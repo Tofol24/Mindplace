@@ -287,12 +287,45 @@ aprens-app/
 
 ---
 
-# Anexo A — Inventario mecánico de herramientas
+# Anexo A — Inventario de herramientas
 
-> _(Barrido automático en curso: dependencias externas, uso del core, claves de almacenamiento y
-> formato de export por archivo. Esta sección se completa con el resultado del barrido.)_
+## A.1 Verificado a fondo (código leído y analizado)
 
-<!-- INVENTARIO_PENDIENTE -->
+| Archivo | Rol | Core embebido | Almacenamiento | Deps externas | Formato export | Notas |
+|---|---|---|---|---|---|---|
+| `aprens-core.js` | Núcleo | — (es el core) | `aprens_db` (por origen) | — | genera `aprens-export` v1 | SCHEMA 1; upsert por id/date; collect-on-export |
+| `cuestionario_tec_aprens.html` | Screening TEC | ✅ (minificado inline) | `aprens_db` | **Google Fonts** | `aprens-export` | `CFG` con L/D/C, `invert`, bandas, foco; anti-XSS |
+| `panel_psicologo_aprens.html` | Panel psicólogo | — (importador) | `PANEL_KEY` | **Google Fonts** | lee `aprens-export` + conversor legacy | Sin login/cifrado; gráficas canvas propias |
+| `inicio_aprens.html` | Hub | — (no persiste) | ninguno | **Google Fonts** | — | Enlaza ~17 Netlify en `target=_blank`; pauta `?foco=L/D/C` |
+| `aprens_MARTI-01_..._.json` | Export real | — | — | — | `aprens-export` v1 | Confirma el sobre y `L/D/C` |
+
+## A.2 Topología de despliegue (extraída del panel y el hub)
+
+~17 sitios Netlify independientes (orígenes separados → un `aprens_db` por sitio), entre ellos:
+`aprens-inicio`, `aprens-cuesitionario-tec`, `aprens-screeningtec`, `aprens-estadomono`, `aprens-dondemono`,
+`aprens-retomona`, `aprens-agendaatencional`, `aprens-aiscuriosidad`, `aprens-aisdiario`, `aprens-aisdiaadia`,
+`aprens-mapainterno`, `aprens-protocoloais`, `aprens-brujulavalores`, `aprens-acompanar-sensacion`,
+`aprens-bajaralerta`, `aprens-controlira`, `aprens-cajadeherramientassemanal`, `aprenseines`, `retorn-feina`.
+
+## A.3 Barrido mecánico de las 26 herramientas restantes — PENDIENTE (bloqueo de infraestructura)
+
+El inventario completo por archivo (core sí/no, `toolId`, deps CDN, claves legacy, formato) **no pudo
+completarse en esta sesión**: el conector de Google Drive requiere **aprobación por llamada / OAuth**, que
+no puede concederse en una sesión no interactiva (además el conector se desconecta de forma intermitente).
+Los archivos del Drive no son públicos, así que no hay descarga directa alternativa.
+
+**Para desbloquear:** autorizar el conector de Google Drive en una sesión interactiva (ajustes de conectores
+de claude.ai, o `/mcp` / `claude mcp`) y aprobar `download_file_content`. El pipeline ya está definido y es
+mecánico: `descargar → base64 -d → grep de 'aprens_db'/'Aprens.config' (core), 'toolId', dominios CDN
+(fonts.googleapis, cdnjs, jsdelivr, unpkg), claves localStorage y 'aprens-export'`.
+
+**Hipótesis a confirmar** (alta confianza, basada en la muestra + el core): la mayoría de las herramientas
+posteriores a 2026-05-30 embeben el core y exportan `aprens-export` con Google Fonts como única dependencia
+externa; el conversor legacy del panel indica que existen **formatos antiguos** en herramientas previas
+(candidatas: las de fecha anterior al core y los `tracker`), que habrá que mapear en la migración.
+
+> Este anexo se completará en cuanto el conector de Drive esté autorizado; no afecta a las conclusiones de
+> las FASES 1–6, que se sostienen sobre la muestra verificada y la topología de despliegue.
 
 ---
 
