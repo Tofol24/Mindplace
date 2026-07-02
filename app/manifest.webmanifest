@@ -1,0 +1,16 @@
+{
+  "name": "APRENS · Presencia interna",
+  "short_name": "APRENS",
+  "description": "Herramientas TEC/AIS de presencia interna para pacientes.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDF3FB",
+  "theme_color": "#1B4F8C",
+  "icons": [
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

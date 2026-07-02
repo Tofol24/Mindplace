@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1B4F8C">
+<meta name="description" content="APRENS · herramientas de presencia interna (TEC/AIS) para pacientes.">
+<title>APRENS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon.svg">
+<link rel="stylesheet" href="css/aprens.css">
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div>
+    <div class="htitle" id="htitle">APRENS</div>
+    <div class="hsub">APRENS Psicología</div>
+  </div>
+  <button class="hback" id="hback" style="display:none">← Inicio</button>
+</div>
+
+<main class="wrap" id="screen"></main>
+
+<!-- Núcleo único: un solo aprens_db para todo el paciente -->
+<script src="js/aprens-core.js"></script>
+<!-- Registro de herramientas + módulos migrados -->
+<script src="js/registry.js"></script>
+<script src="js/tools/cuestionario-tec.js"></script>
+<!-- Shell (hub + router) -->
+<script src="js/app.js"></script>
+
+<!-- PWA: offline + instalable -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
