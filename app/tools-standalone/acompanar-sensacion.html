@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3f8a7e">
+<title>Acompañar la sensación · APRENS</title>
+<style>
+  :root{
+    --bg:#f3f7f6;
+    --card:#ffffff;
+    --tinta:#2f3a38;
+    --suau:#6d7d79;
+    --calma:#3f8a7e;       /* verde-teal calma */
+    --calma-d:#2c6a60;
+    --calma-suau:#e7f1ef;
+    --crema:#eef4f2;
+    --calid:#c98a3f;       /* acento cálido para la brújula */
+    --calid-d:#a86d22;
+    --linia:#dde8e5;
+    --ombra:0 6px 22px rgba(40,80,72,.10);
+    --ombra-s:0 2px 10px rgba(40,80,72,.07);
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#e9f2f0 0%,var(--bg) 220px);
+    color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding:0 16px 80px;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+
+  header{text-align:center;padding:38px 8px 6px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--calma-d);background:var(--calma-suau);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
+  h1{font-size:26px;line-height:1.25;margin:0 auto;max-width:16em;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15px;margin:14px auto 0;max-width:30em}
+  .topcta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:22px 0 4px;padding:14px 16px;border:0;border-radius:14px;cursor:pointer;font-family:inherit;background:var(--calma);color:#fff;font-size:15.5px;font-weight:600;box-shadow:0 6px 18px rgba(63,138,126,.30);transition:transform .08s}
+  .topcta:active{transform:scale(.98)}
+  .topcta svg{width:19px;height:19px}
+  .topnote{text-align:center;color:var(--suau);font-size:13.5px;margin:8px 0 0}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+  .ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--calma-suau);color:var(--calma-d)}
+  .ic svg{width:22px;height:22px;display:block}
+  .card p{margin:8px 0;color:#41514d}
+  .card p.lead{color:var(--suau);font-size:15px;margin-top:2px}
+
+  .quote{background:linear-gradient(135deg,var(--calma-suau) 0%,#dcecea 100%);border-left:4px solid var(--calma);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--calma-d);margin:12px 0 4px;line-height:1.5}
+  .brujula{background:linear-gradient(135deg,#f6ece0 0%,#efe0cd 100%);border:0;text-align:center;box-shadow:var(--ombra)}
+  .brujula .tag{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--calid-d);font-weight:600}
+  .brujula p{color:var(--calid-d);font-size:18px;font-weight:600;line-height:1.5;margin:12px auto 0;max-width:24em}
+
+  .avis{display:flex;gap:11px;background:#fff7ec;border:1px solid #f0e0c4;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14px;color:#7a5b1e;align-items:flex-start}
+  .avis svg{width:20px;height:20px;flex:0 0 20px;color:var(--calid);margin-top:1px}
+
+  /* Práctica guiada */
+  .prac{border:1px solid var(--linia)}
+  .stepwrap{margin-top:8px}
+  .pstep{display:none}
+  .pstep.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .pstep .ptit{font-size:16px;font-weight:700;margin:6px 0 4px}
+  .pstep .ptxt{color:#41514d;font-size:15px;margin:6px 0}
+  .verbal{background:var(--crema);border-radius:12px;padding:13px 15px;font-style:italic;color:var(--calma-d);margin:10px 0;font-size:15px}
+
+  .escala{display:flex;gap:7px;margin-top:8px}
+  .escala button{flex:1;min-width:0;background:var(--bg);border:1.5px solid var(--linia);border-radius:13px;padding:11px 4px 8px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform .08s,border-color .15s,background .15s}
+  .escala button .em{font-size:24px;line-height:1}
+  .escala button .tx{font-size:11px;color:var(--suau);line-height:1.15;text-align:center}
+  .escala button:active{transform:scale(.95)}
+  .escala button.sel{border-color:var(--calma);background:var(--calma-suau)}
+  .escala button.sel .tx{color:var(--calma-d);font-weight:600}
+
+  /* Anillo de respiración */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0 4px}
+  .ring{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 50% 45%,var(--calma-suau),#d3e7e3);
+    box-shadow:inset 0 0 0 2px rgba(63,138,126,.25);transition:transform 1s ease-in-out;}
+  .ring .rinner{width:120px;height:120px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:var(--ombra-s)}
+  .ring .rfase{font-size:17px;font-weight:700;color:var(--calma-d)}
+  .ring .rseg{font-size:13px;color:var(--suau);margin-top:2px}
+  .rhint{color:var(--suau);font-size:13.5px;text-align:center;margin-top:10px;max-width:26em}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:13px 16px;border:0;border-radius:13px;background:var(--calma);color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s;font-family:inherit}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--calma-d);border:1.5px solid var(--calma)}
+  .btn.calid{background:var(--calid)}
+  .brujula .btn{background:#fff;color:var(--calid-d)}
+  .btn svg{width:18px;height:18px}
+  .btn.ok{background:var(--calma)!important;color:#fff!important}
+  .btnrow{display:flex;gap:10px}
+  .btnrow .btn{flex:1}
+
+  /* Resultado de la parada */
+  .result{margin-top:16px;padding:15px;border-radius:14px;background:var(--calma-suau);border:1px solid #cfe3df;display:none;text-align:center}
+  .result.show{display:block;animation:fade .3s ease}
+  .result .bal{font-size:15px;color:var(--calma-d);font-weight:600}
+  .result .bal b{font-size:22px}
+  .result .msg{color:var(--calma-d);font-size:14px;margin-top:4px}
+
+  /* Registro del día */
+  .daysum{margin-top:8px;background:var(--calma-suau);border:1px solid #cfe3df;border-radius:14px;padding:14px 16px}
+  .daysum .tot{display:flex;justify-content:space-around;text-align:center;gap:8px}
+  .daysum .tot div b{display:block;font-size:24px;color:var(--calma-d);line-height:1.1}
+  .daysum .tot div span{font-size:12px;color:var(--calma-d);opacity:.85}
+  .daysum .detall{margin-top:12px;font-size:13px;color:var(--calma-d);line-height:1.7}
+  .daysum .detall .none{font-style:italic;opacity:.8}
+  .clr{background:none;border:0;color:var(--calid-d);font-size:13px;cursor:pointer;text-decoration:underline;padding:10px 0 0;font-family:inherit;display:block;margin:0 auto;width:100%}
+  .hist{margin-top:18px}
+  .hist h3{font-size:13px;color:var(--suau);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .hist .row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--linia);border-radius:11px;padding:9px 12px;margin:7px 0;font-size:13.5px}
+  .hist .row .dt{color:var(--suau);font-size:12.5px;flex:0 0 auto}
+  .hist .row .ev{flex:1;color:#41514d}
+
+  /* Ancla visual: mapa interno (SVG) para localizar la sensación */
+  .mapa{display:flex;justify-content:center;margin:10px 0 4px}
+  .mapa svg{width:100%;max-width:205px;height:auto;display:block}
+  .zone{cursor:pointer}
+  .zone .zbg{fill-opacity:.10;transition:fill-opacity .2s}
+  .zone:hover .zbg{fill-opacity:.2}
+  .zone.sel .zbg{fill-opacity:.3}
+  .zone .organ{transition:filter .2s}
+  .zone:hover .organ{filter:drop-shadow(0 0 3px currentColor)}
+  .zone.sel .organ{filter:drop-shadow(0 0 5px currentColor)}
+  .zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25))}
+  .ancla-msg{display:none;margin:8px 0 4px;background:var(--calma-suau);border-left:4px solid var(--calma);border-radius:0 12px 12px 0;padding:11px 14px;font-size:14.5px;color:var(--calma-d);line-height:1.5;font-weight:600}
+  .ancla-msg.show{display:block;animation:fade .3s ease}
+
+  footer{text-align:center;color:var(--suau);font-size:13px;margin-top:30px;padding:0 10px}
+  footer .logo{font-weight:700;color:var(--calma-d);letter-spacing:.04em}
+
+  @media (max-width:380px){h1{font-size:23px}body{font-size:15px}.escala button .tx{font-size:10px}.ring{width:150px;height:150px}.ring .rinner{width:105px;height:105px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">APRENS · AIS / ACT</span>
+    <h1>Acompañar la sensación</h1>
+    <p class="sub">Ahora tu tarea no es quitar la angustia: es <b>acompañarla</b>. Cuanto menos luches y compruebes, menos fuerza tendrá.</p>
+    <button class="topcta" onclick="anar('practica')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
+      Hacer una parada AIS
+    </button>
+    <p class="topnote">Hazla varias veces al día, aunque sea 1 minuto.</p>
+  </header>
+
+  <!-- Idea base -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>La idea de fondo</h2>
+    <p>La sensación (presión en el pecho, náuseas) es <b>desagradable, pero no peligrosa</b>. No tienes que hacer que se vaya: tienes que <b>cambiar tu relación con ella</b>.</p>
+    <p class="lead">Comprobar si se ha ido, analizar por qué está o pelear con ella le da más atención a tu cuerpo y la hace más persistente.</p>
+  </div>
+
+  <!-- Práctica guiada -->
+  <div class="card prac" id="practica">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12c0-4 3-7 8-7s8 3 8 7-3 7-8 7c-1.4 0-2.7-.2-3.8-.7L4 20l1.2-3.2C4.5 15.6 4 13.9 4 12z"/></svg></span>Una parada AIS</h2>
+
+    <div class="stepwrap">
+      <!-- Paso 1: intensidad antes -->
+      <div class="pstep show" id="ps0">
+        <div class="ptit">1 · ¿Cuánta intensidad notas ahora?</div>
+        <div class="escala" id="esIni">
+          <button data-v="1" onclick="setIni(1,this)"><span class="em">🙂</span><span class="tx">Leve</span></button>
+          <button data-v="2" onclick="setIni(2,this)"><span class="em">😐</span><span class="tx">Poca</span></button>
+          <button data-v="3" onclick="setIni(3,this)"><span class="em">😟</span><span class="tx">Media</span></button>
+          <button data-v="4" onclick="setIni(4,this)"><span class="em">😣</span><span class="tx">Alta</span></button>
+          <button data-v="5" onclick="setIni(5,this)"><span class="em">😰</span><span class="tx">Muy alta</span></button>
+        </div>
+      </div>
+
+      <!-- Paso 2: respiración -->
+      <div class="pstep" id="ps1">
+        <div class="ptit">2 · Respira llevando el aire al abdomen</div>
+        <div class="ring-wrap">
+          <div class="ring" id="ring"><div class="rinner"><div><div class="rfase" id="rfase">Prepárate</div><div class="rseg" id="rseg"></div></div></div></div>
+          <div class="rhint" id="rhint">Sigue el ritmo: el aire entra suave y sale un poco más largo.</div>
+        </div>
+        <div class="btnrow">
+          <button class="btn ghost" onclick="goStep(2)">Seguir</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: observar + palabras + acompañamiento -->
+      <div class="pstep" id="ps2">
+        <div class="ptit">3 · Observa la sensación, tal y como está</div>
+        <p class="ptxt"><b>¿Dónde la notas más?</b> Toca esa zona: la imagen es solo la rampa para llevar ahí tu atención. Luego intenta <b>sentirla</b> de verdad <span class="lead" style="display:inline">(opcional)</span>.</p>
+        <div class="mapa">
+          <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo: cuello, pecho y barriga">
+            <defs>
+              <linearGradient id="bodyGradA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#eaeff3"/>
+                <stop offset="1" stop-color="#dbe4ea"/>
+              </linearGradient>
+            </defs>
+            <g fill="url(#bodyGradA)" stroke="#cdd7df" stroke-width="1.4">
+              <ellipse cx="110" cy="46" rx="29" ry="33"/>
+              <rect x="98" y="72" width="24" height="22" rx="8"/>
+              <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
+              <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
+              <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
+            </g>
+            <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Cuello: garganta y vías" onclick="setAncla('cuello')">
+              <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
+              <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
+                <ellipse cx="110" cy="80" rx="9" ry="7"/>
+                <path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
+                <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/>
+                <line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/>
+                <line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
+              </g>
+              <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
+              <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+            </g>
+            <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pecho: corazón y pulmones" onclick="setAncla('pecho')">
+              <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
+              <g class="organ">
+                <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+                <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+                <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
+                <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
+              </g>
+              <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
+              <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+            </g>
+            <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Barriga: estómago e intestinos" onclick="setAncla('barriga')">
+              <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
+              <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
+                <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
+                <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
+              </g>
+              <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
+              <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+            </g>
+          </svg>
+        </div>
+        <div class="ancla-msg" id="anclaMsg"></div>
+        <p class="ptxt">Obsérvala sin intentar cambiarla. Ponle palabras sencillas:</p>
+        <div class="verbal">“Ahora mismo noto presión en el pecho, angustia y ganas de vomitar.”</div>
+        <p class="ptxt">Y añade el acompañamiento:</p>
+        <div class="verbal">“No me gusta esta sensación, pero puedo estar con ella unos instantes.”</div>
+        <div class="btnrow">
+          <button class="btn ghost" onclick="goStep(1)">Más respiración</button>
+          <button class="btn" onclick="goStep(3)">Seguir</button>
+        </div>
+      </div>
+
+      <!-- Paso 4: volver + intensidad después -->
+      <div class="pstep" id="ps3">
+        <div class="ptit">4 · Vuelve a lo que estabas haciendo</div>
+        <p class="ptxt">Retoma tu actividad <b>aunque la sensación siga ahí</b>. No esperes a sentirte bien para continuar.</p>
+        <div class="ptit" style="margin-top:14px">¿Cuánta intensidad notas ahora?</div>
+        <div class="escala" id="esFin">
+          <button data-v="1" onclick="setFin(1,this)"><span class="em">🙂</span><span class="tx">Leve</span></button>
+          <button data-v="2" onclick="setFin(2,this)"><span class="em">😐</span><span class="tx">Poca</span></button>
+          <button data-v="3" onclick="setFin(3,this)"><span class="em">😟</span><span class="tx">Media</span></button>
+          <button data-v="4" onclick="setFin(4,this)"><span class="em">😣</span><span class="tx">Alta</span></button>
+          <button data-v="5" onclick="setFin(5,this)"><span class="em">😰</span><span class="tx">Muy alta</span></button>
+        </div>
+        <button class="btn" onclick="registrarParada(this)">Registrar esta parada</button>
+      </div>
+
+      <div class="result" id="result">
+        <div class="bal" id="balanc"></div>
+        <div class="msg" id="resMsg"></div>
+        <button class="btn ghost" onclick="nuevaParada()" style="margin-top:12px">Hacer otra parada</button>
+      </div>
+    </div>
+
+    <div class="avis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>El objetivo <b>no</b> es que la intensidad baje. A veces bajará y a veces no: las dos cosas están bien. Lo que entrenas es <b>poder seguir con tu día</b> llevándola contigo.</span>
+    </div>
+  </div>
+
+  <!-- Brújula -->
+  <div class="card brujula">
+    <span class="tag">🧭 Tu brújula</span>
+    <p id="brujulaFrase">“No necesito sentirme bien para continuar con mi día. Puedo llevar esta sensación conmigo mientras hago lo que es importante para mí.”</p>
+    <button class="btn" onclick="copiarFrase(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar la frase
+    </button>
+  </div>
+
+  <!-- Registro del día -->
+  <div class="card" id="registro">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg></span>Mi registro de hoy</h2>
+    <p class="lead">Cada parada que haces se va guardando aquí. Al final del día, envíamelo por WhatsApp.</p>
+    <div class="daysum" id="daysum">
+      <div class="tot">
+        <div><b id="tParadas">0</b><span>paradas<br>hoy</span></div>
+        <div><b id="tIni">–</b><span>intensidad<br>inicial (media)</span></div>
+        <div><b id="tFin">–</b><span>intensidad<br>final (media)</span></div>
+      </div>
+      <div class="detall" id="detall"></div>
+    </div>
+    <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: junta lo del día y mándame <b>un único resumen al final del día</b>.</div>
+    <button class="btn calid" onclick="enviarDia(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar y enviar el registro del día
+    </button>
+    <button class="clr" onclick="reiniciarDia()">Reiniciar el registro de hoy</button>
+    <div class="hist" id="hist"></div>
+  </div>
+
+  <footer>
+    <div class="logo">APRENS</div>
+    Material orientativo de apoyo terapéutico · marco TEC / AIS / ACT.<br>Se interpreta dentro de tu proceso en sesión.
+  </footer>
+
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+  var EMO={1:"🙂",2:"😐",3:"😟",4:"😣",5:"😰"};
+  var KEY_DIA="aprens_acompanar_dia", KEY_HIST="aprens_acompanar_hist";
+  var parada={ini:null,fin:null,zona:null};
+
+  /* Ancla visual (mapa interno): localizar dónde se nota antes de acompañar */
+  var ANCLA={
+    cuello:{ tit:"Cuello", msg:"Lleva la atención al cuello, a la garganta y la nuca. Intenta SENTIR ahí lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." },
+    pecho:{  tit:"Pecho",  msg:"Lleva la atención al pecho. Intenta SENTIR ahí la presión, el latido o lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." },
+    barriga:{tit:"Barriga",msg:"Lleva la atención a la barriga y el estómago. Intenta SENTIR ahí lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." }
+  };
+  function setAncla(k){
+    parada.zona=k;
+    document.querySelectorAll('#ps2 .zone').forEach(function(g){g.classList.toggle('sel', g.getAttribute('data-zona')===k);});
+    var m=document.getElementById('anclaMsg'); m.textContent=ANCLA[k].msg; m.classList.add('show');
+  }
+  function limpiaAncla(){
+    document.querySelectorAll('#ps2 .zone').forEach(function(g){g.classList.remove('sel');});
+    var m=document.getElementById('anclaMsg'); if(m){m.textContent='';m.classList.remove('show');}
+  }
+
+  /* ---------- estado del día ---------- */
+  function hoy(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+  function nowHM(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);}
+  function nuevoDia(){return {date:hoy(),paradas:[]};}
+  function tieneActividad(d){return d&&d.paradas&&d.paradas.length>0;}
+  function cargaDia(){
+    var d=null; try{d=JSON.parse(localStorage.getItem(KEY_DIA));}catch(e){}
+    if(!d||!d.date) return nuevoDia();
+    if(d.date!==hoy()){ archivaDia(d); return nuevoDia(); }
+    if(!d.paradas) d.paradas=[];
+    return d;
+  }
+  function guardaDia(){try{localStorage.setItem(KEY_DIA,JSON.stringify(dia));}catch(e){}}
+  function cargaHist(){try{return JSON.parse(localStorage.getItem(KEY_HIST))||[];}catch(e){return[];}}
+  function media(arr,campo){if(!arr.length)return null;var s=0;arr.forEach(function(p){s+=p[campo];});return Math.round(s/arr.length*10)/10;}
+  function archivaDia(d){
+    if(!tieneActividad(d))return;
+    var h=cargaHist();
+    if(h.length&&h[0].date===d.date)return;
+    h.unshift({date:d.date,n:d.paradas.length,ini:media(d.paradas,"ini"),fin:media(d.paradas,"fin")});
+    if(h.length>30)h=h.slice(0,30);
+    try{localStorage.setItem(KEY_HIST,JSON.stringify(h));}catch(e){}
+  }
+  var dia=cargaDia();
+  if(window.Aprens){ try{ Aprens.config({toolId:"acompanar_sensacion", toolName:"Acompañar la sensación", toolVersion:1}); }catch(e){} }
+
+  /* ---------- navegación / pasos ---------- */
+  function anar(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+  function goStep(n){
+    pararResp();
+    document.querySelectorAll('.pstep').forEach(function(s){s.classList.remove('show');});
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('ps'+n).classList.add('show');
+    if(n===1) iniciarResp();
+  }
+  function setIni(v,btn){
+    parada.ini=v;
+    btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    setTimeout(function(){ goStep(1); },220);
+  }
+  function setFin(v,btn){
+    parada.fin=v;
+    btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+  }
+
+  /* ---------- respiración adaptativa ---------- */
+  // a más activación → exhalación más larga y sin retenciones
+  function ritmoResp(frac){
+    if(frac>=0.8) return [2,0,6,0];
+    if(frac>=0.6) return [3,1,6,1];
+    if(frac>=0.4) return [4,2,6,2];
+    return [5,0,5,0];
+  }
+  function fasesDe(arr){
+    var lab=["Coge aire","Retén","Suelta","Pausa"], sc=[1.18,1.18,0.82,0.82], out=[];
+    arr.forEach(function(d,i){ if(d>0) out.push({f:lab[i],d:d,s:sc[i]}); });
+    return out;
+  }
+  var respTimer=null, respFases=[], respIdx=0, respLeft=0;
+  function iniciarResp(){
+    pararResp();
+    var frac=(parada.ini!=null?parada.ini:3)/5;
+    respFases=fasesDe(ritmoResp(frac));
+    var hint=document.getElementById('rhint');
+    if(frac>=0.8) hint.textContent="Estás muy activada: suelta el aire largo, sin retener. Deja que el cuerpo se afloje.";
+    else if(frac<0.4) hint.textContent="Respiración tranquila y pareja: entra y sale con calma.";
+    else hint.textContent="El aire entra suave hacia el abdomen y sale un poco más largo.";
+    respIdx=-1;
+    siguienteFase();
+  }
+  function siguienteFase(){
+    respIdx=(respIdx+1)%respFases.length;
+    var f=respFases[respIdx];
+    var ring=document.getElementById('ring');
+    document.getElementById('rfase').textContent=f.f;
+    ring.style.transitionDuration=f.d+"s";
+    ring.style.transform="scale("+f.s+")";
+    respLeft=f.d;
+    document.getElementById('rseg').textContent=respLeft+"s";
+    clearInterval(respTimer);
+    respTimer=setInterval(function(){
+      respLeft--;
+      document.getElementById('rseg').textContent=(respLeft>0?respLeft:0)+"s";
+      if(respLeft<=0){ clearInterval(respTimer); siguienteFase(); }
+    },1000);
+  }
+  function pararResp(){
+    clearInterval(respTimer); respTimer=null;
+    var ring=document.getElementById('ring');
+    if(ring){ ring.style.transitionDuration="0.6s"; ring.style.transform="scale(1)"; }
+  }
+
+  /* ---------- registrar parada ---------- */
+  function registrarParada(btn){
+    if(parada.fin==null){ alert("Marca cómo notas la intensidad ahora (paso 4)."); return; }
+    if(parada.ini==null) parada.ini=parada.fin;
+    pararResp();
+    dia.paradas.push({h:nowHM(),ini:parada.ini,fin:parada.fin,zona:parada.zona});
+    guardaDia();
+    if(window.Aprens){ try{ Aprens.save({ id:Date.now(), date:hoy(), ts:Date.now(), param:"densidad", intensidad_antes:parada.ini, intensidad_despues:parada.fin, diferencia:parada.ini-parada.fin, zona:parada.zona||"", paradas_hoy:dia.paradas.length }); Aprens.mountBar(); }catch(e){} }
+    var dif=parada.ini-parada.fin;
+    document.getElementById('balanc').innerHTML=EMO[parada.ini]+' <span style="opacity:.5">→</span> '+EMO[parada.fin]+
+      (dif>0?'  <b>−'+dif+'</b>':(dif<0?'  <b style="color:var(--calid-d)">+'+(-dif)+'</b>':'  <b>=</b>'));
+    var msg=document.getElementById('resMsg');
+    if(dif>0) msg.textContent="La intensidad ha bajado. Bien: tu cuerpo aprende que no había peligro.";
+    else if(dif===0) msg.textContent="Se ha mantenido y has podido estar con ella. Eso también es entrenar.";
+    else msg.textContent="Ha subido un poco, y aun así la has acompañado. Lo importante es que has seguido.";
+    document.querySelectorAll('.pstep').forEach(function(s){s.classList.remove('show');});
+    document.getElementById('result').classList.add('show');
+    pinta();
+  }
+  function nuevaParada(){
+    parada={ini:null,fin:null,zona:null};
+    document.getElementById('esIni').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    document.getElementById('esFin').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    limpiaAncla();
+    goStep(0);
+    anar('practica');
+  }
+
+  /* ---------- render registro ---------- */
+  function pinta(){
+    var ps=dia.paradas;
+    document.getElementById('tParadas').textContent=ps.length;
+    document.getElementById('tIni').textContent=ps.length?media(ps,"ini"):"–";
+    document.getElementById('tFin').textContent=ps.length?media(ps,"fin"):"–";
+    var det=document.getElementById('detall');
+    if(ps.length){
+      det.innerHTML=ps.map(function(p){return '· '+p.h+'  '+EMO[p.ini]+' → '+EMO[p.fin]+(p.zona&&ANCLA[p.zona]?('  <span style="opacity:.7">'+ANCLA[p.zona].tit+'</span>'):'');}).join('<br>');
+    } else { det.innerHTML='<span class="none">Aún no has hecho ninguna parada hoy.</span>'; }
+    pintaHist();
+  }
+  function pintaHist(){
+    var h=cargaHist(), el=document.getElementById('hist');
+    if(!h.length){ el.innerHTML=''; return; }
+    el.innerHTML='<h3>Días anteriores</h3>'+h.map(function(d){
+      return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+d.n+' paradas · media '+
+        (d.ini!=null?d.ini:'–')+' → '+(d.fin!=null?d.fin:'–')+'</span></div>';
+    }).join('');
+  }
+
+  /* ---------- enviar día ---------- */
+  function textDia(d){
+    var L=["ACOMPAÑAR LA SENSACIÓN · APRENS · "+d.date];
+    L.push("Paradas AIS hoy: "+d.paradas.length);
+    var mi=media(d.paradas,"ini"), mf=media(d.paradas,"fin");
+    if(mi!=null) L.push("Nivel inicial (media): "+Math.round(mi)+"/5");
+    if(mf!=null) L.push("Nivel final (media): "+Math.round(mf)+"/5");
+    d.paradas.forEach(function(p){ L.push("   · "+p.h+"  "+p.ini+"/5 → "+p.fin+"/5"+(p.zona&&ANCLA[p.zona]?(" · "+ANCLA[p.zona].tit):"")); });
+    return L.join("\n");
+  }
+  function enviarDia(btn){
+    if(!tieneActividad(dia)){ alert("Aún no has registrado ninguna parada hoy."); return; }
+    copiarText(textDia(dia),btn);
+  }
+  function reiniciarDia(){
+    if(confirm("¿Borrar el registro de hoy y empezar de cero?")){ dia=nuevoDia(); guardaDia(); pinta(); }
+  }
+
+  /* ---------- copiar ---------- */
+  function feedback(btn){
+    if(!btn)return; var html=btn.innerHTML; btn.classList.add('ok');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ¡Copiado!';
+    setTimeout(function(){btn.classList.remove('ok');btn.innerHTML=html;},1700);
+  }
+  function copiarText(text,btn){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){feedback(btn);}).catch(function(){fallback(text,btn);});
+    } else { fallback(text,btn); }
+  }
+  function fallback(text,btn){
+    var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');feedback(btn);}catch(e){alert('No se pudo copiar.');}
+    document.body.removeChild(ta);
+  }
+  function copiarFrase(btn){ copiarText('Mi brújula · APRENS\n\n'+document.getElementById('brujulaFrase').textContent.trim(),btn); }
+
+  /* ---------- init ---------- */
+  guardaDia();
+  pinta();
+</script>
+</body>
+</html>

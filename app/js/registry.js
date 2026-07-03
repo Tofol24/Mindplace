@@ -27,6 +27,12 @@ window.APRENS_TOOLS = [
   { id:"brujula_valores", emoji:"🧭", nombre:"Brújula de valores",
     desc:"Tus áreas vitales: qué te importa y con qué forma estás ahí (ACT).",
     migrada:true, iframe:"tools-standalone/brujula-valores.html" },
+  { id:"acompanar_sensacion", emoji:"🤝", nombre:"Acompañar la sensación",
+    desc:"Paradas AIS: estar con lo que sientes sin luchar ni comprobar.",
+    migrada:true, iframe:"tools-standalone/acompanar-sensacion.html" },
+  { id:"ais_amor", emoji:"🤍", nombre:"AIS desde el amor",
+    desc:"Ejercicios cotidianos para acompañarte, no para controlarte.",
+    migrada:true, iframe:"tools-standalone/ais-amor.html" },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
