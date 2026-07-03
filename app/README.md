@@ -119,8 +119,13 @@ consola donde tú reúnes la evolución de cada paciente a partir de los `.json`
   se deriva (PBKDF2) una clave AES-GCM que **cifra** los datos en `localStorage`. El código
   no se guarda: se pide al abrir. Es el equivalente honesto de un login sin backend (RGPD:
   nada sale a la nube; si te roban el equipo, sin el código no se leen los datos).
-- **Importar**: sube/arrastra uno o varios `.json` (o pega el contenido). Se fusionan por
-  `paciente.codigo` (upsert por `id`/`date`/`fecha`, igual que el núcleo).
+- **Importar** (multi-formato): sube/arrastra uno o varios `.json` (o pega el contenido). Reconoce:
+  (a) el sobre de las herramientas del paciente (`type:"aprens-export"`), (b) el **backup del
+  Screening TEC** (`app:"APRENS_TEC"`/`APRENS_TEC_INVESTIGACION` → convierte `datos{código:{screenings,
+  seguimientos}}` a registros `screening_tec`/`seguimiento_tec`, con L/D/C del `analisis.ice`), y
+  (c) una **copia de seguridad del propio panel** (`type:"aprens-panel-backup"`). Se fusionan por
+  `paciente.codigo` (upsert por `id`/`date`/`fecha`, igual que el núcleo). La gráfica L/D/C se nutre
+  de cualquier herramienta con L/D/C (Cuestionario y Screening).
 - **Vistas clínicas** por paciente: evolución **L/D/C** (Chart.js vendorizado), reparto de
   **posiciones del mono** (conduce/delante/maletero/a mi lado + % «a mi lado»), **valores**
   (discrepancia y cercanía de la brújula), **regulación de la alerta** (antes→después) y

@@ -101,9 +101,59 @@
       return { codigo: codigo, added: added, updated: updated };
     },
 
+    /* Importa CUALQUIER formato APRENS conocido y lo normaliza:
+       - sobre de herramientas del paciente (type:"aprens-export")
+       - backup del Screening TEC (app:"APRENS_TEC" / "APRENS_TEC_INVESTIGACION")
+       - copia de seguridad del propio panel (type:"aprens-panel-backup")
+       Devuelve { codigos:[...], added, updated }. */
+    importAny: function (obj) {
+      if (!obj || typeof obj !== "object") throw new Error("no-json");
+      var envs;
+      if (obj.type === "aprens-export" && obj.tools) envs = [obj];
+      else if ((obj.app === "APRENS_TEC" || obj.app === "APRENS_TEC_INVESTIGACION") && obj.datos) envs = tecBackupToEnvelopes(obj.datos);
+      else if (obj.type === "aprens-panel-backup" && obj.patients) envs = panelBackupToEnvelopes(obj.patients);
+      else throw new Error("formato-desconocido");
+      if (!envs.length) throw new Error("sin-datos");
+      var codigos = {}, added = 0, updated = 0;
+      var self = this;
+      envs.forEach(function (env) { var r = self.mergeEnvelope(env); codigos[r.codigo] = 1; added += r.added; updated += r.updated; });
+      return { codigos: Object.keys(codigos), added: added, updated: updated };
+    },
+
     save: function () { return this._persist(); },
     patients: function () { return Object.keys(this.data.patients).map(function (k) { return this.data.patients[k]; }, this); }
   };
+
+  /* Convierte la BD del Screening TEC ({codigo:{screenings,seguimientos}}) en
+     sobres aprens-export (uno por paciente) que el panel ya sabe fusionar. */
+  function tecBackupToEnvelopes(datos) {
+    return Object.keys(datos).map(function (codigo) {
+      var p = datos[codigo] || {};
+      var scr = (p.screenings || []).map(function (s, i) {
+        var ice = (s.analisis && s.analisis.ice) || {};
+        return { id: "scr:" + codigo + ":" + (s.fecha || "") + ":" + i, date: s.fecha || "", ts: i + 1,
+          L: numOrNull(ice.L), D: numOrNull(ice.D), C: numOrNull(ice.C),
+          patron: (s.analisis && s.analisis.dominante) || null, codigo3: s.codigo || null, tipo: "screening" };
+      });
+      var seg = (p.seguimientos || []).map(function (s, i) {
+        var sc = s.score || {};
+        return { id: "seg:" + codigo + ":" + (s.fecha || "") + ":" + i, date: s.fecha || "", ts: i + 1,
+          indice: numOrNull(sc.indice), latencia: numOrNull(sc.latencia), continuidad: numOrNull(sc.continuidad),
+          perfil: s.perfil || null, tipo: "seguimiento" };
+      });
+      var tools = {};
+      if (scr.length) tools.screening_tec = { meta: { nombre: "Screening TEC/AIS", v: 2 }, records: scr };
+      if (seg.length) tools.seguimiento_tec = { meta: { nombre: "Seguimiento TEC", v: 2 }, records: seg };
+      return { type: "aprens-export", paciente: { codigo: codigo }, exportado: new Date(0).toISOString(), tools: tools };
+    }).filter(function (env) { return Object.keys(env.tools).length; });
+  }
+  function panelBackupToEnvelopes(patients) {
+    return Object.keys(patients).map(function (codigo) {
+      var p = patients[codigo] || {};
+      return { type: "aprens-export", paciente: { codigo: p.codigo || codigo }, exportado: p.updated || new Date(0).toISOString(), tools: p.tools || {} };
+    });
+  }
+  function numOrNull(v) { return v == null || v === "" ? null : Number(v); }
 
   /* ───────────────────────── Modelo / métricas ─────────────────────────── */
   var TOOL_LABEL = {
@@ -111,7 +161,8 @@
     donde_esta_mono: "¿Dónde está el mono?", agenda_atencional: "Agenda atencional",
     ais_curiosidad: "AIS curiosidad", bajar_alerta: "Bajar la alerta",
     brujula_valores: "Brújula de valores", acompanar_sensacion: "Acompañar la sensación",
-    ais_amor: "AIS desde el amor", mapa_atencion_interna: "Mapa interno", screening_tec: "Screening TEC/AIS"
+    ais_amor: "AIS desde el amor", mapa_atencion_interna: "Mapa interno",
+    screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC"
   };
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
@@ -132,9 +183,15 @@
     return ds.length ? { from: ds[0], to: ds[ds.length - 1] } : null;
   }
   function lccSeries(p) {
-    var b = p.tools.cuestionario_tec; if (!b) return [];
-    return (b.records || []).slice().sort(function (a, c) { return recDate(a).localeCompare(recDate(c)); })
-      .map(function (r) { return { date: recDate(r), L: num(r.L), D: num(r.D), C: num(r.C), total: num(r.total) }; });
+    // Reúne L/D/C de cualquier herramienta que los tenga (Cuestionario TEC y Screening TEC).
+    var out = [];
+    Object.keys(p.tools).forEach(function (t) {
+      (p.tools[t].records || []).forEach(function (r) {
+        if (num(r.L) != null && num(r.D) != null && num(r.C) != null)
+          out.push({ date: recDate(r), L: num(r.L), D: num(r.D), C: num(r.C), total: num(r.total) });
+      });
+    });
+    return out.sort(function (a, c) { return String(a.date).localeCompare(String(c.date)); });
   }
   function monoDist(p) {
     var counts = { conduce: 0, delante: 0, maletero: 0, lado: 0 }, total = 0;
@@ -181,6 +238,8 @@
       case "acompanar_sensacion": return "intensidad " + r.intensidad_antes + " → " + r.intensidad_despues + (r.zona ? " (" + r.zona + ")" : "");
       case "ais_curiosidad": case "ais_amor": return (r.ejercicio || "práctica") + (r.micro ? " · " + r.micro : "");
       case "mapa_atencion_interna": return (r.tipo === "recorrido" ? "Recorrido completo" : (r.zona || "Zona")) + cualTxt(r.cualidades);
+      case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (r.patron ? " · patrón " + r.patron : "") + (r.codigo3 ? " · cód " + r.codigo3 : "");
+      case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.latencia != null ? " · latencia " + r.latencia : "") + (r.continuidad != null ? " · continuidad " + r.continuidad : "");
       default: return "—";
     }
   }
@@ -319,15 +378,22 @@
   function closeImport() { $("importModal").style.display = "none"; }
 
   async function importText(txt, label) {
-    var env; try { env = JSON.parse(txt); } catch (e) { setImp("No es un JSON válido" + (label ? " (" + label + ")" : ""), false); return false; }
+    var obj; try { obj = JSON.parse(txt); } catch (e) { setImp("No es un JSON válido" + (label ? " (" + label + ")" : ""), false); return false; }
     try {
-      var res = PanelStore.mergeEnvelope(env);
+      var res = PanelStore.importAny(obj);
       await PanelStore.save();
-      selected = res.codigo;
+      selected = res.codigos[0] || selected;
       renderList($("pfilter").value); renderDetail();
-      setImp("✔ " + res.codigo + ": +" + res.added + " nuevos, " + res.updated + " actualizados", true);
+      var who = res.codigos.length === 1 ? res.codigos[0] : res.codigos.length + " pacientes";
+      setImp("✔ " + who + ": +" + res.added + " nuevos, " + res.updated + " actualizados", true);
       return true;
-    } catch (e) { setImp("El archivo no parece un export de APRENS" + (label ? " (" + label + ")" : ""), false); return false; }
+    } catch (e) {
+      var msg = e && e.message === "formato-desconocido"
+        ? "El archivo no parece un export/backup de APRENS"
+        : "No se pudo importar";
+      setImp(msg + (label ? " (" + label + ")" : ""), false);
+      return false;
+    }
   }
   async function importFiles(files) {
     var ok = 0, fail = 0;
