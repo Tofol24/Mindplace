@@ -1,0 +1,19 @@
+# APRENS · cabeceras de Netlify (válidas también con "drag & drop" de esta carpeta)
+
+# El service worker y el shell no deben cachearse en el CDN: así una versión
+# nueva se propaga al instante (el precache interno ya gestiona el offline).
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Seguridad + RGPD para todo el sitio.
+# La CSP FUERZA la promesa "sin recursos de terceros": el navegador bloquea
+# cualquier carga externa (fuentes, CDNs, imágenes remotas), de modo que la IP
+# del paciente nunca se filtra aunque un día alguien añada un <link> por error.
+# Se permite 'unsafe-inline' porque las herramientas usan estilos y handlers
+# inline; blob: es necesario para la descarga del JSON de exportación.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'

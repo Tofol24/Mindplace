@@ -1,0 +1,6 @@
+# APRENS · configuración de Netlify
+# La app vive en la subcarpeta app/. No hay build: son ficheros estáticos.
+# (Los headers están en app/_headers para que funcionen también con "drag & drop".)
+[build]
+  publish = "app"
+  command = ""
