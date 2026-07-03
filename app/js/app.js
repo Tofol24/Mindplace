@@ -17,6 +17,7 @@
 
   function renderHub(){
     removeExportBar();
+    screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
     titleEl.textContent = "APRENS";
     const tools = window.APRENS_TOOLS || [];
@@ -47,13 +48,27 @@
 
   function renderTool(id){
     const tool = (window.APRENS_TOOLS||[]).find(t=>t.id===id);
-    const mod = window["APRENS_TOOL_"+id];
-    if(!tool || !tool.migrada || !mod){ location.hash = "#/"; return; }
+    if(!tool || !tool.migrada){ location.hash = "#/"; return; }
     removeExportBar();
     backBtn.style.display = "inline-flex";
     titleEl.textContent = tool.nombre;
     screen.innerHTML = "";
     screen._aprensRec = null;
+
+    // Herramientas grandes/legacy integradas como standalone (iframe, mismo origen)
+    if(tool.iframe){
+      screen.classList.add("iframe-host");
+      const f = document.createElement("iframe");
+      f.className = "tool-frame";
+      f.title = tool.nombre;
+      f.src = tool.iframe;
+      screen.appendChild(f);
+      return;
+    }
+
+    screen.classList.remove("iframe-host");
+    const mod = window["APRENS_TOOL_"+id];
+    if(!mod){ location.hash = "#/"; return; }
     mod.mount(screen);
   }
 

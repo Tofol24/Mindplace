@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<!--
+  AGENDA ATENCIONAL · APRENS
+  Estructurador semanal del día en 4 franjas. Cada actividad define la conducta,
+  DÓNDE anclar la atención (única vs repartida) y CON QUÉ CANAL (visual/auditivo/
+  cognitivo/corporal). Registro al final del día (foco logrado, sobrepensamiento,
+  dónde estaba la atención). Herramientas AIS con contador (parada de pensamiento,
+  STOP, respiración, reorientación). Respiración curiosa cada hora, abrazo sentido,
+  honestidad emocional. Brújula de valores por áreas vitales (forma de relacionarse,
+  no resultados). Exporta texto para WhatsApp al psicólogo.
+  Standalone · localStorage 'aprens_agenda_atencional_db' · sistema de diseño APRENS.
+-->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Agenda Atencional · APRENS</title>
+<style>
+:root{
+  --azul:#1B4F8C; --azulLt:#D6E4F0; --verde:#2E7D5E; --verdeLt:#D4EDDA;
+  --naranja:#E07B39; --rojo:#C0392B; --gris:#6B7280; --fondo:#F0F4F8;
+  --oro:#C8973A; --lila:#7B4FC1; --lilaLt:#ECE3F8;
+}
+*{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif; background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%); min-height:100vh; color:#1a1a2e; padding-bottom:calc(74px + env(safe-area-inset-bottom));}
+.header{background:var(--azul); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:11px; box-shadow:0 2px 12px rgba(27,79,140,.3); position:sticky; top:0; z-index:50;}
+.hlogo{width:36px; height:36px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--azul); font-size:12px; font-family:'Playfair Display',serif; flex-shrink:0;}
+.htitle{font-family:'Playfair Display',serif; font-size:17px; font-weight:700;}
+.hsub{font-size:10px; opacity:.75; margin-top:1px;}
+.wrap{max-width:680px; margin:0 auto; padding:18px 14px 30px;}
+.view{display:none;} .view.on{display:block; animation:fade .25s;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+.card{background:#fff; border-radius:18px; padding:20px; box-shadow:0 4px 24px rgba(27,79,140,.08); margin-bottom:16px;}
+.ctit{font-weight:600; font-size:12px; color:var(--azul); margin-bottom:13px; text-transform:uppercase; letter-spacing:.5px;}
+.hero{background:#fff; border-radius:18px; padding:24px 22px 20px; box-shadow:0 4px 24px rgba(27,79,140,.08); margin-bottom:18px; border-top:4px solid var(--oro);}
+.hero h1{font-family:'Playfair Display',serif; font-size:21px; color:var(--azul); margin-bottom:8px; line-height:1.25;}
+.hero p{font-size:13.5px; color:var(--gris); line-height:1.6;}
+.frase{font-style:italic; color:var(--azul); font-size:13px; background:var(--azulLt); border-radius:0 10px 10px 0; border-left:4px solid var(--oro); padding:12px 15px; line-height:1.6; margin-top:14px;}
+.aviso{background:var(--azulLt); border-left:4px solid var(--azul); border-radius:0 10px 10px 0; padding:12px 15px; font-size:12.5px; color:var(--azul); line-height:1.6; margin-bottom:16px;}
+.btn{border:none; border-radius:30px; font-family:'DM Sans',sans-serif; font-weight:600; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; justify-content:center; gap:7px; -webkit-appearance:none; touch-action:manipulation;}
+.bp{background:var(--azul); color:#fff; padding:13px 26px; font-size:14px; box-shadow:0 4px 14px rgba(27,79,140,.3);}
+.bpg{background:var(--verde); color:#fff; padding:13px 26px; font-size:14px; box-shadow:0 4px 14px rgba(46,125,94,.3);}
+.bs{background:#fff; color:var(--azul); border:2px solid var(--azul); padding:10px 20px; font-size:13px;}
+.bsm{padding:8px 15px; font-size:12.5px;}
+.bwa{background:#25D366; color:#fff; padding:14px 22px; font-size:15px; box-shadow:0 4px 14px rgba(37,211,102,.3);}
+.bcopy{background:#fff; color:var(--gris); border:2px solid #E0E7EF; padding:12px 18px; font-size:14px;}
+@media(hover:hover){ .btn:hover{filter:brightness(1.05);} }
+input[type=text], textarea, select{width:100%; border:2px solid #E3EAF3; border-radius:12px; padding:11px 12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#1a1a2e; background:#fff;}
+input[type=text]:focus, textarea:focus, select:focus{outline:none; border-color:var(--azul);}
+textarea{resize:vertical; min-height:60px; line-height:1.5;}
+label.fld{display:block; font-size:12.5px; font-weight:600; color:var(--gris); margin:14px 0 6px;}
+/* day pills */
+.daypills{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:4px;}
+.daypill{flex:0 0 auto; border:2px solid #E0E7EF; background:#fff; border-radius:14px; padding:8px 6px; min-width:46px; text-align:center; cursor:pointer; font-size:12px; color:var(--gris);}
+.daypill.on{border-color:var(--azul); background:var(--azulLt); color:var(--azul); font-weight:600;}
+.daypill small{display:block; font-size:9px; opacity:.7;}
+.daypill.today{box-shadow:0 0 0 2px var(--oro) inset;}
+/* franja */
+.franja{margin-bottom:14px;}
+.frhd{display:flex; align-items:center; gap:8px; font-weight:600; font-size:14px; color:#1a1a2e; margin-bottom:8px;}
+.frhd .fico{font-size:17px;}
+.act{border:1px solid #E8EFF7; border-radius:14px; padding:12px 13px; margin-bottom:8px; background:#FBFCFE;}
+.act .actxt{font-size:14px; font-weight:500; line-height:1.4; margin-bottom:7px;}
+.actchips{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+.chip{font-size:10.5px; padding:3px 9px; border-radius:20px; font-weight:600; white-space:nowrap;}
+.chip-foco-unica{background:var(--verdeLt); color:var(--verde);}
+.chip-foco-rep{background:#FBE5D6; color:var(--naranja);}
+.ch-visual{background:var(--azulLt); color:var(--azul);}
+.ch-auditivo{background:var(--verdeLt); color:var(--verde);}
+.ch-cognitivo{background:var(--lilaLt); color:var(--lila);}
+.ch-corporal{background:#FBE5D6; color:var(--naranja);}
+.ch-mixto{background:#ECEEF1; color:var(--gris);}
+.ancla{font-size:11.5px; color:var(--gris); font-style:italic; margin-top:7px; line-height:1.45;}
+.ancla b{font-style:normal; color:var(--azul);}
+.actbar{display:flex; gap:6px; margin-top:9px;}
+.iconbtn{border:1px solid #E0E7EF; background:#fff; border-radius:9px; padding:5px 9px; font-size:12px; cursor:pointer; color:var(--gris);}
+.addact{width:100%; border:1.5px dashed #C3D2E6; background:#fff; color:var(--azul); border-radius:12px; padding:10px; font-size:13px; font-weight:600; cursor:pointer;}
+.empty{font-size:12.5px; color:var(--gris); font-style:italic; padding:4px 0 6px;}
+/* selectable option pills */
+.opts{display:flex; flex-wrap:wrap; gap:8px;}
+.opt{border:2px solid #E0E7EF; background:#fff; border-radius:14px; padding:9px 13px; font-size:13px; cursor:pointer; color:#1a1a2e; display:flex; flex-direction:column; gap:2px;}
+.opt small{font-size:10px; color:var(--gris);}
+.opt.sel{border-color:var(--azul); background:var(--azulLt);}
+.opt.sel-v{border-color:var(--verde); background:var(--verdeLt);}
+.opt.sel-o{border-color:var(--naranja); background:#FBE5D6;}
+/* registro */
+.regrow{border:1px solid #E8EFF7; border-radius:14px; padding:13px; margin-bottom:10px; background:#FBFCFE;}
+.regrow .rtxt{font-size:13.5px; font-weight:500; margin-bottom:9px; line-height:1.4;}
+.minilbl{font-size:11px; color:var(--gris); font-weight:600; margin:9px 0 5px; text-transform:uppercase; letter-spacing:.4px;}
+.segs{display:flex; gap:6px;}
+.seg{flex:1; border:2px solid #E0E7EF; background:#fff; border-radius:11px; padding:8px 4px; font-size:12px; text-align:center; cursor:pointer; color:var(--gris);}
+.seg.on-si{border-color:var(--verde); background:var(--verdeLt); color:var(--verde); font-weight:600;}
+.seg.on-medias{border-color:var(--naranja); background:#FBE5D6; color:var(--naranja); font-weight:600;}
+.seg.on-no{border-color:var(--gris); background:#ECEEF1; color:var(--gris); font-weight:600;}
+.seg.on-bool{border-color:var(--azul); background:var(--azulLt); color:var(--azul); font-weight:600;}
+input[type=range]{width:100%; accent-color:var(--azul); height:26px;}
+.rngval{font-weight:700; color:var(--azul); font-family:'Playfair Display',serif;}
+/* AIS counters */
+.counter{display:flex; align-items:center; gap:12px; border:1px solid #E8EFF7; border-radius:14px; padding:12px 13px; margin-bottom:9px; background:#FBFCFE;}
+.counter .cinfo{flex:1;}
+.counter .cname{font-size:13.5px; font-weight:600;}
+.counter .cdesc{font-size:11px; color:var(--gris); line-height:1.4; margin-top:2px;}
+.cnum{font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--azul); min-width:34px; text-align:center;}
+.cbtn{width:38px; height:38px; border-radius:50%; border:none; font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.cplus{background:var(--azul); color:#fff;}
+.cminus{background:#fff; border:2px solid #E0E7EF; color:var(--gris); font-size:18px;}
+.badge{display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:6px; margin-left:5px; vertical-align:middle;}
+.bL{background:#FCE4E2; color:var(--rojo);} .bD{background:var(--azulLt); color:var(--azul);} .bC{background:var(--verdeLt); color:var(--verde);}
+/* breathing */
+.breath{text-align:center; padding:8px 0 4px;}
+.bcircle{width:120px; height:120px; border-radius:50%; margin:10px auto; background:radial-gradient(circle,var(--azulLt),var(--azul)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:600; transition:transform 4s ease-in-out; transform:scale(.6);}
+.bcircle.big{transform:scale(1);}
+.bphase{font-size:15px; color:var(--azul); font-weight:600; min-height:22px; margin-top:6px;}
+/* valores */
+.areacard{border:1px solid #E8EFF7; border-radius:14px; padding:13px; margin-bottom:10px; background:#FBFCFE;}
+.areahd{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.areanm{font-size:14px; font-weight:600; color:#1a1a2e;}
+.proxlbl{font-size:11px; color:var(--gris); margin:10px 0 2px;}
+.monogrid{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+.monoopt{border:2px solid #E0E7EF; background:#fff; border-radius:11px; padding:8px; font-size:12px; cursor:pointer; color:#1a1a2e; line-height:1.3;}
+.monoopt small{display:block; font-size:9.5px; color:var(--gris); margin-top:2px;}
+.monoopt.on{border-color:var(--azul); background:var(--azulLt); font-weight:600;}
+.monobar{display:flex; height:10px; border-radius:6px; overflow:hidden; background:#ECEEF1; margin:8px 0 6px;}
+.monoseg{height:100%;}
+.areastat{background:#F4F8FC; border-radius:12px; padding:11px 12px; margin-top:11px; font-size:12px; color:#1a1a2e; line-height:1.55;}
+.areastat .asnum{font-weight:600; color:var(--azul);}
+.sugrow{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #EEF2F7;}
+.sugrow:last-child{border-bottom:none;}
+.sugtxt{font-size:13px; line-height:1.4;}
+.sugtxt small{display:block; color:var(--lila); font-size:10.5px; margin-top:2px;}
+.sugadd{flex:0 0 auto; border:2px solid var(--azul); background:#fff; color:var(--azul); border-radius:20px; padding:7px 13px; font-size:12px; font-weight:600; cursor:pointer;}
+.treetxt{font-size:12.5px; color:#1a1a2e; line-height:1.6; margin-top:10px;}
+/* bottom nav */
+.nav{position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #E5EBF2; display:flex; padding:6px 4px calc(6px + env(safe-area-inset-bottom)); box-shadow:0 -2px 14px rgba(27,79,140,.08); z-index:60;}
+.navb{flex:1; border:none; background:none; cursor:pointer; padding:6px 2px; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--gris); font-size:10px; font-family:'DM Sans',sans-serif;}
+.navb .ni{font-size:20px;}
+.navb.on{color:var(--azul); font-weight:600;}
+/* modal */
+.modal{position:fixed; inset:0; background:rgba(20,30,50,.5); z-index:100; display:none; align-items:flex-end; justify-content:center;}
+.modal.on{display:flex; animation:fade .2s;}
+.sheet{background:#fff; width:100%; max-width:680px; border-radius:22px 22px 0 0; padding:22px 18px calc(22px + env(safe-area-inset-bottom)); max-height:92vh; overflow-y:auto; animation:up .25s;}
+@keyframes up{from{transform:translateY(40px);} to{transform:none;}}
+.sheet h3{font-family:'Playfair Display',serif; color:var(--azul); font-size:18px; margin-bottom:4px;}
+.cbox{background:var(--fondo); border:2px solid #E8EFF7; border-radius:12px; padding:15px; font-size:12px; line-height:1.7; color:#333; max-height:300px; overflow-y:auto; white-space:pre-wrap; word-break:break-word; margin-bottom:16px;}
+.acc{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:12px;}
+.legend{font-size:11px; color:var(--gris); line-height:1.7;}
+.legend b{color:var(--azul);}
+/* drag handle (reordenar arrastrando) */
+.acthead{display:flex; align-items:flex-start; gap:8px;}
+.acthead .actxt{flex:1; margin-bottom:0;}
+.dragh{flex:0 0 auto; cursor:grab; color:#B9C2CE; font-size:18px; line-height:1.25; padding:0 3px; touch-action:none; user-select:none; -webkit-user-select:none;}
+.act.dragging{opacity:.55; box-shadow:0 10px 24px rgba(27,79,140,.22); border-color:var(--azul);}
+/* selector de días y momentos (multi) en el formulario */
+.daysel, .frsel{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:2px;}
+.dseg{border:2px solid #E0E7EF; background:#fff; border-radius:12px; padding:8px 12px; font-size:12.5px; cursor:pointer; color:var(--gris); white-space:nowrap;}
+.dseg.on{border-color:var(--azul); background:var(--azulLt); color:var(--azul); font-weight:600;}
+.dseg.today{box-shadow:0 0 0 2px var(--oro) inset;}
+.presets{display:flex; gap:6px; flex-wrap:wrap; margin-top:7px;}
+.preset{border:none; background:#EEF3F8; color:var(--azul); border-radius:20px; padding:6px 12px; font-size:11.5px; font-weight:600; cursor:pointer;}
+/* vista semana (horario semanal) */
+.wkday{padding:14px 15px;}
+.wkdh{font-weight:600; font-size:14.5px; color:var(--azul); margin-bottom:9px; font-family:'Playfair Display',serif;}
+.wkday.wktoday{border-left:4px solid var(--oro);}
+.wkfr{margin-bottom:10px;}
+.wkfr:last-child{margin-bottom:0;}
+.wkfrh{font-size:11.5px; color:var(--gris); font-weight:600; margin-bottom:5px;}
+.wkact{display:flex; align-items:center; gap:7px; background:#FBFCFE; border:1px solid #E8EFF7; border-radius:10px; padding:7px 9px; margin-bottom:5px;}
+.wkat{flex:1; font-size:13px; line-height:1.35; min-width:0;}
+.wkat small{display:block; color:var(--gris); font-size:10.5px; margin-top:1px;}
+.wkacts{display:flex; gap:3px; flex:0 0 auto;}
+.wkacts .iconbtn{padding:4px 7px; font-size:13px;}
+.pasteb{width:100%; border:1.5px dashed var(--azul); background:var(--azulLt); color:var(--azul); border-radius:10px; padding:8px; font-size:12.5px; font-weight:600; cursor:pointer; margin-top:3px;}
+.clipbar{display:flex; align-items:center; gap:10px; font-size:13px; line-height:1.45; background:#FFF8E8; border:1px solid var(--oro); color:#8a6a1f;}
+.clipbar b{color:#8a6a1f;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div>
+    <div class="htitle">Agenda Atencional</div>
+    <div class="hsub">APRENS Psicologia · Estructura tu día y dónde pones la atención</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===================== PLAN ===================== -->
+  <section class="view on" id="v-plan">
+    <div class="hero">
+      <h1>Tu semana, franja a franja</h1>
+      <p>Reparte cada día en cuatro momentos y coloca tus actividades en orden. En cada una decides no solo <b>qué</b> hacer, sino <b>dónde pondrás la atención</b> y <b>con qué canal</b>. Eso es un trabajo consciente: elegir, antes, dónde anclar la mente.</p>
+      <div class="frase">No se trata de hacer más cosas, sino de estar de verdad en la que estás haciendo.</div>
+    </div>
+
+    <div class="card">
+      <div class="ctit">Elige el día</div>
+      <div class="daypills" id="daypills"></div>
+    </div>
+
+    <div id="planBody"></div>
+
+    <div class="card">
+      <div class="ctit">Qué entrenas aquí</div>
+      <div class="legend">
+        <span class="badge bL">L</span> <b>Latencia</b> — el STOP y la parada de pensamiento crean un espacio antes de reaccionar.<br>
+        <span class="badge bD">D</span> <b>Densidad</b> — anclar la atención en cada actividad y la respiración curiosa cada hora multiplican los momentos de presencia.<br>
+        <span class="badge bC">C</span> <b>Continuidad</b> — la brújula de valores sostiene tu atención orientada a lo que importa, día tras día.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SEMANA (horario completo) ===================== -->
+  <section class="view" id="v-semana">
+    <div class="hero">
+      <h1>Tu horario semanal</h1>
+      <p>Aquí ves la semana entera de un vistazo. Puedes <b>copiar</b> una actividad y pegarla en otro día o momento, <b>cortarla</b> para moverla, o editarla. Así no tienes que ir día a día.</p>
+      <div class="frase">Estructurar la semana también es un acto consciente: decides de antemano dónde quieres estar.</div>
+    </div>
+    <div id="semanaBody"></div>
+  </section>
+
+  <!-- ===================== HOY (registro) ===================== -->
+  <section class="view" id="v-hoy">
+    <div class="hero">
+      <h1>Cómo fue tu día</h1>
+      <p>Al final del día, repasa lo que habías planeado. Sin juzgarte: solo observa si lo hiciste, si tu atención estuvo donde querías, y si no, hacia dónde se fue. Esa observación ya es entrenamiento.</p>
+    </div>
+    <div class="aviso" id="hoyFecha"></div>
+    <div id="hoyBody"></div>
+    <div class="card">
+      <div class="ctit">Nota del día (opcional)</div>
+      <textarea id="hoyNota" placeholder="¿Qué has aprendido hoy sobre tu atención? ¿Qué la llevaba de un lado a otro?" oninput="setNota(this.value)"></textarea>
+    </div>
+  </section>
+
+  <!-- ===================== AIS ===================== -->
+  <section class="view" id="v-ais">
+    <div class="hero">
+      <h1>Herramientas AIS</h1>
+      <p>Cada vez que uses una, súmala. No para sacar nota: para que veas, con los días, cuántas veces has elegido volver a ti en lugar de irte con el piloto automático.</p>
+    </div>
+
+    <div class="card">
+      <div class="ctit">Cuéntalas hoy</div>
+      <div id="aisCounters"></div>
+      <div class="frase">La parada de pensamiento no es pelearte con el pensamiento. Es notarlo, dejarlo pasar y volver a tu ancla. El proceso importa más que el número.</div>
+    </div>
+
+    <div class="card">
+      <div class="ctit">Respiración guiada</div>
+      <div class="breath">
+        <div class="bcircle" id="breathC">Toca empezar</div>
+        <div class="bphase" id="breathP"></div>
+        <button class="btn bp bsm" id="breathBtn" onclick="iniciarResp()" style="margin-top:8px;">🌬️ Respira conmigo (4 rondas)</button>
+      </div>
+      <p style="font-size:12px; color:var(--gris); line-height:1.6; margin-top:10px;">Respiración <b>curiosa</b>: en vez de respirar para calmarte, observa con curiosidad cómo entra y sale el aire, sin cambiar nada. Al terminar suma una a "Respiración curiosa".</p>
+    </div>
+
+    <div class="card">
+      <div class="ctit">Abrazo sentido</div>
+      <p style="font-size:12.5px; color:var(--gris); line-height:1.6;">Cruza los brazos sobre el pecho, una mano en cada hombro. Aprieta suave, como si te sostuvieras. Respira tres veces ahí. No te pide arreglar nada: solo acompañarte.</p>
+      <button class="btn bs bsm" style="margin-top:11px;" onclick="bump('abrazo',1)">🤗 Lo he hecho (+1)</button>
+    </div>
+
+    <div class="card">
+      <div class="ctit">Honestidad emocional</div>
+      <p style="font-size:12.5px; color:var(--gris); line-height:1.6; margin-bottom:10px;">No es analizar lo que sientes, sino <b>compartirlo con alguien a quien quieres</b>. No necesitas entenderlo ni justificarlo: basta con nombrar la sensación del cuerpo y abrir la puerta.</p>
+      <div class="frase">"No sé por qué… pero noto una sensación aquí <i>(mano en la barriga)</i>, y quería compartirlo contigo."</div>
+      <button class="btn bs bsm" style="margin-top:10px;" onclick="copiarFrase(this)">📋 Copiar esta frase</button>
+      <label class="fld">¿Con quién lo compartiste (o quieres compartirlo)?</label>
+      <input type="text" id="honQuien" placeholder="Ej.: mi madre, mi pareja, un amigo…">
+      <label class="fld">¿Qué notas en el cuerpo / qué le dijiste?</label>
+      <input type="text" id="honInput" placeholder="Ej.: una presión en la barriga, ganas de llorar…">
+      <button class="btn bpg bsm" style="margin-top:12px;" onclick="addHonestidad()">Lo he compartido</button>
+      <div id="honList" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <!-- ===================== VALORES ===================== -->
+  <section class="view" id="v-val">
+    <div class="hero">
+      <h1>Brújula de valores</h1>
+      <p>Para cada área de tu vida, define <b>cómo</b> quieres relacionarte ahí (la forma, tu manera) y valora hasta qué punto esta semana te has acercado a esa forma.</p>
+      <div class="frase">No mides resultados ni si lo lograste. Mides la <b>forma</b> en que te relacionas: con presencia, con cuidado, con honestidad. Eso sí depende de ti.</div>
+    </div>
+    <div class="aviso">Ejemplo: en "Familia" tu valor puede ser <i>"estar presente cuando estoy con ellos"</i>. La pregunta no es si discutisteis o no, sino si esta semana <b>estuviste presente</b> del modo que valoras.</div>
+    <div id="valBody"></div>
+    <div class="card">
+      <div class="ctit">Añadir otra área</div>
+      <input type="text" id="newArea" placeholder="Ej.: Espiritualidad, Naturaleza…">
+      <button class="btn bs bsm" style="margin-top:10px;" onclick="addArea()">+ Añadir área</button>
+    </div>
+  </section>
+
+  <!-- ===================== ENVIAR ===================== -->
+  <section class="view" id="v-env">
+    <div class="hero">
+      <h1>Enviar a tu psicólogo/a</h1>
+      <p>Un resumen de tu día y de cómo ha andado tu atención. Lo revisáis juntos en sesión.</p>
+    </div>
+    <div class="aviso">Tus datos se guardan <b>solo en este dispositivo</b> (no salen de aquí). Cuando quieras, copia el texto o ábrelo en WhatsApp para enviarlo.</div>
+    <div class="card">
+      <div class="ctit">Resumen de hoy</div>
+      <div class="cbox" id="msgBox"></div>
+      <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: junta lo del día y mándame <b>un único resumen al final del día</b>.</div>
+      <div class="acc">
+        <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar por WhatsApp</a>
+        <button class="btn bcopy" onclick="copiar(this)">📋 Copiar texto</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctit">Copia de seguridad</div>
+      <p style="font-size:12.5px; color:var(--gris); line-height:1.6; margin-bottom:12px;">Descarga una copia de tu agenda y registros (archivo JSON) por si cambias de móvil o quieres restaurarla.</p>
+      <div class="acc" style="justify-content:flex-start;">
+        <button class="btn bs bsm" onclick="exportJSON()">⬇️ Descargar copia</button>
+        <button class="btn bs bsm" onclick="document.getElementById('impFile').click()">⬆️ Restaurar copia</button>
+        <input type="file" id="impFile" accept="application/json" style="display:none" onchange="importJSON(this)">
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- bottom nav -->
+<div class="nav">
+  <button class="navb on" data-v="plan" onclick="go('plan')"><span class="ni">🗓️</span>Plan</button>
+  <button class="navb" data-v="semana" onclick="go('semana')"><span class="ni">📆</span>Semana</button>
+  <button class="navb" data-v="hoy" onclick="go('hoy')"><span class="ni">✅</span>Hoy</button>
+  <button class="navb" data-v="ais" onclick="go('ais')"><span class="ni">🌬️</span>AIS</button>
+  <button class="navb" data-v="val" onclick="go('val')"><span class="ni">🧭</span>Valores</button>
+  <button class="navb" data-v="env" onclick="go('env')"><span class="ni">📤</span>Enviar</button>
+</div>
+
+<!-- activity form modal -->
+<div class="modal" id="actModal">
+  <div class="sheet" id="actSheet"></div>
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+/* ===================== DATOS ===================== */
+var KEY='aprens_agenda_atencional_db';
+var DOW=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+var DOWS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+var FRANJAS=[
+  {id:'manana', icon:'🌅', txt:'Mañana'},
+  {id:'mediodia', icon:'☀️', txt:'Mediodía'},
+  {id:'tarde', icon:'🌇', txt:'Tarde'},
+  {id:'noche', icon:'🌙', txt:'Noche'}
+];
+var CANALES=[
+  {id:'visual', icon:'👁️', txt:'Visual', desc:'Mirar, observar con los ojos'},
+  {id:'auditivo', icon:'👂', txt:'Auditivo', desc:'Escuchar, atender al sonido'},
+  {id:'cognitivo', icon:'🧠', txt:'Cognitivo', desc:'Pensar, razonar, planificar'},
+  {id:'corporal', icon:'🤲', txt:'Corporal', desc:'Sensaciones del cuerpo, tacto, movimiento'},
+  {id:'mixto', icon:'🔀', txt:'Mixto', desc:'Varios canales a la vez'}
+];
+var AIS=[
+  {k:'parada', nm:'Parada de pensamiento', desc:'Noto el pensamiento, le pongo nombre, lo suelto y vuelvo a mi ancla.', badge:'L'},
+  {k:'stop', nm:'STOP', desc:'Stop · respiro · observo · sigo con intención.', badge:'L'},
+  {k:'resp', nm:'Respiración consciente', desc:'Tres respiraciones lentas, atento a cómo entra y sale el aire.', badge:'D'},
+  {k:'reorA', nm:'Reorientación atencional', desc:'Llevo la atención de vuelta a lo que estaba haciendo.', badge:'D'},
+  {k:'reorC', nm:'Reorientación conductual', desc:'Cambio lo que estoy haciendo para acercarme a lo que importa.', badge:'C'},
+  {k:'respCuriosa', nm:'Respiración curiosa (cada hora)', desc:'Una vez por hora: observo la respiración con curiosidad, sin cambiarla.', badge:'D'},
+  {k:'abrazo', nm:'Abrazo sentido', desc:'Me sostengo unos segundos, con cariño.', badge:'D'}
+];
+var AREAS_DEF=['Familia','Pareja / relaciones','Amistades','Hogar y entorno','Autocuidado','Deporte y movimiento','Nutrición','Trabajo / estudios','Ocio y disfrute','Crecimiento personal','Comunidad / ayudar'];
+// Metáfora del mono y el coche (PDF «¿Quién conduce tu vida?»): dónde va el mono (la emoción) mientras hago la actividad = calidad de presencia
+var MONO=[
+  {k:'lado',    label:'🚗 Al lado',    short:'al lado (conduces tú)',      desc:'Lo siento y sigo hacia mi valor', color:'var(--verde)',   q:3},
+  {k:'delante', label:'🙈 Delante',    short:'delante (me tapa)',           desc:'Me distrae o lo persigo; no veo', color:'var(--naranja)', q:1},
+  {k:'atras',   label:'📦 Atrás',      short:'atrás (lo escondo)',          desc:'Evito la emoción, al maletero',   color:'var(--lila)',    q:1},
+  {k:'conduce', label:'🐒 Conduce él', short:'conduciendo él (reacciono)',  desc:'Automático, manda la emoción',    color:'var(--rojo)',    q:0}
+];
+var MONO_MAP={}; MONO.forEach(function(m){ MONO_MAP[m.k]=m; });
+// conductas orientadas a valor, por área (para autosugerir cuando un área está floja)
+var SUG_CONDUCTA={
+  'Familia':['Comer sin móvil con la familia','Llamar o escribir a un familiar','Pasear con alguien de casa'],
+  'Pareja / relaciones':['Proponer un plan pequeño juntos','Preguntarle cómo está y escuchar sin resolver'],
+  'Amistades':['Escribir a alguien que hace tiempo no veo','Quedar para un café'],
+  'Hogar y entorno':['Recoger una zona de casa 10 minutos','Hacer la cama al levantarme','Ordenar un cajón o una mesa'],
+  'Autocuidado':['Ducharme con calma, atento a las sensaciones','Parar 5 minutos a respirar','Acostarme a una hora fija'],
+  'Deporte y movimiento':['Caminar 20 minutos','Estiramientos suaves a mi ritmo','Mover el cuerpo sin exigirme'],
+  'Nutrición':['Cocinar algo cuidándome','Comer sin pantallas, atento al sabor','Beber agua a lo largo del día'],
+  'Trabajo / estudios':['Una tarea de 25 min sin distracciones','Ordenar mi espacio de trabajo'],
+  'Ocio y disfrute':['Retomar algo que disfrutaba y dejé','Salir a un sitio nuevo'],
+  'Crecimiento personal':['Leer 10 minutos','Escribir cómo me siento'],
+  'Comunidad / ayudar':['Ayudar a alguien en algo pequeño','Participar en algo del barrio']
+};
+
+var db=loadDB();
+var selDow=todayDow();
+if(window.Aprens){ try{ Aprens.config({toolId:'agenda_atencional', toolName:'Agenda atencional', toolVersion:1}); }catch(e){} }
+
+function loadDB(){
+  try{
+    var d=JSON.parse(localStorage.getItem(KEY));
+    if(d&&d.v){ d.plan=d.plan||{}; d.reg=d.reg||{}; d.valores=d.valores||[]; migrateAreas(d); return d; }
+  }catch(e){}
+  var nd={v:1, created:todayStr(), plan:{}, reg:{}, valores:[]};
+  AREAS_DEF.forEach(function(a){ nd.valores.push({id:uid(), area:a, valor:'', prox:5}); });
+  return nd;
+}
+function migrateAreas(d){ for(var dw in d.plan){ for(var fr in d.plan[dw]){ (d.plan[dw][fr]||[]).forEach(function(a){ if(!Array.isArray(a.areas)){ a.areas = a.area ? [a.area] : []; } }); } } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(db)); }catch(e){} }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()); }
+function p2(n){ return (n<10?'0':'')+n; }
+function todayDow(){ return (new Date().getDay()+6)%7; }
+function fechaBonita(){ var d=new Date(); return DOW[todayDow()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function areaChips(areas){ return (areas||[]).filter(function(x){return x;}).map(function(x){ return '<span class="chip" style="background:var(--lilaLt);color:var(--lila);">🧭 '+esc(x)+'</span>'; }).join(''); }
+
+function planDow(dow){
+  if(!db.plan[dow]) db.plan[dow]={};
+  FRANJAS.forEach(function(f){ if(!db.plan[dow][f.id]) db.plan[dow][f.id]=[]; });
+  return db.plan[dow];
+}
+function getReg(date){
+  if(!db.reg[date]) db.reg[date]={acts:{}, ais:{}, honestidad:[], nota:''};
+  var r=db.reg[date];
+  r.acts=r.acts||{}; r.ais=r.ais||{}; r.honestidad=r.honestidad||[]; if(typeof r.nota!=='string') r.nota='';
+  AIS.forEach(function(a){ if(typeof r.ais[a.k]!=='number') r.ais[a.k]=0; });
+  return r;
+}
+function getActReg(date, actId){
+  var r=getReg(date);
+  if(!r.acts[actId]) r.acts[actId]={hecha:'', foco:5, mono:'', sobre:false, donde:''};
+  if(typeof r.acts[actId].mono!=='string') r.acts[actId].mono='';
+  return r.acts[actId];
+}
+/* --- agregación semanal por área vital (últimos 7 días) --- */
+function dowOfDate(s){ var p=s.split('-'); var d=new Date(+p[0],+p[1]-1,+p[2]); return (d.getDay()+6)%7; }
+function semanaFechas(){ var arr=[], d=new Date(); for(var i=0;i<7;i++){ var x=new Date(d); x.setDate(d.getDate()-i); arr.push(x.getFullYear()+'-'+p2(x.getMonth()+1)+'-'+p2(x.getDate())); } return arr; }
+function statsAreaSemana(area){
+  var nPlan=0,nDone=0,nMed=0,foSum=0,foN=0, mono={lado:0,delante:0,atras:0,conduce:0};
+  semanaFechas().forEach(function(date){
+    var plan=db.plan[dowOfDate(date)]; if(!plan) return;
+    var r=db.reg[date];
+    FRANJAS.forEach(function(f){ (plan[f.id]||[]).forEach(function(a){
+      if((a.areas||[]).indexOf(area)<0) return;
+      nPlan++;
+      var ar=(r&&r.acts)?r.acts[a.id]:null; if(!ar) return;
+      if(ar.hecha==='si') nDone++; else if(ar.hecha==='medias') nMed++;
+      if(typeof ar.foco==='number' && ar.hecha && ar.hecha!=='no'){ foSum+=ar.foco; foN++; }
+      if(ar.mono && mono.hasOwnProperty(ar.mono)) mono[ar.mono]++;
+    }); });
+  });
+  return {nPlan:nPlan,nDone:nDone,nMed:nMed,foco:foN?foSum/foN:null,mono:mono,monoTotal:mono.lado+mono.delante+mono.atras+mono.conduce};
+}
+function monoDominante(mono){ var best='',n=0; ['lado','delante','atras','conduce'].forEach(function(k){ if(mono[k]>n){n=mono[k];best=k;} }); return best; }
+function monobarHTML(mono,total){
+  var h='<div class="monobar">';
+  MONO.forEach(function(m){ var w=Math.round(100*mono[m.k]/total); if(w>0) h+='<div class="monoseg" style="width:'+w+'%;background:'+m.color+'"></div>'; });
+  return h+'</div>';
+}
+function optsArea(sel, ph){
+  var o='<option value="">'+(ph||'— sin área —')+'</option>';
+  db.valores.forEach(function(v){ o+='<option value="'+esc(v.area)+'"'+(v.area===sel?' selected':'')+'>'+esc(v.area)+'</option>'; });
+  return o;
+}
+/* --- sinergias entre áreas (actividades vinculadas a 2 áreas), últimos 7 días --- */
+function statsSinergias(){
+  var map={};
+  semanaFechas().forEach(function(date){
+    var plan=db.plan[dowOfDate(date)]; if(!plan) return; var r=db.reg[date];
+    FRANJAS.forEach(function(f){ (plan[f.id]||[]).forEach(function(a){
+      var ars=(a.areas||[]).filter(function(x){return x;});
+      if(ars.length<2) return;
+      for(var i=0;i<ars.length;i++) for(var j=i+1;j<ars.length;j++){
+        var pair=[ars[i],ars[j]].sort(); var key=pair.join('||');
+        if(!map[key]) map[key]={a:pair[0], b:pair[1], count:0, done:0};
+        map[key].count++;
+        var ar=(r&&r.acts)?r.acts[a.id]:null; if(ar&&ar.hecha==='si') map[key].done++;
+      }
+    }); });
+  });
+  return Object.keys(map).map(function(k){ return map[k]; }).sort(function(x,y){return y.count-x.count;});
+}
+/* --- árbol del mono: nodos=áreas (tamaño=cercanía), ramas=agarre, hilos=sinergias --- */
+function colorProx(p){ if(p>=7) return 'var(--verde)'; if(p>=4) return 'var(--oro)'; return '#B9C2CE'; }
+function arbolSVG(){
+  var vs=db.valores, n=vs.length; if(!n) return '';
+  var cx=160, cy=160, R=100;
+  var pos=vs.map(function(v,i){ var ang=(-90 + i*360/n)*Math.PI/180; return {x:cx+R*Math.cos(ang), y:cy+R*Math.sin(ang), v:v, ang:ang}; });
+  var s='<svg viewBox="0 0 320 320" width="100%" style="max-width:340px;display:block;margin:4px auto 0;">';
+  pos.forEach(function(p){ var w=1.2+p.v.prox*0.7; s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p.x.toFixed(1)+'" y2="'+p.y.toFixed(1)+'" stroke="#CFE0D8" stroke-width="'+w.toFixed(1)+'" stroke-linecap="round"/>'; });
+  statsSinergias().forEach(function(pr){
+    var pa=pos.filter(function(p){return p.v.area===pr.a;})[0], pb=pos.filter(function(p){return p.v.area===pr.b;})[0];
+    if(!pa||!pb) return;
+    s+='<line x1="'+pa.x.toFixed(1)+'" y1="'+pa.y.toFixed(1)+'" x2="'+pb.x.toFixed(1)+'" y2="'+pb.y.toFixed(1)+'" stroke="var(--lila)" stroke-width="'+(1.4+pr.count*1.4).toFixed(1)+'" stroke-opacity="0.5" stroke-linecap="round"/>';
+  });
+  pos.forEach(function(p){
+    var r=7+p.v.prox*1.2;
+    s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+colorProx(p.v.prox)+'" stroke="#fff" stroke-width="2"/>';
+    var rightish=Math.cos(p.ang)>=-0.15;
+    var lx=p.x + (rightish?(r+4):-(r+4)); var anchor=rightish?'start':'end';
+    var nm=p.v.area.length>13? p.v.area.slice(0,12)+'…':p.v.area;
+    s+='<text x="'+lx.toFixed(1)+'" y="'+(p.y+3).toFixed(1)+'" font-size="8.5" fill="#445" text-anchor="'+anchor+'" font-family="DM Sans,sans-serif">'+esc(nm)+'</text>';
+  });
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="#fff" stroke="var(--oro)" stroke-width="2"/>';
+  s+='<text x="'+cx+'" y="'+(cy+7)+'" font-size="22" text-anchor="middle">🐒</text>';
+  return s+'</svg>';
+}
+function analisisArbol(){
+  var vs=db.valores, n=vs.length; if(!n) return '';
+  var agarre=vs.filter(function(v){return v.prox>=4;});
+  var debiles=vs.filter(function(v){return v.prox<=3;});
+  var sin=statsSinergias();
+  var L=[];
+  L.push('Tu mono se sujeta ahora a <b>'+agarre.length+'</b> de <b>'+n+'</b> ramas (áreas con cierta cercanía).');
+  if(n>=4 && agarre.length<=2){
+    L.push('Cuando solo unas pocas ramas sostienen todo el peso, es fácil aferrarse a ellas: controlarlas, depender de ellas y que aparezcan la obsesión o conductas para evitar lo incómodo. No es un fallo tuyo: es que el mono necesita más sitios donde agarrarse.');
+    if(debiles.length) L.push('Ramas que hoy casi no sujetan: <b>'+debiles.map(function(v){return esc(v.area);}).join(', ')+'</b>. Acercarte un poco a alguna reparte el peso y suelta presión de las demás.');
+  } else if(agarre.length>=Math.ceil(n*0.6)){
+    L.push('El peso está bien repartido entre varias ramas: eso da estabilidad y el mono no necesita aferrarse a ninguna en concreto.');
+  } else if(debiles.length){
+    L.push('Podrías dar agarre a alguna rama floja: <b>'+debiles.slice(0,3).map(function(v){return esc(v.area);}).join(', ')+'</b>.');
+  }
+  if(sin.length){ L.push('Áreas que ya conectas (el mono salta entre ramas): '+sin.map(function(p){return esc(p.a)+' ⇄ '+esc(p.b);}).join(' · ')+'. Esas sinergias son oro: una misma acción nutre dos valores a la vez.'); }
+  else { L.push('Aún no unes dos áreas en una misma acción. Vincular dos ramas (p. ej. «pasear en familia» = Ocio + Familia) reparte el peso con menos esfuerzo.'); }
+  return L.join('<br><br>');
+}
+function sugerenciasConducta(){
+  var out=[];
+  var sorted=db.valores.slice().sort(function(a,b){return a.prox-b.prox;});
+  var weak=sorted.filter(function(v){return v.prox<=5;});
+  var strong=db.valores.slice().sort(function(a,b){return b.prox-a.prox;}).filter(function(v){return v.prox>=6;});
+  weak.slice(0,3).forEach(function(v){
+    var pool=SUG_CONDUCTA[v.area];
+    out.push({texto: pool?pool[0]:('Algo pequeño orientado a '+v.area.toLowerCase()), areas:[v.area]});
+  });
+  if(weak.length && strong.length && weak[0].area!==strong[0].area){
+    var w=weak[0], s=strong[0]; var pool=SUG_CONDUCTA[s.area];
+    out.push({texto:(pool?pool[0]:('algo de '+s.area.toLowerCase()))+' (junto a '+w.area.toLowerCase()+')', areas:[s.area, w.area]});
+  }
+  return out;
+}
+
+/* ===================== NAVEGACIÓN ===================== */
+var curView='plan';
+function go(v){
+  curView=v;
+  document.querySelectorAll('.view').forEach(function(s){ s.classList.remove('on'); });
+  document.getElementById('v-'+v).classList.add('on');
+  document.querySelectorAll('.navb').forEach(function(b){ b.classList.toggle('on', b.dataset.v===v); });
+  if(v==='plan') renderPlan();
+  if(v==='semana') renderSemana();
+  if(v==='hoy') renderHoy();
+  if(v==='ais') renderAIS();
+  if(v==='val') renderValores();
+  if(v==='env') renderResumen();
+  window.scrollTo(0,0);
+}
+
+/* ===================== PLAN ===================== */
+function renderPlan(){
+  var dp=document.getElementById('daypills');
+  dp.innerHTML=DOW.map(function(d,i){
+    return '<div class="daypill'+(i===selDow?' on':'')+(i===todayDow()?' today':'')+'" onclick="selDay('+i+')">'+DOWS[i]+'<small>'+(i===todayDow()?'hoy':'')+'</small></div>';
+  }).join('');
+  var plan=planDow(selDow);
+  var h='';
+  FRANJAS.forEach(function(f){
+    var acts=plan[f.id];
+    h+='<div class="card franja" data-fr="'+f.id+'"><div class="frhd"><span class="fico">'+f.icon+'</span>'+f.txt+'</div>';
+    if(acts.length===0){ h+='<div class="empty">Sin actividades todavía.</div>'; }
+    acts.forEach(function(a,idx){
+      var cn=CANALES.filter(function(c){return c.id===a.canal;})[0]||CANALES[0];
+      h+='<div class="act" data-id="'+esc(a.id)+'"><div class="acthead"><span class="dragh" title="Arrastra para reordenar">≡</span><div class="actxt">'+esc(a.texto)+'</div></div><div class="actchips">';
+      if(a.foco==='repartida'){ h+='<span class="chip chip-foco-rep">↔ Atención repartida'+(a.focoCon?': '+esc(a.focoCon):'')+'</span>'; }
+      else{ h+='<span class="chip chip-foco-unica">● Atención completa</span>'; }
+      h+='<span class="chip ch-'+cn.id+'">'+cn.icon+' '+cn.txt+'</span>';
+      h+=areaChips(a.areas);
+      h+='</div>';
+      if(a.ancla){ h+='<div class="ancla"><b>Anclo en:</b> '+esc(a.ancla)+'</div>'; }
+      h+='<div class="actbar">'+
+         '<button class="iconbtn" onclick="openAct('+selDow+',\''+f.id+'\',\''+a.id+'\')">✏️ Editar</button>'+
+         (idx>0?'<button class="iconbtn" onclick="moveAct(\''+f.id+'\','+idx+',-1)">↑</button>':'')+
+         (idx<acts.length-1?'<button class="iconbtn" onclick="moveAct(\''+f.id+'\','+idx+',1)">↓</button>':'')+
+         '<button class="iconbtn" onclick="delAct(\''+f.id+'\',\''+a.id+'\')">🗑️</button></div>';
+      h+='</div>';
+    });
+    h+='<button class="addact" onclick="openAct('+selDow+',\''+f.id+'\',null)">+ Añadir actividad</button></div>';
+  });
+  document.getElementById('planBody').innerHTML=h;
+}
+function selDay(i){ selDow=i; renderPlan(); }
+function moveAct(franja, idx, dir){
+  var arr=planDow(selDow)[franja];
+  var ni=idx+dir; if(ni<0||ni>=arr.length) return;
+  var t=arr[idx]; arr[idx]=arr[ni]; arr[ni]=t; save(); renderPlan();
+}
+function delAct(franja, id){
+  var arr=planDow(selDow)[franja];
+  db.plan[selDow][franja]=arr.filter(function(a){return a.id!==id;});
+  save(); renderPlan();
+}
+/* ---- reordenar arrastrando (pointer events, táctil + ratón) ---- */
+var drg=null;
+function planPointerDown(e){
+  var h=e.target.closest ? e.target.closest('.dragh') : null;
+  if(!h) return;
+  e.preventDefault();
+  var el=h.closest('.act'), card=h.closest('.franja');
+  if(!el||!card) return;
+  drg={el:el, card:card, fr:card.getAttribute('data-fr')};
+  el.classList.add('dragging');
+  try{ h.setPointerCapture(e.pointerId); }catch(_){}
+  document.addEventListener('pointermove', planPointerMove);
+  document.addEventListener('pointerup', planPointerUp);
+  document.addEventListener('pointercancel', planPointerUp);
+}
+function planPointerMove(e){
+  if(!drg) return;
+  var acts=[].slice.call(drg.card.querySelectorAll('.act'));
+  var ref=null;
+  for(var i=0;i<acts.length;i++){
+    if(acts[i]===drg.el) continue;
+    var r=acts[i].getBoundingClientRect();
+    if(e.clientY < r.top + r.height/2){ ref=acts[i]; break; }
+  }
+  if(ref){ if(ref!==drg.el) drg.card.insertBefore(drg.el, ref); }
+  else { drg.card.insertBefore(drg.el, drg.card.querySelector('.addact')); }
+}
+function planPointerUp(){
+  if(!drg) return;
+  drg.el.classList.remove('dragging');
+  var fr=drg.fr;
+  var ids=[].slice.call(drg.card.querySelectorAll('.act')).map(function(el){return el.getAttribute('data-id');});
+  var arr=planDow(selDow)[fr];
+  arr.sort(function(a,b){ return ids.indexOf(a.id)-ids.indexOf(b.id); });
+  save();
+  document.removeEventListener('pointermove', planPointerMove);
+  document.removeEventListener('pointerup', planPointerUp);
+  document.removeEventListener('pointercancel', planPointerUp);
+  drg=null;
+}
+
+/* ---- formulario de actividad (modal) ---- */
+var formState={dow:0, franja:'', id:null, gid:null, days:[], franjas:[], foco:'unica', canal:'visual'};
+function gidOf(a){ return a.gid||a.id; }
+function openAct(dow, franja, id){
+  var base={foco:'unica',canal:'visual',texto:'',focoCon:'',ancla:'',areas:[]};
+  var gid=null, days=[dow], franjas=[franja];
+  if(id){
+    var a=planDow(dow)[franja].filter(function(x){return x.id===id;})[0];
+    if(a){
+      base={foco:a.foco, canal:a.canal, texto:a.texto, focoCon:a.focoCon||'', ancla:a.ancla||'', areas:(a.areas||[]).slice()};
+      gid=gidOf(a);
+      var ds={}, frs={};
+      for(var dw=0;dw<7;dw++){ var pl=planDow(dw); FRANJAS.forEach(function(f){ (pl[f.id]||[]).forEach(function(x){ if(gidOf(x)===gid){ ds[dw]=1; frs[f.id]=1; } }); }); }
+      var dk=Object.keys(ds).map(Number); if(dk.length) days=dk;
+      var fk=Object.keys(frs); if(fk.length) franjas=fk;
+    }
+  }
+  formState={dow:dow, franja:franja, id:id, gid:gid, days:days, franjas:franjas, foco:base.foco, canal:base.canal, texto:base.texto, focoCon:base.focoCon, ancla:base.ancla, areas:base.areas};
+  renderActForm();
+  document.getElementById('actModal').classList.add('on');
+}
+function openActPrefill(texto, areas){
+  formState={dow:selDow, franja:'tarde', id:null, gid:null, days:[selDow], franjas:['tarde'], foco:'unica', canal:'visual', texto:texto||'', focoCon:'', ancla:'', areas:(areas||[]).slice()};
+  renderActForm();
+  document.getElementById('actModal').classList.add('on');
+}
+function closeAct(){ document.getElementById('actModal').classList.remove('on'); }
+function readAreas(){ var a1=document.getElementById('af_area'), a2=document.getElementById('af_area2'); var arr=[]; if(a1&&a1.value) arr.push(a1.value); if(a2&&a2.value && a2.value!==(a1?a1.value:'')) arr.push(a2.value); return arr; }
+function syncForm(){ var t=document.getElementById('af_texto'); if(t) formState.texto=t.value; var an=document.getElementById('af_ancla'); if(an) formState.ancla=an.value; var fc=document.getElementById('af_focoCon'); if(fc) formState.focoCon=fc.value; if(document.getElementById('af_area')) formState.areas=readAreas(); }
+function pickFoco(v){ syncForm(); formState.foco=v; renderActForm(); }
+function pickCanal(v){ syncForm(); formState.canal=v; renderActForm(); }
+function toggleDay(i){ syncForm(); var p=formState.days.indexOf(i); if(p>=0){ if(formState.days.length>1) formState.days.splice(p,1); } else formState.days.push(i); renderActForm(); }
+function toggleFr(id){ syncForm(); var p=formState.franjas.indexOf(id); if(p>=0){ if(formState.franjas.length>1) formState.franjas.splice(p,1); } else formState.franjas.push(id); renderActForm(); }
+function presetDays(kind){ syncForm(); if(kind==='all') formState.days=[0,1,2,3,4,5,6]; else if(kind==='lv') formState.days=[0,1,2,3,4]; else if(kind==='sd') formState.days=[5,6]; else if(kind==='hoy') formState.days=[todayDow()]; renderActForm(); }
+function renderActForm(){
+  var h='<h3>'+(formState.id?'Editar actividad':'Nueva actividad')+'</h3>';
+  h+='<p style="font-size:12px;color:var(--gris);margin-bottom:6px;">Marca todos los días y momentos en que la haces.</p>';
+  h+='<label class="fld">¿Qué vas a hacer?</label><input type="text" id="af_texto" value="'+esc(formState.texto)+'" placeholder="Ej.: limpiar la cocina, estudiar un tema…">';
+  h+='<label class="fld">¿Qué días lo haces?</label><div class="daysel">';
+  DOW.forEach(function(d,i){ h+='<div class="dseg'+(formState.days.indexOf(i)>=0?' on':'')+(i===todayDow()?' today':'')+'" onclick="toggleDay('+i+')">'+DOWS[i]+'</div>'; });
+  h+='</div><div class="presets"><button class="preset" onclick="presetDays(\'all\')">Cada día</button><button class="preset" onclick="presetDays(\'lv\')">L–V</button><button class="preset" onclick="presetDays(\'sd\')">Fin de semana</button><button class="preset" onclick="presetDays(\'hoy\')">Solo hoy</button></div>';
+  h+='<label class="fld">¿En qué momento(s) del día?</label><div class="frsel">';
+  FRANJAS.forEach(function(f){ h+='<div class="dseg'+(formState.franjas.indexOf(f.id)>=0?' on':'')+'" onclick="toggleFr(\''+f.id+'\')">'+f.icon+' '+f.txt+'</div>'; });
+  h+='</div>';
+  h+='<label class="fld">¿A qué área(s) de tu vida pertenece?</label><select id="af_area">'+optsArea(formState.areas[0]||'','— sin área —')+'</select>';
+  h+='<select id="af_area2" style="margin-top:8px;">'+optsArea(formState.areas[1]||'','— segunda área (opcional) —')+'</select>';
+  h+='<div style="font-size:11px;color:var(--gris);margin-top:5px;line-height:1.5;">Puedes vincularla a dos áreas. Ej.: «pasear en familia» = Ocio y disfrute + Familia.</div>';
+  h+='<label class="fld">¿Dónde pones la atención?</label><div class="opts">';
+  h+='<div class="opt'+(formState.foco==='unica'?' sel-v':'')+'" onclick="pickFoco(\'unica\')">● Atención completa<small>Solo en la tarea</small></div>';
+  h+='<div class="opt'+(formState.foco==='repartida'?' sel-o':'')+'" onclick="pickFoco(\'repartida\')">↔ Atención repartida<small>La tarea + otra cosa</small></div>';
+  h+='</div>';
+  if(formState.foco==='repartida'){
+    h+='<label class="fld">¿Con qué la repartes?</label><input type="text" id="af_focoCon" value="'+esc(formState.focoCon)+'" placeholder="Ej.: escuchar música, un podcast…">';
+  }
+  h+='<label class="fld">¿Con qué canal vas a atender?</label><div class="opts">';
+  CANALES.forEach(function(c){
+    h+='<div class="opt'+(formState.canal===c.id?' sel':'')+'" onclick="pickCanal(\''+c.id+'\')">'+c.icon+' '+c.txt+'<small>'+c.desc+'</small></div>';
+  });
+  h+='</div>';
+  h+='<label class="fld">¿Dónde anclas la atención? (trabajo consciente)</label><textarea id="af_ancla" placeholder="Ej.: en las manos y el agua; en la voz del audio; en la respiración cuando me distraiga…">'+esc(formState.ancla)+'</textarea>';
+  h+='<div class="acc" style="justify-content:space-between;margin-top:18px;"><button class="btn bcopy bsm" onclick="closeAct()">Cancelar</button><button class="btn bp" onclick="saveAct()">Guardar actividad</button></div>';
+  document.getElementById('actSheet').innerHTML=h;
+}
+function saveAct(){
+  syncForm();
+  var texto=(formState.texto||'').trim();
+  if(!texto){ var t=document.getElementById('af_texto'); if(t) t.focus(); return; }
+  var days=formState.days.slice(), franjas=formState.franjas.slice();
+  if(!days.length||!franjas.length){ alert('Elige al menos un día y un momento del día.'); return; }
+  var gid=formState.gid||uid();
+  var fields={
+    texto: texto,
+    foco: formState.foco,
+    focoCon: (formState.foco==='repartida' ? (formState.focoCon||'').trim() : ''),
+    canal: formState.canal,
+    areas: (formState.areas||[]).slice(),
+    ancla: (formState.ancla||'').trim()
+  };
+  // celdas destino (dia|franja) que deben quedar con la actividad
+  var targets={}; days.forEach(function(d){ franjas.forEach(function(fr){ targets[d+'|'+fr]=1; }); });
+  // recorre TODO el plan: actualiza/conserva donde toca, elimina copias sobrantes del mismo grupo
+  for(var dw=0;dw<7;dw++){
+    var pl=planDow(dw);
+    FRANJAS.forEach(function(f){
+      var arr=pl[f.id], key=dw+'|'+f.id;
+      for(var i=arr.length-1;i>=0;i--){
+        if(gidOf(arr[i])===gid){
+          if(targets[key]===1){
+            var na={id:arr[i].id, gid:gid}; for(var k in fields) na[k]=fields[k];
+            arr[i]=na; targets[key]='done';
+          } else { arr.splice(i,1); }
+        }
+      }
+    });
+  }
+  // crea copias nuevas en las celdas destino que aún no tenían el grupo
+  Object.keys(targets).forEach(function(key){
+    if(targets[key]===1){
+      var pr=key.split('|'); var a={id:uid(), gid:gid}; for(var k in fields) a[k]=fields[k];
+      planDow(+pr[0])[pr[1]].push(a);
+    }
+  });
+  save(); closeAct(); renderPlan(); if(curView==='semana') renderSemana();
+}
+
+/* ===================== SEMANA (horario + portapapeles) ===================== */
+var clip=null; // {mode:'copy'|'cut', dw, fr, id, fields}
+function copyFields(a){ return {texto:a.texto, foco:a.foco, focoCon:a.focoCon||'', canal:a.canal, areas:(a.areas||[]).slice(), ancla:a.ancla||''}; }
+function clipAct(dw, fr, id, mode){
+  var a=(planDow(dw)[fr]||[]).filter(function(x){return x.id===id;})[0];
+  if(!a) return;
+  clip={mode:mode, dw:dw, fr:fr, id:id, fields:copyFields(a)};
+  renderSemana();
+}
+function clearClip(){ clip=null; renderSemana(); }
+function pegar(dw, fr){
+  if(!clip) return;
+  var a={id:uid(), gid:uid()}; for(var k in clip.fields) a[k]=clip.fields[k];
+  planDow(dw)[fr].push(a);
+  if(clip.mode==='cut'){ // elimina el origen
+    var arr=planDow(clip.dw)[clip.fr];
+    db.plan[clip.dw][clip.fr]=arr.filter(function(x){return x.id!==clip.id;});
+    clip=null;
+  }
+  save(); renderSemana(); renderPlan();
+}
+function delActAny(dw, fr, id){
+  var arr=planDow(dw)[fr];
+  db.plan[dw][fr]=arr.filter(function(x){return x.id!==id;});
+  if(clip && clip.id===id){ clip=null; }
+  save(); renderSemana(); renderPlan();
+}
+function renderSemana(){
+  var h='';
+  if(clip){
+    var cn=CANALES.filter(function(c){return c.id===clip.fields.canal;})[0]||CANALES[0];
+    h+='<div class="card clipbar">'+(clip.mode==='cut'?'✂️':'📋')+' <div style="flex:1;min-width:0;"><b>'+(clip.mode==='cut'?'Cortado':'Copiado')+':</b> '+esc(clip.fields.texto)+'<br><small style="color:var(--gris);">Pulsa «Pegar aquí» en el día y momento donde quieras ponerlo.</small></div><button class="iconbtn" onclick="clearClip()">✕</button></div>';
+  }
+  for(var dw=0; dw<7; dw++){
+    var pl=planDow(dw);
+    var isToday=(dw===todayDow());
+    h+='<div class="card wkday'+(isToday?' wktoday':'')+'"><div class="wkdh">'+DOW[dw]+(isToday?' · hoy':'')+'</div>';
+    var dayHasAny=FRANJAS.some(function(f){ return (pl[f.id]||[]).length>0; });
+    if(!dayHasAny && !clip){ h+='<div class="empty" style="margin:0;">Sin actividades.</div></div>'; continue; }
+    FRANJAS.forEach(function(f){
+      var acts=pl[f.id]||[];
+      if(acts.length===0 && !clip) return; // oculta franjas vacías salvo al pegar
+      h+='<div class="wkfr"><div class="wkfrh">'+f.icon+' '+f.txt+'</div>';
+      acts.forEach(function(a){
+        var cn=CANALES.filter(function(c){return c.id===a.canal;})[0]||CANALES[0];
+        var sub=(a.foco==='repartida'?'↔ repartida':'● completa')+' · '+cn.icon+' '+cn.txt;
+        h+='<div class="wkact"><div class="wkat">'+esc(a.texto)+'<small>'+sub+'</small></div><div class="wkacts">'+
+           '<button class="iconbtn" title="Editar" onclick="openAct('+dw+',\''+f.id+'\',\''+a.id+'\')">✏️</button>'+
+           '<button class="iconbtn" title="Copiar" onclick="clipAct('+dw+',\''+f.id+'\',\''+a.id+'\',\'copy\')">📋</button>'+
+           '<button class="iconbtn" title="Cortar" onclick="clipAct('+dw+',\''+f.id+'\',\''+a.id+'\',\'cut\')">✂️</button>'+
+           '<button class="iconbtn" title="Eliminar" onclick="delActAny('+dw+',\''+f.id+'\',\''+a.id+'\')">🗑️</button>'+
+           '</div></div>';
+      });
+      if(clip){ h+='<button class="pasteb" onclick="pegar('+dw+',\''+f.id+'\')">📌 Pegar aquí</button>'; }
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  document.getElementById('semanaBody').innerHTML=h;
+}
+
+/* ===================== HOY (registro) ===================== */
+function renderHoy(){
+  document.getElementById('hoyFecha').innerHTML='📅 <b>'+fechaBonita()+'</b> · Lo que planeaste para hoy';
+  var dow=todayDow();
+  var plan=planDow(dow);
+  var date=todayStr();
+  var any=false;
+  var h='';
+  FRANJAS.forEach(function(f){
+    var acts=plan[f.id];
+    if(acts.length===0) return;
+    any=true;
+    h+='<div class="card"><div class="frhd"><span class="fico">'+f.icon+'</span>'+f.txt+'</div>';
+    acts.forEach(function(a){
+      var r=getActReg(date, a.id);
+      var cn=CANALES.filter(function(c){return c.id===a.canal;})[0]||CANALES[0];
+      h+='<div class="regrow"><div class="rtxt">'+esc(a.texto)+'</div>';
+      h+='<div class="actchips" style="margin-bottom:6px;">'+(a.foco==='repartida'?'<span class="chip chip-foco-rep">↔ repartida</span>':'<span class="chip chip-foco-unica">● completa</span>')+'<span class="chip ch-'+cn.id+'">'+cn.icon+' '+cn.txt+'</span>'+areaChips(a.areas)+'</div>';
+      if(a.ancla){ h+='<div class="ancla"><b>Tu plan era anclar en:</b> '+esc(a.ancla)+'</div>'; }
+      // hecha
+      h+='<div class="minilbl">¿La hiciste?</div><div class="segs">'+
+         seg(a.id,'hecha','si','Sí', r.hecha)+seg(a.id,'hecha','medias','A medias', r.hecha)+seg(a.id,'hecha','no','No', r.hecha)+'</div>';
+      // foco
+      h+='<div class="minilbl">¿Cuánto estuviste centrado donde querías? <span class="rngval" id="fv_'+a.id+'">'+r.foco+'</span>/10</div>'+
+         '<input type="range" min="0" max="10" value="'+r.foco+'" oninput="setFoco(\''+a.id+'\',this.value)">';
+      // mono (calidad de presencia)
+      h+='<div class="minilbl">¿Dónde llevabas al mono mientras lo hacías?</div><div class="monogrid">';
+      MONO.forEach(function(m){ h+='<div class="monoopt'+(r.mono===m.k?' on':'')+'" onclick="setMono(\''+a.id+'\',\''+m.k+'\')">'+m.label+'<small>'+m.desc+'</small></div>'; });
+      h+='</div>';
+      // sobrepensamiento
+      h+='<div class="minilbl">¿Te distrajiste por sobrepensar (darle vueltas a la cabeza)?</div><div class="segs">'+
+         segBool(a.id,'sobre',true,'Sí', r.sobre)+segBool(a.id,'sobre',false,'No', r.sobre)+'</div>';
+      // donde
+      var showDonde = (r.hecha==='no'||r.hecha==='medias'||r.sobre===true);
+      h+='<div id="donde_'+a.id+'" style="display:'+(showDonde?'block':'none')+'"><div class="minilbl">Si no la hiciste o te fuiste, ¿dónde estaba tu atención?</div>'+
+         '<input type="text" value="'+esc(r.donde)+'" placeholder="Ej.: en una preocupación del futuro, en el móvil…" oninput="setDonde(\''+a.id+'\',this.value)"></div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  if(!any){ h='<div class="card"><div class="empty">No tienes actividades planeadas para hoy ('+DOW[dow]+'). Ve a <b>Plan</b> y añade algunas, o registra solo tus herramientas AIS.</div></div>'; }
+  document.getElementById('hoyBody').innerHTML=h;
+  document.getElementById('hoyNota').value=getReg(date).nota;
+}
+function seg(actId, field, val, label, current){
+  return '<div class="seg'+(current===val?' on-'+val:'')+'" onclick="setSeg(\''+actId+'\',\''+field+'\',\''+val+'\')">'+label+'</div>';
+}
+function segBool(actId, field, val, label, current){
+  return '<div class="seg'+(current===val?' on-bool':'')+'" onclick="setBool(\''+actId+'\',\''+field+'\','+val+')">'+label+'</div>';
+}
+function setSeg(actId, field, val){ getActReg(todayStr(), actId)[field]=val; save(); renderHoy(); }
+function setBool(actId, field, val){ getActReg(todayStr(), actId)[field]=val; save(); renderHoy(); }
+function setFoco(actId, v){ getActReg(todayStr(), actId).foco=+v; document.getElementById('fv_'+actId).textContent=v; save(); }
+function setMono(actId, v){ getActReg(todayStr(), actId).mono=v; save(); renderHoy(); }
+function setDonde(actId, v){ getActReg(todayStr(), actId).donde=v; save(); }
+function setNota(v){ getReg(todayStr()).nota=v; save(); }
+
+/* ===================== AIS ===================== */
+function renderAIS(){
+  var r=getReg(todayStr());
+  var h='';
+  AIS.forEach(function(a){
+    h+='<div class="counter"><div class="cinfo"><div class="cname">'+a.nm+'<span class="badge b'+a.badge+'">'+a.badge+'</span></div><div class="cdesc">'+a.desc+'</div></div>'+
+       '<button class="cbtn cminus" onclick="bump(\''+a.k+'\',-1)">−</button>'+
+       '<div class="cnum" id="cn_'+a.k+'">'+r.ais[a.k]+'</div>'+
+       '<button class="cbtn cplus" onclick="bump(\''+a.k+'\',1)">+</button></div>';
+  });
+  document.getElementById('aisCounters').innerHTML=h;
+  renderHon();
+}
+function bump(k, d){
+  var r=getReg(todayStr());
+  r.ais[k]=Math.max(0,(r.ais[k]||0)+d);
+  save();
+  var el=document.getElementById('cn_'+k); if(el) el.textContent=r.ais[k];
+}
+function addHonestidad(){
+  var inp=document.getElementById('honInput');
+  var quienEl=document.getElementById('honQuien');
+  var v=inp.value.trim();
+  var quien=quienEl?quienEl.value.trim():'';
+  if(!v && !quien) return;
+  var d=new Date();
+  getReg(todayStr()).honestidad.push({h:p2(d.getHours())+':'+p2(d.getMinutes()), t:v, quien:quien});
+  inp.value=''; if(quienEl) quienEl.value=''; save(); renderHon();
+}
+function copiarFrase(btn){
+  var t='No sé por qué… pero noto una sensación aquí (mano en la barriga), y quería compartirlo contigo.';
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(function(){ flashBtn(btn); }); return; }
+  var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); flashBtn(btn);
+}
+function renderHon(){
+  var r=getReg(todayStr());
+  var el=document.getElementById('honList'); if(!el) return;
+  el.innerHTML=r.honestidad.map(function(x,i){
+    var quien = x.quien ? '<span style="color:var(--verde);font-weight:600;">→ '+esc(x.quien)+'</span>'+(x.t?' · ':'') : '';
+    return '<div class="areacard" style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;"><div style="font-size:13px;line-height:1.5;"><span style="color:var(--gris);font-size:11px;">'+x.h+'</span><br>'+quien+esc(x.t)+'</div><button class="iconbtn" onclick="delHon('+i+')">🗑️</button></div>';
+  }).join('');
+}
+function delHon(i){ getReg(todayStr()).honestidad.splice(i,1); save(); renderHon(); }
+
+/* respiración guiada */
+var breathBusy=false;
+function iniciarResp(){
+  if(breathBusy) return; breathBusy=true;
+  var c=document.getElementById('breathC'), p=document.getElementById('breathP'), btn=document.getElementById('breathBtn');
+  btn.disabled=true; btn.style.opacity=.5;
+  var rondas=4, n=0;
+  function ciclo(){
+    if(n>=rondas){ c.classList.remove('big'); c.textContent='✓ Hecho'; p.textContent='Suma una respiración curiosa'; btn.disabled=false; btn.style.opacity=1; breathBusy=false; bump('respCuriosa',1); return; }
+    p.textContent='Inhala… observa cómo entra el aire'; c.textContent='Inhala'; c.classList.add('big');
+    setTimeout(function(){ p.textContent='Exhala… observa cómo sale'; c.textContent='Exhala'; c.classList.remove('big'); setTimeout(function(){ n++; ciclo(); }, 4000); }, 4000);
+  }
+  ciclo();
+}
+
+/* ===================== VALORES ===================== */
+function renderValores(){
+  var h='';
+  // botón global de auto-sugerencia
+  var hayDif=db.valores.some(function(v){ var s=sugerirCercania(statsAreaSemana(v.area)); return s!==null && s!==v.prox; });
+  if(hayDif){
+    h+='<div class="card" style="background:var(--azulLt);"><div style="font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:11px;">✨ Según tus actividades de la semana (cómo de presente has estado, no los resultados), puedo proponerte un valor de cercanía para cada área. Es solo una orientación: el número que cuenta es el que tú sientes.</div><button class="btn bp bsm" onclick="aplicarTodasSug()">Aplicar todas las sugerencias</button></div>';
+  }
+  // árbol del mono: gráfico de ramas (áreas) + sinergias + análisis
+  if(db.valores.length){
+    h+='<div class="card"><div class="ctit">🌳 El árbol del mono</div>';
+    h+=arbolSVG();
+    h+='<div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:10px;color:var(--gris);margin-top:8px;">'+
+       '<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--verde);vertical-align:middle;"></span> cercana</span>'+
+       '<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--oro);vertical-align:middle;"></span> intermedia</span>'+
+       '<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#B9C2CE;vertical-align:middle;"></span> floja</span>'+
+       '<span><span style="display:inline-block;width:14px;height:3px;background:var(--lila);vertical-align:middle;"></span> sinergia</span></div>';
+    h+='<div class="treetxt">'+analisisArbol()+'</div></div>';
+  }
+  // conductas sugeridas para acercarse a los valores
+  var sugs=sugerenciasConducta();
+  if(sugs.length){
+    h+='<div class="card"><div class="ctit">💡 Conductas para acercarte</div>'+
+       '<div style="font-size:12px;color:var(--gris);line-height:1.5;margin-bottom:8px;">Pequeñas acciones orientadas a las ramas más flojas (y alguna que une dos áreas). Tócalas para añadirlas a tu plan.</div>';
+    sugs.forEach(function(s){
+      h+='<div class="sugrow"><div class="sugtxt">'+esc(s.texto)+'<small>🧭 '+s.areas.map(esc).join(' + ')+'</small></div>'+
+         '<button class="sugadd" onclick="openActPrefill('+JSON.stringify(s.texto).replace(/"/g,'&quot;')+','+JSON.stringify(s.areas).replace(/"/g,'&quot;')+')">+ Plan</button></div>';
+    });
+    h+='</div>';
+  }
+  // resumen: el mono por áreas (últimos 7 días)
+  var rows=db.valores.map(function(v){ return {v:v, st:statsAreaSemana(v.area)}; }).filter(function(x){ return x.st.monoTotal>0; });
+  if(rows.length){
+    h+='<div class="card"><div class="ctit">El mono por tus áreas (7 días)</div>';
+    rows.forEach(function(x){ var dom=monoDominante(x.st.mono); var pct=Math.round(100*x.st.mono.lado/x.st.monoTotal);
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #EEF2F7;font-size:13px;"><span>'+esc(x.v.area)+'</span><span style="color:var(--gris);font-size:12px;">'+MONO_MAP[dom].label+' · al lado '+pct+'%</span></div>'; });
+    h+='<div class="frase" style="margin-top:12px;">Cuanto más llevas al mono al lado y conduces tú, mejor es la calidad de presencia en esa área — sin importar el resultado.</div></div>';
+  }
+  db.valores.forEach(function(v){
+    var st=statsAreaSemana(v.area);
+    h+='<div class="areacard"><div class="areahd"><div class="areanm">'+esc(v.area)+'</div><button class="iconbtn" onclick="delArea(\''+v.id+'\')">🗑️</button></div>';
+    h+='<label class="fld" style="margin-top:8px;">Mi valor aquí (la forma en que quiero relacionarme)</label>'+
+       '<input type="text" value="'+esc(v.valor)+'" placeholder="Ej.: estar presente, escuchar de verdad…" oninput="setValor(\''+v.id+'\',this.value)">';
+    h+='<div class="proxlbl">Esta semana, ¿en qué medida me relacioné así? <span class="rngval" id="px_'+v.id+'">'+v.prox+'</span>/10</div>'+
+       '<input type="range" min="0" max="10" value="'+v.prox+'" oninput="setProx(\''+v.id+'\',this.value)">';
+    // panel semanal derivado de las actividades vinculadas
+    h+='<div class="areastat">';
+    if(st.nPlan===0){ h+='Sin actividades vinculadas a esta área todavía. En <b>Plan</b>, etiqueta alguna actividad con esta área para ver cómo te acercas a tu valor.'; }
+    else {
+      h+='Esta semana: <span class="asnum">'+st.nDone+'/'+st.nPlan+'</span> hechas'+(st.foco!==null?' · foco medio <span class="asnum">'+st.foco.toFixed(1)+'/10</span>':'')+'.';
+      if(st.monoTotal>0){
+        h+=monobarHTML(st.mono, st.monoTotal);
+        var pct=Math.round(100*st.mono.lado/st.monoTotal);
+        var dom=monoDominante(st.mono);
+        h+='Sobre todo el mono iba <b>'+MONO_MAP[dom].short+'</b>. Condujiste tú (mono al lado) el <span class="asnum">'+pct+'%</span> del tiempo.';
+      } else { h+=' <i>Aún sin registrar la calidad (el mono) en Hoy.</i>'; }
+    }
+    h+='</div>';
+    var sug=sugerirCercania(st);
+    if(sug!==null){
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px;font-size:12px;">'+
+         '<span style="color:var(--gris);">✨ Sugerencia por tus actividades: <b style="color:var(--azul);">'+sug+'/10</b></span>'+
+         (sug!==v.prox?'<button class="iconbtn" onclick="aplicarSug(\''+v.id+'\','+sug+')">Aplicar</button>':'<span style="color:var(--verde);font-size:11px;">✓ coincide</span>')+
+         '</div>';
+    }
+    h+='</div>';
+  });
+  document.getElementById('valBody').innerHTML=h;
+}
+function setValor(id,v){ var x=byId(id); if(x){ x.valor=v; save(); } }
+function setProx(id,v){ var x=byId(id); if(x){ x.prox=+v; document.getElementById('px_'+id).textContent=v; save(); } }
+function byId(id){ return db.valores.filter(function(x){return x.id===id;})[0]; }
+/* sugerencia de cercanía por la FORMA: mono (50%) + foco (30%) + presencia/adherencia (20%) */
+function sugerirCercania(st){
+  if(st.nPlan===0) return null;
+  var val=0, wsum=0;
+  if(st.monoTotal>0){ var qs=0; ['lado','delante','atras','conduce'].forEach(function(k){ qs+=st.mono[k]*MONO_MAP[k].q; }); var monoScore=(qs/st.monoTotal)/3*10; val+=monoScore*0.5; wsum+=0.5; }
+  if(st.foco!==null){ val+=st.foco*0.3; wsum+=0.3; }
+  if(st.nPlan>0){ var adher=(st.nDone+0.5*st.nMed)/st.nPlan*10; val+=adher*0.2; wsum+=0.2; }
+  if(wsum===0) return null;
+  return Math.max(0,Math.min(10,Math.round(val/wsum)));
+}
+function aplicarSug(id,val){ var x=byId(id); if(x){ x.prox=val; save(); renderValores(); } }
+function aplicarTodasSug(){ db.valores.forEach(function(v){ var s=sugerirCercania(statsAreaSemana(v.area)); if(s!==null) v.prox=s; }); save(); renderValores(); }
+function addArea(){
+  var inp=document.getElementById('newArea'); var v=inp.value.trim(); if(!v) return;
+  db.valores.push({id:uid(), area:v, valor:'', prox:5}); inp.value=''; save(); renderValores();
+}
+function delArea(id){ db.valores=db.valores.filter(function(x){return x.id!==id;}); save(); renderValores(); }
+
+/* ===================== RESUMEN / ENVÍO ===================== */
+function construirResumen(){
+  var date=todayStr(), dow=todayDow();
+  var plan=planDow(dow), r=getReg(date);
+  var L=[];
+  L.push('AGENDA ATENCIONAL · APRENS · '+fechaBonita());
+  L.push('');
+  // plan de hoy
+  L.push('— PLAN DE HOY —');
+  var hayPlan=false;
+  FRANJAS.forEach(function(f){
+    var acts=plan[f.id]; if(acts.length===0) return; hayPlan=true;
+    L.push(f.icon+' '+f.txt);
+    acts.forEach(function(a){
+      var cn=CANALES.filter(function(c){return c.id===a.canal;})[0]||CANALES[0];
+      var foco = a.foco==='repartida' ? ('repartida'+(a.focoCon?' (+'+a.focoCon+')':'')) : 'completa';
+      L.push('  • '+a.texto+((a.areas&&a.areas.length)?' ['+a.areas.join(' + ')+']':'')+' — atención '+foco+' · canal '+cn.txt.toLowerCase()+(a.ancla?' · anclo en: '+a.ancla:''));
+    });
+  });
+  if(!hayPlan) L.push('  (sin actividades planeadas)');
+  L.push('');
+  // cómo fue
+  var nT=0,nSi=0,nMed=0,nNo=0,foSum=0,foN=0,nSobre=0;
+  var monoHoy={lado:0,delante:0,atras:0,conduce:0}, monoHoyN=0;
+  FRANJAS.forEach(function(f){ plan[f.id].forEach(function(a){
+    var ar=r.acts[a.id]; if(!ar) return; nT++;
+    if(ar.hecha==='si') nSi++; else if(ar.hecha==='medias') nMed++; else if(ar.hecha==='no') nNo++;
+    if(typeof ar.foco==='number'){ foSum+=ar.foco; foN++; }
+    if(ar.sobre) nSobre++;
+    if(ar.mono && monoHoy.hasOwnProperty(ar.mono)){ monoHoy[ar.mono]++; monoHoyN++; }
+  });});
+  L.push('— CÓMO FUE —');
+  L.push('Actividades con registro: '+nT+' · hechas: '+nSi+' · a medias: '+nMed+' · no: '+nNo);
+  if(foN) L.push('Foco medio (atención donde quería): '+(foSum/foN).toFixed(1)+'/10');
+  L.push('Veces que me distraje por sobrepensar: '+nSobre);
+  if(monoHoyN){ L.push('El mono hoy → al lado: '+monoHoy.lado+' · delante: '+monoHoy.delante+' · atrás: '+monoHoy.atras+' · conducía él: '+monoHoy.conduce+' (conduje yo el '+Math.round(100*monoHoy.lado/monoHoyN)+'%)'); }
+  // dónde se fue la atención
+  var dondes=[];
+  FRANJAS.forEach(function(f){ plan[f.id].forEach(function(a){ var ar=r.acts[a.id]; if(ar&&ar.donde) dondes.push('• '+ar.donde); });});
+  if(dondes.length){ L.push('Cuando me fui, mi atención estaba en:'); dondes.forEach(function(d){ L.push('  '+d); }); }
+  L.push('');
+  // AIS
+  L.push('— HERRAMIENTAS AIS (hoy) —');
+  AIS.forEach(function(a){ L.push(a.nm+': '+(r.ais[a.k]||0)); });
+  if(r.honestidad.length){ L.push('Honestidad emocional (compartida): '+r.honestidad.length+' vez/veces'); r.honestidad.forEach(function(x){ L.push('  ('+x.h+') '+(x.quien?'con '+x.quien+(x.t?': ':''):'')+x.t); }); }
+  L.push('');
+  // valores
+  var vConDato=db.valores.filter(function(v){ return v.valor || v.prox!==5 || statsAreaSemana(v.area).nPlan>0; });
+  if(vConDato.length){
+    L.push('— BRÚJULA DE VALORES (forma de relacionarme, no resultados) —');
+    db.valores.forEach(function(v){
+      var line=v.area+': '+v.prox+'/10'+(v.valor?' — "'+v.valor+'"':'');
+      var st=statsAreaSemana(v.area);
+      if(st.nPlan>0){
+        var extra=' · 7d: hechas '+st.nDone+'/'+st.nPlan+(st.foco!==null?', foco '+st.foco.toFixed(1):'');
+        if(st.monoTotal>0){ extra+=', mono '+MONO_MAP[monoDominante(st.mono)].short+' (al lado '+Math.round(100*st.mono.lado/st.monoTotal)+'%)'; }
+        var sug=sugerirCercania(st);
+        if(sug!==null) extra+=' → forma sugerida '+sug+'/10';
+        line+=extra;
+      }
+      L.push(line);
+    });
+    var sin=statsSinergias();
+    if(sin.length){ L.push('Sinergias (acciones que unen 2 áreas): '+sin.map(function(p){return p.a+' ⇄ '+p.b+(p.count>1?' (x'+p.count+')':'');}).join(' · ')); }
+    L.push('');
+  }
+  if(r.nota) L.push('Nota: '+r.nota);
+  return L.join('\n').trim();
+}
+function renderResumen(){ document.getElementById('msgBox').textContent=construirResumen();
+  try{ if(window.Aprens){
+    var date=todayStr(), dow=todayDow(), plan=planDow(dow), r=getReg(date);
+    var nSi=0,nT=0,foSum=0,foN=0,nSobre=0, mono={lado:0,delante:0,atras:0,conduce:0}, monoN=0, aisTot=0;
+    FRANJAS.forEach(function(f){ plan[f.id].forEach(function(a){ var ar=r.acts[a.id]; if(!ar) return; nT++;
+      if(ar.hecha==='si') nSi++;
+      if(typeof ar.foco==='number'){ foSum+=ar.foco; foN++; }
+      if(ar.sobre) nSobre++;
+      if(ar.mono && mono.hasOwnProperty(ar.mono)){ mono[ar.mono]++; monoN++; }
+    }); });
+    AIS.forEach(function(a){ aisTot+=(r.ais[a.k]||0); });
+    Aprens.save({ date:date, foco: foN?Math.round(foSum/foN*10)/10:null, sobrepensamiento:nSobre,
+      hechas:nSi, conRegistro:nT, monoLadoPct: monoN?Math.round(100*mono.lado/monoN):null, ais:aisTot });
+    Aprens.mountBar();
+  }}catch(e){}
+}
+function abrirWA(e){ e.preventDefault(); var t=document.getElementById('msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function copiar(btn){
+  var box=document.getElementById('msgBox'); var t=box.textContent;
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(t).then(function(){ flashBtn(btn); });
+  } else {
+    var r=document.createRange(); r.selectNodeContents(box); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); try{document.execCommand('copy');}catch(e){} s.removeAllRanges(); flashBtn(btn);
+  }
+}
+function flashBtn(btn){ var o=btn.textContent; btn.textContent='✓ Copiado'; setTimeout(function(){ btn.textContent=o; },2200); }
+
+function exportJSON(){
+  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='agenda_atencional_'+todayStr()+'.json'; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); },1000);
+}
+function importJSON(inp){
+  var f=inp.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){ try{ var d=JSON.parse(rd.result); if(d&&d.v){ db=d; db.plan=db.plan||{}; db.reg=db.reg||{}; db.valores=db.valores||[]; migrateAreas(db); save(); alert('Copia restaurada.'); go('plan'); } else alert('Archivo no válido.'); }catch(e){ alert('No se pudo leer el archivo.'); } };
+  rd.readAsText(f); inp.value='';
+}
+
+/* init */
+renderPlan();
+var _pb=document.getElementById('planBody');
+if(_pb) _pb.addEventListener('pointerdown', planPointerDown);
+</script>
+</body>
+</html>
