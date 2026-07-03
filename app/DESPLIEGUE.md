@@ -76,7 +76,7 @@ casi nada, funciona sin conexión y **todo se queda en el móvil del paciente**.
 ## Mensaje listo para enviar al paciente (copia y pega)
 
 > Hola 🙂 Aquí tienes tu espacio de práctica APRENS:
-> **https://aprens-app.netlify.app** *(cambia esto por tu URL real)*
+> **https://aprens-app.netlify.app**
 >
 > Para tenerlo a mano como una app:
 > - **iPhone:** ábrelo en Safari → botón Compartir ⬆️ → “Añadir a pantalla de inicio”.
