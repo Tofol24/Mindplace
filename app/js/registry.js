@@ -38,7 +38,9 @@ window.APRENS_TOOLS = [
     desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
     migrada:true, iframe:"tools-standalone/screening-tec.html" },
 
+  { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",
+    desc:"El cuerpo como mapa: cuello, pecho y barriga (interocepción AIS).",
+    migrada:true, iframe:"tools-standalone/mapa-interno.html" }
+
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
-  { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },
-  { id:"acompanar_sensacion", emoji:"🤝", nombre:"Acompañar la sensación", desc:"Estar con lo que se siente, sin controlarlo.", migrada:false }
 ];

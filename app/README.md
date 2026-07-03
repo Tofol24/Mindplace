@@ -41,6 +41,13 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
   - `tools-standalone/ais-amor.html` — "AIS desde el amor": 10 ejercicios cotidianos para acompañarte
     (no controlarte). Legacy → iframe + puente en `guardarPractica` (ejercicio, nivel, micro,
     cualidades → TEC=D). El detective lo enruta internamente en "delante" (y como alternativa).
+  - `tools-standalone/mapa-interno.html` — "Mapa de atención interna": el cuerpo como mapa
+    interoceptivo (cuello · pecho · barriga), con pasos AIS por zona, chips de cualidades,
+    intensidad, curiosidad, orbe de respiración y **recorrido completo** guiado. Legacy (clave
+    propia `aprens_mapa_dia`, sin dependencias externas) → iframe + puente: cada zona o recorrido
+    guardado registra en el `aprens_db` único un resumen diario (zona, cualidades, intensidad,
+    curiosidad, hechos del día → **mapeo TEC = Densidad**, porque la interocepción es cuestión de
+    grano/textura del sentir). Upsert por día (`mapa-<fecha>`): no duplica el registro diario.
   - `tools-standalone/screening-tec.html` — Instrumento **Screening TEC/AIS** (dual: paciente +
     profesional): consentimiento RGPD, análisis L/D/C, seguimiento y **gráficas de evolución
     (Chart.js)**. Integrado como standalone: **Chart.js vendorizado** en `/vendor/` (offline) y sin
