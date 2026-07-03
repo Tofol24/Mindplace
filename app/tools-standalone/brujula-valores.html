@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mi Brújula de Valores · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;--lila:#7B4FC1;--lilaLt:#ECE3F8;}
+  body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;padding-bottom:env(safe-area-inset-bottom);}
+  .header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+  .hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
+  .htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+  .hsub{font-size:10px;opacity:.75;margin-top:1px;}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px calc(60px + env(safe-area-inset-bottom));}
+  .btn{border:none;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;text-decoration:none;-webkit-appearance:none;}
+  .bp{background:var(--azul);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(27,79,140,.3);}
+  .bpg{background:var(--verde);color:#fff;padding:14px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3);}
+  .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 22px;font-size:13px;}
+  .bsm{padding:9px 18px;font-size:13px;}
+  .bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+  .bmail{background:#EA4335;color:#fff;padding:14px 24px;font-size:15px;}
+  .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 20px;font-size:14px;}
+  .card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px;}
+  .hero{background:#fff;border-radius:18px;padding:30px 28px 26px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:20px;border-top:4px solid var(--oro);}
+  .htitulo{font-family:'Playfair Display',serif;font-size:24px;color:var(--azul);margin-bottom:8px;}
+  .hsubt{color:var(--gris);font-size:14px;line-height:1.7;}
+  .frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:13px 16px;line-height:1.6;margin-top:16px;}
+  .prog{height:6px;background:#E8EFF7;border-radius:3px;margin-bottom:22px;overflow:hidden;}
+  .prog-f{height:100%;background:var(--oro);border-radius:3px;transition:width .4s;}
+  .step-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .step-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--azulLt);color:var(--azul);}
+  .step-num{color:var(--gris);font-size:13px;}
+  .area-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:16px;border:2px solid #EEF3F8;}
+  .area-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .area-ic{font-size:26px;}
+  .area-nm{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--azul);}
+  .area-desc{font-size:13px;color:var(--gris);line-height:1.55;margin-bottom:18px;}
+  .scale-q{font-size:14px;font-weight:600;color:#333;margin:16px 0 4px;}
+  .scale-hint{font-size:12px;color:var(--gris);margin-bottom:12px;line-height:1.5;}
+  .slider-val{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;color:var(--gris);}
+  .slider-num{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--oro);}
+  input[type=range]{width:100%;height:8px;border-radius:5px;background:#E3EAF3;outline:none;-webkit-appearance:none;appearance:none;margin:6px 0 4px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--azul);cursor:pointer;box-shadow:0 2px 8px rgba(27,79,140,.4);}
+  input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--azul);cursor:pointer;border:none;box-shadow:0 2px 8px rgba(27,79,140,.4);}
+  .range-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--gris);padding:0 2px;}
+  .skip-row{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid #F0F0F0;font-size:13px;color:var(--gris);cursor:pointer;}
+  .skip-row input{width:18px;height:18px;accent-color:var(--gris);}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px;}
+  .res-hero{background:var(--azul);color:#fff;border-radius:18px;padding:26px;text-align:center;margin-bottom:18px;}
+  .res-big{font-family:'Playfair Display',serif;font-size:46px;font-weight:700;margin:8px 0;}
+  .res-lbl{font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:.85;}
+  .res-tag{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;background:rgba(255,255,255,.18);}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;}
+  table.t th{background:var(--azul);color:#fff;padding:9px 8px;text-align:center;font-weight:500;font-size:12px;}
+  table.t td{padding:9px 8px;border-bottom:1px solid var(--fondo);text-align:center;}
+  table.t td.area{text-align:left;font-weight:600;}
+  table.t tr:nth-child(even) td{background:#FAFCFF;}
+  .disc-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-weight:700;font-size:12px;color:#fff;}
+  .interp{border-radius:0 10px 10px 0;padding:14px 16px;font-size:13px;line-height:1.65;margin-bottom:10px;}
+  .interp.alta{background:#FCEBEA;border-left:4px solid var(--rojo);color:#7a241c;}
+  .interp.media{background:#FFF4E8;border-left:4px solid var(--naranja);color:#7a4a18;}
+  .interp.baja{background:var(--verdeLt);border-left:4px solid var(--verde);color:#1a4a30;}
+  .cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:16px;font-size:12px;line-height:1.7;color:#333;max-height:260px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:18px;font-family:'DM Sans',sans-serif;-webkit-user-select:all;user-select:all;}
+  .acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+  .ctit{font-weight:600;font-size:13px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;}
+  .aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:18px;}
+  @media(max-width:560px){table.t th,table.t td{padding:7px 4px;font-size:11px;}}
+  /* ── Metáfora del mono (calidad de presencia) ── */
+  .mono-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:8px 0 4px;}
+  .mono-btn{border:2px solid #E3EAF3;background:#fff;border-radius:13px;padding:11px 12px;text-align:left;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+  .mono-btn .mb-t{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;}
+  .mono-btn .mb-d{font-size:11.5px;color:var(--gris);line-height:1.4;}
+  .mono-btn.on{border-color:currentColor;box-shadow:0 3px 12px rgba(0,0,0,.08);}
+  .mono-btn.on .mb-t{font-weight:700;}
+  .monobar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#EEF3F8;margin:6px 0;}
+  .monoseg{height:100%;}
+  .valor-in{width:100%;border:2px solid #E3EAF3;border-radius:12px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a1a2e;resize:vertical;min-height:46px;}
+  .valor-in:focus{outline:none;border-color:var(--azul);}
+  .arbol-card{background:#fff;border-radius:18px;padding:22px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px;border-top:4px solid var(--oro);}
+  .arbol-leg{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:11.5px;color:var(--gris);margin-top:10px;}
+  .arbol-leg span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .sug-note{font-size:12px;color:var(--oro);background:#FBF4E6;border-radius:10px;padding:8px 12px;margin-top:8px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div><div class="htitle">Mi Brújula de Valores</div><div class="hsub">APRENS Psicologia · Trabajo en valores (ACT)</div></div>
+</div>
+<div class="wrap" id="app"></div>
+<script>
+// ═══ ÁREAS DE VALOR (ACT — formato Wilson/Hayes adaptado, 10 áreas de tus formularios) ═══
+const AREAS=[
+  {id:"fam",ic:"👨‍👩‍👧",nom:"Familia",desc:"Cómo quieres estar con tu familia y la gente de tu casa (padres, hermanos, hijos): tu forma de cuidar y acompañar."},
+  {id:"par",ic:"💞",nom:"Pareja / relaciones",desc:"El tipo de pareja o relación íntima que quieres ser y construir."},
+  {id:"soc",ic:"👫",nom:"Amistades",desc:"Qué significa para ti ser buen amigo/a y la vida social que quieres tener."},
+  {id:"hog",ic:"🏠",nom:"Hogar y entorno",desc:"Cuidar tu espacio: ordenar, limpiar, tener un entorno que te sostenga."},
+  {id:"aut",ic:"🛁",nom:"Autocuidado",desc:"Pararte y cuidarte: descanso, sueño, higiene, tiempo para ti, atender el dolor."},
+  {id:"dep",ic:"🏃",nom:"Deporte y movimiento",desc:"Mover el cuerpo a tu ritmo: ejercicio, movilidad, actividad física."},
+  {id:"nut",ic:"🥗",nom:"Nutrición",desc:"Cómo te alimentas y cuidas tu comer: cocinar, comer con atención."},
+  {id:"tra",ic:"💼",nom:"Trabajo / estudios",desc:"El tipo de profesional o estudiante que quieres ser y cómo quieres tus relaciones ahí."},
+  {id:"oci",ic:"✨",nom:"Ocio y disfrute",desc:"La vida recreativa, aficiones y tiempo de disfrute que quieres tener."},
+  {id:"cre",ic:"🌱",nom:"Crecimiento personal",desc:"Aprender, crecer y dar sentido: formación, espiritualidad, desarrollo personal."},
+  {id:"com",ic:"🤝",nom:"Comunidad / ayudar",desc:"Tu participación en la comunidad, voluntariado o aportar a los demás."},
+];
+const FRASE='«No es un test de valores correctos. Es tu brújula: qué te importa de verdad y, sobre todo, con qué FORMA estás en cada área — no cuánto consigues, sino cómo llevas al mono mientras lo vives.»';
+
+// ═══ METÁFORA DEL MONO (calidad de presencia, PDF «¿Quién conduce tu vida?») ═══
+const MONO=[
+  {k:'lado',    label:'🚗 A mi lado',  short:'a mi lado (conduzco yo)',   desc:'Siento lo incómodo y aun así actúo hacia lo que me importa aquí', color:'var(--verde)',   q:3},
+  {k:'delante', label:'🙈 Delante',    short:'delante (me tapa)',         desc:'Lo incómodo me distrae o lo persigo: no veo bien hacia dónde voy', color:'var(--naranja)', q:1},
+  {k:'atras',   label:'📦 Atrás',      short:'atrás (lo escondo)',        desc:'Evito esta área o lo que siento en ella; la dejo en el maletero',  color:'var(--lila)',    q:1},
+  {k:'conduce', label:'🐒 Conduce él', short:'conduciendo él (reacciono)',desc:'Aquí actúo en automático: mandan la emoción o el impulso',        color:'var(--rojo)',    q:0}
+];
+const MONO_MAP={}; MONO.forEach(m=>MONO_MAP[m.k]=m);
+
+// ═══ ESTADO ═══
+let vista="intro", paso=0;
+// resp[areaId] = {imp:1-10, con:1-10, mono:''|'lado'|'delante'|'atras'|'conduce', valor:string, na:bool}
+let resp={};
+function resetResp(){ resp={}; AREAS.forEach(a=>resp[a.id]={imp:5,con:5,mono:'',valor:'',na:false}); }
+resetResp();
+
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function colorProx(c){ if(c>=7) return 'var(--verde)'; if(c>=4) return 'var(--oro)'; return '#B9C2CE'; }
+function sugCercania(k){ return k?Math.round(MONO_MAP[k].q/3*10):null; }
+function setMono(id,k){ var r=resp[id]; r.mono = (r.mono===k? '' : k); if(r.mono){ r.con=sugCercania(r.mono); } render(); }
+function monoDist(){ var d={lado:0,delante:0,atras:0,conduce:0,total:0}; AREAS.forEach(a=>{ var r=resp[a.id]; if(r.na||!r.mono) return; d[r.mono]++; d.total++; }); return d; }
+function monoDominante(d){ var best='',n=0; ['lado','delante','atras','conduce'].forEach(k=>{ if(d[k]>n){n=d[k];best=k;} }); return best; }
+function monobarHTML(d){ if(!d.total) return ''; var h='<div class="monobar">'; MONO.forEach(m=>{ var w=Math.round(100*d[m.k]/d.total); if(w>0) h+='<div class="monoseg" style="width:'+w+'%;background:'+m.color+'"></div>'; }); return h+'</div>'; }
+// ── Árbol de valores: ramas = áreas, grosor/nodo por cercanía, mono en el centro ──
+function arbolSVG(){
+  var items=AREAS.filter(a=>!resp[a.id].na); var n=items.length; if(!n) return '';
+  var cx=160, cy=160, R=104;
+  var pos=items.map((a,i)=>{ var ang=(-90 + i*360/n)*Math.PI/180; var con=resp[a.id].con; return {a:a, con:con, x:cx+R*Math.cos(ang), y:cy+R*Math.sin(ang), ang:ang}; });
+  var s='<svg viewBox="0 0 320 320" width="100%" style="max-width:340px;display:block;margin:4px auto 0;">';
+  pos.forEach(p=>{ var w=1.2+p.con*0.7; s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p.x.toFixed(1)+'" y2="'+p.y.toFixed(1)+'" stroke="#CFE0D8" stroke-width="'+w.toFixed(1)+'" stroke-linecap="round"/>'; });
+  pos.forEach(p=>{
+    var r=6+p.con*1.1;
+    s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+colorProx(p.con)+'" stroke="#fff" stroke-width="2"/>';
+    var right=Math.cos(p.ang)>=-0.15; var lx=p.x + (right?(r+4):-(r+4)); var anchor=right?'start':'end';
+    var nm=p.a.nom.length>13? p.a.nom.slice(0,12)+'…':p.a.nom;
+    s+='<text x="'+lx.toFixed(1)+'" y="'+(p.y+3).toFixed(1)+'" font-size="8.5" fill="#445" text-anchor="'+anchor+'" font-family="DM Sans,sans-serif">'+esc(nm)+'</text>';
+  });
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="#fff" stroke="var(--oro)" stroke-width="2"/>';
+  s+='<text x="'+cx+'" y="'+(cy+7)+'" font-size="22" text-anchor="middle">🐒</text>';
+  return s+'</svg>';
+}
+function analisisArbol(){
+  var items=AREAS.filter(a=>!resp[a.id].na); var n=items.length; if(!n) return '';
+  var firmes=items.filter(a=>resp[a.id].con>=6);
+  var debiles=items.filter(a=>resp[a.id].con<=4);
+  var L=[];
+  L.push('Tu mono se sujeta ahora con fuerza a <b>'+firmes.length+'</b> de <b>'+n+'</b> ramas (áreas en las que te sientes cerca por tu forma de estar).');
+  if(n>=4 && firmes.length<=2){
+    L.push('Cuando solo unas pocas ramas sostienen todo el peso, es fácil aferrarse a ellas: controlarlas, depender de ellas, y que aparezcan la obsesión o las conductas para evitar lo incómodo. No es un fallo tuyo: es que el mono necesita más sitios donde agarrarse.');
+    if(debiles.length) L.push('Ramas que hoy casi no te sostienen: <b>'+debiles.map(a=>esc(a.nom)).join(', ')+'</b>. Acercarte un poco a alguna —por la forma de estar, no por resultados— reparte el peso y suelta presión de las demás.');
+  } else if(firmes.length>=Math.ceil(n*0.6)){
+    L.push('El peso está bien repartido entre varias ramas: eso da estabilidad y el mono no necesita aferrarse a ninguna en concreto.');
+  } else if(debiles.length){
+    L.push('Podrías dar agarre a alguna rama floja: <b>'+debiles.slice(0,3).map(a=>esc(a.nom)).join(', ')+'</b>.');
+  }
+  L.push('Acercarte a una rama no es lograr un resultado: es la <b>forma</b> con la que estás ahí — llevar al mono a tu lado y aun así actuar hacia lo que te importa.');
+  return L.join('<br><br>');
+}
+
+// ═══ CÁLCULO DE DISCREPANCIA ═══
+// Discrepancia por área = importancia - consistencia (rango teórico 0-9 si imp>=con).
+// Total ACT clásico: suma de discrepancias de las 10 áreas (rango 0-90).
+function calcular(){
+  let totImp=0,totCon=0,totDisc=0,nAreas=0;
+  const filas=[];
+  AREAS.forEach(a=>{
+    const r=resp[a.id];
+    if(r.na){ filas.push({a,na:true}); return; }
+    const imp=r.imp, con=r.con;
+    const disc=Math.max(0, imp-con); // discrepancia: cuánto la importancia supera a lo que has hecho
+    totImp+=imp; totCon+=con; totDisc+=disc; nAreas++;
+    filas.push({a,imp,con,disc,na:false});
+  });
+  return {filas,totImp,totCon,totDisc,nAreas};
+}
+function colorDisc(d){ if(d>=6)return "#C0392B"; if(d>=3)return "#E07B39"; return "#2E7D5E"; }
+function nivelTotal(tot,n){
+  // Normalizamos a escala 0-90 sobre 10 áreas; si hay menos áreas evaluadas, prorrateamos.
+  const max = n*9;
+  const pct = max>0 ? (tot/max) : 0;
+  if(pct>=0.5) return {txt:"alta",cls:"alta"};
+  if(pct>=0.25) return {txt:"media",cls:"media"};
+  return {txt:"baja",cls:"baja"};
+}
+
+// ═══ RENDER ═══
+function render(){
+  const app=document.getElementById("app");
+  if(vista==="intro"){
+    app.innerHTML=`
+      <div class="hero">
+        <div class="htitulo">Mi Brújula de Valores</div>
+        <div class="hsubt">Esta brújula te ayuda a mirar, en cada área importante de tu vida:<br><br><strong>1.</strong> Cuánto te importa de verdad.<br><strong>2.</strong> Con qué <strong>forma</strong> estás ahí estos días — cómo llevas al «mono» (lo incómodo): a tu lado, delante tapándote, escondido atrás o conduciendo él.<br><strong>3.</strong> Cómo de cerca sientes tu valor por esa forma de estar (no por lo que consigues).<br><br>No hay respuestas correctas ni incorrectas. Es solo tuyo: te lo llevarás a la sesión para trabajarlo con tu psicólogo/a.</div>
+        <div class="frase">${FRASE}</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--verde)">
+        <div class="ctit" style="color:var(--verde)">🧭 Qué entrenas aquí</div>
+        <div style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#444;line-height:1.7">
+          <span style="display:inline-flex;align-items:center;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:700;background:var(--verdeLt);color:var(--verde);flex-shrink:0">C · Continuidad</span>
+          <span>Esta brújula trabaja tu <strong>Continuidad</strong>: la coherencia entre lo que de verdad te importa y lo que haces. Ver esa distancia es el primer paso para sostener, semana a semana, una conducta fiel a tus valores.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctit">Cómo funciona</div>
+        <div style="font-size:13.5px;color:#444;line-height:1.8">Verás ${AREAS.length} áreas, una a una. En cada una:<br>· <strong>Importancia</strong> (1-10): 1 = no me importa nada · 10 = es muy importante para mí.<br>· <strong>¿Cómo llevas al mono?</strong>: eliges una de las cuatro formas de estar en esa área.<br>· <strong>Cercanía</strong> (1-10): cuánto te sientes cerca de tu valor por tu forma de estar. Te la sugerimos según el mono, pero el número que cuenta es el que tú sientes.<br>· Si quieres, escribes tu valor (la forma en que quieres estar ahí).<br><br>Al final verás tu <strong>árbol de valores</strong>: las áreas como ramas donde se sujeta tu mono. Si un área no aplica, marca «No aplica» y se salta.</div>
+        <div class="aviso" style="margin-top:18px;margin-bottom:0">🔒 Esto no guarda ningún dato. Al terminar, generará un texto que tú decides enviar a tu psicólogo/a. Es anónimo.</div>
+      </div>
+      <div style="text-align:center"><button class="btn bpg" onclick="vista='quiz';paso=0;render()">Empezar →</button></div>`;
+    return;
+  }
+
+  if(vista==="quiz"){
+    const a=AREAS[paso], r=resp[a.id];
+    const pct=Math.round((paso/AREAS.length)*100);
+    const monoBtns=MONO.map(m=>`<button class="mono-btn${r.mono===m.k?' on':''}" style="color:${m.color}" onclick="setMono('${a.id}','${m.k}')"><div class="mb-t">${m.label}</div><div class="mb-d">${m.desc}</div></button>`).join('');
+    const sug = r.mono? sugCercania(r.mono) : null;
+    app.innerHTML=`
+      <div class="prog"><div class="prog-f" style="width:${pct}%"></div></div>
+      <div class="step-meta"><span class="step-badge">${a.ic} ${esc(a.nom)}</span><span class="step-num">${paso+1} / ${AREAS.length}</span></div>
+      <div class="area-card">
+        <div class="area-head"><span class="area-ic">${a.ic}</span><span class="area-nm">${esc(a.nom)}</span></div>
+        <div class="area-desc">${esc(a.desc)}</div>
+        <div id="scales" style="${r.na?'opacity:.35;pointer-events:none':''}">
+          <div class="scale-q">¿Cuánto te importa esta área?</div>
+          <div class="scale-hint">1 = no me importa nada · 10 = es muy importante para mí</div>
+          <div class="slider-val"><span>Importancia</span><span class="slider-num" id="impv">${r.imp}</span></div>
+          <input type="range" min="1" max="10" value="${r.imp}" oninput="resp['${a.id}'].imp=+this.value;document.getElementById('impv').textContent=this.value">
+          <div class="range-ends"><span>1</span><span>10</span></div>
+          <div class="scale-q" style="margin-top:24px">¿Cómo llevas al mono en esta área?</div>
+          <div class="scale-hint">La <strong>forma</strong> en que estás aquí estos días — no los resultados, sino la calidad de tu presencia.</div>
+          <div class="mono-grid">${monoBtns}</div>
+          <div class="scale-q" style="margin-top:22px">Del 1 al 10, ¿cuánto te sientes cerca de tu valor aquí?</div>
+          <div class="scale-hint">Cerca = me relaciono con esta área como quiero, por mi forma de estar. (No es cuánto consigo.)</div>
+          <div class="slider-val"><span>Cercanía</span><span class="slider-num" id="conv">${r.con}</span></div>
+          <input type="range" min="1" max="10" value="${r.con}" oninput="resp['${a.id}'].con=+this.value;document.getElementById('conv').textContent=this.value">
+          <div class="range-ends"><span>lejos</span><span>cerca</span></div>
+          ${sug!==null?`<div class="sug-note">Por cómo llevas al mono, te sugerimos <strong>${sug}/10</strong>. Es solo una orientación: ajústala a lo que de verdad sientes.</div>`:''}
+          <div class="scale-q" style="margin-top:22px">Mi valor aquí <span style="font-weight:400;color:var(--gris)">(opcional)</span></div>
+          <div class="scale-hint">¿Cómo quieres estar o relacionarte en esta área? La forma, no la meta.</div>
+          <textarea class="valor-in" placeholder="p. ej. estar presente y escuchar sin prisa" oninput="resp['${a.id}'].valor=this.value">${esc(r.valor)}</textarea>
+        </div>
+        <label class="skip-row"><input type="checkbox" id="na" ${r.na?'checked':''} onchange="resp['${a.id}'].na=this.checked;render()"> Esta área no aplica en mi vida ahora mismo</label>
+      </div>
+      <div class="nav">
+        <button class="btn bs bsm" onclick="${paso===0?"vista='intro';render()":"paso--;render()"}">← ${paso===0?'Volver':'Anterior'}</button>
+        <button class="btn bp bsm" onclick="${paso===AREAS.length-1?"vista='resultado';render();window.scrollTo(0,0)":"paso++;render();window.scrollTo(0,0)"}">${paso===AREAS.length-1?'Ver resultado →':'Siguiente →'}</button>
+      </div>`;
+    return;
+  }
+
+  if(vista==="resultado"){
+    const c=calcular();
+    const nv=nivelTotal(c.totDisc,c.nAreas);
+    const md=monoDist();
+    const cercMedia = c.nAreas? Math.round(c.totCon/c.nAreas*10)/10 : 0;
+    const firmes = AREAS.filter(a=>!resp[a.id].na && resp[a.id].con>=6).length;
+    const monoDom = md.total? MONO_MAP[monoDominante(md)] : null;
+    window._aprensRec = { id:"bv"+Date.now(), date:new Date().toISOString().slice(0,10), ts:Date.now(),
+      disc_total:c.totDisc, max:c.nAreas*9, nivel:nv.txt,
+      importancia:c.totImp, consistencia:c.totCon, areas:c.nAreas,
+      cercania_media:cercMedia, C:cercMedia,
+      mono_lado:md.lado, mono_delante:md.delante, mono_atras:md.atras, mono_conduce:md.conduce,
+      ramas_firmes:firmes,
+      focos:c.filas.filter(function(f){return !f.na&&f.disc>=6;}).map(function(f){return f.a.nom+" ("+f.disc+")";}).join("; ") };
+    if(window.Aprens) Aprens.mountBar();
+    const filas=c.filas.map(f=>{
+      if(f.na) return `<tr><td class="area">${f.a.ic} ${esc(f.a.nom)}</td><td colspan="3" style="color:var(--gris);font-style:italic">No aplica</td></tr>`;
+      return `<tr><td class="area">${f.a.ic} ${esc(f.a.nom)}</td><td>${f.imp}</td><td>${f.con}</td><td><span class="disc-pill" style="background:${colorDisc(f.disc)}">${f.disc}</span></td></tr>`;
+    }).join("");
+    // Áreas con discrepancia alta (>=6): foco prioritario
+    const focos=c.filas.filter(f=>!f.na&&f.disc>=6).sort((x,y)=>y.disc-x.disc);
+    // Patrón b: consistencia alta general -> revisar deseabilidad social
+    const consAlta=c.nAreas>0 && (c.totCon/c.nAreas)>=8;
+    // Patrón c: alguna área con consistencia alta pero importancia baja
+    const rarasCB=c.filas.filter(f=>!f.na&&f.con>=7&&f.imp<=4);
+    let interp=`<div class="interp ${nv.cls}"><strong>Discrepancia total: ${c.totDisc} ${nv.txt==='alta'?'(alta)':nv.txt==='media'?'(media)':'(baja)'}.</strong> ${
+      nv.txt==='alta'?'Hay una distancia importante entre lo que te importa y las acciones que esta semana han podido ir en esa dirección. Es habitual que esto venga acompañado de malestar, y puede deberse a contexto, agotamiento, bloqueo o un momento difícil. Es justo el material para trabajar en sesión, sin juicio.'
+      :nv.txt==='media'?'Hay cierta distancia entre lo que valoras y lo que haces en algunas áreas. Hay margen de acercamiento y eso es lo que se trabaja en terapia.'
+      :'Tus acciones de esta semana han ido bastante en la dirección de lo que te importa. Conviene revisarlo igualmente en sesión para sostenerlo y matizarlo.'}</div>`;
+    if(focos.length){
+      interp+=`<div class="interp alta"><strong>Áreas con más distancia (foco sugerido):</strong> ${focos.map(f=>f.a.ic+' '+esc(f.a.nom)+' ('+f.disc+')').join(' · ')}. Son áreas que te importan y en las que esta semana ha sido difícil actuar en su dirección.</div>`;
+    }
+    if(consAlta){
+      interp+=`<div class="interp media"><strong>Nota para revisar en sesión:</strong> tus puntuaciones de "esta semana" son altas en casi todo. Conviene mirar junto a tu psicólogo/a si responden a lo que de verdad haces o si hay algo de querer dar buena imagen (deseabilidad social). No es bueno ni malo: es algo a explorar.</div>`;
+    }
+    if(rarasCB.length){
+      interp+=`<div class="interp media"><strong>Combinación a explorar:</strong> en ${rarasCB.map(f=>esc(f.a.nom)).join(', ')} actúas bastante aunque digas que no te importa demasiado. Una buena pregunta para sesión: ¿por qué dedicas energía a algo que sientes que no te importa tanto?</div>`;
+    }
+    app.innerHTML=`
+      <div class="res-hero">
+        <div class="res-lbl">Discrepancia total de valores</div>
+        <div class="res-big">${c.totDisc}</div>
+        <div class="res-lbl">sobre un máximo de ${c.nAreas*9} (${c.nAreas} áreas evaluadas)</div>
+        <div class="res-tag">Distancia ${nv.txt}</div>
+      </div>
+      <div class="arbol-card">
+        <div class="ctit" style="text-align:center">🌳 Tu árbol de valores</div>
+        <div style="font-size:12.5px;color:var(--gris);text-align:center;line-height:1.6;margin-bottom:6px">Cada rama es un área. Cuanto más cerca te sientes (por tu forma de estar), más gruesa y verde la rama. Tu mono 🐒 se sujeta en el centro.</div>
+        ${arbolSVG()}
+        <div class="arbol-leg"><span><i class="dot" style="background:var(--verde)"></i>cerca (7-10)</span><span><i class="dot" style="background:var(--oro)"></i>a medias (4-6)</span><span><i class="dot" style="background:#B9C2CE"></i>lejos (1-3)</span></div>
+        <div class="interp" style="background:var(--lilaLt);border-left:4px solid var(--lila);color:#4a2f7a;margin-top:14px">${analisisArbol()}</div>
+        ${md.total?`<div style="margin-top:14px">
+          <div style="font-size:12.5px;color:#444;margin-bottom:4px">Cómo llevas al mono en general:</div>
+          ${monobarHTML(md)}
+          <div style="font-size:12px;color:var(--gris);line-height:1.5">${monoDom?'Sobre todo lo llevas <b>'+monoDom.short+'</b>. Lo conduces tú (a tu lado) en el '+Math.round(100*md.lado/md.total)+'% de las áreas.':''}</div>
+        </div>`:''}
+      </div>
+      <div class="card">
+        <div class="ctit">Tu mapa por áreas</div>
+        <table class="t"><tr><th style="text-align:left">Área</th><th>Importa</th><th>Cerca</th><th>Distancia</th></tr>${filas}</table>
+        <div style="font-size:11.5px;color:var(--gris);margin-top:12px;line-height:1.6">La <strong>distancia</strong> es cuánto la importancia supera a lo que has hecho esta semana. Cuanto mayor, más lejos están tus acciones de lo que valoras en esa área.</div>
+      </div>
+      <div class="card">
+        <div class="ctit">Lectura</div>
+        ${interp}
+        <div style="font-size:11.5px;color:var(--gris);font-style:italic;margin-top:6px">Esta lectura es orientativa y no sustituye el trabajo con tu psicólogo/a. Es el punto de partida de la conversación, no una conclusión.</div>
+      </div>
+      <div class="card">
+        <div class="ctit">Enviar a tu psicólogo/a</div>
+        <div class="aviso">Tus datos solo se guardan en tu dispositivo cuando pulsas enviar. Copia el texto o ábrelo en WhatsApp; abajo puedes enviar el resultado al panel de tu psicólogo. Lo trabajaréis juntos en la sesión.</div>
+        <div class="cbox" id="msgBox">${esc(generarTexto(c,nv))}</div>
+        <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: junta lo del día y mándame <b>un único resumen al final del día</b>.</div>
+        <div class="acc">
+          <a class="btn bwa" id="waBtn" href="#" onclick="abrirWA(event)">📱 Enviar por WhatsApp</a>
+          <button class="btn bcopy" onclick="copiar(this)">📋 Copiar texto</button>
+        </div>
+        <div style="text-align:center"><button class="btn bs bsm" onclick="vista='intro';paso=0;resetResp();render();window.scrollTo(0,0)">↺ Empezar de nuevo</button></div>
+      </div>`;
+    return;
+  }
+}
+
+// ═══ TEXTO PARA EL PROFESIONAL ═══
+function generarTexto(c,nv){
+  const md=monoDist();
+  const cercMedia = c.nAreas? Math.round(c.totCon/c.nAreas*10)/10 : 0;
+  const firmes = AREAS.filter(a=>!resp[a.id].na && resp[a.id].con>=6).length;
+  let t="BRÚJULA DE VALORES (ACT) · APRENS\n";
+  t+="Fecha: "+new Date().toLocaleDateString('es-ES')+"\n\n";
+  t+="Discrepancia total: "+c.totDisc+" / "+(c.nAreas*9)+"  (distancia "+nv.txt+")\n";
+  t+="Importancia total: "+c.totImp+"  ·  Consistencia total: "+c.totCon+"  ·  Áreas evaluadas: "+c.nAreas+"\n";
+  t+="Cercania media (forma de relacionarme): "+cercMedia+" / 10\n";
+  if(md.total){ t+="El mono por mis areas -> a mi lado: "+md.lado+" · delante: "+md.delante+" · atras: "+md.atras+" · conduce el: "+md.conduce+"\n"; }
+  t+="Ramas firmes (areas con cercania >=6): "+firmes+" de "+c.nAreas+"\n\n";
+  t+="DETALLE POR ÁREA (importancia / cercanía / distancia · mono · valor):\n";
+  c.filas.forEach(f=>{
+    if(f.na){ t+="· "+f.a.nom+": no aplica\n"; return; }
+    const r=resp[f.a.id];
+    t+="· "+f.a.nom+": "+f.imp+" / "+f.con+" / "+f.disc
+      +(r.mono?"  · mono "+MONO_MAP[r.mono].short:"")
+      +(r.valor?'  · valor: «'+r.valor+'»':"")+"\n";
+  });
+  const focos=c.filas.filter(f=>!f.na&&f.disc>=6).sort((x,y)=>y.disc-x.disc);
+  if(focos.length){ t+="\nÁreas de mayor distancia: "+focos.map(f=>f.a.nom+" ("+f.disc+")").join(", ")+"\n"; }
+  t+="\n— Generado con la Brújula de Valores APRENS. Instrumento de apoyo, no sustituye la valoración clínica.";
+  return t;
+}
+function abrirWA(e){
+  e.preventDefault();
+  const txt=document.getElementById("msgBox").innerText||document.getElementById("msgBox").textContent;
+  window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
+}
+function copiar(btn){
+  const box=document.getElementById("msgBox");
+  const txt=box.innerText||box.textContent;
+  let done=false;
+  try{
+    const r=document.createRange();r.selectNodeContents(box);
+    const s=window.getSelection();s.removeAllRanges();s.addRange(r);
+    done=document.execCommand("copy");s.removeAllRanges();
+  }catch(e){done=false;}
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar texto",2200);}).catch(()=>{});
+    done=true;
+  }
+  if(done){btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar texto",2200);}
+  else{
+    const ov=document.createElement("div");
+    ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px;z-index:999";
+    ov.innerHTML='<div style="background:#fff;border-radius:16px;padding:22px;max-width:480px;max-height:80vh;overflow-y:auto"><div style="font-family:\'Playfair Display\',serif;font-size:17px;color:#1B4F8C;margin-bottom:10px">Copia el texto manualmente</div><textarea readonly style="width:100%;height:200px;border:1px solid #E0E7EF;border-radius:10px;padding:12px;font-size:12px;font-family:monospace">'+esc(txt)+'</textarea><div style="text-align:center;margin-top:12px"><button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:#1B4F8C;color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:14px;cursor:pointer">Cerrar</button></div></div>';
+    ov.addEventListener("click",ev=>{if(ev.target===ov)ov.remove();});
+    document.body.appendChild(ov);
+  }
+}
+
+render();
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function(g){"use strict";var DB_KEY="aprens_db",SCHEMA=1;var st={toolId:null,toolName:null,toolVersion:1};var collector=null;
+function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}return{schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+function bk(db,c){if(!db.tools[st.toolId]&&c){db.tools[st.toolId]={meta:{nombre:st.toolName,v:st.toolVersion},records:[]};}return db.tools[st.toolId];}
+var A={schema:SCHEMA,
+config:function(o){o=o||{};if(o.toolId)st.toolId=String(o.toolId);if(o.toolName)st.toolName=String(o.toolName);if(o.toolVersion)st.toolVersion=o.toolVersion;if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);if(st.toolId){var db=load();var b=bk(db,true);b.meta={nombre:st.toolName,v:st.toolVersion};persist(db);}return this;},
+setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+getPacienteCodigo:function(){return load().paciente.codigo||"";},
+save:function(r,opts){opts=opts||{};if(!st.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();var db=load();var b=bk(db,true);var i=-1;if(r.id!=null){i=b.records.findIndex(function(x){return x.id===r.id;});}else if(r.date&&!opts.append){i=b.records.findIndex(function(x){return x.date===r.date;});}if(i>=0)b.records[i]=r;else b.records.push(r);b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});persist(db);return r;},
+collect:function(fn){collector=fn;return this;},
+_flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)this.save(r);}catch(e){}}},
+buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
+copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+};g.Aprens=A;})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN brujula_valores ===================== -->
+<script>
+Aprens.config({ toolId:"brujula_valores", toolName:"Brújula de valores", toolVersion:1, pacienteCodigo:"" });
+Aprens.collect(function(){ return window._aprensRec || null; });
+</script>
+</body>
+</html>

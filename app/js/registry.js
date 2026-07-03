@@ -24,10 +24,12 @@ window.APRENS_TOOLS = [
   { id:"bajar_alerta", emoji:"🫁", nombre:"Bajar la alerta",
     desc:"4 pasos para volver al aquí y ahora cuando te notas en alerta.",
     migrada:true, iframe:"tools-standalone/bajar-alerta.html" },
+  { id:"brujula_valores", emoji:"🧭", nombre:"Brújula de valores",
+    desc:"Tus áreas vitales: qué te importa y con qué forma estás ahí (ACT).",
+    migrada:true, iframe:"tools-standalone/brujula-valores.html" },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },
-  { id:"brujula_valores",     emoji:"🧭", nombre:"Brújula de valores",    desc:"Actuar en dirección a lo que importa.", migrada:false },
   { id:"acompanar_sensacion", emoji:"🤝", nombre:"Acompañar la sensación", desc:"Estar con lo que se siente, sin controlarlo.", migrada:false }
 ];

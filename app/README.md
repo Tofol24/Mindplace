@@ -35,6 +35,12 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
     `Aprens.config/collect/mountBar`); se integra **como standalone vía iframe** quitando solo
     Google Fonts. Su registro (antes/después, bajada, ancla, zona, emoción, micro) va al `aprens_db`
     único vía su propio core embebido (mismo origen).
+  - `tools-standalone/brujula-valores.html` — "Mi Brújula de valores" (ACT): 11 áreas vitales;
+    por cada una, importancia + cómo llevas al mono + cercanía + tu valor. Calcula discrepancia
+    (importancia − cercanía), dibuja un **árbol de valores** (SVG) y da lectura clínica. **Ya venía
+    integrada con el core**; standalone vía iframe quitando solo Google Fonts. Registro al
+    `aprens_db` único (discrepancia total, cercanía media → mapeo TEC = Continuidad, distribución
+    del mono, ramas firmes, focos). El detective la enruta internamente en "a mi lado".
 - ✅ **Instalable + offline**: `manifest.webmanifest` + `sw.js` (service worker con precache del shell).
 - ✅ **Sin Google Fonts**: stack tipográfico del sistema (ver nota de fuentes en `css/aprens.css`).
 - ✅ **Pauta por URL** conservada: `?foco=L|D|C` resalta el foco de la semana en el hub.

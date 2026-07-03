@@ -74,8 +74,9 @@
   // Circuito interno: herramientas ya migradas a la app → ruta interna (sin salir a Netlify).
   // Añade aquí cada URL a medida que se migre su herramienta.
   var INTERNAL_ROUTES = {
-    'https://aprens-bajaralerta.netlify.app':  '#/tool/bajar_alerta',
-    'https://aprens-aiscuriosidad.netlify.app':'#/tool/ais_curiosidad'
+    'https://aprens-bajaralerta.netlify.app':   '#/tool/bajar_alerta',
+    'https://aprens-aiscuriosidad.netlify.app': '#/tool/ais_curiosidad',
+    'https://aprens-brujulavalores.netlify.app':'#/tool/brujula_valores'
   };
 
   var KW = {
