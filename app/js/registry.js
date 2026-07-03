@@ -18,10 +18,12 @@ window.APRENS_TOOLS = [
   { id:"agenda_atencional", emoji:"🗓️", nombre:"Agenda atencional",
     desc:"Tu semana franja a franja: foco, sobrepensamiento y valores.",
     migrada:true, iframe:"tools-standalone/agenda-atencional.html" },
+  { id:"ais_curiosidad", emoji:"🌱", nombre:"AIS curiosidad",
+    desc:"Explorar el cuerpo por dentro con curiosidad (linterna interior).",
+    migrada:true, iframe:"tools-standalone/ais-curiosidad.html" },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
-  { id:"ais_curiosidad",      emoji:"🌱", nombre:"AIS curiosidad",        desc:"Entrenamiento sensorial desde la curiosidad.", migrada:false },
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },
   { id:"brujula_valores",     emoji:"🧭", nombre:"Brújula de valores",    desc:"Actuar en dirección a lo que importa.", migrada:false },
   { id:"bajar_la_alerta",     emoji:"🫁", nombre:"Bajar la alerta",       desc:"Regular la activación.", migrada:false },

@@ -24,6 +24,11 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
     de re-transcribirla: se le quitó Google Fonts (offline + RGPD) y se le añadió un **puente** que,
     al ver "Enviar", guarda un **resumen diario** (foco medio, sobrepensamiento, hechas, % mono al
     lado, AIS) en el `aprens_db` único para el panel. Mantiene su propio estado interno rico.
+  - `tools-standalone/ais-curiosidad.html` — "Entrenar AIS desde la curiosidad": 9 exploraciones
+    graduadas, mapa corporal SVG (ancla visual), temporizador, checklist curiosidad→análisis y
+    continuidad. Autocontenida (sin dependencias externas). Integrada **como standalone vía iframe**
+    con **puente** al core: cada práctica guardada se registra en el `aprens_db` único
+    (ejercicio, nivel, ancla, cualidades, microacción → mapeo TEC = Densidad).
 - ✅ **Instalable + offline**: `manifest.webmanifest` + `sw.js` (service worker con precache del shell).
 - ✅ **Sin Google Fonts**: stack tipográfico del sistema (ver nota de fuentes en `css/aprens.css`).
 - ✅ **Pauta por URL** conservada: `?foco=L|D|C` resalta el foco de la semana en el hub.
