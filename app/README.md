@@ -53,6 +53,16 @@ Para verificar el modo offline: cárgala una vez, activa el modo avión y recarg
 Arrastra la carpeta `app/` a Netlify (o apunta el sitio a este subdirectorio). Al ser una sola
 app, **todas las herramientas comparten un mismo origen y un mismo `aprens_db`**.
 
+## Circuito interno (enlaces entre herramientas)
+Algunas herramientas se sugieren entre sí (p. ej. el detective "¿Dónde está el mono?" recomienda
+"Bajar la alerta" o "AIS curiosidad"). Cuando la herramienta destino **ya está migrada**, el enlace
+debe ir a la ruta interna (`#/tool/<id>`, sin `target=_blank`) para no salir de la app; si aún no
+está migrada, se mantiene el enlace externo a Netlify.
+
+En `js/tools/donde-esta-mono.js` esto se controla con el mapa `INTERNAL_ROUTES`
+(`URL Netlify → #/tool/<id>`). **Al migrar una herramienta nueva, añade su URL a ese mapa** para
+cerrar el circuito. (Las herramientas standalone en iframe no re-enrutan enlaces al padre por ahora.)
+
 ## Cómo migrar la siguiente herramienta
 **Opción A — módulo nativo** (recomendada para herramientas pequeñas/medias):
 1. Crea `js/tools/<toolId>.js` siguiendo el patrón de `cuestionario-tec.js`

@@ -71,6 +71,13 @@
   };
   var ORDEN=['conduce','delante','maletero','lado'];
 
+  // Circuito interno: herramientas ya migradas a la app → ruta interna (sin salir a Netlify).
+  // Añade aquí cada URL a medida que se migre su herramienta.
+  var INTERNAL_ROUTES = {
+    'https://aprens-bajaralerta.netlify.app':  '#/tool/bajar_alerta',
+    'https://aprens-aiscuriosidad.netlify.app':'#/tool/ais_curiosidad'
+  };
+
   var KW = {
     conduce:['exploté','explote','reaccioné','reaccione','sin pensar','me dejé llevar','me deje llevar','impulso','de golpe','comprobar','compruebo','reviso','revisar','no paro de mirar','repetir','repito','una y otra vez','ritual','compulsi','necesito hacer','no puedo evitar hacer','tengo que hacer','para calmarme','para aliviar','me distraigo haciendo','huyo','escapo','salí corriendo','sali corriendo','consumo','como para','bebo para','me lavo','limpio','ordeno sin parar','no puedo parar de','para no sentir hago',
       'perdí el control','perdi el control','me cegué','me cegue','me pudo','me superó','me supero','salté','salte','me lancé','me lance','piloto automático','piloto automatico','en automático','en automatico','sin darme cuenta','no me reconozco','me arrepiento','grité','grite','di un portazo','portazo','mandé un mensaje','mande un mensaje','escribí sin pensar','escribi sin pensar','llamé sin parar','llame sin parar','atracón','atracon','comí sin parar','comi sin parar','picoteo','me fui de compras','compré sin','compre sin','gasté','gaste','fumé','fume','vapeé','vapee','un porro','beber','copas','me emborraché','me emborrache','scroll','el móvil sin parar','el movil sin parar','las redes','redes sociales','porno','me rasqué','me rasque','me mordí','me mordi','me corté','me corte','autolesión','autolesion','evito','evitar','cancelé','cancele','no fui','no salí','no sali','me quedé en casa','me quede en casa','postergo','procrastino','lo dejo para luego','lo aplazo','me anestesio','me evado','me desconecto','para que pare','que pare ya','no aguanto el malestar','lo que sea con tal de','busco alivio','busqué alivio','busque alivio','para no pensar hago','hice algo para',
@@ -291,9 +298,14 @@
       else pis+='Lo importante no es acertar el nombre, sino acercarte a tu lado.';
       sel.pistas=pis; $('[data-res-pistas]').innerHTML='💡 '+pis;
       $('[data-res-pasos]').innerHTML=p.pasos.map(x=>'<li>'+x+'</li>').join('');
-      var tm=$('[data-tool-main]'); tm.href=p.tool.url;
-      tm.innerHTML='<span class="tn">🧰 '+esc(p.tool.nombre)+'</span><span class="td">'+esc(p.tool.desc)+'</span><span class="go">Abrir herramienta →</span>';
-      $('[data-tool-alt]').innerHTML='¿No te encaja? Prueba también: <a href="'+p.alt.url+'" target="_blank" rel="noopener">'+esc(p.alt.nombre)+'</a>.';
+      var tm=$('[data-tool-main]'); var rMain=INTERNAL_ROUTES[p.tool.url];
+      if(rMain){ tm.setAttribute('href',rMain); tm.removeAttribute('target'); tm.removeAttribute('rel'); }
+      else { tm.setAttribute('href',p.tool.url); tm.setAttribute('target','_blank'); tm.setAttribute('rel','noopener'); }
+      tm.innerHTML='<span class="tn">🧰 '+esc(p.tool.nombre)+'</span><span class="td">'+esc(p.tool.desc)+'</span><span class="go">'+(rMain?'Abrir en la app →':'Abrir herramienta →')+'</span>';
+      var rAlt=INTERNAL_ROUTES[p.alt.url];
+      var altA = rAlt ? '<a href="'+rAlt+'">'+esc(p.alt.nombre)+'</a>'
+                      : '<a href="'+esc(p.alt.url)+'" target="_blank" rel="noopener">'+esc(p.alt.nombre)+'</a>';
+      $('[data-tool-alt]').innerHTML='¿No te encaja? Prueba también: '+altA+'.';
       pintaMicros(); construirResumen(); go('s-result');
     }
     function pintaMicros(){
