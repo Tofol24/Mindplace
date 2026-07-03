@@ -13,10 +13,11 @@ window.APRENS_TOOLS = [
     desc:"Cómo va tu presencia interna esta semana (L/D/C).", migrada:true },
   { id:"estado_mono", emoji:"🐒", nombre:"Estado del mono",
     desc:"¿Dónde está tu mono ahora? Check-in y AIS.", migrada:true },
+  { id:"donde_esta_mono", emoji:"🔍", nombre:"¿Dónde está el mono?",
+    desc:"El detective: adivina dónde llevas al mono y qué hacer.", migrada:true },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
-  { id:"donde_esta_mono",     emoji:"🔍", nombre:"¿Dónde está el mono?",  desc:"Quién conduce ahora mismo.", migrada:false },
   { id:"agenda_atencional",   emoji:"🗓️", nombre:"Agenda atencional",     desc:"Foco, sobrepensamiento y acción por franjas.", migrada:false },
   { id:"ais_curiosidad",      emoji:"🌱", nombre:"AIS curiosidad",        desc:"Entrenamiento sensorial desde la curiosidad.", migrada:false },
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },

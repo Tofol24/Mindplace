@@ -7,13 +7,17 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
 ## Qué incluye este MVP1
 - ✅ **Shell + hub + router** (`index.html`, `js/app.js`, `js/registry.js`).
 - ✅ **Núcleo único** `js/aprens-core.js` (el tuyo, sin cambios: `aprens_db`, export `aprens-export`).
-- ✅ **2 herramientas migradas**:
+- ✅ **3 herramientas migradas**:
   - `js/tools/cuestionario-tec.js` — reutiliza tu `CFG` y el scoring L/D/C intacto.
   - `js/tools/estado-mono.js` — "¿Cómo llevas a tu mono?" con sus 5 escenas, 4 pasos AIS,
     mini-AIS de respiración (60s) y continuidad. **Caso de migración legacy**: la versión
     original no usaba el core (clave propia `aprens_estado_mono_hist` + export solo texto);
     aquí se conserva toda la clínica intacta pero se persiste en el `aprens_db` único y se
     exporta también `aprens-export` para el panel (el resumen de WhatsApp se mantiene).
+  - `js/tools/donde-esta-mono.js` — "El detective del mono": clasificador local por palabras
+    (ES/CA) que infiere en cuál de las 4 posiciones está el mono, con dibujo SVG, 4 pasos AIS,
+    herramienta sugerida y captura de "aprendizaje supervisado" para el psicólogo. Era
+    navegacional (sin persistencia); ahora guarda en el `aprens_db` único + `aprens-export`.
 - ✅ **Instalable + offline**: `manifest.webmanifest` + `sw.js` (service worker con precache del shell).
 - ✅ **Sin Google Fonts**: stack tipográfico del sistema (ver nota de fuentes en `css/aprens.css`).
 - ✅ **Pauta por URL** conservada: `?foco=L|D|C` resalta el foco de la semana en el hub.

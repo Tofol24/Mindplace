@@ -1,0 +1,88 @@
+/* ============================================================
+   APRENS · "¿Dónde está tu mono?" (detective) · estilos scoped .dmono
+   Acento terracota + colores por posición del mono.
+   ============================================================ */
+.dmono{
+  --bg:#f7f4f0; --bg2:#f3e9e1; --card:#ffffff;
+  --tinta:#41382f; --suau:#857a6e;
+  --terra:#b87a5e; --terra-d:#8f5639; --terra-bg:#f3e7e0;
+  --oro:#caa765; --oro-d:#a07f38; --linia:#e7e1d8;
+  --ombra:0 8px 26px rgba(90,70,55,.12); --ombra-s:0 2px 12px rgba(90,70,55,.08); --r:18px;
+  --conduce:#c0584e; --conduce-bg:#f6e3e0; --conduce-d:#9b3e35;
+  --delante:#d98a3d; --delante-bg:#f8ecdc; --delante-d:#a86618;
+  --maletero:#8d6fb0; --maletero-bg:#eee8f5; --maletero-d:#6a4f8c;
+  --lado:#5f9070; --lado-bg:#e7f0ea; --lado-d:#437155;
+  color:var(--tinta);line-height:1.62;font-size:16px;
+}
+.dmono *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.dmono .screen{display:none;animation:dmfade .35s ease}
+.dmono .screen.active{display:block}
+@keyframes dmfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.dmono .dm-head{text-align:center;padding:14px 8px 6px}
+.dmono .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--terra-d);background:var(--terra-bg);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
+.dmono h1{font-size:26px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:700;letter-spacing:-.01em}
+.dmono .sub{color:var(--suau);font-size:16px;margin:12px auto 0;max-width:24em;text-align:center}
+
+.dmono .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px;margin:18px 0;box-shadow:var(--ombra-s)}
+.dmono .card h3{margin:0 0 6px;font-size:19px;font-weight:700}
+.dmono .lead{color:var(--suau);margin:0 0 14px;font-size:15.5px}
+
+.dmono .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--terra);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s,box-shadow .2s;font-family:inherit;box-shadow:0 6px 18px rgba(184,122,94,.32)}
+.dmono .btn:active{transform:scale(.985)}
+.dmono .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.dmono .btn.ghost{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
+.dmono .lnk{display:inline-block;margin-top:14px;color:var(--terra-d);font-weight:600;font-size:14.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:0;font-family:inherit}
+
+.dmono textarea{width:100%;min-height:120px;border:1.6px solid var(--linia);border-radius:14px;padding:13px 14px;font-family:inherit;font-size:16px;color:var(--tinta);background:#fff;resize:vertical}
+.dmono textarea:focus{outline:none;border-color:var(--terra)}
+
+.dmono .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.dmono .chip{border:1.4px solid var(--linia);background:#fff;border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit;color:var(--suau)}
+.dmono .chip.sel{border-color:var(--terra);background:var(--terra-bg);color:var(--terra-d);font-weight:600}
+
+.dmono .gal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.dmono .galc{border:1.5px solid var(--linia);border-radius:14px;padding:10px 10px 12px;text-align:center;background:#fff}
+.dmono .galc .gt{font-weight:700;font-size:14.5px;margin-top:4px}
+.dmono .galc .gd{font-size:12.5px;color:var(--suau);line-height:1.4;margin-top:3px}
+@media(max-width:430px){.dmono .gal{grid-template-columns:1fr}}
+
+.dmono .qcard{margin:16px 0}
+.dmono .qtit{font-weight:700;font-size:16px;margin-bottom:10px}
+.dmono .opt{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;border:1.6px solid var(--linia);background:#fff;border-radius:14px;padding:13px 15px;margin-bottom:9px;cursor:pointer;font-family:inherit;font-size:15.5px;color:var(--tinta);transition:border-color .15s,background .15s}
+.dmono .opt:active{transform:scale(.995)}
+.dmono .opt.sel{border-color:var(--terra);background:var(--terra-bg)}
+.dmono .opt .em{flex:0 0 26px;font-size:21px;line-height:1.2}
+
+.dmono .resHead{border-radius:var(--r);padding:20px 22px 24px;color:#fff;text-align:center;box-shadow:var(--ombra)}
+.dmono .resHead h2{margin:6px 0 4px;font-size:23px;font-weight:700}
+.dmono .resHead .conf{font-size:14px;opacity:.92;font-weight:600}
+.dmono .resHead svg{margin:4px auto 8px}
+.dmono .pistas{background:var(--terra-bg);border-radius:12px;padding:12px 14px;font-size:14.5px;color:var(--terra-d);margin:14px 0}
+.dmono .puente{background:var(--terra-bg);border-left:4px solid var(--terra);border-radius:10px;padding:13px 15px;font-size:14.5px;line-height:1.5;color:var(--terra-d);margin:0 0 16px}
+
+.dmono ol.pasos{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:p}
+.dmono ol.pasos li{counter-increment:p;position:relative;padding:10px 0 10px 46px;border-bottom:1px solid var(--linia);color:#4d453b;font-size:15.5px}
+.dmono ol.pasos li:last-child{border-bottom:0}
+.dmono ol.pasos li b{color:var(--terra-d)}
+.dmono ol.pasos li::before{content:counter(p);position:absolute;left:0;top:9px;width:30px;height:30px;border-radius:50%;background:var(--terra-bg);color:var(--terra-d);font-weight:700;font-size:13px;display:grid;place-items:center}
+
+.dmono .tool{display:block;border:1.6px solid var(--linia);border-radius:14px;padding:15px 16px;margin-top:12px;text-decoration:none;color:var(--tinta);background:#fff;transition:border-color .15s,box-shadow .15s}
+.dmono .tool:hover{box-shadow:var(--ombra-s)}
+.dmono .tool .tn{font-weight:700;font-size:16.5px;display:flex;align-items:center;gap:8px}
+.dmono .tool .td{color:var(--suau);font-size:14px;margin-top:4px}
+.dmono .tool .go{display:inline-block;margin-top:9px;font-weight:700;font-size:14px;color:var(--terra-d)}
+.dmono .alt{color:var(--suau);font-size:14px;margin-top:12px}
+.dmono .alt a{color:var(--terra-d);font-weight:600}
+
+.dmono .wa{background:#eef6ef;border:1px solid #cfe6d2;border-radius:14px;padding:16px;margin-top:14px}
+.dmono .wa h4{margin:0 0 8px;font-size:15px;color:#2c7a3f}
+.dmono .wa textarea{min-height:150px;font-size:13px;background:#fff}
+.dmono .row2{display:flex;gap:10px}
+.dmono .row2 .btn{margin-top:10px}
+.dmono .btn.wabtn{background:#25d366;box-shadow:0 6px 18px rgba(37,211,102,.3)}
+.dmono .btn.copybtn{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
+
+.dmono .dm-footer{text-align:center;color:var(--suau);font-size:12.5px;padding:26px 8px 8px;line-height:1.7}
+.dmono .dm-footer .logo{font-weight:700;color:var(--terra-d);letter-spacing:.04em}
+.dmono .aviso{font-size:12.5px;color:var(--suau);margin-top:10px;text-align:center}
