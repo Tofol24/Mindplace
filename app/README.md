@@ -35,6 +35,18 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
     `Aprens.config/collect/mountBar`); se integra **como standalone vía iframe** quitando solo
     Google Fonts. Su registro (antes/después, bajada, ancla, zona, emoción, micro) va al `aprens_db`
     único vía su propio core embebido (mismo origen).
+  - `tools-standalone/acompanar-sensacion.html` — "Acompañar la sensación": paradas AIS (intensidad
+    antes/después, mapa corporal, respiración adaptada). Legacy (clave propia) → iframe + puente:
+    cada parada registra en el `aprens_db` único (intensidad antes/después, diferencia, zona → TEC=D).
+  - `tools-standalone/ais-amor.html` — "AIS desde el amor": 10 ejercicios cotidianos para acompañarte
+    (no controlarte). Legacy → iframe + puente en `guardarPractica` (ejercicio, nivel, micro,
+    cualidades → TEC=D). El detective lo enruta internamente en "delante" (y como alternativa).
+  - `tools-standalone/screening-tec.html` — Instrumento **Screening TEC/AIS** (dual: paciente +
+    profesional): consentimiento RGPD, análisis L/D/C, seguimiento y **gráficas de evolución
+    (Chart.js)**. Integrado como standalone: **Chart.js vendorizado** en `/vendor/` (offline) y sin
+    Google Fonts. Conserva su propio sistema (BD por paciente, códigos, export de investigación);
+    no usa el `aprens_db` único (su modelo multi-paciente no encaja con collect-on-export). Un puente
+    del resultado en modo paciente queda como mejora futura.
   - `tools-standalone/brujula-valores.html` — "Mi Brújula de valores" (ACT): 11 áreas vitales;
     por cada una, importancia + cómo llevas al mono + cercanía + tu valor. Calcula discrepancia
     (importancia − cercanía), dibuja un **árbol de valores** (SVG) y da lectura clínica. **Ya venía
@@ -58,6 +70,15 @@ Para verificar el modo offline: cárgala una vez, activa el modo avión y recarg
 ## Cómo desplegarla (Netlify)
 Arrastra la carpeta `app/` a Netlify (o apunta el sitio a este subdirectorio). Al ser una sola
 app, **todas las herramientas comparten un mismo origen y un mismo `aprens_db`**.
+
+## Dependencias externas / offline (RGPD)
+Ninguna herramienta debe cargar recursos de terceros (rompe offline y filtra la IP del paciente).
+Al integrar una herramienta:
+- **Google Fonts** → se elimina el `<link>` (cae al stack tipográfico del sistema).
+- **Librerías por CDN** (p. ej. Chart.js en el Screening) → se **vendorizan** en `/vendor/` y se
+  cambia el `src` a la ruta local (`../vendor/…`); se añaden al precache del `sw.js`.
+- **wa.me y enlaces a sitios** (Netlify, protecmir…) son navegaciones que inicia el usuario, no
+  recursos cargados: pueden quedarse (pero enrútalos internos si la herramienta destino ya está migrada).
 
 ## Circuito interno (enlaces entre herramientas)
 Algunas herramientas se sugieren entre sí (p. ej. el detective "¿Dónde está el mono?" recomienda

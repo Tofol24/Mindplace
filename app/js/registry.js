@@ -34,8 +34,11 @@ window.APRENS_TOOLS = [
     desc:"Ejercicios cotidianos para acompañarte, no para controlarte.",
     migrada:true, iframe:"tools-standalone/ais-amor.html" },
 
+  { id:"screening_tec", emoji:"🧪", nombre:"Screening TEC/AIS",
+    desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
+    migrada:true, iframe:"tools-standalone/screening-tec.html" },
+
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
-  { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },
   { id:"acompanar_sensacion", emoji:"🤝", nombre:"Acompañar la sensación", desc:"Estar con lo que se siente, sin controlarlo.", migrada:false }
 ];
