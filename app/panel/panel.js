@@ -111,7 +111,8 @@
       var envs;
       if (obj.type === "aprens-export" && obj.tools) envs = [obj];
       else if ((obj.app === "APRENS_TEC" || obj.app === "APRENS_TEC_INVESTIGACION") && obj.datos) envs = tecBackupToEnvelopes(obj.datos);
-      else if (obj.type === "aprens-panel-backup" && obj.patients) envs = panelBackupToEnvelopes(obj.patients);
+      else if (obj.type === "aprens-panel-backup" && obj.patients) envs = patientMapToEnvelopes(obj.patients);
+      else if (obj.pacientes && typeof obj.pacientes === "object") envs = patientMapToEnvelopes(obj.pacientes); // backup del panel anterior
       else throw new Error("formato-desconocido");
       if (!envs.length) throw new Error("sin-datos");
       var codigos = {}, added = 0, updated = 0;
@@ -124,34 +125,39 @@
     patients: function () { return Object.keys(this.data.patients).map(function (k) { return this.data.patients[k]; }, this); }
   };
 
-  /* Convierte la BD del Screening TEC ({codigo:{screenings,seguimientos}}) en
-     sobres aprens-export (uno por paciente) que el panel ya sabe fusionar. */
+  /* Convierte la BD cruda del Screening TEC ({codigo:{screenings,seguimientos}})
+     a sobres aprens-export. Usa los MISMOS tool ids y campos que el panel anterior
+     (screening_tec / screening_seg, con clave por fecha) para que, si el usuario
+     importa ambas fuentes, se fusionen en vez de duplicarse. */
   function tecBackupToEnvelopes(datos) {
     return Object.keys(datos).map(function (codigo) {
       var p = datos[codigo] || {};
-      var scr = (p.screenings || []).map(function (s, i) {
+      var scr = (p.screenings || []).map(function (s) {
         var ice = (s.analisis && s.analisis.ice) || {};
-        return { id: "scr:" + codigo + ":" + (s.fecha || "") + ":" + i, date: s.fecha || "", ts: i + 1,
+        return { date: s.fecha || "", codigo: s.codigo || null,
           L: numOrNull(ice.L), D: numOrNull(ice.D), C: numOrNull(ice.C),
-          patron: (s.analisis && s.analisis.dominante) || null, codigo3: s.codigo || null, tipo: "screening" };
+          patron: (s.analisis && s.analisis.dominante) || null };
       });
-      var seg = (p.seguimientos || []).map(function (s, i) {
+      var seg = (p.seguimientos || []).map(function (s) {
         var sc = s.score || {};
-        return { id: "seg:" + codigo + ":" + (s.fecha || "") + ":" + i, date: s.fecha || "", ts: i + 1,
-          indice: numOrNull(sc.indice), latencia: numOrNull(sc.latencia), continuidad: numOrNull(sc.continuidad),
-          perfil: s.perfil || null, tipo: "seguimiento" };
+        return { date: s.fecha || "", perfil: s.perfil || null,
+          L: numOrNull(sc.latencia), D: numOrNull(sc.activacion), C: numOrNull(sc.continuidad),
+          indice: numOrNull(sc.indice) };
       });
       var tools = {};
-      if (scr.length) tools.screening_tec = { meta: { nombre: "Screening TEC/AIS", v: 2 }, records: scr };
-      if (seg.length) tools.seguimiento_tec = { meta: { nombre: "Seguimiento TEC", v: 2 }, records: seg };
+      if (scr.length) tools.screening_tec = { meta: { nombre: "Screening TEC (inicial)", v: 2 }, records: scr };
+      if (seg.length) tools.screening_seg = { meta: { nombre: "Screening · seguimiento", v: 2 }, records: seg };
       return { type: "aprens-export", paciente: { codigo: codigo }, exportado: new Date(0).toISOString(), tools: tools };
     }).filter(function (env) { return Object.keys(env.tools).length; });
   }
-  function panelBackupToEnvelopes(patients) {
-    return Object.keys(patients).map(function (codigo) {
-      var p = patients[codigo] || {};
-      return { type: "aprens-export", paciente: { codigo: p.codigo || codigo }, exportado: p.updated || new Date(0).toISOString(), tools: p.tools || {} };
-    });
+  /* Acepta tanto {patients:{...}} (backup de ESTE panel) como {pacientes:{...}}
+     (backup del panel anterior). Cada entrada ya trae {codigo,tools[,importado]}. */
+  function patientMapToEnvelopes(map) {
+    return Object.keys(map).map(function (codigo) {
+      var p = map[codigo] || {};
+      return { type: "aprens-export", paciente: { codigo: p.codigo || codigo },
+        exportado: p.updated || p.importado || new Date(0).toISOString(), tools: p.tools || {} };
+    }).filter(function (env) { return env.tools && Object.keys(env.tools).length; });
   }
   function numOrNull(v) { return v == null || v === "" ? null : Number(v); }
 
@@ -162,8 +168,13 @@
     ais_curiosidad: "AIS curiosidad", bajar_alerta: "Bajar la alerta",
     brujula_valores: "Brújula de valores", acompanar_sensacion: "Acompañar la sensación",
     ais_amor: "AIS desde el amor", mapa_atencion_interna: "Mapa interno",
-    screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC"
+    screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC",
+    screening_seg: "Screening · seguimiento", tracker_tec: "Tracker TEC",
+    autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
+    donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Eina diària",
+    compromiso_semanal: "Compromiso semanal"
   };
+  var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var POS_LABEL = { conduce: "Conduce el mono", delante: "Lo tengo delante (lucha/juicio)",
@@ -195,7 +206,7 @@
   }
   function monoDist(p) {
     var counts = { conduce: 0, delante: 0, maletero: 0, lado: 0 }, total = 0;
-    ["estado_mono", "donde_esta_mono"].forEach(function (t) {
+    MONO_TOOLS.forEach(function (t) {
       var b = p.tools[t]; if (!b) return;
       (b.records || []).forEach(function (r) {
         var raw = r.pos || r.escena || r.modo; var k = POS_MAP[raw];
@@ -226,21 +237,23 @@
   function round1(v) { return Math.round(v * 10) / 10; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
+  function firstLine(s) { var l = String(s).split("\n").filter(function (x) { return x.trim(); })[0] || ""; return l.length > 96 ? l.slice(0, 96) + "…" : l; }
+  function pick() { for (var i = 0; i < arguments.length; i++) if (arguments[i] != null && arguments[i] !== "") return arguments[i]; return null; }
   function recSummary(tool, r) {
-    if (r.resumen) return String(r.resumen).split("\n")[0];
+    if (r.resumen) return firstLine(r.resumen);
     switch (tool) {
       case "cuestionario_tec": return "L " + r.L + " · D " + r.D + " · C " + r.C + " (global " + r.total + ")";
-      case "estado_mono": return (r.estado || "") + (r.micro ? " · " + r.micro : "");
-      case "donde_esta_mono": return (r.estado || "") + (r.herramienta ? " → " + r.herramienta : "");
-      case "bajar_alerta": return "alerta " + r.antes + " → " + r.despues + (r.ancla ? " · ancla: " + r.ancla : "");
-      case "brujula_valores": return "discrepancia " + r.disc_total + "/" + r.max + " · cercanía " + r.cercania_media;
+      case "estado_mono": return (r.estado || "") + (r.micro ? " · " + r.micro : (r.al_lado ? " · a mi lado: " + r.al_lado : ""));
+      case "donde_esta_mono": case "donde_mono": return (r.estado || "") + (pick(r.herramienta, r.herramienta_sugerida) ? " → " + pick(r.herramienta, r.herramienta_sugerida) : "");
+      case "bajar_alerta": { var a = pick(r.antes, r.alerta_antes), d = pick(r.despues, r.alerta_despues); return a != null ? "alerta " + a + " → " + d + (r.ancla ? " · ancla: " + r.ancla : "") : (r.texto ? firstLine(r.texto) : "—"); }
+      case "brujula_valores": { var disc = pick(r.disc_total, r.discrepancia_total), cer = pick(r.cercania_media, r.cercania_media_forma_de_relacionarme); return "discrepancia " + fmt(disc) + (r.max ? "/" + r.max : "") + " · cercanía " + fmt(cer); }
       case "agenda_atencional": return "foco " + fmt(r.foco) + " · sobrepensamiento " + fmt(r.sobrepensamiento) + " · hechas " + fmt(r.hechas);
       case "acompanar_sensacion": return "intensidad " + r.intensidad_antes + " → " + r.intensidad_despues + (r.zona ? " (" + r.zona + ")" : "");
-      case "ais_curiosidad": case "ais_amor": return (r.ejercicio || "práctica") + (r.micro ? " · " + r.micro : "");
+      case "ais_curiosidad": case "ais_amor": return r.ejercicio ? (r.ejercicio + (r.micro ? " · " + r.micro : "")) : (r.texto ? firstLine(r.texto) : "—");
       case "mapa_atencion_interna": return (r.tipo === "recorrido" ? "Recorrido completo" : (r.zona || "Zona")) + cualTxt(r.cualidades);
-      case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (r.patron ? " · patrón " + r.patron : "") + (r.codigo3 ? " · cód " + r.codigo3 : "");
-      case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.latencia != null ? " · latencia " + r.latencia : "") + (r.continuidad != null ? " · continuidad " + r.continuidad : "");
-      default: return "—";
+      case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (pick(r.patron, r.perfil) ? " · " + pick(r.patron, r.perfil) : "") + (pick(r.codigo3, r.codigo) ? " · cód " + pick(r.codigo3, r.codigo) : "");
+      case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : ""));
+      default: return r.texto ? firstLine(r.texto) : "—";
     }
   }
   function cualTxt(c) { if (!c) return ""; var a = Array.isArray(c) ? c : [c]; a = a.filter(Boolean); return a.length ? " · " + a.join(", ") : ""; }

@@ -122,10 +122,13 @@ consola donde tú reúnes la evolución de cada paciente a partir de los `.json`
 - **Importar** (multi-formato): sube/arrastra uno o varios `.json` (o pega el contenido). Reconoce:
   (a) el sobre de las herramientas del paciente (`type:"aprens-export"`), (b) el **backup del
   Screening TEC** (`app:"APRENS_TEC"`/`APRENS_TEC_INVESTIGACION` → convierte `datos{código:{screenings,
-  seguimientos}}` a registros `screening_tec`/`seguimiento_tec`, con L/D/C del `analisis.ice`), y
-  (c) una **copia de seguridad del propio panel** (`type:"aprens-panel-backup"`). Se fusionan por
-  `paciente.codigo` (upsert por `id`/`date`/`fecha`, igual que el núcleo). La gráfica L/D/C se nutre
-  de cualquier herramienta con L/D/C (Cuestionario y Screening).
+  seguimientos}}` a registros `screening_tec`/`screening_seg` con L/D/C del `analisis.ice`; usa clave
+  por fecha para **fusionar sin duplicar** con el backup del panel), (c) el **backup del panel anterior**
+  (`{schema, pacientes:{código:{tools}}}`, mismo modelo interno, 12 tipos de herramienta) y (d) la
+  **copia de seguridad de este panel** (`type:"aprens-panel-backup"`). Todo se fusiona por
+  `paciente.codigo` (upsert por `id`/`date`/`fecha`). La gráfica L/D/C se nutre de cualquier herramienta
+  con L/D/C (Cuestionario, Screening inicial, seguimiento y Tracker). Verificado con **3 backups reales**
+  (44 pacientes): importación, fusión sin duplicados, reimport idempotente, sin nombres reales ni errores.
 - **Vistas clínicas** por paciente: evolución **L/D/C** (Chart.js vendorizado), reparto de
   **posiciones del mono** (conduce/delante/maletero/a mi lado + % «a mi lado»), **valores**
   (discrepancia y cercanía de la brújula), **regulación de la alerta** (antes→después) y
