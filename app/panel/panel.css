@@ -1,0 +1,119 @@
+/* APRENS · Panel del psicólogo — estilos (offline, sin fuentes externas) */
+:root{
+  --navy:#0f2a3f; --blue:#1B4F8C; --blue2:#2d7dd2;
+  --ink:#1c2b36; --muted:#5c6b78; --line:#e2e8ef; --bg:#eef3f8; --card:#fff;
+  --conduce:#c0584e; --delante:#d98a3d; --maletero:#8d6fb0; --lado:#5f9070;
+  --L:#2d7dd2; --D:#3a9e8c; --C:#5f9070;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+button{font-family:inherit}
+
+/* ---------- Cerrojo ---------- */
+.lock{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0f2a3f,#1B4F8C);padding:20px}
+.lock-card{background:#fff;border-radius:20px;padding:28px 26px;width:100%;max-width:380px;
+  box-shadow:0 18px 50px rgba(0,0,0,.3);text-align:center}
+.lock-logo{width:52px;height:52px;border-radius:50%;background:var(--blue);color:#fff;
+  font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:19px}
+.lock-card h1{font-size:20px;margin:0 0 2px}
+.lock-sub{color:var(--muted);margin:0 0 18px;font-size:13px}
+.lock-form{display:flex;flex-direction:column;gap:10px;text-align:left}
+.lock-form input{padding:12px 13px;border:1.5px solid var(--line);border-radius:11px;font-size:15px}
+.lock-form input:focus{outline:none;border-color:var(--blue2)}
+.lock-form button[type=submit]{padding:12px;border:0;border-radius:11px;background:var(--blue);
+  color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:2px}
+.lock-hint{font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.45}
+.lock-warn{font-size:12px;color:#9a6a00;background:#fff6e5;padding:8px 10px;border-radius:9px;margin:4px 0 0;line-height:1.4}
+.lock-err{color:#c0392b;font-size:13px;min-height:16px;margin:2px 0 0}
+.linklike{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:4px}
+
+/* ---------- Cabecera ---------- */
+.app{min-height:100vh;display:flex;flex-direction:column}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--navy);color:#fff;padding:12px 18px}
+.pbrand{display:flex;align-items:center;gap:11px}
+.pblogo{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--blue);font-weight:800;
+  display:flex;align-items:center;justify-content:center;font-size:15px}
+.pbrand b{display:block;font-size:15px}
+.pbrand span{display:block;font-size:11.5px;opacity:.75}
+.pactions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
+  font-size:13.5px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--blue2)}
+.btn-primary{background:var(--blue2);border-color:var(--blue2);color:#fff}
+.btn-ghost{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+
+/* ---------- Layout ---------- */
+.pmain{flex:1;display:grid;grid-template-columns:280px 1fr;gap:0;min-height:0}
+.plist{background:#f6f9fc;border-right:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px}
+.plist-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px}
+.pill{background:var(--blue);color:#fff;border-radius:20px;padding:1px 9px;font-size:12px;font-weight:700}
+.pfilter{padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font-size:13.5px}
+.pfilter:focus{outline:none;border-color:var(--blue2)}
+.patient-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.patient-item{padding:10px 12px;border:1.5px solid var(--line);border-radius:11px;background:#fff;cursor:pointer;transition:.12s}
+.patient-item:hover{border-color:var(--blue2)}
+.patient-item.sel{border-color:var(--blue);background:#eaf2fb}
+.pi-code{font-weight:700;font-size:14px}
+.pi-meta{color:var(--muted);font-size:12px;margin-top:2px}
+.plist-empty{color:var(--muted);font-size:13px;line-height:1.5;text-align:center;padding:10px}
+
+.pdetail{padding:20px;overflow:auto}
+.empty-detail{max-width:420px;margin:8vh auto 0;text-align:center;color:var(--muted)}
+.ed-emoji{font-size:40px}
+.empty-detail h2{color:var(--ink);margin:8px 0 4px}
+.empty-detail .btn{margin-top:14px}
+
+/* ---------- Detalle paciente ---------- */
+.d-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.d-head h2{margin:0;font-size:22px;color:var(--blue)}
+.d-head .muted{color:var(--muted);font-size:13px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+.stat .n{font-size:24px;font-weight:800;color:var(--navy)}
+.stat .k{font-size:12px;color:var(--muted);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.pmain{grid-template-columns:1fr}
+  .plist{border-right:0;border-bottom:1px solid var(--line);max-height:38vh}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.card h3{margin:0 0 10px;font-size:15px}
+.card .sub{color:var(--muted);font-size:12.5px;margin:-6px 0 10px}
+.chart-wrap{position:relative;height:230px}
+.legend-inline{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend-inline i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.nodata{color:var(--muted);font-size:13px;padding:18px;text-align:center}
+
+/* barras mono */
+.monobars{display:flex;flex-direction:column;gap:8px}
+.monobar{display:grid;grid-template-columns:150px 1fr 42px;align-items:center;gap:9px;font-size:13px}
+.monobar .track{background:#eef2f6;border-radius:8px;height:16px;overflow:hidden}
+.monobar .fill{height:100%;border-radius:8px}
+.monobar .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* actividad */
+.acts{width:100%;border-collapse:collapse;font-size:13px}
+.acts th,.acts td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.acts th{color:var(--muted);font-weight:600;font-size:12px}
+.acts .tag{display:inline-block;background:#eaf2fb;color:var(--blue);border-radius:7px;padding:1px 7px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.acts .date{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ---------- Modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(15,42,63,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal-card{background:#fff;border-radius:18px;padding:22px;max-width:520px;width:100%;position:relative}
+.modal-x{position:absolute;top:12px;right:14px;border:0;background:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.modal-card h2{margin:0 0 4px;font-size:18px}
+.muted{color:var(--muted);font-size:13px}
+.drop{display:flex;align-items:center;justify-content:center;text-align:center;border:2px dashed var(--blue2);
+  border-radius:14px;padding:22px;margin:14px 0;cursor:pointer;color:var(--blue);font-size:14px;background:#f4f9ff}
+.drop.hot{background:#e3f0ff}
+.paste{width:100%;min-height:90px;border:1.5px solid var(--line);border-radius:11px;padding:10px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.modal-foot{display:flex;align-items:center;gap:12px;margin-top:12px}
+.imp-msg{font-size:13px}
+.imp-msg.ok{color:#2e7d4f}
+.imp-msg.err{color:#c0392b}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+  padding:11px 18px;border-radius:12px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:60}

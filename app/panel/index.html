@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f2a3f">
+<title>APRENS · Panel del psicólogo</title>
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+
+<!-- ═══════════════ CERROJO (login local + cifrado) ═══════════════ -->
+<div id="lock" class="lock">
+  <div class="lock-card">
+    <div class="lock-logo">ap</div>
+    <h1>APRENS · Panel</h1>
+    <p class="lock-sub" id="lockSub">Panel del psicólogo</p>
+
+    <!-- crear código (primera vez) -->
+    <form id="formCrear" class="lock-form" style="display:none" autocomplete="off">
+      <p class="lock-hint">Primera vez en este dispositivo. Crea un <b>código de acceso</b>.
+        Con él se <b>cifran</b> los datos de tus pacientes en este equipo.</p>
+      <input id="cNew" type="password" placeholder="Código de acceso" autocomplete="new-password">
+      <input id="cNew2" type="password" placeholder="Repite el código" autocomplete="new-password">
+      <button type="submit">Crear panel</button>
+      <p class="lock-warn">⚠️ Si olvidas el código no se pueden recuperar los datos (nadie los tiene: están cifrados solo aquí).</p>
+    </form>
+
+    <!-- entrar -->
+    <form id="formEntrar" class="lock-form" style="display:none" autocomplete="off">
+      <input id="cPass" type="password" placeholder="Tu código de acceso" autocomplete="current-password">
+      <button type="submit">Entrar</button>
+      <p class="lock-err" id="lockErr"></p>
+      <button type="button" id="btnReset" class="linklike">He olvidado el código / empezar de cero</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app" class="app" style="display:none">
+  <header class="phead">
+    <div class="pbrand"><span class="pblogo">ap</span><div><b>APRENS · Panel</b><span>Evolución de tus pacientes</span></div></div>
+    <div class="pactions">
+      <button id="btnImport" class="btn btn-primary">⬆ Importar .json</button>
+      <button id="btnBackup" class="btn">💾 Copia de seguridad</button>
+      <button id="btnLock" class="btn btn-ghost">🔒 Bloquear</button>
+    </div>
+  </header>
+
+  <main class="pmain">
+    <aside class="plist">
+      <div class="plist-head">
+        <span>Pacientes</span><span id="pcount" class="pill">0</span>
+      </div>
+      <input id="pfilter" class="pfilter" placeholder="Filtrar por código…">
+      <ul id="patientList" class="patient-list"></ul>
+      <p class="plist-empty" id="listEmpty">Aún no hay pacientes.<br>Importa un archivo <b>.json</b> que te haya enviado un paciente.</p>
+    </aside>
+
+    <section class="pdetail" id="detail">
+      <div class="empty-detail" id="emptyDetail">
+        <div class="ed-emoji">🧭</div>
+        <h2>Selecciona un paciente</h2>
+        <p>o importa los archivos <b>.json</b> que te envían desde la app APRENS.</p>
+        <button class="btn btn-primary" id="btnImport2">⬆ Importar .json</button>
+      </div>
+      <div id="detailBody" style="display:none"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ═══════════════ MODAL IMPORTAR ═══════════════ -->
+<div id="importModal" class="modal" style="display:none">
+  <div class="modal-card">
+    <button class="modal-x" id="impClose">✕</button>
+    <h2>Importar datos de paciente</h2>
+    <p class="muted">Sube uno o varios <b>.json</b> (los que te envían al pulsar «Archivo .json» o «WhatsApp»), o pega el contenido.</p>
+    <label class="drop" id="drop">
+      <input id="fileInput" type="file" accept=".json,application/json" multiple hidden>
+      <span>📎 Elegir archivos <b>.json</b> o arrastrarlos aquí</span>
+    </label>
+    <textarea id="pasteBox" class="paste" placeholder="…o pega aquí el JSON exportado"></textarea>
+    <div class="modal-foot">
+      <button class="btn" id="pasteBtn">Importar lo pegado</button>
+      <span id="impMsg" class="imp-msg"></span>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" style="display:none"></div>
+
+<script src="../vendor/chart.umd.min.js"></script>
+<script src="panel.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>

@@ -87,5 +87,33 @@ casi nada, funciona sin conexión y **todo se queda en el móvil del paciente**.
 
 ---
 
+## C) Tu panel del psicólogo (solo para ti)
+
+Además de la app del paciente, tienes tu **consola** para ver la evolución de cada persona:
+
+**https://aprens-app.netlify.app/panel/**
+
+> Es una dirección aparte y **no aparece en la app del paciente**: solo la conoces tú.
+> Guárdala en marcadores. No la compartas con pacientes.
+
+**Primer uso:** te pedirá crear un **código de acceso**. Con ese código se **cifran** los
+datos en tu ordenador; nadie más (ni yo, ni Netlify) puede leerlos.
+⚠️ Si olvidas el código, los datos no se pueden recuperar (esa es justo la garantía de
+privacidad). Apúntalo en tu gestor de contraseñas.
+
+**Cómo se usa:**
+1. Cuando un paciente te envíe su archivo **`.json`**, guárdalo y en el panel pulsa
+   **“⬆ Importar .json”** (puedes arrastrar varios a la vez, o pegar el texto).
+2. El panel agrupa por **código de paciente** y te muestra: evolución **L/D/C**, dónde ha
+   estado el **mono**, **valores**, **regulación de la alerta** y la **actividad reciente**.
+3. **“💾 Copia de seguridad”** descarga todo el panel a un archivo (para cambiar de equipo).
+   Guárdalo en lugar seguro: esa copia **no va cifrada**.
+
+**Importante (RGPD):** los datos del panel viven **solo en el dispositivo donde importas**
+los archivos (no hay nube). Úsalo en tu equipo de consulta. Si quieres verlo desde varios
+dispositivos o sincronización automática, ese es el siguiente paso (adaptador en la nube UE).
+
+---
+
 *Para el detalle técnico (arquitectura, herramientas, offline/RGPD) mira
 `README.md` y `../AUDITORIA_Y_PLAN.md`.*

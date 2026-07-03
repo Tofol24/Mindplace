@@ -112,12 +112,35 @@ cerrar el circuito. (Las herramientas standalone en iframe no re-enrutan enlaces
 2. En `js/registry.js`, marca `migrada:true` con `iframe:"tools-standalone/<tool>.html"`.
 3. Añade el archivo al precache de `sw.js`. El router (`app.js`) ya sabe montar iframes.
 
+## Panel del psicólogo (MVP2 — local-first, cifrado)
+Carpeta `panel/` (URL `…/panel/`, **no enlazada desde el hub del paciente**). Es la
+consola donde tú reúnes la evolución de cada paciente a partir de los `.json` que te envían.
+- **Login local + cifrado en reposo**: en el primer uso creas un *código de acceso*; con él
+  se deriva (PBKDF2) una clave AES-GCM que **cifra** los datos en `localStorage`. El código
+  no se guarda: se pide al abrir. Es el equivalente honesto de un login sin backend (RGPD:
+  nada sale a la nube; si te roban el equipo, sin el código no se leen los datos).
+- **Importar**: sube/arrastra uno o varios `.json` (o pega el contenido). Se fusionan por
+  `paciente.codigo` (upsert por `id`/`date`/`fecha`, igual que el núcleo).
+- **Vistas clínicas** por paciente: evolución **L/D/C** (Chart.js vendorizado), reparto de
+  **posiciones del mono** (conduce/delante/maletero/a mi lado + % «a mi lado»), **valores**
+  (discrepancia y cercanía de la brújula), **regulación de la alerta** (antes→después) y
+  **actividad reciente** (todas las herramientas, con resumen por registro).
+- **Copia de seguridad**: exporta todo el panel a un `.json` (⚠️ sin cifrar) para mover de equipo.
+- **`PanelStore`** es una capa de almacenamiento **intercambiable**: hoy es local+cifrado;
+  para MVP2.5 se sustituye por un adaptador Supabase sin tocar la UI ni las métricas.
+- **SW propio** (`panel/sw.js`, scope `/panel/`) → el panel funciona offline y no cae al hub
+  del paciente.
+- Verificado con Playwright (`e2e-panel.js`): crear código, importar (pegado y archivo),
+  métricas correctas, gráficas dibujadas, persistencia cifrada (bloquear→recargar→descifrar),
+  rechazo de código incorrecto, sin peticiones externas ni errores JS.
+
 ## Pendiente (siguientes MVP)
 - Iconos PNG (192/512 + maskable) para instalación óptima en iOS/stores (hoy: SVG).
 - Portar el resto de herramientas (ver `registry.js`). Nota: las herramientas **legacy**
   (con clave `localStorage` propia y export de texto, como lo era `estado_mono`) se migran
   igual que `estado-mono.js`: conservar su UX/clínica y redirigir la persistencia al core.
-- MVP2: backend Supabase (UE) + sync cifrada + panel con login.
+- MVP2 ✅ panel del psicólogo local-first cifrado (`panel/`). Pendiente MVP2.5:
+  adaptador Supabase (UE) para multi-dispositivo/sync (sustituye `PanelStore`).
 - MVP3: empaquetado Capacitor + push + secure storage.
 
 Ver la auditoría y el plan completo en `../AUDITORIA_Y_PLAN.md`.
