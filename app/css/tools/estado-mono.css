@@ -1,0 +1,107 @@
+/* ============================================================
+   APRENS · Herramienta "Estado del mono" · estilos (scoped .emono)
+   Acento TERRACOTA = el color del mono. Prefijado con .emono para
+   no colisionar con el sistema azul del hub (aprens.css).
+   ============================================================ */
+.emono{
+  --bg:#f7f4f0; --bg2:#f3e9e1; --card:#ffffff;
+  --tinta:#41382f; --suau:#857a6e;
+  --terra:#b87a5e; --terra-d:#8f5639; --terra-bg:#f3e7e0;
+  --salvia:#7fa08a; --salvia-d:#557a64; --salvia-bg:#e7f0ea;
+  --azul2:#6f9bc0; --azul2-d:#456d8c; --azul2-bg:#e7eff6;
+  --oro2:#caa765; --oro2-d:#a07f38;
+  --linia:#e7e1d8; --ombra-s:0 2px 12px rgba(90,70,55,.08); --r2:18px;
+  color:var(--tinta); line-height:1.62; font-size:16px;
+}
+.emono *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.emono .screen{display:none;animation:emfade .35s ease}
+.emono .screen.active{display:block}
+@keyframes emfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.emono header{text-align:center;padding:14px 8px 6px}
+.emono .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--terra-d);background:var(--terra-bg);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
+.emono h1{font-size:25px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:700}
+.emono .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:30em}
+
+.emono .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--terra);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s;font-family:inherit;box-shadow:0 6px 18px rgba(184,122,94,.32)}
+.emono .btn:active{transform:scale(.98)}
+.emono .btn.ghost{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
+.emono .btn.oro{background:var(--oro2);box-shadow:0 6px 18px rgba(202,167,101,.32)}
+.emono .btn.wa{background:#25D366;box-shadow:0 6px 18px rgba(37,211,102,.32)}
+.emono .btn.small{width:auto;padding:11px 16px;font-size:14.5px;margin-top:0}
+.emono .btn svg{width:19px;height:19px}
+.emono .btn.ok{background:var(--salvia)!important;color:#fff!important}
+.emono .btnrow{display:flex;gap:11px;flex-wrap:wrap}
+.emono .btnrow .btn{flex:1;min-width:140px}
+.emono .back{background:none;border:0;color:var(--suau);font-family:inherit;font-size:14.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 0 4px}
+.emono .back svg{width:17px;height:17px}
+
+.emono .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r2);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+.emono .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 8px;font-weight:700}
+.emono .card h3{font-size:16px;margin:18px 0 8px;font-weight:700}
+.emono .card p{margin:8px 0;color:#4d453b}
+.emono .card p.lead{color:var(--suau);font-size:14.5px;margin-top:2px}
+.emono .ic{flex:0 0 42px;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--terra-bg);font-size:22px}
+
+.emono .quote{background:linear-gradient(135deg,var(--terra-bg) 0%,#efddd0 100%);border-left:4px solid var(--terra);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--terra-d);margin:14px 0 4px;line-height:1.5}
+.emono .frase-oro{background:linear-gradient(135deg,#f4ecdd 0%,#efe1c8 100%);border-left:4px solid var(--oro2);color:var(--oro2-d)}
+.emono .frase-salvia{background:linear-gradient(135deg,var(--salvia-bg) 0%,#daebe0 100%);border-left:4px solid var(--salvia);color:var(--salvia-d)}
+
+.emono .avis{display:flex;gap:11px;background:#f4ecdd;border:1px solid #ecdcc0;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14px;color:#7a5b1e;align-items:flex-start}
+.emono .avis .em{font-size:18px;line-height:1.4}
+
+.emono .opts{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.emono .opt{display:flex;align-items:flex-start;gap:13px;width:100%;text-align:left;background:var(--bg);border:1.6px solid var(--linia);border-radius:14px;padding:15px 16px;cursor:pointer;font-family:inherit;font-size:15.5px;color:var(--tinta);transition:transform .08s,border-color .15s,background .15s;line-height:1.35}
+.emono .opt:active{transform:scale(.99)}
+.emono .opt.sel{border-color:var(--terra);background:var(--terra-bg)}
+.emono .opt .em{font-size:24px;flex:0 0 auto;line-height:1.1}
+.emono .opt .ot{font-weight:700;display:block}
+.emono .opt .os{font-size:13px;color:var(--suau);display:block;margin-top:2px}
+
+.emono .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+.emono .chip{background:var(--bg);border:1.6px solid var(--linia);border-radius:999px;padding:10px 15px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);transition:.15s}
+.emono .chip.sel{border-color:var(--terra);background:var(--terra-bg);color:var(--terra-d);font-weight:600}
+.emono .chip.oro.sel{border-color:var(--oro2);background:#f4ecdd;color:var(--oro2-d)}
+
+.emono ol.pasos{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:p}
+.emono ol.pasos li{counter-increment:p;position:relative;padding:10px 0 10px 46px;border-bottom:1px solid var(--linia);color:#4d453b}
+.emono ol.pasos li:last-child{border-bottom:0}
+.emono ol.pasos li b{color:var(--terra-d)}
+.emono ol.pasos li::before{content:counter(p);position:absolute;left:0;top:9px;width:30px;height:30px;border-radius:50%;background:var(--terra-bg);color:var(--terra-d);font-weight:700;font-size:13px;display:grid;place-items:center}
+
+.emono .timer-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0 2px}
+.emono .ring{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--terra) 0deg,#ecdfd6 0deg);transition:background .3s linear}
+.emono .ring .rinner{width:134px;height:134px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:var(--ombra-s)}
+.emono .ring .rtime{font-size:30px;font-weight:700;color:var(--terra-d);font-variant-numeric:tabular-nums}
+.emono .ring .rlbl{font-size:12px;color:var(--suau);margin-top:2px}
+
+.emono .three{display:flex;gap:8px;margin-top:6px}
+.emono .three button{flex:1;min-width:0;background:var(--bg);border:1.6px solid var(--linia);border-radius:12px;padding:11px 6px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--tinta);line-height:1.25;transition:.15s}
+.emono .three button.sel{border-color:var(--terra);background:var(--terra-bg);color:var(--terra-d);font-weight:600}
+
+.emono textarea,.emono input[type=text]{width:100%;border:1.6px solid var(--linia);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--bg);resize:vertical;margin-top:6px}
+.emono textarea:focus,.emono input[type=text]:focus{outline:none;border-color:var(--terra)}
+.emono label.fld{display:block;font-weight:600;font-size:14.5px;margin-top:14px}
+
+.emono .contmsg{background:linear-gradient(135deg,var(--terra-bg) 0%,#efddd0 100%);border-radius:14px;padding:16px;text-align:center;color:var(--terra-d);font-weight:600;font-size:16px;line-height:1.5}
+.emono .hist .row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--linia);border-radius:11px;padding:9px 12px;margin:7px 0;font-size:13.5px}
+.emono .hist .row .dt{color:var(--suau);font-size:12.5px;flex:0 0 auto}
+.emono .hist .row .ev{flex:1;color:#4d453b}
+
+.emono .resumen{white-space:pre-wrap;background:var(--bg);border:1px dashed var(--linia);border-radius:12px;padding:14px;font-size:13.5px;color:#4d453b;line-height:1.6;margin-top:6px;user-select:all}
+
+.emono details{border:1px solid var(--linia);border-radius:14px;margin:12px 0;overflow:hidden;background:var(--card)}
+.emono details summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15.5px;list-style:none;display:flex;align-items:center;gap:10px}
+.emono details summary::-webkit-details-marker{display:none}
+.emono details summary .em{font-size:20px}
+.emono details[open] summary{border-bottom:1px solid var(--linia)}
+.emono details .body{padding:6px 18px 18px}
+.emono details .body p{margin:9px 0;color:#4d453b}
+
+.emono .em-footer{text-align:center;color:var(--suau);font-size:13px;margin-top:24px;padding:0 10px}
+.emono .em-footer .logo{font-weight:700;color:var(--terra-d);letter-spacing:.04em}
+
+@media (max-width:380px){
+  .emono h1{font-size:22px}.emono .ring{width:150px;height:150px}
+  .emono .ring .rinner{width:118px;height:118px}.emono .ring .rtime{font-size:26px}
+}

@@ -298,6 +298,7 @@ aprens-app/
 | `panel_psicologo_aprens.html` | Panel psicólogo | — (importador) | `PANEL_KEY` | **Google Fonts** | lee `aprens-export` + conversor legacy | Sin login/cifrado; gráficas canvas propias |
 | `inicio_aprens.html` | Hub | — (no persiste) | ninguno | **Google Fonts** | — | Enlaza ~17 Netlify en `target=_blank`; pauta `?foco=L/D/C` |
 | `aprens_MARTI-01_..._.json` | Export real | — | — | — | `aprens-export` v1 | Confirma el sobre y `L/D/C` |
+| `estado_mono_aprens.html` | Check-in del mono | ❌ **NO** (legacy) | `aprens_estado_mono_hist` (propia) | (fuentes del sistema) | **solo texto** (resumen WhatsApp) | ⚠️ Confirma la existencia de herramientas legacy previas al core: clave propia + export de texto, sin `aprens-export`. Migrada en el MVP1 (`app/js/tools/estado-mono.js`). |
 
 ## A.2 Topología de despliegue (extraída del panel y el hub)
 

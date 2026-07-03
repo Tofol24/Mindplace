@@ -11,10 +11,11 @@
 window.APRENS_TOOLS = [
   { id:"cuestionario_tec", emoji:"📝", nombre:"Cuestionario TEC",
     desc:"Cómo va tu presencia interna esta semana (L/D/C).", migrada:true },
+  { id:"estado_mono", emoji:"🐒", nombre:"Estado del mono",
+    desc:"¿Dónde está tu mono ahora? Check-in y AIS.", migrada:true },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
-  { id:"estado_mono",         emoji:"🐒", nombre:"Estado del mono",       desc:"Check-in emocional del mono.", migrada:false },
   { id:"donde_esta_mono",     emoji:"🔍", nombre:"¿Dónde está el mono?",  desc:"Quién conduce ahora mismo.", migrada:false },
   { id:"agenda_atencional",   emoji:"🗓️", nombre:"Agenda atencional",     desc:"Foco, sobrepensamiento y acción por franjas.", migrada:false },
   { id:"ais_curiosidad",      emoji:"🌱", nombre:"AIS curiosidad",        desc:"Entrenamiento sensorial desde la curiosidad.", migrada:false },
