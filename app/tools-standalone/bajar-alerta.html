@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1B4F8C">
+<title>Bajar la alerta · APRENS</title>
+<style>
+:root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--oro:#C8973A;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;margin:0;padding-bottom:env(safe-area-inset-bottom);}
+.header{background:var(--azul);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+.hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
+.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.wrap{max-width:520px;margin:0 auto;padding:20px 18px 40px;}
+
+/* progreso pasos */
+.dots{display:flex;gap:8px;justify-content:center;margin-bottom:22px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#D6DEE9;transition:.3s;}
+.dot.on{background:var(--oro);transform:scale(1.25);}
+.dot.done{background:var(--verde);}
+
+/* tarjeta paso */
+.step{text-align:center;animation:fade .3s;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.step-ico{font-size:62px;line-height:1;margin:6px 0 10px;}
+.step-tit{font-family:'Playfair Display',serif;font-size:27px;font-weight:700;color:var(--azul);margin:0 0 6px;}
+.step-sub{font-size:16px;color:#3a3f52;line-height:1.5;margin:0 auto 18px;max-width:360px;}
+
+/* botones grandes */
+.btn{border:none;border-radius:40px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none;}
+.big{width:100%;padding:20px;font-size:19px;background:var(--azul);color:#fff;box-shadow:0 6px 18px rgba(27,79,140,.32);}
+.big.green{background:var(--verde);box-shadow:0 6px 18px rgba(46,125,94,.32);}
+.big:active{transform:scale(.97);}
+.ghost{background:#fff;color:var(--azul);border:2px solid var(--azulLt);padding:13px 22px;font-size:15px;}
+.mini{background:transparent;color:var(--gris);font-size:14px;padding:10px;font-weight:600;}
+
+/* opciones tipo "chip" grandes */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 22px;}
+.opt{background:#fff;border:2px solid #E3EAF3;border-radius:18px;padding:18px 10px;font-size:15px;font-weight:600;color:#33384a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.12s;}
+.opt .em{font-size:30px;line-height:1;}
+.opt:active{transform:scale(.96);}
+.opt.sel{border-color:var(--verde);background:#EAF7F0;color:var(--verde);box-shadow:0 0 0 3px #CDEBDD inset;}
+
+/* respiración */
+.breath{display:flex;flex-direction:column;align-items:center;margin:6px 0 18px;}
+.ring{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 70%);border:4px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transform:scale(1);}
+.ring span{font-family:'Playfair Display',serif;color:var(--azul);font-size:17px;font-weight:700;}
+.breath-hint{font-size:14px;color:var(--gris);margin-top:14px;}
+
+/* escala / termómetro */
+.scale-wrap{margin:8px 0 8px;}
+.scale-num{font-family:'Playfair Display',serif;font-size:64px;font-weight:700;text-align:center;line-height:1;transition:color .2s;}
+.scale-em{font-size:34px;text-align:center;margin:4px 0 2px;}
+input[type=range]{width:100%;-webkit-appearance:none;height:14px;border-radius:8px;background:linear-gradient(90deg,#2E7D5E 0%,#E07B39 55%,#C0392B 100%);outline:none;margin:14px 0 4px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;background:#fff;border:4px solid var(--azul);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;background:#fff;border:4px solid var(--azul);cursor:pointer;}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--gris);}
+
+/* resultado */
+.res{background:var(--azul);color:#fff;border-radius:22px;padding:26px;text-align:center;margin-bottom:18px;}
+.res-row{display:flex;justify-content:center;align-items:center;gap:22px;}
+.res-big{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;line-height:1;}
+.res-lbl{font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:.85;}
+.res-msg{font-size:15px;line-height:1.5;text-align:center;color:#33384a;margin:0 0 18px;}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 20px rgba(27,79,140,.08);margin-bottom:16px;}
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.bwa{background:#25D366;color:#fff;padding:15px 22px;font-size:16px;}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:13px 20px;font-size:15px;}
+.cbox{display:none;}
+.frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 12px 12px 0;border-left:4px solid var(--oro);padding:13px 15px;line-height:1.6;margin-top:18px;text-align:center;}
+/* Ancla visual: mapa interno (SVG) */
+.mapa-tit{font-size:14px;font-weight:600;color:var(--azul);text-align:center;margin:8px 0 2px;}
+.mapa-sub{font-size:13px;color:var(--gris);text-align:center;line-height:1.5;margin-bottom:6px;}
+.mapa{display:flex;justify-content:center;margin:4px 0;}
+.mapa svg{width:100%;max-width:180px;height:auto;display:block;}
+.zone{cursor:pointer;}
+.zone .zbg{fill-opacity:.10;transition:fill-opacity .2s;}
+.zone:hover .zbg{fill-opacity:.2;}
+.zone.sel .zbg{fill-opacity:.3;}
+.zone .organ{transition:filter .2s;}
+.zone:hover .organ{filter:drop-shadow(0 0 3px currentColor);}
+.zone.sel .organ{filter:drop-shadow(0 0 5px currentColor);}
+.zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25));}
+.ancla-msg{display:none;margin:8px 0 2px;background:#EAF7F0;border-left:4px solid var(--verde);border-radius:0 11px 11px 0;padding:11px 14px;font-size:14px;color:#1e5e44;line-height:1.5;font-weight:600;}
+.ancla-msg.show{display:block;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div><div class="htitle">Bajar la alerta</div></div>
+</div>
+<div class="wrap" id="app"></div>
+<script>
+let vista="intro", paso=0;
+let nivelIni=6, nivelFin=6;
+let ancla="", frase="", micro="", ayuda="", anclaZona="";
+const app=document.getElementById("app");
+
+const ZNOM={cuello:"Cuello (garganta y nuca)",pecho:"Pecho (corazón y pulmones)",barriga:"Barriga (estómago e intestinos)"};
+const ZMSG={
+  cuello:"Lleva la mirada al cuello. Mientras respiras, intenta SENTIR la garganta y la nuca por dentro. Cuando lo localices, suelta la imagen.",
+  pecho:"Lleva la mirada al pecho. Mientras respiras, intenta SENTIR el latido y el aire por dentro. Cuando lo localices, suelta la imagen.",
+  barriga:"Lleva la mirada a la barriga. Mientras respiras, deja que el aire baje ahí e intenta SENTIRLA por dentro. Cuando lo localices, suelta la imagen."
+};
+const MAPA_SVG=`<div class="mapa-tit">🫀 O ancla la mirada dentro <span style="font-weight:400;color:var(--gris)">· opcional</span></div>
+<div class="mapa-sub">Mira una zona del cuerpo y lleva ahí la atención mientras respiras. La imagen es la rampa; luego intenta sentirla.</div>
+<div class="mapa">
+  <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo con tres zonas">
+    <defs><linearGradient id="bodyGradB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaeff3"/><stop offset="1" stop-color="#dbe4ea"/></linearGradient></defs>
+    <g fill="url(#bodyGradB)" stroke="#cdd7df" stroke-width="1.4">
+      <ellipse cx="110" cy="46" rx="29" ry="33"/>
+      <rect x="98" y="72" width="24" height="22" rx="8"/>
+      <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
+      <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
+      <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
+    </g>
+    <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Cuello" onclick="setZona('cuello')">
+      <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
+      <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
+        <ellipse cx="110" cy="80" rx="9" ry="7"/><path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
+        <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/><line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/><line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
+      </g>
+      <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+    </g>
+    <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pecho" onclick="setZona('pecho')">
+      <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
+      <g class="organ">
+        <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+        <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+        <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
+        <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+    </g>
+    <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Barriga" onclick="setZona('barriga')">
+      <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
+      <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
+        <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
+        <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
+      </g>
+      <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+    </g>
+  </svg>
+</div>
+<div class="ancla-msg" id="zonaMsg"></div>`;
+
+const PASOS=[
+  {ico:"🛑", tit:"Para y mira", sub:"Abre bien los ojos. Mira despacio 3 cosas a tu alrededor.", tipo:"ok", btn:"Ya miro →"},
+  {ico:"🫁", tit:"Respira y ancla", sub:"Respira con el círculo. Toca dónde apoyarte ahora.", tipo:"ancla"},
+  {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Tócalo. No hace falta explicar.", tipo:"emocion"},
+  {ico:"👣", tit:"Una acción pequeña", sub:"Elige algo concreto para volver a tu día.", tipo:"micro"}
+];
+const ANCLAS=[["🐾","mi animal"],["💧","agua fresca"],["🤚","algo con textura"],["🦶","los pies en el suelo"],["☕","una bebida"],["🌬️","el aire"]];
+const EMOS=[["😨","miedo"],["😡","rabia"],["😟","nervios"],["😢","tristeza"],["😣","tensión"],["🌀","agobio"]];
+const MICROS=[["💧","beber agua"],["🚶","caminar un poco"],["🚪","salir un momento"],["🧺","ordenar algo"],["💬","escribir a alguien"],["🐾","mis animales"]];
+
+function colorNivel(v){return v<=3?"var(--verde)":v<=6?"var(--naranja)":"var(--rojo)";}
+function emojiNivel(v){return v<=2?"😌":v<=4?"🙂":v<=6?"😐":v<=8?"😟":"😣";}
+
+/* Respiración guiada ADAPTADA al nivel de alerta inicial (0-10): más alerta →
+   exhalación más larga y sin retenciones; menos → coherente ~6/min */
+function ritmoResp(frac){ if(frac>=0.8)return[2,0,6,0]; if(frac>=0.6)return[3,1,6,1]; if(frac>=0.4)return[4,2,6,2]; return[5,0,5,0]; }
+function fasesDe(r){ var f=[{txt:"Coge aire",dur:r[0]*1000,scale:1.34}]; if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:1.34}); f.push({txt:"Suelta",dur:r[2]*1000,scale:1.0}); if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:1.0}); return f; }
+function hintDe(r){ var s="Coge aire "+r[0]+"s"; if(r[1]>0)s+=" · retén "+r[1]+"s"; s+=" · suelta "+r[2]+"s"; if(r[3]>0)s+=" · pausa "+r[3]+"s"; return s; }
+let FASES_RESP=[], respIdx=0, respTimer=null;
+function startBreath(){ stopBreath(); var r=ritmoResp((nivelIni||5)/10); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; runResp(); }
+function runResp(){
+  var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
+  var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
+  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out';
+  ring.style.transform='scale('+f.scale+')';
+  if(lbl) lbl.textContent=f.txt;
+  respIdx=(respIdx+1)%FASES_RESP.length;
+  respTimer=setTimeout(runResp,f.dur);
+}
+function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
+
+function render(){
+  stopBreath();
+  if(vista==="intro") return intro();
+  if(vista==="paso") return pasoView();
+  if(vista==="resultado") return resultado();
+}
+
+function intro(){
+  app.innerHTML=`
+    <div class="step">
+      <div class="step-ico">🧭</div>
+      <div class="step-tit">Cuando te notes en alerta</div>
+      <div class="step-sub">En 4 pasos muy cortos volvemos al aquí y ahora. No hay forma de hacerlo mal.</div>
+    </div>
+    <div class="card">
+      <div class="scale-em">${emojiNivel(nivelIni)}</div>
+      <div class="scale-num" id="tv" style="color:${colorNivel(nivelIni)}">${nivelIni}</div>
+      <div style="text-align:center;font-size:13px;color:var(--gris);margin-bottom:4px">¿Cuánta alerta ahora?</div>
+      <input type="range" min="0" max="10" value="${nivelIni}" oninput="setIni(this.value)">
+      <div class="ends"><span>0 · en calma</span><span>10 · al máximo</span></div>
+    </div>
+    <button class="btn big" onclick="empezar()">Empezar →</button>`;
+}
+function setIni(v){nivelIni=+v;const t=document.getElementById("tv");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
+function empezar(){vista="paso";paso=0;render();scrollTo(0,0);}
+
+function dotsHTML(){
+  let h="";for(let i=0;i<PASOS.length;i++)h+=`<div class="dot ${i<paso?'done':i===paso?'on':''}"></div>`;return `<div class="dots">${h}</div>`;
+}
+function pasoView(){
+  const s=PASOS[paso];
+  let cuerpo="";
+  if(s.tipo==="ok"){
+    cuerpo=`<button class="btn big green" onclick="next()">${s.btn}</button>`;
+  } else if(s.tipo==="ancla"){
+    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Respira</span></div><div class="breath-hint" id="respHint">Respira con el círculo</div></div>
+      <div class="opts">${ANCLAS.map((o,i)=>opt('ancla',i,o)).join("")}</div>
+      ${MAPA_SVG}
+      <button class="btn big green" onclick="next()">Siguiente →</button>`;
+  } else if(s.tipo==="emocion"){
+    cuerpo=`<div class="opts">${EMOS.map((o,i)=>opt('emocion',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">Siguiente →</button>`;
+  } else if(s.tipo==="micro"){
+    cuerpo=`<div class="opts">${MICROS.map((o,i)=>opt('micro',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">Casi está →</button>`;
+  }
+  app.innerHTML=`${dotsHTML()}
+    <div class="step">
+      <div class="step-ico">${s.ico}</div>
+      <div class="step-tit">${s.tit}</div>
+      <div class="step-sub">${s.sub}</div>
+    </div>
+    ${cuerpo}
+    <div style="text-align:center;margin-top:6px"><button class="btn mini" onclick="prev()">← Atrás</button></div>`;
+  marcarSel();
+  if(s.tipo==="ancla"){ startBreath(); restaurarZona(); }
+}
+function setZona(k){
+  anclaZona=k;
+  document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===k));
+  const m=document.getElementById('zonaMsg');
+  if(m){m.textContent=ZMSG[k];m.classList.add('show');}
+}
+function restaurarZona(){
+  document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===anclaZona));
+  const m=document.getElementById('zonaMsg');
+  if(m){ if(anclaZona){m.textContent=ZMSG[anclaZona];m.classList.add('show');} else {m.classList.remove('show');m.textContent='';} }
+}
+function opt(grupo,i,o){return `<button class="opt" data-g="${grupo}" data-i="${i}" onclick="pick('${grupo}',${i},'${o[1].replace(/'/g,"\\'")}')"><span class="em">${o[0]}</span>${o[1]}</button>`;}
+function pick(grupo,i,val){
+  if(grupo==='ancla')ancla=val; if(grupo==='emocion')frase=val; if(grupo==='micro')micro=val;
+  marcarSel();
+}
+function marcarSel(){
+  document.querySelectorAll('.opt').forEach(b=>{
+    const g=b.dataset.g, v=g==='ancla'?ancla:g==='emocion'?frase:micro;
+    b.classList.toggle('sel', v!=="" && b.textContent.includes(v));
+  });
+}
+function next(){ if(paso<PASOS.length-1){paso++;render();scrollTo(0,0);} else {vista="resultado";nivelFin=nivelIni;render();scrollTo(0,0);} }
+function prev(){ if(paso===0){vista="intro";render();} else {paso--;render();} scrollTo(0,0); }
+
+function resultado(){
+  app.innerHTML=`
+    <div class="step" style="margin-bottom:6px">
+      <div class="step-ico">🌤️</div>
+      <div class="step-tit">¿Cómo estás ahora?</div>
+    </div>
+    <div class="card">
+      <div class="scale-em">${emojiNivel(nivelFin)}</div>
+      <div class="scale-num" id="tv2" style="color:${colorNivel(nivelFin)}">${nivelFin}</div>
+      <input type="range" min="0" max="10" value="${nivelFin}" oninput="setFin(this.value)">
+      <div class="ends"><span>0 · en calma</span><span>10 · al máximo</span></div>
+    </div>
+    <button class="btn big green" onclick="verResumen()">Ver cómo ha ido →</button>`;
+}
+function setFin(v){nivelFin=+v;const t=document.getElementById("tv2");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
+
+function verResumen(){
+  const diff=nivelIni-nivelFin;
+  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+  const L=["🧭 Bajar la alerta — APRENS","Fecha: "+fecha,"","Alerta antes: "+nivelIni+"/10","Alerta después: "+nivelFin+"/10"+(diff>0?"  (bajó "+diff+")":"")];
+  if(ancla)L.push("","Me anclé en: "+ancla);
+  if(anclaZona)L.push("Ancla visual (mirar dentro): "+ZNOM[anclaZona]);
+  if(frase)L.push("Noté: "+frase);
+  if(micro)L.push("Micro-acción: "+micro);
+  L.push("","(Enviado desde mi herramienta de regulación)");
+  const msg=L.join("\n");
+
+  window._aprensRec={ id:"ba"+Date.now(), date:new Date().toISOString().slice(0,10), ts:Date.now(),
+    antes:nivelIni, despues:nivelFin, baja:diff, ancla:ancla||"", anclaZona:anclaZona||"", frase:frase||"", micro:micro||"", ayuda:"" };
+  if(window.Aprens) Aprens.mountBar();
+
+  const msgUp = diff>0
+    ? `Tu alerta bajó <b>${diff} ${diff===1?'punto':'puntos'}</b>. Tu cuerpo está aprendiendo a regularse. 👏`
+    : `Hoy no ha bajado en número, y también vale: has parado y te has acompañado. Cuanto más lo repitas, antes responderá tu cuerpo.`;
+
+  app.innerHTML=`
+    <div class="res">
+      <div class="res-row">
+        <div><div class="res-lbl">Antes</div><div class="res-big">${nivelIni}</div></div>
+        <div style="font-size:30px;opacity:.7">→</div>
+        <div><div class="res-lbl">Ahora</div><div class="res-big">${nivelFin}</div></div>
+      </div>
+    </div>
+    <p class="res-msg">${msgUp}</p>
+    <div class="card">
+      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Esta herramienta se usa cuando te pasa algo.</div>
+      <div class="acc">
+        <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar a mi psicólogo/a</a>
+        <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+      </div>
+      <div id="msgBox" class="cbox">${msg.replace(/</g,'&lt;')}</div>
+      <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">↺ Usarla otra vez</button></div>
+    </div>
+    <div class="frase">«Donde dirijo mi atención, ahí voy yo.»<br>Úsala también en momentos tranquilos: así la tienes lista cuando la necesites.</div>`;
+  scrollTo(0,0);
+}
+function reiniciar(){vista="intro";paso=0;nivelFin=nivelIni;ancla=frase=micro=ayuda=anclaZona="";render();scrollTo(0,0);}
+
+function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function copiar(btn){
+  const t=document.getElementById("msgBox").textContent;
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);});}
+  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
+}
+
+render();
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function(g){"use strict";var DB_KEY="aprens_db",SCHEMA=1;var st={toolId:null,toolName:null,toolVersion:1};var collector=null;
+function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}return{schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+function bk(db,c){if(!db.tools[st.toolId]&&c){db.tools[st.toolId]={meta:{nombre:st.toolName,v:st.toolVersion},records:[]};}return db.tools[st.toolId];}
+var A={schema:SCHEMA,
+config:function(o){o=o||{};if(o.toolId)st.toolId=String(o.toolId);if(o.toolName)st.toolName=String(o.toolName);if(o.toolVersion)st.toolVersion=o.toolVersion;if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);if(st.toolId){var db=load();var b=bk(db,true);b.meta={nombre:st.toolName,v:st.toolVersion};persist(db);}return this;},
+setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+getPacienteCodigo:function(){return load().paciente.codigo||"";},
+save:function(r,opts){opts=opts||{};if(!st.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();var db=load();var b=bk(db,true);var i=-1;if(r.id!=null){i=b.records.findIndex(function(x){return x.id===r.id;});}else if(r.date&&!opts.append){i=b.records.findIndex(function(x){return x.date===r.date;});}if(i>=0)b.records[i]=r;else b.records.push(r);b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});persist(db);return r;},
+collect:function(fn){collector=fn;return this;},
+_flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)this.save(r);}catch(e){}}},
+buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
+copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+};g.Aprens=A;})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN bajar_alerta ===================== -->
+<script>
+Aprens.config({ toolId:"bajar_alerta", toolName:"Bajar la alerta", toolVersion:1, pacienteCodigo:"" });
+Aprens.collect(function(){ return window._aprensRec || null; });
+</script>
+</body>
+</html>

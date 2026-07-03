@@ -21,11 +21,13 @@ window.APRENS_TOOLS = [
   { id:"ais_curiosidad", emoji:"🌱", nombre:"AIS curiosidad",
     desc:"Explorar el cuerpo por dentro con curiosidad (linterna interior).",
     migrada:true, iframe:"tools-standalone/ais-curiosidad.html" },
+  { id:"bajar_alerta", emoji:"🫁", nombre:"Bajar la alerta",
+    desc:"4 pasos para volver al aquí y ahora cuando te notas en alerta.",
+    migrada:true, iframe:"tools-standalone/bajar-alerta.html" },
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
   { id:"screening_tec",       emoji:"🧭", nombre:"Screening TEC",        desc:"Cribado inicial.", migrada:false },
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",        desc:"Cuerpo como mapa: zonas y sensaciones.", migrada:false },
   { id:"brujula_valores",     emoji:"🧭", nombre:"Brújula de valores",    desc:"Actuar en dirección a lo que importa.", migrada:false },
-  { id:"bajar_la_alerta",     emoji:"🫁", nombre:"Bajar la alerta",       desc:"Regular la activación.", migrada:false },
   { id:"acompanar_sensacion", emoji:"🤝", nombre:"Acompañar la sensación", desc:"Estar con lo que se siente, sin controlarlo.", migrada:false }
 ];

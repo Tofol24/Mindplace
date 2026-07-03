@@ -29,6 +29,12 @@ entre los ~17 sitios Netlify actuales), **sin dependencias externas** (offline +
     continuidad. Autocontenida (sin dependencias externas). Integrada **como standalone vía iframe**
     con **puente** al core: cada práctica guardada se registra en el `aprens_db` único
     (ejercicio, nivel, ancla, cualidades, microacción → mapeo TEC = Densidad).
+  - `tools-standalone/bajar-alerta.html` — "Bajar la alerta": 4 pasos (para y mira · respira y
+    ancla con mapa corporal + respiración adaptada al nivel · ponle nombre · microacción), con
+    termómetro de alerta antes/después. **Ya venía integrada con el core** (embebe `aprens-core`,
+    `Aprens.config/collect/mountBar`); se integra **como standalone vía iframe** quitando solo
+    Google Fonts. Su registro (antes/después, bajada, ancla, zona, emoción, micro) va al `aprens_db`
+    único vía su propio core embebido (mismo origen).
 - ✅ **Instalable + offline**: `manifest.webmanifest` + `sw.js` (service worker con precache del shell).
 - ✅ **Sin Google Fonts**: stack tipográfico del sistema (ver nota de fuentes en `css/aprens.css`).
 - ✅ **Pauta por URL** conservada: `?foco=L|D|C` resalta el foco de la semana en el hub.
