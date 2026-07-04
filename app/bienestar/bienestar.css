@@ -24,6 +24,7 @@ button{font-family:inherit;cursor:pointer}
 .onb-emoji{font-size:44px}
 .onb-card h1{font-size:26px;margin:6px 0 8px}
 .onb-card h2{font-size:21px;margin:2px 0 4px}
+.onb-brandtag{color:var(--green);font-size:14px;font-weight:700;letter-spacing:.3px;margin:0 0 14px}
 .onb-lead{color:var(--muted);font-size:15px;line-height:1.55;margin:0 0 20px}
 .onb-sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
 .onb-input{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-bottom:14px}

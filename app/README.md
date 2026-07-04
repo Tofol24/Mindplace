@@ -158,9 +158,15 @@ Carpeta `bienestar/` (URL `…/bienestar/`). Es un **segundo producto sobre el m
 - Verificado (`e2e-bienestar.js`): onboarding + disclaimer gating, recomendados por objetivo,
   abrir práctica, progreso con racha/gráfica, persistencia de perfil, sin peticiones externas ni
   errores JS.
-- **Pendiente Fase A.2**: suavizar el copy *dentro* de cada práctica (siguen con lenguaje clínico) y
-  añadir las herramientas de módulo nativo. **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**:
-  empaquetado Capacitor + envío a Apple/Google.
+- **Marca (Fase A.2):** «**Anclado en mí**» ⚓ · «Vuelve a ti» (título, cabecera, onboarding y
+  `manifest.webmanifest` propio para instalación).
+- **Copy en modo consumer:** el lenguaje clínico de las prácticas (barra «Código paciente», «Enviar a
+  mi psicólogo/a», «en la sesión», «APRENS Psicologia»…) se limpia **en caliente desde `bienestar.js`**
+  procesando el iframe (mismo origen) con `consumerCopy()` + `MutationObserver` — **sin tocar los
+  archivos compartidos**, así la app clínica conserva su lenguaje. Verificado (`e2e-marca.js`): brújula
+  sin «psicólogo/sesión», barra de export reetiquetada («Guardar (.json)») y «Código paciente» oculto.
+- **Pendiente**: Fase A.3 (añadir las herramientas de módulo nativo a la versión consumer + icono
+  propio de marca). **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**: Capacitor + Apple/Google.
 
 ## Pendiente (siguientes MVP)
 - Iconos PNG (192/512 + maskable) para instalación óptima en iOS/stores (hoy: SVG).

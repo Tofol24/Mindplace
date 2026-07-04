@@ -120,15 +120,69 @@
   function dailyIndex() { var d = new Date(); return d.getFullYear() * 366 + (d.getMonth() * 31) + d.getDate(); }
 
   /* ---------- Overlay de práctica ---------- */
+  var frObs = null;
   function openTool(id) {
     var t = TOOLS.filter(function (x) { return x.id === id; })[0]; if (!t) return;
     $("toolTitle").textContent = t.tit;
-    $("toolFrame").src = "../tools-standalone/" + t.file;
+    var fr = $("toolFrame");
+    fr.onload = function () {
+      var doc; try { doc = fr.contentDocument; } catch (e) { return; }
+      if (!doc) return;
+      consumerCopy(doc);
+      try {
+        if (frObs) frObs.disconnect();
+        frObs = new MutationObserver(function () { consumerCopy(doc); });
+        frObs.observe(doc.body, { childList: true, subtree: true, characterData: true });
+      } catch (e) {}
+    };
+    fr.src = "../tools-standalone/" + t.file;
     $("toolOverlay").style.display = "flex";
   }
   function closeTool() {
+    if (frObs) { try { frObs.disconnect(); } catch (e) {} frObs = null; }
     $("toolOverlay").style.display = "none"; $("toolFrame").src = "about:blank";
     renderHoy(); if (curView === "progreso") renderProgreso();
+  }
+
+  /* Modo consumer: limpia el lenguaje clínico de la práctica (iframe, mismo
+     origen) SIN tocar los archivos compartidos con la app clínica.
+     Orden importa: frases largas antes que las genéricas. */
+  var REPS = [
+    [/📱\s*Enviar a mi psic[oó]logo\/?a?/gi, "📤 Compartir"],
+    [/Enviar a mi psic[oó]logo\/?a?/gi, "Compartir"],
+    [/📤?\s*Enviar al panel \(\.json\)/gi, "📤 Guardar (.json)"],
+    [/⬇\s*Archivo \.json/gi, "⬇ Guardar (.json)"],
+    [/;?\s*abajo puedes enviar el resultado al panel de tu psic[oó]logo\.?/gi, "."],
+    [/\bLo trabajar[eé]is juntos en la sesi[oó]n\.?/gi, ""],
+    [/te lo llevar[aá]s a la sesi[oó]n para trabajarlo con tu psic[oó]logo\/?a?\.?/gi, "es solo para ti."],
+    [/enviar a tu psic[oó]logo\/?a?/gi, "guardarlo o compartirlo"],
+    [/no sustituye el trabajo con tu psic[oó]logo\/?a?/gi, "no sustituye la ayuda profesional"],
+    [/Nota para revisar en sesi[oó]n:?/gi, "Para ti:"],
+    [/junto a tu psic[oó]logo\/?a?/gi, "con calma"],
+    [/con tu psic[oó]logo\/?a?/gi, "contigo"],
+    [/a tu psic[oó]logo\/?a?/gi, "para ti"],
+    [/tu psic[oó]logo\/?a?/gi, "ti"],
+    [/psic[oó]logo\/?a?|psic[oó]loga/gi, "un profesional"],
+    [/APRENS Psicolog[ií]a?/gi, "Anclado en mí"],
+    [/\ben la sesi[oó]n\b|\ba la sesi[oó]n\b|\ben sesi[oó]n\b/gi, "cuando quieras"],
+    [/el panel de tu \w+/gi, "tu espacio"]
+  ];
+  var sweeping = false;
+  function consumerCopy(doc) {
+    if (sweeping || !doc || !doc.body) return;
+    sweeping = true;
+    try {
+      var cod = doc.getElementById("aprensCod");
+      if (cod) { cod.style.display = "none"; cod.placeholder = ""; }
+      var walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null);
+      var nodes = [], n;
+      while ((n = walker.nextNode())) nodes.push(n);
+      nodes.forEach(function (t) {
+        var s = t.nodeValue, o = s;
+        REPS.forEach(function (r) { s = s.replace(r[0], r[1]); });
+        if (s !== o) t.nodeValue = s;
+      });
+    } catch (e) {} finally { sweeping = false; }
   }
 
   /* ---------- Progreso ---------- */

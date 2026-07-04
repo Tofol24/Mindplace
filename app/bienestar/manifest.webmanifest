@@ -1,0 +1,16 @@
+{
+  "name": "Anclado en mí · Bienestar",
+  "short_name": "Anclado en mí",
+  "description": "Bienestar emocional, hábitos e inteligencia emocional. Vuelve a ti unos minutos al día.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f8f6",
+  "theme_color": "#3a7d6e",
+  "icons": [
+    { "src": "../assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "../assets/icons/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
