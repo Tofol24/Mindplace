@@ -142,6 +142,26 @@ consola donde tú reúnes la evolución de cada paciente a partir de los `.json`
   métricas correctas, gráficas dibujadas, persistencia cifrada (bloquear→recargar→descifrar),
   rechazo de código incorrecto, sin peticiones externas ni errores JS.
 
+## Versión consumer «Calma» (MVP3 · Fase A — bienestar/psicoeducación)
+Carpeta `bienestar/` (URL `…/bienestar/`). Es un **segundo producto sobre el mismo motor**
+(TEC/AIS) y el **mismo `aprens_db`**, con piel de bienestar para venderlo en stores como app
+**psicoeducativa, NO clínica** (así evita clasificarse como producto sanitario):
+- **Lenguaje de bienestar** (sin «clínico/paciente/terapia») y **disclaimer** visible «no es un
+  producto sanitario» + recurso de crisis (024).
+- **Onboarding** con objetivos (calma · foco · hábitos · inteligencia emocional), nombre opcional,
+  **sin código de profesional**.
+- **Hub** (Hoy/Explora) con prácticas reetiquetadas en consumer, que abren las herramientas
+  standalone en un overlay (iframe).
+- **Mi progreso** personal (del propio `aprens_db`): racha, prácticas, días activos, gráfica de
+  actividad (Chart.js) y «cómo has llevado tu mente» (posiciones del mono en lenguaje amable).
+- **SW propio** (`bienestar/sw.js`, scope `/bienestar/`). No toca la app clínica de producción.
+- Verificado (`e2e-bienestar.js`): onboarding + disclaimer gating, recomendados por objetivo,
+  abrir práctica, progreso con racha/gráfica, persistencia de perfil, sin peticiones externas ni
+  errores JS.
+- **Pendiente Fase A.2**: suavizar el copy *dentro* de cada práctica (siguen con lenguaje clínico) y
+  añadir las herramientas de módulo nativo. **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**:
+  empaquetado Capacitor + envío a Apple/Google.
+
 ## Pendiente (siguientes MVP)
 - Iconos PNG (192/512 + maskable) para instalación óptima en iOS/stores (hoy: SVG).
 - Portar el resto de herramientas (ver `registry.js`). Nota: las herramientas **legacy**
