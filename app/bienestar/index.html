@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#3a7d6e">
-<meta name="description" content="Anclado en mí · bienestar emocional, hábitos saludables e inteligencia emocional. Vuelve a ti unos minutos al día.">
+<meta name="description" content="Anclado en mí · bienestar emocional, hábitos e inteligencia emocional. Un plan diario para volver a ti.">
 <title>Anclado en mí · Bienestar emocional</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
@@ -14,78 +14,25 @@
 </head>
 <body>
 
-<!-- ═══════════════ ONBOARDING (primera vez) ═══════════════ -->
-<div id="onb" class="onb" style="display:none">
-  <div class="onb-card">
-    <div class="onb-step" data-step="1">
-      <div class="onb-emoji">⚓</div>
-      <h1>Anclado en mí</h1>
-      <p class="onb-brandtag">Vuelve a ti</p>
-      <p class="onb-lead">Unos minutos al día para <b>volver a ti</b>: calma, foco, hábitos y conocerte mejor. A tu ritmo, sin presión.</p>
-      <button class="btn-primary" data-next>Empezar</button>
-    </div>
+<!-- ONBOARDING (historia → perfil → evaluación) — render por JS -->
+<div id="onb" class="onb" style="display:none"><div class="onb-card" id="onbCard"></div></div>
 
-    <div class="onb-step" data-step="2" style="display:none">
-      <h2>¿Qué te gustaría cuidar?</h2>
-      <p class="onb-sub">Elige lo que te apetezca (puedes cambiarlo luego).</p>
-      <div class="goals" id="goals">
-        <button class="goal" data-goal="calma"><span>🫁</span>Más calma</button>
-        <button class="goal" data-goal="foco"><span>🎯</span>Más foco</button>
-        <button class="goal" data-goal="habitos"><span>🌀</span>Mejores hábitos</button>
-        <button class="goal" data-goal="ie"><span>💛</span>Inteligencia emocional</button>
-      </div>
-      <button class="btn-primary" data-next>Continuar</button>
-    </div>
-
-    <div class="onb-step" data-step="3" style="display:none">
-      <h2>¿Cómo te llamamos?</h2>
-      <p class="onb-sub">Opcional. Solo se guarda en tu móvil.</p>
-      <input id="onbName" class="onb-input" placeholder="Tu nombre (opcional)" maxlength="24" autocomplete="off">
-      <div class="disclaimer onb-disc">
-        <b>Importante.</b> Esta app es de <b>bienestar y psicoeducación</b>. No es un producto sanitario,
-        no diagnostica ni trata ninguna condición y no sustituye la atención profesional.
-      </div>
-      <label class="accept"><input type="checkbox" id="onbAccept"> Lo he entendido</label>
-      <button class="btn-primary" id="onbFinish" disabled>Entrar</button>
-    </div>
-
-    <div class="onb-dots"><i data-dot="1"></i><i data-dot="2"></i><i data-dot="3"></i></div>
-  </div>
-</div>
-
-<!-- ═══════════════ APP ═══════════════ -->
+<!-- APP -->
 <div id="app" class="app" style="display:none">
   <header class="head">
     <div class="brand"><span class="logo">⚓</span><div><b id="hola">Hola</b><span id="frase">Anclado en mí</span></div></div>
     <button class="ghost" id="btnAjustes" title="Ajustes">⚙️</button>
   </header>
-
   <nav class="tabs">
     <button class="tab active" data-view="hoy">Hoy</button>
-    <button class="tab" data-view="explora">Explora</button>
+    <button class="tab" data-view="plan">Plan</button>
     <button class="tab" data-view="progreso">Mi progreso</button>
   </nav>
-
   <main class="main">
-    <!-- HOY -->
-    <section id="view-hoy" class="view">
-      <div class="hero" id="hero"></div>
-      <h3 class="sec-tit">Recomendado para ti</h3>
-      <div class="cards" id="recCards"></div>
-    </section>
-
-    <!-- EXPLORA -->
-    <section id="view-explora" class="view" style="display:none">
-      <h3 class="sec-tit">Todas las prácticas</h3>
-      <div class="cards" id="allCards"></div>
-    </section>
-
-    <!-- PROGRESO -->
-    <section id="view-progreso" class="view" style="display:none">
-      <div id="progBody"></div>
-    </section>
+    <section id="view-hoy" class="view"></section>
+    <section id="view-plan" class="view" style="display:none"></section>
+    <section id="view-progreso" class="view" style="display:none"></section>
   </main>
-
   <footer class="foot">
     <div class="disclaimer">
       App de bienestar y psicoeducación · <b>no es un producto sanitario</b> ni sustituye a la terapia.
@@ -94,43 +41,48 @@
   </footer>
 </div>
 
-<!-- ═══════════════ OVERLAY DE PRÁCTICA (iframe) ═══════════════ -->
+<!-- OVERLAY práctica (iframe) -->
 <div id="toolOverlay" class="tool-overlay" style="display:none">
-  <div class="tool-bar">
-    <button id="toolBack" class="tool-back">‹ Volver</button>
-    <span id="toolTitle"></span>
-  </div>
+  <div class="tool-bar"><button id="toolBack" class="tool-back">‹ Volver</button><span id="toolTitle"></span></div>
+  <div id="toolWhy" class="tool-why"></div>
   <iframe id="toolFrame" class="tool-frame" title="Práctica"></iframe>
 </div>
 
-<!-- ═══════════════ AJUSTES ═══════════════ -->
+<!-- OVERLAY práctica nativa de 3 min "Sentarme junto al mono" -->
+<div id="miniOverlay" class="tool-overlay" style="display:none">
+  <div class="tool-bar"><button id="miniBack" class="tool-back">‹ Volver</button><span>Sentarme junto al mono</span></div>
+  <div id="miniBody" class="mini-body"></div>
+</div>
+
+<!-- OVERLAY "La historia" (deck) -->
+<div id="histOverlay" class="tool-overlay" style="display:none">
+  <div class="tool-bar"><button id="histBack" class="tool-back">‹ Volver</button><span>La historia del mono</span></div>
+  <div id="histBody" class="hist-body"></div>
+</div>
+
+<!-- MODAL evaluación / termómetro (reutilizable) -->
+<div id="sheet" class="modal" style="display:none"><div class="modal-card" id="sheetCard"></div></div>
+
+<!-- AJUSTES -->
 <div id="ajustes" class="modal" style="display:none">
   <div class="modal-card">
     <button class="modal-x" id="ajClose">✕</button>
     <h2>Ajustes</h2>
-    <label class="fld">Tu nombre
-      <input id="ajName" class="onb-input" placeholder="(opcional)" maxlength="24">
-    </label>
-    <div class="fld">¿Qué quieres cuidar?
-      <div class="goals" id="ajGoals">
-        <button class="goal" data-goal="calma"><span>🫁</span>Calma</button>
-        <button class="goal" data-goal="foco"><span>🎯</span>Foco</button>
-        <button class="goal" data-goal="habitos"><span>🌀</span>Hábitos</button>
-        <button class="goal" data-goal="ie"><span>💛</span>Inteligencia emocional</button>
-      </div>
-    </div>
+    <label class="fld">Tu nombre<input id="ajName" class="onb-input" placeholder="(opcional)" maxlength="24"></label>
     <button class="btn-primary" id="ajSave">Guardar</button>
+    <button class="btn-soft" id="ajHist">📖 Volver a leer la historia</button>
+    <button class="btn-soft" id="ajEval">🧭 Repetir la evaluación</button>
     <button class="linklike" id="ajReset">Borrar mis datos de este dispositivo</button>
   </div>
 </div>
+
+<div id="toast" class="toast" style="display:none"></div>
 
 <script src="../js/aprens-core.js"></script>
 <script src="../vendor/chart.umd.min.js"></script>
 <script src="bienestar.js"></script>
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); });
-}
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
 </body>
 </html>

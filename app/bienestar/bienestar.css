@@ -104,6 +104,82 @@ button{font-family:inherit;cursor:pointer}
 .tool-bar span{font-weight:600;font-size:14px}
 .tool-frame{flex:1;border:0;width:100%;background:#fff}
 
+/* botones suaves */
+.btn-soft{display:block;width:100%;padding:11px;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+  color:var(--ink);font-size:14px;font-weight:600;margin-top:10px}
+.btn-soft:hover{border-color:var(--green2)}
+
+/* onboarding: historia + evaluación (render JS dentro de .onb-card) */
+.story-emoji{font-size:44px;text-align:center}
+.onb-card h1{font-size:25px;margin:6px 0 4px;text-align:center}
+.onb-card h2{font-size:20px;margin:2px 0 10px;text-align:center}
+.story-body{color:var(--ink);font-size:15.5px;line-height:1.6;text-align:center;margin:0 0 18px}
+.story-body b{color:var(--green)}
+.story-quote{color:var(--green);font-weight:700;font-size:15px;text-align:center;font-style:italic;margin:0 0 18px}
+.onb-nav{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:6px}
+.onb-nav .btn-primary{flex:1}
+.onb-skip{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline}
+.eval-q{font-size:16px;font-weight:600;line-height:1.5;margin:2px 0 14px;text-align:center;min-height:66px;display:flex;align-items:center;justify-content:center}
+.likert{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.likert button{padding:12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-size:14.5px;color:var(--ink);text-align:left}
+.likert button.on{border-color:var(--green);background:#eaf5f1;font-weight:600}
+.eval-progress{text-align:center;color:var(--muted);font-size:12.5px;margin-top:6px}
+
+/* por qué (encabezado del overlay de práctica) */
+.tool-why{background:#eaf5f1;color:#2c4f47;font-size:13.5px;line-height:1.45;padding:10px 16px;border-bottom:1px solid var(--line)}
+.tool-why:empty{display:none}
+
+/* Hoy: bloque visitas al mono */
+.visitas{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}
+.visitas h3{margin:0 0 3px;font-size:15px}
+.visitas .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.visita{display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer;font-size:14.5px}
+.visita:first-of-type{border-top:0}
+.visita .box{width:24px;height:24px;border-radius:8px;border:2px solid #cdd8d3;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex:0 0 auto}
+.visita.on .box{background:var(--green);border-color:var(--green)}
+.visita.on span{color:var(--muted);text-decoration:line-through}
+.visitas .count{margin-top:10px;font-size:13px;color:var(--green);font-weight:700}
+
+/* Plan: fases */
+.phase{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px;border-left:5px solid #cdd8d3}
+.phase.cur{border-left-color:var(--green);box-shadow:0 6px 18px rgba(58,125,110,.12)}
+.phase.done{opacity:.7}
+.phase .ph-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.phase .ph-n{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.phase h3{margin:2px 0 4px;font-size:16.5px}
+.phase .ph-obj{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 10px}
+.phase .badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:#eaf5f1;color:var(--green)}
+.ph-tools{display:flex;flex-direction:column;gap:7px}
+.ph-tool{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:#fbfdfc;font-size:13.5px;cursor:pointer;text-align:left;width:100%}
+.ph-tool:hover{border-color:var(--green2)}
+.ph-tool .e{font-size:19px}
+.ph-adv{margin-top:12px}
+
+/* progreso extra: termómetro amenaza→reto */
+.thermo{display:flex;align-items:center;gap:8px;margin-top:6px}
+.thermo .lbl{font-size:11px;color:var(--muted);white-space:nowrap}
+.thermo .bar{flex:1;height:10px;border-radius:6px;background:linear-gradient(90deg,#d98a3d,#e8c15b,#5f9070)}
+.eval-cta{background:#eaf5f1;border:1px solid #cfe6de;border-radius:14px;padding:14px;margin-top:14px;text-align:center}
+.eval-cta p{margin:0 0 10px;font-size:13.5px;color:#2c4f47}
+
+/* mini práctica 3 min */
+.mini-body{flex:1;overflow:auto;padding:22px 18px;max-width:560px;margin:0 auto;width:100%}
+.mini-step .m-n{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px}
+.mini-step h2{font-size:23px;margin:6px 0 10px}
+.mini-step p{font-size:16px;line-height:1.6;color:var(--ink);margin:0 0 16px}
+.mini-orb{width:140px;height:140px;border-radius:50%;margin:10px auto 18px;border:3px solid var(--green2);
+  background:radial-gradient(circle at 50% 40%,#eaf5f1,#fff);display:flex;align-items:center;justify-content:center;font-size:40px;transition:transform 4s ease-in-out}
+.mini-orb.big{transform:scale(1.35)}
+.mini-input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-bottom:14px}
+
+/* La historia (deck) */
+.hist-body{flex:1;overflow:auto;padding:20px 18px 40px;max-width:620px;margin:0 auto;width:100%}
+.hist-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px}
+.hist-card .k{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px}
+.hist-card h3{margin:4px 0 8px;font-size:18px}
+.hist-card p{margin:0;font-size:15px;line-height:1.6;color:var(--ink)}
+.hist-card .q{margin-top:10px;color:var(--green);font-weight:700;font-style:italic}
+
 /* modal ajustes */
 .modal{position:fixed;inset:0;background:rgba(37,50,47,.5);display:flex;align-items:center;justify-content:center;padding:18px;z-index:70}
 .modal-card{background:#fff;border-radius:20px;padding:22px;max-width:420px;width:100%;position:relative}

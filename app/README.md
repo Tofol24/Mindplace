@@ -165,8 +165,22 @@ Carpeta `bienestar/` (URL `…/bienestar/`). Es un **segundo producto sobre el m
   procesando el iframe (mismo origen) con `consumerCopy()` + `MutationObserver` — **sin tocar los
   archivos compartidos**, así la app clínica conserva su lenguaje. Verificado (`e2e-marca.js`): brújula
   sin «psicólogo/sesión», barra de export reetiquetada («Guardar (.json)») y «Código paciente» oculto.
-- **Pendiente**: Fase A.3 (añadir las herramientas de módulo nativo a la versión consumer + icono
-  propio de marca). **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**: Capacitor + Apple/Google.
+- **Plan de cambio guiado (v1):** «Anclado en mí» deja de ser una caja de herramientas y **dirige**.
+  Ver diseño en `../PLAN_DE_CAMBIO.md`. Implementa:
+  - **Onboarding narrativo** con la historia del mono (voz de *«¿Quién conduce tu vida?»*, 6 pantallas)
+    + «La historia» completa (deck de 13 láminas) reconsultable.
+  - **Evaluación de entrada → recomendación** (L/D/C ligero; foco = eje más flojo → primera práctica),
+    repetible y con aviso de **reevaluación cada 2 semanas**.
+  - **Plan por fases libre-pero-guiado** (1 Anclar/alerta · 2 Curiosidad · 3 Amor · 4 Valores): la
+    pestaña **Hoy** sugiere *un* paso; **Plan** muestra las fases (avance manual, todo accesible).
+  - **Visitas al mono** (5 momentos diarios · racha) y **práctica base «Sentarme junto al mono»** (3 min,
+    nativa, guarda en `sentarse_mono`).
+  - **Termómetro amenaza→reto** (registrado y con línea de evolución) + gráfica de actividad y
+    distribución del mono en «Mi progreso».
+  - Estado propio en `aprens_anclado` (perfil, plan, visitas, amenaza→reto, evaluación); las prácticas
+    siguen guardando en el `aprens_db` único. Verificado (`e2e-anclado.js`, `e2e-marca.js`).
+- **Pendiente**: notificaciones (interino in-app; fiables en Fase C nativa) · icono propio de marca.
+  **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**: Capacitor + Apple/Google.
 
 ## Pendiente (siguientes MVP)
 - Iconos PNG (192/512 + maskable) para instalación óptima en iOS/stores (hoy: SVG).
