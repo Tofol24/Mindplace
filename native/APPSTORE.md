@@ -98,6 +98,18 @@ Haz las capturas desde tu iPhone (o el Simulador). Sugerencia de orden y rótulo
 > Consejo: usa fondos limpios y el verde de marca (#3a7d6e). Apple pide al menos 1 captura; con 5–6
 > se ve mucho más profesional.
 
+### Capturas ya generadas ✅
+En `native/appstore/` tienes las **6 capturas listas** a **1290×2796** (iPhone 6.7", el tamaño que
+pide App Store Connect), con rótulo de marketing incluido:
+`1-marca.png · 2-historia.png · 3-hoy.png · 4-practica.png · 5-rutina.png · 6-progreso.png`.
+
+Súbelas tal cual en App Store Connect → tu app → (idioma) → **App Previews and Screenshots** →
+sección **iPhone 6.7"**. Con eso Apple da por cubiertos los tamaños actuales.
+
+**Regenerarlas** (si cambias la interfaz): con la app servida en `localhost:8080` (por ejemplo
+`cd app && python3 -m http.server 8080`), ejecuta `node native/appstore/generate.mjs`. Vuelve a
+crear los 6 PNG con datos de ejemplo.
+
 ---
 
 ## Opcional — versión en inglés (por si añades ese idioma)
