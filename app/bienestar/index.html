@@ -50,7 +50,7 @@
 
 <!-- OVERLAY práctica nativa de 3 min "Sentarme junto al mono" -->
 <div id="miniOverlay" class="tool-overlay" style="display:none">
-  <div class="tool-bar"><button id="miniBack" class="tool-back">‹ Volver</button><span>Sentarme junto al mono</span></div>
+  <div class="tool-bar"><button id="miniBack" class="tool-back">‹ Volver</button><span id="miniTitle">Sentarme junto al mono</span></div>
   <div id="miniBody" class="mini-body"></div>
 </div>
 
@@ -70,11 +70,15 @@
     <h2>Ajustes</h2>
     <label class="fld">Tu nombre<input id="ajName" class="onb-input" placeholder="(opcional)" maxlength="24"></label>
     <button class="btn-primary" id="ajSave">Guardar</button>
+    <button class="btn-soft" id="ajRutina">⏰ Mi rutina diaria y avisos</button>
     <button class="btn-soft" id="ajHist">📖 Volver a leer la historia</button>
     <button class="btn-soft" id="ajEval">🧭 Repetir la evaluación</button>
     <button class="linklike" id="ajReset">Borrar mis datos de este dispositivo</button>
   </div>
 </div>
+
+<!-- RUTINA diaria + avisos -->
+<div id="rutina" class="modal" style="display:none"><div class="modal-card" id="rutinaCard"></div></div>
 
 <div id="toast" class="toast" style="display:none"></div>
 

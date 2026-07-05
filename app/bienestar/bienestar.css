@@ -129,6 +129,21 @@ button{font-family:inherit;cursor:pointer}
 .tool-why{background:#eaf5f1;color:#2c4f47;font-size:13.5px;line-height:1.45;padding:10px 16px;border-bottom:1px solid var(--line)}
 .tool-why:empty{display:none}
 
+/* Hoy: aviso / nudge */
+.nudge{display:flex;align-items:center;gap:12px;background:#fff6e5;border:1px solid #f0dfb8;border-radius:16px;padding:14px;margin-bottom:12px}
+.nudge.soft{background:#f4f9f7;border-color:var(--line)}
+.nudge .nu-txt{flex:1;display:flex;flex-direction:column;gap:2px}
+.nudge .nu-txt b{font-size:14.5px}
+.nudge .nu-txt span{font-size:12.5px;color:var(--muted);line-height:1.4}
+.nudge .nu-go{background:var(--warm);border:0;color:#fff;font-weight:700;font-size:14px;padding:10px 16px;border-radius:11px;flex:0 0 auto}
+
+/* rutina */
+.ru-row{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:14.5px}
+.ru-row:first-child{border-top:0}
+.ru-row input[type=checkbox]{width:20px;height:20px}
+.ru-row input[type=time]{padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;font-size:14px}
+.ru-note{font-size:12px;color:var(--muted);background:#f4f9f7;border-radius:10px;padding:9px 11px;line-height:1.45}
+
 /* Hoy: bloque visitas al mono */
 .visitas{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}
 .visitas h3{margin:0 0 3px;font-size:15px}

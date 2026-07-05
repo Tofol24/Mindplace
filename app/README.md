@@ -179,7 +179,14 @@ Carpeta `bienestar/` (URL `…/bienestar/`). Es un **segundo producto sobre el m
     distribución del mono en «Mi progreso».
   - Estado propio en `aprens_anclado` (perfil, plan, visitas, amenaza→reto, evaluación); las prácticas
     siguen guardando en el `aprens_db` único. Verificado (`e2e-anclado.js`, `e2e-marca.js`).
-- **Pendiente**: notificaciones (interino in-app; fiables en Fase C nativa) · icono propio de marca.
+- **Rutina diaria + avisos (interino):** «Mi rutina diaria» (Ajustes) con momentos fijos (hora +
+  on/off) para un minuto de **Respiración curiosa** (micro-práctica nativa: *para el pensamiento ·
+  respira con curiosidad · aquí y ahora*, guarda en `respiracion_curiosa`). En **Hoy** aparece un
+  **aviso** cuando toca un momento y no se ha hecho hoy. Notificaciones web **best-effort** (piden
+  permiso y se programan con `setTimeout` mientras la app está abierta; en iPhone/PWA no son
+  fiables). Estructura **lista para Capacitor LocalNotifications** en la Fase nativa. Verificado
+  (`e2e-rutina.js`).
+- **Pendiente**: notificaciones **siempre-activas** (Fase C nativa) · icono propio de marca.
   **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**: Capacitor + Apple/Google.
 
 ## Pendiente (siguientes MVP)

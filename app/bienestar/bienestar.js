@@ -57,7 +57,8 @@
     calma:      { kind: "iframe", file: "bajar-alerta.html",       emoji: "🫁", tit: "Calma en 4 pasos",        why: "Ahora el mono tiene el volante. Vamos a recuperarlo, sin pelear." },
     mapa:       { kind: "iframe", file: "mapa-interno.html",        emoji: "🫀", tit: "Mapa de tu cuerpo",        why: "Lleva la atención dentro: que tu cuerpo note que estás ahí." },
     acompanar:  { kind: "iframe", file: "acompanar-sensacion.html", emoji: "🤝", tit: "Acompaña lo que sientes",  why: "Sentarte junto al mono: estar con lo que sientes, sin luchar." },
-    sentarse:   { kind: "mini",   file: null,                       emoji: "🧘", tit: "Sentarme junto al mono",   why: "La práctica base, 3 minutos: parar, sentir, validar y dar un paso." },
+    sentarse:   { kind: "mini",   mini: "sentarse", emoji: "🧘", tit: "Sentarme junto al mono",   why: "La práctica base, 3 minutos: parar, sentir, validar y dar un paso." },
+    respira:    { kind: "mini",   mini: "respira",  emoji: "🫁", tit: "Respiración curiosa",       why: "Un minuto: para el pensamiento, respira con curiosidad y vuelve al aquí y ahora." },
     curiosidad: { kind: "iframe", file: "ais-curiosidad.html",      emoji: "🌱", tit: "Explora con curiosidad",   why: "Mirar dentro con curiosidad, no buscando el peligro." },
     amor:       { kind: "iframe", file: "ais-amor.html",            emoji: "💛", tit: "Cuídate, no te controles", why: "AIS desde el amor: el dolor deja de ser algo que controlar." },
     valores:    { kind: "iframe", file: "brujula-valores.html",     emoji: "🧭", tit: "Tu brújula de valores",    why: "Conducir tú: hacia la persona que quieres ser." },
@@ -79,6 +80,11 @@
   if (!A.perfil) { try { var old = JSON.parse(localStorage.getItem("aprens_bienestar_perfil")); if (old && old.aceptado) A.perfil = old; } catch (e) {} }
   if (!A.visitas) A.visitas = {};
   if (!A.amenaza) A.amenaza = [];
+  if (!A.rutina) A.rutina = { avisos: false, momentos: [
+    { label: "Por la mañana", hora: "09:00", on: true },
+    { label: "A mediodía",     hora: "14:00", on: true },
+    { label: "Por la tarde",   hora: "20:00", on: true }
+  ] };
 
   function db() { try { return JSON.parse(localStorage.getItem("aprens_db")) || { tools: {} }; } catch (e) { return { tools: {} }; } }
   function ymd(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
@@ -104,7 +110,7 @@
   function evalDue() { return !A.eval || daysSince(A.eval.fecha) >= 14; }
   function doneToday(pid) {
     // heurística: ¿hay registro hoy de la herramienta ligada?
-    var map = { calma: "bajar_alerta", mapa: "mapa_atencion_interna", acompanar: "acompanar_sensacion", curiosidad: "ais_curiosidad", amor: "ais_amor", valores: "brujula_valores", agenda: "agenda_atencional", sentarse: "sentarse_mono" };
+    var map = { calma: "bajar_alerta", mapa: "mapa_atencion_interna", acompanar: "acompanar_sensacion", curiosidad: "ais_curiosidad", amor: "ais_amor", valores: "brujula_valores", agenda: "agenda_atencional", sentarse: "sentarse_mono", respira: "respiracion_curiosa" };
     var tid = map[pid]; if (!tid) return false;
     return allRecords().some(function (x) { return x.tool === tid && recDate(x.r) === hoy(); });
   }
@@ -200,6 +206,7 @@
     $("hola").textContent = A.perfil && A.perfil.nombre ? "Hola, " + A.perfil.nombre : "Hola";
     wire();
     render();
+    scheduleNotifs();
   }
   function render() { renderHoy(); if (curView === "plan") renderPlan(); if (curView === "progreso") renderProgreso(); }
 
@@ -225,12 +232,33 @@
         '<button class="h-btn" id="hGo">Empezar ahora</button>' +
         '<div class="streakline">' + (st > 0 ? "🔥 " + st + (st === 1 ? " día seguido" : " días seguidos") : "Empieza hoy 🌱") + '</div>';
     }
-    v.innerHTML = '<div class="hero">' + heroHTML + '</div>' + visitasHTML() +
+    v.innerHTML = nudgeHTML() + '<div class="hero">' + heroHTML + '</div>' + visitasHTML() +
       '<div style="text-align:center;margin-top:16px"><button class="btn-soft" id="hPlan" style="max-width:280px;margin:0 auto">Ver mi plan completo →</button></div>';
     if ($("hGo")) $("hGo").onclick = function () { openPractice(sug.pid); };
     if ($("hEval")) $("hEval").onclick = openEval;
     if ($("hPlan")) $("hPlan").onclick = function () { switchView("plan"); };
+    var ng = $("nudgeGo"); if (ng) ng.onclick = function () { openPractice("respira"); };
     wireVisitas(v);
+  }
+  function nowHHMM() { var d = new Date(); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function pendingMomento() {
+    if (!A.rutina || doneToday("respira")) return null;
+    var hhmm = nowHHMM();
+    var passed = A.rutina.momentos.filter(function (m) { return m.on && m.hora <= hhmm; });
+    return passed.length ? passed[passed.length - 1] : null;
+  }
+  function nextMomento() {
+    if (!A.rutina) return null;
+    var hhmm = nowHHMM();
+    var up = A.rutina.momentos.filter(function (m) { return m.on && m.hora > hhmm; });
+    return up.length ? up[0] : null;
+  }
+  function nudgeHTML() {
+    var m = pendingMomento();
+    if (m) return '<div class="nudge"><div class="nu-txt"><b>🫁 ' + esc(m.label) + '</b><span>Un minuto de respiración curiosa: para, respira con curiosidad y vuelve al aquí y ahora.</span></div><button class="nu-go" id="nudgeGo">Vamos</button></div>';
+    var nx = nextMomento();
+    if (nx && A.rutina.avisos) return '<div class="nudge soft"><div class="nu-txt"><span>⏰ Próximo momento de presencia: <b>' + esc(nx.label) + " · " + nx.hora + '</b></span></div></div>';
+    return "";
   }
   function visitasHTML() {
     var marks = A.visitas[hoy()] || [];
@@ -326,7 +354,7 @@
   var frObs = null;
   function openPractice(pid) {
     var pr = PRACTICES[pid]; if (!pr) return;
-    if (pr.kind === "mini") return openMini();
+    if (pr.kind === "mini") return openMini(pr.mini);
     $("toolTitle").textContent = pr.tit;
     $("toolWhy").textContent = pr.why || "";
     var fr = $("toolFrame");
@@ -337,17 +365,31 @@
   }
   function closeTool() { if (frObs) { try { frObs.disconnect(); } catch (e) {} frObs = null; } $("toolOverlay").style.display = "none"; $("toolFrame").src = "about:blank"; render(); }
 
-  // Práctica base de 3 min (nativa)
-  var MINI = [
-    { n: "1 · Para", h: "Respira y aterriza", p: "Tres respiraciones lentas. Inhala por la nariz unos segundos, suelta el aire despacio por la boca, como si saliera por una pajita. Sin prisa.", orb: true },
-    { n: "2 · Siente", h: "Mira hacia dentro", p: "Lleva la atención al pecho, la barriga o el cuello. ¿Dónde notas algo? No lo cambies: solo acompáñalo unos segundos. «No sé por qué, pero lo noto aquí.»" },
-    { n: "3 · Acompaña", h: "Valida al mono", p: "Háblale con respeto, como a alguien que tiene miedo: «Está bien sentir esto. Tengo derecho a sentirme así. No estás solo.»" },
-    { n: "4 · Actúa", h: "Una microacción con valor", p: "Desde esa calma, elige el paso más pequeño que vaya en la dirección de quien quieres ser. Pequeño, concreto y posible ahora.", input: true }
-  ];
-  var miniI = 0, miniAcc = "", orbT = null;
-  function openMini() { miniI = 0; miniAcc = ""; $("miniOverlay").style.display = "flex"; renderMini(); }
+  // Prácticas nativas guiadas
+  var MINIS = {
+    sentarse: {
+      titulo: "Sentarme junto al mono", toolId: "sentarse_mono", toolName: "Sentarme junto al mono", done: "🧘 Te has sentado junto al mono",
+      pasos: [
+        { n: "1 · Para", h: "Respira y aterriza", p: "Tres respiraciones lentas. Inhala por la nariz unos segundos, suelta el aire despacio por la boca, como si saliera por una pajita. Sin prisa.", orb: true },
+        { n: "2 · Siente", h: "Mira hacia dentro", p: "Lleva la atención al pecho, la barriga o el cuello. ¿Dónde notas algo? No lo cambies: solo acompáñalo unos segundos. «No sé por qué, pero lo noto aquí.»" },
+        { n: "3 · Acompaña", h: "Valida al mono", p: "Háblale con respeto, como a alguien que tiene miedo: «Está bien sentir esto. Tengo derecho a sentirme así. No estás solo.»" },
+        { n: "4 · Actúa", h: "Una microacción con valor", p: "Desde esa calma, elige el paso más pequeño que vaya en la dirección de quien quieres ser. Pequeño, concreto y posible ahora.", input: true }
+      ]
+    },
+    respira: {
+      titulo: "Respiración curiosa", toolId: "respiracion_curiosa", toolName: "Respiración curiosa", done: "🫁 Un minuto de presencia. Bien.",
+      pasos: [
+        { n: "1 · Para", h: "Para el pensamiento", p: "Di «STOP» por dentro. Corta el piloto automático un segundo. No tienes que resolver nada ahora mismo." },
+        { n: "2 · Respira con curiosidad", h: "Una respiración, como la primera vez", p: "Inhala despacio y observa el aire con curiosidad: ¿por dónde entra?, ¿frío o tibio?, ¿hasta dónde llega? No lo cambies: solo míralo por dentro.", orb: true },
+        { n: "3 · Aquí y ahora", h: "Vuelve al presente", p: "Nombra 3 cosas que ves, 2 que oyes y 1 que sientes en el cuerpo. Estás aquí. Estás contigo." }
+      ]
+    }
+  };
+  var miniKey = "sentarse", miniI = 0, miniAcc = "", orbT = null;
+  function openMini(key) { miniKey = key || "sentarse"; miniI = 0; miniAcc = ""; $("miniOverlay").style.display = "flex"; renderMini(); }
   function renderMini() {
-    var s = MINI[miniI], last = miniI === MINI.length - 1;
+    var def = MINIS[miniKey], s = def.pasos[miniI], last = miniI === def.pasos.length - 1;
+    $("miniTitle").textContent = def.titulo;
     $("miniBody").innerHTML = '<div class="mini-step"><div class="m-n">' + s.n + '</div><h2>' + esc(s.h) + '</h2>' +
       (s.orb ? '<div class="mini-orb" id="orb">🫁</div>' : "") +
       '<p>' + esc(s.p) + '</p>' +
@@ -364,9 +406,10 @@
   }
   function finishMini() {
     if (orbT) { clearInterval(orbT); orbT = null; }
-    try { if (window.Aprens) { Aprens.config({ toolId: "sentarse_mono", toolName: "Sentarme junto al mono", toolVersion: 1 }); Aprens.save({ id: Date.now(), date: hoy(), ts: Date.now(), param: "densidad", microaccion: miniAcc }); } } catch (e) {}
+    var def = MINIS[miniKey];
+    try { if (window.Aprens) { Aprens.config({ toolId: def.toolId, toolName: def.toolName, toolVersion: 1 }); Aprens.save({ id: Date.now(), date: hoy(), ts: Date.now(), param: "densidad", microaccion: miniAcc }); } } catch (e) {}
     $("miniOverlay").style.display = "none";
-    toast("🧘 Te has sentado junto al mono");
+    toast(def.done);
     render();
   }
 
@@ -431,6 +474,47 @@
     } catch (e) {} finally { sweeping = false; }
   }
 
+  /* ─────────────── Rutina diaria + avisos ─────────────── */
+  var notifTimers = [];
+  function scheduleNotifs() {
+    notifTimers.forEach(clearTimeout); notifTimers = [];
+    if (!A.rutina || !A.rutina.avisos) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    var now = new Date();
+    A.rutina.momentos.filter(function (m) { return m.on; }).forEach(function (m) {
+      var pr = m.hora.split(":"), t = new Date(); t.setHours(+pr[0], +pr[1], 0, 0);
+      var ms = t - now;
+      if (ms > 0 && ms < 24 * 3600000) notifTimers.push(setTimeout(function () {
+        try { new Notification("Anclado en mí", { body: m.label + ": un minuto de respiración curiosa 🫁", tag: "anclado" }); } catch (e) {}
+      }, ms));
+    });
+  }
+  function openRutina() {
+    var r = A.rutina;
+    $("rutinaCard").innerHTML =
+      '<button class="modal-x" id="ruClose">✕</button><h2>⏰ Mi rutina diaria</h2>' +
+      '<p class="muted">Elige momentos fijos para un minuto de <b>respiración curiosa</b>. Practicar cada día —también en calma— es lo que entrena al conductor.</p>' +
+      '<label class="accept" style="margin:14px 0 6px"><input type="checkbox" id="ruAvisos" ' + (r.avisos ? "checked" : "") + '> Avisarme en el móvil a esas horas</label>' +
+      '<div class="ru-note">En la web los avisos solo llegan con la app abierta. La app instalada del móvil (Fase nativa) los hará <b>siempre</b>, aunque esté cerrada.</div>' +
+      '<div id="ruList" style="margin-top:12px">' + r.momentos.map(function (m, i) {
+        return '<div class="ru-row"><input type="checkbox" data-on="' + i + '" ' + (m.on ? "checked" : "") + '><span>' + esc(m.label) + '</span><input type="time" data-hora="' + i + '" value="' + m.hora + '"></div>';
+      }).join("") + '</div>' +
+      '<button class="btn-primary" id="ruSave" style="margin-top:14px">Guardar</button>';
+    $("rutina").style.display = "flex";
+    $("ruClose").onclick = function () { $("rutina").style.display = "none"; };
+    $("ruSave").onclick = function () {
+      A.rutina.momentos.forEach(function (m, i) {
+        m.on = $("ruList").querySelector('[data-on="' + i + '"]').checked;
+        m.hora = $("ruList").querySelector('[data-hora="' + i + '"]').value || m.hora;
+      });
+      var quiere = $("ruAvisos").checked;
+      var done = function (ok) { A.rutina.avisos = ok; saveA(); scheduleNotifs(); $("rutina").style.display = "none"; toast(ok ? "Avisos activados" : "Rutina guardada"); render(); };
+      if (quiere && typeof Notification !== "undefined" && Notification.permission !== "granted") {
+        Notification.requestPermission().then(function (p) { done(p === "granted"); });
+      } else done(quiere && typeof Notification !== "undefined" && Notification.permission === "granted");
+    };
+  }
+
   /* ─────────────── Nav / ajustes ─────────────── */
   function switchView(view) {
     curView = view;
@@ -448,6 +532,7 @@
     $("ajClose").onclick = function () { $("ajustes").style.display = "none"; };
     $("ajSave").onclick = function () { A.perfil = A.perfil || {}; A.perfil.nombre = $("ajName").value.trim(); saveA(); $("ajustes").style.display = "none"; $("hola").textContent = A.perfil.nombre ? "Hola, " + A.perfil.nombre : "Hola"; render(); };
     $("ajHist").onclick = function () { $("ajustes").style.display = "none"; openHist(); };
+    $("ajRutina").onclick = function () { $("ajustes").style.display = "none"; openRutina(); };
     $("ajEval").onclick = function () { $("ajustes").style.display = "none"; openEval(); };
     $("ajReset").onclick = function () { if (confirm("Esto borra tu perfil y tu plan en este dispositivo (tus prácticas se conservan). ¿Continuar?")) { localStorage.removeItem(AK); localStorage.removeItem("aprens_bienestar_perfil"); location.reload(); } };
   }
