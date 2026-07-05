@@ -519,29 +519,48 @@
       }).catch(function () {});
     } catch (e) {}
   }
+  function readRutinaDOM() {
+    var list = $("ruList"); if (!list) return;
+    A.rutina.momentos.forEach(function (m, i) {
+      var on = list.querySelector('[data-on="' + i + '"]'); if (on) m.on = on.checked;
+      var lb = list.querySelector('[data-label="' + i + '"]'); if (lb) m.label = lb.value.trim() || m.label;
+      var ho = list.querySelector('[data-hora="' + i + '"]'); if (ho) m.hora = ho.value || m.hora;
+      var pr = list.querySelector('[data-pr="' + i + '"]'); if (pr) m.practica = pr.value || m.practica;
+    });
+  }
   function openRutina() {
     var r = A.rutina;
     $("rutinaCard").innerHTML =
       '<button class="modal-x" id="ruClose">✕</button><h2>⏰ Mi rutina diaria</h2>' +
-      '<p class="muted">Elige momentos fijos para un minuto de <b>respiración curiosa</b>. Practicar cada día —también en calma— es lo que entrena al conductor.</p>' +
+      '<p class="muted">Tus momentos del día: en cada uno, una práctica breve para volver a ti. Practicar cada día —también en calma— es lo que entrena al conductor.</p>' +
       '<label class="accept" style="margin:14px 0 6px"><input type="checkbox" id="ruAvisos" ' + (r.avisos ? "checked" : "") + '> Avisarme en el móvil a esas horas</label>' +
       '<div class="ru-note">En la web los avisos solo llegan con la app abierta. La app instalada del móvil (Fase nativa) los hará <b>siempre</b>, aunque esté cerrada.</div>' +
-      '<div id="ruList" style="margin-top:12px">' + r.momentos.map(function (m, i) {
+      '<div id="ruList" style="margin-top:12px">' + (r.momentos.length ? r.momentos.map(function (m, i) {
         var opts = Object.keys(PRACTICES).map(function (k) {
           return '<option value="' + k + '"' + (momPractica(m) === k ? " selected" : "") + '>' + PRACTICES[k].emoji + " " + esc(PRACTICES[k].tit) + '</option>';
         }).join("");
-        return '<div class="ru-row"><div class="ru-top"><input type="checkbox" data-on="' + i + '" ' + (m.on ? "checked" : "") + '><span>' + esc(m.label) + '</span><input type="time" data-hora="' + i + '" value="' + m.hora + '"></div>' +
+        return '<div class="ru-row"><div class="ru-top">' +
+          '<input type="checkbox" data-on="' + i + '" ' + (m.on ? "checked" : "") + '>' +
+          '<input class="ru-label" type="text" data-label="' + i + '" value="' + esc(m.label) + '" placeholder="Momento" maxlength="28">' +
+          '<input type="time" data-hora="' + i + '" value="' + m.hora + '">' +
+          '<button class="ru-del" data-del="' + i + '" title="Quitar momento">✕</button></div>' +
           '<select class="ru-pr" data-pr="' + i + '">' + opts + '</select></div>';
-      }).join("") + '</div>' +
-      '<button class="btn-primary" id="ruSave" style="margin-top:14px">Guardar</button>';
+      }).join("") : '<p class="muted" style="text-align:center;padding:10px">Aún no hay momentos. Añade el primero 👇</p>') + '</div>' +
+      '<button class="btn-soft" id="ruAdd">＋ Añadir momento</button>' +
+      '<button class="btn-primary" id="ruSave" style="margin-top:10px">Guardar</button>';
     $("rutina").style.display = "flex";
     $("ruClose").onclick = function () { $("rutina").style.display = "none"; };
+    $("ruAdd").onclick = function () {
+      readRutinaDOM();
+      if (A.rutina.momentos.length >= 12) { toast("Máximo 12 momentos"); return; }
+      A.rutina.momentos.push({ label: "Nuevo momento", hora: "12:00", on: true, practica: "respira" });
+      openRutina();
+    };
+    Array.prototype.forEach.call($("ruList").querySelectorAll("[data-del]"), function (btn) {
+      btn.onclick = function () { readRutinaDOM(); A.rutina.momentos.splice(Number(btn.getAttribute("data-del")), 1); openRutina(); };
+    });
     $("ruSave").onclick = function () {
-      A.rutina.momentos.forEach(function (m, i) {
-        m.on = $("ruList").querySelector('[data-on="' + i + '"]').checked;
-        m.hora = $("ruList").querySelector('[data-hora="' + i + '"]').value || m.hora;
-        m.practica = $("ruList").querySelector('[data-pr="' + i + '"]').value || m.practica;
-      });
+      readRutinaDOM();
       var quiere = $("ruAvisos").checked;
       var done = function (ok) { A.rutina.avisos = ok; saveA(); scheduleNotifs(); $("rutina").style.display = "none"; toast(ok ? "Avisos activados" : "Rutina guardada"); render(); };
       if (!quiere) return done(false);

@@ -144,9 +144,12 @@ button{font-family:inherit;cursor:pointer}
 /* rutina */
 .ru-row{padding:11px 0;border-top:1px solid var(--line);font-size:14.5px}
 .ru-row:first-child{border-top:0}
-.ru-top{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px}
+.ru-top{display:grid;grid-template-columns:22px 1fr auto auto;align-items:center;gap:8px}
 .ru-row input[type=checkbox]{width:20px;height:20px}
 .ru-row input[type=time]{padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;font-size:14px}
+.ru-label{padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;font-size:14px;min-width:0;color:var(--ink)}
+.ru-label:focus,.ru-pr:focus{outline:none;border-color:var(--green2)}
+.ru-del{background:none;border:0;color:#b04a3f;font-size:16px;padding:4px 6px;line-height:1;cursor:pointer}
 .ru-pr{width:100%;margin-top:8px;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;background:#fff;color:var(--ink)}
 .ru-note{font-size:12px;color:var(--muted);background:#f4f9f7;border-radius:10px;padding:9px 11px;line-height:1.45}
 
