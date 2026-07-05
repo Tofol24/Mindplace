@@ -137,6 +137,27 @@ notificación. Al tocarla, abre la app en «Hoy».
 
 ---
 
+## Solución de problemas
+
+### Archive falla: «double-quoted include "CDV…​.h" in framework header, expected angle-bracketed instead»
+Problema conocido de Capacitor (capa Cordova) con Xcode recientes. Fix:
+- **Rápido (Xcode):** proyecto **Pods** → **Build Settings** → busca «Quoted» → **Quoted Include In
+  Framework Header** = **No** → vuelve a *Archive*.
+- **Duradero (Podfile):** en `native/ios/App/Podfile`, dentro de `post_install do |installer|`
+  añade:
+  ```ruby
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+    end
+  end
+  ```
+  y luego `cd native/ios/App && pod install`.
+
+### Avisos del Splash («Unassigned: splash-2732x2732»)
+Son solo advertencias (imágenes de splash sin asignar en el catálogo). No bloquean el build; puedes
+ignorarlas o asignar las imágenes en el asset catalog «Splash» si quieres una pantalla de inicio propia.
+
 ## Notas
 - El motor y el contenido son los mismos que la web: cualquier mejora en `app/bienestar` llega al
   nativo con `npm run assemble` + `npx cap sync`.
