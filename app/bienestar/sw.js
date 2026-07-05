@@ -1,5 +1,5 @@
 /* Calma · Service Worker propio (scope /bienestar/) — offline + routing propio. */
-const CACHE = "aprens-bienestar-v5";
+const CACHE = "aprens-bienestar-v6";
 const SHELL = [
   "./",
   "./index.html",

@@ -45,13 +45,16 @@ button{font-family:inherit;cursor:pointer}
 
 /* ---------- App ---------- */
 .app{max-width:640px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 8px}
+/* env(safe-area-inset-*) → respeta el notch/reloj del iPhone (viewport-fit=cover) */
+.head{display:flex;align-items:center;justify-content:space-between;
+  padding:calc(16px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) 8px calc(18px + env(safe-area-inset-left))}
 .brand{display:flex;align-items:center;gap:11px}
 .logo{width:42px;height:42px;border-radius:50%;background:#eaf5f1;display:flex;align-items:center;justify-content:center;font-size:22px}
 .brand b{display:block;font-size:17px}
 .brand span{display:block;font-size:12.5px;color:var(--muted)}
 .ghost{background:none;border:0;font-size:20px;opacity:.7}
 .tabs{display:flex;gap:6px;padding:4px 14px 10px;position:sticky;top:0;background:var(--bg);z-index:5}
+@supports(padding:env(safe-area-inset-top)){.tabs{top:env(safe-area-inset-top)}}
 .tab{flex:1;padding:9px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-size:14px;font-weight:600}
 .tab.active{background:#fff;color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .main{flex:1;padding:6px 16px 24px}
@@ -95,11 +98,12 @@ button{font-family:inherit;cursor:pointer}
 .p-empty .e{font-size:40px}
 
 /* footer */
-.foot{padding:8px 16px 22px}
+.foot{padding:8px 16px calc(22px + env(safe-area-inset-bottom))}
 
 /* overlay práctica */
 .tool-overlay{position:fixed;inset:0;background:var(--bg);z-index:60;display:flex;flex-direction:column}
-.tool-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--green);color:#fff}
+.tool-bar{display:flex;align-items:center;gap:10px;background:var(--green);color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left))}
 .tool-back{background:rgba(255,255,255,.18);border:0;color:#fff;font-size:14px;font-weight:700;padding:8px 12px;border-radius:10px}
 .tool-bar span{font-weight:600;font-size:14px}
 .tool-frame{flex:1;border:0;width:100%;background:#fff}
