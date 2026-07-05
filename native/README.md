@@ -13,6 +13,15 @@ lista para **App Store / Google Play**.
 > **Qué tienes que hacer tú** (esto NO se puede hacer desde el repo: necesita tu Mac y tus cuentas):
 > generar las plataformas, poner icono/splash, compilar y subir a las stores. Pasos abajo.
 
+> ### 🍏 Empieza por iOS (tu caso)
+> Tienes **cuenta Apple Developer + Mac + Xcode** → puedes publicar iOS ya. **Android queda para
+> cuando abras Google Play** (no bloquea nada). En los pasos, haz solo los de iOS por ahora.
+>
+> Ya preparado para ti:
+> - **Icono de marca** ⚓ en `native/assets/icon.png` (1024×1024) y `icon-src.svg` (editable).
+> - **Política de privacidad** publicada en
+>   **https://aprens-app.netlify.app/bienestar/privacidad.html** (URL para App Store Connect).
+
 ---
 
 ## 0. Requisitos (una vez)
@@ -53,16 +62,16 @@ Esto genera los proyectos nativos. A partir de aquí trabajas con Android Studio
 
 ## 3. Icono y pantalla de inicio (marca ⚓)
 
-Coloca un icono cuadrado grande (1024×1024 PNG) y opcional splash en `native/assets/` y usa la
-herramienta oficial:
+El icono de marca ya está en **`native/assets/icon.png`** (1024×1024, ancla ⚓ sobre verde). Genera
+todos los tamaños con la herramienta oficial:
 
 ```bash
 npm i -D @capacitor/assets
-npx capacitor-assets generate --iconBackgroundColor '#3a7d6e' --splashBackgroundColor '#f5f8f6'
+npx capacitor-assets generate --ios --iconBackgroundColor '#3a7d6e' --splashBackgroundColor '#f5f8f6'
 ```
 
-> Hoy la app usa el icono genérico. Diseña el icono de **Anclado en mí** (ancla ⚓ sobre verde
-> `#3a7d6e`) antes de publicar: es lo primero que ve el usuario en la store.
+> Si quieres retocar el icono, edita `native/assets/icon-src.svg` y vuelve a exportarlo a
+> `icon.png` (1024×1024) antes de generar.
 
 **Android — icono de notificación:** crea un icono monocromo blanco `ic_stat_icon` en
 `android/app/src/main/res/drawable*/` (Android Studio → New → Image Asset → Notification Icon).
@@ -117,8 +126,9 @@ notificación. Al tocarla, abre la app en «Hoy».
 - [ ] **Posicionamiento wellness, no clínico**: descripción y capturas hablan de *bienestar,
       hábitos, inteligencia emocional*. **Sin claims médicos** (no «trata la ansiedad/depresión»).
 - [ ] **Disclaimer** visible «no es un producto sanitario» (ya está en la app).
-- [ ] **Política de privacidad** publicada (URL). Puedes indicar: datos solo en el dispositivo, sin
-      cuentas, sin envío a terceros.
+- [ ] **Política de privacidad** publicada (URL):
+      **https://aprens-app.netlify.app/bienestar/privacidad.html** (datos solo en el dispositivo,
+      sin cuentas, sin envío a terceros). En App Store Connect → *Privacy*: marca «no se recopilan datos».
 - [ ] **Recurso de crisis** (024) presente (ya está).
 - [ ] **La app se siente completa** (Apple rechaza apps «vacías»): onboarding + plan + práctica +
       progreso ya lo cubren.
