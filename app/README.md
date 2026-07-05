@@ -186,8 +186,13 @@ Carpeta `bienestar/` (URL `…/bienestar/`). Es un **segundo producto sobre el m
   permiso y se programan con `setTimeout` mientras la app está abierta; en iPhone/PWA no son
   fiables). Estructura **lista para Capacitor LocalNotifications** en la Fase nativa. Verificado
   (`e2e-rutina.js`).
-- **Pendiente**: notificaciones **siempre-activas** (Fase C nativa) · icono propio de marca.
-  **Fase B**: paywall (RevenueCat) + cuentas. **Fase C**: Capacitor + Apple/Google.
+- **Fase C · nativo (andamiaje listo, ver `../native/`):** las notificaciones de la rutina usan
+  **Capacitor LocalNotifications** cuando corre en nativo (repetidas diarias, app cerrada); en web,
+  best-effort. `native/` incluye `capacitor.config.json`, `package.json`, `assemble.mjs` (arma el
+  `www/` con las rutas correctas) y una **guía de build+publicación** (`native/README.md`). El bundle
+  ensamblado se verifica como web (`e2e-native.js`). Pendiente (en el Mac del usuario): `cap add
+  ios/android`, icono de marca, compilar y subir a Apple/Google.
+- **Pendiente**: icono propio de marca ⚓. **Fase B**: paywall (RevenueCat) + cuentas.
 
 ## Pendiente (siguientes MVP)
 - Iconos PNG (192/512 + maskable) para instalación óptima en iOS/stores (hoy: SVG).

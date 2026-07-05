@@ -475,10 +475,14 @@
   }
 
   /* ─────────────── Rutina diaria + avisos ─────────────── */
+  // Nativo (Capacitor) → notificaciones locales REALES y repetidas (app cerrada).
+  // Web (PWA) → best-effort con setTimeout mientras la app está abierta.
+  function isNative() { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
   var notifTimers = [];
   function scheduleNotifs() {
     notifTimers.forEach(clearTimeout); notifTimers = [];
     if (!A.rutina || !A.rutina.avisos) return;
+    if (isNative()) { scheduleNative(); return; }
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
     var now = new Date();
     A.rutina.momentos.filter(function (m) { return m.on; }).forEach(function (m) {
@@ -488,6 +492,26 @@
         try { new Notification("Anclado en mí", { body: m.label + ": un minuto de respiración curiosa 🫁", tag: "anclado" }); } catch (e) {}
       }, ms));
     });
+  }
+  function scheduleNative() {
+    try {
+      var LN = window.Capacitor.Plugins.LocalNotifications;
+      if (!LN) return;
+      LN.requestPermissions().then(function () {
+        return LN.getPending().then(function (p) {
+          var old = (p && p.notifications) || [];
+          if (old.length) return LN.cancel({ notifications: old.map(function (n) { return { id: n.id }; }) });
+        }).catch(function () {});
+      }).then(function () {
+        var notifs = [];
+        A.rutina.momentos.filter(function (m) { return m.on; }).forEach(function (m, i) {
+          var pr = m.hora.split(":");
+          notifs.push({ id: 1000 + i, title: "Anclado en mí", body: m.label + ": un minuto de respiración curiosa 🫁",
+            schedule: { on: { hour: +pr[0], minute: +pr[1] }, repeats: true }, smallIcon: "ic_stat_icon" });
+        });
+        if (notifs.length) return LN.schedule({ notifications: notifs });
+      }).catch(function () {});
+    } catch (e) {}
   }
   function openRutina() {
     var r = A.rutina;
@@ -509,9 +533,11 @@
       });
       var quiere = $("ruAvisos").checked;
       var done = function (ok) { A.rutina.avisos = ok; saveA(); scheduleNotifs(); $("rutina").style.display = "none"; toast(ok ? "Avisos activados" : "Rutina guardada"); render(); };
-      if (quiere && typeof Notification !== "undefined" && Notification.permission !== "granted") {
-        Notification.requestPermission().then(function (p) { done(p === "granted"); });
-      } else done(quiere && typeof Notification !== "undefined" && Notification.permission === "granted");
+      if (!quiere) return done(false);
+      if (isNative()) return done(true);                          // nativo: pide permiso al programar
+      if (typeof Notification === "undefined") return done(false);
+      if (Notification.permission === "granted") return done(true);
+      Notification.requestPermission().then(function (p) { done(p === "granted"); });
     };
   }
 

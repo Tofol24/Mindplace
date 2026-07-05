@@ -1,0 +1,12 @@
+{
+  "appId": "es.aprens.anclado",
+  "appName": "Anclado en mí",
+  "webDir": "www",
+  "backgroundColor": "#f5f8f6",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#3a7d6e"
+    }
+  }
+}
