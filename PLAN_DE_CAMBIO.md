@@ -1,11 +1,10 @@
-# «Anclado en mí» · Plan de cambio (diseño para revisión clínica)
+# «Anclado en mí» · Plan de cambio (diseño v2 — con la voz de la historia)
 
-> Documento de diseño. **No es código todavía.** Su objetivo es que lo revises y ajustes
-> clínicamente antes de construir. Todo lo de aquí se implementa sobre lo ya existente
-> (motor TEC/AIS + las prácticas actuales), convirtiendo la app de **caja de herramientas**
-> en un **plan de cambio que dirige**.
+> Documento de diseño. **No es código todavía.** Recoge tu material *«¿Quién conduce tu vida?»*
+> (Tòfol Villalonga · Col. B-01599 · aprens.es) y tus decisiones clínicas. Convierte la app de
+> **caja de herramientas** en un **plan de cambio que dirige**.
 >
-> Marca la versión consumer: **Anclado en mí** ⚓ · *Vuelve a ti*.
+> Marca consumer: **Anclado en mí** ⚓ · *Vuelve a ti*.
 
 ---
 
@@ -16,163 +15,152 @@ El fin del entrenamiento **no es una herramienta**: es **reforzar el vector aten
 demás pasan de **amenaza a reto**.
 
 Dos motores que se apoyan:
+1. **Anclar la atención dentro y regular la alerta** (AIS como ancla).
+2. **AIS desde el amor y la curiosidad**: cambia la actitud hacia el dolor interno → el dolor
+   **deja de ser objeto de control** → el **entorno deja de ser objeto de obsesión de control**.
 
-1. **Anclar la atención dentro y regular la alerta** (AIS como ancla): el cuerpo aprende que la
-   conciencia está disponible sin exigirle que cambie.
-2. **AIS desde el amor y la curiosidad**: cambia la **actitud hacia el dolor interno**. El dolor
-   **deja de ser objeto de control** → el **entorno deja de ser objeto de obsesión de control** →
-   cambia la percepción hacia fuera (los demás, el mundo) y hacia uno mismo.
-
-La **historia del mono** es el vehículo pedagógico que lo hace entendible sin tecnicismos.
-
-**Principio de diseño:** en cada pantalla el usuario sabe *qué hacer ahora* y *por qué*. Nunca
-se le deja delante de 11 herramientas sueltas.
+La **historia del mono** es el vehículo pedagógico. *Amar al mono no significa obedecerlo:
+significa acompañarlo.*
 
 ---
 
-## 1. La historia del mono (onboarding narrativo) — GUION
+## 1. La historia del mono (onboarding narrativo) — TU VOZ
 
-6 pantallas, tono cálido y de tú. Reconsultable siempre desde «Ajustes → La historia».
-*(Texto propuesto; ajústalo a tu voz.)*
+Fuente: tu deck de 17 láminas. Se usa de dos formas:
+- **Onboarding esencial (6 pantallas)** al entrar por primera vez (subconjunto abajo).
+- **«La historia» completa** (las 17 láminas, deslizables) accesible siempre desde el menú, como
+  *material para acompañarte*.
 
-**1 · El mono y tú.**
-Dentro de ti viaja un mono. No es tu enemigo: es la parte de ti que un día sintió miedo, dolor o
-amenaza y aprendió a reaccionar rápido para protegerte. Cuando algo le asusta, coge el volante.
+**Onboarding esencial (frases tuyas, condensadas):**
 
-**2 · ¿Quién conduce?**
-El problema no es que el mono exista, sino **quién conduce**. A veces conduce él (reaccionas sin
-pensar). A veces lo tienes delante, juzgándote. A veces lo escondes en el maletero para no sentirlo.
-Y a veces —el objetivo— viaja **a tu lado**: lo escuchas, lo acompañas… y sigues conduciendo tú.
+1. **Tu vida es un coche.** Dentro viaja un mono: tu sistema emocional, tu parte impulsiva, tus
+   miedos, tu necesidad de protección. *No es tu enemigo.* Lo que ocurre depende de **qué lugar
+   ocupa el mono dentro del coche**.
+2. **Las tres trampas.** A veces **el mono conduce** (reaccionas buscando alivio inmediato). A
+   veces **lo persigues** (te exiges calma, peleas — *«el mono no aprende cuando le gritas»*). A
+   veces **lo encierras en el maletero** (lo tapas — *«lo que escondes no desaparece, solo espera»*).
+3. **La alternativa: tú conduces, el mono a tu lado.** Ni echarlo, ni perseguirlo, ni encerrarlo.
+   Sentarlo al lado y seguir conduciendo tú. *Sentir una emoción no te obliga a obedecerla.*
+4. **¿Y yo dónde estoy?** La conciencia que mira y elige. *Solo aparezco cuando sostengo su dolor.
+   Y al sostenerlo, recupero el volante.*
+5. **La herramienta: AIS (Atención Interna Sensorial).** Dirigir la atención, a propósito, hacia
+   las sensaciones del cuerpo y acompañarlas sin cambiarlas. **PARA · SIENTE · ACOMPAÑA · ACTÚA.**
+   *Donde diriges tu atención, ahí vas tú.*
+6. **Tu plan: visitas al mono.** *No practico para calmarme, sino para no abandonarme.* El mono
+   cambia porque descubre que **cada día vuelves a sentarte a su lado**. Yo te digo qué toca cada día.
 
-**3 · El truco no es controlarlo.**
-Cuanto más intentas callar al mono (controlarlo, distraerte, comprobar, evitar), más grita.
-**Amar al mono no es obedecerlo: es acompañarlo.** Y para acompañarlo hay que aprender a
-**sentirlo por dentro** sin luchar contra él.
-
-**4 · El entrenamiento: mirar hacia dentro.**
-Aquí entrenas algo concreto: llevar la atención **dentro del cuerpo**, con curiosidad. No para
-cambiar lo que sientes, sino para que **tu cuerpo note que estás ahí**. Es tu **ancla** — por eso
-la app se llama *Anclado en mí*.
-
-**5 · Lo que pasa cuando el cuerpo se siente acompañado.**
-Cuando el cuerpo aprende que tu conciencia está disponible, **baja la alerta**. Y cuando baja la
-alerta, el mundo deja de parecer una amenaza constante y empieza a parecer un **reto** que puedes
-habitar. Los demás dejan de ser algo que controlar; tú dejas de ser algo que arreglar.
-
-**6 · Tu plan.**
-No tienes que hacerlo todo hoy. Vamos paso a paso: primero **anclar y bajar la alerta**, luego
-**mirar con curiosidad**, luego **acompañarte con amor**, y llevarlo a **tu vida y tus valores**.
-Yo te voy diciendo qué toca cada día. ¿Empezamos?
-
-> **Micro-refuerzos:** cada práctica del plan abre con 1 frase que la ata a la historia
-> (p. ej. Calma en 4 pasos → *«Ahora mismo el mono tiene el volante. Vamos a recuperarlo, sin
-> pelear.»*). Así la herramienta siempre *significa* algo.
+**Micro-refuerzo:** cada práctica abre con una frase tuya que la ata a la historia
+(p. ej. Calma en 4 pasos → *«Ahora el mono tiene el volante. Vamos a recuperarlo, sin pelear.»*).
 
 ---
 
 ## 2. El punto de partida (evaluación → recomendación)
 
-**Problema actual:** «Cuestionario TEC» y «Screening TEC/AIS» aparecen como dos evaluaciones
-sueltas y nadie sabe cuál elegir.
+Una **única evaluación breve de entrada** (L/D/C) que **sitúa y recomienda por dónde empezar**.
+El screening profundo queda como «evaluación completa» opcional (uso clínico), no como puerta.
 
-**Solución:** una **única evaluación breve de entrada** (L/D/C, la ligera) que **sitúa y
-recomienda por dónde empezar**. El screening profundo queda como opción (uso clínico), no como
-puerta de entrada del consumidor.
-
-**Lógica de recomendación** (reutiliza el «foco sugerido» que ya calcula el cuestionario: el
-parámetro con **menor** puntuación = foco de arranque):
-
-| Foco (lo más flojo) | Qué significa en cristiano | Motor de arranque | Primera práctica |
+| Foco (lo más flojo) | En cristiano | Motor de arranque | Primera práctica |
 |---|---|---|---|
-| **Latencia** baja | Reacciono sin pausa, salto rápido | Regular la alerta | **Calma en 4 pasos** |
-| **Densidad** baja | Me cuesta sentirme por dentro, poca presencia | Anclar la atención dentro | **Explora con curiosidad** / **Mapa de tu cuerpo** |
-| **Continuidad** baja | Me disperso, me cuesta sostener y actuar | Dirección y valores | **Tu brújula de valores** |
+| **Latencia** baja | Reacciono sin pausa (el mono conduce) | Regular la alerta | **Calma en 4 pasos** |
+| **Densidad** baja | Me cuesta sentirme por dentro | Anclar la atención dentro | **Explora con curiosidad** / **Mapa del cuerpo** |
+| **Continuidad** baja | Me disperso, me cuesta sostener | Dirección y valores | **Tu brújula de valores** |
 
-La evaluación **solo decide dónde EMPIEZAS**. El plan cubre igualmente los dos motores con el
-tiempo. Resultado presentado en lenguaje consumer, sin números clínicos crudos (opción de ver el
-detalle L/D/C plegado).
+La evaluación **solo decide dónde EMPIEZAS**; el plan cubre los dos motores con el tiempo.
+**Se repropone cada 2 semanas** para ver evolución (decidido).
 
 ---
 
-## 3. El plan de cambio (fases)
+## 3. El plan de cambio (fases) — **libre pero guiado**
 
-Programa progresivo. Cada fase tiene un **objetivo clínico**, unas **prácticas** y un **criterio
-de avance** (sugerido, no bloqueante por defecto — ver decisiones abiertas).
+Decidido: **fases libres** (la persona avanza a su ritmo, nunca se bloquea) pero **la app
+sugiere** siempre el siguiente paso. **Duración sugerida: 1–2 semanas por fase.**
+**Orden (confirmado): anclar/alerta → curiosidad → amor → valores.**
 
-| Fase | Nombre (consumer) | Objetivo | Prácticas | Avance sugerido |
+| Fase | Nombre (consumer) | Objetivo | Prácticas | Sugerido |
 |---|---|---|---|---|
-| **0** | Entiende | Historia del mono + evaluación → tu punto de partida | Narrativa + evaluación | 1 vez |
-| **1** | Anclar y bajar la alerta | El vector atencional interno básico; primeras bajadas de alerta; el cuerpo empieza a sentirse percibido | Calma en 4 pasos · Mapa de tu cuerpo · Acompaña lo que sientes | ~1–2 semanas |
-| **2** | Mirar con curiosidad | La atención interna deja de ser «buscar el peligro» y pasa a **exploración** → empieza amenaza→reto | Explora con curiosidad · (sigue) Mapa de tu cuerpo | ~1–2 semanas |
-| **3** | Acompañarte con amor | Cambia la relación con el dolor: de **objeto de control** a **objeto de cuidado** → el entorno deja de ser obsesión de control | Cuídate, no te controles · Acompaña lo que sientes | ~1–2 semanas |
-| **4** | Vivir desde tus valores | Llevar el cambio hacia fuera (los demás, el mundo); actuar desde valores; consolidar reto>amenaza | Tu brújula de valores · Tu semana con atención | continuo |
+| **0** | Entiende | Historia del mono + evaluación → punto de partida | Narrativa + evaluación | 1 vez |
+| **1** | Anclar y bajar la alerta | Vector atencional interno básico; el cuerpo empieza a sentirse percibido; primeras bajadas de alerta | Calma en 4 pasos · Mapa del cuerpo · Acompaña lo que sientes | 1–2 sem |
+| **2** | Mirar con curiosidad | La atención interna deja de «buscar el peligro» y pasa a exploración → empieza amenaza→reto | Explora con curiosidad · (sigue) Mapa del cuerpo | 1–2 sem |
+| **3** | Acompañarte con amor | La relación con el dolor pasa de **control** a **cuidado**; *AIS = relación conmigo mismo* | Cuídate, no te controles · Acompaña lo que sientes | 1–2 sem |
+| **4** | Vivir desde tus valores | Llevar el cambio hacia fuera (los demás, el mundo); actuar desde valores | Tu brújula de valores · Tu semana con atención | continuo |
 
-**Latido diario (transversal a todas las fases):** el check-in **«¿Cómo está tu mente hoy?»**
-(estado del mono) + racha. Es el hábito mínimo que sostiene el plan; 30–60 segundos.
-
-**Cómo se ve el progreso:** «Estás en la Fase 2 · Mirar con curiosidad» + barra de avance del plan.
+La app muestra «Estás en la Fase 2» + barra de avance, pero **cualquier práctica es accesible
+siempre** (sección Explora). Nunca bloquea; solo orienta.
 
 ---
 
-## 4. La pantalla «Hoy» (cómo DIRIGE)
+## 4. El latido diario: «Visitas al mono» (tu propio hábito)
+
+Directo de tu lámina 15. Es el hábito mínimo que sostiene el plan y alimenta la racha 🔥.
+
+- **5 momentos** para marcar al acabar el día: *al despertar · al tomar un café · al entrar en
+  casa · con alguien importante · antes de dormir*.
+- Cada casilla significa una sola cosa: **«hoy he vuelto a mí»**. No es para puntuar ni hacerlo
+  perfecto. *Con cinco visitas breves basta.*
+- *No visitas al mono para calmarte, sino para no abandonarte. El objetivo es la compañía, no el alivio.*
+
+Junto a esto, la práctica base **«Sentarme junto al mono» (3 min)** de tu lámina 15
+(Respira y aterriza · Mira hacia dentro/AIS · Valida al mono · Una microacción con valor).
+
+---
+
+## 5. La métrica **amenaza → reto** (decidido: visible y registrada)
+
+Un termómetro sencillo que la persona ve y que registramos para mostrar evolución:
+
+> **«Ahora mismo, la vida y los demás los siento más como…»**
+> `Amenaza 1 — 2 — 3 — 4 — 5 Reto`
+
+- Se pregunta **cada 2 semanas** (junto a la re-evaluación L/D/C) y, opcionalmente, se puede
+  registrar cuando la persona quiera.
+- En **Mi progreso** aparece como una **línea de evolución** («de amenaza hacia reto») junto a la
+  racha y las fases. Es el indicador que resume el «para qué» de todo el plan.
+
+---
+
+## 6. La pantalla «Hoy» (cómo DIRIGE)
 
 En vez de 11 cards planas:
-
 1. **Tu momento de hoy** — *un solo* paso sugerido (el siguiente del plan) + su frase de «por qué».
-   Botón grande: *Empezar*.
-2. **Check-in del día** — «¿Cómo está tu mente hoy?» (si no lo has hecho).
-3. **Tu progreso en el plan** — fase actual + racha 🔥.
-4. **Explora** (secundario) — todas las prácticas, para autonomía de quien quiera saltarse el guion.
+2. **Visitas al mono** — los 5 momentos del día (marca lo que has hecho).
+3. **Tu progreso** — fase actual · racha 🔥 · termómetro amenaza→reto.
+4. **Explora** (secundario) — todas las prácticas + «La historia», para autonomía.
 
 ---
 
-## 5. Avisos al móvil (sostener el hábito)
+## 7. Avisos al móvil (sostener el hábito)
 
-Objetivo: que la persona **use** las herramientas como plan de cambio, no que las olvide.
-
-- **Recordatorio diario** «Tu momento de hoy» a una hora elegida → lleva al paso del día.
+- **Recordatorio diario** «Tu momento de hoy» / «¿Visitas al mono?» a una hora elegida.
 - **Re-enganche suave** si lleva días sin entrar (sin culpabilizar).
-- **Hitos**: fin de fase, rachas.
+- **Hitos**: fin de fase, rachas, «toca tu evaluación quincenal».
 
-**Verdad técnica (importante):** las notificaciones *fiables* con la app cerrada **requieren la
-app nativa** (Capacitor · Fase C). En PWA son limitadas, y en iPhone prácticamente no funcionan.
-- **Interino (ahora, PWA):** recordatorio in-app + «tu momento de hoy» al abrir.
-- **Definitivo (Fase C):** notificaciones locales nativas (Capacitor) a la hora elegida.
+**Verdad técnica:** avisos fiables con la app cerrada = **app nativa (Capacitor · Fase C)**; en
+PWA/iPhone casi no funcionan. Interino (ahora): recordatorio in-app al abrir.
 
 ---
 
-## 6. Impacto en las dos apps
+## 8. Decisiones clínicas — **RESUELTAS** ✅
 
-- **Anclado en mí (consumer):** se convierte en el plan guiado (secciones 1–5). Es su alma.
-- **App clínica (profesionales):** mantiene la **caja completa** (los que saben qué elegir), con un
-  simple «empieza aquí» opcional. No se toca su lógica.
+1. **Fases:** libres, pero la app sugiere cómo ir. ✅
+2. **Duración:** 1–2 semanas por fase. ✅
+3. **Orden de motores:** anclar/alerta → curiosidad → amor → valores. ✅
+4. **Guion del mono:** tu deck *«¿Quién conduce tu vida?»* (voz propia). ✅
+5. **Métrica amenaza→reto:** visible, registrada y mostrada en el progreso. ✅
+6. **Evaluación:** repropuesta cada 2 semanas para ver evolución. ✅
 
----
-
-## 7. Decisiones abiertas para ti (clínicas)
-
-1. **Cadencia de fases:** ¿sugerida y libre (recomendado: la persona avanza a su ritmo, la app
-   solo orienta) o **bloqueante** (no desbloquea la Fase 2 hasta completar X de la Fase 1)?
-2. **Duración de cada fase:** ¿te encaja ~1–2 semanas por fase, o prefieres otra progresión?
-3. **Latido diario:** ¿el check-in diario es «estado del mono» tal cual, o quieres una versión
-   aún más corta (10 s) para el día a día?
-4. **Evaluación de entrada:** ¿el cuestionario L/D/C ligero como puerta, y el screening profundo
-   como «evaluación completa» opcional? ¿Cada cuánto reproponer la evaluación (p. ej. cada 2–4
-   semanas) para ver evolución?
-5. **Orden de los motores:** el plan propone *anclar/alerta → curiosidad → amor → valores*.
-   ¿Es el orden terapéutico que quieres, o cambiarías alguna fase de sitio?
-6. **Tono y textos:** el guion de la historia del mono, ¿fiel a tu voz? ¿Qué frase cambiarías?
-7. **Amenaza→reto:** ¿quieres una métrica visible para la persona (p. ej. «cómo percibo hoy:
-   más amenaza / más reto») que se registre y se vea en el progreso?
+*(Pendiente menor de tu criterio: ¿la práctica base «Sentarme junto al mono» de 3 min la añadimos
+como práctica propia, o basta con las 7 actuales + Visitas al mono?)*
 
 ---
 
-## 8. Qué construiría después de tu visto bueno (orden)
+## 9. Qué construyo tras tu visto bueno (orden)
 
-1. **Narrativa del mono** (onboarding de 6 pantallas) + frases de «por qué» por práctica.
-2. **Evaluación de entrada → recomendación** (reusa el cálculo de foco del cuestionario).
-3. **Motor de plan** (fases + estado del usuario + pantalla «Hoy» dirigida + progreso por fase).
-4. **Recordatorio in-app** interino.
-5. (Fase C) **Notificaciones nativas** al empaquetar con Capacitor.
+1. **La historia** (onboarding de 6 pantallas con tu voz) + «La historia completa» (17 láminas) +
+   frases de «por qué» por práctica.
+2. **Evaluación de entrada → recomendación** (reusa el foco L/D/C) + reevaluación quincenal.
+3. **Motor de plan** (fases libres-guiadas + pantalla «Hoy» dirigida + progreso por fase).
+4. **Visitas al mono** (hábito diario + racha) y **termómetro amenaza→reto** (registro + evolución).
+5. **Recordatorio in-app** interino.
+6. (Fase C) **Notificaciones nativas** (Capacitor).
 
-> Nada de esto requiere tirar lo hecho: se apoya en el motor TEC/AIS y en las prácticas actuales.
+> Todo se apoya en el motor TEC/AIS y en las prácticas actuales. No se tira nada.
