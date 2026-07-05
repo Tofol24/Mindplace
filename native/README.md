@@ -154,6 +154,19 @@ Problema conocido de Capacitor (capa Cordova) con Xcode recientes. Fix:
   ```
   y luego `cd native/ios/App && pod install`.
 
+### Otros errores conocidos de Capacitor 6 + Xcode 16/26 (por orden de aparición)
+Xcode reciente es más estricto; pueden salir estos, todos con arreglo:
+1. **«double-quoted include "CDV…​.h"…»** → Podfile: `CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = 'NO'` (ver arriba) + `pod install`.
+2. **«Clang dependency scanning failure» / «Unable to resolve module 'Capacitor'/'Cordova'»** y
+   **«Declaration of 'CDVScreenOrientationDelegate' must be imported from module…»** →
+   - Build Settings (proyectos **App** y **Pods**) → **Explicitly Built Modules = No**.
+   - Parche del header que le falta un import (lo hace `fix-capacitor-xcode.sh`).
+3. **«Sandbox: bash deny file-read-data … Pods-App-frameworks.sh … Operation not permitted»** →
+   Proyecto **App** → Build Settings → **User Script Sandboxing = No**.
+
+**Atajo:** ejecuta `bash native/fix-capacitor-xcode.sh` (parchea el header y el Podfile) y aplica en
+Xcode los 3 ajustes que indica al final. Luego **Product → Clean Build Folder → Archive**.
+
 ### Avisos del Splash («Unassigned: splash-2732x2732»)
 Son solo advertencias (imágenes de splash sin asignar en el catálogo). No bloquean el build; puedes
 ignorarlas o asignar las imágenes en el asset catalog «Splash» si quieres una pantalla de inicio propia.
