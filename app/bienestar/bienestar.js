@@ -81,10 +81,11 @@
   if (!A.visitas) A.visitas = {};
   if (!A.amenaza) A.amenaza = [];
   if (!A.rutina) A.rutina = { avisos: false, momentos: [
-    { label: "Por la mañana", hora: "09:00", on: true },
-    { label: "A mediodía",     hora: "14:00", on: true },
-    { label: "Por la tarde",   hora: "20:00", on: true }
+    { label: "Por la mañana", hora: "09:00", on: true, practica: "respira" },
+    { label: "A mediodía",     hora: "14:00", on: true, practica: "respira" },
+    { label: "Por la tarde",   hora: "20:00", on: true, practica: "sentarse" }
   ] };
+  A.rutina.momentos.forEach(function (m) { if (!m.practica) m.practica = "respira"; }); // migración
 
   function db() { try { return JSON.parse(localStorage.getItem("aprens_db")) || { tools: {} }; } catch (e) { return { tools: {} }; } }
   function ymd(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
@@ -237,14 +238,15 @@
     if ($("hGo")) $("hGo").onclick = function () { openPractice(sug.pid); };
     if ($("hEval")) $("hEval").onclick = openEval;
     if ($("hPlan")) $("hPlan").onclick = function () { switchView("plan"); };
-    var ng = $("nudgeGo"); if (ng) ng.onclick = function () { openPractice("respira"); };
+    var ng = $("nudgeGo"); if (ng) ng.onclick = function () { openPractice(_pendPractica); };
     wireVisitas(v);
   }
   function nowHHMM() { var d = new Date(); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function momPractica(m) { return (m && PRACTICES[m.practica]) ? m.practica : "respira"; }
   function pendingMomento() {
-    if (!A.rutina || doneToday("respira")) return null;
+    if (!A.rutina) return null;
     var hhmm = nowHHMM();
-    var passed = A.rutina.momentos.filter(function (m) { return m.on && m.hora <= hhmm; });
+    var passed = A.rutina.momentos.filter(function (m) { return m.on && m.hora <= hhmm && !doneToday(momPractica(m)); });
     return passed.length ? passed[passed.length - 1] : null;
   }
   function nextMomento() {
@@ -253,11 +255,15 @@
     var up = A.rutina.momentos.filter(function (m) { return m.on && m.hora > hhmm; });
     return up.length ? up[0] : null;
   }
+  var _pendPractica = "respira";
   function nudgeHTML() {
     var m = pendingMomento();
-    if (m) return '<div class="nudge"><div class="nu-txt"><b>🫁 ' + esc(m.label) + '</b><span>Un minuto de respiración curiosa: para, respira con curiosidad y vuelve al aquí y ahora.</span></div><button class="nu-go" id="nudgeGo">Vamos</button></div>';
+    if (m) {
+      _pendPractica = momPractica(m); var pr = PRACTICES[_pendPractica];
+      return '<div class="nudge"><div class="nu-txt"><b>' + pr.emoji + " " + esc(m.label) + '</b><span>' + esc(pr.tit) + " · " + esc(pr.why) + '</span></div><button class="nu-go" id="nudgeGo">Vamos</button></div>';
+    }
     var nx = nextMomento();
-    if (nx && A.rutina.avisos) return '<div class="nudge soft"><div class="nu-txt"><span>⏰ Próximo momento de presencia: <b>' + esc(nx.label) + " · " + nx.hora + '</b></span></div></div>';
+    if (nx && A.rutina.avisos) { var pn = PRACTICES[momPractica(nx)]; return '<div class="nudge soft"><div class="nu-txt"><span>⏰ Próximo: <b>' + esc(nx.label) + " · " + nx.hora + '</b> · ' + esc(pn.tit) + '</span></div></div>'; }
     return "";
   }
   function visitasHTML() {
@@ -489,7 +495,7 @@
       var pr = m.hora.split(":"), t = new Date(); t.setHours(+pr[0], +pr[1], 0, 0);
       var ms = t - now;
       if (ms > 0 && ms < 24 * 3600000) notifTimers.push(setTimeout(function () {
-        try { new Notification("Anclado en mí", { body: m.label + ": un minuto de respiración curiosa 🫁", tag: "anclado" }); } catch (e) {}
+        try { var pr = PRACTICES[momPractica(m)]; new Notification("Anclado en mí", { body: m.label + ": " + pr.tit + " " + pr.emoji, tag: "anclado" }); } catch (e) {}
       }, ms));
     });
   }
@@ -505,9 +511,9 @@
       }).then(function () {
         var notifs = [];
         A.rutina.momentos.filter(function (m) { return m.on; }).forEach(function (m, i) {
-          var pr = m.hora.split(":");
-          notifs.push({ id: 1000 + i, title: "Anclado en mí", body: m.label + ": un minuto de respiración curiosa 🫁",
-            schedule: { on: { hour: +pr[0], minute: +pr[1] }, repeats: true }, smallIcon: "ic_stat_icon" });
+          var hm = m.hora.split(":"), pr = PRACTICES[momPractica(m)];
+          notifs.push({ id: 1000 + i, title: "Anclado en mí", body: m.label + ": " + pr.tit + " " + pr.emoji,
+            schedule: { on: { hour: +hm[0], minute: +hm[1] }, repeats: true }, smallIcon: "ic_stat_icon" });
         });
         if (notifs.length) return LN.schedule({ notifications: notifs });
       }).catch(function () {});
@@ -521,7 +527,11 @@
       '<label class="accept" style="margin:14px 0 6px"><input type="checkbox" id="ruAvisos" ' + (r.avisos ? "checked" : "") + '> Avisarme en el móvil a esas horas</label>' +
       '<div class="ru-note">En la web los avisos solo llegan con la app abierta. La app instalada del móvil (Fase nativa) los hará <b>siempre</b>, aunque esté cerrada.</div>' +
       '<div id="ruList" style="margin-top:12px">' + r.momentos.map(function (m, i) {
-        return '<div class="ru-row"><input type="checkbox" data-on="' + i + '" ' + (m.on ? "checked" : "") + '><span>' + esc(m.label) + '</span><input type="time" data-hora="' + i + '" value="' + m.hora + '"></div>';
+        var opts = Object.keys(PRACTICES).map(function (k) {
+          return '<option value="' + k + '"' + (momPractica(m) === k ? " selected" : "") + '>' + PRACTICES[k].emoji + " " + esc(PRACTICES[k].tit) + '</option>';
+        }).join("");
+        return '<div class="ru-row"><div class="ru-top"><input type="checkbox" data-on="' + i + '" ' + (m.on ? "checked" : "") + '><span>' + esc(m.label) + '</span><input type="time" data-hora="' + i + '" value="' + m.hora + '"></div>' +
+          '<select class="ru-pr" data-pr="' + i + '">' + opts + '</select></div>';
       }).join("") + '</div>' +
       '<button class="btn-primary" id="ruSave" style="margin-top:14px">Guardar</button>';
     $("rutina").style.display = "flex";
@@ -530,6 +540,7 @@
       A.rutina.momentos.forEach(function (m, i) {
         m.on = $("ruList").querySelector('[data-on="' + i + '"]').checked;
         m.hora = $("ruList").querySelector('[data-hora="' + i + '"]').value || m.hora;
+        m.practica = $("ruList").querySelector('[data-pr="' + i + '"]').value || m.practica;
       });
       var quiere = $("ruAvisos").checked;
       var done = function (ok) { A.rutina.avisos = ok; saveA(); scheduleNotifs(); $("rutina").style.display = "none"; toast(ok ? "Avisos activados" : "Rutina guardada"); render(); };
