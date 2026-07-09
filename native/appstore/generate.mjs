@@ -51,14 +51,14 @@ async function appBuffer(ctx, setup) {
 }
 
 async function frame(browser, buf, caption, out) {
-  const ctx = await browser.newContext({ viewport: { width: 1290, height: 2796 }, deviceScaleFactor: 1 });
+  const ctx = await browser.newContext({ viewport: { width: 1284, height: 2778 }, deviceScaleFactor: 1 });
   const page = await ctx.newPage();
   const b64 = buf.toString('base64');
   await page.setContent(`<html><body style="margin:0">
-    <div style="width:1290px;height:2796px;box-sizing:border-box;background:linear-gradient(165deg,#e8f4ef,#c7e2d7);
-      font-family:-apple-system,system-ui,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;padding:150px 60px 0">
+    <div style="width:1284px;height:2778px;box-sizing:border-box;background:linear-gradient(165deg,#e8f4ef,#c7e2d7);
+      font-family:-apple-system,system-ui,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;padding:148px 60px 0">
       <div style="font-size:72px;font-weight:800;color:#1f423a;text-align:center;line-height:1.14;max-width:1090px;letter-spacing:-1.5px">${caption}</div>
-      <img src="data:image/png;base64,${b64}" style="width:940px;margin-top:80px;border-radius:64px;box-shadow:0 44px 100px rgba(20,60,50,.30)"/>
+      <img src="data:image/png;base64,${b64}" style="width:936px;margin-top:80px;border-radius:64px;box-shadow:0 44px 100px rgba(20,60,50,.30)"/>
     </div></body></html>`);
   await page.waitForTimeout(200);
   await page.screenshot({ path: out });
