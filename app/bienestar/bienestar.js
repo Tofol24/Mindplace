@@ -55,6 +55,7 @@
 
   var PRACTICES = {
     calma:      { kind: "iframe", file: "bajar-alerta.html",       emoji: "🫁", tit: "Calma en 4 pasos",        why: "Ahora el mono tiene el volante. Vamos a recuperarlo, sin pelear." },
+    muscular:   { kind: "iframe", file: "ais-muscular.html",       emoji: "💪", tit: "Tensar y soltar",         why: "Cuando algo te activa, el cuerpo aprieta. Tensa y suelta cada grupo: enséñale a pasar de la tensión a la calma." },
     mapa:       { kind: "iframe", file: "mapa-interno.html",        emoji: "🫀", tit: "Mapa de tu cuerpo",        why: "Lleva la atención dentro: que tu cuerpo note que estás ahí." },
     acompanar:  { kind: "iframe", file: "acompanar-sensacion.html", emoji: "🤝", tit: "Acompaña lo que sientes",  why: "Sentarte junto al mono: estar con lo que sientes, sin luchar." },
     sentarse:   { kind: "mini",   mini: "sentarse", emoji: "🧘", tit: "Sentarme junto al mono",   why: "La práctica base, 3 minutos: parar, sentir, validar y dar un paso." },
@@ -65,7 +66,7 @@
     agenda:     { kind: "iframe", file: "agenda-atencional.html",   emoji: "🗓️", tit: "Tu semana con atención",   why: "Llevar la presencia a tu día a día." }
   };
   var PHASES = [
-    { n: 1, nombre: "Anclar y bajar la alerta", objetivo: "Que el cuerpo empiece a sentirse percibido y baje la alerta.", practicas: ["calma", "sentarse", "mapa", "acompanar"] },
+    { n: 1, nombre: "Anclar y bajar la alerta", objetivo: "Que el cuerpo empiece a sentirse percibido y baje la alerta.", practicas: ["calma", "muscular", "sentarse", "mapa", "acompanar"] },
     { n: 2, nombre: "Mirar con curiosidad",     objetivo: "La atención interna deja de buscar el peligro y pasa a explorar.", practicas: ["curiosidad", "mapa", "sentarse"] },
     { n: 3, nombre: "Acompañarte con amor",     objetivo: "Cambiar la relación con el dolor: de control a cuidado.", practicas: ["amor", "acompanar", "sentarse"] },
     { n: 4, nombre: "Vivir desde tus valores",  objetivo: "Llevar el cambio hacia fuera: los demás, el mundo, tus valores.", practicas: ["valores", "agenda", "sentarse"] }
@@ -111,7 +112,7 @@
   function evalDue() { return !A.eval || daysSince(A.eval.fecha) >= 14; }
   function doneToday(pid) {
     // heurística: ¿hay registro hoy de la herramienta ligada?
-    var map = { calma: "bajar_alerta", mapa: "mapa_atencion_interna", acompanar: "acompanar_sensacion", curiosidad: "ais_curiosidad", amor: "ais_amor", valores: "brujula_valores", agenda: "agenda_atencional", sentarse: "sentarse_mono", respira: "respiracion_curiosa" };
+    var map = { calma: "bajar_alerta", muscular: "ais_muscular", mapa: "mapa_atencion_interna", acompanar: "acompanar_sensacion", curiosidad: "ais_curiosidad", amor: "ais_amor", valores: "brujula_valores", agenda: "agenda_atencional", sentarse: "sentarse_mono", respira: "respiracion_curiosa" };
     var tid = map[pid]; if (!tid) return false;
     return allRecords().some(function (x) { return x.tool === tid && recDate(x.r) === hoy(); });
   }
@@ -467,6 +468,10 @@
     [/con tu psic[oó]logo\/?a?/gi, "contigo"], [/a tu psic[oó]logo\/?a?/gi, "para ti"],
     [/tu psic[oó]logo\/?a?/gi, "ti"], [/psic[oó]logo\/?a?|psic[oó]loga/gi, "un profesional"],
     [/APRENS Psicolog[ií]a?/gi, "Anclado en mí"],
+    [/AIS muscular/gi, "Tensar y soltar"], [/AIS a nivel muscular/gi, "atención al cuerpo"],
+    [/AIS canalizado a nivel muscular/gi, "atención al cuerpo"],
+    [/la atenci[oó]n interna sensorial/gi, "la atención al cuerpo"], [/atenci[oó]n interna sensorial/gi, "atención al cuerpo"],
+    [/\bAIS\b/g, "la práctica"],
     [/\ben la sesi[oó]n\b|\ba la sesi[oó]n\b|\ben sesi[oó]n\b/gi, "cuando quieras"], [/el panel de tu \w+/gi, "tu espacio"]
   ];
   var sweeping = false;
