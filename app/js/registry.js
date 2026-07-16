@@ -36,6 +36,12 @@ window.APRENS_TOOLS = [
   { id:"ais_muscular", emoji:"💪", nombre:"AIS muscular",
     desc:"Tensar y soltar (Jacobson): anclar la atención en el músculo, de la tensión a la distensión.",
     migrada:true, iframe:"tools-standalone/ais-muscular.html" },
+  { id:"herramienta_diaria", emoji:"🌿", nombre:"Herramienta diaria",
+    desc:"Tu práctica diaria de respiración, anclaje y presencia (vía respiración).",
+    migrada:true, iframe:"tools-standalone/herramienta-diaria.html" },
+  { id:"protocolo_ais", emoji:"🎧", nombre:"Protocolo AIS (audio)",
+    desc:"Entrenar la atención hacia dentro por el oído: protocolo progresivo en 6 fases (vía auditiva).",
+    migrada:true, iframe:"tools-standalone/protocolo-ais.html" },
 
   { id:"screening_tec", emoji:"🧪", nombre:"Screening TEC/AIS",
     desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
