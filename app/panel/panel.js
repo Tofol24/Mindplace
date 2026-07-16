@@ -167,7 +167,7 @@
     donde_esta_mono: "¿Dónde está el mono?", agenda_atencional: "Agenda atencional",
     ais_curiosidad: "AIS curiosidad", bajar_alerta: "Bajar la alerta",
     brujula_valores: "Brújula de valores", acompanar_sensacion: "Acompañar la sensación",
-    ais_amor: "AIS desde el amor", mapa_atencion_interna: "Mapa interno",
+    ais_amor: "AIS desde el amor", ais_muscular: "AIS muscular", mapa_atencion_interna: "Mapa interno",
     screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC",
     screening_seg: "Screening · seguimiento", tracker_tec: "Tracker TEC",
     autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
@@ -349,6 +349,14 @@
       var maa = aa / ac.length, mad = ad / ac.length;
       out.acompanar = { n: ac.length, antes: round1(maa), despues: round1(mad), deltaAbs: round1(maa - mad), pct: maa ? Math.round(100 * (maa - mad) / maa) : 0 };
     }
+    var mus = ((p.tools.ais_muscular && p.tools.ais_muscular.records) || [])
+      .map(function (r) { return { a: num(pick(r.activacion_antes, r.antes)), d: num(pick(r.activacion_despues, r.despues)) }; })
+      .filter(function (r) { return r.a != null && r.d != null; });
+    if (mus.length) {
+      var ua = 0, ud = 0; mus.forEach(function (r) { ua += r.a; ud += r.d; });
+      var mua = ua / mus.length, mud = ud / mus.length;
+      out.muscular = { n: mus.length, antes: round1(mua), despues: round1(mud), deltaAbs: round1(mua - mud), pct: mua ? Math.round(100 * (mua - mud) / mua) : 0 };
+    }
     var bv = ((p.tools.brujula_valores && p.tools.brujula_valores.records) || []).slice()
       .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
     if (bv.length) {
@@ -389,6 +397,7 @@
     if (oc) {
       if (oc.alerta) lines.push("Regulación de la alerta: media " + oc.alerta.antes + " → " + oc.alerta.despues + " (" + pctSign(oc.alerta.pct) + ") en " + oc.alerta.n + " ejercicio" + (oc.alerta.n === 1 ? "" : "s") + ".");
       if (oc.acompanar) lines.push("Acompañar la sensación: intensidad " + oc.acompanar.antes + " → " + oc.acompanar.despues + " (" + pctSign(oc.acompanar.pct) + ") en " + oc.acompanar.n + " registro" + (oc.acompanar.n === 1 ? "" : "s") + ".");
+      if (oc.muscular) lines.push("AIS muscular (tensión→distensión): activación " + oc.muscular.antes + " → " + oc.muscular.despues + " (" + pctSign(oc.muscular.pct) + ") en " + oc.muscular.n + " sesión" + (oc.muscular.n === 1 ? "" : "es") + ".");
       if (oc.valores && oc.valores.discDelta != null) lines.push("Valores (ACT): discrepancia " + oc.valores.discFirst + " → " + oc.valores.discLast + " (" + fmtDelta(oc.valores.discDelta) + "); cercanía " + fmt(oc.valores.cerFirst) + " → " + fmt(oc.valores.cerLast) + ".");
       if (oc.mono) { var pl = Math.round(100 * oc.mono.counts.lado / oc.mono.total); lines.push("Posición del mono: " + pl + "% de los check-ins «a mi lado» (acompañamiento) sobre " + oc.mono.total + " registros."); }
     }
@@ -433,6 +442,7 @@
     var outParts = [];
     if (oc && oc.alerta) outParts.push(outBlock("Regulación de la alerta", oc.alerta.antes, oc.alerta.despues, pctSign(oc.alerta.pct), oc.alerta.n + " ejercicios de «Bajar la alerta»"));
     if (oc && oc.acompanar) outParts.push(outBlock("Acompañar la sensación", oc.acompanar.antes, oc.acompanar.despues, pctSign(oc.acompanar.pct), oc.acompanar.n + " registros (intensidad 0–10)"));
+    if (oc && oc.muscular) outParts.push(outBlock("AIS muscular (tensión→distensión)", oc.muscular.antes, oc.muscular.despues, pctSign(oc.muscular.pct), oc.muscular.n + " sesiones (activación 0–10)"));
     if (oc && oc.valores) outParts.push(
       '<div class="inf-out"><h4>Valores (ACT) · brújula</h4>' +
       '<div class="inf-ba"><span>' + fmt(oc.valores.discFirst) + (oc.valores.max ? "/" + oc.valores.max : "") + '</span><i>→</i><span>' + fmt(oc.valores.discLast) + (oc.valores.max ? "/" + oc.valores.max : "") + '</span>' +
@@ -514,6 +524,7 @@
     L.push("3) RESULTADOS DE LAS TAREAS (antes → después)");
     if (oc && oc.alerta) L.push("   - Regulación de la alerta: " + oc.alerta.antes + " → " + oc.alerta.despues + " (" + pctSign(oc.alerta.pct) + "; n=" + oc.alerta.n + ")");
     if (oc && oc.acompanar) L.push("   - Acompañar la sensación: " + oc.acompanar.antes + " → " + oc.acompanar.despues + " (" + pctSign(oc.acompanar.pct) + "; n=" + oc.acompanar.n + ")");
+    if (oc && oc.muscular) L.push("   - AIS muscular (tensión→distensión): " + oc.muscular.antes + " → " + oc.muscular.despues + " (" + pctSign(oc.muscular.pct) + "; n=" + oc.muscular.n + ")");
     if (oc && oc.valores) L.push("   - Valores (ACT): discrepancia " + fmt(oc.valores.discFirst) + " → " + fmt(oc.valores.discLast) + " (" + fmtDelta(oc.valores.discDelta) + "); cercanía " + fmt(oc.valores.cerFirst) + " → " + fmt(oc.valores.cerLast));
     if (oc && oc.mono) L.push("   - Posición del mono: " + Math.round(100 * oc.mono.counts.lado / oc.mono.total) + "% «a mi lado» (n=" + oc.mono.total + ")");
     if (!oc) L.push("   (sin medidas antes→después)");

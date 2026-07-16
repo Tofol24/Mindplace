@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1B4F8C">
+<title>AIS muscular · APRENS</title>
+<style>
+:root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#EAF7F0;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--oro:#C8973A;--tension:#D9663D;--calma:#5F9070;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;margin:0;padding-bottom:env(safe-area-inset-bottom);}
+.header{background:var(--azul);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+.hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
+.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.hsub{font-size:11.5px;opacity:.8;}
+.wrap{max-width:540px;margin:0 auto;padding:20px 18px 40px;}
+
+/* pasos genéricos */
+.step{text-align:center;animation:fade .3s;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.step-ico{font-size:58px;line-height:1;margin:4px 0 10px;}
+.step-tit{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--azul);margin:0 0 6px;}
+.step-sub{font-size:15.5px;color:#3a3f52;line-height:1.55;margin:0 auto 18px;max-width:400px;}
+
+.btn{border:none;border-radius:40px;font-family:inherit;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none;}
+.big{width:100%;padding:19px;font-size:18px;background:var(--azul);color:#fff;box-shadow:0 6px 18px rgba(27,79,140,.32);}
+.big.green{background:var(--verde);box-shadow:0 6px 18px rgba(46,125,94,.32);}
+.big:active{transform:scale(.97);}
+.big:disabled{opacity:.5;filter:grayscale(.3);cursor:default;}
+.ghost{background:#fff;color:var(--azul);border:2px solid var(--azulLt);padding:13px 22px;font-size:15px;}
+.mini{background:transparent;color:var(--gris);font-size:14px;padding:10px;font-weight:600;}
+
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 20px rgba(27,79,140,.08);margin-bottom:16px;}
+.idea{background:#fff;border-left:4px solid var(--oro);border-radius:0 14px 14px 0;padding:14px 16px;margin:0 0 18px;font-size:14.5px;line-height:1.6;color:#33384a;text-align:left;}
+.idea b{color:var(--azul);}
+
+/* escala / activación */
+.scale-em{font-size:32px;text-align:center;margin:2px 0 2px;}
+.scale-num{font-family:'Playfair Display',serif;font-size:60px;font-weight:700;text-align:center;line-height:1;transition:color .2s;}
+input[type=range]{width:100%;-webkit-appearance:none;height:14px;border-radius:8px;background:linear-gradient(90deg,#2E7D5E 0%,#E07B39 55%,#C0392B 100%);outline:none;margin:14px 0 4px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;background:#fff;border:4px solid var(--azul);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;background:#fff;border:4px solid var(--azul);cursor:pointer;}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--gris);}
+
+/* recorrido */
+.progreso{display:flex;gap:6px;justify-content:center;margin:2px 0 16px;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris);background:#fff;border:1.5px solid #E3EAF3;border-radius:20px;padding:5px 10px;cursor:pointer;transition:.15s;}
+.pchip .pe{font-size:15px;}
+.pchip.cur{border-color:var(--azul);color:var(--azul);box-shadow:0 0 0 2px var(--azulLt) inset;}
+.pchip.done{border-color:var(--calma);color:var(--calma);background:var(--verdeLt);}
+
+.layout{display:flex;gap:16px;align-items:flex-start;}
+@media(max-width:480px){.layout{flex-direction:column;align-items:stretch;}}
+.mapa{flex:0 0 158px;display:flex;justify-content:center;}
+.mapa svg{width:100%;max-width:158px;height:auto;display:block;}
+.panel{flex:1;min-width:0;}
+
+.zone{cursor:pointer;}
+.zone .zbg{fill-opacity:.12;transition:fill-opacity .3s, fill .3s;}
+.zone:hover .zbg{fill-opacity:.24;}
+.zone.cur .zbg{fill-opacity:.3;}
+.zone.done .zbg{fill:var(--calma);fill-opacity:.24;}
+.zone.tensa .zbg{fill:var(--tension);fill-opacity:.5;animation:pulse 1s ease-in-out infinite;}
+.zone.suelta .zbg{fill:var(--calma);fill-opacity:.42;}
+@keyframes pulse{0%,100%{fill-opacity:.34;}50%{fill-opacity:.6;}}
+
+/* anillo / cronómetro */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;margin:4px 0 6px;}
+.ring{width:132px;height:132px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:radial-gradient(circle,#EAF2FB 0%,#DCE7F3 72%);border:5px solid var(--azulLt);transform:scale(1);transition:transform .6s ease-in-out, border-color .4s, background .4s;}
+.ring.tensa{border-color:var(--tension);background:radial-gradient(circle,#FBEAE1 0%,#F3D3C4 72%);}
+.ring.suelta{border-color:var(--calma);background:radial-gradient(circle,#E7F3EC 0%,#CFE7D8 72%);}
+.ring-n{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--azul);line-height:1;}
+.ring.tensa .ring-n{color:var(--tension);}
+.ring.suelta .ring-n{color:var(--calma);}
+.ring-fase{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gris);margin-top:2px;}
+
+.grupo-nom{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--azul);text-align:center;margin:2px 0 1px;}
+.grupo-partes{font-size:12.5px;color:var(--gris);text-align:center;margin-bottom:10px;}
+.instr{background:var(--verdeLt);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.5;color:#1e5e44;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.instr.tensa{background:#FBEEE7;color:#8a3d1e;}
+
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.bwa{background:#25D366;color:#fff;padding:15px 22px;font-size:16px;}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:13px 20px;font-size:15px;}
+.cbox{display:none;}
+
+/* resultado */
+.res{background:var(--azul);color:#fff;border-radius:22px;padding:24px;text-align:center;margin-bottom:16px;}
+.res-row{display:flex;justify-content:center;align-items:center;gap:22px;}
+.res-big{font-family:'Playfair Display',serif;font-size:46px;font-weight:700;line-height:1;}
+.res-lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:1px;opacity:.85;}
+.res-msg{font-size:15px;line-height:1.5;text-align:center;color:#33384a;margin:0 0 16px;}
+.frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 12px 12px 0;border-left:4px solid var(--oro);padding:13px 15px;line-height:1.6;margin-top:6px;text-align:center;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 6px;}
+.opt{background:#fff;border:2px solid #E3EAF3;border-radius:16px;padding:14px 8px;font-size:14px;font-weight:600;color:#33384a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.12s;}
+.opt .em{font-size:26px;line-height:1;}
+.opt:active{transform:scale(.96);}
+.opt.sel{border-color:var(--calma);background:var(--verdeLt);color:var(--calma);box-shadow:0 0 0 3px #CDEBDD inset;}
+.aviso{background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div><div class="htitle">AIS muscular</div><div class="hsub">Tensar y soltar para volver a ti</div></div>
+</div>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============================================================================
+   AIS MUSCULAR · relajación progresiva (Jacobson) reconvertida al modelo TEC/AIS
+   ----------------------------------------------------------------------------
+   Idea clínica: la tensión muscular es la ALARMA del cuerpo (el mono apretando
+   el volante). En vez de entrar por el pensamiento —donde hay más resistencia—,
+   entramos por el MÚSCULO: lo tensamos a propósito y lo soltamos. Al soltar, el
+   cuerpo aprende una CONDUCTA ALTERNATIVA (tensión→distensión) y desasocia
+   entorno=amenaza. Es AIS canalizado a nivel muscular: atención interna
+   sensorial al contraste, con curiosidad, no para controlar el dolor sino para
+   acompañar al cuerpo y evitar que la tensión se acumule (contracturas, estrés).
+   ============================================================================ */
+let vista="intro";
+let activIni=6, activFin=6;
+let grupoIdx=0, fase="idle";           // idle | tensa | suelta | listo
+let hechos=[false,false,false,false,false];
+let zonaMasTension="";
+let tTimer=null;
+const app=document.getElementById("app");
+
+const T_TENSA=5, T_SUELTA=15;          // segundos por fase
+
+const GRUPOS=[
+  {k:"cara",   emoji:"😐", nombre:"Cara",             partes:"frente, ojos y mandíbula",
+   tensa:"Arruga la frente, aprieta los ojos y la mandíbula.",
+   suelta:"Suelta la cara: frente lisa, mandíbula floja, labios entreabiertos."},
+  {k:"cuello", emoji:"🧣", nombre:"Cuello y hombros", partes:"nuca y trapecios",
+   tensa:"Sube los hombros hacia las orejas y lleva la barbilla al pecho.",
+   suelta:"Baja los hombros despacio. Cuello largo, nuca suelta."},
+  {k:"tronco", emoji:"🫁", nombre:"Tronco",           partes:"pecho y abdomen",
+   tensa:"Coge aire, hincha el pecho y aprieta el abdomen (mete tripa).",
+   suelta:"Suelta el aire despacio y deja el vientre blando."},
+  {k:"brazos", emoji:"💪", nombre:"Brazos y manos",   partes:"puños y antebrazos",
+   tensa:"Cierra los puños con fuerza y aprieta los brazos al cuerpo.",
+   suelta:"Abre las manos. Brazos pesados, flojos, sueltos."},
+  {k:"piernas",emoji:"🦵", nombre:"Piernas y pies",   partes:"muslos, gemelos y pies",
+   tensa:"Estira las piernas, aprieta muslos y gemelos y curva los dedos.",
+   suelta:"Suelta las piernas. Deja los pies caer hacia fuera."}
+];
+const ZCOLOR={cara:"#6f9bc0",cuello:"#c4744b",tronco:"#b3502c",brazos:"#7f5aa0",piernas:"#6f9f78"};
+
+function bodySVG(){
+  return `<svg viewBox="0 0 220 420" role="img" aria-label="Mapa muscular con cinco grupos">
+    <defs><linearGradient id="bodyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaeff3"/><stop offset="1" stop-color="#dbe4ea"/></linearGradient></defs>
+    <g fill="url(#bodyG)" stroke="#cdd7df" stroke-width="1.4">
+      <ellipse cx="110" cy="44" rx="27" ry="31"/>
+      <rect x="100" y="70" width="20" height="16" rx="7"/>
+      <path d="M74,100 C70,140 70,200 82,238 C88,254 132,254 138,238 C150,200 150,140 146,100 C132,90 88,90 74,100 Z"/>
+      <path d="M74,104 C58,112 50,160 52,208 C53,220 64,219 66,208 C66,168 70,132 82,110 Z"/>
+      <path d="M146,104 C162,112 170,160 168,208 C167,220 156,219 154,208 C154,168 150,132 138,110 Z"/>
+      <path d="M94,250 C90,296 88,346 92,398 C94,410 106,410 108,398 C110,346 110,300 110,254 Z"/>
+      <path d="M126,250 C130,296 132,346 128,398 C126,410 114,410 112,398 C110,346 110,300 110,254 Z"/>
+    </g>
+    <g class="zone" data-k="cara"    role="button" tabindex="0" aria-label="Cara"            onclick="irGrupo(0)"><ellipse class="zbg" cx="110" cy="44"  rx="26" ry="30" fill="#6f9bc0"/></g>
+    <g class="zone" data-k="cuello"  role="button" tabindex="0" aria-label="Cuello y hombros" onclick="irGrupo(1)"><path class="zbg" d="M70,90 C64,88 156,88 150,90 C154,104 152,116 146,118 C120,110 100,110 74,118 C68,116 66,104 70,90 Z" fill="#c4744b"/></g>
+    <g class="zone" data-k="tronco"  role="button" tabindex="0" aria-label="Tronco"          onclick="irGrupo(2)"><ellipse class="zbg" cx="110" cy="168" rx="40" ry="60" fill="#b3502c"/></g>
+    <g class="zone" data-k="brazos"  role="button" tabindex="0" aria-label="Brazos y manos"  onclick="irGrupo(3)"><ellipse class="zbg" cx="60" cy="160" rx="16" ry="52" fill="#7f5aa0"/><ellipse class="zbg" cx="160" cy="160" rx="16" ry="52" fill="#7f5aa0"/></g>
+    <g class="zone" data-k="piernas" role="button" tabindex="0" aria-label="Piernas y pies"  onclick="irGrupo(4)"><ellipse class="zbg" cx="101" cy="330" rx="15" ry="78" fill="#6f9f78"/><ellipse class="zbg" cx="119" cy="330" rx="15" ry="78" fill="#6f9f78"/></g>
+  </svg>`;
+}
+
+function colorNivel(v){return v<=3?"var(--verde)":v<=6?"var(--naranja)":"var(--rojo)";}
+function emojiNivel(v){return v<=2?"😌":v<=4?"🙂":v<=6?"😐":v<=8?"😟":"😣";}
+
+function render(){
+  stopTimer();
+  if(vista==="intro")     return intro();
+  if(vista==="recorrido") return recorrido();
+  if(vista==="cierre")    return cierre();
+  if(vista==="resumen")   return resumen();
+}
+
+/* ---------- intro ---------- */
+function intro(){
+  app.innerHTML=`
+    <div class="step">
+      <div class="step-ico">💪</div>
+      <div class="step-tit">Entra por el músculo</div>
+    </div>
+    <div class="idea">
+      Cuando algo te activa, el cuerpo <b>aprieta</b> antes de que te des cuenta: mandíbula, hombros, barriga…
+      Esa tensión es la <b>alarma del cuerpo</b> (el mono apretando el volante).<br><br>
+      En vez de pelear con los pensamientos —donde hay más resistencia—, aquí entras por el músculo: lo
+      <b>tensas a propósito</b> y luego lo <b>sueltas</b>. Al soltar, tu cuerpo aprende una conducta nueva:
+      puede pasar de <b>tensión a distensión</b>. Así le enseñas que el entorno no siempre es amenaza y evitas
+      que la tensión se acumule (contracturas, cansancio).<br><br>
+      Es <b>AIS a nivel muscular</b>: llevar la atención interna sensorial al <b>contraste</b>, con curiosidad.
+    </div>
+    <div class="card">
+      <div class="scale-em">${emojiNivel(activIni)}</div>
+      <div class="scale-num" id="tv" style="color:${colorNivel(activIni)}">${activIni}</div>
+      <div style="text-align:center;font-size:13px;color:var(--gris);margin-bottom:2px">¿Cuánta activación/tensión notas ahora en el cuerpo?</div>
+      <input type="range" min="0" max="10" value="${activIni}" oninput="setIni(this.value)">
+      <div class="ends"><span>0 · suelto</span><span>10 · muy tenso</span></div>
+    </div>
+    <button class="btn big" onclick="empezar()">Empezar el recorrido →</button>
+    <div style="text-align:center;margin-top:8px;font-size:12.5px;color:var(--gris)">Busca un sitio tranquilo. Siéntate o túmbate. ~5 min.</div>`;
+}
+function setIni(v){activIni=+v;const t=document.getElementById("tv");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
+function empezar(){vista="recorrido";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];render();scrollTo(0,0);}
+
+/* ---------- recorrido guiado ---------- */
+function recorrido(){
+  const g=GRUPOS[grupoIdx];
+  const chips=GRUPOS.map((x,i)=>`<div class="pchip ${i===grupoIdx?'cur':''} ${hechos[i]?'done':''}" onclick="irGrupo(${i})"><span class="pe">${hechos[i]?'✅':x.emoji}</span>${x.nombre.split(' ')[0]}</div>`).join("");
+  const nHechos=hechos.filter(Boolean).length;
+  app.innerHTML=`
+    <div class="progreso">${chips}</div>
+    <div class="layout">
+      <div class="mapa">${bodySVG()}</div>
+      <div class="panel">
+        <div class="grupo-nom">${g.emoji} ${g.nombre}</div>
+        <div class="grupo-partes">${g.partes}</div>
+        <div class="ring-wrap">
+          <div class="ring" id="ring"><span class="ring-n" id="ringN">${T_TENSA}</span><span class="ring-fase" id="ringF">listo</span></div>
+        </div>
+        <div class="instr" id="instr">Cuando quieras, aprieta este grupo unos segundos y luego suéltalo del todo. Fíjate en el <b>contraste</b>.</div>
+        <button class="btn big ${fase==='idle'?'':'green'}" id="btnCiclo" onclick="ciclo()">${hechos[grupoIdx]?'↺ Repetir este grupo':'▶ Tensar y soltar'}</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn ghost" style="flex:1" onclick="saltar()">Saltar grupo</button>
+      <button class="btn big green" style="flex:2;box-shadow:none" onclick="terminar()">${nHechos>0?'Terminar ('+nHechos+'/5) →':'Terminar →'}</button>
+    </div>
+    <div style="text-align:center;margin-top:8px"><button class="btn mini" onclick="volverIntro()">← Volver</button></div>`;
+  pintarZonas();
+}
+function pintarZonas(){
+  document.querySelectorAll('.zone').forEach((z,i)=>{
+    z.classList.toggle('done', hechos[i]);
+    z.classList.toggle('cur', i===grupoIdx && fase==='idle');
+    z.classList.toggle('tensa', i===grupoIdx && fase==='tensa');
+    z.classList.toggle('suelta', i===grupoIdx && fase==='suelta');
+  });
+}
+function irGrupo(i){ if(tTimer) return; grupoIdx=i; fase="idle"; render(); }
+
+function ciclo(){
+  if(tTimer) return;
+  const g=GRUPOS[grupoIdx];
+  const ring=document.getElementById('ring'), ringN=document.getElementById('ringN'),
+        ringF=document.getElementById('ringF'), instr=document.getElementById('instr'), btn=document.getElementById('btnCiclo');
+  btn.disabled=true;
+  // fase TENSA
+  fase="tensa"; pintarZonas();
+  ring.classList.remove('suelta'); ring.classList.add('tensa'); ring.style.transform='scale(.84)';
+  ringF.textContent='tensa'; instr.className='instr tensa'; instr.innerHTML='<b>Aprieta y mantén.</b> '+g.tensa+' Nota cómo avisa la tensión.';
+  cuenta(T_TENSA, ringN, ()=>{
+    // fase SUELTA
+    fase="suelta"; pintarZonas();
+    ring.classList.remove('tensa'); ring.classList.add('suelta'); ring.style.transform='scale(1.24)';
+    ringF.textContent='suelta'; instr.className='instr'; instr.innerHTML='<b>Suelta del todo.</b> '+g.suelta+' Quédate con el calor y el peso: eso es la distensión.';
+    cuenta(T_SUELTA, ringN, ()=>{
+      // LISTO
+      fase="listo"; hechos[grupoIdx]=true; pintarZonas();
+      ring.classList.remove('tensa','suelta'); ring.style.transform='scale(1)';
+      ringN.textContent='✓'; ringF.textContent='hecho';
+      instr.className='instr'; instr.innerHTML='Buen contraste. Tu cuerpo acaba de practicar el paso de <b>tensión a distensión</b>.';
+      const next=GRUPOS.findIndex((x,i)=>!hechos[i]);
+      setTimeout(()=>{
+        if(next>=0){ grupoIdx=next; fase="idle"; render(); }
+        else { vista="cierre"; render(); scrollTo(0,0); }
+      }, 1100);
+    });
+  });
+}
+function cuenta(segs, elN, onEnd){
+  let s=segs; elN.textContent=s;
+  tTimer=setInterval(()=>{
+    s--; if(s<=0){ stopTimer(); onEnd&&onEnd(); return; }
+    if(elN) elN.textContent=s;
+  },1000);
+}
+function stopTimer(){ if(tTimer){clearInterval(tTimer);tTimer=null;} }
+function saltar(){ if(tTimer) return; const next=GRUPOS.findIndex((x,i)=>!hechos[i] && i>grupoIdx); grupoIdx = next>=0?next:Math.min(grupoIdx+1,GRUPOS.length-1); fase="idle"; render(); }
+function terminar(){ stopTimer(); vista="cierre"; render(); scrollTo(0,0); }
+function volverIntro(){ stopTimer(); vista="intro"; render(); scrollTo(0,0); }
+
+/* ---------- cierre ---------- */
+function cierre(){
+  const opts=GRUPOS.map((g,i)=>`<button class="opt ${zonaMasTension===g.k?'sel':''}" onclick="setZonaTension('${g.k}')"><span class="em">${g.emoji}</span>${g.nombre}</button>`).join("");
+  app.innerHTML=`
+    <div class="step" style="margin-bottom:4px">
+      <div class="step-ico">🌤️</div>
+      <div class="step-tit">¿Cómo está el cuerpo ahora?</div>
+    </div>
+    <div class="card">
+      <div class="scale-em">${emojiNivel(activFin)}</div>
+      <div class="scale-num" id="tv2" style="color:${colorNivel(activFin)}">${activFin}</div>
+      <input type="range" min="0" max="10" value="${activFin}" oninput="setFin(this.value)">
+      <div class="ends"><span>0 · suelto</span><span>10 · muy tenso</span></div>
+    </div>
+    <div class="card">
+      <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin-bottom:10px">¿Qué grupo llevaba más tensión? <span style="font-weight:400;color:var(--gris)">· opcional</span></div>
+      <div class="opts">${opts}</div>
+    </div>
+    <button class="btn big green" onclick="verResumen()">Ver cómo ha ido →</button>
+    <div style="text-align:center;margin-top:8px"><button class="btn mini" onclick="vista='recorrido';render();scrollTo(0,0)">← Seguir el recorrido</button></div>`;
+}
+function setFin(v){activFin=+v;const t=document.getElementById("tv2");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
+function setZonaTension(k){ zonaMasTension = (zonaMasTension===k?"":k); render(); scrollTo(0,document.body.scrollHeight); }
+
+/* ---------- resumen + export ---------- */
+function verResumen(){
+  const diff=activIni-activFin;
+  const nHechos=hechos.filter(Boolean).length;
+  const listaHechos=GRUPOS.filter((g,i)=>hechos[i]).map(g=>g.nombre).join(", ");
+  const zonaNom=zonaMasTension?(GRUPOS.find(g=>g.k===zonaMasTension)||{}).nombre:"";
+  const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+
+  const L=["💪 AIS muscular — APRENS","Fecha: "+fecha,"",
+    "Activación antes: "+activIni+"/10","Activación después: "+activFin+"/10"+(diff>0?"  (bajó "+diff+")":""),
+    "Grupos trabajados: "+nHechos+"/5"+(listaHechos?" ("+listaHechos+")":"")];
+  if(zonaNom)L.push("Más tensión en: "+zonaNom);
+  L.push("","(Enviado desde mi práctica de tensión y distensión)");
+  const msg=L.join("\n");
+
+  window._aprensRec={ id:"aim"+Date.now(), date:new Date().toISOString().slice(0,10), ts:Date.now(),
+    activacion_antes:activIni, activacion_despues:activFin, baja:diff,
+    grupos:nHechos, grupos_lista:listaHechos, zona_mas_tension:zonaMasTension||"" };
+  if(window.Aprens) Aprens.mountBar();
+
+  const msgUp = diff>0
+    ? `Tu tensión bajó <b>${diff} ${diff===1?'punto':'puntos'}</b>. Le estás enseñando al cuerpo a soltar. 👏`
+    : `Hoy no ha bajado en número, y también vale: has llevado la atención al cuerpo y has practicado soltar. Con la repetición, tu cuerpo suelta antes.`;
+
+  app.innerHTML=`
+    <div class="res">
+      <div class="res-row">
+        <div><div class="res-lbl">Antes</div><div class="res-big">${activIni}</div></div>
+        <div style="font-size:28px;opacity:.7">→</div>
+        <div><div class="res-lbl">Ahora</div><div class="res-big">${activFin}</div></div>
+      </div>
+      <div style="font-size:12.5px;opacity:.85;margin-top:12px">${nHechos}/5 grupos · ${zonaNom?('más tensión: '+zonaNom):'recorrido muscular'}</div>
+    </div>
+    <p class="res-msg">${msgUp}</p>
+    <div class="card">
+      <div class="aviso"><b>⏱️ ¿Cuándo enviármelo?</b> Cuando la uses ante una situación que te activa, <b>mándamela en ese momento</b>: así vemos qué situaciones tensan tu cuerpo y cómo responde.</div>
+      <div class="acc">
+        <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar a mi psicólogo/a</a>
+        <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+      </div>
+      <div id="msgBox" class="cbox">${msg.replace(/</g,'&lt;')}</div>
+      <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">↺ Hacerla otra vez</button></div>
+    </div>
+    <div class="frase">«No lucho con la tensión: la escucho y le enseño a soltar.»<br>Practícala también en calma: así tu cuerpo la tiene lista cuando el entorno aprieta.</div>`;
+  scrollTo(0,0);
+}
+function reiniciar(){vista="intro";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];activFin=activIni;zonaMasTension="";render();scrollTo(0,0);}
+
+function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function copiar(btn){
+  const t=document.getElementById("msgBox").textContent;
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);});}
+  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
+}
+
+render();
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function(g){"use strict";var DB_KEY="aprens_db",SCHEMA=1;var st={toolId:null,toolName:null,toolVersion:1};var collector=null;
+function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}return{schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+function bk(db,c){if(!db.tools[st.toolId]&&c){db.tools[st.toolId]={meta:{nombre:st.toolName,v:st.toolVersion},records:[]};}return db.tools[st.toolId];}
+var A={schema:SCHEMA,
+config:function(o){o=o||{};if(o.toolId)st.toolId=String(o.toolId);if(o.toolName)st.toolName=String(o.toolName);if(o.toolVersion)st.toolVersion=o.toolVersion;if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);if(st.toolId){var db=load();var b=bk(db,true);b.meta={nombre:st.toolName,v:st.toolVersion};persist(db);}return this;},
+setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+getPacienteCodigo:function(){return load().paciente.codigo||"";},
+save:function(r,opts){opts=opts||{};if(!st.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();var db=load();var b=bk(db,true);var i=-1;if(r.id!=null){i=b.records.findIndex(function(x){return x.id===r.id;});}else if(r.date&&!opts.append){i=b.records.findIndex(function(x){return x.date===r.date;});}if(i>=0)b.records[i]=r;else b.records.push(r);b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});persist(db);return r;},
+collect:function(fn){collector=fn;return this;},
+_flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)this.save(r);}catch(e){}}},
+buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
+copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+};g.Aprens=A;})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN ais_muscular ===================== -->
+<script>
+Aprens.config({ toolId:"ais_muscular", toolName:"AIS muscular", toolVersion:1, pacienteCodigo:"" });
+Aprens.collect(function(){ return window._aprensRec || null; });
+</script>
+</body>
+</html>

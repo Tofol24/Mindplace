@@ -33,6 +33,9 @@ window.APRENS_TOOLS = [
   { id:"ais_amor", emoji:"🤍", nombre:"AIS desde el amor",
     desc:"Ejercicios cotidianos para acompañarte, no para controlarte.",
     migrada:true, iframe:"tools-standalone/ais-amor.html" },
+  { id:"ais_muscular", emoji:"💪", nombre:"AIS muscular",
+    desc:"Tensar y soltar (Jacobson): anclar la atención en el músculo, de la tensión a la distensión.",
+    migrada:true, iframe:"tools-standalone/ais-muscular.html" },
 
   { id:"screening_tec", emoji:"🧪", nombre:"Screening TEC/AIS",
     desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
