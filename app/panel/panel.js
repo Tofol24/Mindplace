@@ -259,6 +259,272 @@
   function cualTxt(c) { if (!c) return ""; var a = Array.isArray(c) ? c : [c]; a = a.filter(Boolean); return a.length ? " · " + a.join(", ") : ""; }
   function fmt(v) { return v == null ? "—" : v; }
 
+  /* ═══════════════════════ Informe clínico (integración) ═══════════════════
+     Fusiona TRES dimensiones para complementar la historia clínica:
+       1) EVOLUCIÓN del screening TEC (latencia/densidad/continuidad + índice).
+       2) ADHERENCIA: capacidad de llevar a cabo las tareas (constancia).
+       3) RESULTADOS: efecto de esas tareas (antes→después de cada práctica).
+     Todo se deriva de los datos autoinformados; no interpreta más allá de ellos. */
+  function parseYMD(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || "")); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
+  function daysBetween(a, b) { var da = parseYMD(a), db = parseYMD(b); if (!da || !db) return 0; return Math.round((db - da) / 86400000); }
+  function maxStreak(sortedDays) {
+    if (!sortedDays.length) return 0;
+    var best = 1, cur = 1;
+    for (var i = 1; i < sortedDays.length; i++) {
+      var diff = daysBetween(sortedDays[i - 1], sortedDays[i]);
+      if (diff === 1) { cur++; if (cur > best) best = cur; } else if (diff > 1) { cur = 1; }
+    }
+    return best;
+  }
+  function fmtDelta(v) { return v == null ? "—" : (v > 0 ? "+" : "") + round1(v); }
+  function pctSign(v) { return (v >= 0 ? "−" : "+") + Math.abs(v) + "%"; } // reducción = signo −
+
+  /* 1 · EVOLUCIÓN del screening (baseline → actual, por eje L/D/C + índice). */
+  function screeningReport(p) {
+    var s = lccSeries(p);
+    if (!s.length) return null;
+    var first = s[0], last = s[s.length - 1];
+    function axis(k) {
+      var a = first[k], b = last[k];
+      var d = (a != null && b != null) ? round1(b - a) : null;
+      return { first: a, last: b, delta: d, dir: d == null ? "—" : (d < -0.05 ? "baja" : d > 0.05 ? "sube" : "estable") };
+    }
+    var seg = ((p.tools.screening_seg && p.tools.screening_seg.records) || [])
+      .filter(function (r) { return num(r.indice) != null; })
+      .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
+    var idx = null;
+    if (seg.length) {
+      var i0 = num(seg[0].indice), i1 = num(seg[seg.length - 1].indice);
+      idx = { first: i0, last: i1, delta: round1(i1 - i0), n: seg.length };
+    }
+    return { n: s.length, from: first.date, to: last.date, series: s, L: axis("L"), D: axis("D"), C: axis("C"), indice: idx, patron: lastPatron(p) };
+  }
+  function lastPatron(p) {
+    var cands = [];
+    ["screening_tec", "cuestionario_tec", "screening_seg"].forEach(function (t) {
+      var b = p.tools[t]; if (!b) return;
+      (b.records || []).forEach(function (r) { var v = pick(r.patron, r.perfil); if (v) cands.push({ d: recDate(r), v: v }); });
+    });
+    cands.sort(function (a, c) { return String(a.d).localeCompare(String(c.d)); });
+    return cands.length ? cands[cands.length - 1].v : null;
+  }
+
+  /* 2 · ADHERENCIA: capacidad de llevar a cabo las tareas (constancia real). */
+  function adherenceReport(p) {
+    var recs = allRecords(p);
+    if (!recs.length) return null;
+    var uniq = {}; recs.forEach(function (x) { var d = recDate(x.r); if (d) uniq[d] = 1; });
+    var days = Object.keys(uniq).sort();
+    var rng = dateRange(p);
+    var spanDays = rng ? daysBetween(rng.from, rng.to) + 1 : days.length || 1;
+    var weeks = Math.max(1, spanDays / 7);
+    var byTool = {};
+    recs.forEach(function (x) { byTool[x.tool] = (byTool[x.tool] || 0) + 1; });
+    var tools = Object.keys(byTool).map(function (t) { return { tool: t, n: byTool[t] }; })
+      .sort(function (a, c) { return c.n - a.n; });
+    return {
+      total: recs.length, activeDays: days.length, spanDays: spanDays,
+      perWeek: round1(recs.length / weeks), daysPerWeek: round1(days.length / weeks),
+      coverage: Math.round(100 * days.length / spanDays), streak: maxStreak(days),
+      tools: tools, lastActive: days[days.length - 1] || null
+    };
+  }
+
+  /* 3 · RESULTADOS de las tareas: efecto antes→después de cada práctica. */
+  function outcomesReport(p) {
+    var out = {};
+    var al = ((p.tools.bajar_alerta && p.tools.bajar_alerta.records) || [])
+      .map(function (r) { return { a: num(pick(r.antes, r.alerta_antes)), d: num(pick(r.despues, r.alerta_despues)) }; })
+      .filter(function (r) { return r.a != null && r.d != null; });
+    if (al.length) {
+      var sa = 0, sd = 0; al.forEach(function (r) { sa += r.a; sd += r.d; });
+      var ma = sa / al.length, md = sd / al.length;
+      out.alerta = { n: al.length, antes: round1(ma), despues: round1(md), deltaAbs: round1(ma - md), pct: ma ? Math.round(100 * (ma - md) / ma) : 0 };
+    }
+    var ac = ((p.tools.acompanar_sensacion && p.tools.acompanar_sensacion.records) || [])
+      .map(function (r) { return { a: num(r.intensidad_antes), d: num(r.intensidad_despues) }; })
+      .filter(function (r) { return r.a != null && r.d != null; });
+    if (ac.length) {
+      var aa = 0, ad = 0; ac.forEach(function (r) { aa += r.a; ad += r.d; });
+      var maa = aa / ac.length, mad = ad / ac.length;
+      out.acompanar = { n: ac.length, antes: round1(maa), despues: round1(mad), deltaAbs: round1(maa - mad), pct: maa ? Math.round(100 * (maa - mad) / maa) : 0 };
+    }
+    var bv = ((p.tools.brujula_valores && p.tools.brujula_valores.records) || []).slice()
+      .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
+    if (bv.length) {
+      var disc = function (r) { return num(pick(r.disc_total, r.discrepancia_total)); };
+      var cer = function (r) { return num(pick(r.cercania_media, r.cercania_media_forma_de_relacionarme)); };
+      var f = bv[0], l = bv[bv.length - 1];
+      out.valores = {
+        n: bv.length, max: num(l.max), discFirst: disc(f), discLast: disc(l), cerFirst: cer(f), cerLast: cer(l),
+        discDelta: (disc(f) != null && disc(l) != null) ? round1(disc(l) - disc(f)) : null,
+        cerDelta: (cer(f) != null && cer(l) != null) ? round1(cer(l) - cer(f)) : null
+      };
+    }
+    var mono = monoDist(p);
+    if (mono.total) out.mono = mono;
+    return Object.keys(out).length ? out : null;
+  }
+
+  /* Síntesis objetiva: frases derivadas SOLO de los números anteriores. */
+  function synthLines(sr, ad, oc) {
+    var lines = [];
+    if (sr) {
+      var parts = [];
+      [["latencia", "L"], ["densidad", "D"], ["continuidad", "C"]].forEach(function (pr) {
+        var ax = sr[pr[1]];
+        if (ax.delta != null) parts.push(pr[0] + " " + (ax.delta < -0.05 ? "↓" : ax.delta > 0.05 ? "↑" : "=") + fmtDelta(ax.delta));
+      });
+      if (parts.length) {
+        var imp = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta < -0.05; }).length;
+        var wor = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta > 0.05; }).length;
+        var trend = imp > wor ? "tendencia global a la baja (menor captación atencional excesiva)"
+          : wor > imp ? "tendencia global al alza (mayor captación atencional)"
+          : "sin cambios netos relevantes entre medidas";
+        lines.push("Screening L/D/C: " + parts.join(", ") + " → " + trend + ".");
+      }
+      if (sr.indice) lines.push("Índice de seguimiento: " + fmt(sr.indice.first) + " → " + fmt(sr.indice.last) + "/10 (" + fmtDelta(sr.indice.delta) + ") en " + sr.indice.n + " mediciones.");
+    }
+    if (ad) lines.push("Adherencia: " + ad.activeDays + " días activos de " + ad.spanDays + " del periodo (" + ad.coverage + "%), " + ad.perWeek + " registros/semana; racha máxima " + ad.streak + " día" + (ad.streak === 1 ? "" : "s") + ".");
+    if (oc) {
+      if (oc.alerta) lines.push("Regulación de la alerta: media " + oc.alerta.antes + " → " + oc.alerta.despues + " (" + pctSign(oc.alerta.pct) + ") en " + oc.alerta.n + " ejercicio" + (oc.alerta.n === 1 ? "" : "s") + ".");
+      if (oc.acompanar) lines.push("Acompañar la sensación: intensidad " + oc.acompanar.antes + " → " + oc.acompanar.despues + " (" + pctSign(oc.acompanar.pct) + ") en " + oc.acompanar.n + " registro" + (oc.acompanar.n === 1 ? "" : "s") + ".");
+      if (oc.valores && oc.valores.discDelta != null) lines.push("Valores (ACT): discrepancia " + oc.valores.discFirst + " → " + oc.valores.discLast + " (" + fmtDelta(oc.valores.discDelta) + "); cercanía " + fmt(oc.valores.cerFirst) + " → " + fmt(oc.valores.cerLast) + ".");
+      if (oc.mono) { var pl = Math.round(100 * oc.mono.counts.lado / oc.mono.total); lines.push("Posición del mono: " + pl + "% de los check-ins «a mi lado» (acompañamiento) sobre " + oc.mono.total + " registros."); }
+    }
+    if (!lines.length) lines.push("Datos insuficientes para una síntesis cuantitativa; se muestran los registros disponibles.");
+    return lines;
+  }
+
+  /* Ensambla el documento imprimible (HTML) del informe. */
+  function buildInforme(p) {
+    var sr = screeningReport(p), ad = adherenceReport(p), oc = outcomesReport(p);
+    var rng = dateRange(p), today = new Date().toISOString().slice(0, 10);
+    var syn = synthLines(sr, ad, oc);
+
+    function axisRow(label, ax) {
+      var arrow = ax.delta == null ? "" : (ax.delta < -0.05 ? "↓" : ax.delta > 0.05 ? "↑" : "→");
+      var cls = ax.delta == null ? "" : (ax.delta < -0.05 ? "good" : ax.delta > 0.05 ? "bad" : "flat");
+      return '<tr><th>' + esc(label) + '</th><td>' + fmt(ax.first) + '</td><td>' + fmt(ax.last) +
+        '</td><td class="' + cls + '">' + arrow + " " + fmtDelta(ax.delta) + '</td></tr>';
+    }
+    var screeningHTML = sr
+      ? '<table class="inf-tbl"><thead><tr><th>Dimensión (0–10)</th><th>Inicial</th><th>Actual</th><th>Δ</th></tr></thead><tbody>' +
+          axisRow("Latencia", sr.L) + axisRow("Densidad", sr.D) + axisRow("Continuidad", sr.C) +
+          (sr.indice ? '<tr><th>Índice seguimiento</th><td>' + fmt(sr.indice.first) + '</td><td>' + fmt(sr.indice.last) + '</td><td class="flat">' + (sr.indice.delta > 0 ? "↑ " : sr.indice.delta < 0 ? "↓ " : "→ ") + fmtDelta(sr.indice.delta) + '</td></tr>' : "") +
+        '</tbody></table>' +
+        '<p class="inf-note">' + sr.n + ' medidas entre ' + esc(sr.from) + ' y ' + esc(sr.to) + (sr.patron ? ' · patrón dominante: <b>' + esc(sr.patron) + '</b>' : '') + '.</p>' +
+        (sr.series.length > 1 ? '<div class="inf-chart"><canvas id="chartInforme"></canvas></div>' : '')
+      : '<p class="inf-empty">Sin registros de screening (Cuestionario/Screening TEC).</p>';
+
+    var adhHTML = ad
+      ? '<div class="inf-kpis">' +
+          infKpi(ad.activeDays + "/" + ad.spanDays, "días activos (" + ad.coverage + "%)") +
+          infKpi(ad.perWeek, "registros/semana") +
+          infKpi(ad.daysPerWeek, "días activos/semana") +
+          infKpi(ad.streak, "racha máx. (días)") +
+        '</div>' +
+        '<table class="inf-tbl"><thead><tr><th>Herramienta</th><th>Registros</th></tr></thead><tbody>' +
+          ad.tools.map(function (t) { return '<tr><th>' + esc(TOOL_LABEL[t.tool] || t.tool) + '</th><td>' + t.n + '</td></tr>'; }).join("") +
+        '</tbody></table>' +
+        '<p class="inf-note">Última actividad registrada: ' + esc(ad.lastActive || "—") + '.</p>'
+      : '<p class="inf-empty">Sin actividad registrada.</p>';
+
+    var outParts = [];
+    if (oc && oc.alerta) outParts.push(outBlock("Regulación de la alerta", oc.alerta.antes, oc.alerta.despues, pctSign(oc.alerta.pct), oc.alerta.n + " ejercicios de «Bajar la alerta»"));
+    if (oc && oc.acompanar) outParts.push(outBlock("Acompañar la sensación", oc.acompanar.antes, oc.acompanar.despues, pctSign(oc.acompanar.pct), oc.acompanar.n + " registros (intensidad 0–10)"));
+    if (oc && oc.valores) outParts.push(
+      '<div class="inf-out"><h4>Valores (ACT) · brújula</h4>' +
+      '<div class="inf-ba"><span>' + fmt(oc.valores.discFirst) + (oc.valores.max ? "/" + oc.valores.max : "") + '</span><i>→</i><span>' + fmt(oc.valores.discLast) + (oc.valores.max ? "/" + oc.valores.max : "") + '</span>' +
+      '<em>' + (oc.valores.discDelta == null ? "" : "discrepancia " + fmtDelta(oc.valores.discDelta)) + '</em></div>' +
+      '<p class="inf-note">Cercanía media a los valores: ' + fmt(oc.valores.cerFirst) + ' → ' + fmt(oc.valores.cerLast) + (oc.valores.cerDelta == null ? "" : " (" + fmtDelta(oc.valores.cerDelta) + ")") + ' · ' + oc.valores.n + ' brújulas.</p></div>');
+    if (oc && oc.mono) {
+      var pl = Math.round(100 * oc.mono.counts.lado / oc.mono.total);
+      outParts.push('<div class="inf-out"><h4>Posición del mono</h4>' +
+        '<div class="inf-ba"><span>' + pl + '%</span><em>«a mi lado» (acompañamiento) · ' + oc.mono.total + ' check-ins</em></div>' +
+        '<p class="inf-note">' + POS_ORDER.map(function (k) { return POS_LABEL[k].replace(/ \(.*\)/, "") + ": " + oc.mono.counts[k]; }).join(" · ") + '.</p></div>');
+    }
+    var outHTML = outParts.length ? outParts.join("") : '<p class="inf-empty">Sin registros con medida antes→después.</p>';
+
+    return {
+      html:
+        '<div class="informe-doc" id="informeDoc">' +
+        '<header class="inf-head"><div><h1>Informe de evolución · APRENS</h1>' +
+          '<p class="inf-sub">Modelo TEC (Teoría del Efecto Consciente) · AIS · ACT</p></div>' +
+          '<div class="inf-logo">ap</div></header>' +
+        '<div class="inf-meta"><div><span class="inf-lbl">Código de paciente</span><b>' + esc(p.codigo) + '</b></div>' +
+          '<div><span class="inf-lbl">Periodo</span><b>' + (rng ? esc(rng.from) + " → " + esc(rng.to) : "—") + '</b></div>' +
+          '<div><span class="inf-lbl">Registros</span><b>' + totalRecords(p) + " en " + Object.keys(p.tools).length + ' herramientas</b></div>' +
+          '<div><span class="inf-lbl">Generado</span><b>' + esc(today) + '</b></div></div>' +
+
+        '<section class="inf-sec"><h2><span class="inf-num">1</span> Evolución del screening</h2>' +
+          '<p class="inf-lead">Captación atencional excesiva: latencia (tardanza en desengancharse), densidad (intensidad) y continuidad (persistencia). Un descenso indica menor sobrepensamiento.</p>' + screeningHTML + '</section>' +
+
+        '<section class="inf-sec"><h2><span class="inf-num">2</span> Adherencia y realización de tareas</h2>' +
+          '<p class="inf-lead">Capacidad del paciente para llevar a cabo las prácticas indicadas: constancia y cobertura del periodo.</p>' + adhHTML + '</section>' +
+
+        '<section class="inf-sec"><h2><span class="inf-num">3</span> Resultados de las tareas</h2>' +
+          '<p class="inf-lead">Efecto autoinformado de cada práctica (antes → después). El signo − indica reducción.</p>' +
+          '<div class="inf-outs">' + outHTML + '</div></section>' +
+
+        '<section class="inf-sec inf-synth"><h2><span class="inf-num">4</span> Síntesis objetiva (derivada de datos)</h2>' +
+          '<ul class="inf-syn">' + syn.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join("") + '</ul></section>' +
+
+        '<footer class="inf-foot">Documento de apoyo generado a partir de <b>datos autoinformados</b> por el paciente en la app APRENS. ' +
+          'Resume evolución, adherencia y resultados de las tareas para <b>complementar</b> —no sustituir— la historia clínica y el juicio profesional. ' +
+          'No constituye un diagnóstico. Datos tratados de forma seudonimizada (código de paciente).</footer>' +
+        '</div>',
+      series: sr && sr.series.length > 1 ? sr.series : null,
+      text: informeText(p, sr, ad, oc, syn, rng, today)
+    };
+  }
+  function infKpi(n, k) { return '<div class="inf-kpi"><div class="inf-kn">' + esc(n) + '</div><div class="inf-kk">' + esc(k) + '</div></div>'; }
+  function outBlock(title, antes, despues, pct, note) {
+    return '<div class="inf-out"><h4>' + esc(title) + '</h4>' +
+      '<div class="inf-ba"><span>' + antes + '</span><i>→</i><span>' + despues + '</span><em>' + esc(pct) + '</em></div>' +
+      '<p class="inf-note">' + esc(note) + '</p></div>';
+  }
+
+  /* Versión en texto plano (para pegar en el software de historia clínica). */
+  function informeText(p, sr, ad, oc, syn, rng, today) {
+    var L = [];
+    L.push("INFORME DE EVOLUCIÓN · APRENS (TEC / AIS / ACT)");
+    L.push("Código de paciente: " + p.codigo);
+    L.push("Periodo: " + (rng ? rng.from + " → " + rng.to : "—") + "  |  Registros: " + totalRecords(p) + " en " + Object.keys(p.tools).length + " herramientas");
+    L.push("Generado: " + today);
+    L.push("");
+    L.push("1) EVOLUCIÓN DEL SCREENING (0–10; ↓ = menos sobrepensamiento)");
+    if (sr) {
+      ["L", "D", "C"].forEach(function (k, i) {
+        var name = ["Latencia", "Densidad", "Continuidad"][i], ax = sr[k];
+        L.push("   - " + name + ": " + fmt(ax.first) + " → " + fmt(ax.last) + " (" + fmtDelta(ax.delta) + ")");
+      });
+      if (sr.indice) L.push("   - Índice seguimiento: " + fmt(sr.indice.first) + " → " + fmt(sr.indice.last) + "/10 (" + fmtDelta(sr.indice.delta) + ")");
+      if (sr.patron) L.push("   - Patrón dominante: " + sr.patron);
+    } else L.push("   (sin registros de screening)");
+    L.push("");
+    L.push("2) ADHERENCIA (realización de tareas)");
+    if (ad) {
+      L.push("   - Días activos: " + ad.activeDays + "/" + ad.spanDays + " (" + ad.coverage + "% del periodo)");
+      L.push("   - Frecuencia: " + ad.perWeek + " registros/semana · " + ad.daysPerWeek + " días activos/semana");
+      L.push("   - Racha máxima: " + ad.streak + " días · última actividad: " + (ad.lastActive || "—"));
+      ad.tools.forEach(function (t) { L.push("     · " + (TOOL_LABEL[t.tool] || t.tool) + ": " + t.n); });
+    } else L.push("   (sin actividad)");
+    L.push("");
+    L.push("3) RESULTADOS DE LAS TAREAS (antes → después)");
+    if (oc && oc.alerta) L.push("   - Regulación de la alerta: " + oc.alerta.antes + " → " + oc.alerta.despues + " (" + pctSign(oc.alerta.pct) + "; n=" + oc.alerta.n + ")");
+    if (oc && oc.acompanar) L.push("   - Acompañar la sensación: " + oc.acompanar.antes + " → " + oc.acompanar.despues + " (" + pctSign(oc.acompanar.pct) + "; n=" + oc.acompanar.n + ")");
+    if (oc && oc.valores) L.push("   - Valores (ACT): discrepancia " + fmt(oc.valores.discFirst) + " → " + fmt(oc.valores.discLast) + " (" + fmtDelta(oc.valores.discDelta) + "); cercanía " + fmt(oc.valores.cerFirst) + " → " + fmt(oc.valores.cerLast));
+    if (oc && oc.mono) L.push("   - Posición del mono: " + Math.round(100 * oc.mono.counts.lado / oc.mono.total) + "% «a mi lado» (n=" + oc.mono.total + ")");
+    if (!oc) L.push("   (sin medidas antes→después)");
+    L.push("");
+    L.push("4) SÍNTESIS OBJETIVA");
+    syn.forEach(function (l) { L.push("   - " + l); });
+    L.push("");
+    L.push("Documento de apoyo basado en datos autoinformados. Complementa, no sustituye, la historia clínica ni el juicio profesional. No es un diagnóstico.");
+    return L.join("\n");
+  }
+
   /* ───────────────────────── UI ─────────────────────────── */
   var $ = function (id) { return document.getElementById(id); };
   var selected = null, charts = [];
@@ -309,7 +575,8 @@
 
     body.innerHTML =
       '<div class="d-head"><h2>' + esc(p.codigo) + '</h2>' +
-        '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span></div>' +
+        '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span>' +
+        '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button></div>' +
       '<div class="stat-row">' +
         stat(totalRecords(p), "registros") +
         stat(Object.keys(p.tools).length, "herramientas usadas") +
@@ -353,6 +620,48 @@
         '</tbody></table></div>';
 
     drawLCC(p);
+    var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
+  }
+
+  /* ───────────────────────── Informe (overlay imprimible) ─────────────────── */
+  var informeChart = null;
+  function openInforme(p) {
+    var ov = $("informeOverlay"), body = $("informeBody");
+    var built = buildInforme(p);
+    body.innerHTML = built.html;
+    body._text = built.text;
+    ov.style.display = "flex";
+    ov.scrollTop = 0;
+    if (informeChart) { try { informeChart.destroy(); } catch (e) {} informeChart = null; }
+    if (built.series && window.Chart) {
+      var ctx = $("chartInforme");
+      if (ctx) {
+        var s = built.series;
+        informeChart = new Chart(ctx.getContext("2d"), {
+          type: "line",
+          data: {
+            labels: s.map(function (x) { return x.date; }),
+            datasets: [
+              { label: "Latencia", data: s.map(function (x) { return x.L; }), borderColor: "#2d7dd2", backgroundColor: "#2d7dd2", tension: .3, pointRadius: 3, borderWidth: 2 },
+              { label: "Densidad", data: s.map(function (x) { return x.D; }), borderColor: "#3a9e8c", backgroundColor: "#3a9e8c", tension: .3, pointRadius: 3, borderWidth: 2 },
+              { label: "Continuidad", data: s.map(function (x) { return x.C; }), borderColor: "#5f9070", backgroundColor: "#5f9070", tension: .3, pointRadius: 3, borderWidth: 2 }
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false, animation: false,
+            plugins: { legend: { position: "bottom" } }, scales: { y: { min: 0, max: 10, ticks: { stepSize: 2 } } } }
+        });
+      }
+    }
+  }
+  function closeInforme() { $("informeOverlay").style.display = "none"; if (informeChart) { try { informeChart.destroy(); } catch (e) {} informeChart = null; } }
+  async function copyInforme() {
+    var txt = $("informeBody")._text || "";
+    try { await navigator.clipboard.writeText(txt); toast("Informe copiado como texto (pégalo en la historia clínica)"); }
+    catch (e) {
+      var ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("Informe copiado como texto"); } catch (e2) { toast("No se pudo copiar"); }
+      ta.remove();
+    }
   }
 
   function stat(n, k) { return '<div class="stat"><div class="n">' + esc(n) + '</div><div class="k">' + esc(k) + '</div></div>'; }
@@ -463,8 +772,16 @@
     drop.addEventListener("drop", function (e) { if (e.dataTransfer.files.length) importFiles(e.dataTransfer.files); });
 
     $("importModal").addEventListener("click", function (e) { if (e.target === $("importModal")) closeImport(); });
+
+    $("infClose").addEventListener("click", closeInforme);
+    $("infPrint").addEventListener("click", function () { window.print(); });
+    $("infCopy").addEventListener("click", copyInforme);
+    $("informeOverlay").addEventListener("click", function (e) { if (e.target === $("informeOverlay")) closeInforme(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("informeOverlay").style.display === "flex") closeInforme(); });
   }
 
   document.addEventListener("DOMContentLoaded", function () { wire(); showLock(); });
-  window.APRENS_PANEL = { PanelStore: PanelStore, _metrics: { monoDist: monoDist, lccSeries: lccSeries, recentActivity: recentActivity } }; // para pruebas
+  window.APRENS_PANEL = { PanelStore: PanelStore, openInforme: openInforme,
+    _metrics: { monoDist: monoDist, lccSeries: lccSeries, recentActivity: recentActivity },
+    _report: { screeningReport: screeningReport, adherenceReport: adherenceReport, outcomesReport: outcomesReport, buildInforme: buildInforme } }; // para pruebas
 })();

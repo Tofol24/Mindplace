@@ -89,6 +89,21 @@
   </div>
 </div>
 
+<!-- ═══════════════ INFORME (overlay imprimible) ═══════════════ -->
+<div id="informeOverlay" class="informe-overlay" style="display:none">
+  <div class="informe-shell">
+    <div class="informe-bar">
+      <span class="informe-bar-title">📄 Informe de evolución</span>
+      <div class="informe-bar-actions">
+        <button class="btn" id="infCopy">📋 Copiar texto</button>
+        <button class="btn btn-primary" id="infPrint">🖨️ Imprimir / PDF</button>
+        <button class="btn btn-ghost-dark" id="infClose">✕ Cerrar</button>
+      </div>
+    </div>
+    <div class="informe-scroll"><div id="informeBody"></div></div>
+  </div>
+</div>
+
 <div id="toast" class="toast" style="display:none"></div>
 
 <script src="../vendor/chart.umd.min.js"></script>

@@ -114,6 +114,83 @@ button{font-family:inherit}
 .imp-msg.ok{color:#2e7d4f}
 .imp-msg.err{color:#c0392b}
 
+/* ---------- Botón informe en la cabecera de detalle ---------- */
+.d-head .d-informe{margin-left:auto}
+
+/* ---------- Overlay / documento del informe ---------- */
+.informe-overlay{position:fixed;inset:0;background:rgba(15,42,63,.6);z-index:70;
+  display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
+.informe-shell{background:#eef3f8;border-radius:16px;width:100%;max-width:900px;box-shadow:0 24px 70px rgba(0,0,0,.4);overflow:hidden}
+.informe-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--navy);color:#fff;padding:12px 16px;position:sticky;top:0}
+.informe-bar-title{font-weight:700;font-size:15px}
+.informe-bar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-ghost-dark{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+.informe-scroll{max-height:calc(100vh - 120px);overflow:auto;padding:22px;background:#dfe7ee}
+
+.informe-doc{background:#fff;max-width:780px;margin:0 auto;padding:34px 40px;border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);color:#1c2b36;font-size:14px;line-height:1.5}
+.inf-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  border-bottom:3px solid var(--navy);padding-bottom:14px;margin-bottom:6px}
+.inf-head h1{margin:0;font-size:22px;color:var(--navy)}
+.inf-sub{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+.inf-logo{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;
+  display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 auto}
+.inf-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0 6px}
+.inf-meta>div{background:#f4f8fc;border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.inf-lbl{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.inf-meta b{font-size:14px}
+
+.inf-sec{margin-top:22px}
+.inf-sec h2{font-size:16px;color:var(--navy);margin:0 0 4px;display:flex;align-items:center;gap:9px;
+  border-bottom:1px solid var(--line);padding-bottom:6px}
+.inf-num{background:var(--blue);color:#fff;width:22px;height:22px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:0 0 auto}
+.inf-lead{color:var(--muted);font-size:12.5px;margin:8px 0 12px;line-height:1.45}
+.inf-note{color:var(--muted);font-size:12px;margin:8px 0 0}
+.inf-empty{color:var(--muted);font-size:13px;font-style:italic;padding:8px 0}
+
+.inf-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.inf-tbl th,.inf-tbl td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+.inf-tbl thead th{background:#f4f8fc;color:var(--muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+.inf-tbl tbody th{font-weight:600}
+.inf-tbl td{font-variant-numeric:tabular-nums}
+.inf-tbl td.good{color:#2e7d4f;font-weight:700}
+.inf-tbl td.bad{color:#c0392b;font-weight:700}
+.inf-tbl td.flat{color:var(--muted);font-weight:600}
+.inf-chart{position:relative;height:230px;margin-top:14px}
+
+.inf-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:6px 0 14px}
+.inf-kpi{background:#f4f8fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
+.inf-kn{font-size:20px;font-weight:800;color:var(--navy)}
+.inf-kk{font-size:11px;color:var(--muted);margin-top:2px}
+
+.inf-outs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.inf-out{background:#f7fafd;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.inf-out h4{margin:0 0 8px;font-size:13.5px;color:var(--navy)}
+.inf-ba{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.inf-ba span{font-size:22px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums}
+.inf-ba i{color:var(--muted);font-style:normal;font-size:18px}
+.inf-ba em{font-style:normal;font-size:12px;color:#2e7d4f;font-weight:700;background:#e7f5ec;padding:2px 8px;border-radius:20px}
+
+.inf-synth{background:#f4f8fc;border:1px solid var(--line);border-radius:12px;padding:4px 16px 14px;margin-top:22px}
+.inf-syn{margin:8px 0 0;padding-left:18px}
+.inf-syn li{margin:5px 0;font-size:13px;line-height:1.45}
+.inf-foot{margin-top:24px;border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:11.5px;line-height:1.5}
+
+@media(max-width:640px){.inf-outs{grid-template-columns:1fr}.informe-doc{padding:22px 18px}}
+
+/* ---------- Impresión: solo el documento ---------- */
+@media print{
+  body{background:#fff}
+  .app,#lock,.informe-bar,.toast,.modal{display:none !important}
+  .informe-overlay{position:static;inset:auto;background:none;padding:0;display:block;overflow:visible}
+  .informe-shell{box-shadow:none;border-radius:0;max-width:none;background:#fff}
+  .informe-scroll{max-height:none;overflow:visible;padding:0;background:#fff}
+  .informe-doc{box-shadow:none;border-radius:0;max-width:none;padding:0}
+  .inf-sec,.inf-synth{page-break-inside:avoid}
+}
+
 /* ---------- Toast ---------- */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
   padding:11px 18px;border-radius:12px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:60}
