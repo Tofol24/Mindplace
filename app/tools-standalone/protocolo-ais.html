@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Protocolo progresivo AIS · APRENS</title>
+<style>
+:root{
+  --azul:#1B4F8C; --azulLt:#D6E4F0; --verde:#2E7D5E; --verdeLt:#D4EDDA;
+  --naranja:#E07B39; --rojo:#C0392B; --gris:#6B7280; --fondo:#F0F4F8;
+  --oro:#C8973A; --lila:#7B4FC1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;flex-shrink:0}
+.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700}
+.hsub{font-size:10px;opacity:.75;margin-top:1px}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px calc(60px + env(safe-area-inset-bottom))}
+.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px}
+.ctit{font-weight:600;font-size:13px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.hero{background:#fff;border-radius:18px;padding:28px 26px 24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:20px;border-top:4px solid var(--oro)}
+.hero h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--azul);line-height:1.2;margin-bottom:8px}
+.hero p{font-size:13.5px;color:#444;line-height:1.65;margin-bottom:10px}
+.frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:13px 16px;line-height:1.6;margin-top:14px}
+.aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:16px}
+.canales{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.canal{flex:1;min-width:140px;background:var(--fondo);border-radius:12px;padding:12px 14px;border:1px solid #E8EFF7}
+.canal b{display:block;font-size:12.5px;color:var(--azul);margin-bottom:3px}
+.canal.act{background:#fff;border:2px solid var(--oro);box-shadow:0 2px 12px rgba(200,151,58,.18)}
+.canal span{font-size:11.5px;color:var(--gris);line-height:1.4;display:block}
+.canal.lk{text-decoration:none;cursor:pointer;transition:all .18s}
+.canal.lk:hover{border-color:var(--azul);box-shadow:0 4px 14px rgba(27,79,140,.14);transform:translateY(-1px)}
+.canal .go{font-size:11px;font-weight:600;color:var(--azul);margin-top:7px}
+label.fl{display:block;font-size:12.5px;color:var(--gris);font-weight:500;margin-bottom:8px}
+input[type=date]{font-family:'DM Sans',sans-serif;font-size:15px;border:2px solid #E3EAF3;border-radius:12px;padding:11px 14px;width:100%;color:#1a1a2e;background:#fff}
+input[type=date]:focus{outline:none;border-color:var(--azul)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.stat{background:var(--fondo);border-radius:14px;padding:16px 14px;text-align:center;border:1px solid #E8EFF7}
+.stat.big{grid-column:1/-1;background:var(--azul);color:#fff;border:none}
+.stat .num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--azul);line-height:1}
+.stat.big .num{color:#fff;font-size:40px}
+.stat .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--gris);margin-top:6px}
+.stat.big .lbl{color:rgba(255,255,255,.85)}
+.fases{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.fp{flex:1;min-width:54px;border:2px solid #E3EAF3;background:#fff;border-radius:14px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
+.fp .fn{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gris);line-height:1}
+.fp .fl2{font-size:9px;color:var(--gris);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
+.fp.sel{border-color:var(--azul);background:var(--azulLt)}
+.fp.sel .fn{color:var(--azul)}
+.fp.rec{border-color:var(--oro)}
+.fp .rectag{display:none;font-size:8px;background:var(--oro);color:#fff;border-radius:8px;padding:1px 5px;margin-top:4px;letter-spacing:.3px}
+.fp.rec .rectag{display:inline-block}
+.phead{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.pbadge{width:46px;height:46px;border-radius:14px;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;flex-shrink:0}
+.ptit{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--azul);line-height:1.15}
+.psub{font-size:12.5px;color:var(--oro);font-style:italic;margin-top:2px}
+.meta{display:inline-block;font-size:11px;background:var(--fondo);color:var(--gris);border-radius:20px;padding:4px 12px;margin:12px 6px 4px 0}
+.psec{margin-top:14px}
+.psec h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--gris);margin-bottom:6px}
+.psec p,.psec li{font-size:13.5px;color:#333;line-height:1.6}
+.psec ul{padding-left:18px}
+.psec li{margin-bottom:3px}
+.pmsg{background:var(--verdeLt);border-left:4px solid var(--verde);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:#1c5b40;line-height:1.6;margin-top:14px;font-style:italic}
+audio{width:100%;margin-top:6px}
+.noaudio{font-size:13px;color:var(--gris);font-style:italic;background:var(--fondo);border-radius:12px;padding:16px;text-align:center;line-height:1.6}
+.mapa{display:flex;justify-content:center;margin:4px 0 8px}
+.mapa svg{width:100%;max-width:260px;height:auto}
+.zone{cursor:default}
+.zone .zbg{fill-opacity:.10;transition:fill-opacity .2s}
+.zone .organ{transition:filter .25s}
+.leyenda{text-align:center;font-size:12px;color:var(--gris);line-height:1.5;margin-top:4px}
+.btn{border:none;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-appearance:none;touch-action:manipulation}
+.bpg{background:var(--verde);color:#fff;padding:15px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3);width:100%}
+.bpg.done{background:#9fb8ac;box-shadow:none}
+.bs{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:11px 22px;font-size:13px}
+.bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3)}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 20px;font-size:14px}
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:6px}
+.cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:16px;font-size:12px;line-height:1.7;color:#333;max-height:240px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:18px;-webkit-user-select:all;user-select:all}
+.rowbtn{display:flex;gap:10px;margin-top:14px;align-items:center}
+.foot{text-align:center;font-size:11px;color:var(--gris);line-height:1.6;margin-top:8px}
+@media(hover:hover){.btn:hover{filter:brightness(1.05)}.fp:hover{border-color:var(--azul)}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div>
+    <div class="htitle">Protocolo progresivo AIS</div>
+    <div class="hsub">APRENS Psicologia · Atención Interna Sensorial · canal auditivo</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Entrenar la atención hacia dentro, por el oído</h1>
+    <p>Este protocolo entrena tu capacidad de <b>dirigir y sostener la atención hacia la experiencia interna del cuerpo</b> de forma segura, no reactiva y no controladora — para que la conducta deje de estar gobernada por el impulso y el alivio inmediato.</p>
+    <p>Anclamos el vector atencional hacia dentro por tres vías. Esta herramienta trabaja la <b>tercera, el canal auditivo</b>: una voz guía que sostiene tu atención sin que tengas que hacer nada.</p>
+    <div class="canales">
+      <a class="canal lk" href="https://aprens-app.netlify.app/#/tool/herramienta_diaria" target="_blank" rel="noopener"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="go">Abrir herramienta →</span></a>
+      <a class="canal lk" href="https://aprens-app.netlify.app/#/tool/mapa_atencion_interna" target="_blank" rel="noopener"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="go">Abrir herramienta →</span></a>
+      <div class="canal act"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="go" style="color:var(--oro)">Estás aquí</span></div>
+    </div>
+    <div class="frase">La atención no es control. Es presencia.</div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Tu progreso</div>
+    <label class="fl" for="startDate">¿Qué día empezaste el protocolo?</label>
+    <input type="date" id="startDate" onchange="setStart()">
+    <div class="stats">
+      <div class="stat big"><div class="num" id="stDia">—</div><div class="lbl">Día desde el inicio</div></div>
+      <div class="stat"><div class="num" id="stRec">0</div><div class="lbl">Fase recomendada</div></div>
+      <div class="stat"><div class="num" id="stRacha">0</div><div class="lbl">Racha (días seguidos)</div></div>
+      <div class="stat"><div class="num" id="stComp">0</div><div class="lbl">Días completados</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Fase actual</div>
+    <div class="aviso" style="margin-bottom:12px">La <b>fase recomendada</b> avanza con los días. Puedes elegir manualmente la fase que quieras practicar hoy.</div>
+    <div class="fases" id="fases"></div>
+  </div>
+
+  <div class="card" id="phaseCard">
+    <!-- contenido de fase generado por JS -->
+  </div>
+
+  <div class="card" id="audioCard">
+    <div class="ctit">🎧 Audio guía</div>
+    <div id="audioBox"></div>
+  </div>
+
+  <div class="card" id="mapaCard">
+    <div class="ctit">🫀 Mapa de apoyo · opcional</div>
+    <div class="aviso" style="margin-bottom:10px">Mientras escuchas, puedes dejar la mirada interna en una zona. <b>La imagen es la rampa; la sensación es el destino.</b> En cuanto la notes, suelta la imagen.</div>
+    <div class="mapa">
+      <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo con tres zonas: cuello, pecho y barriga">
+        <defs>
+          <linearGradient id="bodyGradP" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#eaeff3"/><stop offset="1" stop-color="#dbe4ea"/>
+          </linearGradient>
+        </defs>
+        <g fill="url(#bodyGradP)" stroke="#cdd7df" stroke-width="1.4">
+          <ellipse cx="110" cy="46" rx="29" ry="33"/>
+          <rect x="98" y="72" width="24" height="22" rx="8"/>
+          <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
+          <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
+          <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
+        </g>
+        <g class="zone" data-zona="cuello" style="color:#6f9bc0" aria-label="Cuello: garganta y vías">
+          <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
+          <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
+            <ellipse cx="110" cy="80" rx="9" ry="7"/>
+            <path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
+            <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/>
+            <line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/>
+            <line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
+          </g>
+          <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+        </g>
+        <g class="zone" data-zona="pecho" style="color:#c4744b" aria-label="Pecho: corazón y pulmones">
+          <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
+          <g class="organ">
+            <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+            <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+            <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
+            <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+          <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+        </g>
+        <g class="zone" data-zona="barriga" style="color:#6f9f78" aria-label="Barriga: estómago e intestinos">
+          <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
+          <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
+            <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
+            <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
+          </g>
+          <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+        </g>
+      </svg>
+    </div>
+    <div class="leyenda"><b>1</b> cuello (garganta) · <b>2</b> pecho (corazón y pulmones) · <b>3</b> barriga (estómago e intestinos)</div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Registrar la práctica de hoy</div>
+    <button class="btn bpg" id="markBtn" onclick="marcarHoy()">✓ Marcar día de hoy completado</button>
+    <div class="rowbtn">
+      <button class="btn bs" onclick="resetear()">↺ Resetear progreso</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Enviar a tu psicólogo/a</div>
+    <div class="aviso">Tu progreso se guarda solo en este dispositivo, en tu navegador. Para compartirlo, copia el texto o ábrelo en WhatsApp.</div>
+    <div class="cbox" id="msgBox"></div>
+    <div class="acc">
+      <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar por WhatsApp</a>
+      <button class="btn bcopy" onclick="copiar(this)">📋 Copiar texto</button>
+    </div>
+  </div>
+
+  <div class="foot">APRENS Psicologia · Atención Interna Sensorial<br>No buscamos relajarte ni que sientas algo concreto. Buscamos que tu cuerpo se sienta acompañado por tu atención.</div>
+
+</div>
+
+<script>
+/* ===== Datos de las fases ===== */
+const FASES=[
+ {n:0,tit:"Preparación",sub:"Psicoeducación mínima",dur:"Onboarding + recordatorios breves",audio:null,
+  obj:"Entender qué es y qué no es la atención interna antes de empezar a practicar.",
+  ej:["No buscamos relajarte.","No buscamos que sientas algo concreto.","Buscamos que tu cuerpo se sienta acompañado por tu atención."],
+  ejTit:"Mensaje clave",
+  crit:null,
+  msg:"La atención no es control. Es presencia."},
+
+ {n:1,tit:"AIS Extero–corporal",sub:"La imagen dirige la atención",dur:"Días 1–3 · 1–2 veces/día (2–3 min)",audio:"audio/fase1.m4a",
+  obj:"Entrenar el movimiento voluntario de la atención con imágenes corporales externas y claras, sin zonas emocionalmente cargadas.",
+  ejTit:"Ejercicio",
+  ej:["Visualiza una parte concreta del cuerpo (p. ej. el dedo pequeño del pie).","Permite que la atención vaya allí.","Permanece unos segundos, sin buscar sensaciones."],
+  crit:"Aprendes que no necesita esfuerzo y baja la ansiedad por «hacerlo bien».",
+  msg:null},
+
+ {n:2,tit:"AIS Interna con imagen ancla",sub:"La imagen como puerta al interior",dur:"Días 4–10 · 1 vez al día (5 min)",audio:"audio/fase2.m4a",
+  obj:"Usar el «error» del cerebro (imagen = presencia) para acceder al interior del cuerpo de forma segura.",
+  ejTit:"Ejercicio central",
+  ej:["Visualización simple del estómago, el corazón o el cuello/tráquea.","La imagen no se mantiene: solo orienta.","La atención se queda habitando, no explorando."],
+  crit:"El cuerpo responde con menor urgencia; aparece una sensación de acompañamiento interno.",
+  msg:"No importa lo que sientas. Importa que tu cuerpo sepa que estás ahí."},
+
+ {n:3,tit:"AIS sin imagen",sub:"De la puerta a la casa",dur:"Días 11–18 · 1 vez al día (5–7 min)",audio:"audio/fase3.m4a",
+  obj:"Retirar progresivamente la imagen para evitar la dependencia cognitiva y consolidar la presencia directa.",
+  ejTit:"Ejercicio",
+  ej:["Se propone una zona: «lleva tu atención al pecho».","No se sugiere imagen.","Sostén la atención aunque no haya una representación clara."],
+  crit:"La atención se mantiene sin guía visual; disminuye la necesidad de estímulos externos.",
+  msg:"Si aparece inquietud, volver a la imagen es correcto. La imagen es apoyo, no fracaso."},
+
+ {n:4,tit:"AIS afectiva",sub:"Ser percibido sin tener que hacer nada",dur:"Días 19–30 · 1 vez al día + micro-pausas",audio:"audio/fase4.m4a",
+  obj:"Consolidar la seguridad basal y romper el condicionamiento «solo si hago algo, me atienden».",
+  ejTit:"Ejercicio",
+  ej:["Atención interna con un mensaje implícito: «no tienes que intensificar nada».","«No tienes que cambiar nada».","Actitud curiosa, compasiva, no correctiva."],
+  crit:"El cuerpo deja de generar impulsos para ser priorizado; emergen decisiones más libres.",
+  msg:"No tienes que hacer nada. Solo estar."},
+
+ {n:5,tit:"AIS en contexto real",sub:"Del cuerpo a la conducta",dur:"Mantenimiento continuo",audio:"audio/fase5.m4a",
+  obj:"Trasladar la AIS a los momentos de impulso real: uso del móvil, urgencia, evitación.",
+  ejTit:"Uso en el día a día",
+  ej:["Pausa guiada breve (30–60 s).","Imagen rápida → atención dentro → soltar la urgencia.","Decidir desde la presencia, no desde el impulso."],
+  crit:"La atención interna se vuelve un recurso disponible en la vida real, no solo en la práctica.",
+  msg:"Del cuerpo a la conducta: primero te acompañas, después eliges."}
+];
+
+/* ===== Estado (persistencia local en el dispositivo) ===== */
+const KEY="aprens_protocolo_ais_v1";
+let state={start:null,completed:[],fase:null,manual:false};
+function load(){try{const r=localStorage.getItem(KEY);if(r)state=Object.assign(state,JSON.parse(r));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* ===== Utilidades de fecha ===== */
+function hoyISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function diasDesde(){
+  if(!state.start)return null;
+  const s=new Date(state.start+"T00:00:00");
+  const h=new Date(hoyISO()+"T00:00:00");
+  return Math.floor((h-s)/86400000)+1; // día 1 = fecha de inicio
+}
+function faseRecomendada(d){
+  if(d===null||d<1)return 0;
+  if(d<=3)return 1;
+  if(d<=10)return 2;
+  if(d<=18)return 3;
+  if(d<=30)return 4;
+  return 5;
+}
+function calcRacha(){
+  if(!state.completed.length)return 0;
+  const set=new Set(state.completed);
+  let racha=0;const d=new Date(hoyISO()+"T00:00:00");
+  // permite empezar la racha hoy o ayer
+  if(!set.has(fmt(d))){d.setDate(d.getDate()-1);if(!set.has(fmt(d)))return 0;}
+  while(set.has(fmt(d))){racha++;d.setDate(d.getDate()-1);}
+  return racha;
+}
+function fmt(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+
+/* ===== Render ===== */
+function render(){
+  const d=diasDesde();
+  const rec=faseRecomendada(d);
+  if(!state.manual||state.fase===null)state.fase=rec;
+  document.getElementById("stDia").textContent = d===null?"—":d;
+  document.getElementById("stRec").textContent = rec;
+  document.getElementById("stComp").textContent = state.completed.length;
+  document.getElementById("stRacha").textContent = calcRacha();
+  if(state.start)document.getElementById("startDate").value=state.start;
+  renderFases(rec);
+  renderFase();
+  renderMark();
+  renderMsg(d,rec);
+}
+function renderFases(rec){
+  const cont=document.getElementById("fases");
+  cont.innerHTML=FASES.map(f=>
+    '<div class="fp'+(f.n===state.fase?' sel':'')+(f.n===rec?' rec':'')+'" onclick="selFase('+f.n+')">'+
+    '<div class="fn">'+f.n+'</div><div class="fl2">Fase</div>'+
+    '<div class="rectag">hoy</div></div>').join("");
+}
+function selFase(n){state.fase=n;state.manual=true;save();renderFases(faseRecomendada(diasDesde()));renderFase();renderMsg(diasDesde(),faseRecomendada(diasDesde()));}
+function renderFase(){
+  const f=FASES[state.fase];
+  let h='<div class="phead"><div class="pbadge">'+f.n+'</div><div><div class="ptit">'+f.tit+'</div><div class="psub">«'+f.sub+'»</div></div></div>';
+  h+='<span class="meta">⏱ '+f.dur+'</span>';
+  h+='<div class="psec"><h4>Objetivo</h4><p>'+f.obj+'</p></div>';
+  h+='<div class="psec"><h4>'+f.ejTit+'</h4><ul>'+f.ej.map(x=>'<li>'+x+'</li>').join("")+'</ul></div>';
+  if(f.crit)h+='<div class="psec"><h4>Señal de avance</h4><p>'+f.crit+'</p></div>';
+  if(f.msg)h+='<div class="pmsg">'+f.msg+'</div>';
+  document.getElementById("phaseCard").innerHTML=h;
+  // audio
+  const ab=document.getElementById("audioBox");
+  if(f.audio){
+    ab.innerHTML='<p style="font-size:13px;color:#444;line-height:1.55;margin-bottom:10px">Pulsa play y deja que la voz sostenga tu atención. No tienes que esforzarte ni conseguir nada.</p>'+
+      '<audio controls preload="none" src="'+f.audio+'"></audio>';
+    document.getElementById("audioCard").style.display="";
+  }else{
+    ab.innerHTML='<div class="noaudio">La Fase 0 no lleva audio: es solo lectura y preparación. Cuando te sientas listo/a, pasa a la Fase 1.</div>';
+    document.getElementById("audioCard").style.display="";
+  }
+  // mapa solo relevante en fases con imagen ancla (1,2,3); en 0/4/5 lo ocultamos
+  document.getElementById("mapaCard").style.display=(f.n>=1&&f.n<=3)?"":"none";
+}
+function renderMark(){
+  const b=document.getElementById("markBtn");
+  if(!state.start){b.classList.add("done");b.textContent="Primero indica tu fecha de inicio";return;}
+  const hoy=hoyISO();
+  if(state.completed.includes(hoy)){b.classList.add("done");b.textContent="✓ Hoy ya está completado";}
+  else{b.classList.remove("done");b.textContent="✓ Marcar día de hoy completado";}
+}
+function setStart(){
+  const v=document.getElementById("startDate").value;
+  state.start=v||null;
+  if(v&&state.fase===null)state.fase=faseRecomendada(diasDesde());
+  save();render();
+}
+function marcarHoy(){
+  if(!state.start){alert("Primero indica el día en que empezaste el protocolo.");return;}
+  const hoy=hoyISO();
+  if(!state.completed.includes(hoy)){state.completed.push(hoy);state.completed.sort();save();}
+  render();
+}
+function resetear(){
+  if(confirm("¿Seguro que quieres borrar tu progreso (fecha de inicio, días completados y racha)?")){
+    state={start:null,completed:[],fase:null,manual:false};
+    try{localStorage.removeItem(KEY);}catch(e){}
+    document.getElementById("startDate").value="";
+    render();
+  }
+}
+
+/* ===== Mensaje para el psicólogo ===== */
+function renderMsg(d,rec){
+  const f=FASES[state.fase];
+  let L=[];
+  L.push("🎧 PROTOCOLO PROGRESIVO AIS — canal auditivo");
+  L.push("");
+  L.push("Día desde el inicio: "+(d===null?"(sin fecha)":d));
+  L.push("Fase recomendada: "+rec);
+  L.push("Fase que estoy practicando: "+f.n+" · "+f.tit);
+  L.push("Días completados: "+state.completed.length);
+  L.push("Racha actual: "+calcRacha()+" días seguidos");
+  if(state.completed.length){
+    const ult=state.completed[state.completed.length-1];
+    L.push("Última práctica registrada: "+ult);
+  }
+  L.push("");
+  L.push("Enviado desde la app de APRENS.");
+  document.getElementById("msgBox").textContent=L.join("\n");
+}
+
+/* ===== Envío ===== */
+function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").innerText||document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function copiar(btn){
+  const box=document.getElementById("msgBox");const t=box.innerText||box.textContent;
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar texto",2200);});}
+  else{const r=document.createRange();r.selectNodeContents(box);const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.execCommand("copy");s.removeAllRanges();btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar texto",2200);}
+}
+
+/* ===== init ===== */
+load();render();
+</script>
+</body>
+</html>

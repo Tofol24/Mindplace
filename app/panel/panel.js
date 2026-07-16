@@ -171,7 +171,7 @@
     screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC",
     screening_seg: "Screening · seguimiento", tracker_tec: "Tracker TEC",
     autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
-    donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Eina diària",
+    donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Herramienta diaria", protocolo_ais: "Protocolo AIS (audio)",
     compromiso_semanal: "Compromiso semanal"
   };
   var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
