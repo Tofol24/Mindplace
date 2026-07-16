@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7fa08a">
+<title>Entrenar AIS desde el amor · APRENS</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ENTRENAR AIS DESDE EL AMOR, NO DESDE EL CONTROL · APRENS (TEC / AIS / ACT)
+  Herramienta para pacientes · 1 solo archivo · sin backend · sin login · sin cookies.
+  Guarda SOLO en el navegador del paciente (localStorage, prefijo aprens_ais_amor_).
+
+  CÓMO EDITAR:
+   · Textos de los ejercicios → array EJERCICIOS (más abajo, en el <script>).
+   · Colores → bloque :root (justo aquí debajo).
+   · Frases, mensajes y checklist → marcados con comentarios en el HTML / JS.
+  ════════════════════════════════════════════════════════════════════
+-->
+<style>
+  /* ===== PALETA (editable) ===== */
+  :root{
+    --bg:#f7f4ee;          /* arena clara cálida */
+    --bg2:#eef2ec;         /* verde muy suave para degradado superior */
+    --card:#ffffff;
+    --tinta:#39423d;       /* gris cálido oscuro (texto) */
+    --suau:#7c8079;        /* gris cálido (texto secundario) */
+    --salvia:#7fa08a;      /* verde salvia (acción principal) */
+    --salvia-d:#557a64;
+    --salvia-bg:#e7f0ea;
+    --azul:#8fb0c4;        /* azul suave */
+    --azul-d:#587f97;
+    --azul-bg:#e8f0f5;
+    --arena:#e9ddc7;       /* arena */
+    --arena-bg:#f4ecdd;
+    --oro:#caa765;         /* dorado suave (detalles / enviar) */
+    --oro-d:#a07f38;
+    --terra:#b87a5e;       /* terracota (incomodidad) */
+    --terra-bg:#f3e7e0;
+    --linia:#e6e0d4;
+    --ombra:0 8px 26px rgba(80,90,70,.10);
+    --ombra-s:0 2px 12px rgba(80,90,70,.07);
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 260px);
+    color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding:0 16px 90px;
+  }
+  .wrap{max-width:660px;margin:0 auto}
+
+  /* ===== Pantallas (flujo) ===== */
+  .screen{display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ===== Cabecera ===== */
+  header{text-align:center;padding:40px 8px 6px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--salvia-d);background:var(--salvia-bg);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
+  h1{font-size:27px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:30em}
+
+  /* ===== Botones ===== */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--salvia);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s,box-shadow .2s;font-family:inherit;box-shadow:0 6px 18px rgba(127,160,138,.30)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--salvia-d);border:1.6px solid var(--salvia);box-shadow:none}
+  .btn.oro{background:var(--oro);box-shadow:0 6px 18px rgba(202,167,101,.32)}
+  .btn.small{width:auto;padding:11px 16px;font-size:14.5px;margin-top:0}
+  .btn svg{width:19px;height:19px}
+  .btn.ok{background:var(--salvia)!important;color:#fff!important}
+  .btnrow{display:flex;gap:11px}
+  .btnrow .btn{flex:1}
+  .back{background:none;border:0;color:var(--suau);font-family:inherit;font-size:14.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:18px 0 4px}
+  .back svg{width:17px;height:17px}
+
+  /* ===== Tarjetas ===== */
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .card h3{font-size:16px;margin:18px 0 8px;font-weight:700}
+  .card p{margin:8px 0;color:#46504a}
+  .card p.lead{color:var(--suau);font-size:14.5px;margin-top:2px}
+  .ic{flex:0 0 42px;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--salvia-bg);font-size:22px}
+
+  /* ===== Citas / frases clave ===== */
+  .quote{background:linear-gradient(135deg,var(--salvia-bg) 0%,#dcebe1 100%);border-left:4px solid var(--salvia);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--salvia-d);margin:14px 0 4px;line-height:1.5}
+  .frase-oro{background:linear-gradient(135deg,var(--arena-bg) 0%,#efe1c8 100%);border-left:4px solid var(--oro);color:var(--oro-d)}
+
+  /* ===== Aviso ===== */
+  .avis{display:flex;gap:11px;background:var(--arena-bg);border:1px solid #ecdcc0;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14px;color:#7a5b1e;align-items:flex-start}
+  .avis .em{font-size:18px;line-height:1.4}
+
+  /* ===== Opciones de intención / selección ===== */
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--bg);border:1.6px solid var(--linia);border-radius:14px;padding:15px 16px;cursor:pointer;font-family:inherit;font-size:15.5px;color:var(--tinta);transition:transform .08s,border-color .15s,background .15s}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--salvia);background:var(--salvia-bg)}
+  .opt .em{font-size:22px;flex:0 0 auto}
+
+  /* ===== Mensaje amable (intención) ===== */
+  .reframe{display:none;margin-top:16px;animation:fade .35s ease}
+  .reframe.show{display:block}
+
+  /* ===== Menú de ejercicios ===== */
+  .exgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  .excard{background:var(--card);border:1px solid var(--linia);border-radius:16px;padding:15px 14px;cursor:pointer;text-align:left;font-family:inherit;display:flex;flex-direction:column;gap:7px;transition:transform .08s,box-shadow .2s,border-color .2s;box-shadow:var(--ombra-s)}
+  .excard:active{transform:scale(.98)}
+  .excard:hover{box-shadow:var(--ombra)}
+  .excard .exhead{display:flex;align-items:center;gap:10px}
+  .excard .exem{font-size:26px;line-height:1}
+  .excard .extit{font-size:15px;font-weight:700;line-height:1.2}
+  .excard .exmeta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;letter-spacing:.02em}
+  .exdur{font-size:12px;color:var(--suau)}
+  .exfr{font-size:12.5px;color:var(--suau);font-style:italic;line-height:1.4}
+  @media (max-width:430px){.exgrid{grid-template-columns:1fr}}
+
+  /* ===== Pasos de la guía ===== */
+  ol.pasos{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:p}
+  ol.pasos li{counter-increment:p;position:relative;padding:9px 0 9px 42px;border-bottom:1px solid var(--linia);color:#46504a}
+  ol.pasos li:last-child{border-bottom:0}
+  ol.pasos li::before{content:counter(p);position:absolute;left:0;top:8px;width:28px;height:28px;border-radius:50%;background:var(--salvia-bg);color:var(--salvia-d);font-weight:700;font-size:13px;display:grid;place-items:center}
+
+  /* ===== Temporizador ===== */
+  .timer-wrap{display:flex;flex-direction:column;align-items:center;margin:8px 0 2px}
+  .dursel{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+  .durb{background:var(--bg);border:1.6px solid var(--linia);border-radius:12px;padding:9px 15px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);font-weight:600;transition:.15s}
+  .durb.sel{border-color:var(--salvia);background:var(--salvia-bg);color:var(--salvia-d)}
+  .ring{width:180px;height:180px;border-radius:50%;display:grid;place-items:center;
+        background:conic-gradient(var(--salvia) 0deg,#e4ece6 0deg);transition:background .3s linear}
+  .ring .rinner{width:142px;height:142px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:var(--ombra-s)}
+  .ring .rtime{font-size:30px;font-weight:700;color:var(--salvia-d);font-variant-numeric:tabular-nums}
+  .ring .rlbl{font-size:12px;color:var(--suau);margin-top:2px}
+
+  /* ===== Registro no evaluativo ===== */
+  .qblock{margin:14px 0;padding-bottom:14px;border-bottom:1px solid var(--linia)}
+  .qblock:last-of-type{border-bottom:0}
+  .qtxt{font-weight:600;font-size:15px;margin-bottom:9px;color:var(--tinta)}
+  .three{display:flex;gap:8px}
+  .three button{flex:1;min-width:0;background:var(--bg);border:1.6px solid var(--linia);border-radius:12px;padding:11px 6px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--tinta);line-height:1.25;transition:.15s}
+  .three button.sel{border-color:var(--salvia);background:var(--salvia-bg);color:var(--salvia-d);font-weight:600}
+
+  /* ===== Microacciones (chips) ===== */
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+  .chip{background:var(--bg);border:1.6px solid var(--linia);border-radius:999px;padding:10px 15px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);transition:.15s}
+  .chip.sel{border-color:var(--oro);background:var(--arena-bg);color:var(--oro-d);font-weight:600}
+
+  /* ===== Inputs ===== */
+  textarea,input[type=text]{width:100%;border:1.6px solid var(--linia);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--bg);resize:vertical;margin-top:6px}
+  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--salvia)}
+  label.fld{display:block;font-weight:600;font-size:14.5px;margin-top:14px}
+
+  /* ===== Continuidad ===== */
+  .contmsg{background:linear-gradient(135deg,var(--salvia-bg) 0%,#dcebe1 100%);border-radius:14px;padding:16px;text-align:center;color:var(--salvia-d);font-weight:600;font-size:16px;line-height:1.5}
+  .donelist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .donepill{background:var(--bg);border:1px solid var(--linia);border-radius:999px;padding:6px 13px;font-size:13px;color:var(--salvia-d)}
+  .hist .row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--linia);border-radius:11px;padding:9px 12px;margin:7px 0;font-size:13.5px}
+  .hist .row .dt{color:var(--suau);font-size:12.5px;flex:0 0 auto}
+  .hist .row .ev{flex:1;color:#46504a}
+
+  /* ===== Checklist (advertencia) ===== */
+  .check{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--linia);cursor:pointer}
+  .check:last-of-type{border-bottom:0}
+  .box{flex:0 0 24px;width:24px;height:24px;border-radius:7px;border:2px solid var(--terra);display:grid;place-items:center;transition:.15s}
+  .box svg{width:15px;height:15px;color:#fff;opacity:0;transition:.15s}
+  .check.on .box{background:var(--terra)}
+  .check.on .box svg{opacity:1}
+  .check span{font-size:14.5px;color:#46504a;line-height:1.4}
+  .checkmsg{display:none;margin-top:14px;background:var(--terra-bg);border:1px solid #e8cfc2;border-radius:14px;padding:15px 16px;color:#7d4a32;font-size:14.5px;line-height:1.55}
+  .checkmsg.show{display:block;animation:fade .3s ease}
+
+  /* ===== Resumen ===== */
+  .resumen{white-space:pre-wrap;background:var(--bg);border:1px dashed var(--linia);border-radius:12px;padding:14px;font-size:13.5px;color:#46504a;line-height:1.6;margin-top:6px}
+
+  /* ===== Acordeón psicoeducativo ===== */
+  details{border:1px solid var(--linia);border-radius:14px;margin:12px 0;overflow:hidden;background:var(--card)}
+  details summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15.5px;list-style:none;display:flex;align-items:center;gap:10px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .em{font-size:20px}
+  details[open] summary{border-bottom:1px solid var(--linia)}
+  details .body{padding:4px 18px 18px}
+
+  footer{text-align:center;color:var(--suau);font-size:13px;margin-top:34px;padding:0 10px}
+  footer .logo{font-weight:700;color:var(--salvia-d);letter-spacing:.04em}
+
+  @media (max-width:380px){h1{font-size:24px}body{font-size:15px}.ring{width:158px;height:158px}.ring .rinner{width:124px;height:124px}.ring .rtime{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══════════════════ 1 · PANTALLA DE INICIO ══════════════════ -->
+<section class="screen active" id="s-inicio">
+  <header>
+    <span class="kicker">APRENS · AIS / ACT</span>
+    <h1>Entrenar AIS desde el amor, no desde el control</h1>
+    <p class="sub">Una práctica cotidiana para acompañarte por dentro sin luchar contra lo que sientes.</p>
+  </header>
+
+  <div class="card">
+    <p>Esta herramienta <b>no sirve para eliminar emociones</b>. Sirve para entrenar una forma distinta de relacionarte con ellas.</p>
+    <div class="quote">“No practico AIS para que mi mono se calle.<br>Practico AIS para que mi mono sepa que no está solo.”</div>
+    <div class="quote frase-oro">“El objetivo no es sentirme mejor.<br>El objetivo es estar mejor acompañado por mí.”</div>
+    <button class="btn" onclick="irPantalla('s-intencion')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
+      Empezar mi práctica de hoy
+    </button>
+  </div>
+
+  <footer>
+    <div class="logo">APRENS</div>
+    Material orientativo de apoyo terapéutico · marco TEC / AIS / ACT.<br>Se interpreta dentro de tu proceso en sesión. No guarda datos en ningún servidor.
+  </footer>
+</section>
+
+<!-- ══════════════════ 2 · PANTALLA DE INTENCIÓN ══════════════════ -->
+<section class="screen" id="s-intencion">
+  <button class="back" onclick="irPantalla('s-inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Inicio</button>
+  <header style="padding-top:14px">
+    <h1 style="font-size:24px">¿Desde dónde vienes a practicar hoy?</h1>
+    <p class="sub">No hay respuesta mala. Solo es un momento de honestidad contigo.</p>
+  </header>
+
+  <div class="card">
+    <div class="opts" id="intOpts">
+      <button class="opt" data-tipo="control" onclick="elegirIntencion('control',this)"><span class="em">🌫️</span> Vengo a quitarme una sensación</button>
+      <button class="opt" data-tipo="control" onclick="elegirIntencion('control',this)"><span class="em">🎛️</span> Vengo a controlar mi ansiedad</button>
+      <button class="opt" data-tipo="control" onclick="elegirIntencion('control',this)"><span class="em">✔️</span> Vengo a hacerlo perfecto</button>
+      <button class="opt" data-tipo="acompanamiento" onclick="elegirIntencion('acompanamiento',this)"><span class="em">🤍</span> Vengo a acompañarme, aunque no cambie nada</button>
+    </div>
+
+    <!-- Mensaje amable si elige control/perfeccionismo -->
+    <div class="reframe" id="reframe">
+      <div class="avis"><span class="em">🐒</span><span>Es normal que una parte de ti quiera aliviarse. <b>No vamos a pelear con eso.</b> Pero antes de empezar, recuerda: hoy no venimos a apagar al mono. Venimos a sentarnos a su lado.</span></div>
+      <p style="margin-top:16px;font-weight:600">¿Puedes practicar durante 1 minuto sin exigir que nada cambie?</p>
+      <button class="btn" onclick="confirmarAcompanar()">Sí, practico para acompañarme</button>
+    </div>
+
+    <!-- Continúa directo si elige D -->
+    <button class="btn" id="btnSeguirInt" style="display:none" onclick="irPantalla('s-menu')">Seguir a mi práctica</button>
+  </div>
+</section>
+
+<!-- ══════════════════ 3 · MENÚ DE EJERCICIOS + SECCIONES ══════════════════ -->
+<section class="screen" id="s-menu">
+  <button class="back" onclick="irPantalla('s-intencion')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Intención</button>
+
+  <header style="padding-top:14px">
+    <h1 style="font-size:24px">Ejercicios cotidianos de AIS</h1>
+    <p class="sub">Elige uno. No hace falta hacerlos todos: basta con volver a ti un momento.</p>
+  </header>
+
+  <div class="quote" style="margin:0 0 6px">“No practico AIS para sentirme mejor. Practico AIS para no abandonarme cuando siento.”</div>
+
+  <div class="exgrid" id="exgrid"><!-- tarjetas generadas por JS --></div>
+
+  <!-- 6 · CONTINUIDAD AMOROSA -->
+  <div class="card" id="continuidad">
+    <h2><span class="ic">🌱</span>Mi continuidad amorosa</h2>
+    <p class="lead">La continuidad no es hacerlo perfecto. Es volver.</p>
+    <div class="contmsg" id="contMsg">Hoy todavía no te has visitado por dentro. Cuando quieras, puedes volver.</div>
+    <div class="donelist" id="doneList"></div>
+
+    <h3>¿Cómo ha sido tu día de hoy?</h3>
+    <div class="opts" id="diaOpts">
+      <button class="opt" onclick="marcarDia('una',this)"><span class="em">🌤️</span> Hoy he practicado una vez</button>
+      <button class="opt" onclick="marcarDia('varias',this)"><span class="em">☀️</span> Hoy he practicado varias veces</button>
+      <button class="opt" onclick="marcarDia('volver',this)"><span class="em">🌙</span> Hoy no he practicado, pero puedo volver ahora</button>
+    </div>
+
+    <div class="hist" id="hist"></div>
+  </div>
+
+  <!-- 7 · PSICOEDUCACIÓN -->
+  <details>
+    <summary><span class="em">💡</span>¿Por qué practicar cuando no lo necesito?</summary>
+    <div class="body">
+      <p>Si solo practico AIS cuando estoy mal, mi cerebro puede aprender que el AIS es una <b>técnica para quitar dolor</b>.</p>
+      <p>Pero si lo practico también cuando estoy tranquilo, cuando estoy con alguien, cuando disfruto o cuando no pasa nada, mi cuerpo aprende algo más profundo:</p>
+      <div class="quote">“Mi conciencia viene a acompañarme, no a controlarme.”</div>
+      <p>Así, con el tiempo, la atención interna se vuelve más automática, más amable y menos defensiva.</p>
+    </div>
+  </details>
+
+  <!-- 8 · ADVERTENCIA TERAPÉUTICA -->
+  <details>
+    <summary><span class="em">🧭</span>Señales de que estoy usando AIS como control</summary>
+    <div class="body">
+      <p class="lead">Marca lo que reconozcas en ti. Sin juicio: solo para verlo con claridad.</p>
+      <div id="checklist"><!-- generado por JS --></div>
+      <div class="checkmsg" id="checkMsg">
+        Quizá hoy no necesitas más técnica. Quizá necesitas más honestidad. Vuelve a esta frase:
+        <b>no practico para apagarme, practico para acompañarme y después actuar con sentido.</b>
+      </div>
+    </div>
+  </details>
+
+  <!-- FRASES QUE ME ACOMPAÑAN -->
+  <div class="card">
+    <h2><span class="ic">🤍</span>Frases que me acompañan</h2>
+    <div class="quote">“El mono no necesita siempre una solución. Muchas veces necesita compañía.”</div>
+    <div class="quote">“Amar al mono no significa obedecerlo.”</div>
+    <div class="quote frase-oro">“El objetivo no es calmar. El objetivo es acompañar.”</div>
+    <div class="quote">“Después de acompañarme, vuelvo a la vida.”</div>
+    <div class="quote frase-oro">“Si uso AIS para evitar actuar, ya no es AIS: es otra forma de esconderme.”</div>
+  </div>
+
+  <footer><div class="logo">APRENS</div>marco TEC / AIS / ACT</footer>
+</section>
+
+<!-- ══════════════════ 4 · DESARROLLO DE CADA EJERCICIO (dinámico) ══════════════════ -->
+<section class="screen" id="s-ejercicio">
+  <button class="back" onclick="irPantalla('s-menu')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Ejercicios</button>
+
+  <header style="padding-top:12px">
+    <div style="font-size:48px" id="exIcon">🚦</div>
+    <h1 style="font-size:24px;margin-top:6px" id="exTitulo"></h1>
+    <div class="exmeta" style="justify-content:center;margin-top:10px">
+      <span class="badge" id="exBadge"></span>
+      <span class="exdur" id="exDur"></span>
+    </div>
+  </header>
+
+  <!-- A · Explicación + contexto -->
+  <div class="card">
+    <h2><span class="ic">🌿</span>De qué va</h2>
+    <p id="exExplica"></p>
+    <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
+  </div>
+
+  <!-- B · Guía paso a paso -->
+  <div class="card">
+    <h2><span class="ic">👣</span>Paso a paso</h2>
+    <ol class="pasos" id="exPasos"></ol>
+  </div>
+
+  <!-- C · Temporizador opcional -->
+  <div class="card">
+    <h2><span class="ic">⏳</span>Temporizador (opcional)</h2>
+    <p class="lead">No hace falta. Si te ayuda a quedarte, elige un tiempo y deja que pase.</p>
+    <div class="timer-wrap">
+      <div class="dursel">
+        <button class="durb" onclick="setDur(30,this)">30 seg</button>
+        <button class="durb sel" onclick="setDur(60,this)">1 min</button>
+        <button class="durb" onclick="setDur(180,this)">3 min</button>
+      </div>
+      <div class="ring" id="ring"><div class="rinner"><div style="text-align:center"><div class="rtime" id="rtime">1:00</div><div class="rlbl" id="rlbl">listo</div></div></div></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost small" style="flex:1" id="btnTimer" onclick="toggleTimer()">Empezar</button>
+      <button class="btn ghost small" style="flex:0 0 auto" onclick="resetTimer()">↺</button>
+    </div>
+  </div>
+
+  <!-- D · Frase de acompañamiento -->
+  <div class="quote frase-oro" id="exFrase" style="font-size:18px;text-align:center"></div>
+
+  <!-- E + F · Reflexión + registro no evaluativo -->
+  <div class="card">
+    <h2><span class="ic">🪞</span>Después de acompañarte</h2>
+    <p id="exReflexion" style="font-weight:600"></p>
+    <div id="regBlocks"><!-- 4 preguntas no evaluativas generadas por JS --></div>
+  </div>
+
+  <!-- 9 · MICROACCIÓN CON VALOR -->
+  <div class="card">
+    <h2><span class="ic">➡️</span>Volver a la vida con dirección</h2>
+    <p>Después de acompañarte, ¿cuál es el siguiente gesto pequeño que tiene sentido?</p>
+    <div class="chips" id="microChips"></div>
+    <input type="text" id="microOtra" placeholder="Otra acción que tenga sentido para ti…" style="display:none">
+    <div class="quote" style="margin-top:14px">“El AIS no termina en sentir. Termina en volver a vivir con dirección.”</div>
+  </div>
+
+  <!-- Notas para el resumen -->
+  <div class="card">
+    <h2><span class="ic">📝</span>Para tu terapeuta (opcional)</h2>
+    <label class="fld">Lo que he notado en el cuerpo</label>
+    <textarea id="inCuerpo" rows="2" placeholder="Pecho, garganta, abdomen… lo que haya."></textarea>
+    <label class="fld">Frase que me ha ayudado</label>
+    <input type="text" id="inFrase" placeholder="La frase del ejercicio u otra tuya.">
+    <label class="fld">Me doy cuenta de…</label>
+    <textarea id="inCuenta" rows="2" placeholder="Algo que has aprendido al acompañarte."></textarea>
+
+    <button class="btn" onclick="guardarPractica(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      Guardar en mi continuidad
+    </button>
+    <button class="btn oro" onclick="copiarResumen(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar resumen para enviar
+    </button>
+    <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:13px 0 0;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: junta lo del día y mándame <b>un único resumen al final del día</b>.</div>
+    <div class="resumen" id="resumenPrev"></div>
+  </div>
+
+  <footer><div class="logo">APRENS</div>Después de acompañarme, vuelvo a la vida.</footer>
+</section>
+
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   DATOS · EJERCICIOS  (edita aquí textos, iconos, niveles y pasos)
+   nivel: 'neutro' | 'afectivo' | 'incomodidad' | 'vinculo'
+   ════════════════════════════════════════════════════════════════════ */
+var NIVELES = {
+  neutro:      {txt:'Neutro',      col:'#587f97', bg:'#e8f0f5'},
+  afectivo:    {txt:'Afectivo',    col:'#a07f38', bg:'#f4ecdd'},
+  incomodidad: {txt:'Incomodidad', col:'#b87a5e', bg:'#f3e7e0'},
+  vinculo:     {txt:'Vínculo',     col:'#557a64', bg:'#e7f0ea'}
+};
+
+var EJERCICIOS = [
+  { id:'semaforo', icon:'🚦', titulo:'Semáforo AIS', nivel:'neutro', dur:'30 seg – 1 min',
+    contexto:'Cada vez que estés parado en un semáforo, una cola o una espera.',
+    explica:'Conviertes las esperas del día en pequeñas puertas para volver a ti. No para distraerte ni para calmarte: solo para no abandonarte mientras esperas.',
+    pasos:['Suelta un poco los hombros.','Respira.','Lleva la atención al pecho, estómago o garganta.','Nota lo que haya durante unos segundos.','No busques calma.','Solo di internamente: «Estoy aquí.»'],
+    frase:'No espero para desesperarme. Espero para volver a mí.',
+    reflexion:'¿Has podido tratar la espera como un encuentro contigo, y no como tiempo perdido?' },
+
+  { id:'entrada', icon:'🚪', titulo:'Entrada en casa', nivel:'vinculo', dur:'30 seg',
+    contexto:'Antes de entrar en casa o justo al cruzar la puerta.',
+    explica:'Un segundo de presencia contigo antes de entrar en relación con los demás. Para llegar desde ti, y no desde el automático.',
+    pasos:['Detente antes de hablar.','Respira una vez.','Nota tu cuerpo.','Pregúntate: «¿Cómo llega mi mono?»','Entra con presencia.'],
+    frase:'Antes de entrar en relación con los demás, entro un segundo en relación conmigo.',
+    reflexion:'¿Has entrado un segundo en relación contigo antes que con los demás?' },
+
+  { id:'cafe', icon:'☕', titulo:'Café consciente', nivel:'neutro', dur:'1 min',
+    contexto:'Primer café, desayuno o primera pausa del día.',
+    explica:'Empezar el día acompañándote, en lugar de arrancar abandonándote. Sin buscar nada especial: solo estar.',
+    pasos:['Coge la taza.','Nota el calor.','Respira.','Mira hacia dentro.','No busques nada especial.','Solo acompaña el inicio del día.'],
+    frase:'No empiezo el día abandonándome.',
+    reflexion:'¿Has empezado el día acompañándote, aunque fuera unos segundos?' },
+
+  { id:'abrazo', icon:'🤲', titulo:'Abrazo del mono', nivel:'afectivo', dur:'1 min',
+    contexto:'Tres veces al día, aunque no pase nada.',
+    explica:'Presencia y compañía hacia tu cuerpo, sin tarea de arreglar nada. A veces el mono no necesita solución; necesita compañía.',
+    pasos:['Una mano en el pecho.','Otra en el abdomen.','Respira.','Di internamente: «Hola mono, estoy contigo.»','No soluciones nada.','Solo presencia.'],
+    frase:'El mono no necesita siempre una solución. Muchas veces necesita compañía.',
+    reflexion:'¿Has podido estar con tu mono sin pedirle que cambie?' },
+
+  { id:'afectos', icon:'💞', titulo:'AIS con los afectos', nivel:'vinculo', dur:'durante la conversación',
+    contexto:'Cuando estés con tu pareja, hijos, madre, padre o alguien significativo.',
+    explica:'Estar con el otro sin perderte a ti. Una pequeña parte de tu atención queda en tu cuerpo para responder desde la presencia, no desde la defensa.',
+    pasos:['Escucha a la otra persona.','Mantén una pequeña parte de tu atención en tu cuerpo.','Nota pecho, garganta o abdomen.','No respondas desde la defensa inmediata.','Respira antes de contestar.'],
+    frase:'Puedo estar contigo sin abandonarme a mí.',
+    reflexion:'¿Has podido estar con el otro sin abandonarte a ti?' },
+
+  { id:'bonitas', icon:'🌅', titulo:'AIS de las cosas bonitas', nivel:'afectivo', dur:'30 seg – 1 min',
+    contexto:'Un abrazo, una comida, música, un paseo, una puesta de sol, una conversación agradable.',
+    explica:'Esencial para que el AIS no quede asociado solo al malestar. También miras hacia dentro cuando la vida te cuida.',
+    pasos:['Detecta algo agradable.','Respira.','Pregunta: «¿Dónde noto esto en mi cuerpo?»','Quédate unos segundos ahí.','Deja que el cuerpo registre lo bueno.'],
+    frase:'También miro hacia dentro cuando la vida me cuida.',
+    reflexion:'¿Has dejado que tu cuerpo registrara algo bueno?' },
+
+  { id:'incomodidades', icon:'🌧️', titulo:'AIS de las pequeñas incomodidades', nivel:'incomodidad', dur:'30 seg',
+    contexto:'Tráfico, espera, crítica, cansancio, ruido, frustración pequeña.',
+    explica:'Practicar quedarte un momento con lo incómodo sin correr a quitarlo, y desde ahí elegir una microacción útil.',
+    pasos:['No corras a quitar la incomodidad.','Respira.','Localiza la sensación.','Di: «Esto también puede estar aquí.»','Elige una microacción útil.'],
+    frase:'No necesito que la incomodidad desaparezca para seguir presente.',
+    reflexion:'¿Has podido sostener la incomodidad sin correr a quitarla?' },
+
+  { id:'conduce', icon:'🚗', titulo:'¿Quién conduce ahora?', nivel:'incomodidad', dur:'1 min',
+    contexto:'Cuando notes impulso, urgencia, enfado, miedo o bloqueo.',
+    explica:'Reconocer qué emoción está al volante, validarla y recuperar tú la dirección. Escuchas al mono, pero no le entregas el volante.',
+    pasos:['Pregúntate: «¿Quién conduce ahora?»','¿El miedo?','¿La rabia?','¿La necesidad de agradar?','¿La evitación?','Imagina al mono sentado a tu lado.','Valídalo.','Recupera el volante.'],
+    frase:'Escucho al mono, pero no le entrego el volante.',
+    reflexion:'¿Has podido escuchar al mono sin entregarle el volante?' },
+
+  { id:'movil', icon:'📵', titulo:'Microparada antes del móvil', nivel:'neutro', dur:'15 – 30 seg',
+    contexto:'Antes de abrir WhatsApp, Instagram, correo o cualquier distracción automática.',
+    explica:'Un instante para distinguir entre elegir y escapar. Para no usar el móvil para abandonar al mono sin darte cuenta.',
+    pasos:['Detén el dedo antes de tocar la pantalla.','Respira.','Pregunta: «¿Vengo a elegir o a escapar?»','Nota el cuerpo.','Decide conscientemente.'],
+    frase:'No uso el móvil para abandonar al mono sin darme cuenta.',
+    reflexion:'¿Has elegido, en lugar de escapar en automático?' },
+
+  { id:'cierre', icon:'🌙', titulo:'Cierre del día con presencia', nivel:'afectivo', dur:'1 – 3 min',
+    contexto:'Antes de dormir.',
+    explica:'Revisar el día para aprender a acompañarte, no para castigarte. Reconoces el intento, sin juicio.',
+    pasos:['Apoya una mano en el cuerpo.','Recuerda un momento del día en que tu mono apareció.','No juzgues.','Pregunta: «¿Pude acompañarme un poco?»','Da las gracias por el intento.'],
+    frase:'No reviso el día para castigarme. Lo reviso para aprender a acompañarme.',
+    reflexion:'¿Has mirado tu día para acompañarte, no para castigarte?' }
+];
+
+/* Preguntas del registro NO evaluativo (sin lenguaje de éxito/fracaso) */
+var REG_PREGUNTAS = [
+  '¿He estado conmigo sin exigirme cambiar?',
+  '¿He podido notar algo del cuerpo?',
+  '¿He practicado con amabilidad?',
+  '¿He vuelto a la dirección que tiene sentido para mí?'
+];
+var REG_OPCIONES = ['Sí','Un poco','Me ha costado, pero lo he intentado'];
+
+/* Microacciones con valor */
+var MICRO = ['Enviar un mensaje','Ordenar algo','Salir a caminar','Hablar con alguien','Volver a una tarea','Descansar de forma consciente','Poner un límite','Pedir ayuda','Otra acción'];
+
+/* Checklist de "AIS como control" */
+var CHECKLIST = [
+  'Lo hago para que la ansiedad desaparezca rápido.',
+  'Me enfado si sigo sintiendo lo mismo.',
+  'Busco hacerlo perfecto.',
+  'Lo convierto en una obligación.',
+  'Lo uso para no tomar decisiones difíciles.',
+  'Me quedo dentro del cuerpo para no actuar.',
+  'Me digo que hago AIS, pero en realidad estoy evitando vivir.'
+];
+
+/* Mensajes de continuidad amorosa (no productividad agresiva) */
+var CONT_MSGS = ['Hoy me he visitado por dentro.','Hoy he vuelto a mí.','Hoy mi mono no ha estado solo.'];
+
+/* ════════════════════════ ESTADO ════════════════════════ */
+var KEY_DIA  = 'aprens_ais_amor_dia';
+var KEY_HIST = 'aprens_ais_amor_hist';
+
+var intencion = null;        // 'control' | 'acompanamiento'
+var intencionTexto = '';     // texto para el resumen
+var exActual = null;         // ejercicio en curso
+var practica = {};           // registro de la práctica actual
+
+function hoy(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function nuevoDia(){return {date:hoy(),hechos:[],veces:0,estado:null};}
+function cargaDia(){
+  var d=null; try{d=JSON.parse(localStorage.getItem(KEY_DIA));}catch(e){}
+  if(!d||d.date!==hoy()){ if(d&&d.hechos&&d.hechos.length) archivaDia(d); return nuevoDia(); }
+  if(!d.hechos) d.hechos=[];
+  return d;
+}
+function guardaDia(){try{localStorage.setItem(KEY_DIA,JSON.stringify(dia));}catch(e){}}
+function cargaHist(){try{return JSON.parse(localStorage.getItem(KEY_HIST))||[];}catch(e){return[];}}
+function archivaDia(d){
+  var h=cargaHist();
+  if(h.length&&h[0].date===d.date){h[0]={date:d.date,n:d.hechos.length};}
+  else h.unshift({date:d.date,n:d.hechos.length});
+  if(h.length>30)h=h.slice(0,30);
+  try{localStorage.setItem(KEY_HIST,JSON.stringify(h));}catch(e){}
+}
+var dia = cargaDia();
+if(window.Aprens){ try{ Aprens.config({toolId:"ais_amor", toolName:"AIS desde el amor", toolVersion:1}); }catch(e){} }
+function _aprensSaveAmor(){ try{ if(!window.Aprens||!exActual) return; if(!practica._sid) practica._sid=Date.now(); var g=function(id){var el=document.getElementById(id);return el?el.value.trim():"";}; Aprens.save({ id:practica._sid, date:hoy(), ts:practica._sid, param:"densidad", ejercicio:exActual.titulo, nivel:exActual.nivel, micro:microFinal(), cualidades:g("inCuerpo"), cuenta:g("inCuenta"), frase:g("inFrase"), vecesHoy:dia.hechos.length, intencion:intencion||"" }); Aprens.mountBar(); }catch(e){} }
+
+/* ════════════════════════ NAVEGACIÓN ════════════════════════ */
+function irPantalla(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════════════════ INTENCIÓN ════════════════════════ */
+function elegirIntencion(tipo,btn){
+  document.querySelectorAll('#intOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  intencion=tipo;
+  intencionTexto = (tipo==='acompanamiento') ? btn.textContent.trim() : btn.textContent.trim();
+  if(tipo==='control'){
+    document.getElementById('reframe').classList.add('show');
+    document.getElementById('btnSeguirInt').style.display='none';
+  } else {
+    document.getElementById('reframe').classList.remove('show');
+    intencionTexto='acompañamiento';
+    document.getElementById('btnSeguirInt').style.display='flex';
+  }
+}
+function confirmarAcompanar(){
+  intencion='acompanamiento';
+  intencionTexto='me ha costado, pero vengo a acompañarme'; // honesto: reconoció control y reformuló
+  irPantalla('s-menu');
+}
+
+/* ════════════════════════ MENÚ DE EJERCICIOS ════════════════════════ */
+function pintaMenu(){
+  var g=document.getElementById('exgrid');
+  g.innerHTML = EJERCICIOS.map(function(e){
+    var n=NIVELES[e.nivel];
+    return '<button class="excard" onclick="abrirEjercicio(\''+e.id+'\')">'+
+      '<div class="exhead"><span class="exem">'+e.icon+'</span><span class="extit">'+e.titulo+'</span></div>'+
+      '<div class="exmeta"><span class="badge" style="color:'+n.col+';background:'+n.bg+'">'+n.txt+'</span>'+
+      '<span class="exdur">'+e.dur+'</span></div>'+
+      '<div class="exfr">«'+e.frase+'»</div></button>';
+  }).join('');
+}
+
+/* ════════════════════════ ABRIR EJERCICIO ════════════════════════ */
+function abrirEjercicio(id){
+  exActual = EJERCICIOS.filter(function(e){return e.id===id;})[0];
+  if(!exActual) return;
+  practica = {ejid:id, reg:[null,null,null,null], micro:null};
+  var n=NIVELES[exActual.nivel];
+
+  document.getElementById('exIcon').textContent=exActual.icon;
+  document.getElementById('exTitulo').textContent=exActual.titulo;
+  var b=document.getElementById('exBadge');
+  b.textContent=n.txt; b.style.color=n.col; b.style.background=n.bg;
+  document.getElementById('exDur').textContent='· '+exActual.dur;
+  document.getElementById('exExplica').textContent=exActual.explica;
+  document.getElementById('exContexto').textContent=exActual.contexto;
+  document.getElementById('exPasos').innerHTML=exActual.pasos.map(function(p){return '<li>'+p+'</li>';}).join('');
+  document.getElementById('exFrase').textContent='“'+exActual.frase+'”';
+  document.getElementById('exReflexion').textContent=exActual.reflexion;
+
+  // registro no evaluativo
+  document.getElementById('regBlocks').innerHTML = REG_PREGUNTAS.map(function(q,qi){
+    return '<div class="qblock"><div class="qtxt">'+q+'</div><div class="three">'+
+      REG_OPCIONES.map(function(o,oi){return '<button onclick="setReg('+qi+','+oi+',this)">'+o+'</button>';}).join('')+
+      '</div></div>';
+  }).join('');
+
+  // microacciones
+  document.getElementById('microChips').innerHTML = MICRO.map(function(m){
+    return '<button class="chip" onclick="setMicro(this,\''+m+'\')">'+m+'</button>';
+  }).join('');
+  document.getElementById('microOtra').style.display='none';
+  document.getElementById('microOtra').value='';
+
+  // limpiar campos
+  document.getElementById('inCuerpo').value='';
+  document.getElementById('inFrase').value=exActual.frase;
+  document.getElementById('inCuenta').value='';
+  document.getElementById('resumenPrev').textContent='';
+
+  resetTimer();
+  irPantalla('s-ejercicio');
+}
+
+function setReg(qi,oi,btn){
+  var row=btn.parentNode;
+  row.querySelectorAll('button').forEach(function(x){x.classList.remove('sel');});
+  btn.classList.add('sel');
+  practica.reg[qi]=oi;
+}
+function setMicro(btn,txt){
+  document.querySelectorAll('#microChips .chip').forEach(function(x){x.classList.remove('sel');});
+  btn.classList.add('sel');
+  practica.micro=txt;
+  document.getElementById('microOtra').style.display = (txt==='Otra acción') ? 'block':'none';
+}
+
+/* ════════════════════════ TEMPORIZADOR ════════════════════════ */
+var tDur=60, tLeft=60, tInt=null, tRunning=false;
+function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+function pintaRing(){
+  var frac = tDur? (tDur-tLeft)/tDur : 0;
+  document.getElementById('ring').style.background='conic-gradient(var(--salvia) '+(frac*360)+'deg,#e4ece6 '+(frac*360)+'deg)';
+  document.getElementById('rtime').textContent=fmt(tLeft);
+}
+function setDur(s,btn){
+  document.querySelectorAll('.durb').forEach(function(x){x.classList.remove('sel');});
+  btn.classList.add('sel');
+  tDur=s; resetTimer();
+}
+function toggleTimer(){
+  if(tRunning){ pauseTimer(); return; }
+  if(tLeft<=0) tLeft=tDur;
+  tRunning=true;
+  document.getElementById('btnTimer').textContent='Pausar';
+  document.getElementById('rlbl').textContent='estoy aquí';
+  tInt=setInterval(function(){
+    tLeft--; pintaRing();
+    if(tLeft<=0){ clearInterval(tInt); tRunning=false;
+      document.getElementById('btnTimer').textContent='De nuevo';
+      document.getElementById('rlbl').textContent='gracias por venir';
+      document.getElementById('rtime').textContent='✓';
+    }
+  },1000);
+}
+function pauseTimer(){clearInterval(tInt);tRunning=false;document.getElementById('btnTimer').textContent='Seguir';document.getElementById('rlbl').textContent='en pausa';}
+function resetTimer(){clearInterval(tInt);tRunning=false;tLeft=tDur;document.getElementById('btnTimer').textContent='Empezar';document.getElementById('rlbl').textContent='listo';pintaRing();}
+
+/* ════════════════════════ GUARDAR / CONTINUIDAD ════════════════════════ */
+function guardarPractica(btn){
+  if(exActual && dia.hechos.indexOf(exActual.titulo)===-1){
+    dia.hechos.push(exActual.titulo);
+    dia.veces=dia.hechos.length;
+  }
+  guardaDia(); archivaDia(dia); pintaContinuidad();
+  _aprensSaveAmor();
+  if(btn) feedback(btn,'Guardado en tu continuidad');
+}
+function marcarDia(estado,btn){
+  document.querySelectorAll('#diaOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  dia.estado=estado; guardaDia(); pintaContinuidad();
+}
+function pintaContinuidad(){
+  var msg=document.getElementById('contMsg');
+  var dl=document.getElementById('doneList');
+  if(dia.hechos.length){
+    var frase=CONT_MSGS[Math.min(dia.hechos.length-1,CONT_MSGS.length-1)];
+    msg.textContent=frase;
+    dl.innerHTML=dia.hechos.map(function(h){return '<span class="donepill">🌿 '+h+'</span>';}).join('');
+  } else if(dia.estado==='volver'){
+    msg.textContent='No has fallado. Simplemente tienes otra oportunidad de volver.';
+    dl.innerHTML='';
+  } else {
+    msg.textContent='Hoy todavía no te has visitado por dentro. Cuando quieras, puedes volver.';
+    dl.innerHTML='';
+  }
+  // historial (sin rachas)
+  var h=cargaHist().filter(function(d){return d.date!==hoy();});
+  var el=document.getElementById('hist');
+  if(!h.length){el.innerHTML='';return;}
+  el.innerHTML='<h3>Días anteriores</h3>'+h.slice(0,14).map(function(d){
+    return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+
+      (d.n>0?('te visitaste '+d.n+(d.n===1?' vez':' veces')):'pudiste volver')+'</span></div>';
+  }).join('');
+}
+
+/* ════════════════════════ RESUMEN / WHATSAPP ════════════════════════ */
+function microFinal(){
+  if(practica.micro==='Otra acción'){var v=document.getElementById('microOtra').value.trim();return v||'(otra acción)';}
+  return practica.micro||'—';
+}
+function regResumen(){
+  return REG_PREGUNTAS.map(function(q,i){
+    var v=practica.reg[i]; return '   · '+q+' '+(v!=null?REG_OPCIONES[v]:'—');
+  }).join('\n');
+}
+function construirResumen(){
+  var L=[];
+  L.push('ENTRENAR AIS DESDE EL AMOR · APRENS · '+hoy());
+  L.push('');
+  L.push('Hoy he practicado AIS desde:');
+  L.push(intencionTexto||'acompañamiento');
+  L.push('');
+  L.push('Ejercicio realizado:');
+  L.push((exActual?exActual.titulo:'—')+(exActual?' ('+NIVELES[exActual.nivel].txt+')':''));
+  L.push('');
+  L.push('Lo que he notado en el cuerpo:');
+  L.push(document.getElementById('inCuerpo').value.trim()||'—');
+  L.push('');
+  L.push('Frase que me ha ayudado:');
+  L.push(document.getElementById('inFrase').value.trim()||'—');
+  L.push('');
+  L.push('Microacción con valor:');
+  L.push(microFinal());
+  L.push('');
+  L.push('Me doy cuenta de:');
+  L.push(document.getElementById('inCuenta').value.trim()||'—');
+  L.push('');
+  L.push('Registro (sin exigirme):');
+  L.push(regResumen());
+  return L.join('\n');
+}
+function copiarResumen(btn){
+  guardarPractica(null); // queda registrado en la continuidad
+  var txt=construirResumen();
+  document.getElementById('resumenPrev').textContent=txt;
+  copiarText(txt,btn);
+}
+
+/* ════════════════════════ CHECKLIST AIS-CONTROL ════════════════════════ */
+function pintaChecklist(){
+  document.getElementById('checklist').innerHTML = CHECKLIST.map(function(c,i){
+    return '<div class="check" onclick="toggleCheck(this)"><span class="box">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'+
+      '<span>'+c+'</span></div>';
+  }).join('');
+}
+function toggleCheck(el){
+  el.classList.toggle('on');
+  var n=document.querySelectorAll('#checklist .check.on').length;
+  document.getElementById('checkMsg').classList.toggle('show', n>=2);
+}
+
+/* ════════════════════════ COPIAR (clipboard + fallback) ════════════════════════ */
+function feedback(btn,texto){
+  if(!btn)return; var html=btn.innerHTML; btn.classList.add('ok');
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> '+(texto||'¡Copiado!');
+  setTimeout(function(){btn.classList.remove('ok');btn.innerHTML=html;},1800);
+}
+function copiarText(text,btn){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){feedback(btn);}).catch(function(){fallback(text,btn);});
+  } else { fallback(text,btn); }
+}
+function fallback(text,btn){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');feedback(btn);}catch(e){alert('No se pudo copiar. Selecciona el texto del recuadro y cópialo a mano.');}
+  document.body.removeChild(ta);
+}
+
+/* ════════════════════════ INIT ════════════════════════ */
+pintaMenu();
+pintaChecklist();
+pintaContinuidad();
+</script>
+</body>
+</html>

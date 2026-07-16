@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3a7d6e">
+<meta name="description" content="Anclado en mí · bienestar emocional, hábitos e inteligencia emocional. Un plan diario para volver a ti.">
+<title>Anclado en mí · Bienestar emocional</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-1024.png">
+<link rel="stylesheet" href="bienestar.css">
+</head>
+<body>
+
+<!-- ONBOARDING (historia → perfil → evaluación) — render por JS -->
+<div id="onb" class="onb" style="display:none"><div class="onb-card" id="onbCard"></div></div>
+
+<!-- APP -->
+<div id="app" class="app" style="display:none">
+  <header class="head">
+    <div class="brand"><span class="logo">⚓</span><div><b id="hola">Hola</b><span id="frase">Anclado en mí</span></div></div>
+    <button class="ghost" id="btnAjustes" title="Ajustes">⚙️</button>
+  </header>
+  <nav class="tabs">
+    <button class="tab active" data-view="hoy">Hoy</button>
+    <button class="tab" data-view="plan">Plan</button>
+    <button class="tab" data-view="progreso">Mi progreso</button>
+  </nav>
+  <main class="main">
+    <section id="view-hoy" class="view"></section>
+    <section id="view-plan" class="view" style="display:none"></section>
+    <section id="view-progreso" class="view" style="display:none"></section>
+  </main>
+  <footer class="foot">
+    <div class="disclaimer">
+      App de bienestar y psicoeducación · <b>no es un producto sanitario</b> ni sustituye a la terapia.
+      Si lo estás pasando mal, habla con un profesional. En España, atención a la conducta suicida: <b>024</b>.
+      · <a href="privacidad.html" style="color:inherit">Privacidad</a>
+    </div>
+  </footer>
+</div>
+
+<!-- OVERLAY práctica (iframe) -->
+<div id="toolOverlay" class="tool-overlay" style="display:none">
+  <div class="tool-bar"><button id="toolBack" class="tool-back">‹ Volver</button><span id="toolTitle"></span></div>
+  <div id="toolWhy" class="tool-why"></div>
+  <iframe id="toolFrame" class="tool-frame" title="Práctica"></iframe>
+</div>
+
+<!-- OVERLAY práctica nativa de 3 min "Sentarme junto al mono" -->
+<div id="miniOverlay" class="tool-overlay" style="display:none">
+  <div class="tool-bar"><button id="miniBack" class="tool-back">‹ Volver</button><span id="miniTitle">Sentarme junto al mono</span></div>
+  <div id="miniBody" class="mini-body"></div>
+</div>
+
+<!-- OVERLAY "La historia" (deck) -->
+<div id="histOverlay" class="tool-overlay" style="display:none">
+  <div class="tool-bar"><button id="histBack" class="tool-back">‹ Volver</button><span>La historia del mono</span></div>
+  <div id="histBody" class="hist-body"></div>
+</div>
+
+<!-- MODAL evaluación / termómetro (reutilizable) -->
+<div id="sheet" class="modal" style="display:none"><div class="modal-card" id="sheetCard"></div></div>
+
+<!-- AJUSTES -->
+<div id="ajustes" class="modal" style="display:none">
+  <div class="modal-card">
+    <button class="modal-x" id="ajClose">✕</button>
+    <h2>Ajustes</h2>
+    <label class="fld">Tu nombre<input id="ajName" class="onb-input" placeholder="(opcional)" maxlength="24"></label>
+    <button class="btn-primary" id="ajSave">Guardar</button>
+    <button class="btn-soft" id="ajRutina">⏰ Mi rutina diaria y avisos</button>
+    <button class="btn-soft" id="ajHist">📖 Volver a leer la historia</button>
+    <button class="btn-soft" id="ajEval">🧭 Repetir la evaluación</button>
+    <button class="linklike" id="ajReset">Borrar mis datos de este dispositivo</button>
+  </div>
+</div>
+
+<!-- RUTINA diaria + avisos -->
+<div id="rutina" class="modal" style="display:none"><div class="modal-card" id="rutinaCard"></div></div>
+
+<div id="toast" class="toast" style="display:none"></div>
+
+<script src="../js/aprens-core.js"></script>
+<script src="../vendor/chart.umd.min.js"></script>
+<script src="bienestar.js"></script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
+</script>
+</body>
+</html>

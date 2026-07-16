@@ -1,0 +1,7 @@
+# Artefactos generados — no se versionan
+www/
+node_modules/
+ios/
+android/
+.DS_Store
+package-lock.json

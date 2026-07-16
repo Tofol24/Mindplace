@@ -1,0 +1,23 @@
+{
+  "name": "anclado-en-mi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Anclado en mí — app nativa (Capacitor) de la versión consumer de bienestar",
+  "scripts": {
+    "assemble": "node assemble.mjs",
+    "sync": "npm run assemble && npx cap sync",
+    "add:ios": "npm run assemble && npx cap add ios && npx cap sync ios",
+    "add:android": "npm run assemble && npx cap add android && npx cap sync android",
+    "open:ios": "npx cap open ios",
+    "open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/ios": "^6.1.0",
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/local-notifications": "^6.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0"
+  }
+}

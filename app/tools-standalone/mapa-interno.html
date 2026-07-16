@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#6f9bc0">
+<title>Mapa de atención interna · APRENS</title>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  MAPA DE ATENCIÓN INTERNA · APRENS (TEC / AIS / ACT)
+  Ancla la atención DENTRO usando el cuerpo como mapa visual (SVG).
+  Segunda puerta de anclaje además de la respiración: la VISUALIZACIÓN
+  TOPOGRÁFICA. Eliges una zona (cuello / pecho / barriga), la miras y
+  pruebas a sentirla, desde la CURIOSIDAD (qué/cómo, no por qué).
+  Entrena el vector atencional → Latencia, Densidad y Continuidad (TEC).
+  1 solo archivo · sin backend · sin login · sin cookies.
+  Guarda SOLO en el navegador del paciente (localStorage, aprens_mapa_).
+
+  CÓMO EDITAR:
+   · Zonas, guías, frases y cualidades → objeto ZONAS (en el <script>).
+   · Colores de cada zona → ZONAS[x].col / cold / bg  y  :root.
+   · Cadencia de envío (día) → banner .cad-aviso antes de los botones.
+  ════════════════════════════════════════════════════════════════════
+-->
+<style>
+  :root{
+    --bg:#f6f7f3;
+    --bg2:#eaf1f5;
+    --card:#ffffff;
+    --tinta:#39423d;
+    --suau:#7c8079;
+    --azul:#6f9bc0;
+    --azul-d:#456d8c;
+    --azul-bg:#e7eff6;
+    --oro:#caa765;
+    --oro-d:#a07f38;
+    --arena-bg:#f4ecdd;
+    --linia:#e4e3da;
+    --ombra:0 8px 26px rgba(70,90,110,.12);
+    --ombra-s:0 2px 12px rgba(70,90,110,.08);
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 260px);
+    color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding:0 16px 90px;
+  }
+  .wrap{max-width:660px;margin:0 auto}
+
+  .screen{display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  header{text-align:center;padding:40px 8px 6px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul-d);background:var(--azul-bg);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
+  h1{font-size:27px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:30em}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--azul);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s,box-shadow .2s;font-family:inherit;box-shadow:0 6px 18px rgba(111,155,192,.32)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--azul-d);border:1.6px solid var(--azul);box-shadow:none}
+  .btn.oro{background:var(--oro);box-shadow:0 6px 18px rgba(202,167,101,.32)}
+  .btn.wa{background:#25a35a;box-shadow:0 6px 18px rgba(37,163,90,.30)}
+  .btn.small{width:auto;padding:11px 16px;font-size:14.5px;margin-top:0}
+  .btn svg{width:19px;height:19px}
+  .btn.ok{background:var(--azul)!important;color:#fff!important}
+  .btnrow{display:flex;gap:11px}
+  .btnrow .btn{flex:1}
+  .back{background:none;border:0;color:var(--suau);font-family:inherit;font-size:14.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:18px 0 4px}
+  .back svg{width:17px;height:17px}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .card h3{font-size:16px;margin:18px 0 8px;font-weight:700}
+  .card p{margin:8px 0;color:#46504a}
+  .card p.lead{color:var(--suau);font-size:14.5px;margin-top:2px}
+  .ic{flex:0 0 42px;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--azul-bg);font-size:22px}
+
+  .quote{background:linear-gradient(135deg,var(--azul-bg) 0%,#dbe8f1 100%);border-left:4px solid var(--azul);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--azul-d);margin:14px 0 4px;line-height:1.5}
+  .frase-oro{background:linear-gradient(135deg,var(--arena-bg) 0%,#efe1c8 100%);border-left:4px solid var(--oro);color:var(--oro-d)}
+
+  .avis{display:flex;gap:11px;background:var(--arena-bg);border:1px solid #ecdcc0;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14px;color:#7a5b1e;align-items:flex-start}
+  .avis .em{font-size:18px;line-height:1.4}
+
+  /* ===== Mapa corporal (SVG) ===== */
+  .mapa{display:flex;justify-content:center;margin:6px 0 2px}
+  .mapa svg{width:100%;max-width:280px;height:auto;display:block}
+  .zone{cursor:pointer}
+  .zone .zbg{fill-opacity:.10;transition:fill-opacity .2s}
+  .zone:hover .zbg{fill-opacity:.2}
+  .zone.sel .zbg{fill-opacity:.3}
+  .zone .organ{transition:filter .2s}
+  .zone:hover .organ{filter:drop-shadow(0 0 3px currentColor)}
+  .zone.sel .organ{filter:drop-shadow(0 0 5px currentColor)}
+  .zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25))}
+  .leyenda{text-align:center;font-size:12.5px;color:var(--suau);margin:2px 0 12px}
+
+  /* ===== Tarjetas de zona (legend / botones) ===== */
+  .zcards{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+  .zcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.6px solid var(--linia);border-left:5px solid #ccc;border-radius:16px;padding:14px 16px;cursor:pointer;font-family:inherit;transition:transform .08s,box-shadow .2s,border-color .2s}
+  .zcard:active{transform:scale(.99)}
+  .zcard:hover{box-shadow:var(--ombra)}
+  .zcard .zem{flex:0 0 46px;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:24px}
+  .zcard .zb{display:flex;flex-direction:column;min-width:0}
+  .zcard .zt{font-size:16.5px;font-weight:700;line-height:1.15}
+  .zcard .zs{font-size:13px;color:var(--suau);margin-top:2px}
+  .zcard .zar{margin-left:auto;font-size:22px;color:#c3cedc}
+
+  /* ===== Respiración + visualización (orbe) ===== */
+  .breath-wrap{display:flex;flex-direction:column;align-items:center;margin:4px 0 2px}
+  .breath{width:128px;height:128px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--azul);background:radial-gradient(circle at 50% 40%,var(--azul-bg),#fff);animation:bre 9s ease-in-out infinite;animation-play-state:paused}
+  .breath.run{animation-play-state:running}
+  @keyframes bre{0%,100%{transform:scale(.7)}50%{transform:scale(1)}}
+  .brcap{font-size:14px;color:var(--suau);margin-top:12px;min-height:1.3em;font-weight:600}
+
+  ol.pasos{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:p}
+  ol.pasos li{counter-increment:p;position:relative;padding:9px 0 9px 42px;border-bottom:1px solid var(--linia);color:#46504a}
+  ol.pasos li:last-child{border-bottom:0}
+  ol.pasos li::before{content:counter(p);position:absolute;left:0;top:8px;width:28px;height:28px;border-radius:50%;background:var(--azul-bg);color:var(--azul-d);font-weight:700;font-size:13px;display:grid;place-items:center}
+
+  .qblock{margin:14px 0;padding-bottom:14px;border-bottom:1px solid var(--linia)}
+  .qblock:last-of-type{border-bottom:0}
+  .qtxt{font-weight:600;font-size:15px;margin-bottom:9px;color:var(--tinta)}
+  .three{display:flex;gap:8px}
+  .three button{flex:1;min-width:0;background:var(--bg);border:1.6px solid var(--linia);border-radius:12px;padding:11px 6px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--tinta);line-height:1.25;transition:.15s}
+  .three button.sel{border-color:var(--azul);background:var(--azul-bg);color:var(--azul-d);font-weight:600}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+  .chip{background:var(--bg);border:1.6px solid var(--linia);border-radius:999px;padding:9px 14px;cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);transition:.15s}
+  .chip.sel{border-color:var(--oro);background:var(--arena-bg);color:var(--oro-d);font-weight:600}
+
+  textarea,input[type=text]{width:100%;border:1.6px solid var(--linia);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--bg);resize:vertical;margin-top:6px}
+  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--azul)}
+  label.fld{display:block;font-weight:600;font-size:14.5px;margin-top:14px}
+
+  .contmsg{background:linear-gradient(135deg,var(--azul-bg) 0%,#dbe8f1 100%);border-radius:14px;padding:16px;text-align:center;color:var(--azul-d);font-weight:600;font-size:15.5px;line-height:1.5}
+  .donelist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
+  .donepill{background:var(--bg);border:1px solid var(--linia);border-radius:999px;padding:6px 13px;font-size:13px;color:var(--azul-d)}
+
+  .cad-aviso{background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:13px 0 0;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left}
+  .resumen{white-space:pre-wrap;background:var(--bg);border:1px dashed var(--linia);border-radius:12px;padding:14px;font-size:13.5px;color:#46504a;line-height:1.6;margin-top:12px}
+
+  details{border:1px solid var(--linia);border-radius:14px;margin:12px 0;overflow:hidden;background:var(--card)}
+  details summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15.5px;list-style:none;display:flex;align-items:center;gap:10px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .em{font-size:20px}
+  details[open] summary{border-bottom:1px solid var(--linia)}
+  details .body{padding:4px 18px 18px}
+
+  footer{text-align:center;color:var(--suau);font-size:13px;margin-top:34px;padding:0 10px}
+  footer .logo{font-weight:700;color:var(--azul-d);letter-spacing:.04em}
+
+  @media (max-width:380px){h1{font-size:24px}body{font-size:15px}}
+
+  /* bloque tres canales (cross-link entre herramientas) */
+  .ch-tit{font-weight:600;font-size:12px;color:#1B4F8C;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+  .ch-canales{display:flex;gap:8px;flex-wrap:wrap}
+  .ch-canal{flex:1;min-width:130px;background:#F0F4F8;border:1px solid #E8EFF7;border-radius:12px;padding:12px 14px;text-decoration:none;cursor:pointer;transition:all .18s;display:block}
+  .ch-canal b{display:block;font-size:12.5px;color:#1B4F8C;margin-bottom:3px}
+  .ch-canal span{display:block;font-size:11.5px;color:#6B7280;line-height:1.4}
+  .ch-canal .ch-go{font-size:11px;font-weight:600;color:#1B4F8C;margin-top:7px}
+  .ch-canal.ch-act{background:#fff;border:2px solid #C8973A;box-shadow:0 2px 12px rgba(200,151,58,.18);cursor:default}
+  .ch-canal .ch-here{color:#C8973A}
+  @media(hover:hover){.ch-canal:not(.ch-act):hover{border-color:#1B4F8C;box-shadow:0 4px 14px rgba(27,79,140,.14);transform:translateY(-1px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══════════════════ 1 · INICIO ══════════════════ -->
+<section class="screen active" id="s-inicio">
+  <header>
+    <span class="kicker">APRENS · AIS / ACT</span>
+    <h1>Mapa de atención interna</h1>
+    <p class="sub">Lleva tu atención dentro de ti usando el cuerpo como mapa. Eliges una zona, la miras… y pruebas a sentirla.</p>
+  </header>
+
+  <div class="card">
+    <p>A veces «mira hacia dentro» suena abstracto: no sabes a dónde llevar la atención. Este mapa te da un <b>destino</b>. Miras una zona del dibujo y eso ayuda a que tu atención <b>viaje hacia ese lugar real de tu cuerpo</b>.</p>
+    <div class="quote">“Ver la zona es la rampa.<br>Sentirla es el viaje.”</div>
+    <p>Tienes <b>dos anclas</b> para entrar en ti:</p>
+    <p class="lead" style="margin-top:2px">🌬️ La <b>respiración</b> (ritmo) &nbsp;·&nbsp; 🔍 La <b>visualización</b> de una zona (dirección). Aquí las usamos juntas.</p>
+    <div class="quote frase-oro">“No vengo a entender lo que siento.<br>Vengo a conocerlo, con curiosidad.”</div>
+    <button class="btn" onclick="irPantalla('s-mapa')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      Abrir el mapa
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="ch-tit">Tres vías para anclar la atención hacia dentro</div>
+    <div class="ch-canales">
+      <a class="ch-canal" href="https://aprens-aisdiario.netlify.app" target="_blank" rel="noopener"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="ch-go">Abrir →</span></a>
+      <div class="ch-canal ch-act"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="ch-go ch-here">Estás aquí</span></div>
+      <a class="ch-canal" href="https://aprens-protocoloais.netlify.app" target="_blank" rel="noopener"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="ch-go">Abrir →</span></a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="logo">APRENS</div>
+    Material orientativo de apoyo terapéutico · marco TEC / AIS / ACT.<br>Hermana de "AIS desde la curiosidad". No guarda datos en ningún servidor.
+  </footer>
+</section>
+
+<!-- ══════════════════ 2 · MAPA ══════════════════ -->
+<section class="screen" id="s-mapa">
+  <button class="back" onclick="irPantalla('s-inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Inicio</button>
+
+  <header style="padding-top:12px">
+    <h1 style="font-size:24px">¿Dónde quieres entrar hoy?</h1>
+    <p class="sub">Toca una zona del cuerpo (o su tarjeta). No hay zona correcta: ve a la que te llame.</p>
+  </header>
+
+  <div class="card" style="padding-top:18px">
+    <div class="mapa">
+      <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo con tres zonas: cuello, pecho y barriga">
+        <defs>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#eaeff3"/>
+            <stop offset="1" stop-color="#dbe4ea"/>
+          </linearGradient>
+        </defs>
+
+        <!-- silueta (no interactiva) -->
+        <g fill="url(#bodyGrad)" stroke="#cdd7df" stroke-width="1.4">
+          <ellipse cx="110" cy="46" rx="29" ry="33"/>
+          <rect x="98" y="72" width="24" height="22" rx="8"/>
+          <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
+          <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
+          <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
+        </g>
+
+        <!-- zonas interactivas (órganos ilustrados) -->
+        <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Cuello: garganta y vías" onclick="seleccionar('cuello')">
+          <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
+          <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
+            <ellipse cx="110" cy="80" rx="9" ry="7"/>
+            <path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
+            <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/>
+            <line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/>
+            <line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
+          </g>
+          <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+        </g>
+
+        <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pecho: corazón y pulmones" onclick="seleccionar('pecho')">
+          <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
+          <g class="organ">
+            <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+            <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+            <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
+            <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+          <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+        </g>
+
+        <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Barriga: estómago e intestinos" onclick="seleccionar('barriga')">
+          <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
+          <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
+            <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
+            <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
+          </g>
+          <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
+          <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+        </g>
+      </svg>
+    </div>
+    <div class="leyenda">Toca la zona o desliza tu atención por el cuerpo: <b>1 cuello → 2 pecho → 3 barriga</b></div>
+
+    <div class="zcards" id="zcards"><!-- generadas por JS --></div>
+
+    <button class="btn ghost" onclick="abrirRecorrido()" style="margin-top:16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Recorrido completo (1 → 2 → 3)
+    </button>
+  </div>
+
+  <!-- continuidad ligera -->
+  <div class="card">
+    <h2><span class="ic">🔦</span>Hoy he entrado en mí</h2>
+    <div class="contmsg" id="contMsg">Hoy todavía no has entrado en el mapa. Cuando quieras, toca una zona.</div>
+    <div class="donelist" id="doneList"></div>
+  </div>
+
+  <details>
+    <summary><span class="em">🧭</span>Curiosidad sensorial, no interpretativa</summary>
+    <div class="body">
+      <p>El mapa ayuda… <b>mientras te quedes en el cuerpo.</b> Si saltas al «¿por qué siento esto?», la atención se va a la cabeza (sobrepensamiento).</p>
+      <p>Quédate en preguntas <b>físicas</b>: ¿qué temperatura, peso, textura, movimiento? Si te pillas buscando el porqué, vuelve a: <b>«¿cómo es esto en mi cuerpo ahora?»</b></p>
+    </div>
+  </details>
+
+  <footer><div class="logo">APRENS</div>Donde dirijo mi atención, ahí voy yo.</footer>
+</section>
+
+<!-- ══════════════════ 3 · ZONA (dinámica) ══════════════════ -->
+<section class="screen" id="s-zona">
+  <button class="back" onclick="irPantalla('s-mapa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Mapa</button>
+
+  <header style="padding-top:10px">
+    <div style="font-size:46px" id="zIcon">🫁</div>
+    <h1 style="font-size:25px;margin-top:4px" id="zTitulo"></h1>
+    <p class="sub" id="zSub"></p>
+  </header>
+
+  <div class="card">
+    <p id="zIntro"></p>
+  </div>
+
+  <!-- respiración + visualización -->
+  <div class="card">
+    <h2><span class="ic">🌬️</span>Respira y mira la zona</h2>
+    <p class="lead">Deja que la atención descanse en esa parte del cuerpo mientras respiras. La imagen te marca el sitio; tú solo intenta notarlo.</p>
+    <div class="breath-wrap">
+      <div class="breath" id="breath"><span id="breathEmoji" style="font-size:30px"></span></div>
+      <div class="brcap" id="brcap">Toca «Empezar» y respira a tu ritmo</div>
+    </div>
+    <button class="btn ghost small" style="width:100%" id="btnBreath" onclick="toggleBreath()">Empezar a respirar</button>
+  </div>
+
+  <!-- guía paso a paso -->
+  <div class="card">
+    <h2><span class="ic">👣</span>Paso a paso</h2>
+    <ol class="pasos" id="zPasos"></ol>
+  </div>
+
+  <div class="quote frase-oro" id="zFrase" style="font-size:18px;text-align:center"></div>
+
+  <!-- registro no evaluativo -->
+  <div class="card">
+    <h2><span class="ic">🪞</span>¿Qué has notado?</h2>
+    <p class="lead">Sin buscar la respuesta «correcta». Marca lo que haya aparecido (o «nada», también vale).</p>
+    <div class="chips" id="zChips"></div>
+
+    <div class="qblock" style="margin-top:18px">
+      <div class="qtxt">¿Con qué intensidad?</div>
+      <div class="three" id="zInten">
+        <button onclick="setInten('suave',this)">Suave</button>
+        <button onclick="setInten('media',this)">Media</button>
+        <button onclick="setInten('fuerte',this)">Fuerte</button>
+      </div>
+    </div>
+    <div class="qblock">
+      <div class="qtxt">¿Pudiste quedarte con curiosidad, sin buscar el porqué?</div>
+      <div class="three" id="zCurio">
+        <button onclick="setCurio('si',this)">Sí</button>
+        <button onclick="setCurio('poco',this)">Un poco</button>
+        <button onclick="setCurio('costo',this)">Me costó</button>
+      </div>
+    </div>
+
+    <label class="fld">Si quieres, descríbelo con tus palabras (opcional)</label>
+    <textarea id="zNota" rows="2" placeholder="Cómo era: forma, temperatura, si se movía, dónde justo…"></textarea>
+  </div>
+
+  <!-- enviar -->
+  <div class="card">
+    <h2><span class="ic">📤</span>Guardar y enviar</h2>
+    <button class="btn" onclick="guardarZona(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      Guardar en mi día
+    </button>
+    <div class="btnrow" style="margin-top:11px">
+      <button class="btn wa" onclick="enviarWA(this)" style="margin-top:0">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2 .9.7 1.5 1 1.8 1.1.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn oro" onclick="copiarResumen(this)" style="margin-top:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+    <div class="cad-aviso"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: ve usándolo durante el día y mándame <b>un único resumen al final del día</b>.</div>
+    <div class="resumen" id="msgBox"></div>
+  </div>
+
+  <footer><div class="logo">APRENS</div>Después de mirar dentro, vuelvo a vivir con dirección.</footer>
+</section>
+
+<!-- ══════════════════ 4 · RECORRIDO COMPLETO ══════════════════ -->
+<section class="screen" id="s-recorrido">
+  <button class="back" onclick="irPantalla('s-mapa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Mapa</button>
+
+  <header style="padding-top:10px">
+    <div style="font-size:44px">🧭</div>
+    <h1 style="font-size:24px;margin-top:4px">Recorrido completo</h1>
+    <p class="sub">Baja la atención despacio: cuello → pecho → barriga. Unos segundos en cada zona, sin prisa.</p>
+  </header>
+
+  <div id="recCards"><!-- generado por JS --></div>
+
+  <div class="card">
+    <h2><span class="ic">🪞</span>Al terminar el recorrido</h2>
+    <div class="qblock">
+      <div class="qtxt">¿Dónde notaste más cosas?</div>
+      <div class="three" id="rZona">
+        <button onclick="setRecZona('cuello',this)">Cuello</button>
+        <button onclick="setRecZona('pecho',this)">Pecho</button>
+        <button onclick="setRecZona('barriga',this)">Barriga</button>
+      </div>
+    </div>
+    <div class="qblock">
+      <div class="qtxt">¿Pudiste sostener el recorrido con curiosidad?</div>
+      <div class="three" id="rCurio">
+        <button onclick="setRecCurio('si',this)">Sí</button>
+        <button onclick="setRecCurio('poco',this)">Un poco</button>
+        <button onclick="setRecCurio('costo',this)">Me costó</button>
+      </div>
+    </div>
+    <label class="fld">Si quieres, una frase tuya (opcional)</label>
+    <textarea id="rNota" rows="2" placeholder="Qué tal el viaje por dentro…"></textarea>
+
+    <button class="btn" onclick="guardarRecorrido(this)" style="margin-top:16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+      Guardar en mi día
+    </button>
+    <div class="btnrow" style="margin-top:11px">
+      <button class="btn wa" onclick="enviarWArec(this)" style="margin-top:0">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2Zm5.3 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2 .9.7 1.5 1 1.8 1.1.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn oro" onclick="copiarRecorrido(this)" style="margin-top:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+    <div class="cad-aviso"><b>🌙 ¿Cuándo enviármelo?</b> Ve juntando lo del día y mándame <b>un único resumen al final del día</b>.</div>
+    <div class="resumen" id="msgBoxRec"></div>
+  </div>
+
+  <footer><div class="logo">APRENS</div>Entreno latencia, densidad y continuidad.</footer>
+</section>
+
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   DATOS · ZONAS  (edita aquí guías, frases y colores de cada zona)
+   ════════════════════════════════════════════════════════════════════ */
+var ZONAS = {
+  cuello:{ n:1, ic:'🗣️', tit:'Cuello', sub:'Garganta y nuca', col:'#6f9bc0', cold:'#456d8c', bg:'#e7eff6',
+    intro:'La garganta y la nuca guardan mucha tensión silenciosa: tragar, sostener la cabeza, las palabras que no llegan a salir. Es una zona que habla bajito.',
+    pasos:[
+      'Lleva la mirada (y luego el sentir) a tu garganta y a tu nuca.',
+      '¿Hay aprieto, nudo, sequedad, calor, cosquilleo… o nada?',
+      'Traga una vez, despacio, y nota todo el recorrido.',
+      'Afloja un milímetro la nuca, sin forzar nada.',
+      'Solo observa qué hay ahí ahora, sin cambiarlo.'
+    ],
+    frase:'No tengo que deshacer el nudo. Solo conocerlo.' },
+
+  pecho:{ n:2, ic:'🫀', tit:'Pecho', sub:'Corazón y pulmones', col:'#c4744b', cold:'#9a4a26', bg:'#f4e6dc',
+    intro:'El pecho es donde más se siente la emoción: el corazón que late, la respiración que sube y baja, la presión de la ansiedad o la amplitud de la calma.',
+    pasos:[
+      'Posa la atención en el centro del pecho.',
+      '¿Notas el latido? ¿Rápido, lento, fuerte, sutil?',
+      'Acompaña una respiración entera: cómo se abre y cómo se cierra.',
+      '¿Pesa, se expande, aprieta, está tibio o frío?',
+      'Quédate unos segundos solo notando, sin arreglar nada.'
+    ],
+    frase:'Mi pecho respira solo. Yo solo vengo a mirarlo.' },
+
+  barriga:{ n:3, ic:'🌀', tit:'Barriga', sub:'Estómago e intestinos', col:'#6f9f78', cold:'#4f7a5c', bg:'#e7f0ea',
+    intro:'La barriga es el cerebro emocional del cuerpo: nudos, mariposas, vacío, calor, movimiento… Dice muchas cosas si la escuchas sin juzgarla.',
+    pasos:[
+      'Baja la atención hasta el estómago y el vientre.',
+      '¿Hay vacío, plenitud, nudo, movimiento, calor?',
+      'Apoya una mano en la barriga si te ayuda a localizarla.',
+      'Nota cómo se mueve al respirar, sin empujar la respiración.',
+      'Explora la textura de lo que haya, con curiosidad.'
+    ],
+    frase:'Mi barriga sabe cosas que mi cabeza no. Vengo a escucharla.' }
+};
+var ORDEN = ['cuello','pecho','barriga'];
+
+var CUALIDADES = ['calor','frío','peso','ligereza','presión','nudo','vacío','latido','movimiento','hormigueo','expansión','nada'];
+
+/* ════════════════════════ ESTADO ════════════════════════ */
+var KEY_DIA = 'aprens_mapa_dia';
+
+var zonaActual = null;
+var reg = { cual:[], inten:null, curio:null };
+var rec = { zona:null, curio:null };
+
+function hoy(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function nuevoDia(){return {date:hoy(),hechos:[]};}
+function cargaDia(){
+  var d=null; try{d=JSON.parse(localStorage.getItem(KEY_DIA));}catch(e){}
+  if(!d||d.date!==hoy()) return nuevoDia();
+  if(!d.hechos) d.hechos=[];
+  return d;
+}
+function guardaDia(){try{localStorage.setItem(KEY_DIA,JSON.stringify(dia));}catch(e){}}
+var dia = cargaDia();
+
+/* ════════════════════════ PUENTE APRENS (aprens_db único · panel) ════════════════════════
+   Legacy → puente al núcleo único. La atención interna es interoceptiva:
+   su mapeo TEC natural es la DENSIDAD (con qué grano/textura se siente el cuerpo).
+   Se guarda un resumen diario (upsert por id 'mapa-<fecha>') con la lista de
+   zonas trabajadas hoy + el detalle de la última interacción. collect-on-export. */
+try{ Aprens.config({ toolId:'mapa_atencion_interna', toolName:'Mapa de atención interna', toolVersion:1 }); }catch(e){}
+function _mapaSave(extra){
+  try{
+    var base = {
+      id:'mapa-'+hoy(),
+      fecha:hoy(),
+      param:'densidad',            // mapeo TEC: interocepción → Densidad
+      hechos:dia.hechos.slice()    // zonas trabajadas hoy + "Recorrido completo"
+    };
+    for(var k in extra){ if(extra.hasOwnProperty(k)) base[k]=extra[k]; }
+    Aprens.save(base);
+  }catch(e){}
+}
+function _mapaSaveZona(){
+  var n=document.getElementById('zNota');
+  _mapaSave({
+    tipo:'zona',
+    zona: zonaActual ? ZONAS[zonaActual].tit : null,
+    cualidades: reg.cual.slice(),
+    intensidad: reg.inten,
+    curiosidad: reg.curio,
+    nota: n && n.value ? n.value.trim() : '',
+    resumen: resumenZona()
+  });
+}
+function _mapaSaveRecorrido(){
+  var n=document.getElementById('rNota');
+  _mapaSave({
+    tipo:'recorrido',
+    recorrido:'cuello→pecho→barriga',
+    zonaMasIntensa: rec.zona ? ZONAS[rec.zona].tit : null,
+    curiosidad: rec.curio,
+    nota: n && n.value ? n.value.trim() : '',
+    resumen: resumenRecorrido()
+  });
+}
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ════════════════════════ NAVEGACIÓN ════════════════════════ */
+function irPantalla(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════════════════ MAPA ════════════════════════ */
+function pintaZcards(){
+  var c=document.getElementById('zcards');
+  c.innerHTML = ORDEN.map(function(k){
+    var z=ZONAS[k];
+    return '<button class="zcard" style="border-left-color:'+z.col+'" onclick="seleccionar(\''+k+'\')">'+
+      '<span class="zem" style="background:'+z.bg+'">'+z.ic+'</span>'+
+      '<span class="zb"><span class="zt" style="color:'+z.cold+'">'+z.n+'. '+esc(z.tit)+'</span>'+
+      '<span class="zs">'+esc(z.sub)+'</span></span>'+
+      '<span class="zar">›</span></button>';
+  }).join('');
+}
+
+function seleccionar(k){
+  // realce visual breve y abre la zona
+  document.querySelectorAll('.zone').forEach(function(g){g.classList.toggle('sel', g.getAttribute('data-zona')===k);});
+  abrirZona(k);
+}
+
+/* ════════════════════════ ZONA ════════════════════════ */
+function abrirZona(k){
+  zonaActual = k;
+  var z = ZONAS[k];
+  reg = { cual:[], inten:null, curio:null };
+
+  document.getElementById('zIcon').textContent = z.ic;
+  document.getElementById('zTitulo').textContent = z.tit;
+  document.getElementById('zTitulo').style.color = z.cold;
+  document.getElementById('zSub').textContent = z.sub;
+  document.getElementById('zIntro').textContent = z.intro;
+  document.getElementById('zPasos').innerHTML = z.pasos.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
+  document.getElementById('zFrase').textContent = '“'+z.frase+'”';
+
+  // orbe de respiración con el color de la zona
+  var br=document.getElementById('breath');
+  br.style.borderColor=z.col;
+  br.style.background='radial-gradient(circle at 50% 40%,'+z.bg+',#fff)';
+  document.getElementById('breathEmoji').textContent=z.ic;
+  pararBreath();
+
+  // chips de cualidades
+  document.getElementById('zChips').innerHTML = CUALIDADES.map(function(q){
+    return '<button class="chip" onclick="toggleCual(this,\''+q+'\')">'+q+'</button>';
+  }).join('');
+
+  // limpiar selecciones
+  document.querySelectorAll('#zInten button,#zCurio button').forEach(function(b){b.classList.remove('sel');});
+  document.getElementById('zNota').value='';
+  document.getElementById('msgBox').textContent='';
+
+  irPantalla('s-zona');
+}
+
+function toggleCual(btn,q){
+  btn.classList.toggle('sel');
+  var i=reg.cual.indexOf(q);
+  if(i===-1){
+    if(q==='nada'){ reg.cual=['nada']; document.querySelectorAll('#zChips .chip').forEach(function(b){ if(b!==btn) b.classList.remove('sel'); }); }
+    else { reg.cual=reg.cual.filter(function(x){return x!=='nada';}); var nb=Array.prototype.find.call(document.querySelectorAll('#zChips .chip'),function(b){return b.textContent==='nada';}); if(nb) nb.classList.remove('sel'); reg.cual.push(q); }
+  } else { reg.cual.splice(i,1); }
+}
+function setInten(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.inten=v; }
+function setCurio(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.curio=v; }
+
+/* ════════════════════════ RESPIRACIÓN (orbe) ════════════════════════ */
+var brRun=false, brInt=null;
+function toggleBreath(){ brRun?pararBreath():iniciarBreath(); }
+function iniciarBreath(){
+  brRun=true;
+  document.getElementById('breath').classList.add('run');
+  document.getElementById('btnBreath').textContent='Parar';
+  var fases=['Inspira…','Espira…'];
+  var i=0;
+  document.getElementById('brcap').textContent=fases[0];
+  brInt=setInterval(function(){ i=(i+1)%2; document.getElementById('brcap').textContent=fases[i]; },4500);
+}
+function pararBreath(){
+  brRun=false; clearInterval(brInt);
+  var br=document.getElementById('breath'); if(br) br.classList.remove('run');
+  var b=document.getElementById('btnBreath'); if(b) b.textContent='Empezar a respirar';
+  var c=document.getElementById('brcap'); if(c) c.textContent='Toca «Empezar» y respira a tu ritmo';
+}
+
+/* ════════════════════════ CONTINUIDAD ════════════════════════ */
+function registraHecho(txt){
+  if(dia.hechos.indexOf(txt)===-1) dia.hechos.push(txt);
+  guardaDia(); pintaContinuidad();
+}
+function pintaContinuidad(){
+  var msg=document.getElementById('contMsg'), dl=document.getElementById('doneList');
+  if(dia.hechos.length){
+    msg.textContent = dia.hechos.length===1 ? 'Hoy has entrado en tu cuerpo una vez. Bien.' : ('Hoy has entrado en tu cuerpo '+dia.hechos.length+' veces.');
+    dl.innerHTML = dia.hechos.map(function(h){return '<span class="donepill">🔦 '+esc(h)+'</span>';}).join('');
+  } else {
+    msg.textContent='Hoy todavía no has entrado en el mapa. Cuando quieras, toca una zona.';
+    dl.innerHTML='';
+  }
+}
+
+/* ════════════════════════ RESUMEN ZONA ════════════════════════ */
+var INTEN_TXT={suave:'suave',media:'media',fuerte:'fuerte'};
+var CURIO_TXT={si:'Sí',poco:'Un poco',costo:'Me costó'};
+function resumenZona(){
+  var z=ZONAS[zonaActual]; var L=[];
+  L.push('MAPA DE ATENCIÓN INTERNA · APRENS · '+hoy());
+  L.push('');
+  L.push('Zona explorada: '+z.tit+' ('+z.sub+')');
+  L.push('Qué noté: '+(reg.cual.length?reg.cual.join(', '):'—'));
+  L.push('Intensidad: '+(reg.inten?INTEN_TXT[reg.inten]:'—'));
+  L.push('¿Curiosidad sin buscar el porqué?: '+(reg.curio?CURIO_TXT[reg.curio]:'—'));
+  var n=document.getElementById('zNota').value.trim();
+  if(n){ L.push(''); L.push('Con mis palabras: '+n); }
+  return L.join('\n');
+}
+function guardarZona(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); if(btn) feedback(btn,'Guardado en tu día'); }
+function copiarResumen(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); var t=resumenZona(); document.getElementById('msgBox').textContent=t; copiarText(t,btn); }
+function enviarWA(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); var t=resumenZona(); document.getElementById('msgBox').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+
+/* ════════════════════════ RECORRIDO ════════════════════════ */
+function abrirRecorrido(){
+  rec={zona:null,curio:null};
+  document.getElementById('recCards').innerHTML = ORDEN.map(function(k){
+    var z=ZONAS[k];
+    return '<div class="card" style="border-left:5px solid '+z.col+'">'+
+      '<h2><span class="ic" style="background:'+z.bg+'">'+z.ic+'</span>'+z.n+'. '+esc(z.tit)+'</h2>'+
+      '<p class="lead">'+esc(z.sub)+'</p>'+
+      '<p>'+esc(z.pasos[0])+' '+esc(z.pasos[1])+'</p>'+
+      '<div class="quote frase-oro" style="font-size:15.5px">“'+z.frase+'”</div></div>';
+  }).join('');
+  document.querySelectorAll('#rZona button,#rCurio button').forEach(function(b){b.classList.remove('sel');});
+  document.getElementById('rNota').value='';
+  document.getElementById('msgBoxRec').textContent='';
+  irPantalla('s-recorrido');
+}
+function setRecZona(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); rec.zona=v; }
+function setRecCurio(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); rec.curio=v; }
+function resumenRecorrido(){
+  var L=[];
+  L.push('MAPA DE ATENCIÓN INTERNA · APRENS · '+hoy());
+  L.push('');
+  L.push('Recorrido completo: cuello → pecho → barriga');
+  L.push('Donde noté más: '+(rec.zona?ZONAS[rec.zona].tit:'—'));
+  L.push('¿Sostuve el recorrido con curiosidad?: '+(rec.curio?CURIO_TXT[rec.curio]:'—'));
+  var n=document.getElementById('rNota').value.trim();
+  if(n){ L.push(''); L.push('Con mis palabras: '+n); }
+  return L.join('\n');
+}
+function guardarRecorrido(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); if(btn) feedback(btn,'Guardado en tu día'); }
+function copiarRecorrido(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); var t=resumenRecorrido(); document.getElementById('msgBoxRec').textContent=t; copiarText(t,btn); }
+function enviarWArec(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); var t=resumenRecorrido(); document.getElementById('msgBoxRec').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+
+/* ════════════════════════ COPIAR / FEEDBACK ════════════════════════ */
+function feedback(btn,texto){
+  if(!btn)return; var html=btn.innerHTML; btn.classList.add('ok');
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> '+(texto||'¡Copiado!');
+  setTimeout(function(){btn.classList.remove('ok');btn.innerHTML=html;},1800);
+}
+function copiarText(text,btn){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){feedback(btn);}).catch(function(){fallback(text,btn);});
+  } else { fallback(text,btn); }
+}
+function fallback(text,btn){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');feedback(btn);}catch(e){alert('No se pudo copiar. Selecciona el texto del recuadro y cópialo a mano.');}
+  document.body.removeChild(ta);
+}
+
+/* ════════════════════════ INIT ════════════════════════ */
+pintaZcards();
+pintaContinuidad();
+try{ Aprens.mountBar(); }catch(e){}
+</script>
+</body>
+</html>

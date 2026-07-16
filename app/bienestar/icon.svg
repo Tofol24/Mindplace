@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f9d8a"/>
+      <stop offset="1" stop-color="#3a7d6e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
+    <!-- anilla -->
+    <circle cx="512" cy="296" r="52"/>
+    <!-- caña -->
+    <line x1="512" y1="348" x2="512" y2="742"/>
+    <!-- cepo (travesaño) -->
+    <line x1="398" y1="404" x2="626" y2="404"/>
+    <!-- brazos curvos -->
+    <path d="M300 600 Q 512 782 724 600"/>
+  </g>
+  <!-- uñas (puntas) -->
+  <path d="M300 600 L286 512 L372 556 Z" fill="#ffffff"/>
+  <path d="M724 600 L738 512 L652 556 Z" fill="#ffffff"/>
+</svg>
