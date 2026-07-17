@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#c9742f">
+<title>Retorn a la feina · APRENS</title>
+<style>
+  :root{
+    --bg:#fbf6ef;
+    --card:#ffffff;
+    --tinta:#3a322b;
+    --suau:#7c7065;
+    --calid:#c9742f;
+    --calid-d:#a85d1f;
+    --verd:#5b8f6e;
+    --verd-d:#3c6650;
+    --verd-suau:#eaf3ed;
+    --crema:#f6ece0;
+    --crema-d:#efe0cd;
+    --linia:#ecdfce;
+    --ombra:0 6px 22px rgba(120,82,40,.10);
+    --ombra-s:0 2px 10px rgba(120,82,40,.07);
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#fcf3e8 0%,var(--bg) 220px);
+    color:var(--tinta);
+    line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding:0 16px 96px;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+
+  /* Capçalera */
+  header{text-align:center;padding:38px 8px 8px}
+  .kicker{
+    display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--calid-d);background:var(--crema);border:1px solid var(--linia);
+    padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px;
+  }
+  h1{font-size:27px;line-height:1.25;margin:0 auto;max-width:18em;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15px;margin:14px auto 0;max-width:30em}
+
+  /* Botó superior cap al registre */
+  .topcta{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    width:100%;margin:22px 0 4px;padding:14px 16px;
+    border:0;border-radius:14px;cursor:pointer;font-family:inherit;
+    background:var(--verd);color:#fff;font-size:15.5px;font-weight:600;
+    box-shadow:0 6px 18px rgba(91,143,110,.30);transition:transform .08s;
+  }
+  .topcta:active{transform:scale(.98)}
+  .topcta svg{width:19px;height:19px}
+  .topnote{text-align:center;color:var(--suau);font-size:13.5px;margin:8px 0 0}
+
+  /* Targetes */
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+  .ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--crema);color:var(--calid-d)}
+  .ic svg{width:22px;height:22px;display:block}
+  .card p{margin:8px 0;color:#4a4138}
+  .card p.lead{color:var(--suau);font-size:15px;margin-top:2px}
+
+  /* Frase guia */
+  .quote{background:linear-gradient(135deg,var(--crema) 0%,var(--crema-d) 100%);border-left:4px solid var(--calid);border-radius:0 14px 14px 0;padding:16px 18px;font-size:18px;font-weight:600;color:var(--calid-d);margin:14px 0 4px;line-height:1.5}
+  .quote.verd{background:linear-gradient(135deg,var(--verd-suau) 0%,#dfeee5 100%);border-left-color:var(--verd);color:var(--verd-d)}
+
+  /* Frases tocables (compten al registre) */
+  .tapnote{display:flex;gap:9px;align-items:center;background:var(--verd-suau);border:1px solid #d3e6da;border-radius:12px;padding:10px 13px;font-size:13.5px;color:var(--verd-d);margin:8px 0 12px}
+  .tapnote svg{width:18px;height:18px;flex:0 0 18px;color:var(--verd)}
+  .frase-list{display:flex;flex-direction:column;gap:9px}
+  .fitem{display:flex;align-items:stretch;gap:8px}
+  .ftap{
+    flex:1;text-align:left;background:var(--bg);border:1.5px solid var(--linia);border-radius:13px;
+    padding:12px 14px 12px 38px;position:relative;font-size:15.5px;color:var(--tinta);
+    cursor:pointer;font-family:inherit;transition:transform .08s,border-color .15s,background .15s;
+  }
+  .ftap::before{content:"“";position:absolute;left:13px;top:6px;font-size:26px;color:var(--calid);font-family:Georgia,serif;line-height:1}
+  .ftap:active{transform:scale(.98)}
+  .fitem.on .ftap{border-color:var(--verd);background:var(--verd-suau);color:var(--verd-d);font-weight:500}
+  .fctl{display:none;align-items:center;gap:6px;flex:0 0 auto}
+  .fitem.on .fctl{display:flex}
+  .fbadge{min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--verd);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+  .fminus{width:30px;height:30px;border-radius:999px;border:1.5px solid var(--linia);background:#fff;color:var(--suau);font-size:18px;line-height:1;cursor:pointer;font-family:inherit}
+
+  .avis{display:flex;gap:11px;background:var(--verd-suau);border:1px solid #d3e6da;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14.5px;color:var(--verd-d);align-items:flex-start}
+  .avis .ic{background:transparent;color:var(--verd);flex:0 0 22px;width:22px;height:22px;margin-top:1px}
+  .avis svg{width:22px;height:22px}
+
+  /* Comptador genèric (salutacions / STOP) */
+  .counter{display:flex;align-items:center;gap:12px;background:var(--bg);border:1.5px solid var(--linia);border-radius:14px;padding:12px 14px;margin-top:12px}
+  .counter .ctxt{flex:1;font-size:15px;font-weight:600}
+  .counter .ctxt small{display:block;font-weight:400;color:var(--suau);font-size:13px}
+  .counter .cnum{min-width:34px;text-align:center;font-size:20px;font-weight:700;color:var(--verd-d)}
+  .cbtn{width:40px;height:40px;border-radius:50%;border:0;font-size:22px;line-height:1;cursor:pointer;font-family:inherit;color:#fff;background:var(--verd);box-shadow:0 3px 8px rgba(91,143,110,.3)}
+  .cbtn.minus{background:#fff;color:var(--suau);border:1.5px solid var(--linia);box-shadow:none}
+  .cbtn:active{transform:scale(.92)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 4px}
+  .chips button{background:var(--crema);border:1.5px solid var(--linia);color:var(--calid-d);padding:9px 14px;border-radius:999px;font-size:14.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:transform .08s}
+  .chips button:active{transform:scale(.94)}
+
+  /* Protocol STOP */
+  ol.passos{list-style:none;counter-reset:s;margin:10px 0 0;padding:0}
+  ol.passos li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed var(--linia)}
+  ol.passos li:last-child{border-bottom:0}
+  ol.passos li::before{content:counter(s);flex:0 0 32px;width:32px;height:32px;background:var(--calid);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;box-shadow:0 3px 8px rgba(201,116,47,.35)}
+  ol.passos li b{display:block;font-size:15.5px}
+  ol.passos li small{color:var(--suau);font-size:14px}
+
+  /* Metàfora */
+  .meta{background:linear-gradient(135deg,#eef4f9 0%,#e7eff6 100%);border:1px solid #d7e3ee;border-left:4px solid #6f93b5}
+  .meta h2 .ic{background:#dde9f3;color:#4d6f92}
+  .meta p{font-style:italic;color:#3f566c;font-size:16px}
+
+  /* Frase setmana */
+  .final{background:linear-gradient(135deg,var(--calid) 0%,var(--calid-d) 100%);color:#fff;border:0;text-align:center;box-shadow:var(--ombra)}
+  .final .tag{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:600}
+  .final p{color:#fff;font-size:19px;font-weight:600;line-height:1.5;margin:12px auto 0;max-width:24em}
+
+  /* Botons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:13px 16px;border:0;border-radius:13px;background:var(--calid);color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s;font-family:inherit}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--calid-d);border:1.5px solid var(--calid)}
+  .btn.verd{background:var(--verd)}
+  .final .btn{background:#fff;color:var(--calid-d);margin-top:18px}
+  .btn svg{width:18px;height:18px}
+  .btn.ok{background:var(--verd)!important;color:#fff!important}
+
+  /* Registre del dia */
+  .reg h2 .ic{background:var(--verd-suau);color:var(--verd)}
+  .step{margin:18px 0 0}
+  .step .lab{font-weight:600;font-size:15.5px;margin-bottom:9px}
+  .escala{display:flex;gap:7px}
+  .escala button{flex:1;min-width:0;background:var(--bg);border:1.5px solid var(--linia);border-radius:13px;padding:11px 4px 8px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform .08s,border-color .15s,background .15s}
+  .escala button .em{font-size:24px;line-height:1}
+  .escala button .tx{font-size:11px;color:var(--suau);line-height:1.15;text-align:center}
+  .escala button:active{transform:scale(.95)}
+  .escala button.sel{border-color:var(--verd);background:var(--verd-suau)}
+  .escala button.sel .tx{color:var(--verd-d);font-weight:600}
+
+  .daysum{margin-top:18px;background:var(--verd-suau);border:1px solid #d3e6da;border-radius:14px;padding:14px 16px}
+  .daysum .tot{display:flex;justify-content:space-around;text-align:center;gap:8px}
+  .daysum .tot div b{display:block;font-size:24px;color:var(--verd-d);line-height:1.1}
+  .daysum .tot div span{font-size:12px;color:var(--verd-d);opacity:.85}
+  .daysum .detall{margin-top:12px;font-size:13.5px;color:var(--verd-d);line-height:1.7}
+  .daysum .detall .none{font-style:italic;opacity:.8}
+  .daysum.buit .detall{display:none}
+
+  .clr{background:none;border:0;color:var(--calid-d);font-size:13px;cursor:pointer;text-decoration:underline;padding:10px 0 0;font-family:inherit;display:block;margin:0 auto;width:100%}
+
+  .hist{margin-top:18px}
+  .hist h3{font-size:13px;color:var(--suau);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .hist .row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--linia);border-radius:11px;padding:9px 12px;margin:7px 0;font-size:13.5px}
+  .hist .row .dt{color:var(--suau);font-size:12.5px;flex:0 0 auto}
+  .hist .row .ev{flex:1;color:#4a4138}
+
+  footer{text-align:center;color:var(--suau);font-size:13px;margin-top:30px;padding:0 10px}
+  footer .logo{font-weight:700;color:var(--calid-d);letter-spacing:.04em}
+
+  @media (max-width:380px){
+    h1{font-size:24px}body{font-size:15px}
+    .escala button .tx{font-size:10px}
+    .ftap{font-size:14.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">APRENS · ACT / AIS</span>
+    <h1>Retorn a la feina: presència, respecte i seguretat interna</h1>
+    <p class="sub">Una guia per afrontar les interaccions laborals sense viure-les com una amenaça. Avui ho pots <b>anar registrant</b> i enviar-ho després de la feina.</p>
+    <button class="topcta" onclick="anarRegistre()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      El meu registre d'avui
+    </button>
+    <p class="topnote">Marca cada cosa quan la facis durant el dia. S'acumula sola.</p>
+  </header>
+
+  <!-- 1. Introducció -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>Per on començam</h2>
+    <p>L’objectiu d’aquesta setmana <b>no és demostrar res ni controlar els companys</b>. És recuperar <b>presència</b>, fer la teva feina i reduir la vigilància constant cap als altres.</p>
+    <p class="lead">Quan deixes de vigilar, el teu cos aprèn que no hi ha perill i pots tornar al present.</p>
+  </div>
+
+  <!-- 2. No he de demostrar res -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 16.5 7.6 18.2l.9-5.5-4-3.9L10 8z"/></svg></span>No he de demostrar res</h2>
+    <p>El valor de la teva feina no depèn de l’opinió de ningú. No competeixes: t’hi presentes.</p>
+    <div class="quote">“No necessit demostrar que som millor. Necessit estar present i fer la meva feina.”</div>
+  </div>
+
+  <!-- 3. Respostes respectuoses (TOCABLES) -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></span>Respostes respectuoses</h2>
+    <div class="tapnote">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span><b>Toca la frase</b> cada vegada que la facis servir avui. Es va sumant al teu registre.</span>
+    </div>
+    <div class="frase-list" id="fraseList"></div>
+    <div class="avis">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+      <span>El to ha de ser tranquil, respectuós i amb un petit somriure. <b>No és per atacar</b>, és per mostrar al teu cervell que no estàs en perill.</span>
+    </div>
+  </div>
+
+  <!-- 4. Ser proactiu -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Ser proactiu</h2>
+    <p class="lead">Saludar primer trenca l’evitació. Tries tu el contacte, no l’esperes amb tensió.</p>
+    <div class="chips">
+      <button onclick="bump('salut',0,1)">Bon dia, com va?</button>
+      <button onclick="bump('salut',0,1)">Tot bé?</button>
+      <button onclick="bump('salut',0,1)">Com duis el matí?</button>
+      <button onclick="bump('salut',0,1)">Va bé sa feina avui?</button>
+      <button onclick="bump('salut',0,1)">Au, anam fent.</button>
+    </div>
+    <div class="quote verd">“Quan jo salud primer, el meu cos aprèn que no m’estic amagant.”</div>
+    <div class="counter">
+      <div class="ctxt">He saludat primer<small>Toca + cada vegada (o toca una salutació de dalt)</small></div>
+      <button class="cbtn minus" onclick="bump('salut',0,-1)">−</button>
+      <span class="cnum" id="numSalut">0</span>
+      <button class="cbtn" onclick="bump('salut',0,1)">+</button>
+    </div>
+  </div>
+
+  <!-- 5. Protocol STOP + AIS -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg></span>Protocol STOP + AIS</h2>
+    <p class="lead">Cinc passos per tornar a la presència quan apareix la incomoditat.</p>
+    <ol class="passos">
+      <li><div><b>STOP mental.</b><small>Atura’t un instant abans de reaccionar.</small></div></li>
+      <li><div><b>Respiració diafragmàtica lenta.</b><small>Inhala suau, exhala més llarg.</small></div></li>
+      <li><div><b>Atenció al pit, panxa o coll.</b><small>Localitza la sensació al cos, sense fugir-ne.</small></div></li>
+      <li><div><b>Frase interna:</b><small>“Això és desagradable, però no és una amenaça.”</small></div></li>
+      <li><div><b>Tornar a una acció concreta de feina.</b><small>Una tasca petita i present.</small></div></li>
+    </ol>
+    <div class="counter">
+      <div class="ctxt">He aplicat el STOP + AIS<small>Toca + cada vegada que el facis avui</small></div>
+      <button class="cbtn minus" onclick="bump('stop',0,-1)">−</button>
+      <span class="cnum" id="numStop">0</span>
+      <button class="cbtn" onclick="bump('stop',0,1)">+</button>
+    </div>
+  </div>
+
+  <!-- 6. Metàfora -->
+  <div class="card meta">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 20c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M17 9a5 5 0 0 0-9-2"/></svg></span>La metàfora del tsunami</h2>
+    <p>“La vida és com un tsunami que s’acosta. Podem viure fugint i vigilant-lo, o podem aprendre a estar presents mentre la vida passa. A la feina, l’objectiu és deixar de vigilar constantment els altres i tornar al present.”</p>
+  </div>
+
+  <!-- 7. Frase de la setmana -->
+  <div class="card final">
+    <span class="tag">Frase de la setmana</span>
+    <p id="fraseSetmana">“No venc a demostrar res. Venc a estar present, fer la meva feina i no deixar que l’actitud dels altres governi la meva atenció.”</p>
+    <button class="btn" onclick="copiarFrase(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar frase de la setmana
+    </button>
+  </div>
+
+  <!-- 8. Registre del dia -->
+  <div class="card reg" id="registre">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg></span>El meu registre d'avui</h2>
+    <p class="lead">Es va omplint sol amb el que vas marcant a dalt. Quan acabis la feina, envia'l al psicòleg.</p>
+
+    <div class="step">
+      <div class="lab">Com he començat la jornada?</div>
+      <div class="escala" id="esIni">
+        <button data-v="1" onclick="setMood('ini',1)"><span class="em">😌</span><span class="tx">Calma</span></button>
+        <button data-v="2" onclick="setMood('ini',2)"><span class="em">🙂</span><span class="tx">Bé</span></button>
+        <button data-v="3" onclick="setMood('ini',3)"><span class="em">😐</span><span class="tx">Regular</span></button>
+        <button data-v="4" onclick="setMood('ini',4)"><span class="em">😟</span><span class="tx">Tens</span></button>
+        <button data-v="5" onclick="setMood('ini',5)"><span class="em">😣</span><span class="tx">Molt tens</span></button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="lab">Com l'he acabada?</div>
+      <div class="escala" id="esFin">
+        <button data-v="1" onclick="setMood('fin',1)"><span class="em">😌</span><span class="tx">Calma</span></button>
+        <button data-v="2" onclick="setMood('fin',2)"><span class="em">🙂</span><span class="tx">Bé</span></button>
+        <button data-v="3" onclick="setMood('fin',3)"><span class="em">😐</span><span class="tx">Regular</span></button>
+        <button data-v="4" onclick="setMood('fin',4)"><span class="em">😟</span><span class="tx">Tens</span></button>
+        <button data-v="5" onclick="setMood('fin',5)"><span class="em">😣</span><span class="tx">Molt tens</span></button>
+      </div>
+    </div>
+
+    <div class="daysum" id="daysum">
+      <div class="tot">
+        <div><b id="tFrases">0</b><span>frases<br>respectuoses</span></div>
+        <div><b id="tSalut">0</b><span>salutacions<br>primer</span></div>
+        <div><b id="tStop">0</b><span>STOP +<br>presència</span></div>
+      </div>
+      <div class="detall" id="detall"></div>
+    </div>
+
+    <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 Quan enviar-m'ho?</b> No cal cada cop: ajunta el del dia i envia'm <b>un únic resum al final del dia</b>.</div>
+    <button class="btn verd" onclick="enviarDia(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar i enviar el registre del dia
+    </button>
+    <button class="clr" onclick="reiniciarDia()">Reiniciar el registre d'avui</button>
+
+    <div class="hist" id="hist"></div>
+  </div>
+
+  <footer>
+    <div class="logo">APRENS</div>
+    Material orientatiu de suport terapèutic · marc TEC / ACT / AIS.<br>S’interpreta dins del teu procés en sessió.
+  </footer>
+
+</div>
+
+<script>
+  /* ---------- frases ---------- */
+  var FRASES = [
+    "Ostres, gràcies, es nota que tu en saps molt d’això.",
+    "Molt bé, ho tendré en compte.",
+    "Clar, tu dus més anys i tens més experiència.",
+    "Perfecte, gràcies per compartir-ho.",
+    "Idò mira, avui ja he après una cosa més.",
+    "Sí, jo encara vaig agafant pràctica, poc a poc.",
+    "Bé, si tu ho veus així, ho tendré present.",
+    "Gràcies, m’ho apunt mentalment.",
+    "Molt bé, mestre, ho tendré en compte.",
+    "Sí, sí, aquí tots aprenem cada dia."
+  ];
+  var EMO = {1:"😌",2:"🙂",3:"😐",4:"😟",5:"😣"};
+  var KEY_DIA="aprens_retorn_dia", KEY_HIST="aprens_retorn_hist";
+
+  /* ---------- estat del dia ---------- */
+  function avui(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+  function nouDia(){return {date:avui(),frases:{},salut:0,stop:0,ini:null,fin:null};}
+  function sumaFrases(d){var t=0;for(var k in d.frases){t+=d.frases[k];}return t;}
+  function teActivitat(d){return sumaFrases(d)+(d.salut||0)+(d.stop||0)>0 || d.ini!=null || d.fin!=null;}
+
+  function carregaDia(){
+    var d=null; try{ d=JSON.parse(localStorage.getItem(KEY_DIA)); }catch(e){}
+    if(!d||!d.date) return nouDia();
+    if(d.date!==avui()){ arxivaDia(d); return nouDia(); }
+    if(!d.frases) d.frases={};
+    return d;
+  }
+  function desaDia(){ try{ localStorage.setItem(KEY_DIA,JSON.stringify(dia)); }catch(e){} }
+  function carregaHist(){ try{ return JSON.parse(localStorage.getItem(KEY_HIST))||[]; }catch(e){ return []; } }
+  function arxivaDia(d){
+    if(!teActivitat(d)) return;
+    var h=carregaHist();
+    if(h.length && h[0].date===d.date) return; // ja arxivat
+    h.unshift({date:d.date, frases:sumaFrases(d), salut:d.salut||0, stop:d.stop||0, ini:d.ini, fin:d.fin});
+    if(h.length>30) h=h.slice(0,30);
+    try{ localStorage.setItem(KEY_HIST,JSON.stringify(h)); }catch(e){}
+  }
+  var dia=carregaDia();
+
+  /* ---------- interacció ---------- */
+  function bump(tipus,i,delta){
+    if(tipus==='f'){
+      var k=String(i), c=(dia.frases[k]||0)+delta; if(c<0)c=0;
+      if(c===0) delete dia.frases[k]; else dia.frases[k]=c;
+    } else if(tipus==='salut'){ dia.salut=Math.max(0,(dia.salut||0)+delta); }
+    else if(tipus==='stop'){ dia.stop=Math.max(0,(dia.stop||0)+delta); }
+    desaDia(); pinta();
+  }
+  function setMood(tipus,v){ dia[tipus]=(dia[tipus]===v?null:v); desaDia(); pinta(); }
+  function anarRegistre(){ document.getElementById('registre').scrollIntoView({behavior:'smooth',block:'start'}); }
+
+  /* ---------- render ---------- */
+  function construirFrases(){
+    var c=document.getElementById('fraseList');
+    c.innerHTML=FRASES.map(function(f,i){
+      return '<div class="fitem" id="fi'+i+'">'+
+        '<button class="ftap" onclick="bump(\'f\','+i+',1)">'+f+'</button>'+
+        '<div class="fctl"><button class="fminus" onclick="bump(\'f\','+i+',-1)">−</button>'+
+        '<span class="fbadge" id="fb'+i+'">0</span></div></div>';
+    }).join('');
+  }
+  function pinta(){
+    // frases
+    FRASES.forEach(function(f,i){
+      var c=dia.frases[String(i)]||0;
+      var item=document.getElementById('fi'+i), bad=document.getElementById('fb'+i);
+      if(item){ item.classList.toggle('on',c>0); }
+      if(bad){ bad.textContent='×'+c; }
+    });
+    // comptadors
+    document.getElementById('numSalut').textContent=dia.salut||0;
+    document.getElementById('numStop').textContent=dia.stop||0;
+    // estats d'ànim
+    ['ini','fin'].forEach(function(t){
+      var cont=document.getElementById(t==='ini'?'esIni':'esFin');
+      cont.querySelectorAll('button').forEach(function(b){ b.classList.toggle('sel', +b.getAttribute('data-v')===dia[t]); });
+    });
+    // resum
+    var tf=sumaFrases(dia);
+    document.getElementById('tFrases').textContent=tf;
+    document.getElementById('tSalut').textContent=dia.salut||0;
+    document.getElementById('tStop').textContent=dia.stop||0;
+    var det=document.getElementById('detall'), ds=document.getElementById('daysum');
+    if(tf>0){
+      var lines=FRASES.map(function(f,i){var c=dia.frases[String(i)]||0;return c>0?'· «'+f+'» ×'+c:null;}).filter(Boolean);
+      det.innerHTML=lines.join('<br>');
+      ds.classList.remove('buit');
+    } else { det.innerHTML='<span class="none">Encara no has marcat cap frase avui.</span>'; ds.classList.add('buit'); }
+    pintaHist();
+  }
+  function pintaHist(){
+    var h=carregaHist(), el=document.getElementById('hist');
+    if(!h.length){ el.innerHTML=''; return; }
+    var rows=h.map(function(d){
+      var mood=(d.ini!=null||d.fin!=null)?(' · '+(d.ini!=null?EMO[d.ini]:'·')+'→'+(d.fin!=null?EMO[d.fin]:'·')):'';
+      return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+
+        d.frases+' frases · '+d.salut+' salut. · '+d.stop+' STOP'+mood+'</span></div>';
+    }).join('');
+    el.innerHTML='<h3>Dies anteriors</h3>'+rows;
+  }
+
+  /* ---------- generar text ---------- */
+  function textDia(d){
+    var L=["RETORN A LA FEINA · APRENS · "+d.date];
+    if(d.ini!=null) L.push("Nivell inicial de jornada: "+EMO[d.ini]+" ("+d.ini+"/5)");
+    if(d.fin!=null) L.push("Nivell final de jornada: "+EMO[d.fin]+" ("+d.fin+"/5)");
+    var tf=sumaFrases(d);
+    if(tf>0){
+      L.push("Frases respectuoses: "+tf);
+      FRASES.forEach(function(f,i){var c=d.frases[String(i)]||0;if(c>0)L.push("   · «"+f+"» ×"+c);});
+    }
+    if(d.salut) L.push("Salutacions proactives: "+d.salut);
+    if(d.stop)  L.push("Vegades STOP i presencia: "+d.stop);
+    return L.join("\n");
+  }
+
+  function enviarDia(btn){
+    if(!teActivitat(dia)){ alert("Encara no has registrat res avui. Marca alguna cosa a dalt."); return; }
+    copiarText(textDia(dia), btn);
+  }
+  function reiniciarDia(){
+    if(confirm("Vols esborrar el registre d'avui i començar de zero?")){
+      dia=nouDia(); desaDia(); pinta();
+    }
+  }
+
+  /* ---------- copiar (clipboard amb fallback) ---------- */
+  function feedback(btn){
+    if(!btn) return;
+    var html=btn.innerHTML; btn.classList.add('ok');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Copiat!';
+    setTimeout(function(){ btn.classList.remove('ok'); btn.innerHTML=html; },1700);
+  }
+  function copiarText(text,btn){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){feedback(btn);}).catch(function(){fallback(text,btn);});
+    } else { fallback(text,btn); }
+  }
+  function fallback(text,btn){
+    var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');feedback(btn);}catch(e){alert('No s\'ha pogut copiar.');}
+    document.body.removeChild(ta);
+  }
+  function copiarFrase(btn){ copiarText('Frase de la setmana · APRENS\n\n'+document.getElementById('fraseSetmana').textContent.trim(),btn); }
+
+  /* ---------- init ---------- */
+  construirFrases();
+  desaDia();   // consolida el dia actual (després d'arxivar dies antics si calia)
+  pinta();
+</script>
+</body>
+</html>
