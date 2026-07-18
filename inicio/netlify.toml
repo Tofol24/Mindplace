@@ -1,0 +1,13 @@
+# APRENS · página de inicio (sitio Netlify "aprens-inicio")
+# Deploy automático desde este repo. En el panel de Netlify de "aprens-inicio":
+#   Site configuration → Build & deploy → Continuous deployment
+#     · Repository:       Tofol24/Mindplace
+#     · Base directory:   inicio      ← IMPRESCINDIBLE (así se lee ESTE toml y no el de la app)
+#     · Publish directory: inicio
+#     · Build command:    (vacío)
+# Con "Base directory = inicio", Netlify ignora el netlify.toml raíz (que publica app/)
+# y usa este, de modo que los dos sitios conviven en el mismo repositorio.
+[build]
+  base = "inicio"
+  publish = "."
+  command = ""
