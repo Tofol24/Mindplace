@@ -1,0 +1,9 @@
+# APRENS · página de inicio — cabeceras de Netlify (sitio aprens-inicio)
+# La CSP fuerza la promesa "sin recursos de terceros": el navegador bloquea
+# cualquier carga externa (fuentes, CDNs, imágenes remotas), de modo que la IP
+# del visitante nunca se filtra. Los enlaces a las herramientas (aprens-app) y a
+# WhatsApp son navegaciones <a target=_blank>, que la CSP no restringe.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'
