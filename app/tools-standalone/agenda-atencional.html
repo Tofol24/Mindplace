@@ -30,6 +30,26 @@ body{font-family:'DM Sans',sans-serif; background:linear-gradient(160deg,#EDF3FB
 .hsub{font-size:10px; opacity:.75; margin-top:1px;}
 .wrap{max-width:680px; margin:0 auto; padding:18px 14px 30px;}
 .view{display:none;} .view.on{display:block; animation:fade .25s;}
+/* ---- Horario semanal imprimible (para rellenar a boli / PDF) ---- */
+#printSheet{display:none;}
+@media print{
+  @page{size:A4 landscape; margin:8mm;}
+  html,body{background:#fff !important;}
+  body>*:not(#printSheet){display:none !important;}
+  #printSheet{display:block !important; color:#000; font-family:'DM Sans',system-ui,-apple-system,sans-serif;}
+}
+#printSheet .ps-title{font-family:'Playfair Display',Georgia,serif; font-size:20px; font-weight:700; color:#1B4F8C;}
+#printSheet .ps-sub{font-size:11px; color:#333; margin:3px 0 1px;}
+#printSheet .ps-legend{font-size:10.5px; color:#444; margin:1px 0 3px;}
+#printSheet .ps-week{font-size:11px; margin-bottom:6px; color:#000;}
+#printSheet .ps-grid{width:100%; border-collapse:collapse; table-layout:fixed;}
+#printSheet .ps-grid th,#printSheet .ps-grid td{border:1px solid #1B4F8C; vertical-align:top; padding:3px 4px;}
+#printSheet .ps-grid thead th{background:#D6E4F0; font-size:11px; text-align:center; padding:4px 2px; color:#1B4F8C;}
+#printSheet .ps-grid th.ps-fr{width:64px; background:#F0F4F8; font-size:10.5px; text-align:left; color:#1B4F8C;}
+#printSheet .ps-grid td{height:39mm;}
+#printSheet .ps-act{font-size:10px; line-height:1.25; margin-bottom:1px; color:#000;}
+#printSheet .ps-mono{font-size:11px; letter-spacing:2px; margin-top:5px; white-space:nowrap;}
+#printSheet .ps-foot{margin-top:7px; font-size:11px; color:#000;}
 @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
 .card{background:#fff; border-radius:18px; padding:20px; box-shadow:0 4px 24px rgba(27,79,140,.08); margin-bottom:16px;}
 .ctit{font-weight:600; font-size:12px; color:var(--azul); margin-bottom:13px; text-transform:uppercase; letter-spacing:.5px;}
@@ -218,6 +238,11 @@ input[type=range]{width:100%; accent-color:var(--azul); height:26px;}
       <h1>Tu horario semanal</h1>
       <p>Aquí ves la semana entera de un vistazo. Puedes <b>copiar</b> una actividad y pegarla en otro día o momento, <b>cortarla</b> para moverla, o editarla. Así no tienes que ir día a día.</p>
       <div class="frase">Estructurar la semana también es un acto consciente: decides de antemano dónde quieres estar.</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="ctit">🧲 Para la nevera</div>
+      <p style="font-size:12.5px; color:var(--gris); line-height:1.6; margin-bottom:11px;">¿Se te hace pesado ir rellenándolo en el móvil? Imprime tu horario semanal y rellénalo <b>a boli</b>. Cuélgalo en un sitio visible (la nevera). Esta versión en papel <b>no guarda el registro digital</b>, pero te deja la herramienta a mano. Se imprime en <b>horizontal</b> (elige «Guardar como PDF» o imprime en papel).</p>
+      <button class="btn bp" style="width:100%;" onclick="imprimirHorario()">🖨️ Horario para imprimir / PDF</button>
     </div>
     <div id="semanaBody"></div>
   </section>
@@ -804,6 +829,35 @@ function renderSemana(){
     h+='</div>';
   }
   document.getElementById('semanaBody').innerHTML=h;
+}
+
+/* ===================== Horario imprimible (nevera / PDF) =====================
+   Rejilla 7 días × 4 franjas en A4 horizontal. Vuelca lo ya planificado
+   (a.texto) como referencia y deja el resto en blanco para rellenar a mano.
+   Sin librerías: usa el diálogo de impresión del navegador (→ «Guardar como PDF»). */
+function horarioSheetHTML(){
+  var head=DOWS.map(function(d){ return '<th>'+d+'</th>'; }).join('');
+  var body=FRANJAS.map(function(f){
+    var cells='';
+    for(var dw=0; dw<7; dw++){
+      var acts=(planDow(dw)[f.id]||[]);
+      var ah=acts.map(function(a){ return '<div class="ps-act">• '+esc(a.texto)+'</div>'; }).join('');
+      cells+='<td>'+ah+'<div class="ps-mono">🚗 🙈 📦 🐒</div></td>';
+    }
+    return '<tr><th class="ps-fr">'+f.icon+' '+f.txt+'</th>'+cells+'</tr>';
+  }).join('');
+  return '<div class="ps-title">Mi semana · APRENS</div>'
+    +'<div class="ps-sub">Escribe cada actividad y dónde pondrás la atención. Al terminar el día, rodea dónde fue tu atención (el mono).</div>'
+    +'<div class="ps-legend">🚗 al lado (conduces tú) · 🙈 delante (te tapa) · 📦 atrás (lo escondes) · 🐒 conduce él (reaccionas)</div>'
+    +'<div class="ps-week">Semana del ____ / ____ al ____ / ____</div>'
+    +'<table class="ps-grid"><thead><tr><th class="ps-fr"></th>'+head+'</tr></thead><tbody>'+body+'</tbody></table>'
+    +'<div class="ps-foot">Valores de esta semana: __________________________________   ·   Respiración curiosa (cada hora): ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢</div>';
+}
+function imprimirHorario(){
+  var el=document.getElementById('printSheet');
+  if(!el){ el=document.createElement('div'); el.id='printSheet'; document.body.appendChild(el); }
+  el.innerHTML=horarioSheetHTML();
+  window.print();
 }
 
 /* ===================== HOY (registro) ===================== */
