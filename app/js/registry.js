@@ -43,7 +43,7 @@ window.APRENS_TOOLS = [
     desc:"Entrenar la atención hacia dentro por el oído: protocolo progresivo en 6 fases (vía auditiva).",
     migrada:true, iframe:"tools-standalone/protocolo-ais.html" },
   { id:"control_ira", emoji:"🔥", nombre:"Control de ira",
-    desc:"Autorregistro de episodios de enfado o impulso, para verlos y manejarlos.",
+    desc:"Autorregistro posterior a un episodio de enfado o impulso. Para parar en caliente, «Bajar la alerta».",
     migrada:true, iframe:"tools-standalone/control-ira.html" },
   { id:"retorno_trabajo", emoji:"💼", nombre:"Retorno al trabajo",
     desc:"Volver al trabajo tras una baja, paso a paso y desde tus valores.",
