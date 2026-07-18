@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1B4F8C">
+<title>Tracker AIS · APRENS</title>
+<script src="../vendor/chart.umd.min.js"></script>
+<style>
+:root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;--oroLt:#F5ECD4;--lila:#7B4FC1;--lilaLt:#EDE5F8;--rosa:#C0392B;--rosaLt:#FDECEA;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;}
+.header{background:var(--azul);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+.hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:11px;font-family:'Playfair Display',serif;flex-shrink:0;}
+.htitle{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;}
+.hsub{font-size:10px;opacity:.75;margin-top:1px;}
+.wrap{max-width:640px;margin:0 auto;padding:14px 13px 80px;}
+.card{background:#fff;border-radius:18px;padding:18px 16px;box-shadow:0 4px 20px rgba(27,79,140,.08);margin-bottom:13px;}
+.hero{background:#fff;border-radius:18px;padding:20px 17px 17px;box-shadow:0 4px 20px rgba(27,79,140,.08);margin-bottom:13px;border-top:4px solid var(--oro);}
+.ctit{font-weight:600;font-size:11px;color:var(--azul);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.frase{font-style:italic;color:var(--azul);font-size:12px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:10px 13px;line-height:1.6;}
+.aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:10px 13px;font-size:11.5px;color:var(--azul);line-height:1.6;margin-bottom:11px;}
+.btn{border:none;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px;-webkit-appearance:none;touch-action:manipulation;}
+.bp{background:var(--azul);color:#fff;padding:10px 20px;font-size:13px;box-shadow:0 4px 12px rgba(27,79,140,.3);}
+.bpg{background:var(--verde);color:#fff;padding:10px 20px;font-size:13px;}
+.bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:8px 16px;font-size:12.5px;}
+.bpo{background:var(--oro);color:#fff;padding:10px 20px;font-size:13px;}
+.bwa{background:#25D366;color:#fff;padding:10px 20px;font-size:13px;box-shadow:0 4px 12px rgba(37,211,102,.25);}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:9px 15px;font-size:13px;}
+.btn:active{transform:scale(.94);}
+.acc{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:11px;}
+.cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:12px;font-size:11px;line-height:1.75;color:#333;max-height:190px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:11px;-webkit-user-select:all;user-select:all;}
+/* TABS */
+.tab-row{display:flex;gap:0;margin-bottom:13px;border-radius:12px;overflow:hidden;border:2px solid var(--azulLt);}
+.tab{flex:1;padding:8px 1px;text-align:center;font-size:10px;font-weight:600;background:var(--azulLt);color:var(--azul);cursor:pointer;transition:all .2s;border:none;font-family:'DM Sans',sans-serif;}
+.tab.actiu{background:var(--azul);color:#fff;}
+/* DAY GRID */
+.dies-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:11px;}
+.dia-btn{background:var(--fondo);border:2px solid #E0E7EF;border-radius:9px;padding:6px 2px;text-align:center;cursor:pointer;font-size:10px;color:var(--gris);transition:all .18s;}
+.dia-btn.actiu{background:var(--azulLt);border-color:var(--azul);color:var(--azul);font-weight:700;}
+.dia-lab{font-size:8px;text-transform:uppercase;letter-spacing:.2px;display:block;margin-bottom:1px;}
+/* AIS CYCLE */
+.cycle-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:13px;}
+.cycle-step{border-radius:13px;padding:11px 6px;text-align:center;}
+.cycle-icon{font-size:20px;display:block;margin-bottom:4px;}
+.cycle-name{font-size:10px;font-weight:700;display:block;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px;}
+.cycle-sub{font-size:9px;opacity:.8;line-height:1.3;}
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;gap:8px;margin:16px 0 9px;padding:8px 12px;border-radius:10px;}
+.sec-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px;}
+.sec-title{font-size:12px;font-weight:600;}
+.sec-sub{font-size:10.5px;opacity:.8;}
+/* COUNTERS */
+.counter-box{display:flex;align-items:center;justify-content:space-between;background:var(--fondo);border-radius:12px;padding:11px 13px;margin-bottom:8px;}
+.ci{flex:1;}.cn{font-weight:600;font-size:12.5px;color:#1a1a2e;}.cs{font-size:10.5px;color:var(--gris);margin-top:2px;}
+.cc{display:flex;align-items:center;gap:8px;}
+.cnum{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--azul);min-width:28px;text-align:center;}
+.cb{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:all .15s;}
+.cb-p{background:var(--azul);color:#fff;} .cb-m{background:#E8EFF7;color:var(--azul);}
+.prog{height:5px;background:#E8EFF7;border-radius:3px;margin-top:5px;overflow:hidden;}
+.prog-f{height:100%;border-radius:3px;transition:width .4s;}
+.pf-a{background:var(--azul);}.pf-v{background:var(--verde);}.pf-o{background:var(--oro);}.pf-l{background:var(--lila);}
+/* STEP CARD */
+.step-card{border-radius:12px;padding:13px;margin-bottom:8px;border-left:4px solid;}
+.step-n{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.step-t{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:4px;}
+.step-d{font-size:12px;line-height:1.55;}
+/* QUALITY BTNS */
+.q-row{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;}
+.q-btn{flex:1;min-width:80px;padding:8px 6px;border:2px solid #E0E7EF;border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;-webkit-appearance:none;}
+.q-btn.sel-si{background:var(--verdeLt);border-color:var(--verde);color:var(--verde);}
+.q-btn.sel-part{background:var(--oroLt);border-color:var(--oro);color:#7a5a1a;}
+.q-btn.sel-no{background:#FDECEA;border-color:#C0392B;color:#C0392B;}
+/* BREATHING */
+.breath-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 0 8px;}
+.breath-ring{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,var(--azulLt) 0%,#fff 100%);border:3px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transition:transform .6s ease-in-out;}
+.breath-phase{font-family:'Playfair Display',serif;font-size:13px;color:var(--azul);font-weight:700;text-align:center;line-height:1.3;}
+.breath-sec{font-size:26px;font-weight:700;color:var(--azul);font-family:'Playfair Display',serif;}
+.breath-sub{font-size:10.5px;color:var(--gris);margin-top:7px;text-align:center;}
+/* ABRAÇOS */
+.abrac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;}
+.abrac-btn{background:#fff;border:2px solid #E0E7EF;border-radius:13px;padding:12px 3px;text-align:center;cursor:pointer;-webkit-appearance:none;font-family:'DM Sans',sans-serif;width:100%;transition:all .18s;}
+.abrac-btn:active{transform:scale(.95);}
+.abrac-icon{font-size:22px;display:block;margin-bottom:3px;}
+.abrac-name{font-size:11.5px;font-weight:600;color:#1a1a2e;}
+.abrac-n{font-size:10px;color:var(--gris);margin-top:2px;}
+.guided-ov{background:var(--azul);border-radius:15px;padding:18px;color:#fff;text-align:center;margin-bottom:12px;}
+.guided-big{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+.guided-desc{font-size:12px;line-height:1.75;opacity:.9;margin-bottom:13px;}
+.log-list{max-height:95px;overflow-y:auto;}
+.log-item{font-size:11px;padding:4px 0;border-bottom:1px solid #F4F4F4;display:flex;justify-content:space-between;color:#555;}
+/* HONESTITAT */
+.hon-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.hon-btn{padding:12px 8px;border:2px solid #E0E7EF;border-radius:13px;background:#fff;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:center;-webkit-appearance:none;transition:all .18s;}
+.hon-btn.sel-barriga{background:var(--verdeLt);border-color:var(--verde);}
+.hon-btn.sel-pit{background:#FDECEA;border-color:#C0392B;}
+.hon-btn:active{transform:scale(.96);}
+.hon-rel-btn{padding:6px 12px;border:2px solid #E0E7EF;border-radius:20px;background:#fff;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;-webkit-appearance:none;transition:all .18s;color:#1a1a2e;}
+.hon-rel-btn.sel{background:var(--azulLt);border-color:var(--azul);color:var(--azul);}
+.hon-icon{font-size:22px;display:block;margin-bottom:4px;}
+.hon-name{font-size:12px;font-weight:700;}
+.hon-sub{font-size:10px;color:var(--gris);margin-top:2px;line-height:1.3;}
+/* RUTINA */
+.rutina-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:11px;}
+.rutina-btn{border:2px solid #E0E7EF;border-radius:13px;padding:13px 5px;text-align:center;cursor:pointer;background:#fff;-webkit-appearance:none;font-family:'DM Sans',sans-serif;transition:all .18s;}
+.rutina-btn.fet{background:var(--verdeLt);border-color:var(--verde);}
+.rutina-btn:active{transform:scale(.95);}
+.rutina-icon{font-size:20px;display:block;margin-bottom:4px;}
+.rutina-name{font-size:11.5px;font-weight:600;color:#1a1a2e;}
+.rutina-n{font-size:10px;color:var(--gris);margin-top:2px;}
+/* STARS TEC */
+.tec-stars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.tec-star-card{border-radius:15px;padding:14px 8px;text-align:center;}
+.tsc-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:7px;display:inline-block;letter-spacing:.5px;}
+.tsc-name{font-size:11px;font-weight:600;margin-bottom:7px;}
+.tsc-stars{font-size:18px;letter-spacing:2px;min-height:22px;}
+.tsc-sub{font-size:9.5px;margin-top:4px;opacity:.7;}
+/* CHECKLIST */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #F0F4F8;cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-circ{width:20px;height:20px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.check-circ.fet{background:var(--verde);border-color:var(--verde);}
+.check-circ.fet::after{content:'✓';color:#fff;font-size:10px;font-weight:700;}
+.check-txt{font-size:12px;line-height:1.4;color:#1a1a2e;}
+.check-txt.fet{text-decoration:line-through;color:var(--gris);}
+.mtag{font-size:9px;background:var(--azulLt);color:var(--azul);border-radius:20px;padding:2px 7px;font-weight:600;display:inline-block;margin-bottom:2px;}
+/* HISTORY */
+.hist-item{background:var(--fondo);border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.hist-date{font-size:11px;font-weight:600;color:var(--azul);min-width:70px;}
+.hist-stars{font-size:13px;letter-spacing:1px;}
+.hist-nota{font-size:11px;color:var(--gris);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* VICKY */
+.vsel{border:2px solid #E3EAF3;border-radius:10px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:#1a1a2e;background:#fff;flex:1;outline:none;}
+.vsel:focus{border-color:var(--azul);}
+.vtime{border:2px solid #E3EAF3;border-radius:10px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:#1a1a2e;background:#fff;width:88px;outline:none;}
+.vtime:focus{border-color:var(--azul);}
+.vrow{display:flex;gap:7px;align-items:center;margin-bottom:7px;}
+.vincle-tipus-btn{padding:8px 4px;border:2px solid #E0E7EF;border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;-webkit-appearance:none;transition:all .18s;}
+.vincle-tipus-btn.sel{background:var(--lilaLt);border-color:var(--lila);color:var(--lila);}
+.bsm{padding:7px 13px;font-size:12px;}
+.vrecord{background:var(--oroLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:10px 13px;font-size:12px;color:#7a5a1a;line-height:1.6;margin-top:11px;white-space:pre-line;}
+.nota-input{width:100%;border:2px solid #E3EAF3;border-radius:12px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:#1a1a2e;resize:none;min-height:60px;outline:none;background:#fff;}
+.nota-input:focus{border-color:var(--azul);}
+.sep{border:none;border-top:1px solid #F0F4F8;margin:11px 0;}
+.badge{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+.bv{background:var(--verdeLt);color:var(--verde);}
+input[type=range]{width:100%;}
+canvas{width:100%!important;}
+/* Índex de polsadors (entrar a cada eina) */
+.idxsub{font-size:11.5px;color:var(--gris);line-height:1.5;margin-bottom:11px;}
+.idxgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.idxb{display:flex;align-items:center;gap:9px;text-align:left;background:var(--fondo);border:2px solid #E3EAF3;border-radius:14px;padding:10px 11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .16s;width:100%;}
+.idxb:hover,.idxb:active{border-color:var(--azul);background:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(27,79,140,.1);}
+.idxb .ib-ico{font-size:20px;line-height:1;flex-shrink:0;}
+.idxb .ib-body{flex:1;min-width:0;}
+.idxb .ib-tit{font-weight:700;font-size:12px;color:#1a1a2e;line-height:1.25;}
+.idxb .ib-par{margin-top:4px;}
+.pbadge{display:inline-flex;align-items:center;border-radius:9px;padding:2px 7px;font-size:9px;font-weight:700;letter-spacing:.3px;line-height:1.3;}
+.pL{background:var(--azulLt);color:var(--azul);}
+.pD{background:var(--verdeLt);color:var(--verde);}
+.pC{background:var(--oroLt);color:#7a5a1a;}
+.qtrab{display:flex;align-items:flex-start;gap:8px;background:var(--fondo);border:1px solid #E8EFF7;border-radius:10px;padding:8px 11px;margin-bottom:10px;font-size:11.5px;color:#444;line-height:1.5;}
+.qtrab .qp{flex-shrink:0;}
+@media(max-width:380px){.idxgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div>
+    <div class="htitle">Tracker AIS · APRENS</div>
+    <div class="hsub">APRENS Psicologia · Eines d'Atenció Interna Sensorial</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--azul);margin-bottom:3px;">Seguiment diari · AIS</div>
+  <div style="font-size:17px;font-weight:600;line-height:1.3;margin-bottom:3px;">On dirigeixo l'atenció,<br>allà vaig jo.</div>
+  <div style="font-size:11.5px;color:var(--gris);margin-bottom:10px;">Selecciona el dia d'avui</div>
+  <div class="dies-grid" id="diesGrid"></div>
+  <!-- mini stars avui -->
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;" id="miniStars"></div>
+</div>
+
+<!-- TABS -->
+<div class="tab-row">
+  <button class="tab actiu" onclick="mostrarTab('avui')">🏠 Avui</button>
+  <button class="tab" onclick="mostrarTab('eines')">🧰 Eines</button>
+  <button class="tab" onclick="mostrarTab('parella')">🔗 Vincles</button>
+  <button class="tab" onclick="mostrarTab('tec')">📊 TEC</button>
+  <button class="tab" onclick="mostrarTab('historial')">📈 Historial</button>
+</div>
+
+<!-- ===== TAB AVUI ===== -->
+<div id="tab-avui">
+  <div class="card">
+    <div class="ctit">Cicle AIS · el que practico avui</div>
+    <div class="cycle-grid">
+      <div class="cycle-step" style="background:var(--azulLt);">
+        <span class="cycle-icon">✋</span>
+        <span class="cycle-name" style="color:var(--azul);">PARA</span>
+        <span class="cycle-sub" style="color:var(--azul);">Noto el bucle</span>
+      </div>
+      <div class="cycle-step" style="background:var(--verdeLt);">
+        <span class="cycle-icon">🫁</span>
+        <span class="cycle-name" style="color:var(--verde);">RESPIRO</span>
+        <span class="cycle-sub" style="color:var(--verde);">Baixo a la panxa</span>
+      </div>
+      <div class="cycle-step" style="background:var(--oroLt);">
+        <span class="cycle-icon">🤍</span>
+        <span class="cycle-name" style="color:#7a5a1a;">PRESÈNCIA</span>
+        <span class="cycle-sub" style="color:#7a5a1a);">Em sent atès</span>
+      </div>
+      <div class="cycle-step" style="background:var(--lilaLt);">
+        <span class="cycle-icon">🎯</span>
+        <span class="cycle-name" style="color:var(--lila);">ACTUO</span>
+        <span class="cycle-sub" style="color:var(--lila);">Conducta asertiva</span>
+      </div>
+    </div>
+    <div class="frase">"~600 pensaments al dia. Objectiu: interceptar-ne almenys 60. Cada un que acaba en conducta asertiva desactiva el patró."</div>
+  </div>
+  <div class="card" id="avuiResum">
+    <div class="ctit">Resum d'avui</div>
+    <div id="avuiResumCont"></div>
+  </div>
+</div>
+
+<!-- ===== TAB EINES ===== -->
+<div id="tab-eines" style="display:none">
+
+  <div class="card">
+    <div class="ctit">🧰 Les 6 eines · per on vols entrar</div>
+    <div class="idxsub">Cada eina entrena un paràmetre: <span class="pbadge pL">L</span> Latència (espai abans de reaccionar) · <span class="pbadge pD">D</span> Densitat (presència interna) · <span class="pbadge pC">C</span> Continuïtat (sostenir el patró). Toca una per anar-hi.</div>
+    <div class="idxgrid">
+      <button class="idxb" onclick="irA('herr1')"><span class="ib-ico">✋</span><span class="ib-body"><span class="ib-tit">1 · Para de pensament</span><span class="ib-par"><span class="pbadge pL">L</span></span></span></button>
+      <button class="idxb" onclick="irA('herr5')"><span class="ib-ico">🚪</span><span class="ib-body"><span class="ib-tit">5 · Rituals d'entrada</span><span class="ib-par"><span class="pbadge pL">L</span></span></span></button>
+      <button class="idxb" onclick="irA('herr2')"><span class="ib-ico">🫂</span><span class="ib-body"><span class="ib-tit">2 · Abraç sentit</span><span class="ib-par"><span class="pbadge pD">D</span></span></span></button>
+      <button class="idxb" onclick="irA('herr4')"><span class="ib-ico">🌬</span><span class="ib-body"><span class="ib-tit">4 · Respiració conscient</span><span class="ib-par"><span class="pbadge pD">D</span></span></span></button>
+      <button class="idxb" onclick="irA('herr3')"><span class="ib-ico">🫀</span><span class="ib-body"><span class="ib-tit">3 · Honestitat emocional</span><span class="ib-par"><span class="pbadge pD">D</span><span class="pbadge pC">C</span></span></span></button>
+      <button class="idxb" onclick="irA('herr6')"><span class="ib-ico">🔁</span><span class="ib-body"><span class="ib-tit">6 · Rutina de presència</span><span class="ib-par"><span class="pbadge pC">C</span></span></span></button>
+    </div>
+  </div>
+
+  <!-- L · LATÈNCIA -->
+  <div class="sec-hdr" style="background:var(--azulLt);">
+    <span class="sec-badge" style="background:var(--azul);color:#fff;">L · LATÈNCIA</span>
+    <div><div class="sec-title" style="color:var(--azul);">Crear espai entre l'estímul i la resposta</div></div>
+  </div>
+
+  <!-- Herr. 1: Para -->
+  <div class="card" id="herr1">
+    <div class="ctit" style="color:var(--azul);">✋ Herr. 1 · Para de pensament · <span id="paraCount" style="color:var(--verde);">0 vegades</span></div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pL">Latència</span></span><span>Interceptar el bucle i tornar: cada parada amplia l'espai entre l'estímul i la teva resposta.</span></div>
+    <div id="paraSteps"></div>
+    <div id="paraAccions" style="display:flex;gap:7px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn bp" id="paraBtn" onclick="paraNext()">Iniciar</button>
+    </div>
+    <div id="paraResult" style="display:none;text-align:center;padding:12px 0;">
+      <div style="font-size:24px;margin-bottom:5px;">✓</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;color:var(--verde);font-weight:700;margin-bottom:4px;">Has tornat.</div>
+      <div style="font-size:11.5px;color:var(--gris);margin-bottom:11px;">Cada vegada que fas això, estàs escollint on vols estar.</div>
+      <div class="q-row" id="qRow">
+        <button class="q-btn" onclick="setQ('si')">✓ Sí, vaig reorientar</button>
+        <button class="q-btn" onclick="setQ('part')">≈ En part, em va costar</button>
+        <button class="q-btn" onclick="setQ('no')">✗ No, me'n vaig quedar</button>
+      </div>
+      <button class="btn bpg" style="margin-top:10px;" onclick="resetPara()">Fer-ho de nou</button>
+    </div>
+    <div class="sep" id="paraSepAsert" style="display:none"></div>
+    <div id="paraAsertRow" style="display:none;justify-content:space-between;align-items:center;background:var(--fondo);border-radius:11px;padding:10px 13px;">
+      <div>
+        <div style="font-size:11.5px;font-weight:600;">Asertives avui</div>
+        <div style="font-size:10.5px;color:var(--gris);">de les <span id="paraTotalSess">0</span> parades</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--verde);" id="paraAsertNum">0</div>
+    </div>
+  </div>
+
+  <!-- Herr. 5: Rituals -->
+  <div class="card" id="herr5">
+    <div class="ctit" style="color:var(--azul);">🚪 Herr. 5 · Rituals d'entrada</div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pL">Latència</span></span><span>Un petit gest abans d'una situació difícil prepara el cos i et dona marge per respondre amb valors, no per impuls.</span></div>
+    <div style="font-size:12px;color:var(--gris);margin-bottom:11px;line-height:1.5;">Cada porta, cada situació nova: respira o visualitza. El cos entra acompanyat.</div>
+    <div class="counter-box">
+      <div class="ci">
+        <div class="cn">Entrades acompanyades</div>
+        <div class="cs">Respira o visualitza abans d'entrar</div>
+        <div class="prog"><div class="prog-f pf-a" id="prit" style="width:0%"></div></div>
+      </div>
+      <div class="cc">
+        <button class="cb cb-m" onclick="cambiar('rituals',-1)">−</button>
+        <span class="cnum" id="n-rituals">0</span>
+        <button class="cb cb-p" onclick="cambiar('rituals',1)">+</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:4px;">
+      <button class="q-btn" id="ritPres-si" onclick="setRitualPresent('si')">✓ Estava present</button>
+      <button class="q-btn" id="ritPres-no" onclick="setRitualPresent('no')">✗ Anava en automàtic</button>
+    </div>
+  </div>
+
+  <!-- D · DENSITAT -->
+  <div class="sec-hdr" style="background:var(--verdeLt);">
+    <span class="sec-badge" style="background:var(--verde);color:#fff;">D · DENSITAT</span>
+    <div><div class="sec-title" style="color:var(--verde);">Freqüència de moments d'atenció al llarg del dia</div></div>
+  </div>
+
+  <!-- Herr. 2: Abraç -->
+  <div class="card" id="herr2">
+    <div class="ctit" style="color:var(--verde);">🫂 Herr. 2 · Abraç sentit</div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pD">Densitat</span></span><span>Portar l'atenció a la panxa i sostenir-la: cada moment de presència suma densitat al llarg del dia.</span></div>
+    <div id="abracGuided" style="display:none" class="guided-ov">
+      <div class="guided-big" id="abracTitle">Abraç als fills</div>
+      <div class="guided-desc">Porta un moment l'atenció a la panxa.<br>Nota la calor que hi ha aquí dins.<br>Respira una vegada des d'aquí.<br><br>Ara, des d'aquest lloc, <strong>abraça de veritat.</strong></div>
+      <button class="btn" style="background:#fff;color:var(--azul);padding:9px 20px;font-size:13px;" onclick="confirmarAbrac()">He abraçat ✓</button>
+    </div>
+    <div id="abracSel">
+      <div style="font-size:12px;color:var(--gris);margin-bottom:11px;line-height:1.5;">Al trobar un vincle proper: porta l'atenció a la panxa, és tu qui hi vas.</div>
+      <div class="abrac-grid">
+        <button class="abrac-btn" onclick="prepAbrac('fills','👨‍👧‍👦','als fills')">
+          <span class="abrac-icon">👨‍👧‍👦</span>
+          <div class="abrac-name">Fills</div>
+          <div class="abrac-n" id="nabf">0 avui</div>
+        </button>
+        <button class="abrac-btn" onclick="prepAbrac('pares','👴👵','als pares')">
+          <span class="abrac-icon">👴👵</span>
+          <div class="abrac-name">Pares</div>
+          <div class="abrac-n" id="nabp">0 avui</div>
+        </button>
+        <button class="abrac-btn" onclick="prepAbrac('familia','❤️','a la família')">
+          <span class="abrac-icon">❤️</span>
+          <div class="abrac-name">Família</div>
+          <div class="abrac-n" id="nabfa">0 avui</div>
+        </button>
+      </div>
+      <div class="log-list" id="abracLog"><div style="font-size:11.5px;color:var(--gris);font-style:italic;">Encara no n'has registrat cap.</div></div>
+    </div>
+  </div>
+
+  <!-- Herr. 3: Honestitat emocional -->
+  <div class="card" id="herr3">
+    <div class="ctit" style="color:var(--verde);">🫀 Herr. 3 · Honestitat emocional</div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pD">Densitat</span><span class="pbadge pC">Continuïtat</span></span><span>Compartir el que sents des de la sensació interna: presència (D) i conducta coherent amb els valors sostinguda (C).</span></div>
+
+    <!-- Explicació clínica dels dos modes -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px;">
+      <div style="background:var(--verdeLt);border-radius:13px;padding:11px 9px;border-left:3px solid var(--verde);">
+        <div style="font-size:19px;margin-bottom:4px;">🟢</div>
+        <div style="font-size:11px;font-weight:700;color:var(--verde);margin-bottom:4px;">PROACTIU · Panxa</div>
+        <div style="font-size:10.5px;color:#2E7D5E;line-height:1.55;">Hi vaig <strong>sense necessitar-ho</strong>, per curiositat. El cos se sent prioritat i segur. Treballo l'autoestima i l'acompanyament incondicional des de la no necessitat.</div>
+      </div>
+      <div style="background:#FDECEA;border-radius:13px;padding:11px 9px;border-left:3px solid #C0392B;">
+        <div style="font-size:19px;margin-bottom:4px;">🔴</div>
+        <div style="font-size:11px;font-weight:700;color:#C0392B;margin-bottom:4px;">REACTIU · Pit</div>
+        <div style="font-size:10.5px;color:#C0392B;line-height:1.55;">Respiro <strong>quan ho necessito</strong>. El cos ja m'ha avisat. La seguretat depèn del control de l'entorn, no de l'acompanyament intern.</div>
+      </div>
+    </div>
+
+    <!-- Frase per compartir -->
+    <div style="background:var(--azulLt);border-left:4px solid var(--oro);border-radius:0 11px 11px 0;padding:11px 13px;font-size:12px;color:var(--azul);line-height:1.7;margin-bottom:12px;">
+      <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;color:var(--azul);opacity:.7;">Frase per compartir</div>
+      <em>"No sé per què, però sento una sensació (mà a la panxa) que necessitava compartir amb tu."</em>
+      <div style="font-size:10.5px;margin-top:7px;opacity:.85;">Integro la meva vulnerabilitat amb aquest vincle, em valido i em dono espai → genero autoestima.</div>
+    </div>
+
+    <!-- Selector de vincle -->
+    <div style="font-size:11.5px;font-weight:600;color:#1a1a2e;margin-bottom:7px;">Ho comparteixo amb...</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px;" id="honRelRow">
+      <button class="hon-rel-btn" onclick="selHonRel(this,'Fills')">👨‍👧‍👦 Fills</button>
+      <button class="hon-rel-btn" onclick="selHonRel(this,'Pare')">👨 Pare</button>
+      <button class="hon-rel-btn" onclick="selHonRel(this,'Mare')">👩 Mare</button>
+      <button class="hon-rel-btn" onclick="selHonRel(this,'Parella')">💑 Parella</button>
+      <button class="hon-rel-btn" onclick="selHonRel(this,'Amic/a')">🫂 Amic/a</button>
+    </div>
+
+    <!-- Botons de registre -->
+    <div style="font-size:11.5px;color:var(--gris);margin-bottom:9px;">Porta la mà a la panxa → on és la sensació ara?</div>
+    <div class="hon-btns">
+      <button class="hon-btn" onclick="registrarHon('panxa')">
+        <span class="hon-icon">🟢</span>
+        <div class="hon-name" style="color:var(--verde);">Panxa</div>
+        <div class="hon-sub">Hi vaig jo · sense necessitat<br>→ Autoestima / amor incondicional</div>
+      </button>
+      <button class="hon-btn" onclick="registrarHon('pit')">
+        <span class="hon-icon">🔴</span>
+        <div class="hon-name" style="color:#C0392B;">Pit</div>
+        <div class="hon-sub">El cos m'avisa · ho necessito<br>→ Resposta al bucle actiu</div>
+      </button>
+    </div>
+    <div class="log-list" id="honLog"><div style="font-size:11.5px;color:var(--gris);font-style:italic;">Selecciona el vincle i prem el botó quan facis una comprovació.</div></div>
+  </div>
+
+  <!-- Herr. 4: Respiració -->
+  <div class="card" id="herr4">
+    <div class="ctit" style="color:var(--verde);">🌬 Herr. 4 · Respiració conscient</div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pD">Densitat</span></span><span>Respirar baixant a la panxa, sense necessitat: dius al cos que és una prioritat i entrenes la presència interna.</span></div>
+    <div style="background:var(--oroLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:9px 12px;font-size:11.5px;color:#7a5a1a;line-height:1.6;margin-bottom:12px;">
+      Ho fas perquè t'interessa descobrir com et sents per dins. Sense objectiu. Cada 1-2 hores: la consciència baixa a la panxa.
+    </div>
+    <div class="breath-wrap">
+      <div class="breath-ring" id="breathRing">
+        <div style="text-align:center;">
+          <div class="breath-phase" id="breathPhase">Preparat?</div>
+          <div class="breath-sec" id="breathSec" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="breath-sub" id="breathSub">Prem per explorar la teva respiració</div>
+      <div style="font-size:11px;color:var(--verde);margin-top:7px;text-align:center;font-weight:600;" id="breathSess"></div>
+    </div>
+    <div style="display:flex;gap:7px;justify-content:center;margin-top:10px;" id="breathBtns">
+      <button class="btn bp" onclick="iniciarRespiracio()">Comencem</button>
+    </div>
+    <div class="sep"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--fondo);border-radius:11px;padding:9px 13px;">
+      <div style="font-size:11.5px;color:var(--gris);">Sessions avui <span style="font-size:9.5px;">(obj: 8/dia)</span></div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--verde);"><span id="n-resp">0</span><span style="font-size:12px;opacity:.6;">/8</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C · CONTINUÏTAT -->
+  <div class="sec-hdr" style="background:var(--oroLt);">
+    <span class="sec-badge" style="background:var(--oro);color:#fff;">C · CONTINUÏTAT</span>
+    <div><div class="sec-title" style="color:#7a5a1a;">Manteniment del patró al llarg del temps</div></div>
+  </div>
+
+  <!-- Herr. 6: Rutina -->
+  <div class="card" id="herr6">
+    <div class="ctit" style="color:#7a5a1a;">🔁 Herr. 6 · Rutina de presència interna</div>
+    <div class="qtrab"><span class="qp"><span class="pbadge pC">Continuïtat</span></span><span>Repetir la pràctica en moments fixos del dia: la constància és el que manté el patró viu en el temps.</span></div>
+    <div style="font-size:12px;color:var(--gris);margin-bottom:11px;line-height:1.5;">Tres moments fixos: parada + respiració cap a la panxa + reorientació conscient.</div>
+    <div id="rutinaGuided" style="display:none" class="guided-ov" style="background:var(--oro);">
+      <div class="guided-big" id="rutinaTitle">Moment de matí</div>
+      <div class="guided-desc">Para un moment.<br>Porta l'atenció a la panxa — una respiració.<br>Pregunta't: <em>"Com estic ara mateix?"</em><br><br>Nota la resposta sense jutjar-la.</div>
+      <button class="btn" style="background:#fff;color:var(--azul);padding:9px 20px;font-size:13px;" onclick="confirmarRutina()">He fet la parada ✓</button>
+    </div>
+    <div id="rutinaGrid">
+      <div class="rutina-grid">
+        <button class="rutina-btn" id="rut-mati" onclick="prepRutina('mati','🌅','Moment de matí')">
+          <span class="rutina-icon">🌅</span>
+          <div class="rutina-name">Matí</div>
+          <div class="rutina-n" id="rut-n-mati">pendent</div>
+        </button>
+        <button class="rutina-btn" id="rut-tarda" onclick="prepRutina('tarda','☀️','Moment de tarda')">
+          <span class="rutina-icon">☀️</span>
+          <div class="rutina-name">Tarda</div>
+          <div class="rutina-n" id="rut-n-tarda">pendent</div>
+        </button>
+        <button class="rutina-btn" id="rut-nit" onclick="prepRutina('nit','🌙','Moment de nit')">
+          <span class="rutina-icon">🌙</span>
+          <div class="rutina-name">Nit</div>
+          <div class="rutina-n" id="rut-n-nit">pendent</div>
+        </button>
+      </div>
+      <div style="text-align:center;"><span class="badge bv" id="rutinaTotal">0 de 3 completats</span></div>
+    </div>
+  </div>
+
+</div><!-- /tab-eines -->
+
+<!-- ===== TAB PARELLA ===== -->
+<div id="tab-parella" style="display:none">
+
+  <div class="card">
+    <div class="ctit">Vincles i compromisos conscients</div>
+    <div style="background:var(--lilaLt);border-left:4px solid var(--lila);border-radius:0 11px 11px 0;padding:11px 13px;font-size:12px;color:var(--lila);line-height:1.65;margin-bottom:13px;">
+      L'objectiu no és evitar el contacte — és <strong>triar-lo conscientment</strong>. Cada trobada o moment acordat substitueix l'impuls per la intenció. L'espai entre contactes és el terreny de pràctica de la regulació interna.
+    </div>
+    <div style="text-align:center;">
+      <button class="btn bp" onclick="afegirVincle()">+ Afegir vincle o activitat</button>
+    </div>
+  </div>
+
+  <div id="vinclesList"></div>
+
+  <!-- TEMPLATE (hidden, cloned by JS) -->
+  <div id="vincleTpl" style="display:none">
+    <div class="card vincle-card" data-id="">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="vincle-icon-display" style="font-size:22px;"></span>
+          <div>
+            <div class="vincle-nom-display" style="font-size:13px;font-weight:700;color:#1a1a2e;"></div>
+            <div class="vincle-tipus-display" style="font-size:10px;color:var(--gris);"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn bs bsm vincle-edit-btn" onclick="editarVincle(this)">Editar</button>
+          <button class="btn" style="background:#FDECEA;color:#C0392B;border:2px solid #C0392B;border-radius:30px;padding:7px 13px;font-size:12px;font-weight:600;" onclick="eliminarVincle(this)">✕</button>
+        </div>
+      </div>
+      <!-- Edit form (hidden by default) -->
+      <div class="vincle-form" style="display:none;">
+        <div style="font-size:11px;font-weight:600;color:var(--gris);margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Tipus de vincle</div>
+        <div class="vincle-tipus-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;"></div>
+        <div style="font-size:11px;font-weight:600;color:var(--gris);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px;">Nom o descripció</div>
+        <input type="text" class="vincle-nom-input nota-input" style="min-height:auto;padding:8px 11px;margin-bottom:12px;" placeholder="Ex: La Maria, Instagram, El meu pare...">
+        <div class="vincle-trobada-section">
+          <div style="font-size:11px;font-weight:600;color:var(--azul);margin-bottom:6px;">📅 Trobada / moment acordat</div>
+          <div class="vrow">
+            <select class="vsel vincle-dia1"><option value="">Dia...</option><option>Dilluns</option><option>Dimarts</option><option>Dimecres</option><option>Dijous</option><option>Divendres</option><option>Dissabte</option><option>Diumenge</option></select>
+            <span style="font-size:11px;color:var(--gris);flex-shrink:0;">a les</span>
+            <input type="time" class="vtime vincle-hora1" value="19:00">
+          </div>
+        </div>
+        <div class="vincle-finestres-section" style="margin-top:10px;">
+          <div style="font-size:11px;font-weight:600;color:var(--azul);margin-bottom:6px;">📱 Finestres de contacte (opcional)</div>
+          <div style="font-size:11px;color:var(--gris);margin-bottom:7px;">Fora d'aquests moments, l'espai és cura, no fredor.</div>
+          <div class="vrow"><select class="vsel vincle-wa1d"><option value="">Dia 1...</option><option>Dilluns</option><option>Dimarts</option><option>Dimecres</option><option>Dijous</option><option>Divendres</option><option>Dissabte</option><option>Diumenge</option></select><input type="time" class="vtime vincle-wa1h" value="20:00"></div>
+          <div class="vrow"><select class="vsel vincle-wa2d"><option value="">Dia 2...</option><option>Dilluns</option><option>Dimarts</option><option>Dimecres</option><option>Dijous</option><option>Divendres</option><option>Dissabte</option><option>Diumenge</option></select><input type="time" class="vtime vincle-wa2h" value="20:00"></div>
+        </div>
+        <div style="text-align:center;margin-top:12px;">
+          <button class="btn bpg vincle-save-btn" onclick="desarVincle(this)">Desar ✓</button>
+        </div>
+      </div>
+      <!-- Summary (shown when saved) -->
+      <div class="vincle-summary" style="display:none;background:var(--oroLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:10px 13px;font-size:12px;color:#7a5a1a;line-height:1.65;white-space:pre-line;"></div>
+      <!-- Reminder -->
+      <div class="vincle-reminder" style="margin-top:10px;display:none;">
+        <div style="background:var(--lilaLt);border-radius:11px;padding:10px 12px;font-size:11.5px;color:var(--lila);line-height:1.6;">L'impuls de contactar ara és real. Pots respirar, aguantar la sensació, i confiar que el moment acordat ja arribarà. <strong>Quan arribi, seràs tu qui decideix.</strong></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== TAB TEC ===== -->
+<div id="tab-tec" style="display:none">
+  <div class="card">
+    <div class="ctit">Paràmetres TEC · s'actualitzen sols</div>
+    <div class="aviso">Les estrelles es calculen automàticament a partir del que registres a Eines. No has d'escriure res dues vegades.</div>
+    <div class="tec-stars-grid" id="tecStarsGrid">
+      <div class="tec-star-card" style="background:var(--azulLt);">
+        <span class="tsc-badge" style="background:var(--azul);color:#fff;">L</span>
+        <div class="tsc-name" style="color:var(--azul);">Latència</div>
+        <div class="tsc-stars" id="stars-l">☆☆☆☆☆</div>
+        <div class="tsc-sub" style="color:var(--azul);">Herr. 1 + 5</div>
+      </div>
+      <div class="tec-star-card" style="background:var(--verdeLt);">
+        <span class="tsc-badge" style="background:var(--verde);color:#fff;">D</span>
+        <div class="tsc-name" style="color:var(--verde);">Densitat</div>
+        <div class="tsc-stars" id="stars-d">☆☆☆☆☆</div>
+        <div class="tsc-sub" style="color:var(--verde);">Herr. 2·3·4</div>
+      </div>
+      <div class="tec-star-card" style="background:var(--oroLt);">
+        <span class="tsc-badge" style="background:var(--oro);color:#fff;">C</span>
+        <div class="tsc-name" style="color:#7a5a1a;">Continuïtat</div>
+        <div class="tsc-stars" id="stars-c">☆☆☆☆☆</div>
+        <div class="tsc-sub" style="color:#7a5a1a;">Herr. 6</div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div style="font-size:11px;color:var(--gris);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Resum comptadors</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;" id="tecResum"></div>
+    <div class="sep"></div>
+    <div style="font-size:11.5px;color:var(--gris);font-weight:600;margin-bottom:6px;">Moment del dia que em porto</div>
+    <textarea class="nota-input" id="notaHoy" placeholder="Quina ha estat la parada o la respiració més important d'avui?"></textarea>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div class="ctit">Guardar i enviar</div>
+    <div class="aviso">Guarda el registre d'avui en aquest dispositiu i envia-li'l al teu psicòleg/a.</div>
+    <button class="btn bp" onclick="guardarDia()" style="margin-bottom:11px;">💾 Guardar dia</button>
+    <div id="guardarMsg" style="font-size:11.5px;color:var(--verde);display:none;margin-bottom:8px;">✓ Dia guardat correctament</div>
+  </div>
+</div>
+
+<!-- ===== TAB HISTORIAL ===== -->
+<div id="tab-historial" style="display:none">
+  <div class="card">
+    <div class="ctit">Evolució L · D · C</div>
+    <div style="position:relative;height:180px;margin-bottom:8px;"><canvas id="chartHist"></canvas></div>
+    <div style="display:flex;justify-content:center;gap:14px;font-size:11px;">
+      <span style="color:var(--azul);">● Latència</span>
+      <span style="color:var(--verde);">● Densitat</span>
+      <span style="color:var(--oro);">● Continuïtat</span>
+    </div>
+  </div>
+  <!-- ESTADI D'AFERRAMENT -->
+  <div class="card" id="estadiCard">
+    <div class="ctit">Estadi d'aferrament intern</div>
+    <div id="estadiContent"></div>
+  </div>
+
+  <!-- GRÀFIC RATIO PROACTIU/REACTIU -->
+  <div class="card">
+    <div class="ctit">Quocient proactiu 🟢 / reactiu 🔴 · Herr. 3</div>
+    <div style="font-size:11px;color:var(--gris);margin-bottom:9px;line-height:1.5;">L'indicador clau de la transició: quan 🟢 > 🔴 de manera consistent, el cos ja s'acompanya sense necessitat.</div>
+    <div style="position:relative;height:140px;margin-bottom:6px;"><canvas id="chartRatio"></canvas></div>
+    <div style="display:flex;justify-content:center;gap:14px;font-size:11px;">
+      <span style="color:var(--verde);">● Proactiu (panxa)</span>
+      <span style="color:#C0392B;">● Reactiu (pit)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Promedis del període</div>
+    <div id="promedis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+  </div>
+  <div class="card">
+    <div class="ctit">Registres guardats</div>
+    <div id="histList"><div style="font-size:12px;color:var(--gris);font-style:italic;">Encara no hi ha registres. Completa el dia i prem "Guardar dia".</div></div>
+  </div>
+  <div class="card">
+    <div class="ctit">Exportar / Importar</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+      <button class="btn bp" onclick="exportarJSON()">⬇ Exportar JSON</button>
+      <button class="btn bs" onclick="document.getElementById('importInput').click()">⬆ Importar JSON</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="importarJSON(this)">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:4px;">
+      <input id="aprensCodIn" placeholder="Codi pacient (ex. MARTI-01)" style="padding:7px 9px;border:1px solid #ccc;border-radius:8px;font-size:12px;">
+      <button class="btn bp" onclick="aprensExport()">📤 Exportar al Panel</button>
+    </div>
+    <div style="text-align:center;"><button class="btn" style="background:#FDECEA;color:#C0392B;border:2px solid #C0392B;border-radius:30px;padding:8px 16px;font-size:12px;font-weight:600;" onclick="if(confirm('Esborrar tots els registres?'))esborrarTot()">🗑 Esborrar tot</button></div>
+  </div>
+</div>
+
+<!-- SEND BLOCK -->
+<div class="card">
+  <div class="ctit">Enviar al teu psicòleg</div>
+  <div class="aviso">No guarda res a la sessió. Copia el text o obre'l al WhatsApp.</div>
+  <div class="cbox" id="msgBox"></div>
+  <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 Quan enviar-m'ho?</b> No cal cada cop: ajunta el del dia i envia'm <b>un únic resum al final del dia</b>.</div>
+  <div class="acc">
+    <a class="btn bwa" href="#" onclick="obrirWA(event)">📱 WhatsApp</a>
+    <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+const DIES=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
+const DIES_FULL=['Dilluns','Dimarts','Dimecres','Dijous','Divendres','Dissabte','Diumenge'];
+let diaActiu=new Date().getDay();diaActiu=diaActiu===0?6:diaActiu-1;
+
+const d0=()=>({
+  pSess:0,pAsert:0,pCalitat:{},
+  rituals:0,ritPresent:null,
+  ab:{fills:0,pares:0,familia:0},abLog:[],
+  honLog:[],
+  resp:0,rSess:0,
+  rutina:{mati:false,tarda:false,nit:false},
+  nota:''
+});
+const dades={};DIES.forEach((_,i)=>dades[i]=d0());
+
+let chart=null;
+
+// === STARS AUTO ===
+function calcStars(dd){
+  const l=Math.min(5,dd.pSess+Math.floor(dd.rituals/2));
+  const abT=(dd.ab.fills+dd.ab.pares+dd.ab.familia);
+  const d=Math.min(5,Math.round((dd.resp*0.7+abT*0.8+dd.honLog.length*0.5)));
+  const rT=[dd.rutina.mati,dd.rutina.tarda,dd.rutina.nit].filter(Boolean).length;
+  const c=[0,2,3,5][rT];
+  return{l,d,c};
+}
+function renderStars(n){return'★'.repeat(n)+'☆'.repeat(5-n);}
+function updateStars(){
+  const dd=dades[diaActiu];
+  const s=calcStars(dd);
+  document.getElementById('stars-l').innerText=renderStars(s.l);
+  document.getElementById('stars-d').innerText=renderStars(s.d);
+  document.getElementById('stars-c').innerText=renderStars(s.c);
+  renderMiniStars(s);
+  renderTecResum(dd);
+  generarMissatge();
+}
+function renderMiniStars(s){
+  const el=document.getElementById('miniStars');
+  el.innerHTML=[
+    ['L',s.l,'var(--azulLt)','var(--azul)'],
+    ['D',s.d,'var(--verdeLt)','var(--verde)'],
+    ['C',s.c,'var(--oroLt)','#7a5a1a']
+  ].map(([n,v,bg,col])=>
+    `<div style="background:${bg};border-radius:10px;padding:5px 10px;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:${col};">${n}</div>
+      <div style="font-size:13px;color:${col};">${renderStars(v)}</div>
+    </div>`
+  ).join('');
+}
+
+// === DAYS ===
+function renderDies(){
+  const g=document.getElementById('diesGrid');g.innerHTML='';
+  DIES.forEach((d,i)=>{
+    const b=document.createElement('div');b.className='dia-btn'+(i===diaActiu?' actiu':'');
+    b.innerHTML='<span class="dia-lab">'+d+'</span>';
+    b.onclick=()=>{saveDayCurrent();diaActiu=i;loadDayCurrent();renderDies();};
+    g.appendChild(b);
+  });
+}
+function saveDayCurrent(){
+  const dd=dades[diaActiu];
+  dd.nota=document.getElementById('notaHoy').value;
+}
+function loadDayCurrent(){
+  const dd=dades[diaActiu];
+  document.getElementById('notaHoy').value=dd.nota;
+  document.getElementById('n-resp').innerText=dd.resp;
+  document.getElementById('n-rituals').innerText=dd.rituals;
+  document.getElementById('paraCount').innerText=dd.pSess+' vegades';
+  document.getElementById('paraTotalSess').innerText=dd.pSess;
+  document.getElementById('paraAsertNum').innerText=dd.pAsert;
+  if(dd.pSess>0){document.getElementById('paraAsertRow').style.display='flex';document.getElementById('paraSepAsert').style.display='block';}
+  document.getElementById('prit').style.width=Math.min(dd.rituals*20,100)+'%';
+  const ids={fills:'nabf',pares:'nabp',familia:'nabfa'};
+  Object.keys(ids).forEach(k=>document.getElementById(ids[k]).innerText=dd.ab[k]+' avui');
+  renderAbracLog();renderHonLog();
+  ['mati','tarda','nit'].forEach(m=>{
+    document.getElementById('rut-'+m).className='rutina-btn'+(dd.rutina[m]?' fet':'');
+    document.getElementById('rut-n-'+m).innerText=dd.rutina[m]?'✓ fet':'pendent';
+  });
+  const rT=[dd.rutina.mati,dd.rutina.tarda,dd.rutina.nit].filter(Boolean).length;
+  document.getElementById('rutinaTotal').innerText=rT+' de 3 completats';
+  if(dd.rSess>0)document.getElementById('breathSess').innerText='✓ '+dd.rSess+' sessions avui';
+  updateStars();renderAvuiResum();
+}
+
+// === COUNTERS ===
+function cambiar(key,delta){
+  saveDayCurrent();
+  dades[diaActiu][key]=Math.max(0,(dades[diaActiu][key]||0)+delta);
+  loadDayCurrent();
+}
+
+// === PARA ===
+const PSTEPS=[
+  {col:'var(--azul)',bg:'var(--azulLt)',n:'Pas 1 de 4',t:'PARA',d:'He notat que estic en bucle. Paro. No necessito solucionar res ara. Simplement, paro.'},
+  {col:'var(--verde)',bg:'var(--verdeLt)',n:'Pas 2 de 4',t:'RESPIRO',d:'Quatre respiracions des de la panxa. Lent. Deixo que el cos sàpiga que no hi ha perill.'},
+  {col:'var(--oro)',bg:'var(--oroLt)',n:'Pas 3 de 4',t:'PRESÈNCIA',d:'El que sento és normal. L\'ansietat és una senyal, no un problema. Em tracto com tractaria un amic que pateix.'},
+  {col:'var(--lila)',bg:'var(--lilaLt)',n:'Pas 4 de 4',t:'ACTUO',d:'Ara torno al que tocava fer. No amb força. Amb intenció. Quin era el meu proper pas d\'avui?'},
+];
+let pStep=null;
+function renderPara(){
+  const cont=document.getElementById('paraSteps');cont.innerHTML='';
+  PSTEPS.forEach((s,i)=>{
+    const div=document.createElement('div');div.className='step-card';
+    const active=pStep!==null&&i===pStep,done=pStep!==null&&i<pStep,show=(pStep===null&&i===0)||active;
+    div.style.cssText='border-color:'+s.col+';background:'+(done||active?s.bg:'#F9F9F9')+';opacity:'+(active||done?1:0.3)+';';
+    div.innerHTML='<div class="step-n" style="color:'+s.col+'">'+(done?'✓ ':'')+s.n+'</div><div class="step-t" style="color:'+s.col+';'+(done?'text-decoration:line-through;':'')+'">' +s.t+'</div>'+(show?'<div class="step-d">'+s.d+'</div>':'');
+    cont.appendChild(div);
+  });
+  document.getElementById('paraBtn').innerText=pStep===null?'Iniciar':(pStep<3?'Següent →':'Completar ✓');
+  document.getElementById('paraAccions').style.display='flex';
+  document.getElementById('paraResult').style.display='none';
+}
+function paraNext(){
+  if(pStep===null){pStep=0;}
+  else if(pStep<3){pStep++;}
+  else{
+    pStep=null;
+    dades[diaActiu].pSess++;
+    document.getElementById('paraCount').innerText=dades[diaActiu].pSess+' vegades';
+    document.getElementById('paraTotalSess').innerText=dades[diaActiu].pSess;
+    document.getElementById('paraAsertRow').style.display='flex';
+    document.getElementById('paraSepAsert').style.display='block';
+    document.getElementById('paraSteps').innerHTML='';
+    document.getElementById('paraAccions').style.display='none';
+    document.getElementById('paraResult').style.display='block';
+    // reset quality buttons
+    document.querySelectorAll('.q-btn').forEach(b=>{b.className='q-btn';});
+    updateStars();return;
+  }
+  renderPara();
+}
+function setQ(v){
+  document.querySelectorAll('.q-btn').forEach(b=>{b.className='q-btn';});
+  event.target.className='q-btn sel-'+v;
+  if(v==='si'){dades[diaActiu].pAsert++;document.getElementById('paraAsertNum').innerText=dades[diaActiu].pAsert;}
+  updateStars();
+}
+function resetPara(){pStep=null;renderPara();document.getElementById('paraAccions').style.display='flex';document.getElementById('paraResult').style.display='none';}
+
+// === RITUALS ===
+function setRitualPresent(v){
+  dades[diaActiu].ritPresent=v;
+  document.getElementById('ritPres-si').className='q-btn'+(v==='si'?' sel-si':'');
+  document.getElementById('ritPres-no').className='q-btn'+(v==='no'?' sel-no':'');
+}
+
+// === BREATHING ===
+let bInt=null,bPhN=0,bTim=0,bCyc=0,bRun=false;
+const BPHAS=[{txt:'Inspira...',sec:4,sc:1.32,bg:'#D6E4F0'},{txt:'Reté...',sec:2,sc:1.32,bg:'#D4EDDA'},{txt:'Expira...',sec:6,sc:1.0,bg:'#F7F4EF'},{txt:'Pausa...',sec:2,sc:1.0,bg:'#F0F4F8'}];
+function iniciarRespiracio(){
+  if(bRun){pararRespiracio();return;}
+  bRun=true;bPhN=0;bTim=0;bCyc=0;
+  document.getElementById('breathBtns').innerHTML='<button class="btn bs" onclick="iniciarRespiracio()">Parar</button>';
+  document.getElementById('breathSec').style.display='block';
+  tickB();bInt=setInterval(tickB,1000);
+}
+function tickB(){
+  const ph=BPHAS[bPhN];
+  document.getElementById('breathPhase').innerText=ph.txt;
+  document.getElementById('breathSec').innerText=ph.sec-bTim;
+  document.getElementById('breathSub').innerText='Cicle '+(bCyc+1)+' · 4-2-6-2 · sense pressa';
+  const r=document.getElementById('breathRing');
+  r.style.transform='scale('+ph.sc+')';r.style.background='radial-gradient(circle,'+ph.bg+' 0%,#fff 100%)';
+  bTim++;if(bTim>=ph.sec){bTim=0;bPhN++;if(bPhN>=4){bPhN=0;bCyc++;}}
+  if(bCyc>=4){
+    pararRespiracio();dades[diaActiu].rSess++;dades[diaActiu].resp++;
+    document.getElementById('n-resp').innerText=dades[diaActiu].resp;
+    document.getElementById('breathSess').innerText='✓ '+dades[diaActiu].rSess+' sessions avui';
+    updateStars();
+  }
+}
+function pararRespiracio(){
+  clearInterval(bInt);bRun=false;
+  document.getElementById('breathRing').style.transform='scale(1)';
+  document.getElementById('breathPhase').innerText='Molt bé 👌';
+  document.getElementById('breathSec').style.display='none';
+  document.getElementById('breathSub').innerText='Com t\'has sentit per dins?';
+  document.getElementById('breathBtns').innerHTML='<button class="btn bp" onclick="iniciarRespiracio()">Tornar a explorar</button>';
+}
+
+// === ABRAÇOS ===
+let abPend=null;
+function prepAbrac(t,i,p){abPend=t;document.getElementById('abracTitle').innerText='Abraç '+p+' '+i;document.getElementById('abracGuided').style.display='block';}
+function confirmarAbrac(){
+  if(!abPend)return;
+  dades[diaActiu].ab[abPend]++;
+  const ara=new Date(),h=ara.getHours().toString().padStart(2,'0')+':'+ara.getMinutes().toString().padStart(2,'0');
+  const nms={fills:'Fills 👨‍👧‍👦',pares:'Pares 👴👵',familia:'Família ❤️'};
+  dades[diaActiu].abLog.push({t:nms[abPend],h});
+  const ids={fills:'nabf',pares:'nabp',familia:'nabfa'};
+  document.getElementById(ids[abPend]).innerText=dades[diaActiu].ab[abPend]+' avui';
+  abPend=null;document.getElementById('abracGuided').style.display='none';
+  renderAbracLog();updateStars();
+}
+function renderAbracLog(){
+  const el=document.getElementById('abracLog'),dd=dades[diaActiu];
+  if(!dd.abLog||!dd.abLog.length){el.innerHTML='<div style="font-size:11.5px;color:var(--gris);font-style:italic;">Encara no n\'has registrat cap.</div>';return;}
+  el.innerHTML=dd.abLog.map(a=>'<div class="log-item"><span style="font-weight:600;">'+a.t+'</span><span>'+a.h+'</span></div>').join('');
+}
+
+// === HONESTITAT ===
+let honRelActual='';
+function selHonRel(btn,rel){
+  document.querySelectorAll('.hon-rel-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');honRelActual=rel;
+}
+function registrarHon(lloc){
+  const ara=new Date(),h=ara.getHours().toString().padStart(2,'0')+':'+ara.getMinutes().toString().padStart(2,'0');
+  dades[diaActiu].honLog.push({lloc,h,rel:honRelActual||'—'});
+  renderHonLog();updateStars();
+}
+function renderHonLog(){
+  const el=document.getElementById('honLog'),dd=dades[diaActiu];
+  if(!dd.honLog||!dd.honLog.length){el.innerHTML='<div style="font-size:11.5px;color:var(--gris);font-style:italic;">Selecciona el vincle i prem el botó quan facis una comprovació.</div>';return;}
+  el.innerHTML=dd.honLog.map(a=>{
+    const icon=a.lloc==='panxa'?'🟢':'🔴';
+    const mode=a.lloc==='panxa'?'Proactiu':'Reactiu';
+    const col=a.lloc==='panxa'?'var(--verde)':'#C0392B';
+    return '<div class="log-item"><span style="color:'+col+';font-weight:600;">'+icon+' '+mode+'</span><span style="color:var(--gris);">'+a.rel+'</span><span>'+a.h+'</span></div>';
+  }).join('');
+}
+
+// === RUTINA ===
+let rutinaPend=null;
+function prepRutina(m,i,t){
+  if(dades[diaActiu].rutina[m])return;
+  rutinaPend=m;
+  document.getElementById('rutinaTitle').innerText=t+' '+i;
+  document.getElementById('rutinaGuided').style.display='block';
+  document.getElementById('rutinaGrid').style.opacity='.4';
+}
+function confirmarRutina(){
+  if(!rutinaPend)return;
+  dades[diaActiu].rutina[rutinaPend]=true;
+  const m=rutinaPend;rutinaPend=null;
+  document.getElementById('rutinaGuided').style.display='none';
+  document.getElementById('rutinaGrid').style.opacity='1';
+  document.getElementById('rut-'+m).className='rutina-btn fet';
+  document.getElementById('rut-n-'+m).innerText='✓ fet';
+  const rT=[dades[diaActiu].rutina.mati,dades[diaActiu].rutina.tarda,dades[diaActiu].rutina.nit].filter(Boolean).length;
+  document.getElementById('rutinaTotal').innerText=rT+' de 3 completats';
+  updateStars();
+}
+
+// === VINCLES ===
+var vincles=[];
+var vincleIdSeq=1;
+var TIPUS=[
+  {id:'parella',icon:'\u{1F491}',nom:'Parella'},
+  {id:'amic',icon:'\u{1F46B}',nom:'Amic/a'},
+  {id:'pare',icon:'\u{1F468}',nom:'Pare'},
+  {id:'mare',icon:'\u{1F469}',nom:'Mare'},
+  {id:'fill',icon:'\u{1F9D2}',nom:'Fill/a'},
+  {id:'activitat',icon:'\u{1F4F1}',nom:'Activitat'},
+  {id:'altre',icon:'\u{1F517}',nom:'Altre'},
+];
+
+function afegirVincle(){
+  var tpl=document.getElementById('vincleTpl').children[0].cloneNode(true);
+  var id='v'+vincleIdSeq++;
+  tpl.setAttribute('data-id',id);
+  var grid=tpl.querySelector('.vincle-tipus-grid');
+  TIPUS.forEach(function(t){
+    var b=document.createElement('button');
+    b.className='vincle-tipus-btn';
+    b.setAttribute('data-tipus',t.id);
+    b.innerHTML=t.icon+'<br><span style="font-size:9.5px;">'+t.nom+'</span>';
+    b.onclick=function(){
+      tpl.querySelectorAll('.vincle-tipus-btn').forEach(function(x){x.classList.remove('sel');});
+      b.classList.add('sel');
+      var fi=tpl.querySelector('.vincle-finestres-section');
+      if(t.id==='activitat'){
+        fi.querySelector('div').innerText='Franges d\'us permes (opcional)';
+      } else {
+        fi.querySelector('div').innerText='Finestres de contacte (opcional)';
+      }
+    };
+    grid.appendChild(b);
+  });
+  tpl.querySelector('.vincle-form').style.display='block';
+  tpl.querySelector('.vincle-icon-display').innerText='\u{1F517}';
+  tpl.querySelector('.vincle-nom-display').innerText='Nou vincle';
+  tpl.querySelector('.vincle-tipus-display').innerText='Selecciona el tipus';
+  document.getElementById('vinclesList').appendChild(tpl);
+  vincles.push({id:id,tipus:'',icon:'\u{1F517}',nom:'',dia:'',hora:'19:00',w1d:'',w1h:'20:00',w2d:'',w2h:''});
+}
+
+function editarVincle(btn){
+  var card=btn.closest('.vincle-card');
+  var form=card.querySelector('.vincle-form');
+  var sum=card.querySelector('.vincle-summary');
+  var open=form.style.display==='none';
+  form.style.display=open?'block':'none';
+  sum.style.display=(open||sum.innerText.trim()==='')?' none':'block';
+  btn.innerText=open?'Tancar':'Editar';
+}
+
+function eliminarVincle(btn){
+  var card=btn.closest('.vincle-card');
+  var id=card.getAttribute('data-id');
+  vincles=vincles.filter(function(v){return v.id!==id;});
+  card.remove();
+  generarMissatge();
+}
+
+function desarVincle(btn){
+  var card=btn.closest('.vincle-card');
+  var id=card.getAttribute('data-id');
+  var tipusSel=card.querySelector('.vincle-tipus-btn.sel');
+  var tipusId=tipusSel?tipusSel.getAttribute('data-tipus'):'altre';
+  var tipusObj=TIPUS.find(function(t){return t.id===tipusId;})||TIPUS[TIPUS.length-1];
+  var nom=card.querySelector('.vincle-nom-input').value||tipusObj.nom;
+  var dia=card.querySelector('.vincle-dia1').value;
+  var hora=card.querySelector('.vincle-hora1').value;
+  var w1d=card.querySelector('.vincle-wa1d').value;
+  var w1h=card.querySelector('.vincle-wa1h').value;
+  var w2d=card.querySelector('.vincle-wa2d').value;
+  var w2h=card.querySelector('.vincle-wa2h').value;
+  card.querySelector('.vincle-icon-display').innerText=tipusObj.icon;
+  card.querySelector('.vincle-nom-display').innerText=nom;
+  card.querySelector('.vincle-tipus-display').innerText=tipusObj.nom;
+  var txt='';
+  if(dia)txt+='\u{1F4C5} Trobada: '+dia+' a les '+hora+'h\n';
+  if(w1d)txt+='\u{1F4F1} Contacte 1: '+w1d+' '+w1h+'h\n';
+  if(w2d)txt+='\u{1F4F1} Contacte 2: '+w2d+' '+w2h+'h\n';
+  if(txt)txt+='\n\u2713 Fora d\'aquests moments, l\'espai es cura, no fredor.';
+  var sum=card.querySelector('.vincle-summary');
+  sum.innerText=txt||'Sense estructura definida.';
+  sum.style.display='block';
+  card.querySelector('.vincle-reminder').style.display='block';
+  card.querySelector('.vincle-form').style.display='none';
+  card.querySelector('.vincle-edit-btn').innerText='Editar';
+  var idx=vincles.findIndex(function(v){return v.id===id;});
+  if(idx>=0) vincles[idx]={id:id,tipus:tipusId,icon:tipusObj.icon,nom:nom,dia:dia,hora:hora,w1d:w1d,w1h:w1h,w2d:w2d,w2h:w2h};
+  generarMissatge();
+}
+
+// === TEC RESUM ===
+function renderTecResum(dd){
+  const abT=dd.ab.fills+dd.ab.pares+dd.ab.familia;
+  const rT=[dd.rutina.mati,dd.rutina.tarda,dd.rutina.nit].filter(Boolean).length;
+  const items=[
+    ['✋','Parades',dd.pSess,'→ '+dd.pAsert+' asertives'],
+    ['🌬','Respiracions',dd.resp,'/8 diàries'],
+    ['🤗','Abraços',abT,'fills+pares+família'],
+    ['🫀','Comprovacions',dd.honLog.length,'barriga/pit'],
+    ['🚪','Rituals',dd.rituals,'d\'entrada'],
+    ['🔁','Rutina',rT+'/3','moments completats'],
+  ];
+  document.getElementById('tecResum').innerHTML=items.map(([ic,nm,v,sub])=>
+    `<div style="background:var(--fondo);border-radius:11px;padding:10px 11px;">
+      <div style="font-size:10px;color:var(--gris);">${ic} ${nm}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--azul);">${v}</div>
+      <div style="font-size:10px;color:var(--gris);">${sub}</div>
+    </div>`
+  ).join('');
+}
+
+// === AVUI RESUM ===
+function renderAvuiResum(){
+  const dd=dades[diaActiu];
+  const s=calcStars(dd);
+  const abT=dd.ab.fills+dd.ab.pares+dd.ab.familia;
+  document.getElementById('avuiResumCont').innerHTML=
+    `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;">
+      <div style="background:var(--azulLt);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:9px;font-weight:700;color:var(--azul);">PARADES</div><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--azul);">${dd.pSess}</div></div>
+      <div style="background:var(--verdeLt);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:9px;font-weight:700;color:var(--verde);">RESP.</div><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--verde);">${dd.resp}</div></div>
+      <div style="background:var(--oroLt);border-radius:11px;padding:9px;text-align:center;"><div style="font-size:9px;font-weight:700;color:#7a5a1a;">VINCLE</div><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#7a5a1a;">${abT+dd.honLog.length}</div></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--gris);">Ves a <strong>Eines</strong> per registrar cada eina AIS ↗</div>`;
+}
+
+// === GUARDAR DIA (localStorage) ===
+function guardarDia(){
+  saveDayCurrent();
+  const dd=dades[diaActiu];
+  const s=calcStars(dd);
+  const avui=new Date();
+  const date=avui.getFullYear()+'-'+(avui.getMonth()+1).toString().padStart(2,'0')+'-'+avui.getDate().toString().padStart(2,'0');
+  const abT=dd.ab.fills+dd.ab.pares+dd.ab.familia;
+  const rT=[dd.rutina.mati,dd.rutina.tarda,dd.rutina.nit].filter(Boolean).length;
+  const honP=dd.honLog.filter(h=>h.lloc==='panxa').length;
+  const honR=dd.honLog.filter(h=>h.lloc==='pit').length;
+  const rec={date,l:s.l,d:s.d,c:s.c,para:dd.pSess,resp:dd.resp,ab:abT,rutina:rT,nota:dd.nota,honP,honR};
+  let hist=[];
+  try{hist=JSON.parse(localStorage.getItem('aprens_ais_hist')||'[]');}catch(e){}
+  const idx=hist.findIndex(r=>r.date===date);
+  if(idx>=0)hist[idx]=rec;else hist.push(rec);
+  hist.sort((a,b)=>a.date.localeCompare(b.date));
+  localStorage.setItem('aprens_ais_hist',JSON.stringify(hist));
+  document.getElementById('guardarMsg').style.display='block';
+  setTimeout(()=>document.getElementById('guardarMsg').style.display='none',2500);
+  renderHistorial();
+}
+
+// === HISTORIAL ===
+function getHist(){try{return JSON.parse(localStorage.getItem('aprens_ais_hist')||'[]');}catch(e){return[];}}
+function renderHistorial(){
+  const hist=getHist();
+  const el=document.getElementById('histList');
+  if(!hist.length){el.innerHTML='<div style="font-size:12px;color:var(--gris);font-style:italic;">Encara no hi ha registres.</div>';renderChart([]);renderPromedis([]);return;}
+  el.innerHTML=hist.slice().reverse().map(r=>{
+    const tot=r.honP+(r.honR||0);
+    const ratio=tot>0?r.honP/tot:null;
+    const ratioTxt=ratio!==null?Math.round(ratio*100)+'% 🟢':'—';
+    return `<div class="hist-item">
+      <div class="hist-date">${r.date}</div>
+      <div class="hist-stars">
+        <span style="color:var(--azul);">${renderStars(r.l)}</span>
+        <span style="color:var(--verde);">${renderStars(r.d)}</span>
+        <span style="color:var(--oro);">${renderStars(r.c)}</span>
+      </div>
+      <div style="font-size:10px;color:var(--verde);font-weight:600;min-width:42px;">${ratioTxt}</div>
+      <div class="hist-nota">${r.nota||'—'}</div>
+    </div>`;
+  }).join('');
+  renderChart(hist);renderPromedis(hist);renderEstadi(hist);renderChartRatio(hist);
+}
+function renderChart(hist){
+  const ctx=document.getElementById('chartHist').getContext('2d');
+  if(chart){chart.destroy();chart=null;}
+  if(!hist.length)return;
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:hist.map(r=>r.date.slice(5)),
+      datasets:[
+        {label:'Latència',data:hist.map(r=>r.l),borderColor:'#1B4F8C',backgroundColor:'rgba(27,79,140,.1)',tension:.4,pointRadius:3},
+        {label:'Densitat',data:hist.map(r=>r.d),borderColor:'#2E7D5E',backgroundColor:'rgba(46,125,94,.1)',tension:.4,pointRadius:3},
+        {label:'Continuïtat',data:hist.map(r=>r.c),borderColor:'#C8973A',backgroundColor:'rgba(200,151,58,.1)',tension:.4,pointRadius:3},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:5,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}},plugins:{legend:{display:false}}}
+  });
+}
+function renderPromedis(hist){
+  const el=document.getElementById('promedis');
+  if(!hist.length){el.innerHTML='';return;}
+  const avgL=(hist.reduce((s,r)=>s+r.l,0)/hist.length).toFixed(1);
+  const avgD=(hist.reduce((s,r)=>s+r.d,0)/hist.length).toFixed(1);
+  const avgC=(hist.reduce((s,r)=>s+r.c,0)/hist.length).toFixed(1);
+  el.innerHTML=[
+    ['L','Latència',avgL,'var(--azulLt)','var(--azul)'],
+    ['D','Densitat',avgD,'var(--verdeLt)','var(--verde)'],
+    ['C','Continuïtat',avgC,'var(--oroLt)','#7a5a1a']
+  ].map(([b,n,v,bg,col])=>
+    `<div style="background:${bg};border-radius:12px;padding:12px;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:${col};">${b} · ${n}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:${col};">${v}</div>
+      <div style="font-size:11px;color:${col};">${renderStars(Math.round(parseFloat(v)))}</div>
+    </div>`
+  ).join('');
+}
+
+// === ESTADI ===
+function renderEstadi(hist){
+  var el=document.getElementById('estadiContent');
+  if(!el)return;
+  if(hist.length<3){
+    el.innerHTML='<div style="font-size:12px;color:var(--gris);font-style:italic;">Es necessiten almenys 3 dies guardats per calcular l\'estadi.</div>';
+    return;
+  }
+  var last7=hist.slice(-7);
+  var avgL=last7.reduce(function(s,r){return s+r.l;},0)/last7.length;
+  var avgC=last7.reduce(function(s,r){return s+(r.rutina||r.c||0);},0)/last7.length;
+  var totP=last7.reduce(function(s,r){return s+(r.honP||0);},0);
+  var totR=last7.reduce(function(s,r){return s+(r.honR||0);},0);
+  var ratio=totP+totR>0?totP/(totP+totR):0;
+  var estadi,color,bg,desc,icon;
+  if(avgL>=4&&ratio>=0.65&&avgC>=2.5){
+    estadi='3 \u00b7 Integraci\u00f3';icon='&#127807;';color='var(--verde)';bg='var(--verdeLt)';
+    desc='El cos s\'acompanya a si mateix de manera consistent. Els vincles externs es viuen des de l\'elecci\u00f3, no des de la necessitat. La relaci\u00f3 afectiva tendeix al desapego saludable.';
+  } else if(avgL>=2.5&&ratio>=0.4&&avgC>=1.5){
+    estadi='2 \u00b7 Consolidaci\u00f3';icon='&#127807;';color='var(--oro)';bg='var(--oroLt)';
+    desc='El sistema alterna entre regulaci\u00f3 interna i externa. El control minva per\u00f2 reapareix en moments d\'estr\u00e8s. Continua la pr\u00e0ctica di\u00e0ria \u2014 la consist\u00e8ncia \u00e9s ara la prioritat.';
+  } else {
+    estadi='1 \u00b7 Inici';icon='&#127807;';color='var(--azul)';bg='var(--azulLt)';
+    desc='El sistema encara busca regulaci\u00f3 externa de manera prioritaria. L\'aferrament extern \u00e9s actiu. Cada pausa i cada \ud83d\udfe2 proactiu \u00e9s una inversi\u00f3 directa en el nou circuit.';
+  }
+  var indL=avgL>=4?'\u2713':avgL>=2.5?'~':'\u00b7';
+  var indR=ratio>=0.65?'\u2713':ratio>=0.4?'~':'\u00b7';
+  var indC=avgC>=2.5?'\u2713':avgC>=1.5?'~':'\u00b7';
+  var pct=Math.round(ratio*100);
+  var h='<div style="background:'+bg+';border-radius:14px;padding:16px;margin-bottom:12px;">';
+  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+  h+='<div style="font-size:28px;">'+icon+'</div>';
+  h+='<div><div style="font-size:11px;font-weight:700;color:'+color+';text-transform:uppercase;letter-spacing:.4px;">Estadi</div>';
+  h+='<div style="font-size:18px;font-weight:700;color:'+color+';">'+estadi+'</div></div></div>';
+  h+='<div style="font-size:12px;line-height:1.6;color:'+color+';">'+desc+'</div></div>';
+  h+='<div style="font-size:11px;color:var(--gris);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px;">Indicadors dels \u00faltims 7 dies</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;">';
+  h+='<div style="background:var(--azulLt);border-radius:11px;padding:10px;text-align:center;">';
+  h+='<div style="font-size:9px;font-weight:700;color:var(--azul);">L \u2265 3\u2605</div>';
+  h+='<div style="font-size:22px;margin:3px 0;color:var(--azul);">'+indL+'</div>';
+  h+='<div style="font-size:18px;font-weight:700;color:var(--azul);">'+avgL.toFixed(1)+'\u2605</div>';
+  h+='<div style="font-size:9px;color:var(--gris);margin-top:2px;">Tolera sense buscar fora</div></div>';
+  h+='<div style="background:var(--verdeLt);border-radius:11px;padding:10px;text-align:center;">';
+  h+='<div style="font-size:9px;font-weight:700;color:var(--verde);">\ud83d\udfe2 > \ud83d\udd34</div>';
+  h+='<div style="font-size:22px;margin:3px 0;color:var(--verde);">'+indR+'</div>';
+  h+='<div style="font-size:18px;font-weight:700;color:var(--verde);">'+pct+'%</div>';
+  h+='<div style="font-size:9px;color:var(--gris);margin-top:2px;">Atenci\u00f3 proactiva</div></div>';
+  h+='<div style="background:var(--oroLt);border-radius:11px;padding:10px;text-align:center;">';
+  h+='<div style="font-size:9px;font-weight:700;color:#7a5a1a;">C 3/3</div>';
+  h+='<div style="font-size:22px;margin:3px 0;color:#7a5a1a;">'+indC+'</div>';
+  h+='<div style="font-size:18px;font-weight:700;color:#7a5a1a;">'+avgC.toFixed(1)+'/3</div>';
+  h+='<div style="font-size:9px;color:var(--gris);margin-top:2px;">Predicibilitat interna</div></div></div>';
+  h+='<div style="margin-top:10px;font-size:10.5px;color:var(--gris);text-align:center;font-style:italic;">Basat en els \u00faltims '+last7.length+' registres guardats</div>';
+  el.innerHTML=h;
+}
+
+let chartRatio=null;
+function renderChartRatio(hist){
+  const ctx=document.getElementById('chartRatio').getContext('2d');
+  if(chartRatio){chartRatio.destroy();chartRatio=null;}
+  if(!hist.length)return;
+  chartRatio=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:hist.map(r=>r.date.slice(5)),
+      datasets:[
+        {label:'Proactiu 🟢',data:hist.map(r=>r.honP||0),backgroundColor:'rgba(46,125,94,.7)',borderRadius:4},
+        {label:'Reactiu 🔴',data:hist.map(r=>r.honR||0),backgroundColor:'rgba(192,57,43,.5)',borderRadius:4},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,min:0,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.04)'}}},plugins:{legend:{display:false}}}
+  });
+}
+
+// === EXPORT / IMPORT ===
+function exportarJSON(){
+  const hist=getHist();
+  const blob=new Blob([JSON.stringify(hist,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='aprens_ais_registres.json';a.click();
+}
+function importarJSON(input){
+  const f=input.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(Array.isArray(data)){localStorage.setItem('aprens_ais_hist',JSON.stringify(data));renderHistorial();alert('Importació correcta: '+data.length+' registres.');}
+      else alert('Format incorrecte.');
+    }catch(err){alert('Error llegint el fitxer.');}
+  };reader.readAsText(f);
+}
+function esborrarTot(){localStorage.removeItem('aprens_ais_hist');renderHistorial();}
+
+// === MESSAGE ===
+function generarMissatge(){
+  const dd=dades[diaActiu],dn=DIES_FULL[diaActiu];
+  const s=calcStars(dd);
+  const abT=dd.ab.fills+dd.ab.pares+dd.ab.familia;
+  const rT=[dd.rutina.mati,dd.rutina.tarda,dd.rutina.nit].filter(Boolean).length;
+  let msg='📋 Registre AIS — '+dn+'\n————————————————\n';
+  msg+='✋ Parades de pensament: '+dd.pSess+' ('+dd.pAsert+' asertives)\n';
+  msg+='🌬 Respiració conscient: '+dd.resp+'/8\n';
+  msg+='🤗 Abraços sentits: '+abT+'\n';
+  const honP=dd.honLog.filter(h=>h.lloc==='panxa').length;
+  const honR=dd.honLog.filter(h=>h.lloc==='pit').length;
+  msg+='🫀 Honestitat emocional: '+dd.honLog.length+' comprovacions (🟢'+honP+' proactives · 🔴'+honR+' reactives)\n';
+  msg+='🚪 Rituals d\'entrada: '+dd.rituals+'\n';
+  msg+='🔁 Rutina presència: '+rT+'/3 moments\n';
+  msg+='📊 TEC → L:'+s.l+'★ D:'+s.d+'★ C:'+s.c+'★\n';
+  if(vincles.length){
+    msg+='\n🔗 Vincles conscients:\n';
+    vincles.forEach(function(v){
+      if(v.nom)msg+='  '+v.icon+' '+v.nom+(v.dia?' → '+v.dia+' '+v.hora+'h':'')+' \n';
+    });
+  }
+  if(dd.nota&&dd.nota.trim())msg+='\n💬 "'+dd.nota.trim()+'"\n';
+  msg+='\n— Enviat des d\'APRENS Psicologia';
+  document.getElementById('msgBox').innerText=msg;
+}
+
+// === TABS ===
+function mostrarTab(tab){
+  saveDayCurrent();
+  ['avui','eines','parella','tec','historial'].forEach(t=>document.getElementById('tab-'+t).style.display=t===tab?'block':'none');
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('actiu',['avui','eines','parella','tec','historial'][i]===tab));
+  if(tab==='historial')renderHistorial();
+  if(tab==='tec')renderTecResum(dades[diaActiu]);
+}
+function irA(id){var el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.transition='box-shadow .3s';el.style.boxShadow='0 0 0 3px var(--oro)';setTimeout(function(){el.style.boxShadow='';},900);}}
+
+// === SEND ===
+function obrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('msgBox').innerText),'_blank');}
+function copiar(btn){
+  const t=document.getElementById('msgBox').innerText;
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copiat';setTimeout(()=>btn.textContent='📋 Copiar',2200);});}
+  else{const r=document.createRange(),b=document.getElementById('msgBox');r.selectNodeContents(b);const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.execCommand('copy');s.removeAllRanges();btn.textContent='✓ Copiat';setTimeout(()=>btn.textContent='📋 Copiar',2200);}
+}
+
+// === INIT ===
+renderDies();loadDayCurrent();renderPara();renderHistorial();
+setInterval(()=>{saveDayCurrent();generarMissatge();},60000);
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function (global) {
+  "use strict";
+  var DB_KEY = "aprens_db", SCHEMA = 1;
+  var state = { toolId:null, toolName:null, toolVersion:1 };
+  function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}
+    return {schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+  function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();
+    try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+  function toolBucket(db,create){if(!db.tools[state.toolId]&&create){
+    db.tools[state.toolId]={meta:{nombre:state.toolName,v:state.toolVersion},records:[]};}
+    return db.tools[state.toolId];}
+  var Aprens={
+    schema:SCHEMA,
+    config:function(o){o=o||{};if(o.toolId)state.toolId=String(o.toolId);
+      if(o.toolName)state.toolName=String(o.toolName);if(o.toolVersion)state.toolVersion=o.toolVersion;
+      if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);
+      if(state.toolId){var db=load();var b=toolBucket(db,true);
+        b.meta={nombre:state.toolName,v:state.toolVersion};persist(db);}return this;},
+    setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+    getPacienteCodigo:function(){return load().paciente.codigo||"";},
+    save:function(r){if(!state.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();
+      var db=load();var b=toolBucket(db,true);
+      if(r.date){var i=b.records.findIndex(function(x){return x.date===r.date;});
+        if(i>=0)b.records[i]=r;else b.records.push(r);}else b.records.push(r);
+      b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});
+      persist(db);return r;},
+    seed:function(recs){if(!Array.isArray(recs))return this;var db=load();var b=toolBucket(db,true);
+      recs.forEach(function(r){if(r&&r.ts==null)r.ts=Date.now();});b.records=recs.slice();persist(db);return this;},
+    history:function(){var b=load().tools[state.toolId];return b?b.records.slice():[];},
+    buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",
+      paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+    exportJSON:function(){var env=this.buildEnvelope();
+      var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(state.toolId||"datos")+"_"+
+        new Date().toISOString().slice(0,10)+".json";
+      var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});
+      var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;
+      document.body.appendChild(a);a.click();a.remove();return nombre;}
+  };
+  global.Aprens=Aprens;
+})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN tracker_ais ===================== -->
+<script>
+Aprens.config({ toolId:"tracker_ais", toolName:"Tracker AIS", toolVersion:1, pacienteCodigo:"" });
+// pre-rellena el campo de código si ya estaba fijado en este dispositivo
+(function(){var c=Aprens.getPacienteCodigo();var i=document.getElementById("aprensCodIn");if(i&&c)i.value=c;})();
+// vuelca el histórico existente (clave legacy) al modelo Aprens
+function aprensSync(){ try{ Aprens.seed(getHist()); }catch(e){} }
+aprensSync();
+function aprensExport(){
+  var i=document.getElementById("aprensCodIn");
+  var cod=i?i.value.trim():"";
+  if(!cod && !Aprens.getPacienteCodigo()){ alert("Escriu el codi del pacient (ex. MARTI-01)."); return; }
+  if(cod) Aprens.setPacienteCodigo(cod);
+  aprensSync();
+  Aprens.exportJSON();
+}
+</script>
+</body>
+</html>

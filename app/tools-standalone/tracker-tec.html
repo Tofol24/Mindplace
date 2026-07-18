@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tracker TEC · APRENS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+  --naranja:#E07B39;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;
+  --cL:#b83232;--cLlt:#FDEAEA;
+  --cD:#3257b8;--cDlt:#E8EFFE;
+  --cC:#1f7a30;--cClt:#E8FDEA;
+}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;padding-bottom:env(safe-area-inset-bottom);}
+.header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+.hbrand{display:flex;align-items:center;gap:11px;}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
+.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.hsub{font-size:10px;opacity:.75;margin-top:1px;}
+.htab{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none;}
+.htab.act{background:rgba(255,255,255,.35);}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px calc(80px + env(safe-area-inset-bottom));}
+.btn{border:none;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;-webkit-appearance:none;touch-action:manipulation;}
+.bp-btn{background:var(--azul);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(27,79,140,.3);}
+.bsave{background:var(--verde);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(46,125,94,.3);}
+.bwa{background:#25D366;color:#fff;padding:13px 22px;font-size:14px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:11px 18px;font-size:13px;}
+.bsm{padding:8px 16px;font-size:13px;}
+.card{background:#fff;border-radius:18px;padding:22px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:16px;}
+.hero{background:#fff;border-radius:18px;padding:26px 22px 20px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:16px;border-top:4px solid var(--oro);}
+.ctit{font-weight:600;font-size:13px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.htitulo{font-family:'Playfair Display',serif;font-size:21px;color:var(--azul);margin-bottom:5px;}
+.hsubt{color:var(--gris);font-size:13px;line-height:1.6;}
+.frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:11px 15px;line-height:1.6;margin-top:13px;}
+.aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:11px 15px;font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:14px;}
+.tb{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.tb-L{background:var(--cLlt);color:var(--cL);}
+.tb-D{background:var(--cDlt);color:var(--cD);}
+.tb-C{background:var(--cClt);color:var(--cC);}
+/* Bucle */
+.bucle{display:flex;margin:14px 0 8px;overflow:hidden;border-radius:14px;border:2px solid #E8EFF7;}
+.bstep{flex:1;padding:10px 4px;text-align:center;position:relative;}
+.bstep:not(:last-child)::after{content:'›';position:absolute;right:-7px;top:50%;transform:translateY(-50%);color:#C0CAD4;font-size:1rem;font-weight:900;z-index:2;}
+.bstep.s1{background:var(--cLlt);}.bstep.s2{background:var(--cDlt);}.bstep.s3{background:#FEF9F0;}.bstep.s4{background:var(--cClt);}
+.bico{font-size:1.1rem;line-height:1;}.blbl{font-size:.58rem;font-weight:700;margin-top:3px;line-height:1.25;}
+.bstep.s1 .blbl{color:var(--cL);}.bstep.s2 .blbl{color:var(--cD);}.bstep.s3 .blbl{color:var(--oro);}.bstep.s4 .blbl{color:var(--cC);}
+/* Contadores */
+.cnt-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.cnt-ctrl{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.btn-c{width:38px;height:38px;border-radius:50%;border:none;font-size:1.15rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.btn-m{background:var(--fondo);color:var(--gris);border:2px solid #E0E7EF;}
+.btn-pL{background:var(--cL);color:#fff;}
+.cnt-big{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;min-width:30px;text-align:center;}
+/* Barras */
+.barra-wrap{flex:1;}
+.barra-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.barra-lbl{font-size:.7rem;color:var(--gris);width:76px;flex-shrink:0;}
+.barra-track{flex:1;height:7px;background:#E8EFF7;border-radius:4px;overflow:hidden;}
+.barra-fill{height:100%;border-radius:4px;transition:width .35s;}
+.barra-val{font-size:.7rem;font-weight:700;min-width:18px;text-align:right;}
+/* Sel pills */
+.sel-row{display:flex;gap:7px;margin:8px 0 4px;}
+.sel-pill{flex:1;text-align:center;padding:8px 5px;border-radius:11px;font-size:.76rem;font-weight:600;cursor:pointer;border:2px solid #E3EAF3;background:#fff;color:var(--gris);transition:all .15s;line-height:1.3;-webkit-tap-highlight-color:transparent;}
+.sp-si.sel{background:var(--cClt);border-color:var(--cC);color:var(--cC);}
+.sp-parcial.sel{background:#FEF4E8;border-color:var(--naranja);color:var(--naranja);}
+.sp-no.sel{background:var(--cLlt);border-color:var(--cL);color:var(--cL);}
+.sp-barriga{background:#E8FDEA;color:var(--cC);border-color:#c4ecc6;}
+.sp-barriga.sel{background:var(--cC);color:#fff;}
+.sp-pecho{background:var(--cLlt);color:var(--cL);border-color:#f3c4c4;}
+.sp-pecho.sel{background:var(--cL);color:#fff;}
+/* Resp */
+.resp-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin:10px 0 5px;}
+.resp-slot{aspect-ratio:1;border-radius:9px;border:2px solid #E3EAF3;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.58rem;color:var(--gris);cursor:pointer;transition:all .15s;font-weight:600;gap:1px;-webkit-tap-highlight-color:transparent;}
+.resp-slot .sico{font-size:.85rem;line-height:1;}
+.resp-slot.done{background:var(--cDlt);border-color:var(--cD);color:var(--cD);}
+/* Rutina */
+.rut-row{display:flex;gap:8px;margin:8px 0;}
+.rut-slot{flex:1;border:2px solid #E3EAF3;border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.rut-slot.done{background:var(--cClt);border-color:var(--cC);}
+.rut-ico{font-size:1.2rem;}.rut-lbl{font-size:.68rem;font-weight:600;color:var(--gris);margin-top:3px;}
+.rut-slot.done .rut-lbl{color:var(--cC);}
+/* TEC panel */
+.tec-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.tec-col{border-radius:14px;padding:14px 8px 12px;text-align:center;}
+.tec-col-L{background:var(--cLlt);}.tec-col-D{background:var(--cDlt);}.tec-col-C{background:var(--cClt);}
+.tec-letter{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;line-height:1;}
+.tec-col-L .tec-letter{color:var(--cL);}.tec-col-D .tec-letter{color:var(--cD);}.tec-col-C .tec-letter{color:var(--cC);}
+.tec-name{font-size:.62rem;font-weight:700;opacity:.65;margin:2px 0 8px;line-height:1.25;}
+.tec-stars{display:flex;gap:3px;justify-content:center;}
+.tec-star{font-size:1.05rem;line-height:1;transition:color .25s;}
+.tec-star.lit-L{color:var(--cL);}.tec-star.lit-D{color:var(--cD);}.tec-star.lit-C{color:var(--cC);}.tec-star.off{color:#E0E7EF;}
+.tec-score{font-size:.65rem;color:var(--gris);margin-top:5px;}
+/* Resumen */
+textarea{width:100%;border:2px solid #E3EAF3;border-radius:12px;padding:11px;font-size:.88rem;font-family:'DM Sans',sans-serif;resize:none;outline:none;transition:border-color .2s;background:#fff;color:#1a1a2e;}
+textarea:focus{border-color:var(--azul);}
+textarea::placeholder{color:#C0CAD4;}
+.cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:14px;font-size:11.5px;line-height:1.8;color:#333;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;-webkit-user-select:all;user-select:all;}
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+/* ═══ HISTORIAL ═══ */
+.hist-empty{text-align:center;padding:30px 20px;color:var(--gris);font-size:.9rem;}
+.hist-entry{border:2px solid #EEF3F8;border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.hist-fecha{font-weight:700;font-size:.9rem;color:var(--azul);}
+.hist-scores{display:flex;gap:8px;}
+.hist-badge{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;}
+.hb-L{background:var(--cLlt);color:var(--cL);}
+.hb-D{background:var(--cDlt);color:var(--cD);}
+.hb-C{background:var(--cClt);color:var(--cC);}
+.hist-detail{font-size:.78rem;color:var(--gris);line-height:1.6;}
+.hist-del{background:none;border:none;color:#ddd;font-size:1rem;cursor:pointer;padding:2px 6px;}
+.hist-del:hover{color:var(--cL);}
+/* ═══ CHART SVG ═══ */
+.chart-wrap{margin:14px 0 4px;overflow-x:auto;}
+.chart-wrap svg{display:block;}
+.chart-legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;}
+.cl-item{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;}
+.cl-dot{width:10px;height:10px;border-radius:50%;}
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2d2d2d;color:#fff;padding:10px 20px;border-radius:20px;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:999;}
+.toast.show{opacity:1;}
+@media(hover:hover){.btn:hover{filter:brightness(1.05);}}
+/* Índice de pulsadores */
+.idxsub{font-size:.74rem;color:var(--gris);line-height:1.55;margin-bottom:11px;}
+.idxgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.idxb{display:flex;align-items:center;gap:9px;text-align:left;background:var(--fondo);border:2px solid #E3EAF3;border-radius:14px;padding:10px 11px;cursor:pointer;font-family:inherit;transition:all .16s;width:100%;}
+.idxb:hover,.idxb:active{border-color:var(--cD);background:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(50,87,184,.1);}
+.idxb .ib-ico{font-size:20px;line-height:1;flex-shrink:0;}
+.idxb .ib-body{flex:1;min-width:0;}
+.idxb .ib-tit{font-weight:700;font-size:.78rem;color:#1a1a2e;line-height:1.25;}
+.idxb .ib-par{margin-top:5px;}
+.qtrab{display:flex;align-items:flex-start;gap:8px;background:var(--fondo);border:1px solid #E8EFF7;border-radius:10px;padding:8px 11px;margin:10px 0;font-size:.74rem;color:#444;line-height:1.5;}
+.qtrab .qp{flex-shrink:0;}
+@media(max-width:380px){.idxgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hbrand">
+    <div class="hlogo">ap</div>
+    <div><div class="htitle">Tracker TEC</div><div class="hsub">APRENS Psicologia · AIS</div></div>
+  </div>
+  <div style="display:flex;gap:7px;">
+    <button class="htab act" id="tabHoy" onclick="showTab('hoy')">Hoy</button>
+    <button class="htab" id="tabHist" onclick="showTab('hist')">Historial</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════ TAB HOY ═══════════════ -->
+<div id="pageHoy" class="wrap">
+
+  <div class="hero">
+    <div class="htitulo" id="cfgObjetivo">Mi registro de hoy</div>
+    <div class="hsubt" id="cfgSubtitulo">Objetivo: romper el ciclo rumiación → aislamiento</div>
+    <div class="frase" id="cfgFrase">«No hace falta parar todos los sobrepensamientos. Solo ir a por algunos y atender lo que hay dentro.»</div>
+  </div>
+
+  <!-- BUCLE -->
+  <div class="card">
+    <div class="ctit">🔁 El bucle que practico hoy</div>
+    <div class="bucle">
+      <div class="bstep s1"><div class="bico">✋</div><div class="blbl">STOP<br>noto el bucle</div></div>
+      <div class="bstep s2"><div class="bico">🫁</div><div class="blbl">RESPIRO<br>bajo a barriga</div></div>
+      <div class="bstep s3"><div class="bico">🤍</div><div class="blbl">PRESENCIA<br>él se siente atendido</div></div>
+      <div class="bstep s4"><div class="bico">🎯</div><div class="blbl">ACTÚO<br>conducta asertiva</div></div>
+    </div>
+    <div style="font-size:.74rem;color:var(--gris);line-height:1.55;">~600 sobrepensamientos al día. Objetivo: interceptar al menos <strong id="cfgGoal">60</strong>. Cada uno que termina en conducta asertiva desactiva el patrón.</div>
+  </div>
+
+  <!-- ÍNDICE -->
+  <div class="card">
+    <div class="ctit">🧭 ¿Por dónde quieres entrar?</div>
+    <div class="idxsub">Cada herramienta entrena un parámetro: <span class="tb tb-L">L</span> Latencia (espacio antes de reaccionar) · <span class="tb tb-D">D</span> Densidad (presencia interna) · <span class="tb tb-C">C</span> Continuidad (sostener el patrón). Toca una para ir a ella.</div>
+    <div class="idxgrid">
+      <button class="idxb" onclick="irA('exParadas')"><span class="ib-ico">✋</span><span class="ib-body"><span class="ib-tit">Paradas de pensamiento</span><span class="ib-par"><span class="tb tb-L">L</span></span></span></button>
+      <button class="idxb" onclick="irA('exRituales')"><span class="ib-ico">🚪</span><span class="ib-body"><span class="ib-tit">Rituales de entrada</span><span class="ib-par"><span class="tb tb-L">L</span></span></span></button>
+      <button class="idxb" onclick="irA('exHonestidad')"><span class="ib-ico">🫀</span><span class="ib-body"><span class="ib-tit">Honestidad emocional</span><span class="ib-par"><span class="tb tb-D">D</span></span></span></button>
+      <button class="idxb" onclick="irA('exRespiraciones')"><span class="ib-ico">⏱</span><span class="ib-body"><span class="ib-tit">Respiraciones cotidianas</span><span class="ib-par"><span class="tb tb-D">D</span></span></span></button>
+      <button class="idxb" onclick="irA('exAbrazo')"><span class="ib-ico">🫂</span><span class="ib-body"><span class="ib-tit">Abrazo sentido</span><span class="ib-par"><span class="tb tb-D">D</span></span></span></button>
+      <button class="idxb" onclick="irA('exRutina')"><span class="ib-ico">🔁</span><span class="ib-body"><span class="ib-tit">Rutina de presencia</span><span class="ib-par"><span class="tb tb-C">C</span></span></span></button>
+    </div>
+  </div>
+
+  <!-- PARADAS — L -->
+  <div class="card" id="exParadas">
+    <div class="ctit">✋ Paradas de pensamiento <span class="tb tb-L">L · Herr. 1</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-L">Latencia</span></span><span>Interceptar el sobrepensamiento y reorientar: cada parada amplía el espacio entre el estímulo y tu respuesta.</span></div>
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="text-align:center;flex-shrink:0;">
+        <div class="cnt-big" id="paradaBig" style="color:var(--cL);">0</div>
+        <div style="font-size:.7rem;color:var(--gris);">paradas</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn-c btn-m" onclick="cambiarParada(-1)">−</button>
+          <button class="btn-c btn-pL" onclick="cambiarParada(1)">+</button>
+        </div>
+      </div>
+      <div class="barra-wrap">
+        <div class="barra-row">
+          <span class="barra-lbl">Paradas</span>
+          <div class="barra-track"><div class="barra-fill" id="bfParadas" style="width:0%;background:var(--cL);"></div></div>
+          <span class="barra-val" id="bvParadas" style="color:var(--cL);">0</span>
+        </div>
+        <div class="barra-row">
+          <span class="barra-lbl">→ Asertivas</span>
+          <div class="barra-track"><div class="barra-fill" id="bfAsertivas" style="width:0%;background:var(--cC);"></div></div>
+          <span class="barra-val" id="bvAsertivas" style="color:var(--cC);">0</span>
+        </div>
+        <div style="font-size:.68rem;color:var(--gris);margin-top:2px;">objetivo: <span id="goalLbl">60</span> / día</div>
+      </div>
+    </div>
+    <div style="background:var(--fondo);border-radius:12px;padding:12px;margin-top:12px;">
+      <div style="font-size:.8rem;font-weight:600;color:#444;margin-bottom:8px;">¿Llegué a conducta asertiva en la última parada?</div>
+      <div class="sel-row">
+        <div class="sel-pill sp-si" id="reoSi" onclick="selReo('si')">✓ Sí<br><span style="font-size:.67rem;font-weight:400;">reorienté</span></div>
+        <div class="sel-pill sp-parcial" id="reoParcial" onclick="selReo('parcial')">≈ En parte<br><span style="font-size:.67rem;font-weight:400;">me costó</span></div>
+        <div class="sel-pill sp-no" id="reoNo" onclick="selReo('no')">✗ No<br><span style="font-size:.67rem;font-weight:400;">me quedé en el bucle</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RITUALES — L -->
+  <div class="card" id="exRituales">
+    <div class="ctit">🚪 Rituales de entrada <span class="tb tb-L">L · Herr. 5</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-L">Latencia</span></span><span>Un gesto breve antes de cada situación nueva: el cuerpo entra acompañado y ganas margen para responder con valores.</span></div>
+    <div style="font-size:.84rem;color:#444;margin-bottom:10px;">Cada puerta, cada situación nueva: respira o visualiza. El cuerpo entra acompañado.</div>
+    <div class="cnt-row">
+      <span style="font-size:.8rem;color:var(--gris);">Entradas acompañadas hoy</span>
+      <div class="cnt-ctrl">
+        <button class="btn-c btn-m" onclick="cambiarRitual(-1)">−</button>
+        <span class="cnt-big" id="ritualBig" style="color:var(--cL);">0</span>
+        <button class="btn-c btn-pL" onclick="cambiarRitual(1)">+</button>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <div style="font-size:.8rem;font-weight:600;color:#444;margin-bottom:6px;">¿Estoy haciendo lo que toca según mi estructura del día?</div>
+      <div class="sel-row">
+        <div class="sel-pill sp-si" id="estructSi" onclick="selEstruct('si')">✓ Sí</div>
+        <div class="sel-pill sp-no" id="estructNo" onclick="selEstruct('no')">✗ Me desvié</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HONESTIDAD — D -->
+  <div class="card" id="exHonestidad">
+    <div class="ctit">🫀 Honestidad emocional <span class="tb tb-D">D · Herr. 3</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-D">Densidad</span></span><span>Llevar la mano a la barriga y nombrar lo que hay: entrenas la presencia interna, sobre todo cuando crees que «no sientes nada».</span></div>
+    <div style="font-size:.84rem;color:#444;margin-bottom:5px;">Sobre todo cuando <em>no siento nada</em>: mano en la barriga → ¿qué hay ahí?</div>
+    <div style="font-size:.78rem;font-style:italic;color:var(--gris);margin-bottom:9px;">«No sé por qué, pero me siento… (zona corporal)»</div>
+    <textarea id="honestidad" placeholder="Nómbralo y dónde: barriga, pecho o cuello…" style="height:66px;"></textarea>
+    <div style="font-size:.8rem;font-weight:600;color:#555;margin-top:11px;margin-bottom:5px;">¿Dónde estaba la señal?</div>
+    <div class="sel-row">
+      <div class="sel-pill sp-barriga" id="bpBarriga" onclick="selBP('barriga')">🟢 Barriga<br><span style="font-size:.65rem;font-weight:400;">Fui yo a él</span></div>
+      <div class="sel-pill sp-pecho" id="bpPecho" onclick="selBP('pecho')">🔴 Pecho<br><span style="font-size:.65rem;font-weight:400;">El cuerpo me avisó</span></div>
+    </div>
+    <div style="font-size:.71rem;color:var(--gris);margin-top:5px;line-height:1.5;" id="bpHint">Barriga = llegué antes del umbral · Pecho = el bucle ya estaba activo</div>
+  </div>
+
+  <!-- RESPIRACIÓN — D -->
+  <div class="card" id="exRespiraciones">
+    <div class="ctit">⏱ Respiraciones cotidianas <span class="tb tb-D">D · Herr. 4</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-D">Densidad</span></span><span>Bajar la conciencia a la barriga cada 1–2 horas, sin necesidad: cada repetición suma presencia a lo largo del día.</span></div>
+    <div style="font-size:.84rem;color:var(--gris);margin-bottom:3px;">Cada 1–2 horas: la conciencia baja a la barriga.</div>
+    <div class="resp-grid" id="respGrid"></div>
+    <div style="font-size:.74rem;color:var(--gris);" id="respLabel">0 / 8 respiraciones</div>
+  </div>
+
+  <!-- ABRAZO — D -->
+  <div class="card" id="exAbrazo">
+    <div class="ctit">🫂 Abrazo sentido <span class="tb tb-D">D · Herr. 2</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-D">Densidad</span></span><span>Al encontrar un vínculo, atención en la barriga y vas tú a él: sostienes la sensación interna en lugar de actuar por impulso.</span></div>
+    <div style="font-size:.84rem;color:#444;margin-bottom:10px;">Al encontrar un vínculo: atención en barriga, soy yo quien va a él.</div>
+    <div id="abrazos" style="display:flex;gap:7px;flex-wrap:wrap;min-height:4px;"></div>
+    <button onclick="addAbrazo()" style="margin-top:10px;background:none;border:2px dashed #D8E4F0;border-radius:10px;padding:7px 16px;font-size:.82rem;color:var(--gris);cursor:pointer;font-family:'DM Sans',sans-serif;display:block;">+ Registrar momento de vínculo</button>
+  </div>
+
+  <!-- RUTINA — C -->
+  <div class="card" id="exRutina">
+    <div class="ctit">🔁 Rutina diaria de presencia interna <span class="tb tb-C">C · Herr. 6</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-C">Continuidad</span></span><span>Tres momentos fijos cada día: la constancia es lo que mantiene el patrón vivo y consolida el cambio en el tiempo.</span></div>
+    <div style="font-size:.84rem;color:var(--gris);margin-bottom:10px;">Tres momentos fijos: parada + respiración hacia barriga + reorientación consciente.</div>
+    <div class="rut-row">
+      <div class="rut-slot" id="rutM" onclick="toggleRutina('rutM')"><div class="rut-ico">🌅</div><div class="rut-lbl">Mañana</div></div>
+      <div class="rut-slot" id="rutT" onclick="toggleRutina('rutT')"><div class="rut-ico">☀️</div><div class="rut-lbl">Tarde</div></div>
+      <div class="rut-slot" id="rutN" onclick="toggleRutina('rutN')"><div class="rut-ico">🌙</div><div class="rut-lbl">Noche</div></div>
+    </div>
+    <div style="font-size:.74rem;color:var(--gris);" id="rutinaLbl">0 / 3 momentos completados</div>
+  </div>
+
+  <!-- TEC AUTO -->
+  <div class="card">
+    <div class="ctit">📈 Cómo fue hoy</div>
+    <div class="tec-panel">
+      <div class="tec-col tec-col-L">
+        <div class="tec-letter">L</div><div class="tec-name">LATENCIA<br>Herr. 1·5</div>
+        <div class="tec-stars" id="starsL"><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span></div>
+        <div class="tec-score" id="scoreL">0/5</div>
+      </div>
+      <div class="tec-col tec-col-D">
+        <div class="tec-letter">D</div><div class="tec-name">DENSIDAD<br>Herr. 2·3·4</div>
+        <div class="tec-stars" id="starsD"><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span></div>
+        <div class="tec-score" id="scoreD">0/5</div>
+      </div>
+      <div class="tec-col tec-col-C">
+        <div class="tec-letter">C</div><div class="tec-name">CONTINUIDAD<br>Herr. 6</div>
+        <div class="tec-stars" id="starsC"><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span><span class="tec-star off">★</span></div>
+        <div class="tec-score" id="scoreC">0/5</div>
+      </div>
+    </div>
+    <div style="font-size:.71rem;color:var(--gris);margin-top:8px;font-style:italic;">Se actualizan solas a medida que registras el día.</div>
+  </div>
+
+  <!-- NOTA -->
+  <div class="card">
+    <div class="ctit">✏️ Momento del día que me llevo</div>
+    <textarea id="nota" placeholder="Un momento en que noté algo o llegué a conducta asertiva…" style="height:76px;"></textarea>
+  </div>
+
+  <!-- GUARDAR + ENVIAR -->
+  <div class="card">
+    <div class="ctit">💾 Guardar y enviar</div>
+    <div class="aviso">Guarda el registro de hoy en este dispositivo y envíaselo a tu psicólogo/a.</div>
+    <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 ¿Cuándo enviármelo?</b> No hace falta cada vez: junta lo del día y mándame <b>un único resumen al final del día</b>.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn bsave" onclick="guardarDia()" style="flex:1;">💾 Guardar día</button>
+      <button class="btn bp-btn" onclick="prepararResumen()" style="flex:1;">📋 Preparar resumen</button>
+    </div>
+    <div class="cbox" id="msgBox" style="color:#aaa;font-style:italic;display:none;"></div>
+    <div class="acc" id="sendBtns" style="display:none;">
+      <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 WhatsApp</a>
+      <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+    </div>
+  </div>
+
+</div><!-- /pageHoy -->
+
+<!-- ═══════════════ TAB HISTORIAL ═══════════════ -->
+<div id="pageHist" class="wrap" style="display:none;">
+
+  <!-- Gráfico evolución -->
+  <div class="card">
+    <div class="ctit">📊 Evolución L · D · C</div>
+    <div class="chart-wrap" id="chartWrap">
+      <div class="hist-empty" style="padding:16px;">Aún no hay registros guardados.</div>
+    </div>
+    <div class="chart-legend">
+      <span class="cl-item"><span class="cl-dot" style="background:var(--cL);"></span>Latencia</span>
+      <span class="cl-item"><span class="cl-dot" style="background:var(--cD);"></span>Densidad</span>
+      <span class="cl-item"><span class="cl-dot" style="background:var(--cC);"></span>Continuidad</span>
+    </div>
+  </div>
+
+  <!-- Promedios -->
+  <div class="card" id="promediosCard" style="display:none;">
+    <div class="ctit">📐 Promedios del período</div>
+    <div class="tec-panel" id="promediosPanel"></div>
+  </div>
+
+  <!-- Registros -->
+  <div class="card">
+    <div class="ctit">📋 Registros guardados</div>
+    <div id="histList"><div class="hist-empty">Aún no hay registros guardados.<br>Completa el día y pulsa "Guardar día".</div></div>
+  </div>
+
+  <!-- Export / import -->
+  <div class="card">
+    <div class="ctit">🔄 Exportar / Importar</div>
+    <div style="font-size:.84rem;color:var(--gris);margin-bottom:12px;line-height:1.55;">Exporta todos los registros como archivo JSON para compartir con tu psicólogo/a o guardar copia de seguridad.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn bsave bsm" onclick="exportar()">⬇️ Exportar JSON</button>
+      <label class="btn bcopy bsm" style="cursor:pointer;">⬆️ Importar JSON<input type="file" accept=".json" onchange="importar(this)" style="display:none;"></label>
+      <button class="btn" style="background:var(--cLlt);color:var(--cL);padding:8px 16px;font-size:13px;" onclick="confirmarBorrar()">🗑 Borrar todo</button>
+    </div>
+  </div>
+
+</div><!-- /pageHist -->
+
+<script>
+// ════════════════════════════════════════
+//  CONFIG POR PACIENTE (editar aquí)
+// ════════════════════════════════════════
+const CFG = {
+  paciente: 'Paciente',          // nombre o iniciales
+  objetivo: 'Mi registro de hoy',
+  subtitulo: 'Objetivo: romper el ciclo rumiación → aislamiento',
+  frase: '«No hace falta parar todos los sobrepensamientos. Solo ir a por algunos y atender lo que hay dentro.»',
+  goalParadas: 60,               // 3 para inicio, 60 para avanzado
+  storageKey: 'aprens_tec_v1'   // cambiar por paciente para no mezclar datos
+};
+
+// Aplicar config
+document.getElementById('cfgObjetivo').textContent = CFG.objetivo;
+document.getElementById('cfgSubtitulo').textContent = CFG.subtitulo;
+document.getElementById('cfgFrase').textContent = CFG.frase;
+document.getElementById('cfgGoal').textContent = CFG.goalParadas;
+document.getElementById('goalLbl').textContent = CFG.goalParadas;
+
+// ════════════════════════════════════════
+//  ESTADO HOY
+// ════════════════════════════════════════
+let paradas=0, asertivas=0, rituales=0, abrazosN=0, respHechas=0;
+let reoSel=null, bpSel=null, estructSel=null;
+
+// ════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════
+function showTab(t) {
+  document.getElementById('pageHoy').style.display = t==='hoy' ? '' : 'none';
+  document.getElementById('pageHist').style.display = t==='hist' ? '' : 'none';
+  document.getElementById('tabHoy').classList.toggle('act', t==='hoy');
+  document.getElementById('tabHist').classList.toggle('act', t==='hist');
+  if (t==='hist') renderHist();
+}
+function irA(id){if(document.getElementById('pageHoy').style.display==='none')showTab('hoy');var el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.transition='box-shadow .3s';el.style.boxShadow='0 0 0 3px var(--cD)';setTimeout(function(){el.style.boxShadow='';},900);}}
+
+// ════════════════════════════════════════
+//  LOCALSTORAGE
+// ════════════════════════════════════════
+function getDB() { try { return JSON.parse(localStorage.getItem(CFG.storageKey)||'[]'); } catch { return []; } }
+function setDB(d) { localStorage.setItem(CFG.storageKey, JSON.stringify(d)); }
+
+// ════════════════════════════════════════
+//  RESP SLOTS
+// ════════════════════════════════════════
+(function(){
+  const g=document.getElementById('respGrid');
+  ['7h','9h','11h','13h','15h','17h','19h','21h'].forEach(lbl=>{
+    const s=document.createElement('div'); s.className='resp-slot';
+    s.innerHTML='<span class="sico">🫁</span><span>'+lbl+'</span>';
+    s.onclick=function(){this.classList.toggle('done');respHechas=document.querySelectorAll('.resp-slot.done').length;document.getElementById('respLabel').textContent=respHechas+' / 8 respiraciones'+(respHechas>=8?' ✓':'');updateTEC();};
+    g.appendChild(s);
+  });
+})();
+
+// ════════════════════════════════════════
+//  CÁLCULO TEC
+// ════════════════════════════════════════
+function calcTEC() {
+  const rutN = document.querySelectorAll('.rut-slot.done').length;
+  const pStar = paradas===0?0:paradas<3?1:paradas<10?2:3;
+  const L = Math.min(5, Math.round(pStar + (rituales>=1?1:0) + (reoSel==='si'?1:reoSel==='parcial'?.5:0)));
+  const rH = respHechas===0?0:respHechas<=2?1:respHechas<=5?2:3;
+  const D = Math.min(5, rH + (bpSel==='barriga'?1:0) + (abrazosN>=1?1:0));
+  const C = Math.min(5, rutN + (estructSel==='si'?1:0) + (paradas>=1?1:0));
+  return {L, D, C};
+}
+
+function renderStars(id, val, cls) {
+  document.getElementById(id).querySelectorAll('.tec-star').forEach((s,i)=>{
+    s.classList.toggle('off', i>=val); s.classList.toggle(cls, i<val);
+  });
+}
+
+function updateTEC() {
+  const {L,D,C}=calcTEC();
+  renderStars('starsL',L,'lit-L'); renderStars('starsD',D,'lit-D'); renderStars('starsC',C,'lit-C');
+  document.getElementById('scoreL').textContent=L+'/5';
+  document.getElementById('scoreD').textContent=D+'/5';
+  document.getElementById('scoreC').textContent=C+'/5';
+}
+
+// ════════════════════════════════════════
+//  INTERACCIONES
+// ════════════════════════════════════════
+function cambiarParada(d){paradas=Math.max(0,paradas+d);document.getElementById('paradaBig').textContent=paradas;document.getElementById('bfParadas').style.width=Math.min(100,paradas/CFG.goalParadas*100)+'%';document.getElementById('bvParadas').textContent=paradas;updateTEC();}
+function selReo(v){reoSel=v;['Si','Parcial','No'].forEach(x=>document.getElementById('reo'+x).classList.remove('sel'));document.getElementById('reo'+{si:'Si',parcial:'Parcial',no:'No'}[v]).classList.add('sel');if(v==='si'&&paradas>asertivas){asertivas++;document.getElementById('bfAsertivas').style.width=Math.min(100,asertivas/CFG.goalParadas*100)+'%';document.getElementById('bvAsertivas').textContent=asertivas;}updateTEC();}
+function cambiarRitual(d){rituales=Math.max(0,rituales+d);document.getElementById('ritualBig').textContent=rituales;updateTEC();}
+function selEstruct(v){estructSel=v;document.getElementById('estructSi').classList.toggle('sel',v==='si');document.getElementById('estructNo').classList.toggle('sel',v==='no');updateTEC();}
+function selBP(v){bpSel=v;document.getElementById('bpBarriga').classList.toggle('sel',v==='barriga');document.getElementById('bpPecho').classList.toggle('sel',v==='pecho');document.getElementById('bpHint').textContent=v==='barriga'?'✓ Fui yo a él — detección antes del umbral.':'⚠ El cuerpo ya pedía ayuda. La próxima, mano en barriga antes.';updateTEC();}
+function addAbrazo(){abrazosN++;const c=document.getElementById('abrazos');const p=document.createElement('span');p.style.cssText='background:var(--cDlt);color:var(--cD);border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;';p.innerHTML='🫂 Vínculo '+abrazosN+' <span style="cursor:pointer;opacity:.5;" onclick="this.parentElement.remove();abrazosN--;updateTEC();">✕</span>';c.appendChild(p);updateTEC();}
+function toggleRutina(id){document.getElementById(id).classList.toggle('done');const n=document.querySelectorAll('.rut-slot.done').length;document.getElementById('rutinaLbl').textContent=n+' / 3 momentos completados'+(n===3?' ✓':'');updateTEC();}
+
+// ════════════════════════════════════════
+//  GUARDAR DÍA
+// ════════════════════════════════════════
+function guardarDia() {
+  const {L,D,C} = calcTEC();
+  const hoy = new Date().toLocaleDateString('es-ES');
+  const db = getDB();
+  // Si ya hay entrada de hoy, reemplazar
+  const idx = db.findIndex(r => r.fecha === hoy);
+  const rec = {
+    fecha: hoy,
+    ts: Date.now(),
+    paradas, asertivas, rituales, respHechas, abrazosN,
+    bpSel, reoSel, estructSel,
+    rutina: ['rutM','rutT','rutN'].map(id=>document.getElementById(id).classList.contains('done')),
+    honestidad: document.getElementById('honestidad').value.trim(),
+    nota: document.getElementById('nota').value.trim(),
+    L, D, C
+  };
+  if (idx>=0) db[idx]=rec; else db.push(rec);
+  db.sort((a,b)=>a.ts-b.ts);
+  setDB(db);
+  toast('✓ Día guardado correctamente');
+}
+
+// ════════════════════════════════════════
+//  RESUMEN + ENVÍO
+// ════════════════════════════════════════
+function starsStr(n){return'★'.repeat(n)+'☆'.repeat(5-n);}
+
+function prepararResumen() {
+  const fecha=new Date().toLocaleDateString('es-ES');
+  const {L,D,C}=calcTEC();
+  const bp=bpSel==='barriga'?'🟢 Barriga (proactivo)':bpSel==='pecho'?'🔴 Pecho (reactivo)':'(sin marcar)';
+  const reo=reoSel==='si'?'✓ Asertiva':reoSel==='parcial'?'≈ En parte':reoSel==='no'?'✗ En el bucle':'(sin marcar)';
+  const estr=estructSel==='si'?'✓ Sí':estructSel==='no'?'✗ Me desvié':'(sin marcar)';
+  const ruts=['🌅','☀️','🌙'].map((e,i)=>(document.querySelectorAll('.rut-slot.done')[i]?'✓':'✗')+' '+['Mañana','Tarde','Noche'][i]).join('  ');
+  const hon=document.getElementById('honestidad').value.trim()||'(sin registrar)';
+  const nota=document.getElementById('nota').value.trim()||'(sin nota)';
+  const txt=`TRACKER TEC · APRENS\nFecha: ${fecha}\n\n━ LATENCIA (Herr.1+5)\nParadas: ${paradas}  Asertivas: ${asertivas}\nReorientación: ${reo}\nEntradas acompañadas: ${rituales}\nEstructura del día: ${estr}\n\n━ DENSIDAD (Herr.2+3+4)\nRespiraciones: ${respHechas}/8\nSeñal: ${bp}\nHonestidad emocional: ${hon}\nAbrazos sentidos: ${abrazosN}\n\n━ CONTINUIDAD (Herr.6)\nRutina: ${ruts}\n\n━ PARÁMETROS TEC\nL · Latencia:    ${starsStr(L)} (${L}/5)\nD · Densidad:    ${starsStr(D)} (${D}/5)\nC · Continuidad: ${starsStr(C)} (${C}/5)\n\n━ MOMENTO DEL DÍA\n${nota}\n\n— Tracker TEC APRENS`;
+  const box=document.getElementById('msgBox');
+  box.textContent=txt; box.style.display=''; box.style.color='#333'; box.style.fontStyle='normal';
+  document.getElementById('sendBtns').style.display='flex';
+}
+
+function abrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('msgBox').innerText||document.getElementById('msgBox').textContent),'_blank');}
+function copiar(btn){const txt=document.getElementById('msgBox').innerText||document.getElementById('msgBox').textContent;if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>{btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar',2200);});}else{const r=document.createRange();r.selectNodeContents(document.getElementById('msgBox'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.execCommand('copy');s.removeAllRanges();btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar',2200);}}
+
+// ════════════════════════════════════════
+//  HISTORIAL + GRÁFICO
+// ════════════════════════════════════════
+function renderHist() {
+  const db = getDB();
+
+  // Gráfico
+  const cw = document.getElementById('chartWrap');
+  if (db.length < 2) {
+    cw.innerHTML = '<div class="hist-empty" style="padding:16px;">Necesitas al menos 2 días guardados para ver la evolución.</div>';
+  } else {
+    cw.innerHTML = buildChart(db);
+  }
+
+  // Promedios
+  if (db.length > 0) {
+    const avgL = (db.reduce((s,r)=>s+r.L,0)/db.length).toFixed(1);
+    const avgD = (db.reduce((s,r)=>s+r.D,0)/db.length).toFixed(1);
+    const avgC = (db.reduce((s,r)=>s+r.C,0)/db.length).toFixed(1);
+    document.getElementById('promediosCard').style.display='';
+    document.getElementById('promediosPanel').innerHTML=`
+      <div class="tec-col tec-col-L"><div class="tec-letter">L</div><div class="tec-name">LATENCIA</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--cL);">${avgL}</div><div class="tec-score">${db.length} días</div></div>
+      <div class="tec-col tec-col-D"><div class="tec-letter">D</div><div class="tec-name">DENSIDAD</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--cD);">${avgD}</div><div class="tec-score">${db.length} días</div></div>
+      <div class="tec-col tec-col-C"><div class="tec-letter">C</div><div class="tec-name">CONTINUIDAD</div><div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--cC);">${avgC}</div><div class="tec-score">${db.length} días</div></div>`;
+  }
+
+  // Lista registros
+  const list = document.getElementById('histList');
+  if (db.length===0){list.innerHTML='<div class="hist-empty">Aún no hay registros.</div>';return;}
+  list.innerHTML = [...db].reverse().map((r,i)=>`
+    <div class="hist-entry">
+      <div class="hist-head">
+        <span class="hist-fecha">${r.fecha}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="hist-scores">
+            <span class="hist-badge hb-L">L ${r.L}/5</span>
+            <span class="hist-badge hb-D">D ${r.D}/5</span>
+            <span class="hist-badge hb-C">C ${r.C}/5</span>
+          </div>
+          <button class="hist-del" onclick="borrarRegistro(${db.length-1-i})">✕</button>
+        </div>
+      </div>
+      <div class="hist-detail">
+        ✋ Paradas: ${r.paradas} (asertivas: ${r.asertivas}) · 🫁 Resp: ${r.respHechas}/8 · 🔁 Rutina: ${r.rutina?r.rutina.filter(Boolean).length:0}/3
+        ${r.nota?'<br>✏️ '+r.nota:''}
+      </div>
+    </div>`).join('');
+}
+
+function buildChart(db) {
+  const N = Math.min(db.length, 30);
+  const data = db.slice(-N);
+  const W = Math.max(300, Math.min(600, N * 40));
+  const H = 140;
+  const pad = {t:10,r:16,b:24,l:24};
+  const cw = W - pad.l - pad.r;
+  const ch = H - pad.t - pad.b;
+  const x = i => pad.l + (i/(N-1||1))*cw;
+  const y = v => pad.t + ch - (v/5)*ch;
+  const line = (key, color) => {
+    const pts = data.map((r,i)=>x(i)+','+y(r[key])).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>`;
+  };
+  const dots = (key, color) => data.map((r,i)=>`<circle cx="${x(i)}" cy="${y(r[key])}" r="3.5" fill="${color}"/>`).join('');
+  const xLabels = data.map((r,i)=>{
+    if(N<=7||i===0||i===N-1||i%Math.ceil(N/5)===0) return `<text x="${x(i)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9AA3AF">${r.fecha.slice(0,5)}</text>`;
+    return '';
+  }).join('');
+  const yGrid = [0,1,2,3,4,5].map(v=>`<line x1="${pad.l}" y1="${y(v)}" x2="${W-pad.r}" y2="${y(v)}" stroke="#EEF3F8" stroke-width="1"/><text x="${pad.l-4}" y="${y(v)+3}" text-anchor="end" font-size="9" fill="#C0CAD4">${v}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Sans',sans-serif;">
+    ${yGrid}
+    ${line('L','#b83232')}${line('D','#3257b8')}${line('C','#1f7a30')}
+    ${dots('L','#b83232')}${dots('D','#3257b8')}${dots('C','#1f7a30')}
+    ${xLabels}
+  </svg>`;
+}
+
+function borrarRegistro(idx){
+  if(!confirm('¿Borrar este registro?'))return;
+  const db=getDB(); db.splice(idx,1); setDB(db); renderHist();
+}
+
+function confirmarBorrar(){
+  if(!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.'))return;
+  localStorage.removeItem(CFG.storageKey); renderHist(); toast('Historial borrado');
+}
+
+// ════════════════════════════════════════
+//  EXPORT / IMPORT
+// ════════════════════════════════════════
+function exportar(){
+  const payload={app:'APRENS_TEC',version:1,paciente:CFG.paciente,exportado:new Date().toISOString(),registros:getDB()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='APRENS_TEC_'+CFG.paciente.replace(/\s/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast('✓ Exportado');
+}
+
+function importar(input){
+  const file=input.files&&input.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const o=JSON.parse(e.target.result);
+      if(!o||o.app!=='APRENS_TEC'||!o.registros)throw 0;
+      const db=getDB();const cl=new Set(db.map(r=>r.fecha));
+      let added=0;
+      o.registros.forEach(rec=>{if(!cl.has(rec.fecha)){db.push(rec);added++;}});
+      db.sort((a,b)=>a.ts-b.ts); setDB(db);
+      renderHist(); toast('✓ Importado: '+added+' registros nuevos');
+    }catch{toast('❌ Archivo no válido');}
+    input.value='';
+  };
+  r.readAsText(file);
+}
+
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>

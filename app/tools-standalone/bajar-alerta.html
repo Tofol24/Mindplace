@@ -46,9 +46,13 @@ body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 
 
 /* respiración */
 .breath{display:flex;flex-direction:column;align-items:center;margin:6px 0 18px;}
-.ring{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 70%);border:4px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transform:scale(1);}
-.ring span{font-family:'Playfair Display',serif;color:var(--azul);font-size:17px;font-weight:700;}
-.breath-hint{font-size:14px;color:var(--gris);margin-top:14px;}
+.ring{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 70%);border:4px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transform:scale(1);will-change:transform;}
+.ring.inhale{border-color:#7fb3de;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 72%);}
+.ring.exhale{border-color:#7fb08f;background:radial-gradient(circle,#D6EEDD 0%,#EAF6EF 72%);}
+.ring span{font-family:'Playfair Display',serif;color:var(--azul);font-size:17px;font-weight:700;transition:color .6s;}
+.ring.exhale span{color:var(--verde);}
+.breath-hint{font-size:14px;color:var(--gris);margin-top:16px;}
+.breath-count{font-size:12.5px;color:var(--gris);margin-top:5px;font-weight:600;letter-spacing:.3px;min-height:16px;}
 
 /* escala / termómetro */
 .scale-wrap{margin:8px 0 8px;}
@@ -168,17 +172,25 @@ function emojiNivel(v){return v<=2?"😌":v<=4?"🙂":v<=6?"😐":v<=8?"😟":"�
 /* Respiración guiada ADAPTADA al nivel de alerta inicial (0-10): más alerta →
    exhalación más larga y sin retenciones; menos → coherente ~6/min */
 function ritmoResp(frac){ if(frac>=0.8)return[2,0,6,0]; if(frac>=0.6)return[3,1,6,1]; if(frac>=0.4)return[4,2,6,2]; return[5,0,5,0]; }
-function fasesDe(r){ var f=[{txt:"Coge aire",dur:r[0]*1000,scale:1.34}]; if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:1.34}); f.push({txt:"Suelta",dur:r[2]*1000,scale:1.0}); if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:1.0}); return f; }
+function fasesDe(r){ var IN=1.32, OUT=0.68;
+  var f=[{txt:"Coge aire",dur:r[0]*1000,scale:IN,kind:'in'}];
+  if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:IN,kind:'in'});
+  f.push({txt:"Suelta",dur:r[2]*1000,scale:OUT,kind:'out'});
+  if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:OUT,kind:'out'});
+  return f; }
 function hintDe(r){ var s="Coge aire "+r[0]+"s"; if(r[1]>0)s+=" · retén "+r[1]+"s"; s+=" · suelta "+r[2]+"s"; if(r[3]>0)s+=" · pausa "+r[3]+"s"; return s; }
-let FASES_RESP=[], respIdx=0, respTimer=null;
-function startBreath(){ stopBreath(); var r=ritmoResp((nivelIni||5)/10); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; runResp(); }
+let FASES_RESP=[], respIdx=0, respTimer=null, respCiclos=0;
+function startBreath(){ stopBreath(); var r=ritmoResp((nivelIni||5)/10); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCiclos=0; var c=document.getElementById('respCount'); if(c)c.textContent="Respiración 1"; runResp(); }
 function runResp(){
   var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
   var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
-  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out';
+  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out, background .8s ease, border-color .8s ease';
   ring.style.transform='scale('+f.scale+')';
+  ring.classList.toggle('inhale', f.kind==='in');
+  ring.classList.toggle('exhale', f.kind==='out');
   if(lbl) lbl.textContent=f.txt;
   respIdx=(respIdx+1)%FASES_RESP.length;
+  if(respIdx===0){ respCiclos++; var c=document.getElementById('respCount'); if(c)c.textContent="Respiración "+(respCiclos+1); }
   respTimer=setTimeout(runResp,f.dur);
 }
 function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
@@ -218,7 +230,7 @@ function pasoView(){
   if(s.tipo==="ok"){
     cuerpo=`<button class="btn big green" onclick="next()">${s.btn}</button>`;
   } else if(s.tipo==="ancla"){
-    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Respira</span></div><div class="breath-hint" id="respHint">Respira con el círculo</div></div>
+    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Respira</span></div><div class="breath-hint" id="respHint">Respira con el círculo</div><div class="breath-count" id="respCount"></div></div>
       <div class="opts">${ANCLAS.map((o,i)=>opt('ancla',i,o)).join("")}</div>
       ${MAPA_SVG}
       <button class="btn big green" onclick="next()">Siguiente →</button>`;

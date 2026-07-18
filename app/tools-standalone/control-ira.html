@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1B4F8C">
+<title>Autorregistre · APRENS</title>
+<style>
+:root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--oro:#C8973A;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;margin:0;padding-bottom:env(safe-area-inset-bottom);}
+.header{background:var(--azul);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
+.hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
+.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
+.wrap{max-width:520px;margin:0 auto;padding:20px 18px 40px;}
+.dots{display:flex;gap:8px;justify-content:center;margin-bottom:22px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#D6DEE9;transition:.3s;}
+.dot.on{background:var(--oro);transform:scale(1.25);} .dot.done{background:var(--verde);}
+.step{text-align:center;animation:fade .3s;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.step-ico{font-size:60px;line-height:1;margin:6px 0 10px;}
+.step-tit{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--azul);margin:0 0 6px;}
+.step-sub{font-size:16px;color:#3a3f52;line-height:1.5;margin:0 auto 18px;max-width:360px;}
+.btn{border:none;border-radius:40px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none;}
+.big{width:100%;padding:19px;font-size:18px;background:var(--azul);color:#fff;box-shadow:0 6px 18px rgba(27,79,140,.32);}
+.big.green{background:var(--verde);box-shadow:0 6px 18px rgba(46,125,94,.32);}
+.big:disabled{opacity:.45;box-shadow:none;}
+.big:active{transform:scale(.97);}
+.mini{background:transparent;color:var(--gris);font-size:14px;padding:10px;font-weight:600;}
+/* escala 1-5 nivell */
+.niv{display:flex;gap:8px;margin:6px 0 20px;}
+.niv .n{flex:1;background:#fff;border:2px solid #E3EAF3;border-radius:16px;padding:14px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.12s;}
+.niv .n .em{font-size:30px;line-height:1;} .niv .n .t{font-size:10px;color:var(--gris);font-weight:600;line-height:1.1;}
+.niv .n:active{transform:scale(.95);}
+.niv .n.sel{border-color:var(--naranja);background:#FFF3EC;box-shadow:0 0 0 3px #FAD9C4 inset;}
+.niv .n.sel .t{color:var(--naranja);}
+.niv.fin .n.sel{border-color:var(--verde);background:#EAF7F0;box-shadow:0 0 0 3px #CDEBDD inset;}
+.niv.fin .n.sel .t{color:var(--verde);}
+/* opcions grans */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 20px;}
+.opt{background:#fff;border:2px solid #E3EAF3;border-radius:18px;padding:16px 10px;font-size:14.5px;font-weight:600;color:#33384a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.12s;}
+.opt .em{font-size:28px;line-height:1;}
+.opt:active{transform:scale(.96);}
+.opt.sel{border-color:var(--verde);background:#EAF7F0;color:var(--verde);box-shadow:0 0 0 3px #CDEBDD inset;}
+/* respiració */
+.breath{display:flex;flex-direction:column;align-items:center;margin:6px 0 20px;}
+.ring{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 70%);border:4px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transform:scale(1);will-change:transform;}
+.ring.inhale{border-color:#7fb3de;background:radial-gradient(circle,#CFE4F7 0%,#EAF2FB 72%);}
+.ring.exhale{border-color:#7fb08f;background:radial-gradient(circle,#D6EEDD 0%,#EAF6EF 72%);}
+.ring span{font-family:'Playfair Display',serif;color:var(--azul);font-size:17px;font-weight:700;transition:color .6s;}
+.ring.exhale span{color:var(--verde);}
+.breath-hint{font-size:14px;color:var(--gris);margin-top:16px;}
+.breath-count{font-size:12.5px;color:var(--gris);margin-top:5px;font-weight:600;letter-spacing:.3px;min-height:16px;}
+.parar-ja{margin-top:12px;color:var(--rojo);font-size:14.5px;font-weight:700;}
+/* resultat */
+.res{background:var(--azul);color:#fff;border-radius:22px;padding:26px;text-align:center;margin-bottom:18px;}
+.res-row{display:flex;justify-content:center;align-items:center;gap:22px;}
+.res-big{font-family:'Playfair Display',serif;font-size:46px;font-weight:700;line-height:1;}
+.res-lbl{font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:.85;}
+.res-msg{font-size:15px;line-height:1.5;text-align:center;color:#33384a;margin:0 0 18px;}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 20px rgba(27,79,140,.08);margin-bottom:16px;}
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.bwa{background:#25D366;color:#fff;padding:15px 22px;font-size:16px;}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:13px 20px;font-size:15px;}
+.cbox{display:none;}
+.frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 12px 12px 0;border-left:4px solid var(--oro);padding:13px 15px;line-height:1.6;margin-top:18px;text-align:center;}
+/* Àncora visual: mapa intern (SVG) */
+.mapa-tit{font-size:14px;font-weight:600;color:var(--azul);text-align:center;margin:8px 0 2px;}
+.mapa-sub{font-size:13px;color:var(--gris);text-align:center;line-height:1.5;margin-bottom:6px;}
+.mapa{display:flex;justify-content:center;margin:4px 0;}
+.mapa svg{width:100%;max-width:180px;height:auto;display:block;}
+.zone{cursor:pointer;}
+.zone .zbg{fill-opacity:.10;transition:fill-opacity .2s;}
+.zone:hover .zbg{fill-opacity:.2;}
+.zone.sel .zbg{fill-opacity:.3;}
+.zone .organ{transition:filter .2s;}
+.zone:hover .organ{filter:drop-shadow(0 0 3px currentColor);}
+.zone.sel .organ{filter:drop-shadow(0 0 5px currentColor);}
+.zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25));}
+.ancla-msg{display:none;margin:8px 0 2px;background:#EAF7F0;border-left:4px solid var(--verde);border-radius:0 11px 11px 0;padding:11px 14px;font-size:14px;color:#1e5e44;line-height:1.5;font-weight:600;}
+.ancla-msg.show{display:block;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div><div class="htitle">Com estic ara?</div></div>
+</div>
+<div class="wrap" id="app"></div>
+
+<script>
+let vista="intro", paso=0;
+let nivell=0, nivellPost=0, que="", cos=[], canal="", anclaZona="";
+const app=document.getElementById("app");
+
+const ZNOM={cuello:"Coll (gola i clatell)",pecho:"Pit (cor i pulmons)",barriga:"Panxa (estómac i intestins)"};
+const ZMSG={
+  cuello:"Porta la mirada al coll. Mentre respires, intenta SENTIR la gola i el clatell per dins. Quan ho localitzis, deixa anar la imatge.",
+  pecho:"Porta la mirada al pit. Mentre respires, intenta SENTIR el batec i l'aire per dins. Quan ho localitzis, deixa anar la imatge.",
+  barriga:"Porta la mirada a la panxa. Mentre respires, deixa que l'aire hi baixi i intenta SENTIR-la per dins. Quan ho localitzis, deixa anar la imatge."
+};
+const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="font-weight:400;color:var(--gris)">· opcional</span></div>
+<div class="mapa-sub">Mira una zona del cos i porta-hi l'atenció mentre respires. La imatge és la rampa; després intenta sentir-la.</div>
+<div class="mapa">
+  <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cos amb tres zones">
+    <defs><linearGradient id="bodyGradI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaeff3"/><stop offset="1" stop-color="#dbe4ea"/></linearGradient></defs>
+    <g fill="url(#bodyGradI)" stroke="#cdd7df" stroke-width="1.4">
+      <ellipse cx="110" cy="46" rx="29" ry="33"/>
+      <rect x="98" y="72" width="24" height="22" rx="8"/>
+      <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
+      <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
+      <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
+    </g>
+    <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Coll" onclick="setZona('cuello')">
+      <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
+      <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
+        <ellipse cx="110" cy="80" rx="9" ry="7"/><path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
+        <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/><line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/><line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
+      </g>
+      <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+    </g>
+    <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pit" onclick="setZona('pecho')">
+      <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
+      <g class="organ">
+        <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+        <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
+        <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
+        <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+    </g>
+    <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Panxa" onclick="setZona('barriga')">
+      <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
+      <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
+        <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
+        <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
+      </g>
+      <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
+      <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+    </g>
+  </svg>
+</div>
+<div class="ancla-msg" id="zonaMsg"></div>`;
+
+const NIVELLS=[["😌","Tranquil"],["🙂","Una mica"],["😐","Activat"],["😠","Molt activat"],["😡","Al límit"]];
+const PASO={
+  respira:{ico:"🫁", tit:"Para i respira", sub:"Respira amb el cercle abans de fer res."},
+  que:{ico:"❓", tit:"Què ha passat?", sub:"Toca el que més s'acosti (opcional)."},
+  cos:{ico:"🫀", tit:"On ho notes?", sub:"Toca les zones del cos (les que vulguis)."},
+  canal:{ico:"🧭", tit:"Canalitza-ho", sub:"Tria una manera de baixar l'activació."}
+};
+/* En activació alta (nivell 4-5) el flux és NOMÉS parar i respirar; l'autorregistre
+   (què/cos/canal) s'ofereix DESPRÉS i és opcional. En nivell 1-3, flux complet. */
+let plan=["respira","que","cos","canal"], apuntMode=false, apuntFet=false;
+const QUES=[["💬","M'han dit una cosa"],["📌","Una norma o ordre"],["🏠","A casa"],["💼","A la feina"],["🚦","Una injustícia"],["❓","Una altra cosa"]];
+const COSOS=[["🧠","Cap / gàngols"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"]];
+const CANALS=[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"]];
+
+/* Respiració guiada ADAPTADA al nivell d'activació inicial (evidència: més
+   activació → exhalació més llarga i sense retencions; menys → coherent ~6/min) */
+function ritmoResp(frac){ if(frac>=0.8)return[2,0,6,0]; if(frac>=0.6)return[3,1,6,1]; if(frac>=0.4)return[4,2,6,2]; return[5,0,5,0]; }
+/* El cercle es plena (inspirar → gran) i es buida (espirar → petit): l'amplitud
+   acompanya l'aire. Color blau en inspirar, verd en espirar. */
+function fasesDe(r){ var IN=1.32, OUT=0.68;
+  var f=[{txt:"Agafa aire",dur:r[0]*1000,scale:IN,kind:'in'}];
+  if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:IN,kind:'in'});
+  f.push({txt:"Deixa anar",dur:r[2]*1000,scale:OUT,kind:'out'});
+  if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:OUT,kind:'out'});
+  return f; }
+function hintDe(r){ var s="Agafa aire "+r[0]+"s"; if(r[1]>0)s+=" · retén "+r[1]+"s"; s+=" · deixa anar "+r[2]+"s"; if(r[3]>0)s+=" · pausa "+r[3]+"s"; return s; }
+let FASES_RESP=[], respIdx=0, respTimer=null, respCicles=0;
+function startBreath(){ stopBreath(); var r=ritmoResp((nivell||3)/5); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCicles=0; var c=document.getElementById('respCount'); if(c)c.textContent="Respiració 1"; runResp(); }
+function runResp(){
+  var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
+  var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
+  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out, background .8s ease, border-color .8s ease';
+  ring.style.transform='scale('+f.scale+')';
+  ring.classList.toggle('inhale', f.kind==='in');
+  ring.classList.toggle('exhale', f.kind==='out');
+  if(lbl) lbl.textContent=f.txt;
+  respIdx=(respIdx+1)%FASES_RESP.length;
+  if(respIdx===0){ respCicles++; var c=document.getElementById('respCount'); if(c)c.textContent="Respiració "+(respCicles+1); }
+  respTimer=setTimeout(runResp,f.dur);
+}
+function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
+
+function render(){ stopBreath(); if(vista==="intro")return intro(); if(vista==="paso")return pasoView(); if(vista==="resultado")return resultado(); }
+
+function intro(){
+  app.innerHTML=`
+    <div class="step">
+      <div class="step-ico">🌡️</div>
+      <div class="step-tit">Com estàs d'activat/da?</div>
+      <div class="step-sub">Quan notis que la ràbia puja. Toca el teu nivell ara.</div>
+    </div>
+    <div class="niv">${NIVELLS.map((o,i)=>nivBtn(i,o,false)).join("")}</div>
+    <button class="btn big" id="goBtn" onclick="empezar()" ${nivell?'':'disabled'}>Començar →</button>
+    <div style="text-align:center"><button class="btn parar-ja" onclick="pararJa()">🫁 Necessito parar ja</button></div>`;
+}
+function nivBtn(i,o,fin){return `<div class="n ${((fin?nivellPost:nivell)===i+1)?'sel':''}" onclick="setNiv(${i+1},${fin})"><span class="em">${o[0]}</span><span class="t">${o[1]}</span></div>`;}
+function setNiv(v,fin){ if(fin)nivellPost=v; else nivell=v; render(); }
+/* nivell 4-5 → només parar i respirar; 1-3 → flux complet */
+function empezar(){ if(!nivell)return; plan = nivell>=4 ? ["respira"] : ["respira","que","cos","canal"]; apuntMode=false; apuntFet=false; vista="paso";paso=0;render();scrollTo(0,0); }
+function pararJa(){ if(!nivell)nivell=4; plan=["respira"]; apuntMode=false; apuntFet=false; vista="paso";paso=0;render();scrollTo(0,0); }
+function startApunt(){ plan=["que","cos","canal"]; apuntMode=true; paso=0; vista="paso"; render(); scrollTo(0,0); }
+
+function dotsHTML(){ if(plan.length<2) return ""; let h="";for(let i=0;i<plan.length;i++)h+=`<div class="dot ${i<paso?'done':i===paso?'on':''}"></div>`;return `<div class="dots">${h}</div>`;}
+function pasoView(){
+  const tipo=plan[paso], s=PASO[tipo], last=paso===plan.length-1; let cuerpo="";
+  if(tipo==="respira"){
+    const mostraMapa = plan.length>1;   // en «parar ja» / activació alta, només el cercle
+    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Prepara't</span></div><div class="breath-hint" id="respHint">Respira amb el cercle</div><div class="breath-count" id="respCount"></div></div>
+      ${mostraMapa?MAPA_SVG:''}
+      <button class="btn big green" onclick="next()">${last?"Ja estic millor →":"Ja estic →"}</button>`;
+  } else if(tipo==="que"){
+    cuerpo=`<div class="opts">${QUES.map((o,i)=>opt('que',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">${last?"Gairebé →":"Següent →"}</button>`;
+  } else if(tipo==="cos"){
+    cuerpo=`<div class="opts">${COSOS.map((o,i)=>opt('cos',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">${last?"Gairebé →":"Següent →"}</button>`;
+  } else if(tipo==="canal"){
+    cuerpo=`<div class="opts">${CANALS.map((o,i)=>opt('canal',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">Gairebé →</button>`;
+  }
+  app.innerHTML=`${dotsHTML()}
+    <div class="step"><div class="step-ico">${s.ico}</div><div class="step-tit">${s.tit}</div><div class="step-sub">${s.sub}</div></div>
+    ${cuerpo}
+    <div style="text-align:center;margin-top:6px"><button class="btn mini" onclick="prev()">← Enrere</button></div>`;
+  marcarSel();
+  if(tipo==="respira"){ startBreath(); restaurarZona(); }
+}
+function setZona(k){
+  anclaZona=k;
+  document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===k));
+  const m=document.getElementById('zonaMsg');
+  if(m){m.textContent=ZMSG[k];m.classList.add('show');}
+}
+function restaurarZona(){
+  document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===anclaZona));
+  const m=document.getElementById('zonaMsg');
+  if(m){ if(anclaZona){m.textContent=ZMSG[anclaZona];m.classList.add('show');} else {m.classList.remove('show');m.textContent='';} }
+}
+function opt(grupo,i,o){return `<button class="opt" data-g="${grupo}" onclick="pick('${grupo}','${o[1].replace(/'/g,"\\'")}')"><span class="em">${o[0]}</span>${o[1]}</button>`;}
+function pick(grupo,val){
+  if(grupo==="que")que=val;
+  else if(grupo==="canal")canal=val;
+  else if(grupo==="cos"){const k=cos.indexOf(val);if(k>=0)cos.splice(k,1);else cos.push(val);}
+  marcarSel();
+}
+function marcarSel(){
+  document.querySelectorAll('.opt').forEach(b=>{
+    const g=b.dataset.g, lbl=b.textContent.trim();
+    let on=false;
+    if(g==="que")on=(que && lbl.includes(que));
+    else if(g==="canal")on=(canal && lbl.includes(canal));
+    else if(g==="cos")on=cos.some(v=>lbl.includes(v));
+    b.classList.toggle('sel',on);
+  });
+}
+function next(){
+  if(paso<plan.length-1){paso++;render();scrollTo(0,0);return;}
+  if(apuntMode){ apuntMode=false; apuntFet=true; verResultat(); scrollTo(0,0); return; }
+  vista="resultado"; if(!nivellPost)nivellPost=nivell; render(); scrollTo(0,0);
+}
+function prev(){
+  if(paso===0){ if(apuntMode){ apuntMode=false; verResultat(); scrollTo(0,0); return; } vista="intro"; render(); }
+  else { paso--; render(); }
+  scrollTo(0,0);
+}
+
+function resultado(){
+  app.innerHTML=`
+    <div class="step" style="margin-bottom:6px"><div class="step-ico">🌤️</div><div class="step-tit">Com estàs ara?</div></div>
+    <div class="niv fin">${NIVELLS.map((o,i)=>nivBtn(i,o,true)).join("")}</div>
+    <button class="btn big green" onclick="verResultat()">Veure com ha anat →</button>`;
+}
+function verResultat(){
+  const canvi=nivell-nivellPost;
+  const ara=new Date();
+  const data=ara.toLocaleDateString('ca',{weekday:'long',day:'numeric',month:'long'})+" "+ara.toLocaleTimeString('ca',{hour:'2-digit',minute:'2-digit'});
+  const L=["AUTORREGISTRE APRENS · "+data,
+    "Nivell inicial: "+NIVELLS[nivell-1][0]+" "+NIVELLS[nivell-1][1]+" ("+nivell+"/5)"];
+  if(que)L.push("Desencadenant: "+que);
+  if(cos.length)L.push("Sensació corporal: "+cos.join(", "));
+  if(anclaZona)L.push("Àncora visual (mirar dins): "+ZNOM[anclaZona]);
+  if(canal)L.push("Tècnica: "+canal+" ✅");
+  L.push("Nivell final: "+NIVELLS[nivellPost-1][0]+" "+NIVELLS[nivellPost-1][1]+" ("+nivellPost+"/5)");
+  L.push("— APRENS Psicologia · aprens.es");
+  const msg=L.join("\n");
+
+  const txt = canvi>0
+    ? `Has baixat <b>${canvi} ${canvi===1?'punt':'punts'}</b> d'activació. Has regulat la ràbia abans d'actuar. 👏`
+    : `Avui no ha baixat en número, i també està bé: has parat i t'has acompanyat. Amb la pràctica, el cos respon abans.`;
+
+  app.innerHTML=`
+    <div class="res"><div class="res-row">
+      <div><div class="res-lbl">Abans</div><div class="res-big">${nivell}</div></div>
+      <div style="font-size:30px;opacity:.7">→</div>
+      <div><div class="res-lbl">Ara</div><div class="res-big">${nivellPost}</div></div>
+    </div></div>
+    <p class="res-msg">${txt}</p>
+    <div class="card">
+      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ Quan enviar-m'ho?</b> Tan bon punt acabis, <b>envia-m'ho en aquell moment</b>. Aquesta eina s'usa quan et passa alguna cosa.</div>
+      <div class="acc">
+        <a class="btn bwa" href="#" onclick="obrirWA(event)">📱 Enviar al meu psicòleg/a</a>
+        <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+      </div>
+      <div id="msgBox" class="cbox">${msg.replace(/</g,'&lt;')}</div>
+      ${(plan.indexOf('que')<0 && !apuntFet) ? '<div style="text-align:center;margin-top:12px"><button class="btn mini" style="color:var(--azul)" onclick="startApunt()">✍️ Vols apuntar què ha passat? <span style="font-weight:400">(opcional)</span></button></div>' : ''}
+      <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">↺ Fer-ho un altre cop</button></div>
+    </div>
+    <div class="frase">«On dirigeixo la meva atenció, allà vaig jo.»<br>Practica-ho també en moments tranquils: així ho tens a punt quan ho necessitis.</div>`;
+  scrollTo(0,0);
+}
+function reiniciar(){ vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];canal="";anclaZona="";plan=["respira","que","cos","canal"];apuntMode=false;apuntFet=false;render();scrollTo(0,0); }
+
+function obrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function copiar(btn){
+  const t=document.getElementById("msgBox").textContent;
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiat";setTimeout(()=>btn.textContent="📋 Copiar",2000);});}
+  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiat";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
+}
+
+render();
+</script>
+</body>
+</html>
