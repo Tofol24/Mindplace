@@ -61,7 +61,11 @@ window.APRENS_TOOLS = [
 
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",
     desc:"El cuerpo como mapa: cuello, pecho y barriga (interocepción AIS).",
-    migrada:true, iframe:"tools-standalone/mapa-interno.html" }
+    migrada:true, iframe:"tools-standalone/mapa-interno.html" },
+
+  { id:"honestidad_emocional", emoji:"🤍", nombre:"Honestidad emocional",
+    desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, suspender el porqué, compartir y elegir (AIS).",
+    migrada:true, iframe:"honestidad/index.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];

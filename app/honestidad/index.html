@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F4EFE6">
+<meta name="description" content="Honestidad emocional desde dentro · APRENS (TEC · AIS). Una experiencia para acompañar lo que sientes antes de explicarlo.">
+<title>Honestidad emocional desde dentro · APRENS</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<header class="brandbar">
+  <span class="brand"><b>APRENS</b><span class="tec">TEC · AIS</span></span>
+  <span class="brand" style="letter-spacing:.14em;opacity:.7">Honestidad emocional</span>
+</header>
+
+<main>
+
+  <!-- ═══════════ PORTADA ═══════════ -->
+  <section class="hero">
+    <img src="assets/images/portada-entrada.webp" width="2000" height="1333" fetchpriority="high"
+         alt="Una persona detenida unos segundos en la calle, antes de entrar en casa, con la mirada baja y gesto sereno.">
+    <div class="hero-copy">
+      <p class="eyebrow">Honestidad emocional</p>
+      <h1>Honestidad emocional<br>desde dentro</h1>
+      <p class="hero-tag">Primero acompaño. Después, si hace falta, comprendo.</p>
+    </div>
+    <a href="#lede" class="scrollcue" aria-label="Empezar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12l6 6 6-6"/></svg></a>
+  </section>
+
+  <!-- ═══════════ ENTRADA EDITORIAL ═══════════ -->
+  <section class="lede" id="lede">
+    <div class="wrap">
+      <p class="serif-quote reveal">No se trata de entender lo que sientes.<br>Se trata de estar con ello.</p>
+      <p class="lead reveal">La honestidad emocional no empieza explicando. Empieza acompañando lo que aparece en el cuerpo, sin exigirle todavía que tenga sentido.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 1 · SENTIR ═══════════ -->
+  <section class="step">
+    <div class="wrap">
+      <div class="split">
+        <div class="col-img reveal">
+          <figure>
+            <img src="assets/images/sentir-mano-pecho.webp" width="1200" height="1500" loading="lazy"
+                 alt="Plano cercano de una persona sentada con una mano apoyada sobre el pecho, respirando con calma en un espacio cotidiano.">
+            <figcaption class="figcap">Apoya la atención donde el cuerpo habla.</figcaption>
+          </figure>
+        </div>
+        <div class="col-txt reveal">
+          <span class="num">Uno</span>
+          <h2>Siente dónde</h2>
+          <p>Antes de nombrar nada, lleva una mano a donde lo notes. No busques la respiración perfecta ni una postura de meditación: solo deja la atención donde el cuerpo pesa, aprieta o se mueve.</p>
+          <div class="wordset" role="group" aria-label="¿Dónde lo notas?">
+            <button class="word" data-group="zona" data-val="Pecho" aria-pressed="false">Pecho</button>
+            <button class="word" data-group="zona" data-val="Garganta" aria-pressed="false">Garganta</button>
+            <button class="word" data-group="zona" data-val="Vientre" aria-pressed="false">Vientre</button>
+            <button class="word" data-group="zona" data-val="Hombros" aria-pressed="false">Hombros</button>
+            <button class="word" data-group="zona" data-val="Manos" aria-pressed="false">Manos</button>
+            <button class="word" data-group="zona" data-val="Otra zona" aria-pressed="false">Otra zona</button>
+          </div>
+          <div class="scale">
+            <div class="scale-top"><span class="cap">Cuánto lo notas ahora</span><span class="n" id="intAntesN">5</span></div>
+            <input type="range" min="0" max="10" value="5" id="intAntes" aria-label="Intensidad ahora">
+            <div class="ends"><span>Apenas</span><span>Mucho</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 2 · DESCRIBIR ═══════════ -->
+  <section class="band tint">
+    <img src="assets/images/describir-textura.webp" width="1200" height="800" loading="lazy"
+         alt="Macrofotografía de una textura cálida —pliegues de tela con luz lateral— que sugiere presión y peso, sin representar ninguna emoción concreta.">
+    <div class="band-copy reveal">
+      <p class="eyebrow" style="color:#f2d9b8">Dos</p>
+      <h2 style="font-size:clamp(28px,5vw,52px)">Ponle textura,<br>no motivo</h2>
+      <p class="lead" style="color:#efe6d8;max-width:40ch;margin-top:16px">¿Cómo es por dentro? No <em>por qué</em> está: <em>cómo</em> es. Elige las palabras que se acerquen.</p>
+      <div class="wordset" role="group" aria-label="¿Cómo es la sensación?" style="margin-top:22px">
+        <button class="word" data-group="cualidad" data-val="Presión" aria-pressed="false" style="color:#e8dccb">Presión</button>
+        <button class="word" data-group="cualidad" data-val="Calor" aria-pressed="false" style="color:#e8dccb">Calor</button>
+        <button class="word" data-group="cualidad" data-val="Vacío" aria-pressed="false" style="color:#e8dccb">Vacío</button>
+        <button class="word" data-group="cualidad" data-val="Tensión" aria-pressed="false" style="color:#e8dccb">Tensión</button>
+        <button class="word" data-group="cualidad" data-val="Movimiento" aria-pressed="false" style="color:#e8dccb">Movimiento</button>
+        <button class="word" data-group="cualidad" data-val="Peso" aria-pressed="false" style="color:#e8dccb">Peso</button>
+        <button class="word" data-group="cualidad" data-val="Nudo" aria-pressed="false" style="color:#e8dccb">Nudo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 3 · SUSPENDER EL PORQUÉ ═══════════ -->
+  <section class="band">
+    <img src="assets/images/suspender-ventana.webp" width="2000" height="1125" loading="lazy"
+         alt="Luz natural entrando por una ventana abierta hacia un espacio tranquilo; una puerta antes de cruzarla.">
+    <div class="band-copy reveal">
+      <p class="eyebrow" style="color:#f2d9b8">Tres</p>
+      <h2 style="color:#fff;font-size:clamp(28px,5vw,52px)">Suspende el porqué</h2>
+      <p class="lead" style="color:#f1e8da;max-width:40ch;margin-top:16px">Por un momento, deja de buscar la causa. No hace falta resolverlo para poder sostenerlo. Respira una vez, sin cambiar nada, y quédate mirando.</p>
+      <p style="margin-top:26px"><span class="pausa">…solo estar, unos segundos más.</span></p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 4 · COMPARTIR ═══════════ -->
+  <section class="step">
+    <div class="wrap">
+      <div class="split reverse">
+        <div class="col-img reveal">
+          <figure>
+            <img src="assets/images/compartir-vinculo.webp" width="1200" height="900" loading="lazy"
+                 alt="Dos personas sentadas una junto a otra en un espacio cotidiano, conversando con calma, sin contacto visual forzado.">
+            <figcaption class="figcap">Compartir no es explicar: es dejar entrar.</figcaption>
+          </figure>
+        </div>
+        <div class="col-txt reveal">
+          <span class="num">Cuatro</span>
+          <h2>Compártelo,<br>sin justificarlo</h2>
+          <p class="saying">«No sé por qué… pero noto algo aquí, y quería compartirlo contigo.»</p>
+          <p style="margin-top:22px">No necesitas entenderlo ni explicarlo. Basta con nombrar la sensación y abrir la puerta a alguien a quien quieres.</p>
+          <div class="field">
+            <label for="conQuien">¿Con quién?</label>
+            <input type="text" id="conQuien" placeholder="mi pareja, mi madre, un amigo…">
+          </div>
+          <div class="field">
+            <label for="queDices">Qué notas / qué le dirías</label>
+            <textarea id="queDices" rows="2" placeholder="una presión en el pecho, ganas de que me escuchen…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 5 · VALORAR Y ELEGIR ═══════════ -->
+  <section class="step">
+    <div class="wrap">
+      <div class="split">
+        <div class="col-img reveal">
+          <figure>
+            <img src="assets/images/valorar-movimiento.webp" width="1200" height="1500" loading="lazy"
+                 alt="Una persona caminando hacia una puerta abierta con luz al fondo, retomando el movimiento con la sensación aún presente.">
+            <figcaption class="figcap">La sensación sigue; tú recuperas el rumbo.</figcaption>
+          </figure>
+        </div>
+        <div class="col-txt reveal">
+          <span class="num">Cinco</span>
+          <h2>Elige tu dirección</h2>
+          <p>La sensación puede seguir ahí. Y aun así, tú decides el siguiente paso hacia lo que te importa. Pequeño, concreto, posible ahora.</p>
+          <div class="field">
+            <label for="pasoValor">Un paso en tu dirección</label>
+            <input type="text" id="pasoValor" placeholder="llamar a…, salir a caminar, retomar…">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CIERRE / GUARDAR ═══════════ -->
+  <section class="close">
+    <div class="wrap">
+      <p class="eyebrow reveal">Antes de cerrar</p>
+      <h2 class="reveal">Vuelve a ti cuando quieras</h2>
+      <p class="lead reveal" style="max-width:52ch">Esto no sustituye la conversación con tu psicólogo/a: es un modo de acompañarte entre sesiones. Si quieres, guarda cómo ha ido para revisarlo juntos.</p>
+      <div class="scale reveal" style="max-width:420px">
+        <div class="scale-top"><span class="cap">Cuánto lo notas ahora</span><span class="n" id="intDespuesN">5</span></div>
+        <input type="range" min="0" max="10" value="5" id="intDespues" aria-label="Intensidad al terminar">
+        <div class="ends"><span>Apenas</span><span>Mucho</span></div>
+      </div>
+      <div class="codebox reveal">
+        <label for="codigo">Tu código</label>
+        <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="actions reveal">
+        <button class="btn btn-primary" id="btnCompartir">Compartir con mi psicólogo/a</button>
+        <button class="btn btn-ghost" id="btnGuardar">Guardar (.json)</button>
+      </div>
+      <p class="saved" id="saved"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b> — Honestidad emocional desde dentro.<br>
+  Tus datos se guardan <b>solo en este dispositivo</b>: no se envían a ningún servidor. Esta herramienta acompaña, no diagnostica ni sustituye la atención profesional.
+</footer>
+
+<script src="assets/js/aprens-core.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
