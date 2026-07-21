@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v18";
+const CACHE = "aprens-v19";
 const SHELL = [
   "./",
   "./index.html",
@@ -49,6 +49,10 @@ const SHELL = [
   "./exploradora/assets/css/styles.css",
   "./exploradora/assets/js/app.js",
   "./exploradora/assets/js/aprens-core.js",
+  "./ritual/index.html",
+  "./ritual/assets/css/styles.css",
+  "./ritual/assets/js/app.js",
+  "./ritual/assets/js/aprens-core.js",
   "./vendor/chart.umd.min.js",
   "./assets/icons/icon.svg",
   "./assets/icons/icon-maskable.svg"
@@ -68,6 +72,9 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
+  // Peticiones con Range (audio en streaming): dejar pasar al navegador,
+  // no cachear respuestas parciales (206) para no romper la reproducción.
+  if (req.headers.has("range")) return;
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
