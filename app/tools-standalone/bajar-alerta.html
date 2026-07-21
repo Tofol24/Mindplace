@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1B4F8C">
+<meta name="theme-color" content="#EAF1ED">
 <title>Bajar la alerta · APRENS</title>
 <style>
 :root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--oro:#C8973A;}
@@ -90,6 +90,49 @@ input[type=range]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;bac
 .zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25));}
 .ancla-msg{display:none;margin:8px 0 2px;background:#EAF7F0;border-left:4px solid var(--verde);border-radius:0 11px 11px 0;padding:11px 14px;font-size:14px;color:#1e5e44;line-height:1.5;font-weight:600;}
 .ancla-msg.show{display:block;}
+
+/* ══════════════════════════════════════════════════════════════════════
+   NUEVO ESTILO EDITORIAL · «Bajar la alerta» — identidad propia (agua
+   serena: aqua, arena y tinta teal). Capa de override; conserva la lógica
+   y los nombres de clase. La escala verde→naranja→rojo se mantiene (semántica).
+   ══════════════════════════════════════════════════════════════════════ */
+:root{
+  --azul:#3f7d76; --azulLt:#d9e6e2; --oro:#b0863a;
+  --tinta:#233b39; --tinta-soft:#516865; --arena:#E7DECB; --linea:#D3DCD6;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+body{font-family:var(--sans); color:var(--tinta); background:linear-gradient(170deg,#EAF1ED 0%,#F4EEE1 100%); -webkit-font-smoothing:antialiased;}
+::selection{background:var(--azul); color:#fff;}
+.header{background:linear-gradient(180deg,rgba(234,241,237,.96),rgba(234,241,237,.72)); color:var(--tinta); box-shadow:0 1px 0 var(--linea); backdrop-filter:saturate(120%) blur(3px);}
+.hlogo{background:var(--azul); color:#fff; font-family:var(--serif);}
+.htitle{font-family:var(--serif); color:var(--tinta); letter-spacing:.01em;}
+.wrap{max-width:560px;}
+.step-tit{font-family:var(--serif); color:var(--tinta);}
+.step-sub{color:var(--tinta-soft);}
+.dot.on{background:var(--oro);} .dot.done{background:var(--azul);}
+.btn{border-radius:30px;}
+.big{background:var(--azul); box-shadow:0 10px 24px -12px rgba(35,59,57,.55);}
+.big.green{background:#3f8f5f; box-shadow:0 10px 24px -12px rgba(63,143,95,.5);}
+.ghost{background:transparent; color:var(--azul); border:1.5px solid var(--azul);}
+.mini{color:var(--tinta-soft);}
+.opt{background:#fff; border:1.5px solid var(--linea); border-radius:16px; color:var(--tinta);}
+.opt.sel{border-color:var(--azul); background:#e6f0ed; color:var(--azul-dark,var(--azul)); box-shadow:0 0 0 2px rgba(63,125,118,.3) inset;}
+.ring{border:4px solid var(--azulLt); background:radial-gradient(circle,#d7ebe6 0%,#eef5f1 70%);}
+.ring.inhale{border-color:#6fae9f; background:radial-gradient(circle,#d1ebe3 0%,#eaf5f0 72%);}
+.ring.exhale{border-color:#7fb08f; background:radial-gradient(circle,#d6eedd 0%,#eaf6ef 72%);}
+.ring span{font-family:var(--serif); color:var(--azul);}
+.ring.exhale span{color:#3f8f5f;}
+.breath-hint,.breath-count{color:var(--tinta-soft);}
+.scale-num{font-family:var(--serif);}
+input[type=range]::-webkit-slider-thumb{border-color:var(--azul);}
+input[type=range]::-moz-range-thumb{border-color:var(--azul);}
+.card{background:#fff; border:1px solid var(--linea); border-radius:16px; box-shadow:0 12px 30px -24px rgba(35,59,57,.5);}
+.res{background:linear-gradient(135deg,var(--azul),var(--tinta)); border-radius:18px; color:#fff;}
+.res-big{font-family:var(--serif);}
+.res-msg{color:var(--tinta-soft);}
+.mapa-tit{color:var(--azul);} .mapa-sub{color:var(--tinta-soft);}
+.frase{font-family:var(--serif); font-style:italic; color:var(--tinta); background:var(--arena); border-left-color:var(--oro); border-radius:0 12px 12px 0;}
 </style>
 </head>
 <body>
