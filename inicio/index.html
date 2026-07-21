@@ -455,6 +455,9 @@ const TOOLS=[
   {nombre:"AIS desde el amor",       url:"https://aprens-app.netlify.app/#/tool/ais_amor",         ic:"💚", params:["D","C"],     desc:"Practicar la presencia como acompañamiento, también cuando estás bien."},
   {nombre:"Honestidad emocional",    url:"https://aprens-app.netlify.app/#/tool/honestidad_emocional", ic:"🤍", params:["D","C"], destacar:true, desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, compartir y elegir (una experiencia AIS)."},
   {nombre:"La escalera (exposición)", url:"https://aprens-app.netlify.app/#/tool/escalera_exposicion", ic:"🪜", params:["D","C"], destacar:true, desc:"Exposición en vivo gradual: tu escalera de peldaños y, en cada paso, dos llaves — el QUÉ (afrontar) y el CÓMO (acompañarte por dentro con AIS)."},
+  {nombre:"La exploradora valiente", url:"https://aprens-app.netlify.app/#/tool/exploradora_valiente", ic:"🗺️", params:["D","C"], peques:true, desc:"Exposición gradual para la ansiedad de separación: escaleras de misiones de valiente, mapa de seguridad y las dos llaves (para madres y padres)."},
+  {nombre:"Ritual diario · calma y atención", url:"https://aprens-app.netlify.app/#/tool/ritual_calma", ic:"🌙", params:["L","D"], peques:true, desc:"Ritual diario de audios AIS, normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1 (para regulación y rabietas)."},
+  {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], peques:true, desc:"Juegos cortos y visuales para practicar la calma: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
   {nombre:"Tracker TEC",             url:"https://aprens-app.netlify.app/#/tool/tracker_tec",               ic:"📊", params:["L","C"],     desc:"Tu seguimiento de paradas y rutina diaria."},
   {nombre:"Brújula de valores",      url:"https://aprens-app.netlify.app/#/tool/brujula_valores",     ic:"🧭", params:["C"],         desc:"Mirar qué te importa y cómo de cerca estás por tu forma de estar."},
   {nombre:"Agenda atencional",       url:"https://aprens-app.netlify.app/#/tool/agenda_atencional",   ic:"🗓️", params:["L","D","C"], desc:"Organiza tu semana y dónde poner tu atención en cada momento."},
@@ -528,6 +531,7 @@ function render(){
     {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
+  if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#a86a8e', bg:'#f3e4ec'});
   MENU.push({href:'#revisar', ic:'📝', tit:'Revisar mi progreso', txt:'Mira cómo evolucionas con tus cuestionarios. Esto se mide, no se entrena.', col:'var(--gris)', bg:'#EAEEF3', rev:true});
   html+='<div class="menu-lbl">¿Por dónde quieres ir hoy?</div><div class="menu">';
   MENU.forEach(m=>{
@@ -569,7 +573,7 @@ function render(){
   const doorsOrder = DOORS.slice().sort((a,b)=>(a.k===FOCO?-1:0)-(b.k===FOCO?-1:0));
   doorsOrder.forEach(d=>{
     const isFoco=(FOCO && d.k===FOCO);
-    const all=TOOLS.filter(t=>!t.feat && !t.revisar && t.params.indexOf(d.k)>=0);
+    const all=TOOLS.filter(t=>!t.feat && !t.revisar && !t.peques && t.params.indexOf(d.k)>=0);
     const main=all.filter(t=>t.nombre===d.main)[0] || all[0];
     const destac=all.filter(t=>t!==main && t.destacar);
     const rest=all.filter(t=>t!==main && !t.destacar);
@@ -583,6 +587,16 @@ function render(){
       +(rest.length?'<details class="masherr"><summary>Ver otras '+rest.length+' herramientas para «'+esc(d.tit.toLowerCase())+'»</summary><div class="masherr-list">'+rest.map(toolHTML).join('')+'</div></details>':'')
       +'</div>';
   });
+  // Peques · familias (herramientas infantiles agrupadas aparte)
+  const peq=TOOLS.filter(t=>t.peques);
+  if(peq.length){
+    html+='<div class="sec" id="peques" style="border-top-color:#a86a8e">'
+      +'<div class="sec-head"><span class="sec-ic">🧸</span><span class="sec-tit" style="color:#a86a8e">Peques · familias</span>'
+      +'<span class="sec-badge" style="background:#f3e4ec;color:#a86a8e">Infantil</span></div>'
+      +'<div class="sec-obj">Herramientas para niñas y niños, pensadas para hacer <b>con madre y padre</b>: exposición a la separación, ritual de calma y juegos para practicar.</div>'
+      + peq.map(toolHTML).join('')
+      +'</div>';
+  }
   // Revisar
   const rev=TOOLS.filter(t=>t.revisar);
   if(rev.length){
