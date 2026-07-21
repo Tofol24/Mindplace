@@ -65,7 +65,11 @@ window.APRENS_TOOLS = [
 
   { id:"honestidad_emocional", emoji:"🤍", nombre:"Honestidad emocional",
     desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, suspender el porqué, compartir y elegir (AIS).",
-    migrada:true, iframe:"honestidad/index.html" }
+    migrada:true, iframe:"honestidad/index.html" },
+
+  { id:"escalera_exposicion", emoji:"🪜", nombre:"La escalera (exposición)",
+    desc:"Exposición en vivo gradual: tu escalera de peldaños y dos llaves en cada exposición, el QUÉ (conductual) y el CÓMO (acompañamiento interno AIS).",
+    migrada:true, iframe:"exposicion/index.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
