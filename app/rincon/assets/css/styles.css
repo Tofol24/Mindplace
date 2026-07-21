@@ -1,0 +1,96 @@
+/* ============================================================================
+   RINCÓN DE CALMA · APRENS (TEC · AIS)
+   Juegos infantiles: directos, visuales y lúdicos. Identidad propia, acogedora
+   ("rincón de cojines"): lila, melocotón y menta. Sin fotos, sin fuentes remotas.
+   ============================================================================ */
+:root{
+  --crema:#FBF4EC; --lila:#C9B6E4; --lila-dark:#7d61ab; --melocoton:#F3B99A; --melocoton-dark:#cf7d5c;
+  --menta:#9BD4BE; --menta-dark:#3f8f74; --sol:#F6D06B; --tinta:#453d57; --tinta-soft:#7a7189; --linea:#E7DCEC;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0; background:radial-gradient(120% 90% at 50% 0%,#FDF7F0 0%,#F3ECF4 100%); color:var(--tinta);
+  font-family:var(--sans); font-size:18px; line-height:1.55; min-height:100vh; -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);}
+h1,h2,h3{font-family:var(--serif); font-weight:600; margin:0; line-height:1.1;}
+
+/* marca */
+.brandbar{display:flex; align-items:center; gap:12px; padding:13px clamp(16px,5vw,40px); position:sticky; top:0; z-index:30;
+  background:linear-gradient(180deg,rgba(251,244,236,.96),rgba(251,244,236,.7)); backdrop-filter:blur(3px);}
+.brand{display:flex; align-items:baseline; gap:9px; letter-spacing:.16em; font-size:12px; text-transform:uppercase; color:var(--tinta); white-space:nowrap;}
+.brand b{font-weight:700;} .brand .tec{color:var(--lila-dark);}
+.brand::before{content:""; width:9px; height:9px; border-radius:50%; background:var(--melocoton); align-self:center; margin-right:2px;}
+.home-btn{border:0; background:var(--lila); color:#fff; font-weight:700; font-size:14px; border-radius:22px; padding:8px 15px; cursor:pointer;}
+.home-btn:hover{filter:brightness(1.05);}
+
+main{max-width:720px; margin:0 auto; padding:clamp(20px,5vw,40px) clamp(18px,5vw,32px) 40px;}
+
+/* ---------- Menú de juegos ---------- */
+.menu-h{text-align:center; margin-bottom:24px;}
+.menu-h h1{font-size:clamp(30px,7vw,44px);}
+.menu-h p{color:var(--tinta-soft); font-size:16px; margin-top:8px;}
+.games{display:grid; gap:16px;}
+.gamecard{display:flex; align-items:center; gap:18px; text-align:left; border:0; cursor:pointer; width:100%;
+  border-radius:26px; padding:22px 22px; color:var(--tinta); box-shadow:0 16px 40px -26px rgba(69,61,87,.5); transition:transform .12s;}
+.gamecard:hover{transform:translateY(-2px);}
+.gamecard:active{transform:translateY(0);}
+.gc-1{background:linear-gradient(135deg,#FDE7D6,#F7D9C4);} .gc-2{background:linear-gradient(135deg,#EFE3F7,#E2D0F0);} .gc-3{background:linear-gradient(135deg,#D8F0E6,#C6E9D8);}
+.gc-emoji{font-size:44px; line-height:1; flex:none; filter:drop-shadow(0 3px 5px rgba(69,61,87,.18));}
+.gc-body .gc-t{font-family:var(--serif); font-size:23px; font-weight:600;}
+.gc-body .gc-d{font-size:14.5px; color:var(--tinta-soft); margin-top:3px;}
+.gc-go{margin-left:auto; font-size:26px; color:var(--tinta-soft); flex:none;}
+
+/* ---------- Cabecera de juego ---------- */
+.game{text-align:center;}
+.game h2{font-size:clamp(26px,6vw,36px); margin-bottom:6px;}
+.game .lead{color:var(--tinta-soft); font-size:16px; max-width:30ch; margin:0 auto 18px;}
+.big-btn{border:0; cursor:pointer; font-family:var(--sans); font-weight:700; font-size:17px; color:var(--tinta);
+  background:var(--sol); border-radius:30px; padding:15px 30px; box-shadow:0 10px 24px -12px rgba(69,61,87,.5); transition:transform .12s, filter .15s;}
+.big-btn:hover{filter:brightness(1.04);} .big-btn:active{transform:translateY(1px);}
+.ghost-btn{border:2px solid var(--lila); background:transparent; color:var(--lila-dark); border-radius:30px; padding:12px 24px; font-weight:700; cursor:pointer; font-size:15px;}
+.game-acts{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:24px;}
+.done-msg{font-family:var(--serif); font-style:italic; font-size:19px; color:var(--menta-dark); min-height:26px; margin-top:16px;}
+
+/* ---------- Respiración: flor y vela ---------- */
+.breath-stage{position:relative; width:min(78vw,300px); height:min(78vw,300px); margin:10px auto 6px; display:grid; place-items:center;}
+.breath-orb{width:100%; height:100%; border-radius:50%; background:radial-gradient(circle at 42% 36%,#FBD9C0,#F0A97F); display:grid; place-items:center;
+  box-shadow:0 20px 50px -18px rgba(207,125,92,.6); transform:scale(.7);}
+.breath-orb.run{animation:breathe 10s ease-in-out infinite;}
+@keyframes breathe{0%{transform:scale(.62);}20%{transform:scale(1);}44%{transform:scale(1);}66%{transform:scale(.62);}100%{transform:scale(.62);}}
+.breath-emoji{font-size:88px; line-height:1;}
+.breath-word{font-family:var(--serif); font-size:24px; color:var(--tinta); margin:6px 0 2px; min-height:30px;}
+.breath-count{color:var(--tinta-soft); font-size:15px;}
+
+/* ---------- Abrazo sentido ---------- */
+.hug-stage{width:min(70vw,240px); height:min(70vw,240px); margin:12px auto 4px; display:grid; place-items:center; border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#F0E4FA,#D8C4EE);}
+.hug-heart{font-size:96px; line-height:1;}
+.hug-heart.run{animation:beat 1.2s ease-in-out infinite;}
+@keyframes beat{0%,100%{transform:scale(1);}18%{transform:scale(1.18);}36%{transform:scale(1);}54%{transform:scale(1.12);}}
+.hug-word{font-family:var(--serif); font-size:22px; color:var(--tinta); margin:8px 0 2px; min-height:28px;}
+
+/* ---------- Detective de sensaciones ---------- */
+.body-wrap{display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center; margin-top:8px;}
+.body-svg{width:min(52vw,190px); height:auto;}
+.zona{cursor:pointer; transition:fill .15s, transform .1s;}
+.zona:hover{transform:scale(1.03);}
+.zona.on{stroke:var(--lila-dark); stroke-width:3;}
+.body-side{flex:1 1 220px; min-width:200px; text-align:left;}
+.body-side .bs-t{font-family:var(--serif); font-size:18px; margin-bottom:10px; color:var(--tinta);}
+.quals{display:flex; flex-wrap:wrap; gap:9px;}
+.qual{border:2px solid var(--linea); background:#fff; border-radius:22px; padding:9px 15px; font-size:15px; font-weight:600; color:var(--tinta); cursor:pointer; transition:all .15s;}
+.qual:hover{border-color:var(--lila);}
+.qual.on{background:var(--lila); border-color:var(--lila); color:#fff;}
+.detres{margin-top:18px; background:#fff; border:1px solid var(--linea); border-radius:18px; padding:16px 18px; font-size:16px; color:var(--tinta); min-height:20px;}
+.detres b{color:var(--lila-dark);}
+
+/* ---------- Confeti ---------- */
+.confeti{position:fixed; top:-14px; width:11px; height:15px; z-index:999; pointer-events:none; border-radius:2px;}
+@keyframes cae{to{transform:translateY(106vh) rotate(560deg); opacity:0;}}
+
+/* pie */
+.foot{text-align:center; font-size:12px; color:var(--tinta-soft); line-height:1.6; padding:20px 20px calc(30px + env(safe-area-inset-bottom));}
+.foot b{color:var(--tinta);}
+
+@media (prefers-reduced-motion:reduce){ .breath-orb.run,.hug-heart.run{animation:none;} }

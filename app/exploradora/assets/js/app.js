@@ -98,9 +98,9 @@
     "No salir de la habitación (o del sitio) hasta terminar."
   ];
   var APOYOS = [
-    { id: "abrazo", ico: "🤍", t: "Abrazo sentido con respiración", d: "Un abrazo de verdad, sin prisa, respirando juntas. El adulto respira hondo primero.", tool: "ais_amor" },
-    { id: "respiracion", ico: "🌸", t: "Respiración de la flor y la vela", d: "Huele la flor (inspira)… apaga la vela (espira). Tres veces, despacio.", tool: "herramienta_diaria" },
-    { id: "curiosidad", ico: "🔎", t: "Mirar la sensación con curiosidad", d: "¿Dónde lo notas? ¿Calor, mariposas, nudo? Le ponemos nombre juntas, sin asustarnos.", tool: "ais_curiosidad" },
+    { id: "abrazo", ico: "🤍", t: "Abrazo sentido con respiración", d: "Un abrazo de verdad, sin prisa, respirando juntas. El adulto respira hondo primero.", href: "/rincon/index.html?ej=abrazo" },
+    { id: "respiracion", ico: "🌸", t: "Respiración de la flor y la vela", d: "Huele la flor (inspira)… apaga la vela (espira). Tres veces, despacio.", href: "/rincon/index.html?ej=respiracion" },
+    { id: "curiosidad", ico: "🔎", t: "Mirar la sensación con curiosidad", d: "¿Dónde lo notas? ¿Calor, mariposas, nudo? Le ponemos nombre juntas, sin asustarnos.", href: "/rincon/index.html?ej=sensaciones" },
     { id: "pedir_abrazo", ico: "🗣️", t: "Pedir abrazo en vez de repetir", d: "Cuando repita «¿estás bien?», cambiamos la pregunta por un abrazo. Menos explicaciones, más presencia." },
     { id: "audio", ico: "🎧", t: "El ritual diario de audios", d: "Un ratito de calma y atención, escuchado juntas (abre el ritual de audios AIS).", tool: "ritual_calma" }
   ];
@@ -381,7 +381,7 @@
           APOYOS.map(function (a) {
             return '<label class="apoyo" data-ap="' + a.id + '"><input type="checkbox"><span class="ico">' + a.ico + '</span>' +
               '<span class="txt"><b>' + esc(a.t) + '</b><span>' + esc(a.d) + '</span></span>' +
-              (a.tool ? '<a class="apoyo-practicar" href="/#/tool/' + a.tool + '" target="_blank" rel="noopener">Practicar ↗</a>' : '') + '</label>';
+              ((a.href || a.tool) ? '<a class="apoyo-practicar" href="' + (a.href || ("/#/tool/" + a.tool)) + '" target="_blank" rel="noopener">Practicar ↗</a>' : '') + '</label>';
           }).join("") + '</div>' +
         '<div class="field"><label>¿Cómo está DESPUÉS?</label>' + caritasHTML("despues") + '</div>' +
         '<div class="field"><label>¿Lo logró?</label><div class="pillset" id="logrado">' +

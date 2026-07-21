@@ -77,7 +77,11 @@ window.APRENS_TOOLS = [
 
   { id:"ritual_calma", emoji:"🌙", nombre:"Ritual diario · calma y atención",
     desc:"Pauta parental para regulación y rabietas: ritual diario de audios AIS, 3 normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1.",
-    migrada:true, iframe:"ritual/index.html" }
+    migrada:true, iframe:"ritual/index.html" },
+
+  { id:"rincon_calma", emoji:"🧸", nombre:"Rincón de calma",
+    desc:"Juegos infantiles cortos, visuales y lúdicos para practicar la calma: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
+    migrada:true, iframe:"rincon/index.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
