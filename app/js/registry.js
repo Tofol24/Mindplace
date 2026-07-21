@@ -69,7 +69,11 @@ window.APRENS_TOOLS = [
 
   { id:"escalera_exposicion", emoji:"🪜", nombre:"La escalera (exposición)",
     desc:"Exposición en vivo gradual: tu escalera de peldaños y dos llaves en cada exposición, el QUÉ (conductual) y el CÓMO (acompañamiento interno AIS).",
-    migrada:true, iframe:"exposicion/index.html" }
+    migrada:true, iframe:"exposicion/index.html" },
+
+  { id:"exploradora_valiente", emoji:"🗺️", nombre:"La exploradora valiente",
+    desc:"Juego infantil de exposición gradual para la ansiedad de separación (para madres y padres): escalera de misiones de valiente y dos llaves, el QUÉ y el CÓMO (co-regulación AIS).",
+    migrada:true, iframe:"exploradora/index.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
