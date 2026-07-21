@@ -68,12 +68,12 @@
     closeEditor(); renderLadder();
   }
 
-  /* ---------- APOYOS del CÓMO ---------- */
+  /* ---------- APOYOS del CÓMO (cada uno enlaza a su herramienta de práctica) ---------- */
   var APOYOS = [
-    { id: "respiracion", ico: "🫁", t: "Respiración curiosa", d: "Observo cómo entra y sale el aire, sin forzarlo. Curiosidad, no control." },
-    { id: "muscular", ico: "💪", t: "Tensión y distensión", d: "Tenso y suelto hombros, manos y mandíbula. De la tensión a la distensión." },
-    { id: "abrazo", ico: "🤍", t: "Abrazo sentido", d: "Integro el dolor en mi manada: me acompaño como acompañaría a alguien que quiero." },
-    { id: "honestidad", ico: "🗣️", t: "Honestidad emocional", d: "Nombro lo que siento sin explicarlo ni taparlo: «noto miedo, y me quedo con ello»." }
+    { id: "respiracion", ico: "🫁", t: "Respiración curiosa", d: "Observo cómo entra y sale el aire, sin forzarlo. Curiosidad, no control.", tool: "herramienta_diaria" },
+    { id: "muscular", ico: "💪", t: "Tensión y distensión", d: "Tenso y suelto hombros, manos y mandíbula. De la tensión a la distensión.", tool: "ais_muscular" },
+    { id: "abrazo", ico: "🤍", t: "Abrazo sentido", d: "Integro el dolor en mi manada: me acompaño como acompañaría a alguien que quiero.", tool: "ais_amor" },
+    { id: "honestidad", ico: "🗣️", t: "Honestidad emocional", d: "Nombro lo que siento sin explicarlo ni taparlo: «noto miedo, y me quedo con ello».", tool: "honestidad_emocional" }
   ];
 
   /* ============================================================
@@ -219,10 +219,12 @@
       '<div class="keypanel kp-como">' +
         '<div class="kp-head"><span class="k">🔑</span><h3>El CÓMO</h3></div>' +
         '<p class="kp-sub">Acompañamiento interno · AIS · cómo me sostengo</p>' +
+        '<p class="kp-hint">Marca los que uses durante la exposición. Toca <b>Practicar ↗</b> para entrenar cada apoyo antes, y llegar preparada.</p>' +
         '<div class="apoyos">' +
           APOYOS.map(function (a) {
             return '<label class="apoyo" data-ap="' + a.id + '"><input type="checkbox"><span class="ico">' + a.ico + '</span>' +
-              '<span class="txt"><b>' + esc(a.t) + '</b><span>' + esc(a.d) + '</span></span></label>';
+              '<span class="txt"><b>' + esc(a.t) + '</b><span>' + esc(a.d) + '</span></span>' +
+              '<a class="apoyo-practicar" href="/#/tool/' + a.tool + '" target="_blank" rel="noopener">Practicar ↗</a></label>';
           }).join("") +
         '</div>' +
 
@@ -271,6 +273,9 @@
         var i = expState.apoyos.indexOf(id2);
         if (cb.checked) { if (i < 0) expState.apoyos.push(id2); } else if (i >= 0) expState.apoyos.splice(i, 1);
       });
+      // el enlace "Practicar" abre la herramienta sin alternar la casilla
+      var link = $(".apoyo-practicar", l);
+      if (link) link.addEventListener("click", function (e) { e.stopPropagation(); });
     });
     // pill groups
     bindPills("desenlace", function (v) { expState.desenlace = v; });

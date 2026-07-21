@@ -191,14 +191,19 @@ input[type=range].sud::-moz-range-thumb{border-color:var(--salvia);}
 .contrato b{color:#fff;}
 
 /* apoyos del CÓMO (checklist) */
+.kp-hint{font-size:13px; color:#b7c1bd; margin:0 0 14px; line-height:1.55;}
+.kp-hint b{color:#e6ddcd;}
 .apoyos{display:flex; flex-direction:column; gap:10px; margin-top:8px;}
-.apoyo{display:flex; gap:13px; align-items:flex-start; padding:13px 15px; background:rgba(243,238,228,.05); border:1px solid rgba(243,238,228,.12); border-radius:6px; cursor:pointer; transition:background .2s, border-color .2s;}
+.apoyo{display:flex; flex-wrap:wrap; gap:13px; align-items:center; padding:13px 15px; background:rgba(243,238,228,.05); border:1px solid rgba(243,238,228,.12); border-radius:6px; cursor:pointer; transition:background .2s, border-color .2s;}
 .apoyo:hover{background:rgba(243,238,228,.09);}
-.apoyo input{margin-top:3px; width:20px; height:20px; accent-color:var(--salvia); flex:none;}
+.apoyo input{width:20px; height:20px; accent-color:var(--salvia); flex:none;}
 .apoyo .ico{font-size:19px; flex:none;}
+.apoyo .txt{flex:1 1 160px; min-width:0;}
 .apoyo .txt b{display:block; color:#fff; font-size:15px; font-weight:600;}
 .apoyo .txt span{display:block; color:#c3ccc7; font-size:13px; line-height:1.5; margin-top:2px;}
 .apoyo.on{border-color:var(--salvia); background:rgba(94,124,110,.2);}
+.apoyo-practicar{flex:none; margin-left:auto; align-self:center; font-size:12.5px; font-weight:600; letter-spacing:.02em; color:#a9cbb8; text-decoration:none; border:1px solid rgba(169,203,184,.5); border-radius:22px; padding:7px 14px; white-space:nowrap; transition:background .2s, color .2s, border-color .2s;}
+.apoyo-practicar:hover{background:var(--salvia); color:#fff; border-color:var(--salvia);}
 
 /* preguntas de resultado (sí/no) */
 .pillset{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
