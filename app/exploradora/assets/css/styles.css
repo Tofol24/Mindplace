@@ -215,6 +215,51 @@ input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; 
 .foot{padding:34px clamp(20px,6vw,64px) calc(96px + env(safe-area-inset-bottom)); color:var(--bosque-soft); font-size:12.5px; line-height:1.7; border-top:1px solid var(--linea);}
 .foot b{color:var(--bosque);}
 
+/* ---------- Mapa de seguridad ---------- */
+.mapa-sec{background:var(--cielo);}
+.mapa-add{background:var(--crema); border:1px solid var(--linea); border-radius:14px; padding:18px; box-shadow:0 14px 34px -30px rgba(38,64,59,.6);}
+.mapa-add input{width:100%; border:0; border-bottom:1.5px solid var(--linea); background:transparent; font-family:var(--serif); font-size:clamp(17px,2.2vw,21px); color:var(--bosque); padding:8px 2px; margin-bottom:14px;}
+.mapa-add input:focus{outline:none; border-bottom-color:var(--oro);}
+.mapa-add input::placeholder{color:#b4a98f; font-style:italic;}
+.mapa-btns{display:flex; flex-wrap:wrap; gap:8px;}
+.mzbtn{font-family:var(--sans); font-size:13.5px; font-weight:600; cursor:pointer; border-radius:24px; padding:9px 15px; border:1.5px solid var(--linea); background:var(--crema); color:var(--bosque); transition:all .15s;}
+.mzbtn:hover{transform:translateY(-1px);}
+.mz-muy{border-color:#7fae7f;} .mz-bastante{border-color:#9cbf88;} .mz-algo{border-color:var(--coral);} .mz-poco{border-color:var(--alarma);}
+.mapa-zonas{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:16px;}
+.mzone{background:var(--crema); border:1px solid var(--linea); border-radius:14px; padding:14px 15px; min-height:92px;}
+.mzone.mz-algo{border-left:4px solid var(--coral);} .mzone.mz-poco{border-left:4px solid var(--alarma);}
+.mzone.mz-muy{border-left:4px solid #7fae7f;} .mzone.mz-bastante{border-left:4px solid #9cbf88;}
+.mz-h{font-family:var(--serif); font-size:15px; color:var(--bosque); margin-bottom:10px;}
+.mz-tag{font-family:var(--sans); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--coral-dark); background:rgba(217,138,106,.16); border-radius:20px; padding:2px 8px; margin-left:4px;}
+.mz-item{display:inline-flex; align-items:center; gap:6px; background:var(--cielo); border-radius:20px; padding:5px 6px 5px 12px; margin:0 6px 6px 0; font-size:13.5px; color:var(--bosque);}
+.mz-x{border:0; background:none; color:var(--bosque-soft); font-size:17px; line-height:1; cursor:pointer; padding:0 4px;}
+.mz-x:hover{color:var(--alarma);}
+.mz-empty{color:#b4a98f;}
+
+/* ---------- Selector de escaleras ---------- */
+.esc-selector{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
+.esc-chip{display:inline-flex; align-items:center; gap:8px; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer;
+  border:1.5px solid var(--linea); background:var(--crema); color:var(--bosque); border-radius:26px; padding:9px 15px; transition:all .16s;}
+.esc-chip:hover{transform:translateY(-1px);}
+.esc-chip.on{background:var(--oro); border-color:var(--oro); color:var(--bosque);}
+.esc-chip .ec-emoji{font-size:17px;}
+.esc-chip .ec-count{font-size:11.5px; opacity:.8; background:rgba(38,64,59,.09); border-radius:16px; padding:1px 8px;}
+.esc-chip.on .ec-count{background:rgba(255,255,255,.4);}
+.esc-new{border-style:dashed; color:var(--bosque-soft); background:transparent;}
+.esc-meta{margin-bottom:16px;}
+.esc-meta-in{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; justify-content:space-between; background:var(--crema); border:1px solid var(--linea); border-radius:12px; padding:13px 16px;}
+.em-goal{font-family:var(--serif); font-size:clamp(16px,2.2vw,19px); color:var(--bosque);}
+.em-goal b{color:var(--oro-dark);}
+.em-acts{display:flex; gap:8px; flex-wrap:wrap;}
+
+/* ---------- botón "¡Lo conseguí!" ---------- */
+.mini-done{background:var(--menta); color:#fff;}
+.mini-done:hover{filter:brightness(1.06);}
+
+/* ---------- Confeti (papelines) ---------- */
+.confeti{position:fixed; top:-14px; width:10px; height:14px; z-index:999; pointer-events:none; border-radius:2px;}
+@keyframes cae{to{transform:translateY(106vh) rotate(560deg); opacity:0;}}
+
 /* ---------- Revelado ---------- */
 .reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;}
 .reveal.in{opacity:1; transform:none;}
@@ -234,4 +279,5 @@ input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; 
 @media (max-width:520px){
   .brandbar .brand-2{display:none;}
   .rung-top{flex-wrap:wrap;}
+  .mapa-zonas{grid-template-columns:1fr;}
 }
