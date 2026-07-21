@@ -367,10 +367,7 @@
           '<div class="field"><label for="hConQuien">Con quién se queda hoy</label><input type="text" id="hConQuien" value="' + esc(m.conQuien) + '"></div>' +
         '</div>' +
         '<div class="field"><label>Los acuerdos de la despedida</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
-        '<div class="grid2">' +
-          '<div class="field"><label for="hConsecuencia">Consecuencia acordada (proporcional)</label><input type="text" id="hConsecuencia" placeholder="p. ej. pausa del juego 2 min"></div>' +
-          '<div class="field"><label for="hPremio">Premio de hoy</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
-        '</div>' +
+        '<div class="field"><label for="hPremio">Premio si lo logra</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
         '<div class="field"><label>¿Cómo está ANTES de empezar?</label>' + caritasHTML("antes") + '</div>' +
         '<p class="kp-hint" style="margin-top:16px"><b>Si protesta o llora:</b> validad sin ceder — «sé que cuesta; estarás bien y vuelvo pronto». Vuestra calma es su seguridad.</p>' +
       '</div>' +
@@ -445,7 +442,7 @@
     return { id: "ron_" + Date.now(), kind: "ronda", date: ymd(), ts: Date.now(), escId: runState.escId,
       misionId: runState.misionId, misionTitulo: m.titulo || "", nivel: m.dificultad,
       tiempo_hoy: ($("#hTiempo").value || "").trim(), conQuien_hoy: ($("#hConQuien").value || "").trim(),
-      consecuencia: ($("#hConsecuencia").value || "").trim(), premio: ($("#hPremio").value || "").trim(),
+      premio: ($("#hPremio").value || "").trim(),
       antes: runState.antes, despues: runState.despues, apoyos: runState.apoyos.slice(),
       logrado: runState.logrado, pidio_abrazo: runState.pidio_abrazo, sin_negociar: runState.sin_negociar,
       nota: ($("#hNota").value || "").trim() };
