@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v22";
+const CACHE = "aprens-v23";
 const SHELL = [
   "./",
   "./index.html",
@@ -53,6 +53,10 @@ const SHELL = [
   "./ritual/assets/css/styles.css",
   "./ritual/assets/js/app.js",
   "./ritual/assets/js/aprens-core.js",
+  "./rincon/index.html",
+  "./rincon/assets/css/styles.css",
+  "./rincon/assets/js/app.js",
+  "./rincon/assets/js/aprens-core.js",
   "./vendor/chart.umd.min.js",
   "./assets/icons/icon.svg",
   "./assets/icons/icon-maskable.svg"

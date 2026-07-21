@@ -91,16 +91,16 @@
     ];
   }
 
-  /* ---------- las 3 normas y los apoyos del CÓMO ---------- */
+  /* ---------- acuerdos de la despedida (contexto: exposición a la separación) ---------- */
   var NORMAS = [
-    "No usar el móvil durante la misión.",
-    "No ir a buscar a mamá ni tocarla durante el ejercicio.",
-    "No salir de la habitación (o del sitio) hasta terminar."
+    "Despedida corta y con cariño: un abrazo y «vuelvo pronto», sin alargar.",
+    "Mantener el plan sin negociar la separación, aunque proteste o llore.",
+    "Volver justo cuando lo hemos dicho: cumplir la promesa da seguridad."
   ];
   var APOYOS = [
-    { id: "abrazo", ico: "🤍", t: "Abrazo sentido con respiración", d: "Un abrazo de verdad, sin prisa, respirando juntas. El adulto respira hondo primero.", tool: "ais_amor" },
-    { id: "respiracion", ico: "🌸", t: "Respiración de la flor y la vela", d: "Huele la flor (inspira)… apaga la vela (espira). Tres veces, despacio.", tool: "herramienta_diaria" },
-    { id: "curiosidad", ico: "🔎", t: "Mirar la sensación con curiosidad", d: "¿Dónde lo notas? ¿Calor, mariposas, nudo? Le ponemos nombre juntas, sin asustarnos.", tool: "ais_curiosidad" },
+    { id: "abrazo", ico: "🤍", t: "Abrazo sentido con respiración", d: "Un abrazo de verdad, sin prisa, respirando juntas. El adulto respira hondo primero.", href: "/rincon/index.html?ej=abrazo" },
+    { id: "respiracion", ico: "🌸", t: "Respiración de la flor y la vela", d: "Huele la flor (inspira)… apaga la vela (espira). Tres veces, despacio.", href: "/rincon/index.html?ej=respiracion" },
+    { id: "curiosidad", ico: "🔎", t: "Mirar la sensación con curiosidad", d: "¿Dónde lo notas? ¿Calor, mariposas, nudo? Le ponemos nombre juntas, sin asustarnos.", href: "/rincon/index.html?ej=sensaciones" },
     { id: "pedir_abrazo", ico: "🗣️", t: "Pedir abrazo en vez de repetir", d: "Cuando repita «¿estás bien?», cambiamos la pregunta por un abrazo. Menos explicaciones, más presencia." },
     { id: "audio", ico: "🎧", t: "El ritual diario de audios", d: "Un ratito de calma y atención, escuchado juntas (abre el ritual de audios AIS).", tool: "ritual_calma" }
   ];
@@ -366,13 +366,10 @@
           '<div class="field"><label for="hTiempo">Tiempo de hoy</label><input type="text" id="hTiempo" value="' + esc(m.tiempo) + '"></div>' +
           '<div class="field"><label for="hConQuien">Con quién se queda hoy</label><input type="text" id="hConQuien" value="' + esc(m.conQuien) + '"></div>' +
         '</div>' +
-        '<div class="field"><label>Las 3 normas de la misión</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
-        '<div class="grid2">' +
-          '<div class="field"><label for="hConsecuencia">Consecuencia acordada (proporcional)</label><input type="text" id="hConsecuencia" placeholder="p. ej. pausa del juego 2 min"></div>' +
-          '<div class="field"><label for="hPremio">Premio de hoy</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
-        '</div>' +
+        '<div class="field"><label>Los acuerdos de la despedida</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
+        '<div class="field"><label for="hPremio">Premio si lo logra</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
         '<div class="field"><label>¿Cómo está ANTES de empezar?</label>' + caritasHTML("antes") + '</div>' +
-        '<p class="kp-hint" style="margin-top:16px"><b>Despedida corta:</b> un abrazo y «vuelvo pronto», sin alargar ni negociar. Mantened el plan con cariño.</p>' +
+        '<p class="kp-hint" style="margin-top:16px"><b>Si protesta o llora:</b> validad sin ceder — «sé que cuesta; estarás bien y vuelvo pronto». Vuestra calma es su seguridad.</p>' +
       '</div>' +
       '<div class="keypanel kp-como">' +
         '<div class="kp-head"><span class="k">🤍</span><h3>El CÓMO</h3></div><p class="kp-sub">Cómo nos acompañamos · AIS</p>' +
@@ -381,7 +378,7 @@
           APOYOS.map(function (a) {
             return '<label class="apoyo" data-ap="' + a.id + '"><input type="checkbox"><span class="ico">' + a.ico + '</span>' +
               '<span class="txt"><b>' + esc(a.t) + '</b><span>' + esc(a.d) + '</span></span>' +
-              (a.tool ? '<a class="apoyo-practicar" href="/#/tool/' + a.tool + '" target="_blank" rel="noopener">Practicar ↗</a>' : '') + '</label>';
+              ((a.href || a.tool) ? '<a class="apoyo-practicar" href="' + (a.href || ("/#/tool/" + a.tool)) + '" target="_blank" rel="noopener">Practicar ↗</a>' : '') + '</label>';
           }).join("") + '</div>' +
         '<div class="field"><label>¿Cómo está DESPUÉS?</label>' + caritasHTML("despues") + '</div>' +
         '<div class="field"><label>¿Lo logró?</label><div class="pillset" id="logrado">' +
@@ -445,7 +442,7 @@
     return { id: "ron_" + Date.now(), kind: "ronda", date: ymd(), ts: Date.now(), escId: runState.escId,
       misionId: runState.misionId, misionTitulo: m.titulo || "", nivel: m.dificultad,
       tiempo_hoy: ($("#hTiempo").value || "").trim(), conQuien_hoy: ($("#hConQuien").value || "").trim(),
-      consecuencia: ($("#hConsecuencia").value || "").trim(), premio: ($("#hPremio").value || "").trim(),
+      premio: ($("#hPremio").value || "").trim(),
       antes: runState.antes, despues: runState.despues, apoyos: runState.apoyos.slice(),
       logrado: runState.logrado, pidio_abrazo: runState.pidio_abrazo, sin_negociar: runState.sin_negociar,
       nota: ($("#hNota").value || "").trim() };
