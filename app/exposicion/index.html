@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1E2E36">
+<meta name="description" content="La escalera · Exposición en vivo gradual · APRENS (TEC · AIS). Planifica y acompaña tu exposición al miedo a conducir, peldaño a peldaño, con dos llaves: el QUÉ y el CÓMO.">
+<title>La escalera · Exposición en vivo · APRENS</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<header class="brandbar">
+  <span class="brand"><b>APRENS</b><span class="tec">TEC · AIS</span></span>
+  <span class="brand brand-2" style="letter-spacing:.14em;opacity:.7">La escalera</span>
+</header>
+
+<main>
+
+  <!-- ═══════════ PORTADA ═══════════ -->
+  <section class="hero">
+    <div class="hero-steps" aria-hidden="true">
+      <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span>
+      <span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span>
+    </div>
+    <div class="hero-copy wrap">
+      <p class="eyebrow">Exposición en vivo · gradual</p>
+      <h1>La escalera</h1>
+      <p class="hero-tag">Un peldaño cada vez. No para aguantar el miedo, sino para aprender a sostenerlo con compañía —hasta que la alarma baje sola.</p>
+      <div class="keys-mini">
+        <span class="km km-que">🔑 El <b>QUÉ</b> · qué hago hoy</span>
+        <span class="km km-como">🔑 El <b>CÓMO</b> · cómo me acompaño</span>
+      </div>
+      <a href="#escalera" class="cta">Ver mi escalera ↓</a>
+    </div>
+  </section>
+
+  <!-- ═══════════ PRINCIPIO ═══════════ -->
+  <section class="lede">
+    <div class="wrap">
+      <p class="serif-quote reveal">Quedarte no es apretar los dientes.<br>Es sostener lo que sientes, acompañada.</p>
+      <div class="principio reveal">
+        <p>La exposición funciona cuando <b>te quedas</b> en la situación el tiempo suficiente para que tu cuerpo, poco a poco, baje la alarma hacia un <b>5–6 sobre 10</b>. Si te vas antes, por alivio, el miedo aprende que huir funciona: la próxima vez pesará más. Es el <i>reforzamiento negativo</i> que queremos evitar.</p>
+        <p>Pero quedarte <b>no es reprimir</b> el dolor de dentro. Es acompañarlo: respirar con curiosidad, soltar el cuerpo, abrazarte por dentro y ser honesta con lo que sientes. Sostener el dolor fisiológico <b>sin negar</b> el dolor interno.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LAS DOS LLAVES ═══════════ -->
+  <section class="step llaves-intro">
+    <div class="wrap">
+      <p class="eyebrow reveal">Cada exposición se abre con dos llaves</p>
+      <div class="keys-grid">
+        <article class="keycard keycard-que reveal">
+          <span class="key-ic">🔑</span>
+          <h2>El QUÉ</h2>
+          <p class="key-sub">Afrontamiento conductual</p>
+          <p>Qué peldaño haces hoy y con qué medida: <b>tiempo</b>, <b>compañía</b>, <b>distancia</b>, <b>condición</b>. Tú editas cada peldaño. El compromiso: quedarte y no huir mientras la alarma sigue arriba.</p>
+        </article>
+        <article class="keycard keycard-como reveal">
+          <span class="key-ic">🔑</span>
+          <h2>El CÓMO</h2>
+          <p class="key-sub">Acompañamiento interno · AIS</p>
+          <p>Cómo te sostienes por dentro mientras estás ahí: <b>respiración curiosa</b>, <b>tensión y distensión</b>, <b>abrazo sentido</b> (integrar el dolor en tu manada) y <b>honestidad emocional</b>.</p>
+        </article>
+      </div>
+      <p class="lead reveal" style="margin-top:30px;max-width:52ch">Subes cuando un peldaño deja de asustarte tanto: no solo por <b>cuánto</b> aguantas (lo cuantitativo), también por <b>cómo</b> lo sostienes (lo cualitativo). Así se avanza sólido y seguro.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ MI ESCALERA ═══════════ -->
+  <section class="step" id="escalera">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">Tu escalera</span>
+        <h2>De menos a más, a tu ritmo</h2>
+        <p>Estos peldaños son un punto de partida: <b>edítalos, borra o añade</b> los tuyos. Se ordenan solos por la dificultad que les pongas. Cuando estés lista, prepara una exposición con las dos llaves.</p>
+      </div>
+
+      <div id="ladder" class="ladder"></div>
+
+      <div class="ladder-actions reveal">
+        <button class="btn btn-ghost" id="btnAddPeldano">＋ Añadir un peldaño</button>
+        <button class="btn btn-link" id="btnResetPeldanos" title="Volver a la escalera de ejemplo">Restaurar ejemplo</button>
+      </div>
+
+      <!-- Editor de peldaño (oculto por defecto) -->
+      <div id="peldanoEditor" class="editor" hidden></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ HACER UNA EXPOSICIÓN (se rellena por JS) ═══════════ -->
+  <section class="step exposicion" id="exposicion" hidden>
+    <div class="wrap">
+      <div id="expBody"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CIERRE ═══════════ -->
+  <section class="close">
+    <div class="wrap">
+      <p class="eyebrow reveal">Para tu psicólogo/a</p>
+      <h2 class="reveal">Lleva tu escalera a sesión</h2>
+      <p class="lead reveal" style="max-width:54ch">Esto no sustituye el trabajo con tu psicólogo/a: es la manera de planificar y registrar entre sesiones. Guarda tu escalera y tus exposiciones para revisarlas juntos con la barra de abajo.</p>
+      <div class="codebox reveal">
+        <label for="codigo">Tu código</label>
+        <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="saved" id="saved"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b> — La escalera · Exposición en vivo gradual.<br>
+  Tus datos se guardan <b>solo en este dispositivo</b>: no se envían a ningún servidor. Esta herramienta acompaña la exposición pautada por tu psicólogo/a; no la sustituye ni diagnostica.
+</footer>
+
+<script src="assets/js/aprens-core.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
