@@ -68,20 +68,35 @@
     </div>
   </section>
 
-  <!-- ═══════════ MIS MISIONES (escalera) ═══════════ -->
+  <!-- ═══════════ EL MAPA DE SEGURIDAD (genera escaleras) ═══════════ -->
+  <section class="step mapa-sec" id="mapa">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">El mapa de seguridad</span>
+        <h2>¿Con quién y dónde te sientes segura?</h2>
+        <p>Escribe personas o lugares y colócalos según cómo te hacen sentir. Los que te ponen <b>algo o muy nerviosa</b> se convierten solos en una <b>escalera</b> para acercarte poco a poco.</p>
+      </div>
+      <div id="mapaBox" class="reveal"></div>
+      <p class="run-note reveal" id="mapaNote"></p>
+    </div>
+  </section>
+
+  <!-- ═══════════ MIS ESCALERAS ═══════════ -->
   <section class="step" id="misiones">
     <div class="wrap">
       <div class="sec-head reveal">
-        <span class="num">La escalera de misiones</span>
+        <span class="num">Mis escaleras</span>
         <h2>De la más fácil a la más valiente</h2>
-        <p>Estas misiones son un punto de partida: <b>editadlas, borrad o añadid</b> las vuestras. Se ordenan solas por las estrellas de valentía que necesitan. Cuando estéis listas, preparad una misión con las dos llaves.</p>
+        <p>Tienes una escalera por cada persona o lugar. Elige una, <b>edita, borra o añade</b> misiones (se ordenan solas por estrellas de valentía) y prepárala con las dos llaves. Al conseguir una misión… ¡confeti! 🎉</p>
       </div>
 
+      <div id="escSelector" class="esc-selector reveal"></div>
+      <div id="escMeta" class="esc-meta reveal"></div>
       <div id="ladder" class="ladder"></div>
 
       <div class="ladder-actions reveal">
         <button class="btn btn-ghost" id="btnAddMision">＋ Añadir una misión</button>
-        <button class="btn btn-link" id="btnResetMisiones" title="Volver a las misiones de ejemplo">Restaurar ejemplo</button>
+        <button class="btn btn-link" id="btnResetMisiones" title="Volver a las escaleras de ejemplo">Restaurar ejemplo</button>
       </div>
 
       <div id="misionEditor" class="editor" hidden></div>
