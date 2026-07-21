@@ -20,7 +20,8 @@
   /* ---------- Audios (voz mono, se cargan solo al reproducir) ---------- */
   var AUDIOS = [
     { n: 1, dur: "12:22" }, { n: 2, dur: "4:47" }, { n: 3, dur: "9:56" }, { n: 4, dur: "6:13" },
-    { n: 6, dur: "5:57" }, { n: 7, dur: "5:06" }, { n: 8, dur: "4:19" }, { n: 9, dur: "3:29" }
+    { n: 6, dur: "5:57" }, { n: 7, dur: "5:06" }, { n: 8, dur: "4:19" }, { n: 9, dur: "3:29" },
+    { n: 10, dur: "4:21" }, { n: 11, dur: "5:25" }
   ];
   function renderAudios() {
     var box = $("#audios"); if (!box) return;
