@@ -91,11 +91,11 @@
     ];
   }
 
-  /* ---------- las 3 normas y los apoyos del CÓMO ---------- */
+  /* ---------- acuerdos de la despedida (contexto: exposición a la separación) ---------- */
   var NORMAS = [
-    "No usar el móvil durante la misión.",
-    "No ir a buscar a mamá ni tocarla durante el ejercicio.",
-    "No salir de la habitación (o del sitio) hasta terminar."
+    "Despedida corta y con cariño: un abrazo y «vuelvo pronto», sin alargar.",
+    "Mantener el plan sin negociar la separación, aunque proteste o llore.",
+    "Volver justo cuando lo hemos dicho: cumplir la promesa da seguridad."
   ];
   var APOYOS = [
     { id: "abrazo", ico: "🤍", t: "Abrazo sentido con respiración", d: "Un abrazo de verdad, sin prisa, respirando juntas. El adulto respira hondo primero.", href: "/rincon/index.html?ej=abrazo" },
@@ -366,13 +366,13 @@
           '<div class="field"><label for="hTiempo">Tiempo de hoy</label><input type="text" id="hTiempo" value="' + esc(m.tiempo) + '"></div>' +
           '<div class="field"><label for="hConQuien">Con quién se queda hoy</label><input type="text" id="hConQuien" value="' + esc(m.conQuien) + '"></div>' +
         '</div>' +
-        '<div class="field"><label>Las 3 normas de la misión</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
+        '<div class="field"><label>Los acuerdos de la despedida</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
         '<div class="grid2">' +
           '<div class="field"><label for="hConsecuencia">Consecuencia acordada (proporcional)</label><input type="text" id="hConsecuencia" placeholder="p. ej. pausa del juego 2 min"></div>' +
           '<div class="field"><label for="hPremio">Premio de hoy</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
         '</div>' +
         '<div class="field"><label>¿Cómo está ANTES de empezar?</label>' + caritasHTML("antes") + '</div>' +
-        '<p class="kp-hint" style="margin-top:16px"><b>Despedida corta:</b> un abrazo y «vuelvo pronto», sin alargar ni negociar. Mantened el plan con cariño.</p>' +
+        '<p class="kp-hint" style="margin-top:16px"><b>Si protesta o llora:</b> validad sin ceder — «sé que cuesta; estarás bien y vuelvo pronto». Vuestra calma es su seguridad.</p>' +
       '</div>' +
       '<div class="keypanel kp-como">' +
         '<div class="kp-head"><span class="k">🤍</span><h3>El CÓMO</h3></div><p class="kp-sub">Cómo nos acompañamos · AIS</p>' +
