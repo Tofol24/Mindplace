@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EDEAF1">
+<meta name="description" content="Ritual diario · calma y atención · APRENS (TEC · AIS). Acompañar cada día a mirar hacia dentro, con audios, límites claros y refuerzo, para reducir las rabietas.">
+<title>Ritual diario · calma y atención · APRENS</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<header class="brandbar">
+  <span class="brand"><b>APRENS</b><span class="tec">TEC · AIS</span></span>
+  <span class="brand brand-2" style="letter-spacing:.14em;opacity:.7">Ritual diario</span>
+</header>
+
+<main>
+
+  <!-- ═══════════ PORTADA ═══════════ -->
+  <section class="hero">
+    <div class="hero-sky" aria-hidden="true">
+      <span class="moon"></span>
+      <span class="star s1">✦</span><span class="star s2">✦</span><span class="star s3">✦</span>
+    </div>
+    <div class="hero-copy wrap">
+      <p class="eyebrow">Un ratito cada día · calma y atención</p>
+      <h1>Ritual diario<br>de calma</h1>
+      <p class="hero-tag">Un momento tranquilo para mirar hacia dentro, con vuestra presencia serena como guía. No para que se porte «bien», sino para que aprenda a notar lo que siente antes de que estalle.</p>
+      <a href="#ritual" class="cta">Empezar el ritual ↓</a>
+    </div>
+  </section>
+
+  <!-- ═══════════ PARA LA MADRE / PADRE ═══════════ -->
+  <section class="lede">
+    <div class="wrap">
+      <p class="eyebrow reveal">Para leer madre y padre, antes de empezar</p>
+      <p class="serif-quote reveal">Cuando lo que siente no tiene nombre,<br>sale en forma de rabieta.</p>
+      <div class="principio reveal">
+        <p>A vuestro hijo le cuesta <b>identificar lo que siente en el cuerpo</b>. Cuando las sensaciones se acumulan sin poder expresarlas, se bloquea, se frustra y <b>explota</b> en forma de grito o rabieta.</p>
+        <p>El trabajo AIS —los <b>audios</b> + <b>vuestro modelado</b> sereno + <b>límites claros</b> + <b>refuerzo</b>— hace que empiece a <b>notar</b> lo que siente, aprenda a <b>expresarlo</b>, baje la impulsividad y crezca su autocontrol.</p>
+        <p class="nota">Vosotros sois el modelo: si os reguláis primero, él aprende a regularse con vuestra presencia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 1 · EL RITUAL DE LOS AUDIOS ═══════════ -->
+  <section class="step" id="ritual">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">Uno · cada día</span>
+        <h2>El ritual de los audios</h2>
+        <p>Al atardecer o en un momento tranquilo, entrad con él en la habitación y decidle con tono sereno:</p>
+      </div>
+
+      <blockquote class="guion reveal">«Ahora voy a hacer un audio de tranquilidad y atención. Si quieres, te pones conmigo; si no, me acompañas en silencio.»</blockquote>
+      <p class="reveal" style="color:var(--noche-soft);max-width:60ch">Y os ponéis los auriculares o el móvil y hacéis el audio con normalidad, <b>como modelo</b>. Si quiere hacerlo con vosotros, perfecto. Si no, tampoco pasa nada: pero respeta el momento.</p>
+
+      <!-- Reproductores -->
+      <div class="audios reveal" id="audios"></div>
+      <p class="audios-nota reveal">Los audios se cargan solo al darle a reproducir (ahorran datos). Falta la pista 5 en este juego.</p>
+
+      <!-- 3 normas -->
+      <div class="bloque reveal">
+        <h3>Las 3 normas del momento</h3>
+        <ul class="normas">
+          <li><span class="nn">1</span>No sale de la habitación mientras dura el audio.</li>
+          <li><span class="nn">2</span>No te toca, interrumpe, empuja ni hace ruido a propósito.</li>
+          <li><span class="nn">3</span>No coge el móvil ni la cama ni rompe el límite.</li>
+        </ul>
+      </div>
+
+      <div class="split2 reveal">
+        <div class="bloque bloque-warn">
+          <h3>⚖️ Si rompe una norma</h3>
+          <p>Con calma, sin discutir:</p>
+          <p class="frase-dicha">«Como no has respetado el momento, mañana lo volvemos a intentar y hoy no hay recompensa.»</p>
+          <p class="mini-nota">Solo mantener el límite con serenidad.</p>
+        </div>
+        <div class="bloque bloque-ok">
+          <h3>🎁 Si lo respeta</h3>
+          <p>Haya hecho el audio o solo acompañado, recibe <b>10 minutos de pantalla</b> (lo que hayáis acordado):</p>
+          <p class="frase-dicha">«Gracias por respetar el momento. Ahora tienes tus 10 minutos.»</p>
+          <p class="mini-nota">Refuerza su sensación de logro y las ganas de repetirlo.</p>
+        </div>
+      </div>
+
+      <!-- Registro del ritual de hoy -->
+      <div class="registro reveal">
+        <h3>¿Cómo ha ido hoy?</h3>
+        <div class="field"><label>¿Participó en el audio?</label>
+          <div class="pillset" id="participo">
+            <button class="pill" data-v="hizo" aria-pressed="false">Lo hizo conmigo</button>
+            <button class="pill" data-v="acompano" aria-pressed="false">Me acompañó en silencio</button>
+            <button class="pill" data-v="no" aria-pressed="false">Hoy no quiso</button>
+          </div></div>
+        <div class="field"><label>¿Respetó el momento?</label>
+          <div class="pillset" id="respeto">
+            <button class="pill" data-v="si" aria-pressed="false">Sí → recompensa 🎁</button>
+            <button class="pill warn" data-v="no" aria-pressed="false">No → hoy sin recompensa</button>
+          </div></div>
+        <div class="field"><label for="rNota">¿Algo que contar? (opcional)</label>
+          <textarea id="rNota" rows="2" placeholder="hoy se puso nervioso al principio y luego se calmó…"></textarea></div>
+        <div class="run-acts">
+          <button class="btn btn-primary" id="rSave">Guardar el día</button>
+          <button class="btn btn-ghost" id="rSaveWA">Guardar y enviar por WhatsApp</button>
+        </div>
+        <p class="run-note" id="rNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 2 · PARADA + RESPIRACIÓN ═══════════ -->
+  <section class="step band-calma">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">Dos · cuando está tenso</span>
+        <h2>Parada de pensamiento y respiración</h2>
+        <p>Cuando empiece a ponerse irritable o a punto de estallar, le decís: <b>«Paramos un momento. Respiramos juntos.»</b></p>
+      </div>
+      <div class="respira reveal">
+        <div class="breath" id="breath"><span class="breath-word" id="breathWord">Respira</span></div>
+        <button class="btn btn-calma" id="breathBtn">Empezar la respiración guiada</button>
+        <ol class="pasos-resp">
+          <li>Coge aire por la nariz hinchando la barriga.</li>
+          <li>Mantén un segundo.</li>
+          <li>Suelta el aire por la boca, despacio.</li>
+        </ol>
+        <p class="pregunta reveal">Y después le preguntáis: <b>«¿Qué notas en el cuerpo ahora? ¿Barriga, pecho o cuello?»</b><br><span class="pregunta-sub">El objetivo no es que lo sepa, sino que empiece a mirar hacia dentro.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 3 · GROUNDING 5-4-3-2-1 ═══════════ -->
+  <section class="step">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">Tres · si se desregula mucho</span>
+        <h2>El juego del 5-4-3-2-1</h2>
+        <p>Si está muy activado, guiadle por los sentidos para sacarlo del «túnel» y traerlo al presente. Id tocando cada paso:</p>
+      </div>
+      <div class="grounding reveal" id="grounding"></div>
+      <p class="run-note" id="gNote"></p>
+    </div>
+  </section>
+
+  <!-- ═══════════ CIERRE ═══════════ -->
+  <section class="close">
+    <div class="wrap">
+      <p class="eyebrow reveal">Para vuestro psicólogo/a</p>
+      <h2 class="reveal">Llevad el seguimiento a sesión</h2>
+      <p class="lead reveal" style="max-width:54ch">Esto no sustituye el trabajo con vuestro psicólogo/a: es la manera de sostener el ritual en casa entre sesiones. Guardad cómo van los días para revisarlo juntos con la barra de abajo.</p>
+      <div class="codebox reveal">
+        <label for="codigo">Vuestro código</label>
+        <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="saved" id="saved"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b> — Ritual diario · calma y atención.<br>
+  Los datos se guardan <b>solo en este dispositivo</b>: no se envían a ningún servidor. Esta herramienta acompaña la pauta de vuestro psicólogo/a; no la sustituye ni diagnostica.
+</footer>
+
+<script src="assets/js/aprens-core.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

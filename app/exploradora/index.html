@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EAF0EC">
+<meta name="description" content="La exploradora valiente · APRENS (TEC · AIS). Un juego de exposición gradual para acompañar la ansiedad de separación, en casa y con calma.">
+<title>La exploradora valiente · APRENS</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<header class="brandbar">
+  <span class="brand"><b>APRENS</b><span class="tec">TEC · AIS</span></span>
+  <span class="brand brand-2" style="letter-spacing:.14em;opacity:.7">Exploradora valiente</span>
+</header>
+
+<main>
+
+  <!-- ═══════════ PORTADA ═══════════ -->
+  <section class="hero">
+    <div class="hero-sky" aria-hidden="true">
+      <span class="star s1">✦</span><span class="star s2">✦</span><span class="star s3">✦</span>
+      <span class="hill h1"></span><span class="hill h2"></span>
+    </div>
+    <div class="hero-copy wrap">
+      <p class="eyebrow">Un juego de valentía · exposición gradual</p>
+      <h1>La exploradora<br>valiente</h1>
+      <p class="hero-tag">Separarse un ratito también se entrena. No para dejar de sentir el miedo, sino para descubrir juntas que se puede —y que mamá y papá vuelven.</p>
+      <a href="#misiones" class="cta">Ver las misiones ↓</a>
+    </div>
+  </section>
+
+  <!-- ═══════════ PARA MADRES Y PADRES ═══════════ -->
+  <section class="lede">
+    <div class="wrap">
+      <p class="eyebrow reveal">Para leer madre y padre, antes de jugar</p>
+      <p class="serif-quote reveal">Ser valiente no es no tener miedo.<br>Es hacerlo con el miedo de la mano.</p>
+      <div class="principio reveal">
+        <p>Vuestro papel es <b>acompañar sin negociar la separación</b>: validar lo que siente, mantener el plan, <b>acortar el ritual de despedida</b> y celebrar cada logro por pequeño que sea.</p>
+        <p>Si <b>mamá o papá se calman primero</b> —una respiración, un tono suave—, ella aprende que se puede estar bien un rato lejos. No se trata de que no llore, sino de que descubra que <b>puede</b>, y que volvéis cuando decís que volvéis.</p>
+        <p class="nota">La nota clínica prioriza empezar con vosotros: sois el modelo. La niña os copia la calma.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LAS DOS LLAVES ═══════════ -->
+  <section class="step llaves-intro">
+    <div class="wrap">
+      <p class="eyebrow reveal">Cada misión se abre con dos llaves</p>
+      <div class="keys-grid">
+        <article class="keycard keycard-que reveal">
+          <span class="key-ic">🗺️</span>
+          <h2>El QUÉ</h2>
+          <p class="key-sub">La misión de hoy</p>
+          <p>Qué separación toca hoy y con qué medida: <b>tiempo</b>, <b>lugar</b>, <b>con quién se queda</b>. Con <b>3 normas claras</b>, un ritual de despedida <b>corto</b> y un <b>premio</b> si lo logra.</p>
+        </article>
+        <article class="keycard keycard-como reveal">
+          <span class="key-ic">🤍</span>
+          <h2>El CÓMO</h2>
+          <p class="key-sub">Cómo nos acompañamos</p>
+          <p>Cómo la sostenéis por dentro: <b>abrazo sentido con respiración</b>, la <b>respiración de la flor y la vela</b>, mirar la sensación <b>con curiosidad</b> y <b>pedir abrazo en vez de repetir</b>.</p>
+        </article>
+      </div>
+      <p class="lead reveal" style="margin-top:28px;max-width:52ch">Se sube de misión cuando una deja de asustar tanto: no solo por <b>cuánto</b> aguanta separada (lo cuantitativo), también por <b>cómo</b> lo vive (lo cualitativo). Poco a poco y seguras.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ MIS MISIONES (escalera) ═══════════ -->
+  <section class="step" id="misiones">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="num">La escalera de misiones</span>
+        <h2>De la más fácil a la más valiente</h2>
+        <p>Estas misiones son un punto de partida: <b>editadlas, borrad o añadid</b> las vuestras. Se ordenan solas por las estrellas de valentía que necesitan. Cuando estéis listas, preparad una misión con las dos llaves.</p>
+      </div>
+
+      <div id="ladder" class="ladder"></div>
+
+      <div class="ladder-actions reveal">
+        <button class="btn btn-ghost" id="btnAddMision">＋ Añadir una misión</button>
+        <button class="btn btn-link" id="btnResetMisiones" title="Volver a las misiones de ejemplo">Restaurar ejemplo</button>
+      </div>
+
+      <div id="misionEditor" class="editor" hidden></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ HACER UNA MISIÓN (se rellena por JS) ═══════════ -->
+  <section class="step mision-run" id="run" hidden>
+    <div class="wrap">
+      <div id="runBody"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CIERRE ═══════════ -->
+  <section class="close">
+    <div class="wrap">
+      <p class="eyebrow reveal">Para vuestro psicólogo/a</p>
+      <h2 class="reveal">Llevad las misiones a sesión</h2>
+      <p class="lead reveal" style="max-width:54ch">Esto no sustituye el trabajo con vuestro psicólogo/a: es la manera de practicar y registrar en casa entre sesiones. Guardad las misiones logradas para revisarlas juntos con la barra de abajo.</p>
+      <div class="codebox reveal">
+        <label for="codigo">Vuestro código</label>
+        <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="saved" id="saved"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b> — La exploradora valiente · exposición gradual y acompañamiento.<br>
+  Los datos se guardan <b>solo en este dispositivo</b>: no se envían a ningún servidor. Esta herramienta acompaña la pauta de vuestro psicólogo/a; no la sustituye ni diagnostica.
+</footer>
+
+<script src="assets/js/aprens-core.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
