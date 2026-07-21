@@ -217,6 +217,100 @@
   .ch-canal span{display:block;font-size:11.5px;color:#6B7280;line-height:1.4}
   .ch-canal .ch-go{font-size:11px;font-weight:600;color:#1B4F8C;margin-top:8px}
   @media(hover:hover){.ch-canal:hover{border-color:#1B4F8C;box-shadow:0 4px 14px rgba(27,79,140,.14);transform:translateY(-1px)}}
+
+  /* ══════════════════════════════════════════════════════════════════════
+     NUEVO ESTILO EDITORIAL · «Mi espacio» — identidad propia (papel cálido,
+     tinta, oro). Capa de override: reskin del shell sin tocar el JS ni el
+     detective (#detective conserva su identidad terracota, más específico).
+     ══════════════════════════════════════════════════════════════════════ */
+  :root{
+    --tinta:#2c2620; --tinta-soft:#584f45; --paper:#f5efe4; --arena:#eadfca;
+    --linea:#ddd0b8; --dorado:#a9781f;
+    --azul:#3d6076;  --azulLt:#dbe4ea;   /* Latencia · azul pizarra cálido */
+    --verde:#516e46; --verdeLt:#e0e8d6;  /* Densidad · salvia */
+    --oro:#9e7529;   --oroLt:#efe3c9;    /* Continuidad · oro */
+    --gris:#6f665b;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{font-family:var(--sans);color:var(--tinta);background:linear-gradient(170deg,#F7F2E8 0%,#EFE7D6 100%);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  ::selection{background:var(--dorado);color:#fff;}
+
+  /* Marca (brandbar cálida, no cabecera de app) */
+  .header{background:linear-gradient(180deg,rgba(245,239,228,.96),rgba(245,239,228,.78));backdrop-filter:saturate(120%) blur(3px);color:var(--tinta);box-shadow:0 1px 0 var(--linea);padding:12px 20px;}
+  .hlogo{background:var(--dorado);color:#fff;font-family:var(--serif);}
+  .htitle{font-family:var(--serif);font-weight:600;font-size:16px;letter-spacing:.01em;color:var(--tinta);}
+  .hsub{color:var(--tinta-soft);opacity:1;}
+
+  /* Portada / hero editorial */
+  .hero{background:var(--arena);border:0;border-radius:16px;padding:clamp(28px,6vw,40px) clamp(22px,5vw,32px);box-shadow:none;}
+  .htitulo{font-family:var(--serif);font-weight:600;font-size:clamp(30px,7.5vw,46px);line-height:1.02;letter-spacing:-.01em;color:var(--tinta);margin-bottom:12px;}
+  .hsubt{font-family:var(--sans);color:var(--tinta-soft);font-size:15px;line-height:1.7;}
+  .frase{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--tinta);background:transparent;border-left:2px solid var(--dorado);border-radius:0;padding:4px 0 4px 18px;margin-top:18px;}
+
+  /* Menú «¿por dónde hoy?» */
+  .menu-lbl{font-family:var(--sans);color:var(--tinta-soft);letter-spacing:.16em;font-weight:600;}
+  .mcard{background:var(--paper);border:1px solid var(--linea);border-left:4px solid var(--azul);border-radius:12px;box-shadow:0 10px 26px -22px rgba(44,38,32,.55);}
+  .mcard:hover{box-shadow:0 16px 32px -22px rgba(44,38,32,.5);}
+  .mcard .mic{border-radius:12px;}
+  .mcard .mtit{font-family:var(--serif);font-weight:600;font-size:19px;}
+  .mcard .mtxt{color:var(--tinta-soft);}
+  .mcard .marr{color:#c9bda3;}
+  .mcard.mfeat{background:linear-gradient(135deg,var(--arena),var(--paper));}
+  .mcard.mprime{background:linear-gradient(135deg,#2c2620 0%,#516e46 100%);box-shadow:0 12px 30px -18px rgba(44,38,32,.7);}
+  .mcard.mprime .mprime-badge{background:var(--dorado);}
+  .mcard.focoHi{border-color:var(--oro);box-shadow:0 0 0 2px var(--oro),0 12px 26px -20px rgba(169,120,31,.5);}
+  .mcard .mfoco{background:var(--oro);}
+  .mcard.medirHi{border-color:var(--azul);box-shadow:0 0 0 2px var(--azul),0 12px 26px -20px rgba(61,96,118,.5);}
+  .mcard .mmedir{background:var(--azul);}
+
+  /* Destacada global (feat) */
+  .feat{background:linear-gradient(135deg,var(--arena),var(--paper));border:1px solid var(--dorado);border-radius:14px;box-shadow:0 10px 26px -22px rgba(169,120,31,.5);}
+  .feat-lbl{color:var(--dorado);}
+  .feat .fn{font-family:var(--serif);color:var(--tinta);}
+  .feat .fd{color:var(--tinta-soft);}
+  .feat .arr{color:var(--dorado);}
+
+  /* Secciones (puertas) */
+  .sec{background:var(--paper);border:1px solid var(--linea);border-top:3px solid var(--azul);border-radius:12px;box-shadow:0 10px 28px -24px rgba(44,38,32,.55);}
+  .sec-tit{font-family:var(--serif);font-weight:600;color:var(--tinta);}
+  .sec-obj{color:var(--tinta-soft);}
+  .masherr>summary{border:1.4px dashed var(--linea);background:var(--arena);color:var(--tinta-soft);border-radius:11px;}
+  .masherr[open]>summary{border-style:solid;}
+
+  /* Banners de pauta */
+  .medir-banner{background:var(--paper);border:2px dashed var(--azul);}
+  .medir-banner .mb-tit{font-family:var(--serif);color:var(--azul);}
+  .medir-banner .mb-txt{color:var(--tinta-soft);}
+
+  /* Filas de herramienta */
+  .tool{background:var(--paper);border:1.5px solid var(--linea);border-radius:11px;}
+  .tool .tn{color:var(--tinta);}
+  .tool .td{color:var(--tinta-soft);}
+  .tool .arr{color:#c9bda3;}
+  @media(hover:hover){.tool:hover{box-shadow:0 10px 22px -18px rgba(44,38,32,.5);}}
+
+  /* Pie */
+  .foot{color:var(--tinta-soft);}
+  .foot b{color:var(--tinta);}
+
+  /* Historia (verde, su acento) */
+  .story{background:var(--paper);border:1px solid var(--linea);border-top:3px solid var(--verde);border-radius:12px;}
+  .story>summary{font-family:var(--serif);color:var(--verde);}
+  .story .sbody{color:var(--tinta-soft);}
+  .story .sbody b{color:var(--tinta);}
+  .story .squote{font-family:var(--serif);font-style:italic;background:var(--verdeLt);border-left-color:var(--verde);color:#3c5636;}
+  .story .pdfbtn{background:var(--verde);}
+
+  /* Tres vías */
+  .vias{background:var(--paper);border:1px solid var(--linea);border-radius:12px;}
+  .vias-lbl{color:var(--tinta);}
+  .vias-sub{color:var(--tinta-soft);}
+  .ch-canal{background:var(--arena);border:1px solid var(--linea);border-radius:11px;}
+  .ch-canal b{color:var(--tinta);}
+  .ch-canal span{color:var(--tinta-soft);}
+  .ch-canal .ch-go{color:var(--dorado);}
+  @media(hover:hover){.ch-canal:hover{border-color:var(--dorado);box-shadow:0 8px 18px -14px rgba(169,120,31,.5);}}
 </style>
 </head>
 <body>
