@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1B4F8C">
+<meta name="theme-color" content="#EAF0EA">
 <title>AIS muscular · APRENS</title>
 <style>
 :root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#EAF7F0;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--oro:#C8973A;--tension:#D9663D;--calma:#5F9070;}
@@ -100,6 +100,47 @@ input[type=range]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;bac
 .opt:active{transform:scale(.96);}
 .opt.sel{border-color:var(--calma);background:var(--verdeLt);color:var(--calma);box-shadow:0 0 0 3px #CDEBDD inset;}
 .aviso{background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left;}
+
+/* ══════════════════════════════════════════════════════════════════════
+   NUEVO ESTILO EDITORIAL · «AIS muscular» — identidad propia (bosque y
+   calma: pino profundo, salvia y arcilla). Capa de override; conserva la
+   lógica y los nombres de clase. Los estados tensa (naranja) / suelta
+   (verde) se mantienen (semántica de Jacobson).
+   ══════════════════════════════════════════════════════════════════════ */
+:root{
+  --azul:#3f6147; --azulLt:#d7e3d9; --oro:#a7802f;
+  --tinta:#2b3a30; --tinta-soft:#4f6353; --arena:#E7DECB; --linea:#D3DDD3;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+body{font-family:var(--sans); color:var(--tinta); background:linear-gradient(170deg,#EAF0EA 0%,#F4EEE1 100%); -webkit-font-smoothing:antialiased;}
+::selection{background:var(--azul); color:#fff;}
+.header{background:linear-gradient(180deg,rgba(234,240,234,.96),rgba(234,240,234,.72)); color:var(--tinta); box-shadow:0 1px 0 var(--linea); backdrop-filter:saturate(120%) blur(3px);}
+.hlogo{background:var(--azul); color:#fff; font-family:var(--serif);}
+.htitle{font-family:var(--serif); color:var(--tinta); letter-spacing:.01em;}
+.hsub{color:var(--tinta-soft); opacity:1;}
+.step-tit,.grupo-nom{font-family:var(--serif); color:var(--tinta);}
+.step-sub{color:var(--tinta-soft);}
+.btn{border-radius:30px;}
+.big{background:var(--azul); box-shadow:0 10px 24px -12px rgba(43,58,48,.55);}
+.big.green{background:var(--calma); box-shadow:0 10px 24px -12px rgba(95,144,112,.5);}
+.ghost{background:transparent; color:var(--azul); border:1.5px solid var(--azul);}
+.mini{color:var(--tinta-soft);}
+.card{background:#fff; border:1px solid var(--linea); border-radius:16px; box-shadow:0 12px 30px -24px rgba(43,58,48,.5);}
+.idea{background:var(--arena); border-left-color:var(--oro); border-radius:0 14px 14px 0;} .idea b{color:var(--tinta);}
+.scale-num{font-family:var(--serif);}
+input[type=range]::-webkit-slider-thumb{border-color:var(--azul);}
+input[type=range]::-moz-range-thumb{border-color:var(--azul);}
+.pchip{background:#fff; border:1.5px solid var(--linea); color:var(--tinta-soft); border-radius:22px;}
+.pchip.cur{border-color:var(--azul); color:var(--azul); box-shadow:0 0 0 2px var(--azulLt) inset;}
+.ring{border:5px solid var(--azulLt); background:radial-gradient(circle,#eef3ee 0%,#dde8de 72%);}
+.ring-n{font-family:var(--serif); color:var(--azul);}
+.grupo-partes{color:var(--tinta-soft);}
+.res{background:linear-gradient(135deg,var(--azul),var(--tinta)); border-radius:18px; color:#fff;}
+.res-big{font-family:var(--serif);}
+.res-msg{color:var(--tinta-soft);}
+.opt{background:#fff; border:1.5px solid var(--linea); border-radius:16px; color:var(--tinta);}
+.frase{font-family:var(--serif); font-style:italic; color:var(--tinta); background:var(--arena); border-left-color:var(--oro); border-radius:0 12px 12px 0;}
 </style>
 </head>
 <body>
