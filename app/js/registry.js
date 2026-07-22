@@ -84,7 +84,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"rincon/index.html" },
 
   { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
-    desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a Joanet, modo prueba (Huesca), revisión semanal y ICE.",
+    desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a tu cuerpo, modo prueba, revisión semanal y ICE. Nombre y diminutivo editables.",
     migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---

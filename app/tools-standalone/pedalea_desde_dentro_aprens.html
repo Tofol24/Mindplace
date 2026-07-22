@@ -209,7 +209,7 @@
 /* ---------- almacenamiento ---------- */
 var LS="pedalea_db_v1";
 var DEFAULT={
-  settings:{joanet:"Joanet", joan:"Joan", dark:false,
+  settings:{joanet:"", joan:"", dark:false,
     valores:["Amar el ciclismo","Ser constante","Cuidar mi cuerpo","Competir con valentía","Aprender"],
     direccion:"Doy lo mejor sin maltratarme y cuido mi relación con la bicicleta, aunque el resultado no dependa de mí.",
     favFrases:[]},
@@ -231,8 +231,8 @@ function hoy(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-
 function p2(n){return ("0"+n).slice(-2);}
 function nowHM(){var d=new Date();return p2(d.getHours())+":"+p2(d.getMinutes());}
 function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]+" "+p[0]; }
-function JOANET(){return DB.settings.joanet||"Joanet";}
-function JOAN(){return DB.settings.joan||"Joan";}
+function JOANET(){return (DB.settings.joanet||"").trim()||"mi cuerpo";}
+function JOAN(){return (DB.settings.joan||"").trim();}
 function media(arr,f){ var v=arr.map(function(x){return typeof f==="function"?f(x):x[f];}).filter(function(n){return typeof n==="number"&&!isNaN(n);}); if(!v.length) return null; return Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*10)/10; }
 function ultimos(arr,n){ return arr.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,n||50); }
 function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
@@ -327,8 +327,10 @@ VIEWS.home=function(){
   var comprometidos=sem.filter(function(x){return (x.orientacion||"").indexOf('disfrutar')>=0 || x.completado==='Sí';}).length;
   var h='';
   h+='<span class="kick">Panel del día · '+fechaLarga(hoy())+'</span>';
-  h+='<h1 class="view-t">Hola, '+esc(JOAN())+' 🚴</h1>';
+  var _nm=JOAN(), _dim=(DB.settings.joanet||'').trim();
+  h+='<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:6px 0 2px"><h1 class="view-t" id="greetH" style="margin:0">Hola'+(_nm?', '+esc(_nm):'')+' 🚴</h1><button class="link" onclick="toggleNames()">✎ nombres</button></div>';
   h+='<p class="view-s">Entrena el cuerpo, acompaña a '+esc(JOANET())+' y compite desde el amor por el ciclismo.</p>';
+  h+='<div class="card" id="namesBox" style="display:'+(_nm?'none':'block')+'"><h2><span class="e">🙋</span>Mis nombres</h2><p class="lead">Personaliza cómo te llama la app: tu nombre y el diminutivo con el que llamas a tu cuerpo (tu figura interna). Ej.: Joan → Joanet, Daniel → Danielito.</p><div class="fld"><label>Mi nombre</label><input type="text" id="nmName" value="'+esc(_nm)+'" placeholder="Tu nombre o apodo"></div><div class="fld"><label>Diminutivo · mi cuerpo / figura interna</label><input type="text" id="nmDim" value="'+esc(_dim)+'" placeholder="Ej.: Joanet, Danielito…"></div><button class="btn sm" onclick="saveNames()">Guardar nombres</button></div>';
   h+='<div class="quote">'+esc(fraseDelDia())+'</div>';
 
   h+='<div class="card"><h2><span class="e">🎯</span>La intención de hoy</h2>';
@@ -356,6 +358,8 @@ VIEWS.home=function(){
 };
 function qa(v,e,n,d){ return '<button class="qa" onclick="go(\''+v+'\')"><span class="qe">'+e+'</span><span class="qn">'+esc(n)+'</span><span class="qd">'+esc(d)+'</span></button>'; }
 function guardaIntencion(){ DB.settings.intencion=(document.getElementById('intencionInput').value||"").trim(); save(); render(); }
+function toggleNames(){ var b=document.getElementById('namesBox'); if(b) b.style.display=(b.style.display==='none'?'block':'none'); }
+function saveNames(){ DB.settings.joan=(document.getElementById('nmName').value||'').trim(); DB.settings.joanet=(document.getElementById('nmDim').value||'').trim(); save(); render(); }
 
 /* ---------------- MÁS (menú) ---------------- */
 VIEWS.mas=function(){
@@ -625,7 +629,7 @@ VIEWS.celebrar=function(){
     {k:'resto',l:'¿Resté importancia al logro?',t:'chips1',opts:['Sí','Un poco','No']},
     {k:'comparti',l:'¿Me permití compartirlo?',t:'chips1',opts:['Sí','No']},
     {k:'esfuerzo',l:'¿Qué esfuerzo previo estoy reconociendo?',t:'textarea'},
-    {k:'joan_bien',l:'¿Qué hizo bien '+JOAN()+'?',t:'textarea'},
+    {k:'joan_bien',l:'¿Qué hice bien?',t:'textarea'},
     {k:'joanet_sost',l:'¿Qué sostuvo '+JOANET()+'?',t:'textarea'},
     {k:'gesto',l:'Gesto de celebración elegido',t:'chips1',opts:['Compartirlo con alguien','Escribir qué hice bien','Guardar una foto','Agradecer al cuerpo','Disfrutar unos minutos']}
   ];
@@ -754,7 +758,7 @@ function savePiramide(){
   var frase;
   if((d.p_atencion||'').indexOf('resultado')>=0) frase='Hoy el resultado estuvo condicionado por una atención muy centrada en la comparación. Mañana el objetivo no será demostrar más, sino recuperar el control con una tarea concreta.';
   else if((d.p_reto||'').indexOf('Amenaza')>=0) frase='Hoy '+JOANET()+' sintió el esfuerzo como amenaza en soledad. Se puede entrenar acompañarlo antes: AIS, una frase y el regreso a la cadencia.';
-  else if(d.p_continuidad!=null && d.p_continuidad>=6) frase='Hoy '+JOANET()+' sintió dolor, pero '+JOAN()+' logró acompañarlo y volver a la tarea. Aunque el resultado no fuera el esperado, se entrenaron continuidad y autoeficacia.';
+  else if(d.p_continuidad!=null && d.p_continuidad>=6) frase='Hoy '+JOANET()+' sintió dolor, pero pude acompañarlo y volver a la tarea. Aunque el resultado no fuera el esperado, se entrenaron continuidad y autoeficacia.';
   else frase='Hoy has empezado a mirar tu rendimiento desde la base. Elige mañana una sola cosa: '+(d.p_manana||'volver a la tarea')+'.';
   document.getElementById('pirFrase').innerHTML='<div class="quote">'+esc(frase)+'</div>';
   aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'piramide',atencion:d.p_atencion,reto:d.p_reto,continuidad:d.p_continuidad,manana:d.p_manana,lectura:frase});
@@ -830,7 +834,7 @@ function copiarResumen(btn){
   var e7=DB.entrenos.filter(function(x){return within7(x.date);});
   var mont=e7.filter(function(x){return x.montana;});
   var la7=DB.latigoamor.filter(function(x){return within7(x.date);});
-  var L=['PEDALEA DESDE DENTRO · '+JOAN()+' · semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
+  var L=['PEDALEA DESDE DENTRO · '+(JOAN()?JOAN()+' · ':'')+'semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
   L.push('Entrenos: '+e7.length+' · AIS: '+DB.ais.filter(function(x){return within7(x.date);}).length+' · subidas de montaña: '+mont.length);
   var mp=media(e7,'presion'), md=media(e7,'disfrute'), mc=media(e7,'conexion'), cm=media(mont,'cont_min'), mla=media(la7,'nivel');
   if(mp!=null) L.push('Presión por demostrar (media): '+mp+'/10');
@@ -848,14 +852,14 @@ function copiarResumen(btn){
 /* ---------------- DATOS / AJUSTES ---------------- */
 VIEWS.datos=function(){
   var h='<h1 class="view-t">⚙️ Datos y ajustes</h1><p class="view-s">Todo se guarda solo en este dispositivo (localStorage). No se envía a ningún servidor.</p><div class="ok-flash" id="okflash"></div>';
-  h+='<div class="card"><h2>Nombres</h2><div class="fld"><label>Nombre del deportista</label><input type="text" id="setJoan" value="'+esc(JOAN())+'"></div><div class="fld"><label>Nombre de la figura interna (el cuerpo)</label><input type="text" id="setJoanet" value="'+esc(JOANET())+'"></div><button class="btn sm" onclick="saveNombres()">Guardar nombres</button></div>';
+  h+='<div class="card"><h2>Nombres</h2><div class="fld"><label>Mi nombre</label><input type="text" id="setJoan" value="'+esc(JOAN())+'" placeholder="Tu nombre o apodo"></div><div class="fld"><label>Diminutivo · figura interna (mi cuerpo)</label><input type="text" id="setJoanet" value="'+esc((DB.settings.joanet||"").trim())+'" placeholder="Ej.: Joanet, Danielito…"></div><button class="btn sm" onclick="saveNombres()">Guardar nombres</button></div>';
   h+='<div class="card"><h2>Copias de seguridad</h2><div class="btnrow"><button class="btn sm" onclick="exportJSON()">⬇️ Exportar JSON</button><button class="btn sm" onclick="exportCSV()">⬇️ Exportar CSV</button></div><div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="document.getElementById(\'impFile\').click()">⬆️ Importar JSON</button><input type="file" id="impFile" accept="application/json" style="display:none" onchange="importJSON(event)"></div></div>';
   h+='<div class="card"><h2>Datos de demostración</h2><p class="lead">Añade registros de ejemplo para ver cómo funciona.</p><button class="btn sm gris" onclick="demoData()">Cargar datos demo</button></div>';
   h+='<div class="card" style="border-color:#b5433a"><h2>Borrado total</h2><p class="lead">Elimina todos los registros de este dispositivo. No se puede deshacer.</p><button class="btn sm danger" onclick="resetAll()">Borrar todo</button></div>';
   h+='<div class="card"><h2>Privacidad</h2><p class="muted">Los datos permanecen en tu navegador. Funciona sin conexión tras la primera apertura. Puedes exportarlos para compartirlos con tu psicólogo o guardar una copia.</p></div>';
   h+=footerHTML(); return h;
 };
-function saveNombres(){ DB.settings.joan=(document.getElementById('setJoan').value||'Joan').trim()||'Joan'; DB.settings.joanet=(document.getElementById('setJoanet').value||'Joanet').trim()||'Joanet'; save(); flash("Nombres guardados ✓"); render(); go('datos'); }
+function saveNombres(){ DB.settings.joan=(document.getElementById('setJoan').value||'').trim(); DB.settings.joanet=(document.getElementById('setJoanet').value||'').trim(); save(); flash("Nombres guardados ✓"); render(); go('datos'); }
 function exportJSON(){ downloadFile('pedalea_'+hoy()+'.json', JSON.stringify(DB,null,2), 'application/json'); }
 function exportCSV(){
   var rows=[['modulo','fecha','hora','clave','valor']];
