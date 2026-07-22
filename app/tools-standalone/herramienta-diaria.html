@@ -185,6 +185,41 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 .hlogo{border:1px solid #E1D9C9;}
 .htit{color:#2b2a30;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
 .card{border:1px solid #E7DECB;}
+
+/* ══ MEJORA: pulido visual + práctica directa + accesibilidad ══ */
+:root{--linea:#E1D9C9;--az-d:#4f5f92;}
+/* armonizar azules "duros" que quedaban */
+.ch-tit,.ch-canal b,.ch-canal .ch-go{color:var(--az);}
+.ch-canal{background:#fff;border:1px solid var(--linea);}
+.ch-canal span{color:var(--gr);}
+.ch-canal.ch-act{background:#fff;border:2px solid var(--au);box-shadow:0 2px 12px rgba(169,120,31,.18);}
+.ch-canal .ch-here{color:var(--au);}
+@media(hover:hover){.ch-canal:not(.ch-act):hover{border-color:var(--az);box-shadow:0 4px 14px rgba(74,86,130,.16);}}
+.pD{background:#e0e4f2;color:#4f5f92;}
+.streak-badge{background:linear-gradient(135deg,var(--az),var(--az-d));}
+.qtrab{background:#fbf7ef;border:1px solid var(--linea);color:#4a463f;}
+/* controles con línea cálida y fondo papel */
+.si,.sopt,.cntbtn,.idxb,.dchip,.cslot,.cfform,.fbuild,.fbuild,textarea,select,input[type=text],input[type=time]{border-color:var(--linea)!important;}
+.si,.sopt,.cntbtn,.idxb,.dchip{background:#fbf8f1;}
+textarea,select,input[type=text],input[type=time]{background:#fdfbf6;}
+textarea:focus,select:focus,input:focus{border-color:var(--az)!important;}
+input[type=range]{accent-color:var(--az);}
+.fbuild{background:#fbf7ef;} .fill{background:var(--azl);color:var(--az-d);}
+/* overlays de práctica en editorial cálido-oscuro */
+.gmodal{background:linear-gradient(160deg,#3b3a52,#2b2a30);}
+.rmodal{background:linear-gradient(160deg,#3b3a52,#2b2a30)!important;}
+/* botón directo de práctica en el hero (la respiración, en un toque) */
+.doahora{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:16px;border:0;border-radius:16px;background:var(--az);color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -12px rgba(74,86,130,.6);transition:transform .12s,filter .15s;}
+.doahora:hover{filter:brightness(1.05);} .doahora:active{transform:translateY(1px);}
+.doahora .sub{font-weight:500;font-size:12.5px;opacity:.85;}
+/* ── accesibilidad ── */
+button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dchip:focus-visible,.pbtn:focus-visible,.cntbtn:focus-visible,.doahora:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--au);outline-offset:2px;}
+.sopt,.dchip{min-height:40px;display:inline-flex;align-items:center;}
+.idxb{min-height:58px;}
+@media (prefers-reduced-motion:reduce){
+  .rcirc,.rcirc *{animation:none!important;transition:none!important;}
+  html{scroll-behavior:auto!important;}
+}
 </style>
 </head>
 <body>
@@ -192,14 +227,14 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
   <div class="hlogo"><img id="lgImg" src="" alt="APRENS"></div>
   <div><div class="htit">Herramienta diaria</div><div class="hsub">APRENS Psicologia &middot; Presencia y honestidad</div></div>
 </div>
-<div class="rmodal" id="rmodal">
-  <div class="rfase" id="rfase">Inhala</div>
+<div class="rmodal" id="rmodal" role="dialog" aria-modal="true" aria-label="Respiración guiada">
+  <div class="rfase" id="rfase" aria-live="assertive">Inhala</div>
   <div class="rcirc" id="rcirc"><div class="rcnt" id="rcnt">4</div></div>
   <div class="rbar"><div class="rbarf" id="rbarf" style="width:0%"></div></div>
   <div class="rinfo" id="rinfo">Ciclo 1 de 3</div>
   <button class="rstop" onclick="stopR()">Detener</button>
 </div>
-<div class="gmodal" id="gModal">
+<div class="gmodal" id="gModal" role="dialog" aria-modal="true" aria-label="Grounding 5-4-3-2-1">
   <div id="gStepWrap" style="text-align:center;width:100%;max-width:340px;position:relative">
     <div class="gstepnum" id="gStepNum">Paso 1/5</div>
     <div class="gsense-ico" id="gSenseIco">&#128269;</div>
@@ -242,6 +277,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
     <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--az);font-weight:700;margin-bottom:3px">Tu d&iacute;a de hoy</div>
     <div id="dataLabel" style="font-size:13px;color:var(--gr)"></div>
     <div class="frase">Donde dirijo mi atenci&oacute;n, ah&iacute; voy yo.</div>
+    <button class="doahora" onclick="startR('verd')" aria-label="Empezar la respiraci&oacute;n guiada ahora, ritmo 4-2-6-2">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6&middot;2</span></button>
   </div>
   <div class="card">
     <div class="ch-tit">Tres v&iacute;as para anclar la atenci&oacute;n hacia dentro</div>
@@ -296,9 +332,9 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <div class="si"><div class="sico">&#127919;</div><div class="stit">Vuelvo</div><div class="ssub">A la estructura</div></div>
     </div>
     <div class="crow">
-      <button class="cntbtn" onclick="chgP(-1)">&minus;</button>
+      <button class="cntbtn" onclick="chgP(-1)" aria-label="Restar una">&minus;</button>
       <div style="flex:1;text-align:center"><div id="cntP" class="cval">0</div><div class="clbl2">veces hoy</div></div>
-      <button class="cntbtn" onclick="chgP(1)">+</button>
+      <button class="cntbtn" onclick="chgP(1)" aria-label="Sumar una">+</button>
     </div>
     <div class="brow"><button class="btn bp" onclick="startR(&apos;verd&apos;)">&#127756; Respira ahora</button></div>
     <div style="margin-top:12px"><label class="flbl">Notes</label>
