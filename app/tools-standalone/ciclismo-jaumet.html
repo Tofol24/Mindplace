@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#b5623a">
+<title>Acompañar a Jaumet · APRENS</title>
+<style>
+  :root{
+    --bg:#f6f2ea; --card:#fffdf9; --tinta:#2c2620; --suau:#7a6f60;
+    --clay:#b5623a; --clay-d:#8f4a29; --clay-lt:#f3e4d7;
+    --amor:#5e8f6f; --amor-d:#436b52; --amor-lt:#e4efe6;
+    --latigo:#6a7480; --latigo-d:#4d5560; --latigo-lt:#e7eaed;
+    --oro:#a9781f; --oro-d:#856013;
+    --montana:#3f5e4e;
+    --linia:#e7ddcd;
+    --ombra:0 6px 22px rgba(90,60,35,.10);
+    --ombra-s:0 2px 10px rgba(90,60,35,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#efe4d4 0%,var(--bg) 240px);
+    color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding:0 16px calc(90px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:640px;margin:0 auto}
+
+  /* Cabecera */
+  header{text-align:center;padding:34px 8px 6px}
+  .kicker{display:inline-block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-d);
+    background:var(--clay-lt);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:16px}
+  h1{font-family:var(--serif);font-size:29px;line-height:1.2;margin:0 auto;max-width:14em;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15px;margin:14px auto 0;max-width:29em}
+  .frase{font-family:var(--serif);font-style:italic;color:var(--clay-d);font-size:16px;background:var(--clay-lt);
+    border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:14px 17px;line-height:1.5;margin:20px auto 0;max-width:32em;text-align:left}
+
+  .topcta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:22px 0 4px;padding:15px 16px;
+    border:0;border-radius:14px;cursor:pointer;font-family:inherit;background:var(--clay);color:#fff;font-size:16px;font-weight:600;
+    box-shadow:0 6px 18px rgba(181,98,58,.30);transition:transform .08s;min-height:52px}
+  .topcta:active{transform:scale(.98)}
+  .topcta svg{width:20px;height:20px}
+  .topnote{text-align:center;color:var(--suau);font-size:13.5px;margin:8px 0 0}
+
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:20px;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--clay-lt);color:var(--clay-d)}
+  .ic svg{width:22px;height:22px;display:block}
+  .card p{margin:8px 0;color:#4a4034}
+  .card p.lead{color:var(--suau);font-size:14.5px}
+  .ctit{font-weight:600;font-size:12px;color:var(--clay-d);margin:2px 0 12px;text-transform:uppercase;letter-spacing:.06em}
+
+  /* Dos modos: látigo vs amor */
+  .modos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+  .modo{border-radius:14px;padding:15px 14px;border:1px solid var(--linia)}
+  .modo.lat{background:var(--latigo-lt);border-color:#d3d9de}
+  .modo.amo{background:var(--amor-lt);border-color:#cfe0d4}
+  .modo .mt{font-weight:700;font-size:15px;display:flex;align-items:center;gap:7px;margin-bottom:6px}
+  .modo.lat .mt{color:var(--latigo-d)}
+  .modo.amo .mt{color:var(--amor-d)}
+  .modo .ml{font-size:13.5px;line-height:1.5;color:#4a4034}
+  .modo .ex{font-style:italic;font-size:13px;margin-top:8px;display:block;line-height:1.45}
+  .modo.lat .ex{color:var(--latigo-d)}
+  .modo.amo .ex{color:var(--amor-d)}
+  @media(max-width:440px){.modos{grid-template-columns:1fr}}
+
+  /* Escalas de opciones (chips) */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .chip{flex:1 1 auto;min-width:92px;min-height:46px;background:var(--bg);border:1.5px solid var(--linia);border-radius:13px;
+    padding:10px 12px;cursor:pointer;font-family:inherit;font-size:14px;color:#4a4034;transition:transform .08s,border-color .15s,background .15s;
+    display:flex;align-items:center;justify-content:center;gap:7px;text-align:center;line-height:1.2}
+  .chip:active{transform:scale(.96)}
+  .chip.sel{border-color:var(--clay);background:var(--clay-lt);color:var(--clay-d);font-weight:600}
+  .chip .em{font-size:19px}
+
+  /* Escala numérica esfuerzo/dolor 1-10 */
+  .rpe{display:flex;gap:5px;margin-top:6px}
+  .rpe button{flex:1;min-width:0;min-height:46px;background:var(--bg);border:1.5px solid var(--linia);border-radius:11px;
+    cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:var(--suau);transition:transform .08s,border-color .15s,background .15s}
+  .rpe button:active{transform:scale(.92)}
+  .rpe button.sel{border-color:var(--clay);background:var(--clay);color:#fff}
+  .rpe-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--suau);margin-top:6px}
+
+  /* Eje látigo <-> amor (5 pasos) */
+  .eje{margin-top:4px}
+  .eje-head{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:8px}
+  .eje-head .l{color:var(--latigo-d)}
+  .eje-head .a{color:var(--amor-d)}
+  .eje-track{display:flex;gap:6px}
+  .eje-track button{flex:1;min-height:52px;border-radius:12px;border:1.5px solid var(--linia);background:var(--bg);cursor:pointer;
+    font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .08s,border-color .15s,background .15s;padding:6px 2px}
+  .eje-track button .em{font-size:20px;line-height:1}
+  .eje-track button .tx{font-size:10.5px;color:var(--suau);line-height:1.1;text-align:center}
+  .eje-track button:active{transform:scale(.94)}
+  .eje-track button.sel{border-width:2px}
+  .eje-track button.sel[data-v="1"],.eje-track button.sel[data-v="2"]{border-color:var(--latigo);background:var(--latigo-lt)}
+  .eje-track button.sel[data-v="1"] .tx,.eje-track button.sel[data-v="2"] .tx{color:var(--latigo-d);font-weight:600}
+  .eje-track button.sel[data-v="3"]{border-color:var(--oro);background:#f6edd8}
+  .eje-track button.sel[data-v="3"] .tx{color:var(--oro-d);font-weight:600}
+  .eje-track button.sel[data-v="4"],.eje-track button.sel[data-v="5"]{border-color:var(--amor);background:var(--amor-lt)}
+  .eje-track button.sel[data-v="4"] .tx,.eje-track button.sel[data-v="5"] .tx{color:var(--amor-d);font-weight:600}
+  .eje-eco{display:none;margin-top:10px;border-radius:0 12px 12px 0;padding:11px 14px;font-size:14px;line-height:1.5;font-weight:500}
+  .eje-eco.show{display:block;animation:fade .3s ease}
+
+  .fld{margin-top:18px}
+  .fld:first-child{margin-top:4px}
+  .fld>label{display:block;font-size:14px;font-weight:600;color:var(--tinta);margin-bottom:8px}
+  textarea{width:100%;border:1.5px solid var(--linia);border-radius:12px;padding:12px 13px;font-family:inherit;font-size:15px;
+    color:var(--tinta);background:#fdfbf6;resize:vertical;min-height:64px;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--clay)}
+
+  /* Biblioteca de autoverbalizaciones */
+  .vgrupo{margin-top:14px}
+  .vgrupo h3{font-size:12.5px;color:var(--clay-d);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:0 0 9px;display:flex;align-items:center;gap:7px}
+  .verb{display:flex;align-items:flex-start;gap:10px;background:var(--amor-lt);border:1px solid #d5e4d9;border-radius:13px;
+    padding:11px 13px;margin:8px 0;cursor:pointer;transition:transform .08s,box-shadow .15s}
+  .verb:active{transform:scale(.985)}
+  .verb .vtx{flex:1;font-family:var(--serif);font-style:italic;font-size:15.5px;color:var(--amor-d);line-height:1.45}
+  .verb .vcopy{flex:0 0 auto;color:var(--amor);width:20px;height:20px;margin-top:2px}
+  .verb.copied{box-shadow:0 0 0 2px var(--amor) inset}
+
+  /* Práctica AIS (respiración de subida) */
+  .prac{border:1px solid var(--linia)}
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:16px 0 4px}
+  .ring{width:184px;height:184px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:radial-gradient(circle at 50% 42%,var(--clay-lt),#ecd9c6);
+    box-shadow:inset 0 0 0 2px rgba(181,98,58,.22);transition:transform 1s ease-in-out}
+  .ring .rinner{width:128px;height:128px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:var(--ombra-s);padding:8px;text-align:center}
+  .ring .rfase{font-size:18px;font-weight:700;color:var(--clay-d)}
+  .ring .rseg{font-size:13px;color:var(--suau);margin-top:2px}
+  .rverb{font-family:var(--serif);font-style:italic;color:var(--amor-d);text-align:center;font-size:16px;margin:14px auto 2px;max-width:24em;min-height:2.6em;line-height:1.4;transition:opacity .4s}
+  .rhint{color:var(--suau);font-size:13.5px;text-align:center;margin-top:8px;max-width:27em}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px 16px;
+    border:0;border-radius:13px;background:var(--clay);color:#fff;font-size:15.5px;font-weight:600;cursor:pointer;
+    transition:transform .08s,background .2s;font-family:inherit;min-height:50px}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--clay-d);border:1.5px solid var(--clay)}
+  .btn.amor{background:var(--amor)}
+  .btn.oro{background:var(--oro)}
+  .btn svg{width:18px;height:18px}
+  .btn.ok{background:var(--amor)!important;color:#fff!important}
+  .btnrow{display:flex;gap:10px}
+  .btnrow .btn{flex:1}
+  .btn:focus-visible,.chip:focus-visible,.rpe button:focus-visible,.eje-track button:focus-visible,.verb:focus-visible,.topcta:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+
+  /* Resultado del registro */
+  .result{margin-top:16px;padding:16px;border-radius:14px;background:var(--amor-lt);border:1px solid #cfe0d4;display:none;text-align:center}
+  .result.show{display:block;animation:fade .3s ease}
+  .result .rt{font-family:var(--serif);font-size:17px;color:var(--amor-d);font-weight:700}
+  .result .rm{color:var(--amor-d);font-size:14.5px;margin-top:6px;line-height:1.5}
+
+  /* Registro del día */
+  .daysum{margin-top:8px;background:var(--clay-lt);border:1px solid #ecd9c6;border-radius:14px;padding:15px 16px}
+  .daysum .tot{display:flex;justify-content:space-around;text-align:center;gap:8px}
+  .daysum .tot div b{display:block;font-family:var(--serif);font-size:26px;color:var(--clay-d);line-height:1.1}
+  .daysum .tot div span{font-size:11.5px;color:var(--clay-d);opacity:.85;line-height:1.2}
+  .balbar{margin-top:14px}
+  .balbar .bl{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:5px}
+  .balbar .bl .l{color:var(--latigo-d)}.balbar .bl .a{color:var(--amor-d)}
+  .baltrack{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--latigo-lt),#f6edd8,var(--amor-lt));position:relative;overflow:visible}
+  .balmark{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--oro);transform:translate(-50%,-50%);transition:left .4s}
+  .detall{margin-top:14px;font-size:13.5px;color:#4a4034;line-height:1.7}
+  .detall .none{font-style:italic;opacity:.8}
+  .clr{background:none;border:0;color:var(--clay-d);font-size:13px;cursor:pointer;text-decoration:underline;padding:12px 0 0;font-family:inherit;display:block;margin:0 auto;min-height:40px}
+  .hist{margin-top:18px}
+  .hist h3{font-size:12.5px;color:var(--suau);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .hist .row{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--linia);border-radius:11px;padding:9px 12px;margin:7px 0;font-size:13.5px}
+  .hist .row .dt{color:var(--suau);font-size:12.5px;flex:0 0 auto}
+  .hist .row .ev{flex:1;color:#4a4034}
+
+  .avis{display:flex;gap:11px;background:#fbf3e6;border:1px solid #f0e0c4;border-radius:14px;padding:13px 15px;margin-top:16px;font-size:14px;color:#7a5b1e;align-items:flex-start;line-height:1.5}
+  .avis svg{width:20px;height:20px;flex:0 0 20px;color:var(--oro);margin-top:1px}
+
+  footer{text-align:center;color:var(--suau);font-size:13px;margin-top:30px;padding:0 10px}
+  footer .logo{font-family:var(--serif);font-weight:700;color:var(--clay-d);letter-spacing:.04em}
+
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media(max-width:380px){h1{font-size:25px}body{font-size:15px}.ring{width:158px;height:158px}.ring .rinner{width:112px;height:112px}}
+  @media(prefers-reduced-motion:reduce){.ring,.balmark,.rverb{transition:none!important}*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">APRENS · Ciclismo · AIS</span>
+    <h1>Acompañar a Jaumet</h1>
+    <p class="sub">La bici no se gana a base de látigo. Compites mejor cuando <b>acompañas a tu cuerpo</b> en el esfuerzo, con atención y cariño, no cuando lo castigas para que rinda.</p>
+    <p class="frase">“El resultado es una consecuencia, no mi único valor. Mi trabajo hoy es <b>estar con Jaumet</b> en cada pedalada, sobre todo cuando la subida aprieta.”</p>
+    <button class="topcta" onclick="anar('registro')" aria-label="Registrar cómo he acompañado a mi cuerpo en el entreno de hoy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      Registrar un entreno / subida
+    </button>
+    <p class="topnote">Al terminar de rodar, en caliente, 1 minuto.</p>
+  </header>
+
+  <!-- Idea base: los dos modos -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>Dos formas de subir</h2>
+    <p>El dolor de la subida no vas a poder evitarlo: mantener el ritmo <b>duele</b>. Lo que sí puedes elegir es <b>desde dónde acompañas a tu cuerpo</b> mientras duele.</p>
+    <div class="modos">
+      <div class="modo lat">
+        <div class="mt">🔗 El látigo</div>
+        <div class="ml">Empujas apretando los dientes, insultándote, exigiendo. Tu cuerpo va <b>solo y castigado</b>. A la larga: rechazo, desgana, miedo a la exigencia.</div>
+        <span class="ex">“Aprieta, flojo. Si no ganas no vales.”</span>
+      </div>
+      <div class="modo amo">
+        <div class="mt">🤍 El amor</div>
+        <div class="ml">Empujas <b>acompañando</b>: notas el ardor con curiosidad, respiras con la pedalada, le hablas a Jaumet. El esfuerzo sigue, pero <b>no está solo</b>.</div>
+        <span class="ex">“Estoy contigo, Jaumet. Un pedaleo más, juntos.”</span>
+      </div>
+    </div>
+    <div class="avis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>Acompañar desde el amor <b>no</b> es apretar menos. Puedes sostener el mismo ritmo —o más— <b>sin castigarte</b>. Eso es lo que hace que la bici siga gustándote.</span>
+    </div>
+  </div>
+
+  <!-- Práctica AIS: respiración de subida -->
+  <div class="card prac" id="practica">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12c0-4 3-7 8-7s8 3 8 7-3 7-8 7c-1.4 0-2.7-.2-3.8-.7L4 20l1.2-3.2C4.5 15.6 4 13.9 4 12z"/></svg></span>AIS de subida · estar con el dolor</h2>
+    <p class="lead">Antes de rodar (ensayo) o al revisar una subida: lleva la atención al esfuerzo desde el amor. El dolor de las piernas es <b>trabajo, no peligro</b>.</p>
+    <div class="ring-wrap">
+      <div class="ring" id="ring"><div class="rinner"><div><div class="rfase" id="rfase">Prepárate</div><div class="rseg" id="rseg"></div></div></div></div>
+      <div class="rverb" id="rverb">Respira con el ritmo de la pedalada. No estás solo en la subida.</div>
+      <div class="rhint" id="rhint">Inhala al empujar, exhala largo al soltar. Lleva la atención al ardor de las piernas y salúdalo.</div>
+    </div>
+    <div class="btnrow">
+      <button class="btn amor" id="btnResp" onclick="toggleResp(this)">Empezar la respiración</button>
+    </div>
+  </div>
+
+  <!-- Registro de un entreno / subida -->
+  <div class="card" id="registro">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg></span>¿Cómo has subido hoy?</h2>
+    <p class="lead">Justo al terminar, en caliente. No es para nota: es para <b>ver desde dónde acompañas a Jaumet</b>.</p>
+
+    <div class="fld">
+      <label>1 · ¿Qué has hecho?</label>
+      <div class="chips" id="tipo">
+        <button class="chip" data-v="montaña" onclick="setChip('tipo',this)"><span class="em">⛰️</span>Montaña / subida</button>
+        <button class="chip" data-v="serie" onclick="setChip('tipo',this)"><span class="em">⏱️</span>Series</button>
+        <button class="chip" data-v="rodaje" onclick="setChip('tipo',this)"><span class="em">🚴</span>Rodaje</button>
+        <button class="chip" data-v="competición" onclick="setChip('tipo',this)"><span class="em">🏁</span>Competición</button>
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>2 · Esfuerzo / dolor percibido en lo más duro</label>
+      <div class="rpe" id="rpe">
+        <button data-v="1" onclick="setRpe(1,this)">1</button>
+        <button data-v="2" onclick="setRpe(2,this)">2</button>
+        <button data-v="3" onclick="setRpe(3,this)">3</button>
+        <button data-v="4" onclick="setRpe(4,this)">4</button>
+        <button data-v="5" onclick="setRpe(5,this)">5</button>
+        <button data-v="6" onclick="setRpe(6,this)">6</button>
+        <button data-v="7" onclick="setRpe(7,this)">7</button>
+        <button data-v="8" onclick="setRpe(8,this)">8</button>
+        <button data-v="9" onclick="setRpe(9,this)">9</button>
+        <button data-v="10" onclick="setRpe(10,this)">10</button>
+      </div>
+      <div class="rpe-lbl"><span>Suave</span><span>Al límite</span></div>
+    </div>
+
+    <div class="fld">
+      <label>3 · Cuando ha dolido, ¿desde dónde has acompañado a Jaumet?</label>
+      <div class="eje">
+        <div class="eje-head"><span class="l">🔗 Látigo</span><span class="a">Amor 🤍</span></div>
+        <div class="eje-track" id="eje">
+          <button data-v="1" onclick="setEje(1,this)"><span class="em">😤</span><span class="tx">Puro látigo</span></button>
+          <button data-v="2" onclick="setEje(2,this)"><span class="em">😖</span><span class="tx">Más exigencia</span></button>
+          <button data-v="3" onclick="setEje(3,this)"><span class="em">😐</span><span class="tx">A ratos</span></button>
+          <button data-v="4" onclick="setEje(4,this)"><span class="em">🙂</span><span class="tx">Más amor</span></button>
+          <button data-v="5" onclick="setEje(5,this)"><span class="em">🤍</span><span class="tx">Acompañado</span></button>
+        </div>
+        <div class="eje-eco" id="ejeEco"></div>
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>4 · En la subida, con el dolor, ¿pudiste sostener el ritmo?</label>
+      <div class="chips" id="cont">
+        <button class="chip" data-v="solté" onclick="setChip('cont',this)">Solté antes de tiempo</button>
+        <button class="chip" data-v="ratos" onclick="setChip('cont',this)">Aguanté a ratos</button>
+        <button class="chip" data-v="sostuve" onclick="setChip('cont',this)">Sostuve el ritmo</button>
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>5 · ¿Qué le dijiste a tu cuerpo? <span style="font-weight:400;color:var(--suau)">(opcional)</span></label>
+      <textarea id="dicho" placeholder="Lo que te dijiste por dentro en la subida… o elige una frase de abajo."></textarea>
+    </div>
+
+    <button class="btn" onclick="registrar(this)">Registrar esta subida</button>
+
+    <div class="result" id="result">
+      <div class="rt" id="resTit"></div>
+      <div class="rm" id="resMsg"></div>
+      <button class="btn ghost" onclick="nuevo()" style="margin-top:14px">Registrar otra</button>
+    </div>
+  </div>
+
+  <!-- Biblioteca de autoverbalizaciones -->
+  <div class="card">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Palabras para no dejar solo a Jaumet</h2>
+    <p class="lead">Tócalas para copiarlas. Escoge 1 o 2 y llévalas a la próxima subida como quien lleva a un amigo al lado.</p>
+
+    <div class="vgrupo">
+      <h3>⛰️ Antes de la subida</h3>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Vamos juntos, Jaumet. Esta subida la subimos los dos.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“No vengo a castigarte. Vengo a acompañarte.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+    </div>
+
+    <div class="vgrupo">
+      <h3>🔥 En el dolor, para mantener el ritmo</h3>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Este ardor es esfuerzo, no es peligro. Puedo estar con él.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Estoy aquí contigo, no te suelto. Un pedaleo más.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Respiro contigo. No estás solo en esta cuesta.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+    </div>
+
+    <div class="vgrupo">
+      <h3>💨 Cuando quieres soltar</h3>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“No hace falta apretar los dientes: suelto la cara y los hombros, y sigo.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Gracias, piernas, por sostenerme. Seguimos suave, un poco más.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+    </div>
+
+    <div class="vgrupo">
+      <h3>🏔️ Al coronar</h3>
+      <div class="verb" onclick="copiaVerb(this)" tabindex="0"><span class="vtx">“Lo hemos hecho juntos. Gracias, Jaumet. Esto es amar la bici.”</span><svg class="vcopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Registro del día / balance látigo-amor -->
+  <div class="card" id="balance">
+    <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>Mi día encima de la bici</h2>
+    <div class="daysum" id="daysum">
+      <div class="tot">
+        <div><b id="tN">0</b><span>subidas /<br>entrenos</span></div>
+        <div><b id="tDolor">–</b><span>esfuerzo<br>medio (0-10)</span></div>
+        <div><b id="tSost">–</b><span>veces que<br>sostuve</span></div>
+      </div>
+      <div class="balbar">
+        <div class="bl"><span class="l">🔗 Látigo</span><span class="a">Amor 🤍</span></div>
+        <div class="baltrack"><div class="balmark" id="balmark" style="left:50%"></div></div>
+        <div style="text-align:center;font-size:12.5px;color:var(--suau);margin-top:7px" id="balTxt">Registra una subida para ver desde dónde acompañas a Jaumet.</div>
+      </div>
+      <div class="detall" id="detall"></div>
+    </div>
+    <div class="avis" style="background:#eef4ef;border-color:#cfe0d4;color:var(--amor-d)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 1.5 3 6 3 6s3-4.5 3-6a3 3 0 0 0-3-3z"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg>
+      <span><b>Envíaselo a tu psicólogo/a</b> al final del día: no interesa solo el vatio, interesa <b>desde dónde</b> lo diste. Ahí se entrena competir sin cogerle rechazo a la bici.</span>
+    </div>
+    <button class="btn oro" onclick="enviarDia(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar el resumen del día
+    </button>
+    <button class="clr" onclick="reiniciar()">Reiniciar el día</button>
+    <div class="hist" id="hist"></div>
+  </div>
+
+  <footer>
+    <div class="logo">APRENS</div>
+    Material orientativo de apoyo terapéutico · marco TEC / AIS.<br>Se interpreta dentro de tu proceso en sesión.
+  </footer>
+
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+  var KEY_DIA="aprens_ciclismo_dia", KEY_HIST="aprens_ciclismo_hist";
+  var EJE_ECO={
+    1:{c:"latigo",t:"Puro látigo: tu cuerpo subió solo y castigado. Reconocerlo ya es el primer paso — no es un fallo, es un dato."},
+    2:{c:"latigo",t:"Más exigencia que acompañamiento. La próxima vez, prueba a soltar la mandíbula y decirle una frase a Jaumet."},
+    3:{c:"oro",t:"A ratos con él, a ratos solo. Vas alternando: cada vez que lo recuerdes en el dolor, ya estás entrenando el amor."},
+    4:{c:"amor",t:"Más amor que látigo. Has sostenido el esfuerzo acompañando: así la bici no se vuelve un enemigo."},
+    5:{c:"amor",t:"Lo has acompañado. El dolor estuvo, y Jaumet no estuvo solo. Esto es competir amando la bici."}
+  };
+  var COLOR={latigo:{bg:"#e7eaed",bd:"#6a7480",fg:"#4d5560"},oro:{bg:"#f6edd8",bd:"#a9781f",fg:"#856013"},amor:{bg:"#e4efe6",bd:"#5e8f6f",fg:"#436b52"}};
+
+  var reg={tipo:null,rpe:null,eje:null,cont:null};
+
+  /* ---------- utilidades fecha ---------- */
+  function hoy(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+  function nowHM(){var d=new Date();return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);}
+  function nuevoDia(){return {date:hoy(),subidas:[]};}
+  function tieneActividad(d){return d&&d.subidas&&d.subidas.length>0;}
+  function media(arr,campo){if(!arr.length)return null;var s=0;arr.forEach(function(p){s+=p[campo];});return Math.round(s/arr.length*10)/10;}
+
+  function cargaDia(){
+    var d=null; try{d=JSON.parse(localStorage.getItem(KEY_DIA));}catch(e){}
+    if(!d||!d.date) return nuevoDia();
+    if(d.date!==hoy()){ archivaDia(d); return nuevoDia(); }
+    if(!d.subidas) d.subidas=[];
+    return d;
+  }
+  function guardaDia(){try{localStorage.setItem(KEY_DIA,JSON.stringify(dia));}catch(e){}}
+  function cargaHist(){try{return JSON.parse(localStorage.getItem(KEY_HIST))||[];}catch(e){return[];}}
+  function archivaDia(d){
+    if(!tieneActividad(d))return;
+    var h=cargaHist();
+    if(h.length&&h[0].date===d.date)return;
+    h.unshift({date:d.date,n:d.subidas.length,dolor:media(d.subidas,"rpe"),eje:media(d.subidas,"eje")});
+    if(h.length>30)h=h.slice(0,30);
+    try{localStorage.setItem(KEY_HIST,JSON.stringify(h));}catch(e){}
+  }
+  var dia=cargaDia();
+  if(window.Aprens){ try{ Aprens.config({toolId:"ciclismo_jaumet", toolName:"Acompañar a Jaumet", toolVersion:1}); }catch(e){} }
+
+  /* ---------- navegación ---------- */
+  function anar(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+
+  /* ---------- selección de campos ---------- */
+  function setChip(grp,btn){
+    reg[grp]=btn.getAttribute('data-v');
+    document.getElementById(grp).querySelectorAll('.chip').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+  }
+  function setRpe(v,btn){
+    reg.rpe=v;
+    document.getElementById('rpe').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+  }
+  function setEje(v,btn){
+    reg.eje=v;
+    document.getElementById('eje').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    var eco=document.getElementById('ejeEco'), info=EJE_ECO[v], c=COLOR[info.c];
+    eco.textContent=info.t;
+    eco.style.background=c.bg; eco.style.borderLeft="4px solid "+c.bd; eco.style.color=c.fg;
+    eco.classList.add('show');
+  }
+
+  /* ---------- respiración de subida (AIS) ---------- */
+  var VERBS=[
+    "Respira con la pedalada. No estás solo, Jaumet.",
+    "El ardor es esfuerzo, no peligro. Puedo estar con él.",
+    "Suelto la cara, suelto los hombros. Sigo suave.",
+    "Estoy aquí contigo. Un pedaleo más, juntos.",
+    "Gracias, piernas. Seguimos, sin castigo."
+  ];
+  var FASES=[{f:"Inhala",d:3,s:1.16},{f:"Empuja",d:1,s:1.16},{f:"Exhala",d:4,s:0.84},{f:"Suelta",d:1,s:0.84}];
+  var respOn=false, respTimer=null, respIdx=-1, respLeft=0, verbIdx=0, cicloCount=0;
+  function toggleResp(btn){
+    if(respOn){ pararResp(); btn.textContent="Empezar la respiración"; btn.classList.remove('ghost'); btn.classList.add('amor'); }
+    else { iniciarResp(); btn.textContent="Parar"; btn.classList.remove('amor'); btn.classList.add('ghost'); }
+  }
+  function iniciarResp(){ respOn=true; respIdx=-1; cicloCount=0; verbIdx=0; setVerb(); siguienteFase(); }
+  function setVerb(){ var el=document.getElementById('rverb'); el.style.opacity=0; setTimeout(function(){ el.textContent=VERBS[verbIdx%VERBS.length]; el.style.opacity=1; },250); }
+  function siguienteFase(){
+    respIdx=(respIdx+1)%FASES.length;
+    if(respIdx===0){ cicloCount++; if(cicloCount>1){ verbIdx++; setVerb(); } }
+    var f=FASES[respIdx], ring=document.getElementById('ring');
+    document.getElementById('rfase').textContent=f.f;
+    ring.style.transitionDuration=f.d+"s";
+    ring.style.transform="scale("+f.s+")";
+    respLeft=f.d; document.getElementById('rseg').textContent=respLeft+"s";
+    clearInterval(respTimer);
+    respTimer=setInterval(function(){
+      respLeft--; document.getElementById('rseg').textContent=(respLeft>0?respLeft:0)+"s";
+      if(respLeft<=0){ clearInterval(respTimer); if(respOn) siguienteFase(); }
+    },1000);
+  }
+  function pararResp(){
+    respOn=false; clearInterval(respTimer); respTimer=null;
+    var ring=document.getElementById('ring');
+    if(ring){ ring.style.transitionDuration="0.6s"; ring.style.transform="scale(1)"; }
+    document.getElementById('rfase').textContent="Prepárate";
+    document.getElementById('rseg').textContent="";
+  }
+
+  /* ---------- registrar subida ---------- */
+  function registrar(btn){
+    if(!reg.tipo){ anar('registro'); alert("Marca qué has hecho (paso 1)."); return; }
+    if(reg.rpe==null){ alert("Marca el esfuerzo o dolor percibido (paso 2)."); return; }
+    if(reg.eje==null){ alert("Marca desde dónde acompañaste a Jaumet (paso 3)."); return; }
+    pararResp();
+    var dicho=(document.getElementById('dicho').value||"").trim();
+    var item={h:nowHM(),tipo:reg.tipo,rpe:reg.rpe,eje:reg.eje,cont:reg.cont||"",dicho:dicho};
+    dia.subidas.push(item);
+    guardaDia();
+    if(window.Aprens){ try{
+      Aprens.save({ id:Date.now(), date:hoy(), ts:Date.now(), param:"continuidad",
+        tipo:item.tipo, esfuerzo_dolor:item.rpe, eje_latigo_amor:item.eje,
+        continuidad:item.cont, autoverbalizacion:item.dicho, subidas_hoy:dia.subidas.length });
+      Aprens.mountBar();
+    }catch(e){} }
+    // Feedback
+    var info=EJE_ECO[reg.eje];
+    document.getElementById('resTit').textContent = reg.eje>=4 ? "Has acompañado a Jaumet 🤍" : (reg.eje===3 ? "A ratos con él" : "Hoy ha ido más el látigo 🔗");
+    document.getElementById('resMsg').textContent = info.t + (reg.cont==="sostuve" ? " Y sostuviste el ritmo: continuidad en el dolor, que es justo lo que entrenamos." : "");
+    document.getElementById('result').classList.add('show');
+    btn.style.display="none";
+    pinta();
+    setTimeout(function(){document.getElementById('result').scrollIntoView({behavior:'smooth',block:'center'});},120);
+  }
+  function nuevo(){
+    reg={tipo:null,rpe:null,eje:null,cont:null};
+    ['tipo','cont'].forEach(function(g){document.getElementById(g).querySelectorAll('.chip').forEach(function(b){b.classList.remove('sel');});});
+    document.getElementById('rpe').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    document.getElementById('eje').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    document.getElementById('ejeEco').classList.remove('show');
+    document.getElementById('dicho').value="";
+    document.getElementById('result').classList.remove('show');
+    document.querySelector('#registro > .btn').style.display="";
+    anar('registro');
+  }
+
+  /* ---------- pintar balance del día ---------- */
+  function pinta(){
+    var s=dia.subidas;
+    document.getElementById('tN').textContent=s.length;
+    document.getElementById('tDolor').textContent=s.length?media(s,"rpe"):"–";
+    var sost=s.filter(function(p){return p.cont==="sostuve";}).length;
+    document.getElementById('tSost').textContent=s.length?sost:"–";
+    var me=s.length?media(s,"eje"):null;
+    var mark=document.getElementById('balmark'), txt=document.getElementById('balTxt');
+    if(me!=null){
+      mark.style.left=((me-1)/4*100)+"%";
+      txt.textContent="Media de hoy: "+me+"/5 en el eje látigo–amor.";
+    } else { mark.style.left="50%"; txt.textContent="Registra una subida para ver desde dónde acompañas a Jaumet."; }
+    var det=document.getElementById('detall');
+    if(s.length){
+      det.innerHTML=s.map(function(p){
+        var pole=p.eje>=4?"🤍":(p.eje===3?"◐":"🔗");
+        var cont=p.cont==="sostuve"?" · sostuvo":(p.cont==="ratos"?" · a ratos":(p.cont==="solté"?" · soltó":""));
+        return '· '+p.h+'  '+etTipo(p.tipo)+' · esfuerzo '+p.rpe+'/10 · '+pole+cont+
+          (p.dicho?('<br><span style="opacity:.75;font-style:italic">   “'+esc(p.dicho)+'”</span>'):'');
+      }).join('<br>');
+    } else { det.innerHTML='<span class="none">Aún no has registrado ninguna subida hoy.</span>'; }
+    pintaHist();
+  }
+  function etTipo(t){return {montaña:"⛰️ Montaña",serie:"⏱️ Series",rodaje:"🚴 Rodaje","competición":"🏁 Competición"}[t]||t;}
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function pintaHist(){
+    var h=cargaHist(), el=document.getElementById('hist');
+    if(!h.length){ el.innerHTML=''; return; }
+    el.innerHTML='<h3>Días anteriores</h3>'+h.map(function(d){
+      var pole=d.eje!=null?(d.eje>=3.5?"🤍":(d.eje>=2.5?"◐":"🔗")):"";
+      return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+d.n+' subidas · esfuerzo '+
+        (d.dolor!=null?d.dolor:'–')+'/10 · '+pole+' '+(d.eje!=null?d.eje+'/5':'')+'</span></div>';
+    }).join('');
+  }
+
+  /* ---------- enviar resumen del día ---------- */
+  function textDia(d){
+    var L=["ACOMPAÑAR A JAUMET · Ciclismo · APRENS · "+d.date];
+    L.push("Subidas / entrenos: "+d.subidas.length);
+    var md=media(d.subidas,"rpe"), me=media(d.subidas,"eje");
+    if(md!=null) L.push("Esfuerzo/dolor medio: "+md+"/10");
+    if(me!=null) L.push("Eje látigo(1)–amor(5): "+me+"/5");
+    var sost=d.subidas.filter(function(p){return p.cont==="sostuve";}).length;
+    L.push("Sostuvo el ritmo en: "+sost+"/"+d.subidas.length);
+    L.push("");
+    d.subidas.forEach(function(p){
+      L.push("· "+p.h+"  "+({montaña:"Montaña",serie:"Series",rodaje:"Rodaje","competición":"Competición"}[p.tipo]||p.tipo)+
+        " · esfuerzo "+p.rpe+"/10 · látigo-amor "+p.eje+"/5"+
+        (p.cont?(" · "+p.cont):""));
+      if(p.dicho) L.push("     “"+p.dicho+"”");
+    });
+    return L.join("\n");
+  }
+  function enviarDia(btn){
+    if(!tieneActividad(dia)){ alert("Aún no has registrado ninguna subida hoy."); return; }
+    copiarText(textDia(dia),btn);
+  }
+  function reiniciar(){
+    if(confirm("¿Borrar el registro de hoy y empezar de cero?")){ dia=nuevoDia(); guardaDia(); pinta(); }
+  }
+
+  /* ---------- copiar ---------- */
+  function feedback(btn,html){
+    if(!btn)return; var orig=btn.innerHTML; btn.classList.add('ok');
+    btn.innerHTML=html||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ¡Copiado!';
+    setTimeout(function(){btn.classList.remove('ok');btn.innerHTML=orig;},1700);
+  }
+  function copiarText(text,btn){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){feedback(btn);}).catch(function(){fallbackCopy(text,btn);});
+    } else { fallbackCopy(text,btn); }
+  }
+  function fallbackCopy(text,btn){
+    var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');feedback(btn);}catch(e){alert('No se pudo copiar.');}
+    document.body.removeChild(ta);
+  }
+  function copiaVerb(el){
+    var txt=el.querySelector('.vtx').textContent.replace(/[“”]/g,'').trim();
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).catch(function(){}); }
+    el.classList.add('copied'); setTimeout(function(){el.classList.remove('copied');},1200);
+  }
+
+  /* ---------- init ---------- */
+  guardaDia();
+  pinta();
+</script>
+</body>
+</html>
