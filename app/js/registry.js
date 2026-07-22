@@ -81,7 +81,11 @@ window.APRENS_TOOLS = [
 
   { id:"rincon_calma", emoji:"🧸", nombre:"Rincón de calma",
     desc:"Juegos infantiles cortos, visuales y lúdicos para practicar la calma: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
-    migrada:true, iframe:"rincon/index.html" }
+    migrada:true, iframe:"rincon/index.html" },
+
+  { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
+    desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a Joanet, modo prueba (Huesca), revisión semanal y ICE.",
+    migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
