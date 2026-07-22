@@ -83,9 +83,9 @@ window.APRENS_TOOLS = [
     desc:"Juegos infantiles cortos, visuales y lúdicos para practicar la calma: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
     migrada:true, iframe:"rincon/index.html" },
 
-  { id:"ciclismo_joanet", emoji:"🚵", nombre:"Acompañar a Joanet",
-    desc:"Ciclismo y esfuerzo desde el amor, no el látigo: registra cada subida distinguiendo cómo acompañaste a tu cuerpo, AIS hacia el dolor percibido y autoverbalizaciones para sostener el ritmo en la montaña sin cogerle rechazo a la bici.",
-    migrada:true, iframe:"tools-standalone/ciclismo-joanet.html" }
+  { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
+    desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a Joanet, modo prueba (Huesca), revisión semanal y ICE.",
+    migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];

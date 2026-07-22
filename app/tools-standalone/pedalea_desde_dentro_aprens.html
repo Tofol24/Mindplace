@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3f5e4e">
+<title>Pedalea desde dentro · APRENS</title>
+<style>
+  :root{
+    --bg:#f5f1e8; --bg2:#efe9dc; --card:#fffdf9; --tinta:#2b2822; --suau:#756d5f;
+    --montana:#3f5e4e; --montana-d:#2c4638; --montana-lt:#e2ece5;
+    --azul:#33566b; --azul-lt:#dde8ee;
+    --ambar:#c07b2e; --ambar-d:#9a5f1c; --ambar-lt:#f6e7d2;
+    --amor:#5e8f6f; --amor-d:#436b52; --amor-lt:#e4efe6;
+    --latigo:#6a7480; --latigo-d:#4d5560; --latigo-lt:#e7eaed;
+    --oro:#a9781f;
+    --linia:#e4dccb; --linia2:#d8cfba;
+    --ombra:0 6px 22px rgba(60,50,30,.10); --ombra-s:0 2px 10px rgba(60,50,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:16px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#1c1f1d; --bg2:#171a18; --card:#242926; --tinta:#ece7dc; --suau:#a49a89;
+    --montana:#79b394; --montana-d:#9ecbb1; --montana-lt:#243430;
+    --azul:#8fb6cc; --azul-lt:#223038;
+    --ambar:#e0a35a; --ambar-d:#eab978; --ambar-lt:#3a2c17;
+    --amor:#82c39c; --amor-d:#a2d3b5; --amor-lt:#233029;
+    --latigo:#9aa4b0; --latigo-d:#b6bec8; --latigo-lt:#2a2f34;
+    --oro:#d7ac5a;
+    --linia:#39413c; --linia2:#454e48;
+    --ombra:0 6px 22px rgba(0,0,0,.35); --ombra-s:0 2px 10px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--tinta);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  .wrap{max-width:640px;margin:0 auto;padding:0 15px}
+
+  /* Top bar */
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--bg) 60%,rgba(245,241,232,0));padding:14px 15px 8px;display:flex;align-items:center;gap:11px;max-width:640px;margin:0 auto}
+  :root[data-theme="dark"] .top{background:linear-gradient(180deg,var(--bg) 60%,rgba(28,31,29,0))}
+  .logo{width:34px;height:34px;border-radius:50%;background:var(--montana);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.1}
+  .top .ts{font-size:10.5px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:17px;display:grid;place-items:center}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:6px 0 2px;font-weight:700}
+  .view-s{color:var(--suau);font-size:14px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--montana-d);background:var(--montana-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:8px 0 6px}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  .card h2 .e{font-size:20px}
+  .card .lead{color:var(--suau);font-size:14px;margin:4px 0 10px}
+  .card p{margin:8px 0}
+  .muted{color:var(--suau);font-size:13.5px}
+
+  .quote{font-family:var(--serif);font-style:italic;color:var(--montana-d);background:var(--montana-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--montana);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:13px 18px;min-height:48px;transition:transform .07s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--montana-d);border:1.5px solid var(--montana)}
+  .btn.amber{background:var(--ambar)}
+  .btn.amor{background:var(--amor)}
+  .btn.sm{padding:9px 13px;min-height:40px;font-size:13.5px;border-radius:10px}
+  .btn.gris{background:var(--latigo)}
+  .btn.danger{background:#b5433a}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}
+  .btnrow .btn{flex:1}
+  .btn:focus-visible,.qa:focus-visible,.opt:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible,.pyr-band:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--montana-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px}
+
+  /* Accesos rápidos (home) */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:10px 0}
+  .qa{background:var(--card);border:1px solid var(--linia);border-radius:14px;padding:15px 13px;text-align:left;cursor:pointer;font-family:inherit;color:var(--tinta);box-shadow:var(--ombra-s);display:flex;flex-direction:column;gap:5px;min-height:88px}
+  .qa .qe{font-size:23px}
+  .qa .qn{font-weight:700;font-size:14.5px;line-height:1.2}
+  .qa .qd{font-size:11.5px;color:var(--suau);line-height:1.3}
+  .qa:active{transform:scale(.98)}
+
+  .stat3{display:flex;gap:9px;text-align:center}
+  .stat3>div{flex:1;background:var(--montana-lt);border:1px solid var(--linia);border-radius:12px;padding:12px 6px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:24px;color:var(--montana-d);line-height:1}
+  .stat3 span{font-size:11px;color:var(--suau)}
+
+  /* Formularios genéricos */
+  .fld{margin:16px 0}
+  .fld>label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+  .fld .hint{font-size:12.5px;color:var(--suau);font-weight:400;margin-top:2px}
+  input[type=text],input[type=number],input[type=time],input[type=date],textarea,select{
+    width:100%;border:1.5px solid var(--linia2);border-radius:11px;padding:11px 12px;font-family:inherit;font-size:15px;
+    color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:60px;line-height:1.5}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--montana)}
+  .scale{display:flex;gap:4px;flex-wrap:wrap}
+  .scaleb{flex:1;min-width:26px;min-height:42px;border:1.5px solid var(--linia2);border-radius:9px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;color:var(--suau)}
+  .scaleb.sel{background:var(--montana);border-color:var(--montana);color:#fff}
+  .scale-ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--suau);margin-top:5px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{min-height:42px;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--tinta);padding:9px 13px;display:inline-flex;align-items:center;gap:6px}
+  .chip.sel{background:var(--montana-lt);border-color:var(--montana);color:var(--montana-d);font-weight:600}
+  .opt{display:block;width:100%;text-align:left;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:12px 14px;margin:7px 0}
+  .opt.sel{background:var(--montana-lt);border-color:var(--montana);color:var(--montana-d);font-weight:600}
+
+  .ok-flash{background:var(--amor-lt);border:1px solid var(--amor);color:var(--amor-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Aviso seguridad */
+  .safe{display:flex;gap:10px;background:var(--ambar-lt);border:1px solid #e7cfa6;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--ambar-d);line-height:1.45;align-items:flex-start}
+  :root[data-theme="dark"] .safe{border-color:#5a4423}
+  .safe .i{flex:0 0 auto;font-size:17px}
+
+  /* Continuo látigo-amor */
+  .cont{margin:8px 0}
+  input[type=range]{width:100%;accent-color:var(--montana)}
+  .cont-ends{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:4px}
+  .cont-ends .l{color:var(--latigo-d)}.cont-ends .a{color:var(--amor-d)}
+  .cont-val{text-align:center;font-family:var(--serif);font-size:15px;margin-top:8px;font-weight:600}
+
+  /* Pirámide */
+  .pyr{display:flex;flex-direction:column;align-items:center;margin:8px 0}
+  .pyr-band{border:0;cursor:pointer;font-family:inherit;color:#fff;font-weight:600;text-align:center;padding:9px 8px;margin-bottom:3px;line-height:1.15;transition:filter .15s;position:relative}
+  .pyr-band:active{filter:brightness(1.08)}
+  .pyr-band .n{font-size:9px;opacity:.85;letter-spacing:.05em;text-transform:uppercase;display:block}
+  .pyr-band .t{font-size:13px}
+  .pyr-explain{margin-top:12px;border-radius:12px;border:1px solid var(--linia);background:var(--card);padding:14px 15px;display:none}
+  .pyr-explain.show{display:block;animation:fade .3s ease}
+  .pyr-explain h3{font-family:var(--serif);margin:0 0 6px;font-size:17px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:8px}
+  @media(max-width:430px){.two{grid-template-columns:1fr}}
+  .col{border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.45}
+  .col.good{background:var(--amor-lt);border:1px solid #cfe0d4}
+  .col.bad{background:var(--latigo-lt);border:1px solid #d3d9de}
+  .col h4{margin:0 0 6px;font-size:13.5px}
+  .col.good h4{color:var(--amor-d)}.col.bad h4{color:var(--latigo-d)}
+  .col ul{margin:0;padding-left:16px}.col li{margin:2px 0}
+
+  /* Historial / registros */
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:12px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rt{font-weight:600;font-size:13.5px}
+  .rec .rd{font-size:11.5px;color:var(--suau)}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .rec .del{background:none;border:0;color:#b5433a;cursor:pointer;font-size:12.5px;padding:4px}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0}
+
+  /* Frases */
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--amor-lt);border:1px solid #d5e4d9;border-radius:12px;padding:10px 12px;margin:7px 0}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--amor-d);font-size:15px;line-height:1.4}
+  .verb .va{display:flex;gap:4px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px}
+  .fav-on{color:var(--oro)}
+  .grp-t{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--montana-d);font-weight:700;margin:14px 0 4px}
+
+  /* Charts */
+  .chart{width:100%;height:auto;display:block;margin:6px 0}
+  .chart-lbl{font-size:11px;color:var(--suau);text-align:center;margin-bottom:8px}
+
+  /* Bottom nav */
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}
+  .tab.on{color:var(--montana-d)}
+  .tab.on .te{transform:translateY(-1px)}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(20,18,14,.55);display:none;align-items:flex-end;justify-content:center;padding:0}
+  .modal.show{display:flex;animation:fade .2s ease}
+  .sheet{background:var(--card);width:100%;max-width:640px;border-radius:18px 18px 0 0;padding:20px 17px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
+  .sheet h2{font-family:var(--serif);margin:0 0 4px;font-size:19px}
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.5}
+  footer b{font-family:var(--serif);color:var(--montana-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div><div class="tt">Pedalea desde dentro</div><div class="ts">APRENS · TEC / AIS · Psicología del deporte</div></div>
+  <span class="sp"></span>
+  <button class="iconbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Cambiar modo claro/oscuro" title="Modo claro/oscuro">🌙</button>
+</div>
+
+<main class="wrap" id="app"></main>
+
+<nav class="nav" id="nav"></nav>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   PEDALEA DESDE DENTRO · APRENS
+   App autónoma para ciclista (Joan) — competir desde la tarea y el
+   amor a la bici, acompañar a "Joanet", trabajar la continuidad en
+   montaña y la Pirámide de rendimiento (atención → ... → rendimiento).
+   Todo local (localStorage). Sin backend ni dependencias externas.
+   ============================================================ */
+
+/* ---------- almacenamiento ---------- */
+var LS="pedalea_db_v1";
+var DEFAULT={
+  settings:{joanet:"Joanet", joan:"Joan", dark:false,
+    valores:["Amar el ciclismo","Ser constante","Cuidar mi cuerpo","Competir con valentía","Aprender"],
+    direccion:"Doy lo mejor sin maltratarme y cuido mi relación con la bicicleta, aunque el resultado no dependa de mí.",
+    favFrases:[]},
+  entrenos:[], ais:[], latigoamor:[], celebra:[], sinentreno:[], piramide:[], huesca_dias:[],
+  huesca_antes:null, huesca_despues:null, frasesUser:[], badges:[]
+};
+var DB=load();
+function load(){ try{var d=JSON.parse(localStorage.getItem(LS)); if(!d) return clone(DEFAULT);
+  // merge por si faltan claves nuevas
+  var base=clone(DEFAULT); for(var k in d){ base[k]=d[k]; } for(var s in DEFAULT.settings){ if(base.settings[s]===undefined) base.settings[s]=DEFAULT.settings[s]; } return base;
+  }catch(e){ return clone(DEFAULT); } }
+function save(){ try{localStorage.setItem(LS,JSON.stringify(DB));}catch(e){} }
+function clone(o){return JSON.parse(JSON.stringify(o));}
+
+/* ---------- utilidades ---------- */
+function esc(s){return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function uid(){return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);}
+function hoy(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function p2(n){return ("0"+n).slice(-2);}
+function nowHM(){var d=new Date();return p2(d.getHours())+":"+p2(d.getMinutes());}
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]+" "+p[0]; }
+function JOANET(){return DB.settings.joanet||"Joanet";}
+function JOAN(){return DB.settings.joan||"Joan";}
+function media(arr,f){ var v=arr.map(function(x){return typeof f==="function"?f(x):x[f];}).filter(function(n){return typeof n==="number"&&!isNaN(n);}); if(!v.length) return null; return Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*10)/10; }
+function ultimos(arr,n){ return arr.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,n||50); }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+
+/* Integración con el ecosistema APRENS: guardamos también en el aprens_db
+   compartido (registro unificado del paciente), pero NO montamos la barra
+   flotante de export para no chocar con la navegación inferior propia.
+   La exportación de esta herramienta vive en su vista «Datos y ajustes». */
+function aprensSave(rec){ if(window.Aprens){ try{ Aprens.save(rec); }catch(e){} } }
+if(window.Aprens){ try{ Aprens.config({toolId:"pedalea_desde_dentro", toolName:"Pedalea desde dentro", toolVersion:1}); }catch(e){} }
+
+/* ---------- constructor de formularios ---------- */
+/* field: {k,l,t:'scale'|'text'|'num'|'textarea'|'time'|'select'|'chips'|'chips1'|'options', opts, hint, ends, min, max, ph} */
+function fieldHTML(f){
+  var id="f_"+f.k, h='<div class="fld" data-k="'+f.k+'" data-t="'+f.t+'">';
+  h+='<label for="'+id+'">'+esc(f.l)+(f.hint?'<span class="hint">'+esc(f.hint)+'</span>':'')+'</label>';
+  if(f.t==='scale'){
+    var min=f.min==null?0:f.min, max=f.max==null?10:f.max;
+    h+='<div class="scale" role="group" aria-label="'+esc(f.l)+'">';
+    for(var i=min;i<=max;i++) h+='<button type="button" class="scaleb" data-v="'+i+'" onclick="pickScale(this)">'+i+'</button>';
+    h+='</div>';
+    if(f.ends) h+='<div class="scale-ends"><span>'+esc(f.ends[0])+'</span><span>'+esc(f.ends[1])+'</span></div>';
+  } else if(f.t==='text'){ h+='<input type="text" id="'+id+'" placeholder="'+esc(f.ph||"")+'">';
+  } else if(f.t==='num'){ h+='<input type="number" id="'+id+'" placeholder="'+esc(f.ph||"")+'" inputmode="numeric">';
+  } else if(f.t==='time'){ h+='<input type="time" id="'+id+'" value="'+nowHM()+'">';
+  } else if(f.t==='textarea'){ h+='<textarea id="'+id+'" placeholder="'+esc(f.ph||"")+'"></textarea>';
+  } else if(f.t==='select'){ h+='<select id="'+id+'"><option value="">Elige…</option>'; f.opts.forEach(function(o){h+='<option value="'+esc(o)+'">'+esc(o)+'</option>';}); h+='</select>';
+  } else if(f.t==='chips'||f.t==='chips1'){ h+='<div class="chips" data-multi="'+(f.t==='chips'?1:0)+'">'; f.opts.forEach(function(o){h+='<button type="button" class="chip" data-v="'+esc(o)+'" onclick="pickChip(this)">'+esc(o)+'</button>';}); h+='</div>';
+  } else if(f.t==='options'){ f.opts.forEach(function(o){h+='<button type="button" class="opt" data-v="'+esc(o)+'" onclick="pickOpt(this)">'+esc(o)+'</button>';}); }
+  h+='</div>'; return h;
+}
+function formHTML(fields){ return fields.map(fieldHTML).join(''); }
+function pickScale(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.parentNode.dataset.val=b.dataset.v; }
+function pickChip(b){ var box=b.parentNode, multi=box.dataset.multi==='1'; if(!multi){ box.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); } b.classList.toggle('sel'); }
+function pickOpt(b){ var box=b.parentNode; box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function readForm(scope){
+  var out={};
+  scope.querySelectorAll('.fld').forEach(function(fl){
+    var k=fl.dataset.k, t=fl.dataset.t, v;
+    if(t==='scale'){ v=fl.dataset.val!=null?parseInt(fl.dataset.val,10):null; }
+    else if(t==='chips'||t==='chips1'){ v=[].slice.call(fl.querySelectorAll('.chip.sel')).map(function(x){return x.dataset.v;}); if(t==='chips1') v=v[0]||null; }
+    else if(t==='options'){ var sel=fl.querySelector('.opt.sel'); v=sel?sel.dataset.v:null; }
+    else { var el=fl.querySelector('input,textarea,select'); v=el?el.value.trim():null; if(v==='') v=null; if(t==='num'&&v!=null) v=parseFloat(v); }
+    out[k]=v;
+  });
+  return out;
+}
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||"Guardado ✓"; f.classList.add('show'); setTimeout(function(){f.classList.remove('show');},2600); } }
+
+/* ============================================================
+   VISTAS
+   ============================================================ */
+var VIEW="home";
+var NAV=[
+  {id:"home",e:"🏠",l:"Inicio"},
+  {id:"montana",e:"⛰️",l:"Montaña"},
+  {id:"latigo",e:"⚖️",l:"Látigo/Amor"},
+  {id:"piramide",e:"🔺",l:"Pirámide"},
+  {id:"mas",e:"⋯",l:"Más"}
+];
+function go(v){ if(aisT){ clearInterval(aisT); aisT=null; } VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  var app=document.getElementById('app');
+  app.innerHTML = (VIEWS[VIEW]||VIEWS.home)();
+  document.getElementById('nav').innerHTML = NAV.map(function(n){
+    return '<button class="tab '+(VIEW===n.id||(VIEW.indexOf(n.id)===0&&n.id!=="home")?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>';
+  }).join('');
+  document.getElementById('themeBtn').textContent = DB.settings.dark?'☀️':'🌙';
+}
+
+var FRASES_DIA=[
+  "Hoy no entreno para castigarme; entreno porque esto importa.",
+  "El resultado importa, pero no decide quién soy.",
+  "Firme no significa cruel.",
+  "Estoy contigo, "+"{J}"+". No subes esta montaña solo.",
+  "Puedo ser ambicioso sin abandonarme.",
+  "Hoy entreno continuidad, no perfección.",
+  "El dolor puede estar; mi atención vuelve a la tarea.",
+  "Amar la bici también es proteger mi relación con ella."
+];
+function fraseDelDia(){ var d=new Date(); var i=(d.getFullYear()+d.getMonth()*31+d.getDate())%FRASES_DIA.length; return FRASES_DIA[i].replace("{J}",JOANET()); }
+
+var VIEWS={};
+
+/* ---------------- HOME ---------------- */
+VIEWS.home=function(){
+  var e=DB.entrenos, ais=DB.ais;
+  var sem=e.filter(function(x){return within7(x.date);});
+  var aisSem=ais.filter(function(x){return within7(x.date);});
+  var contMont=media(e.filter(function(x){return x.montana&&within7(x.date);}), 'cont_min');
+  var comprometidos=sem.filter(function(x){return (x.orientacion||"").indexOf('disfrutar')>=0 || x.completado==='Sí';}).length;
+  var h='';
+  h+='<span class="kick">Panel del día · '+fechaLarga(hoy())+'</span>';
+  h+='<h1 class="view-t">Hola, '+esc(JOAN())+' 🚴</h1>';
+  h+='<p class="view-s">Entrena el cuerpo, acompaña a '+esc(JOANET())+' y compite desde el amor por el ciclismo.</p>';
+  h+='<div class="quote">'+esc(fraseDelDia())+'</div>';
+
+  h+='<div class="card"><h2><span class="e">🎯</span>La intención de hoy</h2>';
+  h+='<div class="fld" style="margin:6px 0 0"><input type="text" id="intencionInput" value="'+esc(DB.settings.intencion||"")+'" placeholder="Ej.: hoy vuelvo a la cadencia cada vez que aparezca el dolor"></div>';
+  h+='<div class="btnrow" style="margin-top:10px"><button class="btn sm" onclick="guardaIntencion()">Guardar intención</button></div></div>';
+
+  h+='<p class="grp-t">Acceso rápido</p><div class="qgrid">';
+  h+=qa('antes','🟢','Antes de entrenar','preparación + AIS');
+  h+=qa('montana','⛰️','Entreno de montaña','continuidad en la subida');
+  h+=qa('latigo','⚖️','Látigo o amor','cómo me hablo');
+  h+=qa('despues','🔵','Después de entrenar','registro + reflexión');
+  h+=qa('brujula','🧭','Mi brújula','valores y dirección');
+  h+=qa('piramide','🔺','Mi pirámide','dónde empezó mi rendimiento');
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>Tu semana (proceso, no resultados)</h2>';
+  h+='<div class="stat3"><div><b>'+sem.length+'</b><span>entrenos</span></div><div><b>'+aisSem.length+'</b><span>prácticas AIS</span></div><div><b>'+(contMont!=null?contMont:'–')+'</b><span>continuidad<br>montaña</span></div></div>';
+  h+='<p class="muted" style="margin-top:12px">Aquí no miramos posiciones ni vatios: miramos presencia, continuidad, compromiso, disfrute y cómo te acompañas.</p></div>';
+
+  h+='<div class="card" style="border-color:var(--ambar)"><h2><span class="e">🏔️</span>Semana de prueba · Huesca</h2><p class="lead">Prepara la estancia y el día de la valoración desde la tarea y tus valores.</p><button class="btn amber full" onclick="go(\'huesca\')">Abrir modo Huesca</button></div>';
+
+  h+='<div class="safe"><span class="i">⚠️</span><span>No uses el móvil mientras circulas. Registra antes o después de rodar, en parada segura o en rodillo. Acompañar el esfuerzo no significa ignorar una lesión.</span></div>';
+  h+=footerHTML();
+  return h;
+};
+function qa(v,e,n,d){ return '<button class="qa" onclick="go(\''+v+'\')"><span class="qe">'+e+'</span><span class="qn">'+esc(n)+'</span><span class="qd">'+esc(d)+'</span></button>'; }
+function guardaIntencion(){ DB.settings.intencion=(document.getElementById('intencionInput').value||"").trim(); save(); render(); }
+
+/* ---------------- MÁS (menú) ---------------- */
+VIEWS.mas=function(){
+  var items=[
+    ['brujula','🧭','Mi brújula','metas, valores y dirección'],
+    ['antes','🟢','Antes de entrenar','preparación + AIS'],
+    ['despues','🔵','Después de entrenar','registro + reflexión'],
+    ['ais','🫁','AIS hacia el dolor','práctica con temporizador'],
+    ['competicion','🏁','Competición','antes / después · proceso vs resultado'],
+    ['celebrar','🎉','Éxito: alivio o satisfacción','parar · reconocer · celebrar'],
+    ['sinentreno','🌿','Cuando no estoy entrenando','descanso sin culpa'],
+    ['huesca','🏔️','Semana de prueba · Huesca',''],
+    ['frases','💬','Banco de autoverbalizaciones',''],
+    ['semana','📈','Revisión semanal','gráficas + resumen'],
+    ['ice','⏱️','Parámetros ICE','latencia · densidad · continuidad'],
+    ['datos','⚙️','Datos y ajustes','exportar, importar, nombre, borrar']
+  ];
+  var h='<h1 class="view-t">Más herramientas</h1><p class="view-s">Todo el trabajo, organizado por momentos.</p>';
+  h+='<div class="qgrid">'+items.map(function(it){return qa(it[0],it[1],it[2],it[3]);}).join('')+'</div>';
+  h+=footerHTML();
+  return h;
+};
+
+/* ---------------- BRÚJULA ---------------- */
+var VALORES_POOL=["Amar el ciclismo","Ser constante","Cuidar mi cuerpo","Competir con valentía","Aprender","Ser buen compañero","Mantenerme presente","Dar lo mejor sin maltratarme","Respetar el proceso","Construir una relación duradera con la bici"];
+VIEWS.brujula=function(){
+  var h='<h1 class="view-t">🧭 Mi brújula</h1><p class="view-s">Las metas son destinos; los valores son la dirección. Aunque el resultado no dependa de ti, la dirección sí.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2>Mis valores (elige hasta 5)</h2><p class="lead">¿Qué tipo de ciclista quieres ser, aunque hoy el resultado no acompañe?</p><div class="chips" id="valChips">';
+  VALORES_POOL.forEach(function(v){ h+='<button type="button" class="chip '+(DB.settings.valores.indexOf(v)>=0?'sel':'')+'" data-v="'+esc(v)+'" onclick="toggleValor(this)">'+esc(v)+'</button>'; });
+  h+='</div></div>';
+  h+='<div class="card"><h2>Mi dirección</h2><p class="lead">Aunque el resultado no dependa de mí…</p><textarea id="dirInput" style="min-height:80px">'+esc(DB.settings.direccion)+'</textarea><div class="btnrow" style="margin-top:10px"><button class="btn" onclick="guardaDireccion()">Guardar mi dirección</button></div></div>';
+  h+='<div class="card"><h2>Preguntas para orientarte</h2><ul class="muted" style="padding-left:18px;line-height:1.9">'+
+     ['¿Qué amas realmente del ciclismo?','¿Cómo quieres tratar a tu cuerpo en los momentos difíciles?','¿Qué deseas aprender de esta etapa?','¿Qué querrías conservar del ciclismo aunque no llegaras a profesional?','¿Qué conducta de hoy representaría ese valor?'].map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+
+     '</ul></div>';
+  h+=footerHTML(); return h;
+};
+function toggleValor(b){ var v=b.dataset.v, i=DB.settings.valores.indexOf(v);
+  if(i>=0){ DB.settings.valores.splice(i,1); b.classList.remove('sel'); }
+  else{ if(DB.settings.valores.length>=5){ flash("Máximo 5 valores. Quita uno antes de añadir otro."); return; } DB.settings.valores.push(v); b.classList.add('sel'); }
+  save(); }
+function guardaDireccion(){ DB.settings.direccion=(document.getElementById('dirInput').value||"").trim(); save(); flash("Dirección guardada ✓"); }
+
+/* ---------------- ANTES DE ENTRENAR ---------------- */
+VIEWS.antes=function(){
+  var f=[
+    {k:'tipo',l:'Tipo de entrenamiento',t:'chips1',opts:['Recuperación','Fondo','Series','Fuerza','Técnica','Montaña','Rodillo','Competición','Otro']},
+    {k:'duracion',l:'Duración prevista (min)',t:'num',ph:'90'},
+    {k:'dificultad',l:'Dificultad prevista',t:'scale',ends:['Fácil','Muy dura']},
+    {k:'fisico',l:'Estado físico',t:'scale',ends:['Bajo','Pleno']},
+    {k:'activacion',l:'Activación / nervios',t:'scale',ends:['Calma','Muy activado']},
+    {k:'motivacion',l:'Motivación',t:'scale',ends:['Poca','Mucha']},
+    {k:'presion',l:'Presión por demostrar',t:'scale',ends:['Ninguna','Máxima']},
+    {k:'amor',l:'Conexión con el amor por la bici',t:'scale',ends:['Lejos','Cerca']},
+    {k:'zona',l:'Zona corporal con más activación',t:'chips1',opts:['Pecho','Garganta','Abdomen','Piernas','Hombros','Cabeza']},
+    {k:'pensamiento',l:'Pensamiento dominante antes de salir',t:'textarea',ph:'Lo que te ronda por la cabeza…'},
+    {k:'valor',l:'Valor que quiero representar hoy',t:'chips1',opts:DB.settings.valores.length?DB.settings.valores:VALORES_POOL.slice(0,5)},
+    {k:'conducta',l:'Conducta concreta con la que lo representaré',t:'text',ph:'Ej.: volver a la cadencia en cada rampa'},
+    {k:'orientacion',l:'Hoy, ¿salgo a expresarme o a demostrar que valgo?',t:'options',opts:['Principalmente a disfrutar y aprender','Mezcla de ambas','Principalmente a demostrar mi valor','No lo tengo claro']}
+  ];
+  var h='<h1 class="view-t">🟢 Antes de entrenar</h1><p class="view-s">Un minuto de preparación para elegir desde dónde sales.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="antesForm">'+formHTML(f);
+  h+='<div class="quote">'+esc(JOANET())+', hoy no tienes que demostrar quién eres. Vamos a pedalear juntos y a hacer la tarea que toca.</div>';
+  h+='<button class="btn full" onclick="saveAntes()">Guardar preparación</button></div>';
+  h+='<div class="card"><h2><span class="e">🫁</span>AIS de salida (30–60 s)</h2><ol class="muted" style="padding-left:18px;line-height:1.9"><li>Paro y respiro sin buscar calmarme.</li><li>Llevo la atención al pecho, abdomen, garganta o piernas.</li><li>Reconozco cómo está '+esc(JOANET())+'.</li><li>Le digo que no estará solo.</li><li>Elijo la primera tarea concreta.</li></ol><button class="btn ghost full" onclick="go(\'ais\')">Hacer la práctica AIS</button></div>';
+  h+=footerHTML(); return h;
+};
+function saveAntes(){
+  var d=readForm(document.getElementById('antesForm'));
+  d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.hora=nowHM(); d.fase='antes'; d.montana=(d.tipo==='Montaña');
+  DB.entrenos.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'latencia',modulo:'antes_entreno',tipo:d.tipo,presion_demostrar:d.presion,motivacion:d.motivacion,conexion_bici:d.amor,orientacion:d.orientacion,valor:d.valor});
+  flash("Preparación guardada ✓ Buen entreno.");
+}
+
+/* ---------------- MONTAÑA ---------------- */
+VIEWS.montana=function(){
+  var prep=[
+    {k:'duracion',l:'Duración aprox. de la subida (min)',t:'num',ph:'20'},
+    {k:'pendiente',l:'Pendiente estimada',t:'chips1',opts:['Suave','Media','Dura','Muy dura']},
+    {k:'objetivo',l:'Objetivo técnico',t:'text',ph:'Ej.: mantener cadencia 75-80'},
+    {k:'intensidad',l:'Intensidad prevista',t:'scale',ends:['Suave','Al límite']},
+    {k:'miedo',l:'Miedo a no poder mantener el esfuerzo',t:'scale',ends:['Nada','Mucho']},
+    {k:'demostrar',l:'Necesidad de demostrar',t:'scale',ends:['Nada','Mucha']},
+    {k:'zona',l:'Zona que anticipo como más difícil',t:'chips1',opts:['Piernas','Respiración','Cabeza','Hombros','Estómago']},
+    {k:'focos',l:'Elige 3 focos de tarea',t:'chips',opts:['Cadencia','Respiración','Hombros sueltos','Manos','Postura','Mirada','Pedaleo redondo','Siguiente curva','Siguiente minuto','Ritmo sostenible','Posición en el grupo','Beber/comer']}
+  ];
+  var post=[
+    {k:'int_max',l:'Intensidad máxima percibida',t:'scale',ends:['Suave','Extrema']},
+    {k:'impulso',l:'¿Apareció el impulso de abandonar?',t:'options',opts:['No','Sí, al principio','Sí, a mitad','Sí, cerca del final']},
+    {k:'espera',l:'Segundos que pude esperar antes de reaccionar (latencia)',t:'num',ph:'10'},
+    {k:'foco_vuelta',l:'¿A qué foco de tarea regresé?',t:'chips1',opts:['Cadencia','Respiración','Postura','Siguiente referencia','No lo logré']},
+    {k:'cont_min',l:'Continuidad: cuánto sostuve el ritmo (0-10)',t:'scale',ends:['Solté pronto','Sostuve']},
+    {k:'ajuste',l:'Si ajusté el ritmo, fue…',t:'chips1',opts:['Decisión técnica','Miedo','Dolor esperado','Fatiga real','Posible señal de lesión','No ajusté']},
+    {k:'acomp',l:'¿Cómo me acompañé?',t:'options',opts:['Látigo','Mezcla','Amor y firmeza']},
+    {k:'me_diria',l:'Qué me habría gustado decirme',t:'textarea'},
+    {k:'aprendizaje',l:'Aprendizaje para la próxima subida',t:'textarea'}
+  ];
+  var h='<h1 class="view-t">⛰️ Entrenamiento de montaña</h1><p class="view-s">La subida no es una batalla contra el cuerpo: es contacto progresivo con el esfuerzo. Aquí trabajas la continuidad.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2><span class="e">🧭</span>Protocolo en la dificultad</h2><p class="lead">Cinco pasos fáciles de recordar cuando aprieta:</p>'+
+     protoItem('1 · NOTO','Reconozco el dolor y el impulso de aflojar, sin dramatizarlo.')+
+     protoItem('2 · ACOMPAÑO','Llevo la atención a la zona y le digo a '+esc(JOANET())+': «Estoy contigo».')+
+     protoItem('3 · DISTINGO','¿Es esfuerzo esperado, miedo, fatiga… o una posible señal de lesión?')+
+     protoItem('4 · REORIENTO','Vuelvo a una tarea concreta: cadencia, respiración, postura, siguiente referencia.')+
+     protoItem('5 · DECIDO','Mantengo, ajusto el ritmo o me detengo desde el cuidado, no desde el castigo.')+
+     '</div>';
+  h+='<div class="card"><h2>Frases para la subida</h2>'+frasesRapidas(['Solo este tramo.','Solo esta pedalada.','Estoy contigo, '+JOANET()+'.','El dolor puede estar; mi atención vuelve a la tarea.','Firme no significa cruel.','Puedo ajustar sin abandonarme.','Hoy entreno continuidad, no perfección.','La montaña no decide quién soy.'])+'</div>';
+  h+='<div class="card" id="montPrep"><h2><span class="e">📝</span>Preparar la subida</h2>'+formHTML(prep)+'</div>';
+  h+='<div class="card" id="montPost"><h2><span class="e">✅</span>Después de la subida</h2>'+formHTML(post)+'<button class="btn full" onclick="saveMontana()">Guardar la subida</button></div>';
+  h+=recientes(DB.entrenos.filter(function(x){return x.montana&&x.fase==='montana';}),function(x){ return (x.acomp||'')+' · continuidad '+(x.cont_min!=null?x.cont_min:'–')+'/10'; },'Aún no has registrado subidas.');
+  h+=footerHTML(); return h;
+};
+function protoItem(t,d){ return '<div style="border-left:3px solid var(--montana);padding:6px 0 6px 12px;margin:9px 0"><b>'+esc(t)+'</b><div class="muted">'+esc(d)+'</div></div>'; }
+function frasesRapidas(arr){ return arr.map(function(s){return '<div class="verb"><span class="vt">'+esc(s)+'</span><span class="va"><button title="Copiar" onclick="copiar(\''+esc(s).replace(/'/g,"\\'")+'\',this)">📋</button></span></div>';}).join(''); }
+function saveMontana(){
+  var prep=readForm(document.getElementById('montPrep')), post=readForm(document.getElementById('montPost'));
+  var d=Object.assign({},prep,post); d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.hora=nowHM(); d.fase='montana'; d.montana=true; d.tipo='Montaña';
+  DB.entrenos.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'montana',continuidad:d.cont_min,latencia_seg:d.espera,acompanamiento:d.acomp,intensidad_max:d.int_max,ajuste:d.ajuste});
+  flash("Subida guardada ✓ Has entrenado continuidad.");
+  render(); go('montana');
+}
+
+/* ---------------- LÁTIGO O AMOR ---------------- */
+VIEWS.latigo=function(){
+  var h='<h1 class="view-t">⚖️ Látigo o amor</h1><p class="view-s">Exigirse con firmeza no es maltratarse con el látigo. Aquí distingues una voz de la otra y creas alternativas.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="laForm"><h2>¿Desde dónde me hablé?</h2>';
+  h+='<div class="cont"><input type="range" id="laRange" min="0" max="10" value="5" oninput="laLabel(this.value)"><div class="cont-ends"><span class="l">0 · Látigo</span><span class="a">10 · Amor firme</span></div><div class="cont-val" id="laVal">5 · mezcla de presión y acompañamiento</div></div>';
+  h+='<div class="fld"><label>La frase del látigo que me dije</label><textarea id="laLat" placeholder="Ej.: si hoy no rindes, no vales"></textarea></div>';
+  h+='<div class="fld"><label>Su alternativa desde el amor firme</label><textarea id="laAmor" placeholder="Ej.: esto es difícil y sigo aquí contigo; vamos a la tarea"></textarea></div>';
+  h+='<div class="fld" data-k="efectos" data-t="chips"><label>¿Qué efecto tuvo el látigo?</label><div class="chips" data-multi="1">'+['Más tensión','Rabia','Miedo','Más velocidad','Bloqueo','Mejora momentánea','Más rechazo después'].map(function(o){return '<button type="button" class="chip" data-v="'+o+'" onclick="pickChip(this)">'+o+'</button>';}).join('')+'</div></div>';
+  h+='<div class="quote">¿Estoy usando a '+esc(JOANET())+' para conseguir un resultado, o acompañando a '+esc(JOANET())+' mientras perseguimos juntos algo importante?</div>';
+  h+='<button class="btn full" onclick="saveLatigo()">Guardar</button></div>';
+  h+='<div class="two"><div class="col bad"><h4>🔗 Voz del látigo</h4><ul>'+['«Eres flojo.»','«Si aflojas no llegarás a nada.»','«Los demás pueden y tú no.»','«Si hoy no rindes, no vales.»'].map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div>';
+  h+='<div class="col good"><h4>🤍 Voz del amor firme</h4><ul>'+['«Esto es difícil y sigo aquí contigo.»','«Ajustar el ritmo no es rendirse.»','«Tu valor no depende de esta subida.»','«No necesito humillarte para pedirte compromiso.»'].map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div></div>';
+  h+=recientes(DB.latigoamor,function(x){return x.nivel+'/10 · «'+(x.amor||x.latigo||'')+'»';},'Aún no hay registros.');
+  h+=footerHTML(); return h;
+};
+function laLabel(v){ v=parseInt(v,10); var t=v<=2?'látigo, castigo y desprecio':v<=4?'más presión que acompañamiento':v===5?'mezcla de presión y acompañamiento':v<=7?'más acompañamiento que presión':'amor, firmeza y presencia'; document.getElementById('laVal').textContent=v+' · '+t; }
+function saveLatigo(){
+  var nivel=parseInt(document.getElementById('laRange').value,10);
+  var lat=(document.getElementById('laLat').value||'').trim(), amor=(document.getElementById('laAmor').value||'').trim();
+  var efectos=[].slice.call(document.querySelectorAll('#laForm .chip.sel')).map(function(x){return x.dataset.v;});
+  var d={id:uid(),ts:Date.now(),date:hoy(),hora:nowHM(),nivel:nivel,latigo:lat,amor:amor,efectos:efectos};
+  DB.latigoamor.push(d); if(amor) addFraseUser(amor,'Alternativas de amor firme'); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'densidad',modulo:'latigo_amor',nivel_latigo_amor:nivel,frase_latigo:lat,frase_amor:amor});
+  flash("Guardado ✓ La alternativa se añadió a tu banco de frases.");
+  render(); go('latigo');
+}
+
+/* ---------------- AIS HACIA EL DOLOR ---------------- */
+VIEWS.ais=function(){
+  var h='<h1 class="view-t">🫁 AIS hacia el dolor y el esfuerzo</h1><p class="view-s">No para eliminar el dolor: para cambiar tu relación con él y elegir el siguiente paso. Fuera de la bici o en rodillo.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="safe"><span class="i">⚠️</span><span>No manipules el móvil circulando. AIS no sustituye la atención médica: ante dolor agudo, mareo o dolor torácico, detente y consulta.</span></div>';
+  h+='<div class="card"><h2>Duración</h2><div class="chips" id="aisDur">'+[30,60,120,180,300].map(function(s,i){return '<button type="button" class="chip '+(i===1?'sel':'')+'" data-v="'+s+'" onclick="pickChip(this)">'+(s<60?s+' s':(s/60)+' min')+'</button>';}).join('')+'</div>';
+  h+='<div class="fld" style="margin-top:16px"><label>Antes — nivel de amenaza percibida</label><div class="scale" data-k="amenaza_ini">'+scaleBtns()+'</div></div>';
+  h+='<div class="fld"><label>Antes — soledad corporal</label><div class="scale" data-k="soledad_ini">'+scaleBtns()+'</div></div>';
+  h+='<div id="aisTimerBox" style="text-align:center;margin:18px 0;display:none"><div style="font-family:var(--serif);font-size:44px;font-weight:700" id="aisClock">0:00</div><div class="muted" id="aisGuide">Observa el impulso de escapar. Respira sin forzar.</div></div>';
+  h+='<button class="btn full" id="aisStart" onclick="aisStart()">Empezar la práctica</button>';
+  h+='<div id="aisAfter" style="display:none;margin-top:16px"><div class="fld"><label>Después — amenaza percibida</label><div class="scale" data-k="amenaza_fin">'+scaleBtns()+'</div></div><div class="fld"><label>Después — disposición a continuar con algo valioso</label><div class="scale" data-k="dispo_fin">'+scaleBtns()+'</div></div><button class="btn amor full" onclick="aisSave()">Registrar la práctica</button></div>';
+  h+='<p class="muted" style="margin-top:14px">Éxito = haber estado presente y haber elegido el siguiente paso, aunque la sensación no baje.</p></div>';
+  h+=recientes(DB.ais,function(x){return x.dur+'s · amenaza '+(x.amenaza_ini!=null?x.amenaza_ini:'–')+'→'+(x.amenaza_fin!=null?x.amenaza_fin:'–');},'Aún no hay prácticas.');
+  h+=footerHTML(); return h;
+};
+function scaleBtns(){ var s=''; for(var i=0;i<=10;i++) s+='<button type="button" class="scaleb" data-v="'+i+'" onclick="pickScaleK(this)">'+i+'</button>'; return s; }
+function pickScaleK(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function getK(k){ var el=document.querySelector('[data-k="'+k+'"]'); return el&&el.dataset.val!=null?parseInt(el.dataset.val,10):null; }
+var aisT=null, aisLeft=0, aisDur=60;
+var AIS_GUIDE=["Observa el impulso de escapar o juzgar.","Respiración diafragmática, sin forzar.","Lleva la atención a piernas, abdomen, pecho o garganta.","Describe: presión, calor, quemazón, vibración, tensión…","«Esto es una sensación. No tengo que eliminarla para estar aquí.»","«Mi cuerpo sabe que estoy con él.»","Reorienta la atención hacia una acción elegida."];
+function aisStart(){
+  var sel=document.querySelector('#aisDur .chip.sel'); aisDur=sel?parseInt(sel.dataset.v,10):60; aisLeft=aisDur;
+  document.getElementById('aisTimerBox').style.display='block'; document.getElementById('aisStart').style.display='none';
+  tickAis();
+  aisT=setInterval(function(){ aisLeft--; tickAis(); if(aisLeft<=0){ clearInterval(aisT); aisEnd(); } },1000);
+}
+function tickAis(){ var clock=document.getElementById('aisClock'); if(!clock){ if(aisT){clearInterval(aisT);aisT=null;} return; }
+  var m=Math.floor(aisLeft/60), s=aisLeft%60; clock.textContent=m+':'+p2(s);
+  var g=document.getElementById('aisGuide'); if(g){ var idx=Math.min(AIS_GUIDE.length-1, Math.floor((aisDur-aisLeft)/Math.max(1,aisDur/AIS_GUIDE.length))); g.textContent=AIS_GUIDE[idx]; } }
+function aisEnd(){ var g=document.getElementById('aisGuide'), a=document.getElementById('aisAfter'); if(g) g.textContent='Práctica completada. ¿Cómo estás ahora?'; if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
+function aisSave(){
+  var d={id:uid(),ts:Date.now(),date:hoy(),hora:nowHM(),dur:aisDur,amenaza_ini:getK('amenaza_ini'),soledad_ini:getK('soledad_ini'),amenaza_fin:getK('amenaza_fin'),dispo_fin:getK('dispo_fin')};
+  DB.ais.push(d); addBadge('Presencia entrenada'); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'densidad',modulo:'ais_dolor',duracion_seg:d.dur,amenaza_antes:d.amenaza_ini,amenaza_despues:d.amenaza_fin,disposicion:d.dispo_fin});
+  flash("Práctica registrada ✓"); render(); go('ais');
+}
+
+/* ---------------- DESPUÉS DE ENTRENAR ---------------- */
+VIEWS.despues=function(){
+  var f=[
+    {k:'completado',l:'¿He completado el entrenamiento previsto?',t:'chips1',opts:['Sí','Parcialmente','No']},
+    {k:'que_paso',l:'Si no, ¿qué ocurrió?',t:'textarea'},
+    {k:'esfuerzo',l:'Esfuerzo percibido',t:'scale',ends:['Suave','Extremo']},
+    {k:'dolor',l:'Dolor / fatiga',t:'scale',ends:['Nada','Mucho']},
+    {k:'disfrute',l:'Disfrute',t:'scale',ends:['Nada','Mucho']},
+    {k:'presencia',l:'Presencia / atención a la tarea',t:'scale',ends:['Dispersa','Plena']},
+    {k:'presion',l:'Presión por el resultado',t:'scale',ends:['Ninguna','Máxima']},
+    {k:'continuidad',l:'Continuidad',t:'scale',ends:['Baja','Alta']},
+    {k:'cuidado',l:'Cuidado del cuerpo',t:'scale',ends:['Poco','Mucho']},
+    {k:'conexion',l:'Conexión con el ciclismo',t:'scale',ends:['Lejos','Cerca']},
+    {k:'aisuso',l:'¿Usé AIS?',t:'chips1',opts:['Sí','No']},
+    {k:'latigo_n',l:'Momentos de látigo',t:'num',ph:'0'},
+    {k:'amor_n',l:'Veces que pude cambiar al amor firme',t:'num',ph:'0'},
+    {k:'dificultad',l:'Principal dificultad',t:'textarea'},
+    {k:'aprendizaje',l:'Principal aprendizaje',t:'textarea'},
+    {k:'orgullo',l:'Conducta de la que me siento orgulloso',t:'textarea'}
+  ];
+  var h='<h1 class="view-t">🔵 Después de entrenar</h1><p class="view-s">Mira el proceso, no solo el resultado.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="despForm">'+formHTML(f)+'</div>';
+  h+='<div class="card"><h2>Reflexión</h2><ul class="muted" style="padding-left:18px;line-height:1.9">'+
+     ['¿Cómo acompañé hoy a '+JOANET()+'?','¿Cuándo se sintió solo? ¿Cuándo notó que yo estaba con él?','¿Qué hice desde el miedo y qué desde el amor por la bici?','¿Qué decisión estuvo orientada a la tarea y cuál a aliviar mi autoestima?','¿Qué aprendizaje me llevo, aunque el resultado no haya sido el esperado?'].map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+
+     '</ul><button class="btn full" onclick="saveDespues()">Guardar registro</button></div>';
+  h+=footerHTML(); return h;
+};
+function saveDespues(){
+  var d=readForm(document.getElementById('despForm')); d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.hora=nowHM(); d.fase='despues';
+  DB.entrenos.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'despues_entreno',completado:d.completado,disfrute:d.disfrute,presion_resultado:d.presion,continuidad:d.continuidad,conexion_bici:d.conexion});
+  flash("Registro guardado ✓");
+}
+
+/* ---------------- COMPETICIÓN ---------------- */
+VIEWS.competicion=function(){
+  var antes=[
+    {k:'depende',l:'Qué depende de mí',t:'textarea'},
+    {k:'nodepende',l:'Qué NO depende completamente de mí',t:'textarea'},
+    {k:'tareas',l:'Tareas de carrera',t:'textarea'},
+    {k:'valor',l:'Valor que quiero representar',t:'chips1',opts:DB.settings.valores.length?DB.settings.valores:VALORES_POOL.slice(0,5)},
+    {k:'presion',l:'Nivel de presión',t:'scale',ends:['Baja','Máxima']},
+    {k:'frase',l:'Frase para '+JOANET(),t:'text'},
+    {k:'plan_inicio',l:'Plan para los primeros minutos',t:'textarea'},
+    {k:'plan_dolor',l:'Plan cuando aparezca el dolor',t:'textarea'},
+    {k:'plan_error',l:'Plan ante un error o pérdida de posición',t:'textarea'}
+  ];
+  var despues=[
+    {k:'posicion',l:'Resultado / posición',t:'text'},
+    {k:'sensaciones',l:'Sensaciones',t:'textarea'},
+    {k:'decisiones',l:'Proceso: decisiones realizadas',t:'textarea'},
+    {k:'reorientacion',l:'Capacidad de reorientación',t:'scale',ends:['Baja','Alta']},
+    {k:'continuidad',l:'Continuidad',t:'scale',ends:['Baja','Alta']},
+    {k:'trato',l:'Cómo me traté',t:'options',opts:['Látigo','Mezcla','Amor y firmeza']},
+    {k:'disfrute',l:'Disfrute',t:'scale',ends:['Nada','Mucho']},
+    {k:'aprendizaje',l:'Aprendizaje',t:'textarea'},
+    {k:'valores_conducta',l:'Conducta alineada con mis valores',t:'textarea'}
+  ];
+  var h='<h1 class="view-t">🏁 Competición</h1><p class="view-s">Separar lo que ocurrió de lo que significa. La clasificación no es la medida de tu valor.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="compAntes"><h2>Antes</h2>'+formHTML(antes)+'<button class="btn sm" onclick="saveComp(\'antes\')">Guardar «antes»</button></div>';
+  h+='<div class="card" id="compDespues"><h2>Después</h2>'+formHTML(despues)+'<div class="quote">Si elimináramos la clasificación, ¿qué dice esta carrera sobre el ciclista que estoy aprendiendo a ser?</div><button class="btn full" onclick="saveComp(\'despues\')">Guardar «después»</button></div>';
+  h+='<p class="muted">La decepción, cuando el resultado no acompaña, es válida. No hace falta forzar el optimismo.</p>';
+  h+=footerHTML(); return h;
+};
+function saveComp(fase){
+  var d=readForm(document.getElementById(fase==='antes'?'compAntes':'compDespues'));
+  d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.hora=nowHM(); d.fase='competicion'; d.subfase=fase; d.tipo='Competición'; d.competicion=true;
+  DB.entrenos.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'competicion_'+fase,posicion:d.posicion||'',trato:d.trato,disfrute:d.disfrute,continuidad:d.continuidad});
+  flash("Guardado ✓");
+}
+
+/* ---------------- CELEBRAR (alivio o satisfacción) ---------------- */
+VIEWS.celebrar=function(){
+  var f=[
+    {k:'primero',l:'¿Qué sentí primero?',t:'chips1',opts:['Alegría','Orgullo','Alivio («menos mal»)','Nada','Ya pensaba en lo siguiente']},
+    {k:'resto',l:'¿Resté importancia al logro?',t:'chips1',opts:['Sí','Un poco','No']},
+    {k:'comparti',l:'¿Me permití compartirlo?',t:'chips1',opts:['Sí','No']},
+    {k:'esfuerzo',l:'¿Qué esfuerzo previo estoy reconociendo?',t:'textarea'},
+    {k:'joan_bien',l:'¿Qué hizo bien '+JOAN()+'?',t:'textarea'},
+    {k:'joanet_sost',l:'¿Qué sostuvo '+JOANET()+'?',t:'textarea'},
+    {k:'gesto',l:'Gesto de celebración elegido',t:'chips1',opts:['Compartirlo con alguien','Escribir qué hice bien','Guardar una foto','Agradecer al cuerpo','Disfrutar unos minutos']}
+  ];
+  var h='<h1 class="view-t">🎉 Éxito: ¿alivio o satisfacción?</h1><p class="view-s">Celebrar no es conformarse. Es dejar que '+esc(JOANET())+' registre que el esfuerzo también termina en satisfacción, no solo en alivio.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card">'+
+     '<div style="display:flex;gap:9px;text-align:center;margin-bottom:6px"><div style="flex:1"><div style="font-size:26px">⏸️</div><b>PARAR</b><div class="muted">No corras al siguiente objetivo.</div></div><div style="flex:1"><div style="font-size:26px">🔎</div><b>RECONOCER</b><div class="muted">Nombra una conducta que lo hizo posible.</div></div><div style="flex:1"><div style="font-size:26px">🎉</div><b>CELEBRAR</b><div class="muted">Un gesto breve de disfrute o gratitud.</div></div></div>'+
+     '</div>';
+  h+='<div class="card" id="celebForm">'+formHTML(f)+'<div class="quote">Celebrar no significa dejar de tener ambición: significa permitir que el esfuerzo también pueda terminar bien.</div><button class="btn amor full" onclick="saveCelebra()">Guardar celebración</button></div>';
+  h+=recientes(DB.celebra,function(x){return (x.primero||'')+' · '+(x.gesto||'');},'Aún no hay celebraciones registradas.');
+  h+=footerHTML(); return h;
+};
+function saveCelebra(){ var d=readForm(document.getElementById('celebForm')); d.id=uid(); d.ts=Date.now(); d.date=hoy(); DB.celebra.push(d); addBadge('Me permití celebrar'); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'celebrar',primera_emocion:d.primero,gesto:d.gesto}); flash("Celebración registrada ✓"); render(); go('celebrar'); }
+
+/* ---------------- SIN ENTRENAR ---------------- */
+VIEWS.sinentreno=function(){
+  var f=[
+    {k:'inquietud',l:'Nivel de inquietud',t:'scale',ends:['Calma','Mucha']},
+    {k:'necesidad',l:'Necesidad de hacer algo',t:'scale',ends:['Ninguna','Mucha']},
+    {k:'culpa',l:'Culpa por descansar',t:'scale',ends:['Nada','Mucha']},
+    {k:'pensamientos',l:'Pensamientos sobre abandonar o continuar',t:'textarea'},
+    {k:'cuerpo',l:'Sensación corporal ahora',t:'text'},
+    {k:'micro',l:'Actividad con valor elegida (fuera del ciclismo)',t:'chips1',opts:['Recuperación física','Estudio','Amistades','Familia','Ocio','Naturaleza','Descanso','Respiración','No hacer nada un rato']}
+  ];
+  var h='<h1 class="view-t">🌿 Cuando no estoy entrenando</h1><p class="view-s">Que no toda tu regulación dependa de rendir o mantenerte ocupado. Descansar también es una conducta del deportista que quieres ser.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="sinForm">'+formHTML(f)+'<div class="quote">Descansar no es abandonar el proyecto: también es cuidarlo.</div><button class="btn full" onclick="saveSin()">Guardar</button></div>';
+  h+=footerHTML(); return h;
+};
+function saveSin(){ var d=readForm(document.getElementById('sinForm')); d.id=uid(); d.ts=Date.now(); d.date=hoy(); DB.sinentreno.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'latencia',modulo:'sin_entrenar',inquietud:d.inquietud,culpa_descanso:d.culpa,microaccion:d.micro}); flash("Guardado ✓"); }
+
+/* ---------------- HUESCA ---------------- */
+VIEWS.huesca=function(){
+  var antes=[
+    {k:'depende',l:'Qué depende de mí',t:'textarea'},
+    {k:'nodepende',l:'Qué no depende completamente de mí',t:'textarea'},
+    {k:'aprender',l:'Qué quiero aprender',t:'textarea'},
+    {k:'mostrar',l:'Qué ciclista y qué persona quiero mostrar',t:'textarea'},
+    {k:'cuidar',l:'Cómo cuidaré a '+JOANET(),t:'textarea'},
+    {k:'comparar',l:'Cómo responderé si me comparo',t:'text'},
+    {k:'nivel',l:'Cómo responderé si no estoy al nivel esperado',t:'text'},
+    {k:'critica',l:'Cómo responderé a una crítica',t:'text'},
+    {k:'elogio',l:'Cómo responderé a un elogio',t:'text'},
+    {k:'miedo',l:'Qué haré si aparece miedo a desaprovechar la oportunidad',t:'textarea'}
+  ];
+  var dia=[
+    {k:'fisico',l:'Estado físico',t:'scale',ends:['Bajo','Pleno']},
+    {k:'emocional',l:'Estado emocional',t:'scale',ends:['Mal','Bien']},
+    {k:'presion',l:'Presión',t:'scale',ends:['Baja','Máxima']},
+    {k:'tarea',l:'Atención a la tarea',t:'scale',ends:['Dispersa','Plena']},
+    {k:'comparacion',l:'Comparación con otros',t:'scale',ends:['Nada','Mucha']},
+    {k:'disfrute',l:'Disfrute',t:'scale',ends:['Nada','Mucho']},
+    {k:'continuidad',l:'Continuidad',t:'scale',ends:['Baja','Alta']},
+    {k:'vinculo',l:'Vínculo con compañeros',t:'text'},
+    {k:'joanet',l:'Cómo acompañé a '+JOANET(),t:'text'},
+    {k:'ajuste',l:'Qué necesito ajustar mañana',t:'textarea'}
+  ];
+  var h='<h1 class="view-t">🏔️ Semana de prueba · Huesca</h1><p class="view-s">La prueba puede decidir una oportunidad concreta. No decide tu valor ni todo tu futuro como ciclista.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="hueAntes"><h2>Antes de viajar</h2>'+formHTML(antes)+'<button class="btn sm" onclick="saveHueAntes()">Guardar preparación</button></div>';
+  h+='<div class="card" id="hueDia"><h2>Registro del día</h2>'+formHTML(dia)+'<button class="btn full" onclick="saveHueDia()">Guardar día</button>';
+  if(DB.huesca_dias.length) h+='<p class="grp-t">Días registrados</p>'+DB.huesca_dias.slice().reverse().map(function(x){return '<div class="rec"><div class="rh"><span class="rt">'+esc(fechaLarga(x.date))+'</span><span class="rd">disfrute '+(x.disfrute!=null?x.disfrute:'–')+'/10</span></div></div>';}).join('');
+  h+='</div>';
+  h+='<div class="card"><h2>Después de la valoración</h2><p class="lead">Separa los tres planos:</p>'+
+     '<div class="fld"><label>Lo que ocurrió (resultado, feedback, decisión, datos)</label><textarea id="hueOcurrio"></textarea></div>'+
+     '<div class="fld"><label>Lo que dice mi mente («no soy suficiente», «he perdido mi oportunidad», «ahora sí valgo»…)</label><textarea id="hueMente"></textarea></div>'+
+     '<div class="fld"><label>Lo que puedo elegir (procesar, pedir feedback, aprender, recuperar, decidir con tiempo…)</label><textarea id="hueElijo"></textarea></div>'+
+     '<div class="quote">La prueba de Huesca es una oportunidad, no una sentencia.</div>'+
+     '<button class="btn amber full" onclick="saveHueDespues()">Guardar valoración</button></div>';
+  h+=footerHTML(); return h;
+};
+function saveHueAntes(){ DB.huesca_antes=Object.assign({ts:Date.now(),date:hoy()},readForm(document.getElementById('hueAntes'))); save(); flash("Preparación guardada ✓"); }
+function saveHueDia(){ var d=readForm(document.getElementById('hueDia')); d.id=uid(); d.ts=Date.now(); d.date=hoy(); DB.huesca_dias.push(d); save(); aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'huesca_dia',disfrute:d.disfrute,presion:d.presion,continuidad:d.continuidad}); flash("Día guardado ✓"); render(); go('huesca'); }
+function saveHueDespues(){ DB.huesca_despues={ts:Date.now(),date:hoy(),ocurrio:val('hueOcurrio'),mente:val('hueMente'),elijo:val('hueElijo')}; save(); aprensSave({id:uid(),date:hoy(),ts:Date.now(),param:'continuidad',modulo:'huesca_valoracion'}); flash("Valoración guardada ✓"); }
+function val(id){ var e=document.getElementById(id); return e?(e.value||'').trim():''; }
+
+/* ---------------- PIRÁMIDE ---------------- */
+var PIR=[
+  {k:'atencion',n:'Base',t:'Atención',c:'#33566b',info:'¿Dónde está mi atención: en el proceso (cadencia, respiración, siguiente curva…) o en el resultado (posición, qué pensarán, si valgo)? La atención al resultado no es mala; el problema es que ocupe todo el espacio y el cuerpo deje de saber qué tarea concreta hacer.',good:['Cadencia, respiración, técnica','Ritmo, recuperación, alimentación','Siguiente curva, siguiente minuto','Sensaciones y aprendizaje'],bad:['Posición y qué pensarán','Si seré seleccionado','Si los demás van mejor','Si valgo o no valgo']},
+  {k:'control',n:'Nivel 2',t:'Percepción de control',c:'#3f6b6b',info:'La atención al proceso aumenta el control percibido, porque puedes actuar sobre ritmo, estrategia, alimentación, autoverbalizaciones, persistencia y regreso a la tarea. La atención sólo al resultado lo reduce: no controlas la selección, los rivales, el clima ni la respuesta del cuerpo de un día.',good:['Ritmo, conducta, estrategia','Autoverbalizaciones','Persistencia','Decisión de ajustar y volver'],bad:['La selección del equipo','El rendimiento de los rivales','El recorrido y el clima','La posición final']},
+  {k:'reto',n:'Nivel 3',t:'Reto o amenaza',c:'#3f5e4e',info:'Con control suficiente lo vivo como reto: curiosidad, ajusto, aprendo, tolero mejor el error. Con poco control lo vivo como amenaza: comparación, anticipo el fracaso, me juzgo, tensión y pérdida de continuidad. ¿'+"{J}"+' vive el esfuerzo como reto acompañado o como amenaza que atraviesa solo?',good:['Curiosidad, busco información','Ajusto y aprendo','Mantengo la atención','Tolero el error'],bad:['Me comparo y anticipo fracaso','Intento demostrar','Aumento la tensión','Impulso de abandonar']},
+  {k:'regulacion',n:'Nivel 4',t:'Regulación emocional',c:'#4a6b45',info:'No es dejar de sentir: es notar miedo, presión, dolor o frustración sin perder del todo la dirección de la conducta. Herramientas: AIS, respiración, honestidad emocional, autoverbalización de acompañamiento, regreso a la tarea, distinguir dolor de lesión, ajustar, aceptar la decepción y poder celebrar.',good:['AIS y respiración','Honestidad emocional','Regreso a la tarea','Aceptar decepción, poder celebrar'],bad:[]},
+  {k:'motivacion',n:'Nivel 5',t:'Motivación',c:'#5c7a3f',info:'Intrínseca (amor, disfrute, curiosidad, aprendizaje, dominio, pertenencia) y extrínseca (resultados, selección, reconocimiento). La extrínseca no es mala; el problema es que sea el único combustible: entonces cada entrenamiento se vuelve un examen.',good:['Amor por la bici, disfrute','Curiosidad, aprendizaje','Superación personal','Pertenencia al ciclismo'],bad:['Resultados y selección','Reconocimiento','Comparación','Expectativas externas']},
+  {k:'adherencia',n:'Nivel 6',t:'Adherencia',c:'#7a7a2f',info:'No es entrenar siempre con ganas: es mantener una relación suficientemente sana con el proceso como para continuar también cuando los resultados, la motivación o las sensaciones no acompañan. Distingue abandono evitativo de ajuste, descanso, prevención de lesión o decisión coherente con valores.',good:['Retomar tras un mal día','Ajuste inteligente','Descanso necesario','Conexión con el propósito'],bad:['Abandono evitativo','Rechazo hacia la bici','Fatiga mental sostenida','']},
+  {k:'autoeficacia',n:'Nivel 7',t:'Autoeficacia',c:'#a07020',info:'No es «creer que ganaré», sino confiar en que puedo responder de forma útil ante las dificultades aunque no controle el resultado: continuar con dolor, volver a la tarea, ajustar sin hundirme, aprender de una mala carrera, pedir ayuda, acompañar a '+"{J}"+', tolerar no ser seleccionado.',good:['Puedo continuar con dolor','Puedo volver a la tarea','Puedo aprender del error','Puedo acompañar a '+"{J}"],bad:[]},
+  {k:'rendimiento',n:'Cima',t:'Rendimiento',c:'#a9781f',info:'El rendimiento importa, pero es el resultado emergente de todo lo anterior. No se sostiene si la base está dominada por amenaza, comparación y castigo. Orientación a la maestría vs al ego: el éxito como camino (aprender es parte del éxito) frente al éxito como destino (solo ganar vale).',good:['Éxito como camino','Aprender es parte del éxito','Comparación conmigo mismo','El error informa'],bad:['Éxito como destino','Solo ganar parece suficiente','Comparación con los demás','El error se vive como fracaso']}
+];
+VIEWS.piramide=function(){
+  var h='<h1 class="view-t">🔺 Mi pirámide de rendimiento</h1><p class="view-s">El rendimiento no empieza arriba, en el resultado, sino abajo, donde diriges la atención. Toca cada nivel.</p>';
+  h+='<div class="pyr">';
+  // Pirámide real: cima estrecha (Rendimiento, i=7) → base ancha (Atención, i=0).
+  // Se dibuja de arriba (cima) hacia abajo (base).
+  for(var i=PIR.length-1;i>=0;i--){ var b=PIR[i];
+    var w=42+(PIR.length-1-i)*(58/(PIR.length-1)); // cima(rendimiento)=42% → base(atención)=100%
+    h+='<button class="pyr-band" style="width:'+w.toFixed(0)+'%;background:'+b.c+'" onclick="showPir(\''+b.k+'\')"><span class="n">'+esc(b.n)+'</span><span class="t">'+esc(b.t)+'</span></button>';
+  }
+  h+='</div><div class="pyr-explain" id="pirExplain"></div>';
+  h+='<div class="card"><h2><span class="e">🧩</span>¿Dónde empezó hoy mi rendimiento?</h2><p class="lead">Reconstruye brevemente la pirámide después de entrenar.</p><div id="pirForm">'+formHTML([
+    {k:'p_atencion',l:'1 · ¿Dónde estuvo mi atención?',t:'chips1',opts:['Sobre todo en el proceso','Mezcla','Sobre todo en el resultado']},
+    {k:'p_control',l:'2 · ¿Qué sentí que dependía de mí?',t:'text'},
+    {k:'p_reto',l:'3 · ¿Lo viví como reto o amenaza?',t:'chips1',opts:['Reto acompañado','Mezcla','Amenaza en soledad']},
+    {k:'p_regulacion',l:'4 · ¿Cómo regulé presión, dolor o frustración?',t:'text'},
+    {k:'p_motivacion',l:'5 · ¿Qué motivación predominó?',t:'chips1',opts:['Sobre todo intrínseca','Mezcla','Sobre todo extrínseca']},
+    {k:'p_continuidad',l:'6 · ¿Cómo afectó a mi continuidad?',t:'scale',ends:['La perdí','La sostuve']},
+    {k:'p_autoeficacia',l:'7 · ¿Qué aprendí sobre mi capacidad?',t:'text'},
+    {k:'p_resultado',l:'8 · ¿Qué resultado apareció?',t:'text'},
+    {k:'p_repetir',l:'9 · ¿Qué parte del proceso repetiría?',t:'text'},
+    {k:'p_manana',l:'10 · ¿Qué base necesito entrenar mañana?',t:'chips1',opts:['Atención a la tarea','Percepción de control','Interpretación (reto)','Regulación','Motivación','Adherencia','Autoeficacia']}
+  ])+'</div><div class="ok-flash" id="okflash"></div><div id="pirFrase"></div><button class="btn full" onclick="savePiramide()">Generar mi lectura del día</button></div>';
+  h+='<div class="card"><h2>Maestría vs ego</h2><div class="two"><div class="col good"><h4>Orientación a la maestría</h4><ul><li>El éxito es un camino</li><li>Comparación conmigo mismo</li><li>El error informa</li><li>Motivación intrínseca y adherencia</li></ul></div><div class="col bad"><h4>Orientación al ego</h4><ul><li>El éxito es un destino</li><li>Comparación con los demás</li><li>El error se vive como fracaso</li><li>Autoeficacia según la clasificación</li></ul></div></div><p class="muted" style="margin-top:8px">No es una etiqueta fija: puedes mostrar ambas en distintos momentos.</p></div>';
+  h+=footerHTML(); return h;
+};
+function showPir(k){ var b=PIR.filter(function(x){return x.k===k;})[0]; if(!b) return;
+  var e=document.getElementById('pirExplain');
+  var html='<h3>'+esc(b.t)+'</h3><p>'+esc(b.info.replace(/\{J\}/g,JOANET()))+'</p>';
+  if(b.good.length||b.bad.length){ html+='<div class="two">';
+    if(b.k==='atencion'||b.k==='control'||b.k==='motivacion'){ html+='<div class="col good"><h4>Proceso / útil</h4><ul>'+b.good.map(function(s){return '<li>'+esc(s.replace(/\{J\}/g,JOANET()))+'</li>';}).join('')+'</ul></div><div class="col bad"><h4>Resultado / riesgo</h4><ul>'+b.bad.map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div>'; }
+    else if(b.k==='reto'||b.k==='rendimiento'||b.k==='adherencia'){ html+='<div class="col good"><h4>'+(b.k==='rendimiento'?'Maestría':(b.k==='adherencia'?'Sana':'Reto'))+'</h4><ul>'+b.good.map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div><div class="col bad"><h4>'+(b.k==='rendimiento'?'Ego':(b.k==='adherencia'?'Frágil':'Amenaza'))+'</h4><ul>'+b.bad.filter(Boolean).map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div>'; }
+    else { html+='<div class="col good" style="grid-column:1/-1"><h4>Recursos</h4><ul>'+b.good.map(function(s){return '<li>'+esc(s.replace(/\{J\}/g,JOANET()))+'</li>';}).join('')+'</ul></div>'; }
+    html+='</div>';
+  }
+  e.innerHTML=html; e.classList.add('show'); e.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function savePiramide(){
+  var d=readForm(document.getElementById('pirForm')); d.id=uid(); d.ts=Date.now(); d.date=hoy();
+  DB.piramide.push(d); save();
+  var frase;
+  if((d.p_atencion||'').indexOf('resultado')>=0) frase='Hoy el resultado estuvo condicionado por una atención muy centrada en la comparación. Mañana el objetivo no será demostrar más, sino recuperar el control con una tarea concreta.';
+  else if((d.p_reto||'').indexOf('Amenaza')>=0) frase='Hoy '+JOANET()+' sintió el esfuerzo como amenaza en soledad. Se puede entrenar acompañarlo antes: AIS, una frase y el regreso a la cadencia.';
+  else if(d.p_continuidad!=null && d.p_continuidad>=6) frase='Hoy '+JOANET()+' sintió dolor, pero '+JOAN()+' logró acompañarlo y volver a la tarea. Aunque el resultado no fuera el esperado, se entrenaron continuidad y autoeficacia.';
+  else frase='Hoy has empezado a mirar tu rendimiento desde la base. Elige mañana una sola cosa: '+(d.p_manana||'volver a la tarea')+'.';
+  document.getElementById('pirFrase').innerHTML='<div class="quote">'+esc(frase)+'</div>';
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'continuidad',modulo:'piramide',atencion:d.p_atencion,reto:d.p_reto,continuidad:d.p_continuidad,manana:d.p_manana,lectura:frase});
+  flash("Lectura generada ✓");
+}
+
+/* ---------------- FRASES ---------------- */
+var FRASES_BANK=[
+  ['Antes de entrenar',['Estoy contigo, {J}.','No tienes que demostrar tu valor en esta pedalada.','Vamos a ocuparnos de la tarea que toca.','Hoy no entreno para castigarme, entreno porque esto importa.']],
+  ['Inicio de una subida',['Vamos juntos, {J}. Esta subida la subimos los dos.','No vengo a castigarte; vengo a acompañarte.','Solo este tramo, no toda la montaña.']],
+  ['Dolor de piernas / ahogo',['Este ardor es esfuerzo, no es peligro. Puedo estar con él.','Mi cuerpo puede sufrir y sentirse acompañado a la vez.','No lucho contra mi cuerpo; trabajo con él.','Vuelve a la cadencia.']],
+  ['Comparación / quedarse atrás',['El resultado importa, pero no decide quién soy.','No tengo que demostrar mi valor en este minuto.','Mi dirección no depende de dónde va el de al lado.']],
+  ['Error o mal resultado',['No estás fallando: estás recibiendo información.','Puedo sentir decepción sin convertirla en una sentencia sobre mí.','El buen resultado se celebra; el mal resultado se aprende.']],
+  ['Buen resultado',['{J}, gracias por sostener este esfuerzo.','Puedo celebrar sin dejar de tener ambición.']],
+  ['Poca motivación / descanso',['No todo descanso es evitación.','Amar la bici también es proteger mi relación con ella.','Ajustar no es fracasar.']],
+  ['Prueba de Huesca',['La prueba de Huesca es una oportunidad, no una sentencia.','No tengo que demostrar todo mi valor en una semana.']]
+];
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">💬 Autoverbalizaciones</h1><p class="view-s">Tu banco de frases para acompañar a '+esc(JOANET())+'. Marca favoritas, copia o crea las tuyas.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2>Crear la mía</h2><textarea id="newFrase" placeholder="Escribe una frase que quieras llevar contigo…"></textarea><button class="btn sm" style="margin-top:9px" onclick="crearFrase()">Añadir a mi banco</button></div>';
+  if(DB.frasesUser.length){ h+='<p class="grp-t">Mis frases</p>'; DB.frasesUser.forEach(function(fr,i){ h+=verbRow(fr.txt,true,i); }); }
+  FRASES_BANK.forEach(function(g){ h+='<p class="grp-t">'+esc(g[0])+'</p>'; g[1].forEach(function(s){ h+=verbRow(s.replace(/\{J\}/g,JOANET()),false); }); });
+  h+=footerHTML(); return h;
+};
+function verbRow(txt,isUser,idx){ var fav=DB.settings.favFrases.indexOf(txt)>=0;
+  var t=esc(txt).replace(/'/g,"\\'");
+  return '<div class="verb"><span class="vt">'+esc(txt)+'</span><span class="va">'+
+    '<button title="Favorita" onclick="toggleFav(\''+t+'\',this)" class="'+(fav?'fav-on':'')+'">'+(fav?'★':'☆')+'</button>'+
+    '<button title="Copiar" onclick="copiar(\''+t+'\',this)">📋</button>'+
+    (isUser?'<button title="Borrar" onclick="delFrase('+idx+')">🗑️</button>':'')+
+    '</span></div>'; }
+function crearFrase(){ var t=(document.getElementById('newFrase').value||'').trim(); if(!t) return; addFraseUser(t,''); save(); render(); go('frases'); }
+function addFraseUser(txt,grp){ if(!txt) return; if(DB.frasesUser.some(function(f){return f.txt===txt;})) return; DB.frasesUser.unshift({txt:txt,grp:grp,ts:Date.now()}); }
+function delFrase(i){ DB.frasesUser.splice(i,1); save(); render(); go('frases'); }
+function toggleFav(txt,btn){ var i=DB.settings.favFrases.indexOf(txt); if(i>=0){DB.settings.favFrases.splice(i,1);btn.textContent='☆';btn.classList.remove('fav-on');} else {DB.settings.favFrases.push(txt);btn.textContent='★';btn.classList.add('fav-on');} save(); }
+
+/* ---------------- ICE ---------------- */
+VIEWS.ice=function(){
+  var f=[
+    {k:'latencia',l:'Latencia — espacio entre el impulso (dolor, miedo, autocrítica) y mi respuesta',t:'scale',ends:['Reacciono ya','Espero y elijo']},
+    {k:'densidad',l:'Densidad — calidad al colocar la atención en la sensación o la tarea',t:'scale',ends:['Dispersa','Nítida']},
+    {k:'continuidad',l:'Continuidad — sostener el acompañamiento y el foco durante el esfuerzo',t:'scale',ends:['Suelto pronto','Sostengo']},
+    {k:'contmont',l:'Continuidad específica en MONTAÑA',t:'scale',ends:['Baja','Alta']}
+  ];
+  var h='<h1 class="view-t">⏱️ Parámetros ICE</h1><p class="view-s">No mide cuánto vales: observa cómo entrenas tu forma de acompañarte. Una puntuación baja es información, no un fracaso.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="iceForm">'+formHTML(f)+'<button class="btn full" onclick="saveIce()">Guardar registro ICE</button></div>';
+  h+=chartCard('Continuidad en montaña (últimos registros)', DB.entrenos.filter(function(x){return x.montana&&x.cont_min!=null;}).slice(-10).map(function(x){return x.cont_min;}));
+  h+=footerHTML(); return h;
+};
+function saveIce(){ var d=readForm(document.getElementById('iceForm')); d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.modulo='ice';
+  DB.entrenos.push(Object.assign({fase:'ice',montana:false},d)); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'latencia',modulo:'ice',latencia:d.latencia,densidad:d.densidad,continuidad:d.continuidad,continuidad_montana:d.contmont}); flash("Registro ICE guardado ✓"); }
+
+/* ---------------- SEMANA (revisión) ---------------- */
+VIEWS.semana=function(){
+  var e7=DB.entrenos.filter(function(x){return within7(x.date);});
+  var ais7=DB.ais.filter(function(x){return within7(x.date);});
+  var la7=DB.latigoamor.filter(function(x){return within7(x.date);});
+  var h='<h1 class="view-t">📈 Revisión semanal</h1><p class="view-s">Una foto del proceso para pensar en sesión. No demuestra causas: ofrece pistas.</p>';
+  h+='<div class="card"><h2>Resumen (7 días)</h2><div class="stat3"><div><b>'+e7.length+'</b><span>entrenos</span></div><div><b>'+ais7.length+'</b><span>AIS</span></div><div><b>'+la7.length+'</b><span>látigo/amor</span></div></div>';
+  var mp=media(e7.filter(function(x){return x.presion!=null;}),'presion'), md=media(e7.filter(function(x){return x.disfrute!=null;}),'disfrute'), mc=media(e7.filter(function(x){return x.conexion!=null;}),'conexion'), mla=media(la7,'nivel');
+  h+='<table style="width:100%;margin-top:12px;font-size:13.5px;border-collapse:collapse">'+
+     tr('Presión por demostrar (media)',mp)+tr('Disfrute (media)',md)+tr('Conexión con la bici (media)',mc)+tr('Látigo↔amor (media, 0-10)',mla)+
+     '</table></div>';
+  h+=chartCard('Continuidad en montaña', DB.entrenos.filter(function(x){return x.montana&&x.cont_min!=null;}).slice(-10).map(function(x){return x.cont_min;}));
+  h+=chartCard('Látigo (0) ↔ Amor firme (10)', DB.latigoamor.slice(-10).map(function(x){return x.nivel;}));
+  h+='<div class="card"><h2>Preguntas de la semana</h2><ul class="muted" style="padding-left:18px;line-height:1.9">'+['¿Qué hizo que amaras más la bici esta semana?','¿Qué hizo que apareciera rechazo?','¿Dónde estuvo más presente el látigo?','¿En qué momento acompañaste mejor a '+JOANET()+'?','¿Qué pequeño ajuste harás la próxima semana?'].map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+'</ul></div>';
+  h+='<div class="card"><h2>Resumen para el psicólogo</h2><p class="lead">Texto breve y clínicamente útil para enviar por WhatsApp.</p><button class="btn full" onclick="copiarResumen(this)">📋 Copiar resumen semanal</button><p class="muted" style="margin-top:8px">También puedes usar la barra de exportación de APRENS (abajo del todo) para enviar los datos completos.</p></div>';
+  h+=footerHTML(); return h;
+};
+function tr(l,v){ return '<tr><td style="padding:7px 0;border-bottom:1px solid var(--linia)">'+esc(l)+'</td><td style="padding:7px 0;border-bottom:1px solid var(--linia);text-align:right;font-weight:700">'+(v!=null?v:'–')+'</td></tr>'; }
+function copiarResumen(btn){
+  var e7=DB.entrenos.filter(function(x){return within7(x.date);});
+  var mont=e7.filter(function(x){return x.montana;});
+  var la7=DB.latigoamor.filter(function(x){return within7(x.date);});
+  var L=['PEDALEA DESDE DENTRO · '+JOAN()+' · semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
+  L.push('Entrenos: '+e7.length+' · AIS: '+DB.ais.filter(function(x){return within7(x.date);}).length+' · subidas de montaña: '+mont.length);
+  var mp=media(e7,'presion'), md=media(e7,'disfrute'), mc=media(e7,'conexion'), cm=media(mont,'cont_min'), mla=media(la7,'nivel');
+  if(mp!=null) L.push('Presión por demostrar (media): '+mp+'/10');
+  if(md!=null) L.push('Disfrute (media): '+md+'/10');
+  if(mc!=null) L.push('Conexión con la bici (media): '+mc+'/10');
+  if(cm!=null) L.push('Continuidad en montaña (media): '+cm+'/10');
+  if(mla!=null) L.push('Látigo(0)–amor firme(10) (media): '+mla+'/10');
+  var vueltas=mont.filter(function(x){return x.foco_vuelta&&x.foco_vuelta!=='No lo logré';}).length;
+  L.push('Veces que volvió a la tarea en subida: '+vueltas+'/'+mont.length);
+  if(DB.settings.direccion) L.push('Dirección elegida: '+DB.settings.direccion);
+  L.push('(Proceso, no resultados: presencia, continuidad y forma de acompañarse.)');
+  copiar(L.join('\n'),btn);
+}
+
+/* ---------------- DATOS / AJUSTES ---------------- */
+VIEWS.datos=function(){
+  var h='<h1 class="view-t">⚙️ Datos y ajustes</h1><p class="view-s">Todo se guarda solo en este dispositivo (localStorage). No se envía a ningún servidor.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2>Nombres</h2><div class="fld"><label>Nombre del deportista</label><input type="text" id="setJoan" value="'+esc(JOAN())+'"></div><div class="fld"><label>Nombre de la figura interna (el cuerpo)</label><input type="text" id="setJoanet" value="'+esc(JOANET())+'"></div><button class="btn sm" onclick="saveNombres()">Guardar nombres</button></div>';
+  h+='<div class="card"><h2>Copias de seguridad</h2><div class="btnrow"><button class="btn sm" onclick="exportJSON()">⬇️ Exportar JSON</button><button class="btn sm" onclick="exportCSV()">⬇️ Exportar CSV</button></div><div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="document.getElementById(\'impFile\').click()">⬆️ Importar JSON</button><input type="file" id="impFile" accept="application/json" style="display:none" onchange="importJSON(event)"></div></div>';
+  h+='<div class="card"><h2>Datos de demostración</h2><p class="lead">Añade registros de ejemplo para ver cómo funciona.</p><button class="btn sm gris" onclick="demoData()">Cargar datos demo</button></div>';
+  h+='<div class="card" style="border-color:#b5433a"><h2>Borrado total</h2><p class="lead">Elimina todos los registros de este dispositivo. No se puede deshacer.</p><button class="btn sm danger" onclick="resetAll()">Borrar todo</button></div>';
+  h+='<div class="card"><h2>Privacidad</h2><p class="muted">Los datos permanecen en tu navegador. Funciona sin conexión tras la primera apertura. Puedes exportarlos para compartirlos con tu psicólogo o guardar una copia.</p></div>';
+  h+=footerHTML(); return h;
+};
+function saveNombres(){ DB.settings.joan=(document.getElementById('setJoan').value||'Joan').trim()||'Joan'; DB.settings.joanet=(document.getElementById('setJoanet').value||'Joanet').trim()||'Joanet'; save(); flash("Nombres guardados ✓"); render(); go('datos'); }
+function exportJSON(){ downloadFile('pedalea_'+hoy()+'.json', JSON.stringify(DB,null,2), 'application/json'); }
+function exportCSV(){
+  var rows=[['modulo','fecha','hora','clave','valor']];
+  function push(mod,rec){ for(var k in rec){ if(['id','ts'].indexOf(k)>=0) continue; var v=rec[k]; if(Array.isArray(v)) v=v.join(' | '); rows.push([mod,rec.date||'',rec.hora||'',k,String(v==null?'':v)]); } }
+  DB.entrenos.forEach(function(r){push('entreno_'+(r.fase||''),r);}); DB.ais.forEach(function(r){push('ais',r);}); DB.latigoamor.forEach(function(r){push('latigo_amor',r);}); DB.celebra.forEach(function(r){push('celebrar',r);}); DB.piramide.forEach(function(r){push('piramide',r);}); DB.huesca_dias.forEach(function(r){push('huesca_dia',r);});
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  downloadFile('pedalea_'+hoy()+'.csv', csv, 'text/csv');
+}
+function downloadFile(name,content,type){ try{ var blob=new Blob([content],{type:type}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(url);},1000); flash("Archivo generado ✓"); }catch(e){ alert('No se pudo generar el archivo.'); } }
+function importJSON(ev){ var file=ev.target.files[0]; if(!file) return; var r=new FileReader(); r.onload=function(){ try{ var d=JSON.parse(r.result); if(!d.settings) throw 0; if(confirm('¿Reemplazar los datos actuales por los del archivo?')){ DB=d; save(); render(); go('datos'); flash("Datos importados ✓"); } }catch(e){ alert('Archivo no válido.'); } }; r.readAsText(file); ev.target.value=''; }
+function demoData(){
+  var base=Date.now();
+  for(var i=6;i>=0;i--){ var dt=daysAgo(i);
+    DB.entrenos.push({id:uid(),ts:base-i*86400000,date:dt,hora:'18:00',fase:'montana',montana:true,tipo:'Montaña',cont_min:4+((i*3)%6),int_max:7+(i%3),acomp:['Látigo','Mezcla','Amor y firmeza'][i%3],foco_vuelta:'Cadencia',espera:5+i});
+    if(i%2===0) DB.ais.push({id:uid(),ts:base-i*86400000+3600000,date:dt,dur:60,amenaza_ini:7,amenaza_fin:5,dispo_fin:7});
+    DB.latigoamor.push({id:uid(),ts:base-i*86400000+7200000,date:dt,nivel:3+((i*2)%7),latigo:'aprieta o no vales',amor:'esto duele y sigo contigo, a la cadencia'});
+  }
+  save(); render(); go('datos'); flash("Datos demo cargados ✓");
+}
+function resetAll(){ if(confirm('¿Seguro que quieres borrar TODO?')){ if(confirm('Esta acción no se puede deshacer. ¿Confirmas?')){ DB=clone(DEFAULT); save(); render(); go('home'); } } }
+
+/* ---------------- helpers compartidos ---------------- */
+function chartCard(title,vals){ return '<div class="card"><div class="chart-lbl">'+esc(title)+'</div>'+barChart(vals)+(vals.length?'':'<p class="empty">Sin datos todavía.</p>')+'</div>'; }
+function barChart(vals){ if(!vals.length) return ''; var W=320,H=90,n=vals.length,bw=W/n,max=10;
+  var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="gráfica de barras">';
+  s+='<line x1="0" y1="'+(H-14)+'" x2="'+W+'" y2="'+(H-14)+'" stroke="var(--linia2)" stroke-width="1"/>';
+  vals.forEach(function(v,i){ var h=(v/max)*(H-24); var x=i*bw+bw*0.18, y=(H-14)-h; s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw*0.64).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="var(--montana)"/>'; s+='<text x="'+(i*bw+bw/2).toFixed(1)+'" y="'+(H-3)+'" font-size="8" text-anchor="middle" fill="var(--suau)">'+v+'</text>'; });
+  s+='</svg>'; return s; }
+function recientes(arr,fmt,emptyMsg){ var list=ultimos(arr,6); if(!list.length) return '<div class="card"><p class="empty">'+esc(emptyMsg||'Sin registros.')+'</p></div>';
+  return '<div class="card"><h2>Últimos registros</h2>'+list.map(function(x){ return '<div class="rec"><div class="rh"><span class="rt">'+esc(fechaLarga(x.date))+(x.hora?' · '+esc(x.hora):'')+'</span><button class="del" onclick="delRec(\''+recStore(arr)+'\',\''+x.id+'\')">borrar</button></div><div class="rb">'+esc(fmt(x))+'</div></div>'; }).join('')+'</div>'; }
+function recStore(arr){ if(arr===DB.entrenos) return 'entrenos'; if(arr===DB.ais) return 'ais'; if(arr===DB.latigoamor) return 'latigoamor'; if(arr===DB.celebra) return 'celebra'; if(arr===DB.piramide) return 'piramide'; if(arr===DB.sinentreno) return 'sinentreno'; return ''; }
+function delRec(store,id){ if(!store||!DB[store]) return; if(confirm('¿Borrar este registro?')){ DB[store]=DB[store].filter(function(x){return x.id!==id;}); save(); render(); } }
+function addBadge(name){ if(DB.badges.indexOf(name)<0) DB.badges.push(name); }
+function footerHTML(){ return '<footer><b>APRENS</b> · Pedalea desde dentro<br>Material de apoyo terapéutico (TEC/AIS · psicología del deporte). Se interpreta dentro de tu proceso en sesión.<br>No sustituye atención médica. Ante síntomas preocupantes, detente y consulta.</footer>'; }
+function copiar(txt,btn){ txt=String(txt).replace(/\\'/g,"'");
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=o;},1400); } }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(function(){fb();}); } else { fb(); }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');ok();}catch(e){} document.body.removeChild(ta); }
+}
+function toggleTheme(){ DB.settings.dark=!DB.settings.dark; applyTheme(); save(); }
+function applyTheme(){ document.documentElement.setAttribute('data-theme', DB.settings.dark?'dark':'light'); var b=document.getElementById('themeBtn'); if(b) b.textContent=DB.settings.dark?'☀️':'🌙'; }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+/* ---------------- init ---------------- */
+applyTheme();
+render();
+</script>
+</body>
+</html>
