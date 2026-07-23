@@ -89,7 +89,11 @@ window.APRENS_TOOLS = [
 
   { id:"estoy_aqui_conmigo", emoji:"🤍", nombre:"Estoy aquí conmigo",
     desc:"Para adolescentes: entrenar la presencia interna y el apego seguro con una misma tras una ruptura o cuando cuesta sostener la soledad. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia, registro y plan de apoyo (TEC–AIS).",
-    migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" }
+    migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" },
+
+  { id:"toco_desde_dentro", emoji:"🚪", nombre:"Toco desde dentro",
+    desc:"Para trabajo comercial de puerta fría: respiración ICE/AIS antes de tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar amenaza→reto, soltar los «no» y cerrar el día antes de llegar a casa para no arrastrar fatiga a la familia.",
+    migrada:true, iframe:"tools-standalone/toco_desde_dentro_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
