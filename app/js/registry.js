@@ -92,7 +92,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" },
 
   { id:"toco_desde_dentro", emoji:"🚪", nombre:"Toco desde dentro",
-    desc:"Para trabajo comercial de puerta fría: respiración ICE/AIS antes de tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar amenaza→reto, soltar los «no» y cerrar el día antes de llegar a casa para no arrastrar fatiga a la familia.",
+    desc:"Para trabajo comercial de puerta fría: respiración AIS antes de tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar amenaza→reto, soltar los «no» y cerrar el día antes de llegar a casa para no arrastrar fatiga a la familia.",
     migrada:true, iframe:"tools-standalone/toco_desde_dentro_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
