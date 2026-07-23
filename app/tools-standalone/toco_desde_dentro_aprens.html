@@ -144,7 +144,7 @@
 "use strict";
 /* ============================================================
    TOCO DESDE DENTRO · APRENS
-   Comercial de puerta fría (TDAH): respiración ICE/AIS antes de
+   Comercial de puerta fría (TDAH): respiración AIS antes de
    tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar
    amenaza→reto, resetear los "no" y cerrar el día antes de llegar
    a casa. Todo local, sin backend ni externos.
@@ -197,7 +197,7 @@ VIEWS.casa=function(){
   h+='<span class="kick">Puerta a puerta · '+fechaLarga(hoy())+'</span>';
   h+='<h1 class="view-t">Toco desde dentro</h1>';
   h+='<p class="view-s">Antes de cada puerta, un segundo para <b>acompañar tu cuerpo</b> en vez de arrastrarlo. Cada puerta es un reto, no una amenaza.</p>';
-  h+='<button class="big amber" onclick="go(\'tocar\')"><span class="bi">🚪</span><span><span class="bt">Antes de tocar</span><span class="bd">respiración ICE + una frase · 25 s</span></span></button>';
+  h+='<button class="big amber" onclick="go(\'tocar\')"><span class="bi">🚪</span><span><span class="bt">Antes de tocar</span><span class="bd">respiración AIS + una frase · 25 s</span></span></button>';
   h+='<button class="big slate" onclick="go(\'no\')"><span class="bi">↩️</span><span><span class="bt">Me han dicho que no</span><span class="bd">soltar el pinchazo y seguir</span></span></button>';
   h+='<button class="big reto" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">Cierre antes de casa</span><span class="bd">dejar el trabajo en la furgoneta</span></span></button>';
 
@@ -208,7 +208,7 @@ VIEWS.casa=function(){
   h+=footerHTML(); return h;
 };
 
-/* ---------------- ANTES DE TOCAR (ICE) ---------------- */
+/* ---------------- ANTES DE TOCAR (AIS) ---------------- */
 var TOCAR_FASES=[{f:"Coge aire",d:4,s:1.16},{f:"·",d:1,s:1.16},{f:"Suelta",d:6,s:0.84}];
 var TOCAR_VERB=["Estoy contigo, cuerpo. Esta puerta la tocamos juntos.","No te arrastro: vamos juntos.","Un reto, no una amenaza.","Llego presente, no en alerta."];
 var tIdx=-1, tCiclo=0, tT=null, tVerb=0;
