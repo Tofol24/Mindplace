@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#c58a2e">
+<title>Toco desde dentro · APRENS</title>
+<style>
+  :root{
+    --bg:#f5f0e5; --bg2:#efe8d8; --card:#fffdf8; --tinta:#2e2a22; --suau:#7a7060;
+    --ambar:#c58a2e; --ambar-d:#9c6a1b; --ambar-lt:#f4e6cc;
+    --pizarra:#4a6070; --pizarra-d:#374b58; --pizarra-lt:#dde5ea;
+    --reto:#5e8f6f; --reto-d:#436b52; --reto-lt:#e4efe6;
+    --amen:#8a7f70; --amen-d:#6b6154; --amen-lt:#eae4d8;
+    --oro:#a9781f; --linia:#e7ddc9; --linia2:#dcd1b9;
+    --ombra:0 8px 26px rgba(90,70,30,.10); --ombra-s:0 2px 12px rgba(90,70,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#efe8d8 0%,var(--bg) 240px);color:var(--tinta);line-height:1.55;font-size:16.5px;
+    -webkit-font-smoothing:antialiased;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+  .wrap{max-width:620px;margin:0 auto;padding:0 15px}
+
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--bg) 62%,rgba(245,240,229,0));padding:12px 15px 8px;display:flex;align-items:center;gap:10px;max-width:620px;margin:0 auto}
+  .logo{width:33px;height:33px;border-radius:50%;background:var(--ambar);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:15.5px;line-height:1.05}
+  .top .ts{font-size:10px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);min-width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:13px;font-weight:600;padding:0 12px}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:8px 0 2px;font-weight:700;line-height:1.18}
+  .view-s{color:var(--suau);font-size:14.5px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ambar-d);background:var(--ambar-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:6px 0}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:9px}
+  .card h2 .e{font-size:20px}
+  .card .lead{color:var(--suau);font-size:14px;margin:2px 0 10px}
+  .muted{color:var(--suau);font-size:13.5px}
+  .quote{font-family:var(--serif);font-style:italic;color:var(--ambar-d);background:var(--ambar-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+  .nota{font-size:13px;color:var(--suau);background:var(--bg2);border-radius:12px;padding:11px 13px;margin:10px 0;line-height:1.5}
+
+  /* Botones grandes (TDAH: acción rápida) */
+  .big{display:flex;align-items:center;gap:14px;width:100%;border:0;border-radius:18px;cursor:pointer;font-family:inherit;
+    padding:20px 18px;margin:11px 0;text-align:left;color:#fff;box-shadow:var(--ombra-s);transition:transform .07s}
+  .big:active{transform:scale(.99)}
+  .big .bi{font-size:30px;flex:0 0 auto}
+  .big .bt{display:block;font-weight:700;font-size:18px;line-height:1.15}
+  .big .bd{display:block;font-size:12.5px;opacity:.92;font-weight:400;margin-top:2px}
+  .big.amber{background:linear-gradient(150deg,var(--ambar),#b07a22)}
+  .big.slate{background:linear-gradient(150deg,var(--pizarra),#3f5462)}
+  .big.reto{background:linear-gradient(150deg,var(--reto),#4f7a60)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;background:var(--ambar);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:14px 18px;min-height:50px;transition:transform .07s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--ambar-d);border:1.5px solid var(--ambar)}
+  .btn.slate{background:var(--pizarra)}
+  .btn.reto{background:var(--reto)}
+  .btn.sm{padding:9px 14px;min-height:40px;font-size:13.5px;border-radius:11px}
+  .btn.danger{background:#b25a53}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}.btnrow .btn{flex:1}
+  .btn:focus-visible,.big:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--ambar-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px;min-height:40px}
+
+  .stat3{display:flex;gap:9px;text-align:center;flex-wrap:wrap}
+  .stat3>div{flex:1;min-width:78px;background:var(--ambar-lt);border:1px solid var(--linia);border-radius:13px;padding:12px 6px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:24px;color:var(--ambar-d);line-height:1}
+  .stat3 span{font-size:11px;color:var(--suau)}
+
+  /* Ring respiración */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0}
+  .ring{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,var(--ambar-lt),#ecd8b3);box-shadow:inset 0 0 0 2px rgba(197,138,46,.25);transition:transform 1s ease-in-out}
+  .ring .ri{width:126px;height:126px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;box-shadow:var(--ombra-s);padding:8px}
+  .ring .rf{font-family:var(--serif);font-size:21px;color:var(--ambar-d)}
+  .ring .rs{font-size:12px;color:var(--suau);margin-top:2px}
+  .rverb{font-family:var(--serif);font-style:italic;color:var(--reto-d);text-align:center;font-size:16px;margin:12px auto 2px;max-width:22em;min-height:2.6em;line-height:1.4;transition:opacity .4s}
+
+  /* Chips / escalas */
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{flex:1 1 auto;min-width:90px;min-height:48px;border:1.5px solid var(--linia2);border-radius:13px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;line-height:1.2}
+  .chip.sel{border-width:2px}
+  .chip.sel[data-pole="ob"]{background:var(--amen-lt);border-color:var(--amen);color:var(--amen-d);font-weight:600}
+  .chip.sel[data-pole="mid"]{background:#f6edd2;border-color:var(--oro);color:var(--ambar-d);font-weight:600}
+  .chip.sel[data-pole="ac"]{background:var(--reto-lt);border-color:var(--reto);color:var(--reto-d);font-weight:600}
+  .chip.sel:not([data-pole]){background:var(--ambar-lt);border-color:var(--ambar);color:var(--ambar-d);font-weight:600}
+  .scale{display:flex;gap:5px}
+  .scaleb{flex:1;min-width:0;min-height:46px;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:var(--suau)}
+  .scaleb.sel{background:var(--ambar);border-color:var(--ambar);color:#fff}
+  .scale-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--suau);margin-top:5px}
+  input[type=text],textarea{width:100%;border:1.5px solid var(--linia2);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:56px;line-height:1.5}
+  input:focus,textarea:focus{outline:none;border-color:var(--ambar)}
+  .ok-flash{background:var(--reto-lt);border:1px solid var(--reto);color:var(--reto-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:8px 0}
+  @media(max-width:440px){.two{grid-template-columns:1fr}}
+  .col{border-radius:13px;padding:13px;font-size:13px;line-height:1.45}
+  .col.reto{background:var(--reto-lt);border:1px solid #cfe0d4}
+  .col.amen{background:var(--amen-lt);border:1px solid #ddd3c3}
+  .col h4{margin:0 0 6px;font-size:13.5px}.col.reto h4{color:var(--reto-d)}.col.amen h4{color:var(--amen-d)}
+  .col ul{margin:0;padding-left:16px}.col li{margin:2px 0}
+
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--reto-lt);border:1px solid #cfe0d4;border-radius:13px;padding:11px 12px;margin:7px 0}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--reto-d);font-size:15px;line-height:1.4}
+  .verb .va{display:flex;gap:3px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px;min-height:34px}
+  .fav-on{color:var(--oro)}
+
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rd{font-size:11.5px;color:var(--suau)}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0}
+
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--ambar-d)}
+
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:620px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}.tab.on{color:var(--ambar-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div><div class="tt">Toco desde dentro</div><div class="ts">APRENS · TEC–AIS</div></div>
+  <span class="sp"></span>
+  <button class="iconbtn" onclick="go('cierre')" aria-label="Cierre antes de llegar a casa">🏠 Cierre</button>
+</div>
+
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav"></nav>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   TOCO DESDE DENTRO · APRENS
+   Comercial de puerta fría (TDAH): respiración ICE/AIS antes de
+   tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar
+   amenaza→reto, resetear los "no" y cerrar el día antes de llegar
+   a casa. Todo local, sin backend ni externos.
+   ============================================================ */
+
+var LS="toco_db_v1", MEM=null;
+function lsGet(){ try{return localStorage.getItem(LS);}catch(e){return MEM;} }
+function lsSet(v){ try{localStorage.setItem(LS,v);}catch(e){MEM=v;} }
+var DEFAULT={ settings:{}, eventos:[], dias:{}, frasesFav:[], frasesUser:[] };
+var DB=load();
+function load(){ try{var d=JSON.parse(lsGet()); if(!d) return clone(DEFAULT); var b=clone(DEFAULT); for(var k in d){b[k]=d[k];} return b; }catch(e){ return clone(DEFAULT); } }
+function save(){ try{lsSet(JSON.stringify(DB));}catch(e){} }
+function clone(o){return JSON.parse(JSON.stringify(o));}
+
+function esc(s){return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function uid(){return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);}
+function hoy(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function p2(n){return ("0"+n).slice(-2);}
+function nowHM(){var d=new Date();return p2(d.getHours())+":"+p2(d.getMinutes());}
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]; }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+
+function dia(d){ d=d||hoy(); if(!DB.dias[d]) DB.dias[d]={puertas:0,ice:0,noes:0,cierre:false,acomp:[]}; return DB.dias[d]; }
+function ev(t,extra){ DB.eventos.push(Object.assign({t:t,ts:Date.now(),date:hoy()},extra||{})); if(DB.eventos.length>1000) DB.eventos=DB.eventos.slice(-1000);
+  if(window.Aprens){ try{ Aprens.save({id:uid(),date:hoy(),ts:Date.now(),param:'latencia',modulo:'toco_'+t}); }catch(e){} } save(); }
+if(window.Aprens){ try{ Aprens.config({toolId:"toco_desde_dentro", toolName:"Toco desde dentro", toolVersion:1}); }catch(e){} }
+
+/* ---------- navegación ---------- */
+var VIEW="casa", timers=[];
+function clearTimers(){ timers.forEach(function(t){clearInterval(t);clearTimeout(t);}); timers=[]; }
+var NAV=[
+  {id:"casa",e:"🏠",l:"Casa"},
+  {id:"tocar",e:"🚪",l:"Antes de tocar"},
+  {id:"frases",e:"💬",l:"Frases"},
+  {id:"registro",e:"📓",l:"Día"},
+  {id:"mas",e:"⋯",l:"Más"}
+];
+function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
+function render(){ document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.casa)();
+  document.getElementById('nav').innerHTML=NAV.map(function(n){ return '<button class="tab '+(VIEW===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join(''); }
+var VIEWS={};
+
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||"Hecho ✓"; f.classList.add('show'); setTimeout(function(){f.classList.remove('show');},2600); } }
+
+/* ---------------- CASA (hub de acción) ---------------- */
+VIEWS.casa=function(){
+  var d=dia();
+  var h='';
+  h+='<span class="kick">Puerta a puerta · '+fechaLarga(hoy())+'</span>';
+  h+='<h1 class="view-t">Toco desde dentro</h1>';
+  h+='<p class="view-s">Antes de cada puerta, un segundo para <b>acompañar tu cuerpo</b> en vez de arrastrarlo. Cada puerta es un reto, no una amenaza.</p>';
+  h+='<button class="big amber" onclick="go(\'tocar\')"><span class="bi">🚪</span><span><span class="bt">Antes de tocar</span><span class="bd">respiración ICE + una frase · 25 s</span></span></button>';
+  h+='<button class="big slate" onclick="go(\'no\')"><span class="bi">↩️</span><span><span class="bt">Me han dicho que no</span><span class="bd">soltar el pinchazo y seguir</span></span></button>';
+  h+='<button class="big reto" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">Cierre antes de casa</span><span class="bd">dejar el trabajo en la furgoneta</span></span></button>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>Hoy</h2><div class="stat3"><div><b>'+d.ice+'</b><span>respiros<br>antes de tocar</span></div><div><b>'+d.puertas+'</b><span>puertas</span></div><div><b>'+d.noes+'</b><span>«no»<br>soltados</span></div></div>';
+  h+='<p class="muted" style="margin-top:10px">Aquí no contamos ventas: contamos <b>cuántas veces fuiste con tu cuerpo</b>, no contra él.</p></div>';
+
+  h+='<div class="nota">Rindes bien. Esto no es para rendir más: es para que tu cuerpo <b>no coja rechazo</b> al trabajo y no te deje sin batería para los tuyos al llegar a casa.</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- ANTES DE TOCAR (ICE) ---------------- */
+var TOCAR_FASES=[{f:"Coge aire",d:4,s:1.16},{f:"·",d:1,s:1.16},{f:"Suelta",d:6,s:0.84}];
+var TOCAR_VERB=["Estoy contigo, cuerpo. Esta puerta la tocamos juntos.","No te arrastro: vamos juntos.","Un reto, no una amenaza.","Llego presente, no en alerta."];
+var tIdx=-1, tCiclo=0, tT=null, tVerb=0;
+VIEWS.tocar=function(){
+  var h='<h1 class="view-t">Antes de tocar</h1><p class="view-s">Tres respiraciones cortas para entrar acompañado. Sin retener el aire.</p>';
+  h+='<div class="ring-wrap"><div class="ring" id="ring"><div class="ri"><div><div class="rf" id="rf">Prepárate</div><div class="rs" id="rs"></div></div></div></div><div class="rverb" id="rverb">Estoy contigo, cuerpo. Vamos a esta puerta juntos.</div></div>';
+  h+='<div class="btnrow"><button class="btn full reto" id="tocarBtn" onclick="tocarStart(this)">Empezar</button></div>';
+  h+='<div id="tocarAfter" style="display:none"><div class="card"><h2>¿Cómo vas a esta puerta?</h2><div class="chips" id="tocarAcomp">'+
+     '<button type="button" class="chip" data-pole="ob" data-v="obligación" onclick="tocarAcomp(this)">Desde la obligación</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="mezcla" onclick="tocarAcomp(this)">Una mezcla</button>'+
+     '<button type="button" class="chip" data-pole="ac" data-v="acompañado" onclick="tocarAcomp(this)">Acompañando mi cuerpo</button>'+
+     '</div><div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:12px"><button class="btn full" onclick="tocarYa()">✅ Ya toco esta puerta</button></div>'+
+     '<button class="link" style="display:block;margin:8px auto 0" onclick="go(\'tocar\')">Otra respiración</button></div></div>';
+  h+='<div class="nota">Toca cuando estés listo. Haber respirado antes ya cambia con qué cuerpo entras, tanto si dicen sí como si dicen no.</div>';
+  h+=footerHTML(); return h;
+};
+function tocarStart(btn){ btn.style.display='none'; tIdx=-1; tCiclo=0; tVerb=0; tocarFase(); }
+function tocarFase(){
+  tIdx++;
+  if(tIdx>=TOCAR_FASES.length){ tIdx=0; tCiclo++; tVerb++; setVerb(); if(tCiclo>=3){ tocarFin(); return; } }
+  var f=TOCAR_FASES[tIdx], ring=document.getElementById('ring'); if(!ring) return;
+  document.getElementById('rf').textContent=f.f;
+  ring.style.transitionDuration=f.d+'s'; ring.style.transform='scale('+f.s+')';
+  var left=f.d; document.getElementById('rs').textContent=left+'s';
+  tT=setInterval(function(){ left--; var rs=document.getElementById('rs'); if(!rs){clearInterval(tT);return;} rs.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(tT); tocarFase(); } },1000); timers.push(tT);
+}
+function setVerb(){ var el=document.getElementById('rverb'); if(!el) return; el.style.opacity=0; setTimeout(function(){ el.textContent=TOCAR_VERB[tVerb%TOCAR_VERB.length]; el.style.opacity=1; },250); }
+function tocarFin(){ if(tT)clearInterval(tT); var ring=document.getElementById('ring'); if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';}
+  var rf=document.getElementById('rf'); if(rf) rf.textContent='Presente'; var rs=document.getElementById('rs'); if(rs) rs.textContent='';
+  var a=document.getElementById('tocarAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); }
+  var d=dia(); d.ice++; save(); ev('ice');
+}
+function tocarAcomp(b){ document.getElementById('tocarAcomp').querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel');
+  var d=dia(); d.acomp.push(b.dataset.v); save();
+  flash(b.dataset.v==='acompañado'?'Así: vas con tu cuerpo, no contra él.':(b.dataset.v==='mezcla'?'Bien visto. Cada respiro te acerca a ir acompañado.':'Reconocerlo ya es el primer paso. Prueba a decirte una frase antes de tocar.')); }
+function tocarYa(){ var d=dia(); d.puertas++; save(); ev('puerta'); flash('Vas con tu cuerpo. Suceda lo que suceda, has entrado presente.');
+  setTimeout(function(){ go('casa'); },700); }
+
+/* ---------------- ME HAN DICHO QUE NO ---------------- */
+var noT=null;
+VIEWS.no=function(){
+  var h='<h1 class="view-t">Me han dicho que no</h1><p class="view-s">El «no» es a la oferta de hoy, no a ti. Vamos a soltar el pinchazo para que no se acumule en el cuerpo.</p>';
+  h+='<div class="card"><ol class="muted" style="padding-left:18px;line-height:2"><li><b>Nota</b> el pinchazo (pecho, estómago). No es peligro, es un «no».</li><li><b>Una exhalación</b> larga, soltando hombros y mandíbula.</li><li><b>Dítelo</b>: «un no me acerca al siguiente sí; no me define».</li><li><b>Siguiente puerta</b>, con tu cuerpo al lado.</li></ol>';
+  h+='<div class="ring-wrap"><div class="ring" id="ring" style="width:150px;height:150px"><div class="ri" style="width:100px;height:100px"><div><div class="rf" id="rf" style="font-size:17px">Suelta</div><div class="rs" id="rs"></div></div></div></div></div>';
+  h+='<div class="btnrow"><button class="btn full slate" id="noBtn" onclick="noBreath(this)">Una exhalación larga</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="btnrow" style="margin-top:6px"><button class="btn ghost" onclick="noReg()">Soltado, sigo</button></div></div>';
+  h+='<div class="quote">Que te digan que no es parte del trabajo, no una nota sobre tu valor.</div>';
+  h+=footerHTML(); return h;
+};
+function noBreath(btn){ btn.disabled=true; var ring=document.getElementById('ring'); var seq=[['Coge aire',4,1.16],['Suelta',6,0.84]], i=-1;
+  function step(){ i++; if(i>=seq.length){ if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';} document.getElementById('rf').textContent='Bien'; btn.disabled=false; return; }
+    var s=seq[i]; document.getElementById('rf').textContent=s[0]; ring.style.transitionDuration=s[1]+'s'; ring.style.transform='scale('+s[2]+')';
+    var left=s[1]; document.getElementById('rs').textContent=left+'s'; var iv=setInterval(function(){left--;var rs=document.getElementById('rs');if(!rs){clearInterval(iv);return;}rs.textContent=(left>0?left:0)+'s';if(left<=0){clearInterval(iv);step();}},1000); timers.push(iv); }
+  step();
+}
+function noReg(){ var d=dia(); d.noes++; save(); ev('no'); flash('Soltado. Vamos a la siguiente, contigo.'); setTimeout(function(){ go('casa'); },700); }
+
+/* ---------------- CIERRE ANTES DE CASA ---------------- */
+var ciT=null;
+VIEWS.cierre=function(){
+  var h='<h1 class="view-t">Cierre antes de llegar a casa</h1><p class="view-s">Un minuto en la furgoneta, antes de entrar. Para que el cansancio y la tensión del día no entren contigo por la puerta.</p>';
+  h+='<div class="card"><h2><span class="e">🫁</span>1 · Tres respiraciones largas</h2><p class="lead">Suelta el aire despacio, afloja hombros y mandíbula.</p><div class="ring-wrap"><div class="ring" id="ring"><div class="ri"><div><div class="rf" id="rf">Prepárate</div><div class="rs" id="rs"></div></div></div></div></div><button class="btn full reto" id="ciBtn" onclick="cierreBreath(this)">Empezar</button></div>';
+  h+='<div class="card"><h2><span class="e">🚛</span>2 · Dejo el trabajo en la furgoneta</h2><p>Los «no», las cifras y las prisas se quedan aquí hasta mañana. No tienen por qué entrar en casa.</p></div>';
+  h+='<div class="card"><h2><span class="e">🤍</span>3 · ¿Con qué quiero llegar?</h2><p class="lead">Una intención breve para los tuyos.</p><input type="text" id="ciIntencion" placeholder="Ej.: llego con paciencia y presencia para mi familia"><div class="ok-flash" id="okflash"></div><button class="btn full" style="margin-top:11px" onclick="cierreDone()">Cerrar el día</button></div>';
+  h+='<div class="quote">Trabajas por los tuyos. Llegar con batería para ellos también es parte del trabajo.</div>';
+  h+=footerHTML(); return h;
+};
+function cierreBreath(btn){ btn.style.display='none'; var ring=document.getElementById('ring'); var fases=[['Coge aire',4,1.16],['·',1,1.16],['Suelta',6,0.84]], i=-1, c=0;
+  function step(){ i++; if(i>=fases.length){ i=0; c++; if(c>=3){ if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';} document.getElementById('rf').textContent='Listo'; document.getElementById('rs').textContent=''; return; } }
+    var f=fases[i]; document.getElementById('rf').textContent=f[0]; ring.style.transitionDuration=f[1]+'s'; ring.style.transform='scale('+f[2]+')';
+    var left=f[1]; document.getElementById('rs').textContent=left+'s'; var iv=setInterval(function(){left--;var rs=document.getElementById('rs');if(!rs){clearInterval(iv);return;}rs.textContent=(left>0?left:0)+'s';if(left<=0){clearInterval(iv);step();}},1000); timers.push(iv); }
+  step();
+}
+function cierreDone(){ var d=dia(); d.cierre=true; d.intencion=(document.getElementById('ciIntencion').value||'').trim(); save(); ev('cierre');
+  flash('Día cerrado. Entra a casa contigo. 🤍'); setTimeout(function(){ go('casa'); },900); }
+
+/* ---------------- FRASES ---------------- */
+var FRASES=[
+  "Estoy contigo, cuerpo. Esta puerta la tocamos juntos.",
+  "No te arrastro: vamos juntos a la siguiente.",
+  "El «no» es a la oferta de hoy, no a mí.",
+  "Cada puerta es un reto, no una amenaza.",
+  "Respiro antes de tocar: llego presente, no en alerta.",
+  "No necesito que me digan que sí para estar bien conmigo.",
+  "Un «no» me acerca al siguiente sí.",
+  "Trabajo por los míos, y también me cuido a mí.",
+  "Puedo rendir sin castigarme.",
+  "Gracias, cuerpo, por sostener el día. Ya casi.",
+  "Dejo el trabajo en la furgoneta; a casa entro yo.",
+  "No tengo que ganar cada puerta para valer."
+];
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">Frases para acompañarte</h1><p class="view-s">Elige una o dos y llévalas al día. Tócalas para copiarlas o marcarlas.</p>';
+  h+='<div class="card"><h2>Crear la mía</h2><textarea id="newFrase" placeholder="Una frase que quieras llevar contigo…"></textarea><button class="btn sm" style="margin-top:9px" onclick="crearFrase()">Añadir</button></div>';
+  var all=DB.frasesUser.map(function(x){return {t:x,u:true};}).concat(FRASES.map(function(x){return {t:x,u:false};}));
+  all.sort(function(a,b){ return (DB.frasesFav.indexOf(b.t)>=0?1:0)-(DB.frasesFav.indexOf(a.t)>=0?1:0); });
+  h+=all.map(function(o){ var fav=DB.frasesFav.indexOf(o.t)>=0; var t=esc(o.t).replace(/'/g,"\\'");
+    return '<div class="verb"><span class="vt">'+esc(o.t)+'</span><span class="va"><button aria-label="Favorita" class="'+(fav?'fav-on':'')+'" onclick="favFrase(\''+t+'\',this)">'+(fav?'★':'☆')+'</button><button aria-label="Copiar" onclick="copiar(\''+t+'\',this)">📋</button>'+(o.u?'<button aria-label="Borrar" onclick="delFrase(\''+t+'\')">🗑️</button>':'')+'</span></div>';
+  }).join('');
+  h+=footerHTML(); return h;
+};
+function crearFrase(){ var t=(document.getElementById('newFrase').value||'').trim(); if(!t) return; if(!DB.frasesUser.some(function(f){return f===t;})) DB.frasesUser.unshift(t); save(); go('frases'); }
+function delFrase(t){ t=t.replace(/\\'/g,"'"); DB.frasesUser=DB.frasesUser.filter(function(f){return f!==t;}); DB.frasesFav=DB.frasesFav.filter(function(f){return f!==t;}); save(); go('frases'); }
+function favFrase(t,btn){ t=t.replace(/\\'/g,"'"); var i=DB.frasesFav.indexOf(t); if(i>=0){DB.frasesFav.splice(i,1);btn.textContent='☆';btn.classList.remove('fav-on');} else {DB.frasesFav.push(t);btn.textContent='★';btn.classList.add('fav-on');} save(); }
+
+/* ---------------- MÁS ---------------- */
+VIEWS.mas=function(){
+  var h='<h1 class="view-t">Más</h1><p class="view-s">Reencuadre, resumen y datos.</p>';
+  h+='<button class="big slate" onclick="go(\'reto\')"><span class="bi">🎯</span><span><span class="bt">Reto o amenaza</span><span class="bd">cómo entra tu cuerpo al trabajo</span></span></button>';
+  h+='<button class="big amber" onclick="go(\'no\')"><span class="bi">↩️</span><span><span class="bt">Me han dicho que no</span><span class="bd">soltar el pinchazo</span></span></button>';
+  h+='<div class="card"><h2>Resumen (7 días)</h2>'+resumenHTML()+'<div class="btnrow" style="margin-top:8px"><button class="btn sm" onclick="copiarResumen(this)">📋 Copiar</button><button class="btn sm ghost" onclick="exportJSON()">⬇️ JSON</button></div></div>';
+  h+='<div class="card" style="border-color:#d3a29f"><h2>Borrar</h2><p class="lead">Elimina todos los datos de este dispositivo.</p><button class="btn sm danger" onclick="borrarTodo()">Borrar todo</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+=footerHTML(); return h;
+};
+VIEWS.reto=function(){
+  var h='<h1 class="view-t">Reto o amenaza</h1><p class="view-s">Tu cuerpo puede entrar al trabajo de dos maneras. No se trata de que te encante: se trata de que no lo viva como un peligro.</p>';
+  h+='<div class="two"><div class="col amen"><h4>🛡️ Amenaza (arrastro)</h4><ul><li>Entro en tensión y en alerta</li><li>Cada puerta, un peligro</li><li>Voy desde la obligación</li><li>Los «no» se acumulan en el cuerpo</li><li>Llego a casa vacío e irritable</li></ul></div>'+
+     '<div class="col reto"><h4>🎯 Reto (acompaño)</h4><ul><li>Respiro y entro presente</li><li>Cada puerta, una oportunidad de entrenar</li><li>Voy acompañando mi cuerpo</li><li>Suelto el «no» y sigo</li><li>Guardo batería para los míos</li></ul></div></div>';
+  h+='<div class="card"><h2>Ahora mismo, ¿cómo vas?</h2><div class="scale" id="retoScale">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){return '<button type="button" class="scaleb" data-v="'+i+'" onclick="retoPick(this)">'+i+'</button>';}).join('')+'</div><div class="scale-ends"><span>Amenaza</span><span>Reto</span></div><div class="ok-flash" id="okflash"></div></div>';
+  h+='<div class="quote">No hace falta que te encante el trabajo. Basta con que tu cuerpo no lo viva como un enemigo.</div>';
+  h+=footerHTML(); return h;
+};
+function retoPick(b){ document.getElementById('retoScale').querySelectorAll('.scaleb').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); var v=parseInt(b.dataset.v,10); ev('reto',{v:v});
+  flash(v>=7?'Vas en modo reto: acompañando tu cuerpo.':(v>=4?'A medias. Una respiración antes de la próxima puerta te acerca al reto.':'Hoy pesa la amenaza. Prueba «Antes de tocar» y una frase de acompañamiento.')); }
+
+/* ---------------- DÍA / registro ---------------- */
+VIEWS.registro=function(){
+  var d=dia();
+  var h='<h1 class="view-t">Mi día</h1><p class="view-s">Lo importante no es cuántas ventas, sino con qué cuerpo has trabajado.</p>';
+  h+='<div class="card"><div class="stat3"><div><b>'+d.ice+'</b><span>respiros antes<br>de tocar</span></div><div><b>'+d.puertas+'</b><span>puertas</span></div><div><b>'+d.noes+'</b><span>«no» soltados</span></div></div>';
+  var ac=d.acomp||[]; var acAc=ac.filter(function(x){return x==='acompañado';}).length, acOb=ac.filter(function(x){return x==='obligación';}).length;
+  h+='<p class="muted" style="margin-top:12px">Cierre del día: <b>'+(d.cierre?'hecho ✓':'pendiente')+'</b>'+(d.intencion?(' · «'+esc(d.intencion)+'»'):'')+'<br>Fuiste acompañando: <b>'+acAc+'</b> · desde la obligación: <b>'+acOb+'</b></p></div>';
+  if(!d.cierre) h+='<button class="big reto" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">Cierre antes de casa</span><span class="bd">deja el trabajo en la furgoneta</span></span></button>';
+  h+=resumenHTML();
+  h+=footerHTML(); return h;
+};
+function resumenHTML(){
+  var keys=Object.keys(DB.dias).filter(within7).sort().reverse();
+  if(!keys.length) return '<div class="card"><p class="empty">Aún no hay días registrados.</p></div>';
+  var h='<div class="card"><h2>Últimos días</h2>';
+  h+=keys.map(function(k){ var d=DB.dias[k]; return '<div class="rec"><div class="rh"><span class="rd">'+esc(fechaLarga(k))+'</span><span class="rd">'+(d.cierre?'🏠 cierre ✓':'')+'</span></div><div class="rb">'+d.ice+' respiros · '+d.puertas+' puertas · '+d.noes+' «no» soltados</div></div>'; }).join('');
+  h+='</div>'; return h;
+}
+function copiarResumen(btn){
+  var keys=Object.keys(DB.dias).filter(within7).sort();
+  var L=['TOCO DESDE DENTRO · semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
+  var tice=0,tp=0,tno=0,tc=0;
+  keys.forEach(function(k){ var d=DB.dias[k]; tice+=d.ice; tp+=d.puertas; tno+=d.noes; if(d.cierre)tc++;
+    L.push('· '+k+': '+d.ice+' respiros · '+d.puertas+' puertas · '+d.noes+' «no» · cierre '+(d.cierre?'sí':'no')); });
+  L.push('');
+  L.push('Total: '+tice+' respiros antes de tocar · '+tp+' puertas · '+tno+' «no» soltados · '+tc+' cierres de día');
+  L.push('(Lo que entrenamos: ir con el cuerpo, no contra él; y llegar a casa con batería.)');
+  copiar(L.join('\n'),btn);
+}
+function exportJSON(){ try{ var blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='toco_'+hoy()+'.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(url);},1000); flash('Archivo generado ✓'); }catch(e){ alert('No se pudo generar el archivo.'); } }
+function borrarTodo(){ if(confirm('¿Borrar TODOS los datos de este dispositivo?')){ if(confirm('No se puede deshacer. ¿Confirmas?')){ DB=clone(DEFAULT); save(); go('casa'); } } }
+
+/* ---------------- comunes ---------------- */
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · Entrenamiento TEC–AIS<br>Material de apoyo terapéutico. Se interpreta dentro de tu proceso en sesión.</footer>'; }
+function copiar(txt,btn){ txt=String(txt).replace(/\\'/g,"'");
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=o;},1400); } }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(function(){fb();}); } else { fb(); }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');ok();}catch(e){} document.body.removeChild(ta); }
+}
+
+render();
+</script>
+</body>
+</html>
