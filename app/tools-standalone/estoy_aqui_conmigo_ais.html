@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8aa891">
+<title>Estoy aquí conmigo · APRENS</title>
+<style>
+  :root{
+    --crema:#f4efe6; --crema2:#efe8db; --card:#fffdf9; --tinta:#33302b; --suau:#7c7468;
+    --salvia:#7a9a82; --salvia-d:#5c7c64; --salvia-lt:#e6efe7;
+    --azul:#647985; --azul-d:#4c616d; --azul-lt:#e2eaee;
+    --rosa:#c78f92; --rosa-d:#a86e72; --rosa-lt:#f2e3e2;
+    --oro:#b98a3d;
+    --linia:#e6ddce; --linia2:#dcd2bf;
+    --ombra:0 8px 26px rgba(80,64,40,.10); --ombra-s:0 2px 12px rgba(80,64,40,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:20px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#efe8db 0%,var(--crema) 260px);color:var(--tinta);line-height:1.58;font-size:16px;
+    -webkit-font-smoothing:antialiased;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+  .wrap{max-width:620px;margin:0 auto;padding:0 15px}
+
+  /* Top bar */
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--crema) 62%,rgba(244,239,230,0));padding:12px 15px 8px;display:flex;align-items:center;gap:10px;max-width:620px;margin:0 auto}
+  .logo{width:33px;height:33px;border-radius:50%;background:var(--salvia);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:15.5px;line-height:1.05}
+  .top .ts{font-size:10px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .sosbtn{background:var(--rosa-lt);border:1.5px solid var(--rosa);color:var(--rosa-d);border-radius:20px;padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;min-height:38px}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:16px;display:grid;place-items:center}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:8px 0 2px;font-weight:700;line-height:1.18}
+  .view-s{color:var(--suau);font-size:14px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--salvia-d);background:var(--salvia-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:6px 0}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 17px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:9px}
+  .card h2 .e{font-size:20px}
+  .card .lead{color:var(--suau);font-size:14px;margin:2px 0 10px}
+  .card p{margin:8px 0}
+  .muted{color:var(--suau);font-size:13.5px}
+  .quote{font-family:var(--serif);font-style:italic;color:var(--salvia-d);background:var(--salvia-lt);border-left:4px solid var(--rosa);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+  .nota{font-size:12.5px;color:var(--suau);background:var(--crema2);border-radius:12px;padding:10px 13px;margin:10px 0;line-height:1.5}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--salvia);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:14px 18px;min-height:50px;transition:transform .07s,filter .15s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--salvia-d);border:1.5px solid var(--salvia)}
+  .btn.rosa{background:var(--rosa)}
+  .btn.azul{background:var(--azul)}
+  .btn.sm{padding:9px 14px;min-height:40px;font-size:13.5px;border-radius:11px}
+  .btn.danger{background:#b25a53}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}
+  .btnrow .btn{flex:1}
+  .btn:focus-visible,.qa:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible,.zone:focus-visible,.opt:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--salvia-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px;min-height:40px}
+
+  /* Portada breathing */
+  .breath-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0}
+  .breath{width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 50% 42%,var(--salvia-lt),#d7e4d9);
+    box-shadow:inset 0 0 0 2px rgba(122,154,130,.28),0 10px 30px rgba(122,154,130,.22);display:grid;place-items:center;animation:breathe 10s ease-in-out infinite}
+  .breath .inner{width:120px;height:120px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;font-family:var(--serif);color:var(--salvia-d);font-size:15px;box-shadow:var(--ombra-s)}
+  @keyframes breathe{0%,100%{transform:scale(.86)}45%{transform:scale(1.05)}55%{transform:scale(1.05)}}
+
+  /* Station grid */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:10px 0}
+  .qa{background:var(--card);border:1px solid var(--linia);border-radius:15px;padding:14px 13px;text-align:left;cursor:pointer;font-family:inherit;color:var(--tinta);box-shadow:var(--ombra-s);display:flex;flex-direction:column;gap:5px;min-height:86px}
+  .qa .qe{font-size:22px}
+  .qa .qn{font-weight:700;font-size:14px;line-height:1.2}
+  .qa .qd{font-size:11.5px;color:var(--suau);line-height:1.3}
+  .qa:active{transform:scale(.98)}
+
+  /* Escalas / chips */
+  .fld{margin:15px 0}
+  .fld>label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+  input[type=text],input[type=number],textarea,select{width:100%;border:1.5px solid var(--linia2);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:60px;line-height:1.5}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--salvia)}
+  .scale{display:flex;gap:4px;flex-wrap:wrap}
+  .scaleb{flex:1;min-width:26px;min-height:44px;border:1.5px solid var(--linia2);border-radius:10px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;color:var(--suau)}
+  .scaleb.sel{background:var(--salvia);border-color:var(--salvia);color:#fff}
+  .scale-ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--suau);margin-top:5px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{min-height:44px;border:1.5px solid var(--linia2);border-radius:12px;background:var(--card);cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--tinta);padding:10px 14px}
+  .chip.sel{background:var(--salvia-lt);border-color:var(--salvia);color:var(--salvia-d);font-weight:600}
+  .opt{display:block;width:100%;text-align:left;border:1.5px solid var(--linia2);border-radius:12px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:12px 14px;margin:7px 0}
+  .opt.sel{background:var(--salvia-lt);border-color:var(--salvia);color:var(--salvia-d);font-weight:600}
+  .ok-flash{background:var(--salvia-lt);border:1px solid var(--salvia);color:var(--salvia-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Silueta corporal */
+  .body-wrap{display:flex;justify-content:center;margin:8px 0}
+  .body-wrap svg{width:100%;max-width:190px;height:auto}
+  .zone{cursor:pointer}
+  .zone .zb{fill:var(--salvia);fill-opacity:.14;transition:fill-opacity .2s}
+  .zone:hover .zb,.zone.sel .zb{fill-opacity:.34}
+  .zone .zt{font-size:8px;fill:var(--salvia-d);font-weight:700}
+  .zmsg{display:none;margin-top:10px;background:var(--salvia-lt);border-left:4px solid var(--salvia);border-radius:0 12px 12px 0;padding:11px 14px;font-size:14px;color:var(--salvia-d);line-height:1.5}
+  .zmsg.show{display:block;animation:fade .3s ease}
+
+  /* Flujo/ciclo */
+  .flow{margin:6px 0}
+  .flow .step{background:var(--crema2);border:1px solid var(--linia);border-radius:12px;padding:10px 13px;margin:5px 0;font-size:13.5px;text-align:center;font-weight:600;color:var(--tinta)}
+  .flow .arr{text-align:center;color:var(--suau);font-size:15px;line-height:1}
+  .flow.alt .step{background:var(--salvia-lt);border-color:#cfe0d2;color:var(--salvia-d)}
+  .flow .learn{background:var(--rosa-lt);border-color:#e8cccb;color:var(--rosa-d)}
+  .flow.alt .learn{background:#e5eee7;border-color:#cfe0d2;color:var(--salvia-d)}
+
+  /* Flecha TEC */
+  .flecha{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .flecha .fbx{background:var(--card);border:1.5px solid var(--linia);border-radius:12px;padding:9px 11px;font-size:12.5px;font-weight:700;text-align:center}
+  .flecha .fbx.p{border-color:var(--rosa);color:var(--rosa-d)}
+  .flecha .fbx.c{border-color:var(--azul);color:var(--azul-d)}
+  .flecha .fbx.e{border-color:var(--salvia);color:var(--salvia-d)}
+  .flecha .fa{color:var(--suau);font-size:18px}
+
+  /* STOP */
+  .stopbtn{width:100%;min-height:120px;border-radius:22px;border:0;background:linear-gradient(160deg,var(--rosa),#b97d80);color:#fff;font-family:var(--serif);font-size:44px;font-weight:700;letter-spacing:.08em;cursor:pointer;box-shadow:0 10px 26px rgba(199,143,146,.4);margin:8px 0}
+  .stopbtn:active{transform:scale(.99)}
+  .stopseq{text-align:center;margin:16px 0}
+  .stopseq .sn{font-family:var(--serif);font-size:20px;color:var(--salvia-d);min-height:2.4em;display:flex;align-items:center;justify-content:center}
+  .stopseq .cnt{font-size:13px;color:var(--suau);margin-top:6px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-top:12px}
+  .dots i{width:9px;height:9px;border-radius:50%;background:var(--linia2)}
+  .dots i.on{background:var(--salvia)}
+
+  /* Ring respiración */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0}
+  .ring{width:180px;height:180px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,var(--salvia-lt),#d7e4d9);box-shadow:inset 0 0 0 2px rgba(122,154,130,.25);transition:transform 1s ease-in-out}
+  .ring .ri{width:120px;height:120px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;box-shadow:var(--ombra-s)}
+  .ring .rf{font-family:var(--serif);font-size:20px;color:var(--salvia-d)}
+  .ring .rs{font-size:12px;color:var(--suau);margin-top:2px}
+
+  /* Timer quedarme */
+  .qtimer{text-align:center;margin:14px 0}
+  .qtimer .clock{font-family:var(--serif);font-size:46px;font-weight:700;color:var(--salvia-d)}
+  .qtimer .phr{font-family:var(--serif);font-style:italic;color:var(--suau);min-height:2.4em;font-size:16px;margin-top:6px;transition:opacity .4s}
+
+  /* Resultado deseo/alivio */
+  .res{border-radius:14px;padding:16px;margin-top:14px;display:none}
+  .res.show{display:block;animation:fade .3s ease}
+  .res.A{background:var(--salvia-lt);border:1px solid #cfe0d2}
+  .res.B{background:#f6efdc;border:1px solid #e8dcb9}
+  .res.C{background:var(--rosa-lt);border:1px solid #e8cccb}
+  .res h3{font-family:var(--serif);margin:0 0 6px;font-size:17px}
+
+  /* Apego cards */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:8px 0}
+  @media(max-width:440px){.two{grid-template-columns:1fr}}
+  .acard{border-radius:14px;padding:13px;font-size:13px}
+  .acard.h{background:var(--salvia-lt);border:1px solid #cfe0d2}
+  .acard.d{background:var(--rosa-lt);border:1px solid #e8cccb}
+  .acard h4{margin:0 0 6px;font-size:13.5px}
+  .acard.h h4{color:var(--salvia-d)}.acard.d h4{color:var(--rosa-d)}
+  .acard ul{margin:0;padding-left:15px}.acard li{margin:3px 0}
+  .clasi{background:var(--card);border:1px solid var(--linia);border-radius:14px;padding:15px;margin:10px 0;text-align:center}
+  .clasi .ex{font-family:var(--serif);font-size:16px;margin:6px 0 12px;min-height:2.6em;display:flex;align-items:center;justify-content:center}
+
+  /* Frases */
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--salvia-lt);border:1px solid #cfe0d2;border-radius:13px;padding:11px 12px;margin:7px 0}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--salvia-d);font-size:15px;line-height:1.4}
+  .verb .va{display:flex;gap:3px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px;min-height:34px}
+  .fav-on{color:var(--oro)}
+
+  /* Rutina */
+  .rutrow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:11px 13px;margin:8px 0}
+  .rutrow .chk{width:30px;height:30px;border-radius:9px;border:2px solid var(--salvia);display:grid;place-items:center;cursor:pointer;flex:0 0 auto;font-size:17px;color:#fff;background:transparent}
+  .rutrow .chk.on{background:var(--salvia)}
+  .rutrow input{border:0;background:transparent;font-weight:600;padding:4px}
+
+  /* Registros */
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rd{font-size:11.5px;color:var(--suau)}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .rec .del{background:none;border:0;color:#b25a53;cursor:pointer;font-size:12.5px;padding:4px;min-height:34px}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0}
+
+  .stat3{display:flex;gap:9px;text-align:center;flex-wrap:wrap}
+  .stat3>div{flex:1;min-width:80px;background:var(--salvia-lt);border:1px solid #cfe0d2;border-radius:13px;padding:12px 6px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:24px;color:var(--salvia-d);line-height:1}
+  .stat3 span{font-size:11px;color:var(--suau)}
+
+  .safe{display:flex;gap:10px;background:var(--rosa-lt);border:1px solid #e8cccb;border-radius:13px;padding:12px 14px;font-size:13px;color:var(--rosa-d);line-height:1.5;align-items:flex-start}
+  .safe .i{flex:0 0 auto;font-size:17px}
+
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--salvia-d)}
+
+  /* Bottom nav */
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:620px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}
+  .tab.on{color:var(--salvia-d)}
+
+  /* Modal SOS */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(50,44,36,.55);display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex;animation:fade .2s ease}
+  .sheet{background:var(--card);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:20px 17px calc(22px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto}
+  .sheet h2{font-family:var(--serif);margin:0 0 6px;font-size:20px}
+  .sos-step{display:flex;gap:11px;align-items:flex-start;margin:11px 0}
+  .sos-step .num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--rosa);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div><div class="tt">Estoy aquí conmigo</div><div class="ts">APRENS · TEC–AIS</div></div>
+  <span class="sp"></span>
+  <button class="sosbtn" onclick="openSOS()" aria-label="Ahora necesito apoyo">🤍 Apoyo</button>
+</div>
+
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav"></nav>
+
+<div class="modal" id="sosModal" onclick="if(event.target===this)closeSOS()" role="dialog" aria-modal="true" aria-label="Ahora necesito apoyo">
+  <div class="sheet" id="sosSheet"></div>
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   ESTOY AQUÍ CONMIGO · APRENS
+   Entrenamiento TEC–AIS de presencia interna y apego seguro con
+   una misma para adolescente. Todo local, sin backend ni externos.
+   ============================================================ */
+
+/* ---------- almacenamiento con guarda ---------- */
+var LS="estoy_aqui_db_v1", MEM=null;
+function lsGet(){ try{return localStorage.getItem(LS);}catch(e){return MEM;} }
+function lsSet(v){ try{localStorage.setItem(LS,v);}catch(e){MEM=v;} }
+var DEFAULT={
+  settings:{privacy:false, code:"", momentos:{despertar:"Al despertarme", casa:"Al llegar a casa", dormir:"Antes de dormir"}},
+  registros:[], practicas:[], frasesFav:[], frasesUser:[], rutina:{}
+};
+var DB=load();
+function load(){ try{var d=JSON.parse(lsGet()); if(!d) return clone(DEFAULT); var b=clone(DEFAULT); for(var k in d){b[k]=d[k];} for(var s in DEFAULT.settings){ if(b.settings[s]===undefined) b.settings[s]=DEFAULT.settings[s]; } if(!b.settings.momentos) b.settings.momentos=clone(DEFAULT.settings.momentos); return b; }catch(e){ return clone(DEFAULT); } }
+function save(){ try{lsSet(JSON.stringify(DB));}catch(e){} }
+function clone(o){return JSON.parse(JSON.stringify(o));}
+
+/* ---------- utilidades ---------- */
+function esc(s){return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function uid(){return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);}
+function hoy(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function p2(n){return ("0"+n).slice(-2);}
+function nowHM(){var d=new Date();return p2(d.getHours())+":"+p2(d.getMinutes());}
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]; }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+function media(arr,f){ var v=arr.map(function(x){return typeof f==='function'?f(x):x[f];}).filter(function(n){return typeof n==='number'&&!isNaN(n);}); if(!v.length) return null; return Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*10)/10; }
+function logPractica(tipo){ DB.practicas.push({t:tipo,ts:Date.now(),date:hoy()}); if(DB.practicas.length>500) DB.practicas=DB.practicas.slice(-500); save();
+  if(window.Aprens){ try{ Aprens.save({id:uid(),date:hoy(),ts:Date.now(),param:'densidad',modulo:'practica_'+tipo}); }catch(e){} } }
+if(window.Aprens){ try{ Aprens.config({toolId:"estoy_aqui_conmigo", toolName:"Estoy aquí conmigo", toolVersion:1}); }catch(e){} }
+
+/* ---------- navegación ---------- */
+var VIEW="casa", aisTimers=[];
+function clearTimers(){ aisTimers.forEach(function(t){clearInterval(t);clearTimeout(t);}); aisTimers=[]; }
+var NAV=[
+  {id:"casa",e:"🏠",l:"Casa"},
+  {id:"stop",e:"🛑",l:"STOP"},
+  {id:"respiro",e:"🫁",l:"Respiro"},
+  {id:"registro",e:"📓",l:"Registro"},
+  {id:"mas",e:"⋯",l:"Más"}
+];
+function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.casa)();
+  document.getElementById('nav').innerHTML=NAV.map(function(n){ return '<button class="tab '+(VIEW===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join('');
+}
+
+var VIEWS={};
+
+/* --------- helpers de escalas --------- */
+function scaleBtns(k,min,max){ var s='<div class="scale" data-k="'+k+'">'; for(var i=(min==null?0:min);i<=(max==null?10:max);i++) s+='<button type="button" class="scaleb" data-v="'+i+'" onclick="pickScale(this)">'+i+'</button>'; return s+'</div>'; }
+function pickScale(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function getScale(k){ var el=document.querySelector('.scale[data-k="'+k+'"]'); return el&&el.dataset.val!=null?parseInt(el.dataset.val,10):null; }
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||"Guardado ✓"; f.classList.add('show'); setTimeout(function(){f.classList.remove('show');},2600); } }
+
+/* ---------------- CASA (portada + estaciones) ---------------- */
+VIEWS.casa=function(){
+  var h='';
+  h+='<div class="breath-wrap"><div class="breath"><div class="inner">Estoy aquí<br>conmigo</div></div></div>';
+  h+='<h1 class="view-t" style="text-align:center">Estoy aquí conmigo</h1>';
+  h+='<p class="view-s" style="text-align:center">Entrenamiento para que tu cuerpo note tu presencia.</p>';
+  h+='<div class="quote" style="text-align:center;border-left:0;border-radius:14px">No tienes que sentirte bien para acompañarte bien.</div>';
+  h+='<button class="btn full rosa" onclick="go(\'stop\')">Empezar a estar conmigo</button>';
+  h+='<div class="nota" style="margin-top:14px"><b>Cada respiración curiosa</b> es una forma de decirle a tu cuerpo: <i>estoy aquí contigo</i>.</div>';
+
+  h+='<p class="kick">Estaciones</p><div class="qgrid">';
+  h+=qa('canales','👁','¿Cómo puede notarme?','ver · escuchar · sentir dentro');
+  h+=qa('ciclo','🔄','El ciclo del alivio','dos rutas ante la urgencia');
+  h+=qa('stop','🛑','Botón STOP','recuperar mi atención');
+  h+=qa('respiro','🫁','Respiración de presencia','tres respiraciones');
+  h+=qa('quedarme','⏳','Quedarme sin exigirme','permanecer, sin examen');
+  h+=qa('deseo','🧭','¿Deseo o alivio?','antes de acercarme a alguien');
+  h+=qa('apego','🤝','Mis dos formas de apego','apegarme sin abandonarme');
+  h+=qa('frases','💬','Frases para acompañarme','favoritas y propias');
+  h+=qa('rutina','🌤️','Entrenar cuando estoy bien','presencia cotidiana');
+  h+=qa('flecha','➡️','La flecha de la atención','pensamiento · cuerpo · elección');
+  h+='</div>';
+  h+=footerHTML(); return h;
+};
+function qa(v,e,n,d){ return '<button class="qa" onclick="go(\''+v+'\')"><span class="qe">'+e+'</span><span class="qn">'+esc(n)+'</span><span class="qd">'+esc(d)+'</span></button>'; }
+
+/* ---------------- MÁS ---------------- */
+VIEWS.mas=function(){
+  var h='<h1 class="view-t">Más</h1><p class="view-s">Estaciones, resumen y ajustes.</p>';
+  h+='<div class="qgrid">';
+  h+=qa('canales','👁','¿Cómo puede notarme?','');
+  h+=qa('ciclo','🔄','El ciclo del alivio','');
+  h+=qa('quedarme','⏳','Quedarme sin exigirme','');
+  h+=qa('deseo','🧭','¿Deseo o alivio?','');
+  h+=qa('apego','🤝','Mis dos formas de apego','');
+  h+=qa('frases','💬','Frases para acompañarme','');
+  h+=qa('rutina','🌤️','Entrenar cuando estoy bien','');
+  h+=qa('resumen','📊','Resumen semanal','');
+  h+=qa('flecha','➡️','La flecha de la atención','');
+  h+=qa('ajustes','⚙️','Ajustes y datos','privacidad, exportar, borrar');
+  h+='</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- CANALES ---------------- */
+var ZONAS={
+  garganta:"Has llevado tu atención a la garganta. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento.",
+  pecho:"Has llevado tu atención al pecho. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento.",
+  estomago:"Has llevado tu atención al estómago. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento.",
+  manos:"Has llevado tu atención a las manos. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento.",
+  piernas:"Has llevado tu atención a las piernas. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento.",
+  pies:"Has llevado tu atención a los pies. No hace falta notar algo intenso: haber dirigido aquí tu atención ya es entrenamiento."
+};
+VIEWS.canales=function(){
+  var h='<h1 class="view-t">¿Cómo puede notarme mi cuerpo?</h1>';
+  h+='<div class="card"><div class="two" style="grid-template-columns:1fr 1fr 1fr">'+
+     '<div style="text-align:center"><div style="font-size:26px">👁</div><b style="font-size:13px">Ver</b></div>'+
+     '<div style="text-align:center"><div style="font-size:26px">👂</div><b style="font-size:13px">Escuchar</b></div>'+
+     '<div style="text-align:center"><div style="font-size:26px">🫁</div><b style="font-size:13px">Sentir dentro</b></div></div>';
+  h+='<p style="margin-top:12px">Tu cuerpo no puede mirarte como te mira otra persona. Tampoco puede escucharte desde fuera. Pero sí recibe información cuando llevas tu atención a la respiración, el pecho, el estómago, la garganta, las manos o los pies.</p>';
+  h+='<div class="nota">Esta es una forma terapéutica de entender la <b>interocepción</b>: aprender a percibir conscientemente señales internas del cuerpo.</div></div>';
+  h+='<div class="card"><h2><span class="e">🧍</span>Toca una zona</h2><p class="lead">Lleva ahí tu atención unos segundos.</p>';
+  h+='<div class="body-wrap"><svg viewBox="0 0 140 300" role="img" aria-label="Silueta corporal con zonas">'+
+     '<g fill="#efe8db" stroke="#dcd2bf" stroke-width="1.4"><ellipse cx="70" cy="30" rx="20" ry="23"/><rect x="60" y="50" width="20" height="16" rx="6"/>'+
+     '<path d="M44,68 C36,74 34,140 40,190 C42,202 52,200 52,188 C50,150 50,96 58,74 Z"/><path d="M96,68 C104,74 106,140 100,190 C98,202 88,200 88,188 C90,150 90,96 82,74 Z"/>'+
+     '<path d="M46,66 C42,120 42,210 54,270 C58,286 82,286 86,270 C98,210 98,120 94,66 C86,58 54,58 46,66 Z"/></g>'+
+     zoneSvg('garganta',70,60,15,10,'Garganta')+
+     zoneSvg('pecho',70,100,26,22,'Pecho')+
+     zoneSvg('estomago',70,150,26,24,'Estómago')+
+     zoneSvg('manos',44,196,12,12,'Manos')+
+     zoneSvg('piernas',70,225,20,26,'Piernas')+
+     zoneSvg('pies',70,282,20,10,'Pies')+
+     '</svg></div><div class="zmsg" id="zmsg"></div></div>';
+  h+=footerHTML(); return h;
+};
+function zoneSvg(k,cx,cy,rx,ry,label){ return '<g class="zone" tabindex="0" role="button" aria-label="'+label+'" onclick="tocaZona(\''+k+'\')"><ellipse class="zb" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'"/><text class="zt" x="'+cx+'" y="'+(cy+3)+'" text-anchor="middle">'+label+'</text></g>'; }
+function tocaZona(k){ document.querySelectorAll('#app .zone').forEach(function(g){g.classList.remove('sel');}); var el=document.querySelector('[aria-label]'); var m=document.getElementById('zmsg'); m.textContent=ZONAS[k]; m.classList.add('show'); event.currentTarget.classList.add('sel'); }
+
+/* ---------------- CICLO ---------------- */
+VIEWS.ciclo=function(){
+  var h='<h1 class="view-t">El ciclo del alivio rápido</h1><p class="view-s">Buscar apoyo no es un error. El problema aparece cuando es la única respuesta posible y automática.</p>';
+  h+='<div class="card"><h2>La ruta rápida</h2><div class="flow">'+
+     step('Soledad · miedo · vacío · inquietud')+arr()+step('Pensamientos urgentes')+arr()+step('Impulso de buscar a alguien o hacer algo YA')+arr()+step('Alivio momentáneo')+arr()+'<div class="step learn">Mi cuerpo aprende: «sola no puedo»</div></div></div>';
+  h+='<div class="card"><h2>La ruta que entrenamos</h2><div class="flow alt">'+
+     step('Soledad · miedo · inquietud')+arr()+step('STOP')+arr()+step('Respiración + cuerpo')+arr()+step('Me acompaño')+arr()+step('Decido con más libertad')+arr()+'<div class="step learn">Mi cuerpo aprende: «puedo estar conmigo y también elegir a los demás»</div></div>';
+  h+='<button class="btn full" style="margin-top:12px" onclick="go(\'stop\')">Practicar el STOP</button></div>';
+  h+=footerHTML(); return h;
+};
+function step(t){ return '<div class="step">'+esc(t)+'</div>'; }
+function arr(){ return '<div class="arr">↓</div>'; }
+
+/* ---------------- STOP ---------------- */
+var STOP_SEQ=["Me he dado cuenta.","Ahora no necesito resolver nada.","Puedo esperar unos segundos antes de actuar.","Llevo mi atención hacia dentro."];
+var stopIdx=-1, stopAuto=null;
+VIEWS.stop=function(){
+  var h='<h1 class="view-t">Botón STOP</h1>';
+  h+='<div class="nota"><b>STOP no significa luchar contra lo que piensas.</b> Significa darte cuenta de que tu atención ha sido arrastrada y recuperar su dirección. No se discute con el pensamiento ni se comprueba si es verdad: se interrumpe el automatismo y se elige después.</div>';
+  h+='<div class="flecha" style="margin:12px 0"><span class="fbx e">STOP</span><span class="fa">→</span><span class="fbx e">RESPIRO</span><span class="fa">→</span><span class="fbx e">SIENTO</span><span class="fa">→</span><span class="fbx e">ME QUEDO</span><span class="fa">→</span><span class="fbx e">ELIJO</span></div>';
+  h+='<button class="stopbtn" id="stopBtn" onclick="stopStart()" aria-label="Empezar la secuencia STOP">STOP</button>';
+  h+='<div class="stopseq" id="stopSeq" style="display:none"><div class="sn" id="stopName"></div><div class="cnt" id="stopCnt"></div><div class="dots" id="stopDots"></div><div class="btnrow" style="margin-top:14px"><button class="btn ghost" onclick="stopNext()">Siguiente</button></div></div>';
+  h+=footerHTML(); return h;
+};
+function stopStart(){ document.getElementById('stopBtn').style.display='none'; document.getElementById('stopSeq').style.display='block'; stopIdx=-1; stopNext(); }
+function stopNext(){
+  stopIdx++;
+  if(stopAuto){ clearInterval(stopAuto); }
+  if(stopIdx>=STOP_SEQ.length){ finStop(); return; }
+  document.getElementById('stopName').textContent=STOP_SEQ[stopIdx];
+  var left=12; document.getElementById('stopCnt').textContent=left+' s';
+  document.getElementById('stopDots').innerHTML=STOP_SEQ.map(function(_,i){return '<i class="'+(i<=stopIdx?'on':'')+'"></i>';}).join('');
+  stopAuto=setInterval(function(){ left--; var c=document.getElementById('stopCnt'); if(!c){clearInterval(stopAuto);return;} c.textContent=(left>0?left:0)+' s'; if(left<=0){ clearInterval(stopAuto); stopNext(); } },1000);
+  aisTimers.push(stopAuto);
+}
+function finStop(){ if(stopAuto)clearInterval(stopAuto);
+  document.getElementById('stopSeq').innerHTML='<div class="sn">Has recuperado tu atención.</div><div class="btnrow" style="margin-top:8px"><button class="btn" onclick="go(\'respiro\')">Seguir con la respiración</button></div><button class="link" style="display:block;margin:10px auto 0" onclick="go(\'stop\')">Repetir STOP</button>';
+  logPractica('stop');
+}
+
+/* ---------------- RESPIRACIÓN DE PRESENCIA ---------------- */
+var RESP_FASES=[{f:"Entro",d:4,s:1.14},{f:"·",d:1,s:1.14},{f:"Te noto",d:6,s:0.84}];
+var RESP_MSG=["Entro.","Te noto.","Me quedo contigo."];
+var respIdx=-1, respCiclo=0, respT=null;
+VIEWS.respiro=function(){
+  var h='<h1 class="view-t">Respiración de presencia</h1><p class="view-s">Tres respiraciones tranquilas. Sin retener el aire ni forzar. Solo estar.</p>';
+  h+='<div class="ring-wrap"><div class="ring" id="ring"><div class="ri"><div><div class="rf" id="rf">Prepárate</div><div class="rs" id="rs"></div></div></div></div><div class="quote" id="respMsg" style="text-align:center;border-left:0;border-radius:14px;margin-top:14px">Cada respiración curiosa es una forma de decir: estoy aquí contigo.</div></div>';
+  h+='<div class="btnrow"><button class="btn full" id="respBtn" onclick="respStart(this)">Empezar</button></div>';
+  h+='<div id="respAfter" style="display:none"><div class="card"><h2>¿Dónde resulta más fácil dejar ahora tu atención?</h2><div class="chips" id="respZona">'+
+     ['Garganta','Pecho','Estómago','Manos','Piernas','Pies','No noto nada claro'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="respPick(this)">'+z+'</button>';}).join('')+
+     '</div><div class="ok-flash" id="okflash"></div></div></div>';
+  h+=footerHTML(); return h;
+};
+function respStart(btn){ btn.style.display='none'; respIdx=-1; respCiclo=0; respFase(); }
+function respFase(){
+  respIdx++;
+  if(respIdx>=RESP_FASES.length){ respIdx=0; respCiclo++; if(respCiclo>=3){ respFin(); return; } }
+  var f=RESP_FASES[respIdx], ring=document.getElementById('ring'); if(!ring) return;
+  document.getElementById('rf').textContent=(respIdx===0?RESP_MSG[Math.min(respCiclo,2)]:f.f);
+  ring.style.transitionDuration=f.d+'s'; ring.style.transform='scale('+f.s+')';
+  var left=f.d; document.getElementById('rs').textContent=left+'s';
+  respT=setInterval(function(){ left--; var rs=document.getElementById('rs'); if(!rs){clearInterval(respT);return;} rs.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(respT); respFase(); } },1000);
+  aisTimers.push(respT);
+}
+function respFin(){ if(respT)clearInterval(respT); var ring=document.getElementById('ring'); if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';}
+  var rf=document.getElementById('rf'); if(rf) rf.textContent='Me quedo contigo';
+  var rs=document.getElementById('rs'); if(rs) rs.textContent='';
+  var a=document.getElementById('respAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); }
+  logPractica('respiro');
+}
+function respPick(b){ document.getElementById('respZona').querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel');
+  flash(b.dataset.v==='No noto nada claro' ? 'No notar nada también cuenta. Tu atención ha estado presente.' : 'Bien. Has dejado tu atención en: '+b.dataset.v+'.'); }
+
+/* ---------------- QUEDARME SIN EXIGIRME ---------------- */
+var QUED_FRASES=["No hace falta cambiarlo.","Solo permanece.","Curiosidad, no examen.","Tu cuerpo no tiene que responder de una manera concreta.","Estar presente ya es la práctica."];
+var quedT=null, quedPhr=null;
+VIEWS.quedarme=function(){
+  var h='<h1 class="view-t">Quedarme sin exigirme</h1><p class="view-s">Permanecer unos segundos, con curiosidad. No hay nada que conseguir.</p>';
+  h+='<div class="card" id="quedSel"><h2>¿Cuánto quieres quedarte?</h2><div class="chips">'+
+     [['10','10 s'],['20','20 s'],['30','30 s'],['60','1 min']].map(function(o){return '<button type="button" class="chip" onclick="quedStart('+o[0]+')">'+o[1]+'</button>';}).join('')+'</div></div>';
+  h+='<div class="qtimer" id="quedTimer" style="display:none"><div class="clock" id="quedClock">0:00</div><div class="phr" id="quedPhr"></div><button class="btn ghost" style="margin-top:14px" onclick="quedSalir()">Necesito salir antes</button></div>';
+  h+=footerHTML(); return h;
+};
+function quedStart(sec){ document.getElementById('quedSel').style.display='none'; var box=document.getElementById('quedTimer'); box.style.display='block';
+  var left=sec, pi=0; tickQ(left); showPhr(pi);
+  quedPhr=setInterval(function(){ pi++; showPhr(pi); },Math.max(3000,Math.floor(sec/QUED_FRASES.length)*1000)); aisTimers.push(quedPhr);
+  quedT=setInterval(function(){ left--; tickQ(left); if(left<=0){ clearInterval(quedT); clearInterval(quedPhr); quedFin(false); } },1000); aisTimers.push(quedT);
+}
+function tickQ(s){ var c=document.getElementById('quedClock'); if(c) c.textContent=Math.floor(s/60)+':'+p2(Math.max(0,s%60)); }
+function showPhr(i){ var el=document.getElementById('quedPhr'); if(!el) return; el.style.opacity=0; setTimeout(function(){ el.textContent=QUED_FRASES[i%QUED_FRASES.length]; el.style.opacity=1; },250); }
+function quedSalir(){ clearInterval(quedT); clearInterval(quedPhr); quedFin(true); }
+function quedFin(early){ var box=document.getElementById('quedTimer'); if(!box) return;
+  box.innerHTML = early
+    ? '<div class="phr" style="opacity:1">Parar también puede ser cuidarte. Has practicado hasta donde hoy era posible.</div><button class="btn" style="margin-top:14px" onclick="go(\'quedarme\')">Volver</button>'
+    : '<div class="clock">✓</div><div class="phr" style="opacity:1">Te has quedado contigo. Eso es la práctica.</div><button class="btn" style="margin-top:14px" onclick="go(\'quedarme\')">Otra vez</button>';
+  logPractica('quedarme');
+}
+
+/* ---------------- ¿DESEO O ALIVIO? ---------------- */
+var DESEO_Q=[
+  {k:'cuerpo',l:'¿Qué noto en el cuerpo? (0 calma – 10 mucha activación)',t:'scale'},
+  {k:'urgencia',l:'¿Hay sensación de urgencia?',t:'scale'},
+  {k:'esperar',l:'¿Podría esperar diez minutos?',t:'yn',opts:['Sí','Un poco','No']},
+  {k:'quiero',l:'¿Quiero realmente este contacto?',t:'yn',opts:['Sí','No lo tengo claro','No']},
+  {k:'respetada',l:'¿Me sentiré respetada por mí misma después?',t:'yn',opts:['Sí','No lo sé','No']},
+  {k:'no',l:'¿Puedo decir que no o cambiar de opinión?',t:'yn',opts:['Sí','A medias','No']},
+  {k:'eligiendo',l:'¿Estoy eligiendo o intentando apagar una sensación?',t:'yn',opts:['Eligiendo','Un poco de las dos','Apagando algo']}
+];
+VIEWS.deseo=function(){
+  var h='<h1 class="view-t">Antes de acercarme a alguien</h1><p class="view-s">No es un examen ni un diagnóstico. Es una pausa para comprobar qué quieres. Ninguna respuesta es incorrecta.</p>';
+  h+='<div class="card" id="deseoForm">';
+  DESEO_Q.forEach(function(q){
+    h+='<div class="fld"><label>'+esc(q.l)+'</label>';
+    if(q.t==='scale') h+=scaleBtns(q.k,0,10);
+    else { h+='<div class="chips" data-k="'+q.k+'">'+q.opts.map(function(o,i){return '<button type="button" class="chip" data-v="'+i+'" data-lab="'+esc(o)+'" onclick="pickChipK(this)">'+esc(o)+'</button>';}).join('')+'</div>'; }
+    h+='</div>';
+  });
+  h+='<button class="btn full" onclick="deseoCalc()">Ver mi devolución</button>';
+  h+='<div class="res" id="deseoRes"></div></div>';
+  h+='<div class="nota">Deseo, cercanía y sexualidad no son un problema. La pregunta es: <i>¿lo elijo porque encaja conmigo, o para apagar cuanto antes lo que siento?</i></div>';
+  h+=footerHTML(); return h;
+};
+function pickChipK(b){ var box=b.parentNode; box.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function getChipK(k){ var el=document.querySelector('.chips[data-k="'+k+'"]'); return el&&el.dataset.val!=null?parseInt(el.dataset.val,10):null; }
+function deseoCalc(){
+  var cuerpo=getScale('cuerpo'), urg=getScale('urgencia');
+  var esperar=getChipK('esperar'), quiero=getChipK('quiero'), resp=getChipK('respetada'), no=getChipK('no'), elig=getChipK('eligiendo');
+  // score de "alivio/urgencia": mayor = más urgencia
+  var s=0, n=0;
+  if(cuerpo!=null){ s+=cuerpo/10; n++; }
+  if(urg!=null){ s+=urg/10; n++; }
+  if(esperar!=null){ s+=esperar/2; n++; }      // 0 sí ... 1 no
+  if(quiero!=null){ s+=quiero/2; n++; }
+  if(resp!=null){ s+=resp/2; n++; }
+  if(no!=null){ s+=no/2; n++; }
+  if(elig!=null){ s+=elig/2; n++; }
+  var score = n? s/n : 0.5;
+  var box=document.getElementById('deseoRes'), cls, tit, msg;
+  if(score<0.4){ cls='A'; tit='Elección más libre'; msg='Parece que puedes decidir con cierta calma. Recuerda que puedes seguir comprobando lo que quieres, y cambiar de opinión cuando quieras.'; }
+  else if(score<0.68){ cls='B'; tit='Mezcla de deseo y alivio'; msg='Puede haber deseo y también necesidad de alivio. No tienes que decidir ahora. Respira y date unos minutos: después podrás elegir con más libertad.'; }
+  else { cls='C'; tit='Urgencia emocional'; msg='Tu cuerpo parece pedir alivio rápido. Primero acompáñalo (STOP, respiración, una zona corporal). Después podrás decidir con más libertad. Nada te obliga a actuar ahora.'; }
+  box.className='res show '+cls; box.innerHTML='<h3>'+tit+'</h3><p style="margin:0">'+msg+'</p><div class="btnrow" style="margin-top:12px"><button class="btn ghost sm" onclick="go(\'stop\')">Hacer STOP</button><button class="btn ghost sm" onclick="go(\'respiro\')">Respirar</button></div>';
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+/* ---------------- APEGO ---------------- */
+var APEGO_H=["Le escribo porque quiero compartir algo.","Puedo tolerar que tarde en responder.","Puedo expresar lo que necesito.","Puedo decir que no.","Puedo estar cerca sin dejar de escucharme.","Busco apoyo porque lo he elegido conscientemente."];
+var APEGO_D=["Le escribo repetidamente para que se me pase la angustia.","Acepto algo que no quiero por miedo a perder el vínculo.","Necesito una respuesta inmediata para sentirme segura.","Confundo estar sola con no ser importante.","Cambio mis límites para evitar que se aleje.","Actúo antes de comprobar qué quiero realmente."];
+var apegoPool=[], apegoI=0;
+VIEWS.apego=function(){
+  var h='<h1 class="view-t">Mis dos formas de apego</h1><p class="view-s">El objetivo no es no necesitar a nadie. Es no desaparecer tú cuando necesitas a alguien.</p>';
+  h+='<div class="two"><div class="acard h"><h4>🤝 Apegarme sin abandonarme</h4><ul>'+APEGO_H.map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div>'+
+     '<div class="acard d"><h4>🌀 Abandonarme para que no se vayan</h4><ul>'+APEGO_D.map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ul></div></div>';
+  h+='<div class="card"><h2><span class="e">🎯</span>Clasifica</h2><p class="lead">Lee cada ejemplo y elige a qué forma se parece más. Sin nota: es para mirarlo con calma.</p><div id="clasiBox"></div></div>';
+  h+=footerHTML(); return h;
+};
+function initClasi(){
+  apegoPool=[]; APEGO_H.forEach(function(s){apegoPool.push({t:s,c:'h'});}); APEGO_D.forEach(function(s){apegoPool.push({t:s,c:'d'});});
+  // orden determinista alterno
+  var mixed=[]; for(var i=0;i<6;i++){ mixed.push(apegoPool[i]); mixed.push(apegoPool[i+6]); } apegoPool=mixed; apegoI=0; drawClasi();
+}
+function drawClasi(){
+  var box=document.getElementById('clasiBox'); if(!box) return;
+  if(apegoI>=apegoPool.length){ box.innerHTML='<div class="quote" style="text-align:center">Lo has mirado todo. Recuerda: puedes buscar apoyo <b>y</b> seguir escuchándote.</div><button class="btn full ghost" onclick="initClasi()">Volver a empezar</button>'; return; }
+  var it=apegoPool[apegoI];
+  box.innerHTML='<div class="clasi"><div class="ex">«'+esc(it.t)+'»</div><div class="btnrow"><button class="btn sm" onclick="clasiPick(\'h\')">Sin abandonarme</button><button class="btn sm rosa" onclick="clasiPick(\'d\')">Para que no se vayan</button></div><div id="clasiFb" style="margin-top:12px;min-height:1.4em;font-size:13.5px"></div></div><div class="muted" style="text-align:center">'+(apegoI+1)+' / '+apegoPool.length+'</div>';
+}
+function clasiPick(c){
+  var it=apegoPool[apegoI], fb=document.getElementById('clasiFb');
+  if(c===it.c){ fb.style.color='var(--salvia-d)'; fb.textContent=it.c==='h'?'Sí: aquí te apegas sin perderte.':'Sí: aquí el vínculo tapa una sensación. Reconocerlo ya es cuidado.'; }
+  else { fb.style.color='var(--rosa-d)'; fb.textContent=it.c==='h'?'Mira otra vez: aquí en realidad te apegas sin abandonarte.':'Mira otra vez: aquí el vínculo se usa para calmar una urgencia.'; }
+  setTimeout(function(){ apegoI++; drawClasi(); },1600);
+}
+
+/* ---------------- FRASES ---------------- */
+var FRASES=[
+  "Ahora no tengo que resolverlo.","Puedo sentir esto sin obedecerlo inmediatamente.","Estoy aquí contigo.","No necesito abandonarme para que alguien se quede.","Puedo desear compañía sin convertirme en urgencia.","Primero me acompaño; después decido.","No notar nada también es estar.","Lo que siento merece presencia, no una solución inmediata.","Puedo pedir apoyo sin entregar a otra persona el control de mi estabilidad.","Mi deseo y mis límites pueden existir al mismo tiempo.","Puedo estar sola ahora sin estar abandonada.","Respirar no borra lo que siento: me permite estar presente mientras lo siento."
+];
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">Frases para acompañarme</h1><p class="view-s">Tócalas para marcarlas como favoritas o copiarlas. Puedes crear la tuya.</p>';
+  h+='<div class="card"><h2>Crear la mía</h2><textarea id="newFrase" placeholder="Una frase que quieras llevar contigo…"></textarea><button class="btn sm" style="margin-top:9px" onclick="crearFrase()">Añadir</button></div>';
+  var all=DB.frasesUser.map(function(x){return {t:x,u:true};}).concat(FRASES.map(function(x){return {t:x,u:false};}));
+  // favoritas primero
+  all.sort(function(a,b){ return (DB.frasesFav.indexOf(b.t)>=0?1:0)-(DB.frasesFav.indexOf(a.t)>=0?1:0); });
+  h+=all.map(function(o){ var fav=DB.frasesFav.indexOf(o.t)>=0; var t=esc(o.t).replace(/'/g,"\\'");
+    return '<div class="verb"><span class="vt">'+esc(o.t)+'</span><span class="va"><button aria-label="Favorita" class="'+(fav?'fav-on':'')+'" onclick="favFrase(\''+t+'\',this)">'+(fav?'★':'☆')+'</button><button aria-label="Copiar" onclick="copiar(\''+t+'\',this)">📋</button>'+(o.u?'<button aria-label="Borrar" onclick="delFrase(\''+t+'\')">🗑️</button>':'')+'</span></div>';
+  }).join('');
+  h+=footerHTML(); return h;
+};
+function crearFrase(){ var t=(document.getElementById('newFrase').value||'').trim(); if(!t) return; if(!DB.frasesUser.some(function(f){return f===t;})) DB.frasesUser.unshift(t); save(); go('frases'); }
+function delFrase(t){ t=t.replace(/\\'/g,"'"); DB.frasesUser=DB.frasesUser.filter(function(f){return f!==t;}); DB.frasesFav=DB.frasesFav.filter(function(f){return f!==t;}); save(); go('frases'); }
+function favFrase(t,btn){ t=t.replace(/\\'/g,"'"); var i=DB.frasesFav.indexOf(t); if(i>=0){DB.frasesFav.splice(i,1);btn.textContent='☆';btn.classList.remove('fav-on');} else {DB.frasesFav.push(t);btn.textContent='★';btn.classList.add('fav-on');} save(); }
+
+/* ---------------- RUTINA ---------------- */
+VIEWS.rutina=function(){
+  var m=DB.settings.momentos, r=DB.rutina[hoy()]||{};
+  var h='<h1 class="view-t">Entrenar cuando estoy bien</h1><p class="view-s">No esperes a estar desbordada. El apego interno se construye practicando también en momentos normales.</p>';
+  h+='<div class="nota">Cada práctica: <b>STOP → una respiración → una zona del cuerpo → cinco segundos → volver a lo que hacías</b>. Respirar sin crisis, para construir presencia cotidiana y no solo rescate.</div>';
+  ['despertar','casa','dormir'].forEach(function(key){
+    h+='<div class="rutrow"><button class="chk '+(r[key]?'on':'')+'" onclick="toggleRut(\''+key+'\')" aria-label="Marcar práctica">'+(r[key]?'✓':'')+'</button><input type="text" value="'+esc(m[key])+'" onchange="renMomento(\''+key+'\',this.value)" aria-label="Nombre del momento"></div>';
+  });
+  h+='<p class="muted" style="text-align:center;margin-top:12px">Cambia los nombres si quieres. Se guardan solos.</p>';
+  h+=footerHTML(); return h;
+};
+function toggleRut(key){ var d=hoy(); if(!DB.rutina[d]) DB.rutina[d]={}; DB.rutina[d][key]=!DB.rutina[d][key]; if(DB.rutina[d][key]) logPractica('rutina'); save(); go('rutina'); }
+function renMomento(key,val){ DB.settings.momentos[key]=(val||'').trim()||DB.settings.momentos[key]; save(); }
+
+/* ---------------- FLECHA TEC ---------------- */
+VIEWS.flecha=function(){
+  var h='<h1 class="view-t">La flecha de la atención</h1><p class="view-s">Una forma sencilla de entender el entrenamiento TEC–AIS.</p>';
+  h+='<div class="card"><p>Tu atención funciona como una <b>flecha</b>. Cuando queda secuestrada por el pensamiento urgente, aumenta la conducta automática.</p>';
+  h+='<div class="flecha"><span class="fbx p">Pensamiento urgente</span><span class="fa">→</span><span class="fbx c">Cuerpo</span><span class="fa">→</span><span class="fbx e">Elección</span></div>';
+  h+='<ul class="muted" style="padding-left:18px;line-height:1.9">'+
+     ['<b>STOP</b> te devuelve la dirección de la flecha.','La <b>respiración</b> es la puerta de entrada.','La <b>zona corporal</b> es tu anclaje (interocepción).','Permanecer unos segundos amplía la <b>latencia</b> entre impulso y respuesta.','Esa latencia te deja <b>elegir</b> una acción más coherente con tus valores.','La práctica repetida construye <b>presencia interna</b>.','La presencia interna no sustituye los vínculos: te permite relacionarte sin desaparecer dentro de ellos.'].map(function(s){return '<li>'+s+'</li>';}).join('')+
+     '</ul></div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- REGISTRO ---------------- */
+VIEWS.registro=function(){
+  var h='<h1 class="view-t">Mi cuerpo me ha notado</h1><p class="view-s">Un registro breve cuando quieras. El éxito no es terminar tranquila: puede ser haber esperado, sentido, respetado un límite o elegido con más libertad.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="regForm">';
+  h+='<div class="fld"><label>Situación (opcional)</label><input type="text" id="r_sit" placeholder="Qué estaba pasando"></div>';
+  h+='<div class="fld"><label>Urgencia ANTES</label>'+scaleBtns('r_ini',0,10)+'<div class="scale-ends"><span>Calma</span><span>Máxima</span></div></div>';
+  h+='<div class="fld"><label>Zona corporal que elegí</label><div class="chips" data-k="r_zona">'+['Garganta','Pecho','Estómago','Manos','Piernas','Pies','No noté nada claro'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
+  h+='<div class="fld"><label>Tiempo de presencia (aprox.)</label><div class="chips" data-k="r_tiempo">'+['Unos segundos','Medio minuto','1-2 minutos','Más'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
+  h+='<div class="fld"><label>¿Pude esperar antes de actuar?</label><div class="chips" data-k="r_espera">'+['Sí','Un poco','No'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
+  h+='<div class="fld"><label>¿Qué elegí hacer después? (opcional)</label><input type="text" id="r_eleccion" placeholder="Tu siguiente acción"></div>';
+  h+='<div class="fld"><label>La decisión fue…</label><div class="chips" data-k="r_da">'+['Más de deseo','Una mezcla','Más de alivio'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
+  h+='<div class="fld"><label>¿Pedí apoyo de forma consciente?</label><div class="chips" data-k="r_apoyo">'+['Sí','No hizo falta','No'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
+  h+='<div class="fld"><label>Frase que utilicé (opcional)</label><input type="text" id="r_frase" placeholder="La frase que te acompañó"></div>';
+  h+='<div class="fld"><label>Urgencia DESPUÉS</label>'+scaleBtns('r_fin',0,10)+'<div class="scale-ends"><span>Calma</span><span>Máxima</span></div></div>';
+  h+='<div class="fld"><label>Hoy acompañarme significó… (opcional)</label><textarea id="r_libre"></textarea></div>';
+  h+='<button class="btn full" onclick="saveReg()">Guardar registro</button></div>';
+  h+='<div class="btnrow"><button class="btn ghost sm" onclick="go(\'resumen\')">📊 Resumen semanal</button></div>';
+  h+=histHTML();
+  h+=footerHTML(); return h;
+};
+function pickChipLab(b){ var box=b.parentNode; box.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function getChipLab(k){ var el=document.querySelector('.chips[data-k="'+k+'"]'); return el?el.dataset.val||null:null; }
+function saveReg(){
+  var r={ id:uid(), ts:Date.now(), date:hoy(), hora:nowHM(),
+    sit:(val('r_sit')), ini:getScale('r_ini'), zona:getChipLab('r_zona'), tiempo:getChipLab('r_tiempo'),
+    espera:getChipLab('r_espera'), eleccion:val('r_eleccion'), da:getChipLab('r_da'), apoyo:getChipLab('r_apoyo'),
+    frase:val('r_frase'), fin:getScale('r_fin'), libre:val('r_libre') };
+  DB.registros.push(r); save();
+  if(window.Aprens){ try{ Aprens.save({id:r.id,date:r.date,ts:r.ts,param:'latencia',modulo:'registro',urgencia_antes:r.ini,urgencia_despues:r.fin,pude_esperar:r.espera,pidio_apoyo:r.apoyo,deseo_alivio:r.da}); }catch(e){} }
+  flash("Guardado ✓ Éxito no es terminar tranquila: es haber estado presente.");
+  render(); go('registro');
+}
+function val(id){ var e=document.getElementById(id); return e?(e.value||'').trim():''; }
+function histHTML(){
+  if(!DB.registros.length) return '<div class="card"><p class="empty">Aún no hay registros.</p></div>';
+  var priv=DB.settings.privacy;
+  var list=DB.registros.slice().sort(function(a,b){return b.ts-a.ts;}).slice(0,20);
+  var h='<div class="card"><h2>Historial</h2>';
+  h+=list.map(function(r){
+    var linea='urgencia '+(r.ini!=null?r.ini:'–')+' → '+(r.fin!=null?r.fin:'–')+(r.espera?' · esperar: '+r.espera:'')+(r.zona?' · '+r.zona:'');
+    var extra = priv ? '' : (r.sit?('<br><span style="opacity:.8">'+esc(r.sit)+'</span>'):'')+(r.libre?('<br><i>«'+esc(r.libre)+'»</i>'):'');
+    return '<div class="rec"><div class="rh"><span class="rd">'+esc(fechaLarga(r.date))+' · '+esc(r.hora||'')+'</span><button class="del" onclick="delReg(\''+r.id+'\')">borrar</button></div><div class="rb">'+esc(linea)+extra+'</div></div>';
+  }).join('');
+  if(priv) h+='<p class="muted" style="margin-top:8px">🔒 Modo privacidad: los textos personales están ocultos.</p>';
+  h+='</div>';
+  return h;
+}
+function delReg(id){ if(confirm('¿Borrar este registro?')){ DB.registros=DB.registros.filter(function(r){return r.id!==id;}); save(); render(); } }
+
+/* ---------------- RESUMEN SEMANAL ---------------- */
+VIEWS.resumen=function(){
+  var r7=DB.registros.filter(function(x){return within7(x.date);});
+  var p7=DB.practicas.filter(function(x){return within7(x.date);});
+  var stops=p7.filter(function(x){return x.t==='stop';}).length;
+  var espera=r7.filter(function(x){return x.espera==='Sí';}).length;
+  var apoyo=r7.filter(function(x){return x.apoyo==='Sí';}).length;
+  var limite=r7.filter(function(x){return x.da==='Más de deseo'||x.espera==='Sí';}).length;
+  var zonas={}; r7.forEach(function(x){ if(x.zona) zonas[x.zona]=(zonas[x.zona]||0)+1; });
+  var zTop=Object.keys(zonas).sort(function(a,b){return zonas[b]-zonas[a];}).slice(0,3).join(' · ')||'–';
+  var mi=media(r7,'ini'), mf=media(r7,'fin');
+  var h='<h1 class="view-t">Resumen semanal</h1><p class="view-s">Últimos 7 días. La urgencia no tiene que bajar: lo importante es la presencia.</p>';
+  h+='<div class="card"><div class="stat3"><div><b>'+p7.length+'</b><span>prácticas</span></div><div><b>'+stops+'</b><span>veces STOP</span></div><div><b>'+espera+'</b><span>veces que esperé</span></div></div>';
+  h+='<div class="stat3" style="margin-top:10px"><div><b>'+apoyo+'</b><span>apoyo consciente</span></div><div><b>'+r7.length+'</b><span>registros</span></div><div><b>'+(mi!=null&&mf!=null?(mi+'→'+mf):'–')+'</b><span>urgencia media</span></div></div>';
+  h+='<p class="muted" style="margin-top:12px">Zonas más usadas: <b>'+esc(zTop)+'</b></p></div>';
+  if(DB.frasesFav.length){ h+='<div class="card"><h2>Tus frases favoritas</h2>'+DB.frasesFav.slice(0,5).map(function(f){return '<div class="verb"><span class="vt">'+esc(f)+'</span></div>';}).join('')+'</div>'; }
+  h+='<div class="quote" style="text-align:center">Tu avance no se mide por no necesitar a nadie, sino por estar cada vez más presente cuando eliges acercarte a alguien.</div>';
+  h+='<div class="btnrow"><button class="btn sm" onclick="copiarResumen(this)">📋 Copiar resumen</button><button class="btn sm ghost" onclick="go(\'ajustes\')">Exportar / datos</button></div>';
+  h+=footerHTML(); return h;
+};
+function copiarResumen(btn){
+  var r7=DB.registros.filter(function(x){return within7(x.date);}), p7=DB.practicas.filter(function(x){return within7(x.date);});
+  var L=['ESTOY AQUÍ CONMIGO · resumen semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
+  L.push('Prácticas: '+p7.length+' (STOP: '+p7.filter(function(x){return x.t==='stop';}).length+')');
+  L.push('Registros: '+r7.length);
+  L.push('Veces que pude esperar: '+r7.filter(function(x){return x.espera==='Sí';}).length);
+  L.push('Apoyo consciente: '+r7.filter(function(x){return x.apoyo==='Sí';}).length);
+  var mi=media(r7,'ini'), mf=media(r7,'fin'); if(mi!=null) L.push('Urgencia media: '+mi+' → '+(mf!=null?mf:'–'));
+  L.push('(La reducción de urgencia no es obligatoria; el objetivo es la presencia.)');
+  copiar(L.join('\n'),btn);
+}
+
+/* ---------------- AJUSTES / DATOS ---------------- */
+VIEWS.ajustes=function(){
+  var h='<h1 class="view-t">Ajustes y datos</h1><p class="view-s">Todo se guarda solo en este dispositivo. Nada se envía a ningún servidor.</p><div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2>🔒 Modo privacidad</h2><p class="lead">Oculta los textos personales del historial; solo se ven datos generales.</p>';
+  h+='<div class="btnrow">'+(DB.settings.privacy
+      ? '<button class="btn" id="privBtn" onmousedown="privHoldStart()" onmouseup="privHoldEnd()" onmouseleave="privHoldEnd()" ontouchstart="privHoldStart()" ontouchend="privHoldEnd()">Mantén pulsado para salir</button>'
+      : '<button class="btn azul" onclick="privOn()">Activar modo privacidad</button>')+'</div>';
+  h+='<div class="fld" style="margin-top:12px"><label>Código local opcional (para salir del modo privacidad)</label><input type="text" id="privCode" value="'+esc(DB.settings.code||'')+'" placeholder="Ej.: 4 cifras" inputmode="numeric"><button class="btn sm" style="margin-top:8px" onclick="setCode()">Guardar código</button></div></div>';
+  h+='<div class="card"><h2>Copias y export</h2><div class="btnrow"><button class="btn sm" onclick="exportJSON()">⬇️ JSON</button><button class="btn sm" onclick="exportTXT()">⬇️ TXT</button><button class="btn sm ghost" onclick="copiarResumen(this)">📋 Resumen</button></div></div>';
+  h+='<div class="card" style="border-color:#d3a29f"><h2>Borrar</h2><p class="lead">Elimina todos los datos de este dispositivo. No se puede deshacer.</p><button class="btn sm danger" onclick="borrarTodo()">Borrar todo</button></div>';
+  h+='<div class="safe" style="margin-top:12px"><span class="i">🤍</span><span>Esta herramienta acompaña el trabajo de consulta. No sustituye la atención psicológica, médica ni los recursos de urgencia.</span></div>';
+  h+=footerHTML(); return h;
+};
+function privOn(){ DB.settings.privacy=true; save(); go('ajustes'); }
+var privHoldT=null;
+function privHoldStart(){ privHoldT=setTimeout(function(){ if(DB.settings.code){ var c=prompt('Introduce tu código para salir del modo privacidad:'); if(c!==DB.settings.code){ alert('Código incorrecto.'); return; } } DB.settings.privacy=false; save(); go('ajustes'); },800); }
+function privHoldEnd(){ if(privHoldT){ clearTimeout(privHoldT); privHoldT=null; } }
+function setCode(){ DB.settings.code=(document.getElementById('privCode').value||'').trim(); save(); flash('Código guardado ✓'); }
+function exportJSON(){ downloadFile('estoy_aqui_'+hoy()+'.json', JSON.stringify(DB,null,2), 'application/json'); }
+function exportTXT(){
+  var L=['ESTOY AQUÍ CONMIGO · export '+hoy(),''];
+  DB.registros.slice().sort(function(a,b){return a.ts-b.ts;}).forEach(function(r){
+    L.push('· '+r.date+' '+ (r.hora||'') +' — urgencia '+(r.ini!=null?r.ini:'-')+'→'+(r.fin!=null?r.fin:'-')+(r.zona?' · '+r.zona:'')+(r.espera?' · esperar '+r.espera:'')+(r.apoyo?' · apoyo '+r.apoyo:''));
+    if(r.sit) L.push('   situación: '+r.sit);
+    if(r.eleccion) L.push('   elegí: '+r.eleccion);
+    if(r.libre) L.push('   acompañarme: '+r.libre);
+  });
+  downloadFile('estoy_aqui_'+hoy()+'.txt', L.join('\n'), 'text/plain');
+}
+function downloadFile(name,content,type){ try{ var blob=new Blob([content],{type:type}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(url);},1000); flash('Archivo generado ✓'); }catch(e){ alert('No se pudo generar el archivo.'); } }
+function borrarTodo(){ if(confirm('¿Borrar TODOS tus datos de este dispositivo?')){ if(confirm('Esta acción no se puede deshacer. ¿Confirmas?')){ DB=clone(DEFAULT); save(); go('casa'); } } }
+
+/* ---------------- SOS ---------------- */
+function openSOS(){
+  var s=document.getElementById('sosSheet');
+  s.innerHTML='<h2>🤍 Ahora necesito apoyo</h2><p class="muted" style="margin-top:0">Vamos paso a paso. No tienes que decidir nada importante ahora mismo.</p>'+
+    [['Pies en el suelo. Nota el contacto.'],['Una exhalación lenta y larga.'],['Nombra cinco cosas que ves a tu alrededor.'],['Lleva la atención a una zona del cuerpo unos segundos.'],['Espera dos minutos antes de tomar una decisión impulsiva.'],['Contacta con una persona segura si lo necesitas.'],['Usa los recursos que acordaste con tu psicólogo/a o tu familia.']]
+      .map(function(x,i){return '<div class="sos-step"><span class="num">'+(i+1)+'</span><span>'+esc(x[0])+'</span></div>';}).join('')+
+    '<div class="btnrow" style="margin-top:6px"><button class="btn ghost sm" onclick="closeSOS();go(\'respiro\')">Respirar</button><button class="btn ghost sm" onclick="closeSOS();go(\'stop\')">STOP</button></div>'+
+    '<div class="safe" style="margin-top:14px"><span class="i">⚠️</span><span>Esta herramienta no sustituye la ayuda profesional. Si hay riesgo inmediato, autolesión, violencia, intoxicación o pérdida de control, busca ayuda presencial urgente con una persona adulta de confianza o los servicios de emergencia de tu zona.</span></div>'+
+    '<button class="btn full" style="margin-top:12px" onclick="closeSOS()">Cerrar</button>';
+  document.getElementById('sosModal').classList.add('show');
+}
+function closeSOS(){ document.getElementById('sosModal').classList.remove('show'); }
+
+/* ---------------- comunes ---------------- */
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · Entrenamiento TEC–AIS<br>Esta herramienta acompaña el trabajo realizado en consulta. No sustituye la atención psicológica, médica ni los recursos de urgencia.</footer>'; }
+function copiar(txt,btn){ txt=String(txt).replace(/\\'/g,"'");
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=o;},1400); } }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(function(){fb();}); } else { fb(); }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');ok();}catch(e){} document.body.removeChild(ta); }
+}
+
+/* Re-inicializaciones al renderizar ciertas vistas */
+var _render=render;
+render=function(){ _render(); if(VIEW==='apego') initClasi(); };
+
+/* ---------------- init ---------------- */
+render();
+</script>
+</body>
+</html>
