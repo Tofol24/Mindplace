@@ -85,7 +85,11 @@ window.APRENS_TOOLS = [
 
   { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
     desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a tu cuerpo, modo prueba, revisión semanal y ICE. Nombre y diminutivo editables.",
-    migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" }
+    migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" },
+
+  { id:"estoy_aqui_conmigo", emoji:"🤍", nombre:"Estoy aquí conmigo",
+    desc:"Para adolescentes: entrenar la presencia interna y el apego seguro con una misma tras una ruptura o cuando cuesta sostener la soledad. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia, registro y plan de apoyo (TEC–AIS).",
+    migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
