@@ -215,7 +215,8 @@ function guardar(){
   out.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-/* init */
+/* init: si llega ?frase=… (desde otra herramienta), la precargamos */
+try{ var _q=new URLSearchParams(location.search).get('frase'); if(_q){ _q=_q.replace(/[“”"]/g,'').trim(); if(_q){ sel.frase=_q; var _t=document.getElementById('propia'); if(_t) _t.value=_q; } } }catch(e){}
 renderLista(); renderFondos(); draw();
 </script>
 </body>
