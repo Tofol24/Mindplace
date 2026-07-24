@@ -59,6 +59,9 @@
   .tema-sub{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px;margin:16px 0 8px;}
   .tema-sub span{font-size:16px;}
   .tema-sub:first-of-type{margin-top:4px;}
+  .pdf-row{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 10px;padding-left:4px;}
+  .pdf-chip{display:inline-flex;align-items:center;gap:5px;background:#eef4ec;border:1px solid #d3e2cf;color:#4a7a50;border-radius:20px;padding:7px 13px;font-size:12.5px;font-weight:700;text-decoration:none;}
+  .pdf-chip:active{transform:scale(.97);}
   .masherr{margin-top:4px;}
   .masherr>summary{list-style:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--gris);padding:11px 14px;border:1.6px dashed var(--linia,#dfe5ec);border-radius:14px;background:#fafbfc;display:flex;align-items:center;gap:8px;}
   .masherr>summary::-webkit-details-marker{display:none;}
@@ -461,7 +464,7 @@ const TOOLS=[
   {nombre:"AIS desde el amor",       url:"https://aprens-app.netlify.app/#/tool/ais_amor",         ic:"💚", params:["D","C"],     desc:"Practicar la presencia como acompañamiento, también cuando estás bien."},
   {nombre:"Honestidad emocional",    url:"https://aprens-app.netlify.app/#/tool/honestidad_emocional", ic:"🤍", params:["D","C"], destacar:true, desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, compartir y elegir (una experiencia AIS)."},
   {nombre:"La escalera (exposición)", url:"https://aprens-app.netlify.app/#/tool/escalera_exposicion", ic:"🪜", params:["D","C"], destacar:true, tema:"miedos", desc:"Exposición en vivo gradual: tu escalera de peldaños y, en cada paso, dos llaves — el QUÉ (afrontar) y el CÓMO (acompañarte por dentro con AIS)."},
-  {nombre:"La familia de Koa (cuento)", url:"https://aprens-app.netlify.app/#/tool/cuento_familia", ic:"🐨", params:["D"], peques:true, desc:"Cuento ilustrado para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Con pregunta y gesto en cada página y guía para mamá."},
+  {nombre:"La familia de Koa (cuento)", url:"https://aprens-app.netlify.app/#/tool/cuento_familia", ic:"🐨", params:["D"], peques:true, pdfs:[{l:"Castellano",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-es.pdf"},{l:"Català",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-ca.pdf"}], desc:"Cuento ilustrado para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Con pregunta y gesto en cada página y guía para mamá."},
   {nombre:"La exploradora valiente", url:"https://aprens-app.netlify.app/#/tool/exploradora_valiente", ic:"🗺️", params:["D","C"], peques:true, desc:"Exposición gradual para la ansiedad de separación: escaleras de misiones de valiente, mapa de seguridad y las dos llaves (para madres y padres)."},
   {nombre:"Ritual diario · calma y atención", url:"https://aprens-app.netlify.app/#/tool/ritual_calma", ic:"🌙", params:["L","D"], peques:true, desc:"Ritual diario de audios AIS, normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1 (para regulación y rabietas)."},
   {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], peques:true, desc:"Juegos cortos y visuales para practicar la calma: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
@@ -483,7 +486,14 @@ function toolHTML(t){
   return '<a class="tool" href="'+t.url+'" target="_blank" rel="noopener">'
     +'<span class="tic">'+t.ic+'</span>'
     +'<span class="tbody"><span class="tn">'+esc(t.nombre)+'</span><span class="td">'+esc(t.desc)+'</span></span>'
-    +'<span class="arr">›</span></a>';
+    +'<span class="arr">›</span></a>'
+    + toolPdfs(t);
+}
+function toolPdfs(t){
+  if(!t.pdfs||!t.pdfs.length) return '';
+  return '<div class="pdf-row">'+t.pdfs.map(function(pf){
+    return '<a class="pdf-chip" href="'+pf.u+'" target="_blank" rel="noopener">⬇️ PDF '+esc(pf.l)+'</a>';
+  }).join('')+'</div>';
 }
 
 function getFoco(){
