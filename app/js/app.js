@@ -58,6 +58,34 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  // Historia del mono y el coche (relato → para qué → qué hacer), colapsable
+  function historiaHTML(){
+    return `<details class="hub-story" id="historia">
+      <summary><span class="hs-i">📖</span>Antes de empezar: la historia del mono y el coche</summary>
+      <div class="hs-body">
+        <p>Esta es la idea que da sentido a todo lo demás. <b>Léela primero.</b></p>
+        <p><b>A veces el mono coge el volante.</b> Una emoción intensa toma el control: pisa el acelerador buscando alivio, frena de golpe. Tu vida gira alrededor del alivio inmediato.</p>
+        <p><b>Otras veces lo persigues para vencerlo.</b> Te exiges calma, te riñes por sentir. Pero el miedo no se calma a gritos: cuanto más lo persigues, más corre.</p>
+        <p><b>Y a veces lo metes en el maletero.</b> Lo tapas con móvil, trabajo, comida… Pero lo que escondes no desaparece: solo espera.</p>
+        <p><b>Hay otra forma:</b> sentarlo a tu lado y seguir conduciendo tú. Puedes escucharlo, mirarlo, acompañarlo… y mantener el volante en tus manos. <i>Amar al mono no es obedecerlo: es acompañarlo.</i></p>
+        <div class="hs-quote">«El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.»</div>
+        <div class="hs-acts">
+          <p class="hs-acts-t"><b>¿Y ahora? Según dónde lleves al mono hoy, una herramienta para acompañarlo:</b></p>
+          <a class="hs-act" href="#/tool/bajar_alerta"><span class="se">🚗</span><span class="st">Si coge el volante (reaccionas por impulso)<small>Bajar la alerta · parar antes de actuar</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/ais_amor"><span class="se">🏃</span><span class="st">Si lo persigues (te exiges, te riñes)<small>AIS desde el amor · acompañarte, no controlarte</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/acompanar_sensacion"><span class="se">📦</span><span class="st">Si lo metes en el maletero (lo evitas)<small>Acompañar la sensación · estar con lo que sientes</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/herramienta_diaria"><span class="se">🧡</span><span class="st">Para sentarlo a tu lado (cada día)<small>Herramienta diaria · tu práctica de presencia</small></span><span class="sarr">→</span></a>
+        </div>
+        <a class="hs-pdf" href="assets/pdf/quien-conduce-tu-vida.pdf" target="_blank" rel="noopener" download>📄 Leer la historia completa (PDF ilustrado)</a>
+        <p class="hs-pdfnote">El cuento entero, con sus ilustraciones, para leerlo con calma siempre que quieras.</p>
+        <div class="hs-bridge">
+          <p><b>Solo necesitaba saber que no iba solo.</b> Y ahí está la pregunta de fondo: <i>¿por qué respirar cambia algo?</i> Porque tu mono es un mamífero de manada, y respirar no es relajarte — es <b>volver a aparecer para él</b>.</p>
+          <a href="#/tool/la_manada">🐾 La manada · el porqué de la respiración y el AIS →</a>
+        </div>
+      </div>
+    </details>`;
+  }
+
   function removeExportBar(){ const b=document.getElementById("aprensBar"); if(b) b.remove(); }
 
   function hubCard(t){
@@ -107,6 +135,7 @@
         <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
       </div>
       ${focoBanner}
+      ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
