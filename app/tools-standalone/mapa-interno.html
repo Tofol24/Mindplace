@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#6f9bc0">
+<meta name="theme-color" content="#F4EFE6">
 <title>Mapa de atención interna · APRENS</title>
 <!--
   ════════════════════════════════════════════════════════════════════
@@ -25,31 +25,45 @@
 -->
 <style>
   :root{
-    --bg:#f6f7f3;
-    --bg2:#eaf1f5;
-    --card:#ffffff;
-    --tinta:#39423d;
-    --suau:#7c8079;
-    --azul:#6f9bc0;
-    --azul-d:#456d8c;
-    --azul-bg:#e7eff6;
-    --oro:#caa765;
-    --oro-d:#a07f38;
-    --arena-bg:#f4ecdd;
-    --linia:#e4e3da;
-    --ombra:0 8px 26px rgba(70,90,110,.12);
-    --ombra-s:0 2px 12px rgba(70,90,110,.08);
+    /* Chrome en paleta editorial APRENS (marfil·oliva·terracota). Los colores
+       de las ZONAS del mapa (cuello/pecho/barriga) son independientes (objeto
+       ZONAS en el JS) y se conservan. */
+    --bg:#F4EFE6;
+    --bg2:#e9e3d6;
+    --card:#FBF8F1;
+    --tinta:#2A2622;
+    --suau:#6f665b;
+    --azul:#6E7256;      /* oliva: acento de chrome */
+    --azul-d:#565a41;
+    --azul-bg:#e8ead9;
+    --oro:#a9781f;
+    --oro-d:#8a6410;
+    --arena-bg:#f1e9db;
+    --linia:#D8CDB9;
+    --ombra:0 24px 60px -30px rgba(42,38,34,.5);
+    --ombra-s:0 2px 12px rgba(42,38,34,.08);
     --r:18px;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 260px);
+    font-family:var(--sans);
+    background:var(--bg);
     color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
-    padding:0 16px 90px;
+    padding:0 0 90px;overflow-x:hidden;
   }
-  .wrap{max-width:660px;margin:0 auto}
+  .wrap{max-width:660px;margin:0 auto;padding:0 16px}
+
+  /* Portada editorial (hero con foto), a sangre dentro del contenedor */
+  .phero{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:40vh;max-height:420px;display:flex;align-items:flex-end;overflow:hidden;margin-bottom:20px;background:linear-gradient(150deg,#7d8168 0%,#5f6350 42%,#8a6a52 100%)}
+  .phero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%;z-index:0}
+  .phero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(42,38,34,.28) 0%,rgba(42,38,34,.02) 30%,rgba(42,38,34,.10) 55%,rgba(42,38,34,.74) 100%)}
+  .phero-copy{position:relative;z-index:2;color:#F6ECDD;padding:0 16px 24px;max-width:660px;margin:0 auto;width:100%}
+  .phero .eyebrow{font-family:var(--sans);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#f2d9b8;margin:0 0 12px;font-weight:600}
+  .phero h1{font-family:var(--serif);font-size:clamp(30px,8vw,46px);line-height:1.05;color:#fff;font-weight:600;letter-spacing:-.01em;margin:0;max-width:none;text-shadow:0 2px 22px rgba(20,14,10,.34)}
+  .phero-tag{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.6vw,20px);color:#F6ECDD;max-width:26em;text-shadow:0 1px 12px rgba(20,14,10,.4)}
 
   .screen{display:none;animation:fade .35s ease}
   .screen.active{display:block}
@@ -57,10 +71,10 @@
 
   header{text-align:center;padding:40px 8px 6px}
   .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul-d);background:var(--azul-bg);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
-  h1{font-size:27px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:700;letter-spacing:-.01em}
+  h1{font-family:var(--serif);font-size:27px;line-height:1.24;margin:0 auto;max-width:15em;font-weight:600;letter-spacing:-.01em}
   .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:30em}
 
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--azul);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s,box-shadow .2s;font-family:inherit;box-shadow:0 6px 18px rgba(111,155,192,.32)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:14px;padding:15px 18px;border:0;border-radius:14px;background:var(--azul);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .08s,background .2s,box-shadow .2s;font-family:inherit;box-shadow:0 8px 20px -8px rgba(86,90,65,.5)}
   .btn:active{transform:scale(.98)}
   .btn.ghost{background:#fff;color:var(--azul-d);border:1.6px solid var(--azul);box-shadow:none}
   .btn.oro{background:var(--oro);box-shadow:0 6px 18px rgba(202,167,101,.32)}
@@ -74,13 +88,13 @@
   .back svg{width:17px;height:17px}
 
   .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
-  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .card h2{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:20px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
   .card h3{font-size:16px;margin:18px 0 8px;font-weight:700}
   .card p{margin:8px 0;color:#46504a}
   .card p.lead{color:var(--suau);font-size:14.5px;margin-top:2px}
   .ic{flex:0 0 42px;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--azul-bg);font-size:22px}
 
-  .quote{background:linear-gradient(135deg,var(--azul-bg) 0%,#dbe8f1 100%);border-left:4px solid var(--azul);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--azul-d);margin:14px 0 4px;line-height:1.5}
+  .quote{background:linear-gradient(135deg,var(--azul-bg) 0%,#dde4d2 100%);border-left:4px solid var(--azul);border-radius:0 14px 14px 0;padding:15px 18px;font-size:17px;font-weight:600;color:var(--azul-d);margin:14px 0 4px;line-height:1.5}
   .frase-oro{background:linear-gradient(135deg,var(--arena-bg) 0%,#efe1c8 100%);border-left:4px solid var(--oro);color:var(--oro-d)}
 
   .avis{display:flex;gap:11px;background:var(--arena-bg);border:1px solid #ecdcc0;border-radius:14px;padding:13px 15px;margin-top:14px;font-size:14px;color:#7a5b1e;align-items:flex-start}
@@ -173,11 +187,14 @@
 
 <!-- ══════════════════ 1 · INICIO ══════════════════ -->
 <section class="screen active" id="s-inicio">
-  <header>
-    <span class="kicker">APRENS · AIS / ACT</span>
-    <h1>Mapa de atención interna</h1>
-    <p class="sub">Lleva tu atención dentro de ti usando el cuerpo como mapa. Eliges una zona, la miras… y pruebas a sentirla.</p>
-  </header>
+  <section class="phero">
+    <img class="phero-img" src="assets/editorial/mapa-interno.webp" alt="" onerror="this.remove()">
+    <div class="phero-copy">
+      <p class="eyebrow">APRENS · AIS / ACT</p>
+      <h1>Mapa de atención interna</h1>
+      <p class="phero-tag">Lleva la atención dentro de ti, usando el cuerpo como mapa.</p>
+    </div>
+  </section>
 
   <div class="card">
     <p>A veces «mira hacia dentro» suena abstracto: no sabes a dónde llevar la atención. Este mapa te da un <b>destino</b>. Miras una zona del dibujo y eso ayuda a que tu atención <b>viaje hacia ese lugar real de tu cuerpo</b>.</p>
