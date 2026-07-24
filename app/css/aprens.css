@@ -88,6 +88,17 @@ body{
   padding:2px 7px;border-radius:20px;margin-top:8px;background:var(--azulLt);color:var(--azul)}
 .hub-tag.soon{background:#eceef1;color:var(--gris)}
 
+/* ---- Cabecera de bienvenida con foto ---- */
+.hub-welcome{position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;min-height:190px;display:flex;align-items:flex-end;box-shadow:0 4px 20px rgba(43,38,32,.12)}
+.hub-welcome img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.hub-welcome::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(42,38,34,.12) 0%,rgba(42,38,34,.05) 45%,rgba(42,38,34,.72) 100%)}
+.hub-welcome-copy{position:relative;z-index:1;padding:20px 18px 16px}
+.hub-welcome-copy .htitulo{color:#fff;text-shadow:0 2px 18px rgba(20,14,10,.4);margin-bottom:5px}
+.hub-welcome-copy .hsubt{color:rgba(255,255,255,.92);text-shadow:0 1px 10px rgba(20,14,10,.4)}
+/* ---- Miniatura de sección ---- */
+.hub-sec-thumb{width:38px;height:38px;border-radius:11px;overflow:hidden;flex:0 0 38px;box-shadow:0 2px 8px rgba(43,38,32,.18)}
+.hub-sec-thumb img{width:100%;height:100%;object-fit:cover;object-position:center 32%;display:block}
+
 /* ---- Historia del mono (hub, colapsable) ---- */
 .hub-story{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(43,38,32,.08);border-left:4px solid var(--oro);margin:6px 0 4px;overflow:hidden}
 .hub-story>summary{list-style:none;cursor:pointer;padding:15px 17px;font-family:var(--serif);font-weight:700;font-size:15.5px;color:var(--azul);display:flex;align-items:center;gap:10px}

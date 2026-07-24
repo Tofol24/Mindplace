@@ -7,21 +7,31 @@
 <title>Protocolo progresivo AIS · APRENS</title>
 <style>
 :root{
-  --azul:#1B4F8C; --azulLt:#D6E4F0; --verde:#2E7D5E; --verdeLt:#D4EDDA;
-  --naranja:#E07B39; --rojo:#C0392B; --gris:#6B7280; --fondo:#F0F4F8;
-  --oro:#C8973A; --lila:#7B4FC1;
+  --azul:#565a41; --azulLt:#e8ead9; --verde:#5c7d54; --verdeLt:#e0ead6;
+  --naranja:#C2704F; --rojo:#b0432f; --gris:#6f665b; --fondo:#f1e9db;
+  --oro:#a9781f; --lila:#8a5a4a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;padding-bottom:env(safe-area-inset-bottom)}
-.header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50}
-.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;flex-shrink:0}
-.htitle{font-family:'Playfair Display',serif;font-size:17px;font-weight:700}
+body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;padding-bottom:env(safe-area-inset-bottom);overflow-x:hidden}
+.header{display:none}
+/* Portada editorial (hero con foto) */
+.phero{position:relative;min-height:42vh;max-height:440px;display:flex;align-items:flex-end;overflow:hidden;background:linear-gradient(150deg,#7d8168 0%,#5f6350 42%,#8a6a52 100%)}
+.phero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;z-index:0}
+.phero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(42,38,34,.28) 0%,rgba(42,38,34,.02) 30%,rgba(42,38,34,.10) 55%,rgba(42,38,34,.74) 100%)}
+.phero-copy{position:relative;z-index:2;color:#F6ECDD;padding:0 20px 24px;max-width:680px;margin:0 auto;width:100%}
+.phero .eyebrow{font-family:var(--sans);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#f2d9b8;margin:0 0 12px;font-weight:600}
+.phero h1{font-family:var(--serif);font-size:clamp(28px,7.5vw,44px);line-height:1.06;color:#fff;font-weight:600;letter-spacing:-.01em;margin:0;text-shadow:0 2px 22px rgba(20,14,10,.34)}
+.phero-tag{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.6vw,20px);color:#F6ECDD;max-width:26em;text-shadow:0 1px 12px rgba(20,14,10,.4)}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:var(--serif);flex-shrink:0}
+.htitle{font-family:var(--serif);font-size:17px;font-weight:700}
 .hsub{font-size:10px;opacity:.75;margin-top:1px}
 .wrap{max-width:680px;margin:0 auto;padding:24px 16px calc(60px + env(safe-area-inset-bottom))}
-.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px}
+.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(74,63,48,.08);margin-bottom:18px}
 .ctit{font-weight:600;font-size:13px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
-.hero{background:#fff;border-radius:18px;padding:28px 26px 24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:20px;border-top:4px solid var(--oro)}
-.hero h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--azul);line-height:1.2;margin-bottom:8px}
+.hero{background:#fff;border-radius:18px;padding:28px 26px 24px;box-shadow:0 4px 24px rgba(74,63,48,.08);margin-bottom:20px;border-top:4px solid var(--oro)}
+.hero h1{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--azul);line-height:1.2;margin-bottom:8px}
 .hero p{font-size:13.5px;color:#444;line-height:1.65;margin-bottom:10px}
 .frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:13px 16px;line-height:1.6;margin-top:14px}
 .aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:16px}
@@ -31,21 +41,21 @@ body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 
 .canal.act{background:#fff;border:2px solid var(--oro);box-shadow:0 2px 12px rgba(200,151,58,.18)}
 .canal span{font-size:11.5px;color:var(--gris);line-height:1.4;display:block}
 .canal.lk{text-decoration:none;cursor:pointer;transition:all .18s}
-.canal.lk:hover{border-color:var(--azul);box-shadow:0 4px 14px rgba(27,79,140,.14);transform:translateY(-1px)}
+.canal.lk:hover{border-color:var(--azul);box-shadow:0 4px 14px rgba(74,63,48,.14);transform:translateY(-1px)}
 .canal .go{font-size:11px;font-weight:600;color:var(--azul);margin-top:7px}
 label.fl{display:block;font-size:12.5px;color:var(--gris);font-weight:500;margin-bottom:8px}
-input[type=date]{font-family:'DM Sans',sans-serif;font-size:15px;border:2px solid #E3EAF3;border-radius:12px;padding:11px 14px;width:100%;color:#1a1a2e;background:#fff}
+input[type=date]{font-family:var(--sans);font-size:15px;border:2px solid #E3EAF3;border-radius:12px;padding:11px 14px;width:100%;color:#1a1a2e;background:#fff}
 input[type=date]:focus{outline:none;border-color:var(--azul)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
 .stat{background:var(--fondo);border-radius:14px;padding:16px 14px;text-align:center;border:1px solid #E8EFF7}
 .stat.big{grid-column:1/-1;background:var(--azul);color:#fff;border:none}
-.stat .num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--azul);line-height:1}
+.stat .num{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--azul);line-height:1}
 .stat.big .num{color:#fff;font-size:40px}
 .stat .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--gris);margin-top:6px}
 .stat.big .lbl{color:rgba(255,255,255,.85)}
 .fases{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
-.fp{flex:1;min-width:54px;border:2px solid #E3EAF3;background:#fff;border-radius:14px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif}
-.fp .fn{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gris);line-height:1}
+.fp{flex:1;min-width:54px;border:2px solid #E3EAF3;background:#fff;border-radius:14px;padding:11px 4px;text-align:center;cursor:pointer;transition:all .18s;font-family:var(--sans)}
+.fp .fn{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gris);line-height:1}
 .fp .fl2{font-size:9px;color:var(--gris);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
 .fp.sel{border-color:var(--azul);background:var(--azulLt)}
 .fp.sel .fn{color:var(--azul)}
@@ -53,8 +63,8 @@ input[type=date]:focus{outline:none;border-color:var(--azul)}
 .fp .rectag{display:none;font-size:8px;background:var(--oro);color:#fff;border-radius:8px;padding:1px 5px;margin-top:4px;letter-spacing:.3px}
 .fp.rec .rectag{display:inline-block}
 .phead{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
-.pbadge{width:46px;height:46px;border-radius:14px;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;flex-shrink:0}
-.ptit{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--azul);line-height:1.15}
+.pbadge{width:46px;height:46px;border-radius:14px;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;font-weight:700;flex-shrink:0}
+.ptit{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--azul);line-height:1.15}
 .psub{font-size:12.5px;color:var(--oro);font-style:italic;margin-top:2px}
 .meta{display:inline-block;font-size:11px;background:var(--fondo);color:var(--gris);border-radius:20px;padding:4px 12px;margin:12px 6px 4px 0}
 .psec{margin-top:14px}
@@ -71,7 +81,7 @@ audio{width:100%;margin-top:6px}
 .zone .zbg{fill-opacity:.10;transition:fill-opacity .2s}
 .zone .organ{transition:filter .25s}
 .leyenda{text-align:center;font-size:12px;color:var(--gris);line-height:1.5;margin-top:4px}
-.btn{border:none;border-radius:30px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-appearance:none;touch-action:manipulation}
+.btn{border:none;border-radius:30px;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-appearance:none;touch-action:manipulation}
 .bpg{background:var(--verde);color:#fff;padding:15px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3);width:100%}
 .bpg.done{background:#9fb8ac;box-shadow:none}
 .bs{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:11px 22px;font-size:13px}
@@ -95,6 +105,14 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 </style>
 </head>
 <body>
+<section class="phero">
+  <img class="phero-img" src="assets/editorial/protocolo-ais.webp" alt="" onerror="this.remove()">
+  <div class="phero-copy">
+    <p class="eyebrow">APRENS · AIS · canal auditivo</p>
+    <h1>Protocolo progresivo AIS</h1>
+    <p class="phero-tag">Entrenar la atención hacia dentro, por el oído.</p>
+  </div>
+</section>
 <div class="header">
   <div class="hlogo">ap</div>
   <div>
