@@ -16,8 +16,9 @@
   // Agrupación del hub por tipo/tema (fuente única). Cada herramienta se lista
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
-    { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La metáfora de la manada: para qué respiras y para qué sirve todo esto.",
-      ids:["la_manada"] },
+    { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
+      ids:["la_manada"],
+      pdfs:[{ emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo, la historia del mono (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" }] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       ids:["ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
     { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo?",
@@ -40,15 +41,20 @@
 
   // Material transversal (documentos base, útiles para todas las herramientas)
   const DOCS = [
-    { emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" },
-    { emoji:"🧰", nombre:"Eines AIS bàsiques", desc:"Les eines AIS bàsiques (en català).", url:"assets/pdf/eines-ais-basiques.pdf" }
+    { emoji:"🧰", nombre:"Herramientas AIS básicas", desc:"Las herramientas AIS básicas, para tenerlas siempre a mano.", url:"assets/pdf/eines-ais-basiques.pdf" }
   ];
+  function pdfCard(d){
+    return `<a class="hub-card" href="${d.url}" target="_blank" rel="noopener" download><span class="hub-emoji">${d.emoji}</span>
+      <span class="hub-name">${d.nombre}</span><span class="hub-desc">${d.desc}</span><span class="hub-tag">PDF ↓</span></a>`;
+  }
   function docsHTML(){
     if(!DOCS.length) return "";
-    const cards = DOCS.map(d=>`<a class="hub-card" href="${d.url}" target="_blank" rel="noopener" download><span class="hub-emoji">${d.emoji}</span>
-      <span class="hub-name">${d.nombre}</span><span class="hub-desc">${d.desc}</span><span class="hub-tag">PDF ↓</span></a>`).join("");
+    const cards = DOCS.map(pdfCard).join("");
+    const intro = DOCS.length===1
+      ? "Documento base, útil para todas las herramientas. Puedes verlo o descargarlo en PDF."
+      : "Documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.";
     return `<div class="hub-sec"><span class="hub-sec-e">📄</span><span class="hub-sec-t">Material de apoyo</span></div>
-      <div class="hub-sec-d">Dos documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.</div>
+      <div class="hub-sec-d">${intro}</div>
       <div class="hub-grid">${cards}</div>`;
   }
 
@@ -77,11 +83,13 @@
     let secciones = "";
     GRUPOS.forEach(g=>{
       const gtools = g.ids.map(id=>byId[id]).filter(Boolean);
-      if(!gtools.length) return;
+      const gpdfs = g.pdfs || [];
+      if(!gtools.length && !gpdfs.length) return;
       gtools.forEach(t=>{ usados[t.id]=1; });
+      const cards = gtools.map(hubCard).join("") + gpdfs.map(pdfCard).join("");
       secciones += `<div class="hub-sec"><span class="hub-sec-e">${g.emoji}</span><span class="hub-sec-t">${g.label}</span></div>
         <div class="hub-sec-d">${g.desc}</div>
-        <div class="hub-grid">${gtools.map(hubCard).join("")}</div>`;
+        <div class="hub-grid">${cards}</div>`;
     });
     const otras = tools.filter(t=>!usados[t.id]);
     if(otras.length){
