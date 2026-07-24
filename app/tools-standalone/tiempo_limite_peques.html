@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F4EFE6">
+<title>El tiempo límite · APRENS</title>
+<style>
+  :root{
+    --bg:#F4EFE6; --card:#FBF8F1; --tinta:#2A2622; --suau:#6f665b;
+    --verde:#6E7256; --verde-d:#565a41; --verde-lt:#e8ead9;
+    --terra:#b87a5e; --terra-d:#8f5b3f; --terra-lt:#f2e4d9;
+    --oro:#a9781f; --linia:#e2d8c4;
+    --ombra:0 10px 30px rgba(50,42,32,.10); --ombra-s:0 2px 12px rgba(50,42,32,.07);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--tinta);line-height:1.62;font-size:16.5px;
+    -webkit-font-smoothing:antialiased;padding:0 0 calc(46px + env(safe-area-inset-bottom));overflow-x:hidden}
+  .wrap{max-width:620px;margin:0 auto;padding:0 16px}
+
+  /* toggle idioma */
+  .langbar{position:sticky;top:0;z-index:30;display:flex;justify-content:flex-end;gap:0;
+    padding:10px 16px;background:linear-gradient(180deg,rgba(244,239,230,.96),rgba(244,239,230,.75) 70%,rgba(244,239,230,0));backdrop-filter:saturate(120%) blur(3px)}
+  .lang{display:inline-flex;border:1px solid var(--linia);border-radius:999px;overflow:hidden;background:var(--card);box-shadow:var(--ombra-s)}
+  .lang button{border:0;background:transparent;font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.06em;
+    padding:7px 15px;cursor:pointer;color:var(--suau)}
+  .lang button.on{background:var(--verde);color:#fff}
+
+  /* portada */
+  header.hero{text-align:center;padding:20px 8px 4px}
+  .eyebrow{display:inline-block;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--terra-d);
+    background:var(--terra-lt);border:1px solid var(--linia);padding:5px 13px;border-radius:999px;font-weight:700;margin-bottom:16px}
+  h1{font-family:var(--serif);font-size:32px;line-height:1.14;margin:0 auto;max-width:13em;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:26em}
+
+  .esc{display:flex;justify-content:center;margin:14px 0 2px}
+  .esc svg{width:100%;max-width:280px;height:auto}
+
+  /* bloque objetivos */
+  .objs{background:var(--verde-lt);border:1px solid #d3ddc7;border-radius:var(--r);padding:16px 18px;margin:16px 0}
+  .objs .ol{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--verde-d);margin-bottom:8px}
+  .objs ul{margin:0;padding-left:18px}
+  .objs li{margin:5px 0;font-size:14.5px;color:#3f4a37}
+
+  /* pasos */
+  .step{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:20px 19px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .step .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+    background:var(--verde);color:#fff;font-family:var(--serif);font-weight:700;font-size:16px;flex:0 0 auto}
+  .step.warm .n{background:var(--terra)}
+  .step h2{font-family:var(--serif);font-size:20px;margin:0;font-weight:600;line-height:1.25}
+  .step .hd{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .step p{margin:9px 0}
+  .step p b{color:var(--verde-d)}
+  .step.warm p b{color:var(--terra-d)}
+  .lead{color:var(--suau)}
+  ul.tidy{margin:8px 0;padding-left:20px}
+  ul.tidy li{margin:4px 0}
+
+  /* frase modelo */
+  .say{font-family:var(--serif);font-style:italic;font-size:17.5px;line-height:1.5;color:var(--verde-d);
+    background:var(--verde-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:14px 16px;margin:12px 0}
+  .say.warm{color:var(--terra-d);background:var(--terra-lt);border-left-color:var(--terra)}
+  .say .who{display:block;font-family:var(--sans);font-style:normal;font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;opacity:.7;margin-bottom:5px}
+
+  /* aviso / nota */
+  .note{display:flex;gap:11px;background:#fff8ec;border:1px solid #f0e2c4;border-radius:14px;padding:13px 15px;margin:12px 0;font-size:14px;color:#6f561f;line-height:1.55}
+  .note .e{font-size:18px;line-height:1.4;flex:0 0 auto}
+
+  /* core / cierre */
+  .core{background:linear-gradient(155deg,var(--verde),#4f5540);color:#fff;border-radius:16px;padding:18px 20px;margin:18px 0;
+    font-family:var(--serif);font-size:18.5px;line-height:1.45}
+  .core .who{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.8;margin-bottom:6px}
+
+  .cta{margin:16px 0}
+  .cta a{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--linia);border-radius:14px;
+    padding:13px 15px;color:var(--tinta);text-decoration:none;font-weight:600;font-size:14.5px;box-shadow:var(--ombra-s);margin:8px 0}
+  .cta a .ce{font-size:20px;flex:0 0 auto}
+  .cta a .cd{display:block;font-weight:400;font-size:12.5px;color:var(--suau);margin-top:1px}
+  .cta a .arr{margin-left:auto;color:var(--suau)}
+
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:8px 0 0;padding:13px 16px;border:0;
+    border-radius:13px;background:var(--terra);color:#fff;font-family:var(--sans);font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:var(--ombra-s)}
+  .btn:active{transform:scale(.99)}
+  .btn.ok{background:var(--verde)}
+
+  .sec-tag{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;font-weight:800;color:var(--terra-d);margin:26px 4px 2px}
+
+  footer{text-align:center;color:var(--suau);font-size:12.5px;margin:26px 0 8px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--verde-d)}
+  @media(max-width:380px){h1{font-size:28px}}
+</style>
+</head>
+<body>
+
+<div class="langbar">
+  <div class="lang" role="group" aria-label="Idioma / Idioma">
+    <button id="btEs" class="on" onclick="setLang('es')">CAST</button>
+    <button id="btCa" onclick="setLang('ca')">CAT</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow" id="eyebrow"></span>
+    <h1 id="h1"></h1>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <div class="esc" aria-hidden="true">
+    <svg viewBox="0 0 300 150" role="img">
+      <ellipse cx="150" cy="134" rx="96" ry="11" fill="#e3d8c6" opacity=".6"/>
+      <!-- figura adulta -->
+      <g transform="translate(126,52)">
+        <ellipse cx="0" cy="42" rx="26" ry="34" fill="#b7a488"/>
+        <circle cx="0" cy="0" r="19" fill="#c8b79b"/>
+        <circle cx="-6" cy="-2" r="2.1" fill="#3a3128"/><circle cx="6" cy="-2" r="2.1" fill="#3a3128"/>
+        <path d="M-6,7 q6,5 12,0" stroke="#7d6a4e" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- peque abrazando -->
+      <g transform="translate(168,84)">
+        <ellipse cx="0" cy="26" rx="18" ry="24" fill="#cf9270"/>
+        <circle cx="0" cy="0" r="14" fill="#e2ad8c"/>
+        <circle cx="-4.5" cy="-1" r="1.7" fill="#3a3128"/><circle cx="4.5" cy="-1" r="1.7" fill="#3a3128"/>
+        <path d="M-4,5 q4,4 8,0" stroke="#9c6a49" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <path d="M-14,18 q-16,-4 -26,4" stroke="#cf9270" stroke-width="7" fill="none" stroke-linecap="round"/>
+      </g>
+      <path d="M150,70 q4,-9 9,-2 q5,-7 9,2 q0,7 -9,13 q-9,-6 -9,-13 Z" fill="#c98f7a"/>
+    </svg>
+  </div>
+
+  <div id="content"></div>
+
+  <footer><b>Centre APRENS</b> · TEC · AIS<br><span id="foot"></span></footer>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   El tiempo límite (peques) · APRENS — guía para familias.
+   Honestidad emocional primero, luego entrenamiento de inicio
+   por voluntad propia (funciones ejecutivas). Bilingüe ES/CA.
+   Sin datos, sin red: es material de lectura.
+   ============================================================ */
+
+var T = {
+  es: {
+    eyebrow: "APRENS · Peques y familias",
+    h1: "El tiempo límite",
+    sub: "Enseñar a tu peque a empezar por sí mismo — desde la honestidad, no desde el grito.",
+    intro: [
+      {t:"p", h:"Tu peque también tiene un <b>mono</b>: la parte que siente y reacciona antes de pensar. No aprende a arrancar una tarea por miedo, sino cuando nota que tú —su figura de apego— <b>permaneces serena y a su lado</b> aunque cueste."},
+      {t:"p", h:"Aquí entrenáis dos cosas, en este orden: primero <b>tu honestidad emocional</b> (aparecer para tu propio mono y compartir con él), y solo después <b>el tiempo límite</b> (que su mono aprenda a empezar solo)."}
+    ],
+    objsTitle: "Para qué sirve",
+    objs: [
+      "Entrenar la capacidad de <b>empezar por voluntad propia</b> (funciones ejecutivas).",
+      "Mejorar las rutinas y reducir los conflictos del día a día.",
+      "Aprender a <b>convivir con la frustración</b> sin ser rescatado.",
+      "Proteger su autoestima poniendo límites claros y respetuosos."
+    ],
+    tagBefore: "Primero · el paso que lo cambia todo",
+    steps0: [
+      {warm:true, n:"0", tit:"La honestidad emocional, antes de nada",
+       blocks:[
+        {t:"p", h:"Le pides que recoja o que se ponga el pijama. Lo repites una vez y no hace caso. <b>Antes de insistir, subir el tono o enfadarte</b>, para y haz otra cosa:"},
+        {t:"p", h:"Ponte la mano en la barriga y dile, <b>sintiéndolo de verdad</b>:"},
+        {t:"say", warm:true, who:"Le dices, con la mano en la barriga", h:"“No sé por qué, pero tengo una sensación aquí, en la barriga… ¿me das un abrazo?”"},
+        {t:"p", h:"Al hacerlo de manera sentida, <b>validas el dolor</b> que te genera su conducta y le muestras a tu mono que ese dolor lo <b>priorizas y lo integras en la relación</b>, desde la <b>complicidad</b>, no desde la culpa."},
+        {t:"note", e:"🫂", h:"Si en vez de esto sigues repitiendo o justificando tu malestar por su comportamiento, aparece la culpa. El abrazo transforma ese dolor en complicidad."},
+        {t:"p", h:"Después del abrazo, <b>vuelve a pedirle la conducta</b>. Esta vez la orden ya <b>no está condicionada por el dolor</b>: no nace de la culpa, sino del vínculo."},
+        {t:"p", h:"Si aun así no la hace, entonces sí: pasáis al <b>tiempo límite</b>.", lead:true}
+       ]}
+    ],
+    tagTech: "Después · el tiempo límite (2 minutos)",
+    steps: [
+      {n:"1", tit:"El tiempo límite: 2 minutos de entrenamiento interior",
+       blocks:[
+        {t:"p", h:"Cuando das una consigna clara, tu peque tiene <b>2 minutos</b> para empezarla <b>sin que tú la repitas</b> ni insistas."},
+        {t:"p", h:"En esos 2 minutos su cerebro entrena:"},
+        {t:"list", items:["Reconocer el rechazo interno a la tarea.","Planificar cómo hacerla.","Calcular el tiempo que le queda.","Frenar la resistencia.","Enfocar la atención por voluntad propia."]},
+        {t:"note", e:"🎯", h:"El objetivo no es que lo haga por miedo, sino que aprenda a <b>empezar por sí mismo</b>."}
+       ]},
+      {n:"2", tit:"No repetir, no insistir, no gritar",
+       blocks:[
+        {t:"p", h:"Los avisos repetidos, los sermones y los gritos son <b>“cacahuetes para el mono”</b>: alimentan su cerebro instintivo y le quitan el trabajo de arrancar solo."},
+        {t:"p", h:"Tu actitud:"},
+        {t:"list", items:["Hablar <b>una sola vez</b>.","Mantener el silencio y la confianza.","<b>Regularte por dentro</b> para no actuar desde la frustración."]},
+        {t:"note", e:"🫁", h:"Esos 2 minutos también son tu práctica de AIS: respira y aparece para tu mono, para dar desde la calma y no desde la reacción."}
+       ]},
+      {n:"3", tit:"La consecuencia, si no empieza en 2 minutos",
+       blocks:[
+        {t:"p", h:"Acordada <b>de antemano</b> y <b>proporcional</b> (por ejemplo, perder un privilegio temporal). Cuando pase el tiempo, con tono sereno:"},
+        {t:"say", who:"Con tono sereno", h:"“Cariño, el tiempo ha pasado. Hoy te quedas sin ______.”"},
+        {t:"p", h:"La actitud es <b>serena, no punitiva</b>. No es un castigo desde la rabia: es una consecuencia acordada."}
+       ]},
+      {n:"4", tit:"Acompañar la frustración de la sanción",
+       blocks:[
+        {t:"p", h:"Es normal que aparezcan rabia, gritos o incluso insultos cuando aplicas la consecuencia. El objetivo es que aprenda a <b>convivir con esa emoción</b> sin que tú se la calmes discutiendo, gritando o aflojando."},
+        {t:"say", who:"Frase compasiva", h:"“Entiendo que estás enfadado. Entiendo que tienes mucho dolor dentro para decirme esto.”"}
+       ]},
+      {n:"5", tit:"Límite ante el comportamiento irrespetuoso",
+       blocks:[
+        {t:"p", h:"No toleramos el maltrato, pero <b>no lo confrontamos en caliente</b>. Con calma y firmeza:"},
+        {t:"say", who:"Clara y firme", h:"“Yo no te hablaré así. Tú sabrás lo que haces.”"},
+        {t:"p", h:"Para esto, <b>antes</b> hay que haber acordado en familia:"},
+        {t:"list", items:["Qué conductas se consideran irrespetuosas (insultar, gritar, agredir, tirar objetos…).","Cuál será la consecuencia, proporcional y concreta."]}
+       ]},
+      {n:"6", tit:"Diferenciar la emoción de la conducta",
+       blocks:[
+        {t:"p", h:"Sancionamos <b>la conducta</b>, nunca la emoción ni a la persona."},
+        {t:"list", items:["✅ Se <b>puede</b> estar enfadado, frustrado, triste…","❌ No se <b>puede</b> insultar, pegar o faltar al respeto."]},
+        {t:"note", e:"🔐", h:"Este mensaje protege su autoestima mientras estructura su comportamiento."}
+       ]}
+    ],
+    coreWho: "Para recordar",
+    core: "“No necesito calmar tu malestar con gritos ni con concesiones. Tu cerebro puede aprender a convivir con la frustración y decidir con responsabilidad.”",
+    acuerdoTag: "Antes de empezar",
+    acuerdoTit: "El acuerdo previo (en frío)",
+    acuerdo: [
+      {t:"p", h:"Esta técnica se acuerda <b>antes</b>, en un momento tranquilo, no en mitad del conflicto. Dejad claro entre las figuras de apego:"},
+      {t:"list", items:["Las consignas habituales (recoger, pijama, deberes…).","La consecuencia proporcional de cada una.","Qué conductas son irrespetuosas y su consecuencia.","Que <b>los dos</b> usaréis el mismo guion, con el mismo tono."]}
+    ],
+    ctaTag: "Tu propio AIS, mientras tanto",
+    cta: [
+      {e:"🐾", url:"../index.html#/tool/la_manada", tit:"La manada · el porqué", d:"Por qué respirar y aparecer para tu mono cambia el vínculo."},
+      {e:"🫁", url:"../index.html#/tool/herramienta_diaria", tit:"Respiración diaria", d:"Para regularte por dentro antes de dar la consigna."},
+      {e:"🤍", url:"../index.html#/tool/ais_amor", tit:"AIS desde el amor", d:"Acompañarte a ti misma en el proceso, no exigirte."}
+    ],
+    shareBtn: "📋 Copiar el guion para compartirlo",
+    shareOk: "¡Copiado!",
+    foot: "Material de acompañamiento para familias. Se interpreta dentro de tu proceso en consulta.",
+    shareText: [
+      "EL TIEMPO LÍMITE · APRENS — guion para familias",
+      "",
+      "0) ANTES DE NADA — Honestidad emocional:",
+      "   Al repetir una vez sin respuesta, mano en la barriga y, sintiéndolo:",
+      "   \"No sé por qué, pero tengo una sensación en la barriga… ¿me das un abrazo?\"",
+      "   Validas tu dolor y lo integras desde la complicidad, no la culpa.",
+      "   Después, vuelve a pedir la conducta (ya sin dolor de fondo).",
+      "",
+      "Si aún no la hace → TIEMPO LÍMITE (2 min):",
+      "1) 2 minutos para empezar, sin repetir.",
+      "2) No repetir, no insistir, no gritar. Hablar una vez y regularte.",
+      "3) Consecuencia acordada y serena: \"Cariño, el tiempo ha pasado. Hoy te quedas sin ___.\"",
+      "4) Acompañar la frustración: \"Entiendo que estás enfadado. Entiendo que tienes mucho dolor dentro para decirme esto.\"",
+      "5) Ante falta de respeto: \"Yo no te hablaré así. Tú sabrás lo que haces.\"",
+      "6) Se permite la emoción; no la conducta (insultar/pegar).",
+      "",
+      "\"Tu cerebro puede aprender a convivir con la frustración y decidir con responsabilidad.\""
+    ]
+  },
+  ca: {
+    eyebrow: "APRENS · Petits i famílies",
+    h1: "El temps límit",
+    sub: "Ensenyar al teu petit a començar per ell mateix — des de l’honestedat, no des del crit.",
+    intro: [
+      {t:"p", h:"El teu petit també té un <b>mono</b>: la part que sent i reacciona abans de pensar. No aprèn a engegar una tasca per por, sinó quan nota que tu —la seva figura d’aferrament— <b>hi ets serena i al seu costat</b> encara que costi."},
+      {t:"p", h:"Aquí entreneu dues coses, en aquest ordre: primer <b>la teva honestedat emocional</b> (aparèixer per al teu propi mono i compartir-hi), i només després <b>el temps límit</b> (que el seu mono aprengui a començar sol)."}
+    ],
+    objsTitle: "Per a què serveix",
+    objs: [
+      "Entrenar la capacitat de <b>començar per voluntat pròpia</b> (funcions executives).",
+      "Millorar les rutines i reduir els conflictes del dia a dia.",
+      "Aprendre a <b>conviure amb la frustració</b> sense ser rescatat.",
+      "Protegir la seva autoestima posant límits clars i respectuosos."
+    ],
+    tagBefore: "Primer · el pas que ho canvia tot",
+    steps0: [
+      {warm:true, n:"0", tit:"L’honestedat emocional, abans de res",
+       blocks:[
+        {t:"p", h:"Li demanes que reculli o que es posi el pijama. Ho repeteixes un cop i no fa cas. <b>Abans d’insistir, apujar el to o enfadar-te</b>, atura’t i fes una altra cosa:"},
+        {t:"p", h:"Posa’t la mà a la panxa i digues-li, <b>sentint-ho de debò</b>:"},
+        {t:"say", warm:true, who:"Li dius, amb la mà a la panxa", h:"“No sé per què, però tinc una sensació aquí, a la panxa… em fas una abraçada?”"},
+        {t:"p", h:"En fer-ho de manera sentida, <b>validis el dolor</b> que et genera la seva conducta i li mostres al teu mono que aquest dolor el <b>prioritzes i l’integres en la relació</b>, des de la <b>complicitat</b>, no des de la culpa."},
+        {t:"note", e:"🫂", h:"Si en comptes d’això segueixes repetint o justificant el teu malestar pel seu comportament, apareix la culpa. L’abraçada transforma aquest dolor en complicitat."},
+        {t:"p", h:"Després de l’abraçada, <b>torna a demanar-li la conducta</b>. Aquesta vegada l’ordre ja <b>no està condicionada pel dolor</b>: no neix de la culpa, sinó del vincle."},
+        {t:"p", h:"Si tot i així no la fa, aleshores sí: passeu al <b>temps límit</b>.", lead:true}
+       ]}
+    ],
+    tagTech: "Després · el temps límit (2 minuts)",
+    steps: [
+      {n:"1", tit:"El temps límit: 2 minuts d’entrenament interior",
+       blocks:[
+        {t:"p", h:"Quan dones una consigna clara, el teu petit té <b>2 minuts</b> per començar-la <b>sense que tu la repeteixis</b> ni insisteixis."},
+        {t:"p", h:"En aquests 2 minuts el seu cervell entrena:"},
+        {t:"list", items:["Reconèixer el rebuig intern a la tasca.","Planificar com fer-la.","Calcular el temps que li queda.","Frenar la resistència.","Focalitzar l’atenció per voluntat pròpia."]},
+        {t:"note", e:"🎯", h:"L’objectiu no és que ho faci per por, sinó que aprengui a <b>començar per ell mateix</b>."}
+       ]},
+      {n:"2", tit:"No repetir, no insistir, no cridar",
+       blocks:[
+        {t:"p", h:"Els avisos repetits, els sermons i els crits són <b>“cacauets per al mono”</b>: alimenten el seu cervell instintiu i li treuen la feina d’engegar sol."},
+        {t:"p", h:"La teva actitud:"},
+        {t:"list", items:["Parlar <b>una sola vegada</b>.","Mantenir el silenci i la confiança.","<b>Regular-te per dins</b> per no actuar des de la frustració."]},
+        {t:"note", e:"🫁", h:"Aquests 2 minuts també són la teva pràctica d’AIS: respira i apareix per al teu mono, per donar des de la calma i no des de la reacció."}
+       ]},
+      {n:"3", tit:"La conseqüència, si no comença en 2 minuts",
+       blocks:[
+        {t:"p", h:"Acordada <b>abans</b> i <b>proporcional</b> (per exemple, perdre un privilegi temporal). Quan passi el temps, amb to serè:"},
+        {t:"say", who:"Amb to serè", h:"“Carinyo, el temps ha passat. Avui et quedes sense ______.”"},
+        {t:"p", h:"L’actitud és <b>serena, no punitiva</b>. No és un càstig des de la ràbia: és una conseqüència acordada."}
+       ]},
+      {n:"4", tit:"Acompanyar la frustració de la sanció",
+       blocks:[
+        {t:"p", h:"És normal que apareguin ràbia, crits o fins i tot insults quan apliques la conseqüència. L’objectiu és que aprengui a <b>conviure amb aquesta emoció</b> sense que tu l’hi calmis discutint, cridant o afluixant."},
+        {t:"say", who:"Frase compassiva", h:"“Entenc que estàs enfadat. Entenc que tens molt de dolor dins per dir-me això.”"}
+       ]},
+      {n:"5", tit:"Límit davant el comportament irrespectuós",
+       blocks:[
+        {t:"p", h:"No tolerem el maltractament, però <b>no el confrontem en calent</b>. Amb calma i fermesa:"},
+        {t:"say", who:"Clara i ferma", h:"“Jo no et parlaré així. Tu sabràs el que fas.”"},
+        {t:"p", h:"Per a això, <b>abans</b> cal haver acordat en família:"},
+        {t:"list", items:["Quins comportaments es consideren irrespectuosos (insultar, cridar, agredir, tirar objectes…).","Quina serà la conseqüència, proporcional i concreta."]}
+       ]},
+      {n:"6", tit:"Diferenciar l’emoció de la conducta",
+       blocks:[
+        {t:"p", h:"Sancionem <b>la conducta</b>, mai l’emoció ni la persona."},
+        {t:"list", items:["✅ Es <b>pot</b> estar enfadat, frustrat, trist…","❌ No es <b>pot</b> insultar, pegar o faltar al respecte."]},
+        {t:"note", e:"🔐", h:"Aquest missatge protegeix la seva autoestima mentre estructura el seu comportament."}
+       ]}
+    ],
+    coreWho: "Per recordar",
+    core: "“No necessito calmar el teu malestar amb crits o concessions. El teu cervell pot aprendre a conviure amb la frustració i decidir amb responsabilitat.”",
+    acuerdoTag: "Abans de començar",
+    acuerdoTit: "L’acord previ (en fred)",
+    acuerdo: [
+      {t:"p", h:"Aquesta tècnica s’acorda <b>abans</b>, en un moment tranquil, no enmig del conflicte. Deixeu clar entre les figures d’aferrament:"},
+      {t:"list", items:["Les consignes habituals (recollir, pijama, deures…).","La conseqüència proporcional de cadascuna.","Quins comportaments són irrespectuosos i la seva conseqüència.","Que <b>tots dos</b> fareu servir el mateix guió, amb el mateix to."]}
+    ],
+    ctaTag: "El teu propi AIS, mentrestant",
+    cta: [
+      {e:"🐾", url:"../index.html#/tool/la_manada", tit:"La manada · el perquè", d:"Per què respirar i aparèixer per al teu mono canvia el vincle."},
+      {e:"🫁", url:"../index.html#/tool/herramienta_diaria", tit:"Respiració diària", d:"Per regular-te per dins abans de donar la consigna."},
+      {e:"🤍", url:"../index.html#/tool/ais_amor", tit:"AIS des de l’amor", d:"Acompanyar-te a tu mateixa en el procés, no exigir-te."}
+    ],
+    shareBtn: "📋 Copiar el guió per compartir-lo",
+    shareOk: "Copiat!",
+    foot: "Material d’acompanyament per a famílies. S’interpreta dins del teu procés a consulta.",
+    shareText: [
+      "EL TEMPS LÍMIT · APRENS — guió per a famílies",
+      "",
+      "0) ABANS DE RES — Honestedat emocional:",
+      "   En repetir un cop sense resposta, mà a la panxa i, sentint-ho:",
+      "   \"No sé per què, però tinc una sensació a la panxa… em fas una abraçada?\"",
+      "   Valides el teu dolor i l’integres des de la complicitat, no la culpa.",
+      "   Després, torna a demanar la conducta (ja sense dolor de fons).",
+      "",
+      "Si encara no la fa → TEMPS LÍMIT (2 min):",
+      "1) 2 minuts per començar, sense repetir.",
+      "2) No repetir, no insistir, no cridar. Parlar un cop i regular-te.",
+      "3) Conseqüència acordada i serena: \"Carinyo, el temps ha passat. Avui et quedes sense ___.\"",
+      "4) Acompanyar la frustració: \"Entenc que estàs enfadat. Entenc que tens molt de dolor dins per dir-me això.\"",
+      "5) Davant la manca de respecte: \"Jo no et parlaré així. Tu sabràs el que fas.\"",
+      "6) Es permet l’emoció; no la conducta (insultar/pegar).",
+      "",
+      "\"El teu cervell pot aprendre a conviure amb la frustració i decidir amb responsabilitat.\""
+    ]
+  }
+};
+
+var LANG = "es";
+
+function esc(s){ return s; } // el contenido es de confianza (definido arriba)
+
+function blockHTML(b, warm){
+  if(b.t==="p") return '<p'+(b.lead?' class="lead"':'')+'>'+b.h+'</p>';
+  if(b.t==="say") return '<div class="say'+(b.warm?' warm':'')+'">'+(b.who?'<span class="who">'+b.who+'</span>':'')+b.h+'</div>';
+  if(b.t==="note") return '<div class="note"><span class="e">'+(b.e||"💡")+'</span><span>'+b.h+'</span></div>';
+  if(b.t==="list") return '<ul class="tidy">'+b.items.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul>';
+  return '';
+}
+function stepHTML(s){
+  var body = s.blocks.map(function(b){return blockHTML(b, s.warm);}).join('');
+  return '<div class="step'+(s.warm?' warm':'')+'">'
+    + '<div class="hd"><span class="n">'+s.n+'</span><h2>'+s.tit+'</h2></div>'
+    + body + '</div>';
+}
+
+function render(){
+  var d = T[LANG];
+  document.documentElement.lang = LANG;
+  document.getElementById("eyebrow").innerHTML = d.eyebrow;
+  document.getElementById("h1").textContent = d.h1;
+  document.getElementById("sub").textContent = d.sub;
+  document.getElementById("foot").textContent = d.foot;
+
+  var html = "";
+  d.intro.forEach(function(b){ html += blockHTML(b); });
+
+  html += '<div class="objs"><div class="ol">'+d.objsTitle+'</div><ul>'
+        + d.objs.map(function(o){return '<li>'+o+'</li>';}).join('') + '</ul></div>';
+
+  html += '<div class="sec-tag">'+d.tagBefore+'</div>';
+  d.steps0.forEach(function(s){ html += stepHTML(s); });
+
+  html += '<div class="sec-tag">'+d.tagTech+'</div>';
+  d.steps.forEach(function(s){ html += stepHTML(s); });
+
+  html += '<div class="core"><span class="who">'+d.coreWho+'</span>'+d.core+'</div>';
+
+  html += '<div class="sec-tag">'+d.acuerdoTag+'</div>';
+  html += '<div class="step"><div class="hd"><span class="n">✓</span><h2>'+d.acuerdoTit+'</h2></div>'
+        + d.acuerdo.map(function(b){return blockHTML(b);}).join('') + '</div>';
+
+  html += '<div class="sec-tag">'+d.ctaTag+'</div><div class="cta">'
+        + d.cta.map(function(c){return '<a href="'+c.url+'" target="_top"><span class="ce">'+c.e+'</span>'
+            + '<span>'+c.tit+'<span class="cd">'+c.d+'</span></span><span class="arr">→</span></a>';}).join('')
+        + '</div>';
+
+  html += '<button class="btn" id="shareBtn" onclick="copyGuion(this)">'+d.shareBtn+'</button>';
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function setLang(l){
+  LANG = l;
+  document.getElementById("btEs").classList.toggle("on", l==="es");
+  document.getElementById("btCa").classList.toggle("on", l==="ca");
+  render();
+  window.scrollTo({top:0, behavior:"auto"});
+}
+
+function copyGuion(btn){
+  var d = T[LANG];
+  var text = d.shareText.join("\n");
+  function ok(){
+    var orig = btn.textContent; btn.classList.add("ok"); btn.textContent = "✓ " + d.shareOk;
+    setTimeout(function(){ btn.classList.remove("ok"); btn.textContent = orig; }, 1700);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok).catch(function(){ fallback(text, ok); });
+  } else { fallback(text, ok); }
+}
+function fallback(text, ok){
+  try{
+    var ta = document.createElement("textarea"); ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); ok();
+  }catch(e){ alert(text); }
+}
+
+/* Datos unificados APRENS (sin barra propia para no duplicar navegación) */
+if(window.Aprens){ try{ Aprens.config({toolId:"tiempo_limite", toolName:"El tiempo límite", toolVersion:1}); }catch(e){} }
+
+render();
+</script>
+<script src="../js/aprens-core.js"></script>
+</body>
+</html>
