@@ -329,6 +329,13 @@
   .ch-canal span{color:var(--tinta-soft);}
   .ch-canal .ch-go{color:var(--dorado);}
   @media(hover:hover){.ch-canal:hover{border-color:var(--dorado);box-shadow:0 8px 18px -14px rgba(169,120,31,.5);}}
+  /* Cabecera de bienvenida con foto */
+  .home-welcome{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;min-height:200px;display:flex;align-items:flex-end;box-shadow:0 6px 22px rgba(0,0,0,.12);}
+  .home-welcome img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;}
+  .home-welcome::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(42,38,34,.10) 0%,rgba(42,38,34,.05) 45%,rgba(42,38,34,.74) 100%);}
+  .home-welcome .hw-copy{position:relative;z-index:1;padding:22px 20px 18px;color:#fff;}
+  .home-welcome .hw-tit{font-family:var(--serif);font-size:23px;font-weight:700;line-height:1.15;text-shadow:0 2px 18px rgba(20,14,10,.45);}
+  .home-welcome .hw-sub{font-size:13.5px;margin-top:6px;color:rgba(255,255,255,.92);text-shadow:0 1px 10px rgba(20,14,10,.45);line-height:1.5;}
 </style>
 </head>
 <body>
@@ -337,6 +344,13 @@
   <div><div class="htitle">Mi espacio APRENS</div><div class="hsub">APRENS Psicologia · Tus herramientas en un solo lugar</div></div>
 </div>
 <div class="wrap">
+  <div class="home-welcome">
+    <img src="assets/editorial/inicio-welcome.webp" alt="" loading="eager">
+    <div class="hw-copy">
+      <div class="hw-tit">Tu espacio para volver a ti</div>
+      <div class="hw-sub">Herramientas para acompañarte por dentro, un momento cada día.</div>
+    </div>
+  </div>
   <div id="appHero"></div>
 
   <!-- ═══════════════ LA HISTORIA DEL MONO (primero: da el contexto de la metáfora) ═══════════════ -->

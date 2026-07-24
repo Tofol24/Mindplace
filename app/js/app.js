@@ -20,10 +20,13 @@
       ids:["la_manada"],
       pdfs:[{ emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo, la historia del mono (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" }] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
+      img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
     { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo? Si ya lo sabes, regístralo y practica; si no, deja que el detective lo deduzca.",
+      img:"tools-standalone/assets/editorial/mapa-interno.webp",
       ids:["estado_mono","donde_esta_mono"] },
     { emoji:"🧯", label:"Parar y regular impulsos", desc:"Cuando te notas en alerta o a punto de reaccionar.",
+      img:"tools-standalone/assets/editorial/ais-amor.webp",
       ids:["bajar_alerta","control_ira","estoy_aqui_conmigo"] },
     { emoji:"🪜", label:"Superar miedos", desc:"Exposición gradual, paso a paso.",
       ids:["escalera_exposicion"] },
@@ -34,6 +37,7 @@
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
       ids:["cuento_familia","exploradora_valiente","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
+      img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
       ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
     { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
       ids:["fondos_frases"] }
@@ -115,7 +119,10 @@
       if(!gtools.length && !gpdfs.length) return;
       gtools.forEach(t=>{ usados[t.id]=1; });
       const cards = gtools.map(hubCard).join("") + gpdfs.map(pdfCard).join("");
-      secciones += `<div class="hub-sec"><span class="hub-sec-e">${g.emoji}</span><span class="hub-sec-t">${g.label}</span></div>
+      const secIco = g.img
+        ? `<span class="hub-sec-thumb"><img src="${g.img}" alt="" loading="lazy"></span>`
+        : `<span class="hub-sec-e">${g.emoji}</span>`;
+      secciones += `<div class="hub-sec">${secIco}<span class="hub-sec-t">${g.label}</span></div>
         <div class="hub-sec-d">${g.desc}</div>
         <div class="hub-grid">${cards}</div>`;
     });
@@ -130,9 +137,12 @@
       : "";
 
     screen.innerHTML = `
-      <div class="hero">
-        <div class="htitulo">Tus herramientas</div>
-        <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
+      <div class="hub-welcome">
+        <img src="tools-standalone/assets/editorial/acompanar-la-sensacion.webp" alt="" loading="eager">
+        <div class="hub-welcome-copy">
+          <div class="htitulo">Tus herramientas</div>
+          <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
+        </div>
       </div>
       ${focoBanner}
       ${historiaHTML()}
