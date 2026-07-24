@@ -113,6 +113,10 @@
   .story .pdfbtn{display:inline-flex;align-items:center;gap:9px;margin-top:16px;text-decoration:none;background:var(--verde);color:#fff;font-weight:700;font-size:14px;padding:13px 22px;border-radius:30px;box-shadow:0 3px 12px rgba(0,0,0,.12);transition:transform .15s,box-shadow .15s;}
   .story .pdfbtn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(0,0,0,.18);}
   .story .pdfnote{margin-top:9px;font-size:12.5px;color:var(--gris);}
+  .story .sbridge{margin-top:18px;padding-top:16px;border-top:1px dashed var(--linea,#e2d6c2);}
+  .story .sbridge p{font-size:13.5px;color:#4a4a4a;}
+  .story .sbridge-lk{display:inline-flex;align-items:center;gap:7px;margin-top:6px;text-decoration:none;background:#f3ece0;border:1px solid #e2d6c2;color:#6b5a44;font-weight:700;font-size:13px;padding:10px 16px;border-radius:999px;transition:transform .15s;}
+  .story .sbridge-lk:hover{transform:translateY(-1px);}
 
   /* ════════════ DETECTIVE DEL MONO (embebido, estilos con ámbito #detective) ════════════ */
   #detective{
@@ -341,6 +345,10 @@
       <div class="squote">«El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.»</div>
       <a class="pdfbtn" href="quien-conduce-tu-vida.pdf" target="_blank" rel="noopener">📄 Leer la historia completa (PDF ilustrado)</a>
       <p class="pdfnote">El cuento entero, con sus ilustraciones, para leerlo con calma siempre que quieras.</p>
+      <div class="sbridge">
+        <p><b>Solo necesitaba saber que no iba solo.</b> Y ahí está la pregunta de fondo: <i>¿por qué respirar cambia algo?</i> Porque tu mono es un mamífero de manada, y respirar no es relajarte — es <b>volver a aparecer para él</b>.</p>
+        <a class="sbridge-lk" href="https://aprens-app.netlify.app/#/tool/la_manada" target="_blank" rel="noopener">🐾 La manada · el porqué de la respiración y el AIS →</a>
+      </div>
     </div>
   </details>
 
@@ -482,7 +490,7 @@ const DOORS=[
 
 const MATERIAL=[
   {n:"¿Quién conduce tu vida?", ic:"🧭", d:"La metáfora base del trabajo (AIS · TEC). PDF.", u:"https://aprens-app.netlify.app/assets/pdf/quien-conduce-tu-vida.pdf"},
-  {n:"Eines AIS bàsiques", ic:"🧰", d:"Les eines AIS bàsiques, en català. PDF.", u:"https://aprens-app.netlify.app/assets/pdf/eines-ais-basiques.pdf"}
+  {n:"Herramientas AIS básicas", ic:"🧰", d:"Las herramientas AIS básicas, para tenerlas a mano. PDF.", u:"https://aprens-app.netlify.app/assets/pdf/eines-ais-basiques.pdf"}
 ];
 
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
