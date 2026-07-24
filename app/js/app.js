@@ -29,7 +29,7 @@
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
       ids:["pedalea_desde_dentro"] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
-      ids:["exploradora_valiente","ritual_calma","rincon_calma"] },
+      ids:["cuento_familia","exploradora_valiente","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] }
   ];

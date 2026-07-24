@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#e7c9b6">
+<title>La familia de Koa · APRENS</title>
+<style>
+  :root{
+    --crema:#fbf5ec; --card:#fffdf9; --tinta:#4a4038; --suau:#8a7d6f;
+    --verde:#8bb08a; --verde-d:#5f8a63; --rosa:#e0a2a6; --rosa-d:#c47f84;
+    --cielo:#a9c8d8; --oro:#c79a4e; --luna:#3a3f5c;
+    --linia:#eadfce;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --ombra:0 10px 30px rgba(120,90,60,.12); --ombra-s:0 3px 14px rgba(120,90,60,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--crema);color:var(--tinta);line-height:1.5;font-size:17px;-webkit-font-smoothing:antialiased;
+    min-height:100vh}
+  .wrap{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+  /* Escena (ilustración) */
+  .escena{position:relative;border-radius:0 0 28px 28px;overflow:hidden;min-height:44vh;display:flex;align-items:center;justify-content:center;padding:24px 18px}
+  .escena svg{width:100%;max-width:340px;height:auto;display:block}
+  .mood-cream{background:linear-gradient(180deg,#fbf3e6,#f6ecd9)}
+  .mood-dawn{background:linear-gradient(180deg,#fde3cf,#fbeede)}
+  .mood-home{background:linear-gradient(180deg,#f3e7cf,#efe0c6)}
+  .mood-park{background:linear-gradient(180deg,#dcecd4,#eef3df)}
+  .mood-night{background:linear-gradient(180deg,#31385c,#4a5178)}
+  .mood-night2{background:linear-gradient(180deg,#242a49,#3a4062)}
+
+  .pagenum{position:absolute;top:12px;right:16px;font-size:12px;color:var(--suau);background:rgba(255,255,255,.6);border-radius:20px;padding:3px 10px}
+  .mood-night .pagenum,.mood-night2 .pagenum{color:#e8e4f0;background:rgba(255,255,255,.14)}
+
+  /* Texto del cuento */
+  .texto{padding:26px 22px 8px;text-align:center;flex:0 0 auto}
+  .texto p{font-family:var(--serif);font-size:26px;line-height:1.35;margin:0;color:var(--tinta)}
+  .texto p .r{color:var(--rosa-d)}
+  @media(max-width:380px){.texto p{font-size:23px}.escena{min-height:40vh}}
+
+  /* Controles */
+  .ctrl{display:flex;align-items:center;gap:12px;padding:8px 20px 4px;justify-content:center}
+  .navb{background:var(--card);border:1.5px solid var(--linia);color:var(--tinta);width:60px;height:60px;border-radius:50%;font-size:26px;cursor:pointer;box-shadow:var(--ombra-s);display:grid;place-items:center}
+  .navb:disabled{opacity:.3}
+  .navb:active{transform:scale(.95)}
+  .dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:240px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:var(--linia)}
+  .dots i.on{background:var(--verde);transform:scale(1.3)}
+
+  /* Para mamá */
+  .mama{margin:12px 20px 0}
+  .mama-toggle{width:100%;background:#f5e9dd;border:1.5px solid #ecd9c6;color:var(--rosa-d);border-radius:16px;padding:13px 16px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
+  .mama-panel{display:none;background:var(--card);border:1px solid var(--linia);border-radius:16px;margin-top:10px;padding:16px 17px;box-shadow:var(--ombra-s)}
+  .mama-panel.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .mama-panel .blk{margin:4px 0 14px}
+  .mama-panel .blk:last-child{margin-bottom:2px}
+  .mama-panel .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--verde-d);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .mama-panel .preg{font-family:var(--serif);font-size:18px;color:var(--tinta);line-height:1.35}
+  .mama-panel .gesto{font-size:15px;color:#5c5247;line-height:1.45}
+
+  footer{margin-top:auto;padding:20px;text-align:center;color:var(--suau);font-size:12px;line-height:1.5}
+  footer b{font-family:var(--serif);color:var(--verde-d)}
+
+  /* Portada */
+  .port{padding:34px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .port h1{font-family:var(--serif);font-size:34px;margin:14px 0 2px;line-height:1.15;color:var(--tinta)}
+  .port .sub{color:var(--suau);font-size:15px;font-style:italic}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:18px;background:var(--verde);color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;padding:16px 26px;min-height:56px;box-shadow:0 8px 20px rgba(95,138,99,.3);margin-top:10px}
+  .btn:active{transform:scale(.98)}
+  .btn.soft{background:transparent;color:var(--rosa-d);border:1.5px solid var(--rosa);box-shadow:none;font-size:15px;padding:12px 20px;min-height:48px}
+  .btn:focus-visible,.navb:focus-visible,.mama-toggle:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+
+  /* Guía */
+  .guia{padding:22px 20px 40px;max-width:620px;margin:0 auto}
+  .guia h1{font-family:var(--serif);font-size:25px;margin:8px 0 4px}
+  .guia h2{font-family:var(--serif);font-size:19px;margin:24px 0 6px;color:var(--verde-d)}
+  .guia p{font-size:15px;line-height:1.65;color:#4f463c}
+  .guia ul{padding-left:20px}.guia li{font-size:15px;line-height:1.6;margin:5px 0}
+  .guia .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}
+  @media(max-width:460px){.guia .two{grid-template-columns:1fr}}
+  .guia .col{border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5}
+  .guia .col.si{background:#e7f0e4;border:1px solid #cfe0cc}
+  .guia .col.no{background:#f6e6e2;border:1px solid #ecd2ca}
+  .guia .col h3{margin:0 0 6px;font-size:14.5px}
+  .guia .col.si h3{color:var(--verde-d)}.guia .col.no h3{color:var(--rosa-d)}
+  .guia .pg{border:1px solid var(--linia);border-radius:14px;padding:13px 15px;margin:10px 0;background:var(--card)}
+  .guia .pg .pt{font-family:var(--serif);font-weight:700;font-size:15px}
+  .guia .pg .meta{font-size:13px;color:#5c5247;margin-top:6px;line-height:1.55}
+  .guia .pg .meta b{color:var(--verde-d)}
+  .backbar{position:sticky;top:0;background:var(--crema);padding:12px 16px;z-index:5;border-bottom:1px solid var(--linia)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   LA FAMILIA DE KOA · APRENS
+   Cuento ilustrado e interactivo para dormir (niño de 3 años,
+   familia monoparental). Apego seguro + diversidad familiar.
+   Ilustraciones vectoriales suaves (SVG). Sin backend ni externos.
+   ============================================================ */
+
+function esc(s){return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ---------- ilustración: koala ---------- */
+function koala(cx,cy,s,o){ o=o||{};
+  var body=o.body||'#c2c7cd', ear='#c2c7cd', earin='#f0c9cd', nose='#4a4038', flower=o.flower;
+  var eyeL=o.sleep?'<path d="M-9,-4 q4,4 8,0" stroke="#4a4038" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M4,-4 q4,4 8,0" stroke="#4a4038" stroke-width="1.6" fill="none" stroke-linecap="round"/>'
+    :'<circle cx="-5" cy="-3" r="2.4" fill="#4a4038"/><circle cx="8" cy="-3" r="2.4" fill="#4a4038"/><circle cx="-4.2" cy="-3.8" r=".8" fill="#fff"/><circle cx="8.8" cy="-3.8" r=".8" fill="#fff"/>';
+  return '<g transform="translate('+cx+','+cy+') scale('+s+')">'
+    +'<ellipse cx="0" cy="34" rx="26" ry="30" fill="'+body+'"/>'          // cuerpo
+    +'<circle cx="-22" cy="-16" r="15" fill="'+ear+'"/><circle cx="-22" cy="-16" r="8" fill="'+earin+'"/>'
+    +'<circle cx="22" cy="-16" r="15" fill="'+ear+'"/><circle cx="22" cy="-16" r="8" fill="'+earin+'"/>'
+    +'<circle cx="0" cy="0" r="24" fill="'+body+'"/>'                      // cabeza
+    +'<ellipse cx="-15" cy="6" rx="5" ry="4" fill="'+earin+'" opacity=".7"/><ellipse cx="15" cy="6" rx="5" ry="4" fill="'+earin+'" opacity=".7"/>'
+    +eyeL
+    +'<ellipse cx="1.5" cy="6" rx="7" ry="9" fill="'+nose+'"/>'            // nariz
+    +(o.smile?'<path d="M-6,16 q7,6 14,0" stroke="#4a4038" stroke-width="1.4" fill="none" stroke-linecap="round"/>':'')
+    +(flower?'<g transform="translate(20,-26)"><circle r="4" fill="#e6a2b0"/><circle cx="-5" r="3" fill="#f0c1cb"/><circle cx="5" r="3" fill="#f0c1cb"/><circle cy="-5" r="3" fill="#f0c1cb"/><circle cy="5" r="3" fill="#f0c1cb"/><circle r="2" fill="#f2d98a"/></g>':'')
+    +'</g>';
+}
+function corazon(cx,cy,s,c){ c=c||'#e0a2a6'; return '<g transform="translate('+cx+','+cy+') scale('+s+')"><path d="M0,6 C-8,-4 -18,2 -10,10 L0,18 L10,10 C18,2 8,-4 0,6 Z" fill="'+c+'"/></g>'; }
+/* pareja genérica (familias diversas) */
+function figura(cx,cy,s,col,earType){
+  var ears = earType==='round' ? '<circle cx="-11" cy="-15" r="8" fill="'+col+'"/><circle cx="11" cy="-15" r="8" fill="'+col+'"/>'
+    : earType==='long' ? '<ellipse cx="-9" cy="-24" rx="5" ry="13" fill="'+col+'"/><ellipse cx="9" cy="-24" rx="5" ry="13" fill="'+col+'"/>'
+    : earType==='bird' ? '<path d="M-4,-20 l-8,-8 l6,2 z" fill="'+col+'"/><path d="M4,-20 l8,-8 l-6,2 z" fill="'+col+'"/>'
+    : earType==='spike' ? '<path d="M-12,-14 l-3,-8 l6,3 z M0,-18 l0,-9 l4,6 z M12,-14 l3,-8 l-6,3 z" fill="'+col+'"/>' : '';
+  return '<g transform="translate('+cx+','+cy+') scale('+s+')"><ellipse cx="0" cy="26" rx="18" ry="22" fill="'+col+'"/>'+ears+'<circle cx="0" cy="0" r="17" fill="'+col+'"/><circle cx="-6" cy="-2" r="2" fill="#4a4038"/><circle cx="6" cy="-2" r="2" fill="#4a4038"/><ellipse cx="0" cy="5" rx="4" ry="5" fill="#4a4038"/><path d="M-5,12 q5,4 10,0" stroke="#4a4038" stroke-width="1.2" fill="none" stroke-linecap="round"/><ellipse cx="-9" cy="4" rx="3" ry="2.5" fill="#f0c9cd" opacity=".7"/><ellipse cx="9" cy="4" rx="3" ry="2.5" fill="#f0c9cd" opacity=".7"/></g>'; }
+
+/* ---------- escenas ---------- */
+function moon(){ return '<circle cx="270" cy="46" r="26" fill="#f6efce"/><circle cx="262" cy="40" r="22" fill="#eef4de" opacity=".0"/>'; }
+function stars(){ var s=''; var pts=[[40,40],[90,26],[150,50],[300,90],[250,120],[60,90],[200,30],[120,110]]; pts.forEach(function(p){ s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+(1.5+((p[0]+p[1])%3))+'" fill="#fbf3d6" opacity=".85"/>'; }); return s; }
+function leaves(){ return '<g opacity=".8"><ellipse cx="40" cy="180" rx="24" ry="10" fill="#a7c79c" transform="rotate(-18 40 180)"/><ellipse cx="290" cy="185" rx="26" ry="11" fill="#b6d1ab" transform="rotate(16 290 185)"/></g>'; }
+
+function scene(key){
+  var W='<svg viewBox="0 0 320 220" role="img" aria-hidden="true">';
+  var E='</svg>';
+  switch(key){
+    case 'portada':
+      return W+'<ellipse cx="160" cy="200" rx="120" ry="16" fill="#e7dcc6" opacity=".6"/>'+koala(120,120,1.5,{smile:1,flower:0})+koala(212,150,0.95,{smile:1})+corazon(170,70,2.2,'#e0a2a6')+E;
+    case 'home_present':
+      return W+leaves()+koala(120,110,1.35,{smile:1,flower:1})+koala(210,140,0.95,{smile:1})+E;
+    case 'home':
+      return W+'<path d="M60,60 q100,-40 200,0 l0,120 q-100,30 -200,0 z" fill="#e9d3ac" opacity=".55"/>'+'<rect x="120" y="150" width="80" height="22" rx="8" fill="#d9b98f"/>'+koala(140,120,1.15,{smile:1})+koala(200,140,0.85,{smile:1})+E;
+    case 'dawn':
+      return W+'<circle cx="60" cy="60" r="34" fill="#f7d9a6" opacity=".7"/>'+koala(150,110,1.5,{smile:1,flower:1})+koala(200,150,0.8,{smile:1})+corazon(170,60,1.6)+E;
+    case 'meal':
+      return W+leaves()+'<ellipse cx="120" cy="175" rx="16" ry="7" fill="#cbe0c2"/><ellipse cx="205" cy="175" rx="14" ry="6" fill="#cbe0c2"/>'+koala(120,120,1.15,{smile:1,flower:1})+koala(205,135,0.85,{smile:1})+E;
+    case 'bath':
+      return W+'<g opacity=".8"><circle cx="70" cy="70" r="10" fill="#cfe6ee"/><circle cx="250" cy="60" r="8" fill="#cfe6ee"/><circle cx="230" cy="120" r="6" fill="#cfe6ee"/><circle cx="90" cy="130" r="7" fill="#cfe6ee"/></g>'+koala(160,120,1.35,{smile:1})+corazon(220,80,1.2)+E;
+    case 'park':
+      return W+leaves()+'<circle cx="70" cy="55" r="26" fill="#f7d9a6" opacity=".7"/>'+koala(130,120,1.2,{smile:1,flower:1})+koala(195,140,0.85,{smile:1})+E;
+    case 'families':
+      return W+'<circle cx="70" cy="55" r="22" fill="#f7d9a6" opacity=".6"/>'+figura(70,120,0.7,'#d9a3a8','round')+figura(130,120,0.7,'#a7c1cf','long')+figura(190,120,0.7,'#c9b18a','round')+figura(250,120,0.7,'#a9c79c','spike')+corazon(160,60,1.1)+E;
+    case 'fam_mama_nino':
+      return W+figura(130,120,1.2,'#c9a56f','long')+figura(200,140,0.8,'#d7bd93','long')+corazon(165,70,1.3)+E;
+    case 'fam_papa_nina':
+      return W+figura(130,120,1.2,'#a98c6b','round')+figura(200,140,0.8,'#c4a986','round')+corazon(165,70,1.3)+E;
+    case 'fam_dos_mamas':
+      return W+figura(110,120,1.1,'#d79aa2','bird')+figura(210,120,1.1,'#c98d96','bird')+figura(160,150,0.6,'#f0c7b0','bird')+corazon(160,64,1.3)+E;
+    case 'fam_dos_papas':
+      return W+figura(110,120,1.1,'#8fb0a8','round')+figura(210,120,1.1,'#7fa199','round')+figura(160,150,0.6,'#b8d1c9','round')+corazon(160,64,1.3)+E;
+    case 'fam_abuelos':
+      return W+figura(110,120,1.1,'#c9c3ba','spike')+figura(210,120,1.1,'#bcb6ac','spike')+figura(160,150,0.62,'#d8b5a0','spike')+corazon(160,64,1.3)+E;
+    case 'fam_hermanos':
+      return W+figura(90,120,1.0,'#e6c67a','round')+figura(150,132,0.62,'#efd48f','round')+figura(200,132,0.62,'#efd48f','round')+figura(250,132,0.62,'#efd48f','round')+corazon(160,66,1.1)+E;
+    case 'fam_koa':
+      return W+'<circle cx="70" cy="55" r="20" fill="#f7d9a6" opacity=".5"/>'+koala(130,120,1.25,{smile:1,flower:1})+koala(200,140,0.9,{smile:1})+corazon(165,60,1.5)+E;
+    case 'todas':
+      return W+figura(60,110,0.6,'#d9a3a8','round')+figura(115,110,0.6,'#a7c1cf','long')+figura(170,110,0.6,'#c9b18a','round')+figura(225,110,0.6,'#a9c79c','spike')+figura(270,110,0.6,'#e6c67a','bird')+corazon(90,150,1)+corazon(150,155,1.2)+corazon(210,150,1)+corazon(255,150,.9)+E;
+    case 'gaze':
+      return W+koala(115,115,1.5,{smile:1,flower:1})+koala(205,120,1.35,{smile:1})+corazon(160,55,1.2)+E;
+    case 'kiss':
+      return W+koala(120,120,1.5,{smile:0,flower:1})+koala(200,150,0.85,{smile:1})+corazon(150,80,1.4)+E;
+    case 'night':
+      return W+moon()+stars()+koala(150,130,1.4,{sleep:0,smile:1,flower:1})+koala(205,155,0.8,{smile:1})+E;
+    case 'read':
+      return W+moon()+stars()+'<rect x="120" y="150" width="80" height="16" rx="6" fill="#e9d3ac"/>'+koala(150,120,1.25,{smile:1,flower:1})+koala(205,138,0.8,{smile:1})+E;
+    case 'hug':
+      return W+moon()+stars()+koala(160,120,1.7,{smile:1,flower:1})+koala(160,150,0.8,{sleep:0,smile:1})+corazon(160,52,1.4)+E;
+    case 'sleep':
+      return W+moon()+stars()+koala(150,125,1.6,{sleep:1,flower:1})+koala(180,150,0.85,{sleep:1})+corazon(210,80,1)+E;
+    case 'final':
+      return W+moon()+stars()+koala(160,130,1.8,{sleep:1,flower:1})+koala(190,158,0.9,{sleep:1})+corazon(110,70,1)+corazon(240,90,1.3)+E;
+    default: return W+koala(160,120,1.4,{smile:1})+E;
+  }
+}
+
+/* ---------- páginas ---------- */
+var PAGES=[
+  {mood:'cream',scene:'home_present',
+   text:'Este es Koa.<br>Koa vive con su mamá.',
+   obj:'Identidad y normalidad: presentar la familia del niño como algo natural y completo, sin faltas.',
+   preg:'¿Quién vive contigo en tu casa?',
+   gesto:'Miraos a los ojos y sonreíd.',
+   brief:'Un koala bebé de mejillas sonrosadas junto a su mamá koala en la rama de un eucalipto. Acuarela cálida, fondo crema con mucho blanco. Ambos con expresión serena y feliz. La mamá lleva una florecita en la oreja.'},
+  {mood:'home',scene:'home',
+   text:'Viven en un árbol calentito.<br>Es su casa.',
+   obj:'La casa como base segura: sensación de refugio y hogar.',
+   preg:'¿Cuál es tu rincón favorito de casa?',
+   gesto:'Acurrucaos juntos un momentito.',
+   brief:'El hueco acogedor de un gran árbol, con una mantita y luz dorada suave. Koa y mamá asomados, cómodos. Tonos miel y crema, ambiente de nido.'},
+  {mood:'dawn',scene:'dawn',
+   text:'Por la mañana, mamá abraza a Koa.<br><span class="r">«Buenos días, mi amor.»</span>',
+   obj:'Vínculo y afecto cotidiano: el día empieza con contacto y cariño.',
+   preg:'¿Quién te abraza por la mañana?',
+   gesto:'Dale un abrazo bien fuerte.',
+   brief:'Amanecer suave entrando por la copa del árbol. Mamá koala abraza a Koa, mejilla con mejilla, ojos cerrados de gusto. Luz cálida naranja-melocotón.'},
+  {mood:'park',scene:'meal',
+   text:'Desayunan juntos.<br><span class="r">Qué bien estamos juntos.</span>',
+   obj:'Pertenencia y rutina compartida (estribillo del cuento).',
+   preg:'¿Qué desayunas tú por la mañana?',
+   gesto:'Daos la mano un momento.',
+   brief:'Koa y mamá comiendo hojitas tiernas de un cuenco, sentados juntos. Sonrisas. Fondo verde muy claro, hojas de eucalipto decorando las esquinas.'},
+  {mood:'park',scene:'bath',
+   text:'Mamá lava a Koa.<br>Le hace cosquillas. ¡Ja, ja, ja!',
+   obj:'Cuidado corporal y alegría compartida: el cuerpo es un lugar seguro y divertido.',
+   preg:'¿Dónde te hacen más cosquillas a ti?',
+   gesto:'Unas cosquillitas suaves en la barriga.',
+   brief:'Baño con burbujas de colores pastel. Koa riendo con la boca abierta, mamá con una esponjita. Mucha luz, gotitas y burbujas flotando.'},
+  {mood:'park',scene:'park',
+   text:'Van al parque.<br>Mamá le da la mano.',
+   obj:'Base segura para explorar: desde el vínculo, el mundo se explora tranquilo.',
+   preg:'¿A qué parque vamos juntos tú y yo?',
+   gesto:'Daos la mano y apretad suavecito.',
+   brief:'Un caminito entre árboles. Koa y mamá de la mano, dando un paseo. Sol suave, hierba, flores diminutas. Ambiente abierto y seguro.'},
+  {mood:'park',scene:'families',
+   text:'En el parque hay muchas familias.',
+   obj:'Introducir la diversidad familiar, sin comparar ni jerarquizar.',
+   preg:'¿Ves familias cuando vamos al parque?',
+   gesto:'Mirad juntos por la ventana.',
+   brief:'Vista del parque con varias familias de animalitos a lo lejos, cada una distinta, todas alegres. Colores variados y suaves. Sensación de comunidad.'},
+  {mood:'cream',scene:'fam_mama_nino',
+   text:'Mira: una mamá y su niño.',
+   obj:'Diversidad: una forma de familia, presentada con naturalidad.',
+   preg:'¿Los ves? ¿Qué crees que hacen?',
+   gesto:'Señala con el dedito.',
+   brief:'Una coneja mamá y su conejito jugando con una pelota. Tonos caramelo. Corazón suave encima. Fondo crema limpio.'},
+  {mood:'cream',scene:'fam_papa_nina',
+   text:'Mira: un papá y su niña.',
+   obj:'Diversidad (una familia más; el foco no gira en torno al padre, solo se presenta).',
+   preg:'¿A qué juegan?',
+   gesto:'Señala con el dedito.',
+   brief:'Un oso papá y su osita mirando un libro juntos. Tonos tierra cálidos. Corazón suave encima.'},
+  {mood:'cream',scene:'fam_dos_mamas',
+   text:'Mira: dos mamás y su bebé.',
+   obj:'Diversidad: distintas configuraciones, todas con amor.',
+   preg:'¿Ves al bebé pequeñito?',
+   gesto:'Manda un besito con la mano.',
+   brief:'Dos pájaras mamás protegiendo a su polluelo en un nido acogedor. Plumas en tonos rosados y cálidos. Corazón encima.'},
+  {mood:'cream',scene:'fam_dos_papas',
+   text:'Mira: dos papás y su hijo.',
+   obj:'Diversidad.',
+   preg:'¿Qué llevarán de merienda?',
+   gesto:'Sopla un besito al aire.',
+   brief:'Dos nutrias papás y su cría de picnic sobre una mantita. Verdes suaves. Cestita de comida. Corazón encima.'},
+  {mood:'cream',scene:'fam_abuelos',
+   text:'Mira: unos abuelos y su nieta.',
+   obj:'Diversidad: la familia también son los abuelos.',
+   preg:'¿Cómo se llaman tus abuelos?',
+   gesto:'Nombrad juntos a los abuelos.',
+   brief:'Dos erizos abuelos, con gafitas, y su nieta erizo pequeña. Tonos beige y lavanda muy suaves. Ternura. Corazón encima.'},
+  {mood:'cream',scene:'fam_hermanos',
+   text:'Mira: una familia con muchos hermanos.',
+   obj:'Diversidad: familias grandes.',
+   preg:'¿Cuántos ves? Contémoslos.',
+   gesto:'Contad con los deditos.',
+   brief:'Una pata mamá con tres patitos en fila detrás de ella. Amarillos cálidos. Movimiento alegre. Corazón encima.'},
+  {mood:'dawn',scene:'fam_koa',
+   text:'Y una familia con un solo hijo.<br>Como Koa y su mamá.',
+   obj:'Pertenencia y espejo: la familia del niño es una más, completa y llena de amor.',
+   preg:'¿Cuántos sois en casa tú y yo?',
+   gesto:'Abrazo de «nosotros dos».',
+   brief:'Koa y su mamá, de nuevo protagonistas, muy juntos y radiantes, con un corazón grande encima. Luz cálida que los destaca con cariño.'},
+  {mood:'cream',scene:'todas',
+   text:'Todas son familias.<br><span class="r">Todas se quieren mucho.</span>',
+   obj:'Mensaje central: lo importante es cuánto se quieren, no cuántos son.',
+   preg:'¿Todas se quieren? ¡Sí!',
+   gesto:'Dibujad un corazón en el aire.',
+   brief:'Todas las familias anteriores juntas en una misma escena, en armonía, rodeadas de corazoncitos. Paleta variada y equilibrada. Sensación coral.'},
+  {mood:'dawn',scene:'gaze',
+   text:'Koa mira a mamá.<br>Mamá mira a Koa.',
+   obj:'Vínculo y sintonía: la mirada compartida como seguridad.',
+   preg:'¿Nos miramos a los ojos?',
+   gesto:'Miraos a los ojos y sonreíd despacio.',
+   brief:'Primer plano de las dos caras muy juntas, mirándose con enorme ternura. Ojos brillantes. Fondo desenfocado cálido. Mucha emoción en las expresiones.'},
+  {mood:'dawn',scene:'kiss',
+   text:'<span class="r">«Nuestra familia nos quiere»</span>,<br>dice mamá.',
+   obj:'Seguridad afectiva (estribillo): la familia como fuente de amor seguro.',
+   preg:'¿Quién te quiere muchísimo?',
+   gesto:'Un beso en la frente.',
+   brief:'Mamá koala besando la frente de Koa, que cierra los ojos feliz. Corazón encima. Luz dorada, ternura máxima.'},
+  {mood:'night',scene:'night',
+   text:'Se hace de noche.<br>Koa tiene un poquito de sueño.',
+   obj:'Regulación: empezar a bajar revoluciones para el sueño.',
+   preg:'¿Tienes tú un poquito de sueño?',
+   gesto:'Bostezad juntos, despacito.',
+   brief:'Cielo nocturno azul suave, luna grande y estrellas tenues. Koa se frota un ojito. Ambiente calmado, colores fríos y amables.'},
+  {mood:'night',scene:'read',
+   text:'Mamá le cuenta un cuento.<br>Koa escucha.',
+   obj:'Ritual de calma y presencia: la narración como nido.',
+   preg:'¿Qué cuento te gusta más a ti?',
+   gesto:'Acurrucaos bajo la manta.',
+   brief:'Mamá leyendo un librito a Koa bajo una mantita, con una lamparita cálida. Noche fuera, calidez dentro. Escena íntima.'},
+  {mood:'night2',scene:'hug',
+   text:'Mamá abraza fuerte a Koa.<br>Respiran juntos.',
+   obj:'Co-regulación: respirar juntos, seguridad en el cuerpo.',
+   preg:'¿Respiramos juntos? Coge aire… y suelta…',
+   gesto:'Tres respiraciones lentas, pecho con pecho.',
+   brief:'Un abrazo grande y envolvente, los dos con los ojos cerrados, respirando. Corazón suave encima. Azul noche muy sereno, luz de luna.'},
+  {mood:'night2',scene:'hug',
+   text:'<span class="r">«Estás seguro. Estás querido»</span>,<br>dice mamá.',
+   obj:'Afirmaciones de apego seguro: mensajes explícitos de seguridad y amor.',
+   preg:'¿Estás segurito conmigo? Sí.',
+   gesto:'Acaríciale el pelito, despacio.',
+   brief:'Mamá acariciando la cabecita de Koa, ambos serenos. Luz muy suave. Expresiones de paz total.'},
+  {mood:'night2',scene:'sleep',
+   text:'Koa cierra los ojos,<br>abrazado a mamá.',
+   obj:'Cierre: seguridad completa antes de dormir.',
+   preg:'Cerramos los ojitos…',
+   gesto:'Abrazo largo, en silencio.',
+   brief:'Koa dormido en brazos de mamá, que también entorna los ojos. Luz de luna azulada, quietud. Respiración visible en la calma.'},
+  {mood:'night2',scene:'final',
+   text:'Y pensó:<br><span class="r">«Nuestra familia es perfecta para nosotros.»</span>',
+   obj:'Identidad segura y suficiencia: la familia propia es completa y perfecta tal como es.',
+   preg:'Nuestra familia es perfecta para nosotros. 💛',
+   gesto:'Un beso de buenas noches.',
+   brief:'Escena final: Koa y mamá dormidos juntos, en paz, bajo la luna y las estrellas, rodeados de dos o tres corazones suaves. Sensación de plenitud y hogar.'}
+];
+
+/* ---------- estado ---------- */
+var VISTA='portada', pag=0, mamaOpen=false;
+try{ if(window.Aprens) Aprens.config({toolId:"cuento_familia", toolName:"La familia de Koa", toolVersion:1}); }catch(e){}
+
+function render(){
+  var app=document.getElementById('app');
+  if(VISTA==='portada'){ app.innerHTML=portadaHTML(); return; }
+  if(VISTA==='guia'){ app.innerHTML=guiaHTML(); window.scrollTo(0,0); return; }
+  app.innerHTML=pageHTML(PAGES[pag]);
+  window.scrollTo(0,0);
+}
+function portadaHTML(){
+  return '<div class="escena mood-cream" style="min-height:48vh;border-radius:0 0 28px 28px">'+scene('portada')+'</div>'
+    +'<div class="port"><h1>La familia de Koa</h1><div class="sub">Un cuento para dormir · muchas familias, mucho amor</div>'
+    +'<button class="btn" onclick="empezar()">📖 Empezar el cuento</button>'
+    +'<button class="btn soft" onclick="irGuia()">Guía para mamá</button></div>'
+    +footerHTML();
+}
+function pageHTML(p){
+  var n=pag+1, tot=PAGES.length;
+  var dots=PAGES.map(function(_,i){return '<i class="'+(i===pag?'on':'')+'"></i>';}).join('');
+  return '<div class="escena mood-'+p.mood+'"><span class="pagenum">'+n+' / '+tot+'</span>'+scene(p.scene)+'</div>'
+    +'<div class="texto"><p>'+p.text+'</p></div>'
+    +'<div class="ctrl">'
+      +'<button class="navb" onclick="prev()" '+(pag===0?'disabled':'')+' aria-label="Página anterior">‹</button>'
+      +'<div class="dots">'+dots+'</div>'
+      +'<button class="navb" onclick="next()" aria-label="Página siguiente">'+(pag===tot-1?'✓':'›')+'</button>'
+    +'</div>'
+    +'<div class="mama">'
+      +'<button class="mama-toggle" onclick="toggleMama()">💛 Para mamá</button>'
+      +'<div class="mama-panel'+(mamaOpen?' show':'')+'" id="mamaPanel">'
+        +'<div class="blk"><div class="lbl">💬 Para conversar</div><div class="preg">'+esc(p.preg)+'</div></div>'
+        +'<div class="blk"><div class="lbl">🤍 Gesto de apego</div><div class="gesto">'+esc(p.gesto)+'</div></div>'
+      +'</div>'
+    +'</div>'
+    +footerHTML();
+}
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · cuento de apego y diversidad familiar<br>Léelo muchas veces, sin prisa. La repetición es la que cuida.</footer>'; }
+
+function empezar(){ VISTA='cuento'; pag=0; mamaOpen=false; render(); }
+function next(){ if(pag<PAGES.length-1){ pag++; mamaOpen=false; render(); } else { VISTA='portada'; render(); } }
+function prev(){ if(pag>0){ pag--; mamaOpen=false; render(); } }
+function toggleMama(){ mamaOpen=!mamaOpen; document.getElementById('mamaPanel').classList.toggle('show',mamaOpen); }
+function irGuia(){ VISTA='guia'; render(); }
+function volver(){ VISTA='portada'; render(); }
+
+/* ---------- guía para mamá ---------- */
+function guiaHTML(){
+  var pgs=PAGES.map(function(p,i){
+    return '<div class="pg"><div class="pt">Página '+(i+1)+' · '+p.text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'</div>'
+      +'<div class="meta"><b>Objetivo:</b> '+esc(p.obj)+'<br><b>Pregunta:</b> '+esc(p.preg)+'<br><b>Gesto:</b> '+esc(p.gesto)+'<br><b>Ilustración:</b> '+esc(p.brief)+'</div></div>';
+  }).join('');
+  return '<div class="backbar"><button class="btn soft" onclick="volver()">‹ Volver al cuento</button></div>'
+  +'<div class="guia">'
+  +'<h1>Guía para mamá</h1>'
+  +'<p>Este cuento no explica una ausencia: <b>construye una identidad segura</b>. El foco está siempre en lo que <i>sí</i> hay —tu vínculo, tu cuidado, vuestra casa— y en que existen muchas formas de familia, todas llenas de amor.</p>'
+
+  +'<h2>Por qué está hecho así</h2>'
+  +'<ul>'
+  +'<li><b>Frases muy cortas y mucha repetición.</b> A los 3 años, la repetición es la que da seguridad: lo previsible calma. Los estribillos («Qué bien estamos juntos», «Nuestra familia nos quiere») se graban como certezas.</li>'
+  +'<li><b>Desde el apego, no desde la razón.</b> No se argumenta ni se compara: se <i>vive</i>. Por eso cada página termina en un gesto físico.</li>'
+  +'<li><b>La diversidad se muestra, no se justifica.</b> Otras familias aparecen con total naturalidad, sin decir que una sea mejor. La vuestra es una más, completa.</li>'
+  +'<li><b>Nunca se nombra una falta.</b> No aparece «no tienes papá» ni «falta alguien». La historia gira en torno a la presencia, el cuidado y el amor.</li>'
+  +'</ul>'
+
+  +'<h2>Qué procesos favorece</h2>'
+  +'<ul>'
+  +'<li><b>Apego seguro:</b> «estoy seguro, estoy querido, estoy cuidado».</li>'
+  +'<li><b>Identidad y pertenencia:</b> «mi familia está bien, es perfecta para nosotros».</li>'
+  +'<li><b>Regulación emocional:</b> el tramo final baja revoluciones (noche, cuento, respirar juntos, dormir).</li>'
+  +'<li><b>Diversidad como normalidad:</b> hay muchas familias y todas se quieren.</li>'
+  +'</ul>'
+
+  +'<h2>Cómo usarlo cada noche</h2>'
+  +'<ul>'
+  +'<li>Léelo <b>despacio</b>, con voz suave. No hace falta acabarlo entero si tiene sueño.</li>'
+  +'<li>Haz <b>el gesto de apego</b> de cada página: el cuerpo aprende seguridad más que las palabras.</li>'
+  +'<li>Deja que <b>lo pida muchas veces</b>. Repetir el mismo cuento no es aburrirse: es consolidar.</li>'
+  +'<li>Si un día solo quiere mirar los dibujos, también vale.</li>'
+  +'</ul>'
+
+  +'<h2>Si pregunta por los papás de otros niños</h2>'
+  +'<p>No lo evites y no te alarmes: es sana curiosidad, no una carencia. Responde <b>con naturalidad y en positivo</b>, sin dar más vueltas de las que él pide:</p>'
+  +'<ul>'
+  +'<li>«Sí, esa familia tiene un papá. <b>Hay familias de muchas formas.</b> La nuestra somos tú y yo, y nos queremos muchísimo.»</li>'
+  +'<li>«Cada familia es distinta. Lo importante es cuánto se quieren. <b>Nosotros nos queremos así de grande.</b>»</li>'
+  +'<li>Si insiste, valida la pregunta sin dramatizar: «Qué buena pregunta. Hay niños con un papá, con dos mamás, con abuelos… y niños como tú, con su mamá. Todas son familias de verdad.»</li>'
+  +'</ul>'
+  +'<p>La clave: responder <b>desde la calma y la suficiencia</b>, no desde la explicación defensiva. Tu tono transmite más que tus palabras: si tú lo vives con naturalidad, él también.</p>'
+
+  +'<h2>Frases que ayudan / frases que conviene evitar</h2>'
+  +'<div class="two">'
+  +'<div class="col si"><h3>✓ Ayudan</h3><ul>'
+  +'<li>«Nuestra familia somos tú y yo, y nos queremos muchísimo.»</li>'
+  +'<li>«Estás seguro. Estás querido.»</li>'
+  +'<li>«Hay muchas formas de familia; todas se quieren.»</li>'
+  +'<li>«Nuestra familia es perfecta para nosotros.»</li>'
+  +'<li>«Qué bien estamos juntos.»</li>'
+  +'</ul></div>'
+  +'<div class="col no"><h3>✕ Mejor evitar</h3><ul>'
+  +'<li>«Tu papá no está / se fue.»</li>'
+  +'<li>«No tienes papá.» / «No hace falta un papá.»</li>'
+  +'<li>«A ti te falta…» (cualquier idea de carencia).</li>'
+  +'<li>«Somos una familia igual que las demás» (no hay que defenderse: ya lo sois).</li>'
+  +'<li>Dar explicaciones largas que él no ha pedido.</li>'
+  +'</ul></div>'
+  +'</div>'
+
+  +'<h2>El cuento, página a página</h2>'
+  +'<p class="muted" style="color:#8a7d6f">Objetivo psicológico y descripción de ilustración de cada página (útil también para un ilustrador).</p>'
+  +pgs
+  +'<footer style="margin-top:20px"><b>Centre APRENS</b><br>Material de acompañamiento. Se interpreta dentro de tu proceso en consulta.</footer>'
+  +'</div>';
+}
+
+render();
+</script>
+</body>
+</html>
