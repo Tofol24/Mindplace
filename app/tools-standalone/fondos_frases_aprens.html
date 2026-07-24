@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#a9781f">
+<title>Fondos de frases · APRENS</title>
+<style>
+  :root{
+    --bg:#f4efe4; --card:#fffdf8; --tinta:#2f2a22; --suau:#7c7061;
+    --oro:#a9781f; --oro-d:#856013; --oro-lt:#f4e7cc;
+    --verde:#5f8a63; --linia:#e7ddc9; --linia2:#dcd1b9;
+    --ombra:0 8px 26px rgba(90,70,30,.10); --ombra-s:0 2px 12px rgba(90,70,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#efe7d6 0%,var(--bg) 220px);color:var(--tinta);line-height:1.55;font-size:16px;
+    -webkit-font-smoothing:antialiased;padding:0 15px calc(40px + env(safe-area-inset-bottom))}
+  .wrap{max-width:620px;margin:0 auto}
+  header{text-align:center;padding:30px 8px 6px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--oro-d);background:var(--oro-lt);border:1px solid var(--linia);padding:5px 13px;border-radius:999px;font-weight:600;margin-bottom:14px}
+  h1{font-family:var(--serif);font-size:27px;margin:0;font-weight:700}
+  .sub{color:var(--suau);font-size:15px;margin:12px auto 0;max-width:30em}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 4px}
+  .lead{color:var(--suau);font-size:13.5px;margin:2px 0 12px}
+
+  .grp{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--oro-d);font-weight:700;margin:14px 0 7px}
+  .frase{display:block;width:100%;text-align:left;border:1.5px solid var(--linia2);border-radius:12px;background:var(--card);cursor:pointer;
+    font-family:var(--serif);font-size:15px;color:var(--tinta);padding:11px 13px;margin:7px 0;line-height:1.4;font-style:italic}
+  .frase.sel{border-color:var(--oro);background:var(--oro-lt);color:var(--oro-d);font-weight:600}
+  textarea{width:100%;border:1.5px solid var(--linia2);border-radius:12px;padding:11px 12px;font-family:var(--serif);font-size:15px;color:var(--tinta);background:var(--card);resize:vertical;min-height:60px;font-style:italic;line-height:1.4}
+  textarea:focus{outline:none;border-color:var(--oro)}
+
+  .fondos{display:flex;gap:10px;flex-wrap:wrap}
+  .fondo{width:52px;height:78px;border-radius:12px;border:2px solid transparent;cursor:pointer;box-shadow:var(--ombra-s);position:relative}
+  .fondo.sel{border-color:var(--oro);box-shadow:0 0 0 2px var(--oro-lt)}
+
+  .preview-wrap{display:flex;justify-content:center;margin:6px 0}
+  canvas#cv{width:230px;height:auto;border-radius:22px;box-shadow:var(--ombra);display:block}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;background:var(--oro);color:#fff;font-size:15.5px;font-weight:700;cursor:pointer;font-family:inherit;padding:14px 18px;min-height:52px;width:100%}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;color:var(--oro-d);border:1.5px solid var(--oro)}
+  .btn:focus-visible,.frase:focus-visible,.fondo:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .btnrow{display:flex;gap:10px;margin-top:10px}.btnrow .btn{flex:1}
+
+  .nota{font-size:13px;color:var(--suau);background:#f6edd8;border-radius:12px;padding:11px 13px;margin:12px 0 0;line-height:1.5}
+  .out{display:none;margin-top:14px;text-align:center}
+  .out.show{display:block}
+  .out img{max-width:230px;width:100%;border-radius:22px;box-shadow:var(--ombra)}
+  .out .step{font-size:13.5px;color:var(--suau);margin-top:10px;line-height:1.5;text-align:left}
+  .out .step b{color:var(--oro-d)}
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:28px 0 6px;line-height:1.5}
+  footer b{font-family:var(--serif);color:var(--oro-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kick">APRENS · para llevar contigo</span>
+    <h1>Fondos de frases</h1>
+    <p class="sub">Convierte una frase que te acompañe en el fondo de pantalla de tu móvil. Elige, mira cómo queda y guárdala.</p>
+  </header>
+
+  <div class="card">
+    <h2>1 · Elige una frase</h2>
+    <p class="lead">Toca una de las frases de tus herramientas, o escribe la tuya abajo.</p>
+    <div id="lista"></div>
+    <div style="margin-top:12px"><label style="font-size:13.5px;font-weight:600;display:block;margin-bottom:6px">…o escribe la tuya</label>
+      <textarea id="propia" placeholder="Tu frase para llevar contigo…" oninput="usarPropia()"></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Elige un fondo</h2>
+    <div class="fondos" id="fondos"></div>
+  </div>
+
+  <div class="card">
+    <h2>3 · Así queda</h2>
+    <div class="preview-wrap"><canvas id="cv" width="1080" height="2340" aria-label="Vista previa del fondo"></canvas></div>
+    <button class="btn" onclick="guardar()">📲 Guardar como fondo</button>
+    <div class="nota">Para ponerla de fondo de pantalla: pulsa <b>Guardar</b>, luego <b>mantén pulsada la imagen</b> y elige <b>«Añadir a Fotos» / «Descargar imagen»</b>. Después, en los ajustes del móvil, elígela como fondo o pantalla de bloqueo.</div>
+    <div class="out" id="out">
+      <img id="outImg" alt="Tu fondo de pantalla">
+      <div class="step"><b>iPhone:</b> mantén pulsada la imagen de arriba → <b>«Añadir a Fotos»</b>. Luego Ajustes › Fondo de pantalla.<br><b>Android:</b> mantén pulsada → <b>«Descargar imagen»</b>. Luego Galería › usar como fondo.</div>
+      <div class="btnrow"><a class="btn ghost" id="dl" download="frase-aprens.png">⬇️ Descargar</a></div>
+    </div>
+  </div>
+
+  <footer><b>APRENS</b> · TEC · AIS<br>Lleva contigo lo que te ayuda.</footer>
+</div>
+
+<script>
+"use strict";
+/* Frases clave de las distintas herramientas + fondos + generador de imagen (canvas). */
+var FRASES=[
+  ["Acompañar la sensación / AIS", [
+    "No necesito sentirme bien para continuar con mi día.",
+    "Puedo llevar esta sensación conmigo mientras hago lo que es importante para mí.",
+    "Puedo estar con lo que siento sin luchar ni comprobar.",
+    "Esto es una sensación, no un peligro. Puedo estar con ella."
+  ]],
+  ["Presencia y valores", [
+    "No es hacer más, es estar mejor.",
+    "Parar a tiempo, estar presente y seguir mi dirección.",
+    "Ampliar el instante entre lo que siento y lo que hago.",
+    "Primero me acompaño; después decido."
+  ]],
+  ["Apego seguro conmigo", [
+    "Estoy aquí conmigo.",
+    "No necesito abandonarme para que alguien se quede.",
+    "Puedo pedir apoyo sin entregar a otra persona el control de mi estabilidad.",
+    "Puedo estar sola ahora sin estar abandonada.",
+    "Respirar no borra lo que siento: me permite estar presente mientras lo siento."
+  ]],
+  ["Esfuerzo y trabajo", [
+    "Estoy contigo, cuerpo. Vamos juntos.",
+    "No te arrastro: vamos juntos.",
+    "Puedo rendir sin castigarme.",
+    "Firme no significa cruel.",
+    "El resultado es una consecuencia, no mi único valor.",
+    "Cada puerta es un reto, no una amenaza.",
+    "El «no» es a la oferta de hoy, no a mí.",
+    "Hoy entreno continuidad, no perfección."
+  ]],
+  ["Familia", [
+    "Nuestra familia es perfecta para nosotros.",
+    "Lo importante no es cuántos somos, sino cuánto nos queremos."
+  ]]
+];
+
+var FONDOS=[
+  {n:"Crema",   stops:["#f6efe0","#ece0c9"], text:"#2f2a22", mark:"#a9781f", quote:"#e3caa0"},
+  {n:"Salvia",  stops:["#e7efe6","#cbe0cf"], text:"#33513c", mark:"#5f8a63", quote:"#bcd4c0"},
+  {n:"Teal",    stops:["#4a7a82","#2c4b52"], text:"#ffffff", mark:"#ecd9a0", quote:"#6fa0a6"},
+  {n:"Noche",   stops:["#333a5e","#20263f"], text:"#eef0f7", mark:"#d8b25a", quote:"#4b5478"},
+  {n:"Rosa",    stops:["#f3e6e4","#e6c9c9"], text:"#7a4a4c", mark:"#c47f84", quote:"#e6c9c9"},
+  {n:"Arcilla", stops:["#f4e6cc","#e6c39a"], text:"#5a3b22", mark:"#b5623a", quote:"#e0b98f"}
+];
+
+var sel={frase:FRASES[0][1][0], fondo:0};
+
+/* ---- listas ---- */
+function renderLista(){
+  var h="";
+  FRASES.forEach(function(g){
+    h+='<div class="grp">'+g[0]+'</div>';
+    g[1].forEach(function(f){
+      var s=(f===sel.frase&&!propiaActiva())?' sel':'';
+      h+='<button type="button" class="frase'+s+'" onclick="pickFrase(this)" data-f="'+f.replace(/"/g,'&quot;')+'">“'+f+'”</button>';
+    });
+  });
+  document.getElementById('lista').innerHTML=h;
+}
+function renderFondos(){
+  document.getElementById('fondos').innerHTML=FONDOS.map(function(fd,i){
+    return '<button type="button" class="fondo'+(i===sel.fondo?' sel':'')+'" title="'+fd.n+'" aria-label="Fondo '+fd.n+'" onclick="pickFondo('+i+')" style="background:linear-gradient(160deg,'+fd.stops[0]+','+fd.stops[1]+')"></button>';
+  }).join('');
+}
+function propiaActiva(){ var t=document.getElementById('propia'); return t && t.value.trim().length>0; }
+function pickFrase(btn){ document.getElementById('propia').value=""; sel.frase=btn.getAttribute('data-f'); renderLista(); draw(); }
+function usarPropia(){ var v=document.getElementById('propia').value.trim(); if(v) sel.frase=v; renderLista(); draw(); }
+function pickFondo(i){ sel.fondo=i; renderFondos(); draw(); }
+
+/* ---- dibujo del fondo (canvas) ---- */
+function draw(){
+  var cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  var W=cv.width, H=cv.height, fd=FONDOS[sel.fondo];
+  var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,fd.stops[0]); g.addColorStop(1,fd.stops[1]);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // comilla decorativa grande
+  ctx.fillStyle=fd.quote; ctx.font='700 520px Georgia, serif'; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  ctx.globalAlpha=.5; ctx.fillText('“', 70, 620); ctx.globalAlpha=1;
+  // texto principal centrado, autoajustado
+  var text=(sel.frase||"").trim(); if(!text) text="Escribe tu frase";
+  var maxW=W-260, maxH=H*0.52, size=118;
+  var lines, lh;
+  do{
+    ctx.font='italic 600 '+size+'px Georgia, "Times New Roman", serif';
+    lines=wrap(ctx,'“'+text+'”',maxW); lh=size*1.28;
+    if(lines.length*lh<=maxH) break; size-=6;
+  }while(size>42);
+  ctx.fillStyle=fd.text; ctx.textAlign='center'; ctx.textBaseline='middle';
+  var totalH=lines.length*lh, startY=H*0.46-totalH/2+lh/2;
+  lines.forEach(function(ln,i){ ctx.fillText(ln, W/2, startY+i*lh); });
+  // marca inferior
+  ctx.fillStyle=fd.mark; ctx.font='600 40px Georgia, serif'; ctx.textAlign='center';
+  ctx.fillText('APRENS · TEC · AIS', W/2, H-150);
+  ctx.strokeStyle=fd.mark; ctx.globalAlpha=.6; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(W/2-60,H-200); ctx.lineTo(W/2+60,H-200); ctx.stroke(); ctx.globalAlpha=1;
+}
+function wrap(ctx,text,maxW){
+  var words=text.split(' '), lines=[], line='';
+  for(var i=0;i<words.length;i++){
+    var test=line?line+' '+words[i]:words[i];
+    if(ctx.measureText(test).width>maxW && line){ lines.push(line); line=words[i]; }
+    else line=test;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+function guardar(){
+  draw();
+  var cv=document.getElementById('cv');
+  var url=cv.toDataURL('image/png');
+  document.getElementById('outImg').src=url;
+  document.getElementById('dl').href=url;
+  var out=document.getElementById('out'); out.classList.add('show');
+  out.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+/* init */
+renderLista(); renderFondos(); draw();
+</script>
+</body>
+</html>

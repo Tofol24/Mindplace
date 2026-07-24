@@ -31,7 +31,9 @@
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
       ids:["cuento_familia","exploradora_valiente","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
-      ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] }
+      ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
+    { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
+      ids:["fondos_frases"] }
   ];
 
   // Material transversal (documentos base, útiles para todas las herramientas)

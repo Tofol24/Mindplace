@@ -553,6 +553,7 @@ function render(){
     {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
+  MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#a9781f', bg:'#f4e7cc'});
   MENU.push({href:'#material', ic:'📄', tit:'Material de apoyo', txt:'Dos documentos base, útiles para todas las herramientas (PDF).', col:'#5f8a63', bg:'#e7f0e4'});
   if(TOOLS.some(t=>t.tema)) MENU.push({href:'#temas', ic:'🎯', tit:'Por temas · situaciones', txt:'¿Buscas algo para una situación concreta? Trabajo, deporte, superar miedos o parar impulsos.', col:'#b0733a', bg:'#f4e6cc'});
   if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#a86a8e', bg:'#f3e4ec'});

@@ -97,7 +97,11 @@ window.APRENS_TOOLS = [
 
   { id:"cuento_familia", emoji:"🐨", nombre:"La familia de Koa (cuento)",
     desc:"Cuento ilustrado e interactivo para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Cada página con pregunta y gesto de apego, y una guía completa para mamá.",
-    migrada:true, iframe:"tools-standalone/cuento_familia_aprens.html" }
+    migrada:true, iframe:"tools-standalone/cuento_familia_aprens.html" },
+
+  { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
+    desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
+    migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
