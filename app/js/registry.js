@@ -99,6 +99,10 @@ window.APRENS_TOOLS = [
     desc:"Cuento ilustrado e interactivo para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Cada página con pregunta y gesto de apego, y una guía completa para mamá.",
     migrada:true, iframe:"tools-standalone/cuento_familia_aprens.html" },
 
+  { id:"tiempo_limite", emoji:"⏱️", nombre:"El tiempo límite (peques)",
+    desc:"Para madres y padres: enseñar a tu peque a empezar por sí mismo. Primero la honestidad emocional (compartir la sensación y pedir un abrazo, desde la complicidad y no la culpa), luego el entrenamiento del tiempo límite de 2 minutos, la tolerancia a la frustración sin ser rescatado y los límites claros. Bilingüe castellano/català.",
+    migrada:true, iframe:"tools-standalone/tiempo_limite_peques.html" },
+
   { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
     migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
