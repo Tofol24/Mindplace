@@ -93,7 +93,11 @@ window.APRENS_TOOLS = [
 
   { id:"toco_desde_dentro", emoji:"🚪", nombre:"Toco desde dentro",
     desc:"Para trabajo comercial de puerta fría: respiración AIS antes de tocar, acompañar el cuerpo (no arrastrarlo), reencuadrar amenaza→reto, soltar los «no» y cerrar el día antes de llegar a casa para no arrastrar fatiga a la familia.",
-    migrada:true, iframe:"tools-standalone/toco_desde_dentro_aprens.html" }
+    migrada:true, iframe:"tools-standalone/toco_desde_dentro_aprens.html" },
+
+  { id:"cuento_familia", emoji:"🐨", nombre:"La familia de Koa (cuento)",
+    desc:"Cuento ilustrado e interactivo para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Cada página con pregunta y gesto de apego, y una guía completa para mamá.",
+    migrada:true, iframe:"tools-standalone/cuento_familia_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
