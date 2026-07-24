@@ -305,6 +305,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <p style="font-size:12.5px; color:var(--gris); line-height:1.6; margin-bottom:10px;">No es analizar lo que sientes, sino <b>compartirlo con alguien a quien quieres</b>. No necesitas entenderlo ni justificarlo: basta con nombrar la sensación del cuerpo y abrir la puerta.</p>
       <div class="frase">"No sé por qué… pero noto una sensación aquí <i>(mano en la barriga)</i>, y quería compartirlo contigo."</div>
       <button class="btn bs bsm" style="margin-top:10px;" onclick="copiarFrase(this)">📋 Copiar esta frase</button>
+      <button class="btn bs bsm" style="margin-top:10px;margin-left:8px;" onclick="hacerFondo()">🖼️ Hacer fondo</button>
       <label class="fld">¿Con quién lo compartiste (o quieres compartirlo)?</label>
       <input type="text" id="honQuien" placeholder="Ej.: mi madre, mi pareja, un amigo…">
       <label class="fld">¿Qué notas en el cuerpo / qué le dijiste?</label>
@@ -956,6 +957,7 @@ function addHonestidad(){
   getReg(todayStr()).honestidad.push({h:p2(d.getHours())+':'+p2(d.getMinutes()), t:v, quien:quien});
   inp.value=''; if(quienEl) quienEl.value=''; save(); renderHon();
 }
+function hacerFondo(){ var t='No sé por qué… pero noto una sensación aquí, y quería compartirlo contigo.'; window.open('fondos_frases_aprens.html?frase='+encodeURIComponent(t),'_blank'); }
 function copiarFrase(btn){
   var t='No sé por qué… pero noto una sensación aquí (mano en la barriga), y quería compartirlo contigo.';
   if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(function(){ flashBtn(btn); }); return; }
