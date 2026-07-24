@@ -480,6 +480,11 @@ const DOORS=[
   {k:"C", ic:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", color:"var(--oro)",    bg:"var(--oroLt)",   obj:"Tu objetivo aquí: que tus acciones, día a día, vayan hacia lo que de verdad te importa.", main:"Brújula de valores"}
 ];
 
+const MATERIAL=[
+  {n:"¿Quién conduce tu vida?", ic:"🧭", d:"La metáfora base del trabajo (AIS · TEC). PDF.", u:"https://aprens-app.netlify.app/assets/pdf/quien-conduce-tu-vida.pdf"},
+  {n:"Eines AIS bàsiques", ic:"🧰", d:"Les eines AIS bàsiques, en català. PDF.", u:"https://aprens-app.netlify.app/assets/pdf/eines-ais-basiques.pdf"}
+];
+
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
 function toolHTML(t){
@@ -548,6 +553,7 @@ function render(){
     {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
+  MENU.push({href:'#material', ic:'📄', tit:'Material de apoyo', txt:'Dos documentos base, útiles para todas las herramientas (PDF).', col:'#5f8a63', bg:'#e7f0e4'});
   if(TOOLS.some(t=>t.tema)) MENU.push({href:'#temas', ic:'🎯', tit:'Por temas · situaciones', txt:'¿Buscas algo para una situación concreta? Trabajo, deporte, superar miedos o parar impulsos.', col:'#b0733a', bg:'#f4e6cc'});
   if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#a86a8e', bg:'#f3e4ec'});
   MENU.push({href:'#revisar', ic:'📝', tit:'Revisar mi progreso', txt:'Mira cómo evolucionas con tus cuestionarios. Esto se mide, no se entrena.', col:'var(--gris)', bg:'#EAEEF3', rev:true});
@@ -586,6 +592,14 @@ function render(){
       +'<span class="fic">'+feat.ic+'</span>'
       +'<span><span class="fn">'+esc(feat.nombre)+'</span><span class="fd">'+esc(feat.desc)+'</span></span>'
       +'<span class="arr">›</span></a></div>';
+  }
+  // Material de apoyo (documentos transversales · PDF)
+  if(MATERIAL.length){
+    html+='<div class="sec" id="material" style="border-top-color:#5f8a63">'
+      +'<div class="sec-head"><span class="sec-ic">📄</span><span class="sec-tit" style="color:#5f8a63">Material de apoyo</span></div>'
+      +'<div class="sec-obj">Dos documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.</div>'
+      + MATERIAL.map(function(m){return '<a class="tool" href="'+m.u+'" target="_blank" rel="noopener"><span class="tic">'+m.ic+'</span><span class="tbody"><span class="tn">'+esc(m.n)+'</span><span class="td">'+esc(m.d)+'</span></span><span class="arr">↓</span></a>';}).join('')
+      +'</div>';
   }
   // Doors (si hay foco, su puerta se renderiza primero y destacada)
   const doorsOrder = DOORS.slice().sort((a,b)=>(a.k===FOCO?-1:0)-(b.k===FOCO?-1:0));

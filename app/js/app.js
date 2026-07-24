@@ -34,6 +34,20 @@
       ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] }
   ];
 
+  // Material transversal (documentos base, útiles para todas las herramientas)
+  const DOCS = [
+    { emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" },
+    { emoji:"🧰", nombre:"Eines AIS bàsiques", desc:"Les eines AIS bàsiques (en català).", url:"assets/pdf/eines-ais-basiques.pdf" }
+  ];
+  function docsHTML(){
+    if(!DOCS.length) return "";
+    const cards = DOCS.map(d=>`<a class="hub-card" href="${d.url}" target="_blank" rel="noopener" download><span class="hub-emoji">${d.emoji}</span>
+      <span class="hub-name">${d.nombre}</span><span class="hub-desc">${d.desc}</span><span class="hub-tag">PDF ↓</span></a>`).join("");
+    return `<div class="hub-sec"><span class="hub-sec-e">📄</span><span class="hub-sec-t">Material de apoyo</span></div>
+      <div class="hub-sec-d">Dos documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.</div>
+      <div class="hub-grid">${cards}</div>`;
+  }
+
   function removeExportBar(){ const b=document.getElementById("aprensBar"); if(b) b.remove(); }
 
   function hubCard(t){
@@ -81,6 +95,7 @@
         <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
       </div>
       ${focoBanner}
+      ${docsHTML()}
       ${secciones}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
   }
