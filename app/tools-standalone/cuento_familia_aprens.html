@@ -93,6 +93,29 @@
   .guia .pg .meta b{color:var(--verde-d)}
   .backbar{position:sticky;top:0;background:var(--crema);padding:12px 16px;z-index:5;border-bottom:1px solid var(--linia)}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* Selector de idioma */
+  .langbar{display:flex;gap:8px;justify-content:center;padding:10px 16px 0}
+  .langb{background:var(--card);border:1.5px solid var(--linia);color:var(--suau);border-radius:20px;padding:7px 15px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
+  .langb.on{background:var(--verde);border-color:var(--verde);color:#fff}
+
+  /* Modo imprimible */
+  .print-top{position:sticky;top:0;background:var(--crema);padding:12px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;border-bottom:1px solid var(--linia);z-index:5}
+  .book-print{max-width:620px;margin:0 auto;padding:12px 16px 40px}
+  .pp{border:1px solid var(--linia);border-radius:16px;overflow:hidden;margin:14px 0;background:var(--card)}
+  .pp .escena{border-radius:0;min-height:0;padding:20px}
+  .pp .pt{font-family:var(--serif);font-size:22px;text-align:center;padding:16px 18px 4px;line-height:1.35}
+  .pp .pm{font-size:13px;color:#5c5247;padding:0 18px 14px;line-height:1.5}
+  .pp .pm b{color:var(--verde-d)}
+  @media print{
+    .print-top,.langbar,.mama-toggle,.ctrl,footer{display:none!important}
+    body{background:#fff}
+    .book-print{max-width:none;padding:0}
+    .pp{break-inside:avoid;page-break-inside:avoid;border:0;border-radius:0;margin:0;page-break-after:always}
+    .pp .escena{background:#fff!important}
+    .guia{page-break-before:always}
+    .guia .pg{break-inside:avoid;page-break-inside:avoid}
+  }
 </style>
 </head>
 <body>
@@ -337,6 +360,53 @@ var PAGES=[
    brief:'Escena final: Koa y mamá dormidos juntos, en paz, bajo la luna y las estrellas, rodeados de dos o tres corazones suaves. Sensación de plenitud y hogar.'}
 ];
 
+/* ---------- traducción catalana (mismo orden que PAGES) ---------- */
+var PAGES_CA=[
+  {text:'Aquest és en Koa.<br>En Koa viu amb la seva mare.',obj:'Identitat i normalitat: presentar la família del nen com una cosa natural i completa, sense mancances.',preg:'Qui viu amb tu a casa teva?',gesto:'Mireu-vos als ulls i somrieu.',brief:'Un koala nadó de galtes rosades al costat de la seva mare koala en una branca d\'eucaliptus. Aquarel·la càlida, fons crema amb molt de blanc. Tots dos amb expressió serena i feliç. La mare porta una floreta a l\'orella.'},
+  {text:'Viuen en un arbre calentó.<br>És casa seva.',obj:'La casa com a base segura: sensació de refugi i llar.',preg:'Quin és el teu racó preferit de casa?',gesto:'Feu-vos una abraçada un momentet.',brief:'El forat acollidor d\'un gran arbre, amb una manteta i llum daurada suau. En Koa i la mare, còmodes. Tons mel i crema, ambient de niu.'},
+  {text:'Al matí, la mare abraça en Koa.<br><span class="r">«Bon dia, amor meu.»</span>',obj:'Vincle i afecte quotidià: el dia comença amb contacte i afecte.',preg:'Qui t\'abraça al matí?',gesto:'Fes-li una abraçada ben forta.',brief:'Alba suau entrant per la copa de l\'arbre. La mare koala abraça en Koa, galta amb galta, ulls tancats de gust. Llum càlida taronja-préssec.'},
+  {text:'Esmorzen junts.<br><span class="r">Que bé que estem junts.</span>',obj:'Pertinença i rutina compartida (tornada del conte).',preg:'Què esmorzes tu al matí?',gesto:'Doneu-vos la mà un moment.',brief:'En Koa i la mare menjant fulletes tendres d\'un bol, asseguts junts. Somriures. Fons verd molt clar, fulles d\'eucaliptus decorant.'},
+  {text:'La mare renta en Koa.<br>Li fa pessigolles. Ha, ha, ha!',obj:'Cura corporal i alegria compartida: el cos és un lloc segur i divertit.',preg:'On et fan més pessigolles a tu?',gesto:'Unes pessigolletes suaus a la panxa.',brief:'Bany amb bombolles de colors pastel. En Koa rient amb la boca oberta, la mare amb una esponja. Molta llum, gotetes i bombolles.'},
+  {text:'Van al parc.<br>La mare li dona la mà.',obj:'Base segura per explorar: des del vincle, el món s\'explora tranquil.',preg:'A quin parc anem junts tu i jo?',gesto:'Doneu-vos la mà i estrenyeu fluixet.',brief:'Un caminet entre arbres. En Koa i la mare de la mà, passejant. Sol suau, herba, floretes.'},
+  {text:'Al parc hi ha moltes famílies.',obj:'Introduir la diversitat familiar, sense comparar ni jerarquitzar.',preg:'Veus famílies quan anem al parc?',gesto:'Mireu junts per la finestra.',brief:'Vista del parc amb diverses famílies d\'animalons de lluny, cadascuna diferent, totes alegres. Colors variats i suaus.'},
+  {text:'Mira: una mare i el seu nen.',obj:'Diversitat: una forma de família, presentada amb naturalitat.',preg:'Els veus? Què creus que fan?',gesto:'Assenyala amb el ditet.',brief:'Una conilla mare i el seu conillet jugant amb una pilota. Tons caramel. Cor suau a sobre.'},
+  {text:'Mira: un pare i la seva nena.',obj:'Diversitat (una família més; el focus no gira entorn del pare, només es presenta).',preg:'A què juguen?',gesto:'Assenyala amb el ditet.',brief:'Un ós pare i la seva ossa mirant un llibre junts. Tons terra càlids. Cor suau a sobre.'},
+  {text:'Mira: dues mares i el seu nadó.',obj:'Diversitat: diferents configuracions, totes amb amor.',preg:'Veus el nadó petitó?',gesto:'Envia un petó amb la mà.',brief:'Dues ocelles mares protegint el seu pollet en un niu acollidor. Plomes en tons rosats. Cor a sobre.'},
+  {text:'Mira: dos pares i el seu fill.',obj:'Diversitat.',preg:'Què deuen portar de berenar?',gesto:'Bufa un petó a l\'aire.',brief:'Dues llúdrigues pares i la seva cria de pícnic sobre una manteta. Verds suaus. Cor a sobre.'},
+  {text:'Mira: uns avis i la seva néta.',obj:'Diversitat: la família també són els avis.',preg:'Com es diuen els teus avis?',gesto:'Anomeneu junts els avis.',brief:'Dos eriçons avis, amb ulleretes, i la seva néta eriçó petita. Tons beix i lavanda molt suaus. Cor a sobre.'},
+  {text:'Mira: una família amb molts germans.',obj:'Diversitat: famílies grans.',preg:'Quants en veus? Comptem-los.',gesto:'Compteu amb els ditets.',brief:'Una ànega mare amb tres aneguets en filera. Grocs càlids. Cor a sobre.'},
+  {text:'I una família amb un sol fill.<br>Com en Koa i la seva mare.',obj:'Pertinença i mirall: la família del nen és una més, completa i plena d\'amor.',preg:'Quants sou a casa tu i jo?',gesto:'Abraçada de «nosaltres dos».',brief:'En Koa i la seva mare, de nou protagonistes, molt junts i radiants, amb un cor gran a sobre.'},
+  {text:'Totes són famílies.<br><span class="r">Totes s\'estimen molt.</span>',obj:'Missatge central: el que importa és com s\'estimen, no quants són.',preg:'Totes s\'estimen? Sí!',gesto:'Dibuixeu un cor a l\'aire.',brief:'Totes les famílies anteriors juntes en una mateixa escena, en harmonia, envoltades de cors.'},
+  {text:'En Koa mira la mare.<br>La mare mira en Koa.',obj:'Vincle i sintonia: la mirada compartida com a seguretat.',preg:'Ens mirem als ulls?',gesto:'Mireu-vos als ulls i somrieu a poc a poc.',brief:'Primer pla de les dues cares molt juntes, mirant-se amb tendresa. Ulls brillants. Fons desenfocat càlid.'},
+  {text:'<span class="r">«La nostra família ens estima»</span>,<br>diu la mare.',obj:'Seguretat afectiva (tornada): la família com a font d\'amor segur.',preg:'Qui t\'estima moltíssim?',gesto:'Un petó al front.',brief:'La mare koala fent un petó al front d\'en Koa, que tanca els ulls feliç. Cor a sobre. Llum daurada.'},
+  {text:'Es fa de nit.<br>En Koa té una miqueta de son.',obj:'Regulació: començar a abaixar revolucions per dormir.',preg:'Tens tu una miqueta de son?',gesto:'Badalleu junts, a poc a poc.',brief:'Cel nocturn blau suau, lluna gran i estrelles tènues. En Koa es frega un ullet. Ambient calmat.'},
+  {text:'La mare li explica un conte.<br>En Koa escolta.',obj:'Ritual de calma i presència: la narració com a niu.',preg:'Quin conte t\'agrada més a tu?',gesto:'Acotxeu-vos sota la manta.',brief:'La mare llegint un llibret a en Koa sota una manteta, amb un llumet càlid. Nit a fora, escalfor a dins.'},
+  {text:'La mare abraça fort en Koa.<br>Respiren junts.',obj:'Coregulació: respirar junts, seguretat al cos.',preg:'Respirem junts? Agafa aire… i deixa\'l anar…',gesto:'Tres respiracions lentes, pit amb pit.',brief:'Una abraçada gran i embolcalladora, tots dos amb els ulls tancats, respirant. Cor a sobre. Blau nit serè.'},
+  {text:'<span class="r">«Estàs segur. Estàs estimat»</span>,<br>diu la mare.',obj:'Afirmacions de vincle segur: missatges explícits de seguretat i amor.',preg:'Estàs seguret amb mi? Sí.',gesto:'Acarícia-li els cabellets, a poc a poc.',brief:'La mare acariciant el capet d\'en Koa, tots dos serens. Llum molt suau.'},
+  {text:'En Koa tanca els ulls,<br>abraçat a la mare.',obj:'Tancament: seguretat completa abans de dormir.',preg:'Tanquem els ullets…',gesto:'Abraçada llarga, en silenci.',brief:'En Koa adormit als braços de la mare, que també acluca els ulls. Llum de lluna blavosa, quietud.'},
+  {text:'I va pensar:<br><span class="r">«La nostra família és perfecta per a nosaltres.»</span>',obj:'Identitat segura i suficiència: la pròpia família és completa i perfecta tal com és.',preg:'La nostra família és perfecta per a nosaltres. 💛',gesto:'Un petó de bona nit.',brief:'Escena final: en Koa i la mare adormits junts, en pau, sota la lluna i les estrelles, envoltats de cors. Sensació de plenitud i llar.'}
+];
+
+/* ---------- UI + idioma ---------- */
+var LANG='es';
+var UI={
+  es:{title:'La familia de Koa', sub:'Un cuento para dormir · muchas familias, mucho amor',
+      empezar:'📖 Empezar el cuento', guia:'Guía para mamá', volver:'‹ Volver al cuento',
+      paramama:'💛 Para mamá', conversar:'💬 Para conversar', gesto:'🤍 Gesto de apego',
+      imprimir:'🖨️ Versión imprimible (PDF)', imprimirBtn:'🖨️ Imprimir / Guardar PDF',
+      foot:'cuento de apego y diversidad familiar<br>Léelo muchas veces, sin prisa. La repetición es la que cuida.',
+      pagina:'Página', anterior:'Página anterior', siguiente:'Página siguiente'},
+  ca:{title:'La família d\'en Koa', sub:'Un conte per dormir · moltes famílies, molt amor',
+      empezar:'📖 Comença el conte', guia:'Guia per a la mare', volver:'‹ Tornar al conte',
+      paramama:'💛 Per a la mare', conversar:'💬 Per conversar', gesto:'🤍 Gest de vincle',
+      imprimir:'🖨️ Versió per imprimir (PDF)', imprimirBtn:'🖨️ Imprimir / Desar PDF',
+      foot:'conte de vincle i diversitat familiar<br>Llegeix-lo moltes vegades, sense pressa. La repetició és la que cuida.',
+      pagina:'Pàgina', anterior:'Pàgina anterior', siguiente:'Pàgina següent'}
+};
+function U(k){ return UI[LANG][k]; }
+function L(i,f){ if(LANG==='ca' && PAGES_CA[i] && PAGES_CA[i][f]!=null) return PAGES_CA[i][f]; return PAGES[i][f]; }
+function setLang(l){ LANG=l; render(); }
+
 /* ---------- estado ---------- */
 var VISTA='portada', pag=0, mamaOpen=false;
 try{ if(window.Aprens) Aprens.config({toolId:"cuento_familia", toolName:"La familia de Koa", toolVersion:1}); }catch(e){}
@@ -345,53 +415,78 @@ function render(){
   var app=document.getElementById('app');
   if(VISTA==='portada'){ app.innerHTML=portadaHTML(); return; }
   if(VISTA==='guia'){ app.innerHTML=guiaHTML(); window.scrollTo(0,0); return; }
-  app.innerHTML=pageHTML(PAGES[pag]);
+  if(VISTA==='print'){ app.innerHTML=printHTML(); window.scrollTo(0,0); return; }
+  app.innerHTML=pageHTML(pag);
   window.scrollTo(0,0);
 }
+function langbarHTML(){
+  return '<div class="langbar noprint"><button class="langb'+(LANG==='es'?' on':'')+'" onclick="setLang(\'es\')">Castellano</button>'
+    +'<button class="langb'+(LANG==='ca'?' on':'')+'" onclick="setLang(\'ca\')">Català</button></div>';
+}
 function portadaHTML(){
-  return '<div class="escena mood-cream" style="min-height:48vh;border-radius:0 0 28px 28px">'+scene('portada')+'</div>'
-    +'<div class="port"><h1>La familia de Koa</h1><div class="sub">Un cuento para dormir · muchas familias, mucho amor</div>'
-    +'<button class="btn" onclick="empezar()">📖 Empezar el cuento</button>'
-    +'<button class="btn soft" onclick="irGuia()">Guía para mamá</button></div>'
+  return langbarHTML()
+    +'<div class="escena mood-cream" style="min-height:46vh;border-radius:0 0 28px 28px">'+scene('portada')+'</div>'
+    +'<div class="port"><h1>'+U('title')+'</h1><div class="sub">'+U('sub')+'</div>'
+    +'<button class="btn" onclick="empezar()">'+U('empezar')+'</button>'
+    +'<button class="btn soft" onclick="irGuia()">'+U('guia')+'</button>'
+    +'<button class="btn soft" onclick="irPrint()">'+U('imprimir')+'</button></div>'
     +footerHTML();
 }
-function pageHTML(p){
-  var n=pag+1, tot=PAGES.length;
-  var dots=PAGES.map(function(_,i){return '<i class="'+(i===pag?'on':'')+'"></i>';}).join('');
+function pageHTML(i){
+  var n=i+1, tot=PAGES.length, p=PAGES[i];
+  var dots=PAGES.map(function(_,j){return '<i class="'+(j===i?'on':'')+'"></i>';}).join('');
   return '<div class="escena mood-'+p.mood+'"><span class="pagenum">'+n+' / '+tot+'</span>'+scene(p.scene)+'</div>'
-    +'<div class="texto"><p>'+p.text+'</p></div>'
+    +'<div class="texto"><p>'+L(i,'text')+'</p></div>'
     +'<div class="ctrl">'
-      +'<button class="navb" onclick="prev()" '+(pag===0?'disabled':'')+' aria-label="Página anterior">‹</button>'
+      +'<button class="navb" onclick="prev()" '+(i===0?'disabled':'')+' aria-label="'+U('anterior')+'">‹</button>'
       +'<div class="dots">'+dots+'</div>'
-      +'<button class="navb" onclick="next()" aria-label="Página siguiente">'+(pag===tot-1?'✓':'›')+'</button>'
+      +'<button class="navb" onclick="next()" aria-label="'+U('siguiente')+'">'+(i===tot-1?'✓':'›')+'</button>'
     +'</div>'
     +'<div class="mama">'
-      +'<button class="mama-toggle" onclick="toggleMama()">💛 Para mamá</button>'
+      +'<button class="mama-toggle" onclick="toggleMama()">'+U('paramama')+'</button>'
       +'<div class="mama-panel'+(mamaOpen?' show':'')+'" id="mamaPanel">'
-        +'<div class="blk"><div class="lbl">💬 Para conversar</div><div class="preg">'+esc(p.preg)+'</div></div>'
-        +'<div class="blk"><div class="lbl">🤍 Gesto de apego</div><div class="gesto">'+esc(p.gesto)+'</div></div>'
+        +'<div class="blk"><div class="lbl">'+U('conversar')+'</div><div class="preg">'+esc(L(i,'preg'))+'</div></div>'
+        +'<div class="blk"><div class="lbl">'+U('gesto')+'</div><div class="gesto">'+esc(L(i,'gesto'))+'</div></div>'
       +'</div>'
     +'</div>'
     +footerHTML();
 }
-function footerHTML(){ return '<footer><b>Centre APRENS</b> · cuento de apego y diversidad familiar<br>Léelo muchas veces, sin prisa. La repetición es la que cuida.</footer>'; }
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · '+U('foot')+'</footer>'; }
+
+/* ---------- modo imprimible (libro para guardar como PDF) ---------- */
+function printHTML(){
+  var cover='<div class="pp"><div class="escena mood-cream">'+scene('portada')+'</div><div class="pt">'+U('title')+'</div><div class="pm" style="text-align:center">'+esc(U('sub'))+'</div></div>';
+  var cv=(LANG==='ca'?'Per conversar':'Para conversar'), gt=(LANG==='ca'?'Gest':'Gesto');
+  var pages=PAGES.map(function(p,i){
+    return '<div class="pp"><div class="escena mood-'+p.mood+'">'+scene(p.scene)+'</div>'
+      +'<div class="pt">'+L(i,'text')+'</div>'
+      +'<div class="pm"><b>'+cv+':</b> '+esc(L(i,'preg'))+'<br><b>'+gt+':</b> '+esc(L(i,'gesto'))+'</div></div>';
+  }).join('');
+  return '<div class="print-top noprint"><button class="btn soft" onclick="volver()">'+U('volver')+'</button>'
+    +'<button class="btn" onclick="window.print()">'+U('imprimirBtn')+'</button></div>'
+    +'<div class="book-print">'+cover+pages+'<div class="guia">'+guiaInner()+'</div></div>';
+}
 
 function empezar(){ VISTA='cuento'; pag=0; mamaOpen=false; render(); }
 function next(){ if(pag<PAGES.length-1){ pag++; mamaOpen=false; render(); } else { VISTA='portada'; render(); } }
 function prev(){ if(pag>0){ pag--; mamaOpen=false; render(); } }
 function toggleMama(){ mamaOpen=!mamaOpen; document.getElementById('mamaPanel').classList.toggle('show',mamaOpen); }
 function irGuia(){ VISTA='guia'; render(); }
+function irPrint(){ VISTA='print'; render(); }
 function volver(){ VISTA='portada'; render(); }
 
-/* ---------- guía para mamá ---------- */
+/* ---------- guía para mamá (bilingüe) ---------- */
 function guiaHTML(){
+  return '<div class="backbar noprint"><button class="btn soft" onclick="volver()">'+U('volver')+'</button></div>'
+    +'<div class="guia">'+guiaInner()+'</div>';
+}
+function guiaInner(){ return LANG==='ca' ? guiaCA() : guiaES(); }
+function guiaES(){
   var pgs=PAGES.map(function(p,i){
-    return '<div class="pg"><div class="pt">Página '+(i+1)+' · '+p.text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'</div>'
-      +'<div class="meta"><b>Objetivo:</b> '+esc(p.obj)+'<br><b>Pregunta:</b> '+esc(p.preg)+'<br><b>Gesto:</b> '+esc(p.gesto)+'<br><b>Ilustración:</b> '+esc(p.brief)+'</div></div>';
+    return '<div class="pg"><div class="pt">Página '+(i+1)+' · '+L(i,'text').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'</div>'
+      +'<div class="meta"><b>Objetivo:</b> '+esc(L(i,'obj'))+'<br><b>Pregunta:</b> '+esc(L(i,'preg'))+'<br><b>Gesto:</b> '+esc(L(i,'gesto'))+'<br><b>Ilustración:</b> '+esc(L(i,'brief'))+'</div></div>';
   }).join('');
-  return '<div class="backbar"><button class="btn soft" onclick="volver()">‹ Volver al cuento</button></div>'
-  +'<div class="guia">'
-  +'<h1>Guía para mamá</h1>'
+  return '<h1>Guía para mamá</h1>'
   +'<p>Este cuento no explica una ausencia: <b>construye una identidad segura</b>. El foco está siempre en lo que <i>sí</i> hay —tu vínculo, tu cuidado, vuestra casa— y en que existen muchas formas de familia, todas llenas de amor.</p>'
 
   +'<h2>Por qué está hecho así</h2>'
@@ -448,8 +543,53 @@ function guiaHTML(){
   +'<h2>El cuento, página a página</h2>'
   +'<p class="muted" style="color:#8a7d6f">Objetivo psicológico y descripción de ilustración de cada página (útil también para un ilustrador).</p>'
   +pgs
-  +'<footer style="margin-top:20px"><b>Centre APRENS</b><br>Material de acompañamiento. Se interpreta dentro de tu proceso en consulta.</footer>'
-  +'</div>';
+  +'<footer style="margin-top:20px"><b>Centre APRENS</b><br>Material de acompañamiento. Se interpreta dentro de tu proceso en consulta.</footer>';
+}
+function guiaCA(){
+  var pgs=PAGES.map(function(p,i){
+    return '<div class="pg"><div class="pt">Pàgina '+(i+1)+' · '+L(i,'text').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()+'</div>'
+      +'<div class="meta"><b>Objectiu:</b> '+esc(L(i,'obj'))+'<br><b>Pregunta:</b> '+esc(L(i,'preg'))+'<br><b>Gest:</b> '+esc(L(i,'gesto'))+'<br><b>Il·lustració:</b> '+esc(L(i,'brief'))+'</div></div>';
+  }).join('');
+  return '<h1>Guia per a la mare</h1>'
+  +'<p>Aquest conte no explica una absència: <b>construeix una identitat segura</b>. El focus és sempre en allò que <i>sí</i> que hi ha —el teu vincle, la teva cura, casa vostra— i en el fet que hi ha moltes formes de família, totes plenes d\'amor.</p>'
+  +'<h2>Per què està fet així</h2><ul>'
+  +'<li><b>Frases molt curtes i molta repetició.</b> Als 3 anys, la repetició és la que dona seguretat: allò previsible calma. Les tornades («Que bé que estem junts», «La nostra família ens estima») es graven com a certeses.</li>'
+  +'<li><b>Des del vincle, no des de la raó.</b> No s\'argumenta ni es compara: es <i>viu</i>. Per això cada pàgina acaba amb un gest físic.</li>'
+  +'<li><b>La diversitat es mostra, no es justifica.</b> Altres famílies apareixen amb tota naturalitat, sense dir que una sigui millor. La vostra és una més, completa.</li>'
+  +'<li><b>Mai s\'anomena una mancança.</b> No hi surt «no tens pare» ni «falta algú». La història gira entorn de la presència, la cura i l\'amor.</li></ul>'
+  +'<h2>Quins processos afavoreix</h2><ul>'
+  +'<li><b>Vincle segur:</b> «estic segur, m\'estimen, em cuiden».</li>'
+  +'<li><b>Identitat i pertinença:</b> «la meva família està bé, és perfecta per a nosaltres».</li>'
+  +'<li><b>Regulació emocional:</b> el tram final abaixa revolucions (nit, conte, respirar junts, dormir).</li>'
+  +'<li><b>Diversitat com a normalitat:</b> hi ha moltes famílies i totes s\'estimen.</li></ul>'
+  +'<h2>Com fer-lo servir cada nit</h2><ul>'
+  +'<li>Llegeix-lo <b>a poc a poc</b>, amb veu suau. No cal acabar-lo si té son.</li>'
+  +'<li>Fes <b>el gest de vincle</b> de cada pàgina: el cos aprèn seguretat més que les paraules.</li>'
+  +'<li>Deixa que <b>el demani moltes vegades</b>. Repetir el mateix conte no és avorrir-se: és consolidar.</li>'
+  +'<li>Si un dia només vol mirar els dibuixos, també val.</li></ul>'
+  +'<h2>Si pregunta pels pares d\'altres nens</h2>'
+  +'<p>No ho evitis i no t\'alarmis: és curiositat sana, no una mancança. Respon <b>amb naturalitat i en positiu</b>, sense donar més voltes de les que ell demana:</p><ul>'
+  +'<li>«Sí, aquesta família té un pare. <b>Hi ha famílies de moltes formes.</b> La nostra som tu i jo, i ens estimem moltíssim.»</li>'
+  +'<li>«Cada família és diferent. El que importa és com s\'estimen. <b>Nosaltres ens estimem així de gran.</b>»</li>'
+  +'<li>Si insisteix, valida la pregunta sense dramatitzar: «Quina bona pregunta. Hi ha nens amb un pare, amb dues mares, amb avis… i nens com tu, amb la seva mare. Totes són famílies de veritat.»</li></ul>'
+  +'<p>La clau: respondre <b>des de la calma i la suficiència</b>, no des de l\'explicació defensiva. El teu to transmet més que les paraules: si tu ho vius amb naturalitat, ell també.</p>'
+  +'<h2>Frases que ajuden / frases que convé evitar</h2>'
+  +'<div class="two"><div class="col si"><h3>✓ Ajuden</h3><ul>'
+  +'<li>«La nostra família som tu i jo, i ens estimem moltíssim.»</li>'
+  +'<li>«Estàs segur. T\'estimo.»</li>'
+  +'<li>«Hi ha moltes formes de família; totes s\'estimen.»</li>'
+  +'<li>«La nostra família és perfecta per a nosaltres.»</li>'
+  +'<li>«Que bé que estem junts.»</li></ul></div>'
+  +'<div class="col no"><h3>✕ Millor evitar</h3><ul>'
+  +'<li>«El teu pare no hi és / se\'n va anar.»</li>'
+  +'<li>«No tens pare.» / «No cal un pare.»</li>'
+  +'<li>«A tu et falta…» (qualsevol idea de mancança).</li>'
+  +'<li>«Som una família igual que les altres» (no cal defensar-se: ja ho sou).</li>'
+  +'<li>Donar explicacions llargues que ell no ha demanat.</li></ul></div></div>'
+  +'<h2>El conte, pàgina a pàgina</h2>'
+  +'<p class="muted" style="color:#8a7d6f">Objectiu psicològic i descripció de la il·lustració de cada pàgina (útil també per a un il·lustrador).</p>'
+  +pgs
+  +'<footer style="margin-top:20px"><b>Centre APRENS</b><br>Material d\'acompanyament. S\'interpreta dins del teu procés a consulta.</footer>';
 }
 
 render();

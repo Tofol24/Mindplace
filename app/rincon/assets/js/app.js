@@ -80,12 +80,13 @@
       '</div>';
     $("#bHome").addEventListener("click", goHome);
     var orb = $("#orb"), emoji = $("#orbEmoji"), word = $("#bWord"), count = $("#bCount"), done = $("#bDone"), start = $("#bStart");
-    // fases suman 10s (en sintonía con @keyframes breathe)
+    // fases suman 14s: ritmo lento y marcado 4-2-6-2 (en sintonía con @keyframes breathe)
+    var CICLO = 14000;
     var FASES = [
-      { t: 0, w: "Huele la flor 🌸", e: "🌸" },
-      { t: 2000, w: "Guarda el aire…", e: "🌸" },
-      { t: 4400, w: "Apaga la vela 🕯️", e: "🕯️" },
-      { t: 6600, w: "Descansa", e: "😌" }
+      { t: 0, w: "Huele la flor 🌸", e: "🌸" },     // inspira · 4s
+      { t: 4000, w: "Guarda el aire…", e: "🌸" },   // retén · 2s
+      { t: 6000, w: "Apaga la vela 🕯️", e: "🕯️" }, // sopla despacio · 6s
+      { t: 12000, w: "Descansa", e: "😌" }           // descansa · 2s
     ];
     var t0 = 0, ciclos = 0;
     start.addEventListener("click", function () {
@@ -94,7 +95,7 @@
       t0 = Date.now();
       timer = setInterval(function () {
         var e = Date.now() - t0;
-        if (e >= 10000) { e = e % 10000; t0 = Date.now() - e; ciclos++; count.textContent = Math.max(0, TOTAL - ciclos) + " respiraciones"; }
+        if (e >= CICLO) { e = e % CICLO; t0 = Date.now() - e; ciclos++; count.textContent = Math.max(0, TOTAL - ciclos) + " respiraciones"; }
         if (ciclos >= TOTAL) {
           stopTimer(); orb.classList.remove("run"); word.textContent = "¡Muy bien! 🌟"; emoji.textContent = "😌";
           count.textContent = ""; done.textContent = "Has respirado como una campeona."; confeti(); marcarPractica("respiracion"); return;
