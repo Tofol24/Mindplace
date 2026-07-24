@@ -104,7 +104,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
 
   { id:"la_manada", emoji:"🐾", nombre:"La manada (el porqué)",
-    desc:"Por qué respiras: la metáfora base. Tu cuerpo es un mamífero de manada; con la respiración consciente y el AIS te haces perceptible para él, construyes apego seguro contigo y sales al mundo con la alerta baja.",
+    desc:"Por qué respiras: la metáfora base. Tu mono es un mamífero de manada; el AIS es el canal por el que tu conciencia se vuelve perceptible para él. Respirar no es relajarte: es volver a aparecer para tu mono, construir apego seguro y salir al mundo acompañado.",
     migrada:true, iframe:"tools-standalone/la_manada_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
