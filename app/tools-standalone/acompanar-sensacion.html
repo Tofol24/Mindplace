@@ -8,42 +8,58 @@
 <title>Acompañar la sensación · APRENS</title>
 <style>
   :root{
-    --bg:#f3f7f6;
-    --card:#ffffff;
-    --tinta:#2f3a38;
-    --suau:#6d7d79;
-    --calma:#3f8a7e;       /* verde-teal calma */
-    --calma-d:#2c6a60;
-    --calma-suau:#e7f1ef;
-    --crema:#eef4f2;
-    --calid:#c98a3f;       /* acento cálido para la brújula */
-    --calid-d:#a86d22;
-    --linia:#dde8e5;
-    --ombra:0 6px 22px rgba(40,80,72,.10);
-    --ombra-s:0 2px 10px rgba(40,80,72,.07);
+    /* Dirección artística editorial APRENS (marfil · oliva · terracota),
+       misma familia que "Honestidad emocional". Se conservan los NOMBRES de
+       variable (los usa el JS) y solo se recalibran los valores. */
+    --bg:#F4EFE6;          /* marfil */
+    --card:#FBF8F1;
+    --tinta:#2A2622;
+    --suau:#6f665b;
+    --calma:#6E7256;       /* oliva/sage: acción de calma y respiración */
+    --calma-d:#565a41;
+    --calma-suau:#e8ead9;
+    --crema:#efe7d8;
+    --calid:#C2704F;       /* terracota: acento cálido (brújula / enviar) */
+    --calid-d:#9c5238;
+    --linia:#D8CDB9;
+    --ombra:0 24px 60px -30px rgba(42,38,34,.5);
+    --ombra-s:0 2px 12px rgba(42,38,34,.07);
     --r:18px;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:linear-gradient(180deg,#e9f2f0 0%,var(--bg) 220px);
+    font-family:var(--sans);
+    background:var(--bg);
     color:var(--tinta);line-height:1.62;font-size:16px;-webkit-font-smoothing:antialiased;
-    padding:0 16px 80px;
+    padding:0 0 80px;overflow-x:hidden;
   }
-  .wrap{max-width:640px;margin:0 auto}
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px}
+  ::selection{background:var(--calid);color:var(--bg)}
 
-  header{text-align:center;padding:38px 8px 6px}
-  .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--calma-d);background:var(--calma-suau);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:18px}
-  h1{font-size:26px;line-height:1.25;margin:0 auto;max-width:16em;font-weight:700;letter-spacing:-.01em}
-  .sub{color:var(--suau);font-size:15px;margin:14px auto 0;max-width:30em}
-  .topcta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:22px 0 4px;padding:14px 16px;border:0;border-radius:14px;cursor:pointer;font-family:inherit;background:var(--calma);color:#fff;font-size:15.5px;font-weight:600;box-shadow:0 6px 18px rgba(63,138,126,.30);transition:transform .08s}
+  /* ---------- Portada editorial (hero con foto) ---------- */
+  .hero{position:relative;min-height:46vh;max-height:460px;display:flex;align-items:flex-end;overflow:hidden;
+    background:linear-gradient(150deg,#7d8168 0%,#5f6350 42%,#8a6a52 100%)}
+  .hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .hero::after{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(42,38,34,.30) 0%,rgba(42,38,34,.02) 30%,rgba(42,38,34,.10) 55%,rgba(42,38,34,.74) 100%)}
+  .hero-copy{position:relative;z-index:2;color:#F6ECDD;padding:0 20px 26px;max-width:640px;margin:0 auto;width:100%}
+  .eyebrow{font-family:var(--sans);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#f2d9b8;margin:0 0 12px;font-weight:600}
+  .hero h1{font-family:var(--serif);font-size:clamp(32px,8.5vw,48px);line-height:1.05;color:#fff;font-weight:600;letter-spacing:-.01em;text-shadow:0 2px 22px rgba(20,14,10,.34)}
+  .hero-tag{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:clamp(17px,2.6vw,21px);color:#F6ECDD;max-width:26em;text-shadow:0 1px 12px rgba(20,14,10,.4)}
+
+  .introband{max-width:640px;margin:0 auto;padding:20px 16px 2px}
+  .topcta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:6px 0 4px;padding:15px 16px;border:0;border-radius:14px;cursor:pointer;font-family:inherit;background:var(--calid);color:#fff;font-size:15.5px;font-weight:600;box-shadow:0 10px 24px -10px rgba(156,82,56,.6);transition:transform .08s}
   .topcta:active{transform:scale(.98)}
   .topcta svg{width:19px;height:19px}
   .topnote{text-align:center;color:var(--suau);font-size:13.5px;margin:8px 0 0}
+  h1{font-family:var(--serif)}
+  .sub{color:var(--suau);font-size:15px;margin:0 auto}
 
   .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
-  .card h2{display:flex;align-items:center;gap:11px;font-size:19px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+  .card h2{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:20px;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
   .ic{flex:0 0 40px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--calma-suau);color:var(--calma-d)}
   .ic svg{width:22px;height:22px;display:block}
   .card p{margin:8px 0;color:#41514d}
@@ -63,7 +79,7 @@
   .pstep{display:none}
   .pstep.show{display:block;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .pstep .ptit{font-size:16px;font-weight:700;margin:6px 0 4px}
+  .pstep .ptit{font-family:var(--serif);font-size:17px;font-weight:600;margin:6px 0 4px}
   .pstep .ptxt{color:#41514d;font-size:15px;margin:6px 0}
   .verbal{background:var(--crema);border-radius:12px;padding:13px 15px;font-style:italic;color:var(--calma-d);margin:10px 0;font-size:15px}
 
@@ -138,20 +154,30 @@
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <a class="manada-link" href="../index.html#/tool/la_manada" target="_top" style="display:inline-flex;align-items:center;gap:7px;margin:2px 0 14px;padding:8px 14px;border-radius:999px;background:#f3ece0;border:1px solid #e2d6c2;color:#6b5a44;text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.3">🐾 ¿Por qué respiras? · La manada <span style="opacity:.55">→</span></a>
-
-  <header>
-    <span class="kicker">APRENS · AIS / ACT</span>
+<!-- ═══ Portada editorial. FOTO: cuando exista assets/editorial/acompanar-la-sensacion.webp
+     aparece sola (onerror la oculta mientras no esté). Brief de dirección
+     artística en el PR. ═══ -->
+<section class="hero">
+  <img class="hero-img" src="assets/editorial/acompanar-la-sensacion.webp" alt="" onerror="this.remove()">
+  <div class="hero-copy">
+    <p class="eyebrow">APRENS · AIS / ACT</p>
     <h1>Acompañar la sensación</h1>
-    <p class="sub">Ahora tu tarea no es quitar la angustia: es <b>acompañarla</b>. Cuanto menos luches y compruebes, menos fuerza tendrá.</p>
-    <button class="topcta" onclick="anar('practica')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
-      Hacer una parada AIS
-    </button>
-    <p class="topnote">Hazla varias veces al día, aunque sea 1 minuto.</p>
-  </header>
+    <p class="hero-tag">Primero acompaño. No hace falta que se vaya para poder seguir.</p>
+  </div>
+</section>
+
+<div class="introband">
+  <p class="sub">Ahora tu tarea no es quitar la angustia: es <b>acompañarla</b>. Cuanto menos luches y compruebes, menos fuerza tendrá.</p>
+  <button class="topcta" onclick="anar('practica')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
+    Hacer una parada AIS
+  </button>
+  <p class="topnote">Hazla varias veces al día, aunque sea 1 minuto.</p>
+  <a class="manada-link" href="../index.html#/tool/la_manada" target="_top" style="display:flex;width:fit-content;align-items:center;gap:7px;margin:14px auto 0;padding:8px 14px;border-radius:999px;background:#efe7d8;border:1px solid var(--linia);color:#6b5a44;text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.3">🐾 ¿Por qué respiras? · La manada <span style="opacity:.55">→</span></a>
+</div>
+
+<div class="wrap">
 
   <!-- Idea base -->
   <div class="card">
