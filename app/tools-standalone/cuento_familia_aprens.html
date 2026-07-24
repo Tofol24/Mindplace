@@ -429,7 +429,11 @@ function portadaHTML(){
     +'<div class="port"><h1>'+U('title')+'</h1><div class="sub">'+U('sub')+'</div>'
     +'<button class="btn" onclick="empezar()">'+U('empezar')+'</button>'
     +'<button class="btn soft" onclick="irGuia()">'+U('guia')+'</button>'
-    +'<button class="btn soft" onclick="irPrint()">'+U('imprimir')+'</button></div>'
+    +'<button class="btn soft" onclick="irPrint()">'+U('imprimir')+'</button>'
+    +'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:2px">'
+      +'<a class="btn soft" href="../assets/pdf/la-familia-de-koa-es.pdf" download>⬇️ PDF Castellano</a>'
+      +'<a class="btn soft" href="../assets/pdf/la-familia-de-koa-ca.pdf" download>⬇️ PDF Català</a>'
+    +'</div></div>'
     +footerHTML();
 }
 function pageHTML(i){
