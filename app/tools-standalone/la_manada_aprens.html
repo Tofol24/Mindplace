@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3f6b5e">
+<title>La manada · APRENS</title>
+<style>
+  :root{
+    --bg:#f3f1e6; --card:#fffdf8; --tinta:#2c2f2a; --suau:#75786d;
+    --verde:#3f6b5e; --verde-d:#2d5044; --verde-lt:#e3efe8;
+    --tierra:#b5763a; --tierra-d:#8f5b26; --tierra-lt:#f2e4cf;
+    --oro:#a9781f; --linia:#e4e1cf;
+    --ombra:0 8px 26px rgba(50,60,40,.10); --ombra-s:0 2px 12px rgba(50,60,40,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#e6ede4 0%,var(--bg) 260px);color:var(--tinta);line-height:1.62;font-size:16.5px;
+    -webkit-font-smoothing:antialiased;padding:0 16px calc(40px + env(safe-area-inset-bottom))}
+  .wrap{max-width:600px;margin:0 auto}
+
+  header{text-align:center;padding:34px 6px 4px}
+  .kick{display:inline-block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-d);background:var(--verde-lt);border:1px solid var(--linia);padding:5px 13px;border-radius:999px;font-weight:600;margin-bottom:16px}
+  h1{font-family:var(--serif);font-size:30px;line-height:1.18;margin:0 auto;max-width:13em;font-weight:700}
+  .sub{color:var(--suau);font-size:15.5px;margin:14px auto 0;max-width:28em}
+
+  .escena{display:flex;justify-content:center;margin:10px 0 2px}
+  .escena svg{width:100%;max-width:320px;height:auto}
+  .seqcap{display:flex;justify-content:space-around;max-width:320px;margin:0 auto 4px;color:var(--suau);font-size:12px;font-weight:600}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 19px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:20px;margin:0 0 8px;display:flex;align-items:center;gap:10px;line-height:1.25}
+  .card h2 .e{font-size:22px;flex:0 0 auto}
+  .card p{margin:9px 0}
+  .card p b{color:var(--verde-d)}
+  .lead{color:var(--suau)}
+  .sentidos{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 2px}
+  .sentido{background:var(--verde-lt);border:1px solid #cfe0d5;border-radius:12px;padding:8px 13px;font-size:14px;color:var(--verde-d);font-weight:600;display:flex;align-items:center;gap:7px}
+
+  .quote{font-family:var(--serif);font-style:italic;color:var(--verde-d);background:var(--verde-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:14px 16px;margin:12px 0;font-size:17px;line-height:1.5}
+  .quote.tierra{color:var(--tierra-d);background:var(--tierra-lt);border-left-color:var(--tierra)}
+
+  .core{background:linear-gradient(160deg,var(--verde),#2f5347);color:#fff;border-radius:14px;padding:16px 18px;margin:14px 0;font-family:var(--serif);font-size:18px;line-height:1.45}
+  .core b{color:#fff}
+  .defbox{border:1.5px dashed #bcd2c4;border-radius:14px;padding:14px 16px;margin:13px 0;background:#f4f8f3}
+  .defbox .dl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--verde-d);margin-bottom:5px}
+  .defbox .dt{font-family:var(--serif);font-size:16.5px;line-height:1.45}
+
+  .cta{background:linear-gradient(160deg,var(--verde),#325549);color:#fff;border-radius:var(--r);padding:22px 19px;margin:18px 0;box-shadow:var(--ombra)}
+  .cta h2{font-family:var(--serif);font-size:20px;margin:0 0 6px;color:#fff}
+  .cta p{color:#e7f0ea;font-size:14.5px;margin:6px 0 14px}
+  .cta a{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:13px;padding:13px 15px;margin:9px 0;color:#fff;text-decoration:none;font-weight:600;font-size:15px}
+  .cta a .ce{font-size:20px}
+  .cta a .cd{font-weight:400;font-size:12.5px;opacity:.9;display:block}
+  .cta a:active{transform:scale(.99)}
+
+  footer{text-align:center;color:var(--suau);font-size:12.5px;margin:26px 0 8px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--verde-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .breathe{transform-origin:center;animation:br 9s ease-in-out infinite}
+  @keyframes br{0%,100%{transform:scale(.9)}50%{transform:scale(1.08)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kick">APRENS · el porqué</span>
+    <h1>La manada</h1>
+    <p class="sub">Por qué respiras: para que tu mono no salga solo.</p>
+  </header>
+
+  <div class="escena" aria-hidden="true">
+    <svg viewBox="0 0 300 180" role="img">
+      <ellipse cx="150" cy="158" rx="120" ry="14" fill="#d8e2d3" opacity=".6"/>
+      <g id="herdG"></g>
+    </svg>
+  </div>
+
+  <div class="card">
+    <h2><span class="e">🐒</span>Tu mono es un mamífero de manada</h2>
+    <p>En APRENS llamamos <b>mono</b> a tu cuerpo animal: la parte de ti que siente, se activa y reacciona antes de que te des cuenta. Y ese mono es, ante todo, un <b>mamífero</b>.</p>
+    <p>Como todo mamífero, <b>se siente seguro cuando percibe a los suyos</b>: cuando nota cerca a sus vínculos y se siente arropado por ellos.</p>
+    <p>Los percibe por los sentidos:</p>
+    <div class="sentidos"><span class="sentido">👁️ los ve</span><span class="sentido">✋ los toca</span><span class="sentido">👂 los oye</span><span class="sentido">👃 los huele</span></div>
+    <p class="lead">Así sabe que no está solo. Y desde ahí puede estar en calma.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="e">🚶</span>Hoy toca salir de la manada</h2>
+    <p>Nuestros sistemas de apego <b>evolucionaron para otro entorno</b>: uno en el que vivíamos cerca de los nuestros casi todo el tiempo.</p>
+    <p>La vida moderna nos pide lo contrario: <b>salir del grupo</b> una y otra vez —ir a trabajar, hacer mil cosas, ser autónomos—. Cosas valiosas… pero muy distintas de aquello para lo que tu mono está preparado.</p>
+    <p>Al alejarse de la manada y de sus apegos, el mono lo interpreta como un riesgo: <b>sube la alerta, se estrecha la mirada</b> y empieza a ver amenazas donde en realidad no las hay.</p>
+    <div class="quote tierra">No es que el mundo sea peligroso. Es que tu mono se ha quedado sin manada a la vista.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="e">🫥</span>Y a ti… tu mono no puede percibirte</h2>
+    <p>Aquí está el detalle importante: tú eres la <b>conciencia</b> de tu mono. Vas siempre con él, nunca lo dejas solo. Pero para él, <b>eres invisible</b>: no puede verte, ni olerte, ni oírte, ni tocarte.</p>
+    <div class="core">Tu mono no necesita que la conciencia exista. Necesita <b>poder percibirla</b>.</div>
+  </div>
+
+  <div class="escena" aria-hidden="true">
+    <svg viewBox="0 0 300 150" role="img"><g id="seqG"></g></svg>
+  </div>
+  <div class="seqcap"><span>1 · solo</span><span>2 · respiras</span><span>3 · te mira</span></div>
+
+  <div class="card" style="border-color:#cfe0d5">
+    <h2><span class="e">🫁</span>La respiración es cómo apareces para tu mono</h2>
+    <p>Aquí entra la <b>respiración consciente</b>. No es un truco para relajarte: es la <b>señal</b> con la que tu mono empieza a notarte.</p>
+    <div class="quote">Respirar no es relajarte. Es volver a aparecer para tu mono.</div>
+    <p>Cada respiración atenta, hecha con una <b>actitud compasiva</b>, es como <b>sentarte otra vez a su lado</b>. Poco a poco, el mono descubre que no está solo: te tiene a ti.</p>
+    <div class="defbox"><div class="dl">El AIS, en una frase</div><div class="dt">El AIS es el proceso por el que la <b>conciencia se vuelve perceptible</b> para el organismo. No una técnica de regulación, sino el <b>canal</b> por el que tu mono y tú os comunicáis.</div></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="e">🤍</span>No practicas para sentir menos</h2>
+    <p>El mono <b>no necesita que desaparezca el miedo</b>. Necesita notar que <b>alguien permanece</b> cuando tiene miedo.</p>
+    <div class="quote">No practico para sentir menos. Practico para que mi mono aprenda que siempre aparezco.</div>
+    <p>Eso es, exactamente, lo que hace una <b>figura de apego</b>. Y esa figura, para tu mono, puedes serlo <b>tú</b>.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="e">🧭</span>Apego seguro contigo = salir acompañado</h2>
+    <p>Cuando tu mono te percibe y confía en ti, ya <b>no sale solo</b> de la manada: sale contigo. Puede ir al trabajo, a los retos y a lo cotidiano <b>con la alerta baja</b>, porque lo acompañas a todas partes.</p>
+    <p>Y con los demás, esto te permite vínculos <b>sanos y de desapego</b>: no porque no te importen, sino porque <b>ya no necesitas que estén siempre a tu lado</b> para sentirte a salvo.</p>
+    <div class="quote">No necesito que vengan conmigo a todos los sitios: yo me acompaño.</div>
+  </div>
+
+  <div class="escena" aria-hidden="true">
+    <svg viewBox="0 0 300 180" role="img"><g id="finalG"></g></svg>
+  </div>
+  <div class="card">
+    <h2><span class="e">👀</span>Y un día, el mono se gira</h2>
+    <p>Al principio, el mono está solo, mirando al peligro. Después empiezas a respirar. Y, poco a poco, <b>se gira</b>. No porque el peligro haya desaparecido, sino porque, por primera vez, <b>nota a alguien</b>.</p>
+    <p>En la última escena, el mono <b>te mira</b>. No hace falta abrazarlo, ni que sonría. Le basta con notar que <b>estás</b>. Que apareces.</p>
+  </div>
+
+  <div class="cta">
+    <h2>🌿 El para qué de todo</h2>
+    <p>Por eso respiras. Por eso el AIS. Para que tu mono te perciba, confíe en ti y no se sienta solo, vayas donde vayas. Empieza por aquí:</p>
+    <a target="_top" href="../index.html#/tool/herramienta_diaria"><span class="ce">🫁</span><span>Respiración diaria<span class="cd">aparecer para tu mono, cada día</span></span></a>
+    <a target="_top" href="../index.html#/tool/acompanar_sensacion"><span class="ce">🤝</span><span>Acompañar la sensación<span class="cd">permanecer con él cuando tiene miedo</span></span></a>
+    <a target="_top" href="../index.html#/tool/protocolo_ais"><span class="ce">🎧</span><span>Protocolo AIS (audio)<span class="cd">entrenar el canal, paso a paso</span></span></a>
+    <a href="fondos_frases_aprens.html?frase=Respirar%20no%20es%20relajarme%3A%20es%20volver%20a%20aparecer%20para%20mi%20mono." target="_blank" rel="noopener"><span class="ce">🖼️</span><span>Llévate la frase<span class="cd">hazla el fondo de pantalla de tu móvil</span></span></a>
+  </div>
+
+  <footer><b>Centre APRENS</b> · TEC · AIS<br>Material de acompañamiento. Se interpreta dentro de tu proceso en consulta.</footer>
+</div>
+
+<script>
+"use strict";
+/* ilustraciones vectoriales suaves */
+function animal(cx,cy,s,col){
+  return '<g transform="translate('+cx+','+cy+') scale('+s+')">'
+    +'<ellipse cx="0" cy="22" rx="16" ry="19" fill="'+col+'"/>'
+    +'<circle cx="-9" cy="-13" r="6.5" fill="'+col+'"/><circle cx="9" cy="-13" r="6.5" fill="'+col+'"/>'
+    +'<circle cx="0" cy="0" r="15" fill="'+col+'"/>'
+    +'<circle cx="-5" cy="-1" r="1.8" fill="#2c2f2a"/><circle cx="5" cy="-1" r="1.8" fill="#2c2f2a"/>'
+    +'<ellipse cx="0" cy="5" rx="3.4" ry="4" fill="#2c2f2a"/>'
+    +'<ellipse cx="-8" cy="4" rx="2.6" ry="2.1" fill="#f0c9cd" opacity=".7"/><ellipse cx="8" cy="4" rx="2.6" ry="2.1" fill="#f0c9cd" opacity=".7"/>'
+    +'</g>';
+}
+/* mono: mode = 'away' (de espaldas) | 'side' (empieza a notar) | 'look' (mira) */
+function mono(cx,cy,s,mode){
+  var col='#a58f76', face='#ece0cd';
+  var g='<g transform="translate('+cx+','+cy+') scale('+s+')">';
+  g+='<ellipse cx="0" cy="26" rx="16" ry="19" fill="'+col+'"/>';               // cuerpo
+  g+='<circle cx="-16" cy="-3" r="7" fill="'+col+'"/><circle cx="16" cy="-3" r="7" fill="'+col+'"/>'; // orejas
+  g+='<circle cx="0" cy="0" r="15" fill="'+col+'"/>';                          // cabeza
+  if(mode==='away'){
+    g+='<path d="M14,32 q15,3 12,-16" fill="none" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>'; // cola
+    g+='<line x1="0" y1="-10" x2="0" y2="14" stroke="#8a765e" stroke-width="1.4" opacity=".5"/>';               // espalda
+  } else {
+    var dx = mode==='look' ? 4 : 1.5;
+    g+='<circle cx="-11" cy="-3" r="3.4" fill="'+face+'"/><circle cx="11" cy="-3" r="3.4" fill="'+face+'"/>';
+    g+='<ellipse cx="'+dx+'" cy="3" rx="11" ry="12" fill="'+face+'"/>';        // cara
+    g+='<circle cx="'+(dx-4)+'" cy="-1" r="1.9" fill="#2c2f2a"/><circle cx="'+(dx+4)+'" cy="-1" r="1.9" fill="#2c2f2a"/>';
+    g+='<path d="M'+(dx-3)+',8 q3,2.5 6,0" stroke="#8a6f52" stroke-width="1.3" fill="none" stroke-linecap="round"/>';
+  }
+  g+='</g>'; return g;
+}
+/* conciencia: orbe suave; mode = 'faint' | 'breath' */
+function orb(cx,cy,r,mode){
+  var s='';
+  if(mode==='breath') s+='<circle class="breathe" cx="'+cx+'" cy="'+cy+'" r="'+(r*1.7)+'" fill="#e3efe8"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#cfe0d5" opacity="'+(mode==='faint'?0.28:0.9)+'"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*0.58)+'" fill="#fffdf8" opacity="'+(mode==='faint'?0.35:0.95)+'"/>';
+  return s;
+}
+function dashLink(x1,y1,x2,y2){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#a8c2b3" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/>'; }
+
+/* manada */
+var C=['#8fae9a','#a9b98f','#c7a06a','#9bb0bb'];
+var herd = animal(96,110,1,C[0])+animal(140,120,1.05,C[1])+animal(186,110,1,C[2])+animal(150,86,.8,C[3])
+  +'<g transform="translate(150,58)"><path d="M0,4 C-6,-3 -14,1 -8,7 L0,13 L8,7 C14,1 6,-3 0,4 Z" fill="#c98f93"/></g>';
+
+/* secuencia: solo → respiras → te mira (3 paneles) */
+function panel(px){
+  var y=78;
+  var s='';
+  s+='<line x1="'+(px+50)+'" y1="26" x2="'+(px+50)+'" y2="124" stroke="#e0ddca" stroke-width="1"/>'; // separador
+  return s;
+}
+var seq='';
+seq+=orb(74,64,11,'faint')+mono(34,80,.9,'away');                                     // 1 · solo (de espaldas)
+seq+='<line x1="100" y1="26" x2="100" y2="128" stroke="#e2dfcb" stroke-width="1"/>';
+seq+=orb(174,64,12,'breath')+mono(134,80,.9,'side');                                  // 2 · respiras
+seq+='<line x1="200" y1="26" x2="200" y2="128" stroke="#e2dfcb" stroke-width="1"/>';
+seq+=dashLink(250,66,278,60)+orb(278,60,12,'breath')+mono(244,80,.9,'look');          // 3 · te mira
+
+/* escena final: el mono te mira */
+var fin='<ellipse cx="150" cy="158" rx="110" ry="13" fill="#d8e2d3" opacity=".6"/>'
+  + dashLink(128,92,196,96)
+  + orb(210,96,26,'breath')
+  + mono(108,96,1.55,'look');
+
+document.getElementById('herdG').innerHTML = herd;
+document.getElementById('seqG').innerHTML = seq;
+document.getElementById('finalG').innerHTML = fin;
+</script>
+</body>
+</html>

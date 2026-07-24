@@ -16,6 +16,8 @@
   // Agrupación del hub por tipo/tema (fuente única). Cada herramienta se lista
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
+    { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La metáfora de la manada: para qué respiras y para qué sirve todo esto.",
+      ids:["la_manada"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       ids:["ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
     { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo?",
@@ -97,8 +99,8 @@
         <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
       </div>
       ${focoBanner}
-      ${docsHTML()}
       ${secciones}
+      ${docsHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
   }
 
