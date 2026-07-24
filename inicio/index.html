@@ -117,6 +117,14 @@
   .story .sbridge p{font-size:13.5px;color:#4a4a4a;}
   .story .sbridge-lk{display:inline-flex;align-items:center;gap:7px;margin-top:6px;text-decoration:none;background:#f3ece0;border:1px solid #e2d6c2;color:#6b5a44;font-weight:700;font-size:13px;padding:10px 16px;border-radius:999px;transition:transform .15s;}
   .story .sbridge-lk:hover{transform:translateY(-1px);}
+  .story .sacts{margin-top:16px;padding-top:15px;border-top:1px dashed var(--linea,#e2d6c2);}
+  .story .sacts-t{font-size:13.5px;color:#4a4a4a;margin:0 0 10px;}
+  .story .sact{display:flex;align-items:center;gap:11px;text-decoration:none;background:var(--verdeLt);border:1px solid #cfe0d5;border-radius:12px;padding:11px 14px;margin:8px 0;color:var(--verde);font-weight:600;font-size:13.5px;line-height:1.35;transition:transform .12s;}
+  .story .sact .se{font-size:19px;flex:0 0 auto;}
+  .story .sact .st{flex:1;}
+  .story .sact .st small{display:block;font-weight:400;color:var(--gris);font-size:12px;margin-top:1px;}
+  .story .sact .sarr{margin-left:2px;opacity:.5;}
+  .story .sact:hover{transform:translateY(-1px);}
 
   /* ════════════ DETECTIVE DEL MONO (embebido, estilos con ámbito #detective) ════════════ */
   #detective{
@@ -343,6 +351,13 @@
       <p>Hay coches con una rueda pinchada. Hay coches con el motor averiado. Hay coches que han sufrido un accidente. <b>El camino cambia. Lo que no cambia es quién lleva el volante.</b></p>
       <p>En los tramos difíciles el coche solo avanza más despacio. <i>Y eso también es seguir.</i></p>
       <div class="squote">«El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.»</div>
+      <div class="sacts">
+        <p class="sacts-t"><b>¿Y ahora? Según dónde lleves al mono hoy, una herramienta para acompañarlo:</b></p>
+        <a class="sact" href="https://aprens-app.netlify.app/#/tool/bajar_alerta" target="_blank" rel="noopener"><span class="se">🚗</span><span class="st">Si coge el volante (reaccionas por impulso)<small>Bajar la alerta · parar antes de actuar</small></span><span class="sarr">→</span></a>
+        <a class="sact" href="https://aprens-app.netlify.app/#/tool/ais_amor" target="_blank" rel="noopener"><span class="se">🏃</span><span class="st">Si lo persigues (te exiges, te riñes)<small>AIS desde el amor · acompañarte, no controlarte</small></span><span class="sarr">→</span></a>
+        <a class="sact" href="https://aprens-app.netlify.app/#/tool/acompanar_sensacion" target="_blank" rel="noopener"><span class="se">📦</span><span class="st">Si lo metes en el maletero (lo evitas)<small>Acompañar la sensación · estar con lo que sientes</small></span><span class="sarr">→</span></a>
+        <a class="sact" href="https://aprens-app.netlify.app/#/tool/herramienta_diaria" target="_blank" rel="noopener"><span class="se">🧡</span><span class="st">Para sentarlo a tu lado (cada día)<small>Herramienta diaria · tu práctica de presencia</small></span><span class="sarr">→</span></a>
+      </div>
       <a class="pdfbtn" href="quien-conduce-tu-vida.pdf" target="_blank" rel="noopener">📄 Leer la historia completa (PDF ilustrado)</a>
       <p class="pdfnote">El cuento entero, con sus ilustraciones, para leerlo con calma siempre que quieras.</p>
       <div class="sbridge">

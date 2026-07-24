@@ -21,7 +21,7 @@
       pdfs:[{ emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo, la historia del mono (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" }] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       ids:["ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
-    { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo?",
+    { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo? Si ya lo sabes, regístralo y practica; si no, deja que el detective lo deduzca.",
       ids:["estado_mono","donde_esta_mono"] },
     { emoji:"🧯", label:"Parar y regular impulsos", desc:"Cuando te notas en alerta o a punto de reaccionar.",
       ids:["bajar_alerta","control_ira","estoy_aqui_conmigo"] },
