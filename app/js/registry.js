@@ -101,7 +101,11 @@ window.APRENS_TOOLS = [
 
   { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
-    migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" }
+    migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
+
+  { id:"la_manada", emoji:"🐾", nombre:"La manada (el porqué)",
+    desc:"Por qué respiras: la metáfora base. Tu cuerpo es un mamífero de manada; con la respiración consciente y el AIS te haces perceptible para él, construyes apego seguro contigo y sales al mundo con la alerta baja.",
+    migrada:true, iframe:"tools-standalone/la_manada_aprens.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];

@@ -550,7 +550,8 @@ function render(){
   const MENU=[
     {href:'https://aprens-app.netlify.app/#/tool/agenda_atencional', ext:true, ic:'🗓️', tit:'Organiza tu semana', txt:(PRIMERA?'Si es tu primera semana, empieza por aquí. ':'')+'El punto de partida. Reparte tu semana en 4 momentos, decide dónde poner tu atención y mira qué áreas de tu vida estás regando. Hacerlo una vez te ordena los días enteros.', col:'#1B4F8C', bg:'rgba(255,255,255,.18)', prime:true, badge:(PRIMERA?'🌱 Tu primera semana · empieza aquí':'Empieza por aquí · tu semana')},
     {href:'#detective', ic:'🔍', tit:'El detective del mono', txt:'¿Cómo estás tratando hoy a tu mono? Cuéntamelo y te oriento hacia una herramienta.', col:'#8f5639', bg:'#f3e7e0', feat:true},
-    {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'}
+    {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'},
+    {href:'https://aprens-app.netlify.app/#/tool/la_manada', ext:true, ic:'🐾', tit:'La manada · el porqué', txt:'Por qué respiras: tu cuerpo es un mamífero de manada y con la respiración se apega a ti.', col:'#3f6b5e', bg:'#e3efe8'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
   MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#a9781f', bg:'#f4e7cc'});
