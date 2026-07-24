@@ -88,6 +88,31 @@ body{
   padding:2px 7px;border-radius:20px;margin-top:8px;background:var(--azulLt);color:var(--azul)}
 .hub-tag.soon{background:#eceef1;color:var(--gris)}
 
+/* ---- Historia del mono (hub, colapsable) ---- */
+.hub-story{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(43,38,32,.08);border-left:4px solid var(--oro);margin:6px 0 4px;overflow:hidden}
+.hub-story>summary{list-style:none;cursor:pointer;padding:15px 17px;font-family:var(--serif);font-weight:700;font-size:15.5px;color:var(--azul);display:flex;align-items:center;gap:10px}
+.hub-story>summary::-webkit-details-marker{display:none}
+.hub-story>summary .hs-i{font-size:19px}
+.hub-story>summary::after{content:"▾";margin-left:auto;color:var(--gris);font-size:13px}
+.hub-story[open]>summary::after{content:"▴"}
+.hs-body{padding:0 17px 18px;font-size:14px;line-height:1.7;color:#3a3a3a}
+.hs-body p{margin:0 0 9px}
+.hs-body b{color:var(--azul)}
+.hs-quote{font-family:var(--serif);font-style:italic;color:#1f5e42;background:var(--verdeLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:12px 15px;margin:10px 0}
+.hs-acts{margin-top:14px;padding-top:14px;border-top:1px dashed #e4e1cf}
+.hs-acts-t{font-size:13px;color:#4a4a4a;margin:0 0 9px}
+.hs-act{display:flex;align-items:center;gap:11px;text-decoration:none;background:var(--verdeLt);border:1px solid #bfe0cd;border-radius:12px;padding:11px 14px;margin:7px 0;color:#1f5e42;font-weight:600;font-size:13px;line-height:1.35;transition:transform .12s}
+.hs-act .se{font-size:18px;flex:0 0 auto}
+.hs-act .st{flex:1}
+.hs-act .st small{display:block;font-weight:400;color:var(--gris);font-size:11.5px;margin-top:1px}
+.hs-act .sarr{opacity:.5}
+.hs-act:active{transform:scale(.99)}
+.hs-pdf{display:inline-flex;align-items:center;gap:8px;margin-top:14px;text-decoration:none;background:var(--verde);color:#fff;font-weight:700;font-size:13px;padding:11px 18px;border-radius:24px}
+.hs-pdfnote{margin-top:8px;font-size:11.5px;color:var(--gris)}
+.hs-bridge{margin-top:15px;padding-top:13px;border-top:1px dashed #e4e1cf}
+.hs-bridge p{font-size:12.5px;color:#4a4a4a;margin:0 0 7px}
+.hs-bridge a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;background:#f3ece0;border:1px solid #e2d6c2;color:#6b5a44;font-weight:700;font-size:12.5px;padding:9px 15px;border-radius:999px}
+
 /* ---- Escalas / ítems (cuestionarios) ---- */
 .item{padding:14px 0;border-bottom:1px solid #EEF3F8}
 .item:last-child{border-bottom:none}
