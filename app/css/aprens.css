@@ -72,6 +72,10 @@ body{
 .full{width:100%;justify-content:center}
 
 /* ---- Hub (rejilla de herramientas) ---- */
+.hub-sec{display:flex;align-items:center;gap:9px;margin:26px 4px 0;font-family:var(--serif);font-weight:700;font-size:17px;color:var(--azul)}
+.hub-sec:first-of-type{margin-top:6px}
+.hub-sec-e{font-size:19px}
+.hub-sec-d{color:var(--gris);font-size:12.5px;margin:2px 4px 0;line-height:1.5}
 .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:8px}
 .hub-card{background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 4px 20px rgba(43,38,32,.08);
   border-left:4px solid var(--azul);cursor:pointer;text-decoration:none;color:inherit;display:block;transition:transform .12s}
