@@ -208,6 +208,8 @@
   .sos-step{display:flex;gap:11px;align-items:flex-start;margin:11px 0}
   .sos-step .num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--rosa);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
 
+  .phero{margin:2px 0 14px;border-radius:18px;overflow:hidden;box-shadow:0 10px 26px rgba(74,63,48,.14)}
+  .phero img{display:block;width:100%;height:200px;object-fit:cover;object-position:center 32%}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -289,6 +291,7 @@ function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textCont
 /* ---------------- CASA (portada + estaciones) ---------------- */
 VIEWS.casa=function(){
   var h='';
+  h+='<div class="phero"><img src="assets/editorial/estoy-aqui.webp" alt="" onerror="this.parentNode.remove()"></div>';
   h+='<div class="breath-wrap"><div class="breath"><div class="inner">Estoy aquí<br>conmigo</div></div></div>';
   h+='<h1 class="view-t" style="text-align:center">Estoy aquí conmigo</h1>';
   h+='<p class="view-s" style="text-align:center">Entrenamiento para que tu cuerpo note tu presencia.</p>';

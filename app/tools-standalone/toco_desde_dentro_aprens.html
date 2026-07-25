@@ -125,6 +125,8 @@
   .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:620px;margin:0 auto}
   .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
   .tab .te{font-size:19px}.tab.on{color:var(--ambar-d)}
+  .phero{margin:2px 0 14px;border-radius:18px;overflow:hidden;box-shadow:0 10px 26px rgba(74,63,48,.14)}
+  .phero img{display:block;width:100%;height:200px;object-fit:cover;object-position:center 30%}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -194,6 +196,7 @@ function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textCont
 VIEWS.casa=function(){
   var d=dia();
   var h='';
+  h+='<div class="phero"><img src="assets/editorial/toco-desde-dentro.webp" alt="" onerror="this.parentNode.remove()"></div>';
   h+='<span class="kick">Puerta a puerta · '+fechaLarga(hoy())+'</span>';
   h+='<h1 class="view-t">Toco desde dentro</h1>';
   h+='<p class="view-s">Antes de cada puerta, un segundo para <b>acompañar tu cuerpo</b> en vez de arrastrarlo. Cada puerta es un reto, no una amenaza.</p>';
