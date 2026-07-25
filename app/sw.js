@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v65";
+const CACHE = "aprens-v66";
 const SHELL = [
   "./",
   "./index.html",
@@ -20,6 +20,7 @@ const SHELL = [
   "./tools-standalone/ais-curiosidad.html",
   "./tools-standalone/assets/editorial/ais-curiosidad.webp",
   "./tools-standalone/bajar-alerta.html",
+  "./tools-standalone/assets/editorial/bajar-alerta.webp",
   "./tools-standalone/brujula-valores.html",
   "./tools-standalone/acompanar-sensacion.html",
   "./tools-standalone/assets/editorial/acompanar-la-sensacion.webp",
@@ -48,6 +49,7 @@ const SHELL = [
   "./tools-standalone/protocolo-ais.html",
   "./tools-standalone/assets/editorial/protocolo-ais.webp",
   "./tools-standalone/control-ira.html",
+  "./tools-standalone/assets/editorial/control-ira.webp",
   "./tools-standalone/retorno-trabajo.html",
   "./tools-standalone/tracker-ais.html",
   "./tools-standalone/tracker-tec.html",
