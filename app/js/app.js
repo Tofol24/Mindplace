@@ -103,6 +103,102 @@
       <span class="hub-tag">Abrir →</span></a>`;
   }
 
+  // ============================================================
+  //  Continuidad AIS · racha de presencia + recordatorio (offline)
+  //  Todo en localStorage; nada sale del dispositivo.
+  // ============================================================
+  const CONT_KEY = "aprens_cont";
+  function _isoDay(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function loadCont(){ try{ return JSON.parse(localStorage.getItem(CONT_KEY)) || {dias:[],recHora:null}; }catch(e){ return {dias:[],recHora:null}; } }
+  function saveCont(c){ try{ localStorage.setItem(CONT_KEY, JSON.stringify(c)); }catch(e){} }
+  function registrarPractica(){
+    const c = loadCont(); const hoy = _isoDay(new Date());
+    if(c.dias[c.dias.length-1] !== hoy){ c.dias.push(hoy); if(c.dias.length>400) c.dias = c.dias.slice(-400); saveCont(c); }
+  }
+  function _diaMenos(iso, n){ const p=iso.split("-").map(Number); const dt=new Date(p[0],p[1]-1,p[2]); dt.setDate(dt.getDate()-n); return _isoDay(dt); }
+  function calcRacha(dias){
+    if(!dias.length) return 0;
+    const set = new Set(dias); const hoy=_isoDay(new Date()); const ayer=_diaMenos(hoy,1);
+    let cursor;
+    if(set.has(hoy)) cursor=hoy; else if(set.has(ayer)) cursor=ayer; else return 0;
+    let n=0; while(set.has(cursor)){ n++; cursor=_diaMenos(cursor,1); } return n;
+  }
+  function diasDesde(dias){
+    if(!dias.length) return Infinity;
+    const ultimo = dias[dias.length-1]; const hoy=_isoDay(new Date());
+    let n=0, cur=hoy; while(cur!==ultimo && n<400){ n++; cur=_diaMenos(hoy,n); } return n;
+  }
+  const CTA_POR_FOCO = { L:"bajar_alerta", D:"honestidad_emocional", C:"herramienta_diaria" };
+  function toolSugerido(){
+    const id = CTA_POR_FOCO[focoPauta] || "herramienta_diaria";
+    const t = (window.APRENS_TOOLS||[]).find(x=>x.id===id);
+    return t ? {id:t.id, nombre:t.nombre, emoji:t.emoji} : {id:"herramienta_diaria", nombre:"Herramienta diaria", emoji:"🧡"};
+  }
+  function continuidadHTML(){
+    const c = loadCont(); const racha = calcRacha(c.dias); const desde = diasDesde(c.dias);
+    const hoyHecho = c.dias[c.dias.length-1] === _isoDay(new Date());
+    const sug = toolSugerido();
+    let estado, cta = true;
+    if(hoyHecho){
+      estado = `<b>Hoy ya has estado contigo.</b> Cada día que vuelves, la presencia interna se automatiza un poco más.`;
+      cta = false;
+    } else if(racha>0){
+      estado = `Llevas <b>${racha} ${racha===1?"día":"días"} seguidos</b>. Aún no has bajado hoy — un minuto basta para no soltar el hilo.`;
+    } else if(c.dias.length){
+      estado = `Hace <b>${desde} ${desde===1?"día":"días"}</b> que no practicas. La presencia se entrena <b>volviendo</b>, no siendo perfecta. ¿Un minuto ahora?`;
+    } else {
+      estado = `La constancia es lo que interioriza el AIS. <b>Empieza hoy tu racha de presencia</b> — un minuto basta.`;
+    }
+    const fuego = racha>0 ? `<div class="cont-racha"><span class="cont-fuego">🔥</span><span class="cont-num">${racha}</span><span class="cont-lbl">${racha===1?"día":"días"}<br>seguidos</span></div>` : "";
+    const ctaHTML = cta ? `<a class="cont-cta" href="#/tool/${sug.id}">${sug.emoji} Practicar ahora · ${sug.nombre} →</a>` : "";
+    const rec = c.recHora
+      ? `<button class="cont-rec on" id="contRecBtn">🔔 Recordatorio diario a las ${c.recHora} · cambiar</button>`
+      : `<button class="cont-rec" id="contRecBtn">🔔 Recordarme a diario</button>`;
+    return `<section class="cont">
+      <div class="cont-top">
+        ${fuego}
+        <div class="cont-body">
+          <div class="cont-h">Tu presencia, cada día</div>
+          <div class="cont-txt">${estado}</div>
+          ${ctaHTML}
+        </div>
+      </div>
+      <div class="cont-rec-wrap">
+        ${rec}
+        <div class="cont-rec-panel" id="contRecPanel" hidden>
+          <label>Hora <input type="time" id="contRecHora" value="${c.recHora||"20:00"}"></label>
+          <button class="cont-rec-add" id="contRecAdd">Añadir a mi calendario</button>
+          <div class="cont-rec-note">Se crea un recordatorio diario en el calendario de tu móvil. No sale nada de tu dispositivo.</div>
+        </div>
+      </div>
+    </section>`;
+  }
+  function icsRecordatorio(hora){
+    const hm=hora.split(":").map(Number); const now=new Date();
+    const start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hm[0],hm[1],0);
+    const f=(d)=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"T"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+"00";
+    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//APRENS//AIS//ES","CALSCALE:GREGORIAN","METHOD:PUBLISH",
+      "BEGIN:VEVENT","UID:aprens-"+now.getTime()+"@aprens","DTSTAMP:"+f(now),"DTSTART:"+f(start),"RRULE:FREQ=DAILY",
+      "SUMMARY:APRENS · Tu minuto de presencia",
+      "DESCRIPTION:Un minuto contigo\\, baja a tu cuerpo y practica tu AIS. La constancia es lo que lo automatiza.",
+      "BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0M","DESCRIPTION:APRENS · Tu minuto de presencia","END:VALARM",
+      "END:VEVENT","END:VCALENDAR"].join("\r\n");
+  }
+  function wireCont(){
+    const btn=document.getElementById("contRecBtn"), panel=document.getElementById("contRecPanel");
+    if(btn && panel){ btn.onclick=()=>{ panel.hidden=!panel.hidden; }; }
+    const add=document.getElementById("contRecAdd");
+    if(add){ add.onclick=()=>{
+      const hora=(document.getElementById("contRecHora")||{}).value || "20:00";
+      const c=loadCont(); c.recHora=hora; saveCont(c);
+      const blob=new Blob([icsRecordatorio(hora)],{type:"text/calendar;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=url; a.download="recordatorio-aprens.ics";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+      renderHub();
+    }; }
+  }
+
   function renderHub(){
     removeExportBar();
     screen.classList.remove("iframe-host");
@@ -144,16 +240,19 @@
           <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
         </div>
       </div>
+      ${continuidadHTML()}
       ${focoBanner}
       ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
+    wireCont();
   }
 
   function renderTool(id){
     const tool = (window.APRENS_TOOLS||[]).find(t=>t.id===id);
     if(!tool || !tool.migrada){ location.hash = "#/"; return; }
+    registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
     titleEl.textContent = tool.nombre;
