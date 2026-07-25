@@ -58,7 +58,7 @@
              '<b>ACOMPAÑA.</b> Respira hacia esa zona y quédate 20-60 seg. No hay nada de qué avergonzarse: solo es una sensación.',
              '<b>ACTÚA.</b> Elige un paso que cuide, no que tape.'],
       tool:{nombre:'AIS desde la curiosidad', url:'https://aprens-aiscuriosidad.netlify.app', desc:'Para girarte hacia lo que escondes y mirarlo con curiosidad sensorial (temperatura, peso, textura), sin vergüenza.'},
-      alt:{nombre:'Acompañar la sensación', url:'https://aprens-acompanar-sensacion.netlify.app'} },
+      alt:{nombre:'Honestidad emocional', url:'#/tool/honestidad_emocional'} },
     lado:{ em:'🐒🧡', tit:'Lo llevo a mi lado', etiqueta:'a mi lado', color:'lado', param:'continuidad',
       galt:'A mi lado', gald:'Aparezco, sostengo el dolor y decido según mis valores.',
       donde:'Aquí apareces tú, a nivel consciente: te haces cargo del dolor, lo sostienes sin pelearte con él y, aun así, decides hacia dónde ir según lo que te importa, a pesar del camino y sus circunstancias. El volante sigue en tus manos.',
@@ -197,6 +197,7 @@
           <p class="lead">La que mejor encaja con cómo estás tratando a tu mono ahora:</p>
           <a class="tool" data-tool-main href="#" target="_blank" rel="noopener"></a>
           <p class="alt" data-tool-alt></p>
+          <a class="dm-manada" data-nav="#/tool/la_manada" href="#/tool/la_manada" style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;font-size:13px;font-weight:600;color:var(--terra-d);text-decoration:none">🐾 ¿Por qué esto funciona? · La manada →</a>
         </div>
         <div class="card">
           <h3>Y un paso pequeño con valor</h3>
@@ -301,11 +302,12 @@
       else pis+='Lo importante no es acertar el nombre, sino acercarte a tu lado.';
       sel.pistas=pis; $('[data-res-pistas]').innerHTML='💡 '+pis;
       $('[data-res-pasos]').innerHTML=p.pasos.map(x=>'<li>'+x+'</li>').join('');
-      var tm=$('[data-tool-main]'); var rMain=INTERNAL_ROUTES[p.tool.url];
+      var resolveR=function(u){ return INTERNAL_ROUTES[u]||(u&&u.charAt(0)==='#'?u:null); };
+      var tm=$('[data-tool-main]'); var rMain=resolveR(p.tool.url);
       if(rMain){ tm.setAttribute('href',rMain); tm.removeAttribute('target'); tm.removeAttribute('rel'); }
       else { tm.setAttribute('href',p.tool.url); tm.setAttribute('target','_blank'); tm.setAttribute('rel','noopener'); }
       tm.innerHTML='<span class="tn">🧰 '+esc(p.tool.nombre)+'</span><span class="td">'+esc(p.tool.desc)+'</span><span class="go">'+(rMain?'Abrir en la app →':'Abrir herramienta →')+'</span>';
-      var rAlt=INTERNAL_ROUTES[p.alt.url];
+      var rAlt=resolveR(p.alt.url);
       var altA = rAlt ? '<a href="'+rAlt+'">'+esc(p.alt.nombre)+'</a>'
                       : '<a href="'+esc(p.alt.url)+'" target="_blank" rel="noopener">'+esc(p.alt.nombre)+'</a>';
       $('[data-tool-alt]').innerHTML='¿No te encaja? Prueba también: '+altA+'.';
@@ -325,7 +327,8 @@
       L.push('🐒 Dónde está mi mono: '+p.tit+' ('+p.etiqueta+')');
       L.push('Seguridad de la app: '+sel.conf);
       L.push('Foco TEC sugerido: '+p.param);
-      L.push('Herramienta sugerida: '+p.tool.nombre+' → '+p.tool.url);
+      var _r=INTERNAL_ROUTES[p.tool.url]||(p.tool.url&&p.tool.url.charAt(0)==='#'?p.tool.url:null);
+      L.push('Herramienta sugerida: '+p.tool.nombre+(_r?' → https://aprens-app.netlify.app/'+_r:' → '+p.tool.url));
       if(sel.micro) L.push('Microacción con valor: '+sel.micro);
       if(sel.aprende){ L.push(''); L.push('🧠 Para afinar el detective (psicólogo/a):'); L.push('· El texto no activó ninguna pista; lo resolvió el cuestionario.'); L.push('· Frase a aprender → «'+sel.aprende.frase+'»'); L.push('· Posición del cuestionario: '+POS[sel.aprende.pos].tit+' ('+POS[sel.aprende.pos].etiqueta+')'); }
       L.push(''); L.push('(Generado en la app «¿Dónde está tu mono?» de APRENS)');
