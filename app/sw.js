@@ -43,6 +43,7 @@ const SHELL = [
   "./tools-standalone/toco_desde_dentro_aprens.html",
   "./tools-standalone/cuento_familia_aprens.html",
   "./tools-standalone/assets/editorial/cuento-familia.webp",
+  "./tools-standalone/assets/editorial/cuento-familia-b.webp",
   "./tools-standalone/tiempo_limite_peques.html",
   "./tools-standalone/assets/editorial/tiempo-limite.webp",
   "./tools-standalone/fondos_frases_aprens.html",
