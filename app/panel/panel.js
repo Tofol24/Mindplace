@@ -173,7 +173,15 @@
     control_ira: "Control de ira", retorno_trabajo: "Retorno al trabajo", tracker_ais: "Tracker AIS",
     autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
     donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Herramienta diaria", protocolo_ais: "Protocolo AIS (audio)",
-    compromiso_semanal: "Compromiso semanal"
+    compromiso_semanal: "Compromiso semanal",
+    // Herramientas nuevas (para que el panel muestre el nombre, no el id)
+    honestidad_emocional: "Honestidad emocional", la_manada: "La manada (el porqué)",
+    estoy_aqui_conmigo: "Estoy aquí conmigo", toco_desde_dentro: "Toco desde dentro",
+    pedalea_desde_dentro: "Pedalea desde dentro", cuento_familia: "La familia de Koa (cuento)",
+    tiempo_limite: "El tiempo límite (peques)", fondos_frases: "Fondos de frases",
+    escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
+    ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
+    agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS"
   };
   var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
