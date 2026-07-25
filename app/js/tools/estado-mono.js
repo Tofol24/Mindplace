@@ -84,6 +84,7 @@
 
     app.innerHTML = `<div class="emono">
       <section class="screen active" data-s="inicio">
+        <div class="phero"><img src="tools-standalone/assets/editorial/checkin-mono.webp" alt="" onerror="this.parentNode.remove()"></div>
         <header>
           <span class="kicker">APRENS · El mono y el coche</span>
           <h1>¿Y ahora, cómo llevas a tu mono?</h1>

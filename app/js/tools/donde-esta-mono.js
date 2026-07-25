@@ -141,6 +141,7 @@
     if(window.Aprens){ Aprens.config({ toolId:TOOL_ID, toolName:TOOL_NAME, toolVersion:1 }); Aprens.collect(()=> app._aprensRec || null); }
 
     app.innerHTML = `<div class="dmono">
+      <div class="phero"><img src="tools-standalone/assets/editorial/reflexion.webp" alt="" onerror="this.parentNode.remove()"></div>
       <div class="dm-head">
         <span class="kicker">🐒 El detective del mono</span>
         <h1>¿Dónde está tu mono ahora mismo?</h1>

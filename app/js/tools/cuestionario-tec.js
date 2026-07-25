@@ -102,6 +102,7 @@
     function render(){
       if(vista==="intro"){
         app.innerHTML = `
+          <div class="phero"><img src="tools-standalone/assets/editorial/cuestionario-tec.webp" alt="" onerror="this.parentNode.remove()"></div>
           <div class="hero">
             <div class="htitulo">${esc(CFG.titulo)}</div>
             <div class="hsubt">${esc(CFG.subtitulo)}</div>
