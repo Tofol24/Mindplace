@@ -176,6 +176,8 @@
   .sheet h2{font-family:var(--serif);margin:0 0 4px;font-size:19px}
   footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.5}
   footer b{font-family:var(--serif);color:var(--montana-d)}
+  .phero{margin:2px 0 14px;border-radius:18px;overflow:hidden;box-shadow:0 10px 26px rgba(74,63,48,.14)}
+  .phero img{display:block;width:100%;height:200px;object-fit:cover;object-position:center 42%}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -326,6 +328,7 @@ VIEWS.home=function(){
   var contMont=media(e.filter(function(x){return x.montana&&within7(x.date);}), 'cont_min');
   var comprometidos=sem.filter(function(x){return (x.orientacion||"").indexOf('disfrutar')>=0 || x.completado==='Sí';}).length;
   var h='';
+  h+='<div class="phero"><img src="assets/editorial/pedalea.webp" alt="" onerror="this.parentNode.remove()"></div>';
   h+='<span class="kick">Panel del día · '+fechaLarga(hoy())+'</span>';
   var _nm=JOAN(), _dim=(DB.settings.joanet||'').trim();
   h+='<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:6px 0 2px"><h1 class="view-t" id="greetH" style="margin:0">Hola'+(_nm?', '+esc(_nm):'')+' 🚴</h1><button class="link" onclick="toggleNames()">✎ nombres</button></div>';
