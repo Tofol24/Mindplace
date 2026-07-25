@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v71";
+const CACHE = "aprens-v72";
 const SHELL = [
   "./",
   "./index.html",
@@ -42,9 +42,12 @@ const SHELL = [
   "./tools-standalone/estoy_aqui_conmigo_ais.html",
   "./tools-standalone/toco_desde_dentro_aprens.html",
   "./tools-standalone/cuento_familia_aprens.html",
+  "./tools-standalone/assets/editorial/cuento-familia.webp",
   "./tools-standalone/tiempo_limite_peques.html",
+  "./tools-standalone/assets/editorial/tiempo-limite.webp",
   "./tools-standalone/fondos_frases_aprens.html",
   "./tools-standalone/la_manada_aprens.html",
+  "./tools-standalone/assets/editorial/la-manada.webp",
   "./assets/pdf/la-familia-de-koa-es.pdf",
   "./assets/pdf/la-familia-de-koa-ca.pdf",
   "./assets/pdf/quien-conduce-tu-vida.pdf",
@@ -74,14 +77,17 @@ const SHELL = [
   "./exposicion/assets/js/app.js",
   "./exposicion/assets/js/aprens-core.js",
   "./exploradora/index.html",
+  "./exploradora/assets/images/portada-exploradora.webp",
   "./exploradora/assets/css/styles.css",
   "./exploradora/assets/js/app.js",
   "./exploradora/assets/js/aprens-core.js",
   "./ritual/index.html",
+  "./ritual/assets/images/portada-ritual.webp",
   "./ritual/assets/css/styles.css",
   "./ritual/assets/js/app.js",
   "./ritual/assets/js/aprens-core.js",
   "./rincon/index.html",
+  "./rincon/assets/images/portada-rincon.webp",
   "./rincon/assets/css/styles.css",
   "./rincon/assets/js/app.js",
   "./rincon/assets/js/aprens-core.js",

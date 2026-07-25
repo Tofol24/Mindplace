@@ -116,6 +116,8 @@
     .guia{page-break-before:always}
     .guia .pg{break-inside:avoid;page-break-inside:avoid}
   }
+.phero{margin:0 0 14px;border-radius:0 0 24px 24px;overflow:hidden;box-shadow:0 12px 28px -14px rgba(74,63,48,.4)}
+.phero img{display:block;width:100%;height:220px;object-fit:cover;object-position:center 34%}
 </style>
 </head>
 <body>
@@ -425,7 +427,8 @@ function langbarHTML(){
 }
 function portadaHTML(){
   return langbarHTML()
-    +'<div class="escena mood-cream" style="min-height:46vh;border-radius:0 0 28px 28px">'+scene('portada')+'</div>'
+    +'<div class="phero"><img src="assets/editorial/cuento-familia.webp" alt="" onerror="this.parentNode.remove()"></div>'
+    +'<div class="escena mood-cream" style="min-height:24vh;border-radius:24px">'+scene('portada')+'</div>'
     +'<div class="port"><h1>'+U('title')+'</h1><div class="sub">'+U('sub')+'</div>'
     +'<button class="btn" onclick="empezar()">'+U('empezar')+'</button>'
     +'<button class="btn soft" onclick="irGuia()">'+U('guia')+'</button>'

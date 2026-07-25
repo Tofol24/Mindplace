@@ -44,6 +44,7 @@
   function renderMenu() {
     stopTimer();
     view.innerHTML =
+      '<div class="phero"><img src="assets/images/portada-rincon.webp" alt="" onerror="this.parentNode.remove()"></div>' +
       '<div class="menu-h"><h1>Rincón de calma</h1><p>Elige un juego. Son cortos, para respirar y estar a gustito.</p></div>' +
       '<div class="games">' + GAMES.map(function (g) {
         return '<button class="gamecard ' + g.cls + '" data-g="' + g.id + '">' +
