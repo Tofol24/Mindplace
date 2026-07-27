@@ -40,6 +40,21 @@
   .texto p{font-family:var(--serif);font-size:26px;line-height:1.35;margin:0;color:var(--tinta)}
   .texto p .r{color:var(--rosa-d)}
   @media(max-width:380px){.texto p{font-size:23px}.escena{min-height:40vh}}
+  /* Modo proyección · una diapositiva por página, pantalla completa */
+  .present{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5vh 4vw 3vh;gap:2vh;overflow:hidden}
+  .present-art{flex:1 1 auto;display:flex;align-items:center;justify-content:center;width:100%;min-height:0}
+  .present-art svg{width:auto;height:100%;max-height:62vh;max-width:min(92vw,900px);display:block}
+  .present-txt{flex:0 0 auto;text-align:center;max-width:1100px}
+  .present-txt p{font-family:var(--serif);font-size:clamp(26px,4.4vw,52px);line-height:1.3;margin:0;color:var(--tinta)}
+  .present.mood-night .present-txt p,.present.mood-night2 .present-txt p{color:#f3eee4}
+  .present-num{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:14px;color:var(--suau);background:rgba(255,255,255,.55);border-radius:20px;padding:4px 13px}
+  .present.mood-night .present-num,.present.mood-night2 .present-num{color:#e8e4f0;background:rgba(255,255,255,.14)}
+  .present-exit{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.7);border:0;color:var(--tinta);border-radius:22px;padding:9px 16px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;z-index:2}
+  .present.mood-night .present-exit,.present.mood-night2 .present-exit{background:rgba(255,255,255,.18);color:#f3eee4}
+  .present-nav{position:absolute;top:50%;transform:translateY(-50%);width:64px;height:64px;border-radius:50%;border:0;background:rgba(255,255,255,.6);color:var(--tinta);font-size:30px;cursor:pointer;display:grid;place-items:center;z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+  .present-nav.pleft{left:2vw}.present-nav.pright{right:2vw}
+  .present.mood-night .present-nav,.present.mood-night2 .present-nav{background:rgba(255,255,255,.18);color:#f3eee4}
+  @media(max-width:600px){.present-nav{width:52px;height:52px;font-size:24px}.present-art svg{max-height:50vh}}
 
   /* Controles */
   .ctrl{display:flex;align-items:center;gap:12px;padding:8px 20px 4px;justify-content:center}
@@ -398,12 +413,14 @@ var UI={
       empezar:'📖 Empezar el cuento', guia:'Guía para mamá', volver:'‹ Volver al cuento',
       paramama:'💛 Para mamá', conversar:'💬 Para conversar', gesto:'🤍 Gesto de apego',
       imprimir:'🖨️ Versión imprimible (PDF)', imprimirBtn:'🖨️ Imprimir / Guardar PDF',
+      proyectar:'📽️ Proyectar', salir:'✕ Salir',
       foot:'cuento de apego y diversidad familiar<br>Léelo muchas veces, sin prisa. La repetición es la que cuida.',
       pagina:'Página', anterior:'Página anterior', siguiente:'Página siguiente'},
   ca:{title:'La família d\'en Koa', sub:'Un conte per dormir · moltes famílies, molt amor',
       empezar:'📖 Comença el conte', guia:'Guia per a la mare', volver:'‹ Tornar al conte',
       paramama:'💛 Per a la mare', conversar:'💬 Per conversar', gesto:'🤍 Gest de vincle',
       imprimir:'🖨️ Versió per imprimir (PDF)', imprimirBtn:'🖨️ Imprimir / Desar PDF',
+      proyectar:'📽️ Projectar', salir:'✕ Sortir',
       foot:'conte de vincle i diversitat familiar<br>Llegeix-lo moltes vegades, sense pressa. La repetició és la que cuida.',
       pagina:'Pàgina', anterior:'Pàgina anterior', siguiente:'Pàgina següent'}
 };
@@ -420,6 +437,7 @@ function render(){
   if(VISTA==='portada'){ app.innerHTML=portadaHTML(); return; }
   if(VISTA==='guia'){ app.innerHTML=guiaHTML(); window.scrollTo(0,0); return; }
   if(VISTA==='print'){ app.innerHTML=printHTML(); window.scrollTo(0,0); return; }
+  if(VISTA==='present'){ app.innerHTML=presentHTML(pag); return; }
   app.innerHTML=pageHTML(pag);
   window.scrollTo(0,0);
 }
@@ -433,6 +451,7 @@ function portadaHTML(){
     +'<div class="escena mood-cream" style="min-height:24vh;border-radius:24px">'+scene('portada')+'</div>'
     +'<div class="port"><h1>'+U('title')+'</h1><div class="sub">'+U('sub')+'</div>'
     +'<button class="btn" onclick="empezar()">'+U('empezar')+'</button>'
+    +'<button class="btn" onclick="presentar()" style="background:var(--rosa-d)">'+U('proyectar')+'</button>'
     +'<button class="btn soft" onclick="irGuia()">'+U('guia')+'</button>'
     +'<button class="btn soft" onclick="irPrint()">'+U('imprimir')+'</button>'
     +'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:2px">'
@@ -475,6 +494,38 @@ function printHTML(){
     +'<button class="btn" onclick="window.print()">'+U('imprimirBtn')+'</button></div>'
     +'<div class="book-print">'+cover+pages+'<div class="guia">'+guiaInner()+'</div></div>';
 }
+
+/* ---------- modo proyección (una diapositiva por página · pantalla completa) ---------- */
+function presentHTML(i){
+  var p=PAGES[i], tot=PAGES.length;
+  return '<div class="present mood-'+p.mood+'">'
+    +'<button class="present-exit noprint" onclick="salirPresent()">'+U('salir')+'</button>'
+    +'<div class="present-num">'+(i+1)+' / '+tot+'</div>'
+    +'<div class="present-art">'+scene(p.scene)+'</div>'
+    +'<div class="present-txt"><p>'+L(i,'text')+'</p></div>'
+    +'<button class="present-nav pleft" onclick="prevP()"'+(i===0?' style="visibility:hidden"':'')+' aria-label="'+U('anterior')+'">‹</button>'
+    +'<button class="present-nav pright" onclick="nextP()" aria-label="'+U('siguiente')+'">'+(i===tot-1?'✓':'›')+'</button>'
+  +'</div>';
+}
+function presentar(){
+  VISTA='present'; pag=0; render();
+  try{ var el=document.documentElement; if(el.requestFullscreen) el.requestFullscreen().catch(function(){}); }catch(e){}
+}
+function salirPresent(){
+  VISTA='portada';
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); }catch(e){}
+  render();
+}
+function nextP(){ if(pag<PAGES.length-1){ pag++; render(); } else { salirPresent(); } }
+function prevP(){ if(pag>0){ pag--; render(); } }
+document.addEventListener('keydown',function(e){
+  if(VISTA!=='present') return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); nextP(); }
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevP(); }
+});
+document.addEventListener('fullscreenchange',function(){
+  if(!document.fullscreenElement && VISTA==='present'){ VISTA='portada'; render(); }
+});
 
 function empezar(){ VISTA='cuento'; pag=0; mamaOpen=false; render(); }
 function next(){ if(pag<PAGES.length-1){ pag++; mamaOpen=false; render(); } else { VISTA='portada'; render(); } }
