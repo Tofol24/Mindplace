@@ -168,7 +168,7 @@
         ${c.recHora?`<div class="cont-rec-hint">Te avisa el <b>calendario de tu móvil</b> a las ${c.recHora} —no la app. ¿No te llega? Vuelve a pulsar «Añadir a mi calendario» y confirma <b>«Añadir»</b> en el aviso de tu móvil.</div>`:""}
         <div class="cont-rec-panel" id="contRecPanel" hidden>
           <label>Hora <input type="time" id="contRecHora" value="${c.recHora||"20:00"}"></label>
-          <button class="cont-rec-add" id="contRecAdd">Añadir a mi calendario</button>
+          <a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a>
           <div class="cont-rec-note">Al pulsar, tu móvil te ofrecerá <b>añadir el recordatorio a tu calendario</b>: confírmalo. A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora (APRENS no envía avisos por sí solo). No sale nada de tu dispositivo.</div>
         </div>
       </div>
@@ -177,37 +177,29 @@
   function icsRecordatorio(hora){
     const hm=hora.split(":").map(Number); const now=new Date();
     const start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hm[0],hm[1],0);
+    const end=new Date(start.getTime()+10*60000);
     const f=(d)=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"T"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+"00";
     return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//APRENS//AIS//ES","CALSCALE:GREGORIAN","METHOD:PUBLISH",
-      "BEGIN:VEVENT","UID:aprens-"+now.getTime()+"@aprens","DTSTAMP:"+f(now),"DTSTART:"+f(start),"RRULE:FREQ=DAILY",
+      "BEGIN:VEVENT","UID:aprens-"+start.getTime()+"@aprens","DTSTAMP:"+f(now),"DTSTART:"+f(start),"DTEND:"+f(end),"RRULE:FREQ=DAILY",
       "SUMMARY:APRENS · Tu minuto de presencia",
       "DESCRIPTION:Un minuto contigo\\, baja a tu cuerpo y practica tu AIS. La constancia es lo que lo automatiza.",
       "BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0M","DESCRIPTION:APRENS · Tu minuto de presencia","END:VALARM",
       "END:VEVENT","END:VCALENDAR"].join("\r\n");
   }
-  function descargarICS(ics){
-    // iOS/iPadOS ignora el atributo download y no importa bien el blob:
-    // navegar a un data URI hace que el sistema ofrezca "Añadir al calendario".
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
-    const data = "data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);
-    if(isIOS){ window.location.href = data; return; }
-    try{
-      const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a"); a.href=url; a.download="recordatorio-aprens.ics";
-      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
-    }catch(e){ window.location.href = data; }
-  }
+  function datosICS(hora){ return "data:text/calendar;charset=utf-8,"+encodeURIComponent(icsRecordatorio(hora)); }
   function wireCont(){
     const btn=document.getElementById("contRecBtn"), panel=document.getElementById("contRecPanel");
     if(btn && panel){ btn.onclick=()=>{ panel.hidden=!panel.hidden; }; }
-    const add=document.getElementById("contRecAdd");
-    if(add){ add.onclick=()=>{
-      const hora=(document.getElementById("contRecHora")||{}).value || "20:00";
-      const c=loadCont(); c.recHora=hora; saveCont(c);
-      descargarICS(icsRecordatorio(hora));
-      renderHub();
-    }; }
+    const add=document.getElementById("contRecAdd"), hora=document.getElementById("contRecHora");
+    function refresh(){ if(add){ add.href=datosICS((hora&&hora.value)||"20:00"); } }
+    if(hora){ hora.addEventListener("input", refresh); hora.addEventListener("change", refresh); }
+    refresh();
+    // El propio enlace (con href = data:text/calendar) abre "Añadir al calendario"
+    // de forma nativa en cada toque —también en iPhone—; solo guardamos la hora.
+    if(add){ add.addEventListener("click", ()=>{
+      const c=loadCont(); c.recHora=(hora&&hora.value)||"20:00"; saveCont(c);
+      setTimeout(renderHub, 1500);
+    }); }
   }
 
   function renderHub(){
