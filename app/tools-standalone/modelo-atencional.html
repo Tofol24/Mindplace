@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>El control y la presencia · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --card:#FBF8F1; --tinta:#2A2622; --suau:#6f665b;
+    --oliva:#565a41; --oliva-d:#3f4430; --terra:#b0563a; --terra-d:#8f4126; --sage:#5c7d54;
+    --linia:#e5dcc9; --oro:#a7802f;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{font-family:var(--sans);background:linear-gradient(170deg,#F5F0E6 0%,#EFE7D6 100%);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.55;padding-bottom:env(safe-area-inset-bottom);}
+  .wrap{max-width:820px;margin:0 auto;padding:0 16px 44px;}
+  .langbar{display:flex;gap:8px;justify-content:center;padding:12px 16px 4px;}
+  .langb{background:var(--card);border:1.5px solid var(--linia);color:var(--suau);border-radius:20px;padding:7px 16px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px;}
+  .langb.on{background:var(--oliva);border-color:var(--oliva);color:#fff;}
+  .intro{margin:20px 2px 6px;}
+  .kick{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--terra);background:#f3e0d8;border-radius:20px;padding:4px 12px;margin-bottom:10px;}
+  h1{font-family:var(--serif);font-size:clamp(28px,7vw,40px);line-height:1.08;margin-bottom:8px;}
+  .lead{font-size:15.5px;color:var(--suau);line-height:1.6;}
+  .start{background:var(--card);border:1px solid var(--linia);border-radius:16px;padding:16px 18px;margin:20px 0 6px;}
+  .start .st-t{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--oliva-d);margin-bottom:5px;}
+  .start .st-x{font-size:14.5px;color:#403a33;line-height:1.6;}
+  .start .st-x b{color:var(--tinta);}
+  .fork{text-align:center;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--suau);margin:14px 0 4px;}
+  .paths{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;}
+  @media(max-width:640px){.paths{grid-template-columns:1fr;}}
+  .path{background:var(--card);border:1px solid var(--linia);border-radius:18px;padding:18px 18px 16px;box-shadow:0 6px 20px -14px rgba(42,38,34,.4);}
+  .path.trap{border-top:5px solid var(--terra);}
+  .path.out{border-top:5px solid var(--sage);}
+  .path .ph-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+  .path.trap .ph-lbl{color:var(--terra-d);} .path.out .ph-lbl{color:var(--sage);}
+  .path .ph-t{font-family:var(--serif);font-size:20px;font-weight:700;line-height:1.15;margin-bottom:2px;}
+  .path .ph-s{font-size:13px;color:var(--suau);font-style:italic;margin-bottom:12px;}
+  .steps{list-style:none;display:flex;flex-direction:column;gap:0;}
+  .steps li{position:relative;padding:0 0 16px 26px;font-size:14px;line-height:1.5;color:#403a33;}
+  .steps li b{color:var(--tinta);}
+  .steps li:before{content:"";position:absolute;left:8px;top:5px;width:9px;height:9px;border-radius:50%;}
+  .steps li:after{content:"";position:absolute;left:12px;top:14px;bottom:-2px;width:1.5px;background:var(--linia);}
+  .steps li:last-child{padding-bottom:0;}
+  .steps li:last-child:after{display:none;}
+  .path.trap .steps li:before{background:var(--terra);} .path.out .steps li:before{background:var(--sage);}
+  .outcome{margin-top:12px;border-radius:12px;padding:11px 14px;font-weight:700;font-size:14px;line-height:1.4;}
+  .path.trap .outcome{background:#f4e2da;color:var(--terra-d);}
+  .path.out .outcome{background:#e7efe1;color:var(--oliva-d);}
+  .clave{background:linear-gradient(135deg,#fff,#f4efe2);border:1px solid var(--linia);border-left:5px solid var(--oro);border-radius:16px;padding:18px 20px;margin-top:24px;}
+  .clave .cl-t{font-family:var(--serif);font-size:19px;color:var(--oliva-d);margin-bottom:6px;}
+  .clave .cl-x{font-size:15px;color:#403a33;line-height:1.65;}
+  .clave .cl-x b{color:var(--tinta);}
+  .cta{display:inline-flex;align-items:center;gap:7px;margin-top:16px;background:var(--oliva);color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 20px;border-radius:24px;}
+  footer{margin-top:26px;text-align:center;font-size:12px;color:var(--suau);line-height:1.6;}
+  footer b{font-family:var(--serif);color:var(--oliva-d);}
+</style>
+</head>
+<body>
+<div class="langbar">
+  <button class="langb on" id="lb-es" onclick="setLang('es')">Castellano</button>
+  <button class="langb" id="lb-ca" onclick="setLang('ca')">Català</button>
+</div>
+<div class="wrap"><div id="app"></div></div>
+<script>
+var LANG='es';
+var T={
+  es:{
+    kick:"TEC · el porqué",
+    h1:"El control y la presencia",
+    lead:"Ante el dolor o el malestar, tu mente intenta recuperar el control. Ahí se abren dos caminos. Este es el mapa de por qué, a veces, el malestar crece… y de por dónde se sale.",
+    startT:"El punto de partida",
+    startX:"Aparece un <b>dolor</b>: una emoción intensa, una sensación incómoda. Tu cuerpo busca el <b>control perdido</b> y pregunta: «¿puedo controlar esto?». Lo que haces con esa pregunta marca el camino.",
+    fork:"¿Puedo controlar esto?",
+    trap:{ lbl:"Camino 1 · la trampa", t:"Buscar el control perdido", s:"Sobrepensamiento, sin espacio ni tiempo", steps:[
+      "<b>Sobrepensamiento:</b> tu cuerpo insiste en recuperar el control, sin un espacio-tiempo donde parar.",
+      "<b>Conducta compulsiva o evitativa:</b> haces algo para aliviar —comprobar, evitar, distraerte.",
+      "<b>Alivio inmediato… que refuerza (R+):</b> el alivio enseña que huir o controlar «funciona», y la próxima vez pesa más.",
+      "<b>Frustración:</b> cuando no puedes cambiar el pasado ni el futuro, aparece tensión física, angustia y ansiedad.",
+      "<b>Secuestro atencional:</b> si sigue, las sensaciones se asocian a situaciones neutras del día a día, y empiezas a rechazarlas."
+    ], out:"→ Anhedonia y abulia · deriva ansioso-depresiva" },
+    out:{ lbl:"Camino 2 · la salida", t:"La conciencia", s:"Reflexión, con espacio y tiempo", steps:[
+      "<b>Parada de pensamiento:</b> en la situación presente, paras. Es la «flecha atencional».",
+      "<b>Atención al cuerpo, con compasión:</b> respiración y visualización, llevando la atención dentro (cuello, pecho, barriga).",
+      "<b>Se abre una oportunidad:</b> un espacio-tiempo donde puedes elegir.",
+      "<b>Tus valores y creencias conscientes</b> toman el volante.",
+      "<b>Conducta asertiva, en el presente:</b> actúas fiel a lo que te importa."
+    ], out:"→ Fiel a tus valores · presencia" },
+    claveT:"La clave",
+    claveX:"El dolor no es el problema. El problema es <b>buscar el control sin espacio-tiempo</b>: el sobrepensamiento que alivia a corto plazo pero refuerza el malestar. La salida no es controlar más, sino <b>parar y llevar la atención al cuerpo con presencia</b>. Eso es lo que entrenas con el AIS: la «flecha atencional» que abre el camino 2.",
+    cta:"Entrena el camino 2 · Herramientas AIS →",
+    foot:"material de acompañamiento · Se interpreta dentro de tu proceso en consulta."
+  },
+  ca:{
+    kick:"TEC · el perquè",
+    h1:"El control i la presència",
+    lead:"Davant del dolor o el malestar, la teva ment intenta recuperar el control. Aquí s'obren dos camins. Aquest és el mapa de per què, de vegades, el malestar creix… i de per on se'n surt.",
+    startT:"El punt de partida",
+    startX:"Apareix un <b>dolor</b>: una emoció intensa, una sensació incòmoda. El teu cos busca el <b>control perdut</b> i pregunta: «puc controlar això?». El que fas amb aquesta pregunta marca el camí.",
+    fork:"Puc controlar això?",
+    trap:{ lbl:"Camí 1 · la trampa", t:"Buscar el control perdut", s:"Sobrepensament, sense espai ni temps", steps:[
+      "<b>Sobrepensament:</b> el teu cos insisteix a recuperar el control, sense un espai-temps on aturar-se.",
+      "<b>Conducta compulsiva o evitativa:</b> fas alguna cosa per alleujar —comprovar, evitar, distreure't.",
+      "<b>Alleujament immediat… que reforça (R+):</b> l'alleujament ensenya que fugir o controlar «funciona», i la propera vegada pesa més.",
+      "<b>Frustració:</b> quan no pots canviar el passat ni el futur, apareix tensió física, angoixa i ansietat.",
+      "<b>Segrest atencional:</b> si segueix, les sensacions s'associen a situacions neutres del dia a dia, i comences a rebutjar-les."
+    ], out:"→ Anhedònia i abúlia · deriva ansiosa-depressiva" },
+    out:{ lbl:"Camí 2 · la sortida", t:"La consciència", s:"Reflexió, amb espai i temps", steps:[
+      "<b>Aturada de pensament:</b> en la situació present, atures. És la «fletxa atencional».",
+      "<b>Atenció al cos, amb compassió:</b> respiració i visualització, portant l'atenció a dins (coll, pit, panxa).",
+      "<b>S'obre una oportunitat:</b> un espai-temps on pots triar.",
+      "<b>Els teus valors i creences conscients</b> agafen el volant.",
+      "<b>Conducta assertiva, en el present:</b> actues fidel al que t'importa."
+    ], out:"→ Fidel als teus valors · presència" },
+    claveT:"La clau",
+    claveX:"El dolor no és el problema. El problema és <b>buscar el control sense espai-temps</b>: el sobrepensament que alleuja a curt termini però reforça el malestar. La sortida no és controlar més, sinó <b>aturar-se i portar l'atenció al cos amb presència</b>. Això és el que entrenes amb l'AIS: la «fletxa atencional» que obre el camí 2.",
+    cta:"Entrena el camí 2 · Eines AIS →",
+    foot:"material d'acompanyament · S'interpreta dins del teu procés a consulta."
+  }
+};
+function esc(s){return String(s==null?"":s).replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function U(){return T[LANG];}
+function pathHTML(p,cls){
+  var steps=p.steps.map(function(s){return '<li>'+s+'</li>';}).join('');
+  return '<div class="path '+cls+'"><div class="ph-lbl">'+esc(p.lbl)+'</div><div class="ph-t">'+esc(p.t)+'</div>'+
+    '<div class="ph-s">'+esc(p.s)+'</div><ul class="steps">'+steps+'</ul><div class="outcome">'+esc(p.out)+'</div></div>';
+}
+function render(){
+  var t=U();
+  document.getElementById('app').innerHTML=
+    '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
+    '<div class="start"><div class="st-t">'+esc(t.startT)+'</div><div class="st-x">'+t.startX+'</div></div>'+
+    '<div class="fork">↓ '+esc(t.fork)+' ↓</div>'+
+    '<div class="paths">'+pathHTML(t.trap,'trap')+pathHTML(t.out,'out')+'</div>'+
+    '<div class="clave"><div class="cl-t">'+esc(t.claveT)+'</div><div class="cl-x">'+t.claveX+'</div>'+
+      '<a class="cta" href="/#/tool/ais_basicas" target="_top">'+esc(t.cta)+'</a></div>'+
+    '<footer><b>Centre APRENS</b> · '+esc(t.foot)+'</footer>';
+}
+function setLang(l){
+  LANG=l;
+  document.getElementById('lb-es').classList.toggle('on',l==='es');
+  document.getElementById('lb-ca').classList.toggle('on',l==='ca');
+  document.documentElement.lang=l;
+  render();
+}
+render();
+</script>
+</body>
+</html>
