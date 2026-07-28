@@ -112,7 +112,10 @@ window.APRENS_TOOLS = [
 
   { id:"la_manada", emoji:"🐾", nombre:"La manada (el porqué)",
     desc:"Por qué respiras: la metáfora base. Tu mono es un mamífero de manada; el AIS es el canal por el que tu conciencia se vuelve perceptible para él. Respirar no es relajarte: es volver a aparecer para tu mono, construir apego seguro y salir al mundo acompañado.",
-    migrada:true, iframe:"tools-standalone/la_manada_aprens.html" }
+    migrada:true, iframe:"tools-standalone/la_manada_aprens.html" },
+  { id:"modelo_atencional", emoji:"🧠", nombre:"El control y la presencia",
+    desc:"El mapa del malestar: por qué buscar el control (sobrepensar) sin espacio-tiempo deriva en ansiedad y depresión, y cómo la conciencia —parar y llevar la atención al cuerpo— abre la conducta asertiva. El porqué de entrenar el AIS.",
+    migrada:true, iframe:"tools-standalone/modelo-atencional.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
