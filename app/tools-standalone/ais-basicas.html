@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Herramientas AIS básicas · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --card:#FBF8F1; --tinta:#2A2622; --suau:#6f665b;
+    --oliva:#565a41; --oliva-d:#3f4430; --terra:#C2704F; --sage:#5c7d54;
+    --linia:#e5dcc9; --oro:#a7802f;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{font-family:var(--sans);background:linear-gradient(170deg,#F5F0E6 0%,#EFE7D6 100%);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.55;padding-bottom:env(safe-area-inset-bottom);}
+  .wrap{max-width:680px;margin:0 auto;padding:0 16px 40px;}
+  .langbar{display:flex;gap:8px;justify-content:center;padding:12px 16px 4px;}
+  .langb{background:var(--card);border:1.5px solid var(--linia);color:var(--suau);border-radius:20px;padding:7px 16px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px;}
+  .langb.on{background:var(--oliva);border-color:var(--oliva);color:#fff;}
+  .phero{margin:6px 0 0;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px -16px rgba(42,38,34,.5);background:#12100e;}
+  .phero img{display:block;width:100%;height:auto;}
+  .intro{margin:22px 2px 8px;}
+  .kick{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--terra);background:#f3e3da;border-radius:20px;padding:4px 12px;margin-bottom:10px;}
+  h1{font-family:var(--serif);font-size:clamp(28px,7vw,38px);line-height:1.08;color:var(--tinta);margin-bottom:8px;}
+  .lead{font-size:15.5px;color:var(--suau);line-height:1.6;}
+  h2{font-family:var(--serif);font-size:21px;color:var(--oliva-d);margin:30px 2px 4px;}
+  .sub{font-size:13.5px;color:var(--suau);margin:0 2px 14px;line-height:1.55;}
+  .anclas{display:flex;flex-direction:column;gap:10px;}
+  .ancla{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--linia);border-left:5px solid var(--sage);border-radius:16px;padding:14px 16px;}
+  .ancla .zn{font-family:var(--serif);font-size:26px;line-height:1;flex:0 0 auto;width:34px;text-align:center;}
+  .ancla .zt{font-family:var(--serif);font-weight:700;font-size:17px;color:var(--tinta);}
+  .ancla .zd{font-size:13.5px;color:var(--suau);margin-top:2px;}
+  .a1{border-left-color:#4a86a8;} .a2{border-left-color:var(--terra);} .a3{border-left-color:var(--sage);}
+  .tool{background:var(--card);border:1px solid var(--linia);border-radius:18px;padding:18px 18px 16px;margin-bottom:14px;box-shadow:0 6px 20px -14px rgba(42,38,34,.4);}
+  .tool .tn{display:flex;align-items:baseline;gap:9px;margin-bottom:6px;}
+  .tool .num{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--oro);line-height:1;flex:0 0 auto;}
+  .tool .tt{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--tinta);line-height:1.2;}
+  .tool .when{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sage);margin-bottom:5px;}
+  .tool .tx{font-size:14.5px;color:#403a33;line-height:1.6;}
+  .tool .tx b{color:var(--tinta);}
+  .tool .go{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:var(--oliva);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 15px;border-radius:22px;}
+  .frase{font-family:var(--serif);font-style:italic;color:var(--oliva-d);background:#eef0e2;border-left:3px solid var(--sage);border-radius:0 12px 12px 0;padding:10px 14px;margin-top:10px;font-size:14.5px;line-height:1.5;}
+  footer{margin-top:26px;text-align:center;font-size:12px;color:var(--suau);line-height:1.6;}
+  footer b{font-family:var(--serif);color:var(--oliva-d);}
+</style>
+</head>
+<body>
+<div class="langbar">
+  <button class="langb on" id="lb-es" onclick="setLang('es')">Castellano</button>
+  <button class="langb" id="lb-ca" onclick="setLang('ca')">Català</button>
+</div>
+<div class="wrap">
+  <div class="phero"><img src="assets/editorial/ais-anclas.webp" alt="" onerror="this.parentNode.remove()"></div>
+  <div id="app"></div>
+</div>
+<script>
+var LANG='es';
+var T={
+  es:{
+    kick:"AIS · para entrenar cada día",
+    h1:"Tus herramientas básicas",
+    lead:"El AIS (Atención Interna Sensorial) se entrena, como un músculo. No hace falta sentir nada especial: basta con volver, cada día, a acompañar tu cuerpo. Estas son las 6 herramientas base y las 3 anclas donde apoyar la atención.",
+    ancTit:"Las 3 anclas de tu atención",
+    ancSub:"Cuando pares y respires, lleva la atención a una de estas zonas. No busques sentir nada concreto: solo estar ahí unos segundos.",
+    anc:[
+      {z:"·1·",cls:"a1",t:"Cuello",d:"Conecta con tu garganta y tu nuca."},
+      {z:"·2·",cls:"a2",t:"Pecho",d:"Siente tu corazón y tus pulmones."},
+      {z:"·3·",cls:"a3",t:"Barriga",d:"Percibe tu estómago y tus intestinos."}
+    ],
+    hTit:"Las 6 herramientas · cada día",
+    hSub:"Entrénalas en tu día a día. La constancia es lo que interioriza y automatiza la presencia interna.",
+    go:"Practicar →",
+    tools:[
+      {tt:"Parada de pensamiento",when:"Al darme cuenta",tx:"Cuando notes que te distraes o sobrepiensas, di mentalmente <b>«STOP»</b>, haz una respiración diafragmática y <b>ancla tu atención</b> en el estómago, el pecho o el cuello. Aunque no sientas nada, mantén ahí la concentración unos segundos. Y solo después, reorienta tu atención a lo que estabas haciendo.",tool:"mapa_atencion_interna"},
+      {tt:"El abrazo sentido",when:"Al reencontrarte",tx:"Al llegar a casa o al reencontrarte con alguien querido: respira, <b>identifica la sensación interna</b> y abraza con presencia. Es darte acompañamiento saludable.",tool:"ais_amor"},
+      {tt:"Honestidad emocional desde dentro",when:"Al sentir",tx:"Dilo tal como te sientes, señalando la zona del cuerpo y <b>sin justificaciones</b>.",frase:"«No sé por qué, pero me siento… (zona corporal)»",tool:"honestidad_emocional"},
+      {tt:"Respiración como presencia cotidiana",when:"Sin motivo",tx:"Respiraciones conscientes <b>sin motivo específico</b>, para acompañar al cuerpo con conciencia. Valida incluso el no notar nada.",tool:"herramienta_diaria"},
+      {tt:"Rituales de entrada",when:"Al entrar",tx:"Cada vez que entres en casa o en un lugar con carga emocional (reuniones, aulas, hospitales…), haz una respiración profunda y <b>ancla tu atención sensorial</b> (estómago, pecho, cuello). Prepara tu presencia antes de interactuar.",tool:"toco_desde_dentro"},
+      {tt:"Rutina diaria de presencia interna",when:"Cada día",tx:"Estructura <b>tres momentos</b> en tu día para hacer parada de pensamiento, respiración con anclaje sensorial y reorientación consciente. Hazlo hábito diario para fortalecer el acompañamiento interno.",tool:"tracker_ais"}
+    ],
+    foot:"material de acompañamiento · Se interpreta dentro de tu proceso en consulta."
+  },
+  ca:{
+    kick:"AIS · per entrenar cada dia",
+    h1:"Les teves eines bàsiques",
+    lead:"L'AIS (Atenció Interna Sensorial) s'entrena, com un múscul. No cal sentir res especial: n'hi ha prou amb tornar, cada dia, a acompanyar el teu cos. Aquestes són les 6 eines base i les 3 àncores on recolzar l'atenció.",
+    ancTit:"Les 3 àncores de la teva atenció",
+    ancSub:"Quan paris i respiris, porta l'atenció a una d'aquestes zones. No busquis sentir res concret: només estar-hi uns segons.",
+    anc:[
+      {z:"·1·",cls:"a1",t:"Coll",d:"Connecta amb la teva gola i el teu clatell."},
+      {z:"·2·",cls:"a2",t:"Pit",d:"Sent el teu cor i els teus pulmons."},
+      {z:"·3·",cls:"a3",t:"Panxa",d:"Percep el teu estómac i els teus intestins."}
+    ],
+    hTit:"Les 6 eines · cada dia",
+    hSub:"Entrena-les en el teu dia a dia. La constància és el que interioritza i automatitza la presència interna.",
+    go:"Practicar →",
+    tools:[
+      {tt:"Aturada de pensament",when:"En adonar-me'n",tx:"Quan notis que et distreus o sobrepenses, digues mentalment <b>«STOP»</b>, fes una respiració diafragmàtica i <b>ancora la teva atenció</b> a l'estómac, el pit o el coll. Encara que no sentis res, mantén-hi la concentració uns segons. I només després, reorienta la teva atenció al que estaves fent.",tool:"mapa_atencion_interna"},
+      {tt:"L'abraçada sentida",when:"En retrobar-te",tx:"En arribar a casa o en retrobar-te amb algú estimat: respira, <b>identifica la sensació interna</b> i abraça amb presència. És donar-te acompanyament saludable.",tool:"ais_amor"},
+      {tt:"Honestedat emocional des de dins",when:"En sentir",tx:"Digues-ho tal com et sents, assenyalant la zona del cos i <b>sense justificacions</b>.",frase:"«No sé per què, però em sento… (zona corporal)»",tool:"honestidad_emocional"},
+      {tt:"Respiració com a presència quotidiana",when:"Sense motiu",tx:"Respiracions conscients <b>sense motiu específic</b>, per acompanyar el cos amb consciència. Valida fins i tot el no notar res.",tool:"herramienta_diaria"},
+      {tt:"Rituals d'entrada",when:"En entrar",tx:"Cada vegada que entris a casa o en un lloc amb càrrega emocional (reunions, aules, hospitals…), fes una respiració profunda i <b>ancora la teva atenció sensorial</b> (estómac, pit, coll). Prepara la teva presència abans d'interactuar.",tool:"toco_desde_dentro"},
+      {tt:"Rutina diària de presència interna",when:"Cada dia",tx:"Estructura <b>tres moments</b> del teu dia per fer aturada de pensament, respiració amb ancoratge sensorial i reorientació conscient. Fes-ho hàbit diari per enfortir l'acompanyament intern.",tool:"tracker_ais"}
+    ],
+    foot:"material d'acompanyament · S'interpreta dins del teu procés a consulta."
+  }
+};
+function esc(s){return String(s==null?"":s).replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function U(){return T[LANG];}
+function toolLink(id){ return "/#/tool/"+id; }
+function render(){
+  var t=U();
+  var anclas=t.anc.map(function(a){
+    return '<div class="ancla '+a.cls+'"><div class="zn">'+a.z+'</div><div><div class="zt">'+esc(a.t)+'</div><div class="zd">'+esc(a.d)+'</div></div></div>';
+  }).join('');
+  var tools=t.tools.map(function(x,i){
+    var frase=x.frase?'<div class="frase">'+esc(x.frase)+'</div>':'';
+    var go=x.tool?'<a class="go" href="'+toolLink(x.tool)+'" target="_top">'+esc(t.go)+'</a>':'';
+    return '<div class="tool"><div class="tn"><span class="num">'+(i+1)+'</span><span class="tt">'+esc(x.tt)+'</span></div>'+
+      '<div class="when">'+esc(x.when)+'</div><div class="tx">'+x.tx+'</div>'+frase+go+'</div>';
+  }).join('');
+  document.getElementById('app').innerHTML=
+    '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
+    '<h2>'+esc(t.ancTit)+'</h2><p class="sub">'+esc(t.ancSub)+'</p><div class="anclas">'+anclas+'</div>'+
+    '<h2>'+esc(t.hTit)+'</h2><p class="sub">'+esc(t.hSub)+'</p>'+tools+
+    '<footer><b>Centre APRENS</b> · '+esc(t.foot)+'</footer>';
+}
+function setLang(l){
+  LANG=l;
+  document.getElementById('lb-es').classList.toggle('on',l==='es');
+  document.getElementById('lb-ca').classList.toggle('on',l==='ca');
+  document.documentElement.lang=l;
+  render();
+}
+render();
+</script>
+</body>
+</html>
