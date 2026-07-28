@@ -37,17 +37,74 @@
     } catch (e) {}
   }
 
-  /* ---------- peldaños de ejemplo (editables) ---------- */
-  var SEMILLA = [
-    { dificultad: 2, titulo: "Acercarme al coche en el garaje y apoyar la mano", tiempo: "1–2 min", compania: "acompañada", distancia: "junto al coche", condicion: "motor apagado, garaje cerrado" },
-    { dificultad: 3, titulo: "Sentarme en el asiento del conductor con la puerta abierta", tiempo: "2–3 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor apagado" },
-    { dificultad: 4, titulo: "Sentarme con las puertas cerradas, motor apagado", tiempo: "3–5 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor apagado" },
-    { dificultad: 5, titulo: "Encender el motor sin mover el coche", tiempo: "3–5 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor encendido, sin marcha" },
-    { dificultad: 6, titulo: "Salir del garaje y aparcar justo fuera", tiempo: "5 min", compania: "acompañada", distancia: "salida del garaje", condicion: "de día" },
-    { dificultad: 7, titulo: "Dar una vuelta corta a la manzana", tiempo: "5–10 min", compania: "acompañada", distancia: "la manzana", condicion: "de día, poco tráfico" },
-    { dificultad: 8, titulo: "Un trayecto conocido y corto, sola", tiempo: "10 min", compania: "sola", distancia: "trayecto conocido", condicion: "de día" },
-    { dificultad: 9, titulo: "Un trayecto más largo o por vía rápida, sola", tiempo: "15–20 min", compania: "sola", distancia: "más lejos / vía rápida", condicion: "de día" }
-  ];
+  /* ---------- biblioteca de escaleras de ejemplo por tipo de miedo (editables) ---------- */
+  var BIBLIOTECA = {
+    conducir: { label: "Conducir", emoji: "🚗", semilla: [
+      { dificultad: 2, titulo: "Acercarme al coche en el garaje y apoyar la mano", tiempo: "1–2 min", compania: "acompañada", distancia: "junto al coche", condicion: "motor apagado, garaje cerrado" },
+      { dificultad: 3, titulo: "Sentarme en el asiento del conductor con la puerta abierta", tiempo: "2–3 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor apagado" },
+      { dificultad: 4, titulo: "Sentarme con las puertas cerradas, motor apagado", tiempo: "3–5 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor apagado" },
+      { dificultad: 5, titulo: "Encender el motor sin mover el coche", tiempo: "3–5 min", compania: "acompañada", distancia: "en el garaje", condicion: "motor encendido, sin marcha" },
+      { dificultad: 6, titulo: "Salir del garaje y aparcar justo fuera", tiempo: "5 min", compania: "acompañada", distancia: "salida del garaje", condicion: "de día" },
+      { dificultad: 7, titulo: "Dar una vuelta corta a la manzana", tiempo: "5–10 min", compania: "acompañada", distancia: "la manzana", condicion: "de día, poco tráfico" },
+      { dificultad: 8, titulo: "Un trayecto conocido y corto, sola", tiempo: "10 min", compania: "sola", distancia: "trayecto conocido", condicion: "de día" },
+      { dificultad: 9, titulo: "Un trayecto más largo o por vía rápida, sola", tiempo: "15–20 min", compania: "sola", distancia: "más lejos / vía rápida", condicion: "de día" }
+    ] },
+    espacios: { label: "Espacios abiertos", emoji: "🏞️", semilla: [
+      { dificultad: 2, titulo: "Salir a la puerta de casa y mirar la calle", tiempo: "1–2 min", compania: "acompañada", distancia: "en el umbral", condicion: "calle tranquila" },
+      { dificultad: 3, titulo: "Caminar hasta la esquina y volver", tiempo: "3–5 min", compania: "acompañada", distancia: "cerca de casa", condicion: "hora tranquila" },
+      { dificultad: 4, titulo: "Sentarme en una plaza pequeña un rato", tiempo: "5 min", compania: "acompañada", distancia: "plaza cercana", condicion: "poca gente" },
+      { dificultad: 5, titulo: "Cruzar una plaza grande y abierta", tiempo: "5–10 min", compania: "acompañada", distancia: "plaza amplia", condicion: "de día" },
+      { dificultad: 6, titulo: "Pasear por una avenida ancha", tiempo: "10 min", compania: "acompañada", distancia: "lejos de casa", condicion: "de día" },
+      { dificultad: 7, titulo: "Ir hasta la esquina y volver, sola", tiempo: "3–5 min", compania: "sola", distancia: "cerca de casa", condicion: "hora tranquila" },
+      { dificultad: 8, titulo: "Cruzar una plaza abierta, sola", tiempo: "5–10 min", compania: "sola", distancia: "plaza amplia", condicion: "de día" },
+      { dificultad: 9, titulo: "Pasear por un parque o paseo grande, sola", tiempo: "15–20 min", compania: "sola", distancia: "lejos de casa", condicion: "de día" }
+    ] },
+    multitudes: { label: "Multitudes", emoji: "👥", semilla: [
+      { dificultad: 2, titulo: "Entrar en una tienda pequeña con poca gente", tiempo: "3–5 min", compania: "acompañada", distancia: "comercio tranquilo", condicion: "hora valle" },
+      { dificultad: 3, titulo: "Pasar por una calle comercial con gente", tiempo: "5 min", compania: "acompañada", distancia: "calle concurrida", condicion: "hora valle" },
+      { dificultad: 4, titulo: "Entrar en un supermercado mediano", tiempo: "10 min", compania: "acompañada", distancia: "supermercado", condicion: "hora tranquila" },
+      { dificultad: 5, titulo: "Hacer una cola corta en caja", tiempo: "hasta acabar", compania: "acompañada", distancia: "en la cola", condicion: "cola corta" },
+      { dificultad: 6, titulo: "Ir a un centro comercial", tiempo: "15 min", compania: "acompañada", distancia: "centro comercial", condicion: "por la tarde" },
+      { dificultad: 7, titulo: "Entrar en un súper concurrido, sola", tiempo: "10 min", compania: "sola", distancia: "supermercado", condicion: "hora punta" },
+      { dificultad: 8, titulo: "Usar transporte público un par de paradas", tiempo: "el trayecto", compania: "acompañada", distancia: "bus / metro", condicion: "hora valle" },
+      { dificultad: 9, titulo: "Estar en un mercado o evento con mucha gente", tiempo: "20 min", compania: "sola", distancia: "lugar concurrido", condicion: "fin de semana" }
+    ] },
+    social: { label: "Situaciones sociales", emoji: "💬", semilla: [
+      { dificultad: 2, titulo: "Saludar a un vecino o conocido y sonreír", tiempo: "unos segundos", compania: "sola", distancia: "en el portal", condicion: "encuentro breve" },
+      { dificultad: 3, titulo: "Preguntar una hora o una dirección", tiempo: "1 min", compania: "sola", distancia: "en la calle", condicion: "persona amable" },
+      { dificultad: 4, titulo: "Pedir algo en un mostrador (café, pan)", tiempo: "2–3 min", compania: "sola", distancia: "en un comercio", condicion: "poca cola" },
+      { dificultad: 5, titulo: "Hacer una llamada breve (cita, reserva)", tiempo: "3–5 min", compania: "sola", distancia: "desde casa", condicion: "con un guion" },
+      { dificultad: 6, titulo: "Aportar un comentario en un grupo pequeño", tiempo: "unos minutos", compania: "en grupo", distancia: "reunión conocida", condicion: "3–4 personas" },
+      { dificultad: 7, titulo: "Iniciar una conversación corta con alguien", tiempo: "5 min", compania: "sola", distancia: "contexto cotidiano", condicion: "tema fácil" },
+      { dificultad: 8, titulo: "Expresar una opinión o un desacuerdo amable", tiempo: "unos minutos", compania: "en grupo", distancia: "con confianza", condicion: "tema ligero" },
+      { dificultad: 9, titulo: "Hablar ante varias personas (brindis, presentar)", tiempo: "5 min", compania: "en grupo", distancia: "una reunión", condicion: "algo preparado" }
+    ] },
+    aviones: { label: "Volar / aviones", emoji: "✈️", semilla: [
+      { dificultad: 2, titulo: "Ver fotos y vídeos de aviones y despegues", tiempo: "5 min", compania: "sola", distancia: "en casa", condicion: "con respiración" },
+      { dificultad: 3, titulo: "Mirar la información del vuelo y del aeropuerto", tiempo: "10 min", compania: "acompañada", distancia: "en casa", condicion: "planificando" },
+      { dificultad: 4, titulo: "Ensayo imaginado del vuelo completo, guiado", tiempo: "10 min", compania: "sola", distancia: "en casa", condicion: "relajada" },
+      { dificultad: 5, titulo: "Ir al aeropuerto a ver despegues (sin volar)", tiempo: "20–30 min", compania: "acompañada", distancia: "terminal / mirador", condicion: "de día" },
+      { dificultad: 6, titulo: "Facturar y pasar el control en un vuelo real", tiempo: "el proceso", compania: "acompañada", distancia: "aeropuerto", condicion: "vuelo corto" },
+      { dificultad: 7, titulo: "Embarcar y sentarme, antes del despegue", tiempo: "hasta despegar", compania: "acompañada", distancia: "en el avión", condicion: "vuelo corto" },
+      { dificultad: 8, titulo: "Un vuelo corto, acompañada", tiempo: "el vuelo", compania: "acompañada", distancia: "trayecto breve", condicion: "de día" },
+      { dificultad: 9, titulo: "Un vuelo más largo, o sola", tiempo: "el vuelo", compania: "sola", distancia: "trayecto largo", condicion: "con mis apoyos" }
+    ] },
+    ascensor: { label: "Ascensor / cerrados", emoji: "🛗", semilla: [
+      { dificultad: 2, titulo: "Acercarme al ascensor con las puertas abiertas", tiempo: "1 min", compania: "acompañada", distancia: "en el rellano", condicion: "puertas abiertas" },
+      { dificultad: 3, titulo: "Entrar y salir enseguida, sin cerrar", tiempo: "unos segundos", compania: "acompañada", distancia: "dentro", condicion: "sin pulsar" },
+      { dificultad: 4, titulo: "Entrar, cerrar las puertas, sin subir", tiempo: "30 seg", compania: "acompañada", distancia: "dentro", condicion: "parado" },
+      { dificultad: 5, titulo: "Subir o bajar un piso, acompañada", tiempo: "1 trayecto", compania: "acompañada", distancia: "dentro", condicion: "un piso" },
+      { dificultad: 6, titulo: "Subir varios pisos, acompañada", tiempo: "el trayecto", compania: "acompañada", distancia: "dentro", condicion: "varios pisos" },
+      { dificultad: 7, titulo: "Un piso, sola", tiempo: "1 trayecto", compania: "sola", distancia: "dentro", condicion: "edificio conocido" },
+      { dificultad: 8, titulo: "Varios pisos, sola", tiempo: "el trayecto", compania: "sola", distancia: "dentro", condicion: "edificio conocido" },
+      { dificultad: 9, titulo: "Un ascensor desconocido o más lento, sola", tiempo: "el trayecto", compania: "sola", distancia: "lugar nuevo", condicion: "con mis apoyos" }
+    ] },
+    otro: { label: "Otro (desde cero)", emoji: "✏️", semilla: [] }
+  };
+  var TIPO_KEY = "aprens_esc_tipo";
+  function tipoActual() { try { var t = localStorage.getItem(TIPO_KEY); if (t && BIBLIOTECA[t]) return t; } catch (e) {} return "conducir"; }
+  function guardarTipo(t) { try { localStorage.setItem(TIPO_KEY, t); } catch (e) {} }
+  function semillaActual() { return (BIBLIOTECA[tipoActual()] || BIBLIOTECA.conducir).semilla; }
   function seedPeldano(p, i) {
     var rec = { id: "pel_" + Date.now() + "_" + i, kind: "peldano", ts: Date.now() + i,
       dificultad: p.dificultad, titulo: p.titulo, tiempo: p.tiempo, compania: p.compania, distancia: p.distancia, condicion: p.condicion };
@@ -57,15 +114,34 @@
   function seedIfEmpty() {
     var seeded = false; try { seeded = localStorage.getItem(SEED_FLAG) === "1"; } catch (e) {}
     if (!seeded && getPeldanos().length === 0) {
-      SEMILLA.forEach(seedPeldano);
+      semillaActual().forEach(seedPeldano);
       try { localStorage.setItem(SEED_FLAG, "1"); } catch (e) {}
     }
   }
-  function resetPeldanos() {
+  function resetPeldanos(tipo) {
+    if (tipo && BIBLIOTECA[tipo]) guardarTipo(tipo);
     getPeldanos().forEach(function (p) { removeRecord(p.id); });
-    SEMILLA.forEach(seedPeldano);
+    semillaActual().forEach(seedPeldano);
     try { localStorage.setItem(SEED_FLAG, "1"); } catch (e) {}
-    closeEditor(); renderLadder();
+    closeEditor(); renderLadder(); renderMiedoPicker();
+  }
+  function elegirMiedo(tipo) {
+    if (!BIBLIOTECA[tipo]) return;
+    if (tipo === tipoActual() && getPeldanos().length) return;
+    if (getPeldanos().length && !confirm("Cargar la escalera de ejemplo de «" + BIBLIOTECA[tipo].label + "» reemplaza los peldaños actuales. Las exposiciones ya registradas se conservan. ¿Continuar?")) return;
+    resetPeldanos(tipo);
+    var sec = document.getElementById("escalera"); if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function renderMiedoPicker() {
+    var box = document.getElementById("miedoPicker"); if (!box) return;
+    var act = tipoActual();
+    var chips = Object.keys(BIBLIOTECA).map(function (k) {
+      var b = BIBLIOTECA[k];
+      return '<button type="button" class="miedo-chip' + (k === act ? " on" : "") + '" data-tipo="' + k + '">' + b.emoji + " " + esc(b.label) + "</button>";
+    }).join("");
+    box.innerHTML = '<div class="miedo-lbl">¿A qué le tienes miedo? Elige y tendrás una <b>escalera de ejemplo</b> para editar a tu medida:</div>' +
+      '<div class="miedo-chips">' + chips + "</div>";
+    $$(".miedo-chip", box).forEach(function (ch) { ch.addEventListener("click", function () { elegirMiedo(ch.getAttribute("data-tipo")); }); });
   }
 
   /* ---------- APOYOS del CÓMO (cada uno enlaza a su herramienta de práctica) ---------- */
@@ -375,7 +451,7 @@
   /* ---------- botones de la escalera ---------- */
   $("#btnAddPeldano").addEventListener("click", function () { openEditor(null); });
   $("#btnResetPeldanos").addEventListener("click", function () {
-    if (confirm("¿Restaurar la escalera de ejemplo? Reemplaza los peldaños actuales (las exposiciones registradas se conservan).")) resetPeldanos();
+    if (confirm("¿Restaurar la escalera de ejemplo de «" + (BIBLIOTECA[tipoActual()] || {}).label + "»? Reemplaza los peldaños actuales (las exposiciones registradas se conservan).")) resetPeldanos(tipoActual());
   });
 
   /* ---------- código del paciente ---------- */
@@ -388,6 +464,7 @@
 
   /* ---------- init ---------- */
   seedIfEmpty();
+  renderMiedoPicker();
   renderLadder();
   if (window.Aprens && Aprens.mountBar) Aprens.mountBar();
 })();
