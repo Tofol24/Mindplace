@@ -92,6 +92,14 @@ section{position:relative;}
 .keycard b{color:var(--noche);}
 
 /* ---------- La escalera ---------- */
+/* Selector de tipo de miedo (biblioteca de escaleras) */
+.miedo-picker{margin:0 0 26px;}
+.miedo-lbl{font-size:14.5px; color:var(--tinta-soft); line-height:1.5; margin-bottom:12px;}
+.miedo-chips{display:flex; flex-wrap:wrap; gap:9px;}
+.miedo-chip{font-family:var(--sans); font-size:14px; font-weight:600; color:var(--noche); background:var(--niebla); border:1.5px solid var(--linea); border-radius:26px; padding:9px 16px; cursor:pointer; transition:border-color .15s, background .2s, transform .12s;}
+.miedo-chip:hover{border-color:var(--ambar);}
+.miedo-chip:active{transform:translateY(1px);}
+.miedo-chip.on{background:var(--ambar); border-color:var(--ambar); color:var(--noche);}
 .ladder{display:flex; flex-direction:column; gap:14px;}
 .rung{position:relative; background:var(--niebla); border:1px solid var(--linea); border-left:5px solid var(--ambar);
   border-radius:4px; padding:18px 18px 18px 20px; box-shadow:0 10px 30px -26px rgba(30,46,54,.7);
