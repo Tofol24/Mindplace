@@ -230,7 +230,11 @@
 
     var root=app.querySelector('.dmono');
     var $=s=>root.querySelector(s), $$=s=>root.querySelectorAll(s);
-    function go(id){ $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.s===id)); window.scrollTo({top:0,behavior:'smooth'}); }
+    var scrHist=[];
+    function curScreen(){ var a=root.querySelector('.screen.active'); return a?a.dataset.s:null; }
+    function go(id, back){ if(!back){ var cur=curScreen(); if(cur && cur!==id) scrHist.push(cur); } $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.s===id)); window.scrollTo({top:0,behavior:'smooth'}); }
+    // Gancho para el botón "← Atrás" de la cabecera: retrocede por las pantallas propias.
+    window.APRENS_toolBack=function(){ if(scrHist.length){ go(scrHist.pop(), true); return true; } return false; };
 
     // galería
     $('[data-galeria]').innerHTML = ORDEN.map(id=>{var p=POS[id];return '<div class="galc">'+MONO_SVG(id)+'<div class="gt">'+esc(p.galt)+'</div><div class="gd">'+esc(p.gald)+'</div></div>';}).join('');
@@ -357,7 +361,7 @@
     function reiniciar(){
       sel={ texto:'', contexto:'', respuestas:[null,null,null,null], pos:null, conf:'', pistas:'', micro:'', aprende:null, ts:0 };
       $('[data-in-texto]').value=''; pintaContexto(); pintaPreguntas();
-      $('[data-act="ver-preg"]').disabled=true; go('s-intro');
+      $('[data-act="ver-preg"]').disabled=true; scrHist.length=0; go('s-intro', true);
     }
 
     // wiring
