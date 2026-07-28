@@ -90,6 +90,12 @@
       vista="resultado"; render(); scrollTo(0,0);
     }
     function reiniciar(){ vista="intro"; Object.keys(resp).forEach(k=>delete resp[k]); app._aprensRec=null; render(); scrollTo(0,0); }
+    // Gancho para el "← Atrás" de la cabecera: retrocede de estado en estado.
+    window.APRENS_toolBack = function(){
+      if(vista==="quiz"){ vista="intro"; render(); scrollTo(0,0); return true; }
+      if(vista==="resultado"){ vista="quiz"; render(); scrollTo(0,0); return true; }
+      return false;
+    };
 
     function abrirWA(){ const box=app.querySelector("#msgBox"); const t=box.innerText||box.textContent; window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank"); }
     function copiar(btn){

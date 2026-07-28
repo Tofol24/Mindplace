@@ -279,13 +279,36 @@
     mod.mount(screen);
   }
 
+  // Rastro de navegación en la app (para "← Atrás" paso a paso).
+  const trail = [];
+  let goingBack = false;
+
   function route(){
     const h = location.hash || "#/";
+    // Cada navegación reinicia el gancho de "atrás interno"; la herramienta lo
+    // vuelve a poner si tiene pantallas propias por las que retroceder.
+    window.APRENS_toolBack = null;
+    if(goingBack){ goingBack = false; }
+    else if(trail[trail.length-1] !== h){ trail.push(h); }
     const m = h.match(/^#\/tool\/([\w-]+)/);
     if(m) renderTool(m[1]); else renderHub();
+    backBtn.textContent = "← Atrás";
   }
 
-  backBtn.onclick = () => { location.hash = "#/"; };
+  function goHome(){ if((location.hash||"#/") !== "#/") location.hash = "#/"; }
+  // El logo/título lleva siempre al inicio.
+  const brand = document.querySelector(".header .hlogo");
+  if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","Inicio"); brand.onclick = goHome; }
+  const brandTitle = document.getElementById("htitle");
+  if(brandTitle){ brandTitle.style.cursor = "pointer"; brandTitle.onclick = goHome; }
+
+  backBtn.onclick = () => {
+    // 1) Si la herramienta actual tiene pantallas propias, que retroceda ahí.
+    if(typeof window.APRENS_toolBack === "function" && window.APRENS_toolBack() === true) return;
+    // 2) Si no, retrocede un paso en la app (a la herramienta anterior); o al inicio.
+    if(trail.length > 1){ trail.pop(); goingBack = true; location.hash = trail[trail.length-1]; }
+    else { location.hash = "#/"; }
+  };
   window.addEventListener("hashchange", route);
   route();
 })();
