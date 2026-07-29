@@ -403,6 +403,8 @@ function copiar(btn){
   else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
 }
 
+// Botón «← Atrás» de la cabecera: retrocede un paso dentro del asistente.
+window.APRENS_toolBack=function(){ if(vista==="paso"){ prev(); return true; } return false; };
 render();
 </script>
 
