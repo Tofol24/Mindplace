@@ -313,8 +313,17 @@
   if(brandTitle){ brandTitle.style.cursor = "pointer"; brandTitle.onclick = goHome; }
 
   backBtn.onclick = () => {
-    // 1) Si la herramienta actual tiene pantallas propias, que retroceda ahí.
+    // 1) Herramienta como módulo en la ventana principal: que retroceda en sus pantallas.
     if(typeof window.APRENS_toolBack === "function" && window.APRENS_toolBack() === true) return;
+    // 1b) Herramienta en iframe (mismo origen): consulta su gancho interno de "atrás".
+    //     Así el botón de la cabecera retrocede paso a paso también dentro del iframe.
+    const fr = screen.querySelector("iframe.tool-frame");
+    if(fr && fr.contentWindow){
+      try{
+        const h = fr.contentWindow.APRENS_toolBack;
+        if(typeof h === "function" && h() === true) return;
+      }catch(e){ /* si por lo que sea no es accesible, seguimos */ }
+    }
     // 2) Si no, retrocede un paso en la app (a la herramienta anterior); o al inicio.
     if(trail.length > 1){ trail.pop(); goingBack = true; location.hash = trail[trail.length-1]; }
     else { location.hash = "#/"; }
