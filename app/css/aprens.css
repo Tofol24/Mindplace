@@ -131,6 +131,19 @@ body{
 .hs-body{padding:0 17px 18px;font-size:14px;line-height:1.7;color:#3a3a3a}
 .hs-body p{margin:0 0 9px}
 .hs-body b{color:var(--azul)}
+.hs-quien{background:#f6f1e6;border:1px solid var(--linea);border-radius:14px;padding:14px 15px;margin:4px 0 14px}
+.hs-quien-t{margin:0 0 10px!important;color:var(--tinta)}
+.hs-quien-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.hs-quien-2{grid-template-columns:1fr}}
+.hs-quien .hs-q{background:#fff;border-radius:11px;padding:11px 12px;border-left:4px solid #ccc}
+.hs-quien .hs-q-mono{border-left-color:#b0663a}
+.hs-quien .hs-q-yo{border-left-color:var(--azul)}
+.hs-q-h{font-family:var(--serif);font-weight:700;font-size:15px;margin-bottom:4px}
+.hs-q-mono .hs-q-h{color:#a5583a}
+.hs-q-yo .hs-q-h{color:var(--azul)}
+.hs-q-x{font-size:12.8px;line-height:1.55;color:#443c33}
+.hs-q-x b{color:var(--tinta)}
+.hs-quien-b{margin:11px 0 0!important;font-size:13.5px;color:var(--gris)}
 .hs-quote{font-family:var(--serif);font-style:italic;color:#1f5e42;background:var(--verdeLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:12px 15px;margin:10px 0}
 .hs-acts{margin-top:14px;padding-top:14px;border-top:1px dashed #e4e1cf}
 .hs-acts-t{font-size:13px;color:#4a4a4a;margin:0 0 9px}
