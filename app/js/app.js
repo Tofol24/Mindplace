@@ -71,8 +71,8 @@
         <div class="hs-quien">
           <p class="hs-quien-t"><b>Primero, lo esencial: ¿quién es el mono y quién eres tú?</b></p>
           <div class="hs-quien-2">
-            <div class="hs-q hs-q-mono"><div class="hs-q-h">🐒 El mono</div><div class="hs-q-x">Es tu parte más animal: tu <b>cuerpo</b>, tu organismo, tu <b>niño/a interior</b>. La parte mamífera que siente, se activa y reacciona <b>antes de que te des cuenta</b>. Tiene miedos, necesita afecto y busca alivio. No elige: responde.</div></div>
-            <div class="hs-q hs-q-yo"><div class="hs-q-h">🧭 Tú</div><div class="hs-q-x">Eres una <b>conciencia</b>: una idea de «yo» construida a partir de lo que has vivido, capaz de <b>tomar perspectiva</b>, darte cuenta de que existes y <b>observar a tu propio organismo funcionar por su cuenta</b>, muchas veces sin tu permiso. Tú puedes mirar al mono; el mono no puede mirarse a sí mismo.</div></div>
+            <div class="hs-q hs-q-mono"><div class="hs-q-h">🐒 El mono</div><div class="hs-q-x">Es tu parte más animal: tu <b>cuerpo</b>, tu <b>niño/a interior</b>, la parte mamífera que siente y reacciona <b>antes de que te des cuenta</b>. Pero no es solo biología: también es la <b>vulnerabilidad que no pudo integrarse en tu manada segura</b> —tu familia, tus vínculos de apego—. En la infancia o la adolescencia hubo vivencias que no tuviste las condiciones para acompañar, y quedaron guardadas en él.</div></div>
+            <div class="hs-q hs-q-yo"><div class="hs-q-h">🧭 Tú</div><div class="hs-q-x">Eres una <b>conciencia</b>: una idea de «yo» construida a partir de lo que has vivido, capaz de <b>tomar perspectiva</b> y observar a tu propio organismo funcionar por su cuenta. Tú puedes mirar al mono; el mono no puede mirarse a sí mismo. Entonces tu conciencia <b>aún no estaba</b> para acompañarlo, validarlo y darle espacio. <b>Ahora sí estás: ahora puedes.</b></div></div>
           </div>
           <p class="hs-quien-b"><b>Tú no eres el mono</b>: eres quien puede acompañarlo y llevar el volante. Con esto en mente, la metáfora del coche cobra sentido:</p>
         </div>
