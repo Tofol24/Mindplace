@@ -91,6 +91,8 @@
     <span class="ve">🎬</span><span class="vt">Ver la historia animada<small>Versión narrada, en un minuto</small></span><span class="vp">▶</span>
   </a>
 
+  <div id="audioguia"></div>
+
   <div class="escena" aria-hidden="true">
     <svg viewBox="0 0 300 180" role="img">
       <ellipse cx="150" cy="158" rx="120" ry="14" fill="#d8e2d3" opacity=".6"/>
@@ -242,6 +244,22 @@ var fin='<ellipse cx="150" cy="158" rx="110" ry="13" fill="#d8e2d3" opacity=".6"
 document.getElementById('herdG').innerHTML = herd;
 document.getElementById('seqG').innerHTML = seq;
 document.getElementById('finalG').innerHTML = fin;
+</script>
+<script src="assets/reflexion-audio.js"></script>
+<script>
+AprensAudio.mount('audioguia', {
+  title:'Escuchar la explicación', subtitle:'Voz del dispositivo · te la lee en voz alta',
+  segments:[
+    "Dentro de ti viaja un mono: tu cuerpo animal, la parte de ti que siente y reacciona antes de que te des cuenta. Y ese mono es, ante todo, un mamífero de manada.",
+    "Como todo mamífero, se siente seguro cuando percibe a los suyos: cuando los ve, los toca, los oye, los huele. Así sabe que no está solo, y desde ahí puede estar en calma.",
+    "Pero la vida moderna nos pide lo contrario: salir del grupo una y otra vez, ir a trabajar, ser autónomos. Y al alejarse de la manada, el mono lo interpreta como un riesgo: sube la alerta y ve amenazas donde no las hay.",
+    "Aquí está el detalle importante: tú eres la conciencia de tu mono. Vas siempre con él, pero para él eres invisible: no puede verte, ni olerte, ni oírte, ni tocarte.",
+    "Tu mono no necesita que la conciencia exista. Necesita poder percibirla.",
+    "Aquí entra la respiración consciente. No es un truco para relajarte: es la señal con la que tu mono empieza a notarte. Respirar no es relajarte: es volver a aparecer para tu mono.",
+    "El mono no necesita que desaparezca el miedo. Necesita notar que alguien permanece cuando tiene miedo. No practicas para sentir menos: practicas para que tu mono aprenda que siempre apareces.",
+    "Cuando tu mono te percibe y confía en ti, ya no sale solo: sale contigo, con la alerta baja. Y un día se gira y te mira. No porque el peligro haya desaparecido, sino porque, por primera vez, nota que estás."
+  ]
+});
 </script>
 </body>
 </html>

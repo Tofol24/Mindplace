@@ -110,6 +110,9 @@ window.APRENS_TOOLS = [
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
     migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
 
+  { id:"quien_conduce", emoji:"🧭", nombre:"¿Quién conduce tu vida?",
+    desc:"La metáfora base de todo el trabajo: el mono y el coche. Quién es el mono y quién eres tú, las cuatro formas de conducir, y qué herramienta usar. Con audio guiado y versión animada.",
+    migrada:true, iframe:"tools-standalone/quien-conduce.html" },
   { id:"la_manada", emoji:"🐾", nombre:"La manada (el porqué)",
     desc:"Por qué respiras: la metáfora base. Tu mono es un mamífero de manada; el AIS es el canal por el que tu conciencia se vuelve perceptible para él. Respirar no es relajarte: es volver a aparecer para tu mono, construir apego seguro y salir al mundo acompañado.",
     migrada:true, iframe:"tools-standalone/la_manada_aprens.html" },
