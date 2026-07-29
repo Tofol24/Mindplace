@@ -143,6 +143,12 @@ var SCENES=[
 
 var idx=0, playing=false, muted=false, timer=null;
 var PAUSA=1200; // pausa entre escena y escena (ms)
+// Cuando existan grabaciones de voz, poner AUDIO_DIR='assets/audio/mono/'
+// (archivos 01.m4a … 08.m4a, uno por escena). Si un archivo falta o falla,
+// se usa automáticamente la voz del navegador.
+var AUDIO_DIR=null, curAudio=null;
+function pad(i){ return (i<9?'0':'')+(i+1); }
+function stopAudio(){ if(curAudio){ try{ curAudio.pause(); }catch(e){} curAudio=null; } }
 var $=function(id){return document.getElementById(id);};
 var voces=[], voz=null;
 function cargarVoz(){ voces=(window.speechSynthesis?speechSynthesis.getVoices():[])||[]; voz=voces.filter(function(v){return /^es/i.test(v.lang);})[0]||null; }
@@ -162,6 +168,23 @@ function narrar(text, onEnd){
   scheduleFallback(function(){ if(!done){ done=true; onEnd&&onEnd(); } }, Math.max(4500, text.length*90));
 }
 function scheduleFallback(fn, ms){ clearTimeout(timer); timer=setTimeout(fn, ms||5200); }
+// Reproduce el clip grabado de la escena i; si no existe, cae en la voz del navegador.
+function playClip(i, text, onEnd){
+  try{
+    var a=new Audio(AUDIO_DIR+pad(i)+'.m4a'); curAudio=a; var done=false;
+    a.onended=function(){ if(done)return; done=true; onEnd&&onEnd(); };
+    a.onerror=function(){ if(done)return; done=true; curAudio=null; narrar(text,onEnd); };
+    var p=a.play(); if(p&&p.catch){ p.catch(function(){ if(done)return; done=true; curAudio=null; narrar(text,onEnd); }); }
+    scheduleFallback(function(){ if(!done){ done=true; onEnd&&onEnd(); } }, Math.max(6000, text.length*95));
+  }catch(e){ narrar(text,onEnd); }
+}
+// Voz de la escena: grabada si hay AUDIO_DIR, si no, voz del navegador.
+function speak(i, text, onEnd){
+  stopAudio();
+  if(muted){ scheduleFallback(onEnd, Math.max(4200, text.length*55)); return; }
+  if(AUDIO_DIR){ playClip(i, text, onEnd); return; }
+  narrar(text, onEnd);
+}
 
 function pintaDots(){ $('dots').innerHTML=SCENES.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join(''); }
 function render(){
@@ -170,14 +193,14 @@ function render(){
   var cap=$('cap'); cap.className=sc.quote?'q':''; cap.classList.remove('in'); cap.textContent=(sc.quote?'«':'')+sc.text+(sc.quote?'»':'');
   void cap.offsetWidth; requestAnimationFrame(function(){ cap.classList.add('in'); });
   pintaDots();
-  clearTimeout(timer);
-  if(playing){ narrar(sc.text, function(){ if(!playing) return; clearTimeout(timer); timer=setTimeout(function(){ if(playing) next(true); }, PAUSA); }); }
+  clearTimeout(timer); stopAudio();
+  if(playing){ speak(idx, sc.text, function(){ if(!playing) return; clearTimeout(timer); timer=setTimeout(function(){ if(playing) next(true); }, PAUSA); }); }
   else if(!muted && window.speechSynthesis){ try{speechSynthesis.cancel();}catch(e){} }
 }
 function next(auto){ if(idx<SCENES.length-1){ idx++; render(); } else { setPlay(false); } }
 function prev(){ if(idx>0){ idx--; render(); } }
-function setPlay(p){ playing=p; $('playBtn').textContent=p?'⏸':'▶'; if(p) render(); else { clearTimeout(timer); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
-function setMute(m){ muted=m; var t=m?'🔇 Silencio':'🔊 Voz'; $('muteBtn').textContent=t; if(m){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+function setPlay(p){ playing=p; $('playBtn').textContent=p?'⏸':'▶'; if(p) render(); else { clearTimeout(timer); stopAudio(); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+function setMute(m){ muted=m; var t=m?'🔇 Silencio':'🔊 Voz'; $('muteBtn').textContent=t; if(m){ stopAudio(); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
 
 function empezar(){
   $('cover').style.display='none'; $('show').classList.add('on'); $('topbar').style.display='flex';
@@ -203,7 +226,7 @@ document.addEventListener('keydown',function(e){
 });
 // El botón "← Atrás" de la cabecera (si está en la app): salir de la reproducción primero.
 window.APRENS_toolBack=function(){ if($('show').classList.contains('on')){ salir(); return true; } return false; };
-window.addEventListener('pagehide',function(){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} });
+window.addEventListener('pagehide',function(){ stopAudio(); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} });
 </script>
 </body>
 </html>
