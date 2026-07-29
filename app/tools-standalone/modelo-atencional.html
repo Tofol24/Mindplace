@@ -162,14 +162,12 @@ function render(){
   document.getElementById('app').innerHTML=
     '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
     '<a class="video" href="/#/tool/historia_control" target="_top"><span class="ve">🎬</span><span class="vt">'+esc(t.video)+'<small>'+esc(t.videoSub)+'</small></span><span class="vp">▶</span></a>'+
-    '<div id="audioguia"></div>'+
     '<div class="start"><div class="st-t">'+esc(t.startT)+'</div><div class="st-x">'+t.startX+'</div></div>'+
     '<div class="fork">↓ '+esc(t.fork)+' ↓</div>'+
     '<div class="paths">'+pathHTML(t.trap,'trap')+pathHTML(t.out,'out')+'</div>'+
     '<div class="clave"><div class="cl-t">'+esc(t.claveT)+'</div><div class="cl-x">'+t.claveX+'</div>'+
       '<a class="cta" href="/#/tool/ais_basicas" target="_top">'+esc(t.cta)+'</a></div>'+
     '<footer><b>Centre APRENS</b> · '+esc(t.foot)+'</footer>';
-  if(window.AprensAudio) AprensAudio.mount('audioguia', { title:t.audioT, subtitle:t.audioS, lang:(LANG==='ca'?'ca-ES':'es-ES'), segments:t.audio });
 }
 function setLang(l){
   LANG=l;
@@ -180,7 +178,5 @@ function setLang(l){
 }
 render();
 </script>
-<script src="assets/reflexion-audio.js"></script>
-<script>if(window.AprensAudio) AprensAudio.mount('audioguia', { title:U().audioT, subtitle:U().audioS, lang:(LANG==='ca'?'ca-ES':'es-ES'), segments:U().audio });</script>
 </body>
 </html>
