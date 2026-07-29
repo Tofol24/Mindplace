@@ -127,10 +127,9 @@ var SCENES=[
 
 var idx=0, playing=false, muted=false, timer=null;
 var PAUSA=1200; // pausa entre escena y escena (ms)
-// Cuando existan grabaciones de voz, poner AUDIO_DIR='assets/audio/control/'
-// (archivos 01.m4a … 08.m4a, uno por escena). Si un archivo falta o falla,
-// se usa automáticamente la voz del navegador.
-var AUDIO_DIR=null, curAudio=null;
+// Voz grabada (una por escena, 01.m4a … 08.m4a). De momento hay 01–05;
+// las escenas sin clip (06–08) usan la voz del navegador automáticamente.
+var AUDIO_DIR='assets/audio/control/', curAudio=null;
 function pad(i){ return (i<9?'0':'')+(i+1); }
 function stopAudio(){ if(curAudio){ try{ curAudio.pause(); }catch(e){} curAudio=null; } }
 var $=function(id){return document.getElementById(id);};
