@@ -68,6 +68,7 @@
       <summary><span class="hs-i">📖</span>Antes de empezar: la historia del mono y el coche</summary>
       <div class="hs-body">
         <p>Esta es la idea que da sentido a todo lo demás. <b>Léela primero.</b></p>
+        <a class="hs-video" href="#/tool/historia_animada"><span class="hv-ic">🎬</span><span class="hv-t">Ver la historia animada<small>Versión narrada, en un minuto</small></span><span class="hv-play">▶</span></a>
         <div class="hs-quien">
           <p class="hs-quien-t"><b>Primero, lo esencial: ¿quién es el mono y quién eres tú?</b></p>
           <div class="hs-quien-2">

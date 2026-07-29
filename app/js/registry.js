@@ -115,7 +115,10 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/la_manada_aprens.html" },
   { id:"modelo_atencional", emoji:"🧠", nombre:"El control y la presencia",
     desc:"El mapa del malestar: por qué buscar el control (sobrepensar) sin espacio-tiempo deriva en ansiedad y depresión, y cómo la conciencia —parar y llevar la atención al cuerpo— abre la conducta asertiva. El porqué de entrenar el AIS.",
-    migrada:true, iframe:"tools-standalone/modelo-atencional.html" }
+    migrada:true, iframe:"tools-standalone/modelo-atencional.html" },
+  { id:"historia_animada", emoji:"🎬", nombre:"La historia del mono · animada",
+    desc:"El cuento del mono y el coche en versión animada y narrada (voz del dispositivo), en un minuto.",
+    migrada:true, iframe:"tools-standalone/historia-animada.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
