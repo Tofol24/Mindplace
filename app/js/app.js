@@ -19,6 +19,8 @@
     { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
       ids:["la_manada","modelo_atencional"],
       pdfs:[{ emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo, la historia del mono (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" }] },
+    { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada (voz del dispositivo), de un minuto cada una. Para verlas con calma o compartirlas.",
+      ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_basicas","ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
