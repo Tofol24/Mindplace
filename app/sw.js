@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v90";
+const CACHE = "aprens-v91";
 const SHELL = [
   "./",
   "./index.html",
@@ -71,6 +71,14 @@ const SHELL = [
   "./tools-standalone/assets/audio/mono/06.m4a",
   "./tools-standalone/assets/audio/mono/07.m4a",
   "./tools-standalone/assets/audio/mono/08.m4a",
+  "./tools-standalone/assets/audio/manada/01.m4a",
+  "./tools-standalone/assets/audio/manada/02.m4a",
+  "./tools-standalone/assets/audio/manada/03.m4a",
+  "./tools-standalone/assets/audio/manada/04.m4a",
+  "./tools-standalone/assets/audio/manada/05.m4a",
+  "./tools-standalone/assets/audio/manada/06.m4a",
+  "./tools-standalone/assets/audio/manada/07.m4a",
+  "./tools-standalone/assets/audio/manada/08.m4a",
   "./assets/pdf/la-familia-de-koa-es.pdf",
   "./assets/pdf/la-familia-de-koa-ca.pdf",
   "./assets/pdf/quien-conduce-tu-vida.pdf",
