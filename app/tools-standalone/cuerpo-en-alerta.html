@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7d9b86">
+<meta name="description" content="Herramienta de acompañamiento terapéutico tras experiencias traumáticas. Centre APRENS · TEC / AIS.">
+<title>Cuando el cuerpo sigue en alerta · APRENS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===================== PALETA Y TOKENS ===================== */
+  :root{
+    --crema:#f4efe6;
+    --crema-2:#efe8db;
+    --card:#fffdf9;
+    --tinta:#2f3330;      /* carbón */
+    --tinta-2:#4a524d;
+    --suau:#6e746c;       /* texto secundario */
+    --salvia:#7d9b86;
+    --salvia-d:#516b5a;
+    --salvia-suau:#e7eee8;
+    --azul:#6b8299;       /* azul grisáceo */
+    --azul-d:#465b6d;
+    --azul-suau:#e7edf1;
+    --terra:#c08268;      /* terracota suave */
+    --terra-d:#9c5f45;
+    --terra-suau:#f4e6de;
+    --linia:#e3dccd;
+    --linia-2:#d8cfbd;
+    --ok:#5e7d68;
+    --avis-bg:#faf3e6;
+    --avis-bd:#ecdcbe;
+    --avis-tx:#7a5f2c;
+    --ombra:0 8px 30px rgba(70,60,40,.10);
+    --ombra-s:0 3px 12px rgba(70,60,40,.07);
+    --r:18px;
+    --r-s:13px;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --dur:.28s;
+  }
+  html[data-theme="dark"]{
+    --crema:#23272a;
+    --crema-2:#202427;
+    --card:#2b3033;
+    --tinta:#e9e6dd;
+    --tinta-2:#cfccc2;
+    --suau:#a5a89f;
+    --salvia:#8fae98;
+    --salvia-d:#a9c4b1;
+    --salvia-suau:#2f3a34;
+    --azul:#8aa2b7;
+    --azul-d:#a9c0d3;
+    --azul-suau:#2c353d;
+    --terra:#cf9077;
+    --terra-d:#e0a98f;
+    --terra-suau:#3a2f29;
+    --linia:#3a4044;
+    --linia-2:#454c50;
+    --avis-bg:#332d20;
+    --avis-bd:#4a4028;
+    --avis-tx:#d8c79a;
+    --ombra:0 8px 30px rgba(0,0,0,.35);
+    --ombra-s:0 3px 12px rgba(0,0,0,.28);
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    background:var(--crema);
+    color:var(--tinta);
+    line-height:1.62;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    transition:background var(--dur), color var(--dur);
+  }
+  html[data-reduce="1"] *{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition-duration:.01ms !important} }
+
+  h1,h2,h3,.serif{font-family:var(--serif);letter-spacing:-.01em;font-weight:600}
+  a{color:var(--azul-d)}
+  :focus-visible{outline:3px solid var(--azul);outline-offset:2px;border-radius:6px}
+  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .skip-link{position:absolute;left:8px;top:-60px;background:var(--card);border:1px solid var(--linia);padding:10px 16px;border-radius:10px;z-index:200;transition:top .2s}
+  .skip-link:focus{top:8px}
+
+  /* ===================== LAYOUT ===================== */
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 150px}
+  .topbar{
+    position:sticky;top:0;z-index:60;
+    background:color-mix(in srgb,var(--crema) 88%, transparent);
+    backdrop-filter:saturate(150%) blur(8px);
+    -webkit-backdrop-filter:saturate(150%) blur(8px);
+    border-bottom:1px solid var(--linia);
+  }
+  .topbar-inner{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand .mark{flex:0 0 34px;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--salvia),var(--azul));display:grid;place-items:center;color:#fff}
+  .brand .mark svg{width:19px;height:19px}
+  .brand .nm{font-family:var(--serif);font-weight:600;font-size:15px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand .nm small{display:block;font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suau)}
+  .topbar .spacer{flex:1}
+  .icon-btn{flex:0 0 auto;width:42px;height:42px;border-radius:11px;border:1px solid var(--linia);background:var(--card);color:var(--tinta-2);display:grid;place-items:center;cursor:pointer;transition:transform .08s,background .2s}
+  .icon-btn:active{transform:scale(.94)}
+  .icon-btn svg{width:20px;height:20px}
+
+  header.hero{text-align:center;padding:30px 6px 6px}
+  .kicker{display:inline-block;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--salvia-d);background:var(--salvia-suau);border:1px solid var(--linia);padding:6px 14px;border-radius:999px;font-weight:600;margin-bottom:16px}
+  header.hero h1{font-size:clamp(26px,6.5vw,38px);line-height:1.18;margin:0 auto;max-width:15em}
+  header.hero .sub{color:var(--suau);font-size:16px;margin:14px auto 0;max-width:34em}
+
+  .disclaimer{display:flex;gap:12px;align-items:flex-start;background:var(--azul-suau);border:1px solid var(--linia);border-radius:var(--r-s);padding:14px 16px;margin:22px 0 6px;font-size:14.5px;color:var(--azul-d)}
+  .disclaimer svg{width:22px;height:22px;flex:0 0 22px;margin-top:1px;color:var(--azul-d)}
+
+  .micro{margin:16px 0 4px;background:var(--card);border:1px solid var(--linia);border-radius:var(--r-s);padding:14px 18px;display:flex;gap:12px;align-items:center;box-shadow:var(--ombra-s)}
+  .micro .q{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:var(--terra-suau);color:var(--terra-d);display:grid;place-items:center}
+  .micro .q svg{width:18px;height:18px}
+  .micro p{margin:0;font-family:var(--serif);font-size:16.5px;font-style:italic;color:var(--tinta-2);line-height:1.45}
+
+  /* ===================== VISTAS ===================== */
+  .view{display:none;animation:fade var(--dur) ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .view-head{padding:26px 4px 4px}
+  .view-head .step-of{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--terra-d);font-weight:600}
+  .view-head h2{font-size:clamp(23px,5.5vw,30px);margin:8px 0 6px;line-height:1.2}
+  .view-head p.lead{color:var(--suau);font-size:16px;margin:6px 0 0;max-width:36em}
+
+  /* ===================== TARJETAS ===================== */
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
+  .card h3{font-size:19px;margin:0 0 8px;display:flex;align-items:center;gap:11px}
+  .card h3 .n{flex:0 0 34px;width:34px;height:34px;border-radius:10px;background:var(--salvia-suau);color:var(--salvia-d);display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:15px}
+  .card p{margin:8px 0;color:var(--tinta-2)}
+  .card p.muted{color:var(--suau);font-size:14.5px}
+  .card ul{margin:8px 0;padding-left:20px;color:var(--tinta-2)}
+  .card ul li{margin:4px 0}
+
+  .quote{background:linear-gradient(135deg,var(--salvia-suau),color-mix(in srgb,var(--salvia-suau) 60%, var(--card)));border-left:4px solid var(--salvia);border-radius:0 var(--r-s) var(--r-s) 0;padding:15px 18px;font-family:var(--serif);font-size:17px;font-style:italic;color:var(--salvia-d);margin:14px 0;line-height:1.5}
+  .quote.terra{background:linear-gradient(135deg,var(--terra-suau),color-mix(in srgb,var(--terra-suau) 60%, var(--card)));border-left-color:var(--terra);color:var(--terra-d)}
+  .quote.azul{background:linear-gradient(135deg,var(--azul-suau),color-mix(in srgb,var(--azul-suau) 60%, var(--card)));border-left-color:var(--azul);color:var(--azul-d)}
+
+  .avis{display:flex;gap:12px;background:var(--avis-bg);border:1px solid var(--avis-bd);border-radius:var(--r-s);padding:13px 16px;margin:14px 0;font-size:14.5px;color:var(--avis-tx);align-items:flex-start}
+  .avis svg{width:20px;height:20px;flex:0 0 20px;margin-top:2px}
+  .avis strong{color:var(--avis-tx)}
+
+  /* Psicoeducación: carrusel de tarjetas */
+  .cards-deck{position:relative}
+  .deck-card{display:none}
+  .deck-card.show{display:block;animation:fade var(--dur) ease}
+  .deck-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+  .dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;flex:1}
+  .dots button{width:10px;height:10px;border-radius:50%;border:0;background:var(--linia-2);cursor:pointer;padding:0}
+  .dots button.on{background:var(--salvia);transform:scale(1.25)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .two-col .col{border-radius:var(--r-s);padding:14px 15px}
+  .two-col .col.short{background:var(--salvia-suau)}
+  .two-col .col.long{background:var(--terra-suau)}
+  .two-col .col h4{margin:0 0 8px;font-family:var(--sans);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+  .two-col .col.short h4{color:var(--salvia-d)}
+  .two-col .col.long h4{color:var(--terra-d)}
+  .two-col .col ul{margin:0;padding-left:18px;font-size:14px}
+  @media(max-width:460px){.two-col{grid-template-columns:1fr}}
+
+  /* ===================== BOTONES ===================== */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:13px 20px;border:0;border-radius:var(--r-s);background:var(--salvia);color:#fff;font-size:15.5px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:transform .08s,background .2s,opacity .2s;text-decoration:none}
+  html[data-theme="dark"] .btn{color:#1b201d}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn svg{width:19px;height:19px}
+  .btn.block{width:100%}
+  .btn.azul{background:var(--azul)} html[data-theme="dark"] .btn.azul{color:#12181d}
+  .btn.terra{background:var(--terra)} html[data-theme="dark"] .btn.terra{color:#241812}
+  .btn.ghost{background:transparent;border:1.5px solid var(--linia-2);color:var(--tinta-2)}
+  .btn.ghost svg{color:var(--tinta-2)}
+  .btn.danger{background:transparent;border:1.5px solid var(--terra);color:var(--terra-d)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .btn-row .btn{flex:1;min-width:140px}
+
+  /* Chips seleccionables */
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  .chip{min-height:44px;padding:10px 15px;border-radius:999px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);font-size:14.5px;font-family:var(--sans);cursor:pointer;transition:transform .08s,background .15s,border-color .15s}
+  .chip:active{transform:scale(.96)}
+  .chip[aria-pressed="true"]{background:var(--salvia-suau);border-color:var(--salvia);color:var(--salvia-d);font-weight:600}
+  .chip.azul[aria-pressed="true"]{background:var(--azul-suau);border-color:var(--azul);color:var(--azul-d)}
+  .chip.terra[aria-pressed="true"]{background:var(--terra-suau);border-color:var(--terra);color:var(--terra-d)}
+
+  /* Formularios */
+  label.fld{display:block;margin:14px 0 6px;font-weight:600;font-size:14.5px}
+  label.fld .hint{display:block;font-weight:400;color:var(--suau);font-size:13.5px;margin-top:2px}
+  input[type=text],input[type=date],input[type=time],input[type=tel],input[type=number],select,textarea{
+    width:100%;font-family:var(--sans);font-size:16px;color:var(--tinta);background:var(--card);
+    border:1.5px solid var(--linia-2);border-radius:var(--r-s);padding:12px 14px;transition:border-color .15s}
+  textarea{resize:vertical;min-height:74px;line-height:1.5}
+  input:focus,select,textarea:focus{border-color:var(--salvia)}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236e746c' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;background-size:18px;padding-right:42px}
+  .field-note{font-size:13px;color:var(--suau);margin-top:5px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:460px){.grid2{grid-template-columns:1fr}}
+
+  /* Escala 0-10 */
+  .scale{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .scale button{flex:1;min-width:34px;min-height:44px;border-radius:11px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);font-family:var(--sans);font-weight:600;font-size:15px;cursor:pointer;transition:transform .08s,background .15s}
+  .scale button:active{transform:scale(.92)}
+  .scale button.sel{background:var(--terra);border-color:var(--terra);color:#fff}
+  html[data-theme="dark"] .scale button.sel{color:#241812}
+  .scale-legend{display:flex;justify-content:space-between;font-size:12.5px;color:var(--suau);margin-top:6px}
+
+  /* Progreso no competitivo */
+  .prog{height:8px;border-radius:99px;background:var(--linia);overflow:hidden;margin:6px 0}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--salvia),var(--azul));border-radius:99px;transition:width .4s ease}
+
+  /* Stepper (orientarme) */
+  .stepper .stp{display:none}
+  .stepper .stp.show{display:block;animation:fade var(--dur) ease}
+  .stp .stp-n{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--azul-d);font-weight:600}
+  .stp h3{margin:6px 0 6px}
+  .fill-line{background:var(--crema-2);border:1px dashed var(--linia-2);border-radius:12px;padding:12px 15px;margin:10px 0;font-family:var(--serif);font-size:16.5px;font-style:italic;color:var(--tinta-2)}
+  .fill-line input{display:inline-block;width:auto;min-width:120px;padding:4px 8px;font-size:15px;border-radius:8px;border:1.5px solid var(--linia-2);font-style:normal;font-family:var(--sans)}
+
+  /* Timer AIS */
+  .aisring{display:flex;flex-direction:column;align-items:center;margin:18px 0 4px}
+  .aisring .disc{width:200px;height:200px;border-radius:50%;display:grid;place-items:center;position:relative}
+  .aisring svg.ringsvg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+  .aisring .rinner{position:relative;text-align:center}
+  .aisring .rnum{font-family:var(--serif);font-size:44px;font-weight:600;color:var(--salvia-d);line-height:1}
+  .aisring .rlbl{font-size:13.5px;color:var(--suau);margin-top:6px;max-width:11em}
+  .seg-pick{display:flex;gap:8px;justify-content:center;margin:14px 0}
+  .seg-pick button{min-width:56px;min-height:44px;border-radius:11px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .seg-pick button.sel{background:var(--salvia-suau);border-color:var(--salvia);color:var(--salvia-d)}
+  .level-tabs{display:flex;gap:8px;margin:6px 0 4px;flex-wrap:wrap}
+  .level-tabs button{flex:1;min-width:120px;min-height:48px;border-radius:var(--r-s);border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);cursor:pointer;font-family:var(--sans);font-weight:600;padding:8px 12px;line-height:1.25;font-size:14px}
+  .level-tabs button.sel{background:var(--azul-suau);border-color:var(--azul);color:var(--azul-d)}
+  .level-tabs button small{display:block;font-weight:400;font-size:12px;color:var(--suau);margin-top:2px}
+  .level-body{display:none}
+  .level-body.show{display:block;animation:fade var(--dur) ease}
+
+  /* Diferenciar: 3 columnas */
+  .disc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  @media(max-width:640px){.disc-grid{grid-template-columns:1fr}}
+  .disc-col{border-radius:var(--r-s);padding:14px;border:1.5px solid var(--linia)}
+  .disc-col h4{margin:0 0 4px;font-family:var(--serif);font-size:17px}
+  .disc-col .desc{font-size:13px;color:var(--suau);margin:0 0 10px}
+  .disc-col.rec{background:var(--azul-suau)} .disc-col.rec h4{color:var(--azul-d)}
+  .disc-col.ale{background:var(--terra-suau)} .disc-col.ale h4{color:var(--terra-d)}
+  .disc-col.pel{background:var(--salvia-suau)} .disc-col.pel h4{color:var(--salvia-d)}
+  .disc-col .chip{display:block;width:100%;text-align:left;margin-bottom:7px;border-radius:11px}
+  .disc-out{margin-top:16px;text-align:center;border-radius:var(--r);padding:20px;background:var(--crema-2);border:1px solid var(--linia)}
+  .disc-out .big{font-family:var(--serif);font-size:22px;margin:6px 0}
+
+  /* Escalera Recuperar */
+  .ladder{margin-top:8px}
+  .rung{border:1.5px solid var(--linia);border-radius:var(--r-s);padding:14px 16px;margin:12px 0;background:var(--card);position:relative}
+  .rung .rung-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .rung .rn{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--salvia);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+  html[data-theme="dark"] .rung .rn{color:#1b201d}
+  .rung .rung-t{font-weight:600;flex:1}
+  .rung .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:12.5px}
+  .rung .meta span{background:var(--crema-2);border:1px solid var(--linia);border-radius:99px;padding:4px 10px;color:var(--suau)}
+  .rung-actions{display:flex;gap:8px;margin-top:10px}
+  .mini-btn{border:1px solid var(--linia-2);background:var(--card);color:var(--tinta-2);border-radius:10px;min-height:40px;padding:8px 12px;font-size:13.5px;cursor:pointer;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px}
+  .mini-btn svg{width:15px;height:15px}
+  .mini-btn.del{color:var(--terra-d);border-color:var(--terra-suau)}
+
+  /* Registro / histórico */
+  .log-item{border:1px solid var(--linia);border-radius:var(--r-s);padding:14px 16px;margin:10px 0;background:var(--card)}
+  .log-item .li-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .log-item .li-date{font-size:13px;color:var(--suau)}
+  .log-item .li-sit{font-weight:600}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .badge{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--crema-2);border:1px solid var(--linia);color:var(--suau)}
+  .badge.a{background:var(--terra-suau);color:var(--terra-d);border-color:var(--terra-suau)}
+  .badge.b{background:var(--salvia-suau);color:var(--salvia-d);border-color:var(--salvia-suau)}
+  .badge.c{background:var(--azul-suau);color:var(--azul-d);border-color:var(--azul-suau)}
+  .empty{text-align:center;color:var(--suau);padding:26px 10px;font-style:italic;font-family:var(--serif)}
+
+  /* Resumen / gráficas */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:8px}
+  .stat{background:var(--card);border:1px solid var(--linia);border-radius:var(--r-s);padding:15px}
+  .stat .v{font-family:var(--serif);font-size:30px;line-height:1;color:var(--salvia-d)}
+  .stat .k{font-size:13px;color:var(--suau);margin-top:6px}
+  .chartbox{background:var(--card);border:1px solid var(--linia);border-radius:var(--r-s);padding:16px;margin-top:12px;overflow-x:auto}
+  .chartbox h4{margin:0 0 4px;font-family:var(--sans);font-size:14px;color:var(--tinta-2)}
+  .chartbox .legend{font-size:12.5px;color:var(--suau);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .chartbox .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+
+  /* Mapa */
+  .map-zone{border-left:4px solid var(--salvia);padding:4px 0 4px 16px;margin:18px 0}
+  .map-zone h3{font-size:18px;margin:0 0 6px}
+  .map-zone.z2{border-color:var(--azul)} .map-zone.z3{border-color:var(--terra)} .map-zone.z4{border-color:var(--terra-d)} .map-zone.z5{border-color:var(--salvia-d)}
+
+  /* ===================== BOTTOM NAV ===================== */
+  .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--card);border-top:1px solid var(--linia);box-shadow:0 -6px 20px rgba(70,60,40,.08)}
+  .bn-scroll{max-width:760px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .bn-scroll::-webkit-scrollbar{display:none}
+  .navbtn{flex:1 0 auto;min-width:64px;min-height:56px;border:0;background:transparent;color:var(--suau);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:var(--sans);font-size:10.5px;font-weight:600;padding:6px 4px;border-radius:12px;transition:color .15s,background .15s}
+  .navbtn svg{width:22px;height:22px}
+  .navbtn[aria-current="page"]{color:var(--salvia-d);background:var(--salvia-suau)}
+  .navbtn .num{position:absolute;opacity:0}
+
+  /* Botón NECESITO PARAR flotante */
+  .stopfab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:80;border:0;border-radius:999px;background:var(--terra);color:#fff;font-family:var(--sans);font-weight:700;font-size:14.5px;padding:12px 18px;min-height:48px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px rgba(160,95,70,.4);transition:transform .1s}
+  html[data-theme="dark"] .stopfab{color:#241812}
+  .stopfab:active{transform:scale(.96)}
+  .stopfab svg{width:19px;height:19px}
+
+  /* ===================== OVERLAY / MODAL ===================== */
+  .overlay{position:fixed;inset:0;z-index:100;background:rgba(30,28,22,.55);display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+  .overlay.open{display:flex;animation:fade .2s ease}
+  html[data-theme="dark"] .overlay{background:rgba(0,0,0,.65)}
+  .modal{background:var(--card);border-radius:var(--r);max-width:640px;width:100%;margin:auto;box-shadow:var(--ombra);border:1px solid var(--linia)}
+  .modal-h{display:flex;align-items:center;gap:12px;padding:20px 20px 6px}
+  .modal-h h2,.modal-h h3{margin:0;flex:1;font-size:20px}
+  .modal-b{padding:6px 20px 20px}
+  .modal .close{margin-left:auto}
+
+  /* Pantalla NECESITO PARAR (calma, presente) */
+  .stopscreen{position:fixed;inset:0;z-index:120;background:linear-gradient(180deg,var(--salvia-suau),var(--crema));display:none;flex-direction:column;overflow-y:auto}
+  .stopscreen.open{display:flex;animation:fade .3s ease}
+  html[data-theme="dark"] .stopscreen{background:linear-gradient(180deg,#2a332d,var(--crema))}
+  .stopscreen .ss-in{max-width:560px;margin:auto;padding:40px 22px calc(40px + env(safe-area-inset-bottom));width:100%}
+  .stopscreen h2{font-size:clamp(24px,6vw,32px);text-align:center;margin:0 0 8px}
+  .stopscreen .ss-lead{text-align:center;color:var(--tinta-2);font-size:16px;margin:0 auto 22px;max-width:26em}
+  .ss-step{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 20px;margin:12px 0;box-shadow:var(--ombra-s)}
+  .ss-step h4{margin:0 0 6px;font-family:var(--serif);font-size:18px;display:flex;align-items:center;gap:10px}
+  .ss-step h4 .n{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--salvia);color:#fff;display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:14px}
+  html[data-theme="dark"] .ss-step h4 .n{color:#1b201d}
+  .ss-step p{margin:4px 0;color:var(--tinta-2)}
+  .obj-check{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .obj-check button{min-width:44px;min-height:44px;border-radius:12px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);font-weight:700;cursor:pointer}
+  .obj-check button.on{background:var(--salvia-suau);border-color:var(--salvia);color:var(--salvia-d)}
+  .ss-note{text-align:center;font-family:var(--serif);font-style:italic;color:var(--salvia-d);margin:20px auto 0;font-size:17px;max-width:24em}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(130px + env(safe-area-inset-bottom));z-index:140;background:var(--tinta);color:var(--crema);padding:12px 20px;border-radius:99px;font-size:14px;box-shadow:var(--ombra);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Footer */
+  footer.pageft{text-align:center;color:var(--suau);font-size:13px;padding:30px 10px 10px;border-top:1px solid var(--linia);margin-top:30px}
+  footer.pageft .ft-brand{font-family:var(--serif);font-size:15px;color:var(--tinta-2);margin-bottom:6px}
+  footer.pageft .ft-legal{max-width:34em;margin:10px auto 0;font-size:12.5px}
+
+  /* Toggle switch */
+  .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--linia)}
+  .switch:last-child{border-bottom:0}
+  .switch .lbl{font-weight:500}
+  .switch .lbl small{display:block;color:var(--suau);font-weight:400;font-size:13px}
+  .sw{position:relative;flex:0 0 52px;width:52px;height:30px;border-radius:99px;background:var(--linia-2);border:0;cursor:pointer;transition:background .2s}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+  .sw[aria-checked="true"]{background:var(--salvia)}
+  .sw[aria-checked="true"]::after{transform:translateX(22px)}
+
+  @media print{
+    .topbar,.bottomnav,.stopfab,.icon-btn,.btn,.btn-row,.deck-nav,.mini-btn,.rung-actions{display:none !important}
+    .view{display:block !important;page-break-after:always}
+    body{background:#fff;color:#000;padding:0}
+    .card,.log-item,.rung{box-shadow:none;border-color:#ccc}
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Saltar al contenido</a>
+
+<!-- ============ TOPBAR ============ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-2.5-7-5.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 12c0 3.5-3 6.5-7 9z"/></svg>
+      </span>
+      <span class="nm">Cuando el cuerpo sigue en alerta<small>Centre APRENS</small></span>
+    </div>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="btnPro" title="Configurar plan terapéutico" aria-label="Configurar plan terapéutico (modo profesional)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <button class="icon-btn" id="btnSettings" title="Ajustes" aria-label="Ajustes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+<main id="main">
+
+  <!-- ============ VISTA: INICIO / ENTENDER ============ -->
+  <section class="view active" id="view-entender" aria-labelledby="h-entender" tabindex="-1">
+    <header class="hero">
+      <span class="kicker">Acompañamiento terapéutico</span>
+      <h1 id="h-entender">Cuando el cuerpo sigue en alerta</h1>
+      <p class="sub">Comprender, acompañar y recuperar seguridad después de una experiencia traumática.</p>
+      <div class="disclaimer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>Esta herramienta acompaña el trabajo realizado con tu profesional. No sustituye una evaluación psicológica ni un tratamiento focalizado en trauma.</span>
+      </div>
+    </header>
+
+    <div class="micro" aria-live="polite">
+      <span class="q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8M12 8v8"/><circle cx="12" cy="12" r="9"/></svg></span>
+      <p id="microMsg">Primero presencia. Después elección.</p>
+    </div>
+
+    <div class="view-head">
+      <span class="step-of">Módulo 1 · Entender</span>
+      <h2>Entender lo que me pasa</h2>
+      <p class="lead">Cinco ideas breves para comprender la respuesta protectora de tu organismo. Avanza a tu ritmo.</p>
+    </div>
+
+    <div class="card">
+      <div class="cards-deck" id="deck">
+        <!-- Tarjeta 1 -->
+        <div class="deck-card show" role="group" aria-label="Tarjeta 1 de 5">
+          <h3><span class="n">1</span> El cuerpo recuerda</h3>
+          <p>Después de una experiencia de peligro, el sistema nervioso puede seguir actuando como si tuviera que protegerte. Por eso pueden aparecer sobresaltos, tensión, imágenes, recuerdos, pesadillas, irritabilidad o necesidad de evitar.</p>
+          <p class="quote">Tu cuerpo no está intentando perjudicarte. Está tratando de protegerte con un aprendizaje que ahora necesita actualizarse.</p>
+        </div>
+        <!-- Tarjeta 2 -->
+        <div class="deck-card" role="group" aria-label="Tarjeta 2 de 5">
+          <h3><span class="n">2</span> No todos los recuerdos son voluntarios</h3>
+          <ul>
+            <li>Un recuerdo puede aparecer sin que la persona quiera.</li>
+            <li>Una imagen mental no significa que el acontecimiento esté ocurriendo ahora.</li>
+            <li>El cuerpo puede reaccionar al recuerdo como si fuera una señal actual.</li>
+          </ul>
+        </div>
+        <!-- Tarjeta 3 -->
+        <div class="deck-card" role="group" aria-label="Tarjeta 3 de 5">
+          <h3><span class="n">3</span> Hipervigilancia</h3>
+          <p class="muted">Tras el suceso, la atención puede quedar dirigida hacia:</p>
+          <div class="chips" aria-hidden="true">
+            <span class="chip" style="cursor:default">Coches</span><span class="chip" style="cursor:default">Retrovisores</span>
+            <span class="chip" style="cursor:default">Distancias</span><span class="chip" style="cursor:default">Ruidos</span>
+            <span class="chip" style="cursor:default">Puertas</span><span class="chip" style="cursor:default">Movimientos bruscos</span>
+            <span class="chip" style="cursor:default">Gestos de otras personas</span><span class="chip" style="cursor:default">Tonos de voz</span>
+            <span class="chip" style="cursor:default">Posibles vías de escape</span>
+          </div>
+          <p class="quote azul">No estás eligiendo conscientemente vigilar todo. Tu sistema de protección está trabajando en exceso.</p>
+        </div>
+        <!-- Tarjeta 4 -->
+        <div class="deck-card" role="group" aria-label="Tarjeta 4 de 5">
+          <h3><span class="n">4</span> Evitar funciona, pero solo a corto plazo</h3>
+          <div class="two-col">
+            <div class="col short">
+              <h4>A corto plazo</h4>
+              <ul><li>Baja la ansiedad.</li><li>Aparece alivio.</li><li>Recupero sensación de control.</li></ul>
+            </div>
+            <div class="col long">
+              <h4>A largo plazo</h4>
+              <ul><li>Aumenta la sensibilidad.</li><li>Se reduce mi autonomía.</li><li>El miedo ocupa más situaciones.</li><li>Mi cuerpo no puede aprender que ahora estoy a salvo.</li></ul>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta 5 -->
+        <div class="deck-card" role="group" aria-label="Tarjeta 5 de 5">
+          <h3><span class="n">5</span> Recuperarse no es olvidar</h3>
+          <p class="quote">Recuperarse no significa borrar lo vivido. Significa que el recuerdo pueda existir sin dirigir toda tu vida.</p>
+        </div>
+      </div>
+      <div class="deck-nav">
+        <button class="mini-btn" id="deckPrev" aria-label="Tarjeta anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Anterior</button>
+        <div class="dots" id="deckDots" role="tablist" aria-label="Tarjetas"></div>
+        <button class="mini-btn" id="deckNext" aria-label="Tarjeta siguiente">Siguiente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+    </div>
+
+    <!-- El ciclo -->
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1 1 2.3 5.6"/><path d="M4 20v-4h4"/></svg></span> Cómo se mantiene el miedo</h3>
+      <p class="muted">El ciclo que aprende el cuerpo cuando la evitación alivia a corto plazo:</p>
+      <div id="cycle1"></div>
+      <p class="quote terra" style="margin-top:14px">Estas conductas alivian temporalmente. El alivio inmediato refuerza el mensaje corporal: «He sobrevivido porque he evitado». Así el miedo se mantiene o se generaliza.</p>
+      <h3 style="margin-top:22px"><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span> El ciclo que entrenamos (TEC)</h3>
+      <div id="cycle2"></div>
+      <p class="quote" style="margin-top:14px">La conciencia no puede ordenar al cuerpo que deje de sentir miedo. Sí puede orientarse hacia él, acompañarlo y enseñarle, mediante experiencias repetidas, que el presente puede ser diferente del pasado.</p>
+    </div>
+
+    <!-- Síntomas -->
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span> ¿Qué síntomas reconoces actualmente?</h3>
+      <p class="muted">Selecciona los que notes. Es solo para ayudarte a comprenderte; no es un diagnóstico.</p>
+      <div class="chips" id="symptomChips"></div>
+      <div class="avis" id="symptomMsg" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-2.5-7-5.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 12c0 3.5-3 6.5-7 9z"/></svg>
+        <span>Estas reacciones pueden formar parte de una respuesta de protección después de una experiencia traumática. No son una prueba de debilidad.</span>
+      </div>
+      <div class="avis">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>Durante las primeras semanas tras un acontecimiento traumático pueden aparecer síntomas intensos de estrés. Cuando persisten, interfieren de forma significativa o cumplen determinados criterios, un profesional puede valorar diagnósticos como <strong>trastorno de estrés agudo</strong> o <strong>trastorno de estrés postraumático</strong>. El número de días no basta por sí solo para emitir un diagnóstico.</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn azul" data-goto="orientarme">Ir a: Orientarme al presente
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: ORIENTARME ============ -->
+  <section class="view" id="view-orientarme" aria-labelledby="h-orientarme" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 2 · Orientarme</span>
+      <h2 id="h-orientarme">Ahora estoy aquí</h2>
+      <p class="lead">Úsalo cuando aparezca un flashback, sensación de irrealidad, sobresalto o activación intensa. Dura menos de un minuto y medio.</p>
+    </div>
+
+    <div class="avis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>No buscamos peligro ni relajación. Solo comprobamos, con calma, dónde estás <strong>ahora</strong>.</span>
+    </div>
+
+    <div class="card stepper" id="orient">
+      <div class="prog"><i id="orientProg" style="width:20%"></i></div>
+      <!-- 1 -->
+      <div class="stp show">
+        <span class="stp-n">Paso 1 · Mira</span>
+        <h3>Mira lentamente a tu alrededor</h3>
+        <p>No busques peligro. Solo reconoce dónde estás.</p>
+        <div class="chips" data-single="place">
+          <button class="chip azul" type="button">Estoy en casa</button>
+          <button class="chip azul" type="button">Estoy en el trabajo</button>
+          <button class="chip azul" type="button">Estoy en el coche parado</button>
+          <button class="chip azul" type="button">Estoy en la calle</button>
+          <button class="chip azul" type="button">Estoy en consulta</button>
+          <button class="chip azul" type="button">Otro lugar</button>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="stp">
+        <span class="stp-n">Paso 2 · Fecha y lugar</span>
+        <h3>Sitúate en el presente</h3>
+        <p class="muted" id="orientNow"></p>
+        <div class="fill-line">Hoy es <input type="text" id="oDate" aria-label="fecha"> . Estoy en <input type="text" id="oPlace" aria-label="lugar"> . Lo ocurrido pertenece a otro momento.</div>
+      </div>
+      <!-- 3 -->
+      <div class="stp">
+        <span class="stp-n">Paso 3 · Contacto externo</span>
+        <h3>Reconoce el entorno</h3>
+        <label class="fld">Tres cosas que veo<input type="text" id="oSee" placeholder="p. ej. una ventana, una taza, mi mano"></label>
+        <label class="fld">Dos sonidos que escucho<input type="text" id="oHear" placeholder="p. ej. tráfico lejano, un reloj"></label>
+        <label class="fld">Un punto de contacto de mi cuerpo con una superficie<input type="text" id="oTouch" placeholder="p. ej. la espalda en la silla"></label>
+      </div>
+      <!-- 4 -->
+      <div class="stp">
+        <span class="stp-n">Paso 4 · Apoyo corporal</span>
+        <h3>Apoya los pies</h3>
+        <p>No necesitas relajarte. Solo nota que el suelo está aquí.</p>
+        <div class="aisring" style="margin:10px 0">
+          <div class="disc" style="width:150px;height:150px;background:radial-gradient(circle at 50% 45%,var(--salvia-suau),color-mix(in srgb,var(--salvia-suau) 40%, var(--card)))">
+            <div class="rinner"><div class="rlbl" style="font-size:15px;color:var(--salvia-d)">Pies apoyados<br>en el suelo</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="stp">
+        <span class="stp-n">Paso 5 · Frase de orientación</span>
+        <h3>Elige una frase</h3>
+        <p class="muted">Comprueba qué señales reales existen ahora.</p>
+        <div class="chips" data-single="phrase" style="flex-direction:column">
+          <button class="chip" type="button">Esto es una reacción de mi cuerpo, no el accidente ocurriendo otra vez.</button>
+          <button class="chip" type="button">Mi cuerpo recuerda; yo estoy en el presente.</button>
+          <button class="chip" type="button">Puedo sentir activación y seguir aquí.</button>
+          <button class="chip" type="button">Ahora mismo no necesito escapar de este lugar.</button>
+          <button class="chip" type="button">Voy a comprobar el presente, no a discutir con el recuerdo.</button>
+        </div>
+        <p class="quote" style="margin-top:14px">Comprueba qué señales reales existen ahora.</p>
+      </div>
+
+      <div class="deck-nav">
+        <button class="mini-btn" id="orientPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Atrás</button>
+        <span class="dots" id="orientDots"></span>
+        <button class="mini-btn" id="orientNext">Siguiente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: ACOMPAÑAR (AIS) ============ -->
+  <section class="view" id="view-acompanar" aria-labelledby="h-acompanar" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 3 · Acompañar</span>
+      <h2 id="h-acompanar">No abandonar al cuerpo cuando aparece el miedo</h2>
+      <p class="lead">Atención Interna Sensorial (AIS): acercar la atención de forma dosificada, sin analizar y sin exigir que la sensación desaparezca.</p>
+    </div>
+
+    <div class="quote">No busques que la sensación baje. El entrenamiento consiste en permanecer presente sin obedecer inmediatamente al miedo.</div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></span> Elige un nivel</h3>
+      <div class="level-tabs" id="aisTabs">
+        <button class="sel" data-lv="1">Nivel 1<small>Punto neutro</small></button>
+        <button data-lv="2">Nivel 2<small>Borde de la activación</small></button>
+        <button data-lv="3">Nivel 3<small>Acompañamiento interno</small></button>
+      </div>
+
+      <div class="level-body show" data-body="1">
+        <p class="muted">Para alta activación, disociación o miedo intenso a las sensaciones. Lleva la atención a un punto neutro y tolerable, entre 5 y 10 segundos.</p>
+        <div class="chips" data-single="aisPoint">
+          <button class="chip" type="button">Plantas de los pies</button>
+          <button class="chip" type="button">Manos</button>
+          <button class="chip" type="button">Espalda apoyada</button>
+          <button class="chip" type="button">Contacto con la silla</button>
+          <button class="chip" type="button">Temperatura del aire</button>
+          <button class="chip" type="button">Movimiento suave del abdomen</button>
+        </div>
+      </div>
+      <div class="level-body" data-body="2">
+        <p class="muted">No entres en el centro de la sensación. Localiza solo su borde.</p>
+        <ul>
+          <li>¿Dónde empieza?</li>
+          <li>¿Es fija o cambia?</li>
+          <li>¿Ocupa una zona pequeña o amplia?</li>
+          <li>¿Puedes permanecer 5 segundos sin intentar modificarla?</li>
+        </ul>
+      </div>
+      <div class="level-body" data-body="3">
+        <p class="muted">Secuencia de acompañamiento interno:</p>
+        <ul>
+          <li>Detén la reacción automática.</li>
+          <li>Haz una respiración natural, no forzada.</li>
+          <li>Dirige la atención a una zona corporal tolerable.</li>
+          <li>Mantén la atención entre 5 y 20 segundos.</li>
+          <li>Di internamente: <em>«Estoy aquí contigo.»</em></li>
+          <li>Reorienta la atención a la acción presente.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Temporizador amable</h3>
+      <p class="muted">Elige cuánto tiempo permanecer presente. Sin cuenta atrás agresiva.</p>
+      <div class="seg-pick" id="aisSeg" role="group" aria-label="Duración">
+        <button data-sec="5" class="sel">5 s</button>
+        <button data-sec="10">10 s</button>
+        <button data-sec="15">15 s</button>
+        <button data-sec="20">20 s</button>
+      </div>
+      <div class="aisring">
+        <div class="disc">
+          <svg class="ringsvg" viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="88" fill="none" stroke="var(--linia)" stroke-width="10"/>
+            <circle id="aisArc" cx="100" cy="100" r="88" fill="none" stroke="var(--salvia)" stroke-width="10" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="552.9"/>
+          </svg>
+          <div class="rinner">
+            <div class="rnum" id="aisNum">5</div>
+            <div class="rlbl" id="aisLbl">Presencia, no lucha</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn block" id="aisStart">Comenzar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg></button>
+      </div>
+      <p class="quote" id="aisPhrase" style="margin-top:14px">No tengo que ganarle al miedo; tengo que evitar abandonarme.</p>
+      <div class="avis">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Cada segundo que consigues permanecer presente antes de evitar, comprobar o escapar amplía tu libertad de respuesta. Estás ampliando la <strong>latencia</strong>.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: DIFERENCIAR ============ -->
+  <section class="view" id="view-diferenciar" aria-labelledby="h-diferenciar" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 4 · Diferenciar</span>
+      <h2 id="h-diferenciar">¿Qué está ocurriendo ahora?</h2>
+      <p class="lead">Diferenciar recuerdo, alerta y peligro presente. Marca lo que reconozcas en cada columna.</p>
+    </div>
+
+    <div class="card">
+      <div class="disc-grid">
+        <div class="disc-col rec">
+          <h4>A · Recuerdo</h4>
+          <p class="desc">Puede activar el cuerpo, pero pertenece al pasado.</p>
+          <div data-disc="rec"></div>
+        </div>
+        <div class="disc-col ale">
+          <h4>B · Alerta</h4>
+          <p class="desc">La activación es real. No siempre significa peligro actual.</p>
+          <div data-disc="ale"></div>
+        </div>
+        <div class="disc-col pel">
+          <h4>C · Peligro presente</h4>
+          <p class="desc">Datos externos concretos, no solo una sensación o imagen.</p>
+          <div data-disc="pel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span> Preguntas de discriminación</h3>
+      <ul>
+        <li>¿Qué estoy observando fuera de mí?</li>
+        <li>¿Qué estoy recordando o anticipando?</li>
+        <li>¿Qué está sintiendo mi cuerpo?</li>
+        <li>¿Hay una acción protectora necesaria ahora?</li>
+        <li>¿O mi impulso principal es escapar para reducir la ansiedad?</li>
+      </ul>
+      <div class="btn-row">
+        <button class="btn azul block" id="discCalc">Ver qué predomina ahora
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="disc-out" id="discOut" style="display:none" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: RECUPERAR ============ -->
+  <section class="view" id="view-recuperar" aria-labelledby="h-recuperar" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 5 · Recuperar</span>
+      <h2 id="h-recuperar">Recuperar territorio, no demostrar valentía</h2>
+      <p class="lead">El objetivo no es obligarte a hacer algo para probar que puedes. Es recuperar, paso a paso, espacios de vida que el miedo ha ido ocupando.</p>
+    </div>
+
+    <div class="avis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>Los pasos relacionados directamente con el recuerdo traumático, el lugar del suceso o la persona agresora <strong>deben acordarse con el profesional</strong>. La herramienta no genera exposición de alta intensidad.</span>
+    </div>
+
+    <div class="card">
+      <h3><span class="n">1</span> ¿Qué territorio quieres recuperar?</h3>
+      <label class="fld">Área
+        <select id="recArea">
+          <option value="">Selecciona…</option>
+          <option>Conducción</option><option>Ir como pasajero</option><option>Transporte público</option>
+          <option>Volver al trabajo</option><option>Entrar en el lugar de la agresión</option>
+          <option>Espacios con personas</option><option>Hablar con desconocidos</option>
+          <option>Escuchar sonidos asociados</option><option>Acercarme al lugar del accidente</option>
+          <option>Salir solo</option><option>Otra situación</option>
+        </select>
+      </label>
+      <label class="fld">¿Qué valor estás intentando recuperar?
+        <select id="recValue">
+          <option value="">Selecciona…</option>
+          <option>Autonomía</option><option>Familia</option><option>Responsabilidad</option>
+          <option>Trabajo</option><option>Libertad</option><option>Cuidado</option>
+          <option>Participación social</option><option>Confianza</option><option>Proyecto vital</option><option>Otro</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="card">
+      <h3><span class="n">2</span> Mi escalera de recuperación</h3>
+      <p class="muted">Cinco peldaños graduales. Puedes editar cada uno. Usa las plantillas de ejemplo como punto de partida.</p>
+      <div class="btn-row">
+        <button class="mini-btn" id="tplCoche">Plantilla · accidente de tráfico</button>
+        <button class="mini-btn" id="tplTrabajo">Plantilla · agresión laboral</button>
+      </div>
+      <div class="ladder" id="ladder"></div>
+      <div class="btn-row">
+        <button class="btn ghost" id="addRung"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Añadir peldaño</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg></span> Registrar una práctica</h3>
+      <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:10px">ANTES</p>
+      <label class="fld">¿Qué estoy intentando recuperar?<input type="text" id="pBeforeRecover"></label>
+      <label class="fld">¿Qué predice mi mente?<input type="text" id="pBeforePredict"></label>
+      <label class="fld">¿Dónde noto la activación?<input type="text" id="pBeforeBody"></label>
+      <label class="fld">¿Qué conducta de seguridad aparece?<input type="text" id="pBeforeSafety"></label>
+      <label class="fld">¿Qué microacción he acordado?<input type="text" id="pBeforeMicro"></label>
+
+      <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DURANTE</p>
+      <button class="btn block" id="aisDuring">Pausa · siento · acompaño · continúo</button>
+      <p class="quote" style="margin-top:12px">No necesito sentirme seguro para actuar; necesito comprobar que puedo acompañarme mientras actúo.</p>
+
+      <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DESPUÉS</p>
+      <label class="fld">Activación máxima (0–10)</label>
+      <div class="scale" data-scale="pMax"></div>
+      <label class="fld">Activación final (0–10)</label>
+      <div class="scale" data-scale="pFinal"></div>
+      <label class="fld">¿Qué ocurrió realmente?<textarea id="pReal"></textarea></label>
+      <label class="fld">¿Qué predijo mi mente?<textarea id="pPredicted"></textarea></label>
+      <label class="fld">¿Qué hice a pesar del miedo?<textarea id="pDid"></textarea></label>
+      <label class="fld">¿Qué aprendió hoy mi cuerpo?<textarea id="pLearned"></textarea></label>
+      <label class="fld">Siguiente paso
+        <select id="pNext"><option value="">Selecciona…</option><option>Repetiría este paso</option><option>Mantendría este paso</option><option>Reduciría el siguiente paso</option></select>
+      </label>
+
+      <label class="fld" style="margin-top:16px">Criterios de éxito (marca los que se cumplieron)
+        <span class="hint">El éxito no se mide solo por la bajada de ansiedad.</span></label>
+      <div class="chips" id="successChips"></div>
+
+      <div class="btn-row">
+        <button class="btn block" id="savePractice">Guardar práctica
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: REGISTRAR ============ -->
+  <section class="view" id="view-registrar" aria-labelledby="h-registrar" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 6 · Registrar</span>
+      <h2 id="h-registrar">Registro diario</h2>
+      <p class="lead">Menos de dos minutos. Tus registros permanecen únicamente en este dispositivo.</p>
+    </div>
+
+    <div class="level-tabs" id="regTabs" style="margin-bottom:4px">
+      <button class="sel" data-tab="nuevo">Nuevo registro</button>
+      <button data-tab="hist">Histórico</button>
+      <button data-tab="resumen">Resumen semanal</button>
+    </div>
+
+    <!-- NUEVO -->
+    <div id="reg-nuevo">
+      <div class="card">
+        <div class="grid2">
+          <label class="fld">Fecha<input type="date" id="rDate"></label>
+          <label class="fld">Hora<input type="time" id="rTime"></label>
+        </div>
+        <label class="fld">Situación<input type="text" id="rSit" placeholder="¿Qué estaba pasando?"></label>
+        <label class="fld">Tipo de señal
+          <select id="rSignal"><option value="">Selecciona…</option><option>Externa</option><option>Corporal</option><option>Recuerdo</option><option>Pensamiento</option><option>Sueño o pesadilla</option></select></label>
+        <label class="fld">Activación (0–10)</label>
+        <div class="scale" data-scale="rAct"></div>
+        <label class="fld">Zona corporal principal<input type="text" id="rZone" placeholder="p. ej. pecho, garganta, estómago"></label>
+        <label class="fld">Impulso
+          <select id="rImpulse"><option value="">Selecciona…</option><option>Escapar</option><option>Evitar</option><option>Comprobar</option><option>Pedir seguridad</option><option>Enfrentarme impulsivamente</option><option>Aislarme</option><option>Sobrepensar</option><option>Otro</option></select></label>
+        <label class="fld">¿Hice AIS?
+          <select id="rAis"><option value="">Selecciona…</option><option>Sí</option><option>Lo intenté</option><option>No</option></select></label>
+        <label class="fld">Latencia
+          <span class="hint">¿Cuántos segundos pude esperar antes de reaccionar?</span>
+          <input type="number" id="rLatency" min="0" inputmode="numeric" placeholder="segundos"></label>
+        <label class="fld">Acción realizada<input type="text" id="rAction"></label>
+        <label class="fld">Tipo de acción
+          <select id="rActionType"><option value="">Selecciona…</option><option>Evitativa</option><option>Compulsiva</option><option>Protectora necesaria</option><option>Asertiva</option><option>Valiosa</option></select></label>
+        <label class="fld">Alivio inmediato (0–10)</label>
+        <div class="scale" data-scale="rRelief"></div>
+        <label class="fld">Recuperación funcional
+          <span class="hint">¿Qué parte de mi vida protegí o recuperé?</span>
+          <input type="text" id="rRecovery"></label>
+        <label class="fld">Frase honesta<input type="text" id="rHonest" placeholder="No sé por qué, pero noto…"></label>
+        <label class="fld">Aprendizaje del día<input type="text" id="rLearning" placeholder="Hoy mi cuerpo pudo comprobar que…"></label>
+        <div class="btn-row">
+          <button class="btn block" id="saveLog">Guardar registro
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="reg-hist" style="display:none">
+      <div class="btn-row">
+        <button class="mini-btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"/></svg> JSON</button>
+        <button class="mini-btn" id="expCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"/></svg> CSV</button>
+        <button class="mini-btn" id="expWa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h8M8 14h5M21 12a9 9 0 0 1-13 8l-5 1 1-5A9 9 0 1 1 21 12z"/></svg> Copiar resumen</button>
+        <button class="mini-btn" id="printBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg> Imprimir / PDF</button>
+      </div>
+      <div id="logList"></div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div id="reg-resumen" style="display:none">
+      <div class="card">
+        <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span> Los últimos 7 días</h3>
+        <p class="muted">No buscamos una línea perfecta. Buscamos ampliar tu capacidad de elegir.</p>
+        <div class="stat-grid" id="weekStats"></div>
+        <div id="weekCharts"></div>
+        <div id="weekNotes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: MI MAPA ============ -->
+  <section class="view" id="view-mapa" aria-labelledby="h-mapa" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 7 · Mi mapa</span>
+      <h2 id="h-mapa">Mi mapa de aprendizaje</h2>
+      <p class="lead">Un mapa personal de lo que tu organismo aprendió y de lo que estás entrenando para actualizar.</p>
+    </div>
+
+    <div class="card">
+      <div class="map-zone z1">
+        <h3>1 · Lo que ocurrió</h3>
+        <p class="muted">Solo una descripción breve, no gráfica.</p>
+        <input type="text" id="mapEvent" placeholder="p. ej. accidente de tráfico, agresión laboral, amenaza…">
+      </div>
+      <div class="map-zone z2">
+        <h3>2 · Señales aprendidas</h3>
+        <div class="chips" data-map="signals"></div>
+      </div>
+      <div class="map-zone z3">
+        <h3>3 · Respuestas de protección</h3>
+        <div class="chips" data-map="responses"></div>
+      </div>
+      <div class="map-zone z4">
+        <h3>4 · Costes actuales</h3>
+        <div class="chips" data-map="costs"></div>
+      </div>
+      <div class="map-zone z5">
+        <h3>5 · Territorio que quiero recuperar</h3>
+        <textarea id="mapTerritory" placeholder="Valores y acciones que quiero recuperar…"></textarea>
+      </div>
+      <p class="quote" style="margin-top:16px">Este mapa no explica quién eres. Explica lo que tu organismo aprendió y lo que ahora estás entrenando para actualizar.</p>
+      <div class="btn-row">
+        <button class="btn azul block" id="openFinal">Ver mi pantalla de recorrido
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA: PLAN DE CRISIS ============ -->
+  <section class="view" id="view-plan" aria-labelledby="h-plan" tabindex="-1">
+    <div class="view-head">
+      <span class="step-of">Módulo 8 · Plan</span>
+      <h2 id="h-plan">Plan para momentos difíciles</h2>
+      <p class="lead">Prepáralo con calma ahora, para tenerlo a mano cuando cueste pensar.</p>
+    </div>
+
+    <div class="avis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>Detén la práctica y busca ayuda inmediata si existe riesgo de hacerte daño, de dañar a otra persona, si te encuentras desorientado, no puedes conducir con seguridad o existe una amenaza real en el entorno.</span>
+    </div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Para qué situaciones</h3>
+      <div class="chips" data-map="crisisFor"></div>
+    </div>
+
+    <div class="card">
+      <h3>Mi plan</h3>
+      <label class="fld">Señales tempranas que reconozco<textarea id="crEarly"></textarea></label>
+      <label class="fld">Lo primero que haré<textarea id="crFirst"></textarea></label>
+      <label class="fld">Frase de orientación<input type="text" id="crPhrase"></label>
+      <label class="fld">Punto corporal neutro<input type="text" id="crBody"></label>
+      <label class="fld">Lugar al que puedo dirigirme<input type="text" id="crPlace"></label>
+      <label class="fld">Cuándo pedir ayuda profesional<textarea id="crWhenHelp"></textarea></label>
+      <label class="fld" style="margin-top:14px">Qué NO me ayuda</label>
+      <div class="chips" data-map="crisisNot"></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.5-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg></span> Contactos</h3>
+      <div class="grid2">
+        <label class="fld">Profesional<input type="text" id="cNameProf"></label>
+        <label class="fld">Teléfono<input type="tel" id="cPhoneProf"></label>
+        <label class="fld">Persona de confianza<input type="text" id="cNameTrust"></label>
+        <label class="fld">Teléfono<input type="tel" id="cPhoneTrust"></label>
+        <label class="fld">Servicio de urgencias local<input type="tel" id="cEmergency" placeholder="p. ej. 112"></label>
+        <label class="fld">Otra instrucción clínica<input type="text" id="cOther"></label>
+      </div>
+      <div class="btn-row" id="callRow"></div>
+    </div>
+  </section>
+
+</main>
+</div><!-- /wrap -->
+
+<!-- ============ FOOTER ============ -->
+<footer class="pageft">
+  <div class="ft-brand">Centre APRENS · Psicologia</div>
+  <div>Teoría del Efecto Consciente · TEC / AIS · Herramienta de acompañamiento terapéutico</div>
+  <div>© 2026 Cristòfol Villalonga Melis</div>
+  <div class="ft-legal">Uso profesional y psicoeducativo. No sustituye la evaluación, el diagnóstico ni el tratamiento psicológico o médico.</div>
+</footer>
+
+<!-- ============ BOTÓN NECESITO PARAR ============ -->
+<button class="stopfab" id="stopFab" aria-haspopup="dialog">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+  Necesito parar
+</button>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="bottomnav" aria-label="Navegación entre módulos">
+  <div class="bn-scroll" id="bnScroll"></div>
+</nav>
+
+<!-- ============ PANTALLA NECESITO PARAR ============ -->
+<div class="stopscreen" id="stopScreen" role="dialog" aria-modal="true" aria-labelledby="stopTitle" tabindex="-1">
+  <div class="ss-in">
+    <h2 id="stopTitle">Estás aquí. Vamos a orientarnos.</h2>
+    <p class="ss-lead">No es necesario terminar ningún ejercicio. Parar también es una forma de cuidarte.</p>
+    <div class="ss-step">
+      <h4><span class="n">1</span> Mira el entorno</h4>
+      <p>Levanta la mirada y recorre despacio el lugar donde estás. No busques peligro, solo reconoce el espacio.</p>
+    </div>
+    <div class="ss-step">
+      <h4><span class="n">2</span> Identifica cinco objetos</h4>
+      <p>Nómbralos, en voz alta o por dentro. Toca este contador según los encuentres.</p>
+      <div class="obj-check" id="objCheck"></div>
+    </div>
+    <div class="ss-step">
+      <h4><span class="n">3</span> Apoya los pies</h4>
+      <p>Nota el suelo bajo tus pies. No necesitas relajarte; solo comprobar que el suelo sostiene.</p>
+    </div>
+    <div class="ss-step">
+      <h4><span class="n">4</span> Un punto corporal neutro</h4>
+      <p>Lleva la atención a las manos, la espalda o el contacto con la silla. Un punto tranquilo, sin exigir nada.</p>
+    </div>
+    <div class="ss-step">
+      <h4><span class="n">5</span> Contacta si lo necesitas</h4>
+      <p>Puedes avisar a tu profesional o a una persona de confianza.</p>
+      <div class="btn-row" id="stopContacts"></div>
+    </div>
+    <p class="ss-note">Mi cuerpo recuerda; yo estoy en el presente.</p>
+    <div class="btn-row">
+      <button class="btn ghost block" id="stopClose">Volver cuando esté preparado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL AJUSTES ============ -->
+<div class="overlay" id="ovSettings" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="modal">
+    <div class="modal-h">
+      <h2 id="setTitle">Ajustes</h2>
+      <button class="icon-btn close" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div class="switch"><span class="lbl">Modo oscuro suave<small>Descansa la vista</small></span><button class="sw" id="swTheme" role="switch" aria-checked="false" aria-label="Modo oscuro"></button></div>
+      <div class="switch"><span class="lbl">Reducir movimiento<small>Menos animaciones y transiciones</small></span><button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reducir movimiento"></button></div>
+      <div class="avis" style="margin-top:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Tus registros permanecen únicamente en este dispositivo. No se envían datos a ningún servidor.</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" id="demoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg> Modo demostración</button>
+        <button class="btn danger" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg> Restablecer datos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PROFESIONAL ============ -->
+<div class="overlay" id="ovPro" role="dialog" aria-modal="true" aria-labelledby="proTitle">
+  <div class="modal">
+    <div class="modal-h">
+      <h2 id="proTitle">Configurar plan terapéutico</h2>
+      <button class="icon-btn close" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <p class="muted" style="color:var(--suau);font-size:14px">Espacio orientado al profesional. Separado de la vista del paciente. Los datos se guardan solo en este dispositivo.</p>
+      <div class="grid2">
+        <label class="fld">Iniciales del paciente<input type="text" id="pdInitials" maxlength="6"></label>
+        <label class="fld">Tipo de acontecimiento<input type="text" id="pdEvent"></label>
+        <label class="fld">Fecha aproximada<input type="text" id="pdDate" placeholder="mm/aaaa"></label>
+        <label class="fld">Tiempo desde el acontecimiento<input type="text" id="pdSince"></label>
+      </div>
+      <label class="fld">Presentación
+        <select id="pdPresentation"><option value="">Selecciona…</option><option>Estrés agudo</option><option>Síntomas postraumáticos</option><option>TEPT</option><option>Pendiente de evaluación</option></select></label>
+      <label class="fld">Síntomas predominantes<textarea id="pdSymptoms"></textarea></label>
+      <div class="grid2">
+        <label class="fld">Nivel de disociación
+          <select id="pdDissociation"><option value="">Selecciona…</option><option>Bajo</option><option>Moderado</option><option>Alto</option></select></label>
+        <label class="fld">Riesgo actual
+          <select id="pdRisk"><option value="">Selecciona…</option><option>Sin indicadores</option><option>Requiere seguimiento</option><option>Plan de seguridad activo</option></select></label>
+      </div>
+
+      <label class="fld" style="margin-top:8px">Módulos habilitados</label>
+      <div class="chips" id="pdModules"></div>
+      <div class="avis" id="dissWarn" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <span>Disociación moderada/alta: se recomienda priorizar orientación externa, ojos abiertos, apoyos (pies, manos, silla, objetos, sonidos), limitar AIS a 5–10 s y trabajo supervisado. Considera deshabilitar «Recuperar territorio».</span>
+      </div>
+
+      <label class="fld">Ejercicios deshabilitados<input type="text" id="pdDisabled" placeholder="p. ej. AIS nivel 3"></label>
+      <label class="fld">Escalera de recuperación acordada<textarea id="pdLadder"></textarea></label>
+      <label class="fld">Conductas de seguridad a reducir<textarea id="pdSafety"></textarea></label>
+      <label class="fld">Señales de parada<textarea id="pdStop"></textarea></label>
+      <label class="fld">Frases terapéuticas personalizadas<textarea id="pdPhrases" placeholder="Una por línea"></textarea></label>
+      <div class="grid2">
+        <label class="fld">Frecuencia recomendada<input type="text" id="pdFreq"></label>
+        <label class="fld">Próxima revisión<input type="text" id="pdReview"></label>
+      </div>
+      <div class="btn-row">
+        <button class="btn block" data-close>Guardar y cerrar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PANTALLA FINAL ============ -->
+<div class="overlay" id="ovFinal" role="dialog" aria-modal="true" aria-labelledby="finTitle">
+  <div class="modal">
+    <div class="modal-h">
+      <h2 id="finTitle" style="font-size:22px;line-height:1.25">Lo vivido forma parte de tu historia, pero no tiene que decidir todo tu recorrido</h2>
+      <button class="icon-btn close" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-b" id="finalBody"></div>
+  </div>
+</div>
+
+<!-- ============ MODAL CONFIRMAR ============ -->
+<div class="overlay" id="ovConfirm" role="dialog" aria-modal="true" aria-labelledby="confTitle">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-h"><h3 id="confTitle">Confirmar</h3></div>
+    <div class="modal-b">
+      <p id="confMsg" style="color:var(--tinta-2)"></p>
+      <div class="btn-row">
+        <button class="btn ghost" data-close>Cancelar</button>
+        <button class="btn terra" id="confOk">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   Cuando el cuerpo sigue en alerta · Centre APRENS
+   Herramienta standalone · TEC / AIS
+   Datos en localStorage. Sin envío a servidores.
+   ============================================================ */
+(function(){
+  var $  = function(s,c){return (c||document).querySelector(s);};
+  var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+  var KEY = 'aprens_alerta_v1';
+
+  /* ---------- Estado ---------- */
+  var DEFAULT = {
+    v:1, symptoms:[], place:'', phrase:'',
+    ais:{point:'', seconds:5},
+    disc:{rec:[],ale:[],pel:[]},
+    rec:{area:'',value:'',rungs:[]},
+    practices:[], logs:[],
+    map:{event:'',signals:[],responses:[],costs:[],territory:''},
+    crisis:{for:[],early:'',first:'',phrase:'',body:'',place:'',whenHelp:'',not:[],
+            contacts:{nameProf:'',phoneProf:'',nameTrust:'',phoneTrust:'',emergency:'',other:''}},
+    pro:{initials:'',event:'',date:'',since:'',presentation:'',symptoms:'',dissociation:'',risk:'',
+         modules:{recuperar:true},disabled:'',ladder:'',safety:'',stop:'',phrases:'',freq:'',review:''},
+    ui:{theme:'light',motion:false}
+  };
+  var S;
+  function load(){
+    try{ var raw=localStorage.getItem(KEY); S = raw? deepMerge(clone(DEFAULT), JSON.parse(raw)) : clone(DEFAULT); }
+    catch(e){ S = clone(DEFAULT); }
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('No se pudo guardar. Revisa el espacio del navegador.'); } }
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function deepMerge(base, over){
+    if(over==null) return base;
+    Object.keys(over).forEach(function(k){
+      if(over[k] && typeof over[k]==='object' && !Array.isArray(over[k]) && base[k] && typeof base[k]==='object' && !Array.isArray(base[k])){
+        deepMerge(base[k], over[k]);
+      } else { base[k]=over[k]; }
+    });
+    return base;
+  }
+
+  /* ---------- Toast ---------- */
+  var toastT;
+  function toast(msg){
+    var t=$('#toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('show');},2600);
+  }
+
+  /* ---------- Navegación ---------- */
+  var MODULES = [
+    {id:'entender',   label:'Entender',   icon:'<path d="M12 3a9 9 0 0 0-9 9c0 4 3 6 3 6h12s3-2 3-6a9 9 0 0 0-9-9z"/><path d="M9 21h6"/>'},
+    {id:'orientarme', label:'Orientarme', icon:'<circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="1.5"/>'},
+    {id:'acompanar',  label:'Acompañar',  icon:'<path d="M12 21c-4-2.5-7-5.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 12c0 3.5-3 6.5-7 9z"/>'},
+    {id:'diferenciar',label:'Diferenciar',icon:'<path d="M8 3v18M16 3v18M3 8h5M16 8h5M3 16h5M16 16h5"/>'},
+    {id:'recuperar',  label:'Recuperar',  icon:'<path d="M4 20h4v-5h4v-5h4V5h4"/>'},
+    {id:'registrar',  label:'Registrar',  icon:'<path d="M4 4h13l3 3v13H4zM8 4v5h8"/><path d="M8 14h8M8 18h5"/>'},
+    {id:'mapa',       label:'Mi mapa',    icon:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>'},
+    {id:'plan',       label:'Plan',       icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'}
+  ];
+  var current='entender';
+  function buildNav(){
+    var wrap=$('#bnScroll'); wrap.innerHTML='';
+    MODULES.forEach(function(m){
+      if(m.id==='recuperar' && !S.pro.modules.recuperar) return;
+      var b=document.createElement('button');
+      b.className='navbtn'; b.setAttribute('data-nav',m.id);
+      b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+m.icon+'</svg><span>'+m.label+'</span>';
+      b.addEventListener('click',function(){ nav(m.id); });
+      wrap.appendChild(b);
+    });
+    // ocultar vista recuperar si deshabilitada
+    $('#view-recuperar').style.display = S.pro.modules.recuperar? '' : 'none';
+    updateNavState();
+  }
+  function nav(id){
+    if(id==='recuperar' && !S.pro.modules.recuperar) id='entender';
+    current=id;
+    $$('.view').forEach(function(v){ v.classList.remove('active'); });
+    var view=$('#view-'+id);
+    if(view){ view.classList.add('active'); }
+    updateNavState();
+    window.scrollTo({top:0,behavior: S.ui.motion?'auto':'smooth'});
+    // foco accesible
+    if(view){ view.focus({preventScroll:true}); }
+    if(id==='registrar') renderWeek();
+  }
+  function updateNavState(){
+    $$('.navbtn').forEach(function(b){
+      b.setAttribute('aria-current', b.getAttribute('data-nav')===current?'page':'false');
+    });
+  }
+
+  /* ---------- Data binding genérico por id ---------- */
+  function bindText(id, get, set){
+    var el=$('#'+id); if(!el) return;
+    var v=get(); if(v!=null) el.value=v;
+    el.addEventListener('input',function(){ set(el.value); save(); });
+  }
+
+  /* ---------- MÓDULO 1: Entender ---------- */
+  var SYMPTOMS = ['Recuerdos intrusivos','Pesadillas','Sobresaltos','Irritabilidad','Culpa','Vergüenza','Miedo a perder el control','Evitación','Dificultades para dormir','Sensación de estar desconectado','Hipervigilancia','Tensión corporal','Problemas de concentración','Necesidad de comprobar','Miedo a conducir','Miedo a volver al trabajo','Miedo a espacios sociales','Otro'];
+  function renderSymptoms(){
+    var box=$('#symptomChips'); box.innerHTML='';
+    SYMPTOMS.forEach(function(s){
+      var b=document.createElement('button');
+      b.className='chip'; b.type='button'; b.textContent=s;
+      b.setAttribute('aria-pressed', S.symptoms.indexOf(s)>=0?'true':'false');
+      b.addEventListener('click',function(){
+        var i=S.symptoms.indexOf(s);
+        if(i>=0) S.symptoms.splice(i,1); else S.symptoms.push(s);
+        b.setAttribute('aria-pressed', i<0?'true':'false');
+        $('#symptomMsg').style.display = S.symptoms.length? 'flex':'none';
+        save();
+      });
+      box.appendChild(b);
+    });
+    $('#symptomMsg').style.display = S.symptoms.length? 'flex':'none';
+  }
+  // Deck
+  function initDeck(){
+    var cards=$$('.deck-card',$('#deck')); var idx=0;
+    var dots=$('#deckDots');
+    cards.forEach(function(_,i){
+      var d=document.createElement('button'); d.setAttribute('role','tab');
+      d.setAttribute('aria-label','Tarjeta '+(i+1)); d.className=i===0?'on':'';
+      d.addEventListener('click',function(){ go(i); });
+      dots.appendChild(d);
+    });
+    function go(i){
+      idx=(i+cards.length)%cards.length;
+      cards.forEach(function(c,j){ c.classList.toggle('show', j===idx); });
+      $$('button',dots).forEach(function(d,j){ d.classList.toggle('on', j===idx); });
+    }
+    $('#deckPrev').addEventListener('click',function(){go(idx-1);});
+    $('#deckNext').addEventListener('click',function(){go(idx+1);});
+  }
+  // Ciclos
+  function renderCycles(){
+    function chain(el, items, cls){
+      var c=$('#'+el); if(!c) return;
+      c.style.display='flex'; c.style.flexWrap='wrap'; c.style.gap='8px'; c.style.alignItems='center'; c.style.marginTop='10px';
+      items.forEach(function(t,i){
+        var pill=document.createElement('span');
+        pill.textContent=t;
+        pill.style.cssText='background:var('+(cls)+'-suau);color:var('+(cls)+'-d);border:1px solid var(--linia);border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:600;line-height:1.25';
+        c.appendChild(pill);
+        if(i<items.length-1){
+          var ar=document.createElement('span'); ar.setAttribute('aria-hidden','true');
+          ar.textContent='→'; ar.style.cssText='color:var(--suau);font-weight:700';
+          c.appendChild(ar);
+        }
+      });
+    }
+    chain('cycle1',['Señal','Activación corporal','«Peligro»','Evitación o control','Alivio','Refuerzo del miedo'],'--terra');
+    chain('cycle2',['Señal','Activación corporal','Presencia AIS','Latencia','Elección consciente','Microacción valiosa','Nuevo aprendizaje'],'--salvia');
+  }
+
+  /* ---------- MÓDULO 2: Orientarme ---------- */
+  function initOrient(){
+    var steps=$$('.stp',$('#orient')); var i=0;
+    var dots=$('#orientDots');
+    steps.forEach(function(_,k){ var s=document.createElement('span'); s.style.cssText='display:inline-block;width:9px;height:9px;border-radius:50%;background:'+(k===0?'var(--azul)':'var(--linia-2)')+';margin:0 3px'; dots.appendChild(s); });
+    function go(n){
+      i=Math.max(0,Math.min(steps.length-1,n));
+      steps.forEach(function(s,k){ s.classList.toggle('show',k===i); });
+      $$('span',dots).forEach(function(d,k){ d.style.background = k===i?'var(--azul)':'var(--linia-2)'; });
+      $('#orientProg').style.width = ((i+1)/steps.length*100)+'%';
+      $('#orientPrev').style.visibility = i===0?'hidden':'visible';
+      $('#orientNext').textContent = i===steps.length-1?'Terminar':'Siguiente';
+      if(i===1){ $('#orientNow').textContent = 'Ahora mismo: '+nowStr(); }
+    }
+    $('#orientPrev').addEventListener('click',function(){ go(i-1); });
+    $('#orientNext').addEventListener('click',function(){ if(i===steps.length-1){ nav('acompanar'); go(0);} else go(i+1); });
+    // chips single
+    initSingleChips();
+    go(0);
+  }
+  function initSingleChips(){
+    $$('[data-single]').forEach(function(group){
+      var key=group.getAttribute('data-single');
+      $$('.chip',group).forEach(function(b){
+        if(key==='place' && b.textContent===S.place) b.setAttribute('aria-pressed','true');
+        if(key==='phrase' && b.textContent===S.phrase) b.setAttribute('aria-pressed','true');
+        if(key==='aisPoint' && b.textContent===S.ais.point) b.setAttribute('aria-pressed','true');
+        b.addEventListener('click',function(){
+          $$('.chip',group).forEach(function(x){x.setAttribute('aria-pressed','false');});
+          b.setAttribute('aria-pressed','true');
+          if(key==='place') S.place=b.textContent;
+          if(key==='phrase') S.phrase=b.textContent;
+          if(key==='aisPoint') S.ais.point=b.textContent;
+          save();
+        });
+      });
+    });
+  }
+  function nowStr(){
+    var d=new Date();
+    var dias=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    var mes=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return dias[d.getDay()]+', '+d.getDate()+' de '+mes[d.getMonth()]+' de '+d.getFullYear()+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+
+  /* ---------- MÓDULO 3: Acompañar (AIS) ---------- */
+  var AIS_PHRASES = [
+    'No tengo que ganarle al miedo; tengo que evitar abandonarme.',
+    'El aire no viene a borrar la sensación. Viene a llevar mi presencia hasta ella.',
+    'Mi cuerpo puede estar activado y mi conciencia puede seguir presente.',
+    'No necesito entenderlo todo ahora.',
+    'Puedo notar una señal sin convertirla inmediatamente en una orden.',
+    'Estoy ampliando el espacio antes de reaccionar.'
+  ];
+  var aisTimer=null;
+  function initAis(){
+    // tabs nivel
+    $$('#aisTabs button').forEach(function(b){
+      b.addEventListener('click',function(){
+        $$('#aisTabs button').forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel');
+        var lv=b.getAttribute('data-lv');
+        $$('.level-body').forEach(function(bd){ bd.classList.toggle('show', bd.getAttribute('data-body')===lv); });
+      });
+    });
+    // segundos
+    $$('#aisSeg button').forEach(function(b){
+      if(parseInt(b.getAttribute('data-sec'),10)===S.ais.seconds) b.classList.add('sel'); else b.classList.remove('sel');
+      b.addEventListener('click',function(){
+        $$('#aisSeg button').forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel'); S.ais.seconds=parseInt(b.getAttribute('data-sec'),10); save();
+        $('#aisNum').textContent=S.ais.seconds; resetArc();
+      });
+    });
+    $('#aisNum').textContent=S.ais.seconds;
+    $('#aisStart').addEventListener('click',startAis);
+    resetArc();
+  }
+  var ARC_LEN=552.9;
+  function resetArc(){ var a=$('#aisArc'); if(a){ a.style.transition='none'; a.style.strokeDashoffset=ARC_LEN; } }
+  function startAis(){
+    if(aisTimer){ clearInterval(aisTimer); aisTimer=null; $('#aisStart').innerHTML='Comenzar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>'; resetArc(); $('#aisNum').textContent=S.ais.seconds; $('#aisLbl').textContent='Presencia, no lucha'; return; }
+    var total=S.ais.seconds, left=total;
+    var custom = getProPhrases();
+    var pool = custom.length? custom : AIS_PHRASES;
+    $('#aisPhrase').textContent = pool[Math.floor((total)%pool.length)];
+    var arc=$('#aisArc');
+    $('#aisStart').innerHTML='Detener';
+    $('#aisNum').textContent=left;
+    $('#aisLbl').textContent='Estoy aquí contigo';
+    if(arc){ arc.style.transition='stroke-dashoffset '+total+'s linear'; requestAnimationFrame(function(){ arc.style.strokeDashoffset=0; }); }
+    aisTimer=setInterval(function(){
+      left--;
+      if(left<=0){
+        clearInterval(aisTimer); aisTimer=null;
+        $('#aisNum').textContent='✓'; $('#aisLbl').textContent='Has permanecido presente';
+        $('#aisStart').innerHTML='Repetir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 3 6.7"/><path d="M3 21v-4h4"/></svg>';
+        toast('Sin prisa. Reorienta la atención a lo que estás haciendo.');
+      } else { $('#aisNum').textContent=left; }
+    },1000);
+  }
+  function getProPhrases(){
+    return (S.pro.phrases||'').split('\n').map(function(x){return x.trim();}).filter(Boolean);
+  }
+
+  /* ---------- MÓDULO 4: Diferenciar ---------- */
+  var DISC = {
+    rec:['Imagen del accidente o agresión','Frase mental','Pesadilla','Escena del pasado','«Y si vuelve a ocurrir»','Sensación de estar otra vez allí'],
+    ale:['Taquicardia','Presión en el pecho','Tensión','Temblor','Sudor','Náusea','Sobresalto','Necesidad de escapar','Hipervigilancia'],
+    pel:['Existe una amenaza observable ahora','Es necesaria una conducta de protección','Hay datos externos concretos, no solo una sensación']
+  };
+  function renderDisc(){
+    ['rec','ale','pel'].forEach(function(cat){
+      var box=$('[data-disc="'+cat+'"]'); box.innerHTML='';
+      DISC[cat].forEach(function(t){
+        var b=document.createElement('button');
+        b.className='chip '+(cat==='rec'?'azul':cat==='ale'?'terra':''); b.type='button'; b.textContent=t;
+        b.setAttribute('aria-pressed', S.disc[cat].indexOf(t)>=0?'true':'false');
+        b.addEventListener('click',function(){
+          var i=S.disc[cat].indexOf(t);
+          if(i>=0) S.disc[cat].splice(i,1); else S.disc[cat].push(t);
+          b.setAttribute('aria-pressed', i<0?'true':'false'); save();
+        });
+        box.appendChild(b);
+      });
+    });
+    $('#discCalc').addEventListener('click',function(){
+      var r=S.disc.rec.length, a=S.disc.ale.length, p=S.disc.pel.length;
+      var out=$('#discOut'); out.style.display='block';
+      var html='';
+      if(r+a+p===0){ html='<div class="big">Aún no has marcado nada</div><p class="muted">Marca lo que reconozcas en cada columna para orientarte.</p>'; }
+      else if(p>0 && p>=Math.max(r,a)){ html='<div class="big" style="color:var(--salvia-d)">Existe posible riesgo actual</div><p class="muted">Si hay datos externos concretos, prioriza una conducta de protección adecuada y pide apoyo.</p>'; }
+      else if(r>=a && r>0){ html='<div class="big" style="color:var(--azul-d)">Predomina el recuerdo</div><p class="muted">El recuerdo puede activar el cuerpo, pero pertenece al pasado. Oriéntate al presente.</p>'; }
+      else if(a>0){ html='<div class="big" style="color:var(--terra-d)">Predomina la alerta corporal</div><p class="muted">La activación es real. Acompáñala con AIS; no siempre significa peligro actual.</p>'; }
+      else { html='<div class="big">No puedo diferenciarlo todavía</div><p class="muted">No tienes que decidirlo con rapidez. Oriéntate, busca datos del entorno y pide apoyo si lo necesitas.</p>'; }
+      out.innerHTML=html;
+      out.scrollIntoView({behavior:S.ui.motion?'auto':'smooth',block:'center'});
+    });
+  }
+
+  /* ---------- MÓDULO 5: Recuperar ---------- */
+  var SUCCESS = ['Permanecí el tiempo acordado','Reduje una conducta de seguridad','Me acompañé durante la activación','Elegí desde el valor','Recogí información nueva del presente','Me retiré de manera consciente y no impulsiva','Pedí ayuda de forma adecuada'];
+  var pScale={pMax:null,pFinal:null};
+  function initRecuperar(){
+    bindText('recArea',function(){return S.rec.area;},function(v){S.rec.area=v;});
+    bindText('recValue',function(){return S.rec.value;},function(v){S.rec.value=v;});
+    $('#recArea').value=S.rec.area; $('#recValue').value=S.rec.value;
+    renderLadder();
+    $('#addRung').addEventListener('click',function(){ S.rec.rungs.push({t:'',act:'',time:'',support:'',safety:'',stop:'',value:S.rec.value||''}); save(); renderLadder(); });
+    $('#tplCoche').addEventListener('click',function(){ loadTemplate('coche'); });
+    $('#tplTrabajo').addEventListener('click',function(){ loadTemplate('trabajo'); });
+    // scales
+    buildScale('pMax'); buildScale('pFinal');
+    // success chips
+    var sc=$('#successChips');
+    SUCCESS.forEach(function(t){
+      var b=document.createElement('button'); b.className='chip'; b.type='button'; b.textContent=t; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); });
+      sc.appendChild(b);
+    });
+    $('#aisDuring').addEventListener('click',function(){ nav('acompanar'); toast('Pausa · siento · acompaño · continúo'); });
+    $('#savePractice').addEventListener('click',savePractice);
+  }
+  function loadTemplate(type){
+    var coche=['Sentarme en el coche estacionado durante dos minutos','Permanecer en el coche con el motor encendido','Recorrer una calle tranquila acompañado','Realizar un trayecto breve conocido','Recuperar progresivamente trayectos funcionales'];
+    var trab=['Visualizar el edificio desde una distancia tolerable sin entrar','Acercarme acompañado','Entrar en una zona segura durante pocos minutos','Mantener una interacción breve con una persona de confianza','Realizar una tarea laboral gradual acordada clínicamente'];
+    var arr=type==='coche'?coche:trab;
+    S.rec.rungs=arr.map(function(t){return {t:t,act:'',time:'',support:'',safety:'',stop:'',value:S.rec.value||''};});
+    save(); renderLadder(); toast('Plantilla cargada. Personalízala con tu profesional.');
+  }
+  function renderLadder(){
+    var box=$('#ladder'); box.innerHTML='';
+    if(!S.rec.rungs.length){ box.innerHTML='<p class="empty">Aún no hay peldaños. Añade uno o carga una plantilla.</p>'; return; }
+    S.rec.rungs.forEach(function(r,idx){
+      var d=document.createElement('div'); d.className='rung';
+      d.innerHTML =
+        '<div class="rung-h"><span class="rn">'+(idx+1)+'</span>'+
+        '<input class="rung-t" type="text" placeholder="Situación concreta del peldaño" aria-label="Situación peldaño '+(idx+1)+'"></div>'+
+        '<div class="grid2">'+
+          '<label class="fld">Activación anticipada (0–10)<input type="number" min="0" max="10" data-f="act" inputmode="numeric"></label>'+
+          '<label class="fld">Tiempo o distancia<input type="text" data-f="time"></label>'+
+          '<label class="fld">Apoyo permitido<input type="text" data-f="support"></label>'+
+          '<label class="fld">Conducta de seguridad a reducir<input type="text" data-f="safety"></label>'+
+          '<label class="fld">Señal para detener o adaptar<input type="text" data-f="stop"></label>'+
+          '<label class="fld">Valor al que sirve<input type="text" data-f="value"></label>'+
+        '</div>'+
+        '<div class="rung-actions">'+
+          '<button class="mini-btn" data-up><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> Subir</button>'+
+          '<button class="mini-btn del" data-del><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg> Eliminar</button>'+
+        '</div>';
+      var t=$('.rung-t',d); t.value=r.t||'';
+      t.addEventListener('input',function(){ r.t=t.value; save(); });
+      $$('[data-f]',d).forEach(function(inp){
+        var f=inp.getAttribute('data-f'); inp.value=r[f]||'';
+        inp.addEventListener('input',function(){ r[f]=inp.value; save(); });
+      });
+      $('[data-up]',d).addEventListener('click',function(){ if(idx>0){ var tmp=S.rec.rungs[idx-1]; S.rec.rungs[idx-1]=r; S.rec.rungs[idx]=tmp; save(); renderLadder(); } });
+      $('[data-del]',d).addEventListener('click',function(){ confirmDo('¿Eliminar este peldaño?',function(){ S.rec.rungs.splice(idx,1); save(); renderLadder(); }); });
+      box.appendChild(d);
+    });
+  }
+  function savePractice(){
+    var succ=$$('#successChips .chip').filter(function(c){return c.getAttribute('aria-pressed')==='true';}).map(function(c){return c.textContent;});
+    var p={
+      id:uid(), date:new Date().toISOString(),
+      area:S.rec.area, value:S.rec.value,
+      before:{recover:val('pBeforeRecover'),predict:val('pBeforePredict'),body:val('pBeforeBody'),safety:val('pBeforeSafety'),micro:val('pBeforeMicro')},
+      max:pScale.pMax, final:pScale.pFinal,
+      real:val('pReal'), predicted:val('pPredicted'), did:val('pDid'), learned:val('pLearned'), next:val('pNext'),
+      success:succ
+    };
+    S.practices.push(p); save();
+    // limpiar
+    ['pBeforeRecover','pBeforePredict','pBeforeBody','pBeforeSafety','pBeforeMicro','pReal','pPredicted','pDid','pLearned'].forEach(function(id){ $('#'+id).value=''; });
+    $('#pNext').value='';
+    $$('#successChips .chip').forEach(function(c){c.setAttribute('aria-pressed','false');});
+    $$('[data-scale="pMax"] button,[data-scale="pFinal"] button').forEach(function(b){b.classList.remove('sel');});
+    pScale={pMax:null,pFinal:null};
+    toast('Práctica guardada. Gracias por recuperar territorio.');
+  }
+
+  /* ---------- Escalas 0-10 ---------- */
+  function buildScale(name){
+    var box=$('[data-scale="'+name+'"]'); if(!box) return;
+    box.innerHTML='';
+    for(var i=0;i<=10;i++){ (function(n){
+      var b=document.createElement('button'); b.type='button'; b.textContent=n; b.setAttribute('aria-label',name+' '+n);
+      b.addEventListener('click',function(){
+        $$('button',box).forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel');
+        if(name in pScale) pScale[name]=n;
+        if(name in rScale) rScale[name]=n;
+      });
+      box.appendChild(b);
+    })(i); }
+    var lg=document.createElement('div'); lg.className='scale-legend'; lg.innerHTML='<span>0 · nada</span><span>10 · máxima</span>';
+    box.parentNode.insertBefore(lg, box.nextSibling);
+  }
+
+  /* ---------- MÓDULO 6: Registrar ---------- */
+  var rScale={rAct:null,rRelief:null};
+  function initRegistrar(){
+    // tabs
+    $$('#regTabs button').forEach(function(b){
+      b.addEventListener('click',function(){
+        $$('#regTabs button').forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel');
+        var t=b.getAttribute('data-tab');
+        $('#reg-nuevo').style.display = t==='nuevo'?'':'none';
+        $('#reg-hist').style.display  = t==='hist'?'':'none';
+        $('#reg-resumen').style.display = t==='resumen'?'':'none';
+        if(t==='hist') renderLogs();
+        if(t==='resumen') renderWeek();
+      });
+    });
+    buildScale('rAct'); buildScale('rRelief');
+    // default fecha/hora
+    var d=new Date();
+    $('#rDate').value = d.toISOString().slice(0,10);
+    $('#rTime').value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    $('#saveLog').addEventListener('click',saveLog);
+    $('#expJson').addEventListener('click',exportJson);
+    $('#expCsv').addEventListener('click',exportCsv);
+    $('#expWa').addEventListener('click',copyWa);
+    $('#printBtn').addEventListener('click',function(){ window.print(); });
+  }
+  function saveLog(){
+    if(!val('rSit') && rScale.rAct==null){ toast('Añade al menos la situación o la activación.'); return; }
+    var log={
+      id:uid(), date:val('rDate'), time:val('rTime'),
+      sit:val('rSit'), signal:val('rSignal'), act:rScale.rAct, zone:val('rZone'),
+      impulse:val('rImpulse'), ais:val('rAis'), latency:val('rLatency'),
+      action:val('rAction'), actionType:val('rActionType'), relief:rScale.rRelief,
+      recovery:val('rRecovery'), honest:val('rHonest'), learning:val('rLearning'),
+      ts:new Date().toISOString()
+    };
+    S.logs.push(log); save();
+    ['rSit','rZone','rLatency','rAction','rRecovery','rHonest','rLearning'].forEach(function(id){$('#'+id).value='';});
+    ['rSignal','rImpulse','rAis','rActionType'].forEach(function(id){$('#'+id).value='';});
+    $$('[data-scale="rAct"] button,[data-scale="rRelief"] button').forEach(function(b){b.classList.remove('sel');});
+    rScale={rAct:null,rRelief:null};
+    toast('Registro guardado.');
+  }
+  function renderLogs(){
+    var box=$('#logList'); box.innerHTML='';
+    var all=allEntries();
+    if(!all.length){ box.innerHTML='<p class="empty">Todavía no hay registros. Cuando guardes uno, aparecerá aquí.</p>'; return; }
+    all.forEach(function(e){
+      var d=document.createElement('div'); d.className='log-item';
+      if(e.kind==='log'){
+        var badges='';
+        if(e.act!=null) badges+='<span class="badge a">Activación '+e.act+'</span>';
+        if(e.ais) badges+='<span class="badge b">AIS: '+e.ais+'</span>';
+        if(e.latency) badges+='<span class="badge c">Latencia '+e.latency+'s</span>';
+        if(e.actionType) badges+='<span class="badge">'+e.actionType+'</span>';
+        d.innerHTML='<div class="li-h"><span class="li-sit">'+(esc(e.sit)||'(sin situación)')+'</span><span class="li-date">'+fmtDate(e.date,e.time)+'</span></div>'+
+          (e.learning?'<p class="muted" style="margin:6px 0 0">'+esc(e.learning)+'</p>':'')+
+          '<div class="badges">'+badges+'</div>';
+      } else {
+        d.innerHTML='<div class="li-h"><span class="li-sit">Práctica · '+(esc(e.area)||'recuperar')+'</span><span class="li-date">'+fmtDate(e.date.slice(0,10),'')+'</span></div>'+
+          (e.learned?'<p class="muted" style="margin:6px 0 0">'+esc(e.learned)+'</p>':'')+
+          '<div class="badges">'+(e.max!=null?'<span class="badge a">Máx '+e.max+'</span>':'')+(e.final!=null?'<span class="badge b">Final '+e.final+'</span>':'')+(e.value?'<span class="badge c">'+esc(e.value)+'</span>':'')+'</div>';
+      }
+      var del=document.createElement('button'); del.className='mini-btn del'; del.style.marginTop='10px';
+      del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg> Eliminar';
+      del.addEventListener('click',function(){ confirmDo('¿Eliminar este registro? Esta acción no se puede deshacer.',function(){
+        if(e.kind==='log') S.logs=S.logs.filter(function(x){return x.id!==e.id;});
+        else S.practices=S.practices.filter(function(x){return x.id!==e.id;});
+        save(); renderLogs();
+      }); });
+      d.appendChild(del);
+      box.appendChild(d);
+    });
+  }
+  function allEntries(){
+    var a=S.logs.map(function(l){return Object.assign({kind:'log'},l);})
+      .concat(S.practices.map(function(p){return Object.assign({kind:'practice'},p);}));
+    a.sort(function(x,y){ return (y.ts||y.date)<(x.ts||x.date)?-1:1; });
+    return a;
+  }
+
+  /* ---------- Exportaciones ---------- */
+  function download(name, text, type){
+    var blob=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },100);
+  }
+  function exportJson(){
+    download('cuerpo-en-alerta_'+today()+'.json', JSON.stringify({logs:S.logs,practices:S.practices,map:S.map,exported:new Date().toISOString()},null,2), 'application/json');
+    toast('Exportado en JSON.');
+  }
+  function exportCsv(){
+    var cols=['fecha','hora','situacion','señal','activacion','zona','impulso','ais','latencia_s','accion','tipo_accion','alivio','recuperacion','frase_honesta','aprendizaje'];
+    var rows=[cols.join(';')];
+    S.logs.forEach(function(l){
+      rows.push([l.date,l.time,l.sit,l.signal,l.act,l.zone,l.impulse,l.ais,l.latency,l.action,l.actionType,l.relief,l.recovery,l.honest,l.learning]
+        .map(function(x){ x=(x==null?'':String(x)).replace(/"/g,'""'); return /[;"\n]/.test(x)?'"'+x+'"':x; }).join(';'));
+    });
+    download('cuerpo-en-alerta_'+today()+'.csv','﻿'+rows.join('\r\n'),'text/csv;charset=utf-8');
+    toast('Exportado en CSV.');
+  }
+  function copyWa(){
+    var w=weekData();
+    var txt='*Cuando el cuerpo sigue en alerta · resumen*\n'+
+      '('+today()+')\n\n'+
+      '• Situaciones afrontadas: '+w.faced+'\n'+
+      '• Prácticas AIS: '+w.ais+'\n'+
+      '• Latencia media: '+(w.latency!=null?w.latency+' s':'—')+'\n'+
+      '• Conductas valiosas: '+w.valuable+'\n'+
+      '• Conductas evitativas: '+w.avoidant+'\n'+
+      '• Territorios recuperados: '+w.territories+'\n'+
+      '• Valor más entrenado: '+(w.topValue||'—')+'\n\n'+
+      'Esta semana estás ampliando tu capacidad de permanecer presente antes de reaccionar.';
+    copyText(txt);
+  }
+  function copyText(txt){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){toast('Resumen copiado al portapapeles.');},function(){ fallbackCopy(txt); });
+    } else fallbackCopy(txt);
+  }
+  function fallbackCopy(txt){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast('Resumen copiado.'); }catch(e){ toast('Copia manualmente el texto.'); }
+    document.body.removeChild(ta);
+  }
+
+  /* ---------- Resumen semanal ---------- */
+  function weekData(){
+    var since=Date.now()-7*24*3600*1000;
+    var logs=S.logs.filter(function(l){ return new Date(l.ts||l.date).getTime()>=since; });
+    var pracs=S.practices.filter(function(p){ return new Date(p.date).getTime()>=since; });
+    var lat=logs.map(function(l){return parseFloat(l.latency);}).filter(function(n){return !isNaN(n);});
+    var latency = lat.length? Math.round(lat.reduce(function(a,b){return a+b;},0)/lat.length) : null;
+    var avoidant=logs.filter(function(l){return l.actionType==='Evitativa'||l.actionType==='Compulsiva';}).length;
+    var valuable=logs.filter(function(l){return l.actionType==='Valiosa'||l.actionType==='Asertiva';}).length + pracs.length;
+    var aisCount=logs.filter(function(l){return l.ais==='Sí';}).length;
+    var acts=logs.map(function(l){return parseFloat(l.act);}).filter(function(n){return !isNaN(n);});
+    var actAvg = acts.length? (acts.reduce(function(a,b){return a+b;},0)/acts.length).toFixed(1):null;
+    // valor más entrenado
+    var vcount={}; pracs.forEach(function(p){ if(p.value){ vcount[p.value]=(vcount[p.value]||0)+1; } });
+    var topValue=null,mx=0; Object.keys(vcount).forEach(function(k){ if(vcount[k]>mx){mx=vcount[k];topValue=k;} });
+    var safetyReduced=pracs.filter(function(p){return (p.success||[]).indexOf('Reduje una conducta de seguridad')>=0;}).length;
+    return {faced:logs.length+pracs.length, ais:aisCount, latency:latency, avoidant:avoidant, valuable:valuable,
+            territories:pracs.length, topValue:topValue, actAvg:actAvg, safetyReduced:safetyReduced,
+            initActs: pracs.map(function(p){return p.max;}).filter(function(n){return n!=null;}),
+            finalActs: pracs.map(function(p){return p.final;}).filter(function(n){return n!=null;}),
+            logs:logs};
+  }
+  function renderWeek(){
+    var w=weekData();
+    var g=$('#weekStats'); if(!g) return;
+    var stats=[
+      ['Situaciones afrontadas',w.faced],['Prácticas AIS',w.ais],
+      ['Latencia media',w.latency!=null?w.latency+' s':'—'],
+      ['Conductas valiosas',w.valuable],['Conductas evitativas',w.avoidant],
+      ['Territorios recuperados',w.territories],
+      ['Conductas de seguridad reducidas',w.safetyReduced],
+      ['Valor más entrenado',w.topValue||'—']
+    ];
+    g.innerHTML=stats.map(function(s){return '<div class="stat"><div class="v">'+s[1]+'</div><div class="k">'+s[0]+'</div></div>';}).join('');
+    // gráfica activación (barras) de logs de la semana
+    renderWeekChart(w);
+    // notas prudentes
+    var notes=[];
+    if(w.latency!=null && w.latency>0) notes.push('Esta semana aumentó tu capacidad de permanecer presente antes de reaccionar.');
+    if(w.faced>0) notes.push('La activación sigue apareciendo, pero estás recuperando conducta.');
+    notes.push('No buscamos una línea perfecta. Buscamos ampliar tu capacidad de elegir.');
+    $('#weekNotes').innerHTML = notes.map(function(n){return '<p class="quote">'+n+'</p>';}).join('');
+  }
+  function renderWeekChart(w){
+    var box=$('#weekCharts');
+    if(!w.logs.length && !w.initActs.length){ box.innerHTML='<p class="empty">Aún no hay datos suficientes para el gráfico. Registra tu semana.</p>'; return; }
+    // Barras de activación por registro (últimos, máx 10)
+    var acts=w.logs.map(function(l){return parseFloat(l.act);}).filter(function(n){return !isNaN(n);}).slice(-10);
+    var svg='';
+    if(acts.length){
+      var W=Math.max(260,acts.length*34), H=140, pad=24, bw=Math.min(26,(W-pad*2)/acts.length-8);
+      svg+='<div class="chartbox"><h4>Activación en registros recientes (0–10)</h4><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="Barras de activación">';
+      acts.forEach(function(a,i){
+        var x=pad+i*((W-pad*2)/acts.length)+4;
+        var h=(a/10)*(H-pad*2); var y=H-pad-h;
+        svg+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(2,h)+'" rx="4" fill="var(--terra)"/>';
+        svg+='<text x="'+(x+bw/2)+'" y="'+(H-8)+'" font-size="10" fill="var(--suau)" text-anchor="middle">'+a+'</text>';
+      });
+      svg+='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" stroke="var(--linia)"/></svg></div>';
+    }
+    // Práctica: inicial vs final (líneas simples)
+    if(w.initActs.length && w.finalActs.length){
+      svg+='<div class="chartbox"><h4>Prácticas: activación inicial vs final</h4>';
+      svg+=lineChart(w.initActs, w.finalActs);
+      svg+='<div class="legend"><span><i style="background:var(--terra)"></i>Inicial</span><span><i style="background:var(--salvia)"></i>Final</span></div></div>';
+    }
+    box.innerHTML=svg;
+  }
+  function lineChart(a,b){
+    var n=Math.max(a.length,b.length); var W=Math.max(260,n*40),H=140,pad=24;
+    function pts(arr){ return arr.map(function(v,i){ var x=pad+i*((W-pad*2)/Math.max(1,n-1)); var y=H-pad-(v/10)*(H-pad*2); return x+','+y; }).join(' '); }
+    var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" role="img" aria-label="Líneas inicial y final">';
+    s+='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" stroke="var(--linia)"/>';
+    s+='<polyline fill="none" stroke="var(--terra)" stroke-width="2.5" points="'+pts(a)+'"/>';
+    s+='<polyline fill="none" stroke="var(--salvia)" stroke-width="2.5" points="'+pts(b)+'"/>';
+    a.forEach(function(v,i){ var x=pad+i*((W-pad*2)/Math.max(1,n-1)); var y=H-pad-(v/10)*(H-pad*2); s+='<circle cx="'+x+'" cy="'+y+'" r="3" fill="var(--terra)"/>'; });
+    b.forEach(function(v,i){ var x=pad+i*((W-pad*2)/Math.max(1,n-1)); var y=H-pad-(v/10)*(H-pad*2); s+='<circle cx="'+x+'" cy="'+y+'" r="3" fill="var(--salvia)"/>'; });
+    s+='</svg>'; return s;
+  }
+
+  /* ---------- MÓDULO 7: Mapa ---------- */
+  var MAP = {
+    signals:['Lugares','Sonidos','Personas','Horarios','Movimientos','Sensaciones','Pensamientos','Imágenes','Olores'],
+    responses:['Huir','Evitar','Quedarme paralizado','Comprobar','Vigilar','Irritarme','Aislarme','Controlar','Pedir acompañamiento'],
+    costs:['Autonomía','Trabajo','Familia','Descanso','Movilidad','Relaciones','Ocio','Confianza','Salud']
+  };
+  var CRISIS_FOR=['Flashback','Ataque de pánico','Pesadilla','Disociación','Sobresalto intenso','Bloqueo al conducir','Activación en el trabajo','Impulso de abandonar una exposición','Irritabilidad intensa'];
+  var CRISIS_NOT=['Discutir con el pensamiento','Forzar la respiración','Conducir si no puedo mantener la atención necesaria','Consumir alcohol u otras sustancias para regularme','Exponerme de forma impulsiva para demostrar algo'];
+  function initMapChips(){
+    // chips multi ligados a arrays en S
+    setupMapGroup('signals', MAP.signals, S.map.signals);
+    setupMapGroup('responses', MAP.responses, S.map.responses);
+    setupMapGroup('costs', MAP.costs, S.map.costs);
+    setupMapGroup('crisisFor', CRISIS_FOR, S.crisis.for);
+    setupMapGroup('crisisNot', CRISIS_NOT, S.crisis.not);
+    bindText('mapEvent',function(){return S.map.event;},function(v){S.map.event=v;});
+    bindText('mapTerritory',function(){return S.map.territory;},function(v){S.map.territory=v;});
+    $('#mapEvent').value=S.map.event; $('#mapTerritory').value=S.map.territory;
+  }
+  function setupMapGroup(name, options, arr){
+    var box=$('[data-map="'+name+'"]'); if(!box) return; box.innerHTML='';
+    options.forEach(function(o){
+      var b=document.createElement('button'); b.className='chip'; b.type='button'; b.textContent=o;
+      b.setAttribute('aria-pressed', arr.indexOf(o)>=0?'true':'false');
+      b.addEventListener('click',function(){
+        var i=arr.indexOf(o); if(i>=0) arr.splice(i,1); else arr.push(o);
+        b.setAttribute('aria-pressed', i<0?'true':'false'); save();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  /* ---------- MÓDULO 8: Plan crisis ---------- */
+  function initPlan(){
+    bindText('crEarly',function(){return S.crisis.early;},function(v){S.crisis.early=v;});
+    bindText('crFirst',function(){return S.crisis.first;},function(v){S.crisis.first=v;});
+    bindText('crPhrase',function(){return S.crisis.phrase;},function(v){S.crisis.phrase=v;});
+    bindText('crBody',function(){return S.crisis.body;},function(v){S.crisis.body=v;});
+    bindText('crPlace',function(){return S.crisis.place;},function(v){S.crisis.place=v;});
+    bindText('crWhenHelp',function(){return S.crisis.whenHelp;},function(v){S.crisis.whenHelp=v;});
+    var c=S.crisis.contacts;
+    var m={cNameProf:'nameProf',cPhoneProf:'phoneProf',cNameTrust:'nameTrust',cPhoneTrust:'phoneTrust',cEmergency:'emergency',cOther:'other'};
+    Object.keys(m).forEach(function(id){ (function(k){ bindText(id,function(){return c[k];},function(v){c[k]=v; renderCallRow(); renderStopContacts();}); })(m[id]); });
+    // set values
+    $('#crEarly').value=S.crisis.early; $('#crFirst').value=S.crisis.first; $('#crPhrase').value=S.crisis.phrase;
+    $('#crBody').value=S.crisis.body; $('#crPlace').value=S.crisis.place; $('#crWhenHelp').value=S.crisis.whenHelp;
+    Object.keys(m).forEach(function(id){ $('#'+id).value=c[m[id]]||''; });
+    renderCallRow(); renderStopContacts();
+  }
+  function renderCallRow(){
+    var c=S.crisis.contacts, row=$('#callRow'); row.innerHTML='';
+    addCall(row,'Profesional',c.phoneProf);
+    addCall(row,'Confianza',c.phoneTrust);
+    addCall(row,'Urgencias',c.emergency,'terra');
+  }
+  function addCall(row,label,phone,cls){
+    if(!phone) return;
+    var a=document.createElement('a'); a.className='btn '+(cls||'azul'); a.href='tel:'+phone.replace(/\s/g,'');
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.5-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg> Llamar · '+label;
+    row.appendChild(a);
+  }
+
+  /* ---------- Pantalla NECESITO PARAR ---------- */
+  var lastFocus=null;
+  function openStop(){
+    lastFocus=document.activeElement;
+    if(aisTimer){ clearInterval(aisTimer); aisTimer=null; }
+    var ss=$('#stopScreen'); ss.classList.add('open');
+    renderStopContacts();
+    // reset contador objetos
+    var oc=$('#objCheck');
+    ss.setAttribute('aria-hidden','false');
+    setTimeout(function(){ $('#stopClose').focus(); },50);
+    document.body.style.overflow='hidden';
+  }
+  function closeStop(){
+    $('#stopScreen').classList.remove('open');
+    document.body.style.overflow='';
+    if(lastFocus) lastFocus.focus();
+  }
+  function renderStopContacts(){
+    var row=$('#stopContacts'); if(!row) return; row.innerHTML='';
+    var c=S.crisis.contacts;
+    addCall(row,(c.nameProf||'Profesional'),c.phoneProf);
+    addCall(row,(c.nameTrust||'Confianza'),c.phoneTrust);
+    addCall(row,'Urgencias',c.emergency,'terra');
+    if(!row.children.length){ row.innerHTML='<p class="muted" style="color:var(--suau);font-size:14px">Puedes añadir contactos en el módulo «Plan».</p>'; }
+  }
+  function initObjCheck(){
+    var oc=$('#objCheck');
+    for(var i=1;i<=5;i++){ (function(n){
+      var b=document.createElement('button'); b.type='button'; b.textContent=n; b.setAttribute('aria-label','Objeto '+n);
+      b.addEventListener('click',function(){ b.classList.toggle('on'); });
+      oc.appendChild(b);
+    })(i); }
+  }
+
+  /* ---------- Modales ---------- */
+  function openModal(id){
+    var lf=document.activeElement;
+    var ov=$('#'+id); ov.classList.add('open'); ov.setAttribute('data-lastfocus','');
+    ov._lastFocus=lf;
+    var f=ov.querySelector('input,select,textarea,button'); if(f) setTimeout(function(){f.focus();},50);
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(ov){
+    ov.classList.remove('open'); document.body.style.overflow='';
+    if(ov._lastFocus) ov._lastFocus.focus();
+  }
+  function initModals(){
+    $$('.overlay').forEach(function(ov){
+      ov.addEventListener('click',function(e){ if(e.target===ov) closeModal(ov); });
+      $$('[data-close]',ov).forEach(function(b){ b.addEventListener('click',function(){ closeModal(ov); if(ov.id==='ovPro'){ buildNav(); toast('Configuración guardada en este dispositivo.'); } }); });
+    });
+    $('#btnSettings').addEventListener('click',function(){ openModal('ovSettings'); });
+    $('#btnPro').addEventListener('click',function(){ openModal('ovPro'); });
+    // trap focus + escape
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){
+        if($('#stopScreen').classList.contains('open')){ closeStop(); return; }
+        var open=$('.overlay.open'); if(open) closeModal(open);
+      }
+    });
+  }
+
+  /* ---------- Config profesional ---------- */
+  function initPro(){
+    var map={pdInitials:'initials',pdEvent:'event',pdDate:'date',pdSince:'since',pdPresentation:'presentation',
+      pdSymptoms:'symptoms',pdDissociation:'dissociation',pdRisk:'risk',pdDisabled:'disabled',pdLadder:'ladder',
+      pdSafety:'safety',pdStop:'stop',pdPhrases:'phrases',pdFreq:'freq',pdReview:'review'};
+    Object.keys(map).forEach(function(id){ (function(k){
+      var el=$('#'+id); if(!el) return; el.value=S.pro[k]||'';
+      el.addEventListener('input',function(){ S.pro[k]=el.value; save(); if(k==='dissociation') dissCheck(); });
+    })(map[id]); });
+    // módulos habilitados
+    var pm=$('#pdModules');
+    MODULES.forEach(function(m){
+      var b=document.createElement('button'); b.className='chip'; b.type='button'; b.textContent=m.label;
+      var enabled = (m.id==='recuperar')? !!S.pro.modules.recuperar : true;
+      b.setAttribute('aria-pressed', enabled?'true':'false');
+      if(m.id!=='recuperar'){ b.style.opacity='.6'; b.title='Siempre disponible'; }
+      b.addEventListener('click',function(){
+        if(m.id!=='recuperar'){ toast('Solo «Recuperar territorio» puede ocultarse.'); return; }
+        S.pro.modules.recuperar=!S.pro.modules.recuperar;
+        b.setAttribute('aria-pressed', S.pro.modules.recuperar?'true':'false'); save(); buildNav();
+      });
+      pm.appendChild(b);
+    });
+    dissCheck();
+  }
+  function dissCheck(){
+    var v=S.pro.dissociation;
+    $('#dissWarn').style.display = (v==='Moderado'||v==='Alto')?'flex':'none';
+  }
+
+  /* ---------- Pantalla final ---------- */
+  function openFinal(){
+    var learn=[];
+    S.practices.slice().reverse().forEach(function(p){ if(p.learned && learn.length<3) learn.push(p.learned); });
+    S.logs.slice().reverse().forEach(function(l){ if(l.learning && learn.length<3) learn.push(l.learning); });
+    var valuable='';
+    for(var i=S.logs.length-1;i>=0;i--){ if(S.logs[i].actionType==='Valiosa'||S.logs[i].actionType==='Asertiva'){ valuable=S.logs[i].action||S.logs[i].sit; break; } }
+    if(!valuable && S.practices.length){ valuable=S.practices[S.practices.length-1].did||''; }
+    var body=$('#finalBody');
+    body.innerHTML=
+      block('El valor elegido', S.rec.value || S.map.territory || '—')+
+      block('El territorio que se está recuperando', S.rec.area || (S.map.territory||'—'))+
+      '<div class="card" style="margin:12px 0"><h3>Tres aprendizajes registrados</h3>'+(learn.length? '<ul>'+learn.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>' : '<p class="muted">Cuando registres prácticas, aquí aparecerán tus aprendizajes.</p>')+'</div>'+
+      block('Una conducta valiosa reciente', valuable||'—')+
+      block('Tu frase personal', S.phrase || S.crisis.phrase || '—')+
+      '<p class="quote" style="margin-top:14px">Tu cuerpo aprendió a protegerte en un momento en que percibió peligro. Ahora, mediante presencia, orientación y experiencias graduales, puede aprender que no todos los caminos conducen de nuevo a aquel lugar.</p>';
+    openModal('ovFinal');
+    function block(t,v){ return '<div class="card" style="margin:12px 0"><h3 style="font-size:16px">'+t+'</h3><p style="font-family:var(--serif);font-size:18px;color:var(--tinta-2);margin:4px 0 0">'+esc(v)+'</p></div>'; }
+  }
+
+  /* ---------- Ajustes ---------- */
+  function initSettings(){
+    setSwitch('#swTheme', S.ui.theme==='dark', function(on){ S.ui.theme=on?'dark':'light'; applyTheme(); save(); });
+    setSwitch('#swMotion', S.ui.motion, function(on){ S.ui.motion=on; applyMotion(); save(); });
+    $('#demoBtn').addEventListener('click',function(){ confirmDo('¿Cargar datos de demostración? Se añadirán registros ficticios.',loadDemo); });
+    $('#resetBtn').addEventListener('click',function(){ confirmDo('¿Restablecer TODOS los datos? Se borrará todo lo guardado en este dispositivo y no se puede deshacer.',function(){
+      localStorage.removeItem(KEY); load(); location.reload();
+    }); });
+  }
+  function setSwitch(sel,on,cb){
+    var el=$(sel); el.setAttribute('aria-checked',on?'true':'false');
+    el.addEventListener('click',function(){ var n=el.getAttribute('aria-checked')!=='true'; el.setAttribute('aria-checked',n?'true':'false'); cb(n); });
+  }
+  function applyTheme(){ document.documentElement.setAttribute('data-theme', S.ui.theme); $('meta[name=theme-color]').setAttribute('content', S.ui.theme==='dark'?'#23272a':'#7d9b86'); }
+  function applyMotion(){ document.documentElement.setAttribute('data-reduce', S.ui.motion?'1':'0'); }
+
+  /* ---------- Confirmación ---------- */
+  var confCb=null;
+  function confirmDo(msg,cb){ $('#confMsg').textContent=msg; confCb=cb; openModal('ovConfirm'); }
+  function initConfirm(){
+    $('#confOk').addEventListener('click',function(){ closeModal($('#ovConfirm')); if(confCb){ var f=confCb; confCb=null; f(); } });
+  }
+
+  /* ---------- Demo ---------- */
+  function loadDemo(){
+    var now=Date.now();
+    for(var i=6;i>=0;i--){
+      var d=new Date(now-i*24*3600*1000);
+      S.logs.push({id:uid(),date:d.toISOString().slice(0,10),time:'18:'+String(10+i).padStart(2,'0'),
+        sit:['Escuché un frenazo','Crucé una rotonda','Volví al edificio del trabajo','Fui de pasajero','Sonó una sirena','Entré en un lugar concurrido','Conduje un trayecto corto'][i],
+        signal:['Externa','Externa','Recuerdo','Corporal','Externa','Externa','Corporal'][i],
+        act:[8,6,7,5,7,6,4][i], zone:['pecho','estómago','garganta','pecho','pecho','hombros','manos'][i],
+        impulse:['Escapar','Evitar','Comprobar','Pedir seguridad','Escapar','Aislarme','Sobrepensar'][i],
+        ais:['Lo intenté','Sí','Sí','Lo intenté','Sí','No','Sí'][i],
+        latency:[2,5,8,3,10,0,15][i], action:['Me quedé y respiré','Seguí conduciendo','Entré acompañado','Avisé a mi pareja','Me orienté al presente','Salí un momento','Completé el trayecto'][i],
+        actionType:['Protectora necesaria','Valiosa','Valiosa','Protectora necesaria','Valiosa','Evitativa','Valiosa'][i],
+        relief:[4,5,6,5,6,7,7][i], recovery:['Movilidad','Autonomía','Trabajo','Cuidado','Autonomía','—','Autonomía'][i],
+        honest:'No sé por qué, pero noto menos urgencia', learning:['Pude quedarme','El cuerpo se calma solo','Puedo entrar','Pedir ayuda está bien','Sigo aquí','Hoy costó más','Cada vez menos'][i],
+        ts:d.toISOString()});
+    }
+    S.practices.push({id:uid(),date:new Date(now-2*24*3600*1000).toISOString(),area:'Conducción',value:'Autonomía',
+      before:{recover:'Conducir al trabajo',predict:'Voy a bloquearme',body:'pecho',safety:'ir acompañado',micro:'trayecto corto'},
+      max:8,final:5,real:'Llegué sin incidentes',predicted:'Un bloqueo total',did:'Conduje 10 minutos',learned:'Puedo sostener la activación mientras conduzco',next:'Mantendría este paso',
+      success:['Permanecí el tiempo acordado','Me acompañé durante la activación','Elegí desde el valor']});
+    S.map.event=S.map.event||'Accidente de tráfico';
+    if(!S.map.signals.length) S.map.signals=['Sonidos','Movimientos','Lugares'];
+    if(!S.map.responses.length) S.map.responses=['Evitar','Vigilar'];
+    if(!S.map.costs.length) S.map.costs=['Autonomía','Movilidad'];
+    S.rec.area=S.rec.area||'Conducción'; S.rec.value=S.rec.value||'Autonomía';
+    S.phrase=S.phrase||'Mi cuerpo recuerda; yo estoy en el presente.';
+    save();
+    toast('Datos de demostración cargados.');
+    renderAllChips();
+    renderWeek(); renderLogs();
+  }
+
+  /* ---------- Utilidades ---------- */
+  function uid(){ return 'id'+Math.round(performance.now()*1000).toString(36)+Math.floor(performance.now()%997).toString(36)+(S.logs.length+S.practices.length); }
+  function val(id){ var e=$('#'+id); return e? e.value.trim():''; }
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function fmtDate(d,t){ if(!d) return ''; var p=d.split('-'); return (p[2]||'')+'/'+(p[1]||'')+'/'+(p[0]||'')+(t?' · '+t:''); }
+  function renderAllChips(){
+    renderSymptoms(); setupMapGroup('signals',MAP.signals,S.map.signals); setupMapGroup('responses',MAP.responses,S.map.responses);
+    setupMapGroup('costs',MAP.costs,S.map.costs); setupMapGroup('crisisFor',CRISIS_FOR,S.crisis.for); setupMapGroup('crisisNot',CRISIS_NOT,S.crisis.not);
+    if($('#mapEvent')) $('#mapEvent').value=S.map.event;
+    if($('#mapTerritory')) $('#mapTerritory').value=S.map.territory;
+    if($('#recArea')) $('#recArea').value=S.rec.area;
+    if($('#recValue')) $('#recValue').value=S.rec.value;
+    renderLadder();
+  }
+
+  /* ---------- Micromensajes rotatorios ---------- */
+  var MICRO = [
+    'Sentir activación no borra lo que has avanzado.',
+    'Hoy no estás repitiendo el accidente: estás reconociendo una memoria de protección.',
+    'Cada práctica ofrece al cuerpo información nueva.',
+    'Evitar no fue debilidad; fue una estrategia de supervivencia. Ahora estás ampliando tus opciones.',
+    'No necesitas demostrar nada.',
+    'El miedo puede viajar contigo sin conducir tu conducta.',
+    'La meta no es no sentir. La meta es no quedarte solo ante lo que sientes.',
+    'Tu conciencia puede convertirse en una presencia segura para tu cuerpo.',
+    'Primero presencia. Después elección.',
+    'Recuperar territorio es volver a vivir, no vencer al miedo.'
+  ];
+  function initMicro(){
+    var i=Math.floor((new Date().getSeconds())%MICRO.length);
+    $('#microMsg').textContent=MICRO[i];
+    setInterval(function(){ i=(i+1)%MICRO.length; var el=$('#microMsg'); el.style.opacity=0; setTimeout(function(){ el.textContent=MICRO[i]; el.style.opacity=1; },300); },9000);
+    $('#microMsg').style.transition='opacity .3s';
+  }
+
+  /* ---------- INIT ---------- */
+  function init(){
+    load();
+    applyTheme(); applyMotion();
+    buildNav();
+    renderSymptoms();
+    initDeck(); renderCycles();
+    initOrient();
+    initAis();
+    renderDisc();
+    if(S.pro.modules.recuperar) initRecuperar();
+    initRegistrar();
+    initMapChips();
+    initPlan();
+    initObjCheck();
+    initModals(); initPro(); initSettings(); initConfirm();
+    initMicro();
+    // navegación desde botones data-goto
+    $$('[data-goto]').forEach(function(b){ b.addEventListener('click',function(){ nav(b.getAttribute('data-goto')); }); });
+    $('#openFinal').addEventListener('click',openFinal);
+    // stop
+    $('#stopFab').addEventListener('click',openStop);
+    $('#stopClose').addEventListener('click',closeStop);
+    // date fields orient
+    document.addEventListener('keydown',function(e){
+      if(e.altKey && e.key>='1' && e.key<='8'){ var idx=parseInt(e.key,10)-1; if(MODULES[idx]) nav(MODULES[idx].id); }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+</body>
+</html>
