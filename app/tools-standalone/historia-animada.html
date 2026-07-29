@@ -142,6 +142,7 @@ var SCENES=[
 ];
 
 var idx=0, playing=false, muted=false, timer=null;
+var PAUSA=1200; // pausa entre escena y escena (ms)
 var $=function(id){return document.getElementById(id);};
 var voces=[], voz=null;
 function cargarVoz(){ voces=(window.speechSynthesis?speechSynthesis.getVoices():[])||[]; voz=voces.filter(function(v){return /^es/i.test(v.lang);})[0]||null; }
@@ -150,9 +151,9 @@ if(window.speechSynthesis){ cargarVoz(); speechSynthesis.onvoiceschanged=cargarV
 function narrar(text, onEnd){
   if(!window.speechSynthesis) { onEnd&&scheduleFallback(onEnd); return; }
   try{ speechSynthesis.cancel(); }catch(e){}
-  if(muted){ scheduleFallback(onEnd); return; }
+  if(muted){ scheduleFallback(onEnd, Math.max(4200, text.length*55)); return; }
   var u=new SpeechSynthesisUtterance(text);
-  u.lang='es-ES'; if(voz)u.voice=voz; u.rate=0.98; u.pitch=1;
+  u.lang='es-ES'; if(voz)u.voice=voz; u.rate=0.84; u.pitch=1;
   var done=false;
   u.onend=function(){ if(done)return; done=true; onEnd&&onEnd(); };
   u.onerror=function(){ if(done)return; done=true; scheduleFallback(onEnd); };
@@ -170,7 +171,7 @@ function render(){
   void cap.offsetWidth; requestAnimationFrame(function(){ cap.classList.add('in'); });
   pintaDots();
   clearTimeout(timer);
-  if(playing){ narrar(sc.text, function(){ if(playing) next(true); }); }
+  if(playing){ narrar(sc.text, function(){ if(!playing) return; clearTimeout(timer); timer=setTimeout(function(){ if(playing) next(true); }, PAUSA); }); }
   else if(!muted && window.speechSynthesis){ try{speechSynthesis.cancel();}catch(e){} }
 }
 function next(auto){ if(idx<SCENES.length-1){ idx++; render(); } else { setPlay(false); } }
