@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>La historia del mono · animada · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --tinta:#2A2622; --suau:#6f665b; --oliva:#565a41;
+    --terra:#C2704F; --sage:#5c7d54; --mono:#a5764f; --mono-d:#7c5637;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  html,body{height:100%;}
+  body{font-family:var(--sans);background:radial-gradient(120% 100% at 50% 0%,#3a4030 0%,#23261d 70%);color:#f3eee2;overflow:hidden;}
+  .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));}
+  /* Portada */
+  #cover{text-align:center;max-width:520px;}
+  #cover .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#d6b98a;margin-bottom:14px;}
+  #cover h1{font-family:var(--serif);font-size:clamp(30px,8vw,46px);line-height:1.05;margin-bottom:12px;}
+  #cover p{font-size:15px;color:#d8d2c4;line-height:1.6;margin-bottom:26px;}
+  .play{display:inline-flex;align-items:center;gap:10px;background:var(--terra);color:#fff;border:0;border-radius:30px;font-family:var(--sans);font-weight:700;font-size:17px;padding:15px 30px;cursor:pointer;box-shadow:0 12px 30px -12px rgba(194,112,79,.7);}
+  .mutebar{margin-top:18px;}
+  .mutebar button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#f3eee2;border-radius:22px;padding:8px 16px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  /* Escena */
+  #show{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));}
+  #show.on{display:flex;}
+  .art{flex:1 1 auto;display:flex;align-items:center;justify-content:center;width:100%;min-height:0;}
+  .art svg{width:auto;height:100%;max-height:52vh;max-width:min(92vw,560px);}
+  .cap{flex:0 0 auto;max-width:640px;text-align:center;margin-top:8px;}
+  .cap p{font-family:var(--serif);font-size:clamp(20px,4.2vw,30px);line-height:1.32;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;}
+  .cap p.in{opacity:1;transform:none;}
+  .cap .q{font-style:italic;color:#f0d9a0;}
+  .dots{display:flex;gap:7px;margin-top:16px;justify-content:center;}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:background .3s,transform .3s;}
+  .dots i.on{background:#e7c079;transform:scale(1.35);}
+  .ctrl{display:flex;align-items:center;gap:14px;margin-top:16px;}
+  .cbtn{width:52px;height:52px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#f3eee2;font-size:20px;cursor:pointer;display:grid;place-items:center;}
+  .cbtn.big{width:60px;height:60px;background:var(--terra);color:#fff;font-size:22px;}
+  .top{position:fixed;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:10px;z-index:5;}
+  .top button{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);color:#f3eee2;border-radius:22px;padding:8px 14px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  @media(prefers-reduced-motion:no-preference){
+    .drive{animation:drive 2.4s ease-in-out infinite;}
+    .shake{animation:shake .35s ease-in-out infinite;}
+    .bob{animation:bob 2.2s ease-in-out infinite;}
+    .run{animation:run 1s ease-in-out infinite;}
+    .glow{animation:glow 2.6s ease-in-out infinite;}
+    .pulse{animation:pulse 3s ease-in-out infinite;}
+  }
+  @keyframes drive{0%,100%{transform:translateX(-8px)}50%{transform:translateX(8px)}}
+  @keyframes shake{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  @keyframes run{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+  @keyframes glow{0%,100%{filter:drop-shadow(0 0 6px rgba(231,192,121,.4))}50%{filter:drop-shadow(0 0 18px rgba(231,192,121,.8))}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .fade{animation:fade .5s ease both;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="top" id="topbar" style="display:none">
+  <button id="muteBtn">🔊 Voz</button>
+  <button id="exitBtn">✕ Salir</button>
+</div>
+
+<div class="stage" id="cover">
+  <div>
+    <div class="eyebrow">APRENS · el porqué</div>
+    <h1>La historia del mono</h1>
+    <p>Un cuento de un minuto sobre quién conduce tu vida —y cómo aprender a llevar el volante acompañando a tu mono.</p>
+    <button class="play" id="startBtn">▶ Reproducir</button>
+    <div class="mutebar"><button id="coverMute">🔊 Con voz · tocar para silenciar</button></div>
+  </div>
+</div>
+
+<div class="stage" id="show">
+  <div class="art" id="art"></div>
+  <div class="cap"><p id="cap"></p></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrl">
+    <button class="cbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="cbtn big" id="playBtn" aria-label="Pausa">⏸</button>
+    <button class="cbtn" id="nextBtn" aria-label="Siguiente">›</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Ilustraciones (SVG simples) ---------- */
+function monoFace(x,y,s){ s=s||1; return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+  '<circle cx="0" cy="0" r="22" fill="var(--mono)"/>'+
+  '<circle cx="-19" cy="-14" r="9" fill="var(--mono)"/><circle cx="19" cy="-14" r="9" fill="var(--mono)"/>'+
+  '<circle cx="-19" cy="-14" r="4.5" fill="#e9c9a6"/><circle cx="19" cy="-14" r="4.5" fill="#e9c9a6"/>'+
+  '<ellipse cx="0" cy="6" rx="15" ry="13" fill="#e9c9a6"/>'+
+  '<circle cx="-7" cy="-3" r="3.2" fill="#2a2622"/><circle cx="7" cy="-3" r="3.2" fill="#2a2622"/>'+
+  '<ellipse cx="0" cy="5" rx="3" ry="2.2" fill="#7c5637"/>'+
+  '<path d="M-7 11 Q0 16 7 11" stroke="#7c5637" stroke-width="2" fill="none" stroke-linecap="round"/></g>'; }
+function car(mono){ // mono: 'volante'|'copiloto'|'maletero'|null
+  var m='';
+  if(mono==='volante') m=monoFace(70,74,0.7);
+  if(mono==='copiloto') m=monoFace(120,74,0.7);
+  if(mono==='maletero') m=monoFace(158,86,0.55);
+  return '<svg viewBox="0 0 200 140"><g>'+
+    '<ellipse cx="100" cy="126" rx="86" ry="7" fill="rgba(0,0,0,.25)"/>'+
+    '<path d="M28 96 L46 60 Q50 52 60 52 L140 52 Q150 52 154 60 L172 96 Z" fill="var(--terra)"/>'+
+    '<rect x="30" y="92" width="140" height="22" rx="9" fill="#a85a3c"/>'+
+    '<path d="M58 62 L96 62 L96 84 L48 84 Z" fill="#d7e6ea" opacity=".9"/>'+
+    '<path d="M104 62 L138 62 L150 84 L104 84 Z" fill="#d7e6ea" opacity=".9"/>'+
+    '<circle cx="60" cy="114" r="15" fill="#2a2622"/><circle cx="60" cy="114" r="6" fill="#6f665b"/>'+
+    '<circle cx="140" cy="114" r="15" fill="#2a2622"/><circle cx="140" cy="114" r="6" fill="#6f665b"/>'+
+    m+'</g></svg>'; }
+function persona(x,y,glow){ return '<g transform="translate('+x+','+y+')" class="'+(glow?'glow':'')+'">'+
+  '<circle cx="0" cy="0" r="21" fill="#f0d6bd"/>'+
+  '<path d="M-21 -3 Q0 -30 21 -3 Q18 -22 0 -24 Q-18 -22 -21 -3Z" fill="#5b4a3a"/>'+
+  '<circle cx="-7" cy="-1" r="2.6" fill="#2a2622"/><circle cx="7" cy="-1" r="2.6" fill="#2a2622"/>'+
+  '<path d="M-6 9 Q0 13 6 9" stroke="#b98a5e" stroke-width="2" fill="none" stroke-linecap="round"/></g>'; }
+function koala(x,y,s,col){ s=s||1; col=col||'#9fb0a2'; return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+  '<circle cx="-16" cy="-10" r="10" fill="'+col+'"/><circle cx="16" cy="-10" r="10" fill="'+col+'"/>'+
+  '<circle cx="-16" cy="-10" r="5" fill="#f3d9dd"/><circle cx="16" cy="-10" r="5" fill="#f3d9dd"/>'+
+  '<circle cx="0" cy="2" r="20" fill="'+col+'"/>'+
+  '<circle cx="-7" cy="-1" r="2.6" fill="#2a2622"/><circle cx="7" cy="-1" r="2.6" fill="#2a2622"/>'+
+  '<ellipse cx="0" cy="7" rx="6" ry="7.5" fill="#4a4038"/></g>'; }
+
+var SCENES=[
+  { art:'<svg viewBox="0 0 200 140"><g class="bob">'+monoFace(100,66,1.7)+'</g></svg>',
+    text:'Dentro de ti viaja un mono. Es tu parte más animal: tu niño interior, tu cuerpo, lo que siente y reacciona antes de que te des cuenta.' },
+  { art:'<svg viewBox="0 0 200 140"><g class="glow">'+persona(100,66,true)+'</g></svg>',
+    text:'Y estás tú: una conciencia que puede mirar al mono y acompañarlo. Tú no eres el mono; eres quien puede llevar el volante.' },
+  { art:car('volante').replace('<g>','<g class="shake">'),
+    text:'A veces el mono coge el volante. Una emoción intensa toma el control, pisa el acelerador buscando alivio y frena de golpe.' },
+  { art:'<svg viewBox="0 0 200 140"><g class="drive">'+monoFace(150,60,0.9)+persona(60,74,false)+'</g></svg>',
+    text:'Otras veces lo persigues para vencerlo: te exiges calma, te riñes por sentir. Pero cuanto más lo persigues, más corre.' },
+  { art:car('maletero'),
+    text:'Y a veces lo metes en el maletero: lo tapas con móvil, trabajo o comida. Pero lo que escondes no desaparece: solo espera.' },
+  { art:car('copiloto').replace('<g>','<g class="drive">'),
+    text:'Hay otra forma: sentarlo a tu lado y conducir tú. Escucharlo, mirarlo, acompañarlo… y mantener el volante en tus manos.' },
+  { art:'<svg viewBox="0 0 200 140"><g class="pulse">'+koala(70,72,1,'#8aa38c')+koala(115,66,1.15,'#9fb0a2')+koala(150,74,0.9,'#c8a06a')+'</g></svg>',
+    text:'Tu mono es un mamífero de manada. Por eso respirar no es relajarte: es volver a aparecer para él, para que note que no va solo.' },
+  { art:'<svg viewBox="0 0 200 140"><g class="glow">'+monoFace(78,70,1.1)+persona(126,70,true)+'</g></svg>',
+    text:'El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.', quote:true }
+];
+
+var idx=0, playing=false, muted=false, timer=null;
+var $=function(id){return document.getElementById(id);};
+var voces=[], voz=null;
+function cargarVoz(){ voces=(window.speechSynthesis?speechSynthesis.getVoices():[])||[]; voz=voces.filter(function(v){return /^es/i.test(v.lang);})[0]||null; }
+if(window.speechSynthesis){ cargarVoz(); speechSynthesis.onvoiceschanged=cargarVoz; }
+
+function narrar(text, onEnd){
+  if(!window.speechSynthesis) { onEnd&&scheduleFallback(onEnd); return; }
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(muted){ scheduleFallback(onEnd); return; }
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='es-ES'; if(voz)u.voice=voz; u.rate=0.98; u.pitch=1;
+  var done=false;
+  u.onend=function(){ if(done)return; done=true; onEnd&&onEnd(); };
+  u.onerror=function(){ if(done)return; done=true; scheduleFallback(onEnd); };
+  try{ speechSynthesis.speak(u); }catch(e){ scheduleFallback(onEnd); }
+  // Fallback por si onend no dispara (algunos móviles)
+  scheduleFallback(function(){ if(!done){ done=true; onEnd&&onEnd(); } }, Math.max(4500, text.length*90));
+}
+function scheduleFallback(fn, ms){ clearTimeout(timer); timer=setTimeout(fn, ms||5200); }
+
+function pintaDots(){ $('dots').innerHTML=SCENES.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join(''); }
+function render(){
+  var sc=SCENES[idx];
+  var art=$('art'); art.innerHTML=sc.art; art.classList.remove('fade'); void art.offsetWidth; art.classList.add('fade');
+  var cap=$('cap'); cap.className=sc.quote?'q':''; cap.classList.remove('in'); cap.textContent=(sc.quote?'«':'')+sc.text+(sc.quote?'»':'');
+  void cap.offsetWidth; requestAnimationFrame(function(){ cap.classList.add('in'); });
+  pintaDots();
+  clearTimeout(timer);
+  if(playing){ narrar(sc.text, function(){ if(playing) next(true); }); }
+  else if(!muted && window.speechSynthesis){ try{speechSynthesis.cancel();}catch(e){} }
+}
+function next(auto){ if(idx<SCENES.length-1){ idx++; render(); } else { setPlay(false); } }
+function prev(){ if(idx>0){ idx--; render(); } }
+function setPlay(p){ playing=p; $('playBtn').textContent=p?'⏸':'▶'; if(p) render(); else { clearTimeout(timer); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+function setMute(m){ muted=m; var t=m?'🔇 Silencio':'🔊 Voz'; $('muteBtn').textContent=t; if(m){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+
+function empezar(){
+  $('cover').style.display='none'; $('show').classList.add('on'); $('topbar').style.display='flex';
+  idx=0; setPlay(true);
+  var el=document.documentElement; try{ el.requestFullscreen&&el.requestFullscreen().catch(function(){}); }catch(e){}
+}
+function salir(){
+  setPlay(false); $('show').classList.remove('on'); $('topbar').style.display='none'; $('cover').style.display='flex';
+  try{ document.fullscreenElement&&document.exitFullscreen&&document.exitFullscreen().catch(function(){}); }catch(e){}
+}
+
+$('startBtn').onclick=empezar;
+$('coverMute').onclick=function(){ setMute(!muted); this.textContent=muted?'🔇 Sin voz · tocar para activar':'🔊 Con voz · tocar para silenciar'; };
+$('playBtn').onclick=function(){ setPlay(!playing); };
+$('prevBtn').onclick=function(){ setPlay(false); prev(); };
+$('nextBtn').onclick=function(){ setPlay(false); next(); };
+$('muteBtn').onclick=function(){ setMute(!muted); if(playing) render(); };
+$('exitBtn').onclick=salir;
+document.addEventListener('keydown',function(e){
+  if(!$('show').classList.contains('on')) return;
+  if(e.key==='ArrowRight'){ setPlay(false); next(); } else if(e.key==='ArrowLeft'){ setPlay(false); prev(); }
+  else if(e.key===' '){ e.preventDefault(); setPlay(!playing); } else if(e.key==='Escape'){ salir(); }
+});
+// El botón "← Atrás" de la cabecera (si está en la app): salir de la reproducción primero.
+window.APRENS_toolBack=function(){ if($('show').classList.contains('on')){ salir(); return true; } return false; };
+window.addEventListener('pagehide',function(){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} });
+</script>
+</body>
+</html>

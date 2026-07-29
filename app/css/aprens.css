@@ -144,6 +144,11 @@ body{
 .hs-q-x{font-size:12.8px;line-height:1.55;color:#443c33}
 .hs-q-x b{color:var(--tinta)}
 .hs-quien-b{margin:11px 0 0!important;font-size:13.5px;color:var(--gris)}
+.hs-video{display:flex;align-items:center;gap:12px;text-decoration:none;background:linear-gradient(135deg,#2f3527,#414834);color:#f3eee2;border-radius:14px;padding:12px 14px;margin:2px 0 14px;box-shadow:0 8px 22px -12px rgba(42,38,34,.6)}
+.hs-video .hv-ic{font-size:22px;flex:0 0 auto}
+.hs-video .hv-t{display:flex;flex-direction:column;font-weight:700;font-size:15px;font-family:var(--serif);color:#f3eee2}
+.hs-video .hv-t small{font-family:var(--sans);font-weight:400;font-size:12px;color:#cfc9bb;margin-top:2px}
+.hs-video .hv-play{margin-left:auto;background:#C2704F;color:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:13px;flex:0 0 auto}
 .hs-quote{font-family:var(--serif);font-style:italic;color:#1f5e42;background:var(--verdeLt);border-left:4px solid var(--oro);border-radius:0 10px 10px 0;padding:12px 15px;margin:10px 0}
 .hs-acts{margin-top:14px;padding-top:14px;border-top:1px dashed #e4e1cf}
 .hs-acts-t{font-size:13px;color:#4a4a4a;margin:0 0 9px}
