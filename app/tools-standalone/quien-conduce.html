@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#565a41">
+<title>¿Quién conduce tu vida? · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --card:#FBF8F1; --tinta:#2A2622; --suau:#6f665b;
+    --oliva:#565a41; --oliva-d:#3f4430; --terra:#b0563a; --terra-d:#8f4126; --sage:#5c7d54;
+    --mono:#a5764f; --linia:#e5dcc9; --oro:#a7802f;
+    --ombra-s:0 2px 12px rgba(50,60,40,.07);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:18px;
+  }
+  body{font-family:var(--sans);background:linear-gradient(170deg,#F5F0E6 0%,#EFE7D6 100%);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.6;padding:0 16px calc(40px + env(safe-area-inset-bottom));}
+  .wrap{max-width:620px;margin:0 auto;}
+  header{text-align:center;padding:28px 6px 4px;}
+  .kick{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--oliva-d);background:#e7ead9;border:1px solid var(--linia);border-radius:20px;padding:5px 13px;margin-bottom:12px;}
+  h1{font-family:var(--serif);font-size:clamp(28px,7vw,40px);line-height:1.1;}
+  .lead{font-size:15.5px;color:var(--suau);margin:12px auto 0;max-width:30em;}
+
+  .video{display:flex;align-items:center;gap:13px;margin:16px 0 4px;background:linear-gradient(160deg,var(--oliva),#3f4430);color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;box-shadow:var(--ombra-s);}
+  .video .ve{font-size:24px;flex:0 0 auto;}
+  .video .vt{font-weight:700;font-size:15px;line-height:1.25;flex:1;}
+  .video .vt small{display:block;font-weight:400;font-size:12.5px;opacity:.88;margin-top:1px;}
+  .video .vp{font-size:15px;background:rgba(255,255,255,.18);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;flex:0 0 auto;}
+  .video:active{transform:scale(.99);}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:20px 18px;margin:16px 0;box-shadow:var(--ombra-s);}
+  .card h2{font-family:var(--serif);font-size:20px;margin:0 0 8px;display:flex;align-items:center;gap:10px;line-height:1.25;}
+  .card h2 .e{font-size:22px;flex:0 0 auto;}
+  .card p{margin:9px 0;}
+  .card p b{color:var(--oliva-d);}
+
+  .quien{display:grid;gap:12px;margin:10px 0 2px;}
+  @media(min-width:520px){.quien{grid-template-columns:1fr 1fr;}}
+  .q{border-radius:14px;padding:14px 15px;border:1px solid var(--linia);}
+  .q-mono{background:#f6ede0;border-color:#e7d4b8;}
+  .q-yo{background:#eef1e6;border-color:#d8e0c6;}
+  .q-h{font-family:var(--serif);font-weight:700;font-size:16px;margin-bottom:5px;}
+  .q-mono .q-h{color:var(--mono);} .q-yo .q-h{color:var(--oliva-d);}
+  .q-x{font-size:14px;line-height:1.55;color:#403a33;}
+  .q-x b{color:var(--tinta);}
+  .bridge-lead{font-size:14.5px;color:#403a33;margin-top:12px;}
+
+  .modo{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--linia);border-left:5px solid var(--terra);border-radius:14px;padding:14px 15px;margin:11px 0;box-shadow:var(--ombra-s);}
+  .modo.bien{border-left-color:var(--sage);}
+  .modo .me{font-size:26px;flex:0 0 auto;line-height:1.1;}
+  .modo .mt{font-size:14.5px;line-height:1.55;color:#403a33;}
+  .modo .mt b{color:var(--tinta);}
+
+  .quote{font-family:var(--serif);font-style:italic;color:var(--oliva-d);background:#eef1e6;border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:15px 17px;margin:16px 0;font-size:18px;line-height:1.5;}
+
+  .acts{background:linear-gradient(160deg,#fff,#f4efe2);border:1px solid var(--linia);border-radius:var(--r);padding:18px;margin:18px 0;}
+  .acts-t{font-family:var(--serif);font-size:16px;color:var(--oliva-d);margin-bottom:10px;}
+  .act{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:12px 14px;margin:9px 0;color:var(--tinta);text-decoration:none;}
+  .act .se{font-size:22px;flex:0 0 auto;}
+  .act .st{flex:1;font-weight:600;font-size:14.5px;line-height:1.3;}
+  .act .st small{display:block;font-weight:400;font-size:12.5px;color:var(--suau);margin-top:1px;}
+  .act .sarr{color:var(--oliva);font-weight:700;}
+  .act:active{transform:scale(.99);}
+
+  .pdf{display:inline-flex;align-items:center;gap:8px;margin:6px 0 2px;color:var(--oliva-d);background:#eef1e6;border:1px solid var(--linia);border-radius:999px;padding:11px 16px;text-decoration:none;font-weight:600;font-size:13.5px;}
+  .pdfnote{font-size:12.5px;color:var(--suau);margin:6px 0 0;}
+
+  .cta{background:linear-gradient(160deg,var(--oliva),#3f4430);color:#fff;border-radius:var(--r);padding:20px 18px;margin:18px 0;}
+  .cta h2{font-family:var(--serif);font-size:19px;margin:0 0 6px;color:#fff;}
+  .cta p{color:#eaeee0;font-size:14.5px;margin:6px 0 12px;}
+  .cta a{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:13px;padding:12px 15px;color:#fff;text-decoration:none;font-weight:600;font-size:14.5px;}
+
+  footer{text-align:center;color:var(--suau);font-size:12.5px;margin:26px 0 8px;line-height:1.55;}
+  footer b{font-family:var(--serif);color:var(--oliva-d);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kick">AIS · TEC · el porqué</span>
+    <h1>¿Quién conduce tu vida?</h1>
+    <p class="lead rx" data-say="¿Quién conduce tu vida? Esta es la metáfora base de todo el trabajo: el mono y el coche. Antes de cualquier técnica, entender quién lleva el volante.">La metáfora base de todo el trabajo: el mono y el coche. Antes de cualquier técnica, entender quién lleva el volante.</p>
+  </header>
+
+  <div id="audioguia"></div>
+
+  <a class="video" target="_top" href="../index.html#/tool/historia_animada">
+    <span class="ve">🎬</span><span class="vt">Ver la historia animada<small>La misma historia, narrada en un minuto</small></span><span class="vp">▶</span>
+  </a>
+
+  <div class="card">
+    <h2><span class="e">🧭</span>Primero, lo esencial: ¿quién es el mono y quién eres tú?</h2>
+    <div class="quien">
+      <div class="q q-mono">
+        <div class="q-h">🐒 El mono</div>
+        <div class="q-x rx" data-say="El mono es tu parte más animal: tu cuerpo, tu niño o niña interior, la parte mamífera que siente y reacciona antes de que te des cuenta. Pero no es solo biología: también es la vulnerabilidad que no pudo integrarse en tu manada segura, tu familia, tus vínculos de apego. En la infancia o la adolescencia hubo vivencias que no tuviste las condiciones para acompañar, y quedaron guardadas en él.">Es tu parte más animal: tu <b>cuerpo</b>, tu <b>niño/a interior</b>, la parte mamífera que siente y reacciona <b>antes de que te des cuenta</b>. Pero no es solo biología: también es la <b>vulnerabilidad que no pudo integrarse en tu manada segura</b> —tu familia, tus vínculos de apego—. En la infancia o la adolescencia hubo vivencias que no tuviste las condiciones para acompañar, y quedaron guardadas en él.</div>
+      </div>
+      <div class="q q-yo">
+        <div class="q-h">🧑 Tú</div>
+        <div class="q-x rx" data-say="Tú eres una conciencia: una idea de yo construida a partir de lo que has vivido, capaz de tomar perspectiva y observar a tu propio organismo funcionar por su cuenta. Tú puedes mirar al mono; el mono no puede mirarse a sí mismo. Entonces tu conciencia aún no estaba para acompañarlo, validarlo y darle espacio. Ahora sí estás: ahora puedes.">Eres una <b>conciencia</b>: una idea de «yo» construida a partir de lo que has vivido, capaz de <b>tomar perspectiva</b> y observar a tu propio organismo funcionar por su cuenta. Tú puedes mirar al mono; el mono no puede mirarse a sí mismo. Entonces tu conciencia <b>aún no estaba</b> para acompañarlo. <b>Ahora sí estás: ahora puedes.</b></div>
+      </div>
+    </div>
+    <p class="bridge-lead rx" data-say="Tú no eres el mono: eres quien puede acompañarlo y llevar el volante. Con esto en mente, la metáfora del coche cobra sentido."><b>Tú no eres el mono</b>: eres quien puede acompañarlo y llevar el volante. Con esto en mente, la metáfora del coche cobra sentido:</p>
+  </div>
+
+  <div class="modo">
+    <span class="me">🚗</span>
+    <div class="mt rx" data-say="A veces el mono coge el volante. Una emoción intensa toma el control: pisa el acelerador buscando alivio, frena de golpe. Tu vida gira alrededor del alivio inmediato."><b>A veces el mono coge el volante.</b> Una emoción intensa toma el control: pisa el acelerador buscando alivio, frena de golpe. Tu vida gira alrededor del alivio inmediato.</div>
+  </div>
+  <div class="modo">
+    <span class="me">🏃</span>
+    <div class="mt rx" data-say="Otras veces lo persigues para vencerlo. Te exiges calma, te riñes por sentir. Pero el miedo no se calma a gritos: cuanto más lo persigues, más corre."><b>Otras veces lo persigues para vencerlo.</b> Te exiges calma, te riñes por sentir. Pero el miedo no se calma a gritos: cuanto más lo persigues, más corre.</div>
+  </div>
+  <div class="modo">
+    <span class="me">📦</span>
+    <div class="mt rx" data-say="Y a veces lo metes en el maletero. Lo tapas con móvil, trabajo, comida. Pero lo que escondes no desaparece: solo espera."><b>Y a veces lo metes en el maletero.</b> Lo tapas con móvil, trabajo, comida… Pero lo que escondes no desaparece: solo espera.</div>
+  </div>
+  <div class="modo bien">
+    <span class="me">🧡</span>
+    <div class="mt rx" data-say="Hay otra forma: sentarlo a tu lado y seguir conduciendo tú. Puedes escucharlo, mirarlo, acompañarlo, y mantener el volante en tus manos. Amar al mono no es obedecerlo: es acompañarlo."><b>Hay otra forma:</b> sentarlo a tu lado y seguir conduciendo tú. Puedes escucharlo, mirarlo, acompañarlo… y mantener el volante en tus manos. <i>Amar al mono no es obedecerlo: es acompañarlo.</i></div>
+  </div>
+
+  <div class="quote rx" data-say="El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.">«El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.»</div>
+
+  <div class="acts">
+    <p class="acts-t"><b>¿Y ahora? Según dónde lleves al mono hoy, una herramienta para acompañarlo:</b></p>
+    <a class="act" target="_top" href="../index.html#/tool/bajar_alerta"><span class="se">🚗</span><span class="st">Si coge el volante (reaccionas por impulso)<small>Bajar la alerta · parar antes de actuar</small></span><span class="sarr">→</span></a>
+    <a class="act" target="_top" href="../index.html#/tool/ais_amor"><span class="se">🏃</span><span class="st">Si lo persigues (te exiges, te riñes)<small>AIS desde el amor · acompañarte, no controlarte</small></span><span class="sarr">→</span></a>
+    <a class="act" target="_top" href="../index.html#/tool/acompanar_sensacion"><span class="se">📦</span><span class="st">Si lo metes en el maletero (lo evitas)<small>Acompañar la sensación · estar con lo que sientes</small></span><span class="sarr">→</span></a>
+    <a class="act" target="_top" href="../index.html#/tool/herramienta_diaria"><span class="se">🧡</span><span class="st">Para sentarlo a tu lado (cada día)<small>Herramienta diaria · tu práctica de presencia</small></span><span class="sarr">→</span></a>
+  </div>
+
+  <div class="card">
+    <a class="pdf" href="../assets/pdf/quien-conduce-tu-vida.pdf" target="_blank" rel="noopener" download>📄 Leer la historia completa (PDF ilustrado)</a>
+    <p class="pdfnote">El cuento entero, con sus ilustraciones, para leerlo con calma siempre que quieras.</p>
+  </div>
+
+  <div class="cta">
+    <h2>🐾 ¿Y por qué respirar cambia algo?</h2>
+    <p class="rx" data-say="Solo necesitaba saber que no iba solo. Porque tu mono es un mamífero de manada, y respirar no es relajarte: es volver a aparecer para él.">Porque tu mono es un mamífero de manada, y respirar no es relajarte — es <b>volver a aparecer para él</b>.</p>
+    <a target="_top" href="../index.html#/tool/la_manada">🐾 La manada · el porqué de la respiración →</a>
+  </div>
+
+  <footer><b>Centre APRENS</b> · TEC · AIS<br>Material de acompañamiento. Se interpreta dentro de tu proceso en consulta.</footer>
+</div>
+
+<script src="assets/reflexion-audio.js"></script>
+<script>
+  AprensAudio.mount('audioguia', { title:'Escuchar la explicación', subtitle:'Voz del dispositivo · te la lee en voz alta' });
+</script>
+</body>
+</html>

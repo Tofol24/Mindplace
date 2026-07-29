@@ -17,8 +17,7 @@
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
     { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
-      ids:["la_manada","modelo_atencional"],
-      pdfs:[{ emoji:"🧭", nombre:"¿Quién conduce tu vida?", desc:"La metáfora base del trabajo, la historia del mono (AIS · TEC).", url:"assets/pdf/quien-conduce-tu-vida.pdf" }] },
+      ids:["quien_conduce","la_manada","modelo_atencional"] },
     { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada (voz del dispositivo), de un minuto cada una. Para verlas con calma o compartirlas.",
       ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",

@@ -76,6 +76,18 @@ var T={
     h1:"El control y la presencia",
     lead:"Ante el dolor o el malestar, tu mente intenta recuperar el control. Ahí se abren dos caminos. Este es el mapa de por qué, a veces, el malestar crece… y de por dónde se sale.",
     video:"Ver la historia animada", videoSub:"Versión narrada, en un minuto",
+    audioT:"Escuchar la explicación", audioS:"Voz del dispositivo · te la lee en voz alta",
+    audio:[
+      "Ante el dolor o el malestar, tu mente intenta recuperar el control. Ahí se abren dos caminos.",
+      "El punto de partida: aparece un dolor, una emoción intensa, una sensación incómoda. Tu cuerpo busca el control perdido y pregunta: ¿puedo controlar esto? Lo que haces con esa pregunta marca el camino.",
+      "Camino uno, la trampa: buscar el control perdido con sobrepensamiento, sin un espacio ni un tiempo donde parar.",
+      "Haces algo para aliviarte: comprobar, evitar, distraerte. Llega un alivio inmediato que refuerza la huida, y la próxima vez pesa más.",
+      "Aparece la frustración: tensión física, angustia y ansiedad. Y si sigue, las sensaciones se asocian a situaciones neutras del día a día. El resultado es una deriva ansioso-depresiva: anhedonia y abulia.",
+      "Camino dos, la salida: la conciencia. En la situación presente, paras. Es la flecha atencional.",
+      "Llevas la atención al cuerpo con compasión: respiración y visualización, hacia dentro, al cuello, el pecho, la barriga. Y se abre una oportunidad, un espacio y un tiempo donde puedes elegir.",
+      "Tus valores y creencias conscientes toman el volante, y actúas con una conducta asertiva, fiel a lo que te importa.",
+      "La clave: el dolor no es el problema. El problema es buscar el control sin espacio ni tiempo. La salida no es controlar más, sino parar y llevar la atención al cuerpo con presencia. Eso es lo que entrenas con el AIS."
+    ],
     startT:"El punto de partida",
     startX:"Aparece un <b>dolor</b>: una emoción intensa, una sensación incómoda. Tu cuerpo busca el <b>control perdido</b> y pregunta: «¿puedo controlar esto?». Lo que haces con esa pregunta marca el camino.",
     fork:"¿Puedo controlar esto?",
@@ -103,6 +115,18 @@ var T={
     h1:"El control i la presència",
     lead:"Davant del dolor o el malestar, la teva ment intenta recuperar el control. Aquí s'obren dos camins. Aquest és el mapa de per què, de vegades, el malestar creix… i de per on se'n surt.",
     video:"Veure la història animada", videoSub:"Versió narrada, en un minut",
+    audioT:"Escoltar l'explicació", audioS:"Veu del dispositiu · te la llegeix en veu alta",
+    audio:[
+      "Davant del dolor o el malestar, la teva ment intenta recuperar el control. Aquí s'obren dos camins.",
+      "El punt de partida: apareix un dolor, una emoció intensa, una sensació incòmoda. El teu cos busca el control perdut i pregunta: puc controlar això? El que fas amb aquesta pregunta marca el camí.",
+      "Camí un, la trampa: buscar el control perdut amb sobrepensament, sense un espai ni un temps on aturar-se.",
+      "Fas alguna cosa per alleujar-te: comprovar, evitar, distreure't. Arriba un alleujament immediat que reforça la fugida, i la propera vegada pesa més.",
+      "Apareix la frustració: tensió física, angoixa i ansietat. I si segueix, les sensacions s'associen a situacions neutres del dia a dia. El resultat és una deriva ansiosa-depressiva: anhedònia i abúlia.",
+      "Camí dos, la sortida: la consciència. En la situació present, atures. És la fletxa atencional.",
+      "Portes l'atenció al cos, amb compassió: respiració i visualització, cap a dins, al coll, el pit, la panxa. I s'obre una oportunitat, un espai i un temps on pots triar.",
+      "Els teus valors i creences conscients agafen el volant, i actues amb una conducta assertiva, fidel al que t'importa.",
+      "La clau: el dolor no és el problema. El problema és buscar el control sense espai ni temps. La sortida no és controlar més, sinó aturar-se i portar l'atenció al cos amb presència. Això és el que entrenes amb l'AIS."
+    ],
     startT:"El punt de partida",
     startX:"Apareix un <b>dolor</b>: una emoció intensa, una sensació incòmoda. El teu cos busca el <b>control perdut</b> i pregunta: «puc controlar això?». El que fas amb aquesta pregunta marca el camí.",
     fork:"Puc controlar això?",
@@ -138,12 +162,14 @@ function render(){
   document.getElementById('app').innerHTML=
     '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
     '<a class="video" href="/#/tool/historia_control" target="_top"><span class="ve">🎬</span><span class="vt">'+esc(t.video)+'<small>'+esc(t.videoSub)+'</small></span><span class="vp">▶</span></a>'+
+    '<div id="audioguia"></div>'+
     '<div class="start"><div class="st-t">'+esc(t.startT)+'</div><div class="st-x">'+t.startX+'</div></div>'+
     '<div class="fork">↓ '+esc(t.fork)+' ↓</div>'+
     '<div class="paths">'+pathHTML(t.trap,'trap')+pathHTML(t.out,'out')+'</div>'+
     '<div class="clave"><div class="cl-t">'+esc(t.claveT)+'</div><div class="cl-x">'+t.claveX+'</div>'+
       '<a class="cta" href="/#/tool/ais_basicas" target="_top">'+esc(t.cta)+'</a></div>'+
     '<footer><b>Centre APRENS</b> · '+esc(t.foot)+'</footer>';
+  if(window.AprensAudio) AprensAudio.mount('audioguia', { title:t.audioT, subtitle:t.audioS, lang:(LANG==='ca'?'ca-ES':'es-ES'), segments:t.audio });
 }
 function setLang(l){
   LANG=l;
@@ -154,5 +180,7 @@ function setLang(l){
 }
 render();
 </script>
+<script src="assets/reflexion-audio.js"></script>
+<script>if(window.AprensAudio) AprensAudio.mount('audioguia', { title:U().audioT, subtitle:U().audioS, lang:(LANG==='ca'?'ca-ES':'es-ES'), segments:U().audio });</script>
 </body>
 </html>
