@@ -2,6 +2,11 @@
 
 # El service worker y el shell no deben cachearse en el CDN: así una versión
 # nueva se propaga al instante (el precache interno ya gestiona el offline).
+# Los .ics del recordatorio deben servirse como calendario para que iOS/Safari
+# ofrezca "Añadir al calendario" (con nosniff el tipo debe declararse explícito).
+/assets/ics/*
+  Content-Type: text/calendar; charset=utf-8
+
 /sw.js
   Cache-Control: public, max-age=0, must-revalidate
 /index.html

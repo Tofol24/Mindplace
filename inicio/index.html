@@ -1140,8 +1140,10 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
   function foco(){try{var f=(new URLSearchParams(location.search).get('foco')||'').toUpperCase();return ['L','D','C'].indexOf(f)>=0?f:null;}catch(e){return null;}}
   var CTA={L:{id:'bajar_alerta',n:'Bajar la alerta',e:'🚗'},D:{id:'honestidad_emocional',n:'Honestidad emocional',e:'🫀'},C:{id:'herramienta_diaria',n:'Herramienta diaria',e:'🧡'}};
   function sug(){return CTA[foco()]||CTA.C;}
-  function ics(hora){var hm=hora.split(":").map(Number),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hm[0],hm[1],0),end=new Date(start.getTime()+10*60000);var f=function(d){return d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"T"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+"00";};return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//APRENS//AIS//ES","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:aprens-"+start.getTime()+"@aprens","DTSTAMP:"+f(now),"DTSTART:"+f(start),"DTEND:"+f(end),"RRULE:FREQ=DAILY","SUMMARY:APRENS · Tu minuto de presencia","DESCRIPTION:Un minuto contigo\\, baja a tu cuerpo y practica tu AIS. La constancia es lo que lo automatiza.","BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0M","DESCRIPTION:APRENS · Tu minuto de presencia","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");}
-  function datosICS(hora){return "data:text/calendar;charset=utf-8,"+encodeURIComponent(ics(hora));}
+  // Recordatorio = .ics real alojado en el dominio de la app (uno por cuarto de hora),
+  // servido con Content-Type text/calendar. Es lo único fiable en iPhone. Ajusta al cuarto.
+  function snapCuarto(hhmm){var p=(hhmm||"20:00").split(":").map(Number),h=p[0]||0,m=Math.round((p[1]||0)/15)*15;if(m===60){m=0;h=(h+1)%24;}var pad=function(n){return String(n).padStart(2,"0");};return {hhmm:pad(h)+":"+pad(m),file:pad(h)+pad(m)};}
+  function urlICS(hora){return "https://aprens-app.netlify.app/assets/ics/"+snapCuarto(hora).file+".ics";}
   function tpl(){
     var c=load(),r=racha(c.dias),ds=desde(c.dias),hoy=c.dias[c.dias.length-1]===iso(new Date()),s=sug(),estado,cta=true;
     if(hoy){estado='<b>Hoy ya has estado contigo.</b> Cada día que vuelves, la presencia interna se automatiza un poco más.';cta=false;}
@@ -1152,7 +1154,7 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
     var ctaH=cta?'<a class="cont-cta" href="https://aprens-app.netlify.app/#/tool/'+s.id+'" target="_blank" rel="noopener">'+s.e+' Practicar ahora · '+s.n+' →</a>':'';
     var rec=c.recHora?'<button class="cont-rec on" id="contRecBtn">🔔 Recordatorio diario a las '+c.recHora+' · cambiar</button>':'<button class="cont-rec" id="contRecBtn">🔔 Recordarme a diario</button>';
     var hint=c.recHora?'<div class="cont-rec-hint">Te avisa el <b>calendario de tu móvil</b> a las '+c.recHora+' —no la app. ¿No te llega? Vuelve a pulsar «Añadir a mi calendario» y confirma <b>«Añadir»</b> en el aviso de tu móvil.</div>':'';
-    return '<section class="cont"><div class="cont-top">'+fuego+'<div class="cont-body"><div class="cont-h">Tu presencia, cada día</div><div class="cont-txt">'+estado+'</div>'+ctaH+'</div></div><div class="cont-rec-wrap">'+rec+hint+'<div class="cont-rec-panel" id="contRecPanel" hidden><label>Hora <input type="time" id="contRecHora" value="'+(c.recHora||'20:00')+'"></label><a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a><div class="cont-rec-note">Al pulsar, se abre tu <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. No sale nada de tu dispositivo.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div></div></div></section>';
+    return '<section class="cont"><div class="cont-top">'+fuego+'<div class="cont-body"><div class="cont-h">Tu presencia, cada día</div><div class="cont-txt">'+estado+'</div>'+ctaH+'</div></div><div class="cont-rec-wrap">'+rec+hint+'<div class="cont-rec-panel" id="contRecPanel" hidden><label>Hora <input type="time" id="contRecHora" value="'+(c.recHora||'20:00')+'"></label><a class="cont-rec-add" id="contRecAdd" href="#" target="_blank" rel="noopener">Añadir a mi calendario</a><div class="cont-rec-note">Al pulsar, se abre el <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. La hora se ajusta al <b>cuarto de hora</b> más cercano.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div></div></div></section>';
   }
   function render(){
     var box=document.getElementById('continuidad'); if(!box) return;
@@ -1160,11 +1162,11 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
     var btn=document.getElementById('contRecBtn'),pan=document.getElementById('contRecPanel');
     if(btn&&pan)btn.onclick=function(){pan.hidden=!pan.hidden;};
     var add=document.getElementById('contRecAdd'),horaEl=document.getElementById('contRecHora');
-    if(add&&ES_IOS){ add.removeAttribute('download'); } // en iOS, navegar al .ics (no descargar)
-    function refresh(){ if(add) add.href=datosICS((horaEl&&horaEl.value)||'20:00'); }
+    if(add){ if(ES_IOS){ add.removeAttribute('download'); } else { add.setAttribute('download','recordatorio-aprens.ics'); } }
+    function refresh(){ if(add) add.href=urlICS((horaEl&&horaEl.value)||'20:00'); }
     if(horaEl){ horaEl.addEventListener('input',refresh); horaEl.addEventListener('change',refresh); }
     refresh();
-    if(add)add.addEventListener('click',function(){var c=load();c.recHora=(horaEl&&horaEl.value)||'20:00';save(c);if(!ES_IOS)setTimeout(render,1500);});
+    if(add)add.addEventListener('click',function(){var c=load();c.recHora=snapCuarto((horaEl&&horaEl.value)||'20:00').hhmm;save(c);if(!ES_IOS)setTimeout(render,1500);});
   }
   // Registrar práctica cuando el paciente pulsa un enlace a una herramienta de la app
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(a&&a.href&&/aprens-app\.netlify\.app\/#\/tool\//.test(a.href)){marcar();}},true);
