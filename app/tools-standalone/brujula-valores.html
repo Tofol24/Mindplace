@@ -422,6 +422,8 @@ function copiar(btn){
   }
 }
 
+// Botón «← Atrás» de la cabecera: retrocede una pregunta dentro del cuestionario.
+window.APRENS_toolBack=function(){ if(vista==="quiz"){ if(paso===0){vista='intro';}else{paso--;} render(); window.scrollTo(0,0); return true; } return false; };
 render();
 </script>
 

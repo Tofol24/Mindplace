@@ -670,6 +670,12 @@ function irPantalla(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+// Botón «← Atrás» de la cabecera: pulsa el «‹» de la pantalla activa (retroceso paso a paso).
+window.APRENS_toolBack=function(){
+  var act=document.querySelector('.screen.active');
+  if(act){ var b=act.querySelector('.back'); if(b){ b.click(); return true; } }
+  return false;
+};
 
 /* ════════════════════════ INTENCIÓN ════════════════════════ */
 function elegirIntencion(tipo,btn){

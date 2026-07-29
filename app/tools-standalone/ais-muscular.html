@@ -440,6 +440,12 @@ function copiar(btn){
   else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
 }
 
+// Botón «← Atrás» de la cabecera: retrocede un paso dentro del recorrido.
+window.APRENS_toolBack=function(){
+  if(vista==="recorrido"){ volverIntro(); return true; }
+  if(vista==="cierre"){ vista="recorrido"; render(); scrollTo(0,0); return true; }
+  return false;
+};
 render();
 </script>
 
