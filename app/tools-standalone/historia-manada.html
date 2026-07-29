@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>La manada · animada · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --tinta:#2A2622; --suau:#6f665b; --oliva:#565a41;
+    --terra:#C2704F; --sage:#5c7d54; --mono:#a58f76;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  html,body{height:100%;}
+  body{font-family:var(--sans);background:radial-gradient(120% 100% at 50% 0%,#33402f 0%,#1e241b 70%);color:#f3eee2;overflow:hidden;}
+  .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));}
+  #cover{text-align:center;max-width:520px;}
+  #cover .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#9fc0a6;margin-bottom:14px;}
+  #cover h1{font-family:var(--serif);font-size:clamp(30px,8vw,46px);line-height:1.05;margin-bottom:12px;}
+  #cover p{font-size:15px;color:#d8d2c4;line-height:1.6;margin-bottom:26px;}
+  .play{display:inline-flex;align-items:center;gap:10px;background:var(--sage);color:#fff;border:0;border-radius:30px;font-family:var(--sans);font-weight:700;font-size:17px;padding:15px 30px;cursor:pointer;box-shadow:0 12px 30px -12px rgba(92,125,84,.7);}
+  .mutebar{margin-top:18px;}
+  .mutebar button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#f3eee2;border-radius:22px;padding:8px 16px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  #show{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));}
+  #show.on{display:flex;}
+  .art{flex:1 1 auto;display:flex;align-items:center;justify-content:center;width:100%;min-height:0;}
+  .art svg{width:auto;height:100%;max-height:52vh;max-width:min(92vw,560px);}
+  .cap{flex:0 0 auto;max-width:640px;text-align:center;margin-top:8px;}
+  .cap p{font-family:var(--serif);font-size:clamp(20px,4.2vw,30px);line-height:1.32;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;}
+  .cap p.in{opacity:1;transform:none;}
+  .cap .q{font-style:italic;color:#e7c079;}
+  .dots{display:flex;gap:7px;margin-top:16px;justify-content:center;}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:background .3s,transform .3s;}
+  .dots i.on{background:#9fc0a6;transform:scale(1.35);}
+  .ctrl{display:flex;align-items:center;gap:14px;margin-top:16px;}
+  .cbtn{width:52px;height:52px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#f3eee2;font-size:20px;cursor:pointer;display:grid;place-items:center;}
+  .cbtn.big{width:60px;height:60px;background:var(--sage);color:#fff;font-size:22px;}
+  .top{position:fixed;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:10px;z-index:5;}
+  .top button{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);color:#f3eee2;border-radius:22px;padding:8px 14px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  @media(prefers-reduced-motion:no-preference){
+    .bob{animation:bob 2.6s ease-in-out infinite;}
+    .run{animation:run 2s ease-in-out infinite;}
+    .shake{animation:shake .4s ease-in-out infinite;}
+    .pulse{animation:pulse 3s ease-in-out infinite;}
+    .breathe{transform-origin:center;animation:breathe 8s ease-in-out infinite;}
+  }
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  @keyframes run{0%,100%{transform:translateX(-14px)}50%{transform:translateX(14px)}}
+  @keyframes shake{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  @keyframes breathe{0%,100%{transform:scale(.9);opacity:.85}50%{transform:scale(1.12);opacity:1}}
+  .fade{animation:fade .5s ease both;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="top" id="topbar" style="display:none">
+  <button id="muteBtn">🔊 Voz</button>
+  <button id="exitBtn">✕ Salir</button>
+</div>
+
+<div class="stage" id="cover">
+  <div>
+    <div class="eyebrow">APRENS · el porqué</div>
+    <h1>La manada</h1>
+    <p>Un cuento de un minuto sobre por qué respiras: para que tu mono no salga solo al mundo.</p>
+    <button class="play" id="startBtn">▶ Reproducir</button>
+    <div class="mutebar"><button id="coverMute">🔊 Con voz · tocar para silenciar</button></div>
+  </div>
+</div>
+
+<div class="stage" id="show">
+  <div class="art" id="art"></div>
+  <div class="cap"><p id="cap"></p></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrl">
+    <button class="cbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="cbtn big" id="playBtn" aria-label="Pausa">⏸</button>
+    <button class="cbtn" id="nextBtn" aria-label="Siguiente">›</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Ilustraciones (SVG simples) ---------- */
+/* animal de la manada */
+function animal(cx,cy,s,col){ s=s||1;
+  return '<g transform="translate('+cx+','+cy+') scale('+s+')">'
+    +'<ellipse cx="0" cy="22" rx="16" ry="19" fill="'+col+'"/>'
+    +'<circle cx="-9" cy="-13" r="6.5" fill="'+col+'"/><circle cx="9" cy="-13" r="6.5" fill="'+col+'"/>'
+    +'<circle cx="0" cy="0" r="15" fill="'+col+'"/>'
+    +'<circle cx="-5" cy="-1" r="1.8" fill="#2c2f2a"/><circle cx="5" cy="-1" r="1.8" fill="#2c2f2a"/>'
+    +'<ellipse cx="0" cy="5" rx="3.4" ry="4" fill="#2c2f2a"/>'
+    +'<ellipse cx="-8" cy="4" rx="2.6" ry="2.1" fill="#f0c9cd" opacity=".7"/><ellipse cx="8" cy="4" rx="2.6" ry="2.1" fill="#f0c9cd" opacity=".7"/>'
+    +'</g>'; }
+/* mono: mode = 'away' (de espaldas) | 'side' (empieza a notar) | 'look' (mira) */
+function mono(cx,cy,s,mode){ s=s||1;
+  var col='#a58f76', face='#ece0cd';
+  var g='<g transform="translate('+cx+','+cy+') scale('+s+')">';
+  g+='<ellipse cx="0" cy="26" rx="16" ry="19" fill="'+col+'"/>';
+  g+='<circle cx="-16" cy="-3" r="7" fill="'+col+'"/><circle cx="16" cy="-3" r="7" fill="'+col+'"/>';
+  g+='<circle cx="0" cy="0" r="15" fill="'+col+'"/>';
+  if(mode==='away'){
+    g+='<path d="M14,32 q15,3 12,-16" fill="none" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>';
+    g+='<line x1="0" y1="-10" x2="0" y2="14" stroke="#8a765e" stroke-width="1.4" opacity=".5"/>';
+  } else {
+    var dx = mode==='look' ? 4 : 1.5;
+    g+='<circle cx="-11" cy="-3" r="3.4" fill="'+face+'"/><circle cx="11" cy="-3" r="3.4" fill="'+face+'"/>';
+    g+='<ellipse cx="'+dx+'" cy="3" rx="11" ry="12" fill="'+face+'"/>';
+    g+='<circle cx="'+(dx-4)+'" cy="-1" r="1.9" fill="#2c2f2a"/><circle cx="'+(dx+4)+'" cy="-1" r="1.9" fill="#2c2f2a"/>';
+    g+='<path d="M'+(dx-3)+',8 q3,2.5 6,0" stroke="#8a6f52" stroke-width="1.3" fill="none" stroke-linecap="round"/>';
+  }
+  g+='</g>'; return g; }
+/* conciencia: orbe suave; mode = 'faint' | 'breath' */
+function orb(cx,cy,r,mode){
+  var s='';
+  if(mode==='breath') s+='<circle class="breathe" cx="'+cx+'" cy="'+cy+'" r="'+(r*1.7)+'" fill="#dfeee4" opacity=".5" style="transform-box:fill-box;transform-origin:center"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#cfe0d5" opacity="'+(mode==='faint'?0.25:0.9)+'"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*0.58)+'" fill="#fffdf8" opacity="'+(mode==='faint'?0.3:0.95)+'"/>';
+  return s; }
+function dashLink(x1,y1,x2,y2){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#a8c2b3" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/>'; }
+function bang(x,y){ return '<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="30" font-weight="900" fill="#e08a5a" font-family="var(--sans)">!</text>'; }
+function ground(){ return '<ellipse cx="150" cy="176" rx="122" ry="12" fill="rgba(255,255,255,.09)"/>'; }
+function svg(inner){ return '<svg viewBox="0 0 300 200">'+inner+'</svg>'; }
+
+var SCENES=[
+  { art:svg(ground()+animal(66,132,1,'#8fae9a')+animal(236,132,1,'#c7a06a')+animal(150,158,.8,'#9bb0bb')+'<g class="bob">'+mono(150,88,1.7,'look')+'</g>'),
+    text:'Dentro de ti viaja un mono: tu cuerpo, tu parte animal. Y ese mono es, ante todo, un mamífero de manada.' },
+  { art:svg(ground()+dashLink(122,100,84,124)+dashLink(178,100,216,124)+animal(66,128,.9,'#a9b98f')+animal(234,128,.9,'#8fae9a')+'<g class="pulse">'+mono(150,100,1.5,'look')+'</g>'),
+    text:'Como todo mamífero, se siente seguro cuando percibe a los suyos: cuando los ve, los oye, los toca, los huele. Así sabe que no está solo.' },
+  { art:svg(ground()+'<g opacity=".8">'+animal(52,132,.7,'#8fae9a')+animal(84,144,.65,'#c7a06a')+animal(64,160,.55,'#9bb0bb')+'</g><g class="run">'+mono(214,104,1.35,'away')+'</g>'),
+    text:'Pero la vida de hoy le pide salir de la manada una y otra vez: ir a trabajar, ser autónomo, hacer mil cosas.' },
+  { art:svg(bang(96,58)+bang(150,42)+bang(204,58)+'<g class="shake">'+mono(150,112,1.65,'away')+'</g>'),
+    text:'Y al alejarse de los suyos, lo lee como un riesgo: sube la alerta, se estrecha la mirada y ve amenazas donde no las hay.' },
+  { art:svg(mono(112,112,1.4,'away')+orb(214,96,20,'faint')),
+    text:'Tú eres su conciencia: vas siempre con él y nunca lo dejas solo. Pero para él eres invisible: no puede verte, ni oírte, ni tocarte.' },
+  { art:svg(orb(206,98,20,'breath')+mono(120,112,1.4,'side')+dashLink(150,108,186,100)),
+    text:'Por eso respiras. La respiración consciente no es para relajarte: es la señal con la que tu mono, por fin, empieza a notarte.' },
+  { art:svg(orb(196,102,22,'breath')+mono(118,112,1.5,'look')+dashLink(150,108,176,104)),
+    text:'No practicas para sentir menos. Practicas para que tu mono aprenda que, cuando tiene miedo, alguien se queda a su lado.' },
+  { art:svg(dashLink(130,106,196,108)+orb(214,108,26,'breath')+mono(110,110,1.75,'look')),
+    text:'Y un día el mono se gira y te mira. No hace falta más: le basta con notar que estás.', quote:true }
+];
+
+var idx=0, playing=false, muted=false, timer=null;
+var PAUSA=1200; // pausa entre escena y escena (ms)
+var $=function(id){return document.getElementById(id);};
+var voces=[], voz=null;
+function cargarVoz(){ voces=(window.speechSynthesis?speechSynthesis.getVoices():[])||[]; voz=voces.filter(function(v){return /^es/i.test(v.lang);})[0]||null; }
+if(window.speechSynthesis){ cargarVoz(); speechSynthesis.onvoiceschanged=cargarVoz; }
+
+function narrar(text, onEnd){
+  if(!window.speechSynthesis) { onEnd&&scheduleFallback(onEnd); return; }
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(muted){ scheduleFallback(onEnd, Math.max(4200, text.length*55)); return; }
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='es-ES'; if(voz)u.voice=voz; u.rate=0.84; u.pitch=1;
+  var done=false;
+  u.onend=function(){ if(done)return; done=true; onEnd&&onEnd(); };
+  u.onerror=function(){ if(done)return; done=true; scheduleFallback(onEnd); };
+  try{ speechSynthesis.speak(u); }catch(e){ scheduleFallback(onEnd); }
+  scheduleFallback(function(){ if(!done){ done=true; onEnd&&onEnd(); } }, Math.max(4500, text.length*90));
+}
+function scheduleFallback(fn, ms){ clearTimeout(timer); timer=setTimeout(fn, ms||5200); }
+
+function pintaDots(){ $('dots').innerHTML=SCENES.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join(''); }
+function render(){
+  var sc=SCENES[idx];
+  var art=$('art'); art.innerHTML=sc.art; art.classList.remove('fade'); void art.offsetWidth; art.classList.add('fade');
+  var cap=$('cap'); cap.className=sc.quote?'q':''; cap.classList.remove('in'); cap.textContent=(sc.quote?'«':'')+sc.text+(sc.quote?'»':'');
+  void cap.offsetWidth; requestAnimationFrame(function(){ cap.classList.add('in'); });
+  pintaDots();
+  clearTimeout(timer);
+  if(playing){ narrar(sc.text, function(){ if(!playing) return; clearTimeout(timer); timer=setTimeout(function(){ if(playing) next(true); }, PAUSA); }); }
+  else if(!muted && window.speechSynthesis){ try{speechSynthesis.cancel();}catch(e){} }
+}
+function next(auto){ if(idx<SCENES.length-1){ idx++; render(); } else { setPlay(false); } }
+function prev(){ if(idx>0){ idx--; render(); } }
+function setPlay(p){ playing=p; $('playBtn').textContent=p?'⏸':'▶'; if(p) render(); else { clearTimeout(timer); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+function setMute(m){ muted=m; var t=m?'🔇 Silencio':'🔊 Voz'; $('muteBtn').textContent=t; if(m){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+
+function empezar(){
+  $('cover').style.display='none'; $('show').classList.add('on'); $('topbar').style.display='flex';
+  idx=0; setPlay(true);
+  var el=document.documentElement; try{ el.requestFullscreen&&el.requestFullscreen().catch(function(){}); }catch(e){}
+}
+function salir(){
+  setPlay(false); $('show').classList.remove('on'); $('topbar').style.display='none'; $('cover').style.display='flex';
+  try{ document.fullscreenElement&&document.exitFullscreen&&document.exitFullscreen().catch(function(){}); }catch(e){}
+}
+
+$('startBtn').onclick=empezar;
+$('coverMute').onclick=function(){ setMute(!muted); this.textContent=muted?'🔇 Sin voz · tocar para activar':'🔊 Con voz · tocar para silenciar'; };
+$('playBtn').onclick=function(){ setPlay(!playing); };
+$('prevBtn').onclick=function(){ setPlay(false); prev(); };
+$('nextBtn').onclick=function(){ setPlay(false); next(); };
+$('muteBtn').onclick=function(){ setMute(!muted); if(playing) render(); };
+$('exitBtn').onclick=salir;
+document.addEventListener('keydown',function(e){
+  if(!$('show').classList.contains('on')) return;
+  if(e.key==='ArrowRight'){ setPlay(false); next(); } else if(e.key==='ArrowLeft'){ setPlay(false); prev(); }
+  else if(e.key===' '){ e.preventDefault(); setPlay(!playing); } else if(e.key==='Escape'){ salir(); }
+});
+window.APRENS_toolBack=function(){ if($('show').classList.contains('on')){ salir(); return true; } return false; };
+window.addEventListener('pagehide',function(){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} });
+</script>
+</body>
+</html>

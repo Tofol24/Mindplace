@@ -69,6 +69,12 @@
   @keyframes br{0%,100%{transform:scale(.9)}50%{transform:scale(1.08)}}
 .phero{margin:0 0 16px;border-radius:18px;overflow:hidden;box-shadow:0 12px 28px -14px rgba(74,63,48,.4)}
 .phero img{display:block;width:100%;height:210px;object-fit:cover;object-position:center 38%}
+.video{display:flex;align-items:center;gap:13px;margin:14px 0 4px;background:linear-gradient(160deg,var(--verde),#325549);color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;box-shadow:var(--ombra-s)}
+.video .ve{font-size:24px;flex:0 0 auto}
+.video .vt{font-weight:700;font-size:15px;line-height:1.25;flex:1}
+.video .vt small{display:block;font-weight:400;font-size:12.5px;opacity:.88;margin-top:1px}
+.video .vp{font-size:15px;background:rgba(255,255,255,.18);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;flex:0 0 auto}
+.video:active{transform:scale(.99)}
 </style>
 </head>
 <body>
@@ -80,6 +86,10 @@
     <h1>La manada</h1>
     <p class="sub">Por qué respiras: para que tu mono no salga solo.</p>
   </header>
+
+  <a class="video" target="_top" href="../index.html#/tool/historia_manada">
+    <span class="ve">🎬</span><span class="vt">Ver la historia animada<small>Versión narrada, en un minuto</small></span><span class="vp">▶</span>
+  </a>
 
   <div class="escena" aria-hidden="true">
     <svg viewBox="0 0 300 180" role="img">

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>El control y la presencia · animada · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --marfil:#F4EFE6; --tinta:#2A2622; --suau:#6f665b; --oliva:#565a41;
+    --terra:#C2704F; --sage:#5c7d54;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  html,body{height:100%;}
+  body{font-family:var(--sans);background:radial-gradient(120% 100% at 50% 0%,#3a3630 0%,#221f1b 70%);color:#f3eee2;overflow:hidden;}
+  .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));}
+  #cover{text-align:center;max-width:520px;}
+  #cover .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#d6b98a;margin-bottom:14px;}
+  #cover h1{font-family:var(--serif);font-size:clamp(28px,7.4vw,44px);line-height:1.06;margin-bottom:12px;}
+  #cover p{font-size:15px;color:#d8d2c4;line-height:1.6;margin-bottom:26px;}
+  .play{display:inline-flex;align-items:center;gap:10px;background:var(--oliva);color:#fff;border:0;border-radius:30px;font-family:var(--sans);font-weight:700;font-size:17px;padding:15px 30px;cursor:pointer;box-shadow:0 12px 30px -12px rgba(86,90,65,.7);}
+  .mutebar{margin-top:18px;}
+  .mutebar button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#f3eee2;border-radius:22px;padding:8px 16px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  #show{display:none;position:fixed;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));}
+  #show.on{display:flex;}
+  .art{flex:1 1 auto;display:flex;align-items:center;justify-content:center;width:100%;min-height:0;}
+  .art svg{width:auto;height:100%;max-height:52vh;max-width:min(92vw,560px);}
+  .cap{flex:0 0 auto;max-width:640px;text-align:center;margin-top:8px;}
+  .cap p{font-family:var(--serif);font-size:clamp(20px,4.2vw,30px);line-height:1.32;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;}
+  .cap p.in{opacity:1;transform:none;}
+  .cap .q{font-style:italic;color:#e7c079;}
+  .dots{display:flex;gap:7px;margin-top:16px;justify-content:center;}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);transition:background .3s,transform .3s;}
+  .dots i.on{background:#c8a06a;transform:scale(1.35);}
+  .ctrl{display:flex;align-items:center;gap:14px;margin-top:16px;}
+  .cbtn{width:52px;height:52px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#f3eee2;font-size:20px;cursor:pointer;display:grid;place-items:center;}
+  .cbtn.big{width:60px;height:60px;background:var(--oliva);color:#fff;font-size:22px;}
+  .top{position:fixed;top:calc(10px + env(safe-area-inset-top));right:14px;display:flex;gap:10px;z-index:5;}
+  .top button{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);color:#f3eee2;border-radius:22px;padding:8px 14px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+  @media(prefers-reduced-motion:no-preference){
+    .shake{animation:shake .38s ease-in-out infinite;}
+    .spin{transform-origin:center;animation:spin 5s linear infinite;}
+    .spinf{transform-origin:center;animation:spin 2.4s linear infinite;}
+    .pulse{animation:pulse 2.6s ease-in-out infinite;}
+    .glow{animation:glow 2.8s ease-in-out infinite;}
+    .drop{animation:drop 2.4s ease-in-out infinite;}
+    .bob{animation:bob 2.6s ease-in-out infinite;}
+  }
+  @keyframes shake{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes glow{0%,100%{filter:drop-shadow(0 0 6px rgba(231,192,121,.4))}50%{filter:drop-shadow(0 0 18px rgba(231,192,121,.85))}}
+  @keyframes drop{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .fade{animation:fade .5s ease both;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="top" id="topbar" style="display:none">
+  <button id="muteBtn">🔊 Voz</button>
+  <button id="exitBtn">✕ Salir</button>
+</div>
+
+<div class="stage" id="cover">
+  <div>
+    <div class="eyebrow">APRENS · el porqué</div>
+    <h1>El control y la presencia</h1>
+    <p>Un cuento de un minuto sobre los dos caminos ante el malestar: buscar el control… o parar y volver al cuerpo.</p>
+    <button class="play" id="startBtn">▶ Reproducir</button>
+    <div class="mutebar"><button id="coverMute">🔊 Con voz · tocar para silenciar</button></div>
+  </div>
+</div>
+
+<div class="stage" id="show">
+  <div class="art" id="art"></div>
+  <div class="cap"><p id="cap"></p></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrl">
+    <button class="cbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="cbtn big" id="playBtn" aria-label="Pausa">⏸</button>
+    <button class="cbtn" id="nextBtn" aria-label="Siguiente">›</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Ilustraciones (SVG simples) ---------- */
+function persona(x,y,glow){ return '<g transform="translate('+x+','+y+')" class="'+(glow?'glow':'')+'">'+
+  '<circle cx="0" cy="0" r="21" fill="#f0d6bd"/>'+
+  '<path d="M-21 -3 Q0 -30 21 -3 Q18 -22 0 -24 Q-18 -22 -21 -3Z" fill="#5b4a3a"/>'+
+  '<circle cx="-7" cy="-1" r="2.6" fill="#2a2622"/><circle cx="7" cy="-1" r="2.6" fill="#2a2622"/>'+
+  '<path d="M-6 9 Q0 13 6 9" stroke="#b98a5e" stroke-width="2" fill="none" stroke-linecap="round"/></g>'; }
+function spark(x,y){ return '<path d="M'+x+' '+(y-18)+' l-9 20 l7.5 0 l-4 15 l14 -22 l-7.5 0 l6 -13 z" fill="#e7c079" stroke="#f0d9a0" stroke-width="1" stroke-linejoin="round"/>'; }
+function spiralPath(col){ return '<path d="M0,0 C5,-2 6,3 1.5,4.5 C-7,7 -9,-4 -1.5,-7 C9,-11 13,6 3,11.5 C-13,17 -18,-7 -4,-14 C15,-20 22,9 4,17" fill="none" stroke="'+col+'" stroke-width="3.2" stroke-linecap="round"/>'; }
+function loopArrow(col){ return '<path d="M-13,2 A13,13 0 1,1 4,13" fill="none" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>'+
+  '<path d="M4,13 l-7,-1.5 M4,13 l1.5,-7" fill="none" stroke="'+col+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'; }
+function svg(inner){ return '<svg viewBox="0 0 200 150">'+inner+'</svg>'; }
+
+var SCENES=[
+  { art:svg(spark(100,40)+'<g class="shake">'+persona(100,90,false)+'</g>'),
+    text:'A veces aparece un dolor: una emoción intensa, una sensación incómoda que no elegiste.' },
+  { art:svg('<circle cx="100" cy="26" r="10" fill="#e7c079"/>'+
+      '<path d="M100 36 L100 54" stroke="#cbb98f" stroke-width="4" stroke-linecap="round"/>'+
+      '<path d="M100 54 Q70 78 52 112" fill="none" stroke="var(--terra)" stroke-width="5.5" stroke-linecap="round"/>'+
+      '<path d="M100 54 Q130 78 148 112" fill="none" stroke="var(--sage)" stroke-width="5.5" stroke-linecap="round"/>'+
+      '<circle cx="52" cy="116" r="8" fill="var(--terra)"/><circle cx="148" cy="116" r="8" fill="var(--sage)"/>'),
+    text:'Tu cuerpo busca recuperar el control perdido y se pregunta: «¿puedo controlar esto?». Lo que haces con esa pregunta abre dos caminos.' },
+  { art:svg('<g transform="translate(100,44)" class="spin">'+spiralPath('var(--terra)')+'</g>'+persona(100,102,false)),
+    text:'Camino uno: le das vueltas y más vueltas, intentando controlarlo sin un espacio donde parar. Es el sobrepensamiento.' },
+  { art:svg(persona(100,96,false)+'<g transform="translate(150,52)" class="spin">'+loopArrow('var(--terra)')+'</g>'),
+    text:'Haces algo para aliviarte: comprobar, evitar, distraerte. Funciona… pero solo un momento.' },
+  { art:svg('<path d="M100 20 L100 74" stroke="var(--terra)" stroke-width="6" stroke-linecap="round" class="drop"/>'+
+      '<path d="M84 60 L100 78 L116 60" fill="none" stroke="var(--terra)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="drop"/>'+
+      '<g opacity=".85">'+persona(100,112,false)+'</g>'),
+    text:'Y ese alivio enseña que huir funciona. El malestar vuelve más fuerte: tensión, angustia, ansiedad. Poco a poco, todo se apaga.' },
+  { art:svg('<g class="pulse"><rect x="86" y="30" width="9" height="26" rx="3.5" fill="var(--sage)"/><rect x="105" y="30" width="9" height="26" rx="3.5" fill="var(--sage)"/></g>'+persona(100,100,false)),
+    text:'Pero hay otro camino. En medio de la situación, paras. Es la flecha atencional: un pequeño alto.' },
+  { art:svg('<g class="glow">'+persona(100,84,true)+'<circle cx="100" cy="114" r="11" fill="#e7c079" opacity=".85" class="bob"/></g>'),
+    text:'Llevas la atención al cuerpo con compasión: respiras, notas el cuello, el pecho, la barriga. Y se abre un espacio.' },
+  { art:svg('<g class="glow">'+persona(100,80,true)+'</g>'+
+      '<path d="M66 120 L128 120" stroke="var(--sage)" stroke-width="5.5" stroke-linecap="round"/>'+
+      '<path d="M118 111 L131 120 L118 129" fill="none" stroke="var(--sage)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>'),
+    text:'El dolor no era el enemigo. Parar y volver al cuerpo abre el espacio donde tú —y tus valores— cogéis el volante.', quote:true }
+];
+
+var idx=0, playing=false, muted=false, timer=null;
+var PAUSA=1200; // pausa entre escena y escena (ms)
+var $=function(id){return document.getElementById(id);};
+var voces=[], voz=null;
+function cargarVoz(){ voces=(window.speechSynthesis?speechSynthesis.getVoices():[])||[]; voz=voces.filter(function(v){return /^es/i.test(v.lang);})[0]||null; }
+if(window.speechSynthesis){ cargarVoz(); speechSynthesis.onvoiceschanged=cargarVoz; }
+
+function narrar(text, onEnd){
+  if(!window.speechSynthesis) { onEnd&&scheduleFallback(onEnd); return; }
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(muted){ scheduleFallback(onEnd, Math.max(4200, text.length*55)); return; }
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='es-ES'; if(voz)u.voice=voz; u.rate=0.84; u.pitch=1;
+  var done=false;
+  u.onend=function(){ if(done)return; done=true; onEnd&&onEnd(); };
+  u.onerror=function(){ if(done)return; done=true; scheduleFallback(onEnd); };
+  try{ speechSynthesis.speak(u); }catch(e){ scheduleFallback(onEnd); }
+  scheduleFallback(function(){ if(!done){ done=true; onEnd&&onEnd(); } }, Math.max(4500, text.length*90));
+}
+function scheduleFallback(fn, ms){ clearTimeout(timer); timer=setTimeout(fn, ms||5200); }
+
+function pintaDots(){ $('dots').innerHTML=SCENES.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join(''); }
+function render(){
+  var sc=SCENES[idx];
+  var art=$('art'); art.innerHTML=sc.art; art.classList.remove('fade'); void art.offsetWidth; art.classList.add('fade');
+  var cap=$('cap'); cap.className=sc.quote?'q':''; cap.classList.remove('in'); cap.textContent=(sc.quote?'«':'')+sc.text+(sc.quote?'»':'');
+  void cap.offsetWidth; requestAnimationFrame(function(){ cap.classList.add('in'); });
+  pintaDots();
+  clearTimeout(timer);
+  if(playing){ narrar(sc.text, function(){ if(!playing) return; clearTimeout(timer); timer=setTimeout(function(){ if(playing) next(true); }, PAUSA); }); }
+  else if(!muted && window.speechSynthesis){ try{speechSynthesis.cancel();}catch(e){} }
+}
+function next(auto){ if(idx<SCENES.length-1){ idx++; render(); } else { setPlay(false); } }
+function prev(){ if(idx>0){ idx--; render(); } }
+function setPlay(p){ playing=p; $('playBtn').textContent=p?'⏸':'▶'; if(p) render(); else { clearTimeout(timer); try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+function setMute(m){ muted=m; var t=m?'🔇 Silencio':'🔊 Voz'; $('muteBtn').textContent=t; if(m){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} } }
+
+function empezar(){
+  $('cover').style.display='none'; $('show').classList.add('on'); $('topbar').style.display='flex';
+  idx=0; setPlay(true);
+  var el=document.documentElement; try{ el.requestFullscreen&&el.requestFullscreen().catch(function(){}); }catch(e){}
+}
+function salir(){
+  setPlay(false); $('show').classList.remove('on'); $('topbar').style.display='none'; $('cover').style.display='flex';
+  try{ document.fullscreenElement&&document.exitFullscreen&&document.exitFullscreen().catch(function(){}); }catch(e){}
+}
+
+$('startBtn').onclick=empezar;
+$('coverMute').onclick=function(){ setMute(!muted); this.textContent=muted?'🔇 Sin voz · tocar para activar':'🔊 Con voz · tocar para silenciar'; };
+$('playBtn').onclick=function(){ setPlay(!playing); };
+$('prevBtn').onclick=function(){ setPlay(false); prev(); };
+$('nextBtn').onclick=function(){ setPlay(false); next(); };
+$('muteBtn').onclick=function(){ setMute(!muted); if(playing) render(); };
+$('exitBtn').onclick=salir;
+document.addEventListener('keydown',function(e){
+  if(!$('show').classList.contains('on')) return;
+  if(e.key==='ArrowRight'){ setPlay(false); next(); } else if(e.key==='ArrowLeft'){ setPlay(false); prev(); }
+  else if(e.key===' '){ e.preventDefault(); setPlay(!playing); } else if(e.key==='Escape'){ salir(); }
+});
+window.APRENS_toolBack=function(){ if($('show').classList.contains('on')){ salir(); return true; } return false; };
+window.addEventListener('pagehide',function(){ try{speechSynthesis&&speechSynthesis.cancel();}catch(e){} });
+</script>
+</body>
+</html>

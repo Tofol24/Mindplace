@@ -118,7 +118,13 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/modelo-atencional.html" },
   { id:"historia_animada", emoji:"🎬", nombre:"La historia del mono · animada",
     desc:"El cuento del mono y el coche en versión animada y narrada (voz del dispositivo), en un minuto.",
-    migrada:true, iframe:"tools-standalone/historia-animada.html" }
+    migrada:true, iframe:"tools-standalone/historia-animada.html" },
+  { id:"historia_manada", emoji:"🎬", nombre:"La manada · animada",
+    desc:"El porqué de la respiración en versión animada y narrada (voz del dispositivo): tu mono es un mamífero de manada y respirar es volver a aparecer para él.",
+    migrada:true, iframe:"tools-standalone/historia-manada.html" },
+  { id:"historia_control", emoji:"🎬", nombre:"El control y la presencia · animada",
+    desc:"El mapa del malestar en versión animada y narrada (voz del dispositivo): buscar el control (sobrepensar) frente a parar y volver al cuerpo.",
+    migrada:true, iframe:"tools-standalone/historia-control.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
