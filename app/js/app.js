@@ -178,43 +178,38 @@
         ${c.recHora?`<div class="cont-rec-hint">Te avisa el <b>calendario de tu móvil</b> a las ${c.recHora} —no la app. ¿No te llega? Vuelve a pulsar «Añadir a mi calendario» y confirma <b>«Añadir»</b> en el aviso de tu móvil.</div>`:""}
         <div class="cont-rec-panel" id="contRecPanel" hidden>
           <label>Hora <input type="time" id="contRecHora" value="${c.recHora||"20:00"}"></label>
-          <a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a>
-          <div class="cont-rec-note">Al pulsar, se abre tu <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. No sale nada de tu dispositivo.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div>
+          <a class="cont-rec-add" id="contRecAdd" href="#" target="_blank" rel="noopener">Añadir a mi calendario</a>
+          <div class="cont-rec-note">Al pulsar, se abre el <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. La hora se ajusta al <b>cuarto de hora</b> más cercano.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div>
         </div>
       </div>
     </section>`;
   }
-  function icsRecordatorio(hora){
-    const hm=hora.split(":").map(Number); const now=new Date();
-    const start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hm[0],hm[1],0);
-    const end=new Date(start.getTime()+10*60000);
-    const f=(d)=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+"T"+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0")+"00";
-    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//APRENS//AIS//ES","CALSCALE:GREGORIAN","METHOD:PUBLISH",
-      "BEGIN:VEVENT","UID:aprens-"+start.getTime()+"@aprens","DTSTAMP:"+f(now),"DTSTART:"+f(start),"DTEND:"+f(end),"RRULE:FREQ=DAILY",
-      "SUMMARY:APRENS · Tu minuto de presencia",
-      "DESCRIPTION:Un minuto contigo\\, baja a tu cuerpo y practica tu AIS. La constancia es lo que lo automatiza.",
-      "BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0M","DESCRIPTION:APRENS · Tu minuto de presencia","END:VALARM",
-      "END:VEVENT","END:VCALENDAR"].join("\r\n");
+  // Recordatorio diario = archivo .ics REAL alojado (uno por cada cuarto de hora),
+  // servido con Content-Type text/calendar. Es lo único fiable en iPhone (Safari y
+  // app instalada): al abrirlo, iOS ofrece "Añadir al calendario". El data: URI no
+  // funciona en iOS. Ajustamos la hora elegida al cuarto de hora más cercano.
+  function snapCuarto(hhmm){
+    const p=(hhmm||"20:00").split(":").map(Number);
+    let h=p[0]||0, m=Math.round((p[1]||0)/15)*15;
+    if(m===60){ m=0; h=(h+1)%24; }
+    const pad=(n)=>String(n).padStart(2,"0");
+    return { hhmm: pad(h)+":"+pad(m), file: pad(h)+pad(m) };
   }
-  function datosICS(hora){ return "data:text/calendar;charset=utf-8,"+encodeURIComponent(icsRecordatorio(hora)); }
-  // iPhone/iPad: iOS ignora el atributo `download` en enlaces data: (no descarga
-  // ni abre el calendario). Hay que NAVEGAR al .ics para que el sistema ofrezca
-  // "Añadir al calendario". En escritorio/Android sí funciona la descarga.
+  function urlICS(hhmm){ return "assets/ics/"+snapCuarto(hhmm).file+".ics"; }
   const ES_IOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
     (/Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints||0) > 1);
   function wireCont(){
     const btn=document.getElementById("contRecBtn"), panel=document.getElementById("contRecPanel");
     if(btn && panel){ btn.onclick=()=>{ panel.hidden=!panel.hidden; }; }
     const add=document.getElementById("contRecAdd"), hora=document.getElementById("contRecHora");
-    if(add && ES_IOS){ add.removeAttribute("download"); } // en iOS, navegar (no descargar)
-    function refresh(){ if(add){ add.href=datosICS((hora&&hora.value)||"20:00"); } }
+    // En móvil (sobre todo iOS) abrir el .ics en el navegador para que el sistema
+    // ofrezca "Añadir al calendario"; en escritorio, descargar el archivo.
+    if(add){ if(ES_IOS){ add.removeAttribute("download"); } else { add.setAttribute("download","recordatorio-aprens.ics"); } }
+    function refresh(){ if(add){ add.href=urlICS((hora&&hora.value)||"20:00"); } }
     if(hora){ hora.addEventListener("input", refresh); hora.addEventListener("change", refresh); }
     refresh();
-    // El enlace (href = data:text/calendar) abre "Añadir al calendario" de forma
-    // nativa al tocarlo; solo guardamos la hora. En iOS la navegación reemplaza la
-    // vista, así que no re-renderizamos (al volver del calendario ya se ve puesto).
     if(add){ add.addEventListener("click", ()=>{
-      const c=loadCont(); c.recHora=(hora&&hora.value)||"20:00"; saveCont(c);
+      const c=loadCont(); c.recHora=snapCuarto((hora&&hora.value)||"20:00").hhmm; saveCont(c);
       if(!ES_IOS) setTimeout(renderHub, 1500);
     }); }
   }
