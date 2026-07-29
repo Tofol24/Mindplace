@@ -273,6 +273,7 @@
   .cont-rec-panel input[type=time]{font-family:var(--sans);font-size:14px;border:2px solid var(--linea);border-radius:10px;padding:6px 8px;background:#fff;color:var(--tinta);}
   .cont-rec-add{display:inline-block;text-decoration:none;text-align:center;background:var(--dorado);color:#fff;border:0;border-radius:22px;font-family:var(--sans);font-weight:600;font-size:13px;padding:10px 16px;cursor:pointer;}
   .cont-rec-note{flex-basis:100%;font-size:11.5px;color:var(--gris);line-height:1.5;}
+  .cont-rec-alt{display:inline-block;margin-top:6px;font-style:italic;opacity:.9;}
   .cont-rec-hint{margin-top:8px;font-size:12px;color:var(--gris);line-height:1.55;background:var(--verdeLt);border-radius:10px;padding:9px 12px;}
 
   /* Marca (brandbar cálida, no cabecera de app) */
@@ -1126,6 +1127,9 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
 /* Continuidad AIS en inicio · racha + recordatorio (offline, localStorage propio del sitio) */
 (function(){
   var CONT_KEY="aprens_cont";
+  // iOS ignora el atributo download en enlaces data:; hay que navegar al .ics.
+  var ES_IOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+    (/Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints||0) > 1);
   function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function load(){try{return JSON.parse(localStorage.getItem(CONT_KEY))||{dias:[],recHora:null};}catch(e){return {dias:[],recHora:null};}}
   function save(c){try{localStorage.setItem(CONT_KEY,JSON.stringify(c));}catch(e){}}
@@ -1148,7 +1152,7 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
     var ctaH=cta?'<a class="cont-cta" href="https://aprens-app.netlify.app/#/tool/'+s.id+'" target="_blank" rel="noopener">'+s.e+' Practicar ahora · '+s.n+' →</a>':'';
     var rec=c.recHora?'<button class="cont-rec on" id="contRecBtn">🔔 Recordatorio diario a las '+c.recHora+' · cambiar</button>':'<button class="cont-rec" id="contRecBtn">🔔 Recordarme a diario</button>';
     var hint=c.recHora?'<div class="cont-rec-hint">Te avisa el <b>calendario de tu móvil</b> a las '+c.recHora+' —no la app. ¿No te llega? Vuelve a pulsar «Añadir a mi calendario» y confirma <b>«Añadir»</b> en el aviso de tu móvil.</div>':'';
-    return '<section class="cont"><div class="cont-top">'+fuego+'<div class="cont-body"><div class="cont-h">Tu presencia, cada día</div><div class="cont-txt">'+estado+'</div>'+ctaH+'</div></div><div class="cont-rec-wrap">'+rec+hint+'<div class="cont-rec-panel" id="contRecPanel" hidden><label>Hora <input type="time" id="contRecHora" value="'+(c.recHora||'20:00')+'"></label><a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a><div class="cont-rec-note">Al pulsar, tu móvil te ofrecerá <b>añadir el recordatorio a tu calendario</b>: confírmalo. A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora (APRENS no envía avisos por sí solo). No sale nada de tu dispositivo.</div></div></div></section>';
+    return '<section class="cont"><div class="cont-top">'+fuego+'<div class="cont-body"><div class="cont-h">Tu presencia, cada día</div><div class="cont-txt">'+estado+'</div>'+ctaH+'</div></div><div class="cont-rec-wrap">'+rec+hint+'<div class="cont-rec-panel" id="contRecPanel" hidden><label>Hora <input type="time" id="contRecHora" value="'+(c.recHora||'20:00')+'"></label><a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a><div class="cont-rec-note">Al pulsar, se abre tu <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. No sale nada de tu dispositivo.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div></div></div></section>';
   }
   function render(){
     var box=document.getElementById('continuidad'); if(!box) return;
@@ -1156,10 +1160,11 @@ window.addEventListener('pageshow', function(e){ _alInicio(); });
     var btn=document.getElementById('contRecBtn'),pan=document.getElementById('contRecPanel');
     if(btn&&pan)btn.onclick=function(){pan.hidden=!pan.hidden;};
     var add=document.getElementById('contRecAdd'),horaEl=document.getElementById('contRecHora');
+    if(add&&ES_IOS){ add.removeAttribute('download'); } // en iOS, navegar al .ics (no descargar)
     function refresh(){ if(add) add.href=datosICS((horaEl&&horaEl.value)||'20:00'); }
     if(horaEl){ horaEl.addEventListener('input',refresh); horaEl.addEventListener('change',refresh); }
     refresh();
-    if(add)add.addEventListener('click',function(){var c=load();c.recHora=(horaEl&&horaEl.value)||'20:00';save(c);setTimeout(render,1500);});
+    if(add)add.addEventListener('click',function(){var c=load();c.recHora=(horaEl&&horaEl.value)||'20:00';save(c);if(!ES_IOS)setTimeout(render,1500);});
   }
   // Registrar práctica cuando el paciente pulsa un enlace a una herramienta de la app
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(a&&a.href&&/aprens-app\.netlify\.app\/#\/tool\//.test(a.href)){marcar();}},true);

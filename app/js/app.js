@@ -179,7 +179,7 @@
         <div class="cont-rec-panel" id="contRecPanel" hidden>
           <label>Hora <input type="time" id="contRecHora" value="${c.recHora||"20:00"}"></label>
           <a class="cont-rec-add" id="contRecAdd" href="#" download="recordatorio-aprens.ics">Añadir a mi calendario</a>
-          <div class="cont-rec-note">Al pulsar, tu móvil te ofrecerá <b>añadir el recordatorio a tu calendario</b>: confírmalo. A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora (APRENS no envía avisos por sí solo). No sale nada de tu dispositivo.</div>
+          <div class="cont-rec-note">Al pulsar, se abre tu <b>calendario</b> con el evento diario: pulsa <b>«Añadir»</b> (en iPhone, arriba a la derecha). A partir de ahí es <b>tu calendario</b> quien te avisa cada día a esa hora —APRENS no envía avisos por sí solo—. No sale nada de tu dispositivo.<br><span class="cont-rec-alt">¿No se abre el calendario? Ponte una alarma diaria en la app <b>Reloj</b> a esa hora.</span></div>
         </div>
       </div>
     </section>`;
@@ -197,18 +197,25 @@
       "END:VEVENT","END:VCALENDAR"].join("\r\n");
   }
   function datosICS(hora){ return "data:text/calendar;charset=utf-8,"+encodeURIComponent(icsRecordatorio(hora)); }
+  // iPhone/iPad: iOS ignora el atributo `download` en enlaces data: (no descarga
+  // ni abre el calendario). Hay que NAVEGAR al .ics para que el sistema ofrezca
+  // "Añadir al calendario". En escritorio/Android sí funciona la descarga.
+  const ES_IOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+    (/Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints||0) > 1);
   function wireCont(){
     const btn=document.getElementById("contRecBtn"), panel=document.getElementById("contRecPanel");
     if(btn && panel){ btn.onclick=()=>{ panel.hidden=!panel.hidden; }; }
     const add=document.getElementById("contRecAdd"), hora=document.getElementById("contRecHora");
+    if(add && ES_IOS){ add.removeAttribute("download"); } // en iOS, navegar (no descargar)
     function refresh(){ if(add){ add.href=datosICS((hora&&hora.value)||"20:00"); } }
     if(hora){ hora.addEventListener("input", refresh); hora.addEventListener("change", refresh); }
     refresh();
-    // El propio enlace (con href = data:text/calendar) abre "Añadir al calendario"
-    // de forma nativa en cada toque —también en iPhone—; solo guardamos la hora.
+    // El enlace (href = data:text/calendar) abre "Añadir al calendario" de forma
+    // nativa al tocarlo; solo guardamos la hora. En iOS la navegación reemplaza la
+    // vista, así que no re-renderizamos (al volver del calendario ya se ve puesto).
     if(add){ add.addEventListener("click", ()=>{
       const c=loadCont(); c.recHora=(hora&&hora.value)||"20:00"; saveCont(c);
-      setTimeout(renderHub, 1500);
+      if(!ES_IOS) setTimeout(renderHub, 1500);
     }); }
   }
 
