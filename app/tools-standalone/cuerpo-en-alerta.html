@@ -2001,6 +2001,16 @@
       if(e.altKey && e.key>='1' && e.key<='8'){ var idx=parseInt(e.key,10)-1; if(MODULES[idx]) nav(MODULES[idx].id); }
     });
   }
+  // Integración con el botón «← Atrás» de la cabecera de la app (cuando la
+  // herramienta se abre dentro del iframe): primero cierra la pantalla «Necesito
+  // parar», luego un modal abierto, luego retrocede al primer módulo; si no,
+  // devuelve false para que la app salga al hub.
+  window.APRENS_toolBack=function(){
+    if($('#stopScreen').classList.contains('open')){ closeStop(); return true; }
+    var op=$('.overlay.open'); if(op){ closeModal(op); if(op.id==='ovPro'){ buildNav(); } return true; }
+    if(current!=='entender'){ nav('entender'); return true; }
+    return false;
+  };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 </script>
