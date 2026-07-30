@@ -379,6 +379,9 @@
   .keyc .kt{font-family:var(--serif);font-weight:700;font-size:15.5px;margin-bottom:5px;display:flex;align-items:center;gap:7px}
   .keyc.que .kt{color:var(--azul-d)} .keyc.como .kt{color:var(--salvia-d)}
   .keyc p{font-size:14px;color:var(--tinta-2);margin:0}
+  .adapt-note{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;background:var(--azul-suau);border:1px solid var(--azul);border-radius:11px;padding:11px 13px;margin:0 0 12px;color:var(--tinta-2)}
+  .adapt-note svg{width:18px;height:18px;flex:0 0 18px;margin-top:2px;color:var(--azul-d)}
+  .adapt-note b{color:var(--azul-d)}
 </style>
 </head>
 <body>
@@ -819,6 +822,10 @@
       <button class="btn block" id="aisDuring">Pausa · siento · acompaño · continúo</button>
       <div class="comohacer">
         <div class="ch-t">El CÓMO · cómo me acompaño, paso a paso</div>
+        <div class="adapt-note" id="comoDisoc" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="1.5"/></svg>
+          <span><b>Adaptación:</b> se ha indicado priorizar la <b>orientación externa</b>. Mantén los <b>ojos abiertos</b> y apóyate en lo de fuera —objetos, sonidos, los pies en el suelo, las manos—. <b>Evita cerrar los ojos o centrarte en las sensaciones internas.</b> Haz tramos cortos y trabaja estos pasos con tu profesional.</span>
+        </div>
         <ol class="pasos-durante">
           <li><b>Quédate en tu ventana.</b> Acércate solo hasta donde puedas seguir presente. No se trata de aguantar al máximo: es estar activado/a y, a la vez, aquí.</li>
           <li><b>Un pie en el presente.</b> Con los ojos abiertos, nombra por dentro tres cosas que ves y nota el suelo bajo tus pies.</li>
@@ -1549,6 +1556,7 @@
     // dictado por voz + opciones rápidas (rellenar con menos esfuerzo)
     $$('#view-recuperar [data-voz]').forEach(attachMic);
     $$('#view-recuperar .optchips').forEach(wireOpt);
+    updateComoDisoc();
   }
   function loadTemplate(type){
     var coche=['Sentarme en el coche estacionado durante dos minutos','Permanecer en el coche con el motor encendido','Recorrer una calle tranquila acompañado','Realizar un trayecto breve conocido','Recuperar progresivamente trayectos funcionales'];
@@ -2039,6 +2047,14 @@
   function dissCheck(){
     var v=S.pro.dissociation;
     $('#dissWarn').style.display = (v==='Moderado'||v==='Alto')?'flex':'none';
+    updateComoDisoc();
+  }
+  // Con disociación moderada/alta, el módulo Recuperar prioriza la orientación
+  // externa en el CÓMO (evita la introspección, que puede reactivar la revivencia).
+  function updateComoDisoc(){
+    var el=$('#comoDisoc'); if(!el) return;
+    var v=S.pro.dissociation;
+    el.style.display = (v==='Moderado'||v==='Alto')?'flex':'none';
   }
 
   /* ---------- PIN del modo profesional (candado ligero, no seguridad real) ----------
