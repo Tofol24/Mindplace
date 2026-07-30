@@ -30,7 +30,7 @@
       img:"tools-standalone/assets/editorial/ais-amor.webp",
       ids:["bajar_alerta","control_ira","estoy_aqui_conmigo"] },
     { emoji:"🪜", label:"Superar miedos", desc:"Exposición gradual, paso a paso.",
-      ids:["escalera_exposicion"] },
+      ids:["escalera_exposicion","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
       ids:["retorno_trabajo","toco_desde_dentro"] },
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
