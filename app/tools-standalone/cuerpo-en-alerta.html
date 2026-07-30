@@ -832,6 +832,10 @@
 
     <div class="card">
       <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg></span> Registrar una práctica</h3>
+      <label class="fld">¿Qué peldaño estás afrontando?
+        <span class="hint">El peldaño de tu escalera al que corresponde esta práctica.</span>
+        <select id="pRung"><option value="">Selecciona…</option></select>
+      </label>
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:10px">ANTES</p>
       <div class="fill-hint">Para escribir menos: toca las <b>opciones rápidas</b>, o usa <b>🎤 Dictar</b> (o el micrófono del teclado). No hace falta rellenarlo todo.</div>
       <label class="fld">¿Qué estoy intentando recuperar?<textarea class="grow" rows="1" id="pBeforeRecover" data-voz></textarea></label>
@@ -1704,7 +1708,36 @@
     // dictado por voz + opciones rápidas (rellenar con menos esfuerzo)
     $$('#view-recuperar [data-voz]').forEach(attachMic);
     $$('#view-recuperar .optchips').forEach(wireOpt);
+    fillRungSelect();
+    var pr=$('#pRung');
+    if(pr) pr.addEventListener('change',function(){
+      var i=parseInt(pr.value,10);
+      if(!isNaN(i) && S.rec.rungs[i]){
+        var r=S.rec.rungs[i];
+        var mic=$('#pBeforeMicro'); if(mic && !mic.value){ mic.value=r.t||''; mic.dispatchEvent(new Event('input',{bubbles:true})); }
+        var saf=$('#pBeforeSafety'); if(saf && !saf.value && r.safety){ saf.value=r.safety; saf.dispatchEvent(new Event('input',{bubbles:true})); }
+      }
+    });
     updateComoDisoc();
+  }
+  // Puebla el selector de peldaño con la escalera actual (conserva la selección
+  // si sigue siendo válida). Se llama al construir Recuperar y al editar la escalera.
+  function fillRungSelect(){
+    var sel=$('#pRung'); if(!sel) return;
+    var cur=sel.value;
+    var html='<option value="">Selecciona…</option>';
+    S.rec.rungs.forEach(function(r,i){
+      html+='<option value="'+i+'">'+(i+1)+' · '+esc(r.t||('Peldaño '+(i+1)))+'</option>';
+    });
+    html+='<option value="otro">Otro / no aplica</option>';
+    sel.innerHTML=html;
+    if(cur==='otro' || (cur!=='' && parseInt(cur,10)>=0 && parseInt(cur,10)<S.rec.rungs.length)) sel.value=cur;
+  }
+  function currentRung(){
+    var sel=$('#pRung'); if(!sel || !sel.value || sel.value==='otro') return {num:null,text:''};
+    var i=parseInt(sel.value,10);
+    if(isNaN(i) || !S.rec.rungs[i]) return {num:null,text:''};
+    return { num:i+1, text:(S.rec.rungs[i].t||('Peldaño '+(i+1))) };
   }
   function loadTemplate(type){
     var coche=['Sentarme en el coche estacionado durante dos minutos','Permanecer en el coche con el motor encendido','Recorrer una calle tranquila acompañado','Realizar un trayecto breve conocido','Recuperar progresivamente trayectos funcionales'];
@@ -1748,12 +1781,15 @@
       box.appendChild(d);
       growEl(t); // ya está en el DOM: ajusta el alto para que se vea todo el texto
     });
+    fillRungSelect();
   }
   function savePractice(){
     var succ=$$('#successChips .chip').filter(function(c){return c.getAttribute('aria-pressed')==='true';}).map(function(c){return c.textContent;});
+    var rg=currentRung();
     var p={
       id:uid(), date:new Date().toISOString(),
       area:S.rec.area, value:S.rec.value,
+      rungNum:rg.num, rung:rg.text,
       before:{recover:val('pBeforeRecover'),predict:val('pBeforePredict'),body:val('pBeforeBody'),safety:val('pBeforeSafety'),micro:val('pBeforeMicro')},
       max:pScale.pMax, final:pScale.pFinal,
       real:val('pReal'), predicted:val('pPredicted'), did:val('pDid'), learned:val('pLearned'), next:val('pNext'),
@@ -1762,7 +1798,7 @@
     S.practices.push(p); save();
     // limpiar
     ['pBeforeRecover','pBeforePredict','pBeforeBody','pBeforeSafety','pBeforeMicro','pReal','pPredicted','pDid','pLearned'].forEach(function(id){ $('#'+id).value=''; });
-    $('#pNext').value='';
+    $('#pNext').value=''; if($('#pRung')) $('#pRung').value='';
     $$('#successChips .chip').forEach(function(c){c.setAttribute('aria-pressed','false');});
     $$('[data-scale="pMax"] button,[data-scale="pFinal"] button').forEach(function(b){b.classList.remove('sel');});
     pScale={pMax:null,pFinal:null};
@@ -1850,8 +1886,9 @@
           '<div class="badges">'+badges+'</div>';
       } else {
         d.innerHTML='<div class="li-h"><span class="li-sit">Práctica · '+(esc(e.area)||'recuperar')+'</span><span class="li-date">'+fmtDate(e.date.slice(0,10),'')+'</span></div>'+
+          (e.rung?'<p class="muted" style="margin:6px 0 0"><b>Peldaño '+e.rungNum+':</b> '+esc(e.rung)+'</p>':'')+
           (e.learned?'<p class="muted" style="margin:6px 0 0">'+esc(e.learned)+'</p>':'')+
-          '<div class="badges">'+(e.max!=null?'<span class="badge a">Máx '+e.max+'</span>':'')+(e.final!=null?'<span class="badge b">Final '+e.final+'</span>':'')+(e.value?'<span class="badge c">'+esc(e.value)+'</span>':'')+'</div>';
+          '<div class="badges">'+(e.rungNum?'<span class="badge c">Peldaño '+e.rungNum+'</span>':'')+(e.max!=null?'<span class="badge a">Máx '+e.max+'</span>':'')+(e.final!=null?'<span class="badge b">Final '+e.final+'</span>':'')+(e.value?'<span class="badge">'+esc(e.value)+'</span>':'')+'</div>';
       }
       var del=document.createElement('button'); del.className='mini-btn del'; del.style.marginTop='10px';
       del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg> Eliminar';
@@ -1897,8 +1934,8 @@
         tipo_accion:l.actionType, alivio:l.relief, recuperacion:l.recovery, aprendizaje:l.learning };
     }
     function pracRec(p){
-      var res='Práctica · '+(p.area||'recuperar')+(p.max!=null?' · máx '+p.max+(p.final!=null?'→'+p.final:''):'')+(p.value?' · valor: '+p.value:'');
-      return { date:(p.date||'').slice(0,10), ts:p.date, resumen:res, area:p.area, max:p.max, final:p.final, valor:p.value, aprendizaje:p.learned };
+      var res='Práctica · '+(p.area||'recuperar')+(p.rungNum?' · peldaño '+p.rungNum+(p.rung?' ('+p.rung+')':''):'')+(p.max!=null?' · máx '+p.max+(p.final!=null?'→'+p.final:''):'')+(p.value?' · valor: '+p.value:'');
+      return { date:(p.date||'').slice(0,10), ts:p.date, resumen:res, area:p.area, peldano_num:p.rungNum, peldano:p.rung, max:p.max, final:p.final, valor:p.value, aprendizaje:p.learned };
     }
     var records=S.logs.map(logRec).concat(S.practices.map(pracRec));
     return { type:'aprens-export', paciente:{codigo:(S.pro.code||'').trim()}, exportado:new Date().toISOString(),
