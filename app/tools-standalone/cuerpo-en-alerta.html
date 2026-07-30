@@ -985,7 +985,11 @@
       </div>
       <div class="map-zone z3">
         <h3>3 · Respuestas de protección</h3>
+        <p class="muted" style="font-size:13.5px;margin:0 0 6px">Se marcan automáticamente las respuestas típicas según los síntomas que indicaste. Ajústalas libremente.</p>
         <div class="chips" data-map="responses"></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="mini-btn" id="mapSuggestResp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5L16 8z"/></svg> Sugerir según mis síntomas</button>
+        </div>
       </div>
       <div class="map-zone z4">
         <h3>4 · Costes actuales</h3>
@@ -1242,7 +1246,7 @@
     disc:{rec:[],ale:[],pel:[]},
     rec:{area:'',value:'',rungs:[]},
     practices:[], logs:[],
-    map:{event:'',signals:[],responses:[],costs:[],territory:''},
+    map:{event:'',signals:[],responses:[],costs:[],territory:'',seeded:false},
     crisis:{for:[],early:'',first:'',phrase:'',body:'',place:'',whenHelp:'',not:[],
             contacts:{nameProf:'',phoneProf:'',nameTrust:'',phoneTrust:'',emergency:'',other:''}},
     pro:{pin:'',code:'',initials:'',event:'',date:'',since:'',presentation:'',symptoms:'',dissociation:'',risk:'',
@@ -1310,6 +1314,7 @@
     // foco accesible
     if(view){ view.focus({preventScroll:true}); }
     if(id==='registrar') renderWeek();
+    if(id==='mapa' && maybeSeedMap()) setupMapGroup('responses', MAP.responses, S.map.responses);
   }
   function updateNavState(){
     $$('.navbtn').forEach(function(b){
@@ -2030,8 +2035,46 @@
   };
   var CRISIS_FOR=['Flashback','Ataque de pánico','Pesadilla','Disociación','Sobresalto intenso','Bloqueo al conducir','Activación en el trabajo','Impulso de abandonar una exposición','Irritabilidad intensa'];
   var CRISIS_NOT=['Discutir con el pensamiento','Forzar la respiración','Conducir si no puedo mantener la atención necesaria','Consumir alcohol u otras sustancias para regularme','Exponerme de forma impulsiva para demostrar algo'];
+  /* Respuestas de protección típicas según cada síntoma. El mapa las marca
+     automáticamente la primera vez (de forma aditiva: nunca desmarca lo tuyo). */
+  var SYMPTOM_RESP = {
+    'Evitación':['Evitar'],
+    'Miedo a conducir':['Evitar'],
+    'Miedo a volver al trabajo':['Evitar'],
+    'Miedo a espacios sociales':['Evitar','Aislarme'],
+    'Hipervigilancia':['Vigilar'],
+    'Necesidad de comprobar':['Comprobar'],
+    'Sobresaltos':['Huir'],
+    'Irritabilidad':['Irritarme'],
+    'Miedo a perder el control':['Controlar'],
+    'Sensación de estar desconectado':['Quedarme paralizado'],
+    'Culpa':['Aislarme'],
+    'Vergüenza':['Aislarme']
+  };
+  function suggestedResponses(){
+    var out=[];
+    S.symptoms.forEach(function(s){ (SYMPTOM_RESP[s]||[]).forEach(function(r){ if(out.indexOf(r)<0) out.push(r); }); });
+    if(S.pro.dissociation==='Moderado'||S.pro.dissociation==='Alto'){ if(out.indexOf('Quedarme paralizado')<0) out.push('Quedarme paralizado'); }
+    return out;
+  }
+  function applyMapSuggestions(){
+    var added=0;
+    suggestedResponses().forEach(function(r){
+      if(MAP.responses.indexOf(r)>=0 && S.map.responses.indexOf(r)<0){ S.map.responses.push(r); added++; }
+    });
+    if(added) save();
+    return added;
+  }
+  // Siembra automática (una sola vez): al abrir el mapa con síntomas marcados.
+  function maybeSeedMap(){
+    if(S.map.seeded || !S.symptoms.length) return false;
+    var n=applyMapSuggestions();
+    S.map.seeded=true; save();
+    return n>0;
+  }
   function initMapChips(){
     // chips multi ligados a arrays en S
+    maybeSeedMap();
     setupMapGroup('signals', MAP.signals, S.map.signals);
     setupMapGroup('responses', MAP.responses, S.map.responses);
     setupMapGroup('costs', MAP.costs, S.map.costs);
@@ -2040,6 +2083,13 @@
     bindText('mapEvent',function(){return S.map.event;},function(v){S.map.event=v;});
     bindText('mapTerritory',function(){return S.map.territory;},function(v){S.map.territory=v;});
     $('#mapEvent').value=S.map.event; $('#mapTerritory').value=S.map.territory;
+    var sb=$('#mapSuggestResp');
+    if(sb) sb.addEventListener('click',function(){
+      if(!S.symptoms.length){ toast('Marca algún síntoma en «Entender» para poder sugerir.'); return; }
+      var n=applyMapSuggestions();
+      setupMapGroup('responses', MAP.responses, S.map.responses);
+      toast(n? n+(n===1?' respuesta añadida.':' respuestas añadidas.') : 'Ya estaban marcadas todas las típicas.');
+    });
   }
   function setupMapGroup(name, options, arr){
     var box=$('[data-map="'+name+'"]'); if(!box) return; box.innerHTML='';
