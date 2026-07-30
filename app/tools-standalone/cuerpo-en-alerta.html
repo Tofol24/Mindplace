@@ -382,6 +382,21 @@
   .adapt-note{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;background:var(--azul-suau);border:1px solid var(--azul);border-radius:11px;padding:11px 13px;margin:0 0 12px;color:var(--tinta-2)}
   .adapt-note svg{width:18px;height:18px;flex:0 0 18px;margin-top:2px;color:var(--azul-d)}
   .adapt-note b{color:var(--azul-d)}
+  /* Recomendaciones a partir de los síntomas (conducción por síntomas) */
+  .reco{background:linear-gradient(135deg,var(--salvia-suau),color-mix(in srgb,var(--salvia-suau) 55%,var(--card)));border:1px solid var(--salvia);border-radius:var(--r-s);padding:15px 17px;margin:16px 0}
+  .reco .reco-k{display:flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--salvia-d);font-weight:700;margin-bottom:6px}
+  .reco .reco-k svg{width:16px;height:16px;flex:0 0 16px}
+  .reco p{margin:5px 0;color:var(--tinta-2);font-size:14.5px}
+  .reco .reco-steps{display:flex;flex-direction:column;gap:8px;margin-top:11px}
+  .reco .reco-step{display:flex;gap:11px;align-items:center;background:var(--card);border:1px solid var(--linia);border-radius:12px;padding:11px 13px}
+  .reco .reco-step .rs-txt{flex:1;min-width:0}
+  .reco .reco-step .rs-txt b{display:block;font-size:14.5px;color:var(--tinta);line-height:1.3}
+  .reco .reco-step .rs-txt span{display:block;font-size:13px;color:var(--suau);margin-top:2px;line-height:1.4}
+  .reco .reco-step .btn{min-height:40px;padding:8px 14px;font-size:13.5px;flex:0 0 auto}
+  .reco.azul{background:linear-gradient(135deg,var(--azul-suau),color-mix(in srgb,var(--azul-suau) 55%,var(--card)));border-color:var(--azul)}
+  .reco.azul .reco-k{color:var(--azul-d)}
+  .reco .reco-act{margin-top:11px}
+  .reco .reco-act .btn{min-height:42px;padding:9px 15px;font-size:14px}
 </style>
 </head>
 <body>
@@ -523,6 +538,9 @@
       </div>
     </div>
 
+    <!-- Recomendación personalizada a partir de los síntomas marcados -->
+    <div class="reco" id="profileReco" style="display:none" aria-live="polite"></div>
+
     <div class="btn-row">
       <button class="btn azul" data-goto="orientarme">Ir a: Orientarme al presente
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
@@ -541,6 +559,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
       <span>No buscamos peligro ni relajación. Solo comprobamos, con calma, dónde estás <strong>ahora</strong>.</span>
     </div>
+
+    <div class="reco azul" id="orientReco" style="display:none" aria-live="polite"></div>
 
     <div class="card stepper" id="orient">
       <div class="prog"><i id="orientProg" style="width:20%"></i></div>
@@ -616,6 +636,8 @@
     </div>
 
     <div class="quote">No busques que la sensación baje. El entrenamiento consiste en permanecer presente sin obedecer inmediatamente al miedo.</div>
+
+    <div class="reco azul" id="aisReco" style="display:none" aria-live="polite"></div>
 
     <div class="card">
       <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg></span> Elige un nivel</h3>
@@ -699,6 +721,8 @@
       <p class="lead">Diferenciar recuerdo, alerta y peligro presente. Marca lo que reconozcas en cada columna.</p>
     </div>
 
+    <div class="reco azul" id="discReco" style="display:none" aria-live="polite"></div>
+
     <div class="card">
       <div class="disc-grid">
         <div class="disc-col rec">
@@ -748,6 +772,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
       <span>Los pasos relacionados directamente con el recuerdo traumático, el lugar del suceso o la persona agresora <strong>deben acordarse con el profesional</strong>. La herramienta no genera exposición de alta intensidad.</span>
     </div>
+
+    <div class="reco" id="recReco" style="display:none" aria-live="polite"></div>
 
     <div class="card">
       <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7a4 4 0 1 0-3.9 5H14l2 2 2-2 2 2 2-2-2-2"/></svg></span> Cada práctica, con dos llaves</h3>
@@ -1311,11 +1337,113 @@
         if(i>=0) S.symptoms.splice(i,1); else S.symptoms.push(s);
         b.setAttribute('aria-pressed', i<0?'true':'false');
         $('#symptomMsg').style.display = S.symptoms.length? 'flex':'none';
-        save();
+        save(); renderReco();
       });
       box.appendChild(b);
     });
     $('#symptomMsg').style.display = S.symptoms.length? 'flex':'none';
+  }
+
+  /* ---------- Conducción por síntomas ----------
+     A partir de lo que la persona marca en «Entender», la herramienta sugiere
+     por dónde seguir y adapta los pasos posteriores. Son sugerencias amables
+     (nunca un diagnóstico ni una obligación); ante disociación, priorizan lo
+     externo para no favorecer la revivencia. */
+  var SYMPTOM_FAM = {
+    'Recuerdos intrusivos':'intrusion','Pesadillas':'intrusion',
+    'Sobresaltos':'hiper','Irritabilidad':'hiper','Hipervigilancia':'hiper','Tensión corporal':'hiper',
+    'Dificultades para dormir':'hiper','Problemas de concentración':'hiper','Necesidad de comprobar':'hiper',
+    'Evitación':'evit','Miedo a conducir':'evit','Miedo a volver al trabajo':'evit','Miedo a espacios sociales':'evit',
+    'Sensación de estar desconectado':'disoc',
+    'Culpa':'cognicion','Vergüenza':'cognicion','Miedo a perder el control':'cognicion'
+  };
+  var FAM = {
+    disoc:{ mod:'orientarme', label:'Orientarte al presente', ais:1,
+      lead:'Marcaste sensación de desconexión. Empieza siempre por lo de fuera —lo que ves, oyes y tocas— antes de mirar hacia dentro.' },
+    hiper:{ mod:'acompanar', label:'Acompañar la activación', ais:2,
+      lead:'Marcaste señales de alerta del cuerpo. Acompañarlas con AIS, sin luchar contra ellas, amplía tu latencia.' },
+    intrusion:{ mod:'diferenciar', label:'Diferenciar recuerdo y presente', ais:2,
+      lead:'Marcaste recuerdos o pesadillas. Separar recuerdo, alarma del cuerpo y peligro real ayuda a no revivirlo como si ocurriera ahora.' },
+    evit:{ mod:'recuperar', label:'Recuperar territorio, paso a paso', ais:1,
+      lead:'Marcaste evitación. Lo que el miedo te quitó se recupera por peldaños pequeños y acordados, nunca de golpe.' },
+    cognicion:{ mod:'entender', label:'Comprenderte con amabilidad', ais:1,
+      lead:'Marcaste culpa, vergüenza o miedo a perder el control. Son parte frecuente de la respuesta al trauma, no una prueba de debilidad.' }
+  };
+  var FAM_ORDER = ['disoc','hiper','intrusion','evit','cognicion'];
+  var FEAR_TPL  = {'Miedo a conducir':'coche','Miedo a volver al trabajo':'trabajo'};
+  var TPL_LABEL = {coche:'accidente de tráfico',trabajo:'agresión laboral'};
+  var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var BRUJULA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5L16 8z"/></svg>';
+  function computeProfile(){
+    var fams={};
+    S.symptoms.forEach(function(s){ var f=SYMPTOM_FAM[s]; if(f) fams[f]=true; });
+    // La disociación indicada por el profesional fuerza la prioridad externa.
+    if(S.pro.dissociation==='Moderado'||S.pro.dissociation==='Alto') fams.disoc=true;
+    var order=FAM_ORDER.filter(function(f){return fams[f];});
+    var tpl=null; S.symptoms.forEach(function(s){ if(FEAR_TPL[s]&&!tpl) tpl=FEAR_TPL[s]; });
+    return { fams:fams, order:order, tpl:tpl, disoc:!!fams.disoc };
+  }
+  function suggestedAisLevel(p){
+    if(p.disoc) return 1;
+    for(var i=0;i<p.order.length;i++){ var f=FAM[p.order[i]]; if(f&&f.ais) return f.ais; }
+    return 1;
+  }
+  function setReco(id, html){
+    var el=$('#'+id); if(!el) return;
+    if(!html){ el.style.display='none'; el.innerHTML=''; }
+    else { el.innerHTML=html; el.style.display='block'; }
+  }
+  function selectAisLevel(lv){ var b=$('#aisTabs button[data-lv="'+lv+'"]'); if(b) b.click(); }
+  function renderReco(){
+    var p=computeProfile();
+    // 1) Tarjeta en «Entender»: por dónde seguir
+    if(!p.order.length){ setReco('profileReco',''); }
+    else {
+      var steps=p.order.slice(0,3).map(function(f){
+        var c=FAM[f];
+        var canNav = c.mod!=='entender' && !(c.mod==='recuperar' && !S.pro.modules.recuperar);
+        var btn = canNav ? '<button class="btn" type="button" data-reco-nav="'+c.mod+'">Ir '+ARROW+'</button>' : '';
+        return '<div class="reco-step"><div class="rs-txt"><b>'+esc(c.label)+'</b><span>'+esc(c.lead)+'</span></div>'+btn+'</div>';
+      }).join('');
+      var safety = p.disoc ? '<p style="color:var(--azul-d)"><b>Ve a tu ritmo.</b> Si en algún momento notas que te desconectas, para y empieza por lo externo en «Orientarme».</p>' : '';
+      setReco('profileReco','<div class="reco-k">'+BRUJULA+'Según lo que has marcado</div>'+
+        '<p>No es un diagnóstico. Es una sugerencia de por dónde puede acompañarte la herramienta:</p>'+
+        safety+'<div class="reco-steps">'+steps+'</div>');
+      $$('#profileReco [data-reco-nav]').forEach(function(b){ b.addEventListener('click',function(){ nav(b.getAttribute('data-reco-nav')); }); });
+    }
+    // 2) Orientarme
+    if(p.disoc){
+      setReco('orientReco','<div class="reco-k">'+BRUJULA+'Para ti, ahora</div><p>Marcaste sensación de desconexión. En este módulo apóyate <b>sobre todo en lo externo</b> —lo que ves, oyes y tocas, los pies en el suelo— y ve despacio. Es tu mejor punto de partida.</p>');
+    } else if(p.fams.hiper||p.fams.intrusion){
+      setReco('orientReco','<div class="reco-k">'+BRUJULA+'Para ti, ahora</div><p>Úsalo cuando aparezca un sobresalto o un recuerdo: aquí compruebas, con calma, qué señales <b>reales</b> hay en el presente.</p>');
+    } else setReco('orientReco','');
+    // 3) Acompañar: nivel AIS sugerido
+    if(p.order.length){
+      var lv=suggestedAisLevel(p);
+      var lvName={1:'Nivel 1 · Punto neutro',2:'Nivel 2 · Borde de la activación',3:'Nivel 3 · Acompañamiento interno'}[lv];
+      var why = p.disoc
+        ? 'Como marcaste desconexión, empieza por el punto neutro y externo. <b>Evita cerrar los ojos o ir hacia las sensaciones internas.</b>'
+        : 'A partir de lo que has marcado, este nivel es un buen punto de partida. Puedes cambiarlo cuando quieras.';
+      setReco('aisReco','<div class="reco-k">'+BRUJULA+'Nivel sugerido</div><p>'+why+'</p>'+
+        '<div class="reco-act"><button class="btn" type="button" id="recoAisBtn">Empezar por el '+esc(lvName)+'</button></div>');
+      var ab=$('#recoAisBtn'); if(ab) ab.addEventListener('click',function(){ selectAisLevel(lv); toast('Nivel '+lv+' seleccionado.'); });
+    } else setReco('aisReco','');
+    // 4) Diferenciar
+    var dcol=[];
+    if(p.fams.intrusion) dcol.push('la columna <b>A · Recuerdo</b>');
+    if(p.fams.hiper||p.disoc) dcol.push('la columna <b>B · Alerta</b>');
+    if(dcol.length){
+      setReco('discReco','<div class="reco-k">'+BRUJULA+'Dónde mirar</div><p>Por lo que has marcado, presta especial atención a '+dcol.join(' y ')+'. Recordar no es lo mismo que estar en peligro ahora.</p>');
+    } else setReco('discReco','');
+    // 5) Recuperar: plantilla sugerida por miedo específico
+    if(S.pro.modules.recuperar && p.tpl){
+      setReco('recReco','<div class="reco-k">'+BRUJULA+'Un punto de partida para ti</div>'+
+        '<p>Marcaste un miedo concreto. Puedes empezar con una <b>escalera de ejemplo</b> ('+esc(TPL_LABEL[p.tpl])+') y luego ajustarla con tu profesional.</p>'+
+        '<div class="reco-act"><button class="btn" type="button" id="recoTplBtn">Cargar escalera de ejemplo '+ARROW+'</button></div>');
+      var tb=$('#recoTplBtn'); if(tb) tb.addEventListener('click',function(){ loadTemplate(p.tpl); });
+    } else if(S.pro.modules.recuperar && p.fams.evit){
+      setReco('recReco','<div class="reco-k">'+BRUJULA+'Para ti, ahora</div><p>Marcaste evitación. Elige un territorio y arma una escalera de peldaños pequeños: recuperar es volver a vivir, no demostrar valentía.</p>');
+    } else setReco('recReco','');
   }
   // Deck
   function initDeck(){
@@ -2048,6 +2176,7 @@
     var v=S.pro.dissociation;
     $('#dissWarn').style.display = (v==='Moderado'||v==='Alto')?'flex':'none';
     updateComoDisoc();
+    renderReco();
   }
   // Con disociación moderada/alta, el módulo Recuperar prioriza la orientación
   // externa en el CÓMO (evita la introspección, que puede reactivar la revivencia).
@@ -2194,6 +2323,7 @@
     if($('#recArea')) $('#recArea').value=S.rec.area;
     if($('#recValue')) $('#recValue').value=S.rec.value;
     renderLadder();
+    renderReco();
   }
 
   /* ---------- Micromensajes rotatorios ---------- */
@@ -2233,6 +2363,7 @@
     initObjCheck();
     initModals(); initPro(); initPin(); initSettings(); initConfirm();
     initMicro();
+    renderReco();
     // navegación desde botones data-goto
     $$('[data-goto]').forEach(function(b){ b.addEventListener('click',function(){ nav(b.getAttribute('data-goto')); }); });
     $('#openFinal').addEventListener('click',openFinal);
