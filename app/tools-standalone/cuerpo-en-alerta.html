@@ -371,6 +371,14 @@
   .pasos-durante li:last-child{border-bottom:0}
   .pasos-durante li:before{counter-increment:pd;content:counter(pd);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:7px;background:var(--salvia-suau);color:var(--salvia-d);display:grid;place-items:center;font-weight:700;font-size:12px}
   .pasos-durante li b{color:var(--tinta)}
+  .keys2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+  @media(max-width:560px){.keys2{grid-template-columns:1fr}}
+  .keyc{border:1px solid var(--linia);border-radius:12px;padding:13px 14px;background:var(--card)}
+  .keyc.que{border-top:4px solid var(--azul)}
+  .keyc.como{border-top:4px solid var(--salvia)}
+  .keyc .kt{font-family:var(--serif);font-weight:700;font-size:15.5px;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+  .keyc.que .kt{color:var(--azul-d)} .keyc.como .kt{color:var(--salvia-d)}
+  .keyc p{font-size:14px;color:var(--tinta-2);margin:0}
 </style>
 </head>
 <body>
@@ -739,6 +747,24 @@
     </div>
 
     <div class="card">
+      <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7a4 4 0 1 0-3.9 5H14l2 2 2-2 2 2 2-2-2-2"/></svg></span> Cada práctica, con dos llaves</h3>
+      <div class="keys2">
+        <div class="keyc que">
+          <div class="kt">El QUÉ · qué paso doy</div>
+          <p>El peldaño concreto y su medida —tiempo, distancia, compañía— y tu microacción. El compromiso no es «aguantar al máximo»: es <b>quedarte solo mientras puedas seguir presente</b>, y retirarte de forma consciente si hace falta.</p>
+        </div>
+        <div class="keyc como">
+          <div class="kt">El CÓMO · cómo me acompaño</div>
+          <p>Cómo te sostienes mientras estás ahí (lo tienes abajo, en «El CÓMO, paso a paso»). En trauma, el CÓMO se apoya en el <b>presente y lo externo</b> —ojos abiertos, orientación, doble mirada—, no en ir hacia dentro.</p>
+        </div>
+      </div>
+      <div class="avis" style="margin-top:12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        <span><b>Importante en estrés postraumático:</b> mirar demasiado hacia dentro puede reactivar el recuerdo (revivencia). Aquí <b>no vamos a revivir nada</b>: el CÓMO es acompañarte con un pie en el presente. Si notas que te vas al recuerdo o te desconectas, prioriza lo externo (módulo «Orientarme») y ajusta este trabajo con tu profesional.</span>
+      </div>
+    </div>
+
+    <div class="card">
       <h3><span class="n">1</span> ¿Qué territorio quieres recuperar?</h3>
       <label class="fld">Área
         <select id="recArea">
@@ -792,7 +818,7 @@
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DURANTE</p>
       <button class="btn block" id="aisDuring">Pausa · siento · acompaño · continúo</button>
       <div class="comohacer">
-        <div class="ch-t">Cómo hacerlo, paso a paso</div>
+        <div class="ch-t">El CÓMO · cómo me acompaño, paso a paso</div>
         <ol class="pasos-durante">
           <li><b>Quédate en tu ventana.</b> Acércate solo hasta donde puedas seguir presente. No se trata de aguantar al máximo: es estar activado/a y, a la vez, aquí.</li>
           <li><b>Un pie en el presente.</b> Con los ojos abiertos, nombra por dentro tres cosas que ves y nota el suelo bajo tus pies.</li>
