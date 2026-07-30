@@ -195,6 +195,8 @@
     width:100%;font-family:var(--sans);font-size:16px;color:var(--tinta);background:var(--card);
     border:1.5px solid var(--linia-2);border-radius:var(--r-s);padding:12px 14px;transition:border-color .15s}
   textarea{resize:vertical;min-height:74px;line-height:1.5}
+  /* Campos de una línea que crecen para que se vea todo lo escrito o propuesto */
+  textarea.grow{min-height:46px;resize:none;overflow:hidden}
   input:focus,select,textarea:focus{border-color:var(--salvia)}
   select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236e746c' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;background-size:18px;padding-right:42px}
   .field-note{font-size:13px;color:var(--suau);margin-top:5px}
@@ -257,7 +259,7 @@
   .rung .rung-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
   .rung .rn{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--salvia);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
   html[data-theme="dark"] .rung .rn{color:#1b201d}
-  .rung .rung-t{font-weight:600;flex:1}
+  .rung .rung-t{font-weight:600;flex:1;min-height:44px;line-height:1.4}
   .rung .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:12.5px}
   .rung .meta span{background:var(--crema-2);border:1px solid var(--linia);border-radius:99px;padding:4px 10px;color:var(--suau)}
   .rung-actions{display:flex;gap:8px;margin-top:10px}
@@ -589,9 +591,9 @@
       <div class="stp">
         <span class="stp-n">Paso 3 · Contacto externo</span>
         <h3>Reconoce el entorno</h3>
-        <label class="fld">Tres cosas que veo<input type="text" id="oSee" placeholder="p. ej. una ventana, una taza, mi mano"></label>
-        <label class="fld">Dos sonidos que escucho<input type="text" id="oHear" placeholder="p. ej. tráfico lejano, un reloj"></label>
-        <label class="fld">Un punto de contacto de mi cuerpo con una superficie<input type="text" id="oTouch" placeholder="p. ej. la espalda en la silla"></label>
+        <label class="fld">Tres cosas que veo<textarea class="grow" rows="1" id="oSee" placeholder="p. ej. una ventana, una taza, mi mano"></textarea></label>
+        <label class="fld">Dos sonidos que escucho<textarea class="grow" rows="1" id="oHear" placeholder="p. ej. tráfico lejano, un reloj"></textarea></label>
+        <label class="fld">Un punto de contacto de mi cuerpo con una superficie<textarea class="grow" rows="1" id="oTouch" placeholder="p. ej. la espalda en la silla"></textarea></label>
       </div>
       <!-- 4 -->
       <div class="stp">
@@ -832,17 +834,17 @@
       <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg></span> Registrar una práctica</h3>
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:10px">ANTES</p>
       <div class="fill-hint">Para escribir menos: toca las <b>opciones rápidas</b>, o usa <b>🎤 Dictar</b> (o el micrófono del teclado). No hace falta rellenarlo todo.</div>
-      <label class="fld">¿Qué estoy intentando recuperar?<input type="text" id="pBeforeRecover" data-voz></label>
-      <label class="fld">¿Qué predice mi mente?<input type="text" id="pBeforePredict" data-voz></label>
-      <label class="fld">¿Dónde noto la activación?<input type="text" id="pBeforeBody" data-voz></label>
+      <label class="fld">¿Qué estoy intentando recuperar?<textarea class="grow" rows="1" id="pBeforeRecover" data-voz></textarea></label>
+      <label class="fld">¿Qué predice mi mente?<textarea class="grow" rows="1" id="pBeforePredict" data-voz></textarea></label>
+      <label class="fld">¿Dónde noto la activación?<textarea class="grow" rows="1" id="pBeforeBody" data-voz></textarea></label>
       <div class="chips optchips" data-target="pBeforeBody">
         <button class="chip" type="button" data-val="Pecho">Pecho</button><button class="chip" type="button" data-val="Garganta">Garganta</button><button class="chip" type="button" data-val="Estómago">Estómago</button><button class="chip" type="button" data-val="Manos">Manos</button><button class="chip" type="button" data-val="Hombros/cuello">Hombros/cuello</button><button class="chip" type="button" data-val="Cabeza">Cabeza</button><button class="chip" type="button" data-val="Piernas">Piernas</button>
       </div>
-      <label class="fld">¿Qué conducta de seguridad aparece?<input type="text" id="pBeforeSafety" data-voz></label>
+      <label class="fld">¿Qué conducta de seguridad aparece?<textarea class="grow" rows="1" id="pBeforeSafety" data-voz></textarea></label>
       <div class="chips optchips" data-target="pBeforeSafety">
         <button class="chip" type="button" data-val="Evitar">Evitar</button><button class="chip" type="button" data-val="Comprobar">Comprobar</button><button class="chip" type="button" data-val="Ir acompañado/a">Ir acompañado/a</button><button class="chip" type="button" data-val="Escapar">Escapar</button><button class="chip" type="button" data-val="Distraerme">Distraerme</button><button class="chip" type="button" data-val="Sobrepensar">Sobrepensar</button><button class="chip" type="button" data-val="Ir con prisa">Ir con prisa</button>
       </div>
-      <label class="fld">¿Qué microacción he acordado?<input type="text" id="pBeforeMicro" data-voz></label>
+      <label class="fld">¿Qué microacción he acordado?<textarea class="grow" rows="1" id="pBeforeMicro" data-voz></textarea></label>
 
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DURANTE</p>
       <button class="btn block" id="aisDuring">Pausa · siento · acompaño · continúo</button>
@@ -909,7 +911,7 @@
           <label class="fld">Fecha<input type="date" id="rDate"></label>
           <label class="fld">Hora<input type="time" id="rTime"></label>
         </div>
-        <label class="fld">Situación<input type="text" id="rSit" placeholder="¿Qué estaba pasando?"></label>
+        <label class="fld">Situación<textarea class="grow" rows="1" id="rSit" placeholder="¿Qué estaba pasando?"></textarea></label>
         <label class="fld">Tipo de señal
           <select id="rSignal"><option value="">Selecciona…</option><option>Externa</option><option>Corporal</option><option>Recuerdo</option><option>Pensamiento</option><option>Sueño o pesadilla</option></select></label>
         <label class="fld">Activación (0–10)</label>
@@ -922,16 +924,16 @@
         <label class="fld">Latencia
           <span class="hint">¿Cuántos segundos pude esperar antes de reaccionar?</span>
           <input type="number" id="rLatency" min="0" inputmode="numeric" placeholder="segundos"></label>
-        <label class="fld">Acción realizada<input type="text" id="rAction"></label>
+        <label class="fld">Acción realizada<textarea class="grow" rows="1" id="rAction"></textarea></label>
         <label class="fld">Tipo de acción
           <select id="rActionType"><option value="">Selecciona…</option><option>Evitativa</option><option>Compulsiva</option><option>Protectora necesaria</option><option>Asertiva</option><option>Valiosa</option></select></label>
         <label class="fld">Alivio inmediato (0–10)</label>
         <div class="scale" data-scale="rRelief"></div>
         <label class="fld">Recuperación funcional
           <span class="hint">¿Qué parte de mi vida protegí o recuperé?</span>
-          <input type="text" id="rRecovery"></label>
-        <label class="fld">Frase honesta<input type="text" id="rHonest" placeholder="No sé por qué, pero noto…"></label>
-        <label class="fld">Aprendizaje del día<input type="text" id="rLearning" placeholder="Hoy mi cuerpo pudo comprobar que…"></label>
+          <textarea class="grow" rows="1" id="rRecovery"></textarea></label>
+        <label class="fld">Frase honesta<textarea class="grow" rows="1" id="rHonest" placeholder="No sé por qué, pero noto…"></textarea></label>
+        <label class="fld">Aprendizaje del día<textarea class="grow" rows="1" id="rLearning" placeholder="Hoy mi cuerpo pudo comprobar que…"></textarea></label>
         <div class="btn-row">
           <button class="btn block" id="saveLog">Guardar registro
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></button>
@@ -981,7 +983,11 @@
       </div>
       <div class="map-zone z2">
         <h3>2 · Señales aprendidas</h3>
+        <p class="muted" style="font-size:13.5px;margin:0 0 6px">Se marcan automáticamente las señales típicas según tus síntomas. Ajústalas libremente.</p>
         <div class="chips" data-map="signals"></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="mini-btn" id="mapSuggestSignal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5L16 8z"/></svg> Sugerir según mis síntomas</button>
+        </div>
       </div>
       <div class="map-zone z3">
         <h3>3 · Respuestas de protección</h3>
@@ -993,7 +999,11 @@
       </div>
       <div class="map-zone z4">
         <h3>4 · Costes actuales</h3>
+        <p class="muted" style="font-size:13.5px;margin:0 0 6px">Se marcan automáticamente los costes típicos según tus síntomas. Ajústalos libremente.</p>
         <div class="chips" data-map="costs"></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="mini-btn" id="mapSuggestCost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M16 8l-2.5 5.5L8 16l2.5-5.5L16 8z"/></svg> Sugerir según mis síntomas</button>
+        </div>
       </div>
       <div class="map-zone z5">
         <h3>5 · Territorio que quiero recuperar</h3>
@@ -1246,7 +1256,7 @@
     disc:{rec:[],ale:[],pel:[]},
     rec:{area:'',value:'',rungs:[]},
     practices:[], logs:[],
-    map:{event:'',signals:[],responses:[],costs:[],territory:'',seeded:false},
+    map:{event:'',signals:[],responses:[],costs:[],territory:'',seedV:0},
     crisis:{for:[],early:'',first:'',phrase:'',body:'',place:'',whenHelp:'',not:[],
             contacts:{nameProf:'',phoneProf:'',nameTrust:'',phoneTrust:'',emergency:'',other:''}},
     pro:{pin:'',code:'',initials:'',event:'',date:'',since:'',presentation:'',symptoms:'',dissociation:'',risk:'',
@@ -1314,7 +1324,12 @@
     // foco accesible
     if(view){ view.focus({preventScroll:true}); }
     if(id==='registrar') renderWeek();
-    if(id==='mapa' && maybeSeedMap()) setupMapGroup('responses', MAP.responses, S.map.responses);
+    if(id==='mapa' && maybeSeedMap()){
+      setupMapGroup('signals', MAP.signals, S.map.signals);
+      setupMapGroup('responses', MAP.responses, S.map.responses);
+      setupMapGroup('costs', MAP.costs, S.map.costs);
+    }
+    if(view){ $$('.grow',view).forEach(growEl); }
   }
   function updateNavState(){
     $$('.navbtn').forEach(function(b){
@@ -1705,7 +1720,7 @@
       var d=document.createElement('div'); d.className='rung';
       d.innerHTML =
         '<div class="rung-h"><span class="rn">'+(idx+1)+'</span>'+
-        '<input class="rung-t" type="text" placeholder="Situación concreta del peldaño" aria-label="Situación peldaño '+(idx+1)+'"></div>'+
+        '<textarea class="rung-t grow" rows="1" placeholder="Situación concreta del peldaño" aria-label="Situación peldaño '+(idx+1)+'"></textarea></div>'+
         '<div class="grid2">'+
           '<label class="fld">Activación anticipada (0–10)<input type="number" min="0" max="10" data-f="act" inputmode="numeric"></label>'+
           '<label class="fld">Tiempo o distancia<input type="text" data-f="time"></label>'+
@@ -1720,7 +1735,7 @@
         '</div>';
       var t=$('.rung-t',d); t.value=r.t||'';
       t.addEventListener('input',function(){ r.t=t.value; save(); });
-      attachMic(t);
+      attachMic(t); autoGrow(t);
       $$('[data-f]',d).forEach(function(inp){
         var f=inp.getAttribute('data-f'); inp.value=r[f]||'';
         inp.addEventListener('input',function(){ r[f]=inp.value; save(); });
@@ -2035,8 +2050,21 @@
   };
   var CRISIS_FOR=['Flashback','Ataque de pánico','Pesadilla','Disociación','Sobresalto intenso','Bloqueo al conducir','Activación en el trabajo','Impulso de abandonar una exposición','Irritabilidad intensa'];
   var CRISIS_NOT=['Discutir con el pensamiento','Forzar la respiración','Conducir si no puedo mantener la atención necesaria','Consumir alcohol u otras sustancias para regularme','Exponerme de forma impulsiva para demostrar algo'];
-  /* Respuestas de protección típicas según cada síntoma. El mapa las marca
+  /* Señales, respuestas y costes típicos según cada síntoma. El mapa los marca
      automáticamente la primera vez (de forma aditiva: nunca desmarca lo tuyo). */
+  var SYMPTOM_SIGNAL = {
+    'Recuerdos intrusivos':['Imágenes','Pensamientos'],
+    'Pesadillas':['Imágenes'],
+    'Sobresaltos':['Sonidos','Movimientos'],
+    'Hipervigilancia':['Personas','Lugares','Movimientos'],
+    'Tensión corporal':['Sensaciones'],
+    'Sensación de estar desconectado':['Sensaciones'],
+    'Problemas de concentración':['Pensamientos'],
+    'Miedo a conducir':['Lugares','Movimientos','Sonidos'],
+    'Miedo a volver al trabajo':['Lugares','Personas'],
+    'Miedo a espacios sociales':['Personas','Lugares'],
+    'Necesidad de comprobar':['Lugares']
+  };
   var SYMPTOM_RESP = {
     'Evitación':['Evitar'],
     'Miedo a conducir':['Evitar'],
@@ -2051,26 +2079,50 @@
     'Culpa':['Aislarme'],
     'Vergüenza':['Aislarme']
   };
-  function suggestedResponses(){
-    var out=[];
-    S.symptoms.forEach(function(s){ (SYMPTOM_RESP[s]||[]).forEach(function(r){ if(out.indexOf(r)<0) out.push(r); }); });
-    if(S.pro.dissociation==='Moderado'||S.pro.dissociation==='Alto'){ if(out.indexOf('Quedarme paralizado')<0) out.push('Quedarme paralizado'); }
+  var SYMPTOM_COST = {
+    'Evitación':['Autonomía','Movilidad'],
+    'Miedo a conducir':['Movilidad','Autonomía'],
+    'Miedo a volver al trabajo':['Trabajo','Autonomía'],
+    'Miedo a espacios sociales':['Relaciones','Ocio'],
+    'Dificultades para dormir':['Descanso','Salud'],
+    'Irritabilidad':['Relaciones','Familia'],
+    'Culpa':['Relaciones','Confianza'],
+    'Vergüenza':['Relaciones','Confianza'],
+    'Hipervigilancia':['Descanso'],
+    'Problemas de concentración':['Trabajo']
+  };
+  var MAP_SUGG = { signals:SYMPTOM_SIGNAL, responses:SYMPTOM_RESP, costs:SYMPTOM_COST };
+  function mapArr(group){ return group==='signals'?S.map.signals : group==='costs'?S.map.costs : S.map.responses; }
+  function suggestedFor(group){
+    var m=MAP_SUGG[group]||{}, out=[];
+    S.symptoms.forEach(function(s){ (m[s]||[]).forEach(function(x){ if(out.indexOf(x)<0) out.push(x); }); });
+    if(group==='responses' && (S.pro.dissociation==='Moderado'||S.pro.dissociation==='Alto')){ if(out.indexOf('Quedarme paralizado')<0) out.push('Quedarme paralizado'); }
     return out;
   }
-  function applyMapSuggestions(){
-    var added=0;
-    suggestedResponses().forEach(function(r){
-      if(MAP.responses.indexOf(r)>=0 && S.map.responses.indexOf(r)<0){ S.map.responses.push(r); added++; }
-    });
+  function applyMapSuggestions(group){
+    var arr=mapArr(group), opts=MAP[group], added=0;
+    suggestedFor(group).forEach(function(x){ if(opts.indexOf(x)>=0 && arr.indexOf(x)<0){ arr.push(x); added++; } });
     if(added) save();
     return added;
   }
-  // Siembra automática (una sola vez): al abrir el mapa con síntomas marcados.
+  // Siembra automática (aditiva) al abrir el mapa con síntomas marcados. Se
+  // versiona: si en una actualización se añaden zonas nuevas, se vuelve a sembrar
+  // una sola vez sobre lo que ya hubiera (sin desmarcar nada).
+  var MAP_SEED_V = 2;
   function maybeSeedMap(){
-    if(S.map.seeded || !S.symptoms.length) return false;
-    var n=applyMapSuggestions();
-    S.map.seeded=true; save();
+    if((S.map.seedV||0) >= MAP_SEED_V || !S.symptoms.length) return false;
+    var n=applyMapSuggestions('signals')+applyMapSuggestions('responses')+applyMapSuggestions('costs');
+    S.map.seedV=MAP_SEED_V; save();
     return n>0;
+  }
+  function wireSuggest(btnId, group){
+    var b=$('#'+btnId); if(!b) return;
+    b.addEventListener('click',function(){
+      if(!S.symptoms.length){ toast('Marca algún síntoma en «Entender» para poder sugerir.'); return; }
+      var n=applyMapSuggestions(group);
+      setupMapGroup(group, MAP[group], mapArr(group));
+      toast(n? n+(n===1?' añadida.':' añadidas.') : 'Ya estaban marcadas las típicas.');
+    });
   }
   function initMapChips(){
     // chips multi ligados a arrays en S
@@ -2083,13 +2135,9 @@
     bindText('mapEvent',function(){return S.map.event;},function(v){S.map.event=v;});
     bindText('mapTerritory',function(){return S.map.territory;},function(v){S.map.territory=v;});
     $('#mapEvent').value=S.map.event; $('#mapTerritory').value=S.map.territory;
-    var sb=$('#mapSuggestResp');
-    if(sb) sb.addEventListener('click',function(){
-      if(!S.symptoms.length){ toast('Marca algún síntoma en «Entender» para poder sugerir.'); return; }
-      var n=applyMapSuggestions();
-      setupMapGroup('responses', MAP.responses, S.map.responses);
-      toast(n? n+(n===1?' respuesta añadida.':' respuestas añadidas.') : 'Ya estaban marcadas todas las típicas.');
-    });
+    wireSuggest('mapSuggestSignal','signals');
+    wireSuggest('mapSuggestResp','responses');
+    wireSuggest('mapSuggestCost','costs');
   }
   function setupMapGroup(name, options, arr){
     var box=$('[data-map="'+name+'"]'); if(!box) return; box.innerHTML='';
@@ -2359,6 +2407,18 @@
     renderWeek(); renderLogs();
   }
 
+  /* ---------- Campos que crecen (para ver todo lo escrito o propuesto) ---------- */
+  function growEl(el){
+    if(!el) return;
+    if(el.offsetParent===null && el!==document.activeElement) return; // oculto: mantiene min-height
+    el.style.height='auto'; el.style.height=(el.scrollHeight+2)+'px';
+  }
+  function autoGrow(el){
+    if(!el || el._grow) return; el._grow=1;
+    el.addEventListener('input',function(){ growEl(el); });
+    growEl(el);
+  }
+
   /* ---------- Utilidades ---------- */
   function uid(){ return 'id'+Math.round(performance.now()*1000).toString(36)+Math.floor(performance.now()%997).toString(36)+(S.logs.length+S.practices.length); }
   function val(id){ var e=$('#'+id); return e? e.value.trim():''; }
@@ -2414,6 +2474,7 @@
     initModals(); initPro(); initPin(); initSettings(); initConfirm();
     initMicro();
     renderReco();
+    $$('.grow').forEach(autoGrow);
     // navegación desde botones data-goto
     $$('[data-goto]').forEach(function(b){ b.addEventListener('click',function(){ nav(b.getAttribute('data-goto')); }); });
     $('#openFinal').addEventListener('click',openFinal);
