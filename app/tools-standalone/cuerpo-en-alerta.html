@@ -335,6 +335,17 @@
   .obj-check button{min-width:44px;min-height:44px;border-radius:12px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--tinta-2);font-weight:700;cursor:pointer}
   .obj-check button.on{background:var(--salvia-suau);border-color:var(--salvia);color:var(--salvia-d)}
   .ss-note{text-align:center;font-family:var(--serif);font-style:italic;color:var(--salvia-d);margin:20px auto 0;font-size:17px;max-width:24em}
+  /* Guía «Escuchar y hacer» de la pantalla de parada */
+  .ss-guide{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 18px 16px;margin:0 0 18px;box-shadow:var(--ombra-s);text-align:center}
+  .ss-orb{width:96px;height:96px;margin:2px auto 14px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,var(--salvia-suau),color-mix(in srgb,var(--salvia-suau) 35%,var(--card)))}
+  .ss-orb span{width:44px;height:44px;border-radius:50%;background:var(--salvia);opacity:.85;transition:transform .6s ease}
+  .ss-orb.on span{animation:ssbreath 7s ease-in-out infinite}
+  @keyframes ssbreath{0%,100%{transform:scale(.7)}50%{transform:scale(1.25)}}
+  html[data-reduce="1"] .ss-orb.on span{animation:none}
+  .ss-guide-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .ss-guide-msg{font-size:13.5px;color:var(--suau);min-height:1.2em}
+  .ss-step{transition:box-shadow .25s,border-color .25s}
+  .ss-step.gs-active{border-color:var(--salvia);box-shadow:0 0 0 2px var(--salvia),var(--ombra-s)}
 
   /* Toast */
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(130px + env(safe-area-inset-bottom));z-index:140;background:var(--tinta);color:var(--crema);padding:12px 20px;border-radius:99px;font-size:14px;box-shadow:var(--ombra);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
@@ -1092,20 +1103,32 @@
   <div class="ss-in">
     <h2 id="stopTitle">Estás aquí. Vamos a orientarnos.</h2>
     <p class="ss-lead">No es necesario terminar ningún ejercicio. Parar también es una forma de cuidarte.</p>
-    <div class="ss-step">
+
+    <div class="ss-guide" id="ssGuide">
+      <div class="ss-orb" id="ssOrb" aria-hidden="true"><span></span></div>
+      <button class="btn block" id="ssPlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg>
+        Escuchar y hacer · 1 min</button>
+      <div class="ss-guide-row">
+        <button class="mini-btn" id="ssVoice">🔊 Con voz</button>
+        <span class="ss-guide-msg" id="ssMsg" aria-live="polite">No hace falta leer. Toca y solo escucha.</span>
+      </div>
+    </div>
+
+    <div class="ss-step" id="ss1">
       <h4><span class="n">1</span> Mira el entorno</h4>
       <p>Levanta la mirada y recorre despacio el lugar donde estás. No busques peligro, solo reconoce el espacio.</p>
     </div>
-    <div class="ss-step">
+    <div class="ss-step" id="ss2">
       <h4><span class="n">2</span> Identifica cinco objetos</h4>
       <p>Nómbralos, en voz alta o por dentro. Toca este contador según los encuentres.</p>
       <div class="obj-check" id="objCheck"></div>
     </div>
-    <div class="ss-step">
+    <div class="ss-step" id="ss3">
       <h4><span class="n">3</span> Apoya los pies</h4>
       <p>Nota el suelo bajo tus pies. No necesitas relajarte; solo comprobar que el suelo sostiene.</p>
     </div>
-    <div class="ss-step">
+    <div class="ss-step" id="ss4">
       <h4><span class="n">4</span> Un punto corporal neutro</h4>
       <p>Lleva la atención a las manos, la espalda o el contacto con la silla. Un punto tranquilo, sin exigir nada.</p>
     </div>
@@ -2230,16 +2253,110 @@
     if(aisTimer){ clearInterval(aisTimer); aisTimer=null; }
     var ss=$('#stopScreen'); ss.classList.add('open');
     renderStopContacts();
-    // reset contador objetos
-    var oc=$('#objCheck');
+    ssStop(); // guía en reposo al abrir
     ss.setAttribute('aria-hidden','false');
     setTimeout(function(){ $('#stopClose').focus(); },50);
     document.body.style.overflow='hidden';
   }
   function closeStop(){
+    ssStop();
     $('#stopScreen').classList.remove('open');
     document.body.style.overflow='';
     if(lastFocus) lastFocus.focus();
+  }
+
+  /* ---------- Guía «Escuchar y hacer» (audio) de la pantalla de parada ----------
+     En crisis, leer cuesta. Esta guía narra los pasos con pausas para hacerlos y
+     resalta el paso actual, para que baste con escuchar. Usa la voz del navegador;
+     si en el futuro se graban clips del profesional, se activan poniendo
+     STOP_AUDIO_DIR (p. ej. 'assets/audio/alerta-parar/') y añadiéndolos al SW. */
+  var STOP_AUDIO_DIR = null;
+  function pad2(n){ return (n<10?'0':'')+n; }
+  function stopSegs(){
+    return [
+      { n:1, el:null,   hold:1400, text:'Estás aquí. No hace falta leer nada. Solo escucha y, si puedes, haz lo que te propongo. Vamos despacio.' },
+      { n:2, el:'#ss1', hold:4500, text:'Primero, mira el entorno. Levanta la mirada y recorre despacio el lugar donde estás. No busques peligro; solo reconoce el espacio.' },
+      { n:3, el:'#ss2', hold:9000, text:'Ahora busca cinco objetos y nómbralos, en voz alta o por dentro, uno a uno, sin prisa.' },
+      { n:4, el:'#ss3', hold:5000, text:'Apoya los pies. Nota el suelo bajo tus pies. No necesitas relajarte; solo comprobar que el suelo te sostiene.' },
+      { n:5, el:'#ss4', hold:6000, text:'Lleva la atención a un punto neutro: las manos, la espalda o el contacto con la silla. Un punto tranquilo, sin exigir nada.' },
+      { n:6, el:null,   hold:0,    text:'Has vuelto un poco más al presente. Puedes quedarte aquí el tiempo que necesites. Y si lo necesitas, avisa a tu profesional o a alguien de confianza.' }
+    ];
+  }
+  var sg={running:false, i:0, audio:null, timer:null, muted:false};
+  function ssClearHl(){ $$('.ss-step.gs-active').forEach(function(e){ e.classList.remove('gs-active'); }); }
+  function ssHighlight(sel){
+    ssClearHl();
+    if(!sel) return;
+    var el=$(sel); if(!el) return;
+    el.classList.add('gs-active');
+    el.scrollIntoView({behavior:S.ui.motion?'auto':'smooth', block:'center'});
+  }
+  function ssPlayLabel(playing){
+    $('#ssPlay').innerHTML = playing
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> Detener'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg> Escuchar y hacer · 1 min';
+  }
+  function ssStop(){
+    sg.running=false;
+    if(sg.timer){ clearTimeout(sg.timer); sg.timer=null; }
+    if(sg.audio){ try{ sg.audio.pause(); }catch(e){} sg.audio=null; }
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+    var orb=$('#ssOrb'); if(orb) orb.classList.remove('on');
+    ssClearHl();
+    ssPlayLabel(false);
+    var m=$('#ssMsg'); if(m) m.textContent='No hace falta leer. Toca y solo escucha.';
+  }
+  function ssStart(){
+    if(sg.running){ ssStop(); return; }
+    sg.running=true; sg.i=0;
+    ssPlayLabel(true);
+    var orb=$('#ssOrb'); if(orb) orb.classList.add('on');
+    ssRun();
+  }
+  function ssRun(){
+    if(!sg.running) return;
+    var segs=stopSegs();
+    if(sg.i>=segs.length){ ssStop(); $('#ssMsg') && ($('#ssMsg').textContent='Cuando quieras, puedes quedarte o volver.'); return; }
+    var s=segs[sg.i];
+    ssHighlight(s.el);
+    var m=$('#ssMsg'); if(m) m.textContent = sg.muted? 'Paso '+(sg.i+1)+' de '+segs.length : '';
+    ssSpeak(s, function(){
+      if(!sg.running) return;
+      var hold = sg.muted? Math.max(1600, s.hold) : s.hold;
+      sg.timer=setTimeout(function(){ sg.i++; ssRun(); }, hold);
+    });
+  }
+  function ssSpeak(s, done){
+    if(sg.muted){ var est=Math.min(9000,Math.max(2600,s.text.length*55)); sg.timer=setTimeout(done,est); return; }
+    if(STOP_AUDIO_DIR){
+      var a=new Audio(STOP_AUDIO_DIR+pad2(s.n)+'.m4a'); sg.audio=a;
+      a.onended=function(){ sg.audio=null; done(); };
+      a.onerror=function(){ sg.audio=null; ssSynth(s,done); };
+      a.play().catch(function(){ sg.audio=null; ssSynth(s,done); });
+    } else ssSynth(s,done);
+  }
+  function ssSynth(s, done){
+    if(!('speechSynthesis' in window)){ var est=Math.min(9000,Math.max(2600,s.text.length*55)); sg.timer=setTimeout(done,est); return; }
+    try{
+      var u=new SpeechSynthesisUtterance(s.text); u.lang='es-ES'; u.rate=0.86; u.pitch=1;
+      u.onend=function(){ done(); }; u.onerror=function(){ done(); };
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }catch(e){ done(); }
+  }
+  function initStopGuide(){
+    var play=$('#ssPlay'); if(play) play.addEventListener('click',ssStart);
+    var v=$('#ssVoice');
+    if(v) v.addEventListener('click',function(){
+      sg.muted=!sg.muted;
+      v.textContent = sg.muted? '🔇 Sin voz' : '🔊 Con voz';
+      v.classList.toggle('on', sg.muted);
+      if(sg.running){ // reiniciar el paso actual con el nuevo modo
+        if(sg.timer){ clearTimeout(sg.timer); sg.timer=null; }
+        if(sg.audio){ try{ sg.audio.pause(); }catch(e){} sg.audio=null; }
+        try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+        ssRun();
+      }
+    });
   }
   function renderStopContacts(){
     var row=$('#stopContacts'); if(!row) return; row.innerHTML='';
@@ -2511,7 +2628,7 @@
     initRegistrar();
     initMapChips();
     initPlan();
-    initObjCheck();
+    initObjCheck(); initStopGuide();
     initModals(); initPro(); initPin(); initSettings(); initConfirm();
     initMicro();
     renderReco();
