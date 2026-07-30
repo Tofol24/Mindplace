@@ -843,7 +843,10 @@
 
     <!-- HISTÓRICO -->
     <div id="reg-hist" style="display:none">
+      <p class="muted" style="color:var(--suau);font-size:13px;margin:2px 0 8px">Compartir con tu profesional. Nada se sube a internet salvo lo que tú envíes.</p>
       <div class="btn-row">
+        <button class="mini-btn" id="expPanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01"/></svg> Enviar al panel (.json)</button>
+        <button class="mini-btn" id="expWaSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h8M8 14h5M21 12a9 9 0 0 1-13 8l-5 1 1-5A9 9 0 1 1 21 12z"/></svg> WhatsApp a mi profesional</button>
         <button class="mini-btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"/></svg> JSON</button>
         <button class="mini-btn" id="expCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"/></svg> CSV</button>
         <button class="mini-btn" id="expWa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h8M8 14h5M21 12a9 9 0 0 1-13 8l-5 1 1-5A9 9 0 1 1 21 12z"/></svg> Copiar resumen</button>
@@ -1035,6 +1038,7 @@
       <p class="muted" style="color:var(--suau);font-size:14px">Espacio del profesional, protegido con PIN. Esta herramienta está pensada para vivir en el <b>móvil del paciente</b>: configúrala aquí, en su dispositivo. Los datos se guardan solo en este aparato, no se sincronizan ni salen de él; con varios pacientes, usa el dispositivo de cada uno.</p>
       <div class="grid2">
         <label class="fld">Iniciales del paciente<input type="text" id="pdInitials" maxlength="6"></label>
+        <label class="fld">Código de seguimiento (para el panel)<input type="text" id="pdCode" maxlength="12" placeholder="p. ej. el de 3 cifras del screening"></label>
         <label class="fld">Tipo de acontecimiento<input type="text" id="pdEvent"></label>
         <label class="fld">Fecha aproximada<input type="text" id="pdDate" placeholder="mm/aaaa"></label>
         <label class="fld">Tiempo desde el acontecimiento<input type="text" id="pdSince"></label>
@@ -1143,7 +1147,7 @@
     map:{event:'',signals:[],responses:[],costs:[],territory:''},
     crisis:{for:[],early:'',first:'',phrase:'',body:'',place:'',whenHelp:'',not:[],
             contacts:{nameProf:'',phoneProf:'',nameTrust:'',phoneTrust:'',emergency:'',other:''}},
-    pro:{pin:'',initials:'',event:'',date:'',since:'',presentation:'',symptoms:'',dissociation:'',risk:'',
+    pro:{pin:'',code:'',initials:'',event:'',date:'',since:'',presentation:'',symptoms:'',dissociation:'',risk:'',
          modules:{recuperar:true},disabled:'',ladder:'',safety:'',stop:'',phrases:'',freq:'',review:''},
     ui:{theme:'light',motion:false}
   };
@@ -1541,6 +1545,8 @@
     $('#rDate').value = d.toISOString().slice(0,10);
     $('#rTime').value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     $('#saveLog').addEventListener('click',saveLog);
+    $('#expPanel').addEventListener('click',exportPanel);
+    $('#expWaSend').addEventListener('click',sendWa);
     $('#expJson').addEventListener('click',exportJson);
     $('#expCsv').addEventListener('click',exportCsv);
     $('#expWa').addEventListener('click',copyWa);
@@ -1611,6 +1617,55 @@
   function exportJson(){
     download('cuerpo-en-alerta_'+today()+'.json', JSON.stringify({logs:S.logs,practices:S.practices,map:S.map,exported:new Date().toISOString()},null,2), 'application/json');
     toast('Exportado en JSON.');
+  }
+  /* Sobre compatible con el panel (mismo formato "aprens-export" que el resto de
+     herramientas). Cada registro lleva un "resumen" legible que el panel muestra. */
+  function panelEnvelope(){
+    function logRec(l){
+      var res=(l.sit||'(sin situación)')
+        + (l.act!=null? ' · activación '+l.act+(l.relief!=null?'→'+l.relief:''):'')
+        + (l.latency? ' · latencia '+l.latency+'s':'')
+        + (l.impulse? ' · impulso: '+l.impulse:'')
+        + (l.ais? ' · AIS: '+l.ais:'')
+        + (l.actionType? ' · '+l.actionType:'');
+      return { date:l.date, ts:l.ts, resumen:res, situacion:l.sit, senal:l.signal, activacion:l.act,
+        zona:l.zone, impulso:l.impulse, ais:l.ais, latencia:l.latency, accion:l.action,
+        tipo_accion:l.actionType, alivio:l.relief, recuperacion:l.recovery, aprendizaje:l.learning };
+    }
+    function pracRec(p){
+      var res='Práctica · '+(p.area||'recuperar')+(p.max!=null?' · máx '+p.max+(p.final!=null?'→'+p.final:''):'')+(p.value?' · valor: '+p.value:'');
+      return { date:(p.date||'').slice(0,10), ts:p.date, resumen:res, area:p.area, max:p.max, final:p.final, valor:p.value, aprendizaje:p.learned };
+    }
+    var records=S.logs.map(logRec).concat(S.practices.map(pracRec));
+    return { type:'aprens-export', paciente:{codigo:(S.pro.code||'').trim()}, exportado:new Date().toISOString(),
+      tools:{ cuerpo_en_alerta:{ meta:{nombre:'Cuando el cuerpo sigue en alerta', v:1}, records:records } } };
+  }
+  function exportPanel(){
+    if(!S.logs.length && !S.practices.length){ toast('Aún no hay registros que enviar.'); return; }
+    var env=panelEnvelope();
+    var tag=env.paciente.codigo? '_'+env.paciente.codigo : '';
+    download('panel_cuerpo-en-alerta'+tag+'_'+today()+'.json', JSON.stringify(env,null,2), 'application/json');
+    toast(env.paciente.codigo? 'Archivo para el panel listo.' : 'Listo. Añade el código del paciente en ⚙ para el panel.');
+  }
+  function waText(){
+    var w=weekData(), code=(S.pro.code||'').trim();
+    return 'Cuando el cuerpo sigue en alerta · resumen\n'+
+      (code? 'Código: '+code+'\n':'')+
+      '('+today()+')\n\n'+
+      '• Situaciones afrontadas: '+w.faced+'\n'+
+      '• Prácticas AIS: '+w.ais+'\n'+
+      '• Latencia media: '+(w.latency!=null?w.latency+' s':'—')+'\n'+
+      '• Conductas valiosas: '+w.valuable+'\n'+
+      '• Conductas evitativas: '+w.avoidant+'\n'+
+      '• Territorios recuperados: '+w.territories+'\n'+
+      '• Valor más entrenado: '+(w.topValue||'—')+'\n\n'+
+      '(Para el detalle, adjunto también el archivo del panel.)';
+  }
+  function sendWa(){
+    var phone=(S.crisis.contacts.phoneProf||'').replace(/[^\d]/g,'');
+    var url='https://wa.me/'+phone+'?text='+encodeURIComponent(waText());
+    window.open(url,'_blank','noopener');
+    if(!phone) toast('Consejo: pon el teléfono del profesional (con prefijo, p. ej. 34…) en «Plan de crisis».');
   }
   function exportCsv(){
     var cols=['fecha','hora','situacion','señal','activacion','zona','impulso','ais','latencia_s','accion','tipo_accion','alivio','recuperacion','frase_honesta','aprendizaje'];
@@ -1854,7 +1909,7 @@
 
   /* ---------- Config profesional ---------- */
   function initPro(){
-    var map={pdInitials:'initials',pdEvent:'event',pdDate:'date',pdSince:'since',pdPresentation:'presentation',
+    var map={pdInitials:'initials',pdCode:'code',pdEvent:'event',pdDate:'date',pdSince:'since',pdPresentation:'presentation',
       pdSymptoms:'symptoms',pdDissociation:'dissociation',pdRisk:'risk',pdDisabled:'disabled',pdLadder:'ladder',
       pdSafety:'safety',pdStop:'stop',pdPhrases:'phrases',pdFreq:'freq',pdReview:'review'};
     Object.keys(map).forEach(function(id){ (function(k){
