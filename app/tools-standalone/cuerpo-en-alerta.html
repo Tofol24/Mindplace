@@ -256,7 +256,7 @@
   /* Escalera Recuperar */
   .ladder{margin-top:8px}
   .rung{border:1.5px solid var(--linia);border-radius:var(--r-s);padding:14px 16px;margin:12px 0;background:var(--card);position:relative}
-  .rung .rung-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .rung .rung-h{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
   .rung .rn{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:var(--salvia);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
   html[data-theme="dark"] .rung .rn{color:#1b201d}
   .rung .rung-t{font-weight:600;flex:1;min-height:44px;line-height:1.4}
@@ -1736,6 +1736,9 @@
       var t=$('.rung-t',d); t.value=r.t||'';
       t.addEventListener('input',function(){ r.t=t.value; save(); });
       attachMic(t); autoGrow(t);
+      // El botón «Dictar» del peldaño baja debajo, para que la situación use todo
+      // el ancho y se vea el texto completo.
+      if(t._mic){ var rh=$('.rung-h',d); if(rh) rh.insertAdjacentElement('afterend', t._mic); }
       $$('[data-f]',d).forEach(function(inp){
         var f=inp.getAttribute('data-f'); inp.value=r[f]||'';
         inp.addEventListener('input',function(){ r[f]=inp.value; save(); });
@@ -1743,6 +1746,7 @@
       $('[data-up]',d).addEventListener('click',function(){ if(idx>0){ var tmp=S.rec.rungs[idx-1]; S.rec.rungs[idx-1]=r; S.rec.rungs[idx]=tmp; save(); renderLadder(); } });
       $('[data-del]',d).addEventListener('click',function(){ confirmDo('¿Eliminar este peldaño?',function(){ S.rec.rungs.splice(idx,1); save(); renderLadder(); }); });
       box.appendChild(d);
+      growEl(t); // ya está en el DOM: ajusta el alto para que se vea todo el texto
     });
   }
   function savePractice(){
