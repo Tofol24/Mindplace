@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8aa981">
+<title>Por qué mi cuerpo sigue en alerta · APRENS</title>
+</head>
+<body>
+<div class="top" id="topbar" style="display:none">
+  <button id="volverBtn">← Volver</button>
+  <div class="rgt"><button id="muteBtn">🔊 Voz</button><button id="exitBtn" aria-label="Salir">✕</button></div>
+</div>
+
+<div class="stage" id="cover">
+  <div>
+    <div class="eyebrow">APRENS · comprender</div>
+    <h1>Por qué mi cuerpo sigue en alerta</h1>
+    <p>Una explicación breve y tranquila, de un minuto, sobre lo que le pasa a tu cuerpo después de una experiencia de mucho miedo, y por dónde se recupera. Puedes verla con calma.</p>
+    <button class="play" id="startBtn">▶ Reproducir</button>
+    <div class="mutebar"><button id="coverMute">🔊 Con voz · tocar para silenciar</button></div>
+  </div>
+</div>
+
+<div class="stage" id="show">
+  <div class="art" id="art"></div>
+  <div class="cap" id="cap"><p></p></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrl">
+    <button class="cbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <button class="cbtn big" id="playBtn" aria-label="Pausa">⏸</button>
+    <button class="cbtn" id="nextBtn" aria-label="Siguiente">›</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Ilustraciones calmadas (sin imágenes activadoras) ---------- */
+function svg(inner,vb){ return '<svg viewBox="'+(vb||'0 0 200 150')+'">'+inner+'</svg>'; }
+function figura(cx,cy,s,glow){ s=s||1; return '<g transform="translate('+cx+','+cy+') scale('+s+')" class="'+(glow?'breathe':'')+'">'+
+  '<path d="M-24 32 Q-24 2 0 2 Q24 2 24 32 Z" fill="#c9b79c"/>'+
+  '<circle cx="0" cy="-15" r="14" fill="#dcc9ad"/></g>'; }
+function orbe(cx,cy,r,mode){ var s='';
+  if(mode==='breath') s+='<circle class="breathe" cx="'+cx+'" cy="'+cy+'" r="'+(r*1.7)+'" fill="#cfe0d5" opacity=".45"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#cfe0d5" opacity="'+(mode==='faint'?.25:.9)+'"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*.55)+'" fill="#fbf8f1" opacity="'+(mode==='faint'?.3:.95)+'"/>'; return s; }
+function alarma(cx,cy){ return '<g class="pulse">'+
+  '<circle cx="'+cx+'" cy="'+cy+'" r="30" fill="none" stroke="#cf9077" stroke-width="3" opacity=".8"/>'+
+  '<circle cx="'+cx+'" cy="'+cy+'" r="18" fill="none" stroke="#cf9077" stroke-width="3" opacity=".55"/>'+
+  '<circle cx="'+cx+'" cy="'+cy+'" r="6.5" fill="#cf9077"/></g>'; }
+function bucle(cx,cy){ return '<g transform="translate('+cx+','+cy+')" class="spin">'+
+  '<path d="M-16,2 A16,16 0 1,1 4,16" fill="none" stroke="#cf9077" stroke-width="4" stroke-linecap="round"/>'+
+  '<path d="M4,16 l-7,-2 M4,16 l2,-7" fill="none" stroke="#cf9077" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>'; }
+function paso(){ return '<path d="M58 120 L128 120" stroke="#8aa981" stroke-width="5" stroke-linecap="round"/>'+
+  '<path d="M118 111 L131 120 L118 129" fill="none" stroke="#8aa981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'; }
+function senal(x,y,c){ return '<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+(c||'#9ab2bd')+'" opacity=".7"/>'; }
+
+window.SCENES=[
+  { art:svg('<g class="bob">'+figura(100,82,1.5,false)+'</g>'+senal(42,48)+senal(158,52,'#cf9077')+senal(150,110,'#8aa981')+senal(46,110)),
+    text:'Después de una experiencia de mucho miedo, tu cuerpo aprendió a protegerte muy deprisa. Guardó señales sin que lo eligieras: sonidos, lugares, sensaciones.' },
+  { art:svg(alarma(100,42)+figura(100,98,1.3,false)),
+    text:'Ahora, aunque el peligro ya no esté, esas señales pueden encender la alarma. No es que elijas estar en alerta: tu sistema de protección está trabajando de más.' },
+  { art:svg(figura(96,98,1.3,false)+bucle(150,50)),
+    text:'Para calmar esa alarma, es normal evitar, comprobar o estar muy pendiente. A corto plazo alivia. Pero, a la larga, el miedo ocupa más rincones y tu cuerpo no llega a aprender que ahora estás a salvo.' },
+  { art:svg('<g class="breathe">'+orbe(100,116,11,'breath')+'</g>'+figura(100,86,1.3,true)),
+    text:'Hay otro camino. En lugar de huir de lo que sientes, puedes pararte un momento y llevar la atención a tu cuerpo, con amabilidad.' },
+  { art:svg(figura(72,86,1.15,false)+paso()),
+    text:'Ese pequeño espacio —lo llamamos latencia— te deja elegir. Y desde ahí puedes dar un paso pequeño hacia lo que te importa.' },
+  { art:svg(orbe(140,68,20,'breath')+figura(92,92,1.3,true)),
+    text:'Cada vez que te acompañas en lugar de abandonarte, tu cuerpo recibe información nueva: el presente puede ser distinto del pasado.' },
+  { art:svg('<g class="breathe">'+figura(100,88,1.55,true)+'</g>'),
+    text:'Tu cuerpo no intenta hacerte daño. Te protege con un aprendizaje que, poco a poco, puede actualizarse.', quote:true }
+];
+// Cuando existan grabaciones de voz: window.AUDIO_DIR='assets/audio/alerta-histo/'
+window.AUDIO_DIR=null;
+window.VOLVER='cuerpo-en-alerta.html';
+</script>
+<script src="assets/historia-engine.js"></script>
+</body>
+</html>
