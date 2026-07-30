@@ -590,7 +590,7 @@
     $("detailBody").style.display = p ? "block" : "none";
     if (!p) return;
 
-    var rng = dateRange(p), mono = monoDist(p), al = alertaStat(p), val = valoresStat(p);
+    var rng = dateRange(p), mono = monoDist(p), al = alertaStat(p), val = valoresStat(p), ca = alertaData(p);
     var pctLado = mono.total ? Math.round(100 * mono.counts.lado / mono.total) : null;
     var body = $("detailBody");
 
@@ -631,6 +631,7 @@
             : '<div class="nodata">Sin registros de «Bajar la alerta».</div>') +
         '</div>' +
       '</div>' +
+      (ca ? cuerpoAlertaCard(ca) : '') +
       '<div class="card"><h3>Actividad reciente</h3>' +
         '<table class="acts"><thead><tr><th>Fecha</th><th>Herramienta</th><th>Resumen</th></tr></thead><tbody>' +
         recentActivity(p, 30).map(function (x) {
@@ -641,6 +642,7 @@
         '</tbody></table></div>';
 
     drawLCC(p);
+    drawAlerta(p);
     var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
   }
 
@@ -693,6 +695,60 @@
         '<span class="track"><span class="fill" style="width:' + pct + '%;background:' + POS_COLOR[k] + '"></span></span>' +
         '<span class="v">' + v + '</span></div>';
     }).join("") + '</div>';
+  }
+
+  /* ───────── «Cuando el cuerpo sigue en alerta» (post-trauma) ───────── */
+  function alertaData(p) {
+    var b = p.tools.cuerpo_en_alerta; if (!b || !b.records || !b.records.length) return null;
+    var recs = b.records;
+    function mean(vals) { vals = vals.filter(function (n) { return !isNaN(n); }); if (!vals.length) return null; return round1(vals.reduce(function (a, c) { return a + c; }, 0) / vals.length); }
+    var lats = recs.map(function (r) { return parseFloat(r.latencia); }).filter(function (n) { return !isNaN(n); });
+    var series = recs.map(function (r) { return { date: recDate(r), act: parseFloat(r.activacion), fin: parseFloat(r.alivio) }; })
+      .filter(function (x) { return !isNaN(x.act); })
+      .sort(function (a, c) { return (a.date || "") < (c.date || "") ? -1 : 1; });
+    return {
+      faced: recs.length,
+      ais: recs.filter(function (r) { return r.ais === "Sí"; }).length,
+      latMed: lats.length ? Math.round(lats.reduce(function (a, c) { return a + c; }, 0) / lats.length) : null,
+      valuable: recs.filter(function (r) { return ["Valiosa", "Asertiva", "Protectora necesaria"].indexOf(r.tipo_accion) >= 0; }).length,
+      avoidant: recs.filter(function (r) { return ["Evitativa", "Compulsiva"].indexOf(r.tipo_accion) >= 0; }).length,
+      actIni: mean(recs.map(function (r) { return parseFloat(r.activacion); })),
+      actFin: mean(recs.map(function (r) { return parseFloat(r.alivio); })),
+      series: series
+    };
+  }
+  function cuerpoAlertaCard(ca) {
+    return '<div class="card"><h3>Cuando el cuerpo sigue en alerta</h3>' +
+      '<div class="sub">Post-trauma · presencia, latencia y recuperación de conducta.</div>' +
+      '<div class="stat-row" style="margin:6px 0 0">' +
+        stat(ca.faced, "situaciones afrontadas") +
+        stat(ca.ais, "prácticas AIS") +
+        stat(ca.latMed == null ? "—" : ca.latMed + " s", "latencia media") +
+        stat((ca.actIni == null ? "—" : ca.actIni) + "→" + (ca.actFin == null ? "—" : ca.actFin), "activación (ini→fin)") +
+      '</div>' +
+      '<div class="stat-row" style="margin:6px 0 0">' +
+        stat(ca.valuable, "conductas valiosas / asertivas") +
+        stat(ca.avoidant, "conductas evitativas") +
+      '</div>' +
+      (ca.series.length > 1
+        ? '<div class="chart-wrap"><canvas id="chartAlerta"></canvas></div><div class="sub" style="text-align:center">Activación por registro: inicial vs final.</div>'
+        : '<div class="nodata" style="margin-top:8px">Aún no hay suficientes registros para el gráfico de activación.</div>') +
+      '</div>';
+  }
+  function drawAlerta(p) {
+    var ca = alertaData(p); if (!ca || ca.series.length < 2 || !window.Chart) return;
+    var ctx = $("chartAlerta"); if (!ctx) return;
+    charts.push(new Chart(ctx.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: ca.series.map(function (x) { return x.date; }),
+        datasets: [
+          { label: "Activación inicial", data: ca.series.map(function (x) { return x.act; }), borderColor: "#bf7256", backgroundColor: "#bf7256", tension: .3, pointRadius: 3, borderWidth: 2 },
+          { label: "Activación final", data: ca.series.map(function (x) { return isNaN(x.fin) ? null : x.fin; }), borderColor: "#5c7d54", backgroundColor: "#5c7d54", tension: .3, pointRadius: 3, borderWidth: 2, spanGaps: true }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: "bottom" } }, scales: { y: { min: 0, max: 10, ticks: { stepSize: 2 } } } }
+    }));
   }
   function drawLCC(p) {
     var s = lccSeries(p); if (!s.length || !window.Chart) return;
