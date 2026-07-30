@@ -359,6 +359,18 @@
     body{background:#fff;color:#000;padding:0}
     .card,.log-item,.rung{box-shadow:none;border-color:#ccc}
   }
+  /* dictado por voz + opciones rápidas + cómo hacerlo (módulo Recuperar) */
+  .mic-btn{display:inline-flex;align-items:center;gap:6px;margin:6px 0 2px;min-height:40px;padding:8px 13px;border-radius:11px;border:1.5px solid var(--linia-2);background:var(--card);color:var(--salvia-d);font-size:13.5px;font-weight:600;font-family:var(--sans);cursor:pointer}
+  .mic-btn.on{background:var(--terra-suau);border-color:var(--terra);color:var(--terra-d)}
+  .fill-hint{font-size:13px;color:var(--tinta-2);background:var(--salvia-suau);border-radius:11px;padding:10px 13px;margin:8px 0 12px}
+  .optchips{margin-top:8px}
+  .comohacer{background:var(--card);border:1px solid var(--linia);border-radius:var(--r-s);padding:14px 16px;margin-top:12px}
+  .comohacer .ch-t{font-weight:700;color:var(--tinta-2);margin-bottom:6px}
+  .pasos-durante{list-style:none;margin:4px 0;padding:0;counter-reset:pd}
+  .pasos-durante li{position:relative;padding:8px 0 8px 34px;font-size:14.5px;color:var(--tinta-2);border-bottom:1px solid var(--linia)}
+  .pasos-durante li:last-child{border-bottom:0}
+  .pasos-durante li:before{counter-increment:pd;content:counter(pd);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:7px;background:var(--salvia-suau);color:var(--salvia-d);display:grid;place-items:center;font-weight:700;font-size:12px}
+  .pasos-durante li b{color:var(--tinta)}
 </style>
 </head>
 <body>
@@ -764,14 +776,33 @@
     <div class="card">
       <h3><span class="n" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg></span> Registrar una práctica</h3>
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:10px">ANTES</p>
-      <label class="fld">¿Qué estoy intentando recuperar?<input type="text" id="pBeforeRecover"></label>
-      <label class="fld">¿Qué predice mi mente?<input type="text" id="pBeforePredict"></label>
-      <label class="fld">¿Dónde noto la activación?<input type="text" id="pBeforeBody"></label>
-      <label class="fld">¿Qué conducta de seguridad aparece?<input type="text" id="pBeforeSafety"></label>
-      <label class="fld">¿Qué microacción he acordado?<input type="text" id="pBeforeMicro"></label>
+      <div class="fill-hint">Para escribir menos: toca las <b>opciones rápidas</b>, o usa <b>🎤 Dictar</b> (o el micrófono del teclado). No hace falta rellenarlo todo.</div>
+      <label class="fld">¿Qué estoy intentando recuperar?<input type="text" id="pBeforeRecover" data-voz></label>
+      <label class="fld">¿Qué predice mi mente?<input type="text" id="pBeforePredict" data-voz></label>
+      <label class="fld">¿Dónde noto la activación?<input type="text" id="pBeforeBody" data-voz></label>
+      <div class="chips optchips" data-target="pBeforeBody">
+        <button class="chip" type="button" data-val="Pecho">Pecho</button><button class="chip" type="button" data-val="Garganta">Garganta</button><button class="chip" type="button" data-val="Estómago">Estómago</button><button class="chip" type="button" data-val="Manos">Manos</button><button class="chip" type="button" data-val="Hombros/cuello">Hombros/cuello</button><button class="chip" type="button" data-val="Cabeza">Cabeza</button><button class="chip" type="button" data-val="Piernas">Piernas</button>
+      </div>
+      <label class="fld">¿Qué conducta de seguridad aparece?<input type="text" id="pBeforeSafety" data-voz></label>
+      <div class="chips optchips" data-target="pBeforeSafety">
+        <button class="chip" type="button" data-val="Evitar">Evitar</button><button class="chip" type="button" data-val="Comprobar">Comprobar</button><button class="chip" type="button" data-val="Ir acompañado/a">Ir acompañado/a</button><button class="chip" type="button" data-val="Escapar">Escapar</button><button class="chip" type="button" data-val="Distraerme">Distraerme</button><button class="chip" type="button" data-val="Sobrepensar">Sobrepensar</button><button class="chip" type="button" data-val="Ir con prisa">Ir con prisa</button>
+      </div>
+      <label class="fld">¿Qué microacción he acordado?<input type="text" id="pBeforeMicro" data-voz></label>
 
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DURANTE</p>
       <button class="btn block" id="aisDuring">Pausa · siento · acompaño · continúo</button>
+      <div class="comohacer">
+        <div class="ch-t">Cómo hacerlo, paso a paso</div>
+        <ol class="pasos-durante">
+          <li><b>Quédate en tu ventana.</b> Acércate solo hasta donde puedas seguir presente. No se trata de aguantar al máximo: es estar activado/a y, a la vez, aquí.</li>
+          <li><b>Un pie en el presente.</b> Con los ojos abiertos, nombra por dentro tres cosas que ves y nota el suelo bajo tus pies.</li>
+          <li><b>Doble mirada.</b> Una parte de ti nota la activación sin pelearse con ella; otra comprueba: «esto es una reacción de mi cuerpo, no el suceso otra vez».</li>
+          <li><b>Respira natural y baja al cuerpo.</b> Sin forzar. Lleva la atención a un punto tolerable (pies, manos, espalda) unos segundos: «estoy aquí contigo».</li>
+          <li><b>Solo tu microacción.</b> Haz el paso pequeño que acordaste. No hace falta más.</li>
+          <li><b>Dosifica.</b> Si sube demasiado, reduce: acércate menos, aumenta la distancia o apóyate. Retirarte de forma consciente no es fracasar.</li>
+        </ol>
+        <div class="avis" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span><b>Cuándo parar:</b> si te desconectas o disocias, te bloqueas, no puedes sostener la atención, o el entorno deja de ser seguro, para y pulsa «Necesito parar». Parar también es cuidarte.</span></div>
+      </div>
       <p class="quote" style="margin-top:12px">No necesito sentirme seguro para actuar; necesito comprobar que puedo acompañarme mientras actúo.</p>
 
       <p class="muted" style="font-weight:600;color:var(--tinta-2);margin-top:18px">DESPUÉS</p>
@@ -779,10 +810,10 @@
       <div class="scale" data-scale="pMax"></div>
       <label class="fld">Activación final (0–10)</label>
       <div class="scale" data-scale="pFinal"></div>
-      <label class="fld">¿Qué ocurrió realmente?<textarea id="pReal"></textarea></label>
-      <label class="fld">¿Qué predijo mi mente?<textarea id="pPredicted"></textarea></label>
-      <label class="fld">¿Qué hice a pesar del miedo?<textarea id="pDid"></textarea></label>
-      <label class="fld">¿Qué aprendió hoy mi cuerpo?<textarea id="pLearned"></textarea></label>
+      <label class="fld">¿Qué ocurrió realmente?<textarea id="pReal" data-voz></textarea></label>
+      <label class="fld">¿Qué predijo mi mente?<textarea id="pPredicted" data-voz></textarea></label>
+      <label class="fld">¿Qué hice a pesar del miedo?<textarea id="pDid" data-voz></textarea></label>
+      <label class="fld">¿Qué aprendió hoy mi cuerpo?<textarea id="pLearned" data-voz></textarea></label>
       <label class="fld">Siguiente paso
         <select id="pNext"><option value="">Selecciona…</option><option>Repetiría este paso</option><option>Mantendría este paso</option><option>Reduciría el siguiente paso</option></select>
       </label>
@@ -1435,6 +1466,41 @@
   /* ---------- MÓDULO 5: Recuperar ---------- */
   var SUCCESS = ['Permanecí el tiempo acordado','Reduje una conducta de seguridad','Me acompañé durante la activación','Elegí desde el valor','Recogí información nueva del presente','Me retiré de manera consciente y no impulsiva','Pedí ayuda de forma adecuada'];
   var pScale={pMax:null,pFinal:null};
+  /* Dictado por voz: usa el reconocimiento del navegador si existe; en iPhone
+     (donde no está disponible) guía a usar el micrófono del teclado. */
+  function dictar(el, b){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ toast('En el iPhone: toca el campo y usa el micrófono 🎤 del teclado para dictar.'); el.focus(); return; }
+    if(b._rec){ try{ b._rec.stop(); }catch(e){} return; }
+    try{
+      var rec=new SR(); b._rec=rec; rec.lang='es-ES'; rec.interimResults=false; rec.maxAlternatives=1;
+      b.classList.add('on');
+      rec.onresult=function(e){ var t=e.results[0][0].transcript; el.value=(el.value?el.value.trim()+' ':'')+t; el.dispatchEvent(new Event('input',{bubbles:true})); };
+      rec.onend=function(){ b.classList.remove('on'); b._rec=null; };
+      rec.onerror=function(){ b.classList.remove('on'); b._rec=null; };
+      rec.start();
+    }catch(e){ b.classList.remove('on'); b._rec=null; toast('No se pudo iniciar el dictado.'); }
+  }
+  function attachMic(el){
+    if(!el || el._mic) return;
+    var b=document.createElement('button'); b.type='button'; b.className='mic-btn';
+    b.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> Dictar';
+    b.addEventListener('click',function(){ dictar(el,b); });
+    var host=el.closest('label')||el; host.insertAdjacentElement('afterend', b); el._mic=b;
+  }
+  function wireOpt(row){
+    var el=$('#'+row.getAttribute('data-target')); if(!el) return;
+    $$('.chip',row).forEach(function(c){
+      c.addEventListener('click',function(){
+        var val=c.getAttribute('data-val');
+        var cur=el.value.split(/,\s*/).map(function(s){return s.trim();}).filter(Boolean);
+        var i=cur.indexOf(val);
+        if(i>=0){ cur.splice(i,1); c.setAttribute('aria-pressed','false'); }
+        else { cur.push(val); c.setAttribute('aria-pressed','true'); }
+        el.value=cur.join(', '); el.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+    });
+  }
   function initRecuperar(){
     bindText('recArea',function(){return S.rec.area;},function(v){S.rec.area=v;});
     bindText('recValue',function(){return S.rec.value;},function(v){S.rec.value=v;});
@@ -1454,6 +1520,9 @@
     });
     $('#aisDuring').addEventListener('click',function(){ nav('acompanar'); toast('Pausa · siento · acompaño · continúo'); });
     $('#savePractice').addEventListener('click',savePractice);
+    // dictado por voz + opciones rápidas (rellenar con menos esfuerzo)
+    $$('#view-recuperar [data-voz]').forEach(attachMic);
+    $$('#view-recuperar .optchips').forEach(wireOpt);
   }
   function loadTemplate(type){
     var coche=['Sentarme en el coche estacionado durante dos minutos','Permanecer en el coche con el motor encendido','Recorrer una calle tranquila acompañado','Realizar un trayecto breve conocido','Recuperar progresivamente trayectos funcionales'];
@@ -1484,6 +1553,7 @@
         '</div>';
       var t=$('.rung-t',d); t.value=r.t||'';
       t.addEventListener('input',function(){ r.t=t.value; save(); });
+      attachMic(t);
       $$('[data-f]',d).forEach(function(inp){
         var f=inp.getAttribute('data-f'); inp.value=r[f]||'';
         inp.addEventListener('input',function(){ r[f]=inp.value; save(); });
