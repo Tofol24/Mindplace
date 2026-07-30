@@ -127,7 +127,11 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/historia-manada.html" },
   { id:"historia_control", emoji:"🎬", nombre:"El control y la presencia · animada",
     desc:"El mapa del malestar en versión animada y narrada (voz del dispositivo): buscar el control (sobrepensar) frente a parar y volver al cuerpo.",
-    migrada:true, iframe:"tools-standalone/historia-control.html" }
+    migrada:true, iframe:"tools-standalone/historia-control.html" },
+
+  { id:"cuerpo_en_alerta", emoji:"🌿", nombre:"Cuando el cuerpo sigue en alerta",
+    desc:"Acompañamiento tras una experiencia traumática (accidente, agresión, amenaza): comprender la respuesta protectora, orientarse al presente, acompañar la activación con AIS, diferenciar recuerdo/alerta/peligro, recuperar territorio por valores, registro diario, mapa y plan de crisis. Botón «Necesito parar» siempre disponible (ACT · TEC · AIS).",
+    migrada:true, iframe:"tools-standalone/cuerpo-en-alerta.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
