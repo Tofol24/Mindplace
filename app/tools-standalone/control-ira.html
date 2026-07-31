@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#F4EFE6">
-<title>Autorregistre · APRENS</title>
+<title>Autorregistro · APRENS</title>
 <style>
 :root{--azul:#565a41;--azulLt:#e8ead9;--verde:#5c7d54;--naranja:#C2704F;--rojo:#b0432f;--gris:#6f665b;--oro:#a9781f;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
@@ -39,7 +39,7 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .big:disabled{opacity:.45;box-shadow:none;}
 .big:active{transform:scale(.97);}
 .mini{background:transparent;color:var(--gris);font-size:14px;padding:10px;font-weight:600;}
-/* escala 1-5 nivell */
+/* escala 1-5 nivel */
 .niv{display:flex;gap:8px;margin:6px 0 20px;}
 .niv .n{flex:1;background:#fff;border:2px solid #e0d8c8;border-radius:16px;padding:14px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.12s;}
 .niv .n .em{font-size:30px;line-height:1;} .niv .n .t{font-size:10px;color:var(--gris);font-weight:600;line-height:1.1;}
@@ -48,13 +48,13 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .niv .n.sel .t{color:var(--naranja);}
 .niv.fin .n.sel{border-color:var(--verde);background:#EAF7F0;box-shadow:0 0 0 3px #CDEBDD inset;}
 .niv.fin .n.sel .t{color:var(--verde);}
-/* opcions grans */
+/* opciones grandes */
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 20px;}
 .opt{background:#fff;border:2px solid #e0d8c8;border-radius:18px;padding:16px 10px;font-size:14.5px;font-weight:600;color:#33384a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.12s;}
 .opt .em{font-size:28px;line-height:1;}
 .opt:active{transform:scale(.96);}
 .opt.sel{border-color:var(--verde);background:#EAF7F0;color:var(--verde);box-shadow:0 0 0 3px #CDEBDD inset;}
-/* respiració */
+/* respiración */
 .breath{display:flex;flex-direction:column;align-items:center;margin:6px 0 20px;}
 .ring{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#eef0e2 0%,#f4f1e6 70%);border:4px solid var(--azulLt);display:flex;align-items:center;justify-content:center;transform:scale(1);will-change:transform;}
 .ring.inhale{border-color:#9aa87f;background:radial-gradient(circle,#eef0e2 0%,#f4f1e6 72%);}
@@ -64,7 +64,7 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .breath-hint{font-size:14px;color:var(--gris);margin-top:16px;}
 .breath-count{font-size:12.5px;color:var(--gris);margin-top:5px;font-weight:600;letter-spacing:.3px;min-height:16px;}
 .parar-ja{margin-top:12px;color:var(--rojo);font-size:14.5px;font-weight:700;}
-/* resultat */
+/* resultado */
 .res{background:var(--azul);color:#fff;border-radius:22px;padding:26px;text-align:center;margin-bottom:18px;}
 .res-row{display:flex;justify-content:center;align-items:center;gap:22px;}
 .res-big{font-family:var(--serif);font-size:46px;font-weight:700;line-height:1;}
@@ -76,7 +76,7 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:13px 20px;font-size:15px;}
 .cbox{display:none;}
 .frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 12px 12px 0;border-left:4px solid var(--oro);padding:13px 15px;line-height:1.6;margin-top:18px;text-align:center;}
-/* Àncora visual: mapa intern (SVG) */
+/* Ancla visual: mapa interno (SVG) */
 .mapa-tit{font-size:14px;font-weight:600;color:var(--azul);text-align:center;margin:8px 0 2px;}
 .mapa-sub{font-size:13px;color:var(--gris);text-align:center;line-height:1.5;margin-bottom:6px;}
 .mapa{display:flex;justify-content:center;margin:4px 0;}
@@ -91,6 +91,9 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25));}
 .ancla-msg{display:none;margin:8px 0 2px;background:#EAF7F0;border-left:4px solid var(--verde);border-radius:0 11px 11px 0;padding:11px 14px;font-size:14px;color:#1e5e44;line-height:1.5;font-weight:600;}
 .ancla-msg.show{display:block;}
+/* Selector de idioma */
+.langtog{position:fixed;top:10px;right:10px;z-index:50;display:flex;background:rgba(255,255,255,.92);border:1px solid #E1D9C9;border-radius:999px;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.langtog button{border:0;background:none;padding:6px 12px;cursor:pointer;color:#6f675c;}
 
 /* ══ NUEVO ESTILO EDITORIAL (migración) · identidad propia ══ */
 :root{--azul:#b0663a;--azulLt:#ecd8ca;--oro:#a7802f;--gris:#6f675c;}
@@ -104,12 +107,16 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 </style>
 </head>
 <body>
+<div class="langtog" id="langToggle" role="group" aria-label="Idioma / Idioma">
+  <button data-lang="es" onclick="setLang('es')">ES</button>
+  <button data-lang="ca" onclick="setLang('ca')">CA</button>
+</div>
 <section class="phero">
   <img class="phero-img" src="assets/editorial/control-ira.webp" alt="" onerror="this.remove()">
   <div class="phero-copy">
     <p class="eyebrow">APRENS · AIS</p>
-    <h1>Com estic ara?</h1>
-    <p class="phero-tag">Un registre serè després de la ràbia, per aprendre’n sense culpa.</p>
+    <h1 id="heroTitle">¿Cómo estoy ahora?</h1>
+    <p class="phero-tag" id="heroTag">Un registro sereno después de la rabia, para aprender de ella sin culpa.</p>
   </div>
 </section>
 <div style="max-width:380px;margin:18px auto 0;padding:0 16px">
@@ -118,29 +125,110 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <source src="/assets/video/video-ira.mp4" type="video/mp4">
     </video>
   </div>
-  <p style="text-align:center;font-size:13px;color:#8a8f86;margin:8px 0 0;font-family:system-ui,-apple-system,sans-serif">▶ La ira, con Tòfol Villalonga · psicólogo</p>
+  <p id="videoCap" style="text-align:center;font-size:13px;color:#8a8f86;margin:8px 0 0;font-family:system-ui,-apple-system,sans-serif">▶ La ira, con Tòfol Villalonga · psicólogo</p>
 </div>
 <div class="header">
   <div class="hlogo">ap</div>
-  <div><div class="htitle">Com estic ara?</div></div>
+  <div><div class="htitle" id="hdrTitle">¿Cómo estoy ahora?</div></div>
 </div>
 <div class="wrap" id="app"></div>
 
 <script>
+/* ── Textos por idioma (ES por defecto; CA disponible con el selector) ── */
+const I18N={
+ es:{
+   docTitle:"Autorregistro · APRENS", heroTitle:"¿Cómo estoy ahora?",
+   heroTag:"Un registro sereno después de la rabia, para aprender de ella sin culpa.",
+   videoCap:"▶ La ira, con Tòfol Villalonga · psicólogo",
+   znom:{cuello:"Cuello (garganta y nuca)",pecho:"Pecho (corazón y pulmones)",barriga:"Vientre (estómago e intestinos)"},
+   zmsg:{
+     cuello:"Lleva la mirada al cuello. Mientras respiras, intenta SENTIR la garganta y la nuca por dentro. Cuando lo localices, suelta la imagen.",
+     pecho:"Lleva la mirada al pecho. Mientras respiras, intenta SENTIR el latido y el aire por dentro. Cuando lo localices, suelta la imagen.",
+     barriga:"Lleva la mirada al vientre. Mientras respiras, deja que el aire baje e intenta SENTIRLO por dentro. Cuando lo localices, suelta la imagen."},
+   mapaTit:'🫀 O ancla la mirada dentro <span style="font-weight:400;color:var(--gris)">· opcional</span>',
+   mapaSub:"Mira una zona del cuerpo y lleva ahí la atención mientras respiras. La imagen es la rampa; después intenta sentirla.",
+   ariaMapa:"Mapa del cuerpo con tres zonas", ariaCuello:"Cuello", ariaPecho:"Pecho", ariaBarriga:"Vientre",
+   nivells:[["😌","Tranquilo"],["🙂","Un poco"],["😐","Activado"],["😠","Muy activado"],["😡","Al límite"]],
+   paso:{respira:{ico:"🫁",tit:"Para y respira",sub:"Respira con el círculo antes de hacer nada."},
+     que:{ico:"❓",tit:"¿Qué ha pasado?",sub:"Toca lo que más se acerque (opcional)."},
+     cos:{ico:"🫀",tit:"¿Dónde lo notas?",sub:"Toca las zonas del cuerpo (las que quieras)."},
+     canal:{ico:"🧭",tit:"Canalízalo",sub:"Elige una manera de bajar la activación."}},
+   ques:[["💬","Me han dicho algo"],["📌","Una norma u orden"],["🏠","En casa"],["💼","En el trabajo"],["🚦","Una injusticia"],["❓","Otra cosa"]],
+   cosos:[["🧠","Cabeza / mandíbula"],["❤️","Pecho / corazón"],["🫃","Vientre"],["💪","Manos / brazos"],["🦵","Piernas"],["🔥","Calor general"]],
+   canals:[["🫁","Respirar hondo"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escribir o dibujar"],["🚶","Caminar o moverme"],["🔌","Desconectar un rato"],["💬","Hablar con alguien"]],
+   respPrep:"Prepárate", respHint:"Respira con el círculo", respCountWord:"Respiración",
+   fase:{in:"Toma aire",hold:"Retén",out:"Suelta",pause:"Pausa"},
+   hint:{in:"Toma aire",hold:"retén",out:"suelta",pause:"pausa"},
+   introTit:"¿Cómo estás de activado/a?", introSub:"Cuando notes que la rabia sube. Toca tu nivel ahora.",
+   comencar:"Empezar →", pararJa:"🫁 Necesito parar ya",
+   jaMillor:"Ya estoy mejor →", jaEstic:"Ya estoy →", gairebe:"Casi →", seguent:"Siguiente →", enrere:"← Atrás",
+   resTit:"¿Cómo estás ahora?", veure:"Ver cómo ha ido →",
+   locale:"es",
+   regTitle:"AUTORREGISTRO APRENS · ", nivInicial:"Nivel inicial: ", desenc:"Desencadenante: ",
+   sensCorp:"Sensación corporal: ", ancla:"Ancla visual (mirar dentro): ", tecnica:"Técnica: ",
+   nivFinal:"Nivel final: ", signature:"— APRENS Psicología · aprens.es",
+   baixat:(c)=>`Has bajado <b>${c} ${c===1?'punto':'puntos'}</b> de activación. Has regulado la rabia antes de actuar. 👏`,
+   noBaixat:"Hoy no ha bajado en número, y también está bien: has parado y te has acompañado. Con la práctica, el cuerpo responde antes.",
+   avisoWA:'<b>⏱️ ¿Cuándo enviármelo?</b> En cuanto acabes, <b>envíamelo en ese momento</b>. Esta herramienta se usa cuando te pasa algo.',
+   enviarWA:"📱 Enviar a mi psicólogo/a", copiar:"📋 Copiar", copiat:"✓ Copiado",
+   apunt:'✍️ ¿Quieres apuntar qué ha pasado? <span style="font-weight:400">(opcional)</span>',
+   reiniciar:"↺ Hacerlo otra vez",
+   fraseMain:"«Donde dirijo mi atención, allí voy yo.»",
+   fraseSub:"Practícalo también en momentos tranquilos: así lo tienes a punto cuando lo necesites."
+ },
+ ca:{
+   docTitle:"Autorregistre · APRENS", heroTitle:"Com estic ara?",
+   heroTag:"Un registre serè després de la ràbia, per aprendre’n sense culpa.",
+   videoCap:"▶ La ira, amb Tòfol Villalonga · psicòleg",
+   znom:{cuello:"Coll (gola i clatell)",pecho:"Pit (cor i pulmons)",barriga:"Panxa (estómac i intestins)"},
+   zmsg:{
+     cuello:"Porta la mirada al coll. Mentre respires, intenta SENTIR la gola i el clatell per dins. Quan ho localitzis, deixa anar la imatge.",
+     pecho:"Porta la mirada al pit. Mentre respires, intenta SENTIR el batec i l'aire per dins. Quan ho localitzis, deixa anar la imatge.",
+     barriga:"Porta la mirada a la panxa. Mentre respires, deixa que l'aire hi baixi i intenta SENTIR-la per dins. Quan ho localitzis, deixa anar la imatge."},
+   mapaTit:'🫀 O ancora la mirada dins <span style="font-weight:400;color:var(--gris)">· opcional</span>',
+   mapaSub:"Mira una zona del cos i porta-hi l'atenció mentre respires. La imatge és la rampa; després intenta sentir-la.",
+   ariaMapa:"Mapa del cos amb tres zones", ariaCuello:"Coll", ariaPecho:"Pit", ariaBarriga:"Panxa",
+   nivells:[["😌","Tranquil"],["🙂","Una mica"],["😐","Activat"],["😠","Molt activat"],["😡","Al límit"]],
+   paso:{respira:{ico:"🫁",tit:"Para i respira",sub:"Respira amb el cercle abans de fer res."},
+     que:{ico:"❓",tit:"Què ha passat?",sub:"Toca el que més s'acosti (opcional)."},
+     cos:{ico:"🫀",tit:"On ho notes?",sub:"Toca les zones del cos (les que vulguis)."},
+     canal:{ico:"🧭",tit:"Canalitza-ho",sub:"Tria una manera de baixar l'activació."}},
+   ques:[["💬","M'han dit una cosa"],["📌","Una norma o ordre"],["🏠","A casa"],["💼","A la feina"],["🚦","Una injustícia"],["❓","Una altra cosa"]],
+   cosos:[["🧠","Cap / mandíbula"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"]],
+   canals:[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"]],
+   respPrep:"Prepara't", respHint:"Respira amb el cercle", respCountWord:"Respiració",
+   fase:{in:"Agafa aire",hold:"Retén",out:"Deixa anar",pause:"Pausa"},
+   hint:{in:"Agafa aire",hold:"retén",out:"deixa anar",pause:"pausa"},
+   introTit:"Com estàs d'activat/da?", introSub:"Quan notis que la ràbia puja. Toca el teu nivell ara.",
+   comencar:"Començar →", pararJa:"🫁 Necessito parar ja",
+   jaMillor:"Ja estic millor →", jaEstic:"Ja estic →", gairebe:"Gairebé →", seguent:"Següent →", enrere:"← Enrere",
+   resTit:"Com estàs ara?", veure:"Veure com ha anat →",
+   locale:"ca",
+   regTitle:"AUTORREGISTRE APRENS · ", nivInicial:"Nivell inicial: ", desenc:"Desencadenant: ",
+   sensCorp:"Sensació corporal: ", ancla:"Àncora visual (mirar dins): ", tecnica:"Tècnica: ",
+   nivFinal:"Nivell final: ", signature:"— APRENS Psicologia · aprens.es",
+   baixat:(c)=>`Has baixat <b>${c} ${c===1?'punt':'punts'}</b> d'activació. Has regulat la ràbia abans d'actuar. 👏`,
+   noBaixat:"Avui no ha baixat en número, i també està bé: has parat i t'has acompanyat. Amb la pràctica, el cos respon abans.",
+   avisoWA:'<b>⏱️ Quan enviar-m\'ho?</b> Tan bon punt acabis, <b>envia-m\'ho en aquell moment</b>. Aquesta eina s\'usa quan et passa alguna cosa.',
+   enviarWA:"📱 Enviar al meu psicòleg/a", copiar:"📋 Copiar", copiat:"✓ Copiat",
+   apunt:'✍️ Vols apuntar què ha passat? <span style="font-weight:400">(opcional)</span>',
+   reiniciar:"↺ Fer-ho un altre cop",
+   fraseMain:"«On dirigeixo la meva atenció, allà vaig jo.»",
+   fraseSub:"Practica-ho també en moments tranquils: així ho tens a punt quan ho necessitis."
+ }
+};
+let lang=(function(){ try{ var l=localStorage.getItem('aprens_ira_lang'); return (l==='ca'||l==='es')?l:'es'; }catch(e){ return 'es'; } })();
+function T(){ return I18N[lang]; }
+
 let vista="intro", paso=0;
 let nivell=0, nivellPost=0, que="", cos=[], canal="", anclaZona="";
 const app=document.getElementById("app");
 
-const ZNOM={cuello:"Coll (gola i clatell)",pecho:"Pit (cor i pulmons)",barriga:"Panxa (estómac i intestins)"};
-const ZMSG={
-  cuello:"Porta la mirada al coll. Mentre respires, intenta SENTIR la gola i el clatell per dins. Quan ho localitzis, deixa anar la imatge.",
-  pecho:"Porta la mirada al pit. Mentre respires, intenta SENTIR el batec i l'aire per dins. Quan ho localitzis, deixa anar la imatge.",
-  barriga:"Porta la mirada a la panxa. Mentre respires, deixa que l'aire hi baixi i intenta SENTIR-la per dins. Quan ho localitzis, deixa anar la imatge."
-};
-const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="font-weight:400;color:var(--gris)">· opcional</span></div>
-<div class="mapa-sub">Mira una zona del cos i porta-hi l'atenció mentre respires. La imatge és la rampa; després intenta sentir-la.</div>
+function mapaSVG(){ const t=T();
+ return `<div class="mapa-tit">${t.mapaTit}</div>
+<div class="mapa-sub">${t.mapaSub}</div>
 <div class="mapa">
-  <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cos amb tres zones">
+  <svg viewBox="0 0 220 380" role="img" aria-label="${t.ariaMapa}">
     <defs><linearGradient id="bodyGradI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaeff3"/><stop offset="1" stop-color="#dbe4ea"/></linearGradient></defs>
     <g fill="url(#bodyGradI)" stroke="#cdd7df" stroke-width="1.4">
       <ellipse cx="110" cy="46" rx="29" ry="33"/>
@@ -149,7 +237,7 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="
       <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
       <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
     </g>
-    <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Coll" onclick="setZona('cuello')">
+    <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="${t.ariaCuello}" onclick="setZona('cuello')">
       <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
       <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
         <ellipse cx="110" cy="80" rx="9" ry="7"/><path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
@@ -158,7 +246,7 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="
       <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
       <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
     </g>
-    <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pit" onclick="setZona('pecho')">
+    <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="${t.ariaPecho}" onclick="setZona('pecho')">
       <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
       <g class="organ">
         <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
@@ -169,7 +257,7 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="
       <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
       <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
     </g>
-    <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Panxa" onclick="setZona('barriga')">
+    <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="${t.ariaBarriga}" onclick="setZona('barriga')">
       <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
       <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
@@ -182,35 +270,25 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancora la mirada dins <span style="
   </svg>
 </div>
 <div class="ancla-msg" id="zonaMsg"></div>`;
+}
 
-const NIVELLS=[["😌","Tranquil"],["🙂","Una mica"],["😐","Activat"],["😠","Molt activat"],["😡","Al límit"]];
-const PASO={
-  respira:{ico:"🫁", tit:"Para i respira", sub:"Respira amb el cercle abans de fer res."},
-  que:{ico:"❓", tit:"Què ha passat?", sub:"Toca el que més s'acosti (opcional)."},
-  cos:{ico:"🫀", tit:"On ho notes?", sub:"Toca les zones del cos (les que vulguis)."},
-  canal:{ico:"🧭", tit:"Canalitza-ho", sub:"Tria una manera de baixar l'activació."}
-};
-/* En activació alta (nivell 4-5) el flux és NOMÉS parar i respirar; l'autorregistre
-   (què/cos/canal) s'ofereix DESPRÉS i és opcional. En nivell 1-3, flux complet. */
+const PASO_ICO={respira:"🫁",que:"❓",cos:"🫀",canal:"🧭"};
+/* En activación alta (nivel 4-5) el flujo es SOLO parar y respirar; el autorregistro
+   (qué/cuerpo/canal) se ofrece DESPUÉS y es opcional. En nivel 1-3, flujo completo. */
 let plan=["respira","que","cos","canal"], apuntMode=false, apuntFet=false;
-const QUES=[["💬","M'han dit una cosa"],["📌","Una norma o ordre"],["🏠","A casa"],["💼","A la feina"],["🚦","Una injustícia"],["❓","Una altra cosa"]];
-const COSOS=[["🧠","Cap / gàngols"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"]];
-const CANALS=[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"]];
 
-/* Respiració guiada ADAPTADA al nivell d'activació inicial (evidència: més
-   activació → exhalació més llarga i sense retencions; menys → coherent ~6/min) */
+/* Respiración guiada ADAPTADA al nivel de activación inicial (evidencia: más
+   activación → exhalación más larga y sin retenciones; menos → coherente ~6/min) */
 function ritmoResp(frac){ if(frac>=0.8)return[2,0,6,0]; if(frac>=0.6)return[3,1,6,1]; if(frac>=0.4)return[4,2,6,2]; return[5,0,5,0]; }
-/* El cercle es plena (inspirar → gran) i es buida (espirar → petit): l'amplitud
-   acompanya l'aire. Color blau en inspirar, verd en espirar. */
-function fasesDe(r){ var IN=1.32, OUT=0.68;
-  var f=[{txt:"Agafa aire",dur:r[0]*1000,scale:IN,kind:'in'}];
-  if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:IN,kind:'in'});
-  f.push({txt:"Deixa anar",dur:r[2]*1000,scale:OUT,kind:'out'});
-  if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:OUT,kind:'out'});
-  return f; }
-function hintDe(r){ var s="Agafa aire "+r[0]+"s"; if(r[1]>0)s+=" · retén "+r[1]+"s"; s+=" · deixa anar "+r[2]+"s"; if(r[3]>0)s+=" · pausa "+r[3]+"s"; return s; }
+function fasesDe(r){ var IN=1.32, OUT=0.68; var f=T().fase;
+  var a=[{txt:f.in,dur:r[0]*1000,scale:IN,kind:'in'}];
+  if(r[1]>0)a.push({txt:f.hold,dur:r[1]*1000,scale:IN,kind:'in'});
+  a.push({txt:f.out,dur:r[2]*1000,scale:OUT,kind:'out'});
+  if(r[3]>0)a.push({txt:f.pause,dur:r[3]*1000,scale:OUT,kind:'out'});
+  return a; }
+function hintDe(r){ var h=T().hint; var s=h.in+" "+r[0]+"s"; if(r[1]>0)s+=" · "+h.hold+" "+r[1]+"s"; s+=" · "+h.out+" "+r[2]+"s"; if(r[3]>0)s+=" · "+h.pause+" "+r[3]+"s"; return s; }
 let FASES_RESP=[], respIdx=0, respTimer=null, respCicles=0;
-function startBreath(){ stopBreath(); var r=ritmoResp((nivell||3)/5); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCicles=0; var c=document.getElementById('respCount'); if(c)c.textContent="Respiració 1"; runResp(); }
+function startBreath(){ stopBreath(); var r=ritmoResp((nivell||3)/5); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCicles=0; var c=document.getElementById('respCount'); if(c)c.textContent=T().respCountWord+" 1"; runResp(); }
 function runResp(){
   var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
   var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
@@ -220,53 +298,54 @@ function runResp(){
   ring.classList.toggle('exhale', f.kind==='out');
   if(lbl) lbl.textContent=f.txt;
   respIdx=(respIdx+1)%FASES_RESP.length;
-  if(respIdx===0){ respCicles++; var c=document.getElementById('respCount'); if(c)c.textContent="Respiració "+(respCicles+1); }
+  if(respIdx===0){ respCicles++; var c=document.getElementById('respCount'); if(c)c.textContent=T().respCountWord+" "+(respCicles+1); }
   respTimer=setTimeout(runResp,f.dur);
 }
 function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
 
 function render(){ stopBreath(); if(vista==="intro")return intro(); if(vista==="paso")return pasoView(); if(vista==="resultado")return resultado(); }
 
-function intro(){
+function intro(){ const t=T();
   app.innerHTML=`
     <div class="step">
       <div class="step-ico">🌡️</div>
-      <div class="step-tit">Com estàs d'activat/da?</div>
-      <div class="step-sub">Quan notis que la ràbia puja. Toca el teu nivell ara.</div>
+      <div class="step-tit">${t.introTit}</div>
+      <div class="step-sub">${t.introSub}</div>
     </div>
-    <div class="niv">${NIVELLS.map((o,i)=>nivBtn(i,o,false)).join("")}</div>
-    <button class="btn big" id="goBtn" onclick="empezar()" ${nivell?'':'disabled'}>Començar →</button>
-    <div style="text-align:center"><button class="btn parar-ja" onclick="pararJa()">🫁 Necessito parar ja</button></div>`;
+    <div class="niv">${t.nivells.map((o,i)=>nivBtn(i,o,false)).join("")}</div>
+    <button class="btn big" id="goBtn" onclick="empezar()" ${nivell?'':'disabled'}>${t.comencar}</button>
+    <div style="text-align:center"><button class="btn parar-ja" onclick="pararJa()">${t.pararJa}</button></div>`;
 }
 function nivBtn(i,o,fin){return `<div class="n ${((fin?nivellPost:nivell)===i+1)?'sel':''}" onclick="setNiv(${i+1},${fin})"><span class="em">${o[0]}</span><span class="t">${o[1]}</span></div>`;}
 function setNiv(v,fin){ if(fin)nivellPost=v; else nivell=v; render(); }
-/* nivell 4-5 → només parar i respirar; 1-3 → flux complet */
+/* nivel 4-5 → solo parar y respirar; 1-3 → flujo completo */
 function empezar(){ if(!nivell)return; plan = nivell>=4 ? ["respira"] : ["respira","que","cos","canal"]; apuntMode=false; apuntFet=false; vista="paso";paso=0;render();scrollTo(0,0); }
 function pararJa(){ if(!nivell)nivell=4; plan=["respira"]; apuntMode=false; apuntFet=false; vista="paso";paso=0;render();scrollTo(0,0); }
 function startApunt(){ plan=["que","cos","canal"]; apuntMode=true; paso=0; vista="paso"; render(); scrollTo(0,0); }
 
 function dotsHTML(){ if(plan.length<2) return ""; let h="";for(let i=0;i<plan.length;i++)h+=`<div class="dot ${i<paso?'done':i===paso?'on':''}"></div>`;return `<div class="dots">${h}</div>`;}
-function pasoView(){
-  const tipo=plan[paso], s=PASO[tipo], last=paso===plan.length-1; let cuerpo="";
+function pasoView(){ const t=T();
+  const tipo=plan[paso], last=paso===plan.length-1; let cuerpo="";
+  const s={ico:PASO_ICO[tipo], tit:t.paso[tipo].tit, sub:t.paso[tipo].sub};
   if(tipo==="respira"){
-    const mostraMapa = plan.length>1;   // en «parar ja» / activació alta, només el cercle
-    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Prepara't</span></div><div class="breath-hint" id="respHint">Respira amb el cercle</div><div class="breath-count" id="respCount"></div></div>
-      ${mostraMapa?MAPA_SVG:''}
-      <button class="btn big green" onclick="next()">${last?"Ja estic millor →":"Ja estic →"}</button>`;
+    const mostraMapa = plan.length>1;   // en «parar ya» / activación alta, solo el círculo
+    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">${t.respPrep}</span></div><div class="breath-hint" id="respHint">${t.respHint}</div><div class="breath-count" id="respCount"></div></div>
+      ${mostraMapa?mapaSVG():''}
+      <button class="btn big green" onclick="next()">${last?t.jaMillor:t.jaEstic}</button>`;
   } else if(tipo==="que"){
-    cuerpo=`<div class="opts">${QUES.map((o,i)=>opt('que',i,o)).join("")}</div>
-      <button class="btn big green" onclick="next()">${last?"Gairebé →":"Següent →"}</button>`;
+    cuerpo=`<div class="opts">${t.ques.map((o,i)=>opt('que',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">${last?t.gairebe:t.seguent}</button>`;
   } else if(tipo==="cos"){
-    cuerpo=`<div class="opts">${COSOS.map((o,i)=>opt('cos',i,o)).join("")}</div>
-      <button class="btn big green" onclick="next()">${last?"Gairebé →":"Següent →"}</button>`;
+    cuerpo=`<div class="opts">${t.cosos.map((o,i)=>opt('cos',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">${last?t.gairebe:t.seguent}</button>`;
   } else if(tipo==="canal"){
-    cuerpo=`<div class="opts">${CANALS.map((o,i)=>opt('canal',i,o)).join("")}</div>
-      <button class="btn big green" onclick="next()">Gairebé →</button>`;
+    cuerpo=`<div class="opts">${t.canals.map((o,i)=>opt('canal',i,o)).join("")}</div>
+      <button class="btn big green" onclick="next()">${t.gairebe}</button>`;
   }
   app.innerHTML=`${dotsHTML()}
     <div class="step"><div class="step-ico">${s.ico}</div><div class="step-tit">${s.tit}</div><div class="step-sub">${s.sub}</div></div>
     ${cuerpo}
-    <div style="text-align:center;margin-top:6px"><button class="btn mini" onclick="prev()">← Enrere</button></div>`;
+    <div style="text-align:center;margin-top:6px"><button class="btn mini" onclick="prev()">${t.enrere}</button></div>`;
   marcarSel();
   if(tipo==="respira"){ startBreath(); restaurarZona(); }
 }
@@ -274,12 +353,12 @@ function setZona(k){
   anclaZona=k;
   document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===k));
   const m=document.getElementById('zonaMsg');
-  if(m){m.textContent=ZMSG[k];m.classList.add('show');}
+  if(m){m.textContent=T().zmsg[k];m.classList.add('show');}
 }
 function restaurarZona(){
   document.querySelectorAll('.zone').forEach(g=>g.classList.toggle('sel',g.getAttribute('data-zona')===anclaZona));
   const m=document.getElementById('zonaMsg');
-  if(m){ if(anclaZona){m.textContent=ZMSG[anclaZona];m.classList.add('show');} else {m.classList.remove('show');m.textContent='';} }
+  if(m){ if(anclaZona){m.textContent=T().zmsg[anclaZona];m.classList.add('show');} else {m.classList.remove('show');m.textContent='';} }
 }
 function opt(grupo,i,o){return `<button class="opt" data-g="${grupo}" onclick="pick('${grupo}','${o[1].replace(/'/g,"\\'")}')"><span class="em">${o[0]}</span>${o[1]}</button>`;}
 function pick(grupo,val){
@@ -309,48 +388,46 @@ function prev(){
   scrollTo(0,0);
 }
 
-function resultado(){
+function resultado(){ const t=T();
   app.innerHTML=`
-    <div class="step" style="margin-bottom:6px"><div class="step-ico">🌤️</div><div class="step-tit">Com estàs ara?</div></div>
-    <div class="niv fin">${NIVELLS.map((o,i)=>nivBtn(i,o,true)).join("")}</div>
-    <button class="btn big green" onclick="verResultat()">Veure com ha anat →</button>`;
+    <div class="step" style="margin-bottom:6px"><div class="step-ico">🌤️</div><div class="step-tit">${t.resTit}</div></div>
+    <div class="niv fin">${t.nivells.map((o,i)=>nivBtn(i,o,true)).join("")}</div>
+    <button class="btn big green" onclick="verResultat()">${t.veure}</button>`;
 }
-function verResultat(){
+function verResultat(){ const t=T();
   const canvi=nivell-nivellPost;
   const ara=new Date();
-  const data=ara.toLocaleDateString('ca',{weekday:'long',day:'numeric',month:'long'})+" "+ara.toLocaleTimeString('ca',{hour:'2-digit',minute:'2-digit'});
-  const L=["AUTORREGISTRE APRENS · "+data,
-    "Nivell inicial: "+NIVELLS[nivell-1][0]+" "+NIVELLS[nivell-1][1]+" ("+nivell+"/5)"];
-  if(que)L.push("Desencadenant: "+que);
-  if(cos.length)L.push("Sensació corporal: "+cos.join(", "));
-  if(anclaZona)L.push("Àncora visual (mirar dins): "+ZNOM[anclaZona]);
-  if(canal)L.push("Tècnica: "+canal+" ✅");
-  L.push("Nivell final: "+NIVELLS[nivellPost-1][0]+" "+NIVELLS[nivellPost-1][1]+" ("+nivellPost+"/5)");
-  L.push("— APRENS Psicologia · aprens.es");
+  const data=ara.toLocaleDateString(t.locale,{weekday:'long',day:'numeric',month:'long'})+" "+ara.toLocaleTimeString(t.locale,{hour:'2-digit',minute:'2-digit'});
+  const L=[t.regTitle+data,
+    t.nivInicial+t.nivells[nivell-1][0]+" "+t.nivells[nivell-1][1]+" ("+nivell+"/5)"];
+  if(que)L.push(t.desenc+que);
+  if(cos.length)L.push(t.sensCorp+cos.join(", "));
+  if(anclaZona)L.push(t.ancla+t.znom[anclaZona]);
+  if(canal)L.push(t.tecnica+canal+" ✅");
+  L.push(t.nivFinal+t.nivells[nivellPost-1][0]+" "+t.nivells[nivellPost-1][1]+" ("+nivellPost+"/5)");
+  L.push(t.signature);
   const msg=L.join("\n");
 
-  const txt = canvi>0
-    ? `Has baixat <b>${canvi} ${canvi===1?'punt':'punts'}</b> d'activació. Has regulat la ràbia abans d'actuar. 👏`
-    : `Avui no ha baixat en número, i també està bé: has parat i t'has acompanyat. Amb la pràctica, el cos respon abans.`;
+  const txt = canvi>0 ? t.baixat(canvi) : t.noBaixat;
 
   app.innerHTML=`
     <div class="res"><div class="res-row">
-      <div><div class="res-lbl">Abans</div><div class="res-big">${nivell}</div></div>
+      <div><div class="res-lbl">${lang==='ca'?'Abans':'Antes'}</div><div class="res-big">${nivell}</div></div>
       <div style="font-size:30px;opacity:.7">→</div>
-      <div><div class="res-lbl">Ara</div><div class="res-big">${nivellPost}</div></div>
+      <div><div class="res-lbl">${lang==='ca'?'Ara':'Ahora'}</div><div class="res-big">${nivellPost}</div></div>
     </div></div>
     <p class="res-msg">${txt}</p>
     <div class="card">
-      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ Quan enviar-m'ho?</b> Tan bon punt acabis, <b>envia-m'ho en aquell moment</b>. Aquesta eina s'usa quan et passa alguna cosa.</div>
+      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left">${t.avisoWA}</div>
       <div class="acc">
-        <a class="btn bwa" href="#" onclick="obrirWA(event)">📱 Enviar al meu psicòleg/a</a>
-        <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
+        <a class="btn bwa" href="#" onclick="obrirWA(event)">${t.enviarWA}</a>
+        <button class="btn bcopy" onclick="copiar(this)">${t.copiar}</button>
       </div>
       <div id="msgBox" class="cbox">${msg.replace(/</g,'&lt;')}</div>
-      ${(plan.indexOf('que')<0 && !apuntFet) ? '<div style="text-align:center;margin-top:12px"><button class="btn mini" style="color:var(--azul)" onclick="startApunt()">✍️ Vols apuntar què ha passat? <span style="font-weight:400">(opcional)</span></button></div>' : ''}
-      <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">↺ Fer-ho un altre cop</button></div>
+      ${(plan.indexOf('que')<0 && !apuntFet) ? '<div style="text-align:center;margin-top:12px"><button class="btn mini" style="color:var(--azul)" onclick="startApunt()">'+t.apunt+'</button></div>' : ''}
+      <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">${t.reiniciar}</button></div>
     </div>
-    <div class="frase">«On dirigeixo la meva atenció, allà vaig jo.»<br>Practica-ho també en moments tranquils: així ho tens a punt quan ho necessitis.</div>`;
+    <div class="frase">${t.fraseMain}<br>${t.fraseSub}</div>`;
   scrollTo(0,0);
 }
 function reiniciar(){ vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];canal="";anclaZona="";plan=["respira","que","cos","canal"];apuntMode=false;apuntFet=false;render();scrollTo(0,0); }
@@ -358,12 +435,35 @@ function reiniciar(){ vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];c
 function obrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
 function copiar(btn){
   const t=document.getElementById("msgBox").textContent;
-  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiat";setTimeout(()=>btn.textContent="📋 Copiar",2000);});}
-  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();btn.textContent="✓ Copiat";setTimeout(()=>btn.textContent="📋 Copiar",2000);}
+  const done=()=>{btn.textContent=T().copiat;setTimeout(()=>btn.textContent=T().copiar,2000);};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(done);}
+  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();done();}
+}
+
+/* Aplica los textos estáticos (portada, cabecera, vídeo) según el idioma */
+function applyLang(){ const t=T();
+  document.documentElement.lang=lang;
+  document.title=t.docTitle;
+  document.getElementById('heroTitle').textContent=t.heroTitle;
+  document.getElementById('heroTag').textContent=t.heroTag;
+  document.getElementById('hdrTitle').textContent=t.heroTitle;
+  document.getElementById('videoCap').textContent=t.videoCap;
+  document.querySelectorAll('#langToggle button').forEach(b=>{
+    const on=b.dataset.lang===lang;
+    b.style.color=on?'#b0663a':'#6f675c'; b.style.background=on?'#f3e2d6':'none';
+  });
+}
+function setLang(l){ if(l===lang || !I18N[l])return; lang=l;
+  try{ localStorage.setItem('aprens_ira_lang',l); }catch(e){}
+  // Reiniciar el flujo para no mezclar idiomas en los datos ya elegidos.
+  vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];canal="";anclaZona="";plan=["respira","que","cos","canal"];apuntMode=false;apuntFet=false;
+  applyLang(); render(); scrollTo(0,0);
 }
 
 // Botón «← Atrás» de la cabecera: retrocede un paso dentro del asistente.
 window.APRENS_toolBack=function(){ if(vista==="paso"){ prev(); return true; } return false; };
+
+applyLang();
 render();
 </script>
 </body>
