@@ -18,8 +18,6 @@
   const GRUPOS = [
     { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
       ids:["quien_conduce","la_manada","modelo_atencional"] },
-    { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada (voz del dispositivo), de un minuto cada una. Para verlas con calma o compartirlas.",
-      ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_basicas","ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
@@ -40,6 +38,8 @@
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
       ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
+    { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada, de un minuto cada una. Son las mismas de «Empieza por aquí», en vídeo, para verlas con calma o compartirlas.",
+      ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
       ids:["fondos_frases"] }
   ];
