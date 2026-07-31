@@ -214,6 +214,21 @@
     }); }
   }
 
+  // «La teoría, en vídeo»: tres vídeos breves con el profesional (portada del hub)
+  function teoriaVideosHTML(){
+    const vids=[
+      ["video-tec.mp4","La Teoría del Efecto Consciente"],
+      ["video-sobrepensamiento.mp4","El sobrepensamiento"],
+      ["video-cerebro.mp4","Cómo funciona tu cerebro"]
+    ];
+    const cards=vids.map(([src,label])=>`<figure style="margin:0">
+      <div style="background:#000;border-radius:14px;overflow:hidden;box-shadow:0 8px 26px rgba(70,60,40,.14)"><video controls playsinline preload="none" style="width:100%;display:block;background:#000"><source src="/assets/video/${src}" type="video/mp4"></video></div>
+      <figcaption style="text-align:center;font-size:12.5px;color:#6e746c;margin:7px 0 0;line-height:1.35">▶ ${label}<br>con Tòfol Villalonga · psicólogo</figcaption></figure>`).join("");
+    return `<div class="hub-sec"><span class="hub-sec-e">🎬</span><span class="hub-sec-t">La teoría, en vídeo</span></div>
+      <div class="hub-sec-d">Tres vídeos breves con Tòfol Villalonga para entender lo esencial. Puedes verlos con calma.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:10px 0 8px">${cards}</div>`;
+  }
+
   function renderHub(){
     removeExportBar();
     screen.classList.remove("iframe-host");
@@ -257,6 +272,7 @@
       </div>
       ${continuidadHTML()}
       ${focoBanner}
+      ${teoriaVideosHTML()}
       ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
