@@ -375,10 +375,10 @@
   .vteo{background:#fff;border:1px solid #E7DECB;border-radius:16px;border-top:4px solid #1B4F8C;padding:20px 18px;margin-bottom:18px;box-shadow:0 4px 24px rgba(27,79,140,.06);}
   .vteo-lbl{font-family:var(--serif);font-size:19px;font-weight:700;color:#1B4F8C;}
   .vteo-sub{font-size:13.5px;color:#6a7a86;line-height:1.5;margin:5px 0 4px;}
-  .vteo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:10px;}
+  .vteo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px;}
   .vteo-card{margin:0;text-align:center;}
-  .vteo-card video{width:180px;height:320px;object-fit:contain;max-width:100%;display:inline-block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(27,79,140,.14);}
-  .vteo-cap{text-align:center;font-size:12.5px;color:#6a7a86;margin:7px 0 0;line-height:1.35;}
+  .vteo-card video{width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(27,79,140,.14);}
+  .vteo-cap{text-align:center;font-size:12px;color:#6a7a86;margin:6px 0 0;line-height:1.3;}
 </style>
 </head>
 <body>
@@ -595,7 +595,7 @@ function vteoCard(src,label){
   var poster='assets/video/'+src.replace('video-','poster-').replace('.mp4','.png');
   return '<figure class="vteo-card">'
     +'<video controls playsinline preload="none" poster="'+poster+'"><source src="assets/video/'+src+'" type="video/mp4"></video>'
-    +'<figcaption class="vteo-cap">▶ '+esc(label)+'<br>con Tòfol Villalonga · psicólogo</figcaption>'
+    +'<figcaption class="vteo-cap">▶ '+esc(label)+'</figcaption>'
     +'</figure>';
 }
 function getFoco(){

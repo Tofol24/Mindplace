@@ -224,12 +224,12 @@
     const cards=vids.map(([src,label])=>{
       const poster="/assets/video/"+src.replace("video-","poster-").replace(".mp4",".png");
       return `<figure style="margin:0;text-align:center">
-      <video controls playsinline preload="none" poster="${poster}" style="width:180px;height:320px;object-fit:contain;max-width:100%;display:inline-block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(70,60,40,.14)"><source src="/assets/video/${src}" type="video/mp4"></video>
-      <figcaption style="font-size:12.5px;color:#6e746c;margin:7px 0 0;line-height:1.35">▶ ${label}<br>con Tòfol Villalonga · psicólogo</figcaption></figure>`;
+      <video controls playsinline preload="none" poster="${poster}" style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(70,60,40,.14)"><source src="/assets/video/${src}" type="video/mp4"></video>
+      <figcaption style="font-size:12px;color:#6e746c;margin:6px 0 0;line-height:1.3">▶ ${label}</figcaption></figure>`;
     }).join("");
     return `<div class="hub-sec"><span class="hub-sec-e">🎬</span><span class="hub-sec-t">La teoría, en vídeo</span></div>
       <div class="hub-sec-d">Tres vídeos breves con Tòfol Villalonga para entender lo esencial. Puedes verlos con calma.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:10px 0 8px">${cards}</div>`;
+      <div class="hub-grid">${cards}</div>`;
   }
 
   function renderHub(){
