@@ -9,8 +9,11 @@
 
 Dos cosas, por rigor:
 
-1. **Sobre tus obras.** Me confirmaste el libro real: **"LIDERA TU MON(E)A"** (subtítulo: *"La conciencia y la mon(e)a: cómo entrenar tu mente para vivir con serenidad y conectar con tu propósito vital"*), y forma parte de una **trilogía: "Crece, Cría y Trasciende conscientemente"**. Es decir, los tres títulos que mencionabas *sí* existen como proyecto: *Lidera tu mon(e)a* es el volumen **"Crece"**; **"Cría"** (crianza) y **"Trasciende"** (trascendencia) son los otros dos. He podido leer e integrar *Lidera tu mon(e)a* completo (256 pp.). **Los volúmenes "Cría" y "Trasciende" todavía no los tengo**: si me los pasas, afino las Fases 2–4 con su contenido real (y "Trasciende" es, previsiblemente, el más relevante para Carlos). Lo que en este documento diga sobre trascendencia sale de *Lidera tu mon(e)a* y del material de la app, no de esos dos libros.
-   *(Nota de estilo: la app usa "el mono" en masculino; el libro usa "la mon(e)a" — juego bilingüe entre "mona" (mono, en catalán/mallorquín) y "moneda". Conviene unificar la metáfora antes de comunicar en abierto.)*
+1. **Sobre tus obras — la trilogía completa, ya leída.** He leído e integrado los **tres** volúmenes de la trilogía *"Crece, Cría y Trasciende conscientemente"*:
+   - **"Lidera tu mon(e)a"** (volumen *Crece*, 256 pp.) — el marco general: de la biología al sentido, con Frankl, ACT, mindfulness y compasión.
+   - **"Cría desde dentro"** (volumen *Cría*, 143 pp.) — crianza consciente: apego seguro, regulación del propio adulto ("criar sin traicionarte"), por etapas evolutivas. Sólido y sin riesgos de rigor.
+   - **"Trasciende desde dentro"** (volumen *Trasciende*, 245 pp.) — *"La conciencia que acepta, transforma y trasciende. Jesús, el dolor y la fidelidad al valor como camino hacia lo eterno."* **Es tu obra más relevante para Carlos y, a la vez, la que exige más cuidado estratégico** (ver el aviso destacado tras la Tesis central).
+   *(Nota de estilo: la app usa "el mono" en masculino; los libros usan "la mon(e)a" — juego bilingüe entre "mona" (mono, en catalán/mallorquín) y "moneda". Conviene unificar la metáfora antes de comunicar en abierto.)*
 
 2. **Sobre las fuentes de Carlos Roca.** Su podcast es en vídeo/audio; yo he trabajado sobre metadatos públicos (títulos de episodios, descripciones, plataformas, su web y biografía). No he podido escuchar las conversaciones íntegras. Todo lo que sigue sobre "sus obsesiones" es inferencia fundada sobre un patrón temático muy consistente de ~112 episodios, no transcripción literal. Donde afirmo, lo hago con esa cautela.
 
@@ -33,6 +36,26 @@ Ese es el puente exacto —ciencia ↔ experiencia— que Carlos lleva 100 episo
 **Frases-gancho candidatas (elige registro):**
 - *(clínico)* "No vengo a decirte si la conciencia sobrevive a la muerte. Vengo a mostrarte que, en la consulta, la conciencia se comporta como una figura de apego — y que cambiar tu relación con ella cambia el sufrimiento. Eso sí lo puedo demostrar."
 - *(espiritual-honesto, el más afín a Carlos)* "Llevas cien conversaciones preguntando dónde está la conciencia y si hay algo más. Yo no te voy a responder eso. Pero puedo contarte cómo el cuerpo experimenta lo sagrado — sin negar a Dios y sin tener que demostrarlo. Y cómo eso, en consulta, alivia el sufrimiento."
+
+---
+
+## ⚠️ Aviso estratégico clave: *Trasciende desde dentro* es tu mejor carta y tu mayor riesgo
+
+Esto merece su propio apartado porque decide el tono de toda la candidatura.
+
+**Por qué es tu mejor carta.** *Trasciende* es, literalmente, un libro sobre **Jesús + conciencia + muerte + neurociencia + ACT**, con la *Atención Interna Sensorial* como práctica y el dolor como puerta al sentido. Es la intersección *exacta* de las obsesiones de Carlos: él ha hecho episodios sobre las evidencias de Jesús/Dios (#17, #63), sobre si la conciencia está fuera del cerebro (#66) y sobre experiencias cercanas a la muerte (#2, #57). Tú no eres un invitado que *roza* su tema: has escrito un libro entero en su epicentro. Y su núcleo es defendible y elegante: presentas a Jesús *"no como dogma ni doctrina, sino como puertas de acceso a la experiencia humana"*, invitas a leerlo *"no desde la teología, sino desde el cuerpo"*, y lo anclas en ACT y en Frankl.
+
+**Por qué es tu mayor riesgo.** El mismo libro contiene material que cruza de la psicología clínica a la **afirmación metafísica y al ensayo socio-espiritual**, y ahí es donde un escéptico —o un neurocientífico invitado— podría desmontarte en directo (y Carlos *invita* a escépticos y presume de "rigor"):
+- **Analogías físicas tratadas como algo más que metáfora:** el agujero negro, la dilatación gravitacional del tiempo → "el ahora se convierte en eternidad", "la presencia puede curvar el tiempo psicológico". Como metáfora, preciosa. Presentada como "posibilidad verosímil" que cruza física y conciencia, es terreno resbaladizo (evoca el "misticismo cuántico").
+- **La conciencia que "continúa más allá de la muerte" (cap. 11):** *"si la conciencia no es solo un producto del cerebro, entonces las elecciones… pueden influir en cómo se proyecta más allá de la muerte."* Eso es una **afirmación filosófico-espiritual, no un hallazgo neurocientífico**, aunque se apoye en neuroplasticidad (que sí es ciencia).
+- **El hilo "Nuevo Paradigma / neocomunismo" (aparece ~31 veces):** una crítica socio-económica y un "cambio de paradigma" que se entretejen por todo el libro. Está **fuera de tu carril clínico**, es ideológicamente cargado y es justo el tipo de "teoría de todo" que resta credibilidad a un experto.
+
+**La recomendación (y encaja con tu propio principio de honestidad):**
+1. **Lleva el TEMA y el núcleo defendible de *Trasciende*** (Jesús como vía vivencial, dolor→sentido, el "Otro compasivo" sin negar a Dios, Frankl, AIS). Eso es oro y es tuyo.
+2. **No lleves —o etiqueta explícitamente como "búsqueda personal / filosofía / metáfora"— las analogías físicas, la "conciencia que sobrevive a la muerte" y el "neocomunismo / nuevo paradigma".** No porque no puedas pensarlas, sino porque en un primer contacto son munición para quien quiera reducirte a "otro gurú".
+3. **Tu Fase 5 es el escudo:** di en voz alta "esto es dato, esto es mi modelo clínico, esto ya es mi búsqueda personal". Esa honestidad es exactamente lo que a Carlos le hace confiar — y lo que te separa de los que venden certezas.
+
+> En una frase: *usa Trasciende por su tema y su corazón; protege tu credibilidad manteniendo la metafísica etiquetada como lo que es.*
 
 ---
 
@@ -130,6 +153,22 @@ Principio: **"Amar al mono no significa obedecerlo: significa acompañarlo."**
 - **El puente ciencia↔espiritualidad ya escrito (cap. 15 y 16):** conectas compasión → dolor con dignidad → **trascendencia**. Explicas la paz de la oración/comunión como *"la percepción de un 'Otro compasivo' que acompaña y valida"*, subrayando que *"esto no pone en cuestión la existencia de Dios, sino que explica cómo el cuerpo reacciona"*. Usas el **Viacrucis** y la **procesión de Semana Santa de Inca** como metáforas de valores y compromiso. Y cierras con *"¿Qué es lo que tiene sentido?"* como brújula (Frankl: *"los valores nos proporcionan dirección en un mundo lleno de incertidumbre"*).
 - **Tu tesis sobre el sufrimiento, madura:** *"convivir con el dolor: integrarlo sin luchar contra él"*; la conciencia como *"una presencia externa que abraza ese dolor"*; *"nunca estaremos solos, independientemente de las circunstancias."*
 - **Biografía que a Carlos le importa (cap. sobre el autor):** psicólogo desde APRENS (2006); desde 2009 en Mutua Balear acompañando **TEPT, dolor crónico, amputaciones, fobias** y adaptación tras **accidentes laborales graves** que *"de un día para otro transforman vidas"*. Esto es exactamente el tipo de sufrimiento real y superación que vertebra el podcast: tienes las historias.
+
+## El libro: "Trasciende desde dentro" (volumen "Trasciende")
+245 pp. *"La conciencia que acepta, transforma y trasciende. Jesús, el dolor y la fidelidad al valor como camino hacia lo eterno."* (Tratamiento estratégico completo en el aviso destacado de arriba.)
+
+- **Tesis:** integra *"la espiritualidad encarnada de Jesús, la neuropsicología moderna y la ACT"*, con el **AIS como camino de transformación** y el dolor como *"puerta hacia una vida con más sentido"*.
+- **Estructura:** Parte 1 — *La naturaleza de la conciencia y la conciencia trascendente* (el misterio de la conciencia, neurociencia y circuitos, conciencia reactiva vs. trascendente, gratitud, humildad, la muerte, el placebo). Parte 2 — *Pasajes de Jesús: guía vivencial* (los evangelios leídos *"no desde la teología, sino desde el cuerpo"*: el dolor como umbral, la aceptación, la compasión como liberación, los valores como guía).
+- **Núcleo defendible (llévalo):** Jesús como vía vivencial no dogmática; *"no se promete ausencia de sufrimiento, sino presencia con sentido"*; la fidelidad al valor por encima de la perfección; el AIS que *"genera una percepción interna de compañía que desactiva la amenaza"*.
+- **Núcleo de riesgo (etiquétalo o resérvalo):** las analogías físicas (agujero negro, dilatación del tiempo → eternidad), el cap. 11 sobre *"codificar la conciencia para trascender más allá de la muerte"*, y el hilo *"nuevo paradigma / neocomunismo"*. Ver aviso estratégico.
+
+## El libro: "Cría desde dentro" (volumen "Cría")
+143 pp. Crianza consciente. Es tu obra más **sólida y sin riesgos**: puro apego y regulación, sin metafísica.
+
+- **Tesis:** *"el arte de acompañar a tus hijos conectando con tus propias sensaciones"*; **"criar sin traicionarte"**; *"regularnos para acompañar mejor"*. El adulto se regula primero (AIS) para poder sostener al hijo.
+- **Estructura:** Parte 1 — fundamentos (honestidad emocional como base del vínculo, la sensación interna, regulación emocional de los padres, patrones adquiridos, conflictos entre hermanos y apego seguro). Parte 2 — por etapas (0-3, 3-6, 6-9, 10-12, 13+). Parte 3 — estrategias transversales, guía práctica, fichas de situaciones comunes, tolerancia a la frustración.
+- **Idea potente:** *"cuando el cuerpo recuerda lo que la mente no"* — el niño que "reacciona con desproporción puede estar reviviendo algo que no sabe nombrar"; acompañarlo *"puede cambiarle el futuro"*.
+- **Para Carlos:** menos central que *Trasciende*, pero refuerza tu autoridad sobre **apego, trauma intergeneracional y regulación**, y conecta con sus temas de familia y heridas de infancia (#48).
 
 ## Tu voz (citas listas para comunicación)
 - *"El mono no aprende cuando le gritas. Solo se asusta más."*
@@ -240,7 +279,10 @@ Esto no es un descargo legal: es tu mejor carta con Carlos. Cuatro columnas para
 | Los parámetros L/D/C miden el estado del sistema | **Hipótesis / instrumento propio** | Es **tu** instrumento (TEC/ICE), útil clínicamente; no es un test validado ni diagnóstico. Tú ya lo dices: *"no es un test diagnóstico"*. Mantén esa honestidad ante el micro. |
 | "El yo aparece al sostener el dolor" | **Interpretación filosófica** | Bella y coherente con tu marco; es filosofía de la mente, no dato empírico. Etiquétala como tal. |
 | Lo que se siente al "acompañar al mono" (presencia, calma, no-soledad interna) | **Experiencia subjetiva** | Real como fenómeno vivido; su valor no depende de una prueba de laboratorio. |
-| La paz de la oración = el cuerpo percibiendo un "Otro compasivo" | **Hipótesis psicológica que NO decide la metafísica** | Tu propia formulación (cap. 15) es el patrón oro: describe el mecanismo corporal *"sin poner en cuestión la existencia de Dios"*. Mantén esa doble negativa exacta ante el micro. |
+| La paz de la oración = el cuerpo percibiendo un "Otro compasivo" | **Hipótesis psicológica que NO decide la metafísica** | Tu propia formulación (cap. 15 de *Lidera*) es el patrón oro: describe el mecanismo corporal *"sin poner en cuestión la existencia de Dios"*. Mantén esa doble negativa exacta ante el micro. |
+| La presencia plena "curva el tiempo psicológico" / "el ahora se vuelve eternidad" (analogía agujero negro) | **Metáfora / analogía** — NO física | En *Trasciende* es evocadora, pero si suena a "física de la conciencia" te expones a la crítica de misticismo cuántico. Preséntala como imagen poética, nunca como mecanismo. |
+| "Codificar la conciencia para que continúe más allá de la muerte" (cap. 11 de *Trasciende*) | **Filosofía / espiritualidad personal** | La neuroplasticidad es ciencia; "proyectarse más allá de la muerte" no. Sepáralo explícitamente o resérvalo. |
+| "Nuevo paradigma / neocomunismo" y crítica socio-económica | **Ensayo personal, fuera del carril clínico** | No lo lleves a un primer contacto: te descentra del tema y polariza. |
 | Si la conciencia sobrevive a la muerte / si hay algo trascendente | **Fuera de tu competencia** | No lo afirmes ni lo niegues. Tu honestidad aquí es tu mayor activo. |
 
 **Regla de oro para la entrevista:** cada vez que subas un peldaño (de evidencia a hipótesis a filosofía), **dilo en voz alta**. "Esto es dato… esto es mi modelo clínico… esto ya es interpretación mía." Carlos lo valorará más que cualquier certeza fingida, porque es exactamente lo que pide a sus invitados.
@@ -378,6 +420,14 @@ No cambiaría casi nada de lo que hago — y eso, para mí, es una buena señal 
 **30. Qué es lo que no se rompe.**
 Después de todo lo que he visto… no es la fortaleza, porque los fuertes también se quiebran. No es el optimismo. Lo que he visto que no se rompe del todo, incluso en personas que lo han perdido todo, es la capacidad de que *alguien esté presente* — de dejar entrar a otro, o de aparecer para uno mismo. Es una brasa, a veces diminuta, debajo de mucha ceniza. No sé si eso apunta a algo trascendente o es solo cómo somos los mamíferos. No lo sé, y no necesito saberlo para mi trabajo. Lo que sé es que esa brasa, la de no quedarte del todo solo por dentro, casi nunca se apaga del todo. Y que se puede volver a soplar. En eso consiste lo que hago.
 
+## Preguntas extra que Carlos casi seguro te hará (por la trilogía)
+
+**31. Has escrito un libro entero sobre Jesús siendo psicólogo. ¿No es mezclar churras con merinas?**
+Lo entiendo, y por eso lo hice con cuidado. No escribí teología ni pruebas de nada. Leí los evangelios como lo que también son: una de las descripciones más finas que tenemos de cómo un ser humano atraviesa el miedo, el dolor y la traición sin desconectarse de sí mismo ni de los demás. Cuando pido leer a Jesús "no desde la teología, sino desde el cuerpo", no te estoy diciendo qué creer. Te estoy señalando un modelo de presencia radical bajo sufrimiento extremo. Que además sea, para millones, el hijo de Dios, ni lo afirmo ni lo niego: no es mi trabajo. Mi trabajo es lo que ese modo de estar le hace a tu sistema nervioso cuando lo encarnas. Eso sí lo sé.
+
+**32. Vale, directo: ¿tú crees que la conciencia sobrevive a la muerte?**
+Personalmente, me gustaría. Honestamente, no lo sé, y no tengo forma de demostrártelo — ni yo ni nadie. En mi libro exploro esa pregunta, pero te voy a marcar la raya con claridad, porque es importante: que la gratitud o la compasión cambian el cerebro, eso es ciencia. Que dejamos huella en los demás y esa huella sigue viva cuando morimos, eso lo veo cada día y no necesita fe. Pero que "algo mío" se proyecte más allá de mi cuerpo… eso ya es mi búsqueda personal, mi filosofía, no un dato que pueda ponerte sobre la mesa. Y prefiero decírtelo así, con la costura a la vista, que venderte una certeza que no tengo. Curiosamente, no necesito esa respuesta para hacer mi trabajo. Y creo que tú tampoco la necesitas para vivir con sentido.
+
 ---
 
 # FASE 8 · El vídeo de presentación (2–3 min)
@@ -407,7 +457,9 @@ Después de todo lo que he visto… no es la fortaleza, porque los fuertes tambi
 "Una vez acompañé a alguien con un dolor que ningún médico encontraba. Vivía vigilando su propio cuerpo como a un enemigo. No le prometí quitarle el dolor. Le enseñé a decirle a su cuerpo: 'puedo estar contigo sin cambiarte'. Meses después me dijo: 'he vuelto a vivir en mi cuerpo, aunque me siga doliendo'. El dolor no se había ido. La guerra, sí."
 
 **[02:05 — La conexión con él, explícita pero sin adular.]**
-"Tú preguntas de dónde sale eso que en algunas personas no se rompe cuando todo se rompe. Yo no sé si apunta a algo que nos trasciende. Pero escribí un libro entero sobre cómo el cuerpo experimenta la calma de rezar, de sentirse acompañado por algo más grande — sin negar a Dios y sin tener que demostrarlo. Y creo que esa conversación, entre lo que la ciencia puede decir y lo que el ser humano necesita creer, es justo la que a ti te falta tener."
+"Tú preguntas de dónde sale eso que en algunas personas no se rompe cuando todo se rompe. Yo no sé si apunta a algo que nos trasciende. Pero escribí un libro sobre el dolor, la conciencia y el modo en que Jesús atravesó el suyo — leído no desde la teología, sino desde el cuerpo. Sin negar a Dios y sin tener que demostrarlo. Y creo que esa conversación, entre lo que la ciencia puede decir y lo que el ser humano necesita creer, es justo la que a ti te falta tener."
+
+*(Nota: si prefieres un registro más neutro para no polarizar de entrada, sustituye "el modo en que Jesús atravesó el suyo" por "cómo el cuerpo sostiene el dolor cuando no hay cura". Elige según cuánto quieras adelantar la carta espiritual.)*
 
 **[02:25 — Cierre. Sin pedir nada con ansia.]**
 "No vengo a convencerte de nada. Solo pensé que, después de cien preguntas sobre la conciencia, a lo mejor te apetece hablar con alguien que la ve todos los días… de cerca, en gente que sufre. Soy Tòfol. Si te resuena, hablamos."
@@ -429,12 +481,12 @@ Después de todo lo que he visto… no es la fortaleza, porque los fuertes tambi
 
 **Lo honesto por encima de lo que agrada.** Este dossier no fuerza puentes: los que hay son reales (la conciencia como relación, no como enigma; el sufrimiento que se acompaña; el rigor honesto). Y señala dónde **no** debes entrar (afirmar metafísica, jugar a neurocientífico). Tu candidatura es fuerte precisamente porque no intenta ser lo que Carlos ya tiene.
 
-**Antes de grabar, resuelve tres cosas:**
-1. **Los otros dos volúmenes.** Ya tengo *Lidera tu mon(e)a*. Mándame **"Cría"** y **"Trasciende"** (sobre todo este último): "Trasciende" es, por título, el más afín a Carlos, y puede que contenga tu material más fuerte para él. Sin leerlos no los cito.
-2. **La sigla AIS y "mono/mon(e)a".** La app dice "Atención Interna Sensorial"; tu skill clínica dice "Atención Interoceptiva Sistemática"; y usas "el mono" (app) vs. "la mon(e)a" (libro). Unifica antes de hablar en público — a Carlos le llegará la coherencia.
-3. **Una historia real tuya** para el minuto 1:40 del vídeo. Tienes casos potentísimos y reales de tu trabajo en Mutua Balear (TEPT, amputaciones, accidentes que "de un día para otro transforman vidas", dolor crónico). Elige uno anónimo que puedas contar con verdad y sustituye el del guion.
+**Antes de grabar, decide tres cosas:**
+1. **Cuánta carta espiritual adelantas.** La decisión más importante. *Trasciende* es tu mejor gancho con Carlos, pero decide de antemano dónde pones la raya de rigor (ver aviso estratégico): lleva el tema y el corazón, etiqueta la metafísica, deja fuera el "nuevo paradigma / neocomunismo". Si dudas, empieza más neutro y deja que sea *él* quien tire del hilo espiritual — llegará solo.
+2. **Coherencia de marca.** La sigla **AIS** ("Atención Interna Sensorial" en la app vs. "Atención Interoceptiva Sistemática" en tu skill) y **"el mono" (app) vs. "la mon(e)a" (libros)**. Unifica antes de hablar en público: a Carlos le llegará la coherencia.
+3. **Tu historia real** para el minuto 1:40 del vídeo. Tienes casos potentísimos y reales de Mutua Balear (TEPT, amputaciones, accidentes que "de un día para otro transforman vidas", dolor crónico). Elige uno anónimo que puedas contar con verdad y sustituye el del guion.
 
-**Si quieres, en una segunda vuelta puedo:** (a) leer *"Trasciende"* y *"Cría"* e integrar sus puentes; (b) escuchar/leer 2-3 episodios concretos de Carlos (p. ej. #66 conciencia, #57 ECM, #50 Esclapez) y ajustar los puentes con citas literales suyas; (c) escribir 2 versiones alternativas del vídeo (una más emocional, otra más intelectual); (d) extraer de *Lidera tu mon(e)a* un dossier de 10-12 citas tuyas listas para copy.
+**Si quieres, en una segunda vuelta puedo:** (a) escuchar/leer 2-3 episodios concretos de Carlos (p. ej. #66 conciencia, #57 ECM, #50 Esclapez) y ajustar los puentes con citas literales suyas; (b) escribir 2 versiones alternativas del vídeo (una más "clínica/neutra", otra más "espiritual/Jesús") para que elijas según el riesgo que quieras asumir; (c) extraer de la trilogía un dossier de 12-15 citas tuyas listas para copy; (d) redactar el email/DM de acompañamiento del vídeo a su equipo (info@rocaproject.com).
 
 ---
 
