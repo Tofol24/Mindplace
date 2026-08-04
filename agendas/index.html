@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Reserva tu cita · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+    --naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;
+    --oro:#C8973A;--oroLt:#F6ECD6;--lila:#7B4FC1;--lilaLt:#ECE3F8;
+  }
+  /* Fuentes del sistema con el "aire" de la marca (Playfair/DM Sans) sin cargar
+     recursos externos: así la página respeta la promesa de privacidad de APRENS. */
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:system-ui,-apple-system,'DM Sans','Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);
+    min-height:100vh;color:#1a1a2e;line-height:1.5;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  h1,h2,.serif{font-family:Georgia,'Playfair Display',serif;}
+  .header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);}
+  .hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:Georgia,'Playfair Display',serif;}
+  .htitle{font-size:17px;font-weight:700;}
+  .hsub{font-size:10px;opacity:.75;margin-top:1px;}
+  .wrap{max-width:720px;margin:0 auto;padding:24px 16px calc(48px + env(safe-area-inset-bottom));}
+  .hero{background:#fff;border-radius:18px;padding:26px 24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:20px;border-top:4px solid var(--oro);}
+  .hero h1{font-size:24px;color:var(--azul);margin-bottom:8px;}
+  .hero p{color:var(--gris);font-size:14px;line-height:1.7;}
+  .menu-lbl{text-align:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gris);margin:6px 0 14px;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-bottom:20px;}
+  @media(max-width:600px){.grid{grid-template-columns:1fr;}}
+  .pcard{display:flex;flex-direction:column;gap:10px;background:#fff;border:1.6px solid #E6ECF3;border-left:5px solid var(--azul);border-radius:18px;padding:18px;box-shadow:0 4px 18px rgba(27,79,140,.07);transition:transform .12s,box-shadow .12s,border-color .12s;}
+  .pcard:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(27,79,140,.15);}
+  .pcard.sel{border-color:var(--oro);box-shadow:0 10px 26px rgba(200,151,58,.22);}
+  .pcard .ptop{display:flex;gap:13px;align-items:center;}
+  .pav{flex:none;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:700;color:#fff;font-family:Georgia,serif;overflow:hidden;}
+  .pav img{width:100%;height:100%;object-fit:cover;}
+  .pname{font-size:18px;font-weight:700;font-family:Georgia,'Playfair Display',serif;line-height:1.15;}
+  .pspec{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--gris);margin-top:3px;}
+  .pdesc{font-size:13px;color:#444;line-height:1.55;}
+  .pbtn{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;background:var(--azul);color:#fff;font-size:14px;font-weight:700;border-radius:12px;padding:12px 16px;transition:filter .12s;font-family:inherit;text-decoration:none;}
+  .pbtn:hover{filter:brightness(1.08);}
+  .pbtn.ext{background:var(--verde);}
+  .pbtn[disabled]{background:#B9C4D2;cursor:not-allowed;}
+  .ptag{align-self:flex-start;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 9px;border-radius:999px;background:var(--oroLt);color:var(--oro);}
+
+  .embed-wrap{background:#fff;border-radius:18px;box-shadow:0 4px 24px rgba(27,79,140,.10);margin-bottom:20px;border-top:4px solid var(--verde);overflow:hidden;display:none;}
+  .embed-wrap.on{display:block;}
+  .embed-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #EDF1F6;}
+  .embed-head .eh-name{font-size:16px;font-weight:700;font-family:Georgia,'Playfair Display',serif;color:var(--azul);}
+  .embed-close{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--gris);font-size:22px;line-height:1;padding:2px 6px;border-radius:8px;}
+  .embed-close:hover{background:#F0F4F8;}
+  .cal-holder{width:100%;min-height:620px;}
+  .cal-slot{width:100%;min-height:620px;}
+
+  .info{background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(27,79,140,.07);margin-bottom:16px;font-size:13px;color:#444;line-height:1.65;border-left:4px solid var(--azulLt);}
+  .info b{color:var(--azul);}
+  .foot{text-align:center;font-size:12px;color:var(--gris);margin-top:8px;line-height:1.7;}
+  .foot a{color:var(--azul);font-weight:700;text-decoration:none;}
+  .foot a:hover{text-decoration:underline;}
+  .badge-privacy{display:inline-block;font-size:11px;color:var(--verde);background:var(--verdeLt);border-radius:999px;padding:3px 11px;font-weight:700;margin-top:10px;}
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="hlogo">AP</div>
+    <div>
+      <div class="htitle">APRENS · Reserva de citas</div>
+      <div class="hsub">Elige profesional y hora disponible</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Reserva tu cita</h1>
+      <p>Elige a la profesional con la que quieres ir. Verás sus <b>huecos libres reales</b>
+         (sincronizados con su calendario) y podrás reservar en el momento que te venga bien.
+         Recibirás la confirmación por correo.</p>
+      <span class="badge-privacy">🔒 Tus datos solo se usan para gestionar la cita</span>
+    </section>
+
+    <div class="menu-lbl">Nuestro equipo</div>
+    <div class="grid" id="grid"></div>
+
+    <!-- Aquí se carga el calendario de la profesional seleccionada -->
+    <section class="embed-wrap" id="embedWrap">
+      <div class="embed-head">
+        <span class="eh-name" id="ehName">Agenda</span>
+        <button class="embed-close" id="ehClose" aria-label="Cerrar agenda">&times;</button>
+      </div>
+      <div class="cal-holder" id="calHolder"></div>
+    </section>
+
+    <div class="info">
+      ¿Necesitas cambiar o cancelar una cita ya reservada? Usa el <b>enlace del correo de
+      confirmación</b> que recibiste al reservar: desde ahí puedes reprogramarla o anularla.
+    </div>
+
+    <p class="foot">
+      APRENS · Psicología ·
+      <a id="staffLink" href="https://app.cal.com/login" target="_blank" rel="noopener noreferrer">¿Eres del equipo? Gestiona tu agenda →</a>
+    </p>
+  </main>
+
+<script>
+/* ======================================================================
+   ⚙️  CONFIGURACIÓN — lo único que tiene que tocar el informático
+   ----------------------------------------------------------------------
+   Añade/edita una entrada por cada profesional.
+
+   · tipo: "cal"      → agenda en Cal.com (huecos + Google Calendar + reservas)
+       calLink: "usuario/tipo-de-evento"
+                 (usuario de Cal.com + nombre del "event type"; p. ej.
+                  "maria-lopez/consulta" o, si usáis equipo, "team/aprens/consulta")
+
+   · tipo: "externo"  → enlace a otra agenda ya existente (p. ej. Doctoralia)
+       url: "https://www.doctoralia.es/..."
+
+   Cómo dar de alta a cada psicóloga (resumen — detalle en README.md):
+     1) Crea su cuenta en https://cal.com con SU correo y contraseña.
+     2) Ella conecta su Google Calendar (Cal lee sus huecos ocupados).
+     3) Define su disponibilidad y crea un "event type" (duración, etc.).
+     4) Copia su enlace público → pégalo aquí como calLink.
+   ====================================================================== */
+  const CAL_ORIGIN = "https://cal.com";   // Cambia a tu Cal.com propio / región EU si lo usas.
+
+  const PSICOLOGAS = [
+    {
+      nombre: "Tòfol Villalonga",
+      especialidad: "Psicólogo · Fundador de APRENS",
+      descripcion: "Primera visita y seguimiento. Teoría del Efecto Consciente.",
+      inicial: "T",
+      color: "#1B4F8C",
+      tipo: "externo",
+      url: "https://www.doctoralia.es/"      // ← PON AQUÍ tu enlace real de Doctoralia
+    },
+    {
+      nombre: "Psicóloga 1",
+      especialidad: "Psicóloga general sanitaria",
+      descripcion: "Terapia individual para adultos.",
+      inicial: "P",
+      color: "#2E7D5E",
+      tipo: "cal",
+      calLink: ""                            // ← PON AQUÍ su enlace de Cal.com: "usuario/consulta"
+    },
+    {
+      nombre: "Psicóloga 2",
+      especialidad: "Psicóloga · Infanto-juvenil",
+      descripcion: "Niños, adolescentes y familias.",
+      inicial: "P",
+      color: "#7B4FC1",
+      tipo: "cal",
+      calLink: ""                            // ← PON AQUÍ su enlace de Cal.com: "usuario/consulta"
+    }
+  ];
+
+  // Enlace de acceso para el equipo (login de Cal.com). Cámbialo si usas Cal propio.
+  const STAFF_LOGIN = "https://app.cal.com/login";
+
+/* ============ A partir de aquí no hace falta tocar nada ============ */
+
+  document.getElementById("staffLink").href = STAFF_LOGIN;
+
+  // ---- Cargador oficial de Cal.com (embed). Solo se activa si hay agendas "cal". ----
+  var calLoaded = false;
+  function loadCal(){
+    if (calLoaded) return;
+    calLoaded = true;
+    (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, A_SRC(), "init");
+  }
+  function A_SRC(){
+    // Script del embed en el mismo origen configurado (Cal.com o self-hosted).
+    return CAL_ORIGIN.replace(/\/$/,"") + "/embed/embed.js";
+  }
+
+  const inited = {};            // índices de Cal ya inicializados
+  const grid = document.getElementById("grid");
+  const embedWrap = document.getElementById("embedWrap");
+  const ehName = document.getElementById("ehName");
+  const calHolder = document.getElementById("calHolder");
+
+  function isPlaceholder(link){ return !link || /usuario|EJEMPLO|EDITAR/i.test(link); }
+
+  PSICOLOGAS.forEach(function(p, i){
+    const card = document.createElement("div");
+    card.className = "pcard";
+    card.id = "card-" + i;
+
+    const av = '<div class="pav" style="background:'+ (p.color||'#1B4F8C') +'">' +
+                 (p.foto ? '<img src="'+p.foto+'" alt="">' : (p.inicial||p.nombre.charAt(0))) +
+               '</div>';
+
+    let btn, tag = "";
+    if (p.tipo === "externo"){
+      tag = '<span class="ptag">Doctoralia</span>';
+      btn = '<a class="pbtn ext" href="'+ (p.url||'#') +'" target="_blank" rel="noopener noreferrer">Reservar en Doctoralia ↗</a>';
+    } else if (isPlaceholder(p.calLink)){
+      btn = '<button class="pbtn" disabled>Agenda en preparación</button>';
+    } else {
+      btn = '<button class="pbtn" data-i="'+i+'">Ver huecos y reservar</button>';
+    }
+
+    card.innerHTML =
+      '<div class="ptop">'+ av +
+        '<div><div class="pname">'+ p.nombre +'</div>'+
+        '<div class="pspec">'+ (p.especialidad||'') +'</div></div>'+
+      '</div>'+
+      (tag||'') +
+      '<div class="pdesc">'+ (p.descripcion||'') +'</div>'+
+      btn;
+
+    grid.appendChild(card);
+  });
+
+  // Delegación: abrir agenda de Cal al pulsar el botón.
+  grid.addEventListener("click", function(ev){
+    const b = ev.target.closest("button[data-i]");
+    if (!b) return;
+    openCal(parseInt(b.getAttribute("data-i"), 10));
+  });
+
+  function openCal(i){
+    const p = PSICOLOGAS[i];
+    if (!p || p.tipo !== "cal" || isPlaceholder(p.calLink)) return;
+
+    loadCal();
+
+    // Resalta la tarjeta activa.
+    document.querySelectorAll(".pcard").forEach(function(c){ c.classList.remove("sel"); });
+    const card = document.getElementById("card-"+i);
+    if (card) card.classList.add("sel");
+
+    ehName.textContent = "Agenda de " + p.nombre;
+    embedWrap.classList.add("on");
+
+    // Un contenedor por profesional (perezoso): se crea la primera vez y luego se muestra/oculta.
+    Array.prototype.forEach.call(calHolder.children, function(el){ el.style.display = "none"; });
+    let slot = document.getElementById("slot-"+i);
+    if (!slot){
+      slot = document.createElement("div");
+      slot.className = "cal-slot";
+      slot.id = "slot-" + i;
+      calHolder.appendChild(slot);
+    }
+    slot.style.display = "block";
+
+    if (!inited[i]){
+      inited[i] = true;
+      const ns = "psi" + i;
+      Cal("init", ns, { origin: CAL_ORIGIN });
+      Cal.ns[ns]("inline", {
+        elementOrSelector: "#slot-" + i,
+        calLink: p.calLink.replace(/^\//,""),
+        config: { layout: "month_view" }
+      });
+      Cal.ns[ns]("ui", {
+        hideEventTypeDetails: false,
+        cssVarsPerTheme: { light: { "cal-brand": "#1B4F8C" } },
+        layout: "month_view"
+      });
+    }
+
+    embedWrap.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  document.getElementById("ehClose").addEventListener("click", function(){
+    embedWrap.classList.remove("on");
+    document.querySelectorAll(".pcard").forEach(function(c){ c.classList.remove("sel"); });
+  });
+</script>
+</body>
+</html>
