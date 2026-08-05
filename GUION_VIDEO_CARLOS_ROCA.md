@@ -96,7 +96,7 @@ Y otra pertenece a preguntas que todavía no sé responder.
 Y creo que distinguir esas tres cosas es una forma de respetar tanto a la ciencia como al misterio.
 
 **[Cierre · sin invitar · termina en la pregunta]**
-No sé si la conciencia trasciende al cerebro.
+No sé si eso que llamamos conciencia trasciende al cerebro.
 
 No puedo responder esa pregunta.
 
@@ -124,7 +124,7 @@ Misma verdad, cero lectura. Ten a la vista solo estas **cinco ideas** y déjalas
 2. **La soledad común.** Personas muy distintas comparten la misma sensación: sentirse solas incluso acompañadas. Creí que estudiaba la ansiedad, el trauma, el dolor. En realidad estudiaba qué pasa cuando alguien deja de poder relacionarse consigo mismo.
 3. **El giro.** Con los años entendí que la psicoterapia, sobre todo, es **restaurar una relación**. *(No expliques cuál. Deja que cuelgue.)*
 4. **La honestidad.** Una parte de lo que hago es evidencia; otra, una forma de entender la clínica construida con los años; otra, preguntas que no sé responder. Distinguirlas es respetar a la vez a la ciencia y al misterio.
-5. **El cierre.** No sé si la conciencia trasciende al cerebro. Pero cuando alguien deja de sentirse solo consigo mismo, vive distinto. Y sigo intentando comprender por qué. *(No invites. Para ahí.)*
+5. **El cierre.** No sé si eso que llamamos conciencia trasciende al cerebro. Pero cuando alguien deja de sentirse solo consigo mismo, vive distinto. Y sigo intentando comprender por qué. *(No invites. Para ahí.)*
 
 > Graba las dos. Elige después. La intuición dice que la B tendrá momentos de verdad imposibles de escribir.
 
@@ -144,6 +144,15 @@ Recomendación: **guárdalo para la entrevista.** Que sea Carlos quien pregunte 
 - **"Compartir", no "describir".** Este vídeo va de humanidad, no de clínica.
 - **"Forma de entender la clínica", no "modelo".** "Modelo" suena acabado; "forma de entender" suena viva — y es fiel al documento fundacional (marco interpretativo abierto a revisión, no sistema cerrado).
 - **No aparece (a propósito):** el mamífero, Jesús, la muerte como afirmación, "lo eterno", siglas, "método", promesas, ni una invitación. Todo eso es material para la conversación que vendrá.
+
+## Coherencia con el Documento Fundacional (v7) y el Sistema APRENS
+Este guion no "encaja" con tu marco: lo **encarna**. Verificado contra tus dos documentos.
+- **El corazón es literal.** Documento fundacional: *"La psicoterapia consiste en restaurar esa relación."* → es la frase central del vídeo.
+- **El protagonista correcto.** *"La TEC no es, en esencia, una teoría sobre la conciencia. Es una teoría sobre la relación."* El vídeo hace protagonista a la relación, no a la conciencia.
+- **Sin afirmación metafísica.** El cuerpo dice *"nuestra capacidad de tomar conciencia"* (capacidad, no cosa), fiel a *"nombramos una capacidad, no una cosa… personas de distintas visiones filosóficas o religiosas pueden reconocerse"*. El cierre usa *"eso que llamamos conciencia"* para tocar la pregunta de Carlos sin afirmar nada.
+- **La honestidad = tu sección 8.** La tríada evidencia / forma de entender la clínica / preguntas abiertas es tu *"¿qué tendría que ocurrir para que esta hipótesis fuera falsa?"*: marco abierto a revisión, no sistema cerrado.
+- **El final sin invitar = tu manifiesto.** Sistema APRENS: **"Nunca convencer, siempre acompañar."** Un vídeo que pide entrevista convencería; este acompaña. Pasa la prueba del ecosistema: *"¿Habla el lenguaje APRENS?"* — acompaña, no impresiona.
+- *(Alternativa doc-exacta, opcional: donde dices "seguridad, pertenencia y cuidado", tu documento usa "seguridad, presencia y pertenencia". "Cuidado" es más cálido para un vídeo; elige tú.)*
 
 ## Retoques de coherencia
 - **La cifra de años.** Usas "más de veinte", "dos décadas" y "veinte". Tus libros dicen *"más de 15 años"*. Elige una y mantenla; asegúrate de que te representa (APRENS es de 2006).
