@@ -1,24 +1,33 @@
 # Guion — Vídeo de presentación para Carlos Roca (Roca Project)
 
-> **Centro de gravedad:** no "tengo una teoría sobre la conciencia", sino *"llevo veinte años intentando comprender qué hace que una persona deje de sentirse sola consigo misma."*
-> No presentas un método. Presentas una **búsqueda**. Y Carlos no entrevista respuestas: entrevista a personas que llevan años viviendo una pregunta.
-> Disciplina: no se explica la conciencia, no se nombra la TEC, no se nombra APRENS. Se presenta *la pregunta que dio origen a APRENS*. Lo espiritual queda como pregunta abierta al final, para que sea Carlos quien tire del hilo.
-> Duración objetivo: ~2:20–2:40. Los "…" son silencios reales (2-3 s).
+> **Centro de gravedad:** no presentas una teoría ni un método. Dejas ver *la pregunta que lleva más de veinte años acompañándote*. Carlos entrevista personas que **viven** una pregunta, no que tienen experiencia.
+> Disciplina: no se nombra la TEC, ni APRENS, ni "el mamífero", ni "lo eterno" como afirmación. Se guardan las cartas para que sea Carlos quien pregunte.
+> El vídeo **no invita**. Termina en la pregunta. La curiosidad hace el resto.
+> Duración objetivo: ~2:20–2:40. Los "…" son silencios reales (2-3 s); "silencio largo" = 3-4 s.
 
 ---
 
-## GUION PARA TELEPRÓMPTER (texto limpio para leer a cámara)
+## VERSIÓN A · Guion para teleprómter (texto limpio para leer a cámara)
 
-**[Apertura · directo a cámara]**
+**[Apertura · empieza por la pregunta, no por las personas]**
 Carlos.
 
-Llevo veinte años trabajando con personas que sufren.
+Hay una pregunta que lleva más de veinte años acompañándome.
 
-Y hay algo que nunca deja de sorprenderme.
+**[…silencio…]**
 
+Y, curiosamente, cuanto más trabajo con personas que sufren…
+
+…menos siento que esté cerca de responderla.
+
+**[…silencio…]**
+
+Pero sí creo que cada paciente me ha enseñado un trozo de la respuesta.
+
+**[El punto en común]**
 Personas con historias completamente distintas…
 
-terminan describiendo una sensación muy parecida.
+terminan compartiendo una sensación muy parecida.
 
 La de sentirse profundamente solas…
 
@@ -46,99 +55,109 @@ Así que no puedo decirte qué ocurre cuando morimos.
 
 Pero llevo dos décadas observando qué ocurre mientras vivimos.
 
-Y con los años me he dado cuenta de algo que cambió mi manera de entender la psicoterapia.
+**[El corazón — sin marco previo, sin explicación]**
+Con los años me he dado cuenta de algo que cambió por completo mi manera de entender la psicoterapia.
 
-Quizá no consista únicamente en reducir síntomas.
+**[…silencio…]**
 
-Creo que, sobre todo, consiste en restaurar una relación.
+Creo que, sobre todo…
 
-**[…silencio · no digas todavía cuál…]**
+**[…silencio…]**
+
+…consiste en restaurar una relación.
+
+**[…silencio largo · no expliques nada · que Carlos piense "¿qué relación?"…]**
 
 La relación entre nuestra capacidad de tomar conciencia de lo que vivimos…
 
-y ese cuerpo que sigue sintiendo como un mamífero.
+y esa parte de nosotros que sigue buscando seguridad, pertenencia y cuidado.
 
-**[La paradoja — compacta]**
-Porque dentro de cada uno viaja un mamífero.
+Esa parte no necesita que le expliquemos nada.
 
-Un cuerpo que busca continuamente señales de seguridad.
+Necesita, sobre todo, notarnos cerca.
 
-Tú vas siempre con él.
+Y cuando empieza a notarnos…
 
-Pero él no puede verte.
-
-Solo puede notarte.
-
-Y cuando empieza a notarte…
-
-empieza a cambiar algo.
+algo empieza a cambiar.
 
 Aunque el dolor siga ahí.
 
-**[Honestidad — el eje que respeta a la ciencia y al misterio]**
+**[Honestidad — respeta a la ciencia y al misterio]**
 No vengo a decir que haya descubierto ninguna verdad.
 
 Al contrario.
 
 Una parte de lo que hago está apoyada por la evidencia.
 
-Otra es el modelo clínico que he ido construyendo durante años.
+Otra es una forma de entender la clínica que he ido construyendo durante años.
 
 Y otra pertenece a preguntas que todavía no sé responder.
 
 Y creo que distinguir esas tres cosas es una forma de respetar tanto a la ciencia como al misterio.
 
-**[Cierre · humildad con más fuerza que cualquier afirmación]**
-No sé si la conciencia es algo que trasciende al cerebro.
+**[Cierre · sin invitar · termina en la pregunta]**
+No sé si la conciencia trasciende al cerebro.
 
 No puedo responder esa pregunta.
 
-Lo que sí sé…
+**[…silencio…]**
 
-es que cuando una persona cambia la relación con su propio cuerpo…
+Pero llevo veinte años viendo que, cuando una persona deja de sentirse sola consigo misma…
 
-cambia también la manera en que vive.
+empieza a vivir de una manera distinta.
 
-Y llevo veinte años intentando comprender por qué ocurre eso.
+**[…silencio largo…]**
 
-Soy Tòfol.
+Y todavía intento comprender por qué ocurre eso.
 
-Si alguna vez te apetece explorar esa pregunta juntos…
-
-me encantará conversar contigo.
-
-**[Fin · ~2:30]**
+**[Corte a negro.]**
+**[En negro, solo aparece tu nombre: «Tòfol Villalonga · Psicólogo».]**
+**[Sin invitación. Sin "hablamos". Nada más.]**
 
 ---
 
-## Por qué este guion funciona (recordatorio para cuando lo grabes)
-- **Dice la TEC entera sin nombrarla.** *"Qué ocurre cuando una persona deja de poder relacionarse con ella misma"* + *"restaurar una relación"* + *"ese cuerpo que sigue sintiendo como un mamífero"* = tu modelo, en lenguaje humano, sin una sola sigla.
-- **Presenta la pregunta, no el proyecto.** No aparece "APRENS" ni "método". Aparece la pregunta que los originó. Los proyectos interesan; las preguntas profundas interesan mucho más.
-- **La humildad del final es el gancho.** *"No puedo responder esa pregunta"* abre más curiosidad que cualquier "esta conversación te falta".
+## VERSIÓN B · Sin teleprómter (habla a Carlos como si estuviera enfrente)
 
-## Retoques opcionales (tu voz manda)
-- **"veinte años" / "dos décadas":** tus libros dicen *"más de 15 años"*. Cuadra con APRENS (2006), pero asegúrate de que el número te representa; *"más de quince años"* es igual de fuerte y coherente con lo publicado. (Aparece 3 veces: elige una cifra y mantenla.)
-- **"He visto tus conversaciones"** (si lo añades): *"escuchado"* si piensas en el podcast; *"visto"* si en YouTube.
+Misma verdad, cero lectura. Ten a la vista solo estas **cinco ideas** y déjalas salir en tu orden y tus palabras. Busca el momento imperfecto y verdadero — probablemente será el que más conecte.
+
+1. **La pregunta.** Hay una pregunta que me acompaña hace más de veinte años. Cuanto más trabajo con quien sufre, menos cerca de responderla me siento — pero cada paciente me ha dado un trozo.
+2. **La soledad común.** Personas muy distintas comparten la misma sensación: sentirse solas incluso acompañadas. Creí que estudiaba la ansiedad, el trauma, el dolor. En realidad estudiaba qué pasa cuando alguien deja de poder relacionarse consigo mismo.
+3. **El giro.** Con los años entendí que la psicoterapia, sobre todo, es **restaurar una relación**. *(No expliques cuál. Deja que cuelgue.)*
+4. **La honestidad.** Una parte de lo que hago es evidencia; otra, una forma de entender la clínica construida con los años; otra, preguntas que no sé responder. Distinguirlas es respetar a la vez a la ciencia y al misterio.
+5. **El cierre.** No sé si la conciencia trasciende al cerebro. Pero cuando alguien deja de sentirse solo consigo mismo, vive distinto. Y sigo intentando comprender por qué. *(No invites. Para ahí.)*
+
+> Graba las dos. Elige después. La intuición dice que la B tendrá momentos de verdad imposibles de escribir.
+
+---
+
+## Guardado por si lo quieres restaurar: el bloque original del "mamífero"
+Lo retiré del primer contacto (aparece demasiado pronto y le regala a Carlos la pregunta que quieres que él haga). Si decides usarlo, sustituye el bloque *"esa parte no necesita que le expliquemos nada…"* por esto:
+> Porque dentro de cada uno viaja un mamífero. Un cuerpo que busca continuamente señales de seguridad. Tú vas siempre con él. Pero él no puede verte. Solo puede notarte. Y cuando empieza a notarte… empieza a cambiar algo. Aunque el dolor siga ahí.
+
+Recomendación: **guárdalo para la entrevista.** Que sea Carlos quien pregunte *"¿por qué hablas de un mamífero?"*.
+
+---
 
 ## Notas de dirección
-- **Los silencios son el mensaje.** Tras *"incluso cuando están acompañadas"*, tras *"relacionarse con ella misma"* y tras *"restaurar una relación"*, deja 2-3 s reales. No los llenes.
-- **Tono de consulta, no de charla.** Mira a cámara como si miraras a Carlos a los ojos.
-- **Los tres momentos que deciden:** la apertura de la soledad, *"restaurar una relación"* y *"no puedo responder esa pregunta"*. Ahí, más despacio.
-- **No aparece (a propósito):** Jesús, la muerte como afirmación, "lo eterno", siglas, "método", promesas de cura. Se guarda para que Carlos pregunte.
+- **Los silencios son el mensaje.** Los tres decisivos: tras *"…consiste en restaurar una relación"* (largo), tras *"relacionarse con ella misma"* y el final tras *"vivir de una manera distinta"*. No los llenes.
+- **Empiezas por ti, no por las personas.** La primera frase es una pregunta que te habita, no un currículum. Eso es lo que hace que Carlos se incline hacia delante.
+- **"Compartir", no "describir".** Este vídeo va de humanidad, no de clínica.
+- **"Forma de entender la clínica", no "modelo".** "Modelo" suena acabado; "forma de entender" suena viva — y es fiel al documento fundacional (marco interpretativo abierto a revisión, no sistema cerrado).
+- **No aparece (a propósito):** el mamífero, Jesús, la muerte como afirmación, "lo eterno", siglas, "método", promesas, ni una invitación. Todo eso es material para la conversación que vendrá.
 
-## Coherencia con la "sala de detrás"
-El vídeo abre la puerta con humildad y se guarda las cartas. Cuando Carlos tire del hilo, lo que encontrará es *Trasciende desde dentro*: lleva su corazón y **mantén etiquetada la metafísica** (evidencia / hipótesis clínica / búsqueda personal), igual que en el vídeo. La puerta y la sala deben sostener la misma honestidad. *(Si me pasas `APRENS-fundamento-fase2.pdf`, alineo el lenguaje del vídeo y del email con la distinción exacta que ahí haces entre conocimiento consolidado e hipótesis clínica, y el marco relacional.)*
+## Retoques de coherencia
+- **La cifra de años.** Usas "más de veinte", "dos décadas" y "veinte". Tus libros dicen *"más de 15 años"*. Elige una y mantenla; asegúrate de que te representa (APRENS es de 2006).
 
 ## Checklist de producción
 - **Formato:** vertical 9:16 para DM/redes; horizontal 16:9 para email/YouTube.
 - **Plano:** medio-corto, cámara a la altura de los ojos, fondo real (tu consulta).
 - **Luz** natural de frente o a 45°; **audio** con micro de solapa o sitio muy silencioso (lo más importante).
 - **Miniatura:** tu cara mirando a cámara, sin texto.
-- **Una toma imperfecta con verdad > diez perfectas.** Si te emocionas, déjalo.
+- **El nombre final** en negro, tipografía sobria, 2-3 s. Sin música épica ni logo.
 
 ## Cómo enviarlo
 - **Destinatario:** info@rocaproject.com y/o DM de Instagram a Carlos Roca. Archivo: `Tofol-Villalonga_presentacion_RocaProject.mp4`.
-- Acompáñalo del email/DM breve de abajo. Nada de dossier.
+- Acompáñalo del email/DM de abajo. Nada de dossier.
 
 ---
 
@@ -149,18 +168,20 @@ El vídeo abre la puerta con humildad y se guarda las cartas. Cuando Carlos tire
 
 Hola Carlos,
 
-Soy Tòfol Villalonga, psicólogo. Llevo veinte años acompañando a personas que sufren y he acabado dedicándome a una pregunta que creo que también te ronda: qué hace que alguien deje de sentirse solo consigo mismo.
+Soy Tòfol Villalonga, psicólogo. Llevo más de veinte años acompañando a personas que sufren y he acabado dedicándome a una pregunta que creo que también te ronda: qué hace que alguien deje de sentirse solo consigo mismo.
 
-Te dejo un vídeo de un par de minutos. No es una propuesta cerrada ni un método: es, sobre todo, esa pregunta.
+Te dejo un vídeo de un par de minutos. No es una propuesta ni un método: es, sobre todo, esa pregunta.
 
-Si te resuena, me encantará conversar. Y si no, gracias de verdad por las conversaciones que ya haces.
+Gracias, de verdad, por las conversaciones que ya haces.
 
 Un abrazo,
 Tòfol
 
 ### DM (Instagram — más corto)
-Hola Carlos. Soy Tòfol, psicólogo. Llevo veinte años con una pregunta que creo que también te ronda: qué hace que alguien deje de sentirse solo consigo mismo. Te dejo un vídeo corto — no es una propuesta, es esa pregunta. Si te resuena, hablamos. Gracias por las conversaciones que haces.
+Hola Carlos. Soy Tòfol, psicólogo. Llevo más de veinte años con una pregunta que creo que también te ronda: qué hace que alguien deje de sentirse solo consigo mismo. Te dejo un vídeo corto — no es una propuesta, es esa pregunta. Gracias por las conversaciones que haces.
+
+*(Nota: el email tampoco pide entrevista, igual que el vídeo. Si prefieres una versión con una línea de invitación explícita, dímelo y te la doy.)*
 
 ---
 
-*Nota: la versión anterior del guion (la de "creo que esa conversación te falta") queda en el historial de git de este archivo por si quieres compararlas.*
+*Versiones anteriores del guion en el historial de git de este archivo.*
