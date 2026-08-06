@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Despatxos · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+    --naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;
+    --oro:#C8973A;--oroLt:#F6ECD6;--lila:#7B4FC1;--linia:#E6ECF3;
+  }
+  html{scroll-behavior:smooth;}
+  body{font-family:system-ui,-apple-system,'DM Sans','Segoe UI',Roboto,sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;line-height:1.45;-webkit-text-size-adjust:100%;}
+  h1,h2,h3,.serif{font-family:Georgia,'Playfair Display',serif;}
+
+  .header{background:var(--azul);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:40;flex-wrap:wrap;}
+  .hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--azul);font-size:12px;font-family:Georgia,serif;flex:none;}
+  .htitle{font-size:16px;font-weight:700;}
+  .hsub{font-size:10px;opacity:.78;margin-top:1px;}
+  .whoami{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;}
+  .whoami select{font:inherit;font-size:13px;padding:6px 9px;border-radius:9px;border:none;background:rgba(255,255,255,.16);color:#fff;font-weight:700;}
+  .whoami select option{color:#1a1a2e;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:16px 12px 60px;}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .tab{border:none;cursor:pointer;background:#fff;color:var(--azul);font:inherit;font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:11px;box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .tab.on{background:var(--azul);color:#fff;}
+
+  /* --- Barra de dia --- */
+  .daybar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .daybar button.nav{border:none;cursor:pointer;background:#fff;color:var(--azul);font-size:18px;font-weight:700;width:38px;height:38px;border-radius:11px;box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .daybar .daylabel{font-family:Georgia,serif;font-size:18px;font-weight:700;color:var(--azul);min-width:210px;text-transform:capitalize;}
+  .daybar input[type=date]{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linia);background:#fff;}
+  .btn{border:none;cursor:pointer;background:var(--verde);color:#fff;font:inherit;font-weight:700;font-size:14px;padding:10px 16px;border-radius:11px;box-shadow:0 3px 12px rgba(46,125,94,.22);}
+  .btn.sec{background:var(--azul);box-shadow:0 3px 12px rgba(27,79,140,.2);}
+  .btn.ghost{background:#fff;color:var(--azul);box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .spacer{margin-left:auto;}
+
+  /* --- Graella de despatxos --- */
+  .board-scroll{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:0 0 6px;}
+  .board{display:grid;grid-template-columns:56px repeat(5,minmax(120px,1fr));min-width:660px;}
+  .colhead{position:sticky;top:0;background:#fff;z-index:5;text-align:center;padding:10px 4px 8px;border-bottom:1.5px solid var(--linia);}
+  .colhead .dnum{font-family:Georgia,serif;font-size:15px;font-weight:700;color:var(--azul);}
+  .colhead .down{font-size:10.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:1px;}
+  .colhead .dtag{font-size:9.5px;color:var(--oro);font-weight:700;}
+  .gutterhead{position:sticky;top:0;background:#fff;z-index:5;border-bottom:1.5px solid var(--linia);}
+  .lanes{position:relative;}
+  .gutter{position:relative;}
+  .hourlbl{position:absolute;right:6px;font-size:10.5px;color:var(--gris);transform:translateY(-6px);}
+  .lane{position:relative;border-left:1px solid var(--linia);cursor:pointer;}
+  .lane:hover{background:rgba(27,79,140,.03);}
+  .hourline{position:absolute;left:0;right:0;border-top:1px solid var(--linia);}
+  .halfline{position:absolute;left:0;right:0;border-top:1px dashed #EEF2F7;}
+  .ev{position:absolute;left:3px;right:3px;border-radius:8px;padding:4px 6px;color:#fff;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:pointer;font-size:11px;line-height:1.2;}
+  .ev .en{font-weight:700;}
+  .ev .et{opacity:.92;font-size:10px;}
+  .ev.mine{outline:2px solid rgba(255,255,255,.85);}
+
+  /* --- Panells --- */
+  .panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:18px;margin-bottom:16px;}
+  .panel h2{font-size:19px;color:var(--azul);margin-bottom:4px;}
+  .panel .sub{color:var(--gris);font-size:13px;margin-bottom:14px;}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .row label{font-size:12.5px;font-weight:700;color:var(--gris);}
+  select,input[type=month],input[type=number]{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linia);background:#fff;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--linia);}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris);}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+  tr.tot td{font-weight:800;border-top:2px solid var(--azul);border-bottom:none;color:var(--azul);}
+  .pill{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;}
+  .muted{color:var(--gris);font-size:12.5px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+  .kpi{background:var(--fondo);border-radius:12px;padding:12px 14px;}
+  .kpi .kn{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--azul);}
+  .kpi .kl{font-size:11.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+
+  /* --- Modal --- */
+  .modal{position:fixed;inset:0;background:rgba(20,30,50,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal.on{display:flex;}
+  .card{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:400px;padding:22px;}
+  .card h3{font-size:20px;color:var(--azul);margin-bottom:14px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+  .field select,.field input{width:100%;}
+  .durs{display:flex;flex-wrap:wrap;gap:6px;}
+  .durs button{border:1.5px solid var(--linia);background:#fff;cursor:pointer;font:inherit;font-weight:700;font-size:13px;padding:8px 0;border-radius:9px;flex:1 1 30%;min-width:60px;}
+  .durs button.on{background:var(--azul);color:#fff;border-color:var(--azul);}
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .modal-actions .btn{flex:1;}
+  .danger{background:var(--rojo)!important;box-shadow:none!important;}
+  .link{background:none;border:none;color:var(--gris);cursor:pointer;font:inherit;font-size:13px;text-decoration:underline;}
+  .warn{background:var(--oroLt);color:#8a6d1f;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;display:none;}
+  .warn.on{display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin:10px 2px 0;font-size:12px;color:#444;}
+  .legend span .pill{margin-right:5px;}
+  .note{font-size:12px;color:var(--gris);margin-top:6px;}
+  @media(max-width:560px){.htitle{font-size:14px;}.daybar .daylabel{min-width:auto;font-size:16px;}}
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="hlogo">AP</div>
+    <div>
+      <div class="htitle">APRENS · Despatxos</div>
+      <div class="hsub">Reserva de sales i comissions</div>
+    </div>
+    <div class="whoami">
+      <span>Sóc:</span>
+      <select id="who"></select>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tabs">
+      <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
+      <button class="tab" data-tab="comissions">📊 Comissions</button>
+      <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
+    </div>
+
+    <!-- ================= AGENDA ================= -->
+    <section id="tab-agenda">
+      <div class="daybar">
+        <button class="nav" id="prevDay" aria-label="Dia anterior">‹</button>
+        <div class="daylabel" id="dayLabel">—</div>
+        <button class="nav" id="nextDay" aria-label="Dia següent">›</button>
+        <input type="date" id="datePick">
+        <button class="btn ghost" id="todayBtn">Avui</button>
+        <button class="btn spacer" id="newBtn">＋ Nova reserva</button>
+      </div>
+
+      <div class="board-scroll">
+        <div class="board" id="board"></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <p class="note">Toca un espai buit d'un despatx per reservar. Toca una reserva teva per anul·lar-la. Els despatxos són compartits: qui vulgui pot reservar-ne un si està lliure.</p>
+    </section>
+
+    <!-- ================= COMISSIONS ================= -->
+    <section id="tab-comissions" style="display:none;">
+      <div class="panel">
+        <h2>Comissions APRENS</h2>
+        <div class="sub">Nombre de sessions per professional i comissió del <b id="pctLbl">20</b>% sobre el servei. Sense cap nom de pacient.</div>
+        <div class="row">
+          <label>Període</label>
+          <select id="periode">
+            <option value="mes">Mensual</option>
+            <option value="setmana">Setmanal</option>
+          </select>
+          <input type="month" id="mesPick">
+          <input type="date" id="setPick" style="display:none;">
+          <button class="btn ghost" id="csvBtn">⬇ Exportar CSV</button>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div style="overflow-x:auto;">
+          <table id="repTable">
+            <thead>
+              <tr>
+                <th>Professional</th>
+                <th class="num">Sessions</th>
+                <th class="num">Minuts</th>
+                <th class="num">Preu/sessió</th>
+                <th class="num">Facturació</th>
+                <th class="num">Comissió</th>
+              </tr>
+            </thead>
+            <tbody id="repBody"></tbody>
+          </table>
+        </div>
+        <p class="note">La «facturació» és una estimació = sessions × preu/sessió (el preu es configura a Ajustos). La comissió és el <span id="pctLbl2">20</span>% d'aquesta facturació.</p>
+      </div>
+    </section>
+
+    <!-- ================= AJUSTOS ================= -->
+    <section id="tab-ajustos" style="display:none;">
+      <div class="panel">
+        <h2>Ajustos</h2>
+        <div class="sub">Preu per sessió de cada professional i percentatge de comissió. Es guarda en aquest dispositiu.</div>
+        <div class="row">
+          <label>Comissió (%)</label>
+          <input type="number" id="pctInput" min="0" max="100" step="1" style="width:90px;">
+          <label>Horari graella</label>
+          <input type="number" id="hIni" min="0" max="23" step="1" style="width:70px;"> a
+          <input type="number" id="hFi" min="1" max="24" step="1" style="width:70px;"> h
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Professional</th><th>Rol</th><th>Despatx propi</th><th class="num">Preu/sessió (€)</th></tr></thead>
+            <tbody id="preusBody"></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:14px;">
+          <button class="btn" id="saveAjustos">Desar ajustos</button>
+          <button class="link" id="resetData">Esborrar totes les reserves d'aquest dispositiu</button>
+        </div>
+        <p class="note">⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Perquè totes les professionals comparteixin la mateixa graella cal connectar-ho a una base de dades — instruccions per a l'informàtic al README.md.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODAL RESERVA ================= -->
+  <div class="modal" id="modal">
+    <div class="card">
+      <h3 id="modalTitle">Nova reserva</h3>
+      <div class="warn" id="warn"></div>
+      <div class="field">
+        <label>Despatx</label>
+        <select id="mDesp"></select>
+      </div>
+      <div class="field">
+        <label>Professional</label>
+        <select id="mProf"></select>
+      </div>
+      <div class="field">
+        <label>Hora d'inici</label>
+        <select id="mStart"></select>
+      </div>
+      <div class="field">
+        <label>Durada</label>
+        <div class="durs" id="mDurs"></div>
+      </div>
+      <div class="field">
+        <label>Nota (opcional · sense nom de pacient)</label>
+        <input type="text" id="mNota" maxlength="40" placeholder="p. ex. buit, primera visita…">
+      </div>
+      <div class="modal-actions">
+        <button class="btn sec" id="mSave">Reservar</button>
+        <button class="btn ghost" id="mCancel">Tancar</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="link" id="mDelete" style="display:none;color:var(--rojo);">Anul·lar aquesta reserva</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ======================================================================
+   APRENS · Gestió de despatxos  (v1 · demostració amb dades locals)
+   ---------------------------------------------------------------------- */
+
+  // --- Professionals ---
+  const PROFS = [
+    { id:'tofol',    nom:'Tòfol',    rol:'PS', desp:1, propietari:true, color:'#1B4F8C' },
+    { id:'bea',      nom:'Bea',      rol:'PS', desp:2, color:'#2E7D5E' },
+    { id:'elena',    nom:'Elena',    rol:'PS', desp:3, color:'#E07B39' },
+    { id:'mariana',  nom:'Mariana',  rol:'LP', desp:4, color:'#7B4FC1' },
+    { id:'cristina', nom:'Cristina', rol:'PS', desp:5, color:'#C0392B' },
+    { id:'victoria', nom:'Victoria', rol:'PS', desp:null, color:'#0E7490' },
+    { id:'nuria',    nom:'Núria',    rol:'PS', desp:null, color:'#B45309' },
+  ];
+  const DESPATXOS = [1,2,3,4,5];
+  const OWNER_OF = {1:'tofol',2:'bea',3:'elena',4:'mariana',5:'cristina'};
+  const DURADES = [30,35,40,45,50,55,60];
+
+  const prof = id => PROFS.find(p=>p.id===id);
+
+  // --- Ajustos (preus, %, horari) ---
+  const DEF_PREU = 60;
+  function loadCfg(){
+    let c = {};
+    try { c = JSON.parse(localStorage.getItem('despatx_cfg')||'{}'); } catch(e){}
+    c.pct  = (c.pct  ?? 20);
+    c.hIni = (c.hIni ?? 8);
+    c.hFi  = (c.hFi  ?? 21);
+    c.preus = c.preus || {};
+    PROFS.forEach(p=>{ if(c.preus[p.id]==null) c.preus[p.id]=DEF_PREU; });
+    return c;
+  }
+  function saveCfg(c){ localStorage.setItem('despatx_cfg', JSON.stringify(c)); }
+  let cfg = loadCfg();
+
+  // --- Emmagatzematge de reserves (capa aïllada: fàcil de canviar per Supabase) ---
+  const Store = {
+    _key:'despatx_reserves',
+    all(){ try { return JSON.parse(localStorage.getItem(this._key)||'[]'); } catch(e){ return []; } },
+    _write(a){ localStorage.setItem(this._key, JSON.stringify(a)); },
+    add(b){ const a=this.all(); b.id='r'+Date.now()+Math.round(performance.now()); a.push(b); this._write(a); return b; },
+    remove(id){ this._write(this.all().filter(x=>x.id!==id)); },
+    clear(){ this._write([]); }
+  };
+
+  // --- Utilitats de temps ---
+  const pad = n => String(n).padStart(2,'0');
+  const toMin = hhmm => { const [h,m]=hhmm.split(':').map(Number); return h*60+m; };
+  const toHHMM = min => pad(Math.floor(min/60))+':'+pad(min%60);
+  function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+  const DIES = ['diumenge','dilluns','dimarts','dimecres','dijous','divendres','dissabte'];
+  const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'];
+  function labelDia(d){ return DIES[d.getDay()]+', '+d.getDate()+' '+MESOS[d.getMonth()]; }
+
+  // --- Estat ---
+  let curDate = new Date(); curDate.setHours(0,0,0,0);
+  let editing = null; // reserva seleccionada per anul·lar
+  const PXMIN = 1.15; // píxels per minut a la graella
+
+  // ---------- WHO AM I ----------
+  const whoSel = document.getElementById('who');
+  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; whoSel.appendChild(o); });
+  let me = localStorage.getItem('despatx_me') || 'tofol';
+  whoSel.value = me;
+  whoSel.onchange = ()=>{ me = whoSel.value; localStorage.setItem('despatx_me', me); render(); };
+  const soc = () => prof(me);
+  const isOwner = () => me==='tofol';
+
+  // ---------- TABS ----------
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+      t.classList.add('on');
+      ['agenda','comissions','ajustos'].forEach(name=>{
+        document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
+      });
+      if(t.dataset.tab==='comissions') renderReport();
+      if(t.dataset.tab==='ajustos') renderAjustos();
+    };
+  });
+
+  // ---------- AGENDA ----------
+  const board = document.getElementById('board');
+  const dayLabel = document.getElementById('dayLabel');
+  const datePick = document.getElementById('datePick');
+
+  document.getElementById('prevDay').onclick = ()=>{ curDate.setDate(curDate.getDate()-1); render(); };
+  document.getElementById('nextDay').onclick = ()=>{ curDate.setDate(curDate.getDate()+1); render(); };
+  document.getElementById('todayBtn').onclick = ()=>{ curDate=new Date(); curDate.setHours(0,0,0,0); render(); };
+  datePick.onchange = ()=>{ if(datePick.value){ curDate=parseDate(datePick.value); render(); } };
+  document.getElementById('newBtn').onclick = ()=> openModal({ desp:(soc().desp||1) });
+
+  function render(){
+    dayLabel.textContent = labelDia(curDate);
+    datePick.value = fmtDate(curDate);
+    document.getElementById('pctLbl').textContent = cfg.pct;
+    document.getElementById('pctLbl2').textContent = cfg.pct;
+
+    const hIni=cfg.hIni, hFi=cfg.hFi;
+    const totalMin=(hFi-hIni)*60;
+    const H = totalMin*PXMIN;
+
+    board.innerHTML='';
+    // capçalera cantonada
+    const gh=document.createElement('div'); gh.className='gutterhead'; board.appendChild(gh);
+    // capçaleres de despatx
+    DESPATXOS.forEach(n=>{
+      const own = OWNER_OF[n] ? prof(OWNER_OF[n]) : null;
+      const ch=document.createElement('div'); ch.className='colhead';
+      ch.innerHTML='<div class="dnum">Despatx '+n+'</div>'+
+                   '<div class="down" style="color:'+(own?own.color:'#6B7280')+'">'+(own?own.nom:'Compartit')+'</div>';
+      board.appendChild(ch);
+    });
+    // gutter d'hores
+    const gut=document.createElement('div'); gut.className='gutter'; gut.style.height=H+'px';
+    for(let h=hIni; h<=hFi; h++){
+      const l=document.createElement('div'); l.className='hourlbl'; l.style.top=((h-hIni)*60*PXMIN)+'px'; l.textContent=pad(h)+':00';
+      gut.appendChild(l);
+    }
+    board.appendChild(gut);
+
+    const ds = fmtDate(curDate);
+    const reserves = Store.all().filter(r=>r.date===ds);
+
+    DESPATXOS.forEach(n=>{
+      const lane=document.createElement('div'); lane.className='lane'; lane.style.height=H+'px'; lane.dataset.desp=n;
+      for(let h=hIni; h<=hFi; h++){
+        const hl=document.createElement('div'); hl.className='hourline'; hl.style.top=((h-hIni)*60*PXMIN)+'px'; lane.appendChild(hl);
+        if(h<hFi){ const half=document.createElement('div'); half.className='halfline'; half.style.top=((h-hIni)*60+30)*PXMIN+'px'; lane.appendChild(half); }
+      }
+      // clic en buit → nova reserva amb hora calculada
+      lane.addEventListener('click', ev=>{
+        if(ev.target.closest('.ev')) return;
+        const rect=lane.getBoundingClientRect();
+        let min = Math.round((ev.clientY-rect.top)/PXMIN/5)*5 + hIni*60;
+        min = Math.max(hIni*60, Math.min(min, hFi*60-30));
+        openModal({ desp:n, start:toHHMM(min) });
+      });
+      // esdeveniments
+      reserves.filter(r=>Number(r.desp)===n).forEach(r=>{
+        const p=prof(r.prof)||{nom:r.prof,color:'#6B7280'};
+        const top=(toMin(r.start)-hIni*60)*PXMIN;
+        const hgt=Math.max(r.dur*PXMIN-2, 16);
+        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'');
+        el.style.top=top+'px'; el.style.height=hgt+'px'; el.style.background=p.color;
+        el.innerHTML='<div class="en">'+p.nom+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
+        lane.appendChild(el);
+      });
+      board.appendChild(lane);
+    });
+
+    // llegenda
+    const lg=document.getElementById('legend'); lg.innerHTML='';
+    PROFS.forEach(p=>{ const s=document.createElement('span'); s.innerHTML='<span class="pill" style="background:'+p.color+'"></span>'+p.nom; lg.appendChild(s); });
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // ---------- MODAL ----------
+  const modal=document.getElementById('modal');
+  const mDesp=document.getElementById('mDesp'), mProf=document.getElementById('mProf'), mStart=document.getElementById('mStart');
+  const mDurs=document.getElementById('mDurs'), mNota=document.getElementById('mNota'), warn=document.getElementById('warn');
+  let selDur=50, selEdit=null;
+
+  DESPATXOS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent='Despatx '+n+(OWNER_OF[n]?(' · '+prof(OWNER_OF[n]).nom):''); mDesp.appendChild(o); });
+  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; mProf.appendChild(o); });
+  DURADES.forEach(d=>{ const b=document.createElement('button'); b.textContent=d+"'"; b.dataset.d=d; b.onclick=()=>{ selDur=d; paintDurs(); checkWarn(); }; mDurs.appendChild(b); });
+  function paintDurs(){ mDurs.querySelectorAll('button').forEach(b=>b.classList.toggle('on', Number(b.dataset.d)===selDur)); }
+
+  function fillStarts(){
+    mStart.innerHTML='';
+    for(let m=cfg.hIni*60; m<=cfg.hFi*60-5; m+=5){ const o=document.createElement('option'); o.value=toHHMM(m); o.textContent=toHHMM(m); mStart.appendChild(o); }
+  }
+
+  function openModal(opts){
+    opts=opts||{};
+    fillStarts();
+    if(opts.edit){
+      const r=opts.edit; selEdit=r;
+      document.getElementById('modalTitle').textContent='Reserva';
+      mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
+      const canEdit = isOwner() || r.prof===me;
+      [mDesp,mProf,mStart,mNota].forEach(el=>el.disabled=!canEdit);
+      mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
+      document.getElementById('mSave').style.display=canEdit?'':'none';
+      const del=document.getElementById('mDelete'); del.style.display=canEdit?'':'none';
+    } else {
+      selEdit=null;
+      document.getElementById('modalTitle').textContent='Nova reserva';
+      mDesp.value=opts.desp||soc().desp||1;
+      mProf.value = isOwner()? me : me;   // per defecte, jo
+      mProf.disabled = !isOwner();        // només el propietari reserva per a altres
+      mStart.value = opts.start || toHHMM(cfg.hIni*60+120);
+      selDur = 50; mNota.value='';
+      [mDesp,mStart,mNota].forEach(el=>el.disabled=false);
+      mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
+      document.getElementById('mSave').style.display='';
+      document.getElementById('mDelete').style.display='none';
+    }
+    paintDurs(); checkWarn();
+    modal.classList.add('on');
+  }
+  function closeModal(){ modal.classList.remove('on'); selEdit=null; }
+  document.getElementById('mCancel').onclick=closeModal;
+  modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+  [mDesp,mStart].forEach(el=>el.onchange=checkWarn);
+
+  function overlaps(desp,start,dur,ignoreId){
+    const ds=fmtDate(curDate); const s=toMin(start), e=s+dur;
+    return Store.all().some(r=> r.date===ds && Number(r.desp)===Number(desp) && r.id!==ignoreId &&
+      (toMin(r.start) < e && (toMin(r.start)+r.dur) > s));
+  }
+  function checkWarn(){
+    const conf = overlaps(mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
+    const endM = toMin(mStart.value)+selDur;
+    let msg='';
+    if(conf) msg='⚠️ Aquest despatx ja està ocupat en aquesta franja.';
+    else if(endM>cfg.hFi*60) msg='⚠️ La reserva acaba després de l\'horari ('+toHHMM(cfg.hFi*60)+').';
+    warn.textContent=msg; warn.classList.toggle('on', !!msg);
+    document.getElementById('mSave').disabled = conf;
+    return !conf;
+  }
+
+  document.getElementById('mSave').onclick=()=>{
+    if(!checkWarn()) return;
+    const data={ desp:Number(mDesp.value), prof:mProf.value, date:fmtDate(curDate), start:mStart.value, dur:selDur, nota:mNota.value.trim() };
+    if(selEdit){ Store.remove(selEdit.id); }
+    Store.add(data);
+    closeModal(); render();
+  };
+  document.getElementById('mDelete').onclick=()=>{
+    if(selEdit && confirm('Anul·lar aquesta reserva?')){ Store.remove(selEdit.id); closeModal(); render(); }
+  };
+
+  // ---------- COMISSIONS ----------
+  const periode=document.getElementById('periode'), mesPick=document.getElementById('mesPick'), setPick=document.getElementById('setPick');
+  periode.onchange=()=>{ const m=periode.value==='mes'; mesPick.style.display=m?'':'none'; setPick.style.display=m?'none':''; renderReport(); };
+  mesPick.onchange=renderReport; setPick.onchange=renderReport;
+
+  function weekRange(d){ // dilluns–diumenge
+    const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0);
+    const end=new Date(x); end.setDate(end.getDate()+6);
+    return [x,end];
+  }
+  function inRange(dateStr){
+    const d=parseDate(dateStr);
+    if(periode.value==='mes'){
+      const [y,m]=(mesPick.value||fmtDate(curDate).slice(0,7)).split('-').map(Number);
+      return d.getFullYear()===y && (d.getMonth()+1)===m;
+    } else {
+      const base = setPick.value?parseDate(setPick.value):curDate;
+      const [a,b]=weekRange(base);
+      return d>=a && d<=b;
+    }
+  }
+
+  function renderReport(){
+    if(!mesPick.value) mesPick.value=fmtDate(curDate).slice(0,7);
+    if(!setPick.value) setPick.value=fmtDate(curDate);
+    document.getElementById('pctLbl').textContent=cfg.pct;
+    document.getElementById('pctLbl2').textContent=cfg.pct;
+
+    const rows=Store.all().filter(r=>inRange(r.date));
+    const agg={}; PROFS.forEach(p=>agg[p.id]={sessions:0,min:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) agg[r.prof]={sessions:0,min:0}; agg[r.prof].sessions++; agg[r.prof].min+=r.dur; });
+
+    let totS=0,totFact=0,totCom=0;
+    const tb=document.getElementById('repBody'); tb.innerHTML='';
+    PROFS.forEach(p=>{
+      const a=agg[p.id]; const preu=Number(cfg.preus[p.id]||0);
+      const fact=a.sessions*preu; const com=fact*cfg.pct/100;
+      totS+=a.sessions; totFact+=fact; totCom+=com;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+' <span class="muted">('+p.rol+')</span></td>'+
+        '<td class="num">'+a.sessions+'</td><td class="num">'+a.min+'</td>'+
+        '<td class="num">'+preu.toFixed(0)+' €</td><td class="num">'+fact.toFixed(0)+' €</td>'+
+        '<td class="num"><b>'+com.toFixed(2)+' €</b></td>';
+      tb.appendChild(tr);
+    });
+    const tr=document.createElement('tr'); tr.className='tot';
+    tr.innerHTML='<td>TOTAL</td><td class="num">'+totS+'</td><td class="num"></td><td class="num"></td><td class="num">'+totFact.toFixed(0)+' €</td><td class="num">'+totCom.toFixed(2)+' €</td>';
+    tb.appendChild(tr);
+
+    const k=document.getElementById('kpis');
+    const lbl = periode.value==='mes' ? ('Mes '+(mesPick.value||'')) : 'Setmana seleccionada';
+    k.innerHTML =
+      '<div class="kpi"><div class="kn">'+totS+'</div><div class="kl">Sessions</div></div>'+
+      '<div class="kpi"><div class="kn">'+totCom.toFixed(0)+' €</div><div class="kl">Comissió APRENS ('+cfg.pct+'%)</div></div>'+
+      '<div class="kpi"><div class="kn">'+totFact.toFixed(0)+' €</div><div class="kl">Facturació estimada</div></div>'+
+      '<div class="kpi"><div class="kn" style="font-size:15px;line-height:1.5;">'+lbl+'</div><div class="kl">Període</div></div>';
+  }
+
+  document.getElementById('csvBtn').onclick=()=>{
+    const rows=Store.all().filter(r=>inRange(r.date));
+    const agg={}; PROFS.forEach(p=>agg[p.id]={sessions:0,min:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) agg[r.prof]={sessions:0,min:0}; agg[r.prof].sessions++; agg[r.prof].min+=r.dur; });
+    let csv='Professional;Rol;Sessions;Minuts;Preu sessio;Facturacio;Comissio '+cfg.pct+'%\n';
+    PROFS.forEach(p=>{ const a=agg[p.id]; const preu=Number(cfg.preus[p.id]||0); const fact=a.sessions*preu; const com=fact*cfg.pct/100;
+      csv+=[p.nom,p.rol,a.sessions,a.min,preu.toFixed(0),fact.toFixed(0),com.toFixed(2)].join(';')+'\n'; });
+    const per = periode.value==='mes' ? (mesPick.value||'') : ('setmana-'+(setPick.value||''));
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='comissions-aprens-'+per+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  // ---------- AJUSTOS ----------
+  function renderAjustos(){
+    document.getElementById('pctInput').value=cfg.pct;
+    document.getElementById('hIni').value=cfg.hIni;
+    document.getElementById('hFi').value=cfg.hFi;
+    const tb=document.getElementById('preusBody'); tb.innerHTML='';
+    PROFS.forEach(p=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+'</td><td>'+p.rol+'</td>'+
+        '<td>'+(p.desp?('Despatx '+p.desp):'<span class="muted">flotant</span>')+'</td>'+
+        '<td class="num"><input type="number" min="0" step="1" style="width:90px" data-preu="'+p.id+'" value="'+(cfg.preus[p.id]||0)+'"></td>';
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('saveAjustos').onclick=()=>{
+    cfg.pct=Math.max(0,Math.min(100,Number(document.getElementById('pctInput').value)||0));
+    cfg.hIni=Math.max(0,Math.min(23,Number(document.getElementById('hIni').value)||8));
+    cfg.hFi=Math.max(cfg.hIni+1,Math.min(24,Number(document.getElementById('hFi').value)||21));
+    document.querySelectorAll('[data-preu]').forEach(inp=>{ cfg.preus[inp.dataset.preu]=Number(inp.value)||0; });
+    saveCfg(cfg); render(); alert('Ajustos desats.');
+  };
+  document.getElementById('resetData').onclick=()=>{
+    if(confirm('Segur que vols esborrar TOTES les reserves d\'aquest dispositiu? No es pot desfer.')){ Store.clear(); render(); alert('Reserves esborrades.'); }
+  };
+
+  // ---------- INICI ----------
+  render();
+</script>
+</body>
+</html>
