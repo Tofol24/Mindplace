@@ -49,12 +49,15 @@ drop policy if exists "profiles_read_own" on public.profiles;
 create policy "profiles_read_own" on public.profiles
   for select to authenticated using (id = auth.uid());
 
--- Reservas: TODAS pueden LEER la ocupación (para saber qué despacho está libre)...
+-- LECTURA de la tabla base: cada una solo lee SUS filas (con precio y nota).
+-- La ocupación de las demás se lee por la vista `agenda_view` (paso 4b), que
+-- oculta precio y nota. Tòfol (owner) lee todo.
 drop policy if exists "reserves_read_all" on public.reserves;
-create policy "reserves_read_all" on public.reserves
-  for select to authenticated using (true);
+drop policy if exists "reserves_read_own" on public.reserves;
+create policy "reserves_read_own" on public.reserves
+  for select to authenticated using (prof = public.my_prof() or public.is_owner());
 
--- ...pero cada una solo CREA/EDITA/BORRA lo suyo (Tòfol, con rol owner, puede todo).
+-- Cada una solo CREA/EDITA/BORRA lo suyo (Tòfol, con rol owner, puede todo).
 drop policy if exists "reserves_insert_own" on public.reserves;
 create policy "reserves_insert_own" on public.reserves
   for insert to authenticated
@@ -71,8 +74,25 @@ create policy "reserves_delete_own" on public.reserves
   for delete to authenticated
   using (prof = public.my_prof() or public.is_owner());
 
--- 5) TIEMPO REAL (que todas vean los cambios al instante) -------------------
-alter publication supabase_realtime add table public.reserves;
+-- 4b) VISTA DE AGENDA (privacidad de importes entre compañeras) --------------
+-- Devuelve TODAS las reservas para pintar la ocupación de los 5 despachos, pero
+-- a las reservas AJENAS les oculta `preu` y `nota`. Cada una ve su detalle
+-- completo; Tòfol (owner) ve el detalle de todas. La app lee de esta vista.
+-- (security_invoker=off → la vista lee todas las filas saltándose el RLS de la
+--  tabla base, y decide qué ocultar según quién consulta.)
+drop view if exists public.agenda_view;
+create view public.agenda_view with (security_invoker = off) as
+  select
+    r.id, r.desp, r.prof, r.date, r.start, r.dur, r.estat, r.serie, r.created_at,
+    case when r.prof = public.my_prof() or public.is_owner() then r.preu else null end as preu,
+    case when r.prof = public.my_prof() or public.is_owner() then r.nota else null end as nota
+  from public.reserves r;
+
+grant select on public.agenda_view to authenticated;
+
+-- Nota: no se usa realtime a propósito. Con realtime, los cambios de las demás se
+-- emitirían con sus importes; para mantener la privacidad, la app refresca la vista
+-- por sondeo (cada ~40 s y al volver a la pestaña). Tus cambios se ven al instante.
 
 -- 6) MAPEO DE USUARIOS  -----------------------------------------------------
 -- Crea antes un usuario por profesional en Authentication → Users → Add user

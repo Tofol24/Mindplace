@@ -377,7 +377,9 @@
 
   // --- Emmagatzematge de reserves ---
   // DATA és la còpia en memòria que llegeix render(). En LOCAL surt de localStorage;
-  // en SUPABASE surt del servidor i es refresca en viu (realtime).
+  // en SUPABASE surt de la VISTA `agenda_view`: cada una veu el detall NOMÉS de les
+  // seves reserves; de les altres, només ocupat/lliure (sense preu ni nota). Això ho
+  // imposa el servidor. La vista s'actualitza per sondeig (veure startSync).
   const LKEY='despatx_reserves';
   const Local = {
     load(){ try { return JSON.parse(localStorage.getItem(LKEY)||'[]'); } catch(e){ return []; } },
@@ -390,24 +392,24 @@
   const Store = {
     all(){ return DATA; },
     async refresh(){
-      if(SUPABASE){ const { data, error } = await sb.from('reserves').select('*'); if(error){ console.error(error); return; } DATA = data||[]; }
+      if(SUPABASE){ const { data, error } = await sb.from('agenda_view').select('*'); if(error){ console.error(error); return; } DATA = data||[]; }
       else { DATA = Local.load(); }
     },
     add(b){                            // optimista: pinta ja i persisteix en segon pla
       if(!b.id) b.id = uid();
       DATA = DATA.concat([b]);
-      if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); Store.refresh().then(rerenderAll); } }); }
+      if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
       else { const a=Local.load(); a.push(b); Local.save(a); }
       return b;
     },
     remove(id){
       DATA = DATA.filter(x=>x.id!==id);
-      if(SUPABASE){ sb.from('reserves').delete().eq('id',id).then(({error})=>{ if(error){ alert('No s\'ha pogut esborrar: '+error.message); Store.refresh().then(rerenderAll); } }); }
+      if(SUPABASE){ sb.from('reserves').delete().eq('id',id).then(({error})=>{ if(error){ alert('No s\'ha pogut esborrar: '+error.message); } Store.refresh().then(rerenderAll); }); }
       else { Local.save(Local.load().filter(x=>x.id!==id)); }
     },
     clear(){
       const ids = DATA.map(x=>x.id); DATA = [];
-      if(SUPABASE){ if(ids.length) sb.from('reserves').delete().in('id',ids).then(({error})=>{ if(error) alert('Error: '+error.message); }); }
+      if(SUPABASE){ if(ids.length) sb.from('reserves').delete().in('id',ids).then(({error})=>{ if(error) alert('Error: '+error.message); Store.refresh().then(rerenderAll); }); }
       else { Local.save([]); }
     }
   };
@@ -419,10 +421,19 @@
     if(vis('tab-comissions')) renderReport();
     if(vis('tab-extractes')) renderExt();
   }
-  function subscribeRealtime(){
+  // Sincronització per sondeig (no realtime): amb màxima privacitat, el realtime
+  // filtraria dades de les altres, així que refresquem la vista periòdicament i en
+  // tornar a la pestanya. Els teus canvis es veuen a l'instant (optimista); els de
+  // les altres apareixen en pocs segons.
+  let syncTimer=null;
+  function onVis(){ if(!document.hidden) Store.refresh().then(rerenderAll); }
+  function startSync(){
     if(!SUPABASE) return;
-    sb.channel('reserves-rt').on('postgres_changes', { event:'*', schema:'public', table:'reserves' }, ()=>{ Store.refresh().then(rerenderAll); }).subscribe();
+    stopSync();
+    syncTimer=setInterval(()=>{ if(!document.hidden) Store.refresh().then(rerenderAll); }, 40000);
+    document.addEventListener('visibilitychange', onVis);
   }
+  function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); }
 
   // --- Utilitats de temps ---
   const pad = n => String(n).padStart(2,'0');
@@ -467,7 +478,7 @@
   }
   async function enterApp(){
     lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
-    applyRole(); await Store.refresh(); render(); subscribeRealtime();
+    applyRole(); await Store.refresh(); render(); startSync();
   }
   async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
     const { data:{ user } } = await sb.auth.getUser();
@@ -493,7 +504,7 @@
   document.getElementById('lbtn').onclick=doLogin;
   lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
   lemail.addEventListener('keydown', e=>{ if(e.key==='Enter') lpass.focus(); });
-  document.getElementById('logoutBtn').onclick=async ()=>{ if(SUPABASE){ try{ await sb.auth.signOut(); }catch(e){} } me=null; myRole=''; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
+  document.getElementById('logoutBtn').onclick=async ()=>{ stopSync(); if(SUPABASE){ try{ await sb.auth.signOut(); }catch(e){} } me=null; myRole=''; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
 
   // ---------- TABS ----------
   document.querySelectorAll('.tab').forEach(t=>{

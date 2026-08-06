@@ -5,7 +5,7 @@ compartits entre les professionals d'APRENS, veure quins estan lliures i calcula
 la **comissió del 20 %** que APRENS factura per servei — **sense cap nom de pacient**.
 
 > **Para el informático de APRENS.** La app ya funciona tal cual (guarda en el
-> propio navegador). Para que TODAS compartan la misma agenda en tiempo real hay
+> propio navegador). Para que TODAS compartan la misma agenda (que se actualiza sola) hay
 > que darle una base de datos compartida: ver **§3**. Es el único trabajo de fondo.
 
 ---
@@ -80,10 +80,10 @@ Al empezar, la contraseña de cada persona es **su nombre + `2026`** (p. ej.
 
 La app **ya trae toda la integración con Supabase hecha**. En modo local (por
 defecto) guarda en el dispositivo; en cuanto rellenes las dos claves, pasa a
-**agenda compartida en tiempo real + seguridad real de servidor (RLS)** y login por
+**agenda compartida (se actualiza sola) + seguridad real de servidor (RLS)** y login por
 correo. No hay que reescribir código: solo configurar. ~20 minutos.
 
-Recomendado: **[Supabase](https://supabase.com)** (Postgres + API + realtime,
+Recomendado: **[Supabase](https://supabase.com)** (Postgres + API,
 plan gratis, con **región EU** — importante por RGPD).
 
 ### Paso a paso
@@ -91,7 +91,7 @@ plan gratis, con **región EU** — importante por RGPD).
 1. **Crea el proyecto** en Supabase (elige región **EU**, p. ej. Frankfurt).
 2. **Base de datos**: abre *SQL Editor → New query*, pega **todo** el archivo
    [`supabase-schema.sql`](./supabase-schema.sql) y pulsa **Run**. Eso crea las
-   tablas `reserves` y `profiles`, las políticas de seguridad (RLS) y el tiempo real.
+   tablas `reserves` y `profiles`, las políticas de seguridad (RLS) y la vista de privacidad `agenda_view`.
 3. **Usuarios**: en *Authentication → Users → Add user*, crea **un usuario por
    profesional** (email + contraseña). Copia el **UUID** de cada uno.
 4. **Mapeo**: vuelve al *SQL Editor* y ejecuta el `insert into public.profiles ...`
@@ -105,24 +105,31 @@ plan gratis, con **región EU** — importante por RGPD).
    const SUPA_KEY = "eyJ...";   // clave anon public
    ```
 
-6. **Despliega** (Netlify). El `_headers` ya permite `*.supabase.co` (API + realtime).
+6. **Despliega** (Netlify). El `_headers` ya permite `*.supabase.co`.
    Al abrir la app, ahora pedirá **correo y contraseña** y cada una verá su agenda;
-   la ocupación es común y en vivo.
+   la ocupación es común y se actualiza sola (cada ~40 s y al volver a la pestaña).
 
-### Qué garantiza la seguridad (RLS)
+### Qué garantiza la seguridad (RLS) — máxima privacidad
 
-- **Todas** pueden **leer** la ocupación (para saber qué despacho está libre).
-- Cada una solo puede **crear/editar/borrar lo suyo**; **Tòfol** (rol `owner`) puede
-  con todo. Esto lo impone el **servidor**, no el navegador: aunque alguien trastee
-  el código, la base de datos rechaza lo que no le corresponde.
+- Cada profesional ve **su propio detalle** (precio, nota) solo de **sus** reservas.
+- De las **demás** solo ve **ocupado/libre** de cada despacho (para saber cuál está
+  libre): **sin precio ni nota**. Esto lo impone el **servidor** con la vista
+  `agenda_view`, no el navegador: aunque alguien mire el código o la API, los
+  importes ajenos no salen.
+- Cada una solo puede **crear/editar/borrar lo suyo**.
+- **Tòfol** (rol `owner`) ve **todas** las reservas con **detalle completo** e
+  identifica cada una (nombre, despacho, hora, precio, nota, estado).
 
 ### Cómo está hecho por dentro (por si hay que mantenerlo)
 
 - El cliente de Supabase va **self-hosted** en `vendor/supabase.js` (sin CDN).
 - La capa `Store` de `index.html` funciona en los dos modos: mantiene una copia en
   memoria (`DATA`) que la interfaz pinta, escribe de forma **optimista** y persiste
-  en Supabase; una suscripción **realtime** refresca la vista cuando otra persona
-  cambia algo.
+  en Supabase. **Lee de la vista `agenda_view`** (no de la tabla), que aplica la
+  privacidad de importes.
+- **Refresco por sondeo** (no realtime): tus cambios se ven al instante; los de las
+  demás aparecen en pocos segundos (cada ~40 s y al volver a la pestaña). Se hace así
+  a propósito: el realtime emitiría los importes de las demás y rompería la privacidad.
 - El login: en modo Supabase usa **Supabase Auth** (correo+contraseña) y la tabla
   `profiles` para saber qué profesional es cada usuario; en modo local usa el
   selector de nombre + PIN.
@@ -149,7 +156,7 @@ plan gratis, con **región EU** — importante por RGPD).
 |---|---|
 | `index.html`          | La aplicación completa (agenda + comisiones + extractos + ajustes). |
 | `vendor/supabase.js`  | Cliente de Supabase self-hosted (sin CDN). |
-| `supabase-schema.sql` | SQL a ejecutar en Supabase (tablas + seguridad RLS + realtime). |
+| `supabase-schema.sql` | SQL a ejecutar en Supabase (tablas + seguridad RLS + vista de privacidad). |
 | `_headers`            | Cabeceras/CSP de Netlify (permite `*.supabase.co`). |
 | `netlify.toml`        | Despliegue como sitio Netlify propio. |
 | `README.md`           | Esto. |
