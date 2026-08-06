@@ -1,0 +1,9 @@
+# APRENS · Despatxos — cabeceras de Netlify
+#
+# El cliente de Supabase va self-hosted (vendor/supabase.js), así que script-src
+# se queda en 'self'. connect-src permite la API y el WebSocket (realtime) de
+# Supabase. Si NO usas Supabase, puedes quitar las líneas *.supabase.co.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'self'

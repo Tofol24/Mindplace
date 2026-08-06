@@ -1,0 +1,13 @@
+# APRENS · Reservas — cabeceras de Netlify
+#
+# OJO: esta página NO puede usar la CSP "sin terceros" del sitio de inicio,
+# porque el motor de reservas (Cal.com) se carga desde app.cal.com. Aquí
+# abrimos SOLO lo justo para que Cal.com funcione, y nada más.
+#
+# Si usas un Cal.com propio (self-hosted) o la región EU, sustituye
+# "https://app.cal.com" y "https://cal.com" por tu dominio en las 3 líneas
+# (script-src, frame-src, connect-src).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://app.cal.com https://cal.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; media-src 'self'; connect-src 'self' https://app.cal.com https://cal.com; frame-src https://app.cal.com https://cal.com; base-uri 'self'; form-action 'self'; object-src 'none'

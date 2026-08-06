@@ -1,0 +1,14 @@
+# APRENS · página de reservas (sitio Netlify independiente, p. ej. "aprens-agendas")
+# Es un sitio estático sin build. Se puede desplegar como sitio propio o
+# incrustar por <iframe> en aprens.es.
+#
+# Si lo despliegas como sitio Netlify propio desde este repo, en el panel:
+#   Site configuration → Build & deploy → Continuous deployment
+#     · Repository:        Tofol24/Mindplace
+#     · Base directory:    agendas      ← IMPRESCINDIBLE (lee ESTE toml)
+#     · Publish directory: agendas
+#     · Build command:     (vacío)
+[build]
+  base = "agendas"
+  publish = "."
+  command = ""

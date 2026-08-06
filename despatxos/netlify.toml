@@ -1,0 +1,13 @@
+# APRENS · Gestió de despatxos (sitio Netlify independiente, p. ej. "aprens-despatxos")
+# Estático, sin build. Uso interno del equipo (no es de cara al público).
+#
+# Para desplegarlo como sitio propio desde este repo, en el panel de Netlify:
+#   Site configuration → Build & deploy → Continuous deployment
+#     · Repository:        Tofol24/Mindplace
+#     · Base directory:    despatxos      ← IMPRESCINDIBLE (lee ESTE toml)
+#     · Publish directory: despatxos
+#     · Build command:     (vacío)
+[build]
+  base = "despatxos"
+  publish = "."
+  command = ""

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Despatxos · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+    --naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;
+    --oro:#C8973A;--oroLt:#F6ECD6;--lila:#7B4FC1;--linia:#E6ECF3;
+  }
+  html{scroll-behavior:smooth;}
+  body{font-family:system-ui,-apple-system,'DM Sans','Segoe UI',Roboto,sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;line-height:1.45;-webkit-text-size-adjust:100%;}
+  h1,h2,h3,.serif{font-family:Georgia,'Playfair Display',serif;}
+
+  .header{background:var(--azul);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:40;flex-wrap:wrap;}
+  .hlogo{width:34px;height:34px;background:#fff;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--azul);font-size:12px;font-family:Georgia,serif;flex:none;}
+  .htitle{font-size:16px;font-weight:700;}
+  .hsub{font-size:10px;opacity:.78;margin-top:1px;}
+  .whoami{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;}
+  .whoami #meLabel{font-weight:700;}
+  .logout{border:none;cursor:pointer;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:9px;}
+  .logout:hover{background:rgba(255,255,255,.26);}
+
+  /* --- Pantalla d'accés --- */
+  .login{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(160deg,#1B4F8C 0%,#2E7D5E 120%);}
+  .login .lcard{background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.35);width:100%;max-width:380px;padding:30px 26px;}
+  .login .llogo{width:52px;height:52px;border-radius:50%;background:var(--azul);color:#fff;display:grid;place-items:center;font-family:Georgia,serif;font-weight:700;margin:0 auto 14px;}
+  .login h2{text-align:center;font-size:22px;color:var(--azul);margin-bottom:4px;}
+  .login .lsub{text-align:center;color:var(--gris);font-size:13px;margin-bottom:20px;}
+  .login label{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.3px;margin:0 0 5px;}
+  .login select,.login input{width:100%;font:inherit;padding:11px 12px;border-radius:11px;border:1.5px solid var(--linia);margin-bottom:14px;}
+  .login .btn{width:100%;font-size:15px;padding:12px;}
+  .login .lerr{color:var(--rojo);font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;display:none;}
+  .login .lnote{font-size:11.5px;color:var(--gris);text-align:center;margin-top:14px;line-height:1.5;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:16px 12px 60px;}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .tab{border:none;cursor:pointer;background:#fff;color:var(--azul);font:inherit;font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:11px;box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .tab.on{background:var(--azul);color:#fff;}
+
+  /* --- Barra de dia --- */
+  .daybar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .daybar button.nav{border:none;cursor:pointer;background:#fff;color:var(--azul);font-size:18px;font-weight:700;width:38px;height:38px;border-radius:11px;box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .daybar .daylabel{font-family:Georgia,serif;font-size:18px;font-weight:700;color:var(--azul);min-width:210px;text-transform:capitalize;}
+  .daybar input[type=date]{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linia);background:#fff;}
+  .btn{border:none;cursor:pointer;background:var(--verde);color:#fff;font:inherit;font-weight:700;font-size:14px;padding:10px 16px;border-radius:11px;box-shadow:0 3px 12px rgba(46,125,94,.22);}
+  .btn.sec{background:var(--azul);box-shadow:0 3px 12px rgba(27,79,140,.2);}
+  .btn.ghost{background:#fff;color:var(--azul);box-shadow:0 2px 10px rgba(27,79,140,.08);}
+  .spacer{margin-left:auto;}
+
+  /* --- Graella de despatxos --- */
+  .board-scroll{overflow-x:auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:0 0 6px;}
+  .board{display:grid;grid-template-columns:56px repeat(5,minmax(120px,1fr));min-width:660px;}
+  .colhead{position:sticky;top:0;background:#fff;z-index:5;text-align:center;padding:10px 4px 8px;border-bottom:1.5px solid var(--linia);}
+  .colhead .dnum{font-family:Georgia,serif;font-size:15px;font-weight:700;color:var(--azul);}
+  .colhead .down{font-size:10.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:1px;}
+  .colhead .dtag{font-size:9.5px;color:var(--oro);font-weight:700;}
+  .gutterhead{position:sticky;top:0;background:#fff;z-index:5;border-bottom:1.5px solid var(--linia);}
+  .lanes{position:relative;}
+  .gutter{position:relative;}
+  .hourlbl{position:absolute;right:6px;font-size:10.5px;color:var(--gris);transform:translateY(-6px);}
+  .lane{position:relative;border-left:1px solid var(--linia);cursor:pointer;}
+  .lane:hover{background:rgba(27,79,140,.03);}
+  .hourline{position:absolute;left:0;right:0;border-top:1px solid var(--linia);}
+  .halfline{position:absolute;left:0;right:0;border-top:1px dashed #EEF2F7;}
+  .ev{position:absolute;left:3px;right:3px;border-radius:8px;padding:4px 6px;color:#fff;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.14);cursor:pointer;font-size:11px;line-height:1.2;}
+  .ev .en{font-weight:700;}
+  .ev .et{opacity:.92;font-size:10px;}
+  .ev.mine{outline:2px solid rgba(255,255,255,.85);}
+  .ev.est-no{opacity:.5;}
+  .ev.est-no .en,.ev.est-no .et{text-decoration:line-through;}
+  .ev.est-pend{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 7px,transparent 7px 14px);}
+  .estats button[data-e=feta].on{background:var(--verde);border-color:var(--verde);color:#fff;}
+  .estats button[data-e=no].on{background:var(--rojo);border-color:var(--rojo);color:#fff;}
+  .estats button[data-e=pend].on{background:var(--oro);border-color:var(--oro);color:#fff;}
+
+  /* --- Panells --- */
+  .panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:18px;margin-bottom:16px;}
+  .panel h2{font-size:19px;color:var(--azul);margin-bottom:4px;}
+  .panel .sub{color:var(--gris);font-size:13px;margin-bottom:14px;}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .row label{font-size:12.5px;font-weight:700;color:var(--gris);}
+  select,input[type=month],input[type=number]{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linia);background:#fff;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--linia);}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris);}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+  tr.tot td{font-weight:800;border-top:2px solid var(--azul);border-bottom:none;color:var(--azul);}
+  .pill{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;}
+  .muted{color:var(--gris);font-size:12.5px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+  .kpi{background:var(--fondo);border-radius:12px;padding:12px 14px;}
+  .kpi .kn{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--azul);}
+  .kpi .kl{font-size:11.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+
+  /* --- Modal --- */
+  .modal{position:fixed;inset:0;background:rgba(20,30,50,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
+  .modal.on{display:flex;}
+  .card{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:400px;padding:22px;}
+  .card h3{font-size:20px;color:var(--azul);margin-bottom:14px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+  .field select,.field input{width:100%;}
+  .durs{display:flex;flex-wrap:wrap;gap:6px;}
+  .durs button{border:1.5px solid var(--linia);background:#fff;cursor:pointer;font:inherit;font-weight:700;font-size:13px;padding:8px 0;border-radius:9px;flex:1 1 30%;min-width:60px;}
+  .durs button.on{background:var(--azul);color:#fff;border-color:var(--azul);}
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .modal-actions .btn{flex:1;}
+  .danger{background:var(--rojo)!important;box-shadow:none!important;}
+  .link{background:none;border:none;color:var(--gris);cursor:pointer;font:inherit;font-size:13px;text-decoration:underline;}
+  .warn{background:var(--oroLt);color:#8a6d1f;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;display:none;}
+  .warn.on{display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin:10px 2px 0;font-size:12px;color:#444;}
+  .legend span .pill{margin-right:5px;}
+  .note{font-size:12px;color:var(--gris);margin-top:6px;}
+  @media(max-width:560px){.htitle{font-size:14px;}.daybar .daylabel{min-width:auto;font-size:16px;}}
+</style>
+</head>
+<body>
+  <!-- ================= ACCÉS ================= -->
+  <div class="login" id="login">
+    <div class="lcard">
+      <div class="llogo">AP</div>
+      <h2>APRENS · Despatxos</h2>
+      <div class="lsub">Entra amb el teu nom i la teva contrasenya</div>
+      <div class="lerr" id="lerr">Contrasenya incorrecta.</div>
+      <label id="lwhoLbl">Qui ets?</label>
+      <select id="lwho"></select>
+      <label id="lemailLbl" style="display:none;">Correu</label>
+      <input type="email" id="lemail" autocomplete="username" placeholder="el-teu-correu@exemple.com" style="display:none;">
+      <label>Contrasenya</label>
+      <input type="password" id="lpass" autocomplete="current-password" placeholder="La teva contrasenya">
+      <button class="btn" id="lbtn">Entrar</button>
+      <div class="lnote">Cada professional veu la seva agenda i el que ha de pagar de comissió. Si no recordes la contrasenya, demana-la a Tòfol.</div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="hlogo">AP</div>
+    <div>
+      <div class="htitle">APRENS · Despatxos</div>
+      <div class="hsub">Reserva de sales i comissions</div>
+    </div>
+    <div class="whoami">
+      <span id="meLabel">—</span>
+      <button class="logout" id="logoutBtn">Sortir</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tabs">
+      <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
+      <button class="tab" data-tab="comissions">📊 Comissions</button>
+      <button class="tab" data-tab="extractes">📄 Extractes</button>
+      <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
+    </div>
+
+    <!-- ================= AGENDA ================= -->
+    <section id="tab-agenda">
+      <div class="daybar">
+        <button class="nav" id="prevDay" aria-label="Dia anterior">‹</button>
+        <div class="daylabel" id="dayLabel">—</div>
+        <button class="nav" id="nextDay" aria-label="Dia següent">›</button>
+        <input type="date" id="datePick">
+        <button class="btn ghost" id="todayBtn">Avui</button>
+        <button class="btn spacer" id="newBtn">＋ Nova reserva</button>
+      </div>
+
+      <div class="board-scroll">
+        <div class="board" id="board"></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <p class="note">Toca un espai buit d'un despatx per reservar. Toca una reserva teva per anul·lar-la. Els despatxos són compartits: qui vulgui pot reservar-ne un si està lliure.</p>
+    </section>
+
+    <!-- ================= COMISSIONS ================= -->
+    <section id="tab-comissions" style="display:none;">
+      <div class="panel">
+        <h2>Comissions APRENS</h2>
+        <div class="sub">Nombre de sessions per professional i comissió del <b id="pctLbl">20</b>% sobre el servei. Sense cap nom de pacient.</div>
+        <div class="row">
+          <label>Període</label>
+          <select id="periode">
+            <option value="mes">Mensual</option>
+            <option value="setmana">Setmanal</option>
+          </select>
+          <input type="month" id="mesPick">
+          <input type="date" id="setPick" style="display:none;">
+          <button class="btn ghost" id="csvBtn">⬇ Exportar CSV</button>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div style="overflow-x:auto;">
+          <table id="repTable">
+            <thead>
+              <tr>
+                <th>Professional</th>
+                <th class="num">Sessions</th>
+                <th class="num">Minuts</th>
+                <th class="num">Facturació</th>
+                <th class="num">Comissió</th>
+              </tr>
+            </thead>
+            <tbody id="repBody"></tbody>
+          </table>
+        </div>
+        <p class="note">La «facturació» és la suma dels preus que posa cada professional a cada sessió. La comissió és el <span id="pctLbl2">20</span>% d'aquesta facturació.</p>
+      </div>
+    </section>
+
+    <!-- ================= EXTRACTES ================= -->
+    <section id="tab-extractes" style="display:none;">
+      <div class="panel">
+        <h2>Extracte mensual</h2>
+        <div class="sub" id="extSub">Ingressos <b>bruts</b>, <b>comissió</b> i <b>nets</b>, mes a mes (des de l'1 de cada mes). Només compten les sessions <b>realitzades</b>.</div>
+        <div class="row">
+          <label>Any</label>
+          <select id="anyPick"></select>
+          <button class="btn ghost" id="csvExtBtn">⬇ Exportar CSV</button>
+        </div>
+        <div class="kpis" id="extKpis"></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió</th><th class="num">Net</th></tr>
+            </thead>
+            <tbody id="extBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="extNote"></p>
+      </div>
+    </section>
+
+    <!-- ================= AJUSTOS ================= -->
+    <section id="tab-ajustos" style="display:none;">
+      <div class="panel">
+        <h2>Ajustos</h2>
+        <div class="sub">Preu per sessió de cada professional i percentatge de comissió. Es guarda en aquest dispositiu.</div>
+        <div class="row">
+          <label>Comissió (%)</label>
+          <input type="number" id="pctInput" min="0" max="100" step="1" style="width:90px;">
+          <label>Horari graella</label>
+          <input type="number" id="hIni" min="0" max="23" step="1" style="width:70px;"> a
+          <input type="number" id="hFi" min="1" max="24" step="1" style="width:70px;"> h
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Professional</th><th>Rol</th><th>Despatx propi</th><th class="num">Preu suggerit (€)</th><th>Contrasenya</th></tr></thead>
+            <tbody id="preusBody"></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:14px;">
+          <button class="btn" id="saveAjustos">Desar ajustos</button>
+          <button class="link" id="resetData">Esborrar totes les reserves d'aquest dispositiu</button>
+        </div>
+        <p class="note" id="ajNote">⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Per compartir-les entre totes, activa Supabase — vegeu README.md §3.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODAL RESERVA ================= -->
+  <div class="modal" id="modal">
+    <div class="card">
+      <h3 id="modalTitle">Nova reserva</h3>
+      <div class="warn" id="warn"></div>
+      <div class="field">
+        <label>Despatx</label>
+        <select id="mDesp"></select>
+      </div>
+      <div class="field">
+        <label>Professional</label>
+        <select id="mProf"></select>
+      </div>
+      <div class="field">
+        <label>Hora d'inici</label>
+        <select id="mStart"></select>
+      </div>
+      <div class="field">
+        <label>Durada</label>
+        <div class="durs" id="mDurs"></div>
+      </div>
+      <div class="field">
+        <label>Preu de la sessió (€)</label>
+        <input type="number" id="mPreu" min="0" step="1" inputmode="decimal" placeholder="p. ex. 60">
+      </div>
+      <div class="field">
+        <label>El pacient ha acudit?</label>
+        <div class="durs estats" id="mEstat">
+          <button type="button" data-e="feta">✓ Realitzada</button>
+          <button type="button" data-e="no">✗ No ha vingut</button>
+          <button type="button" data-e="pend">⏳ Pendent</button>
+        </div>
+        <div class="note" style="margin-top:6px;">Les <b>no realitzades</b> no compten per a la comissió, però queden registrades.</div>
+      </div>
+      <div class="field" id="mRepWrap">
+        <label>Repetir la cita</label>
+        <select id="mRep">
+          <option value="none">No, només aquest dia</option>
+          <option value="setmanal">Cada setmana (mateix dia i hora)</option>
+          <option value="quinzenal">Cada 2 setmanes (quinzenal)</option>
+          <option value="mensual">Cada mes (mateix dia del mes)</option>
+        </select>
+        <div id="mRepCountWrap" style="display:none;margin-top:8px;">
+          <label style="display:block;font-size:11px;">Durant quantes sessions (comptant aquesta)</label>
+          <input type="number" id="mRepCount" min="2" max="60" step="1" value="8">
+        </div>
+      </div>
+      <div class="field">
+        <label>Nota (opcional · sense nom de pacient)</label>
+        <input type="text" id="mNota" maxlength="40" placeholder="p. ex. codi de pacient, buit…">
+      </div>
+      <div class="modal-actions">
+        <button class="btn sec" id="mSave">Reservar</button>
+        <button class="btn ghost" id="mCancel">Tancar</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="link" id="mDelete" style="display:none;color:var(--rojo);">Anul·lar aquesta reserva</button>
+        <button class="link" id="mDeleteSerie" style="display:none;color:var(--rojo);margin-left:10px;">Anul·lar tota la sèrie</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Client de Supabase (self-hosted, no CDN). Només s'usa si s'omplen les claus a CONFIG. -->
+<script src="vendor/supabase.js"></script>
+<script>
+/* ======================================================================
+   APRENS · Gestió de despatxos
+   ----------------------------------------------------------------------
+   MODES:
+   · LOCAL  (per defecte) — dades en aquest dispositiu (demostració).
+   · SUPABASE — agenda compartida entre totes + seguretat real (RLS + login).
+     S'activa SOL amb omplir SUPA_URL i SUPA_KEY aquí sota. Passos i SQL:
+     README.md §3 i supabase-schema.sql.
+   ---------------------------------------------------------------------- */
+
+  // ⚙️ CONFIG SUPABASE — omple aquests dos valors per activar el mode compartit.
+  //    (Project URL i clau "anon public" del panell de Supabase → Settings → API)
+  const SUPA_URL = "";   // p. ex. "https://xxxxxxxx.supabase.co"
+  const SUPA_KEY = "";   // clau anon public (comença per "eyJ...")
+  const SUPABASE = !!(SUPA_URL && SUPA_KEY && window.supabase);
+  const sb = SUPABASE ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
+
+  // --- Professionals ---
+  const PROFS = [
+    { id:'tofol',    nom:'Tòfol',    rol:'PS', desp:1, propietari:true, color:'#1B4F8C' },
+    { id:'bea',      nom:'Bea',      rol:'PS', desp:2, color:'#2E7D5E' },
+    { id:'elena',    nom:'Elena',    rol:'PS', desp:3, color:'#E07B39' },
+    { id:'mariana',  nom:'Mariana',  rol:'LP', desp:4, color:'#7B4FC1' },
+    { id:'cristina', nom:'Cristina', rol:'PS', desp:5, color:'#C0392B' },
+    { id:'victoria', nom:'Victoria', rol:'PS', desp:null, color:'#0E7490' },
+    { id:'nuria',    nom:'Núria',    rol:'PS', desp:null, color:'#B45309' },
+  ];
+  const DESPATXOS = [1,2,3,4,5];
+  const OWNER_OF = {1:'tofol',2:'bea',3:'elena',4:'mariana',5:'cristina'};
+  const DURADES = [30,35,40,45,50,55,60];
+
+  const prof = id => PROFS.find(p=>p.id===id);
+
+  // --- Ajustos (preus, %, horari) ---
+  const DEF_PREU = 60;
+  function loadCfg(){
+    let c = {};
+    try { c = JSON.parse(localStorage.getItem('despatx_cfg')||'{}'); } catch(e){}
+    c.pct  = (c.pct  ?? 20);
+    c.hIni = (c.hIni ?? 8);
+    c.hFi  = (c.hFi  ?? 21);
+    c.preus = c.preus || {};
+    c.claus = c.claus || {};
+    PROFS.forEach(p=>{ if(c.preus[p.id]==null) c.preus[p.id]=DEF_PREU; if(c.claus[p.id]==null) c.claus[p.id]=p.id+'2026'; });
+    return c;
+  }
+  function saveCfg(c){ localStorage.setItem('despatx_cfg', JSON.stringify(c)); }
+  let cfg = loadCfg();
+
+  // --- Emmagatzematge de reserves ---
+  // DATA és la còpia en memòria que llegeix render(). En LOCAL surt de localStorage;
+  // en SUPABASE surt de la VISTA `agenda_view`: cada una veu el detall NOMÉS de les
+  // seves reserves; de les altres, només ocupat/lliure (sense preu ni nota). Això ho
+  // imposa el servidor. La vista s'actualitza per sondeig (veure startSync).
+  const LKEY='despatx_reserves';
+  const Local = {
+    load(){ try { return JSON.parse(localStorage.getItem(LKEY)||'[]'); } catch(e){ return []; } },
+    save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
+  };
+  const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'' }; }
+  let DATA = SUPABASE ? [] : Local.load();
+
+  const Store = {
+    all(){ return DATA; },
+    async refresh(){
+      if(SUPABASE){ const { data, error } = await sb.from('agenda_view').select('*'); if(error){ console.error(error); return; } DATA = data||[]; }
+      else { DATA = Local.load(); }
+    },
+    add(b){                            // optimista: pinta ja i persisteix en segon pla
+      if(!b.id) b.id = uid();
+      DATA = DATA.concat([b]);
+      if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
+      else { const a=Local.load(); a.push(b); Local.save(a); }
+      return b;
+    },
+    remove(id){
+      DATA = DATA.filter(x=>x.id!==id);
+      if(SUPABASE){ sb.from('reserves').delete().eq('id',id).then(({error})=>{ if(error){ alert('No s\'ha pogut esborrar: '+error.message); } Store.refresh().then(rerenderAll); }); }
+      else { Local.save(Local.load().filter(x=>x.id!==id)); }
+    },
+    clear(){
+      const ids = DATA.map(x=>x.id); DATA = [];
+      if(SUPABASE){ if(ids.length) sb.from('reserves').delete().in('id',ids).then(({error})=>{ if(error) alert('Error: '+error.message); Store.refresh().then(rerenderAll); }); }
+      else { Local.save([]); }
+    }
+  };
+
+  // Torna a pintar la vista activa (agenda + panell obert) després d'un canvi remot.
+  function rerenderAll(){
+    render();
+    const vis = id => { const el=document.getElementById(id); return el && el.style.display!=='none'; };
+    if(vis('tab-comissions')) renderReport();
+    if(vis('tab-extractes')) renderExt();
+  }
+  // Sincronització per sondeig (no realtime): amb màxima privacitat, el realtime
+  // filtraria dades de les altres, així que refresquem la vista periòdicament i en
+  // tornar a la pestanya. Els teus canvis es veuen a l'instant (optimista); els de
+  // les altres apareixen en pocs segons.
+  let syncTimer=null;
+  function onVis(){ if(!document.hidden) Store.refresh().then(rerenderAll); }
+  function startSync(){
+    if(!SUPABASE) return;
+    stopSync();
+    syncTimer=setInterval(()=>{ if(!document.hidden) Store.refresh().then(rerenderAll); }, 40000);
+    document.addEventListener('visibilitychange', onVis);
+  }
+  function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); }
+
+  // --- Utilitats de temps ---
+  const pad = n => String(n).padStart(2,'0');
+  const toMin = hhmm => { const [h,m]=hhmm.split(':').map(Number); return h*60+m; };
+  const toHHMM = min => pad(Math.floor(min/60))+':'+pad(min%60);
+  function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+  const DIES = ['diumenge','dilluns','dimarts','dimecres','dijous','divendres','dissabte'];
+  const MESOS = ['gener','febrer','març','abril','maig','juny','juliol','agost','setembre','octubre','novembre','desembre'];
+  function labelDia(d){ return DIES[d.getDay()]+', '+d.getDate()+' '+MESOS[d.getMonth()]; }
+
+  // --- Estat ---
+  let curDate = new Date(); curDate.setHours(0,0,0,0);
+  let editing = null; // reserva seleccionada per anul·lar
+  const PXMIN = 1.15; // píxels per minut a la graella
+
+  // ---------- ACCÉS / ROLS ----------
+  let me = null, myRole = '';
+  const soc = () => prof(me);
+  const isOwner = () => me==='tofol' || myRole==='owner';
+  const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
+  const sessPreu = r => (r.preu!=null && r.preu!=='') ? Number(r.preu) : Number(cfg.preus[r.prof]||0);
+
+  const loginEl=document.getElementById('login');
+  const lwho=document.getElementById('lwho'), lpass=document.getElementById('lpass'), lerr=document.getElementById('lerr');
+  const lemail=document.getElementById('lemail');
+  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; lwho.appendChild(o); });
+
+  // Mostra els camps segons el mode
+  if(SUPABASE){
+    document.getElementById('lwhoLbl').style.display='none'; lwho.style.display='none';
+    document.getElementById('lemailLbl').style.display=''; lemail.style.display='';
+    document.getElementById('login').querySelector('.lsub').textContent='Entra amb el teu correu i contrasenya';
+  }
+
+  function applyRole(){
+    document.getElementById('meLabel').textContent = soc().nom + (isOwner()?' · propietari':' ('+soc().rol+')');
+    document.querySelectorAll('.tab').forEach(t=>{ if(t.dataset.tab==='ajustos') t.style.display=isOwner()?'':'none'; });
+    if(!isOwner() && document.getElementById('tab-ajustos').style.display!=='none'){
+      document.querySelector('.tab[data-tab="agenda"]').click();
+    }
+  }
+  async function enterApp(){
+    lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
+    applyRole(); await Store.refresh(); render(); startSync();
+  }
+  async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user){ loginEl.style.display='flex'; return; }
+    const { data:pr, error } = await sb.from('profiles').select('prof, role').eq('id', user.id).maybeSingle();
+    if(error || !pr || !PROFS.some(p=>p.id===pr.prof)){
+      lerr.textContent='El teu usuari no està assignat a cap professional (revisa la taula «profiles»).'; lerr.style.display='block';
+      await sb.auth.signOut(); loginEl.style.display='flex'; return;
+    }
+    me = pr.prof; myRole = pr.role||''; await enterApp();
+  }
+  async function doLogin(){
+    if(SUPABASE){
+      const { error } = await sb.auth.signInWithPassword({ email:lemail.value.trim(), password:lpass.value });
+      if(error){ lerr.textContent='Accés incorrecte.'; lerr.style.display='block'; return; }
+      await afterAuth();
+    } else {
+      const id=lwho.value, pass=lpass.value;
+      if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){ me=id; myRole=''; localStorage.setItem('despatx_sess', id); await enterApp(); }
+      else { lerr.textContent='Contrasenya incorrecta.'; lerr.style.display='block'; }
+    }
+  }
+  document.getElementById('lbtn').onclick=doLogin;
+  lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  lemail.addEventListener('keydown', e=>{ if(e.key==='Enter') lpass.focus(); });
+  document.getElementById('logoutBtn').onclick=async ()=>{ stopSync(); if(SUPABASE){ try{ await sb.auth.signOut(); }catch(e){} } me=null; myRole=''; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
+
+  // ---------- TABS ----------
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+      t.classList.add('on');
+      ['agenda','comissions','extractes','ajustos'].forEach(name=>{
+        document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
+      });
+      if(t.dataset.tab==='comissions') renderReport();
+      if(t.dataset.tab==='extractes') renderExt();
+      if(t.dataset.tab==='ajustos') renderAjustos();
+    };
+  });
+
+  // ---------- AGENDA ----------
+  const board = document.getElementById('board');
+  const dayLabel = document.getElementById('dayLabel');
+  const datePick = document.getElementById('datePick');
+
+  document.getElementById('prevDay').onclick = ()=>{ curDate.setDate(curDate.getDate()-1); render(); };
+  document.getElementById('nextDay').onclick = ()=>{ curDate.setDate(curDate.getDate()+1); render(); };
+  document.getElementById('todayBtn').onclick = ()=>{ curDate=new Date(); curDate.setHours(0,0,0,0); render(); };
+  datePick.onchange = ()=>{ if(datePick.value){ curDate=parseDate(datePick.value); render(); } };
+  document.getElementById('newBtn').onclick = ()=> openModal({ desp:(soc().desp||1) });
+
+  function render(){
+    dayLabel.textContent = labelDia(curDate);
+    datePick.value = fmtDate(curDate);
+    document.getElementById('pctLbl').textContent = cfg.pct;
+    document.getElementById('pctLbl2').textContent = cfg.pct;
+
+    const hIni=cfg.hIni, hFi=cfg.hFi;
+    const totalMin=(hFi-hIni)*60;
+    const H = totalMin*PXMIN;
+
+    board.innerHTML='';
+    // capçalera cantonada
+    const gh=document.createElement('div'); gh.className='gutterhead'; board.appendChild(gh);
+    // capçaleres de despatx
+    DESPATXOS.forEach(n=>{
+      const own = OWNER_OF[n] ? prof(OWNER_OF[n]) : null;
+      const ch=document.createElement('div'); ch.className='colhead';
+      ch.innerHTML='<div class="dnum">Despatx '+n+'</div>'+
+                   '<div class="down" style="color:'+(own?own.color:'#6B7280')+'">'+(own?own.nom:'Compartit')+'</div>';
+      board.appendChild(ch);
+    });
+    // gutter d'hores
+    const gut=document.createElement('div'); gut.className='gutter'; gut.style.height=H+'px';
+    for(let h=hIni; h<=hFi; h++){
+      const l=document.createElement('div'); l.className='hourlbl'; l.style.top=((h-hIni)*60*PXMIN)+'px'; l.textContent=pad(h)+':00';
+      gut.appendChild(l);
+    }
+    board.appendChild(gut);
+
+    const ds = fmtDate(curDate);
+    const reserves = Store.all().filter(r=>r.date===ds);
+
+    DESPATXOS.forEach(n=>{
+      const lane=document.createElement('div'); lane.className='lane'; lane.style.height=H+'px'; lane.dataset.desp=n;
+      for(let h=hIni; h<=hFi; h++){
+        const hl=document.createElement('div'); hl.className='hourline'; hl.style.top=((h-hIni)*60*PXMIN)+'px'; lane.appendChild(hl);
+        if(h<hFi){ const half=document.createElement('div'); half.className='halfline'; half.style.top=((h-hIni)*60+30)*PXMIN+'px'; lane.appendChild(half); }
+      }
+      // clic en buit → nova reserva amb hora calculada
+      lane.addEventListener('click', ev=>{
+        if(ev.target.closest('.ev')) return;
+        const rect=lane.getBoundingClientRect();
+        let min = Math.round((ev.clientY-rect.top)/PXMIN/5)*5 + hIni*60;
+        min = Math.max(hIni*60, Math.min(min, hFi*60-30));
+        openModal({ desp:n, start:toHHMM(min) });
+      });
+      // esdeveniments
+      reserves.filter(r=>Number(r.desp)===n).forEach(r=>{
+        const p=prof(r.prof)||{nom:r.prof,color:'#6B7280'};
+        const top=(toMin(r.start)-hIni*60)*PXMIN;
+        const hgt=Math.max(r.dur*PXMIN-2, 16);
+        const est=r.estat||'feta';
+        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'')+(est==='no'?' est-no':'')+(est==='pend'?' est-pend':'');
+        el.style.top=top+'px'; el.style.height=hgt+'px'; el.style.background=p.color;
+        const preuTxt=(r.preu!=null && r.preu!=='')?' · '+r.preu+'€':'';
+        const estG=est==='no'?' ✗':(est==='pend'?' ⏳':'');
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
+        lane.appendChild(el);
+      });
+      board.appendChild(lane);
+    });
+
+    // llegenda
+    const lg=document.getElementById('legend'); lg.innerHTML='';
+    PROFS.forEach(p=>{ const s=document.createElement('span'); s.innerHTML='<span class="pill" style="background:'+p.color+'"></span>'+p.nom; lg.appendChild(s); });
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // ---------- MODAL ----------
+  const modal=document.getElementById('modal');
+  const mDesp=document.getElementById('mDesp'), mProf=document.getElementById('mProf'), mStart=document.getElementById('mStart');
+  const mDurs=document.getElementById('mDurs'), mNota=document.getElementById('mNota'), warn=document.getElementById('warn');
+  const mPreu=document.getElementById('mPreu');
+  const mRepWrap=document.getElementById('mRepWrap'), mRep=document.getElementById('mRep');
+  const mRepCountWrap=document.getElementById('mRepCountWrap'), mRepCount=document.getElementById('mRepCount');
+  const mEstat=document.getElementById('mEstat');
+  let selDur=50, selEdit=null, selEstat='feta';
+
+  DESPATXOS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent='Despatx '+n+(OWNER_OF[n]?(' · '+prof(OWNER_OF[n]).nom):''); mDesp.appendChild(o); });
+  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; mProf.appendChild(o); });
+  DURADES.forEach(d=>{ const b=document.createElement('button'); b.textContent=d+"'"; b.dataset.d=d; b.onclick=()=>{ selDur=d; paintDurs(); checkWarn(); }; mDurs.appendChild(b); });
+  function paintDurs(){ mDurs.querySelectorAll('button').forEach(b=>b.classList.toggle('on', Number(b.dataset.d)===selDur)); }
+  mEstat.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ selEstat=b.dataset.e; paintEstat(); }; });
+  function paintEstat(){ mEstat.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.e===selEstat)); }
+
+  function fillStarts(){
+    mStart.innerHTML='';
+    for(let m=cfg.hIni*60; m<=cfg.hFi*60-5; m+=5){ const o=document.createElement('option'); o.value=toHHMM(m); o.textContent=toHHMM(m); mStart.appendChild(o); }
+  }
+
+  mRep.onchange=()=>{ mRepCountWrap.style.display = mRep.value==='none' ? 'none' : 'block'; };
+  mProf.onchange=()=>{ if(!selEdit && (mPreu.value===''||mPreu.value==null)) mPreu.value=cfg.preus[mProf.value]||''; };
+
+  function openModal(opts){
+    opts=opts||{};
+    fillStarts();
+    if(opts.edit){
+      const r=opts.edit; selEdit=r;
+      document.getElementById('modalTitle').textContent='Reserva';
+      mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
+      mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
+      selEstat = r.estat||'feta';
+      const canEdit = isOwner() || r.prof===me;
+      [mDesp,mProf,mStart,mNota,mPreu].forEach(el=>el.disabled=!canEdit);
+      mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
+      mEstat.style.pointerEvents=canEdit?'auto':'none'; mEstat.style.opacity=canEdit?1:.6;
+      document.getElementById('mSave').style.display=canEdit?'':'none';
+      document.getElementById('mDelete').style.display=canEdit?'':'none';
+      document.getElementById('mDeleteSerie').style.display=(canEdit && r.serie)?'':'none';
+      mRepWrap.style.display='none';   // la repetició només en crear
+    } else {
+      selEdit=null;
+      document.getElementById('modalTitle').textContent='Nova reserva';
+      mDesp.value=opts.desp||soc().desp||1;
+      mProf.value = me;                   // per defecte, jo
+      mProf.disabled = !isOwner();        // només el propietari reserva per a altres
+      mStart.value = opts.start || toHHMM(cfg.hIni*60+120);
+      selDur = 50; mNota.value=''; selEstat='feta';
+      mPreu.value = cfg.preus[me] || '';
+      [mDesp,mStart,mNota,mPreu].forEach(el=>el.disabled=false);
+      mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
+      mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
+      document.getElementById('mSave').style.display='';
+      document.getElementById('mDelete').style.display='none';
+      document.getElementById('mDeleteSerie').style.display='none';
+      mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
+    }
+    paintDurs(); paintEstat(); checkWarn();
+    modal.classList.add('on');
+  }
+  function closeModal(){ modal.classList.remove('on'); selEdit=null; }
+  document.getElementById('mCancel').onclick=closeModal;
+  modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+  [mDesp,mStart].forEach(el=>el.onchange=checkWarn);
+
+  function overlapsOn(dateStr,desp,start,dur,ignoreId){
+    const s=toMin(start), e=s+dur;
+    return Store.all().some(r=> r.date===dateStr && Number(r.desp)===Number(desp) && r.id!==ignoreId &&
+      (toMin(r.start) < e && (toMin(r.start)+r.dur) > s));
+  }
+  function checkWarn(){
+    const conf = overlapsOn(fmtDate(curDate), mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
+    const endM = toMin(mStart.value)+selDur;
+    let msg='';
+    if(conf) msg='⚠️ Aquest despatx ja està ocupat en aquesta franja.';
+    else if(endM>cfg.hFi*60) msg='⚠️ La reserva acaba després de l\'horari ('+toHHMM(cfg.hFi*60)+').';
+    warn.textContent=msg; warn.classList.toggle('on', !!msg);
+    document.getElementById('mSave').disabled = conf;
+    return !conf;
+  }
+
+  // --- dates de la sèrie recurrent ---
+  function addMonthsClamp(d,n){
+    const x=new Date(d.getFullYear(), d.getMonth()+n, 1);
+    const last=new Date(x.getFullYear(), x.getMonth()+1, 0).getDate();
+    x.setDate(Math.min(d.getDate(), last));
+    return x;
+  }
+  function seriesDates(base, mode, count){
+    const out=[new Date(base)];
+    for(let i=1;i<count;i++){
+      const d=new Date(base);
+      if(mode==='setmanal'){ d.setDate(d.getDate()+7*i); out.push(d); }
+      else if(mode==='quinzenal'){ d.setDate(d.getDate()+14*i); out.push(d); }
+      else if(mode==='mensual'){ out.push(addMonthsClamp(base,i)); }
+    }
+    return out;
+  }
+
+  function readBase(){
+    const preu = (mPreu.value===''||mPreu.value==null) ? null : Math.max(0, Number(mPreu.value)||0);
+    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat };
+  }
+
+  document.getElementById('mSave').onclick=()=>{
+    if(!checkWarn()) return;
+    const base=readBase();
+    if(selEdit){
+      const serie=selEdit.serie;
+      Store.remove(selEdit.id);
+      Store.add(Object.assign({date:fmtDate(curDate)}, base, serie?{serie:serie}:{}));
+      closeModal(); render(); return;
+    }
+    const mode=mRep.value;
+    if(mode==='none'){
+      Store.add(Object.assign({date:fmtDate(curDate)}, base));
+      closeModal(); render(); return;
+    }
+    const count=Math.max(2, Math.min(60, Number(mRepCount.value)||2));
+    const serie='s'+Date.now();
+    let ok=0, skip=0;
+    seriesDates(curDate, mode, count).forEach(d=>{
+      const ds=fmtDate(d);
+      if(overlapsOn(ds, base.desp, base.start, base.dur, null)){ skip++; }
+      else { Store.add(Object.assign({date:ds, serie:serie}, base)); ok++; }
+    });
+    closeModal(); render();
+    if(skip>0) alert('S\'han creat '+ok+' cites. '+skip+' no s\'han pogut crear perquè el despatx ja estava ocupat en aquella franja.');
+  };
+  document.getElementById('mDelete').onclick=()=>{
+    if(selEdit && confirm('Anul·lar aquesta reserva?')){ Store.remove(selEdit.id); closeModal(); render(); }
+  };
+  document.getElementById('mDeleteSerie').onclick=()=>{
+    if(selEdit && selEdit.serie && confirm('Anul·lar aquesta cita i totes les de la mateixa sèrie a partir d\'aquest dia?')){
+      const from=selEdit.date;
+      Store.all().filter(r=>r.serie===selEdit.serie && r.date>=from).forEach(r=>Store.remove(r.id));
+      closeModal(); render();
+    }
+  };
+
+  // ---------- COMISSIONS ----------
+  const periode=document.getElementById('periode'), mesPick=document.getElementById('mesPick'), setPick=document.getElementById('setPick');
+  periode.onchange=()=>{ const m=periode.value==='mes'; mesPick.style.display=m?'':'none'; setPick.style.display=m?'none':''; renderReport(); };
+  mesPick.onchange=renderReport; setPick.onchange=renderReport;
+
+  function weekRange(d){ // dilluns–diumenge
+    const x=new Date(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0);
+    const end=new Date(x); end.setDate(end.getDate()+6);
+    return [x,end];
+  }
+  function inRange(dateStr){
+    const d=parseDate(dateStr);
+    if(periode.value==='mes'){
+      const [y,m]=(mesPick.value||fmtDate(curDate).slice(0,7)).split('-').map(Number);
+      return d.getFullYear()===y && (d.getMonth()+1)===m;
+    } else {
+      const base = setPick.value?parseDate(setPick.value):curDate;
+      const [a,b]=weekRange(base);
+      return d>=a && d<=b;
+    }
+  }
+
+  function renderReport(){
+    if(!mesPick.value) mesPick.value=fmtDate(curDate).slice(0,7);
+    if(!setPick.value) setPick.value=fmtDate(curDate);
+    document.getElementById('pctLbl').textContent=cfg.pct;
+    document.getElementById('pctLbl2').textContent=cfg.pct;
+
+    const rows=Store.all().filter(r=>inRange(r.date));
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={feta:0,no:0,pend:0,fact:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) return; const e=r.estat||'feta';
+      if(e==='no') agg[r.prof].no++;
+      else if(e==='pend') agg[r.prof].pend++;
+      else { agg[r.prof].feta++; agg[r.prof].fact+=sessPreu(r); }
+    });
+
+    let totF=0,totNo=0,totPend=0,totFact=0,totCom=0;
+    const tb=document.getElementById('repBody'); tb.innerHTML='';
+    visibleProfs().forEach(p=>{
+      const a=agg[p.id]; const fact=a.fact; const com=fact*cfg.pct/100;
+      totF+=a.feta; totNo+=a.no; totPend+=a.pend; totFact+=fact; totCom+=com;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+' <span class="muted">('+p.rol+')</span></td>'+
+        '<td class="num">'+a.feta+'</td>'+
+        '<td class="num">'+(a.no?('<span style="color:var(--rojo);font-weight:700">'+a.no+'</span>'):'0')+'</td>'+
+        '<td class="num">'+(a.pend||0)+'</td>'+
+        '<td class="num">'+fact.toFixed(0)+' €</td>'+
+        '<td class="num"><b>'+com.toFixed(2)+' €</b></td>';
+      tb.appendChild(tr);
+    });
+    if(isOwner()){
+      const tr=document.createElement('tr'); tr.className='tot';
+      tr.innerHTML='<td>TOTAL</td><td class="num">'+totF+'</td><td class="num">'+totNo+'</td><td class="num">'+totPend+'</td><td class="num">'+totFact.toFixed(0)+' €</td><td class="num">'+totCom.toFixed(2)+' €</td>';
+      tb.appendChild(tr);
+    }
+
+    const k=document.getElementById('kpis');
+    const lbl = periode.value==='mes' ? ('Mes '+(mesPick.value||'')) : 'Setmana seleccionada';
+    const comLbl = isOwner() ? ('Comissió APRENS ('+cfg.pct+'%)') : ('El que has de pagar ('+cfg.pct+'%)');
+    const factLbl = isOwner() ? 'Facturació (fetes)' : 'La teva facturació';
+    k.innerHTML =
+      '<div class="kpi"><div class="kn">'+totF+'</div><div class="kl">Sessions realitzades</div></div>'+
+      '<div class="kpi"><div class="kn">'+totCom.toFixed(0)+' €</div><div class="kl">'+comLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+totFact.toFixed(0)+' €</div><div class="kl">'+factLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn" style="color:var(--rojo)">'+totNo+'</div><div class="kl">No realitzades</div></div>'+
+      '<div class="kpi"><div class="kn" style="font-size:15px;line-height:1.5;">'+lbl+'</div><div class="kl">Període</div></div>';
+  }
+
+  document.getElementById('csvBtn').onclick=()=>{
+    const rows=Store.all().filter(r=>inRange(r.date));
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={feta:0,no:0,pend:0,fact:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) return; const e=r.estat||'feta';
+      if(e==='no') agg[r.prof].no++; else if(e==='pend') agg[r.prof].pend++; else { agg[r.prof].feta++; agg[r.prof].fact+=sessPreu(r); } });
+    let csv='Professional;Rol;Realitzades;No realitzades;Pendents;Facturacio;Comissio '+cfg.pct+'%\n';
+    visibleProfs().forEach(p=>{ const a=agg[p.id]; const com=a.fact*cfg.pct/100;
+      csv+=[p.nom,p.rol,a.feta,a.no,a.pend,a.fact.toFixed(0),com.toFixed(2)].join(';')+'\n'; });
+    const per = periode.value==='mes' ? (mesPick.value||'') : ('setmana-'+(setPick.value||''));
+    const who = isOwner()? '' : (me+'-');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='comissions-aprens-'+who+per+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  // ---------- EXTRACTES (ingressos bruts/nets/comissió, mes a mes) ----------
+  const anyPick=document.getElementById('anyPick');
+  (function initAny(){
+    const cy=curDate.getFullYear();
+    for(let y=cy-2; y<=cy; y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; anyPick.appendChild(o); }
+    anyPick.value=cy;
+  })();
+  anyPick.onchange=renderExt;
+
+  function monthAgg(year, month){ // sessions realitzades visibles del mes → {sessions, brut}
+    let sessions=0, brut=0;
+    Store.all().forEach(r=>{
+      if(!isOwner() && r.prof!==me) return;
+      if((r.estat||'feta')!=='feta') return;
+      const d=parseDate(r.date);
+      if(d.getFullYear()===year && (d.getMonth()+1)===month){ sessions++; brut+=sessPreu(r); }
+    });
+    return {sessions, brut};
+  }
+  const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+  function renderExt(){
+    const year=Number(anyPick.value||curDate.getFullYear());
+    const pct=cfg.pct;
+    document.getElementById('extSub').innerHTML = isOwner()
+      ? 'Ingressos <b>bruts</b> del centre, la teva <b>comissió</b> ('+pct+'%) i el <b>net</b> dels professionals, mes a mes. Només sessions <b>realitzades</b>.'
+      : 'El teu <b>brut</b>, la <b>comissió</b> que pagues ('+pct+'%) i el teu <b>net</b>, mes a mes. Només sessions <b>realitzades</b>.';
+    const tb=document.getElementById('extBody'); tb.innerHTML='';
+    let yS=0,yBrut=0,yCom=0,yNet=0;
+    for(let m=1;m<=12;m++){
+      const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+      yS+=a.sessions; yBrut+=a.brut; yCom+=com; yNet+=net;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+cap(MESOS[m-1])+'</td>'+
+        '<td class="num">'+a.sessions+'</td>'+
+        '<td class="num">'+a.brut.toFixed(0)+' €</td>'+
+        '<td class="num">'+com.toFixed(2)+' €</td>'+
+        '<td class="num"><b>'+net.toFixed(2)+' €</b></td>';
+      if(a.sessions===0) tr.style.opacity=.5;
+      tb.appendChild(tr);
+    }
+    const tr=document.createElement('tr'); tr.className='tot';
+    tr.innerHTML='<td>TOTAL '+year+'</td><td class="num">'+yS+'</td><td class="num">'+yBrut.toFixed(0)+' €</td><td class="num">'+yCom.toFixed(2)+' €</td><td class="num">'+yNet.toFixed(2)+' €</td>';
+    tb.appendChild(tr);
+
+    const comLbl=isOwner()?('La teva comissió ('+pct+'%)'):('Comissió pagada ('+pct+'%)');
+    document.getElementById('extKpis').innerHTML=
+      '<div class="kpi"><div class="kn">'+yBrut.toFixed(0)+' €</div><div class="kl">Brut '+year+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+yCom.toFixed(0)+' €</div><div class="kl">'+comLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+yNet.toFixed(0)+' €</div><div class="kl">Net '+year+'</div></div>';
+    document.getElementById('extNote').innerHTML = isOwner()
+      ? 'Brut = suma de les sessions realitzades de tot l\'equip. Comissió = el teu ingrés ('+pct+'%). Net = el que es queden els professionals.'
+      : 'Brut = les teves sessions realitzades. Comissió = el que pagues a APRENS ('+pct+'%). Net = el que et quedes.';
+  }
+
+  document.getElementById('csvExtBtn').onclick=()=>{
+    const year=Number(anyPick.value||curDate.getFullYear()); const pct=cfg.pct;
+    let csv='Mes;Sessions;Brut;Comissio '+pct+'%;Net\n';
+    for(let m=1;m<=12;m++){ const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+      csv+=[MESOS[m-1],a.sessions,a.brut.toFixed(0),com.toFixed(2),net.toFixed(2)].join(';')+'\n'; }
+    const who=isOwner()?'':(me+'-');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='extracte-aprens-'+who+year+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  // ---------- AJUSTOS ----------
+  function renderAjustos(){
+    document.getElementById('pctInput').value=cfg.pct;
+    document.getElementById('hIni').value=cfg.hIni;
+    document.getElementById('hFi').value=cfg.hFi;
+    const tb=document.getElementById('preusBody'); tb.innerHTML='';
+    PROFS.forEach(p=>{
+      const tr=document.createElement('tr');
+      const clauCell = SUPABASE
+        ? '<td><span class="muted">gestionada a Supabase</span></td>'
+        : '<td><input type="text" style="width:130px" data-clau="'+p.id+'" value="'+escapeHtml(cfg.claus[p.id]||'')+'"></td>';
+      tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+'</td><td>'+p.rol+'</td>'+
+        '<td>'+(p.desp?('Despatx '+p.desp):'<span class="muted">flotant</span>')+'</td>'+
+        '<td class="num"><input type="number" min="0" step="1" style="width:90px" data-preu="'+p.id+'" value="'+(cfg.preus[p.id]||0)+'"></td>'+
+        clauCell;
+      tb.appendChild(tr);
+    });
+    const nota=document.getElementById('ajNote');
+    if(nota) nota.innerHTML = SUPABASE
+      ? '✅ <b>Mode compartit actiu</b> (Supabase): totes veuen la mateixa agenda en viu i cada una només pot editar el seu. Les contrasenyes es gestionen a Supabase (Auth).'
+      : '⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Per compartir-les entre totes, activa Supabase — vegeu README.md §3.';
+  }
+  document.getElementById('saveAjustos').onclick=()=>{
+    cfg.pct=Math.max(0,Math.min(100,Number(document.getElementById('pctInput').value)||0));
+    cfg.hIni=Math.max(0,Math.min(23,Number(document.getElementById('hIni').value)||8));
+    cfg.hFi=Math.max(cfg.hIni+1,Math.min(24,Number(document.getElementById('hFi').value)||21));
+    document.querySelectorAll('[data-preu]').forEach(inp=>{ cfg.preus[inp.dataset.preu]=Number(inp.value)||0; });
+    document.querySelectorAll('[data-clau]').forEach(inp=>{ const v=inp.value.trim(); if(v) cfg.claus[inp.dataset.clau]=v; });
+    saveCfg(cfg); render(); alert('Ajustos desats.');
+  };
+  document.getElementById('resetData').onclick=()=>{
+    if(confirm('Segur que vols esborrar TOTES les reserves? No es pot desfer.')){ Store.clear(); render(); alert('Reserves esborrades.'); }
+  };
+
+  // ---------- INICI ----------
+  (async function init(){
+    if(SUPABASE){
+      try { const { data:{ session } } = await sb.auth.getSession(); if(session){ await afterAuth(); return; } } catch(e){ console.error(e); }
+      loginEl.style.display='flex';
+    } else {
+      const savedSess=localStorage.getItem('despatx_sess');
+      if(savedSess && prof(savedSess)){ me=savedSess; lwho.value=savedSess; await enterApp(); }
+      else { loginEl.style.display='flex'; }
+    }
+  })();
+</script>
+</body>
+</html>
