@@ -76,68 +76,60 @@ Al empezar, la contraseña de cada persona es **su nombre + `2026`** (p. ej.
 
 ---
 
-## 3. Hacerlo multiusuario (base de datos compartida) — trabajo del informático
+## 3. Activar el modo compartido con Supabase (trabajo del informático)
 
-La versión entregada guarda en `localStorage` (**solo ese dispositivo**). Está
-escrita para que **solo haya que sustituir la capa `Store`** por una base de datos.
-Recomendado: **[Supabase](https://supabase.com)** (Postgres + API + gratis, con
-región EU — importante por RGPD).
+La app **ya trae toda la integración con Supabase hecha**. En modo local (por
+defecto) guarda en el dispositivo; en cuanto rellenes las dos claves, pasa a
+**agenda compartida en tiempo real + seguridad real de servidor (RLS)** y login por
+correo. No hay que reescribir código: solo configurar. ~20 minutos.
 
-### 3.1 Tabla (SQL)
+Recomendado: **[Supabase](https://supabase.com)** (Postgres + API + realtime,
+plan gratis, con **región EU** — importante por RGPD).
 
-```sql
-create table reserves (
-  id       text primary key,
-  desp     int  not null check (desp between 1 and 5),
-  prof     text not null,
-  date     date not null,
-  start    text not null,          -- "HH:MM"
-  dur      int  not null,
-  preu     numeric,                -- precio de la sesión (€)
-  estat    text default 'feta',    -- 'feta' | 'no' | 'pend'
-  serie    text,                   -- id de serie recurrente (null si suelta)
-  nota     text default '',
-  created_at timestamptz default now()
-);
-create index on reserves (date);
-alter table reserves enable row level security;
-```
+### Paso a paso
 
-Define políticas RLS según quién puede leer/escribir. La regla que pide el negocio:
-**todas pueden LEER la ocupación** (para saber qué despacho está libre), pero cada
-una solo **CREA/EDITA/BORRA lo suyo**; Tòfol (rol propietario) puede con todo. Para
-identificar a cada profesional usa **Supabase Auth** (un usuario/contraseña por
-persona): eso sustituye a la pantalla de acceso y a las contraseñas de `cfg.claus`
-por seguridad real de servidor.
+1. **Crea el proyecto** en Supabase (elige región **EU**, p. ej. Frankfurt).
+2. **Base de datos**: abre *SQL Editor → New query*, pega **todo** el archivo
+   [`supabase-schema.sql`](./supabase-schema.sql) y pulsa **Run**. Eso crea las
+   tablas `reserves` y `profiles`, las políticas de seguridad (RLS) y el tiempo real.
+3. **Usuarios**: en *Authentication → Users → Add user*, crea **un usuario por
+   profesional** (email + contraseña). Copia el **UUID** de cada uno.
+4. **Mapeo**: vuelve al *SQL Editor* y ejecuta el `insert into public.profiles ...`
+   del final de `supabase-schema.sql` con los UUID reales (a Tòfol ponle `role`
+   = `'owner'`).
+5. **Claves en la app**: en *Settings → API* copia **Project URL** y **anon public
+   key** y pégalas al principio de `index.html`:
 
-### 3.2 Sustituir la capa `Store` en `index.html`
+   ```js
+   const SUPA_URL = "https://TU-PROYECTO.supabase.co";
+   const SUPA_KEY = "eyJ...";   // clave anon public
+   ```
 
-Localiza `const Store = { ... }` y cámbialo por llamadas a Supabase. Como las
-funciones pasan a ser asíncronas, `render()`, `renderReport()` y el guardado deben
-usar `await` (o `.then`). Esquema:
+6. **Despliega** (Netlify). El `_headers` ya permite `*.supabase.co` (API + realtime).
+   Al abrir la app, ahora pedirá **correo y contraseña** y cada una verá su agenda;
+   la ocupación es común y en vivo.
 
-```html
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  const sb = createClient('https://TU-PROYECTO.supabase.co', 'ANON_KEY');
+### Qué garantiza la seguridad (RLS)
 
-  window.Store = {
-    async all(){ const { data } = await sb.from('reserves').select('*'); return data || []; },
-    async add(b){ b.id = crypto.randomUUID(); await sb.from('reserves').insert(b); return b; },
-    async remove(id){ await sb.from('reserves').delete().eq('id', id); },
-    async clear(){ await sb.from('reserves').delete().neq('id',''); }
-  };
-</script>
-```
+- **Todas** pueden **leer** la ocupación (para saber qué despacho está libre).
+- Cada una solo puede **crear/editar/borrar lo suyo**; **Tòfol** (rol `owner`) puede
+  con todo. Esto lo impone el **servidor**, no el navegador: aunque alguien trastee
+  el código, la base de datos rechaza lo que no le corresponde.
 
-Añade el dominio de Supabase a `connect-src` en `_headers` (ya indicado allí).
-Para refresco en vivo entre dispositivos, suscríbete a los cambios con
-`sb.channel(...).on('postgres_changes', …, render)`.
+### Cómo está hecho por dentro (por si hay que mantenerlo)
 
-> Si prefieres no programar nada: alternativa **sin código** = 5 calendarios de
-> Google (uno por despacho) compartidos con el equipo (free/busy visible para
-> todas). Inconveniente: el recuento de sesiones y la comisión hay que hacerlos
-> aparte (hoja de cálculo o Apps Script). La app de aquí resuelve justo eso.
+- El cliente de Supabase va **self-hosted** en `vendor/supabase.js` (sin CDN).
+- La capa `Store` de `index.html` funciona en los dos modos: mantiene una copia en
+  memoria (`DATA`) que la interfaz pinta, escribe de forma **optimista** y persiste
+  en Supabase; una suscripción **realtime** refresca la vista cuando otra persona
+  cambia algo.
+- El login: en modo Supabase usa **Supabase Auth** (correo+contraseña) y la tabla
+  `profiles` para saber qué profesional es cada usuario; en modo local usa el
+  selector de nombre + PIN.
+
+> Alternativa **sin programar nada**: 5 calendarios de Google (uno por despacho)
+> compartidos con el equipo. Inconveniente: el recuento de sesiones y la comisión
+> hay que hacerlos aparte. La app de aquí resuelve justo eso.
 
 ---
 
@@ -155,7 +147,9 @@ Para refresco en vivo entre dispositivos, suscríbete a los cambios con
 
 | Archivo | Para qué |
 |---|---|
-| `index.html`   | La aplicación completa (agenda + comisiones + ajustes). |
-| `_headers`     | Cabeceras/CSP de Netlify. |
-| `netlify.toml` | Despliegue como sitio Netlify propio. |
-| `README.md`    | Esto. |
+| `index.html`          | La aplicación completa (agenda + comisiones + extractos + ajustes). |
+| `vendor/supabase.js`  | Cliente de Supabase self-hosted (sin CDN). |
+| `supabase-schema.sql` | SQL a ejecutar en Supabase (tablas + seguridad RLS + realtime). |
+| `_headers`            | Cabeceras/CSP de Netlify (permite `*.supabase.co`). |
+| `netlify.toml`        | Despliegue como sitio Netlify propio. |
+| `README.md`           | Esto. |

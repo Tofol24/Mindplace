@@ -128,8 +128,10 @@
       <h2>APRENS · Despatxos</h2>
       <div class="lsub">Entra amb el teu nom i la teva contrasenya</div>
       <div class="lerr" id="lerr">Contrasenya incorrecta.</div>
-      <label>Qui ets?</label>
+      <label id="lwhoLbl">Qui ets?</label>
       <select id="lwho"></select>
+      <label id="lemailLbl" style="display:none;">Correu</label>
+      <input type="email" id="lemail" autocomplete="username" placeholder="el-teu-correu@exemple.com" style="display:none;">
       <label>Contrasenya</label>
       <input type="password" id="lpass" autocomplete="current-password" placeholder="La teva contrasenya">
       <button class="btn" id="lbtn">Entrar</button>
@@ -254,7 +256,7 @@
           <button class="btn" id="saveAjustos">Desar ajustos</button>
           <button class="link" id="resetData">Esborrar totes les reserves d'aquest dispositiu</button>
         </div>
-        <p class="note">⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Perquè totes les professionals comparteixin la mateixa graella cal connectar-ho a una base de dades — instruccions per a l'informàtic al README.md.</p>
+        <p class="note" id="ajNote">⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Per compartir-les entre totes, activa Supabase — vegeu README.md §3.</p>
       </div>
     </section>
   </main>
@@ -321,10 +323,25 @@
     </div>
   </div>
 
+<!-- Client de Supabase (self-hosted, no CDN). Només s'usa si s'omplen les claus a CONFIG. -->
+<script src="vendor/supabase.js"></script>
 <script>
 /* ======================================================================
-   APRENS · Gestió de despatxos  (v1 · demostració amb dades locals)
+   APRENS · Gestió de despatxos
+   ----------------------------------------------------------------------
+   MODES:
+   · LOCAL  (per defecte) — dades en aquest dispositiu (demostració).
+   · SUPABASE — agenda compartida entre totes + seguretat real (RLS + login).
+     S'activa SOL amb omplir SUPA_URL i SUPA_KEY aquí sota. Passos i SQL:
+     README.md §3 i supabase-schema.sql.
    ---------------------------------------------------------------------- */
+
+  // ⚙️ CONFIG SUPABASE — omple aquests dos valors per activar el mode compartit.
+  //    (Project URL i clau "anon public" del panell de Supabase → Settings → API)
+  const SUPA_URL = "";   // p. ex. "https://xxxxxxxx.supabase.co"
+  const SUPA_KEY = "";   // clau anon public (comença per "eyJ...")
+  const SUPABASE = !!(SUPA_URL && SUPA_KEY && window.supabase);
+  const sb = SUPABASE ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
 
   // --- Professionals ---
   const PROFS = [
@@ -358,15 +375,54 @@
   function saveCfg(c){ localStorage.setItem('despatx_cfg', JSON.stringify(c)); }
   let cfg = loadCfg();
 
-  // --- Emmagatzematge de reserves (capa aïllada: fàcil de canviar per Supabase) ---
-  const Store = {
-    _key:'despatx_reserves',
-    all(){ try { return JSON.parse(localStorage.getItem(this._key)||'[]'); } catch(e){ return []; } },
-    _write(a){ localStorage.setItem(this._key, JSON.stringify(a)); },
-    add(b){ const a=this.all(); b.id='r'+Date.now()+Math.round(performance.now()); a.push(b); this._write(a); return b; },
-    remove(id){ this._write(this.all().filter(x=>x.id!==id)); },
-    clear(){ this._write([]); }
+  // --- Emmagatzematge de reserves ---
+  // DATA és la còpia en memòria que llegeix render(). En LOCAL surt de localStorage;
+  // en SUPABASE surt del servidor i es refresca en viu (realtime).
+  const LKEY='despatx_reserves';
+  const Local = {
+    load(){ try { return JSON.parse(localStorage.getItem(LKEY)||'[]'); } catch(e){ return []; } },
+    save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
   };
+  const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'' }; }
+  let DATA = SUPABASE ? [] : Local.load();
+
+  const Store = {
+    all(){ return DATA; },
+    async refresh(){
+      if(SUPABASE){ const { data, error } = await sb.from('reserves').select('*'); if(error){ console.error(error); return; } DATA = data||[]; }
+      else { DATA = Local.load(); }
+    },
+    add(b){                            // optimista: pinta ja i persisteix en segon pla
+      if(!b.id) b.id = uid();
+      DATA = DATA.concat([b]);
+      if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); Store.refresh().then(rerenderAll); } }); }
+      else { const a=Local.load(); a.push(b); Local.save(a); }
+      return b;
+    },
+    remove(id){
+      DATA = DATA.filter(x=>x.id!==id);
+      if(SUPABASE){ sb.from('reserves').delete().eq('id',id).then(({error})=>{ if(error){ alert('No s\'ha pogut esborrar: '+error.message); Store.refresh().then(rerenderAll); } }); }
+      else { Local.save(Local.load().filter(x=>x.id!==id)); }
+    },
+    clear(){
+      const ids = DATA.map(x=>x.id); DATA = [];
+      if(SUPABASE){ if(ids.length) sb.from('reserves').delete().in('id',ids).then(({error})=>{ if(error) alert('Error: '+error.message); }); }
+      else { Local.save([]); }
+    }
+  };
+
+  // Torna a pintar la vista activa (agenda + panell obert) després d'un canvi remot.
+  function rerenderAll(){
+    render();
+    const vis = id => { const el=document.getElementById(id); return el && el.style.display!=='none'; };
+    if(vis('tab-comissions')) renderReport();
+    if(vis('tab-extractes')) renderExt();
+  }
+  function subscribeRealtime(){
+    if(!SUPABASE) return;
+    sb.channel('reserves-rt').on('postgres_changes', { event:'*', schema:'public', table:'reserves' }, ()=>{ Store.refresh().then(rerenderAll); }).subscribe();
+  }
 
   // --- Utilitats de temps ---
   const pad = n => String(n).padStart(2,'0');
@@ -384,15 +440,23 @@
   const PXMIN = 1.15; // píxels per minut a la graella
 
   // ---------- ACCÉS / ROLS ----------
-  let me = null;
+  let me = null, myRole = '';
   const soc = () => prof(me);
-  const isOwner = () => me==='tofol';
+  const isOwner = () => me==='tofol' || myRole==='owner';
   const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
   const sessPreu = r => (r.preu!=null && r.preu!=='') ? Number(r.preu) : Number(cfg.preus[r.prof]||0);
 
   const loginEl=document.getElementById('login');
   const lwho=document.getElementById('lwho'), lpass=document.getElementById('lpass'), lerr=document.getElementById('lerr');
+  const lemail=document.getElementById('lemail');
   PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; lwho.appendChild(o); });
+
+  // Mostra els camps segons el mode
+  if(SUPABASE){
+    document.getElementById('lwhoLbl').style.display='none'; lwho.style.display='none';
+    document.getElementById('lemailLbl').style.display=''; lemail.style.display='';
+    document.getElementById('login').querySelector('.lsub').textContent='Entra amb el teu correu i contrasenya';
+  }
 
   function applyRole(){
     document.getElementById('meLabel').textContent = soc().nom + (isOwner()?' · propietari':' ('+soc().rol+')');
@@ -401,17 +465,35 @@
       document.querySelector('.tab[data-tab="agenda"]').click();
     }
   }
-  function login(id, pass){
-    if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){
-      me=id; localStorage.setItem('despatx_sess', id);
-      lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
-      applyRole(); render(); return true;
-    }
-    lerr.style.display='block'; return false;
+  async function enterApp(){
+    lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
+    applyRole(); await Store.refresh(); render(); subscribeRealtime();
   }
-  document.getElementById('lbtn').onclick=()=> login(lwho.value, lpass.value);
-  lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') login(lwho.value, lpass.value); });
-  document.getElementById('logoutBtn').onclick=()=>{ me=null; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
+  async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user){ loginEl.style.display='flex'; return; }
+    const { data:pr, error } = await sb.from('profiles').select('prof, role').eq('id', user.id).maybeSingle();
+    if(error || !pr || !PROFS.some(p=>p.id===pr.prof)){
+      lerr.textContent='El teu usuari no està assignat a cap professional (revisa la taula «profiles»).'; lerr.style.display='block';
+      await sb.auth.signOut(); loginEl.style.display='flex'; return;
+    }
+    me = pr.prof; myRole = pr.role||''; await enterApp();
+  }
+  async function doLogin(){
+    if(SUPABASE){
+      const { error } = await sb.auth.signInWithPassword({ email:lemail.value.trim(), password:lpass.value });
+      if(error){ lerr.textContent='Accés incorrecte.'; lerr.style.display='block'; return; }
+      await afterAuth();
+    } else {
+      const id=lwho.value, pass=lpass.value;
+      if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){ me=id; myRole=''; localStorage.setItem('despatx_sess', id); await enterApp(); }
+      else { lerr.textContent='Contrasenya incorrecta.'; lerr.style.display='block'; }
+    }
+  }
+  document.getElementById('lbtn').onclick=doLogin;
+  lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  lemail.addEventListener('keydown', e=>{ if(e.key==='Enter') lpass.focus(); });
+  document.getElementById('logoutBtn').onclick=async ()=>{ if(SUPABASE){ try{ await sb.auth.signOut(); }catch(e){} } me=null; myRole=''; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
 
   // ---------- TABS ----------
   document.querySelectorAll('.tab').forEach(t=>{
@@ -805,12 +887,19 @@
     const tb=document.getElementById('preusBody'); tb.innerHTML='';
     PROFS.forEach(p=>{
       const tr=document.createElement('tr');
+      const clauCell = SUPABASE
+        ? '<td><span class="muted">gestionada a Supabase</span></td>'
+        : '<td><input type="text" style="width:130px" data-clau="'+p.id+'" value="'+escapeHtml(cfg.claus[p.id]||'')+'"></td>';
       tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+'</td><td>'+p.rol+'</td>'+
         '<td>'+(p.desp?('Despatx '+p.desp):'<span class="muted">flotant</span>')+'</td>'+
         '<td class="num"><input type="number" min="0" step="1" style="width:90px" data-preu="'+p.id+'" value="'+(cfg.preus[p.id]||0)+'"></td>'+
-        '<td><input type="text" style="width:130px" data-clau="'+p.id+'" value="'+escapeHtml(cfg.claus[p.id]||'')+'"></td>';
+        clauCell;
       tb.appendChild(tr);
     });
+    const nota=document.getElementById('ajNote');
+    if(nota) nota.innerHTML = SUPABASE
+      ? '✅ <b>Mode compartit actiu</b> (Supabase): totes veuen la mateixa agenda en viu i cada una només pot editar el seu. Les contrasenyes es gestionen a Supabase (Auth).'
+      : '⚠️ De moment les reserves es guarden <b>només en aquest dispositiu</b> (mode demostració). Per compartir-les entre totes, activa Supabase — vegeu README.md §3.';
   }
   document.getElementById('saveAjustos').onclick=()=>{
     cfg.pct=Math.max(0,Math.min(100,Number(document.getElementById('pctInput').value)||0));
@@ -821,13 +910,20 @@
     saveCfg(cfg); render(); alert('Ajustos desats.');
   };
   document.getElementById('resetData').onclick=()=>{
-    if(confirm('Segur que vols esborrar TOTES les reserves d\'aquest dispositiu? No es pot desfer.')){ Store.clear(); render(); alert('Reserves esborrades.'); }
+    if(confirm('Segur que vols esborrar TOTES les reserves? No es pot desfer.')){ Store.clear(); render(); alert('Reserves esborrades.'); }
   };
 
   // ---------- INICI ----------
-  const savedSess=localStorage.getItem('despatx_sess');
-  if(savedSess && prof(savedSess)){ me=savedSess; lwho.value=savedSess; loginEl.style.display='none'; applyRole(); render(); }
-  else { loginEl.style.display='flex'; }
+  (async function init(){
+    if(SUPABASE){
+      try { const { data:{ session } } = await sb.auth.getSession(); if(session){ await afterAuth(); return; } } catch(e){ console.error(e); }
+      loginEl.style.display='flex';
+    } else {
+      const savedSess=localStorage.getItem('despatx_sess');
+      if(savedSess && prof(savedSess)){ me=savedSess; lwho.value=savedSess; await enterApp(); }
+      else { loginEl.style.display='flex'; }
+    }
+  })();
 </script>
 </body>
 </html>
