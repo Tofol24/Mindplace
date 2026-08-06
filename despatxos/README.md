@@ -12,14 +12,26 @@ la **comissió del 20 %** que APRENS factura per servei — **sense cap nom de p
 
 ## 1. Qué hace
 
+- **Acceso con contraseña**: cada profesional entra con su nombre y su clave y ve
+  **sus** reservas y **lo que tiene que pagar** de comisión. Tòfol (propietario) lo ve todo.
 - **Agenda diaria** con 5 columnas (Despatx 1–5). Cada profesional reserva franjas
   de **30/35/40/45/50/55/60 min** en el despacho que esté libre.
 - Muestra al instante si un despacho está **ocupado o libre** (bloquea solapes).
+- **Precio y duración por sesión**: los pone la profesional al reservar (con un
+  precio sugerido por defecto, editable).
+- **Citas recurrentes**: mismo día y hora repitiendo **semanal, quincenal o mensual**
+  durante N sesiones (se pueden anular en serie).
+- **Asistencia**: marcar cada sesión como **Realitzada / No realitzada / Pendent**.
+  Las **no realizadas no cuentan** para la comisión, pero **quedan registradas**
+  (nº de sesiones reservadas y no hechas al mes).
 - **Sin nombres de pacientes**: cada reserva guarda solo profesional, despacho,
-  día, hora, duración y una nota opcional.
-- **Panel de comisiones**: por semana o por mes, cuenta sesiones por profesional y
-  calcula la comisión (20 % configurable) sobre el servicio. Exporta a **CSV**.
-- **Ajustes**: precio por sesión de cada profesional, % de comisión y franja horaria.
+  día, hora, duración, precio, estado y una nota opcional.
+- **Comisiones** (semana/mes): sesiones realizadas por profesional y comisión (20 %
+  configurable). Exporta **CSV**.
+- **Extractos mensuales**: visor por año con **bruto, comisión y neto** mes a mes
+  (desde el 1 de cada mes). Exporta **CSV**.
+- **Ajustes** (solo propietario): precio sugerido y **contraseña** de cada profesional,
+  % de comisión y franja horaria.
 
 ### Datos precargados (editables en el código)
 
@@ -41,14 +53,26 @@ al principio del `<script>` en `index.html`.
 
 ---
 
-## 2. Cómo se usa (cada profesional)
+## 2. Cómo se usa
 
-1. Arriba a la derecha, elige tu nombre en **«Sóc:»**.
-2. En **Agenda**, toca un hueco libre de un despacho → elige duración → **Reservar**.
-   (O botón **＋ Nova reserva**.)
-3. Toca una reserva **tuya** para anularla o cambiarla. Tòfol puede editar todas.
-4. Tòfol, en **Comissions**, elige mes/semana y ve las sesiones y la comisión;
-   **⬇ Exportar CSV** para facturar.
+1. **Entrar**: cada una elige su nombre y escribe su contraseña.
+2. En **Agenda**, toca un hueco libre → elige duración, **precio**, **asistencia** y,
+   si quieres, **repetir** (semanal/quincenal/mensual) → **Reservar**. (O **＋ Nova reserva**.)
+3. Toca una reserva **tuya** para cambiarla, marcar si el paciente **vino o no**, o
+   anularla (o anular toda la serie). Tòfol puede editar todas.
+4. En **Comissions** ves tus sesiones realizadas y **lo que has de pagar** (20 %).
+5. En **Extractes** ves el resumen mensual **bruto / comisión / neto** del año.
+6. **⬇ Exportar CSV** en Comissions y Extractes para pasar cuentas.
+
+### Contraseñas por defecto (cámbialas)
+
+Al empezar, la contraseña de cada persona es **su nombre + `2026`** (p. ej.
+`elena2026`, `tofol2026`). Tòfol las cambia en **⚙️ Ajustos** (columna «Contrasenya»).
+
+> ⚠️ **Importante:** en esta versión (datos en el dispositivo) la contraseña es una
+> **barrera ligera**, no seguridad real (el código es visible). La seguridad de
+> verdad —cada una solo puede ver/editar lo suyo— llega al conectar la base de
+> datos con **Supabase Auth** (§3). Hasta entonces, úsalo en dispositivos de confianza.
 
 ---
 
@@ -69,6 +93,9 @@ create table reserves (
   date     date not null,
   start    text not null,          -- "HH:MM"
   dur      int  not null,
+  preu     numeric,                -- precio de la sesión (€)
+  estat    text default 'feta',    -- 'feta' | 'no' | 'pend'
+  serie    text,                   -- id de serie recurrente (null si suelta)
   nota     text default '',
   created_at timestamptz default now()
 );
@@ -76,9 +103,12 @@ create index on reserves (date);
 alter table reserves enable row level security;
 ```
 
-Define políticas RLS según quién puede leer/escribir (p. ej. solo usuarios
-autenticados del equipo). Para identificar a cada profesional usa **Supabase Auth**
-(un usuario/contraseña por profesional) en lugar del selector «Sóc:».
+Define políticas RLS según quién puede leer/escribir. La regla que pide el negocio:
+**todas pueden LEER la ocupación** (para saber qué despacho está libre), pero cada
+una solo **CREA/EDITA/BORRA lo suyo**; Tòfol (rol propietario) puede con todo. Para
+identificar a cada profesional usa **Supabase Auth** (un usuario/contraseña por
+persona): eso sustituye a la pantalla de acceso y a las contraseñas de `cfg.claus`
+por seguridad real de servidor.
 
 ### 3.2 Sustituir la capa `Store` en `index.html`
 

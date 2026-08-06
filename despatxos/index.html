@@ -21,8 +21,21 @@
   .htitle{font-size:16px;font-weight:700;}
   .hsub{font-size:10px;opacity:.78;margin-top:1px;}
   .whoami{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;}
-  .whoami select{font:inherit;font-size:13px;padding:6px 9px;border-radius:9px;border:none;background:rgba(255,255,255,.16);color:#fff;font-weight:700;}
-  .whoami select option{color:#1a1a2e;}
+  .whoami #meLabel{font-weight:700;}
+  .logout{border:none;cursor:pointer;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:9px;}
+  .logout:hover{background:rgba(255,255,255,.26);}
+
+  /* --- Pantalla d'accés --- */
+  .login{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(160deg,#1B4F8C 0%,#2E7D5E 120%);}
+  .login .lcard{background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.35);width:100%;max-width:380px;padding:30px 26px;}
+  .login .llogo{width:52px;height:52px;border-radius:50%;background:var(--azul);color:#fff;display:grid;place-items:center;font-family:Georgia,serif;font-weight:700;margin:0 auto 14px;}
+  .login h2{text-align:center;font-size:22px;color:var(--azul);margin-bottom:4px;}
+  .login .lsub{text-align:center;color:var(--gris);font-size:13px;margin-bottom:20px;}
+  .login label{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.3px;margin:0 0 5px;}
+  .login select,.login input{width:100%;font:inherit;padding:11px 12px;border-radius:11px;border:1.5px solid var(--linia);margin-bottom:14px;}
+  .login .btn{width:100%;font-size:15px;padding:12px;}
+  .login .lerr{color:var(--rojo);font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;display:none;}
+  .login .lnote{font-size:11.5px;color:var(--gris);text-align:center;margin-top:14px;line-height:1.5;}
 
   .wrap{max-width:1080px;margin:0 auto;padding:16px 12px 60px;}
   .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
@@ -58,6 +71,12 @@
   .ev .en{font-weight:700;}
   .ev .et{opacity:.92;font-size:10px;}
   .ev.mine{outline:2px solid rgba(255,255,255,.85);}
+  .ev.est-no{opacity:.5;}
+  .ev.est-no .en,.ev.est-no .et{text-decoration:line-through;}
+  .ev.est-pend{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 7px,transparent 7px 14px);}
+  .estats button[data-e=feta].on{background:var(--verde);border-color:var(--verde);color:#fff;}
+  .estats button[data-e=no].on{background:var(--rojo);border-color:var(--rojo);color:#fff;}
+  .estats button[data-e=pend].on{background:var(--oro);border-color:var(--oro);color:#fff;}
 
   /* --- Panells --- */
   .panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:18px;margin-bottom:16px;}
@@ -102,6 +121,22 @@
 </style>
 </head>
 <body>
+  <!-- ================= ACCÉS ================= -->
+  <div class="login" id="login">
+    <div class="lcard">
+      <div class="llogo">AP</div>
+      <h2>APRENS · Despatxos</h2>
+      <div class="lsub">Entra amb el teu nom i la teva contrasenya</div>
+      <div class="lerr" id="lerr">Contrasenya incorrecta.</div>
+      <label>Qui ets?</label>
+      <select id="lwho"></select>
+      <label>Contrasenya</label>
+      <input type="password" id="lpass" autocomplete="current-password" placeholder="La teva contrasenya">
+      <button class="btn" id="lbtn">Entrar</button>
+      <div class="lnote">Cada professional veu la seva agenda i el que ha de pagar de comissió. Si no recordes la contrasenya, demana-la a Tòfol.</div>
+    </div>
+  </div>
+
   <header class="header">
     <div class="hlogo">AP</div>
     <div>
@@ -109,8 +144,8 @@
       <div class="hsub">Reserva de sales i comissions</div>
     </div>
     <div class="whoami">
-      <span>Sóc:</span>
-      <select id="who"></select>
+      <span id="meLabel">—</span>
+      <button class="logout" id="logoutBtn">Sortir</button>
     </div>
   </header>
 
@@ -118,6 +153,7 @@
     <div class="tabs">
       <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
       <button class="tab" data-tab="comissions">📊 Comissions</button>
+      <button class="tab" data-tab="extractes">📄 Extractes</button>
       <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
     </div>
 
@@ -162,7 +198,6 @@
                 <th>Professional</th>
                 <th class="num">Sessions</th>
                 <th class="num">Minuts</th>
-                <th class="num">Preu/sessió</th>
                 <th class="num">Facturació</th>
                 <th class="num">Comissió</th>
               </tr>
@@ -170,7 +205,30 @@
             <tbody id="repBody"></tbody>
           </table>
         </div>
-        <p class="note">La «facturació» és una estimació = sessions × preu/sessió (el preu es configura a Ajustos). La comissió és el <span id="pctLbl2">20</span>% d'aquesta facturació.</p>
+        <p class="note">La «facturació» és la suma dels preus que posa cada professional a cada sessió. La comissió és el <span id="pctLbl2">20</span>% d'aquesta facturació.</p>
+      </div>
+    </section>
+
+    <!-- ================= EXTRACTES ================= -->
+    <section id="tab-extractes" style="display:none;">
+      <div class="panel">
+        <h2>Extracte mensual</h2>
+        <div class="sub" id="extSub">Ingressos <b>bruts</b>, <b>comissió</b> i <b>nets</b>, mes a mes (des de l'1 de cada mes). Només compten les sessions <b>realitzades</b>.</div>
+        <div class="row">
+          <label>Any</label>
+          <select id="anyPick"></select>
+          <button class="btn ghost" id="csvExtBtn">⬇ Exportar CSV</button>
+        </div>
+        <div class="kpis" id="extKpis"></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió</th><th class="num">Net</th></tr>
+            </thead>
+            <tbody id="extBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="extNote"></p>
       </div>
     </section>
 
@@ -188,7 +246,7 @@
         </div>
         <div style="overflow-x:auto;">
           <table>
-            <thead><tr><th>Professional</th><th>Rol</th><th>Despatx propi</th><th class="num">Preu/sessió (€)</th></tr></thead>
+            <thead><tr><th>Professional</th><th>Rol</th><th>Despatx propi</th><th class="num">Preu suggerit (€)</th><th>Contrasenya</th></tr></thead>
             <tbody id="preusBody"></tbody>
           </table>
         </div>
@@ -223,8 +281,34 @@
         <div class="durs" id="mDurs"></div>
       </div>
       <div class="field">
+        <label>Preu de la sessió (€)</label>
+        <input type="number" id="mPreu" min="0" step="1" inputmode="decimal" placeholder="p. ex. 60">
+      </div>
+      <div class="field">
+        <label>El pacient ha acudit?</label>
+        <div class="durs estats" id="mEstat">
+          <button type="button" data-e="feta">✓ Realitzada</button>
+          <button type="button" data-e="no">✗ No ha vingut</button>
+          <button type="button" data-e="pend">⏳ Pendent</button>
+        </div>
+        <div class="note" style="margin-top:6px;">Les <b>no realitzades</b> no compten per a la comissió, però queden registrades.</div>
+      </div>
+      <div class="field" id="mRepWrap">
+        <label>Repetir la cita</label>
+        <select id="mRep">
+          <option value="none">No, només aquest dia</option>
+          <option value="setmanal">Cada setmana (mateix dia i hora)</option>
+          <option value="quinzenal">Cada 2 setmanes (quinzenal)</option>
+          <option value="mensual">Cada mes (mateix dia del mes)</option>
+        </select>
+        <div id="mRepCountWrap" style="display:none;margin-top:8px;">
+          <label style="display:block;font-size:11px;">Durant quantes sessions (comptant aquesta)</label>
+          <input type="number" id="mRepCount" min="2" max="60" step="1" value="8">
+        </div>
+      </div>
+      <div class="field">
         <label>Nota (opcional · sense nom de pacient)</label>
-        <input type="text" id="mNota" maxlength="40" placeholder="p. ex. buit, primera visita…">
+        <input type="text" id="mNota" maxlength="40" placeholder="p. ex. codi de pacient, buit…">
       </div>
       <div class="modal-actions">
         <button class="btn sec" id="mSave">Reservar</button>
@@ -232,6 +316,7 @@
       </div>
       <div style="text-align:center;margin-top:10px;">
         <button class="link" id="mDelete" style="display:none;color:var(--rojo);">Anul·lar aquesta reserva</button>
+        <button class="link" id="mDeleteSerie" style="display:none;color:var(--rojo);margin-left:10px;">Anul·lar tota la sèrie</button>
       </div>
     </div>
   </div>
@@ -266,7 +351,8 @@
     c.hIni = (c.hIni ?? 8);
     c.hFi  = (c.hFi  ?? 21);
     c.preus = c.preus || {};
-    PROFS.forEach(p=>{ if(c.preus[p.id]==null) c.preus[p.id]=DEF_PREU; });
+    c.claus = c.claus || {};
+    PROFS.forEach(p=>{ if(c.preus[p.id]==null) c.preus[p.id]=DEF_PREU; if(c.claus[p.id]==null) c.claus[p.id]=p.id+'2026'; });
     return c;
   }
   function saveCfg(c){ localStorage.setItem('despatx_cfg', JSON.stringify(c)); }
@@ -297,24 +383,46 @@
   let editing = null; // reserva seleccionada per anul·lar
   const PXMIN = 1.15; // píxels per minut a la graella
 
-  // ---------- WHO AM I ----------
-  const whoSel = document.getElementById('who');
-  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; whoSel.appendChild(o); });
-  let me = localStorage.getItem('despatx_me') || 'tofol';
-  whoSel.value = me;
-  whoSel.onchange = ()=>{ me = whoSel.value; localStorage.setItem('despatx_me', me); render(); };
+  // ---------- ACCÉS / ROLS ----------
+  let me = null;
   const soc = () => prof(me);
   const isOwner = () => me==='tofol';
+  const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
+  const sessPreu = r => (r.preu!=null && r.preu!=='') ? Number(r.preu) : Number(cfg.preus[r.prof]||0);
+
+  const loginEl=document.getElementById('login');
+  const lwho=document.getElementById('lwho'), lpass=document.getElementById('lpass'), lerr=document.getElementById('lerr');
+  PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; lwho.appendChild(o); });
+
+  function applyRole(){
+    document.getElementById('meLabel').textContent = soc().nom + (isOwner()?' · propietari':' ('+soc().rol+')');
+    document.querySelectorAll('.tab').forEach(t=>{ if(t.dataset.tab==='ajustos') t.style.display=isOwner()?'':'none'; });
+    if(!isOwner() && document.getElementById('tab-ajustos').style.display!=='none'){
+      document.querySelector('.tab[data-tab="agenda"]').click();
+    }
+  }
+  function login(id, pass){
+    if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){
+      me=id; localStorage.setItem('despatx_sess', id);
+      lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
+      applyRole(); render(); return true;
+    }
+    lerr.style.display='block'; return false;
+  }
+  document.getElementById('lbtn').onclick=()=> login(lwho.value, lpass.value);
+  lpass.addEventListener('keydown', e=>{ if(e.key==='Enter') login(lwho.value, lpass.value); });
+  document.getElementById('logoutBtn').onclick=()=>{ me=null; localStorage.removeItem('despatx_sess'); loginEl.style.display='flex'; lpass.focus(); };
 
   // ---------- TABS ----------
   document.querySelectorAll('.tab').forEach(t=>{
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','ajustos'].forEach(name=>{
+      ['agenda','comissions','extractes','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
+      if(t.dataset.tab==='extractes') renderExt();
       if(t.dataset.tab==='ajustos') renderAjustos();
     };
   });
@@ -381,9 +489,12 @@
         const p=prof(r.prof)||{nom:r.prof,color:'#6B7280'};
         const top=(toMin(r.start)-hIni*60)*PXMIN;
         const hgt=Math.max(r.dur*PXMIN-2, 16);
-        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'');
+        const est=r.estat||'feta';
+        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'')+(est==='no'?' est-no':'')+(est==='pend'?' est-pend':'');
         el.style.top=top+'px'; el.style.height=hgt+'px'; el.style.background=p.color;
-        el.innerHTML='<div class="en">'+p.nom+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        const preuTxt=(r.preu!=null && r.preu!=='')?' · '+r.preu+'€':'';
+        const estG=est==='no'?' ✗':(est==='pend'?' ⏳':'');
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
         el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
         lane.appendChild(el);
       });
@@ -401,17 +512,26 @@
   const modal=document.getElementById('modal');
   const mDesp=document.getElementById('mDesp'), mProf=document.getElementById('mProf'), mStart=document.getElementById('mStart');
   const mDurs=document.getElementById('mDurs'), mNota=document.getElementById('mNota'), warn=document.getElementById('warn');
-  let selDur=50, selEdit=null;
+  const mPreu=document.getElementById('mPreu');
+  const mRepWrap=document.getElementById('mRepWrap'), mRep=document.getElementById('mRep');
+  const mRepCountWrap=document.getElementById('mRepCountWrap'), mRepCount=document.getElementById('mRepCount');
+  const mEstat=document.getElementById('mEstat');
+  let selDur=50, selEdit=null, selEstat='feta';
 
   DESPATXOS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent='Despatx '+n+(OWNER_OF[n]?(' · '+prof(OWNER_OF[n]).nom):''); mDesp.appendChild(o); });
   PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; mProf.appendChild(o); });
   DURADES.forEach(d=>{ const b=document.createElement('button'); b.textContent=d+"'"; b.dataset.d=d; b.onclick=()=>{ selDur=d; paintDurs(); checkWarn(); }; mDurs.appendChild(b); });
   function paintDurs(){ mDurs.querySelectorAll('button').forEach(b=>b.classList.toggle('on', Number(b.dataset.d)===selDur)); }
+  mEstat.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ selEstat=b.dataset.e; paintEstat(); }; });
+  function paintEstat(){ mEstat.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.e===selEstat)); }
 
   function fillStarts(){
     mStart.innerHTML='';
     for(let m=cfg.hIni*60; m<=cfg.hFi*60-5; m+=5){ const o=document.createElement('option'); o.value=toHHMM(m); o.textContent=toHHMM(m); mStart.appendChild(o); }
   }
+
+  mRep.onchange=()=>{ mRepCountWrap.style.display = mRep.value==='none' ? 'none' : 'block'; };
+  mProf.onchange=()=>{ if(!selEdit && (mPreu.value===''||mPreu.value==null)) mPreu.value=cfg.preus[mProf.value]||''; };
 
   function openModal(opts){
     opts=opts||{};
@@ -420,25 +540,34 @@
       const r=opts.edit; selEdit=r;
       document.getElementById('modalTitle').textContent='Reserva';
       mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
+      mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
+      selEstat = r.estat||'feta';
       const canEdit = isOwner() || r.prof===me;
-      [mDesp,mProf,mStart,mNota].forEach(el=>el.disabled=!canEdit);
+      [mDesp,mProf,mStart,mNota,mPreu].forEach(el=>el.disabled=!canEdit);
       mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
+      mEstat.style.pointerEvents=canEdit?'auto':'none'; mEstat.style.opacity=canEdit?1:.6;
       document.getElementById('mSave').style.display=canEdit?'':'none';
-      const del=document.getElementById('mDelete'); del.style.display=canEdit?'':'none';
+      document.getElementById('mDelete').style.display=canEdit?'':'none';
+      document.getElementById('mDeleteSerie').style.display=(canEdit && r.serie)?'':'none';
+      mRepWrap.style.display='none';   // la repetició només en crear
     } else {
       selEdit=null;
       document.getElementById('modalTitle').textContent='Nova reserva';
       mDesp.value=opts.desp||soc().desp||1;
-      mProf.value = isOwner()? me : me;   // per defecte, jo
+      mProf.value = me;                   // per defecte, jo
       mProf.disabled = !isOwner();        // només el propietari reserva per a altres
       mStart.value = opts.start || toHHMM(cfg.hIni*60+120);
-      selDur = 50; mNota.value='';
-      [mDesp,mStart,mNota].forEach(el=>el.disabled=false);
+      selDur = 50; mNota.value=''; selEstat='feta';
+      mPreu.value = cfg.preus[me] || '';
+      [mDesp,mStart,mNota,mPreu].forEach(el=>el.disabled=false);
       mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
+      mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
       document.getElementById('mSave').style.display='';
       document.getElementById('mDelete').style.display='none';
+      document.getElementById('mDeleteSerie').style.display='none';
+      mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
     }
-    paintDurs(); checkWarn();
+    paintDurs(); paintEstat(); checkWarn();
     modal.classList.add('on');
   }
   function closeModal(){ modal.classList.remove('on'); selEdit=null; }
@@ -446,13 +575,13 @@
   modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
   [mDesp,mStart].forEach(el=>el.onchange=checkWarn);
 
-  function overlaps(desp,start,dur,ignoreId){
-    const ds=fmtDate(curDate); const s=toMin(start), e=s+dur;
-    return Store.all().some(r=> r.date===ds && Number(r.desp)===Number(desp) && r.id!==ignoreId &&
+  function overlapsOn(dateStr,desp,start,dur,ignoreId){
+    const s=toMin(start), e=s+dur;
+    return Store.all().some(r=> r.date===dateStr && Number(r.desp)===Number(desp) && r.id!==ignoreId &&
       (toMin(r.start) < e && (toMin(r.start)+r.dur) > s));
   }
   function checkWarn(){
-    const conf = overlaps(mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
+    const conf = overlapsOn(fmtDate(curDate), mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
     const endM = toMin(mStart.value)+selDur;
     let msg='';
     if(conf) msg='⚠️ Aquest despatx ja està ocupat en aquesta franja.';
@@ -462,15 +591,63 @@
     return !conf;
   }
 
+  // --- dates de la sèrie recurrent ---
+  function addMonthsClamp(d,n){
+    const x=new Date(d.getFullYear(), d.getMonth()+n, 1);
+    const last=new Date(x.getFullYear(), x.getMonth()+1, 0).getDate();
+    x.setDate(Math.min(d.getDate(), last));
+    return x;
+  }
+  function seriesDates(base, mode, count){
+    const out=[new Date(base)];
+    for(let i=1;i<count;i++){
+      const d=new Date(base);
+      if(mode==='setmanal'){ d.setDate(d.getDate()+7*i); out.push(d); }
+      else if(mode==='quinzenal'){ d.setDate(d.getDate()+14*i); out.push(d); }
+      else if(mode==='mensual'){ out.push(addMonthsClamp(base,i)); }
+    }
+    return out;
+  }
+
+  function readBase(){
+    const preu = (mPreu.value===''||mPreu.value==null) ? null : Math.max(0, Number(mPreu.value)||0);
+    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat };
+  }
+
   document.getElementById('mSave').onclick=()=>{
     if(!checkWarn()) return;
-    const data={ desp:Number(mDesp.value), prof:mProf.value, date:fmtDate(curDate), start:mStart.value, dur:selDur, nota:mNota.value.trim() };
-    if(selEdit){ Store.remove(selEdit.id); }
-    Store.add(data);
+    const base=readBase();
+    if(selEdit){
+      const serie=selEdit.serie;
+      Store.remove(selEdit.id);
+      Store.add(Object.assign({date:fmtDate(curDate)}, base, serie?{serie:serie}:{}));
+      closeModal(); render(); return;
+    }
+    const mode=mRep.value;
+    if(mode==='none'){
+      Store.add(Object.assign({date:fmtDate(curDate)}, base));
+      closeModal(); render(); return;
+    }
+    const count=Math.max(2, Math.min(60, Number(mRepCount.value)||2));
+    const serie='s'+Date.now();
+    let ok=0, skip=0;
+    seriesDates(curDate, mode, count).forEach(d=>{
+      const ds=fmtDate(d);
+      if(overlapsOn(ds, base.desp, base.start, base.dur, null)){ skip++; }
+      else { Store.add(Object.assign({date:ds, serie:serie}, base)); ok++; }
+    });
     closeModal(); render();
+    if(skip>0) alert('S\'han creat '+ok+' cites. '+skip+' no s\'han pogut crear perquè el despatx ja estava ocupat en aquella franja.');
   };
   document.getElementById('mDelete').onclick=()=>{
     if(selEdit && confirm('Anul·lar aquesta reserva?')){ Store.remove(selEdit.id); closeModal(); render(); }
+  };
+  document.getElementById('mDeleteSerie').onclick=()=>{
+    if(selEdit && selEdit.serie && confirm('Anul·lar aquesta cita i totes les de la mateixa sèrie a partir d\'aquest dia?')){
+      const from=selEdit.date;
+      Store.all().filter(r=>r.serie===selEdit.serie && r.date>=from).forEach(r=>Store.remove(r.id));
+      closeModal(); render();
+    }
   };
 
   // ---------- COMISSIONS ----------
@@ -502,45 +679,122 @@
     document.getElementById('pctLbl2').textContent=cfg.pct;
 
     const rows=Store.all().filter(r=>inRange(r.date));
-    const agg={}; PROFS.forEach(p=>agg[p.id]={sessions:0,min:0});
-    rows.forEach(r=>{ if(!agg[r.prof]) agg[r.prof]={sessions:0,min:0}; agg[r.prof].sessions++; agg[r.prof].min+=r.dur; });
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={feta:0,no:0,pend:0,fact:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) return; const e=r.estat||'feta';
+      if(e==='no') agg[r.prof].no++;
+      else if(e==='pend') agg[r.prof].pend++;
+      else { agg[r.prof].feta++; agg[r.prof].fact+=sessPreu(r); }
+    });
 
-    let totS=0,totFact=0,totCom=0;
+    let totF=0,totNo=0,totPend=0,totFact=0,totCom=0;
     const tb=document.getElementById('repBody'); tb.innerHTML='';
-    PROFS.forEach(p=>{
-      const a=agg[p.id]; const preu=Number(cfg.preus[p.id]||0);
-      const fact=a.sessions*preu; const com=fact*cfg.pct/100;
-      totS+=a.sessions; totFact+=fact; totCom+=com;
+    visibleProfs().forEach(p=>{
+      const a=agg[p.id]; const fact=a.fact; const com=fact*cfg.pct/100;
+      totF+=a.feta; totNo+=a.no; totPend+=a.pend; totFact+=fact; totCom+=com;
       const tr=document.createElement('tr');
       tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+' <span class="muted">('+p.rol+')</span></td>'+
-        '<td class="num">'+a.sessions+'</td><td class="num">'+a.min+'</td>'+
-        '<td class="num">'+preu.toFixed(0)+' €</td><td class="num">'+fact.toFixed(0)+' €</td>'+
+        '<td class="num">'+a.feta+'</td>'+
+        '<td class="num">'+(a.no?('<span style="color:var(--rojo);font-weight:700">'+a.no+'</span>'):'0')+'</td>'+
+        '<td class="num">'+(a.pend||0)+'</td>'+
+        '<td class="num">'+fact.toFixed(0)+' €</td>'+
         '<td class="num"><b>'+com.toFixed(2)+' €</b></td>';
       tb.appendChild(tr);
     });
-    const tr=document.createElement('tr'); tr.className='tot';
-    tr.innerHTML='<td>TOTAL</td><td class="num">'+totS+'</td><td class="num"></td><td class="num"></td><td class="num">'+totFact.toFixed(0)+' €</td><td class="num">'+totCom.toFixed(2)+' €</td>';
-    tb.appendChild(tr);
+    if(isOwner()){
+      const tr=document.createElement('tr'); tr.className='tot';
+      tr.innerHTML='<td>TOTAL</td><td class="num">'+totF+'</td><td class="num">'+totNo+'</td><td class="num">'+totPend+'</td><td class="num">'+totFact.toFixed(0)+' €</td><td class="num">'+totCom.toFixed(2)+' €</td>';
+      tb.appendChild(tr);
+    }
 
     const k=document.getElementById('kpis');
     const lbl = periode.value==='mes' ? ('Mes '+(mesPick.value||'')) : 'Setmana seleccionada';
+    const comLbl = isOwner() ? ('Comissió APRENS ('+cfg.pct+'%)') : ('El que has de pagar ('+cfg.pct+'%)');
+    const factLbl = isOwner() ? 'Facturació (fetes)' : 'La teva facturació';
     k.innerHTML =
-      '<div class="kpi"><div class="kn">'+totS+'</div><div class="kl">Sessions</div></div>'+
-      '<div class="kpi"><div class="kn">'+totCom.toFixed(0)+' €</div><div class="kl">Comissió APRENS ('+cfg.pct+'%)</div></div>'+
-      '<div class="kpi"><div class="kn">'+totFact.toFixed(0)+' €</div><div class="kl">Facturació estimada</div></div>'+
+      '<div class="kpi"><div class="kn">'+totF+'</div><div class="kl">Sessions realitzades</div></div>'+
+      '<div class="kpi"><div class="kn">'+totCom.toFixed(0)+' €</div><div class="kl">'+comLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+totFact.toFixed(0)+' €</div><div class="kl">'+factLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn" style="color:var(--rojo)">'+totNo+'</div><div class="kl">No realitzades</div></div>'+
       '<div class="kpi"><div class="kn" style="font-size:15px;line-height:1.5;">'+lbl+'</div><div class="kl">Període</div></div>';
   }
 
   document.getElementById('csvBtn').onclick=()=>{
     const rows=Store.all().filter(r=>inRange(r.date));
-    const agg={}; PROFS.forEach(p=>agg[p.id]={sessions:0,min:0});
-    rows.forEach(r=>{ if(!agg[r.prof]) agg[r.prof]={sessions:0,min:0}; agg[r.prof].sessions++; agg[r.prof].min+=r.dur; });
-    let csv='Professional;Rol;Sessions;Minuts;Preu sessio;Facturacio;Comissio '+cfg.pct+'%\n';
-    PROFS.forEach(p=>{ const a=agg[p.id]; const preu=Number(cfg.preus[p.id]||0); const fact=a.sessions*preu; const com=fact*cfg.pct/100;
-      csv+=[p.nom,p.rol,a.sessions,a.min,preu.toFixed(0),fact.toFixed(0),com.toFixed(2)].join(';')+'\n'; });
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={feta:0,no:0,pend:0,fact:0});
+    rows.forEach(r=>{ if(!agg[r.prof]) return; const e=r.estat||'feta';
+      if(e==='no') agg[r.prof].no++; else if(e==='pend') agg[r.prof].pend++; else { agg[r.prof].feta++; agg[r.prof].fact+=sessPreu(r); } });
+    let csv='Professional;Rol;Realitzades;No realitzades;Pendents;Facturacio;Comissio '+cfg.pct+'%\n';
+    visibleProfs().forEach(p=>{ const a=agg[p.id]; const com=a.fact*cfg.pct/100;
+      csv+=[p.nom,p.rol,a.feta,a.no,a.pend,a.fact.toFixed(0),com.toFixed(2)].join(';')+'\n'; });
     const per = periode.value==='mes' ? (mesPick.value||'') : ('setmana-'+(setPick.value||''));
+    const who = isOwner()? '' : (me+'-');
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='comissions-aprens-'+per+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+    a.href=URL.createObjectURL(blob); a.download='comissions-aprens-'+who+per+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  // ---------- EXTRACTES (ingressos bruts/nets/comissió, mes a mes) ----------
+  const anyPick=document.getElementById('anyPick');
+  (function initAny(){
+    const cy=curDate.getFullYear();
+    for(let y=cy-2; y<=cy; y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; anyPick.appendChild(o); }
+    anyPick.value=cy;
+  })();
+  anyPick.onchange=renderExt;
+
+  function monthAgg(year, month){ // sessions realitzades visibles del mes → {sessions, brut}
+    let sessions=0, brut=0;
+    Store.all().forEach(r=>{
+      if(!isOwner() && r.prof!==me) return;
+      if((r.estat||'feta')!=='feta') return;
+      const d=parseDate(r.date);
+      if(d.getFullYear()===year && (d.getMonth()+1)===month){ sessions++; brut+=sessPreu(r); }
+    });
+    return {sessions, brut};
+  }
+  const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+  function renderExt(){
+    const year=Number(anyPick.value||curDate.getFullYear());
+    const pct=cfg.pct;
+    document.getElementById('extSub').innerHTML = isOwner()
+      ? 'Ingressos <b>bruts</b> del centre, la teva <b>comissió</b> ('+pct+'%) i el <b>net</b> dels professionals, mes a mes. Només sessions <b>realitzades</b>.'
+      : 'El teu <b>brut</b>, la <b>comissió</b> que pagues ('+pct+'%) i el teu <b>net</b>, mes a mes. Només sessions <b>realitzades</b>.';
+    const tb=document.getElementById('extBody'); tb.innerHTML='';
+    let yS=0,yBrut=0,yCom=0,yNet=0;
+    for(let m=1;m<=12;m++){
+      const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+      yS+=a.sessions; yBrut+=a.brut; yCom+=com; yNet+=net;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+cap(MESOS[m-1])+'</td>'+
+        '<td class="num">'+a.sessions+'</td>'+
+        '<td class="num">'+a.brut.toFixed(0)+' €</td>'+
+        '<td class="num">'+com.toFixed(2)+' €</td>'+
+        '<td class="num"><b>'+net.toFixed(2)+' €</b></td>';
+      if(a.sessions===0) tr.style.opacity=.5;
+      tb.appendChild(tr);
+    }
+    const tr=document.createElement('tr'); tr.className='tot';
+    tr.innerHTML='<td>TOTAL '+year+'</td><td class="num">'+yS+'</td><td class="num">'+yBrut.toFixed(0)+' €</td><td class="num">'+yCom.toFixed(2)+' €</td><td class="num">'+yNet.toFixed(2)+' €</td>';
+    tb.appendChild(tr);
+
+    const comLbl=isOwner()?('La teva comissió ('+pct+'%)'):('Comissió pagada ('+pct+'%)');
+    document.getElementById('extKpis').innerHTML=
+      '<div class="kpi"><div class="kn">'+yBrut.toFixed(0)+' €</div><div class="kl">Brut '+year+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+yCom.toFixed(0)+' €</div><div class="kl">'+comLbl+'</div></div>'+
+      '<div class="kpi"><div class="kn">'+yNet.toFixed(0)+' €</div><div class="kl">Net '+year+'</div></div>';
+    document.getElementById('extNote').innerHTML = isOwner()
+      ? 'Brut = suma de les sessions realitzades de tot l\'equip. Comissió = el teu ingrés ('+pct+'%). Net = el que es queden els professionals.'
+      : 'Brut = les teves sessions realitzades. Comissió = el que pagues a APRENS ('+pct+'%). Net = el que et quedes.';
+  }
+
+  document.getElementById('csvExtBtn').onclick=()=>{
+    const year=Number(anyPick.value||curDate.getFullYear()); const pct=cfg.pct;
+    let csv='Mes;Sessions;Brut;Comissio '+pct+'%;Net\n';
+    for(let m=1;m<=12;m++){ const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+      csv+=[MESOS[m-1],a.sessions,a.brut.toFixed(0),com.toFixed(2),net.toFixed(2)].join(';')+'\n'; }
+    const who=isOwner()?'':(me+'-');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='extracte-aprens-'+who+year+'.csv'; a.click(); URL.revokeObjectURL(a.href);
   };
 
   // ---------- AJUSTOS ----------
@@ -553,7 +807,8 @@
       const tr=document.createElement('tr');
       tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+'</td><td>'+p.rol+'</td>'+
         '<td>'+(p.desp?('Despatx '+p.desp):'<span class="muted">flotant</span>')+'</td>'+
-        '<td class="num"><input type="number" min="0" step="1" style="width:90px" data-preu="'+p.id+'" value="'+(cfg.preus[p.id]||0)+'"></td>';
+        '<td class="num"><input type="number" min="0" step="1" style="width:90px" data-preu="'+p.id+'" value="'+(cfg.preus[p.id]||0)+'"></td>'+
+        '<td><input type="text" style="width:130px" data-clau="'+p.id+'" value="'+escapeHtml(cfg.claus[p.id]||'')+'"></td>';
       tb.appendChild(tr);
     });
   }
@@ -562,6 +817,7 @@
     cfg.hIni=Math.max(0,Math.min(23,Number(document.getElementById('hIni').value)||8));
     cfg.hFi=Math.max(cfg.hIni+1,Math.min(24,Number(document.getElementById('hFi').value)||21));
     document.querySelectorAll('[data-preu]').forEach(inp=>{ cfg.preus[inp.dataset.preu]=Number(inp.value)||0; });
+    document.querySelectorAll('[data-clau]').forEach(inp=>{ const v=inp.value.trim(); if(v) cfg.claus[inp.dataset.clau]=v; });
     saveCfg(cfg); render(); alert('Ajustos desats.');
   };
   document.getElementById('resetData').onclick=()=>{
@@ -569,7 +825,9 @@
   };
 
   // ---------- INICI ----------
-  render();
+  const savedSess=localStorage.getItem('despatx_sess');
+  if(savedSess && prof(savedSess)){ me=savedSess; lwho.value=savedSess; loginEl.style.display='none'; applyRole(); render(); }
+  else { loginEl.style.display='flex'; }
 </script>
 </body>
 </html>
