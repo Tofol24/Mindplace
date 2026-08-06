@@ -158,6 +158,7 @@
       <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
       <button class="tab" data-tab="comissions">📊 Comissions</button>
       <button class="tab" data-tab="pendents">💰 Pendents</button>
+      <button class="tab" data-tab="beques">🎓 Beques</button>
       <button class="tab" data-tab="extractes">📄 Extractes</button>
       <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
     </div>
@@ -229,6 +230,28 @@
           </table>
         </div>
         <p class="note" id="penEmpty" style="display:none;">🎉 No tens res pendent de cobrar.</p>
+      </div>
+    </section>
+
+    <!-- ================= BEQUES ================= -->
+    <section id="tab-beques" style="display:none;">
+      <div class="panel">
+        <h2>Beques</h2>
+        <div class="sub">Una beca té un <b>import total</b>. Cada sessió enllaçada (i realitzada) en va <b>descomptant</b>. Sense noms de pacient: fes servir un <b>codi</b>.</div>
+        <div class="row" style="align-items:flex-end;gap:10px;">
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Codi / referència</label>
+            <input type="text" id="bCodi" maxlength="40" placeholder="p. ex. Escola X · A3" style="min-width:180px;"></div>
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Import total (€)</label>
+            <input type="number" id="bImport" min="0" step="1" placeholder="p. ex. 600" style="width:130px;"></div>
+          <button class="btn" id="bAdd">＋ Afegir beca</button>
+        </div>
+        <div style="overflow-x:auto;margin-top:8px;">
+          <table>
+            <thead><tr><th>Codi</th><th id="bProfTh" style="display:none;">Prof.</th><th class="num">Total</th><th class="num">Consumit</th><th class="num">Restant</th><th>Estat</th><th></th></tr></thead>
+            <tbody id="beqBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="beqEmpty" style="display:none;">Encara no tens cap beca. Crea'n una a dalt.</p>
       </div>
     </section>
 
@@ -335,6 +358,11 @@
           <button type="button" data-c="0">⏳ Pendent</button>
         </div>
       </div>
+      <div class="field" id="mBecaWrap" style="display:none;">
+        <label>Beca (descompta del saldo)</label>
+        <select id="mBeca"></select>
+        <div class="note" id="mBecaHint" style="margin-top:6px;"></div>
+      </div>
       <div class="field">
         <label>El pacient ha acudit?</label>
         <div class="durs estats" id="mEstat">
@@ -435,7 +463,7 @@
     save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
   };
   const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
-  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false) }; }
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false), beca_id:b.beca_id||null }; }
   let DATA = SUPABASE ? [] : Local.load();
 
   const Store = {
@@ -470,11 +498,35 @@
     }
   };
 
+  // --- Beques (mateix patró dual local/Supabase) ---
+  const LKEY_B='despatx_beques';
+  const LocalB = { load(){ try{ return JSON.parse(localStorage.getItem(LKEY_B)||'[]'); }catch(e){ return []; } }, save(a){ localStorage.setItem(LKEY_B, JSON.stringify(a)); } };
+  function cleanBeca(b){ return { id:b.id, prof:b.prof, codi:b.codi||'', import_total:(b.import_total==null?0:Number(b.import_total)) }; }
+  let BEQUES = SUPABASE ? [] : LocalB.load();
+  const Becas = {
+    all(){ return BEQUES; },
+    async refresh(){ if(SUPABASE){ const { data, error } = await sb.from('beques').select('*'); if(error){ console.error(error); return; } BEQUES = data||[]; } else { BEQUES = LocalB.load(); } },
+    add(b){ if(!b.id) b.id=uid(); BEQUES = BEQUES.concat([b]);
+      if(SUPABASE){ sb.from('beques').insert(cleanBeca(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar la beca: '+error.message); } Becas.refresh().then(renderBeques); }); }
+      else { const a=LocalB.load(); a.push(b); LocalB.save(a); } return b; },
+    update(b){ const i=BEQUES.findIndex(x=>x.id===b.id); if(i>=0) BEQUES=BEQUES.slice(0,i).concat([b],BEQUES.slice(i+1));
+      if(SUPABASE){ const row=cleanBeca(b); delete row.id; sb.from('beques').update(row).eq('id',b.id).then(({error})=>{ if(error){ alert('Error: '+error.message); } Becas.refresh().then(renderBeques); }); }
+      else { const a=LocalB.load(); const j=a.findIndex(x=>x.id===b.id); if(j>=0){a[j]=b;LocalB.save(a);} } return b; },
+    remove(id){ BEQUES = BEQUES.filter(x=>x.id!==id);
+      if(SUPABASE){ sb.from('beques').delete().eq('id',id).then(({error})=>{ if(error){ alert('Error: '+error.message); } Becas.refresh().then(renderBeques); }); }
+      else { LocalB.save(LocalB.load().filter(x=>x.id!==id)); } }
+  };
+  // Consum d'una beca = suma de preus de sessions REALITZADES enllaçades.
+  function becaConsumit(id){ let n=0,imp=0; Store.all().forEach(r=>{ if(r.beca_id===id && (r.estat||'feta')==='feta'){ n++; imp+=sessPreu(r); } }); return {n,imp}; }
+  function becaRestant(bc){ return Number(bc.import_total||0) - becaConsumit(bc.id).imp; }
+
   // Torna a pintar la vista activa (agenda + panell obert) després d'un canvi remot.
   function rerenderAll(){
     render();
     const vis = id => { const el=document.getElementById(id); return el && el.style.display!=='none'; };
     if(vis('tab-comissions')) renderReport();
+    if(vis('tab-pendents')) renderPendents();
+    if(vis('tab-beques')) renderBeques();
     if(vis('tab-extractes')) renderExt();
   }
   // Sincronització per sondeig (no realtime): amb màxima privacitat, el realtime
@@ -482,11 +534,11 @@
   // tornar a la pestanya. Els teus canvis es veuen a l'instant (optimista); els de
   // les altres apareixen en pocs segons.
   let syncTimer=null;
-  function onVis(){ if(!document.hidden) Store.refresh().then(rerenderAll); }
+  function onVis(){ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh()]).then(rerenderAll); }
   function startSync(){
     if(!SUPABASE) return;
     stopSync();
-    syncTimer=setInterval(()=>{ if(!document.hidden) Store.refresh().then(rerenderAll); }, 40000);
+    syncTimer=setInterval(()=>{ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh()]).then(rerenderAll); }, 40000);
     document.addEventListener('visibilitychange', onVis);
   }
   function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); }
@@ -534,7 +586,7 @@
   }
   async function enterApp(){
     lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
-    applyRole(); await Store.refresh(); render(); startSync();
+    applyRole(); await Store.refresh(); await Becas.refresh(); render(); startSync();
   }
   async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
     const { data:{ user } } = await sb.auth.getUser();
@@ -567,11 +619,12 @@
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','pendents','extractes','ajustos'].forEach(name=>{
+      ['agenda','comissions','pendents','beques','extractes','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
       if(t.dataset.tab==='pendents') renderPendents();
+      if(t.dataset.tab==='beques') renderBeques();
       if(t.dataset.tab==='extractes') renderExt();
       if(t.dataset.tab==='ajustos') renderAjustos();
     };
@@ -668,7 +721,7 @@
   const mRepWrap=document.getElementById('mRepWrap'), mRep=document.getElementById('mRep');
   const mRepCountWrap=document.getElementById('mRepCountWrap'), mRepCount=document.getElementById('mRepCount');
   const mEstat=document.getElementById('mEstat');
-  const mPaga=document.getElementById('mPaga'), mCobr=document.getElementById('mCobr');
+  const mPaga=document.getElementById('mPaga'), mCobr=document.getElementById('mCobr'), mBeca=document.getElementById('mBeca');
   let selDur=50, selEdit=null, selEstat='feta', selPaga='efectiu', selCobrat=true;
   // Formes que per defecte es cobren a l'acte:
   const PAGA_ALACTE = { efectiu:1, bizum:1, transferencia:1 };
@@ -681,7 +734,7 @@
   function paintEstat(){ mEstat.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.e===selEstat)); }
   mCobr.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ selCobrat = b.dataset.c==='1'; paintCobr(); }; });
   function paintCobr(){ mCobr.querySelectorAll('button').forEach(b=>b.classList.toggle('on', (b.dataset.c==='1')===selCobrat)); }
-  mPaga.onchange=()=>{ selPaga=mPaga.value; selCobrat=!!PAGA_ALACTE[selPaga]; paintCobr(); };
+  mPaga.onchange=()=>{ selPaga=mPaga.value; selCobrat=!!PAGA_ALACTE[selPaga]; paintCobr(); toggleBecaField(); };
 
   function fillStarts(){
     mStart.innerHTML='';
@@ -700,7 +753,7 @@
       mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
       mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
       selEstat = r.estat||'feta';
-      selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false);
+      selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false); mBeca.value = r.beca_id||'';
       const canEdit = isOwner() || r.prof===me;
       [mDesp,mProf,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=!canEdit);
       mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
@@ -719,7 +772,7 @@
       mStart.value = opts.start || toHHMM(cfg.hIni*60+120);
       selDur = 50; mNota.value=''; selEstat='feta';
       mPreu.value = cfg.preus[me] || '';
-      selPaga='efectiu'; mPaga.value='efectiu'; selCobrat=true;
+      selPaga='efectiu'; mPaga.value='efectiu'; selCobrat=true; mBeca.value='';
       [mDesp,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=false);
       mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
       mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
@@ -729,7 +782,7 @@
       document.getElementById('mDeleteSerie').style.display='none';
       mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
     }
-    paintDurs(); paintEstat(); paintCobr(); checkWarn();
+    paintDurs(); paintEstat(); paintCobr(); toggleBecaField(); checkWarn();
     modal.classList.add('on');
   }
   function closeModal(){ modal.classList.remove('on'); selEdit=null; }
@@ -773,7 +826,7 @@
 
   function readBase(){
     const preu = (mPreu.value===''||mPreu.value==null) ? null : Math.max(0, Number(mPreu.value)||0);
-    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat, pagament:selPaga, cobrat:selCobrat };
+    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat, pagament:selPaga, cobrat:selCobrat, beca_id:(selPaga==='beca'? (mBeca.value||null) : null) };
   }
 
   document.getElementById('mSave').onclick=()=>{
@@ -931,6 +984,67 @@
       '<div class="kpi"><div class="kn" style="color:var(--oro)">'+total.toFixed(0)+' €</div><div class="kl">Total pendent de cobrar</div></div>';
     tb.querySelectorAll('button[data-cobrar]').forEach(b=>{ b.onclick=()=>{ if(confirm('Marcar aquesta sessió com a cobrada?')) markCobrat(b.getAttribute('data-cobrar')); }; });
   }
+
+  // ---------- BEQUES ----------
+  const misBeques = () => Becas.all().filter(b => isOwner() || b.prof===me);
+
+  document.getElementById('bAdd').onclick=()=>{
+    const codi=document.getElementById('bCodi').value.trim();
+    const imp=Math.max(0, Number(document.getElementById('bImport').value)||0);
+    if(!codi){ alert('Posa un codi o referència per a la beca.'); return; }
+    Becas.add({ prof:me, codi:codi, import_total:imp });
+    document.getElementById('bCodi').value=''; document.getElementById('bImport').value='';
+    renderBeques();
+  };
+
+  function renderBeques(){
+    document.getElementById('bProfTh').style.display = isOwner()? '' : 'none';
+    const list = misBeques().slice().sort((a,b)=>(a.codi||'').localeCompare(b.codi||''));
+    const tb=document.getElementById('beqBody'); tb.innerHTML='';
+    list.forEach(bc=>{
+      const c=becaConsumit(bc.id); const rest=Number(bc.import_total||0)-c.imp;
+      const p=prof(bc.prof)||{nom:bc.prof};
+      const estat = rest<=0 ? '<span style="color:var(--rojo);font-weight:700">Esgotada</span>'
+                  : (rest < Number(bc.import_total||0)*0.15 ? '<span style="color:var(--oro);font-weight:700">Gairebé esgotada</span>'
+                  : '<span style="color:var(--verde);font-weight:700">Activa</span>');
+      const canEdit = isOwner() || bc.prof===me;
+      const tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td><b>'+escapeHtml(bc.codi||'—')+'</b> <span class="muted">('+c.n+" ses.)</span></td>"+
+        (isOwner()? '<td>'+p.nom+'</td>' : '')+
+        '<td class="num">'+Number(bc.import_total||0).toFixed(0)+' €</td>'+
+        '<td class="num">'+c.imp.toFixed(0)+' €</td>'+
+        '<td class="num"><b>'+rest.toFixed(0)+' €</b></td>'+
+        '<td>'+estat+'</td>'+
+        '<td class="num">'+(canEdit?'<button class="link" data-bedit="'+bc.id+'">editar</button> · <button class="link" data-bdel="'+bc.id+'" style="color:var(--rojo)">esborrar</button>':'')+'</td>';
+      tb.appendChild(tr);
+    });
+    document.getElementById('beqEmpty').style.display = list.length? 'none' : '';
+    tb.querySelectorAll('button[data-bdel]').forEach(b=>{ b.onclick=()=>{ const id=b.getAttribute('data-bdel'); const c=becaConsumit(id);
+      if(confirm('Esborrar aquesta beca?'+(c.n?' (Té '+c.n+' sessions enllaçades; no s\'esborraran, però quedaran sense beca.)':''))){ Becas.remove(id); renderBeques(); } }; });
+    tb.querySelectorAll('button[data-bedit]').forEach(b=>{ b.onclick=()=>{ const bc=Becas.all().find(x=>x.id===b.getAttribute('data-bedit')); if(!bc) return;
+      const nc=prompt('Codi / referència:', bc.codi||''); if(nc===null) return;
+      const ni=prompt('Import total (€):', String(bc.import_total||0)); if(ni===null) return;
+      Becas.update(Object.assign({}, bc, { codi:nc.trim()||bc.codi, import_total:Math.max(0,Number(ni)||0) })); renderBeques(); }; });
+  }
+
+  // Selector de beca dins del modal
+  function fillBeques(sel){
+    mBeca.innerHTML='<option value="">— cap —</option>';
+    misBeques().forEach(bc=>{ const rest=becaRestant(bc); const o=document.createElement('option'); o.value=bc.id; o.textContent=bc.codi+' ('+rest.toFixed(0)+' € restants)'; mBeca.appendChild(o); });
+    mBeca.value = sel||'';
+    updateBecaHint();
+  }
+  function updateBecaHint(){
+    const bc=Becas.all().find(x=>x.id===mBeca.value);
+    document.getElementById('mBecaHint').textContent = bc ? ('Saldo restant: '+becaRestant(bc).toFixed(0)+' € (abans d\'aquesta sessió)') : '';
+  }
+  function toggleBecaField(){
+    const on = (selPaga==='beca');
+    document.getElementById('mBecaWrap').style.display = on ? '' : 'none';
+    if(on) fillBeques(mBeca.value);
+  }
+  mBeca.onchange=updateBecaHint;
 
   // ---------- EXTRACTES (ingressos bruts/nets/comissió, mes a mes) ----------
   const anyPick=document.getElementById('anyPick');
