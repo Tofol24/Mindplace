@@ -338,8 +338,8 @@
 
   // ⚙️ CONFIG SUPABASE — omple aquests dos valors per activar el mode compartit.
   //    (Project URL i clau "anon public" del panell de Supabase → Settings → API)
-  const SUPA_URL = "";   // p. ex. "https://xxxxxxxx.supabase.co"
-  const SUPA_KEY = "";   // clau anon public (comença per "eyJ...")
+  const SUPA_URL = "https://vrxgrnnqryjdnplkmjmt.supabase.co";   // projecte APRENS (EU · Frankfurt)
+  const SUPA_KEY = "sb_publishable_YErYTd_2pX0nkHycGCGTIg_4JSUNrvM";   // clau pública (publishable) — protegida per RLS
   const SUPABASE = !!(SUPA_URL && SUPA_KEY && window.supabase);
   const sb = SUPABASE ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
 
