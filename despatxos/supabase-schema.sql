@@ -19,6 +19,8 @@ create table if not exists public.reserves (
   estat    text not null default 'feta',  -- 'feta' | 'no' | 'pend'
   serie    text,                          -- id de serie recurrente (null si suelta)
   nota     text default '',
+  pagament text default 'efectiu',        -- forma de pago: efectiu|bizum|transferencia|mensual|escola|beca|altre
+  cobrat   boolean default true,          -- ¿cobrada? (escola/beca suelen ir pendientes)
   created_at timestamptz default now()
 );
 create index if not exists reserves_date_idx on public.reserves (date);
@@ -85,7 +87,9 @@ create view public.agenda_view with (security_invoker = off) as
   select
     r.id, r.desp, r.prof, r.date, r.start, r.dur, r.estat, r.serie, r.created_at,
     case when r.prof = public.my_prof() or public.is_owner() then r.preu else null end as preu,
-    case when r.prof = public.my_prof() or public.is_owner() then r.nota else null end as nota
+    case when r.prof = public.my_prof() or public.is_owner() then r.nota else null end as nota,
+    case when r.prof = public.my_prof() or public.is_owner() then r.pagament else null end as pagament,
+    case when r.prof = public.my_prof() or public.is_owner() then r.cobrat else null end as cobrat
   from public.reserves r;
 
 grant select on public.agenda_view to authenticated;

@@ -77,6 +77,8 @@
   .estats button[data-e=feta].on{background:var(--verde);border-color:var(--verde);color:#fff;}
   .estats button[data-e=no].on{background:var(--rojo);border-color:var(--rojo);color:#fff;}
   .estats button[data-e=pend].on{background:var(--oro);border-color:var(--oro);color:#fff;}
+  .cobr button[data-c="1"].on{background:var(--verde);border-color:var(--verde);color:#fff;}
+  .cobr button[data-c="0"].on{background:var(--oro);border-color:var(--oro);color:#fff;}
 
   /* --- Panells --- */
   .panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(27,79,140,.08);padding:18px;margin-bottom:16px;}
@@ -155,6 +157,7 @@
     <div class="tabs">
       <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
       <button class="tab" data-tab="comissions">📊 Comissions</button>
+      <button class="tab" data-tab="pendents">💰 Pendents</button>
       <button class="tab" data-tab="extractes">📄 Extractes</button>
       <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
     </div>
@@ -211,6 +214,24 @@
       </div>
     </section>
 
+    <!-- ================= PENDENTS DE COBRAMENT ================= -->
+    <section id="tab-pendents" style="display:none;">
+      <div class="panel">
+        <h2>Pendents de cobrament</h2>
+        <div class="sub">Sessions <b>realitzades</b> que encara <b>no has cobrat</b> (escola, beca, mensual…). Marca-les quan les cobris.</div>
+        <div class="kpis" id="penKpis"></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Data</th><th id="penProfTh" style="display:none;">Prof.</th><th>Despatx</th><th>Forma</th><th>Nota</th><th class="num">Import</th><th></th></tr>
+            </thead>
+            <tbody id="penBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="penEmpty" style="display:none;">🎉 No tens res pendent de cobrar.</p>
+      </div>
+    </section>
+
     <!-- ================= EXTRACTES ================= -->
     <section id="tab-extractes" style="display:none;">
       <div class="panel">
@@ -231,6 +252,15 @@
           </table>
         </div>
         <p class="note" id="extNote"></p>
+
+        <h3 style="font-size:16px;color:var(--azul);margin:18px 0 4px;">Desglossament per forma de pagament</h3>
+        <div class="sub">Sessions realitzades de l'any seleccionat, per forma de pagament i estat de cobrament.</div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Forma</th><th class="num">Sessions</th><th class="num">Import</th><th class="num">Cobrat</th><th class="num">Pendent</th></tr></thead>
+            <tbody id="desglBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -285,6 +315,25 @@
       <div class="field">
         <label>Preu de la sessió (€)</label>
         <input type="number" id="mPreu" min="0" step="1" inputmode="decimal" placeholder="p. ex. 60">
+      </div>
+      <div class="field">
+        <label>Forma de pagament</label>
+        <select id="mPaga">
+          <option value="efectiu">Efectiu</option>
+          <option value="bizum">Bizum</option>
+          <option value="transferencia">Transferència</option>
+          <option value="mensual">Pagament mensual</option>
+          <option value="escola">Escola / conveni</option>
+          <option value="beca">Beca</option>
+          <option value="altre">Altre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Cobrament</label>
+        <div class="durs cobr" id="mCobr">
+          <button type="button" data-c="1">✅ Cobrat</button>
+          <button type="button" data-c="0">⏳ Pendent</button>
+        </div>
       </div>
       <div class="field">
         <label>El pacient ha acudit?</label>
@@ -386,7 +435,7 @@
     save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
   };
   const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
-  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'' }; }
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false) }; }
   let DATA = SUPABASE ? [] : Local.load();
 
   const Store = {
@@ -400,6 +449,13 @@
       DATA = DATA.concat([b]);
       if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
       else { const a=Local.load(); a.push(b); Local.save(a); }
+      return b;
+    },
+    update(b){                         // edita una reserva existent (mateix id)
+      const i=DATA.findIndex(x=>x.id===b.id);
+      if(i>=0) DATA = DATA.slice(0,i).concat([b], DATA.slice(i+1));
+      if(SUPABASE){ const row=cleanRow(b); delete row.id; sb.from('reserves').update(row).eq('id',b.id).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
+      else { const a=Local.load(); const j=a.findIndex(x=>x.id===b.id); if(j>=0){ a[j]=b; Local.save(a); } }
       return b;
     },
     remove(id){
@@ -511,10 +567,11 @@
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','extractes','ajustos'].forEach(name=>{
+      ['agenda','comissions','pendents','extractes','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
+      if(t.dataset.tab==='pendents') renderPendents();
       if(t.dataset.tab==='extractes') renderExt();
       if(t.dataset.tab==='ajustos') renderAjustos();
     };
@@ -587,7 +644,9 @@
         el.style.top=top+'px'; el.style.height=hgt+'px'; el.style.background=p.color;
         const preuTxt=(r.preu!=null && r.preu!=='')?' · '+r.preu+'€':'';
         const estG=est==='no'?' ✗':(est==='pend'?' ⏳':'');
-        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        // 💰 = pendent de cobrament (només visible per a la pròpia / propietari)
+        const payG=(r.cobrat===false && est!=='no' && (r.prof===me || isOwner()))?' 💰':'';
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
         el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
         lane.appendChild(el);
       });
@@ -609,7 +668,10 @@
   const mRepWrap=document.getElementById('mRepWrap'), mRep=document.getElementById('mRep');
   const mRepCountWrap=document.getElementById('mRepCountWrap'), mRepCount=document.getElementById('mRepCount');
   const mEstat=document.getElementById('mEstat');
-  let selDur=50, selEdit=null, selEstat='feta';
+  const mPaga=document.getElementById('mPaga'), mCobr=document.getElementById('mCobr');
+  let selDur=50, selEdit=null, selEstat='feta', selPaga='efectiu', selCobrat=true;
+  // Formes que per defecte es cobren a l'acte:
+  const PAGA_ALACTE = { efectiu:1, bizum:1, transferencia:1 };
 
   DESPATXOS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent='Despatx '+n+(OWNER_OF[n]?(' · '+prof(OWNER_OF[n]).nom):''); mDesp.appendChild(o); });
   PROFS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.nom+' ('+p.rol+')'; mProf.appendChild(o); });
@@ -617,6 +679,9 @@
   function paintDurs(){ mDurs.querySelectorAll('button').forEach(b=>b.classList.toggle('on', Number(b.dataset.d)===selDur)); }
   mEstat.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ selEstat=b.dataset.e; paintEstat(); }; });
   function paintEstat(){ mEstat.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.e===selEstat)); }
+  mCobr.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ selCobrat = b.dataset.c==='1'; paintCobr(); }; });
+  function paintCobr(){ mCobr.querySelectorAll('button').forEach(b=>b.classList.toggle('on', (b.dataset.c==='1')===selCobrat)); }
+  mPaga.onchange=()=>{ selPaga=mPaga.value; selCobrat=!!PAGA_ALACTE[selPaga]; paintCobr(); };
 
   function fillStarts(){
     mStart.innerHTML='';
@@ -635,10 +700,12 @@
       mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
       mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
       selEstat = r.estat||'feta';
+      selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false);
       const canEdit = isOwner() || r.prof===me;
-      [mDesp,mProf,mStart,mNota,mPreu].forEach(el=>el.disabled=!canEdit);
+      [mDesp,mProf,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=!canEdit);
       mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
       mEstat.style.pointerEvents=canEdit?'auto':'none'; mEstat.style.opacity=canEdit?1:.6;
+      mCobr.style.pointerEvents=canEdit?'auto':'none'; mCobr.style.opacity=canEdit?1:.6;
       document.getElementById('mSave').style.display=canEdit?'':'none';
       document.getElementById('mDelete').style.display=canEdit?'':'none';
       document.getElementById('mDeleteSerie').style.display=(canEdit && r.serie)?'':'none';
@@ -652,15 +719,17 @@
       mStart.value = opts.start || toHHMM(cfg.hIni*60+120);
       selDur = 50; mNota.value=''; selEstat='feta';
       mPreu.value = cfg.preus[me] || '';
-      [mDesp,mStart,mNota,mPreu].forEach(el=>el.disabled=false);
+      selPaga='efectiu'; mPaga.value='efectiu'; selCobrat=true;
+      [mDesp,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=false);
       mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
       mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
+      mCobr.style.pointerEvents='auto'; mCobr.style.opacity=1;
       document.getElementById('mSave').style.display='';
       document.getElementById('mDelete').style.display='none';
       document.getElementById('mDeleteSerie').style.display='none';
       mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
     }
-    paintDurs(); paintEstat(); checkWarn();
+    paintDurs(); paintEstat(); paintCobr(); checkWarn();
     modal.classList.add('on');
   }
   function closeModal(){ modal.classList.remove('on'); selEdit=null; }
@@ -704,16 +773,14 @@
 
   function readBase(){
     const preu = (mPreu.value===''||mPreu.value==null) ? null : Math.max(0, Number(mPreu.value)||0);
-    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat };
+    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat, pagament:selPaga, cobrat:selCobrat };
   }
 
   document.getElementById('mSave').onclick=()=>{
     if(!checkWarn()) return;
     const base=readBase();
     if(selEdit){
-      const serie=selEdit.serie;
-      Store.remove(selEdit.id);
-      Store.add(Object.assign({date:fmtDate(curDate)}, base, serie?{serie:serie}:{}));
+      Store.update(Object.assign({ id:selEdit.id, date:selEdit.date||fmtDate(curDate), serie:selEdit.serie||null }, base));
       closeModal(); render(); return;
     }
     const mode=mRep.value;
@@ -825,6 +892,46 @@
     a.href=URL.createObjectURL(blob); a.download='comissions-aprens-'+who+per+'.csv'; a.click(); URL.revokeObjectURL(a.href);
   };
 
+  // ---------- PENDENTS DE COBRAMENT ----------
+  const PAGA_LBL = { efectiu:'Efectiu', bizum:'Bizum', transferencia:'Transferència', mensual:'Mensual', escola:'Escola', beca:'Beca', altre:'Altre' };
+  const pagaLbl = k => PAGA_LBL[k] || (k||'—');
+
+  function markCobrat(id){
+    const r = DATA.find(x=>x.id===id); if(!r) return;
+    Store.update(Object.assign({}, r, { cobrat:true }));
+    renderPendents(); render();
+  }
+
+  function renderPendents(){
+    // Realitzades i NO cobrades, visibles (les meves; el propietari, totes).
+    const rows = Store.all()
+      .filter(r => (r.estat||'feta')==='feta' && r.cobrat===false && (isOwner() || r.prof===me))
+      .sort((a,b)=> (a.date+a.start).localeCompare(b.date+b.start));
+    document.getElementById('penProfTh').style.display = isOwner()? '' : 'none';
+    const tb=document.getElementById('penBody'); tb.innerHTML='';
+    let total=0;
+    rows.forEach(r=>{
+      const imp = sessPreu(r); total += imp;
+      const p = prof(r.prof)||{nom:r.prof};
+      const d = parseDate(r.date);
+      const tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td>'+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'</td>'+
+        (isOwner()? '<td>'+p.nom+'</td>' : '')+
+        '<td>Despatx '+r.desp+'</td>'+
+        '<td>'+pagaLbl(r.pagament)+'</td>'+
+        '<td class="muted">'+(r.nota?escapeHtml(r.nota):'—')+'</td>'+
+        '<td class="num">'+imp.toFixed(0)+' €</td>'+
+        '<td class="num"><button class="btn" data-cobrar="'+r.id+'" style="padding:6px 10px;font-size:12.5px">Marcar cobrat</button></td>';
+      tb.appendChild(tr);
+    });
+    document.getElementById('penEmpty').style.display = rows.length? 'none' : '';
+    document.getElementById('penKpis').innerHTML =
+      '<div class="kpi"><div class="kn">'+rows.length+'</div><div class="kl">Sessions pendents</div></div>'+
+      '<div class="kpi"><div class="kn" style="color:var(--oro)">'+total.toFixed(0)+' €</div><div class="kl">Total pendent de cobrar</div></div>';
+    tb.querySelectorAll('button[data-cobrar]').forEach(b=>{ b.onclick=()=>{ if(confirm('Marcar aquesta sessió com a cobrada?')) markCobrat(b.getAttribute('data-cobrar')); }; });
+  }
+
   // ---------- EXTRACTES (ingressos bruts/nets/comissió, mes a mes) ----------
   const anyPick=document.getElementById('anyPick');
   (function initAny(){
@@ -878,6 +985,30 @@
     document.getElementById('extNote').innerHTML = isOwner()
       ? 'Brut = suma de les sessions realitzades de tot l\'equip. Comissió = el teu ingrés ('+pct+'%). Net = el que es queden els professionals.'
       : 'Brut = les teves sessions realitzades. Comissió = el que pagues a APRENS ('+pct+'%). Net = el que et quedes.';
+
+    // Desglossament per forma de pagament (any seleccionat)
+    const dg={};
+    Store.all().forEach(r=>{
+      if(!isOwner() && r.prof!==me) return;
+      if((r.estat||'feta')!=='feta') return;
+      if(parseDate(r.date).getFullYear()!==year) return;
+      const k=r.pagament||'efectiu'; const imp=sessPreu(r);
+      if(!dg[k]) dg[k]={n:0,imp:0,cob:0,pen:0};
+      dg[k].n++; dg[k].imp+=imp; if(r.cobrat===false) dg[k].pen+=imp; else dg[k].cob+=imp;
+    });
+    const db=document.getElementById('desglBody'); db.innerHTML='';
+    let tN=0,tImp=0,tCob=0,tPen=0;
+    Object.keys(PAGA_LBL).filter(k=>dg[k]).forEach(k=>{
+      const a=dg[k]; tN+=a.n; tImp+=a.imp; tCob+=a.cob; tPen+=a.pen;
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+pagaLbl(k)+'</td><td class="num">'+a.n+'</td><td class="num">'+a.imp.toFixed(0)+' €</td>'+
+        '<td class="num">'+a.cob.toFixed(0)+' €</td><td class="num">'+(a.pen?('<b style="color:var(--oro)">'+a.pen.toFixed(0)+' €</b>'):'0 €')+'</td>';
+      db.appendChild(tr);
+    });
+    if(!tN){ db.innerHTML='<tr><td colspan="5" class="muted">Sense sessions aquest any.</td></tr>'; }
+    else { const tr=document.createElement('tr'); tr.className='tot';
+      tr.innerHTML='<td>TOTAL</td><td class="num">'+tN+'</td><td class="num">'+tImp.toFixed(0)+' €</td><td class="num">'+tCob.toFixed(0)+' €</td><td class="num">'+tPen.toFixed(0)+' €</td>';
+      db.appendChild(tr); }
   }
 
   document.getElementById('csvExtBtn').onclick=()=>{
