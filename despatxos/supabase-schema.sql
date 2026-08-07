@@ -24,8 +24,11 @@ create table if not exists public.reserves (
   cobrat_data date,                       -- fecha de cobro (para comisiones "por caja"); null si pendiente
   beca_id  text,                          -- enlace a una beca (Fase B), null si ninguna
   pacient_id text,                        -- enlace a un paciente (privado), null si ninguno
+  source   text,                          -- origen: null = reserva normal; 'ical' = ocupación importada de agenda externa (Doctoralia/Google)
   created_at timestamptz default now()
 );
+-- Migración para BD ya existentes (seguro reejecutar):
+alter table public.reserves add column if not exists source text;
 
 -- 1c) PACIENTES (lista privada de cada profesional: nombre/alias + tel + precio) --
 create table if not exists public.pacients (
@@ -73,8 +76,13 @@ create table if not exists public.profiles (
   id   uuid primary key references auth.users(id) on delete cascade,
   prof text not null,                     -- 'tofol','bea','elena','mariana','cristina','victoria','nuria'
   role text default '',                   -- 'owner' para Tòfol; vacío para el resto
-  veu_owner boolean default false         -- true = contractada (el propietario ve sus notas); false = autónoma (privadas)
+  veu_owner boolean default false,        -- true = contractada (el propietario ve sus notas); false = autónoma (privadas)
+  ical_url  text,                         -- enlace secreto iCal de su agenda externa (Doctoralia/Google), null si ninguna
+  ical_desp int                           -- despacho que ocupan sus citas importadas (1..5)
 );
+-- Migración para BD ya existentes (seguro reejecutar):
+alter table public.profiles add column if not exists ical_url text;
+alter table public.profiles add column if not exists ical_desp int;
 
 -- 3) FUNCIONES DE AYUDA (para las políticas) --------------------------------
 create or replace function public.my_prof() returns text
@@ -100,7 +108,7 @@ drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles
   for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
 revoke update on public.profiles from authenticated;
-grant update (veu_owner) on public.profiles to authenticated;
+grant update (veu_owner, ical_url, ical_desp) on public.profiles to authenticated;
 
 -- LECTURA de la tabla base: cada una solo lee SUS filas (con precio y nota).
 -- La ocupación de las demás se lee por la vista `agenda_view` (paso 4b), que
@@ -150,7 +158,10 @@ create view public.agenda_view with (security_invoker = off) as
     -- pacient_id segueix la mateixa regla que la nota (identitat del pacient)
     case when r.prof = public.my_prof()
               or (public.is_owner() and exists (select 1 from public.profiles p where p.prof = r.prof and coalesce(p.veu_owner,false)))
-         then r.pacient_id else null end as pacient_id
+         then r.pacient_id else null end as pacient_id,
+    -- source no és sensible: indica que la franja ve d'una agenda externa (ocupació). Visible per a totes
+    -- perquè la vegin com a "Ocupat" i no es reservi a sobre; mai porta imports ni nom de pacient.
+    r.source
   from public.reserves r;
 
 grant select on public.agenda_view to authenticated;

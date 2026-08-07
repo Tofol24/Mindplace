@@ -76,6 +76,9 @@
   .ev.est-no{opacity:.5;}
   .ev.est-no .en,.ev.est-no .et{text-decoration:line-through;}
   .ev.est-pend{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 7px,transparent 7px 14px);}
+  /* Ocupació importada d'una agenda externa (Doctoralia / Google Calendar): només bloqueja, no compta */
+  .ev.est-ext{background:#64748B !important;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.22) 0 6px,transparent 6px 12px) !important;cursor:default;}
+  .ev.est-ext .en{font-weight:600;}
   .estats button[data-e=feta].on{background:var(--verde);border-color:var(--verde);color:#fff;}
   .estats button[data-e=no].on{background:var(--rojo);border-color:var(--rojo);color:#fff;}
   .estats button[data-e=pend].on{background:var(--oro);border-color:var(--oro);color:#fff;}
@@ -337,6 +340,32 @@
         <p class="note" id="perfHint"></p>
         <p class="note">🔒 En qualsevol cas, <b>cap altra professional</b> pot veure les teves notes. La diferència és només si el propietari (Tòfol) hi té accés: <b>Autònoma</b> → no; <b>Contractada</b> → sí.</p>
       </div>
+
+      <div class="panel">
+        <h2>📅 Agenda externa (Doctoralia / Google Calendar)</h2>
+        <div class="sub">Enganxa l'enllaç secret <b>iCal</b> de la teva agenda i les teves cites entraran soles a despatxos i <b>ocuparan el despatx</b> perquè ningú reservi a sobre. Es refresca sol (cada uns minuts). Serveix per <b>ocupar</b>: no compta encara per a la comissió.</div>
+        <div class="row" style="align-items:flex-end;flex-wrap:wrap;">
+          <div style="flex:1 1 320px;">
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Enllaç secret iCal (acaba en <code>.ics</code>)</label>
+            <input type="url" id="perfIcal" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" style="width:100%;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Ocupa el despatx</label>
+            <select id="perfIcalDesp"></select>
+          </div>
+          <button class="btn" id="perfIcalSave">Desar</button>
+          <button class="btn ghost" id="perfIcalTest">Provar ara</button>
+        </div>
+        <p class="note" id="perfIcalMsg"></p>
+        <details class="note" style="margin-top:6px;">
+          <summary style="cursor:pointer;font-weight:700;">On trobo l'enllaç secret iCal?</summary>
+          <div style="margin-top:6px;line-height:1.5;">
+            <b>Google Calendar</b> (ordinador): ⚙️ <i>Configuració</i> → tria el teu calendari a l'esquerra → <i>Integrar el calendari</i> → copia <b>«Adreça secreta en format iCal»</b>.<br>
+            <b>Doctoralia</b>: dins la teva Agenda → <i>Ajustos / Sincronitzar calendari</i> → copia la <b>«Dirección secreta en formato iCal»</b> (si el teu pla la inclou).<br>
+            🔒 És un enllaç de <b>només lectura</b>. Les cites entren com a <b>«Ocupat»</b>, <b>sense el nom del pacient</b>.
+          </div>
+        </details>
+      </div>
     </section>
 
     <!-- ================= AJUSTOS ================= -->
@@ -521,7 +550,7 @@
     save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
   };
   const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
-  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false), beca_id:b.beca_id||null, cobrat_data:(b.cobrat_data||null), pacient_id:b.pacient_id||null }; }
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false), beca_id:b.beca_id||null, cobrat_data:(b.cobrat_data||null), pacient_id:b.pacient_id||null, source:(b.source||null) }; }
   const avui = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
   // Data que compta per a la "caixa": quan es va cobrar (o, si no consta, el dia de la sessió).
   const dataCobrament = r => r.cobrat_data || r.date;
@@ -618,14 +647,89 @@
   // tornar a la pestanya. Els teus canvis es veuen a l'instant (optimista); els de
   // les altres apareixen en pocs segons.
   let syncTimer=null;
-  function onVis(){ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh(),Pacients.refresh()]).then(rerenderAll); }
+  function onVis(){ if(!document.hidden){ Promise.all([Store.refresh(),Becas.refresh(),Pacients.refresh()]).then(rerenderAll); if(myIcal()) syncIcal(true).then(r=>{ if(r&&r.ok) rerenderAll(); }); } }
   function startSync(){
     if(!SUPABASE) return;
     stopSync();
     syncTimer=setInterval(()=>{ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh(),Pacients.refresh()]).then(rerenderAll); }, 40000);
+    // L'agenda externa es refresca menys sovint (la lectura iCal és més pesada): cada 8 min.
+    icalTimer=setInterval(()=>{ if(!document.hidden && myIcal()) syncIcal(true).then(r=>{ if(r&&r.ok) rerenderAll(); }); }, 480000);
     document.addEventListener('visibilitychange', onVis);
   }
-  function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); }
+  function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); if(icalTimer){ clearInterval(icalTimer); icalTimer=null; } }
+
+  // ====================================================================
+  //  AGENDA EXTERNA (Doctoralia / Google Calendar) → ocupa el despatx
+  //  Llegeix un enllaç iCal (només lectura) a través del proxy del servidor
+  //  (/.netlify/functions/ical) i crea reserves "ext" que NOMÉS ocupen la
+  //  franja (no compten per a la comissió i no porten nom de pacient).
+  // ====================================================================
+  const ICAL = (function(){
+    const DAY=86400000, pad=n=>String(n).padStart(2,'0'), WD={SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6};
+    const unfold=t=>String(t).replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n[ \t]/g,'');
+    function splitLine(line){ const c=line.indexOf(':'); if(c<0) return null; const left=line.slice(0,c), value=line.slice(c+1); const parts=left.split(';'); const name=parts.shift().toUpperCase(); const params={}; parts.forEach(p=>{ const eq=p.indexOf('='); if(eq>0) params[p.slice(0,eq).toUpperCase()]=p.slice(eq+1); }); return {name,params,value}; }
+    function parseDT(value,params){ const allday=/^\d{8}$/.test(value)||(params&&/DATE/i.test(params.VALUE||'')); if(allday){ const y=+value.slice(0,4),mo=+value.slice(4,6),d=+value.slice(6,8); return {allday:true,isUTC:false,moment:new Date(Date.UTC(y,mo-1,d))}; } const m=value.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z)?$/); if(!m) return null; const y=+m[1],mo=+m[2],d=+m[3],h=+m[4],mi=+m[5],s=+(m[6]||0); if(m[7]==='Z') return {allday:false,isUTC:true,moment:new Date(Date.UTC(y,mo-1,d,h,mi,s))}; return {allday:false,isUTC:false,moment:new Date(Date.UTC(y,mo-1,d,h,mi,s))}; }
+    function madrid(moment,isUTC){ if(!isUTC){ return { date:moment.getUTCFullYear()+'-'+pad(moment.getUTCMonth()+1)+'-'+pad(moment.getUTCDate()), hhmm:pad(moment.getUTCHours())+':'+pad(moment.getUTCMinutes()) }; } const f=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}); const p={}; f.formatToParts(moment).forEach(x=>{ if(x.type!=='literal') p[x.type]=x.value; }); let hh=p.hour==='24'?'00':p.hour; return { date:p.year+'-'+p.month+'-'+p.day, hhmm:hh+':'+p.minute }; }
+    function madridWeekday(moment,isUTC){ const d=madrid(moment,isUTC).date; const [y,m,dd]=d.split('-').map(Number); return new Date(Date.UTC(y,m-1,dd)).getUTCDay(); }
+    function parseRRULE(v){ const o={}; v.split(';').forEach(kv=>{ const i=kv.indexOf('='); if(i>0) o[kv.slice(0,i).toUpperCase()]=kv.slice(i+1); }); const r={freq:o.FREQ,interval:Math.max(1,parseInt(o.INTERVAL||'1',10)||1)}; if(o.COUNT) r.count=parseInt(o.COUNT,10); if(o.UNTIL){ const dt=parseDT(o.UNTIL,{}); if(dt){ r.until=dt.moment; r.untilIsUTC=/Z$/.test(o.UNTIL); } } if(o.BYDAY) r.byday=o.BYDAY.split(',').map(x=>x.replace(/^[+-]?\d+/,'').toUpperCase()).filter(x=>x in WD).map(x=>WD[x]); return r; }
+    function toEvents(text){ const lines=unfold(text).split('\n'); const evs=[]; let cur=null; for(const line of lines){ const t=line.trim(); if(!t) continue; if(t==='BEGIN:VEVENT'){ cur={exdates:[]}; continue; } if(t==='END:VEVENT'){ if(cur) evs.push(cur); cur=null; continue; } if(!cur) continue; const p=splitLine(t); if(!p) continue; if(p.name==='UID') cur.uid=p.value; else if(p.name==='SUMMARY') cur.summary=p.value; else if(p.name==='DTSTART') cur.dtstart=parseDT(p.value,p.params); else if(p.name==='DTEND') cur.dtend=parseDT(p.value,p.params); else if(p.name==='DURATION') cur.duration=p.value; else if(p.name==='RRULE') cur.rrule=parseRRULE(p.value); else if(p.name==='EXDATE'){ p.value.split(',').forEach(v=>{ const dt=parseDT(v,p.params); if(dt){ const md=madrid(dt.moment,dt.isUTC); cur.exdates.push(md.date+'T'+md.hhmm); } }); } else if(p.name==='STATUS') cur.status=p.value.toUpperCase(); } return evs; }
+    function durMin(ev){ if(ev.dtend&&ev.dtstart) return Math.round((ev.dtend.moment-ev.dtstart.moment)/60000); if(ev.duration){ const m=ev.duration.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?/); if(m) return (+(m[1]||0))*1440+(+(m[2]||0))*60+(+(m[3]||0)); } return 50; }
+    function fmt(d){ return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()); }
+    function expand(text,winStart,winEnd,opts){ opts=opts||{}; const MAXOUT=opts.max||400; const winA=fmt(winStart),winB=fmt(winEnd); const out=[]; const evs=toEvents(text);
+      for(const ev of evs){ if(!ev.dtstart||ev.dtstart.allday) continue; if(ev.status==='CANCELLED') continue; const isUTC=ev.dtstart.isUTC; const base=ev.dtstart.moment; const dur=Math.max(5,durMin(ev)); const uid=ev.uid||('x'+base.getTime());
+        const emit=(moment)=>{ const md=madrid(moment,isUTC); if(md.date<winA||md.date>winB) return; if(ev.exdates.indexOf(md.date+'T'+md.hhmm)>=0) return; out.push({uid,date:md.date,start:md.hhmm,dur,summary:ev.summary||''}); };
+        if(!ev.rrule||!ev.rrule.freq){ emit(base); continue; }
+        const r=ev.rrule; const untilA=r.until?madrid(r.until,r.untilIsUTC).date:null; let produced=0,guard=0;
+        if(r.freq==='MONTHLY'){ for(let k=0;guard++<600;k++){ const mm=new Date(base.getTime()); mm.setUTCMonth(mm.getUTCMonth()+k*r.interval); if(mm.getUTCDate()!==base.getUTCDate()){ if(untilA&&madrid(mm,isUTC).date>untilA) break; if(madrid(mm,isUTC).date>winB) break; continue; } const md=madrid(mm,isUTC); if(untilA&&md.date>untilA) break; if(md.date>winB) break; emit(mm); produced++; if(r.count&&produced>=r.count) break; } }
+        else { const stepDays=r.freq==='DAILY'?r.interval:1; const bydays=(r.freq==='WEEKLY'&&r.byday&&r.byday.length)?r.byday:null; const baseWD=madridWeekday(base,isUTC); for(let off=0;guard++<800;off+=stepDays){ const mm=new Date(base.getTime()+off*DAY); const md=madrid(mm,isUTC); if(untilA&&md.date>untilA) break; if(md.date>winB) break; let match=false; if(r.freq==='DAILY') match=true; else { const wd=madridWeekday(mm,isUTC); const weekAligned=(Math.floor(off/7)%r.interval)===0; match = bydays ? (weekAligned&&bydays.indexOf(wd)>=0) : (weekAligned&&wd===baseWD); } if(match){ emit(mm); produced++; if(r.count&&produced>=r.count) break; } } }
+        if(out.length>=MAXOUT) break;
+      }
+      const seen=new Set(),res=[]; for(const o of out){ const k=o.uid+'|'+o.date+'|'+o.start; if(seen.has(k)) continue; seen.add(k); res.push(o); } return res.slice(0,MAXOUT);
+    }
+    return { expand, toEvents };
+  })();
+
+  const ICAL_WINDOW_DAYS = 70;   // finestra d'importació: ahir .. +70 dies
+  const ICAL_MAX = 400;
+  let icalTimer=null;
+  function hashStr(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; } return h.toString(36); }
+  function myIcal(){ return SUPABASE ? (myIcalUrl||'') : ((cfg.ical&&cfg.ical[me])||''); }
+  function myIcalDespN(){ const d = SUPABASE ? myIcalDesp : (cfg.icalDesp&&cfg.icalDesp[me]); return Number(d)|| (soc()&&soc().desp) || 1; }
+
+  async function syncIcal(silent){
+    if(!me) return {ok:false,msg:'Sense sessió.'};
+    const url = myIcal(); if(!url){ return {ok:false,msg:'No hi ha cap enllaç iCal configurat.'}; }
+    const desp = myIcalDespN();
+    let text;
+    try {
+      const resp = await fetch('/.netlify/functions/ical?url='+encodeURIComponent(url), { cache:'no-store' });
+      if(!resp.ok){ return {ok:false,msg:'El servidor no ha pogut llegir l\'agenda (codi '+resp.status+').'}; }
+      text = await resp.text();
+    } catch(e){ return {ok:false,msg:'No s\'ha pogut connectar amb el servidor (proxy iCal).'}; }
+    if(!/BEGIN:VCALENDAR/i.test(text)){ return {ok:false,msg:'L\'enllaç no sembla un calendari iCal vàlid.'}; }
+    const ws=new Date(); ws.setHours(0,0,0,0); ws.setDate(ws.getDate()-1);
+    const we=new Date(ws); we.setDate(we.getDate()+ICAL_WINDOW_DAYS);
+    let insts;
+    try { insts = ICAL.expand(text, ws, we, {max:ICAL_MAX}); } catch(e){ console.error('iCal parse', e); return {ok:false,msg:'Error llegint el calendari.'}; }
+    const rows = insts.map(ev=>({ id:'ical:'+me+':'+hashStr(ev.uid+'|'+ev.date+'|'+ev.start), desp:desp, prof:me, date:ev.date, start:ev.start, dur:ev.dur, preu:null, estat:'ext', serie:null, nota:'', pagament:'altre', cobrat:false, cobrat_data:null, beca_id:null, pacient_id:null, source:'ical' }));
+    const byId=new Map(); rows.forEach(r=>byId.set(r.id,r)); const desired=[...byId.values()];
+    const desiredIds=new Set(desired.map(r=>r.id));
+    const wsS=fmtDate(ws), weS=fmtDate(we);
+    const mineExt = DATA.filter(r=>r.source==='ical' && r.prof===me);
+    const toDel = mineExt.filter(r=> !desiredIds.has(r.id) && ( (r.date>=wsS && r.date<=weS) ) ).map(r=>r.id);
+    try {
+      if(SUPABASE){
+        if(toDel.length) await sb.from('reserves').delete().in('id', toDel);
+        if(desired.length) await sb.from('reserves').upsert(desired.map(cleanRow), { onConflict:'id' });
+        await Store.refresh();
+      } else {
+        let a = Local.load().filter(r=> !(r.source==='ical' && r.prof===me && r.date>=wsS && r.date<=weS) );
+        a = a.concat(desired); Local.save(a); DATA = Local.load();
+      }
+    } catch(e){ console.error('iCal sync write', e); return {ok:false,msg:'Error desant l\'ocupació importada.'}; }
+    if(!silent) rerenderAll();
+    return {ok:true, n:desired.length};
+  }
 
   // --- Utilitats de temps ---
   const pad = n => String(n).padStart(2,'0');
@@ -643,7 +747,7 @@
   const PXMIN = 1.15; // píxels per minut a la graella
 
   // ---------- ACCÉS / ROLS ----------
-  let me = null, myRole = '', myAuthId = null, myVeuOwner = false;
+  let me = null, myRole = '', myAuthId = null, myVeuOwner = false, myIcalUrl = '', myIcalDesp = null;
   const soc = () => prof(me);
   const isOwner = () => me==='tofol' || myRole==='owner';
   const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
@@ -671,16 +775,19 @@
   async function enterApp(){
     lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
     applyRole(); await Store.refresh(); await Becas.refresh(); await Pacients.refresh(); render(); startSync();
+    if(myIcal()) syncIcal(true).then(r=>{ if(r&&r.ok) rerenderAll(); });
   }
   async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
     const { data:{ user } } = await sb.auth.getUser();
     if(!user){ loginEl.style.display='flex'; return; }
-    const { data:pr, error } = await sb.from('profiles').select('prof, role, veu_owner').eq('id', user.id).maybeSingle();
+    const { data:pr, error } = await sb.from('profiles').select('prof, role, veu_owner, ical_url, ical_desp').eq('id', user.id).maybeSingle();
     if(error || !pr || !PROFS.some(p=>p.id===pr.prof)){
       lerr.textContent='El teu usuari no està assignat a cap professional (revisa la taula «profiles»).'; lerr.style.display='block';
       await sb.auth.signOut(); loginEl.style.display='flex'; return;
     }
-    me = pr.prof; myRole = pr.role||''; myAuthId = user.id; myVeuOwner = (pr.veu_owner===true); await enterApp();
+    me = pr.prof; myRole = pr.role||''; myAuthId = user.id; myVeuOwner = (pr.veu_owner===true);
+    myIcalUrl = pr.ical_url||''; myIcalDesp = pr.ical_desp||null;
+    await enterApp();
   }
   async function doLogin(){
     if(SUPABASE){
@@ -779,6 +886,14 @@
         const top=(toMin(r.start)-hIni*60)*PXMIN;
         const hgt=Math.max(r.dur*PXMIN-2, 16);
         const est=r.estat||'feta';
+        // Ocupació importada d'una agenda externa (Doctoralia / Google Calendar): només bloqueja.
+        if(r.source==='ical' || est==='ext'){
+          const elx=document.createElement('div'); elx.className='ev est-ext'+(r.prof===me?' mine':'');
+          elx.style.top=top+'px'; elx.style.height=hgt+'px';
+          elx.innerHTML='<div class="en">🔒 Ocupat</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · agenda externa</div>';
+          if(r.prof===me) elx.addEventListener('click', e=>{ e.stopPropagation(); alert('Aquesta franja ve de la teva agenda externa (Doctoralia / Google Calendar) i només ocupa el despatx.\n\nPer canviar-la o anul·lar-la, fes-ho a la teva agenda de Doctoralia/Google: aquí s\'actualitzarà sola.'); });
+          lane.appendChild(elx); return;
+        }
         // ⚠️ avís: reserva pròpia sense pacient assignat (les alienes tenen pacient_id ocult, per això r.prof===me)
         const senseP=(r.prof===me && !r.pacient_id);
         const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'')+(est==='no'?' est-no':'')+(est==='pend'?' est-pend':'')+(senseP?' no-pac':'');
@@ -968,6 +1083,7 @@
   mesPick.onchange=renderReport; setPick.onchange=renderReport; baseCom.onchange=renderReport;
   // Import que compta al període segons la base ('caixa' = cobrat aquest període; 'real' = realitzat aquest període). null si no compta.
   function importPeriode(r){
+    if(r.source==='ical' || r.estat==='ext') return null;   // ocupació externa: no compta per a la comissió
     const e=r.estat||'feta';
     if(baseCom.value==='caixa'){ return (r.cobrat===true && e!=='no' && inRange(dataCobrament(r))) ? sessPreu(r) : null; }
     return (e==='feta' && inRange(r.date)) ? sessPreu(r) : null;
@@ -1356,11 +1472,16 @@
 
   // ---------- PERFIL (autònoma / contractada → qui veu les meves notes) ----------
   const perfTipus=document.getElementById('perfTipus');
+  const perfIcal=document.getElementById('perfIcal'), perfIcalDesp=document.getElementById('perfIcalDesp'), perfIcalMsg=document.getElementById('perfIcalMsg');
+  DESPATXOS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent='Despatx '+n+(OWNER_OF[n]?(' · '+prof(OWNER_OF[n]).nom):''); perfIcalDesp.appendChild(o); });
   function renderPerfil(){
     perfTipus.value = myVeuOwner ? 'contractada' : 'autonoma';
     document.getElementById('perfHint').innerHTML = myVeuOwner
       ? '✔️ Ara ets <b>Contractada per APRENS</b>: Tòfol pot veure les teves notes.'
       : '✔️ Ara ets <b>Autònoma</b>: les teves notes són <b>privades</b> (ni Tòfol les veu).';
+    perfIcal.value = myIcal();
+    perfIcalDesp.value = myIcalDespN();
+    perfIcalMsg.textContent = myIcal() ? '✔️ Agenda externa connectada. Ocupa el Despatx '+myIcalDespN()+'.' : '';
   }
   perfTipus.onchange=async ()=>{
     const val = perfTipus.value==='contractada';
@@ -1369,6 +1490,36 @@
       if(myAuthId){ const { error } = await sb.from('profiles').update({ veu_owner: val }).eq('id', myAuthId); if(error){ alert('No s\'ha pogut desar: '+error.message); myVeuOwner=!val; } }
     } else { cfg.veuOwner = cfg.veuOwner || {}; cfg.veuOwner[me]=val; saveCfg(cfg); }
     renderPerfil();
+  };
+  async function saveIcal(){
+    const url=perfIcal.value.trim(); const desp=Number(perfIcalDesp.value)||1;
+    if(url && !/^https:\/\//i.test(url)){ perfIcalMsg.textContent='⚠️ L\'enllaç ha de començar per https://'; return false; }
+    if(SUPABASE){
+      if(myAuthId){ const { error } = await sb.from('profiles').update({ ical_url:(url||null), ical_desp:desp }).eq('id', myAuthId); if(error){ perfIcalMsg.textContent='No s\'ha pogut desar: '+error.message; return false; } }
+      myIcalUrl=url; myIcalDesp=desp;
+    } else { cfg.ical=cfg.ical||{}; cfg.icalDesp=cfg.icalDesp||{}; cfg.ical[me]=url; cfg.icalDesp[me]=desp; saveCfg(cfg); }
+    return true;
+  }
+  document.getElementById('perfIcalSave').onclick=async ()=>{
+    perfIcalMsg.textContent='Desant…';
+    if(!(await saveIcal())) return;
+    if(!myIcal()){ // s'ha esborrat l'enllaç → treu l'ocupació importada
+      const mine=DATA.filter(r=>r.source==='ical' && r.prof===me).map(r=>r.id);
+      if(SUPABASE){ if(mine.length){ await sb.from('reserves').delete().in('id',mine); await Store.refresh(); } }
+      else { Local.save(Local.load().filter(r=>!(r.source==='ical'&&r.prof===me))); DATA=Local.load(); }
+      perfIcalMsg.textContent='Agenda externa desconnectada.'; rerenderAll(); return;
+    }
+    perfIcalMsg.textContent='Important cites…';
+    const r=await syncIcal(true);
+    perfIcalMsg.textContent = r.ok ? ('✔️ Importades '+r.n+' ocupacions. Ocupen el Despatx '+myIcalDespN()+'.') : ('⚠️ '+r.msg);
+    rerenderAll();
+  };
+  document.getElementById('perfIcalTest').onclick=async ()=>{
+    perfIcalMsg.textContent='Provant…';
+    if(!(await saveIcal())) return;
+    const r=await syncIcal(true);
+    perfIcalMsg.textContent = r.ok ? ('✔️ Connexió correcta: '+r.n+' ocupacions llegides.') : ('⚠️ '+r.msg);
+    rerenderAll();
   };
 
   // ---------- INICI ----------
