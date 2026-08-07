@@ -21,6 +21,7 @@ create table if not exists public.reserves (
   nota     text default '',
   pagament text default 'efectiu',        -- forma de pago: efectiu|bizum|transferencia|mensual|escola|beca|altre
   cobrat   boolean default true,          -- ¿cobrada? (escola/beca suelen ir pendientes)
+  cobrat_data date,                       -- fecha de cobro (para comisiones "por caja"); null si pendiente
   beca_id  text,                          -- enlace a una beca (Fase B), null si ninguna
   created_at timestamptz default now()
 );
@@ -107,6 +108,7 @@ create view public.agenda_view with (security_invoker = off) as
     case when r.prof = public.my_prof() or public.is_owner() then r.nota else null end as nota,
     case when r.prof = public.my_prof() or public.is_owner() then r.pagament else null end as pagament,
     case when r.prof = public.my_prof() or public.is_owner() then r.cobrat else null end as cobrat,
+    case when r.prof = public.my_prof() or public.is_owner() then r.cobrat_data else null end as cobrat_data,
     case when r.prof = public.my_prof() or public.is_owner() then r.beca_id else null end as beca_id
   from public.reserves r;
 
