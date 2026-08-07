@@ -159,10 +159,16 @@ automáticamente** su despacho en despatxos (sin nombres de paciente, solo «Ocu
      en formato iCal»** (según plan).
 2. Lo pega, elige **qué despacho ocupa** y pulsa **Desar** (o **Provar ara** para comprobar).
 
-Sus citas aparecen como bloques grises **«🔒 Ocupat · agenda externa»**, se refrescan solas
-(al entrar, al volver a la pestaña y cada ~8 min) y **bloquean** ese hueco para las demás.
-**No** suman a la comisión: solo ocupan. Es sincronización **en un sentido** (fuera → despatxos,
-solo lectura); no se puede escribir dentro de Doctoralia.
+Sus citas aparecen como bloques grises **«🔒 Ocupat · agenda externa»** (con el nombre que trae
+la cita, **privado**: solo lo ve ella), se refrescan solas (al entrar, al volver a la pestaña y
+cada ~8 min) y **bloquean** ese hueco para las demás. Es sincronización **en un sentido** (fuera →
+despatxos, solo lectura); no se puede escribir dentro de Doctoralia.
+
+**Confirmar una cita externa** (convertirla en reserva real): al tocar un bloque gris propio se
+abre «Confirmar cita externa». Si el nombre coincide con un paciente de su lista, se **enlaza solo**
+(con su precio). Al confirmar pasa a ser una **reserva normal que SÍ cuenta** para la comisión, y
+la sincronización **ya no la toca** (no la borra ni la duplica aunque siga en Google/Doctoralia).
+Mientras no se confirma, solo **ocupa** y no cuenta.
 
 **Qué necesita el informático** (una sola vez): el sitio de Netlify debe tener activas las
 **Functions**. Ya viene configurado en `netlify.toml` (`[functions] directory = "netlify/functions"`)
