@@ -71,6 +71,8 @@
   .ev .en{font-weight:700;}
   .ev .et{opacity:.92;font-size:10px;}
   .ev.mine{outline:2px solid rgba(255,255,255,.85);}
+  /* Avís: reserva pròpia sense pacient assignat */
+  .ev.no-pac{outline:2px dashed #FFCB8A;outline-offset:-2px;}
   .ev.est-no{opacity:.5;}
   .ev.est-no .en,.ev.est-no .et{text-decoration:line-through;}
   .ev.est-pend{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 7px,transparent 7px 14px);}
@@ -777,15 +779,18 @@
         const top=(toMin(r.start)-hIni*60)*PXMIN;
         const hgt=Math.max(r.dur*PXMIN-2, 16);
         const est=r.estat||'feta';
-        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'')+(est==='no'?' est-no':'')+(est==='pend'?' est-pend':'');
+        // ⚠️ avís: reserva pròpia sense pacient assignat (les alienes tenen pacient_id ocult, per això r.prof===me)
+        const senseP=(r.prof===me && !r.pacient_id);
+        const el=document.createElement('div'); el.className='ev'+(r.prof===me?' mine':'')+(est==='no'?' est-no':'')+(est==='pend'?' est-pend':'')+(senseP?' no-pac':'');
         el.style.top=top+'px'; el.style.height=hgt+'px'; el.style.background=p.color;
         const preuTxt=(r.preu!=null && r.preu!=='')?' · '+r.preu+'€':'';
         const estG=est==='no'?' ✗':(est==='pend'?' ⏳':'');
         // 💰 = pendent de cobrament (només visible per a la pròpia / propietari)
         const payG=(r.cobrat===false && est!=='no' && (r.prof===me || isOwner()))?' 💰':'';
+        const pacWarn=senseP?' ⚠️':'';
         const pc=r.pacient_id?pacById(r.pacient_id):null;
         const pacTxt=pc?(' · '+escapeHtml(pc.nom)):'';
-        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+pacTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+pacWarn+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+pacTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
         el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
         lane.appendChild(el);
       });
