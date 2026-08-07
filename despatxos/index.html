@@ -1029,21 +1029,26 @@
   modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
   [mDesp,mStart].forEach(el=>el.onchange=checkWarn);
 
-  function overlapsOn(dateStr,desp,start,dur,ignoreId){
+  function overlapsOn(dateStr,desp,start,dur,ignoreId,bookingProf){
     const s=toMin(start), e=s+dur;
     return Store.all().some(r=> r.date===dateStr && Number(r.desp)===Number(desp) && r.id!==ignoreId &&
+      // La TEVA pròpia ocupació externa (Doctoralia/Google) no bloqueja les teves reserves;
+      // la d'una altra professional sí (per no reservar-li a sobre).
+      !((r.estat==='ext') && bookingProf && r.prof===bookingProf) &&
       (toMin(r.start) < e && (toMin(r.start)+r.dur) > s));
   }
   function checkWarn(){
-    const conf = overlapsOn(fmtDate(curDate), mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
+    const conf = overlapsOn(fmtDate(curDate), mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null, mProf.value);
     const endM = toMin(mStart.value)+selDur;
+    // En EDITAR una reserva existent o en CONFIRMAR una cita externa, el solapament només avisa (no bloqueja):
+    // la reserva ja ocupa aquell lloc. En una reserva NOVA sí que bloqueja (evita dobles reserves per error).
+    const soft = converting || !!selEdit;
     let msg='';
-    // En confirmar una cita externa el solapament NO bloqueja (la cita ja ocupava aquell lloc); només avisa.
-    if(conf) msg = converting ? '⚠️ Ja hi ha una altra reserva en aquesta franja; es confirmarà igualment.' : '⚠️ Aquest despatx ja està ocupat en aquesta franja.';
+    if(conf) msg = soft ? '⚠️ Ja hi ha una altra reserva en aquesta franja; es desarà igualment.' : '⚠️ Aquest despatx ja està ocupat en aquesta franja.';
     else if(endM>cfg.hFi*60) msg='⚠️ La reserva acaba després de l\'horari ('+toHHMM(cfg.hFi*60)+').';
     warn.textContent=msg; warn.classList.toggle('on', !!msg);
-    document.getElementById('mSave').disabled = conf && !converting;
-    return converting || !conf;
+    document.getElementById('mSave').disabled = conf && !soft;
+    return soft || !conf;
   }
 
   // --- dates de la sèrie recurrent ---
@@ -1091,7 +1096,7 @@
     let ok=0, skip=0;
     seriesDates(curDate, mode, count).forEach(d=>{
       const ds=fmtDate(d);
-      if(overlapsOn(ds, base.desp, base.start, base.dur, null)){ skip++; }
+      if(overlapsOn(ds, base.desp, base.start, base.dur, null, base.prof)){ skip++; }
       else { const b=Object.assign({date:ds, serie:serie}, base); b.cobrat_data = b.cobrat ? ds : null; Store.add(b); ok++; }
     });
     closeModal(); render();
