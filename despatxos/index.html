@@ -160,6 +160,7 @@
       <button class="tab" data-tab="pendents">💰 Pendents</button>
       <button class="tab" data-tab="beques">🎓 Beques</button>
       <button class="tab" data-tab="extractes">📄 Extractes</button>
+      <button class="tab" data-tab="perfil">👤 Perfil</button>
       <button class="tab" data-tab="ajustos">⚙️ Ajustos</button>
     </div>
 
@@ -290,6 +291,25 @@
       </div>
     </section>
 
+    <!-- ================= PERFIL ================= -->
+    <section id="tab-perfil" style="display:none;">
+      <div class="panel">
+        <h2>El meu perfil</h2>
+        <div class="sub">Tria el teu tipus. Això decideix <b>qui pot veure les teves notes</b> (on pots posar el nom o inicials del pacient).</div>
+        <div class="row" style="align-items:flex-end;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Tipus</label>
+            <select id="perfTipus">
+              <option value="autonoma">Autònoma (les meves notes són privades)</option>
+              <option value="contractada">Contractada per APRENS (Tòfol pot veure les meves notes)</option>
+            </select>
+          </div>
+        </div>
+        <p class="note" id="perfHint"></p>
+        <p class="note">🔒 En qualsevol cas, <b>cap altra professional</b> pot veure les teves notes. La diferència és només si el propietari (Tòfol) hi té accés: <b>Autònoma</b> → no; <b>Contractada</b> → sí.</p>
+      </div>
+    </section>
+
     <!-- ================= AJUSTOS ================= -->
     <section id="tab-ajustos" style="display:none;">
       <div class="panel">
@@ -389,8 +409,9 @@
         </div>
       </div>
       <div class="field">
-        <label>Nota (opcional · sense nom de pacient)</label>
-        <input type="text" id="mNota" maxlength="40" placeholder="p. ex. codi de pacient, buit…">
+        <label>Nota / pacient (opcional)</label>
+        <input type="text" id="mNota" maxlength="60" placeholder="inicials, nom o codi del pacient…">
+        <div class="note" id="mNotaHint" style="margin-top:6px;"></div>
       </div>
       <div class="modal-actions">
         <button class="btn sec" id="mSave">Reservar</button>
@@ -565,7 +586,7 @@
   const PXMIN = 1.15; // píxels per minut a la graella
 
   // ---------- ACCÉS / ROLS ----------
-  let me = null, myRole = '';
+  let me = null, myRole = '', myAuthId = null, myVeuOwner = false;
   const soc = () => prof(me);
   const isOwner = () => me==='tofol' || myRole==='owner';
   const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
@@ -597,12 +618,12 @@
   async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
     const { data:{ user } } = await sb.auth.getUser();
     if(!user){ loginEl.style.display='flex'; return; }
-    const { data:pr, error } = await sb.from('profiles').select('prof, role').eq('id', user.id).maybeSingle();
+    const { data:pr, error } = await sb.from('profiles').select('prof, role, veu_owner').eq('id', user.id).maybeSingle();
     if(error || !pr || !PROFS.some(p=>p.id===pr.prof)){
       lerr.textContent='El teu usuari no està assignat a cap professional (revisa la taula «profiles»).'; lerr.style.display='block';
       await sb.auth.signOut(); loginEl.style.display='flex'; return;
     }
-    me = pr.prof; myRole = pr.role||''; await enterApp();
+    me = pr.prof; myRole = pr.role||''; myAuthId = user.id; myVeuOwner = (pr.veu_owner===true); await enterApp();
   }
   async function doLogin(){
     if(SUPABASE){
@@ -611,7 +632,7 @@
       await afterAuth();
     } else {
       const id=lwho.value, pass=lpass.value;
-      if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){ me=id; myRole=''; localStorage.setItem('despatx_sess', id); await enterApp(); }
+      if(cfg.claus[id] && String(pass)===String(cfg.claus[id])){ me=id; myRole=''; myVeuOwner=!!(cfg.veuOwner&&cfg.veuOwner[id]); localStorage.setItem('despatx_sess', id); await enterApp(); }
       else { lerr.textContent='Contrasenya incorrecta.'; lerr.style.display='block'; }
     }
   }
@@ -625,13 +646,14 @@
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','pendents','beques','extractes','ajustos'].forEach(name=>{
+      ['agenda','comissions','pendents','beques','extractes','perfil','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
       if(t.dataset.tab==='pendents') renderPendents();
       if(t.dataset.tab==='beques') renderBeques();
       if(t.dataset.tab==='extractes') renderExt();
+      if(t.dataset.tab==='perfil') renderPerfil();
       if(t.dataset.tab==='ajustos') renderAjustos();
     };
   });
@@ -788,6 +810,9 @@
       document.getElementById('mDeleteSerie').style.display='none';
       mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
     }
+    document.getElementById('mNotaHint').innerHTML = myVeuOwner
+      ? '🔒 Privada. La veus tu i, com que estàs contractada per APRENS, també Tòfol. Cap altra professional.'
+      : '🔒 Privada: <b>només la veus tu</b>. Ni Tòfol ni cap altra professional. Pots posar el nom o inicials del pacient.';
     paintDurs(); paintEstat(); paintCobr(); toggleBecaField(); checkWarn();
     modal.classList.add('on');
   }
@@ -1194,6 +1219,23 @@
     if(confirm('Segur que vols esborrar TOTES les reserves? No es pot desfer.')){ Store.clear(); render(); alert('Reserves esborrades.'); }
   };
 
+  // ---------- PERFIL (autònoma / contractada → qui veu les meves notes) ----------
+  const perfTipus=document.getElementById('perfTipus');
+  function renderPerfil(){
+    perfTipus.value = myVeuOwner ? 'contractada' : 'autonoma';
+    document.getElementById('perfHint').innerHTML = myVeuOwner
+      ? '✔️ Ara ets <b>Contractada per APRENS</b>: Tòfol pot veure les teves notes.'
+      : '✔️ Ara ets <b>Autònoma</b>: les teves notes són <b>privades</b> (ni Tòfol les veu).';
+  }
+  perfTipus.onchange=async ()=>{
+    const val = perfTipus.value==='contractada';
+    myVeuOwner = val;
+    if(SUPABASE){
+      if(myAuthId){ const { error } = await sb.from('profiles').update({ veu_owner: val }).eq('id', myAuthId); if(error){ alert('No s\'ha pogut desar: '+error.message); myVeuOwner=!val; } }
+    } else { cfg.veuOwner = cfg.veuOwner || {}; cfg.veuOwner[me]=val; saveCfg(cfg); }
+    renderPerfil();
+  };
+
   // ---------- INICI ----------
   (async function init(){
     if(SUPABASE){
@@ -1201,7 +1243,7 @@
       loginEl.style.display='flex';
     } else {
       const savedSess=localStorage.getItem('despatx_sess');
-      if(savedSess && prof(savedSess)){ me=savedSess; lwho.value=savedSess; await enterApp(); }
+      if(savedSess && prof(savedSess)){ me=savedSess; myVeuOwner=!!(cfg.veuOwner&&cfg.veuOwner[savedSess]); lwho.value=savedSess; await enterApp(); }
       else { loginEl.style.display='flex'; }
     }
   })();
