@@ -32,6 +32,11 @@ la **comissió del 20 %** que APRENS factura per servei — **sense cap nom de p
   (desde el 1 de cada mes). Exporta **CSV**.
 - **Ajustes** (solo propietario): precio sugerido y **contraseña** de cada profesional,
   % de comisión y franja horaria.
+- **Agenda externa (Doctoralia / Google Calendar)**: cada profesional puede pegar en su
+  **Perfil** el enlace secreto **iCal** de su agenda; sus citas entran solas y **ocupan el
+  despacho** elegido (para que nadie reserve encima). Entran como **«Ocupat»**, **sin nombre
+  de paciente**, en solo lectura, y **no cuentan** para la comisión (solo bloquean). Necesita
+  el modo servidor (Netlify Functions): ver **§3b**.
 
 ### Datos precargados (editables en el código)
 
@@ -140,6 +145,39 @@ plan gratis, con **región EU** — importante por RGPD).
 
 ---
 
+## 3b. Agenda externa (Doctoralia / Google Calendar) → ocupa el despacho
+
+Cada profesional puede conectar su agenda de fuera para que sus citas **ocupen
+automáticamente** su despacho en despatxos (sin nombres de paciente, solo «Ocupat»).
+
+**Cómo lo usa cada una** (en **👤 Perfil → Agenda externa**):
+
+1. Copia el **enlace secreto en formato iCal** de su agenda:
+   - **Google Calendar** (ordenador): ⚙️ *Configuración* → elige su calendario → *Integrar
+     el calendario* → **«Dirección secreta en formato iCal»**.
+   - **Doctoralia**: en su Agenda → *Ajustes / Sincronizar calendario* → **«Dirección secreta
+     en formato iCal»** (según plan).
+2. Lo pega, elige **qué despacho ocupa** y pulsa **Desar** (o **Provar ara** para comprobar).
+
+Sus citas aparecen como bloques grises **«🔒 Ocupat · agenda externa»**, se refrescan solas
+(al entrar, al volver a la pestaña y cada ~8 min) y **bloquean** ese hueco para las demás.
+**No** suman a la comisión: solo ocupan. Es sincronización **en un sentido** (fuera → despatxos,
+solo lectura); no se puede escribir dentro de Doctoralia.
+
+**Qué necesita el informático** (una sola vez): el sitio de Netlify debe tener activas las
+**Functions**. Ya viene configurado en `netlify.toml` (`[functions] directory = "netlify/functions"`)
+y el proxy de solo lectura está en `netlify/functions/ical.js` (solo acepta hosts de Google
+Calendar / Doctoralia, por seguridad). Al desplegar en Netlify se activa solo. Y ejecutar la
+migración SQL (columnas `reserves.source`, `profiles.ical_url`, `profiles.ical_desp`) de
+`supabase-schema.sql`.
+
+> **Privacidad**: el enlace iCal es de **solo lectura** y las citas entran **sin el nombre del
+> paciente** (solo día/hora/duración → «Ocupat»). El proxy no guarda nada y solo lee de Google
+> Calendar o Doctoralia. Aun así, trata ese enlace secreto como una contraseña: quien lo tenga
+> puede ver tu agenda.
+
+---
+
 ## 4. Privacidad / RGPD
 
 - La app **no guarda nombres de pacientes** por diseño.
@@ -156,6 +194,7 @@ plan gratis, con **región EU** — importante por RGPD).
 |---|---|
 | `index.html`          | La aplicación completa (agenda + comisiones + extractos + ajustes). |
 | `vendor/supabase.js`  | Cliente de Supabase self-hosted (sin CDN). |
+| `netlify/functions/ical.js` | Proxy de solo lectura para agendas iCal externas (Doctoralia / Google Calendar). |
 | `supabase-schema.sql` | SQL a ejecutar en Supabase (tablas + seguridad RLS + vista de privacidad). |
 | `_headers`            | Cabeceras/CSP de Netlify (permite `*.supabase.co`). |
 | `netlify.toml`        | Despliegue como sitio Netlify propio. |

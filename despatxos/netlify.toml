@@ -11,3 +11,9 @@
   base = "despatxos"
   publish = "."
   command = ""
+
+# Funcions serverless (proxy de només lectura per a agendes iCal externes).
+# La ruta queda a /.netlify/functions/ical (mateix origen → passa la CSP 'self').
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
