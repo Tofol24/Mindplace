@@ -267,11 +267,13 @@
             <input type="text" id="bCodi" maxlength="40" placeholder="p. ex. Escola X · A3" style="min-width:180px;"></div>
           <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Import total (€)</label>
             <input type="number" id="bImport" min="0" step="1" placeholder="p. ex. 600" style="width:130px;"></div>
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Pacient (opcional)</label>
+            <select id="bPacient" style="min-width:150px;"></select></div>
           <button class="btn" id="bAdd">＋ Afegir beca</button>
         </div>
         <div style="overflow-x:auto;margin-top:8px;">
           <table>
-            <thead><tr><th>Codi</th><th id="bProfTh" style="display:none;">Prof.</th><th class="num">Total</th><th class="num">Consumit</th><th class="num">Restant</th><th>Estat</th><th></th></tr></thead>
+            <thead><tr><th>Codi</th><th id="bProfTh" style="display:none;">Prof.</th><th>Pacient</th><th class="num">Total</th><th class="num">Consumit</th><th class="num">Restant</th><th>Estat</th><th></th></tr></thead>
             <tbody id="beqBody"></tbody>
           </table>
         </div>
@@ -558,7 +560,7 @@
   // --- Beques (mateix patró dual local/Supabase) ---
   const LKEY_B='despatx_beques';
   const LocalB = { load(){ try{ return JSON.parse(localStorage.getItem(LKEY_B)||'[]'); }catch(e){ return []; } }, save(a){ localStorage.setItem(LKEY_B, JSON.stringify(a)); } };
-  function cleanBeca(b){ return { id:b.id, prof:b.prof, codi:b.codi||'', import_total:(b.import_total==null?0:Number(b.import_total)) }; }
+  function cleanBeca(b){ return { id:b.id, prof:b.prof, codi:b.codi||'', import_total:(b.import_total==null?0:Number(b.import_total)), pacient_id:b.pacient_id||null }; }
   let BEQUES = SUPABASE ? [] : LocalB.load();
   const Becas = {
     all(){ return BEQUES; },
@@ -1092,17 +1094,26 @@
   // ---------- BEQUES ----------
   const misBeques = () => Becas.all().filter(b => isOwner() || b.prof===me);
 
+  // opcions <option> de pacients (per als selectors de beca)
+  function pacOptionsHtml(selId){
+    let h='<option value="">— cap —</option>';
+    misPacients().slice().sort((a,b)=>(a.nom||'').localeCompare(b.nom||'')).forEach(pc=>{ h+='<option value="'+pc.id+'"'+(pc.id===selId?' selected':'')+'>'+escapeHtml(pc.nom)+'</option>'; });
+    return h;
+  }
+
   document.getElementById('bAdd').onclick=()=>{
     const codi=document.getElementById('bCodi').value.trim();
     const imp=Math.max(0, Number(document.getElementById('bImport').value)||0);
+    const pac=document.getElementById('bPacient').value||null;
     if(!codi){ alert('Posa un codi o referència per a la beca.'); return; }
-    Becas.add({ prof:me, codi:codi, import_total:imp });
+    Becas.add({ prof:me, codi:codi, import_total:imp, pacient_id:pac });
     document.getElementById('bCodi').value=''; document.getElementById('bImport').value='';
     renderBeques();
   };
 
   function renderBeques(){
     document.getElementById('bProfTh').style.display = isOwner()? '' : 'none';
+    document.getElementById('bPacient').innerHTML = pacOptionsHtml('');   // pacients per al formulari d'alta
     const list = misBeques().slice().sort((a,b)=>(a.codi||'').localeCompare(b.codi||''));
     const tb=document.getElementById('beqBody'); tb.innerHTML='';
     list.forEach(bc=>{
@@ -1112,10 +1123,15 @@
                   : (rest < Number(bc.import_total||0)*0.15 ? '<span style="color:var(--oro);font-weight:700">Gairebé esgotada</span>'
                   : '<span style="color:var(--verde);font-weight:700">Activa</span>');
       const canEdit = isOwner() || bc.prof===me;
+      // Pacient: si és la meva beca, selector editable; si no (propietari veient una altra), text
+      const pacCell = (bc.prof===me)
+        ? '<select data-bpac="'+bc.id+'" style="max-width:150px">'+pacOptionsHtml(bc.pacient_id||'')+'</select>'
+        : (bc.pacient_id && pacById(bc.pacient_id) ? escapeHtml(pacById(bc.pacient_id).nom) : '<span class="muted">—</span>');
       const tr=document.createElement('tr');
       tr.innerHTML =
         '<td><b>'+escapeHtml(bc.codi||'—')+'</b> <span class="muted">('+c.n+" ses.)</span></td>"+
         (isOwner()? '<td>'+p.nom+'</td>' : '')+
+        '<td>'+pacCell+'</td>'+
         '<td class="num">'+Number(bc.import_total||0).toFixed(0)+' €</td>'+
         '<td class="num">'+c.imp.toFixed(0)+' €</td>'+
         '<td class="num"><b>'+rest.toFixed(0)+' €</b></td>'+
@@ -1124,6 +1140,7 @@
       tb.appendChild(tr);
     });
     document.getElementById('beqEmpty').style.display = list.length? 'none' : '';
+    tb.querySelectorAll('select[data-bpac]').forEach(s=>{ s.onchange=()=>{ const bc=Becas.all().find(x=>x.id===s.getAttribute('data-bpac')); if(bc){ Becas.update(Object.assign({}, bc, { pacient_id:s.value||null })); } }; });
     tb.querySelectorAll('button[data-bdel]').forEach(b=>{ b.onclick=()=>{ const id=b.getAttribute('data-bdel'); const c=becaConsumit(id);
       if(confirm('Esborrar aquesta beca?'+(c.n?' (Té '+c.n+' sessions enllaçades; no s\'esborraran, però quedaran sense beca.)':''))){ Becas.remove(id); renderBeques(); } }; });
     tb.querySelectorAll('button[data-bedit]').forEach(b=>{ b.onclick=()=>{ const bc=Becas.all().find(x=>x.id===b.getAttribute('data-bedit')); if(!bc) return;

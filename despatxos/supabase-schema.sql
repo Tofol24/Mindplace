@@ -56,6 +56,7 @@ create table if not exists public.beques (
   prof         text not null,             -- profesional propietaria de la beca
   codi         text not null,             -- código/alias (SIN nombre de paciente)
   import_total numeric default 0,
+  pacient_id   text,                      -- enlace opcional a un paciente de la lista
   created_at   timestamptz default now()
 );
 alter table public.beques enable row level security;
