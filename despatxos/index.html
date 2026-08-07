@@ -158,6 +158,7 @@
       <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
       <button class="tab" data-tab="comissions">📊 Comissions</button>
       <button class="tab" data-tab="pendents">💰 Pendents</button>
+      <button class="tab" data-tab="pacients">🧑 Pacients</button>
       <button class="tab" data-tab="beques">🎓 Beques</button>
       <button class="tab" data-tab="extractes">📄 Extractes</button>
       <button class="tab" data-tab="perfil">👤 Perfil</button>
@@ -229,6 +230,30 @@
           </table>
         </div>
         <p class="note" id="penEmpty" style="display:none;">🎉 No tens res pendent de cobrar.</p>
+      </div>
+    </section>
+
+    <!-- ================= PACIENTS ================= -->
+    <section id="tab-pacients" style="display:none;">
+      <div class="panel">
+        <h2>Els meus pacients</h2>
+        <div class="sub">Llista <b>privada</b>: cap altra professional la veu. Assigna un pacient a la reserva i li posa el seu <b>preu</b> per defecte (canviable a cada sessió). Millor <b>inicials o àlies</b>.</div>
+        <div class="row" style="align-items:flex-end;gap:10px;">
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Nom / inicials</label>
+            <input type="text" id="pcNom" maxlength="60" placeholder="p. ex. J. M. o àlies" style="min-width:160px;"></div>
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Telèfon</label>
+            <input type="tel" id="pcTel" maxlength="24" placeholder="opcional" style="width:140px;"></div>
+          <div><label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Preu (€)</label>
+            <input type="number" id="pcPreu" min="0" step="1" placeholder="p. ex. 60" style="width:110px;"></div>
+          <button class="btn" id="pcAdd">＋ Afegir pacient</button>
+        </div>
+        <div style="overflow-x:auto;margin-top:8px;">
+          <table>
+            <thead><tr><th id="pcProfTh" style="display:none;">Prof.</th><th>Nom</th><th>Telèfon</th><th class="num">Preu</th><th class="num">Sessions</th><th></th></tr></thead>
+            <tbody id="pacBody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="pacEmpty" style="display:none;">Encara no tens cap pacient. Afegeix-ne un a dalt.</p>
       </div>
     </section>
 
@@ -349,6 +374,11 @@
       <div class="field">
         <label>Professional</label>
         <select id="mProf"></select>
+      </div>
+      <div class="field">
+        <label>Pacient (opcional · privat)</label>
+        <select id="mPacient"></select>
+        <div class="note" id="mPacientHint" style="margin-top:6px;"></div>
       </div>
       <div class="field">
         <label>Hora d'inici</label>
@@ -487,7 +517,7 @@
     save(a){ localStorage.setItem(LKEY, JSON.stringify(a)); }
   };
   const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('r'+Date.now()+Math.round(performance.now()));
-  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false), beca_id:b.beca_id||null, cobrat_data:(b.cobrat_data||null) }; }
+  function cleanRow(b){ return { id:b.id, desp:b.desp, prof:b.prof, date:b.date, start:b.start, dur:b.dur, preu:(b.preu==null?null:b.preu), estat:b.estat||'feta', serie:b.serie||null, nota:b.nota||'', pagament:b.pagament||'efectiu', cobrat:(b.cobrat!==false), beca_id:b.beca_id||null, cobrat_data:(b.cobrat_data||null), pacient_id:b.pacient_id||null }; }
   const avui = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
   // Data que compta per a la "caixa": quan es va cobrar (o, si no consta, el dia de la sessió).
   const dataCobrament = r => r.cobrat_data || r.date;
@@ -547,6 +577,28 @@
   function becaConsumit(id){ let n=0,imp=0; Store.all().forEach(r=>{ if(r.beca_id===id && (r.estat||'feta')==='feta'){ n++; imp+=sessPreu(r); } }); return {n,imp}; }
   function becaRestant(bc){ return Number(bc.import_total||0) - becaConsumit(bc.id).imp; }
 
+  // --- Pacients (privats de cada professional, mateixa regla que la nota) ---
+  const LKEY_P='despatx_pacients';
+  const LocalP = { load(){ try{ return JSON.parse(localStorage.getItem(LKEY_P)||'[]'); }catch(e){ return []; } }, save(a){ localStorage.setItem(LKEY_P, JSON.stringify(a)); } };
+  function cleanPac(b){ return { id:b.id, prof:b.prof, nom:b.nom||'', telefon:(b.telefon||''), preu:(b.preu==null||b.preu===''?null:Number(b.preu)) }; }
+  let PACIENTS = SUPABASE ? [] : LocalP.load();
+  const Pacients = {
+    all(){ return PACIENTS; },
+    async refresh(){ if(SUPABASE){ const { data, error } = await sb.from('pacients').select('*'); if(error){ console.error(error); return; } PACIENTS = data||[]; } else { PACIENTS = LocalP.load(); } },
+    add(b){ if(!b.id) b.id=uid(); PACIENTS = PACIENTS.concat([b]);
+      if(SUPABASE){ sb.from('pacients').insert(cleanPac(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar el pacient: '+error.message); } Pacients.refresh().then(renderPacients); }); }
+      else { const a=LocalP.load(); a.push(b); LocalP.save(a); } return b; },
+    update(b){ const i=PACIENTS.findIndex(x=>x.id===b.id); if(i>=0) PACIENTS=PACIENTS.slice(0,i).concat([b],PACIENTS.slice(i+1));
+      if(SUPABASE){ const row=cleanPac(b); delete row.id; sb.from('pacients').update(row).eq('id',b.id).then(({error})=>{ if(error){ alert('Error: '+error.message); } Pacients.refresh().then(renderPacients); }); }
+      else { const a=LocalP.load(); const j=a.findIndex(x=>x.id===b.id); if(j>=0){a[j]=b;LocalP.save(a);} } return b; },
+    remove(id){ PACIENTS = PACIENTS.filter(x=>x.id!==id);
+      if(SUPABASE){ sb.from('pacients').delete().eq('id',id).then(({error})=>{ if(error){ alert('Error: '+error.message); } Pacients.refresh().then(renderPacients); }); }
+      else { LocalP.save(LocalP.load().filter(x=>x.id!==id)); } }
+  };
+  const pacById = id => Pacients.all().find(x=>x.id===id);
+  // Nº de sessions realitzades d'un pacient (per a la seva fitxa).
+  function pacSessions(id){ let n=0; Store.all().forEach(r=>{ if(r.pacient_id===id && (r.estat||'feta')==='feta') n++; }); return n; }
+
   // Torna a pintar la vista activa (agenda + panell obert) després d'un canvi remot.
   function rerenderAll(){
     render();
@@ -554,6 +606,7 @@
     if(vis('tab-comissions')) renderReport();
     if(vis('tab-pendents')) renderPendents();
     if(vis('tab-beques')) renderBeques();
+    if(vis('tab-pacients')) renderPacients();
     if(vis('tab-extractes')) renderExt();
   }
   // Sincronització per sondeig (no realtime): amb màxima privacitat, el realtime
@@ -561,11 +614,11 @@
   // tornar a la pestanya. Els teus canvis es veuen a l'instant (optimista); els de
   // les altres apareixen en pocs segons.
   let syncTimer=null;
-  function onVis(){ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh()]).then(rerenderAll); }
+  function onVis(){ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh(),Pacients.refresh()]).then(rerenderAll); }
   function startSync(){
     if(!SUPABASE) return;
     stopSync();
-    syncTimer=setInterval(()=>{ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh()]).then(rerenderAll); }, 40000);
+    syncTimer=setInterval(()=>{ if(!document.hidden) Promise.all([Store.refresh(),Becas.refresh(),Pacients.refresh()]).then(rerenderAll); }, 40000);
     document.addEventListener('visibilitychange', onVis);
   }
   function stopSync(){ if(syncTimer){ clearInterval(syncTimer); syncTimer=null; } document.removeEventListener('visibilitychange', onVis); }
@@ -613,7 +666,7 @@
   }
   async function enterApp(){
     lerr.style.display='none'; lpass.value=''; loginEl.style.display='none';
-    applyRole(); await Store.refresh(); await Becas.refresh(); render(); startSync();
+    applyRole(); await Store.refresh(); await Becas.refresh(); await Pacients.refresh(); render(); startSync();
   }
   async function afterAuth(){   // (només SUPABASE) mapa usuari-Auth → professional via taula profiles
     const { data:{ user } } = await sb.auth.getUser();
@@ -646,11 +699,12 @@
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','pendents','beques','extractes','perfil','ajustos'].forEach(name=>{
+      ['agenda','comissions','pendents','pacients','beques','extractes','perfil','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
       if(t.dataset.tab==='pendents') renderPendents();
+      if(t.dataset.tab==='pacients') renderPacients();
       if(t.dataset.tab==='beques') renderBeques();
       if(t.dataset.tab==='extractes') renderExt();
       if(t.dataset.tab==='perfil') renderPerfil();
@@ -727,7 +781,9 @@
         const estG=est==='no'?' ✗':(est==='pend'?' ⏳':'');
         // 💰 = pendent de cobrament (només visible per a la pròpia / propietari)
         const payG=(r.cobrat===false && est!=='no' && (r.prof===me || isOwner()))?' 💰':'';
-        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        const pc=r.pacient_id?pacById(r.pacient_id):null;
+        const pacTxt=pc?(' · '+escapeHtml(pc.nom)):'';
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+pacTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
         el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
         lane.appendChild(el);
       });
@@ -782,8 +838,9 @@
       mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
       selEstat = r.estat||'feta';
       selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false); mBeca.value = r.beca_id||'';
+      fillPacients(r.pacient_id||'');
       const canEdit = isOwner() || r.prof===me;
-      [mDesp,mProf,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=!canEdit);
+      [mDesp,mProf,mStart,mNota,mPreu,mPaga,mPacient].forEach(el=>el.disabled=!canEdit);
       mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
       mEstat.style.pointerEvents=canEdit?'auto':'none'; mEstat.style.opacity=canEdit?1:.6;
       mCobr.style.pointerEvents=canEdit?'auto':'none'; mCobr.style.opacity=canEdit?1:.6;
@@ -801,7 +858,8 @@
       selDur = 50; mNota.value=''; selEstat='feta';
       mPreu.value = cfg.preus[me] || '';
       selPaga='efectiu'; mPaga.value='efectiu'; selCobrat=true; mBeca.value='';
-      [mDesp,mStart,mNota,mPreu,mPaga].forEach(el=>el.disabled=false);
+      fillPacients('');
+      [mDesp,mStart,mNota,mPreu,mPaga,mPacient].forEach(el=>el.disabled=false);
       mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
       mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
       mCobr.style.pointerEvents='auto'; mCobr.style.opacity=1;
@@ -857,7 +915,7 @@
 
   function readBase(){
     const preu = (mPreu.value===''||mPreu.value==null) ? null : Math.max(0, Number(mPreu.value)||0);
-    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat, pagament:selPaga, cobrat:selCobrat, beca_id:(selPaga==='beca'? (mBeca.value||null) : null) };
+    return { desp:Number(mDesp.value), prof:mProf.value, start:mStart.value, dur:selDur, nota:mNota.value.trim(), preu:preu, estat:selEstat, pagament:selPaga, cobrat:selCobrat, beca_id:(selPaga==='beca'? (mBeca.value||null) : null), pacient_id:(mPacient.value||null) };
   }
 
   document.getElementById('mSave').onclick=()=>{
@@ -1091,6 +1149,61 @@
     if(on) fillBeques(mBeca.value);
   }
   mBeca.onchange=updateBecaHint;
+
+  // ---------- PACIENTS ----------
+  const misPacients = () => Pacients.all().filter(p => isOwner() || p.prof===me);
+  const mPacient=document.getElementById('mPacient');
+
+  document.getElementById('pcAdd').onclick=()=>{
+    const nom=document.getElementById('pcNom').value.trim();
+    const tel=document.getElementById('pcTel').value.trim();
+    const preu=document.getElementById('pcPreu').value===''?null:Math.max(0,Number(document.getElementById('pcPreu').value)||0);
+    if(!nom){ alert('Posa un nom o inicials.'); return; }
+    Pacients.add({ prof:me, nom:nom, telefon:tel, preu:preu });
+    document.getElementById('pcNom').value=''; document.getElementById('pcTel').value=''; document.getElementById('pcPreu').value='';
+    renderPacients();
+  };
+
+  function renderPacients(){
+    document.getElementById('pcProfTh').style.display = isOwner()? '' : 'none';
+    const list = misPacients().slice().sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
+    const tb=document.getElementById('pacBody'); tb.innerHTML='';
+    list.forEach(pc=>{
+      const p=prof(pc.prof)||{nom:pc.prof};
+      const canEdit = pc.prof===me || isOwner();
+      const tr=document.createElement('tr');
+      tr.innerHTML =
+        (isOwner()? '<td>'+p.nom+'</td>' : '')+
+        '<td><b>'+escapeHtml(pc.nom||'—')+'</b></td>'+
+        '<td>'+(pc.telefon?('<a href="tel:'+escapeHtml(pc.telefon)+'">'+escapeHtml(pc.telefon)+'</a>'):'<span class="muted">—</span>')+'</td>'+
+        '<td class="num">'+(pc.preu!=null&&pc.preu!==''?(Number(pc.preu).toFixed(0)+' €'):'<span class="muted">—</span>')+'</td>'+
+        '<td class="num">'+pacSessions(pc.id)+'</td>'+
+        '<td class="num">'+(canEdit?'<button class="link" data-pedit="'+pc.id+'">editar</button> · <button class="link" data-pdel="'+pc.id+'" style="color:var(--rojo)">esborrar</button>':'')+'</td>';
+      tb.appendChild(tr);
+    });
+    document.getElementById('pacEmpty').style.display = list.length? 'none' : '';
+    tb.querySelectorAll('button[data-pdel]').forEach(b=>{ b.onclick=()=>{ const id=b.getAttribute('data-pdel'); const n=pacSessions(id);
+      if(confirm('Esborrar aquest pacient?'+(n?' (Té '+n+' sessions enllaçades; no s\'esborraran, però quedaran sense pacient.)':''))){ Pacients.remove(id); renderPacients(); } }; });
+    tb.querySelectorAll('button[data-pedit]').forEach(b=>{ b.onclick=()=>{ const pc=Pacients.all().find(x=>x.id===b.getAttribute('data-pedit')); if(!pc) return;
+      const nn=prompt('Nom / inicials:', pc.nom||''); if(nn===null) return;
+      const nt=prompt('Telèfon:', pc.telefon||''); if(nt===null) return;
+      const np=prompt('Preu (€):', pc.preu!=null?String(pc.preu):''); if(np===null) return;
+      Pacients.update(Object.assign({}, pc, { nom:nn.trim()||pc.nom, telefon:nt.trim(), preu:(np===''?null:Math.max(0,Number(np)||0)) })); renderPacients(); }; });
+  }
+
+  // Selector de pacient dins del modal
+  function fillPacients(sel){
+    mPacient.innerHTML='<option value="">— cap —</option>';
+    misPacients().slice().sort((a,b)=>(a.nom||'').localeCompare(b.nom||'')).forEach(pc=>{ const o=document.createElement('option'); o.value=pc.id; o.textContent=pc.nom+(pc.preu!=null&&pc.preu!==''?(' · '+Number(pc.preu).toFixed(0)+'€'):''); mPacient.appendChild(o); });
+    mPacient.value = sel||'';
+    updatePacientHint();
+  }
+  function updatePacientHint(){
+    const pc=pacById(mPacient.value);
+    document.getElementById('mPacientHint').innerHTML = pc ? ('🔒 privat'+(pc.telefon?(' · ☎ '+escapeHtml(pc.telefon)):'')) : '🔒 La nota i el pacient són privats (només tu' + (myVeuOwner?' i Tòfol':'') + ').';
+  }
+  // En triar pacient (acció de l'usuària), posa el seu preu per defecte (canviable).
+  mPacient.onchange=()=>{ const pc=pacById(mPacient.value); if(pc && pc.preu!=null && pc.preu!=='') mPreu.value=pc.preu; updatePacientHint(); };
 
   // ---------- EXTRACTES (ingressos bruts/nets/comissió, mes a mes) ----------
   const anyPick=document.getElementById('anyPick');

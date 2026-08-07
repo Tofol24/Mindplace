@@ -23,8 +23,32 @@ create table if not exists public.reserves (
   cobrat   boolean default true,          -- ¿cobrada? (escola/beca suelen ir pendientes)
   cobrat_data date,                       -- fecha de cobro (para comisiones "por caja"); null si pendiente
   beca_id  text,                          -- enlace a una beca (Fase B), null si ninguna
+  pacient_id text,                        -- enlace a un paciente (privado), null si ninguno
   created_at timestamptz default now()
 );
+
+-- 1c) PACIENTES (lista privada de cada profesional: nombre/alias + tel + precio) --
+create table if not exists public.pacients (
+  id         text primary key,
+  prof       text not null,               -- profesional propietaria
+  nom        text not null,               -- nombre o iniciales/alias
+  telefon    text,
+  preu       numeric,                     -- precio por defecto de este paciente
+  created_at timestamptz default now()
+);
+alter table public.pacients enable row level security;
+-- Escribir: solo las suyas.
+drop policy if exists "pacients_ins" on public.pacients;
+create policy "pacients_ins" on public.pacients for insert to authenticated with check (prof = public.my_prof());
+drop policy if exists "pacients_upd" on public.pacients;
+create policy "pacients_upd" on public.pacients for update to authenticated using (prof = public.my_prof()) with check (prof = public.my_prof());
+drop policy if exists "pacients_del" on public.pacients;
+create policy "pacients_del" on public.pacients for delete to authenticated using (prof = public.my_prof());
+-- Leer: las suyas; el propietario SOLO si esa profesional es "contractada" (veu_owner).
+drop policy if exists "pacients_sel" on public.pacients;
+create policy "pacients_sel" on public.pacients for select to authenticated
+  using (prof = public.my_prof()
+         or (public.is_owner() and exists (select 1 from public.profiles p where p.prof = pacients.prof and coalesce(p.veu_owner,false))));
 
 -- 1b) BECAS (saldo prepagado que se va descontando por sesión) ---------------
 create table if not exists public.beques (
@@ -121,7 +145,11 @@ create view public.agenda_view with (security_invoker = off) as
     case when r.prof = public.my_prof() or public.is_owner() then r.pagament else null end as pagament,
     case when r.prof = public.my_prof() or public.is_owner() then r.cobrat else null end as cobrat,
     case when r.prof = public.my_prof() or public.is_owner() then r.cobrat_data else null end as cobrat_data,
-    case when r.prof = public.my_prof() or public.is_owner() then r.beca_id else null end as beca_id
+    case when r.prof = public.my_prof() or public.is_owner() then r.beca_id else null end as beca_id,
+    -- pacient_id segueix la mateixa regla que la nota (identitat del pacient)
+    case when r.prof = public.my_prof()
+              or (public.is_owner() and exists (select 1 from public.profiles p where p.prof = r.prof and coalesce(p.veu_owner,false)))
+         then r.pacient_id else null end as pacient_id
   from public.reserves r;
 
 grant select on public.agenda_view to authenticated;
