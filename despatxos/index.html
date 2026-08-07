@@ -400,6 +400,7 @@
     <div class="card">
       <h3 id="modalTitle">Nova reserva</h3>
       <div class="warn" id="warn"></div>
+      <div class="note" id="mConvHint" style="display:none;background:#EAF2FB;border:1px solid #CFE0F5;border-radius:10px;padding:8px 10px;margin-bottom:8px;">📅 Aquesta cita ve de la teva <b>agenda externa</b>. En confirmar-la passarà a ser una <b>reserva real</b> (comptarà per a la comissió). Assigna-hi el <b>pacient</b> i el <b>preu</b> si cal. Després no s'actualitzarà sola des de fora.</div>
       <div class="field">
         <label>Despatx</label>
         <select id="mDesp"></select>
@@ -629,6 +630,8 @@
       else { LocalP.save(LocalP.load().filter(x=>x.id!==id)); } }
   };
   const pacById = id => Pacients.all().find(x=>x.id===id);
+  // Cerca un pacient de la meva llista pel nom (coincidència exacta, sense majúscules/espais).
+  function matchPacientByName(name){ if(!name) return ''; const n=String(name).trim().toLowerCase(); const hit=Pacients.all().find(p=> p.prof===me && String(p.nom||'').trim().toLowerCase()===n); return hit?hit.id:''; }
   // Nº de sessions realitzades d'un pacient (per a la seva fitxa).
   function pacSessions(id){ let n=0; Store.all().forEach(r=>{ if(r.pacient_id===id && (r.estat||'feta')==='feta') n++; }); return n; }
 
@@ -711,19 +714,25 @@
     const we=new Date(ws); we.setDate(we.getDate()+ICAL_WINDOW_DAYS);
     let insts;
     try { insts = ICAL.expand(text, ws, we, {max:ICAL_MAX}); } catch(e){ console.error('iCal parse', e); return {ok:false,msg:'Error llegint el calendari.'}; }
-    const rows = insts.map(ev=>({ id:'ical:'+me+':'+hashStr(ev.uid+'|'+ev.date+'|'+ev.start), desp:desp, prof:me, date:ev.date, start:ev.start, dur:ev.dur, preu:null, estat:'ext', serie:null, nota:'', pagament:'altre', cobrat:false, cobrat_data:null, beca_id:null, pacient_id:null, source:'ical' }));
-    const byId=new Map(); rows.forEach(r=>byId.set(r.id,r)); const desired=[...byId.values()];
+    // El nom de la cita (SUMMARY) es guarda a `nota` (privada: només la veu la pròpia / propietari
+    // si és contractada; mai una altra professional). Serveix per confirmar-la i saber qui és.
+    const rows = insts.map(ev=>({ id:'ical:'+me+':'+hashStr(ev.uid+'|'+ev.date+'|'+ev.start), desp:desp, prof:me, date:ev.date, start:ev.start, dur:ev.dur, preu:null, estat:'ext', serie:null, nota:(ev.summary||'').slice(0,140), pagament:'altre', cobrat:false, cobrat_data:null, beca_id:null, pacient_id:null, source:'ical' }));
+    const byId=new Map(); rows.forEach(r=>byId.set(r.id,r)); let desired=[...byId.values()];
+    // Reserves ja CONFIRMADES (convertides per l'usuari, estat != 'ext'): no s'han de tocar mai.
+    const confirmedIds = new Set(DATA.filter(r=> r.source==='ical' && r.prof===me && (r.estat||'')!=='ext').map(r=>r.id));
+    desired = desired.filter(r=> !confirmedIds.has(r.id));      // no sobreescriguis una confirmada
     const desiredIds=new Set(desired.map(r=>r.id));
     const wsS=fmtDate(ws), weS=fmtDate(we);
-    const mineExt = DATA.filter(r=>r.source==='ical' && r.prof===me);
-    const toDel = mineExt.filter(r=> !desiredIds.has(r.id) && ( (r.date>=wsS && r.date<=weS) ) ).map(r=>r.id);
+    // Només reconciliem les OCUPACIONS sense confirmar (estat 'ext'); les confirmades es queden.
+    const mineExt = DATA.filter(r=>r.source==='ical' && r.prof===me && (r.estat||'')==='ext');
+    const toDel = mineExt.filter(r=> !desiredIds.has(r.id) && (r.date>=wsS && r.date<=weS) ).map(r=>r.id);
     try {
       if(SUPABASE){
         if(toDel.length) await sb.from('reserves').delete().in('id', toDel);
         if(desired.length) await sb.from('reserves').upsert(desired.map(cleanRow), { onConflict:'id' });
         await Store.refresh();
       } else {
-        let a = Local.load().filter(r=> !(r.source==='ical' && r.prof===me && r.date>=wsS && r.date<=weS) );
+        let a = Local.load().filter(r=> !(r.source==='ical' && r.prof===me && (r.estat||'')==='ext' && r.date>=wsS && r.date<=weS) );
         a = a.concat(desired); Local.save(a); DATA = Local.load();
       }
     } catch(e){ console.error('iCal sync write', e); return {ok:false,msg:'Error desant l\'ocupació importada.'}; }
@@ -886,12 +895,13 @@
         const top=(toMin(r.start)-hIni*60)*PXMIN;
         const hgt=Math.max(r.dur*PXMIN-2, 16);
         const est=r.estat||'feta';
-        // Ocupació importada d'una agenda externa (Doctoralia / Google Calendar): només bloqueja.
-        if(r.source==='ical' || est==='ext'){
+        // Ocupació importada SENSE confirmar (Doctoralia / Google): bloqueja i es pot "confirmar".
+        if(est==='ext'){
           const elx=document.createElement('div'); elx.className='ev est-ext'+(r.prof===me?' mine':'');
           elx.style.top=top+'px'; elx.style.height=hgt+'px';
-          elx.innerHTML='<div class="en">🔒 Ocupat</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · agenda externa</div>';
-          if(r.prof===me) elx.addEventListener('click', e=>{ e.stopPropagation(); alert('Aquesta franja ve de la teva agenda externa (Doctoralia / Google Calendar) i només ocupa el despatx.\n\nPer canviar-la o anul·lar-la, fes-ho a la teva agenda de Doctoralia/Google: aquí s\'actualitzarà sola.'); });
+          const nm = r.nota ? ('🔒 '+escapeHtml(r.nota)) : '🔒 Ocupat';
+          elx.innerHTML='<div class="en">'+nm+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · agenda externa</div>';
+          if(r.prof===me) elx.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r, convert:true }); });
           lane.appendChild(elx); return;
         }
         // ⚠️ avís: reserva pròpia sense pacient assignat (les alienes tenen pacient_id ocult, per això r.prof===me)
@@ -903,9 +913,10 @@
         // 💰 = pendent de cobrament (només visible per a la pròpia / propietari)
         const payG=(r.cobrat===false && est!=='no' && (r.prof===me || isOwner()))?' 💰':'';
         const pacWarn=senseP?' ⚠️':'';
+        const extG=(r.source==='ical')?' 📅':'';   // ve d'una agenda externa, ja confirmada
         const pc=r.pacient_id?pacById(r.pacient_id):null;
         const pacTxt=pc?(' · '+escapeHtml(pc.nom)):'';
-        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+pacWarn+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+pacTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
+        el.innerHTML='<div class="en">'+p.nom+(r.serie?' 🔁':'')+estG+payG+pacWarn+extG+'</div><div class="et">'+r.start+'–'+toHHMM(toMin(r.start)+r.dur)+' · '+r.dur+"'"+preuTxt+pacTxt+(r.nota?' · '+escapeHtml(r.nota):'')+'</div>';
         el.addEventListener('click', e=>{ e.stopPropagation(); openModal({ edit:r }); });
         lane.appendChild(el);
       });
@@ -955,21 +966,35 @@
     fillStarts();
     if(opts.edit){
       const r=opts.edit; selEdit=r;
-      document.getElementById('modalTitle').textContent='Reserva';
+      const isConv = !!opts.convert || (r.estat==='ext');   // confirmar una cita d'agenda externa
+      document.getElementById('modalTitle').textContent = isConv ? 'Confirmar cita externa' : 'Reserva';
       mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
       mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
-      selEstat = r.estat||'feta';
-      selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false); mBeca.value = r.beca_id||'';
-      fillPacients(r.pacient_id||'');
+      selEstat = isConv ? 'feta' : (r.estat||'feta');   // 'ext' no és un estat triable → per defecte "feta"
+      if(isConv){
+        // En confirmar, per defecte tracta-la com una sessió normal (cobrada a l'acte), editable.
+        selPaga='efectiu'; mPaga.value='efectiu'; selCobrat=true; mBeca.value='';
+        const match=matchPacientByName(r.nota);   // enllaça amb un pacient de la llista pel nom
+        fillPacients(match||'');
+        if(match){
+          mNota.value='';                          // ja queda identificat pel pacient; evita duplicar el nom
+          const pc=pacById(match); if(pc && pc.preu!=null && pc.preu!=='') mPreu.value=pc.preu;   // preu del pacient
+        }
+      } else {
+        selPaga = r.pagament||'efectiu'; mPaga.value=selPaga; selCobrat = (r.cobrat!==false); mBeca.value = r.beca_id||'';
+        fillPacients(r.pacient_id||'');
+      }
       const canEdit = isOwner() || r.prof===me;
       [mDesp,mProf,mStart,mNota,mPreu,mPaga,mPacient].forEach(el=>el.disabled=!canEdit);
       mDurs.style.pointerEvents=canEdit?'auto':'none'; mDurs.style.opacity=canEdit?1:.6;
       mEstat.style.pointerEvents=canEdit?'auto':'none'; mEstat.style.opacity=canEdit?1:.6;
       mCobr.style.pointerEvents=canEdit?'auto':'none'; mCobr.style.opacity=canEdit?1:.6;
       document.getElementById('mSave').style.display=canEdit?'':'none';
-      document.getElementById('mDelete').style.display=canEdit?'':'none';
-      document.getElementById('mDeleteSerie').style.display=(canEdit && r.serie)?'':'none';
+      document.getElementById('mSave').textContent = isConv ? 'Confirmar reserva' : 'Desar';
+      document.getElementById('mDelete').style.display=(canEdit && !isConv)?'':'none';
+      document.getElementById('mDeleteSerie').style.display=(canEdit && r.serie && !isConv)?'':'none';
       mRepWrap.style.display='none';   // la repetició només en crear
+      document.getElementById('mConvHint').style.display = isConv ? '' : 'none';
     } else {
       selEdit=null;
       document.getElementById('modalTitle').textContent='Nova reserva';
@@ -985,9 +1010,10 @@
       mDurs.style.pointerEvents='auto'; mDurs.style.opacity=1;
       mEstat.style.pointerEvents='auto'; mEstat.style.opacity=1;
       mCobr.style.pointerEvents='auto'; mCobr.style.opacity=1;
-      document.getElementById('mSave').style.display='';
+      document.getElementById('mSave').style.display=''; document.getElementById('mSave').textContent='Desar';
       document.getElementById('mDelete').style.display='none';
       document.getElementById('mDeleteSerie').style.display='none';
+      document.getElementById('mConvHint').style.display='none';
       mRepWrap.style.display=''; mRep.value='none'; mRepCountWrap.style.display='none'; mRepCount.value=8;
     }
     document.getElementById('mNotaHint').innerHTML = myVeuOwner
@@ -1046,7 +1072,9 @@
     if(selEdit){
       // data de cobrament: si ja en tenia, es manté; si es marca ara com a cobrat, avui; si es desmarca, null
       base.cobrat_data = base.cobrat ? (selEdit.cobrat_data || avui()) : null;
-      Store.update(Object.assign({ id:selEdit.id, date:selEdit.date||fmtDate(curDate), serie:selEdit.serie||null }, base));
+      // Es manté l'origen: una cita externa confirmada segueix marcada com 'ical' (estat passa a 'feta'),
+      // així la sincronització sap que ja NO l'ha de tocar ni tornar a crear.
+      Store.update(Object.assign({ id:selEdit.id, date:selEdit.date||fmtDate(curDate), serie:selEdit.serie||null, source:selEdit.source||null }, base));
       closeModal(); render(); return;
     }
     const mode=mRep.value;
@@ -1083,7 +1111,7 @@
   mesPick.onchange=renderReport; setPick.onchange=renderReport; baseCom.onchange=renderReport;
   // Import que compta al període segons la base ('caixa' = cobrat aquest període; 'real' = realitzat aquest període). null si no compta.
   function importPeriode(r){
-    if(r.source==='ical' || r.estat==='ext') return null;   // ocupació externa: no compta per a la comissió
+    if(r.estat==='ext') return null;   // ocupació externa SENSE confirmar: no compta (les confirmades sí)
     const e=r.estat||'feta';
     if(baseCom.value==='caixa'){ return (r.cobrat===true && e!=='no' && inRange(dataCobrament(r))) ? sessPreu(r) : null; }
     return (e==='feta' && inRange(r.date)) ? sessPreu(r) : null;
