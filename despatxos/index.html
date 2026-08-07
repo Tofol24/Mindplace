@@ -939,7 +939,7 @@
   const mRepCountWrap=document.getElementById('mRepCountWrap'), mRepCount=document.getElementById('mRepCount');
   const mEstat=document.getElementById('mEstat');
   const mPaga=document.getElementById('mPaga'), mCobr=document.getElementById('mCobr'), mBeca=document.getElementById('mBeca');
-  let selDur=50, selEdit=null, selEstat='feta', selPaga='efectiu', selCobrat=true;
+  let selDur=50, selEdit=null, selEstat='feta', selPaga='efectiu', selCobrat=true, converting=false;
   // Formes que per defecte es cobren a l'acte:
   const PAGA_ALACTE = { efectiu:1, bizum:1, transferencia:1 };
 
@@ -964,9 +964,11 @@
   function openModal(opts){
     opts=opts||{};
     fillStarts();
+    converting=false;
     if(opts.edit){
       const r=opts.edit; selEdit=r;
       const isConv = !!opts.convert || (r.estat==='ext');   // confirmar una cita d'agenda externa
+      converting = isConv;
       document.getElementById('modalTitle').textContent = isConv ? 'Confirmar cita externa' : 'Reserva';
       mDesp.value=r.desp; mProf.value=r.prof; mStart.value=r.start; selDur=r.dur; mNota.value=r.nota||'';
       mPreu.value = (r.preu!=null && r.preu!=='') ? r.preu : (cfg.preus[r.prof]||'');
@@ -1022,7 +1024,7 @@
     paintDurs(); paintEstat(); paintCobr(); toggleBecaField(); checkWarn();
     modal.classList.add('on');
   }
-  function closeModal(){ modal.classList.remove('on'); selEdit=null; }
+  function closeModal(){ modal.classList.remove('on'); selEdit=null; converting=false; }
   document.getElementById('mCancel').onclick=closeModal;
   modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
   [mDesp,mStart].forEach(el=>el.onchange=checkWarn);
@@ -1036,11 +1038,12 @@
     const conf = overlapsOn(fmtDate(curDate), mDesp.value, mStart.value, selDur, selEdit?selEdit.id:null);
     const endM = toMin(mStart.value)+selDur;
     let msg='';
-    if(conf) msg='⚠️ Aquest despatx ja està ocupat en aquesta franja.';
+    // En confirmar una cita externa el solapament NO bloqueja (la cita ja ocupava aquell lloc); només avisa.
+    if(conf) msg = converting ? '⚠️ Ja hi ha una altra reserva en aquesta franja; es confirmarà igualment.' : '⚠️ Aquest despatx ja està ocupat en aquesta franja.';
     else if(endM>cfg.hFi*60) msg='⚠️ La reserva acaba després de l\'horari ('+toHHMM(cfg.hFi*60)+').';
     warn.textContent=msg; warn.classList.toggle('on', !!msg);
-    document.getElementById('mSave').disabled = conf;
-    return !conf;
+    document.getElementById('mSave').disabled = conf && !converting;
+    return converting || !conf;
   }
 
   // --- dates de la sèrie recurrent ---
