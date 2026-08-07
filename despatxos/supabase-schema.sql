@@ -47,7 +47,8 @@ create index if not exists reserves_date_idx on public.reserves (date);
 create table if not exists public.profiles (
   id   uuid primary key references auth.users(id) on delete cascade,
   prof text not null,                     -- 'tofol','bea','elena','mariana','cristina','victoria','nuria'
-  role text default ''                    -- 'owner' para Tòfol; vacío para el resto
+  role text default '',                   -- 'owner' para Tòfol; vacío para el resto
+  veu_owner boolean default false         -- true = contractada (el propietario ve sus notas); false = autónoma (privadas)
 );
 
 -- 3) FUNCIONES DE AYUDA (para las políticas) --------------------------------
@@ -68,6 +69,13 @@ alter table public.profiles enable row level security;
 drop policy if exists "profiles_read_own" on public.profiles;
 create policy "profiles_read_own" on public.profiles
   for select to authenticated using (id = auth.uid());
+-- Cada usuaria puede cambiar su propio perfil, pero SOLO la columna veu_owner
+-- (no puede tocar 'role' ni 'prof' → evita que alguien se ponga 'owner').
+drop policy if exists "profiles_update_own" on public.profiles;
+create policy "profiles_update_own" on public.profiles
+  for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
+revoke update on public.profiles from authenticated;
+grant update (veu_owner) on public.profiles to authenticated;
 
 -- LECTURA de la tabla base: cada una solo lee SUS filas (con precio y nota).
 -- La ocupación de las demás se lee por la vista `agenda_view` (paso 4b), que
@@ -105,7 +113,11 @@ create view public.agenda_view with (security_invoker = off) as
   select
     r.id, r.desp, r.prof, r.date, r.start, r.dur, r.estat, r.serie, r.created_at,
     case when r.prof = public.my_prof() or public.is_owner() then r.preu else null end as preu,
-    case when r.prof = public.my_prof() or public.is_owner() then r.nota else null end as nota,
+    -- La NOTA (pot contenir el nom del pacient) només la veu qui l'escriu; el
+    -- propietari només si aquella professional és "contractada" (veu_owner).
+    case when r.prof = public.my_prof()
+              or (public.is_owner() and exists (select 1 from public.profiles p where p.prof = r.prof and coalesce(p.veu_owner,false)))
+         then r.nota else null end as nota,
     case when r.prof = public.my_prof() or public.is_owner() then r.pagament else null end as pagament,
     case when r.prof = public.my_prof() or public.is_owner() then r.cobrat else null end as cobrat,
     case when r.prof = public.my_prof() or public.is_owner() then r.cobrat_data else null end as cobrat_data,
