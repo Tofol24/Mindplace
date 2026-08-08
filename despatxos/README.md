@@ -33,6 +33,8 @@ la **comissió del 20 %** que APRENS factura per servei — **sense cap nom de p
 - **Sesiones por estado**: pestaña con el resumen del mes agrupado por estado
   (realizadas, pendientes, no realizadas, **cobradas** con bruto/comisión/neto,
   pendientes de cobro y reservas sin paciente asignado); cada grupo se abre en lista.
+  Incluye **«Pendientes con paciente»**: sesiones hechas con paciente asignado pero
+  aún no cobradas, con la **comisión prevista desglosada por meses** (todas las fechas).
 - **Ajustes** (solo propietario): precio sugerido y **contraseña** de cada profesional,
   % de comisión y franja horaria.
 - **Agenda externa (Doctoralia / Google Calendar)**: cada profesional puede pegar en su
