@@ -1192,29 +1192,36 @@
   const sesMes=document.getElementById('sesMes');
   let selSesGroup='realitzades';
   sesMes.onchange=renderSessions;
+  const mesLabel = mm => { const [y,mo]=mm.split('-'); return (MESOS[+mo-1]||mo)+' '+y; };
   function sesGroups(){
     return [
       { key:'realitzades', icon:'🟢', label:'Realitzades',            pred:r=>(r.estat||'feta')==='feta' },
       { key:'pend',        icon:'⏳', label:'Pendents (assistència)',  pred:r=>r.estat==='pend' },
       { key:'no',          icon:'✖️', label:'No realitzades',          pred:r=>r.estat==='no' },
       { key:'cobrades',    icon:'✅', label:'Cobrades',                pred:r=>(r.estat||'feta')==='feta' && r.cobrat===true },
+      // Fetes, amb pacient assignat, però pendents de cobrar → comissió PREVISTA (totes les dates, per mesos)
+      { key:'pendpac',     icon:'🧾', label:'Pendents amb pacient',    pred:r=>(r.estat||'feta')==='feta' && r.cobrat===false && r.pacient_id, forecast:true },
       { key:'pendcob',     icon:'💰', label:'Pendents de cobrament',   pred:r=>(r.estat||'feta')==='feta' && r.cobrat===false },
       { key:'sensepac',    icon:'⚠️', label:'Sense pacient assignat',  pred:r=>r.prof===me && !r.pacient_id },
     ];
   }
   function renderSessions(){
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
-    document.getElementById('sesScope').textContent = isOwner() ? 'Veus les de totes les professionals.' : 'Veus les teves.';
+    const owner=isOwner();
+    document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals.' : 'Veus les teves.';
     const m=sesMes.value;
-    const rows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);   // sessions reals del mes (sense ocupacions externes)
+    const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);   // sessions reals del mes (sense ocupacions externes)
     const groups=sesGroups();
     const cont=document.getElementById('sesCards'); cont.innerHTML='';
     groups.forEach(g=>{
-      const list=rows.filter(g.pred);
+      // El grup "pendpac" és una PREVISIÓ: compta totes les dates, no només el mes triat.
+      const src = g.forecast ? Store.all().filter(r=> r.estat!=='ext') : monthRows;
+      const list=src.filter(g.pred);
       const brut=list.reduce((s,r)=>s+sessPreu(r),0), com=brut*cfg.pct/100, net=brut-com;
       let sub='';
       if(g.key==='cobrades')       sub='<div class="ksub">Brut '+brut.toFixed(0)+' € · Comissió '+com.toFixed(0)+' € · Net '+net.toFixed(0)+' €</div>';
       else if(g.key==='realitzades') sub='<div class="ksub">Brut '+brut.toFixed(0)+' €</div>';
+      else if(g.key==='pendpac')     sub='<div class="ksub">Comissió prevista '+com.toFixed(0)+' € · totes les dates</div>';
       else if(g.key==='pendcob')     sub='<div class="ksub">Import '+brut.toFixed(0)+' €</div>';
       const el=document.createElement('div');
       el.className='kpi click'+(selSesGroup===g.key?' sel':'');
@@ -1223,13 +1230,35 @@
       cont.appendChild(el);
     });
     const g=groups.find(x=>x.key===selSesGroup)||groups[0];
-    const list=rows.filter(g.pred).slice().sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+    document.getElementById('sesListWrap').style.display='';
+    const tb=document.getElementById('sesListBody'); tb.innerHTML='';
+
+    // Vista especial de PREVISIÓ: comissió prevista per mesos (totes les dates)
+    if(g.forecast){
+      document.getElementById('sesListTitle').textContent='🧾 Comissió prevista per mes · fetes amb pacient i pendents de cobrar (totes les dates)';
+      document.getElementById('sesListHead').innerHTML='<th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió prevista</th>';
+      const list=Store.all().filter(r=> r.estat!=='ext').filter(g.pred);
+      const byMonth={};
+      list.forEach(r=>{ const mm=(r.date||'').slice(0,7); if(!mm) return; (byMonth[mm]=byMonth[mm]||{n:0,brut:0}); byMonth[mm].n++; byMonth[mm].brut+=sessPreu(r); });
+      const months=Object.keys(byMonth).sort();
+      if(!months.length){ tb.innerHTML='<tr><td colspan="4" class="muted">Cap sessió feta amb pacient pendent de cobrar. 🎉</td></tr>'; return; }
+      let tn=0,tbr=0;
+      months.forEach(mm=>{ const a=byMonth[mm], com=a.brut*cfg.pct/100; tn+=a.n; tbr+=a.brut;
+        const tr=document.createElement('tr');
+        tr.innerHTML='<td>'+mesLabel(mm)+'</td><td class="num">'+a.n+'</td><td class="num">'+a.brut.toFixed(0)+' €</td><td class="num"><b>'+com.toFixed(0)+' €</b></td>';
+        tb.appendChild(tr);
+      });
+      const tr=document.createElement('tr'); tr.className='tot';
+      tr.innerHTML='<td>TOTAL</td><td class="num">'+tn+'</td><td class="num">'+tbr.toFixed(0)+' €</td><td class="num">'+(tbr*cfg.pct/100).toFixed(0)+' €</td>';
+      tb.appendChild(tr);
+      return;
+    }
+
+    // Vista normal: llista de sessions del mes seleccionat
+    const list=monthRows.filter(g.pred).slice().sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
     document.getElementById('sesListTitle').textContent=g.icon+' '+g.label+' · '+list.length;
-    const owner=isOwner();
     document.getElementById('sesListHead').innerHTML='<th>Data</th><th>Hora</th>'+(owner?'<th>Prof.</th>':'')+'<th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th>Pacient</th><th>Estat</th>';
     const estLbl={feta:'Realitzada',pend:'Pendent',no:'No realitzada'};
-    const tb=document.getElementById('sesListBody'); tb.innerHTML='';
-    document.getElementById('sesListWrap').style.display='';
     if(!list.length){ tb.innerHTML='<tr><td colspan="'+(owner?8:7)+'" class="muted">Cap sessió en aquest grup aquest mes.</td></tr>'; return; }
     list.forEach(r=>{
       const pc=r.pacient_id?pacById(r.pacient_id):null;
