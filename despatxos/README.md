@@ -30,6 +30,9 @@ la **comissió del 20 %** que APRENS factura per servei — **sense cap nom de p
   configurable). Exporta **CSV**.
 - **Extractos mensuales**: visor por año con **bruto, comisión y neto** mes a mes
   (desde el 1 de cada mes). Exporta **CSV**.
+- **Sesiones por estado**: pestaña con el resumen del mes agrupado por estado
+  (realizadas, pendientes, no realizadas, **cobradas** con bruto/comisión/neto,
+  pendientes de cobro y reservas sin paciente asignado); cada grupo se abre en lista.
 - **Ajustes** (solo propietario): precio sugerido y **contraseña** de cada profesional,
   % de comisión y franja horaria.
 - **Agenda externa (Doctoralia / Google Calendar)**: cada profesional puede pegar en su

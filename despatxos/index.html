@@ -103,6 +103,10 @@
   .kpi{background:var(--fondo);border-radius:12px;padding:12px 14px;}
   .kpi .kn{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--azul);}
   .kpi .kl{font-size:11.5px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+  .kpi .ksub{font-size:11px;color:var(--gris);margin-top:4px;font-weight:600;}
+  .kpi.click{cursor:pointer;transition:outline .1s;}
+  .kpi.click:hover{outline:2px solid var(--linia);}
+  .kpi.sel{outline:2px solid var(--azul);}
 
   /* --- Modal --- */
   .modal{position:fixed;inset:0;background:rgba(20,30,50,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;}
@@ -162,6 +166,7 @@
     <div class="tabs">
       <button class="tab on" data-tab="agenda">🗓️ Agenda</button>
       <button class="tab" data-tab="comissions">📊 Comissions</button>
+      <button class="tab" data-tab="sessions">📋 Sessions</button>
       <button class="tab" data-tab="pendents">💰 Pendents</button>
       <button class="tab" data-tab="pacients">🧑 Pacients</button>
       <button class="tab" data-tab="beques">🎓 Beques</button>
@@ -217,6 +222,28 @@
         </div>
         <p class="note" id="comNote"></p>
         <p class="note">La comissió és el <span id="pctLbl2">20</span>% de la facturació. La <b>base</b> tria si compta pel dia de cobrament (facturable) o pel dia de la sessió (meritat).</p>
+      </div>
+    </section>
+
+    <!-- ================= SESSIONS PER ESTAT ================= -->
+    <section id="tab-sessions" style="display:none;">
+      <div class="panel">
+        <h2>Sessions per estat</h2>
+        <div class="sub">Resum del mes: sessions agrupades pel seu estat. Toca un grup per veure'n la llista. <span id="sesScope"></span></div>
+        <div class="row">
+          <label>Mes</label>
+          <input type="month" id="sesMes">
+        </div>
+        <div class="kpis" id="sesCards"></div>
+        <div id="sesListWrap" style="display:none;margin-top:6px;">
+          <h3 id="sesListTitle" style="margin:8px 0;"></h3>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr id="sesListHead"></tr></thead>
+              <tbody id="sesListBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -657,6 +684,7 @@
     render();
     const vis = id => { const el=document.getElementById(id); return el && el.style.display!=='none'; };
     if(vis('tab-comissions')) renderReport();
+    if(vis('tab-sessions')) renderSessions();
     if(vis('tab-pendents')) renderPendents();
     if(vis('tab-beques')) renderBeques();
     if(vis('tab-pacients')) renderPacients();
@@ -836,10 +864,11 @@
     t.onclick = ()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');
-      ['agenda','comissions','pendents','pacients','beques','extractes','perfil','ajustos'].forEach(name=>{
+      ['agenda','comissions','sessions','pendents','pacients','beques','extractes','perfil','ajustos'].forEach(name=>{
         document.getElementById('tab-'+name).style.display = (name===t.dataset.tab)?'':'none';
       });
       if(t.dataset.tab==='comissions') renderReport();
+      if(t.dataset.tab==='sessions') renderSessions();
       if(t.dataset.tab==='pendents') renderPendents();
       if(t.dataset.tab==='pacients') renderPacients();
       if(t.dataset.tab==='beques') renderBeques();
@@ -1157,6 +1186,64 @@
       const [a,b]=weekRange(base);
       return d>=a && d<=b;
     }
+  }
+
+  // ---------- SESSIONS PER ESTAT ----------
+  const sesMes=document.getElementById('sesMes');
+  let selSesGroup='realitzades';
+  sesMes.onchange=renderSessions;
+  function sesGroups(){
+    return [
+      { key:'realitzades', icon:'🟢', label:'Realitzades',            pred:r=>(r.estat||'feta')==='feta' },
+      { key:'pend',        icon:'⏳', label:'Pendents (assistència)',  pred:r=>r.estat==='pend' },
+      { key:'no',          icon:'✖️', label:'No realitzades',          pred:r=>r.estat==='no' },
+      { key:'cobrades',    icon:'✅', label:'Cobrades',                pred:r=>(r.estat||'feta')==='feta' && r.cobrat===true },
+      { key:'pendcob',     icon:'💰', label:'Pendents de cobrament',   pred:r=>(r.estat||'feta')==='feta' && r.cobrat===false },
+      { key:'sensepac',    icon:'⚠️', label:'Sense pacient assignat',  pred:r=>r.prof===me && !r.pacient_id },
+    ];
+  }
+  function renderSessions(){
+    if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
+    document.getElementById('sesScope').textContent = isOwner() ? 'Veus les de totes les professionals.' : 'Veus les teves.';
+    const m=sesMes.value;
+    const rows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);   // sessions reals del mes (sense ocupacions externes)
+    const groups=sesGroups();
+    const cont=document.getElementById('sesCards'); cont.innerHTML='';
+    groups.forEach(g=>{
+      const list=rows.filter(g.pred);
+      const brut=list.reduce((s,r)=>s+sessPreu(r),0), com=brut*cfg.pct/100, net=brut-com;
+      let sub='';
+      if(g.key==='cobrades')       sub='<div class="ksub">Brut '+brut.toFixed(0)+' € · Comissió '+com.toFixed(0)+' € · Net '+net.toFixed(0)+' €</div>';
+      else if(g.key==='realitzades') sub='<div class="ksub">Brut '+brut.toFixed(0)+' €</div>';
+      else if(g.key==='pendcob')     sub='<div class="ksub">Import '+brut.toFixed(0)+' €</div>';
+      const el=document.createElement('div');
+      el.className='kpi click'+(selSesGroup===g.key?' sel':'');
+      el.innerHTML='<div class="kn">'+list.length+'</div><div class="kl">'+g.icon+' '+g.label+'</div>'+sub;
+      el.onclick=()=>{ selSesGroup=g.key; renderSessions(); };
+      cont.appendChild(el);
+    });
+    const g=groups.find(x=>x.key===selSesGroup)||groups[0];
+    const list=rows.filter(g.pred).slice().sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+    document.getElementById('sesListTitle').textContent=g.icon+' '+g.label+' · '+list.length;
+    const owner=isOwner();
+    document.getElementById('sesListHead').innerHTML='<th>Data</th><th>Hora</th>'+(owner?'<th>Prof.</th>':'')+'<th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th>Pacient</th><th>Estat</th>';
+    const estLbl={feta:'Realitzada',pend:'Pendent',no:'No realitzada'};
+    const tb=document.getElementById('sesListBody'); tb.innerHTML='';
+    document.getElementById('sesListWrap').style.display='';
+    if(!list.length){ tb.innerHTML='<tr><td colspan="'+(owner?8:7)+'" class="muted">Cap sessió en aquest grup aquest mes.</td></tr>'; return; }
+    list.forEach(r=>{
+      const pc=r.pacient_id?pacById(r.pacient_id):null;
+      const e=r.estat||'feta';
+      const cob=(e==='feta') ? (r.cobrat===false?' · 💰 pendent':' · ✅ cobrada') : '';
+      const pacCell = pc ? escapeHtml(pc.nom) : ((r.prof===me && !r.pacient_id) ? '⚠️ —' : '—');
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td>'+r.date+'</td><td>'+r.start+'</td>'+(owner?'<td>'+escapeHtml((prof(r.prof)||{}).nom||r.prof)+'</td>':'')+
+        '<td>'+r.desp+'</td><td class="num">'+r.dur+"'</td>"+
+        '<td class="num">'+((r.preu!=null&&r.preu!=='')?r.preu+' €':'—')+'</td>'+
+        '<td>'+pacCell+'</td>'+
+        '<td>'+(estLbl[e]||e)+cob+'</td>';
+      tb.appendChild(tr);
+    });
   }
 
   function renderReport(){
