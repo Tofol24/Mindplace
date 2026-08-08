@@ -342,6 +342,23 @@
       </div>
 
       <div class="panel">
+        <h2>🔑 La meva contrasenya</h2>
+        <div class="sub">Canvia la teva contrasenya d'accés quan vulguis. Mínim <b>6 caràcters</b>. La faràs servir el pròxim cop que entris.</div>
+        <div class="row" style="align-items:flex-end;flex-wrap:wrap;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Nova contrasenya</label>
+            <input type="password" id="perfPass1" autocomplete="new-password" style="width:200px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--gris);margin-bottom:4px;">Repeteix-la</label>
+            <input type="password" id="perfPass2" autocomplete="new-password" style="width:200px;">
+          </div>
+          <button class="btn" id="perfPassSave">Canviar</button>
+        </div>
+        <p class="note" id="perfPassMsg"></p>
+      </div>
+
+      <div class="panel">
         <h2>📅 Agenda externa (Doctoralia / Google Calendar)</h2>
         <div class="sub">Enganxa l'enllaç secret <b>iCal</b> de la teva agenda i les teves cites entraran soles a despatxos i <b>ocuparan el despatx</b> perquè ningú reservi a sobre. Es refresca sol (cada uns minuts). Serveix per <b>ocupar</b>: no compta encara per a la comissió.</div>
         <div class="row" style="align-items:flex-end;flex-wrap:wrap;">
@@ -1518,6 +1535,8 @@
     perfIcal.value = myIcal();
     perfIcalDesp.value = myIcalDespN();
     perfIcalMsg.textContent = myIcal() ? '✔️ Agenda externa connectada. Ocupa el Despatx '+myIcalDespN()+'.' : '';
+    const p1=document.getElementById('perfPass1'), p2=document.getElementById('perfPass2');
+    if(p1) p1.value=''; if(p2) p2.value=''; document.getElementById('perfPassMsg').textContent='';
   }
   perfTipus.onchange=async ()=>{
     const val = perfTipus.value==='contractada';
@@ -1527,6 +1546,23 @@
     } else { cfg.veuOwner = cfg.veuOwner || {}; cfg.veuOwner[me]=val; saveCfg(cfg); }
     renderPerfil();
   };
+  document.getElementById('perfPassSave').onclick=async ()=>{
+    const p1=document.getElementById('perfPass1'), p2=document.getElementById('perfPass2');
+    const msg=document.getElementById('perfPassMsg');
+    const a=p1.value, b=p2.value;
+    if(a.length<6){ msg.textContent='⚠️ La contrasenya ha de tenir com a mínim 6 caràcters.'; return; }
+    if(a!==b){ msg.textContent='⚠️ Les dues contrasenyes no coincideixen.'; return; }
+    msg.textContent='Canviant…';
+    if(SUPABASE){
+      const { error } = await sb.auth.updateUser({ password:a });
+      if(error){ msg.textContent='⚠️ No s\'ha pogut canviar: '+error.message; return; }
+    } else {
+      cfg.claus=cfg.claus||{}; cfg.claus[me]=a; saveCfg(cfg);
+    }
+    p1.value=''; p2.value='';
+    msg.textContent='✔️ Contrasenya canviada. La faràs servir el pròxim cop que entris.';
+  };
+
   async function saveIcal(){
     const url=perfIcal.value.trim(); const desp=Number(perfIcalDesp.value)||1;
     if(url && !/^https:\/\//i.test(url)){ perfIcalMsg.textContent='⚠️ L\'enllaç ha de començar per https://'; return false; }
