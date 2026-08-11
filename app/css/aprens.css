@@ -112,6 +112,19 @@ body{
 .hub-tag.soon{background:#eceef1;color:var(--gris)}
 
 /* ---- Cabecera de bienvenida con foto ---- */
+/* ¿Para qué sirven estos ejercicios? (motivo y objetivo) */
+.porque{background:linear-gradient(180deg,#fbf8f1,#f4efe6);border:1px solid var(--linea);border-top:4px solid #7d9b86;border-radius:18px;padding:18px 18px;margin-bottom:18px}
+.porque .pq-tit{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:700;color:#4f6a58;margin-bottom:7px}
+.porque .pq-lead{font-size:14px;line-height:1.62;color:var(--tinta);margin:0 0 11px}
+.porque .pq-sello{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:15.5px;color:#4f6a58;text-align:center;background:#e7eee8;border-radius:12px;padding:11px 13px;line-height:1.5}
+.porque .pq-more{margin-top:11px}
+.porque .pq-more>summary{cursor:pointer;color:#4f6a58;font-weight:600;font-size:13px;list-style:none}
+.porque .pq-more>summary::-webkit-details-marker{display:none}
+.porque .pq-more>summary::before{content:"▸ "}
+.porque .pq-more[open]>summary::before{content:"▾ "}
+.porque .pq-full{margin-top:9px}
+.porque .pq-full p{font-size:13px;line-height:1.62;color:var(--tinta);margin:0 0 9px}
+.porque .pq-full i{color:#4f6a58}
 .hub-welcome{position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;min-height:190px;display:flex;align-items:flex-end;box-shadow:0 4px 20px rgba(43,38,32,.12)}
 .hub-welcome img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
 .hub-welcome::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(42,38,34,.12) 0%,rgba(42,38,34,.05) 45%,rgba(42,38,34,.72) 100%)}
