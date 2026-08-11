@@ -232,6 +232,25 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  function porqueHTML(){
+    return `
+      <section class="porque">
+        <div class="pq-tit">¿Para qué sirven estos ejercicios?</div>
+        <p class="pq-lead">No buscan que te entiendas mejor, sino que aprendas <b>una nueva relación contigo</b>. Con la <b>Atención Interna Sensorial (AIS)</b> entrenas algo sencillo y profundo: parar, y llevar tu atención a lo que siente tu cuerpo — no para quitarlo, ni calmarlo, ni siquiera entenderlo, sino <b>para estar con ello</b>.</p>
+        <div class="pq-sello">«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»</div>
+        <details class="pq-more"><summary>Leer el porqué completo</summary>
+          <div class="pq-full">
+            <p>La reconstrucción personal no se queda en entenderte, analizarte o saber por qué eres como eres. Tiene que convertirse en una <b>nueva relación contigo mismo</b>.</p>
+            <p>Por eso trabajamos la <b>Atención Interna Sensorial (AIS)</b>: parar y llevar conscientemente tu atención hacia lo que está sintiendo tu cuerpo. No para quitar la sensación. No para tranquilizarla. Ni siquiera para entenderla. <b>Simplemente para estar con ella.</b></p>
+            <p>Cada vez que haces AIS entrenas algo muy profundo: que, sea cual sea la sensación que aparezca —miedo, vacío, tristeza, tensión, inseguridad—, tú permanezcas ahí con ella. Es una forma de decirle a tu cuerpo, sin palabras: <i>«No necesito que estés bien para estar contigo. Estoy aquí también cuando duele».</i></p>
+            <p>Y esto no ocurre porque un día lo entiendas: ocurre <b>por repetición</b>. Poco a poco, tu cuerpo comprueba que no lo abandonas cuando aparecen sensaciones difíciles, hasta que empieza a <b>confiar en ti</b>.</p>
+            <p>Ese es el objetivo: <b>acompañar y querer a tu cuerpo desde el sentir</b>, sea cual sea la sensación. Comprenderte será importante. Pero la transformación llega cuando tu cuerpo empieza a experimentar, una y otra vez, algo distinto: <i>«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo».</i></p>
+            <p>La terapia es un entrenamiento. La atención, como un músculo, se fortalece cada vez que la pones. No desde la razón, ni el análisis, ni el «por qué». Simplemente: <b>sentir conscientemente</b>.</p>
+          </div>
+        </details>
+      </section>`;
+  }
+
   function renderHub(){
     removeExportBar();
     screen.classList.remove("iframe-host");
@@ -273,6 +292,7 @@
           <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
         </div>
       </div>
+      ${porqueHTML()}
       ${continuidadHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
