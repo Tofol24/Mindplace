@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Formentor Flow · Exploración inicial</title>
+<meta name="theme-color" content="#103A44">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --mar:#103A44; --mar-2:#1B5A68; --mar-3:#2E7C8A; --pi:#5C7A56; --pi-2:#47623F;
+    --arena:#C7B393; --llauto:#A87C39; --llauto-2:#855F26;
+    --piedra:#F4F0E8; --piedra-2:#ECE6DA; --blanc:#FCFBF7;
+    --tinta:#17242A; --tinta-2:#4E5A5F; --tinta-3:#7A848A; --linia:#DDD6C8; --linia-2:#E9E3D6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SFMono-Regular","SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  html,body{height:100%;}
+  body{font-family:var(--sans);background:var(--piedra);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.55;}
+  .wrap{min-height:100dvh;display:flex;flex-direction:column;max-width:640px;margin-inline:auto;}
+
+  /* progress */
+  .pbar{position:sticky;top:0;z-index:5;background:var(--piedra);padding:calc(env(safe-area-inset-top) + 14px) 22px 10px;}
+  .pbar .track{height:4px;background:var(--linia);border-radius:4px;overflow:hidden;}
+  .pbar .fill{height:100%;background:linear-gradient(90deg,var(--pi),var(--mar-3));border-radius:4px;width:0;transition:width .4s ease;}
+  .pbar .meta{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-3);}
+
+  main{flex:1;padding:14px 22px 24px;}
+  .screen{animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.screen{animation:none;}}
+
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--llauto-2);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--llauto);}
+  .q{font-family:var(--serif);font-size:clamp(1.35rem,4.6vw,1.7rem);line-height:1.22;color:var(--mar);margin-bottom:8px;text-wrap:balance;}
+  .help{color:var(--tinta-2);font-size:.95rem;margin-bottom:20px;}
+
+  /* intro / done hero */
+  .hero-k{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--llauto-2);margin-bottom:18px;}
+  .hero-h{font-family:var(--serif);font-size:clamp(2rem,7vw,2.9rem);line-height:1.04;color:var(--mar);margin-bottom:6px;}
+  .hero-s{font-family:var(--serif);font-style:italic;color:var(--mar-2);font-size:1.15rem;margin-bottom:22px;}
+  .intro-card{background:var(--blanc);border:1px solid var(--linia);border-left:3px solid var(--llauto);border-radius:16px;padding:20px 22px;font-size:1.02rem;color:var(--tinta);line-height:1.6;}
+  .intro-card p{margin-bottom:12px;}
+  .intro-card p:last-child{margin-bottom:0;}
+  .sign{margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--tinta-3);}
+
+  /* inputs */
+  textarea{width:100%;background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:13px 15px;font-family:var(--sans);font-size:1rem;color:var(--tinta);line-height:1.5;resize:vertical;min-height:120px;}
+  textarea:focus{outline:none;border-color:var(--mar-2);box-shadow:0 0 0 3px rgba(46,124,138,.12);}
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{display:flex;align-items:center;gap:12px;background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:13px 15px;cursor:pointer;font-size:.98rem;color:var(--tinta);text-align:left;transition:border-color .12s,background .12s;}
+  .opt:hover{border-color:var(--mar-2);}
+  .opt .bx{width:22px;height:22px;flex:none;border:2px solid var(--linia);display:grid;place-items:center;color:transparent;font-size:12px;}
+  .opt.multi .bx{border-radius:6px;} .opt.single .bx{border-radius:50%;}
+  .opt.on{border-color:var(--pi);background:#EEF3F0;}
+  .opt.on .bx{background:var(--pi);border-color:var(--pi);color:#fff;}
+  .opt.disabled{opacity:.45;pointer-events:none;}
+  .otherbox{margin-top:9px;display:none;}
+  .otherbox.on{display:block;}
+  .otherbox input{width:100%;background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:12px 14px;font-family:var(--sans);font-size:.98rem;color:var(--tinta);}
+  .otherbox input:focus{outline:none;border-color:var(--mar-2);}
+
+  .maxnote{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--llauto-2);margin-bottom:12px;}
+
+  /* scale single 1-5 */
+  .scale{display:flex;gap:8px;justify-content:space-between;margin:6px 0 4px;}
+  .scale button{flex:1;aspect-ratio:1;max-width:60px;border:1.5px solid var(--linia);background:var(--blanc);border-radius:12px;font-family:var(--serif);font-size:1.2rem;color:var(--mar-2);cursor:pointer;}
+  .scale button.on{background:var(--mar);color:#fff;border-color:var(--mar);}
+  .scale-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--tinta-3);margin-top:4px;}
+
+  /* matrix */
+  .matrix{display:flex;flex-direction:column;gap:14px;}
+  .mrow{background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:12px 14px;}
+  .mrow .ml{font-size:.95rem;margin-bottom:9px;color:var(--tinta);}
+  .dots{display:flex;gap:7px;}
+  .dots button{flex:1;height:34px;border:1.5px solid var(--linia);background:var(--piedra);border-radius:9px;font-family:var(--mono);font-size:.85rem;color:var(--tinta-2);cursor:pointer;}
+  .dots button.on{background:var(--mar-3);color:#fff;border-color:var(--mar-3);}
+  .mscale{display:flex;justify-content:space-between;font-size:.78rem;color:var(--tinta-3);margin:-4px 2px 14px;}
+
+  /* yes/no cond */
+  .cond{margin-top:14px;display:none;}
+  .cond.on{display:block;}
+
+  /* nav */
+  .nav{position:sticky;bottom:0;background:linear-gradient(0deg,var(--piedra) 70%,transparent);padding:14px 22px calc(env(safe-area-inset-bottom) + 16px);display:flex;gap:10px;}
+  .btn{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:15px 12px;border-radius:26px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta);cursor:pointer;min-height:50px;}
+  .btn.primary{background:var(--mar);color:#fff;border-color:var(--mar);flex:2;}
+  .btn.gold{background:var(--llauto);color:#fff;border-color:var(--llauto);}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .btn:active{transform:scale(.99);}
+
+  /* review */
+  .rev{display:flex;flex-direction:column;gap:10px;}
+  .rev .ri{background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:13px 15px;}
+  .rev .rq{font-size:.85rem;color:var(--tinta-3);margin-bottom:4px;}
+  .rev .ra{font-size:.98rem;color:var(--tinta);white-space:pre-wrap;}
+  .rev .ra.empty{color:var(--tinta-3);font-style:italic;}
+  .rev .edit{margin-top:8px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--llauto-2);background:none;border:1px solid var(--linia);border-radius:16px;padding:5px 10px;cursor:pointer;}
+
+  /* done */
+  .summary{width:100%;min-height:220px;background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--tinta);white-space:pre-wrap;}
+  .done-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .done-actions .btn{flex:none;}
+
+  footer{padding:10px 22px calc(env(safe-area-inset-bottom) + 16px);text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--tinta-3);}
+
+  @media print{
+    .pbar,.nav,footer,.done-actions{display:none!important;}
+    body{background:#fff;}
+    .summary{border:none;font-family:var(--sans);font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pbar" id="pbar">
+    <div class="track"><div class="fill" id="pfill"></div></div>
+    <div class="meta"><span id="pstep"></span><span>Formentor Flow</span></div>
+  </div>
+  <main id="main"></main>
+  <div class="nav" id="nav"></div>
+  <footer>Centre APRENS · Exploración inicial · Tus respuestas no se guardan en ningún servidor.</footer>
+</div>
+
+<script>
+/* ============================================================
+   Formentor Flow · Exploración Inicial RRHH
+   100% en el navegador. Sin backend, sin almacenamiento.
+   Al finalizar genera un resumen para copiar / enviar / imprimir.
+   ============================================================ */
+var DEST_EMAIL="aprens.tofol@gmail.com";
+
+var NEEDS=["Mejorar la comunicación","Mejorar la coordinación","Mejorar el liderazgo","Reducir la sobrecarga","Mejorar el clima laboral","Aumentar la implicación","Facilitar la resolución de conflictos","Mejorar la coordinación entre departamentos","Facilitar el arranque de temporada","Prevenir el desgaste","Mejorar la comunicación Dirección–mandos","Mejorar la comunicación mandos–equipos","Desarrollar las habilidades de los responsables"];
+var FRICTION=["Dirección → mandos","Mandos → equipos","Equipos → mandos","Entre departamentos","Dentro del propio departamento","Cambios de turno / relevos","Priorización","Falta de información","Exceso de demandas simultáneas","Recursos / personas disponibles","Incorporación de personal nuevo","Conflictos interpersonales"];
+var PHASES=["Pre-apertura","Primeras semanas","Acoplamiento de equipos","Temporada estable","Temporada de máxima demanda","Cierre","Preparación de la temporada siguiente"];
+var RECOVER=["Ritmos","Roles","Procedimientos","Coordinación","Relaciones","Comunicación","Cultura de equipo","Liderazgo","Conocimiento operativo","Incorporación de personal"];
+var LEADSKILLS=["Priorización","Comunicación","Delegación","Feedback","Gestión de conflictos","Trabajo bajo presión","Coordinación","Comunicación hacia Dirección","Motivación de equipos","Gestión de incidencias","Conversaciones difíciles"];
+var NOTWANT=["Una charla motivacional","Demasiado teórica","Demasiado psicológica","Difícil de aplicar","Que genere más carga","Que el personal la perciba como evaluación","Que quede olvidada tras unas semanas"];
+var FORMATS=["Charla","Workshop","Formación para mandos","Formación para equipos","Dinámicas","Evaluación / diagnóstico","Acompañamiento durante la temporada","Herramienta digital","No tenía un formato concreto en mente"];
+var TARGETS=["Dirección","Mandos","Equipos","RRHH","Determinados departamentos","Toda la organización","No lo tengo claro"];
+var INDIC=["Mejor comunicación","Menos conflictos","Mayor coordinación","Mayor autonomía","Menos incidencias","Resolución más rápida","Mejor clima","Menor rotación","Menor absentismo","Mayor bienestar","Mejor experiencia del huésped"];
+var M1=["Claridad de roles","Claridad de prioridades","Comunicación Dirección → mandos","Comunicación mandos → equipos","Comunicación equipos → mandos","Coordinación entre departamentos","Capacidad para resolver incidencias","Gestión de cambios de prioridad","Calidad de los relevos"];
+var M2=["Feedback","Clima laboral","Sentimiento de equipo","Apoyo entre compañeros","Capacidad de los responsables para trabajar bajo presión","Bienestar","Recuperación tras periodos intensos","Capacidad para pedir ayuda","Prevención del desgaste"];
+
+/* ---- screens ---- */
+var S=[
+  {type:"intro"},
+  {id:"q1_ahora",block:"Qué buscáis",type:"open",q:"Para empezar: ¿qué os ha llevado a plantear una colaboración de este tipo precisamente ahora?",help:"Con tus palabras. No hay respuestas correctas."},
+  {id:"q2_porque_psico",block:"Qué buscáis",type:"open",q:"¿Por qué pensaste en un profesional de la psicología para esta necesidad, y qué te gustaría que pudiera aportar?"},
+  {id:"q3_prioridades",block:"Qué buscáis",type:"multimax",max:3,q:"De estos posibles focos, ¿cuáles son vuestras 3 prioridades principales ahora?",help:"Selecciona hasta 3.",options:NEEDS,other:true},
+  {id:"q4_foto1",block:"Fotografía actual",type:"matrix",q:"Desde tu percepción actual, ¿cómo valorarías estos aspectos? (1 de 2)",help:"1 = necesita bastante mejora · 5 = funciona especialmente bien. Puedes dejar en blanco lo que no sepas.",rows:M1},
+  {id:"q5_foto2",block:"Fotografía actual",type:"matrix",q:"¿Y estos otros? (2 de 2)",help:"1 = necesita bastante mejora · 5 = funciona especialmente bien.",rows:M2},
+  {id:"q6_friccion",block:"Dónde se pierde fluidez",type:"multi",q:"Cuando el hotel está bajo mucha presión, ¿dónde percibes que aparecen con más frecuencia las dificultades?",help:"Marca todas las que apliquen.",options:FRICTION,other:true},
+  {id:"q7_una_friccion",block:"Dónde se pierde fluidez",type:"open",q:"Si pudieras eliminar UNA fricción del funcionamiento cotidiano del hotel, ¿cuál elegirías?",help:"Breve."},
+  {id:"q8_fase",block:"Estacionalidad",type:"multi",q:"¿Qué fase del año resulta más exigente organizacionalmente?",help:"Puedes marcar más de una.",options:PHASES},
+  {id:"q9_recuperar",block:"Estacionalidad",type:"multi",q:"¿Qué suele costar más recuperar cada año tras la reapertura?",options:RECOVER,other:true},
+  {id:"q10_repite",block:"Estacionalidad",type:"yesnocond",q:"¿Hay problemas o aprendizajes que tengas la sensación de que se repiten de una temporada a otra?",options:["Sí","En parte","No"],condOn:["Sí","En parte"],condQ:"¿Cuáles?"},
+  {id:"q11_lideres",block:"Responsables de área",type:"twolist",q:"Los responsables de área, por su posición entre Dirección y equipos, suelen tener una visión amplia del día a día.",help:"Selecciona lo que corresponda en cada columna.",subA:"¿Dónde tienen actualmente mayores fortalezas?",subB:"¿Dónde crees que agradecerían más herramientas?",options:LEADSKILLS},
+  {id:"q12_herramientas_presion",block:"Responsables de área",type:"scale5",q:"Cuando un responsable recibe mucha presión, ¿en qué medida crees que hoy dispone de herramientas para procesarla antes de trasladarla al equipo?",help:"1 = pocas herramientas · 5 = muchas. Es una percepción general, no sobre nadie en concreto.",lowLabel:"Pocas",highLabel:"Muchas"},
+  {id:"q13_fortalezas",block:"Fortalezas",type:"open",q:"¿Qué hace especialmente bien Formentor con sus personas y equipos, y qué de vuestra cultura NO deberíamos perder al intentar mejorar otras cosas?"},
+  {id:"q14_previas",block:"Experiencias previas",type:"yesnocond",q:"¿Habéis realizado antes formación o intervenciones sobre liderazgo, comunicación, bienestar o equipos?",options:["Sí","No"],condOn:["Sí"],condQ:"¿Qué funcionó, qué no, y qué hizo que algunas iniciativas se mantuvieran o desaparecieran?"},
+  {id:"q15_nodeseado",block:"Experiencias previas",type:"multi",q:"¿Qué NO te gustaría que fuera esta intervención?",options:NOTWANT,other:true},
+  {id:"q16_formato",block:"Formato esperado",type:"multi",q:"Cuando pensaste en contactar conmigo, ¿qué tipo de colaboración imaginabas inicialmente?",options:FORMATS,other:true},
+  {id:"q17_destinatario",block:"Formato esperado",type:"multi",q:"¿A quién consideras prioritario dirigir inicialmente la intervención?",options:TARGETS},
+  {id:"q18_exito",block:"Éxito",type:"open",q:"Imagina que han pasado seis meses y consideras que la intervención ha valido realmente la pena. ¿Qué estarías observando de manera diferente en el hotel?"},
+  {id:"q19_indicadores",block:"Éxito",type:"multi",q:"¿Qué indicadores serían importantes para ti?",options:INDIC,other:true},
+  {id:"q20_final",block:"Para terminar",type:"open",q:"¿Hay algo sobre el funcionamiento de los equipos, la presión de la temporada o la realidad del hotel que consideres importante que yo comprenda antes de proponeros cualquier intervención?"},
+  {type:"review"},
+  {type:"done"}
+];
+
+var ans={}; var idx=0;
+var main=document.getElementById('main'), nav=document.getElementById('nav');
+var questionScreens=S.filter(function(s){return s.id;}).length;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function curQuestionNumber(){var n=0;for(var i=0;i<=idx;i++){if(S[i].id)n++;}return n;}
+
+function render(){
+  var s=S[idx];
+  window.scrollTo(0,0);
+  // progress
+  var pf=document.getElementById('pfill'), ps=document.getElementById('pstep');
+  if(s.type==='intro'){pf.style.width='0%';ps.textContent='Introducción';}
+  else if(s.type==='review'){pf.style.width='100%';ps.textContent='Revisión';}
+  else if(s.type==='done'){pf.style.width='100%';ps.textContent='Enviar';}
+  else{var n=curQuestionNumber();pf.style.width=Math.round(n/questionScreens*100)+'%';ps.textContent='Pregunta '+n+' / '+questionScreens;}
+
+  if(s.type==='intro') return renderIntro();
+  if(s.type==='review') return renderReview();
+  if(s.type==='done') return renderDone();
+  return renderQuestion(s);
+}
+
+function renderIntro(){
+  main.innerHTML='<div class="screen">'
+    +'<p class="hero-k">Centre APRENS · Psicología aplicada al funcionamiento organizacional</p>'
+    +'<h1 class="hero-h">Antes de proponeros nada,<br>quiero comprenderos</h1>'
+    +'<p class="hero-s">Exploración inicial · Hotel Formentor</p>'
+    +'<div class="intro-card">'
+    +'<p>Isabel, gracias por el contacto. Antes de plantear ninguna propuesta cerrada, me gustaría entender bien qué estáis buscando y cómo percibes hoy el funcionamiento del hotel.</p>'
+    +'<p>Estas preguntas <b>no evalúan a personas ni a departamentos</b>. Me servirán para llegar a nuestra conversación con una primera fotografía de vuestras necesidades, fortalezas y prioridades, y evitar proponeros algo genérico que no responda a vuestra realidad.</p>'
+    +'<p>Son unos <b>10–15 minutos</b>. Puedes contestar con calma; nada se guarda hasta que tú decidas enviarlo.</p>'
+    +'<div class="sign">Tofol Villalonga · Psicólogo y neuropsicólogo</div>'
+    +'</div></div>';
+  nav.innerHTML='<button class="btn primary" id="start">Empezar →</button>';
+  document.getElementById('start').onclick=next;
+}
+
+function renderQuestion(s){
+  var h='<div class="screen"><p class="eyebrow">'+esc(s.block)+'</p><h2 class="q">'+s.q+'</h2>';
+  if(s.help) h+='<p class="help">'+esc(s.help)+'</p>';
+  if(s.type==='open'){
+    h+='<textarea id="inp" placeholder="Escribe aquí…">'+esc(ans[s.id]||'')+'</textarea>';
+  } else if(s.type==='multi'||s.type==='multimax'){
+    if(s.type==='multimax') h+='<p class="maxnote">Máximo '+s.max+'</p>';
+    h+=optsHTML(s,true);
+  } else if(s.type==='matrix'){
+    h+=matrixHTML(s);
+  } else if(s.type==='scale5'){
+    h+=scaleHTML(s);
+  } else if(s.type==='yesnocond'){
+    h+=optsHTML(s,false);
+    var cv=(ans[s.id]&&ans[s.id].cond)||'';
+    h+='<div class="cond'+(s.condOn.indexOf(ans[s.id]&&ans[s.id].val)>=0?' on':'')+'" id="cond"><textarea id="condinp" placeholder="'+esc(s.condQ)+'">'+esc(cv)+'</textarea></div>';
+  } else if(s.type==='twolist'){
+    h+=twolistHTML(s);
+  }
+  h+='</div>';
+  main.innerHTML=h;
+  wire(s);
+  nav.innerHTML='<button class="btn" id="prev">← Anterior</button><button class="btn primary" id="next">Siguiente →</button>';
+  document.getElementById('prev').onclick=prev;
+  document.getElementById('next').onclick=next;
+}
+
+function optsHTML(s,multi){
+  var sel=ans[s.id]; var arr=multi?(sel||[]):null;
+  var cls=multi?'multi':'single';
+  var h='<div class="opts">';
+  s.options.forEach(function(o,i){
+    var on=multi?(arr.indexOf(o)>=0):(sel&&sel.val===o||sel===o);
+    h+='<button type="button" class="opt '+cls+(on?' on':'')+'" data-o="'+esc(o)+'"><span class="bx">✓</span><span>'+esc(o)+'</span></button>';
+  });
+  if(s.other){
+    var oon=multi?(arr.indexOf('__other')>=0):false;
+    h+='<button type="button" class="opt '+cls+(oon?' on':'')+'" data-o="__other"><span class="bx">✓</span><span>Otro</span></button>';
+    h+='<div class="otherbox'+(oon?' on':'')+'" id="otherbox"><input id="otherinp" placeholder="¿Cuál?" value="'+esc((ans[s.id]&&ans[s.id].__other)||(multi&&ans['__other_'+s.id])||'')+'"></div>';
+  }
+  h+='</div>';
+  return h;
+}
+function matrixHTML(s){
+  var v=ans[s.id]||{};
+  var h='<div class="matrix">';
+  s.rows.forEach(function(r,i){
+    h+='<div class="mrow"><div class="ml">'+esc(r)+'</div><div class="dots" data-row="'+i+'">';
+    for(var n=1;n<=5;n++) h+='<button type="button" class="'+(v[i]===n?'on':'')+'" data-v="'+n+'">'+n+'</button>';
+    h+='</div></div>';
+  });
+  h+='</div>';
+  return h;
+}
+function scaleHTML(s){
+  var v=ans[s.id];
+  var h='<div class="scale">';
+  for(var n=1;n<=5;n++) h+='<button type="button" class="'+(v===n?'on':'')+'" data-v="'+n+'">'+n+'</button>';
+  h+='</div><div class="scale-ends"><span>'+esc(s.lowLabel||'1')+'</span><span>'+esc(s.highLabel||'5')+'</span></div>';
+  return h;
+}
+function twolistHTML(s){
+  var v=ans[s.id]||{a:[],b:[]};
+  function col(title,key,arr){
+    var h='<p class="maxnote" style="margin-top:10px">'+esc(title)+'</p><div class="opts">';
+    s.options.forEach(function(o){
+      var on=arr.indexOf(o)>=0;
+      h+='<button type="button" class="opt multi '+(on?'on':'')+'" data-col="'+key+'" data-o="'+esc(o)+'"><span class="bx">✓</span><span>'+esc(o)+'</span></button>';
+    });
+    return h+'</div>';
+  }
+  return col(s.subA,'a',v.a||[])+col(s.subB,'b',v.b||[]);
+}
+
+function wire(s){
+  if(s.type==='open'){
+    document.getElementById('inp').addEventListener('input',function(){ans[s.id]=this.value;});
+  } else if(s.type==='multi'||s.type==='multimax'){
+    if(!ans[s.id])ans[s.id]=[];
+    main.querySelectorAll('.opt').forEach(function(b){
+      b.addEventListener('click',function(){
+        var o=b.getAttribute('data-o'), arr=ans[s.id];
+        var pos=arr.indexOf(o);
+        if(pos>=0){arr.splice(pos,1);b.classList.remove('on');}
+        else{
+          if(s.type==='multimax'&&arr.filter(function(x){return x!=='__other';}).length>= s.max && o!=='__other'){return;}
+          arr.push(o);b.classList.add('on');
+        }
+        if(o==='__other'){var ob=document.getElementById('otherbox');if(ob)ob.classList.toggle('on',pos<0);}
+        if(s.type==='multimax')updateMaxDisable(s);
+      });
+    });
+    var oi=document.getElementById('otherinp');
+    if(oi)oi.addEventListener('input',function(){ if(!ans['__other_'+s.id]&&ans['__other_'+s.id]!=='')0; ans['__other_'+s.id]=this.value; });
+    if(s.type==='multimax')updateMaxDisable(s);
+  } else if(s.type==='matrix'){
+    if(!ans[s.id])ans[s.id]={};
+    main.querySelectorAll('.dots').forEach(function(row){
+      row.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click',function(){
+          var ri=+row.getAttribute('data-row'), val=+b.getAttribute('data-v');
+          if(ans[s.id][ri]===val){delete ans[s.id][ri];row.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});}
+          else{ans[s.id][ri]=val;row.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',+x.getAttribute('data-v')===val);});}
+        });
+      });
+    });
+  } else if(s.type==='scale5'){
+    main.querySelectorAll('.scale button').forEach(function(b){
+      b.addEventListener('click',function(){var val=+b.getAttribute('data-v');ans[s.id]=(ans[s.id]===val?null:val);main.querySelectorAll('.scale button').forEach(function(x){x.classList.toggle('on',ans[s.id]&&+x.getAttribute('data-v')===ans[s.id]);});});
+    });
+  } else if(s.type==='yesnocond'){
+    main.querySelectorAll('.opt').forEach(function(b){
+      b.addEventListener('click',function(){
+        var o=b.getAttribute('data-o');
+        ans[s.id]=ans[s.id]||{}; ans[s.id].val=o;
+        main.querySelectorAll('.opt').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-o')===o);});
+        document.getElementById('cond').classList.toggle('on',s.condOn.indexOf(o)>=0);
+      });
+    });
+    var ci=document.getElementById('condinp');
+    if(ci)ci.addEventListener('input',function(){ans[s.id]=ans[s.id]||{};ans[s.id].cond=this.value;});
+  } else if(s.type==='twolist'){
+    if(!ans[s.id])ans[s.id]={a:[],b:[]};
+    main.querySelectorAll('.opt').forEach(function(b){
+      b.addEventListener('click',function(){
+        var col=b.getAttribute('data-col'), o=b.getAttribute('data-o'), arr=ans[s.id][col];
+        var pos=arr.indexOf(o);
+        if(pos>=0){arr.splice(pos,1);b.classList.remove('on');}else{arr.push(o);b.classList.add('on');}
+      });
+    });
+  }
+}
+function updateMaxDisable(s){
+  var arr=ans[s.id]||[], full=arr.filter(function(x){return x!=='__other';}).length>=s.max;
+  main.querySelectorAll('.opt').forEach(function(b){
+    var o=b.getAttribute('data-o');
+    if(o==='__other')return;
+    b.classList.toggle('disabled', full && arr.indexOf(o)<0);
+  });
+}
+
+function prev(){ if(idx>0){idx--;render();} }
+function next(){ if(idx<S.length-1){idx++;render();} }
+
+/* ---- review ---- */
+function answerText(s){
+  var v=ans[s.id];
+  if(s.type==='open') return (v||'').trim();
+  if(s.type==='scale5') return v?(v+' / 5'):'';
+  if(s.type==='matrix'){ if(!v)return''; return s.rows.map(function(r,i){return v[i]?(r+': '+v[i]+'/5'):null;}).filter(Boolean).join('\n'); }
+  if(s.type==='yesnocond'){ if(!v||!v.val)return''; return v.val+(v.cond?(' — '+v.cond):''); }
+  if(s.type==='twolist'){ if(!v)return''; var a=(v.a||[]).join(', '), b=(v.b||[]).join(', '); return 'Fortalezas: '+(a||'—')+'\nHerramientas: '+(b||'—'); }
+  if(s.type==='multi'||s.type==='multimax'){
+    if(!v||!v.length)return'';
+    return v.map(function(o){return o==='__other'?('Otro: '+(ans['__other_'+s.id]||'')):o;}).join(', ');
+  }
+  return '';
+}
+function renderReview(){
+  var h='<div class="screen"><p class="eyebrow">Revisión</p><h2 class="q">Repasa antes de enviar</h2><p class="help">Puedes editar cualquier respuesta. Nada se ha guardado todavía.</p><div class="rev">';
+  S.forEach(function(s,i){
+    if(!s.id)return;
+    var a=answerText(s);
+    h+='<div class="ri"><div class="rq">'+esc(s.q)+'</div><div class="ra'+(a?'':' empty')+'">'+(a?esc(a):'(sin responder)')+'</div><button class="edit" data-i="'+i+'">Editar</button></div>';
+  });
+  h+='</div></div>';
+  main.innerHTML=h;
+  main.querySelectorAll('.edit').forEach(function(b){b.onclick=function(){idx=+b.getAttribute('data-i');render();};});
+  nav.innerHTML='<button class="btn" id="prev">← Anterior</button><button class="btn gold" id="finish">Finalizar y generar resumen →</button>';
+  document.getElementById('prev').onclick=prev;
+  document.getElementById('finish').onclick=next;
+}
+
+/* ---- done / summary ---- */
+function buildSummary(){
+  var d=new Date();
+  var lines=["FORMENTOR FLOW · EXPLORACIÓN INICIAL — RESPUESTAS DE RRHH (HOTEL FORMENTOR)","Fecha: "+d.toLocaleDateString('es-ES')+"  "+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),"".padEnd(56,"—")];
+  var block=null;
+  S.forEach(function(s){
+    if(!s.id)return;
+    if(s.block!==block){block=s.block;lines.push("");lines.push("· "+block.toUpperCase()+" ·");}
+    var a=answerText(s)||"(sin responder)";
+    lines.push("");lines.push(s.q);
+    a.split('\n').forEach(function(l){lines.push("  "+l);});
+  });
+  lines.push("");lines.push("".padEnd(56,"—"));
+  lines.push("Recogido con Formentor Flow · Exploración inicial (Centre APRENS). Sin almacenamiento automático.");
+  return lines.join("\n");
+}
+function renderDone(){
+  var sum=buildSummary();
+  main.innerHTML='<div class="screen"><p class="eyebrow">Enviar</p><h2 class="q">Gracias, Isabel</h2>'
+    +'<p class="help">Este es el resumen de tus respuestas. Elige cómo hacérmelo llegar. <b>Nada se ha guardado</b>: si cierras sin enviar, se pierde.</p>'
+    +'<textarea class="summary" id="sum" readonly>'+esc(sum)+'</textarea>'
+    +'<div class="done-actions">'
+    +'<button class="btn gold" id="copy">⧉ Copiar el resumen</button>'
+    +'<button class="btn primary" id="mail">✉ Enviar por email a Tofol</button>'
+    +'<button class="btn" id="print">🖨 Imprimir / guardar como PDF</button>'
+    +'</div></div>';
+  nav.innerHTML='<button class="btn" id="prev">← Volver a revisar</button>';
+  document.getElementById('prev').onclick=prev;
+  document.getElementById('copy').onclick=function(){
+    var b=this; navigator.clipboard&&navigator.clipboard.writeText(sum).then(function(){b.textContent='✓ Copiado';setTimeout(function(){b.textContent='⧉ Copiar el resumen';},1600);},function(){fallback(sum);});
+  };
+  document.getElementById('mail').onclick=function(){
+    var subj=encodeURIComponent("Formentor Flow · Exploración inicial — respuestas RRHH");
+    var body=encodeURIComponent(sum);
+    window.location.href="mailto:"+DEST_EMAIL+"?subject="+subj+"&body="+body;
+  };
+  document.getElementById('print').onclick=function(){window.print();};
+}
+function fallback(txt){var ta=document.getElementById('sum');ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}}
+
+render();
+</script>
+</body>
+</html>
