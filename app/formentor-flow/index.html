@@ -87,10 +87,12 @@
   .ctx .d{width:11px;height:11px;border-radius:50%;flex:none;}
 
   /* para */
-  .breath{display:grid;place-items:center;padding:20px 0 8px;}
-  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mar-2);animation:breathe 5.2s ease-in-out infinite;}
-  @keyframes breathe{0%,100%{transform:scale(.78);opacity:.65;}50%{transform:scale(1.06);opacity:1;}}
-  @media(prefers-reduced-motion:reduce){.ring{animation:none;}}
+  .breath{display:grid;place-items:center;padding:24px 0 10px;}
+  .ring{width:160px;height:160px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;color:var(--mar-2);transform:scale(.72);}
+  .ring.anim{animation:breathe4 8s infinite;}
+  @keyframes breathe4{0%{transform:scale(.72);opacity:.7;animation-timing-function:ease-in-out}50%{transform:scale(1.08);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.72);opacity:.7}}
+  .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+  .ring .bn{display:block;font-family:var(--serif);font-size:30px;line-height:1;margin-top:4px;}
   .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:16px 18px;margin:16px 0;font-size:.95rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
 
@@ -103,8 +105,15 @@
   .dirtog button{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:12px 6px;border-radius:22px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta-2);cursor:pointer;min-height:44px;}
   .dirtog button.on{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
   .field{margin-bottom:12px;}
+  .field .row{display:flex;gap:8px;align-items:flex-start;}
+  .mic{flex:none;width:46px;min-height:46px;border-radius:11px;border:1px solid var(--linia);background:var(--blanc);color:var(--mar-2);display:grid;place-items:center;cursor:pointer;}
+  .mic svg{width:19px;height:19px;}
+  .mic.rec{background:var(--clay);color:#fff;border-color:var(--clay);animation:micpulse 1.2s ease-in-out infinite;}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(176,86,58,.5);}50%{box-shadow:0 0 0 7px rgba(176,86,58,0);}}
+  @media(prefers-reduced-motion:reduce){.mic.rec{animation:none;}}
+  .michint{font-size:.82rem;color:var(--tinta-2);margin:0 0 14px;display:flex;align-items:center;gap:7px;}
   .field label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:5px;}
-  .field textarea{width:100%;background:var(--blanc);border:1px solid var(--linia);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:.96rem;color:var(--tinta);resize:none;line-height:1.4;min-height:44px;}
+  .field textarea{width:100%;flex:1;background:var(--blanc);border:1px solid var(--linia);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:.96rem;color:var(--tinta);resize:none;line-height:1.4;min-height:44px;}
   .field textarea:focus{outline:none;border-color:var(--mar-2);box-shadow:0 0 0 3px rgba(46,124,138,.12);}
   .field textarea::placeholder{color:var(--tinta-3);opacity:.8;}
   .preview{background:var(--mar);color:#EAF1EF;border-radius:14px;padding:15px 16px;margin-top:8px;}
@@ -205,10 +214,11 @@ var STR={
     hsub:"Manager · ayuda de decisión",
     homeQ:"¿Qué necesita el sistema ahora?",
     homeL:"Elige lo que está pasando. Te acompaño en tres pasos para convertir la presión en información.",
-    priv:"<b>Privacidad.</b> Nada se guarda. Sin registro individual. La información no sale de este dispositivo.",
+    priv:"<b>Privacidad.</b> La app no guarda nada ni envía datos a ningún servidor. (El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.)",
     foot:"Formentor Flow · Centre APRENS · v1 · en el dispositivo",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica"},
-    ring:"inhala<br>· exhala ·",
+    inhala:"Inhala", exhala:"Exhala", breathStatic:"Inhala 4 · Exhala 4",
+    michint:"Toca el micro para dictar en vez de escribir.",
     paraX:"Una respiración. <em>¿Qué notas en tu cuerpo ahora?</em> Detecta tu grado de activación y no transmitas tu tensión: abre un instante de espacio-tiempo para recuperar la capacidad de decidir.",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
@@ -241,10 +251,11 @@ var STR={
     hsub:"Manager · decision aid",
     homeQ:"What does the system need now?",
     homeL:"Pick what's happening. Three steps to turn pressure into information.",
-    priv:"<b>Privacy.</b> Nothing is saved. No individual record. Information never leaves this device.",
+    priv:"<b>Privacy.</b> The app stores nothing and sends no data to any server. (Voice dictation, if you use it, relies on your device's or browser's own speech recognition.)",
     foot:"Formentor Flow · Centre APRENS · v1 · on-device",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate"},
-    ring:"breathe in<br>· out ·",
+    inhala:"Breathe in", exhala:"Breathe out", breathStatic:"In 4 · Out 4",
+    michint:"Tap the mic to dictate instead of typing.",
     paraX:"One breath. <em>What do you notice in your body right now?</em> Sense your level of activation and don't pass on your tension: open a moment of space to recover your capacity to decide.",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
@@ -292,6 +303,37 @@ var HINTS={
   coordinacion:{es:{que:"punto de coordinación en el relevo"},en:{que:"coordination point at handover"}}
 };
 
+/* ================= voice dictation (Web Speech API) ================= */
+var MIC_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.2"/></svg>';
+var MIC_SVG_SM='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;color:var(--mar-2)"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.2"/></svg>';
+function speechAvailable(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition);}
+var rec=null, recBtn=null, recBase='';
+function makeMic(ta,key){
+  var b=document.createElement('button');b.type='button';b.className='mic';b.setAttribute('aria-label','Dictar');b.innerHTML=MIC_SVG;
+  b.addEventListener('click',function(){ if(rec&&recBtn===b){stopRec();return;} startRec(ta,key,b); });
+  return b;
+}
+function startRec(ta,key,btn){
+  stopRec();
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR)return;
+  try{rec=new SR();}catch(e){rec=null;return;}
+  rec.lang=(LANG==='en'?'en-US':'es-ES'); rec.interimResults=true; rec.continuous=true; rec.maxAlternatives=1;
+  recBtn=btn; recBase=ta.value?ta.value.replace(/\s+$/,'')+' ':''; btn.classList.add('rec');
+  rec.onresult=function(e){
+    var fin='',intp='';
+    for(var i=0;i<e.results.length;i++){var r=e.results[i];if(r.isFinal)fin+=r[0].transcript+' ';else intp+=r[0].transcript;}
+    var v=(recBase+fin+intp).replace(/\s+/g,' ').replace(/^\s+/,'');
+    ta.value=v; state.vals[key]=v; ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; renderPreview();
+  };
+  rec.onerror=function(){stopRec();};
+  rec.onend=function(){stopRec();};
+  try{rec.start();}catch(e){stopRec();}
+}
+function stopRec(){
+  if(rec){try{rec.onend=null;rec.stop();}catch(e){} rec=null;}
+  if(recBtn){recBtn.classList.remove('rec');recBtn=null;}
+}
+
 /* ================= state ================= */
 var state={sit:null,step:"para",dir:"down",vals:{}};
 function U(){return STR[LANG];}
@@ -333,6 +375,8 @@ function renderCtx(){
 }
 
 function showStep(step){
+  stopRec();
+  if(step!=='para') stopBreath();
   state.step=step;
   ['para','ordena','comunica'].forEach(function(k){el('st-'+k).style.display=(k===step?'block':'none');});
   renderStepBar();
@@ -343,11 +387,29 @@ function showStep(step){
 
 function renderPara(){
   var t=U();
-  el('ringTxt').innerHTML=t.ring;
   el('paraX').innerHTML=t.paraX;
   el('paraBack').textContent=t.paraBack;
   el('paraNext').textContent=t.paraNext;
+  startBreath();
 }
+var breathRAF=null, breathT0=0;
+function startBreath(){
+  stopBreath();
+  var ring=el('ringTxt'), t=U();
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  ring.classList.remove('anim'); void ring.offsetWidth;
+  if(reduce){ ring.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
+  ring.classList.add('anim');
+  breathT0=performance.now();
+  (function loop(){
+    var e2=document.getElementById('ringTxt'); if(!e2){breathRAF=null;return;}
+    var ms=(performance.now()-breathT0)%8000, inh=ms<4000;
+    var n=Math.floor((inh?ms:ms-4000)/1000)+1; if(n>4)n=4;
+    e2.innerHTML='<span class="bl">'+(inh?U().inhala:U().exhala)+'</span><span class="bn">'+n+'</span>';
+    breathRAF=requestAnimationFrame(loop);
+  })();
+}
+function stopBreath(){ if(breathRAF){cancelAnimationFrame(breathRAF);breathRAF=null;} }
 function renderOrdena(){
   var t=U(), ul=el('qlist');ul.innerHTML='';
   t.ordena.forEach(function(q){var li=document.createElement('li');li.textContent=q;ul.appendChild(li);});
@@ -366,13 +428,17 @@ function renderComunica(){
   renderFields();
 }
 function renderFields(){
+  stopRec();
   var t=U(), defs=state.dir==='down'?t.fieldsDown:t.fieldsUp;
   var hints=(HINTS[state.sit]&&HINTS[state.sit][LANG])||{};
   var wrap=el('fields');wrap.innerHTML='';
+  var canVoice=speechAvailable();
+  if(canVoice){var hint=document.createElement('div');hint.className='michint';hint.innerHTML=MIC_SVG_SM+'<span>'+t.michint+'</span>';wrap.appendChild(hint);}
   defs.forEach(function(f){
     var key=state.dir+'.'+f[0];
     var d=document.createElement('div');d.className='field';
     var lab=document.createElement('label');lab.textContent=f[1];
+    var row=document.createElement('div');row.className='row';
     var ta=document.createElement('textarea');ta.rows=1;ta.setAttribute('placeholder',hints[f[0]]||f[2]);
     ta.value=state.vals[key]||'';
     ta.addEventListener('input',function(){
@@ -380,7 +446,10 @@ function renderFields(){
       ta.style.height='auto';ta.style.height=(ta.scrollHeight)+'px';
       renderPreview();
     });
-    d.appendChild(lab);d.appendChild(ta);wrap.appendChild(d);
+    row.appendChild(ta);
+    if(canVoice)row.appendChild(makeMic(ta,key));
+    d.appendChild(lab);d.appendChild(row);wrap.appendChild(d);
+    if(ta.value){ta.style.height='auto';ta.style.height=(ta.scrollHeight)+'px';}
   });
   el('prevTitle').textContent=state.dir==='down'?t.prevDown:t.prevUp;
   renderPreview();
@@ -409,9 +478,10 @@ function openFlow(k){
   el('sb-comunica').onclick=function(){goStep('comunica');};
 }
 function goStep(step){ if(state.sit) showStep(step); }
-function home(){setScreen('s-home');}
+function home(){stopBreath();stopRec();setScreen('s-home');}
 
 function setLang(l){
+  stopRec();
   LANG=l;
   el('l-es').classList.toggle('on',l==='es');
   el('l-en').classList.toggle('on',l==='en');
@@ -419,7 +489,7 @@ function setLang(l){
   renderHome();
   if(el('s-flow').classList.contains('on')){renderCtx();showStep(state.step);}
 }
-function setDir(d){state.dir=d;renderComunica();}
+function setDir(d){stopRec();state.dir=d;renderComunica();}
 
 /* buttons */
 el('paraBack').addEventListener('click',home);
