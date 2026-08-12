@@ -22,3 +22,9 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Formentor Flow · Manager (PWA de cliente) — mismo criterio de no-caché para shell y SW.
+/formentor-flow/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/formentor-flow/index.html
+  Cache-Control: public, max-age=0, must-revalidate

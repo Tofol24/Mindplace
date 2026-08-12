@@ -1,0 +1,16 @@
+{
+  "name": "Formentor Flow · Manager",
+  "short_name": "Flow Manager",
+  "description": "Ayuda de decisión para mandos: convertir la presión en información (PARA · ORDENA · COMUNICA).",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F0E8",
+  "theme_color": "#103A44",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

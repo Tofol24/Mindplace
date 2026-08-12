@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Formentor Flow">
+  <rect width="512" height="512" rx="104" fill="#103A44"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#C7B393" stroke-width="14"/>
+  <path d="M112 320c58 0 58-150 116-150s58 150 116 150 58-150 116-150" fill="none" stroke="#FCFBF7" stroke-width="26" stroke-linecap="round"/>
+</svg>
