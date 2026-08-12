@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Formentor Flow · Manager</title>
+<meta name="theme-color" content="#103A44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flow Manager">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --mar:#103A44; --mar-2:#1B5A68; --mar-3:#2E7C8A;
+    --pi:#5C7A56; --pi-2:#47623F;
+    --arena:#C7B393; --llauto:#A87C39; --llauto-2:#855F26;
+    --clay:#B0563A; --clay-2:#8F4229;
+    --piedra:#F4F0E8; --piedra-2:#ECE6DA; --blanc:#FCFBF7;
+    --tinta:#17242A; --tinta-2:#4E5A5F; --tinta-3:#7A848A;
+    --linia:#DDD6C8; --linia-2:#E9E3D6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SFMono-Regular","SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  html,body{height:100%;}
+  body{
+    font-family:var(--sans); background:var(--mar); color:var(--tinta);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    display:flex; justify-content:center;
+  }
+  .app{
+    width:100%; max-width:440px; background:var(--piedra); min-height:100dvh;
+    display:flex; flex-direction:column; position:relative;
+    box-shadow:0 0 60px rgba(0,0,0,.25);
+  }
+
+  /* header */
+  header{
+    background:var(--mar); color:var(--blanc);
+    padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;
+    display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:10;
+  }
+  header .mk{width:30px;height:30px;flex:none;}
+  header .ht{flex:1;}
+  header .ht .b{font-family:var(--serif);font-size:1.05rem;line-height:1.1;}
+  header .ht .s{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--arena);margin-top:2px;}
+  .lang{display:flex;gap:4px;flex:none;}
+  .lang button{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:6px 9px;cursor:pointer;min-height:32px;}
+  .lang button.on{background:var(--arena);color:var(--mar);border-color:var(--arena);}
+
+  main{flex:1;padding:20px 18px;overflow-y:auto;}
+  footer{
+    padding:12px 18px calc(env(safe-area-inset-bottom) + 14px);
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.03em;color:var(--tinta-3);
+    text-align:center;border-top:1px solid var(--linia-2);background:var(--piedra);
+  }
+
+  .screen{display:none;animation:fade .32s ease;}
+  .screen.on{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @media(prefers-reduced-motion:reduce){.screen.on{animation:none;}}
+
+  h1{font-family:var(--serif);font-size:1.5rem;line-height:1.12;margin-bottom:6px;}
+  .lead{color:var(--tinta-2);font-size:.95rem;margin-bottom:20px;}
+
+  /* home situations */
+  .sits{display:flex;flex-direction:column;gap:10px;}
+  .sit{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:16px 16px;font-family:var(--sans);font-size:1.02rem;font-weight:600;color:var(--tinta);cursor:pointer;min-height:58px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+  .sit:hover{border-color:var(--mar-2);transform:translateX(2px);}
+  .sit:active{transform:scale(.99);}
+  .sit:focus-visible{outline:2px solid var(--llauto);outline-offset:2px;}
+  .sit .d{width:14px;height:14px;border-radius:50%;flex:none;}
+  .sit .ar{margin-left:auto;color:var(--tinta-3);font-size:1.1rem;}
+
+  /* step bar */
+  .stepbar{display:flex;gap:6px;margin-bottom:18px;}
+  .stepbar .s{flex:1;text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:8px 0;border-radius:20px;background:var(--piedra-2);color:var(--tinta-3);border:1px solid var(--linia);}
+  .stepbar .s.on{background:var(--mar);color:var(--blanc);border-color:var(--mar);}
+  .stepbar .s.done{background:var(--blanc);color:var(--pi-2);border-color:var(--pi);}
+
+  .ctx{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:16px;}
+  .ctx .d{width:11px;height:11px;border-radius:50%;flex:none;}
+
+  /* para */
+  .breath{display:grid;place-items:center;padding:20px 0 8px;}
+  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mar-2);animation:breathe 5.2s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:scale(.78);opacity:.65;}50%{transform:scale(1.06);opacity:1;}}
+  @media(prefers-reduced-motion:reduce){.ring{animation:none;}}
+  .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:16px 18px;margin:16px 0;font-size:.95rem;color:var(--tinta);}
+  .para-x em{color:var(--llauto-2);font-style:italic;}
+
+  /* ordena */
+  .qlist{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .qlist li{background:var(--blanc);border:1px solid var(--linia);border-left:3px solid var(--llauto);border-radius:12px;padding:13px 15px;font-size:.96rem;}
+
+  /* comunica */
+  .dirtog{display:flex;gap:8px;margin-bottom:16px;}
+  .dirtog button{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:12px 6px;border-radius:22px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta-2);cursor:pointer;min-height:44px;}
+  .dirtog button.on{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:5px;}
+  .field textarea{width:100%;background:var(--blanc);border:1px solid var(--linia);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:.96rem;color:var(--tinta);resize:none;line-height:1.4;min-height:44px;}
+  .field textarea:focus{outline:none;border-color:var(--mar-2);box-shadow:0 0 0 3px rgba(46,124,138,.12);}
+  .field textarea::placeholder{color:var(--tinta-3);opacity:.8;}
+  .preview{background:var(--mar);color:#EAF1EF;border-radius:14px;padding:15px 16px;margin-top:8px;}
+  .preview h5{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--arena);margin-bottom:9px;}
+  .preview pre{font-family:var(--mono);font-size:12px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:#EAF1EF;}
+  .preview .empty{color:rgba(234,241,239,.45);font-style:italic;font-family:var(--sans);font-size:.9rem;}
+
+  /* buttons */
+  .actions{display:flex;gap:9px;margin-top:18px;}
+  .btn{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:14px 10px;border-radius:24px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta);cursor:pointer;min-height:48px;}
+  .btn.primary{background:var(--mar);color:var(--blanc);border-color:var(--mar);}
+  .btn.gold{background:var(--llauto);color:var(--blanc);border-color:var(--llauto);}
+  .btn:active{transform:scale(.98);}
+  .btn.copied{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
+
+  .privacy{margin-top:20px;background:var(--piedra-2);border:1px solid var(--linia);border-radius:11px;padding:12px 14px;font-size:.82rem;color:var(--tinta-2);}
+  .privacy b{color:var(--tinta);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="15" stroke="#C7B393" stroke-width="1.3"/><path d="M6 20c3.2 0 3.2-9 6.5-9s3.3 9 6.5 9 3.2-9 6.5-9" stroke="#FCFBF7" stroke-width="1.7" stroke-linecap="round"/></svg>
+    <div class="ht"><div class="b">Formentor Flow</div><div class="s" id="hsub">Manager · ayuda de decisión</div></div>
+    <div class="lang">
+      <button id="l-es" class="on" onclick="setLang('es')">ES</button>
+      <button id="l-en" onclick="setLang('en')">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="screen on" id="s-home">
+      <h1 id="home-q"></h1>
+      <p class="lead" id="home-l"></p>
+      <div class="sits" id="sits"></div>
+      <div class="privacy" id="home-priv"></div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="screen" id="s-flow">
+      <div class="stepbar">
+        <div class="s" id="sb-para" onclick="goStep('para')">PARA</div>
+        <div class="s" id="sb-ordena" onclick="goStep('ordena')">ORDENA</div>
+        <div class="s" id="sb-comunica" onclick="goStep('comunica')">COMUNICA</div>
+      </div>
+      <div class="ctx"><span class="d" id="ctxDot"></span><span id="ctxName"></span></div>
+
+      <!-- PARA -->
+      <div id="st-para">
+        <div class="breath"><div class="ring" id="ringTxt"></div></div>
+        <div class="para-x" id="paraX"></div>
+        <div class="actions">
+          <button class="btn" id="paraBack"></button>
+          <button class="btn primary" id="paraNext"></button>
+        </div>
+      </div>
+
+      <!-- ORDENA -->
+      <div id="st-ordena" style="display:none">
+        <ul class="qlist" id="qlist"></ul>
+        <div class="actions">
+          <button class="btn" id="ordBack"></button>
+          <button class="btn primary" id="ordNext"></button>
+        </div>
+      </div>
+
+      <!-- COMUNICA -->
+      <div id="st-comunica" style="display:none">
+        <div class="dirtog">
+          <button id="dir-down" class="on" onclick="setDir('down')"></button>
+          <button id="dir-up" onclick="setDir('up')"></button>
+        </div>
+        <div id="fields"></div>
+        <div class="preview">
+          <h5 id="prevTitle"></h5>
+          <pre id="prevBody"></pre>
+        </div>
+        <div class="actions">
+          <button class="btn" id="comBack"></button>
+          <button class="btn gold" id="copyBtn"></button>
+        </div>
+        <div class="actions" style="margin-top:9px">
+          <button class="btn" id="restartBtn"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+/* ================= i18n + data ================= */
+var LANG='es';
+var STR={
+  es:{
+    hsub:"Manager · ayuda de decisión",
+    homeQ:"¿Qué necesita el sistema ahora?",
+    homeL:"Elige lo que está pasando. Te acompaño en tres pasos para convertir la presión en información.",
+    priv:"<b>Privacidad.</b> Nada se guarda. Sin registro individual. La información no sale de este dispositivo.",
+    foot:"Formentor Flow · Centre APRENS · v1 · en el dispositivo",
+    steps:{para:"Para",ordena:"Ordena",comunica:"Comunica"},
+    ring:"inhala<br>· exhala ·",
+    paraX:"Una respiración. <em>¿Qué notas en tu cuerpo ahora?</em> Detecta tu grado de activación y no transmitas tu tensión: abre un instante de espacio-tiempo para recuperar la capacidad de decidir.",
+    paraBack:"← Inicio", paraNext:"Ya estoy →",
+    ordNext:"Comunicar →", ordBack:"← Para",
+    comBack:"← Ordena", copy:"⧉ Copiar", copied:"✓ Copiado", restart:"↻ Nueva situación",
+    dirDown:"Hacia abajo", dirUp:"Hacia arriba",
+    prevDown:"Comunicación descendente", prevUp:"Comunicación ascendente · S·I·N·P",
+    empty:"Rellena los campos para ver el mensaje…",
+    ordena:[
+      "¿Qué está ocurriendo realmente?",
+      "¿Qué es prioritario y qué puede esperar?",
+      "¿Qué recursos existen?",
+      "¿Quién necesita intervenir?",
+      "¿Qué información falta?"
+    ],
+    fieldsDown:[
+      ["que","Qué","Qué hay que hacer, en concreto"],
+      ["quien","Quién","Persona o rol responsable"],
+      ["cuando","Cuándo","Plazo / momento"],
+      ["prioridad","Prioridad","Alta / media / qué va primero"],
+      ["criterio","Criterio de finalización","Cómo sabremos que está hecho"]
+    ],
+    fieldsUp:[
+      ["situacion","Situación","Qué está pasando, en una frase"],
+      ["impacto","Impacto","A quién / a qué afecta"],
+      ["necesidad","Necesidad","Qué decisión o recurso hace falta"],
+      ["propuesta","Propuesta","Qué propones tú"]
+    ]
+  },
+  en:{
+    hsub:"Manager · decision aid",
+    homeQ:"What does the system need now?",
+    homeL:"Pick what's happening. Three steps to turn pressure into information.",
+    priv:"<b>Privacy.</b> Nothing is saved. No individual record. Information never leaves this device.",
+    foot:"Formentor Flow · Centre APRENS · v1 · on-device",
+    steps:{para:"Pause",ordena:"Order",comunica:"Communicate"},
+    ring:"breathe in<br>· out ·",
+    paraX:"One breath. <em>What do you notice in your body right now?</em> Sense your level of activation and don't pass on your tension: open a moment of space to recover your capacity to decide.",
+    paraBack:"← Home", paraNext:"I'm ready →",
+    ordNext:"Communicate →", ordBack:"← Pause",
+    comBack:"← Order", copy:"⧉ Copy", copied:"✓ Copied", restart:"↻ New situation",
+    dirDown:"Downward", dirUp:"Upward",
+    prevDown:"Downward message", prevUp:"Upward message · S·I·N·P",
+    empty:"Fill the fields to see the message…",
+    ordena:[
+      "What is actually happening?",
+      "What is a priority and what can wait?",
+      "What resources exist?",
+      "Who needs to step in?",
+      "What information is missing?"
+    ],
+    fieldsDown:[
+      ["que","What","What needs doing, specifically"],
+      ["quien","Who","Person or role responsible"],
+      ["cuando","When","Deadline / moment"],
+      ["prioridad","Priority","High / medium / what comes first"],
+      ["criterio","Done when","How we'll know it's complete"]
+    ],
+    fieldsUp:[
+      ["situacion","Situation","What's happening, in one line"],
+      ["impacto","Impact","Who / what it affects"],
+      ["necesidad","Need","What decision or resource is required"],
+      ["propuesta","Proposal","What you propose"]
+    ]
+  }
+};
+var SITS={
+  incidencia:  {color:"#B0563A", es:"Incidencia",         en:"Incident"},
+  sobrecarga:  {color:"#A87C39", es:"Sobrecarga",         en:"Overload"},
+  conflicto:   {color:"#8F4229", es:"Conflicto",          en:"Conflict"},
+  prioridad:   {color:"#1B5A68", es:"Cambio de prioridad",en:"Priority change"},
+  coordinacion:{color:"#5C7A56", es:"Coordinación",       en:"Coordination"}
+};
+var SITORDER=["incidencia","sobrecarga","conflicto","prioridad","coordinacion"];
+
+/* prefill hints per situation (placeholders adapt) */
+var HINTS={
+  incidencia:{es:{que:"resolver la incidencia detectada",criterio:"verificado y comunicado a recepción"},en:{que:"resolve the detected incident",criterio:"verified and reported to front desk"}},
+  sobrecarga:{es:{situacion:"tres demandas simultáneas con el personal actual",propuesta:"garantizamos A y B a las 18:00; C requiere ajustar plazo, prioridad o recursos"},en:{situacion:"three simultaneous demands with current staff",propuesta:"we guarantee A and B by 18:00; C needs a change in deadline, priority or resources"}},
+  conflicto:{es:{que:"conversación breve entre las partes, fuera de zona de cliente"},en:{que:"brief conversation between the parties, away from guest areas"}},
+  prioridad:{es:{que:"aplicar el cambio de prioridad"},en:{que:"apply the priority change"}},
+  coordinacion:{es:{que:"punto de coordinación en el relevo"},en:{que:"coordination point at handover"}}
+};
+
+/* ================= state ================= */
+var state={sit:null,step:"para",dir:"down",vals:{}};
+function U(){return STR[LANG];}
+
+/* ================= render ================= */
+function el(id){return document.getElementById(id);}
+function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});el(id).classList.add('on');}
+
+function renderHome(){
+  var t=U();
+  el('hsub').textContent=t.hsub;
+  el('home-q').textContent=t.homeQ;
+  el('home-l').textContent=t.homeL;
+  el('home-priv').innerHTML=t.priv;
+  el('foot').textContent=t.foot;
+  var wrap=el('sits');wrap.innerHTML='';
+  SITORDER.forEach(function(k){
+    var s=SITS[k];
+    var b=document.createElement('button');
+    b.className='sit';b.setAttribute('data-sit',k);
+    b.innerHTML='<span class="d" style="background:'+s.color+'"></span>'+s[LANG]+'<span class="ar">→</span>';
+    b.addEventListener('click',function(){openFlow(k);});
+    wrap.appendChild(b);
+  });
+}
+
+function renderStepBar(){
+  var t=U(), order=['para','ordena','comunica'], idx=order.indexOf(state.step);
+  order.forEach(function(k,i){
+    var e=el('sb-'+k);
+    e.textContent=t.steps[k].toUpperCase();
+    e.className='s'+(i===idx?' on':(i<idx?' done':''));
+  });
+}
+
+function renderCtx(){
+  el('ctxDot').style.background=SITS[state.sit].color;
+  el('ctxName').textContent=SITS[state.sit][LANG];
+}
+
+function showStep(step){
+  state.step=step;
+  ['para','ordena','comunica'].forEach(function(k){el('st-'+k).style.display=(k===step?'block':'none');});
+  renderStepBar();
+  if(step==='para')renderPara();
+  if(step==='ordena')renderOrdena();
+  if(step==='comunica')renderComunica();
+}
+
+function renderPara(){
+  var t=U();
+  el('ringTxt').innerHTML=t.ring;
+  el('paraX').innerHTML=t.paraX;
+  el('paraBack').textContent=t.paraBack;
+  el('paraNext').textContent=t.paraNext;
+}
+function renderOrdena(){
+  var t=U(), ul=el('qlist');ul.innerHTML='';
+  t.ordena.forEach(function(q){var li=document.createElement('li');li.textContent=q;ul.appendChild(li);});
+  el('ordBack').textContent=t.ordBack;
+  el('ordNext').textContent=t.ordNext;
+}
+function renderComunica(){
+  var t=U();
+  el('dir-down').textContent=t.dirDown;
+  el('dir-up').textContent=t.dirUp;
+  el('comBack').textContent=t.comBack;
+  el('copyBtn').textContent=t.copy;
+  el('restartBtn').textContent=t.restart;
+  el('dir-down').classList.toggle('on',state.dir==='down');
+  el('dir-up').classList.toggle('on',state.dir==='up');
+  renderFields();
+}
+function renderFields(){
+  var t=U(), defs=state.dir==='down'?t.fieldsDown:t.fieldsUp;
+  var hints=(HINTS[state.sit]&&HINTS[state.sit][LANG])||{};
+  var wrap=el('fields');wrap.innerHTML='';
+  defs.forEach(function(f){
+    var key=state.dir+'.'+f[0];
+    var d=document.createElement('div');d.className='field';
+    var lab=document.createElement('label');lab.textContent=f[1];
+    var ta=document.createElement('textarea');ta.rows=1;ta.setAttribute('placeholder',hints[f[0]]||f[2]);
+    ta.value=state.vals[key]||'';
+    ta.addEventListener('input',function(){
+      state.vals[key]=ta.value;
+      ta.style.height='auto';ta.style.height=(ta.scrollHeight)+'px';
+      renderPreview();
+    });
+    d.appendChild(lab);d.appendChild(ta);wrap.appendChild(d);
+  });
+  el('prevTitle').textContent=state.dir==='down'?t.prevDown:t.prevUp;
+  renderPreview();
+}
+function buildMessage(){
+  var t=U(), defs=state.dir==='down'?t.fieldsDown:t.fieldsUp, lines=[];
+  defs.forEach(function(f){
+    var v=(state.vals[state.dir+'.'+f[0]]||'').trim();
+    if(v)lines.push(f[1].toUpperCase()+': '+v);
+  });
+  return lines.join('\n');
+}
+function renderPreview(){
+  var msg=buildMessage();
+  var body=el('prevBody');
+  if(msg){body.textContent=msg;body.classList.remove('empty');}
+  else{body.textContent=U().empty;body.classList.add('empty');}
+}
+
+/* ================= navigation ================= */
+function openFlow(k){
+  state.sit=k;state.step='para';state.dir='down';state.vals={};
+  setScreen('s-flow');renderCtx();showStep('para');
+  el('sb-para').onclick=function(){goStep('para');};
+  el('sb-ordena').onclick=function(){goStep('ordena');};
+  el('sb-comunica').onclick=function(){goStep('comunica');};
+}
+function goStep(step){ if(state.sit) showStep(step); }
+function home(){setScreen('s-home');}
+
+function setLang(l){
+  LANG=l;
+  el('l-es').classList.toggle('on',l==='es');
+  el('l-en').classList.toggle('on',l==='en');
+  document.documentElement.lang=l;
+  renderHome();
+  if(el('s-flow').classList.contains('on')){renderCtx();showStep(state.step);}
+}
+function setDir(d){state.dir=d;renderComunica();}
+
+/* buttons */
+el('paraBack').addEventListener('click',home);
+el('paraNext').addEventListener('click',function(){showStep('ordena');});
+el('ordBack').addEventListener('click',function(){showStep('para');});
+el('ordNext').addEventListener('click',function(){showStep('comunica');});
+el('comBack').addEventListener('click',function(){showStep('ordena');});
+el('restartBtn').addEventListener('click',home);
+el('copyBtn').addEventListener('click',function(){
+  var msg=buildMessage(); if(!msg)return;
+  var btn=el('copyBtn');
+  var done=function(){btn.classList.add('copied');btn.textContent=U().copied;setTimeout(function(){btn.classList.remove('copied');btn.textContent=U().copy;},1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).then(done,function(){fallbackCopy(msg);done();});}
+  else{fallbackCopy(msg);done();}
+});
+function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+
+/* ================= service worker (offline) ================= */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+
+/* init */
+renderHome();
+</script>
+</body>
+</html>
