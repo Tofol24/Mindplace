@@ -28,23 +28,10 @@
     --mono:"SFMono-Regular","SF Mono",ui-monospace,Menlo,Consolas,monospace;
   }
   html,body{height:100%;}
-  body{
-    font-family:var(--sans); background:var(--mar); color:var(--tinta);
-    -webkit-font-smoothing:antialiased; line-height:1.5;
-    display:flex; justify-content:center;
-  }
-  .app{
-    width:100%; max-width:440px; background:var(--piedra); min-height:100dvh;
-    display:flex; flex-direction:column; position:relative;
-    box-shadow:0 0 60px rgba(0,0,0,.25);
-  }
+  body{font-family:var(--sans);background:var(--mar);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.5;display:flex;justify-content:center;}
+  .app{width:100%;max-width:440px;background:var(--piedra);min-height:100dvh;display:flex;flex-direction:column;position:relative;box-shadow:0 0 60px rgba(0,0,0,.25);}
 
-  /* header */
-  header{
-    background:var(--mar); color:var(--blanc);
-    padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;
-    display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:10;
-  }
+  header{background:var(--mar);color:var(--blanc);padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
   header .mk{width:30px;height:30px;flex:none;}
   header .ht{flex:1;}
   header .ht .b{font-family:var(--serif);font-size:1.05rem;line-height:1.1;}
@@ -54,11 +41,7 @@
   .lang button.on{background:var(--arena);color:var(--mar);border-color:var(--arena);}
 
   main{flex:1;padding:20px 18px;overflow-y:auto;}
-  footer{
-    padding:12px 18px calc(env(safe-area-inset-bottom) + 14px);
-    font-family:var(--mono);font-size:9.5px;letter-spacing:.03em;color:var(--tinta-3);
-    text-align:center;border-top:1px solid var(--linia-2);background:var(--piedra);
-  }
+  footer{padding:12px 18px calc(env(safe-area-inset-bottom) + 14px);font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:var(--tinta-3);text-align:center;border-top:1px solid var(--linia-2);background:var(--piedra);}
 
   .screen{display:none;animation:fade .32s ease;}
   .screen.on{display:block;}
@@ -66,81 +49,100 @@
   @media(prefers-reduced-motion:reduce){.screen.on{animation:none;}}
 
   h1{font-family:var(--serif);font-size:1.5rem;line-height:1.12;margin-bottom:6px;}
-  .lead{color:var(--tinta-2);font-size:.95rem;margin-bottom:20px;}
+  .lead{color:var(--tinta-2);font-size:.95rem;margin-bottom:18px;}
 
-  /* home situations */
-  .sits{display:flex;flex-direction:column;gap:10px;}
-  .sit{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:16px 16px;font-family:var(--sans);font-size:1.02rem;font-weight:600;color:var(--tinta);cursor:pointer;min-height:58px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+  /* home */
+  .sits{display:flex;flex-direction:column;gap:9px;}
+  .sit{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 16px;font-family:var(--sans);font-size:1.0rem;font-weight:600;color:var(--tinta);cursor:pointer;min-height:56px;transition:transform .12s,border-color .12s;}
   .sit:hover{border-color:var(--mar-2);transform:translateX(2px);}
   .sit:active{transform:scale(.99);}
   .sit:focus-visible{outline:2px solid var(--llauto);outline-offset:2px;}
   .sit .d{width:14px;height:14px;border-radius:50%;flex:none;}
   .sit .ar{margin-left:auto;color:var(--tinta-3);font-size:1.1rem;}
+  .privacy{margin-top:18px;background:var(--piedra-2);border:1px solid var(--linia);border-radius:11px;padding:13px 15px;font-size:.84rem;color:var(--tinta-2);}
+  .privacy b{color:var(--tinta);}
 
   /* step bar */
-  .stepbar{display:flex;gap:6px;margin-bottom:18px;}
-  .stepbar .s{flex:1;text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:8px 0;border-radius:20px;background:var(--piedra-2);color:var(--tinta-3);border:1px solid var(--linia);}
+  .stepbar{display:flex;gap:5px;margin-bottom:14px;}
+  .stepbar .s{flex:1;text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:8px 0;border-radius:20px;background:var(--piedra-2);color:var(--tinta-3);border:1px solid var(--linia);cursor:pointer;}
   .stepbar .s.on{background:var(--mar);color:var(--blanc);border-color:var(--mar);}
   .stepbar .s.done{background:var(--blanc);color:var(--pi-2);border-color:var(--pi);}
 
-  .ctx{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:16px;}
+  .ctx{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
   .ctx .d{width:11px;height:11px;border-radius:50%;flex:none;}
+  .ctx .nm{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);}
+  .ctx .ex{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--llauto-2);background:none;border:1px solid var(--linia);border-radius:16px;padding:6px 11px;cursor:pointer;}
+  .ctx .ex:focus-visible{outline:2px solid var(--llauto);outline-offset:2px;}
+
+  .example{display:none;background:var(--blanc);border:1px solid var(--linia);border-radius:13px;padding:14px 16px;margin-bottom:16px;}
+  .example.on{display:block;}
+  .example .ln{font-size:.9rem;line-height:1.5;padding:8px 0;}
+  .example .ln.bad{color:var(--clay-2);border-bottom:1px dashed var(--linia);}
+  .example .ln.good{color:var(--pi-2);}
+  .example .mk{font-weight:700;margin-right:6px;}
 
   /* para */
-  .breath{display:grid;place-items:center;padding:24px 0 10px;}
-  .ring{width:160px;height:160px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;color:var(--mar-2);transform:scale(.72);}
+  .breath{display:grid;place-items:center;padding:14px 0 6px;}
+  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;color:var(--mar-2);transform:scale(.72);}
   .ring.anim{animation:breathe4 8s infinite;}
   @keyframes breathe4{0%{transform:scale(.72);opacity:.7;animation-timing-function:ease-in-out}50%{transform:scale(1.08);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.72);opacity:.7}}
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
-  .ring .bn{display:block;font-family:var(--serif);font-size:30px;line-height:1;margin-top:4px;}
-  .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:16px 18px;margin:16px 0;font-size:.95rem;color:var(--tinta);}
+  .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
+  .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
+  .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 17px;margin-bottom:8px;font-size:.93rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
 
   /* ordena */
-  .qlist{list-style:none;display:flex;flex-direction:column;gap:10px;}
-  .qlist li{background:var(--blanc);border:1px solid var(--linia);border-left:3px solid var(--llauto);border-radius:12px;padding:13px 15px;font-size:.96rem;}
+  .qlist{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .qlist li{background:var(--blanc);border:1px solid var(--linia);border-left:3px solid var(--llauto);border-radius:12px;padding:12px 14px;font-size:.95rem;line-height:1.4;}
+  .qlist li.key{border-left-color:var(--mar);background:#EEF3F1;font-weight:600;color:var(--mar);}
 
   /* comunica */
-  .dirtog{display:flex;gap:8px;margin-bottom:16px;}
-  .dirtog button{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:12px 6px;border-radius:22px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta-2);cursor:pointer;min-height:44px;}
+  .dirtog{display:flex;gap:8px;margin-bottom:14px;}
+  .dirtog button{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;padding:11px 6px;border-radius:22px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta-2);cursor:pointer;min-height:44px;}
   .dirtog button.on{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
-  .field{margin-bottom:12px;}
+  .field{margin-bottom:9px;}
   .field .row{display:flex;gap:8px;align-items:flex-start;}
   .mic{flex:none;width:46px;min-height:46px;border-radius:11px;border:1px solid var(--linia);background:var(--blanc);color:var(--mar-2);display:grid;place-items:center;cursor:pointer;}
   .mic svg{width:19px;height:19px;}
   .mic.rec{background:var(--clay);color:#fff;border-color:var(--clay);animation:micpulse 1.2s ease-in-out infinite;}
   @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(176,86,58,.5);}50%{box-shadow:0 0 0 7px rgba(176,86,58,0);}}
   @media(prefers-reduced-motion:reduce){.mic.rec{animation:none;}}
-  .michint{font-size:.82rem;color:var(--tinta-2);margin:0 0 14px;display:flex;align-items:center;gap:7px;}
+  .michint{font-size:.8rem;color:var(--tinta-2);margin:0 0 12px;display:flex;align-items:center;gap:7px;}
   .field label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:5px;}
   .field textarea{width:100%;flex:1;background:var(--blanc);border:1px solid var(--linia);border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:.96rem;color:var(--tinta);resize:none;line-height:1.4;min-height:44px;}
   .field textarea:focus{outline:none;border-color:var(--mar-2);box-shadow:0 0 0 3px rgba(46,124,138,.12);}
   .field textarea::placeholder{color:var(--tinta-3);opacity:.8;}
-  .preview{background:var(--mar);color:#EAF1EF;border-radius:14px;padding:15px 16px;margin-top:8px;}
+  .preview{background:var(--mar);color:#EAF1EF;border-radius:14px;padding:13px 15px;margin-top:6px;}
   .preview h5{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--arena);margin-bottom:9px;}
   .preview pre{font-family:var(--mono);font-size:12px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:#EAF1EF;}
   .preview .empty{color:rgba(234,241,239,.45);font-style:italic;font-family:var(--sans);font-size:.9rem;}
+  .micro{margin-top:12px;font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--mar-2);text-align:center;line-height:1.4;}
 
-  /* buttons */
+  /* verifica */
+  .vq{font-family:var(--serif);font-size:1.18rem;line-height:1.25;color:var(--mar);margin-bottom:14px;}
+  .checks{display:flex;flex-direction:column;gap:8px;}
+  .chk{display:flex;align-items:center;gap:12px;background:var(--blanc);border:1px solid var(--linia);border-radius:12px;padding:13px 15px;font-size:.95rem;color:var(--tinta);cursor:pointer;text-align:left;}
+  .chk .bx{width:22px;height:22px;border-radius:6px;border:2px solid var(--linia);flex:none;display:grid;place-items:center;color:transparent;font-size:13px;}
+  .chk.on{border-color:var(--pi);}
+  .chk.on .bx{background:var(--pi);border-color:var(--pi);color:#fff;}
+
   .actions{display:flex;gap:9px;margin-top:18px;}
-  .btn{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:14px 10px;border-radius:24px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta);cursor:pointer;min-height:48px;}
+  .btn{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:14px 10px;border-radius:24px;border:1px solid var(--linia);background:var(--blanc);color:var(--tinta);cursor:pointer;min-height:48px;}
   .btn.primary{background:var(--mar);color:var(--blanc);border-color:var(--mar);}
   .btn.gold{background:var(--llauto);color:var(--blanc);border-color:var(--llauto);}
   .btn:active{transform:scale(.98);}
   .btn.copied{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
-
-  .privacy{margin-top:20px;background:var(--piedra-2);border:1px solid var(--linia);border-radius:11px;padding:12px 14px;font-size:.82rem;color:var(--tinta-2);}
-  .privacy b{color:var(--tinta);}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="15" stroke="#C7B393" stroke-width="1.3"/><path d="M6 20c3.2 0 3.2-9 6.5-9s3.3 9 6.5 9 3.2-9 6.5-9" stroke="#FCFBF7" stroke-width="1.7" stroke-linecap="round"/></svg>
-    <div class="ht"><div class="b">Formentor Flow</div><div class="s" id="hsub">Manager · ayuda de decisión</div></div>
+    <div class="ht"><div class="b">Formentor Flow</div><div class="s" id="hsub">Manager</div></div>
     <div class="lang">
-      <button id="l-es" class="on" onclick="setLang('es')">ES</button>
-      <button id="l-en" onclick="setLang('en')">EN</button>
+      <button id="l-es" class="on" type="button">ES</button>
+      <button id="l-en" type="button">EN</button>
     </div>
   </header>
 
@@ -155,49 +157,59 @@
 
     <!-- FLOW -->
     <section class="screen" id="s-flow">
-      <div class="stepbar">
-        <div class="s" id="sb-para" onclick="goStep('para')">PARA</div>
-        <div class="s" id="sb-ordena" onclick="goStep('ordena')">ORDENA</div>
-        <div class="s" id="sb-comunica" onclick="goStep('comunica')">COMUNICA</div>
+      <div class="stepbar" id="stepbar"></div>
+      <div class="ctx">
+        <span class="d" id="ctxDot"></span><span class="nm" id="ctxName"></span>
+        <button class="ex" id="exBtn" type="button"></button>
       </div>
-      <div class="ctx"><span class="d" id="ctxDot"></span><span id="ctxName"></span></div>
+      <div class="example" id="example"></div>
 
       <!-- PARA -->
-      <div id="st-para">
+      <div class="step-body" id="st-para">
         <div class="breath"><div class="ring" id="ringTxt"></div></div>
+        <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
         <div class="actions">
-          <button class="btn" id="paraBack"></button>
-          <button class="btn primary" id="paraNext"></button>
+          <button class="btn" id="paraBack" type="button"></button>
+          <button class="btn primary" id="paraNext" type="button"></button>
         </div>
       </div>
 
       <!-- ORDENA -->
-      <div id="st-ordena" style="display:none">
+      <div class="step-body" id="st-ordena" style="display:none">
         <ul class="qlist" id="qlist"></ul>
         <div class="actions">
-          <button class="btn" id="ordBack"></button>
-          <button class="btn primary" id="ordNext"></button>
+          <button class="btn" id="ordBack" type="button"></button>
+          <button class="btn primary" id="ordNext" type="button"></button>
         </div>
       </div>
 
       <!-- COMUNICA -->
-      <div id="st-comunica" style="display:none">
-        <div class="dirtog">
-          <button id="dir-down" class="on" onclick="setDir('down')"></button>
-          <button id="dir-up" onclick="setDir('up')"></button>
+      <div class="step-body" id="st-comunica" style="display:none">
+        <div class="dirtog" id="dirtog">
+          <button id="dir-down" class="on" type="button"></button>
+          <button id="dir-up" type="button"></button>
         </div>
         <div id="fields"></div>
-        <div class="preview">
-          <h5 id="prevTitle"></h5>
-          <pre id="prevBody"></pre>
-        </div>
+        <div class="preview"><h5 id="prevTitle"></h5><pre id="prevBody"></pre></div>
+        <div class="micro" id="micro"></div>
         <div class="actions">
-          <button class="btn" id="comBack"></button>
-          <button class="btn gold" id="copyBtn"></button>
+          <button class="btn" id="comBack" type="button"></button>
+          <button class="btn gold" id="copyBtn" type="button"></button>
         </div>
         <div class="actions" style="margin-top:9px">
-          <button class="btn" id="restartBtn"></button>
+          <button class="btn primary" id="comNext" type="button"></button>
+        </div>
+      </div>
+
+      <!-- VERIFICA -->
+      <div class="step-body" id="st-verifica" style="display:none">
+        <div class="vq" id="verQ"></div>
+        <div class="checks" id="checks"></div>
+        <div class="micro" id="microV"></div>
+        <div class="actions">
+          <button class="btn" id="verBack" type="button"></button>
+          <button class="btn primary" id="verDone" type="button"></button>
         </div>
       </div>
     </section>
@@ -207,103 +219,119 @@
 </div>
 
 <script>
-/* ================= i18n + data ================= */
+/* ============================================================
+   Formentor Flow · Manager (V2)
+   Método Centre APRENS · psicología aplicada al funcionamiento
+   organizacional. Sin backend, sin tracking, sin almacenamiento.
+   ============================================================ */
 var LANG='es';
+
+/* ---------- UI strings ---------- */
 var STR={
   es:{
-    hsub:"Manager · ayuda de decisión",
+    hsub:"Manager", foot:"Formentor Flow · Manager — método Centre APRENS · en el dispositivo",
     homeQ:"¿Qué necesita el sistema ahora?",
-    homeL:"Elige lo que está pasando. Te acompaño en tres pasos para convertir la presión en información.",
-    priv:"<b>Privacidad.</b> La app no guarda nada ni envía datos a ningún servidor. (El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.)",
-    foot:"Formentor Flow · Centre APRENS · v1 · en el dispositivo",
-    steps:{para:"Para",ordena:"Ordena",comunica:"Comunica"},
+    homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
+    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin registros, sin analítica y sin conexión propia. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.",
+    steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
     inhala:"Inhala", exhala:"Exhala", breathStatic:"Inhala 4 · Exhala 4",
-    michint:"Toca el micro para dictar en vez de escribir.",
-    paraX:"Una respiración. <em>¿Qué notas en tu cuerpo ahora?</em> Detecta tu grado de activación y no transmitas tu tensión: abre un instante de espacio-tiempo para recuperar la capacidad de decidir.",
+    paraQ:"¿Vas a transmitir información o activación?",
+    paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
-    comBack:"← Ordena", copy:"⧉ Copiar", copied:"✓ Copiado", restart:"↻ Nueva situación",
+    comBack:"← Ordena", comNext:"Verificar →", copy:"⧉ Copiar", copied:"✓ Copiado",
+    verBack:"← Comunica", verDone:"↻ Nueva situación",
     dirDown:"Hacia abajo", dirUp:"Hacia arriba",
-    prevDown:"Comunicación descendente", prevUp:"Comunicación ascendente · S·I·N·P",
+    prevDown:"Comunicación descendente", prevUp:"Comunicación ascendente · S·I·N·P", prevRelevo:"Relevo",
     empty:"Rellena los campos para ver el mensaje…",
-    ordena:[
-      "¿Qué está ocurriendo realmente?",
-      "¿Qué es prioritario y qué puede esperar?",
-      "¿Qué recursos existen?",
-      "¿Quién necesita intervenir?",
-      "¿Qué información falta?"
-    ],
-    fieldsDown:[
-      ["que","Qué","Qué hay que hacer, en concreto"],
-      ["quien","Quién","Persona o rol responsable"],
-      ["cuando","Cuándo","Plazo / momento"],
-      ["prioridad","Prioridad","Alta / media / qué va primero"],
-      ["criterio","Criterio de finalización","Cómo sabremos que está hecho"]
-    ],
-    fieldsUp:[
-      ["situacion","Situación","Qué está pasando, en una frase"],
-      ["impacto","Impacto","A quién / a qué afecta"],
-      ["necesidad","Necesidad","Qué decisión o recurso hace falta"],
-      ["propuesta","Propuesta","Qué propones tú"]
-    ]
+    example:"Ver ejemplo", exampleHide:"Ocultar ejemplo",
+    michint:"Toca el micro para dictar en vez de escribir.",
+    verQ:"Antes de cerrar: ¿la comunicación ha quedado clara?",
+    checks:["Sabe qué hacer.","Sabe para cuándo.","Sabe qué es prioritario.","Puede comunicar una dificultad.","Sabemos cuándo comprobarlo."]
   },
   en:{
-    hsub:"Manager · decision aid",
+    hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
     homeQ:"What does the system need now?",
-    homeL:"Pick what's happening. Three steps to turn pressure into information.",
-    priv:"<b>Privacy.</b> The app stores nothing and sends no data to any server. (Voice dictation, if you use it, relies on your device's or browser's own speech recognition.)",
-    foot:"Formentor Flow · Centre APRENS · v1 · on-device",
-    steps:{para:"Pause",ordena:"Order",comunica:"Communicate"},
+    homeL:"Pick what's happening. A few steps to turn pressure into information.",
+    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no records, no analytics and no connection of its own. Voice dictation, if you use it, relies on your device's or browser's own speech recognition.",
+    steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
     inhala:"Breathe in", exhala:"Breathe out", breathStatic:"In 4 · Out 4",
-    michint:"Tap the mic to dictate instead of typing.",
-    paraX:"One breath. <em>What do you notice in your body right now?</em> Sense your level of activation and don't pass on your tension: open a moment of space to recover your capacity to decide.",
+    paraQ:"Will you pass on information or activation?",
+    paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
-    comBack:"← Order", copy:"⧉ Copy", copied:"✓ Copied", restart:"↻ New situation",
+    comBack:"← Order", comNext:"Verify →", copy:"⧉ Copy", copied:"✓ Copied",
+    verBack:"← Communicate", verDone:"↻ New situation",
     dirDown:"Downward", dirUp:"Upward",
-    prevDown:"Downward message", prevUp:"Upward message · S·I·N·P",
+    prevDown:"Downward message", prevUp:"Upward message · S·I·N·P", prevRelevo:"Handover",
     empty:"Fill the fields to see the message…",
-    ordena:[
-      "What is actually happening?",
-      "What is a priority and what can wait?",
-      "What resources exist?",
-      "Who needs to step in?",
-      "What information is missing?"
-    ],
-    fieldsDown:[
-      ["que","What","What needs doing, specifically"],
-      ["quien","Who","Person or role responsible"],
-      ["cuando","When","Deadline / moment"],
-      ["prioridad","Priority","High / medium / what comes first"],
-      ["criterio","Done when","How we'll know it's complete"]
-    ],
-    fieldsUp:[
-      ["situacion","Situation","What's happening, in one line"],
-      ["impacto","Impact","Who / what it affects"],
-      ["necesidad","Need","What decision or resource is required"],
-      ["propuesta","Proposal","What you propose"]
-    ]
+    example:"See example", exampleHide:"Hide example",
+    michint:"Tap the mic to dictate instead of typing.",
+    verQ:"Before closing: is the message clear?",
+    checks:["Knows what to do.","Knows by when.","Knows what's the priority.","Can flag a difficulty.","We know when to check."]
   }
 };
-var SITS={
-  incidencia:  {color:"#B0563A", es:"Incidencia",         en:"Incident"},
-  sobrecarga:  {color:"#A87C39", es:"Sobrecarga",         en:"Overload"},
-  conflicto:   {color:"#8F4229", es:"Conflicto",          en:"Conflict"},
-  prioridad:   {color:"#1B5A68", es:"Cambio de prioridad",en:"Priority change"},
-  coordinacion:{color:"#5C7A56", es:"Coordinación",       en:"Coordination"}
-};
-var SITORDER=["incidencia","sobrecarga","conflicto","prioridad","coordinacion"];
 
-/* prefill hints per situation (placeholders adapt) */
-var HINTS={
-  incidencia:{es:{que:"resolver la incidencia detectada",criterio:"verificado y comunicado a recepción"},en:{que:"resolve the detected incident",criterio:"verified and reported to front desk"}},
-  sobrecarga:{es:{situacion:"tres demandas simultáneas con el personal actual",propuesta:"garantizamos A y B a las 18:00; C requiere ajustar plazo, prioridad o recursos"},en:{situacion:"three simultaneous demands with current staff",propuesta:"we guarantee A and B by 18:00; C needs a change in deadline, priority or resources"}},
-  conflicto:{es:{que:"conversación breve entre las partes, fuera de zona de cliente"},en:{que:"brief conversation between the parties, away from guest areas"}},
-  prioridad:{es:{que:"aplicar el cambio de prioridad"},en:{que:"apply the priority change"}},
-  coordinacion:{es:{que:"punto de coordinación en el relevo"},en:{que:"coordination point at handover"}}
+/* ---------- situations (order matters) ---------- */
+var SITORDER=["incidencia","sobrecarga","conflicto","prioridad","coordinacion","relevo"];
+var SITU={
+  incidencia:{ color:"#B0563A",
+    name:{es:"Incidencia",en:"Incident"},
+    ordena:{es:["¿Qué ha ocurrido objetivamente?","¿Afecta al huésped o al servicio?","¿Qué necesita resolverse ahora?","¿Quién tiene capacidad para resolverlo?","¿Quién necesita estar informado?"],
+             en:["What happened, objectively?","Does it affect the guest or the service?","What needs solving now?","Who can actually solve it?","Who needs to be informed?"]},
+    ex:{es:{bad:"Se ha roto el aire de la 214, arregladlo ya.",good:"Avería de A/C en la 214, con huésped dentro. Mantenimiento: prioridad alta, antes de las 15:00. Recepción informada por si procede recolocar."},
+        en:{bad:"The AC in 214 is broken, fix it now.",good:"A/C fault in 214, guest in the room. Maintenance: high priority, before 15:00. Front desk informed in case a room move is needed."}},
+    micro:{es:"Comunicar no es transmitir presión: es convertirla en información.",en:"Communicating isn't passing on pressure: it's turning it into information."} },
+  sobrecarga:{ color:"#A87C39",
+    name:{es:"Sobrecarga",en:"Overload"},
+    ordena:{es:["¿Qué demandas están compitiendo?","¿Qué es realmente prioritario?","¿Qué puede esperar?","¿Qué recurso falta?","¿Qué debemos modificar: plazo, prioridad o recursos?"],
+             en:["Which demands are competing?","What's really the priority?","What can wait?","What resource is missing?","What do we change: deadline, priority or resources?"]},
+    ex:{es:{bad:"No llegamos. Falta gente y todo es urgente.",good:"Tenemos tres demandas simultáneas. Con los recursos actuales garantizamos A y B antes de las 18:00. Para incorporar C necesitamos modificar plazo, prioridad o recursos."},
+        en:{bad:"We can't cope. We're short-staffed and it's all urgent.",good:"Three demands at once. With current resources we guarantee A and B before 18:00. To add C we need to change deadline, priority or resources."}},
+    micro:{es:"Priorizar también es decidir qué puede esperar.",en:"Prioritising is also deciding what can wait."} },
+  conflicto:{ color:"#8F4229",
+    name:{es:"Conflicto",en:"Conflict"},
+    ordena:{es:["¿Qué ha ocurrido objetivamente?","¿Qué parte estoy interpretando?","¿Qué necesita la otra persona?","¿Qué necesita el servicio?","¿Esta conversación debe ser ahora o cuando haya menor activación?"],
+             en:["What happened, objectively?","What part am I interpreting?","What does the other person need?","What does the service need?","Should this talk be now or when activation is lower?"]},
+    ex:{es:{bad:"Housekeeping siempre nos retrasa, así es imposible.",good:"Dos habitaciones VIP no estaban listas a la hora acordada; afecta al check-in. Propongo alinear con Housekeeping el orden de prioridad de las VIP para hoy."},
+        en:{bad:"Housekeeping always delays us, it's impossible.",good:"Two VIP rooms weren't ready at the agreed time; it affects check-in. I propose aligning the VIP priority order with Housekeeping for today."}},
+    micro:{es:"Antes de responder, separa lo ocurrido de lo que interpretas.",en:"Before responding, separate what happened from what you interpret."} },
+  prioridad:{ color:"#1B5A68",
+    name:{es:"Cambio de prioridad",en:"Priority change"},
+    ordena:{es:["¿Qué nueva prioridad aparece?","¿Por qué?","Si esto pasa a ser prioritario, ¿qué deja de serlo?","¿Quién necesita conocer el cambio?","¿Qué impacto tendrá?"],
+             en:["What new priority appears?","Why?","If this becomes the priority, what stops being one?","Who needs to know the change?","What impact will it have?"]},
+    ex:{es:{bad:"Ahora todos a la llegada del grupo, dejad lo que estáis haciendo.",good:"Llega el grupo VIP a las 17:00: pasa a ser prioridad. Posponemos el montaje de la sala B a las 19:00. Recepción y F&B, confirmad el cambio."},
+        en:{bad:"Everyone on the group arrival now, drop what you're doing.",good:"VIP group arrives at 17:00: it becomes the priority. We push room B setup to 19:00. Front desk and F&B, confirm the change."}},
+    micro:{es:"Una nueva prioridad necesita desplazar otra.",en:"A new priority needs to displace another."} },
+  coordinacion:{ color:"#5C7A56",
+    name:{es:"Coordinación",en:"Coordination"},
+    ordena:{es:["¿Quién necesita saber qué?","¿Quién es responsable?","¿Qué dependencia existe entre departamentos?","¿Qué plazo existe?","¿Cómo comprobaremos que la coordinación se ha producido?"],
+             en:["Who needs to know what?","Who is responsible?","What dependency exists between departments?","What's the deadline?","How will we check coordination happened?"]},
+    ex:{es:{bad:"Que alguien avise a cocina de lo del evento.",good:"Evento de 40 pax a las 20:30. Cocina: menú confirmado. Sala: montaje a las 19:30. Mantenimiento: luces a las 19:00. Revisamos a las 19:45 que todo esté listo."},
+        en:{bad:"Someone tell the kitchen about the event.",good:"Event for 40 pax at 20:30. Kitchen: menu confirmed. Floor: setup at 19:30. Maintenance: lighting at 19:00. We check at 19:45 that all is ready."}},
+    micro:{es:"Coordinar termina cuando todos saben qué reciben y cuándo.",en:"Coordination ends when everyone knows what they get and when."} },
+  relevo:{ color:"#2E7C8A",
+    name:{es:"Relevo",en:"Handover"},
+    ordena:{es:["¿Qué queda pendiente?","¿En qué estado está?","¿Quién asume la responsabilidad?","¿Qué prioridad tiene?","¿Cuándo debe revisarse?"],
+             en:["What's still pending?","What state is it in?","Who takes responsibility?","What priority is it?","When should it be reviewed?"]},
+    ex:{es:{bad:"Te dejo el turno, ahí queda todo más o menos.",good:"Pendiente: la 305 pide late check-out (sin confirmar). Estado: a la espera de Housekeeping. Responsable turno tarde: [rol]. Prioridad: media. Revisar a las 16:00."},
+        en:{bad:"I'm leaving you the shift, it's all more or less there.",good:"Pending: 305 requests late check-out (unconfirmed). State: waiting on Housekeeping. Late-shift owner: [role]. Priority: medium. Review at 16:00."}},
+    micro:{es:"Un relevo termina cuando el otro sabe qué recibe.",en:"A handover ends when the other person knows what they receive."} }
 };
 
-/* ================= voice dictation (Web Speech API) ================= */
+/* ---------- COMUNICA field sets ---------- */
+var FIELDS={
+  down:{es:[["que","Qué","Qué hay que hacer, en concreto"],["quien","Quién","Persona o rol responsable"],["cuando","Cuándo","Plazo / momento"],["prioridad","Prioridad","Alta / media / qué va primero"],["criterio","Criterio de finalización","Cómo sabremos que está hecho"]],
+        en:[["que","What","What needs doing, specifically"],["quien","Who","Person or role responsible"],["cuando","When","Deadline / moment"],["prioridad","Priority","High / medium / what comes first"],["criterio","Done when","How we'll know it's complete"]]},
+  up:{es:[["situacion","Situación","Qué está pasando, en una frase"],["impacto","Impacto","A quién / a qué afecta"],["necesidad","Necesidad","Qué decisión o recurso hace falta"],["propuesta","Propuesta","Qué propones tú"]],
+      en:[["situacion","Situation","What's happening, in one line"],["impacto","Impact","Who / what it affects"],["necesidad","Need","What decision or resource is required"],["propuesta","Proposal","What you propose"]]},
+  relevo:{es:[["pendiente","Pendiente","Qué queda por hacer"],["estado","Estado","En qué punto está"],["responsable","Responsable","Quién lo asume"],["prioridad","Prioridad","Alta / media / baja"],["revision","Siguiente revisión","Cuándo se comprueba"]],
+          en:[["pendiente","Pending","What's left to do"],["estado","State","Where it stands"],["responsable","Owner","Who takes it on"],["prioridad","Priority","High / medium / low"],["revision","Next review","When it's checked"]]}
+};
+/* which microphrase to show in COMUNICA, by direction (falls back to situation micro) */
+var MICRO_DIR={ up:{es:"Comunicar hacia arriba no es quejarse: es facilitar decisiones.",en:"Communicating upward isn't complaining: it's enabling decisions."} };
+
+/* ---------- voice dictation (Web Speech API) ---------- */
 var MIC_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.2"/></svg>';
 var MIC_SVG_SM='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;color:var(--mar-2)"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.2"/></svg>';
 function speechAvailable(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition);}
@@ -329,67 +357,76 @@ function startRec(ta,key,btn){
   rec.onend=function(){stopRec();};
   try{rec.start();}catch(e){stopRec();}
 }
-function stopRec(){
-  if(rec){try{rec.onend=null;rec.stop();}catch(e){} rec=null;}
-  if(recBtn){recBtn.classList.remove('rec');recBtn=null;}
-}
+function stopRec(){ if(rec){try{rec.onend=null;rec.stop();}catch(e){} rec=null;} if(recBtn){recBtn.classList.remove('rec');recBtn=null;} }
 
-/* ================= state ================= */
-var state={sit:null,step:"para",dir:"down",vals:{}};
+/* ---------- state ---------- */
+var state={sit:null,step:"para",dir:"down",vals:{},checks:{},exOpen:false};
+var STEPS=["para","ordena","comunica","verifica"];
 function U(){return STR[LANG];}
-
-/* ================= render ================= */
 function el(id){return document.getElementById(id);}
-function setScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});el(id).classList.add('on');}
+function setScreen(id){var s=document.querySelectorAll('.screen');for(var i=0;i<s.length;i++)s[i].classList.remove('on');el(id).classList.add('on');}
 
+/* ---------- home ---------- */
 function renderHome(){
   var t=U();
-  el('hsub').textContent=t.hsub;
-  el('home-q').textContent=t.homeQ;
-  el('home-l').textContent=t.homeL;
-  el('home-priv').innerHTML=t.priv;
-  el('foot').textContent=t.foot;
-  var wrap=el('sits');wrap.innerHTML='';
+  el('hsub').textContent=t.hsub; el('home-q').textContent=t.homeQ; el('home-l').textContent=t.homeL;
+  el('home-priv').innerHTML=t.priv; el('foot').textContent=t.foot;
+  var wrap=el('sits'); wrap.innerHTML='';
   SITORDER.forEach(function(k){
-    var s=SITS[k];
-    var b=document.createElement('button');
-    b.className='sit';b.setAttribute('data-sit',k);
-    b.innerHTML='<span class="d" style="background:'+s.color+'"></span>'+s[LANG]+'<span class="ar">→</span>';
+    var s=SITU[k];
+    var b=document.createElement('button'); b.className='sit'; b.type='button';
+    b.innerHTML='<span class="d" style="background:'+s.color+'"></span>'+s.name[LANG]+'<span class="ar">→</span>';
     b.addEventListener('click',function(){openFlow(k);});
     wrap.appendChild(b);
   });
 }
 
+/* ---------- step bar ---------- */
 function renderStepBar(){
-  var t=U(), order=['para','ordena','comunica'], idx=order.indexOf(state.step);
-  order.forEach(function(k,i){
-    var e=el('sb-'+k);
-    e.textContent=t.steps[k].toUpperCase();
-    e.className='s'+(i===idx?' on':(i<idx?' done':''));
+  var t=U(), bar=el('stepbar'), idx=STEPS.indexOf(state.step);
+  bar.innerHTML='';
+  STEPS.forEach(function(k,i){
+    var d=document.createElement('div');
+    d.className='s'+(i===idx?' on':(i<idx?' done':''));
+    d.textContent=t.steps[k];
+    d.addEventListener('click',function(){ if(state.sit) showStep(k); });
+    bar.appendChild(d);
   });
 }
 
+/* ---------- context + example ---------- */
 function renderCtx(){
-  el('ctxDot').style.background=SITS[state.sit].color;
-  el('ctxName').textContent=SITS[state.sit][LANG];
+  var s=SITU[state.sit], t=U();
+  el('ctxDot').style.background=s.color;
+  el('ctxName').textContent=s.name[LANG];
+  el('exBtn').textContent=state.exOpen?t.exampleHide:t.example;
+  var ex=el('example');
+  if(state.exOpen){
+    var e=s.ex[LANG];
+    ex.innerHTML='<div class="ln bad"><span class="mk">✕</span>'+e.bad+'</div><div class="ln good"><span class="mk">✓</span>'+e.good+'</div>';
+    ex.classList.add('on');
+  } else { ex.classList.remove('on'); ex.innerHTML=''; }
 }
 
+/* ---------- steps ---------- */
 function showStep(step){
   stopRec();
   if(step!=='para') stopBreath();
   state.step=step;
-  ['para','ordena','comunica'].forEach(function(k){el('st-'+k).style.display=(k===step?'block':'none');});
+  ['para','ordena','comunica','verifica'].forEach(function(k){ el('st-'+k).style.display=(k===step?'block':'none'); });
   renderStepBar();
   if(step==='para')renderPara();
   if(step==='ordena')renderOrdena();
   if(step==='comunica')renderComunica();
+  if(step==='verifica')renderVerifica();
 }
 
+/* PARA + breathing 4-4 */
 function renderPara(){
   var t=U();
+  el('paraQ').textContent=t.paraQ;
   el('paraX').innerHTML=t.paraX;
-  el('paraBack').textContent=t.paraBack;
-  el('paraNext').textContent=t.paraNext;
+  el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
   startBreath();
 }
 var breathRAF=null, breathT0=0;
@@ -399,10 +436,9 @@ function startBreath(){
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   ring.classList.remove('anim'); void ring.offsetWidth;
   if(reduce){ ring.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
-  ring.classList.add('anim');
-  breathT0=performance.now();
+  ring.classList.add('anim'); breathT0=performance.now();
   (function loop(){
-    var e2=document.getElementById('ringTxt'); if(!e2){breathRAF=null;return;}
+    var e2=el('ringTxt'); if(!e2){breathRAF=null;return;}
     var ms=(performance.now()-breathT0)%8000, inh=ms<4000;
     var n=Math.floor((inh?ms:ms-4000)/1000)+1; if(n>4)n=4;
     e2.innerHTML='<span class="bl">'+(inh?U().inhala:U().exhala)+'</span><span class="bn">'+n+'</span>';
@@ -410,111 +446,126 @@ function startBreath(){
   })();
 }
 function stopBreath(){ if(breathRAF){cancelAnimationFrame(breathRAF);breathRAF=null;} }
+
+/* ORDENA (adaptive per situation) */
 function renderOrdena(){
-  var t=U(), ul=el('qlist');ul.innerHTML='';
-  t.ordena.forEach(function(q){var li=document.createElement('li');li.textContent=q;ul.appendChild(li);});
-  el('ordBack').textContent=t.ordBack;
-  el('ordNext').textContent=t.ordNext;
+  var t=U(), ul=el('qlist'); ul.innerHTML='';
+  var qs=SITU[state.sit].ordena[LANG];
+  qs.forEach(function(q){
+    var li=document.createElement('li');
+    if(state.sit==='prioridad' && /deja de serlo|stops being/.test(q)) li.className='key';
+    li.textContent=q; ul.appendChild(li);
+  });
+  el('ordBack').textContent=t.ordBack; el('ordNext').textContent=t.ordNext;
+}
+
+/* COMUNICA */
+function fieldSet(){
+  if(state.sit==='relevo') return FIELDS.relevo[LANG];
+  return (state.dir==='up')?FIELDS.up[LANG]:FIELDS.down[LANG];
 }
 function renderComunica(){
-  var t=U();
-  el('dir-down').textContent=t.dirDown;
-  el('dir-up').textContent=t.dirUp;
-  el('comBack').textContent=t.comBack;
+  var t=U(), isRelevo=(state.sit==='relevo');
+  el('dirtog').style.display=isRelevo?'none':'flex';
+  el('dir-down').textContent=t.dirDown; el('dir-up').textContent=t.dirUp;
+  el('dir-down').classList.toggle('on',state.dir==='down'); el('dir-up').classList.toggle('on',state.dir==='up');
+  el('comBack').textContent=t.comBack; el('comNext').textContent=t.comNext;
   el('copyBtn').textContent=t.copy;
-  el('restartBtn').textContent=t.restart;
-  el('dir-down').classList.toggle('on',state.dir==='down');
-  el('dir-up').classList.toggle('on',state.dir==='up');
   renderFields();
+  // microphrase
+  var m = (!isRelevo && state.dir==='up') ? MICRO_DIR.up[LANG] : SITU[state.sit].micro[LANG];
+  el('micro').textContent = m;
 }
+function fieldKey(f){ return (state.sit==='relevo'?'rel':state.dir)+'.'+f[0]; }
 function renderFields(){
   stopRec();
-  var t=U(), defs=state.dir==='down'?t.fieldsDown:t.fieldsUp;
-  var hints=(HINTS[state.sit]&&HINTS[state.sit][LANG])||{};
-  var wrap=el('fields');wrap.innerHTML='';
+  var t=U(), defs=fieldSet(), wrap=el('fields'); wrap.innerHTML='';
   var canVoice=speechAvailable();
-  if(canVoice){var hint=document.createElement('div');hint.className='michint';hint.innerHTML=MIC_SVG_SM+'<span>'+t.michint+'</span>';wrap.appendChild(hint);}
+  if(canVoice){ var hint=document.createElement('div'); hint.className='michint'; hint.innerHTML=MIC_SVG_SM+'<span>'+t.michint+'</span>'; wrap.appendChild(hint); }
   defs.forEach(function(f){
-    var key=state.dir+'.'+f[0];
-    var d=document.createElement('div');d.className='field';
-    var lab=document.createElement('label');lab.textContent=f[1];
-    var row=document.createElement('div');row.className='row';
-    var ta=document.createElement('textarea');ta.rows=1;ta.setAttribute('placeholder',hints[f[0]]||f[2]);
-    ta.value=state.vals[key]||'';
-    ta.addEventListener('input',function(){
-      state.vals[key]=ta.value;
-      ta.style.height='auto';ta.style.height=(ta.scrollHeight)+'px';
-      renderPreview();
-    });
+    var key=fieldKey(f);
+    var d=document.createElement('div'); d.className='field';
+    var lab=document.createElement('label'); lab.textContent=f[1];
+    var row=document.createElement('div'); row.className='row';
+    var ta=document.createElement('textarea'); ta.rows=1; ta.setAttribute('placeholder',f[2]); ta.value=state.vals[key]||'';
+    ta.addEventListener('input',function(){ state.vals[key]=ta.value; ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; renderPreview(); });
     row.appendChild(ta);
-    if(canVoice)row.appendChild(makeMic(ta,key));
-    d.appendChild(lab);d.appendChild(row);wrap.appendChild(d);
-    if(ta.value){ta.style.height='auto';ta.style.height=(ta.scrollHeight)+'px';}
+    if(canVoice) row.appendChild(makeMic(ta,key));
+    d.appendChild(lab); d.appendChild(row); wrap.appendChild(d);
+    if(ta.value){ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; }
   });
-  el('prevTitle').textContent=state.dir==='down'?t.prevDown:t.prevUp;
+  var t2=U();
+  el('prevTitle').textContent = state.sit==='relevo'?t2.prevRelevo:(state.dir==='up'?t2.prevUp:t2.prevDown);
   renderPreview();
 }
 function buildMessage(){
-  var t=U(), defs=state.dir==='down'?t.fieldsDown:t.fieldsUp, lines=[];
-  defs.forEach(function(f){
-    var v=(state.vals[state.dir+'.'+f[0]]||'').trim();
-    if(v)lines.push(f[1].toUpperCase()+': '+v);
-  });
+  var defs=fieldSet(), lines=[];
+  defs.forEach(function(f){ var v=(state.vals[fieldKey(f)]||'').trim(); if(v) lines.push(f[1].toUpperCase()+': '+v); });
   return lines.join('\n');
 }
 function renderPreview(){
-  var msg=buildMessage();
-  var body=el('prevBody');
-  if(msg){body.textContent=msg;body.classList.remove('empty');}
-  else{body.textContent=U().empty;body.classList.add('empty');}
+  var msg=buildMessage(), body=el('prevBody');
+  if(msg){ body.textContent=msg; body.classList.remove('empty'); }
+  else { body.textContent=U().empty; body.classList.add('empty'); }
 }
 
-/* ================= navigation ================= */
+/* VERIFICA */
+function renderVerifica(){
+  var t=U(); el('verQ').textContent=t.verQ;
+  el('verBack').textContent=t.verBack; el('verDone').textContent=t.verDone;
+  el('microV').textContent = SITU[state.sit].micro[LANG];
+  var wrap=el('checks'); wrap.innerHTML='';
+  t.checks.forEach(function(c,i){
+    var b=document.createElement('button'); b.type='button'; b.className='chk'+(state.checks[i]?' on':'');
+    b.innerHTML='<span class="bx">✓</span><span>'+c+'</span>';
+    b.addEventListener('click',function(){ state.checks[i]=!state.checks[i]; b.classList.toggle('on',state.checks[i]); });
+    wrap.appendChild(b);
+  });
+}
+
+/* ---------- navigation ---------- */
 function openFlow(k){
-  state.sit=k;state.step='para';state.dir='down';state.vals={};
-  setScreen('s-flow');renderCtx();showStep('para');
-  el('sb-para').onclick=function(){goStep('para');};
-  el('sb-ordena').onclick=function(){goStep('ordena');};
-  el('sb-comunica').onclick=function(){goStep('comunica');};
+  state.sit=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false;
+  setScreen('s-flow'); renderCtx(); showStep('para');
 }
-function goStep(step){ if(state.sit) showStep(step); }
-function home(){stopBreath();stopRec();setScreen('s-home');}
-
+function home(){ stopBreath(); stopRec(); setScreen('s-home'); }
 function setLang(l){
-  stopRec();
-  LANG=l;
-  el('l-es').classList.toggle('on',l==='es');
-  el('l-en').classList.toggle('on',l==='en');
+  stopRec(); LANG=l;
+  el('l-es').classList.toggle('on',l==='es'); el('l-en').classList.toggle('on',l==='en');
   document.documentElement.lang=l;
   renderHome();
-  if(el('s-flow').classList.contains('on')){renderCtx();showStep(state.step);}
+  if(el('s-flow').classList.contains('on')){ renderCtx(); showStep(state.step); }
 }
-function setDir(d){stopRec();state.dir=d;renderComunica();}
+function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
 
-/* buttons */
+/* ---------- events ---------- */
+el('l-es').addEventListener('click',function(){setLang('es');});
+el('l-en').addEventListener('click',function(){setLang('en');});
+el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
+el('dir-down').addEventListener('click',function(){setDir('down');});
+el('dir-up').addEventListener('click',function(){setDir('up');});
 el('paraBack').addEventListener('click',home);
 el('paraNext').addEventListener('click',function(){showStep('ordena');});
 el('ordBack').addEventListener('click',function(){showStep('para');});
 el('ordNext').addEventListener('click',function(){showStep('comunica');});
 el('comBack').addEventListener('click',function(){showStep('ordena');});
-el('restartBtn').addEventListener('click',home);
+el('comNext').addEventListener('click',function(){showStep('verifica');});
+el('verBack').addEventListener('click',function(){showStep('comunica');});
+el('verDone').addEventListener('click',home);
 el('copyBtn').addEventListener('click',function(){
   var msg=buildMessage(); if(!msg)return;
-  var btn=el('copyBtn');
-  var done=function(){btn.classList.add('copied');btn.textContent=U().copied;setTimeout(function(){btn.classList.remove('copied');btn.textContent=U().copy;},1600);};
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).then(done,function(){fallbackCopy(msg);done();});}
-  else{fallbackCopy(msg);done();}
+  var btn=el('copyBtn'), done=function(){ btn.classList.add('copied'); btn.textContent=U().copied; setTimeout(function(){btn.classList.remove('copied');btn.textContent=U().copy;},1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(msg).then(done,function(){fallbackCopy(msg);done();}); }
+  else { fallbackCopy(msg); done(); }
 });
 function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
 
-/* ================= service worker (offline) ================= */
+/* ---------- service worker (offline) ---------- */
 if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
 
-/* init */
+/* ---------- init ---------- */
 renderHome();
 </script>
 </body>
