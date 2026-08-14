@@ -244,9 +244,9 @@
       ["video-sentir.mp4","Sentir conscientemente","el porqué de la práctica AIS"]
     ];
     const cards=vids.map(([src,label,sub],i)=>{
-      const poster="/assets/video/"+src.replace("video-","poster-").replace(".mp4",".jpg");
+      const poster="/assets/video/"+src.replace("video-","poster-").replace(".mp4",".png");
       return `<figure style="margin:0;text-align:center">
-      <video controls playsinline preload="none" poster="${poster}" style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(70,60,40,.14)"><source src="/assets/video/${src}" type="video/mp4"></video>
+      <video controls playsinline preload="none" poster="${poster}" style="width:100%;aspect-ratio:9/16;object-fit:cover;display:block;background:#e3e8de;border-radius:14px;box-shadow:0 8px 26px rgba(70,60,40,.14)"><source src="/assets/video/${src}" type="video/mp4"></video>
       <figcaption style="font-size:12px;color:#6e746c;margin:6px 0 0;line-height:1.35"><b style="color:#516b5a">${i+1}.</b> ${label}<br><span style="font-style:italic;opacity:.85">${sub}</span></figcaption></figure>`;
     }).join("");
     return `<div class="hub-sec"><span class="hub-sec-e">🌱</span><span class="hub-sec-t">El recorrido · de aparecer a permanecer</span></div>
