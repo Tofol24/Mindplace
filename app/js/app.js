@@ -232,6 +232,26 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  // «El recorrido»: las piezas narrativas del método (Fase 1 → Fase 2), en orden.
+  // Sección aditiva; los vídeos se cargan bajo demanda (el SW no los precachea).
+  function recorridoHTML(){
+    const vids=[
+      ["video-cuerpo.mp4","El día que tu cuerpo empezó a notarte","aparecer"],
+      ["video-respirar.mp4","Respirar es aparecer","cómo se lo dices a tu cuerpo"],
+      ["video-pregunta.mp4","La pregunta que casi nunca nos hacemos","permanecer"],
+      ["video-sentir.mp4","Sentir conscientemente","el porqué de la práctica AIS"]
+    ];
+    const cards=vids.map(([src,label,sub],i)=>{
+      const poster="/assets/video/"+src.replace("video-","poster-").replace(".mp4",".jpg");
+      return `<figure style="margin:0;text-align:center">
+      <video controls playsinline preload="none" poster="${poster}" style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(70,60,40,.14)"><source src="/assets/video/${src}" type="video/mp4"></video>
+      <figcaption style="font-size:12px;color:#6e746c;margin:6px 0 0;line-height:1.35"><b style="color:#516b5a">${i+1}.</b> ${label}<br><span style="font-style:italic;opacity:.85">${sub}</span></figcaption></figure>`;
+    }).join("");
+    return `<div class="hub-sec"><span class="hub-sec-e">🌱</span><span class="hub-sec-t">El recorrido · de aparecer a permanecer</span></div>
+      <div class="hub-sec-d">Las piezas narrativas del método, para verlas en orden y con calma. No son ejercicios: son el hilo que da sentido a la práctica.</div>
+      <div class="hub-grid">${cards}</div>`;
+  }
+
   function porqueHTML(){
     return `
       <section class="porque">
@@ -296,6 +316,7 @@
       ${continuidadHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
+      ${recorridoHTML()}
       ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
