@@ -239,6 +239,8 @@
       ["video-cuerpo.mp4","El día que tu cuerpo empezó a notarte","aparecer"],
       ["video-respirar.mp4","Respirar es aparecer","cómo se lo dices a tu cuerpo"],
       ["video-pregunta.mp4","La pregunta que casi nunca nos hacemos","permanecer"],
+      ["video-yo.mp4","El yo que se construyó sin ti","volver a por quien dejaste fuera"],
+      ["video-quedarte.mp4","Aprender a quedarte","la práctica: permanecer"],
       ["video-sentir.mp4","Sentir conscientemente","el porqué de la práctica AIS"]
     ];
     const cards=vids.map(([src,label,sub],i)=>{
