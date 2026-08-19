@@ -9,6 +9,8 @@ description: >
   stop loss, DCA, cartera, diversificación, tokenomics, PER, dividendos, fiscalidad de plusvalías, o cuando se pida
   un diario de operaciones, una ficha de análisis, una revisión de cartera o un plan de inversión.
   No esperar a que lo pidan explícitamente: si hay un activo + una intención de comprar o vender, activar esta skill.
+  No usar para: el informe diario o semanal, el estado del mercado, la puntuación 0-100 ni la gestión de la cartera
+  y el perfil del inversor (eso es `asesor-inversion`, que además consulta datos actualizados antes de responder).
 ---
 
 # Skill: Análisis de Inversión — Cripto y Acciones
@@ -244,3 +246,14 @@ Genera:
 | `references/fundamentales.md` | Al analizar el fondo de una acción o de una cripto |
 | `references/lectura-tecnica.md` | Al analizar niveles de precio, tendencia o momento de entrada |
 | `references/plantillas.md` | Al generar cualquier output: ficha, diario, revisión |
+
+---
+
+## Relación con la skill `asesor-inversion`
+
+Esta skill es el **marco de método**: cómo se analiza un activo, cómo se dimensiona una posición, cómo se
+comprueba una plataforma y cómo se lleva el diario.
+
+La skill `asesor-inversion` es el **nivel operativo del día a día**: informe diario y semanal, estado del
+mercado con datos buscados en vivo, puntuación 0-100, cartera, perfil y decisión del día.
+Esta de aquí le sirve de biblioteca de referencia — `asesor-inversion` lee estos ficheros y no los duplica.

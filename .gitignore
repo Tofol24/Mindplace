@@ -1,0 +1,10 @@
+# Datos personales de inversión — NUNCA en el repositorio (publica un sitio web en Netlify)
+inversion/
+datos-privados/
+**/perfil-real.md
+**/cartera-real.md
+**/diario-real.md
+
+# Sistema
+.DS_Store
+Thumbs.db
