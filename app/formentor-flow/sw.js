@@ -1,7 +1,7 @@
 /* Formentor Flow · Manager — Service Worker
    Precache del shell → funciona 100% offline tras la primera visita.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "formentor-flow-v7";
+const CACHE = "formentor-flow-v8";
 const SHELL = [
   "./",
   "./index.html",
