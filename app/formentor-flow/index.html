@@ -84,12 +84,7 @@
   /* para */
   .breath{display:grid;place-items:center;padding:14px 0 6px;}
   .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;}
-  .ring.bReinicio{animation-name:bReinicio;animation-iteration-count:infinite;}
-  .ring.bFoco{animation-name:bFoco;animation-iteration-count:infinite;}
-  .ring.bBajar{animation-name:bBajar;animation-iteration-count:infinite;}
-  @keyframes bReinicio{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}33.33%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
-  @keyframes bFoco{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}25%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}75%{transform:scale(.7);opacity:.6;animation-timing-function:linear}100%{transform:scale(.7);opacity:.6}}
-  @keyframes bBajar{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}33.33%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
+  /* la respiración la anima startBreath() por JS: la escala del círculo se calcula por frame según inhala/retén/exhala */
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
   .ring-txt{text-align:center;pointer-events:none;}
@@ -453,20 +448,32 @@ var SITMODE={incidencia:'reinicio',sobrecarga:'foco',prioridad:'foco',coordinaci
 function breathLabel(typ){var u=U();return typ==='in'?u.inhala:typ==='ex'?u.exhala:typ==='pausa'?u.pausa:u.reten;}
 function breathStaticTxt(m){return m.phases.map(function(p){return breathLabel(p[0])+' '+p[1];}).join(' · ');}
 function breathAt(phases,ms){var t=0;for(var i=0;i<phases.length;i++){var len=phases[i][1]*1000;if(ms<t+len){var n=Math.floor((ms-t)/1000)+1;if(n>phases[i][1])n=phases[i][1];return{type:phases[i][0],n:n};}t+=len;}var L=phases[phases.length-1];return{type:L[0],n:L[1]};}
+function bEase(t){ return t*t*(3-2*t); } /* smoothstep */
 function startBreath(){
   stopBreath();
-  var ring=el('ring'), txt=el('ringTxt');
+  var ring=el('ring');
   var m=BREATH[SITMODE[state.sit]||'foco'];
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(ring){ ring.className='ring'; void ring.offsetWidth; }
-  if(reduce){ if(txt) txt.innerHTML='<span class="bl">'+breathStaticTxt(m)+'</span>'; return; }
-  if(ring){ ring.style.animationDuration=(m.dur/1000)+'s'; ring.classList.add(m.cls); }
+  var MIN=reduce?0.88:0.7, MAX=reduce?1.06:1.12;
+  var total=0, bounds=[];
+  m.phases.forEach(function(p){ bounds.push([p[0],total,total+p[1]*1000,p[1]]); total+=p[1]*1000; });
+  if(ring) ring.style.transform='scale('+MIN+')';
   breathT0=performance.now();
   var last=-1,lastT='';
   (function loop(){
-    var tx=el('ringTxt'); if(!tx){breathRAF=null;return;}
-    var ms=(performance.now()-breathT0)%m.dur, b=breathAt(m.phases,ms);
-    if(b.n!==last||b.type!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(b.type)+'</span><span class="bn">'+b.n+'</span>'; last=b.n; lastT=b.type; }
+    var r=el('ring'), tx=el('ringTxt'); if(!r||!tx){breathRAF=null;return;}
+    var ms=(performance.now()-breathT0)%total;
+    var ph=bounds[bounds.length-1];
+    for(var i=0;i<bounds.length;i++){ if(ms<bounds[i][2]){ ph=bounds[i]; break; } }
+    var typ=ph[0], within=ms-ph[1], len=ph[2]-ph[1], p=len>0?within/len:0, scale;
+    if(typ==='in') scale=MIN+(MAX-MIN)*bEase(p);
+    else if(typ==='ex') scale=MAX-(MAX-MIN)*bEase(p);
+    else if(typ==='hold') scale=MAX;
+    else scale=MIN;
+    r.style.transform='scale('+scale.toFixed(3)+')';
+    r.style.opacity=(0.6+0.4*((scale-MIN)/(MAX-MIN))).toFixed(3);
+    var n=Math.floor(within/1000)+1; if(n>ph[3])n=ph[3];
+    if(n!==last||typ!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(typ)+'</span><span class="bn">'+n+'</span>'; last=n; lastT=typ; }
     breathRAF=requestAnimationFrame(loop);
   })();
 }
