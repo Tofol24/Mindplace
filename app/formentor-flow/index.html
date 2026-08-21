@@ -83,14 +83,20 @@
 
   /* para */
   .breath{display:grid;place-items:center;padding:14px 0 6px;}
-  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;}
+  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;background:transparent;font-family:inherit;padding:0;-webkit-tap-highlight-color:transparent;}
+  .ring:focus-visible{outline:2px solid var(--llauto);outline-offset:4px;}
   /* la respiración la anima startBreath() por JS: la escala del círculo se calcula por frame según inhala/retén/exhala */
+  /* idle: el círculo es un pulsador que muestra la frase de atención interna hasta que se toca */
+  .ring.idle{transform:none;cursor:pointer;border-color:var(--llauto);animation:ringInvite 2.6s ease-in-out infinite;}
+  @keyframes ringInvite{0%,100%{box-shadow:0 0 0 0 rgba(168,124,57,0);}50%{box-shadow:0 0 0 7px rgba(168,124,57,.10);}}
+  @media(prefers-reduced-motion:reduce){.ring.idle{animation:none;}}
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
+  .ring .rp{display:block;font-family:var(--serif);font-style:italic;font-size:10.5px;line-height:1.34;color:var(--mar-2);padding:0 13px;}
+  .ring .rc{display:block;margin-top:8px;font-family:var(--mono);font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--llauto-2);}
   .ring-txt{text-align:center;pointer-events:none;}
   .breath-count{text-align:center;margin-top:10px;min-height:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mar-3);}
   .breath-count .bc-n{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--llauto-2);margin-right:4px;letter-spacing:0;}
-  .para-ais{text-align:center;font-family:var(--serif);font-style:italic;font-size:.97rem;line-height:1.4;color:var(--mar-2);margin:12px 12px 2px;}
   .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
   .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 17px;margin-bottom:8px;font-size:.93rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
@@ -171,9 +177,8 @@
 
       <!-- PARA -->
       <div class="step-body" id="st-para">
-        <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
+        <div class="breath"><button class="ring idle" id="ring" type="button"><div class="ring-txt" id="ringTxt"></div></button></div>
         <div class="breath-count" id="breathCount"></div>
-        <div class="para-ais" id="paraAis"></div>
         <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
         <div class="actions">
@@ -246,6 +251,7 @@ var STR={
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
     ais:"Aparece atencionalmente en tu barriga, tu pecho, tu cuello… y simplemente siente. No analices, no luches.",
+    breathCue:"▶ Toca para empezar", breathStart:"Empezar la respiración",
     cyclesLbl:"ciclos", cyclesOne:"ciclo",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
@@ -271,6 +277,7 @@ var STR={
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
     ais:"Bring your attention to your belly, your chest, your neck… and simply feel. Don't analyse, don't fight it.",
+    breathCue:"▶ Tap to begin", breathStart:"Start breathing",
     cyclesLbl:"cycles", cyclesOne:"cycle",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
@@ -440,11 +447,19 @@ function showStep(step){
 /* PARA + breathing 4-4 */
 function renderPara(){
   var t=U();
-  el('paraAis').textContent=t.ais;
   el('paraQ').textContent=t.paraQ;
   el('paraX').innerHTML=t.paraX;
   el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
-  startBreath();
+  showBreathIdle();
+}
+/* Estado inicial: el círculo es un pulsador con la frase de atención interna.
+   Al tocarlo desaparece la frase y arranca el ciclo de respiración. */
+function showBreathIdle(){
+  stopBreath();
+  var t=U(), r=el('ring'), tx=el('ringTxt');
+  breathCycles=0; renderBreathCount();
+  if(r){ r.classList.add('idle'); r.style.transform=''; r.style.opacity=''; r.setAttribute('aria-label',t.breathStart); }
+  if(tx){ tx.innerHTML='<span class="rp">'+t.ais+'</span><span class="rc">'+t.breathCue+'</span>'; }
 }
 function renderBreathCount(){
   var c=el('breathCount'); if(!c)return; var u=U();
@@ -468,6 +483,7 @@ function bEase(t){ return t*t*(3-2*t); } /* smoothstep */
 function startBreath(){
   stopBreath();
   var ring=el('ring');
+  if(ring) ring.classList.remove('idle');
   var m=BREATH[SITMODE[state.sit]||'foco'];
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MIN=reduce?0.88:0.7, MAX=reduce?1.06:1.12;
@@ -595,6 +611,10 @@ el('l-en').addEventListener('click',function(){setLang('en');});
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
+el('ring').addEventListener('click',function(){
+  if(state.step!=='para'||breathRAF)return; /* solo arranca desde el estado inicial */
+  startBreath();
+});
 el('paraBack').addEventListener('click',home);
 el('paraNext').addEventListener('click',function(){showStep('ordena');});
 el('ordBack').addEventListener('click',function(){showStep('para');});
