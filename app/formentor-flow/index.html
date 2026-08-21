@@ -83,11 +83,12 @@
 
   /* para */
   .breath{display:grid;place-items:center;padding:14px 0 6px;}
-  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;text-align:center;color:var(--mar-2);transform:scale(.72);}
+  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;}
   .ring.anim{animation:breathe4 8s infinite;}
-  @keyframes breathe4{0%{transform:scale(.72);opacity:.7;animation-timing-function:ease-in-out}50%{transform:scale(1.08);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.72);opacity:.7}}
+  @keyframes breathe4{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
+  .ring-txt{text-align:center;pointer-events:none;}
   .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
   .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 17px;margin-bottom:8px;font-size:.93rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
@@ -168,7 +169,7 @@
 
       <!-- PARA -->
       <div class="step-body" id="st-para">
-        <div class="breath"><div class="ring" id="ringTxt"></div></div>
+        <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
         <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
         <div class="actions">
@@ -439,16 +440,19 @@ function renderPara(){
 var breathRAF=null, breathT0=0;
 function startBreath(){
   stopBreath();
-  var ring=el('ringTxt'), t=U();
+  var ring=el('ring'), txt=el('ringTxt'), t=U();
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  ring.classList.remove('anim'); void ring.offsetWidth;
-  if(reduce){ ring.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
-  ring.classList.add('anim'); breathT0=performance.now();
+  if(ring){ ring.classList.remove('anim'); void ring.offsetWidth; }
+  if(reduce){ if(txt) txt.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
+  if(ring) ring.classList.add('anim');
+  breathT0=performance.now();
+  var last=-1, lastPh=-1;
   (function loop(){
-    var e2=el('ringTxt'); if(!e2){breathRAF=null;return;}
+    var tx=el('ringTxt'); if(!tx){breathRAF=null;return;}
     var ms=(performance.now()-breathT0)%8000, inh=ms<4000;
     var n=Math.floor((inh?ms:ms-4000)/1000)+1; if(n>4)n=4;
-    e2.innerHTML='<span class="bl">'+(inh?U().inhala:U().exhala)+'</span><span class="bn">'+n+'</span>';
+    var ph=inh?0:1;
+    if(n!==last||ph!==lastPh){ tx.innerHTML='<span class="bl">'+(inh?U().inhala:U().exhala)+'</span><span class="bn">'+n+'</span>'; last=n; lastPh=ph; }
     breathRAF=requestAnimationFrame(loop);
   })();
 }
