@@ -85,7 +85,7 @@
   .breath{display:grid;place-items:center;padding:14px 0 6px;}
   .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;}
   .ring.anim{animation:breathe4 8s infinite;}
-  @keyframes breathe4{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
+  @keyframes breathe4{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}37.5%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
   .ring-txt{text-align:center;pointer-events:none;}
@@ -238,7 +238,7 @@ var STR={
     homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
     priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin registros, sin analítica y sin conexión propia. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
-    inhala:"Inhala", exhala:"Exhala", breathStatic:"Inhala 4 · Exhala 4",
+    inhala:"Inhala", reten:"Retén", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
@@ -261,7 +261,7 @@ var STR={
     homeL:"Pick what's happening. A few steps to turn pressure into information.",
     priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no records, no analytics and no connection of its own. Voice dictation, if you use it, relies on your device's or browser's own speech recognition.",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
-    inhala:"Breathe in", exhala:"Breathe out", breathStatic:"In 4 · Out 4",
+    inhala:"Breathe in", reten:"Hold", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
     paraBack:"← Home", paraNext:"I'm ready →",
@@ -446,13 +446,14 @@ function startBreath(){
   if(reduce){ if(txt) txt.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
   if(ring) ring.classList.add('anim');
   breathT0=performance.now();
-  var last=-1, lastPh=-1;
+  var last=-1, lastPh='';
   (function loop(){
     var tx=el('ringTxt'); if(!tx){breathRAF=null;return;}
-    var ms=(performance.now()-breathT0)%8000, inh=ms<4000;
-    var n=Math.floor((inh?ms:ms-4000)/1000)+1; if(n>4)n=4;
-    var ph=inh?0:1;
-    if(n!==last||ph!==lastPh){ tx.innerHTML='<span class="bl">'+(inh?U().inhala:U().exhala)+'</span><span class="bn">'+n+'</span>'; last=n; lastPh=ph; }
+    var ms=(performance.now()-breathT0)%8000, ph, n, lab;
+    if(ms<3000){ ph='in'; n=Math.floor(ms/1000)+1; lab=U().inhala; }
+    else if(ms<4000){ ph='hold'; n=1; lab=U().reten; }
+    else { ph='ex'; n=Math.floor((ms-4000)/1000)+1; if(n>4)n=4; lab=U().exhala; }
+    if(n!==last||ph!==lastPh){ tx.innerHTML='<span class="bl">'+lab+'</span><span class="bn">'+n+'</span>'; last=n; lastPh=ph; }
     breathRAF=requestAnimationFrame(loop);
   })();
 }
