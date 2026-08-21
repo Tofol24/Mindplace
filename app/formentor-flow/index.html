@@ -88,6 +88,9 @@
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
   .ring-txt{text-align:center;pointer-events:none;}
+  .breath-count{text-align:center;margin-top:10px;min-height:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mar-3);}
+  .breath-count .bc-n{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--llauto-2);margin-right:4px;letter-spacing:0;}
+  .para-ais{text-align:center;font-family:var(--serif);font-style:italic;font-size:.97rem;line-height:1.4;color:var(--mar-2);margin:12px 12px 2px;}
   .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
   .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 17px;margin-bottom:8px;font-size:.93rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
@@ -169,6 +172,8 @@
       <!-- PARA -->
       <div class="step-body" id="st-para">
         <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
+        <div class="breath-count" id="breathCount"></div>
+        <div class="para-ais" id="paraAis"></div>
         <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
         <div class="actions">
@@ -240,6 +245,8 @@ var STR={
     inhala:"Inhala", reten:"Retén", pausa:"Pausa", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
+    ais:"Aparece atencionalmente en tu barriga, tu pecho, tu cuello… y simplemente siente. No analices, no luches.",
+    cyclesLbl:"ciclos", cyclesOne:"ciclo",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
     comBack:"← Ordena", comNext:"Verificar →", copy:"⧉ Copiar", copied:"✓ Copiado",
@@ -263,6 +270,8 @@ var STR={
     inhala:"Breathe in", reten:"Hold", pausa:"Pause", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
+    ais:"Bring your attention to your belly, your chest, your neck… and simply feel. Don't analyse, don't fight it.",
+    cyclesLbl:"cycles", cyclesOne:"cycle",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
     comBack:"← Order", comNext:"Verify →", copy:"⧉ Copy", copied:"✓ Copied",
@@ -431,12 +440,19 @@ function showStep(step){
 /* PARA + breathing 4-4 */
 function renderPara(){
   var t=U();
+  el('paraAis').textContent=t.ais;
   el('paraQ').textContent=t.paraQ;
   el('paraX').innerHTML=t.paraX;
   el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
   startBreath();
 }
-var breathRAF=null, breathT0=0;
+function renderBreathCount(){
+  var c=el('breathCount'); if(!c)return; var u=U();
+  if(breathCycles<=0){ c.innerHTML=''; return; }
+  var lbl=breathCycles===1?u.cyclesOne:u.cyclesLbl;
+  c.innerHTML='<span class="bc-n">'+breathCycles+'</span>'+lbl;
+}
+var breathRAF=null, breathT0=0, breathCycles=0;
 /* Ritmos de respiración por tipo de situación (regular, no relajar).
    reinicio 3-0-6 (agudo) · foco 4-4-4-4 (box) · bajar 4-2-6 (exhala larga). */
 var BREATH={
@@ -459,10 +475,12 @@ function startBreath(){
   m.phases.forEach(function(p){ bounds.push([p[0],total,total+p[1]*1000,p[1]]); total+=p[1]*1000; });
   if(ring) ring.style.transform='scale('+MIN+')';
   breathT0=performance.now();
-  var last=-1,lastT='';
+  breathCycles=0; renderBreathCount();
+  var last=-1,lastT='',prevMs=0;
   (function loop(){
     var r=el('ring'), tx=el('ringTxt'); if(!r||!tx){breathRAF=null;return;}
     var ms=(performance.now()-breathT0)%total;
+    if(ms<prevMs){ breathCycles++; renderBreathCount(); } prevMs=ms;
     var ph=bounds[bounds.length-1];
     for(var i=0;i<bounds.length;i++){ if(ms<bounds[i][2]){ ph=bounds[i]; break; } }
     var typ=ph[0], within=ms-ph[1], len=ph[2]-ph[1], p=len>0?within/len:0, scale;
