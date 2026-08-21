@@ -83,27 +83,44 @@
 
   /* para */
   /* stage: apila la figura anatómica (fondo) y el círculo de respiración (delante) */
-  .para-stage{display:grid;place-items:center;width:100%;background:transparent;border:0;padding:10px 0 2px;font-family:inherit;position:relative;}
+  .para-stage{display:grid;place-items:center;width:100%;padding:10px 0 2px;position:relative;}
   .para-stage>*{grid-column:1;grid-row:1;}
-  .para-stage.idle{cursor:pointer;-webkit-tap-highlight-color:transparent;}
-  .para-stage:focus-visible{outline:2px solid var(--llauto);outline-offset:4px;border-radius:16px;}
-  .anatomy{transition:opacity .55s ease;pointer-events:none;}
-  .anatomy svg{display:block;height:240px;max-height:38vh;width:auto;}
-  @keyframes stagePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.02);}}
-  .para-stage.idle .anatomy{animation:stagePulse 3.4s ease-in-out infinite;}
-  @media(prefers-reduced-motion:reduce){.para-stage.idle .anatomy{animation:none;}}
-  .para-stage.running .anatomy{opacity:.13;}
-  .stage-cue{align-self:end;justify-self:center;margin-bottom:2px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--llauto-2);background:rgba(244,240,232,.86);padding:5px 13px;border-radius:20px;}
+  .anatomy{transition:opacity .55s ease;}
+  .anatomy svg{display:block;height:250px;max-height:40vh;width:auto;pointer-events:none;}
+  /* la figura y los órganos se atenúan al respirar → quedan al fondo */
+  .figure{transition:opacity .55s ease;}
+  .para-stage.running .figure{opacity:.08;}
+  /* zonas de anclaje tocables */
+  .zone{pointer-events:none;transition:opacity .4s ease;}
+  .zone .hit{fill:#000;fill-opacity:0;pointer-events:all;cursor:pointer;}
+  .zone:focus-visible{outline:none;}
+  .zone:focus-visible .selring{opacity:.9;}
+  .zone .glow{transition:opacity .4s ease,transform .4s ease;transform-box:fill-box;transform-origin:center;}
+  .zone .selring{opacity:0;transition:opacity .3s ease;transform-box:fill-box;transform-origin:center;}
+  .zone .tag{transition:fill .3s ease;}
+  .zone.sel .glow{transform:scale(1.16);}
+  .zone.sel .selring{opacity:.9;animation:zonePulse 1.9s ease-in-out infinite;}
+  .zone.sel .tag{font-weight:800;}
+  @keyframes zonePulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:.95;transform:scale(1.06);}}
+  @media(prefers-reduced-motion:reduce){.zone.sel .selring{animation:none;opacity:.9;}}
+  .para-stage.has-anchor .zone:not(.sel){opacity:.35;}
+  /* al respirar: figura al fondo, pero el ancla elegida sigue perceptible */
+  .para-stage.running .zone:not(.sel){opacity:.1;}
+  .para-stage.running .zone.sel{opacity:.55;}
+  .para-stage.running .zone.sel .selring{animation:none;opacity:.4;}
+  .para-stage.running .zone .hit{pointer-events:none;cursor:default;}
+  .stage-cue{align-self:end;justify-self:center;margin-bottom:0;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--llauto-2);background:rgba(244,240,232,.9);padding:5px 13px;border-radius:20px;text-align:center;max-width:88%;}
   .para-stage.running .stage-cue{display:none;}
 
   .breath{display:grid;place-items:center;transition:opacity .45s ease;}
-  .para-stage.idle .breath{opacity:0;pointer-events:none;}
+  .para-stage:not(.running) .breath{opacity:0;pointer-events:none;}
   .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;background:var(--piedra);}
   /* la respiración la anima startBreath() por JS: la escala del círculo se calcula por frame según inhala/retén/exhala */
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
   .ring-txt{text-align:center;pointer-events:none;}
-  .para-ais{text-align:center;font-family:var(--serif);font-style:italic;font-size:.97rem;line-height:1.4;color:var(--mar-2);margin:12px 14px 2px;}
+  .para-ais{text-align:center;font-family:var(--serif);font-style:italic;font-size:.97rem;line-height:1.4;color:var(--mar-2);margin:12px 14px 4px;}
+  .start-btn{display:block;margin:2px auto 0;}
   .breath-count{text-align:center;margin-top:10px;min-height:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mar-3);}
   .breath-count .bc-n{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--llauto-2);margin-right:4px;letter-spacing:0;}
   .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
@@ -186,41 +203,71 @@
 
       <!-- PARA -->
       <div class="step-body" id="st-para">
-        <button class="para-stage idle" id="paraStage" type="button">
-          <div class="anatomy" id="anatomy" aria-hidden="true">
-            <svg viewBox="0 0 250 300" width="250" height="300" role="img" aria-label="Cuerpo: cuello, pecho y barriga">
+        <div class="para-stage" id="paraStage">
+          <div class="anatomy" id="anatomy">
+            <svg viewBox="0 0 260 322" width="260" height="322" role="img" aria-label="Cuerpo: cuello, pecho y barriga">
               <defs>
                 <radialGradient id="gNeck" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#2E7C8A" stop-opacity=".78"/><stop offset="68%" stop-color="#2E7C8A" stop-opacity=".10"/><stop offset="100%" stop-color="#2E7C8A" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#2E7C8A" stop-opacity=".85"/><stop offset="66%" stop-color="#2E7C8A" stop-opacity=".12"/><stop offset="100%" stop-color="#2E7C8A" stop-opacity="0"/>
                 </radialGradient>
                 <radialGradient id="gChest" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#A87C39" stop-opacity=".74"/><stop offset="68%" stop-color="#A87C39" stop-opacity=".10"/><stop offset="100%" stop-color="#A87C39" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#C06A3E" stop-opacity=".8"/><stop offset="66%" stop-color="#C06A3E" stop-opacity=".12"/><stop offset="100%" stop-color="#C06A3E" stop-opacity="0"/>
                 </radialGradient>
                 <radialGradient id="gBelly" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#5C7A56" stop-opacity=".74"/><stop offset="68%" stop-color="#5C7A56" stop-opacity=".10"/><stop offset="100%" stop-color="#5C7A56" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#6E8A52" stop-opacity=".8"/><stop offset="66%" stop-color="#6E8A52" stop-opacity=".12"/><stop offset="100%" stop-color="#6E8A52" stop-opacity="0"/>
                 </radialGradient>
               </defs>
-              <g fill="#103A44" fill-opacity=".09" stroke="#103A44" stroke-opacity=".22" stroke-width="1.5">
-                <circle cx="110" cy="38" r="25"/>
-                <path d="M110,66 C138,66 150,80 158,102 C165,122 160,150 158,176 C156,206 150,232 132,250 L88,250 C70,232 64,206 62,176 C60,150 55,122 62,102 C70,80 82,66 110,66 Z"/>
+              <!-- figura + órganos (decorativa, se atenúa al respirar) -->
+              <g class="figure">
+                <g class="body" fill="#103A44" fill-opacity=".11" stroke="#103A44" stroke-opacity=".26" stroke-width="1.4">
+                  <circle cx="118" cy="40" r="27"/>
+                  <path d="M118,68 C148,68 162,84 170,108 C178,130 172,160 170,188 C168,220 160,250 138,270 L98,270 C76,250 68,220 66,188 C64,160 58,130 66,108 C74,84 88,68 118,68 Z"/>
+                </g>
+                <g class="organs">
+                  <path d="M100,30 q-7,-11 6,-14 q6,-7 18,-2 q11,-3 13,8 q9,3 3,13 q4,8 -6,10 q-4,7 -13,3 q-9,5 -16,-3 q-10,-1 -5,-12 q-5,-5 0,-8 Z" fill="#2E7C8A" fill-opacity=".4"/>
+                  <path d="M118,17 V52 M107,22 q7,7 0,14 q-7,7 0,14 M129,22 q-7,7 0,14 q7,7 0,14" stroke="#1B5A68" stroke-opacity=".55" stroke-width="1.2" fill="none"/>
+                  <rect x="110" y="63" width="16" height="30" rx="7" fill="#2E7C8A" fill-opacity=".3"/>
+                  <path d="M112,113 C103,113 91,122 89,142 C87,160 91,174 104,178 C112,180 114,171 114,161 L114,121 C114,115 114,113 112,113 Z" fill="#C98A78" fill-opacity=".5"/>
+                  <path d="M124,113 C133,113 145,122 147,142 C149,160 145,174 132,178 C124,180 122,171 122,161 L122,121 C122,115 122,113 124,113 Z" fill="#C98A78" fill-opacity=".5"/>
+                  <path d="M118,151 C112,138 95,141 97,155 C99,168 116,178 118,180 C120,178 137,168 139,155 C141,141 124,138 118,151 Z" fill="#B0563A" fill-opacity=".72"/>
+                  <path d="M90,183 C110,180 133,183 141,191 C132,202 106,204 94,197 C88,193 86,185 90,183 Z" fill="#A87C39" fill-opacity=".5"/>
+                  <path d="M133,181 C145,179 151,189 147,199 C143,209 131,209 127,201 C124,194 125,185 133,181 Z" fill="#8F4229" fill-opacity=".46"/>
+                  <path d="M95,207 h46 a7,7 0 0 1 7,7 v36 a7,7 0 0 1 -7,7 h-46 a7,7 0 0 1 -7,-7 v-36 a7,7 0 0 1 7,-7 Z" fill="none" stroke="#5C7A56" stroke-opacity=".55" stroke-width="7" stroke-linejoin="round"/>
+                  <path d="M104,221 q8,-6 15,0 q8,6 16,0 M104,233 q8,6 15,0 q8,-6 16,0 M104,245 q8,-6 15,0 q8,6 16,0" stroke="#47623F" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </g>
               </g>
-              <ellipse cx="110" cy="82" rx="30" ry="14" fill="url(#gNeck)"/>
-              <ellipse cx="110" cy="140" rx="46" ry="34" fill="url(#gChest)"/>
-              <ellipse cx="110" cy="206" rx="44" ry="32" fill="url(#gBelly)"/>
-              <circle cx="110" cy="82" r="4" fill="#2E7C8A"/>
-              <circle cx="110" cy="140" r="4.5" fill="#A87C39"/>
-              <circle cx="110" cy="206" r="4.5" fill="#5C7A56"/>
-              <g font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="700" letter-spacing=".5">
-                <line x1="140" y1="82" x2="172" y2="72" stroke="#2E7C8A" stroke-width="1.3"/><text id="znNeck" x="176" y="76" fill="#1B5A68">CUELLO</text>
-                <line x1="156" y1="140" x2="186" y2="138" stroke="#A87C39" stroke-width="1.3"/><text id="znChest" x="190" y="142" fill="#855F26">PECHO</text>
-                <line x1="154" y1="206" x2="184" y2="212" stroke="#5C7A56" stroke-width="1.3"/><text id="znBelly" x="188" y="216" fill="#47623F">BARRIGA</text>
+              <!-- zonas de anclaje (tocables) -->
+              <g class="zone" id="zNeck" data-z="neck" role="button" tabindex="0" aria-label="Anclar la atención en el cuello">
+                <ellipse class="glow" cx="118" cy="80" rx="30" ry="15" fill="url(#gNeck)"/>
+                <ellipse class="selring" cx="118" cy="80" rx="27" ry="15" fill="none" stroke="#2E7C8A" stroke-width="2"/>
+                <circle class="dot" cx="118" cy="80" r="3.6" fill="#2E7C8A"/>
+                <line x1="146" y1="80" x2="178" y2="70" stroke="#2E7C8A" stroke-width="1.2"/>
+                <text class="tag" id="znNeck" x="182" y="74" fill="#1B5A68">CUELLO</text>
+                <ellipse class="hit" cx="118" cy="80" rx="36" ry="21"/>
+              </g>
+              <g class="zone" id="zChest" data-z="chest" role="button" tabindex="0" aria-label="Anclar la atención en el pecho">
+                <ellipse class="glow" cx="118" cy="150" rx="50" ry="38" fill="url(#gChest)"/>
+                <ellipse class="selring" cx="118" cy="150" rx="46" ry="35" fill="none" stroke="#C06A3E" stroke-width="2"/>
+                <circle class="dot" cx="118" cy="150" r="4" fill="#B0563A"/>
+                <line x1="164" y1="150" x2="188" y2="150" stroke="#B0563A" stroke-width="1.2"/>
+                <text class="tag" id="znChest" x="192" y="154" fill="#8F4229">PECHO</text>
+                <ellipse class="hit" cx="118" cy="150" rx="54" ry="42"/>
+              </g>
+              <g class="zone" id="zBelly" data-z="belly" role="button" tabindex="0" aria-label="Anclar la atención en la barriga">
+                <ellipse class="glow" cx="118" cy="228" rx="46" ry="34" fill="url(#gBelly)"/>
+                <ellipse class="selring" cx="118" cy="228" rx="43" ry="32" fill="none" stroke="#6E8A52" stroke-width="2"/>
+                <circle class="dot" cx="118" cy="228" r="4" fill="#5C7A56"/>
+                <line x1="160" y1="228" x2="186" y2="234" stroke="#5C7A56" stroke-width="1.2"/>
+                <text class="tag" id="znBelly" x="190" y="238" fill="#47623F">BARRIGA</text>
+                <ellipse class="hit" cx="118" cy="228" rx="50" ry="37"/>
               </g>
             </svg>
           </div>
           <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
           <div class="stage-cue" id="stageCue"></div>
-        </button>
+        </div>
         <div class="para-ais" id="paraAis"></div>
+        <button class="btn primary start-btn" id="startBtn" type="button"></button>
         <div class="breath-count" id="breathCount"></div>
         <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
@@ -294,8 +341,10 @@ var STR={
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
     ais:"Aparece atencionalmente en tu barriga, tu pecho, tu cuello… y simplemente siente. No analices, no luches.",
-    breathCue:"▶ Toca para empezar", breathStart:"Empezar la respiración",
+    cuePick:"Toca una zona para anclar tu atención", cueAnchored:"Atención en {z} · toca Empezar",
+    startBtnLbl:"▶ Empezar a respirar",
     zoneNeck:"CUELLO", zoneChest:"PECHO", zoneBelly:"BARRIGA",
+    zoneNeckL:"el cuello", zoneChestL:"el pecho", zoneBellyL:"la barriga",
     cyclesLbl:"ciclos", cyclesOne:"ciclo",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
@@ -321,8 +370,10 @@ var STR={
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
     ais:"Bring your attention to your belly, your chest, your neck… and simply feel. Don't analyse, don't fight it.",
-    breathCue:"▶ Tap to begin", breathStart:"Start breathing",
+    cuePick:"Tap a zone to anchor your attention", cueAnchored:"Attention on {z} · tap Start",
+    startBtnLbl:"▶ Start breathing",
     zoneNeck:"NECK", zoneChest:"CHEST", zoneBelly:"BELLY",
+    zoneNeckL:"the neck", zoneChestL:"the chest", zoneBellyL:"the belly",
     cyclesLbl:"cycles", cyclesOne:"cycle",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
@@ -495,21 +546,35 @@ function renderPara(){
   el('paraQ').textContent=t.paraQ;
   el('paraX').innerHTML=t.paraX;
   el('paraAis').textContent=t.ais;
-  el('stageCue').textContent=t.breathCue;
   el('znNeck').textContent=t.zoneNeck; el('znChest').textContent=t.zoneChest; el('znBelly').textContent=t.zoneBelly;
+  el('startBtn').textContent=t.startBtnLbl;
   el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
   showBreathIdle();
 }
-/* Estado inicial: la figura anatómica (dónde anclar la atención) queda en primer
-   plano y el stage es un pulsador. Al tocarlo, la figura pasa al fondo y arranca
-   delante el ciclo de respiración de la situación. */
+var ZID={neck:'zNeck',chest:'zChest',belly:'zBelly'}, ZLBL={neck:'zoneNeckL',chest:'zoneChestL',belly:'zoneBellyL'};
+/* Estado inicial: la figura anatómica en primer plano. El usuario toca una de las
+   tres zonas (cuello/pecho/barriga) para anclar su atención; esa zona se resalta.
+   Luego, al pulsar Empezar, la figura pasa al fondo y arranca delante el ciclo. */
 function showBreathIdle(){
   stopBreath();
   var t=U(), st=el('paraStage'), r=el('ring');
+  state.anchor=null;
   breathCycles=0; renderBreathCount();
-  if(st){ st.classList.add('idle'); st.classList.remove('running'); st.setAttribute('aria-label',t.breathStart); }
+  if(st){ st.classList.remove('running','has-anchor'); }
+  for(var k in ZID){ var g=el(ZID[k]); if(g) g.classList.remove('sel'); }
   if(r){ r.style.transform=''; r.style.opacity=''; }
+  el('stageCue').textContent=t.cuePick;
   el('paraAis').style.display='';
+  el('startBtn').style.display='none';
+}
+function setAnchor(z){
+  if(state.step!=='para'||breathRAF)return;
+  state.anchor=z;
+  var t=U(), st=el('paraStage');
+  st.classList.add('has-anchor');
+  for(var k in ZID){ var g=el(ZID[k]); if(g) g.classList.toggle('sel',k===z); }
+  el('stageCue').textContent=t.cueAnchored.replace('{z}',t[ZLBL[z]]);
+  el('startBtn').style.display='';
 }
 function renderBreathCount(){
   var c=el('breathCount'); if(!c)return; var u=U();
@@ -533,8 +598,9 @@ function bEase(t){ return t*t*(3-2*t); } /* smoothstep */
 function startBreath(){
   stopBreath();
   var ring=el('ring'), st=el('paraStage');
-  if(st){ st.classList.remove('idle'); st.classList.add('running'); }
+  if(st){ st.classList.remove('has-anchor'); st.classList.add('running'); }
   el('paraAis').style.display='none';
+  el('startBtn').style.display='none';
   var m=BREATH[SITMODE[state.sit]||'foco'];
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MIN=reduce?0.88:0.7, MAX=reduce?1.06:1.12;
@@ -662,8 +728,14 @@ el('l-en').addEventListener('click',function(){setLang('en');});
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
-el('paraStage').addEventListener('click',function(){
-  if(state.step!=='para'||breathRAF)return; /* solo arranca desde el estado inicial */
+['neck','chest','belly'].forEach(function(z){
+  var g=el(ZID[z]); if(!g)return;
+  g.addEventListener('click',function(){ setAnchor(z); });
+  g.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setAnchor(z); } });
+});
+el('startBtn').addEventListener('click',function(){
+  if(state.step!=='para'||breathRAF)return;
+  if(!state.anchor) setAnchor('chest');
   startBreath();
 });
 el('paraBack').addEventListener('click',home);
