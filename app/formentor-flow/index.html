@@ -84,8 +84,12 @@
   /* para */
   .breath{display:grid;place-items:center;padding:14px 0 6px;}
   .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;}
-  .ring.anim{animation:breathe4 8s infinite;}
-  @keyframes breathe4{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}37.5%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
+  .ring.bReinicio{animation-name:bReinicio;animation-iteration-count:infinite;}
+  .ring.bFoco{animation-name:bFoco;animation-iteration-count:infinite;}
+  .ring.bBajar{animation-name:bBajar;animation-iteration-count:infinite;}
+  @keyframes bReinicio{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}33.33%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
+  @keyframes bFoco{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}25%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}75%{transform:scale(.7);opacity:.6;animation-timing-function:linear}100%{transform:scale(.7);opacity:.6}}
+  @keyframes bBajar{0%{transform:scale(.7);opacity:.6;animation-timing-function:ease-in-out}33.33%{transform:scale(1.12);opacity:1;animation-timing-function:linear}50%{transform:scale(1.12);opacity:1;animation-timing-function:ease-in-out}100%{transform:scale(.7);opacity:.6}}
   .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
   .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
   .ring-txt{text-align:center;pointer-events:none;}
@@ -238,7 +242,7 @@ var STR={
     homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
     priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin registros, sin analítica y sin conexión propia. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
-    inhala:"Inhala", reten:"Retén", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
+    inhala:"Inhala", reten:"Retén", pausa:"Pausa", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
@@ -261,7 +265,7 @@ var STR={
     homeL:"Pick what's happening. A few steps to turn pressure into information.",
     priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no records, no analytics and no connection of its own. Voice dictation, if you use it, relies on your device's or browser's own speech recognition.",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
-    inhala:"Breathe in", reten:"Hold", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
+    inhala:"Breathe in", reten:"Hold", pausa:"Pause", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
     paraBack:"← Home", paraNext:"I'm ready →",
@@ -438,22 +442,31 @@ function renderPara(){
   startBreath();
 }
 var breathRAF=null, breathT0=0;
+/* Ritmos de respiración por tipo de situación (regular, no relajar).
+   reinicio 3-0-6 (agudo) · foco 4-4-4-4 (box) · bajar 4-2-6 (exhala larga). */
+var BREATH={
+  reinicio:{cls:'bReinicio',dur:9000, phases:[['in',3],['ex',6]]},
+  foco:    {cls:'bFoco',    dur:16000,phases:[['in',4],['hold',4],['ex',4],['pausa',4]]},
+  bajar:   {cls:'bBajar',   dur:12000,phases:[['in',4],['hold',2],['ex',6]]}
+};
+var SITMODE={incidencia:'reinicio',sobrecarga:'foco',prioridad:'foco',coordinacion:'foco',conflicto:'bajar',relevo:'bajar'};
+function breathLabel(typ){var u=U();return typ==='in'?u.inhala:typ==='ex'?u.exhala:typ==='pausa'?u.pausa:u.reten;}
+function breathStaticTxt(m){return m.phases.map(function(p){return breathLabel(p[0])+' '+p[1];}).join(' · ');}
+function breathAt(phases,ms){var t=0;for(var i=0;i<phases.length;i++){var len=phases[i][1]*1000;if(ms<t+len){var n=Math.floor((ms-t)/1000)+1;if(n>phases[i][1])n=phases[i][1];return{type:phases[i][0],n:n};}t+=len;}var L=phases[phases.length-1];return{type:L[0],n:L[1]};}
 function startBreath(){
   stopBreath();
-  var ring=el('ring'), txt=el('ringTxt'), t=U();
+  var ring=el('ring'), txt=el('ringTxt');
+  var m=BREATH[SITMODE[state.sit]||'foco'];
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(ring){ ring.classList.remove('anim'); void ring.offsetWidth; }
-  if(reduce){ if(txt) txt.innerHTML='<span class="bl">'+t.breathStatic+'</span>'; return; }
-  if(ring) ring.classList.add('anim');
+  if(ring){ ring.className='ring'; void ring.offsetWidth; }
+  if(reduce){ if(txt) txt.innerHTML='<span class="bl">'+breathStaticTxt(m)+'</span>'; return; }
+  if(ring){ ring.style.animationDuration=(m.dur/1000)+'s'; ring.classList.add(m.cls); }
   breathT0=performance.now();
-  var last=-1, lastPh='';
+  var last=-1,lastT='';
   (function loop(){
     var tx=el('ringTxt'); if(!tx){breathRAF=null;return;}
-    var ms=(performance.now()-breathT0)%8000, ph, n, lab;
-    if(ms<3000){ ph='in'; n=Math.floor(ms/1000)+1; lab=U().inhala; }
-    else if(ms<4000){ ph='hold'; n=1; lab=U().reten; }
-    else { ph='ex'; n=Math.floor((ms-4000)/1000)+1; if(n>4)n=4; lab=U().exhala; }
-    if(n!==last||ph!==lastPh){ tx.innerHTML='<span class="bl">'+lab+'</span><span class="bn">'+n+'</span>'; last=n; lastPh=ph; }
+    var ms=(performance.now()-breathT0)%m.dur, b=breathAt(m.phases,ms);
+    if(b.n!==last||b.type!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(b.type)+'</span><span class="bn">'+b.n+'</span>'; last=b.n; lastT=b.type; }
     breathRAF=requestAnimationFrame(loop);
   })();
 }
