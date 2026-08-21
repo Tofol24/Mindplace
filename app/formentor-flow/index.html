@@ -208,49 +208,65 @@
             <svg viewBox="0 0 260 322" width="260" height="322" role="img" aria-label="Cuerpo: cuello, pecho y barriga">
               <defs>
                 <radialGradient id="gNeck" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#2E7C8A" stop-opacity=".85"/><stop offset="66%" stop-color="#2E7C8A" stop-opacity=".12"/><stop offset="100%" stop-color="#2E7C8A" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#2E7C8A" stop-opacity=".62"/><stop offset="64%" stop-color="#2E7C8A" stop-opacity=".1"/><stop offset="100%" stop-color="#2E7C8A" stop-opacity="0"/>
                 </radialGradient>
                 <radialGradient id="gChest" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#C06A3E" stop-opacity=".8"/><stop offset="66%" stop-color="#C06A3E" stop-opacity=".12"/><stop offset="100%" stop-color="#C06A3E" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#C06A3E" stop-opacity=".55"/><stop offset="64%" stop-color="#C06A3E" stop-opacity=".1"/><stop offset="100%" stop-color="#C06A3E" stop-opacity="0"/>
                 </radialGradient>
                 <radialGradient id="gBelly" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6E8A52" stop-opacity=".8"/><stop offset="66%" stop-color="#6E8A52" stop-opacity=".12"/><stop offset="100%" stop-color="#6E8A52" stop-opacity="0"/>
+                  <stop offset="0%" stop-color="#6E8A52" stop-opacity=".55"/><stop offset="64%" stop-color="#6E8A52" stop-opacity=".1"/><stop offset="100%" stop-color="#6E8A52" stop-opacity="0"/>
                 </radialGradient>
+                <radialGradient id="oBody" cx="50%" cy="32%" r="78%"><stop offset="0%" stop-color="#1B5A68" stop-opacity=".17"/><stop offset="100%" stop-color="#103A44" stop-opacity=".07"/></radialGradient>
+                <linearGradient id="oBrain" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5DAEBB"/><stop offset="100%" stop-color="#1B5A68"/></linearGradient>
+                <linearGradient id="oLung" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E7B09B"/><stop offset="100%" stop-color="#A9634E"/></linearGradient>
+                <radialGradient id="oHeart" cx="42%" cy="30%" r="75%"><stop offset="0%" stop-color="#D07C57"/><stop offset="100%" stop-color="#7E3A24"/></radialGradient>
+                <linearGradient id="oLiver" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#CBA159"/><stop offset="100%" stop-color="#7C561F"/></linearGradient>
+                <linearGradient id="oStom" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BE7C51"/><stop offset="100%" stop-color="#6E3320"/></linearGradient>
+                <linearGradient id="oGut" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8EAA68"/><stop offset="100%" stop-color="#47623F"/></linearGradient>
               </defs>
               <!-- figura + órganos (decorativa, se atenúa al respirar) -->
               <g class="figure">
-                <g class="body" fill="#103A44" fill-opacity=".11" stroke="#103A44" stroke-opacity=".26" stroke-width="1.4">
+                <g class="body" fill="url(#oBody)" stroke="#103A44" stroke-opacity=".28" stroke-width="1.4">
                   <circle cx="118" cy="40" r="27"/>
                   <path d="M118,68 C148,68 162,84 170,108 C178,130 172,160 170,188 C168,220 160,250 138,270 L98,270 C76,250 68,220 66,188 C64,160 58,130 66,108 C74,84 88,68 118,68 Z"/>
                 </g>
                 <g class="organs">
                   <!-- cerebro: hemisferios + circunvoluciones + cerebelo + tronco -->
-                  <path d="M102,32 C99,20 108,12 118,12.5 C128,12 137,20 134,32 C139,35 137,44 129,45 C123,51 113,51 107,45 C99,44 97,35 102,32 Z" fill="#2E7C8A" fill-opacity=".4"/>
-                  <path d="M118,13 V45 M110,17 c6,4 6,10 0,14 M126,17 c-6,4 -6,10 0,14 M104,27 c5,1 6,7 2,11 M132,27 c-5,1 -6,7 -2,11" stroke="#1B5A68" stroke-opacity=".5" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-                  <ellipse cx="118" cy="50" rx="9" ry="5" fill="#2E7C8A" fill-opacity=".34"/>
-                  <path d="M118,54 v9" stroke="#2E7C8A" stroke-opacity=".42" stroke-width="3" fill="none"/>
+                  <path d="M102,32 C99,20 108,12 118,12.5 C128,12 137,20 134,32 C139,35 137,44 129,45 C123,51 113,51 107,45 C99,44 97,35 102,32 Z" fill="url(#oBrain)" fill-opacity=".82" stroke="#12414B" stroke-opacity=".42" stroke-width="1"/>
+                  <path d="M118,13 V45 M110,17 c6,4 6,10 0,14 M126,17 c-6,4 -6,10 0,14 M104,27 c5,1 6,7 2,11 M132,27 c-5,1 -6,7 -2,11" stroke="#0F3B44" stroke-opacity=".45" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                  <path d="M105,20 c6,-5 22,-5 28,0" stroke="#EAF3F2" stroke-opacity=".22" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="118" cy="50" rx="9" ry="5" fill="url(#oBrain)" fill-opacity=".72" stroke="#12414B" stroke-opacity=".35" stroke-width=".8"/>
+                  <path d="M118,54 v9" stroke="#2E7C8A" stroke-opacity=".6" stroke-width="3" fill="none"/>
                   <!-- tráquea (anillos) + tiroides -->
-                  <rect x="113" y="62" width="10" height="30" rx="5" fill="#8FA9AE" fill-opacity=".42"/>
+                  <rect x="113" y="62" width="10" height="30" rx="5" fill="#9CB6BB" fill-opacity=".55" stroke="#3B6B73" stroke-opacity=".32" stroke-width=".8"/>
                   <path d="M113,68 h10 M113,74 h10 M113,80 h10 M113,86 h10" stroke="#3B6B73" stroke-opacity=".35" stroke-width="1"/>
                   <path d="M112,72 c-5,1 -6,8 0,9 c2,-3 2,-6 0,-9 Z M124,72 c5,1 6,8 0,9 c-2,-3 -2,-6 0,-9 Z" fill="#B0563A" fill-opacity=".4"/>
                   <!-- pulmones (lóbulos + cisuras) -->
-                  <path d="M111,110 C100,111 88,122 87,143 C86,161 90,177 104,180 C110,181 113,175 113,167 C113,150 113,128 112,116 C112,112 112,110 111,110 Z" fill="#C98A78" fill-opacity=".5"/>
-                  <path d="M125,110 C136,111 148,122 149,143 C150,161 146,177 132,180 C126,181 123,175 123,167 C123,150 123,128 124,116 C124,112 124,110 125,110 Z" fill="#C98A78" fill-opacity=".5"/>
-                  <path d="M100,131 c6,3 9,3 11,2 M98,151 c7,3 10,3 13,1 M136,131 c-6,3 -9,3 -11,2 M138,151 c-7,3 -10,3 -13,1" stroke="#A96A56" stroke-opacity=".42" stroke-width="1" fill="none"/>
-                  <!-- corazón (ventrículos + cayado aórtico) -->
-                  <path d="M118,179 C114,171 106,151 110,143 C113,137 120,139 121,147 C123,140 130,139 132,145 C136,153 128,169 118,179 Z" fill="#B0563A" fill-opacity=".74"/>
-                  <path d="M121,147 c1,-8 1,-15 -2,-21 M126,145 c3,-7 8,-9 12,-8" stroke="#8F4229" stroke-opacity=".55" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <path d="M111,110 C100,111 88,122 87,143 C86,161 90,177 104,180 C110,181 113,175 113,167 C113,150 113,128 112,116 C112,112 112,110 111,110 Z" fill="url(#oLung)" fill-opacity=".8" stroke="#94513E" stroke-opacity=".4" stroke-width="1"/>
+                  <path d="M125,110 C136,111 148,122 149,143 C150,161 146,177 132,180 C126,181 123,175 123,167 C123,150 123,128 124,116 C124,112 124,110 125,110 Z" fill="url(#oLung)" fill-opacity=".8" stroke="#94513E" stroke-opacity=".4" stroke-width="1"/>
+                  <path d="M100,131 c6,3 9,3 11,2 M98,151 c7,3 10,3 13,1 M136,131 c-6,3 -9,3 -11,2 M138,151 c-7,3 -10,3 -13,1" stroke="#8A4A38" stroke-opacity=".45" stroke-width="1" fill="none"/>
+                  <path d="M96,120 c4,-4 10,-6 14,-5 M140,120 c-4,-4 -10,-6 -14,-5" stroke="#F5DBD1" stroke-opacity=".32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                  <!-- corazón (ventrículos + cayado aórtico + brillo) -->
+                  <path d="M118,179 C114,171 106,151 110,143 C113,137 120,139 121,147 C123,140 130,139 132,145 C136,153 128,169 118,179 Z" fill="url(#oHeart)" fill-opacity=".92" stroke="#6B2F1C" stroke-opacity=".48" stroke-width="1"/>
+                  <path d="M121,147 c1,-8 1,-15 -2,-21 M126,145 c3,-7 8,-9 12,-8" stroke="#5E2716" stroke-opacity=".6" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <path d="M112,150 c2,-4 6,-6 9,-5" stroke="#F2D0C1" stroke-opacity=".38" stroke-width="1.6" fill="none" stroke-linecap="round"/>
                   <!-- hígado -->
-                  <path d="M88,184 C104,181 128,183 140,187 C142,193 138,199 128,201 C112,204 95,203 89,197 C85,193 85,186 88,184 Z" fill="#A87C39" fill-opacity=".54"/>
-                  <path d="M117,186 c0,6 -1,11 -4,14" stroke="#855F26" stroke-opacity=".4" stroke-width="1.2" fill="none"/>
+                  <path d="M88,184 C104,181 128,183 140,187 C142,193 138,199 128,201 C112,204 95,203 89,197 C85,193 85,186 88,184 Z" fill="url(#oLiver)" fill-opacity=".84" stroke="#6E4C1B" stroke-opacity=".42" stroke-width="1"/>
+                  <path d="M117,186 c0,6 -1,11 -4,14" stroke="#5C3F16" stroke-opacity=".48" stroke-width="1.2" fill="none"/>
+                  <path d="M92,187 c10,-3 28,-2 40,2" stroke="#EEDFBB" stroke-opacity=".3" stroke-width="1.4" fill="none" stroke-linecap="round"/>
                   <!-- estómago (forma en J) -->
-                  <path d="M131,181 C143,179 151,188 150,199 C149,209 139,213 132,207 C127,202 124,209 122,203 C120,196 123,185 131,181 Z" fill="#8F4229" fill-opacity=".46"/>
-                  <!-- intestino grueso: marco cólico (⊓) + ciego + sigmoide -->
-                  <path d="M97,250 V213 a7,7 0 0 1 7,-7 H132 a7,7 0 0 1 7,7 V250" fill="none" stroke="#5C7A56" stroke-opacity=".6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="97" cy="252" r="5.5" fill="#5C7A56" fill-opacity=".55"/>
-                  <path d="M139,250 q-2,9 -13,10" fill="none" stroke="#5C7A56" stroke-opacity=".55" stroke-width="7" stroke-linecap="round"/>
+                  <path d="M131,181 C143,179 151,188 150,199 C149,209 139,213 132,207 C127,202 124,209 122,203 C120,196 123,185 131,181 Z" fill="url(#oStom)" fill-opacity=".82" stroke="#5C2A1A" stroke-opacity=".42" stroke-width="1"/>
+                  <!-- intestino grueso: marco cólico (⊓) + ciego + sigmoide + haustras -->
+                  <path d="M97,250 V213 a7,7 0 0 1 7,-7 H132 a7,7 0 0 1 7,7 V250" fill="none" stroke="url(#oGut)" stroke-opacity=".95" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="97" cy="252" r="6" fill="url(#oGut)" fill-opacity=".95" stroke="#3B5233" stroke-opacity=".35" stroke-width="1"/>
+                  <path d="M139,250 q-2,9 -13,10" fill="none" stroke="url(#oGut)" stroke-opacity=".92" stroke-width="8" stroke-linecap="round"/>
+                  <g stroke="#37502F" stroke-opacity=".32" stroke-width="1">
+                    <path d="M92,221 h10 M92,231 h10 M92,241 h10"/>
+                    <path d="M134,221 h10 M134,231 h10 M134,241 h10"/>
+                    <path d="M108,203 v8 M118,203 v8 M128,203 v8"/>
+                  </g>
                   <!-- intestino delgado (asas) -->
-                  <path d="M106,222 q7,-6 13,0 q7,6 13,0 M106,231 q7,6 13,0 q7,-6 13,0 M108,240 q6,-5 11,0 q6,5 11,0" stroke="#47623F" stroke-opacity=".52" stroke-width="3.1" fill="none" stroke-linecap="round"/>
+                  <path d="M107,224 q6,-5 12,0 q6,5 12,0 M107,233 q6,5 12,0 q6,-5 12,0 M109,242 q5,-4 10,0 q5,4 10,0" stroke="#3E5836" stroke-opacity=".62" stroke-width="3.1" fill="none" stroke-linecap="round"/>
                 </g>
               </g>
               <!-- zonas de anclaje (tocables) -->
