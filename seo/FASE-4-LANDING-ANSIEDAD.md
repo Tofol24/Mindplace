@@ -359,30 +359,36 @@ Mismo criterio que en la fase 3, con dos diferencias:
 
 ---
 
-## 7. Referencias — decisión pendiente
+## 7. Referencias — verificadas e incorporadas
 
-El encargo pide referencias científicas cuando se hagan afirmaciones clínicas relevantes. La
-página hace, en rigor, **una sola**: que la TCC y la ACT cuentan con apoyo empírico en trastornos
-de ansiedad. Todo lo demás es descripción de mecanismos, no afirmación de eficacia.
+Resuelto. Ver `seo/fase-4/REFERENCIAS-VERIFICADAS.md` para la verificación completa.
 
-Propongo respaldar esa afirmación con guías de práctica clínica antes que con estudios sueltos:
-una guía es más estable, más citable y más verificable para un lector no especializado.
+**Referencia principal:** *Guía de Práctica Clínica para el Tratamiento del Trastorno de Ansiedad
+Generalizada en Atención Primaria*, Ministerio de Sanidad / Programa de GPC en el SNS (SESCS),
+**28 de noviembre de 2024**. DOI `10.46995/gpc_641`. La guía de 2008 **no** se usa como referencia
+principal.
 
-Candidatas:
+**Complementaria internacional:** NICE CG113, vigente (act. 2020, revisada 2024). Se cita
+únicamente en apoyo de la TCC: no formula recomendación sobre ACT y no se le atribuye ninguna.
 
-| Referencia | Nota |
-|---|---|
-| NICE, *Generalised anxiety disorder and panic disorder in adults: management* (CG113) | Guía de referencia internacional |
-| GuíaSalud, *GPC para el Manejo de Pacientes con Trastornos de Ansiedad en Atención Primaria* | Fuente española del SNS. ⚠️ Verificar vigencia: la versión que conozco es de 2008 |
+| Intervención | Fuerza | Línea |
+|---|---|---|
+| Terapia cognitivo conductual | **Fuerte a favor** | Primera línea psicológica |
+| Terapia de relajación | Débil a favor | Alternativa a la TCC |
+| Terapia metacognitiva | Débil a favor | Segunda línea |
+| Terapia de aceptación y compromiso | **Débil a favor** | Segunda línea |
+| Terapia psicodinámica | Débil **en contra** | — |
+| Mindfulness | Sin recomendación posible | — |
 
-⚠️ **No las incluyo todavía en el texto.** Antes de publicar cualquier referencia quiero
-verificar edición vigente y URL estable de cada una, y que tú las apruebes. Prefiero una página
-con una afirmación bien sostenida que con cinco citas decorativas.
+**Formulación publicada**, ajustada a lo que la guía dice literalmente:
 
-Dime si quieres que las verifique y te las proponga con enlace, o si prefieres aportar tú las
-referencias que uses habitualmente.
-
----
+> La terapia cognitivo-conductual dispone de la base de evidencia más amplia y es la intervención
+> psicológica de referencia: la guía del SNS de 2024 la recomienda como primera línea de
+> tratamiento psicológico para el trastorno de ansiedad generalizada, con recomendación fuerte a
+> favor. La terapia de aceptación y compromiso cuenta también con evidencia favorable en el
+> trastorno de ansiedad generalizada, pero esa misma guía la sitúa por detrás: recomendación débil
+> a favor, como **una de las opciones** de segunda línea cuando no se obtiene respuesta con la
+> terapia cognitivo-conductual. La elección se individualiza en cada caso.
 
 ## 8. Comprobación contra las reglas acordadas
 
@@ -413,3 +419,43 @@ aprobar en el mismo lote o dejar para después:
 
 Si prefieres, la ansiedad puede publicarse antes y enlazar de momento a
 `/cristofol-villalonga-psicologo-mallorca/#enfoque`, pero es mejor que exista.
+
+
+---
+
+## 10. Ajustes aprobados y aplicados
+
+Revisión del 26 de agosto de 2026. Implementación en `seo/fase-4/`.
+
+| # | Ajuste | Estado |
+|---|---|---|
+| 1 | Verificar las referencias en origen | ✅ PDF completo descargado y leído (242 pp.) |
+| 2 | GuíaSalud 2024 como referencia española principal, no la de 2008 | ✅ |
+| 3 | Reflejar el nivel de evidencia exacto de TCC y ACT | ✅ Fuerte a favor / débil a favor, con las líneas correspondientes |
+| 4 | NICE CG113 solo como apoyo de la TCC | ✅ Sin atribuirle recomendación sobre ACT |
+| 5 | Avisos médicos y 024/112 integrados de forma discreta | ✅ Notas al margen, no bloques de alarma |
+| 6 | No construir `/enfoque/` en este lote; sin enlaces rotos | ✅ Los tres enlaces apuntan a la página profesional |
+
+### Dos precisiones que añade la lectura directa de la guía
+
+1. **ACT está condicionada.** La justificación de la sección 5.4 dice literalmente: recomendación
+   débil a favor «en caso de que no se obtenga respuesta con la TCC o con la terapia de
+   relajación». La página lo refleja.
+2. **ACT no está sola en segunda línea.** La terapia metacognitiva tiene la misma fuerza y la
+   misma posición. Por eso el texto dice «**una de** las opciones de segunda línea», no «la
+   segunda línea».
+
+### El hallazgo aprovechado en la redacción
+
+La guía describe el fundamento de ACT en términos casi idénticos a los que la página necesitaba:
+las personas con TAG «reaccionan negativamente a sus experiencias internas, juzgándolas, luchando
+contra ellas o tratando de controlarlas», lo que denomina **evitación experiencial**.
+
+Eso permite que la cadena que explica la página —sensación, intento de control, más vigilancia,
+más preocupación, evitación— quede sostenida por una guía de práctica clínica del SNS de 2024,
+citada literalmente en la sección «¿Por qué cuanto más intento controlar la ansiedad, peor me
+siento?».
+
+**Consecuencia importante:** ya no hace falta apoyarse en TEC/AIS para explicar el mecanismo. TEC/AIS
+puede quedar exactamente donde le corresponde —desarrollo propio, en `/enfoque/`— sin cargar con
+el peso de explicar el problema.
