@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# APRENS · FASE 3 — reglas de Apache
+# Añadir al .htaccess de la raíz del sitio, ANTES de cualquier otra RewriteRule.
+# Si ya existe una línea "RewriteEngine On", no la dupliques: reutilízala.
+# ─────────────────────────────────────────────────────────────────────────────
+
+RewriteEngine On
+
+# ── 1. HOST CANÓNICO ─────────────────────────────────────────────────────────
+# Hoy las cuatro variantes (http/https × con y sin www) devuelven 200 sin
+# redirección, de modo que cada página existe cuatro veces para un buscador.
+# Esta regla las unifica en https://www.aprens.es con UN SOLO salto 301.
+#
+# NOTA para el hosting: si el sitio está detrás de un proxy o balanceador, la
+# variable %{HTTPS} puede llegar siempre en "off". En ese caso sustituye la
+# primera condición por:
+#     RewriteCond %{HTTP:X-Forwarded-Proto} !https
+# Compruébalo antes de subir: una regla mal condicionada aquí crea un bucle
+# de redirección y tumba el sitio entero.
+
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} !^www\.aprens\.es$ [NC]
+RewriteRule ^ https://www.aprens.es%{REQUEST_URI} [R=301,L]
+
+
+# ── 2. URLS LIMPIAS DE LAS PÁGINAS NUEVAS ────────────────────────────────────
+# Cada página se sirve desde su .php real pero se publica con una URL legible.
+# El orden importa: primero se normaliza la barra final, después se reescribe.
+
+# 2a. Si alguien pide el .php directamente, se le manda a la URL pública.
+#     Se usa THE_REQUEST para que solo actúe sobre peticiones externas reales
+#     y no sobre la reescritura interna del punto 2c (evita el bucle).
+RewriteCond %{THE_REQUEST} \s/+profesional\.php[\s?] [NC]
+RewriteRule ^ /cristofol-villalonga-psicologo-mallorca/ [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+trayectoria\.php[\s?] [NC]
+RewriteRule ^ /trayectoria-y-publicaciones/ [R=301,L]
+
+# 2b. Barra final obligatoria (una sola forma canónica de cada URL).
+RewriteRule ^cristofol-villalonga-psicologo-mallorca$ /cristofol-villalonga-psicologo-mallorca/ [R=301,L]
+RewriteRule ^trayectoria-y-publicaciones$          /trayectoria-y-publicaciones/          [R=301,L]
+
+# 2c. Reescritura interna: la URL pública sirve el fichero real.
+RewriteRule ^cristofol-villalonga-psicologo-mallorca/$ profesional.php [L]
+RewriteRule ^trayectoria-y-publicaciones/$          trayectoria.php [L]
+
+
+# ── 3. CACHÉ DE ESTÁTICOS ────────────────────────────────────────────────────
+# Hoy el servidor manda "Cache-Control: no-store" y "Expires: 1981" en TODO,
+# incluidas imágenes y CSS. Esto permite cachear solo lo que no cambia.
+# El HTML se deja fuera a propósito: sigue sirviéndose siempre fresco.
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg              "access plus 1 month"
+  ExpiresByType image/png               "access plus 1 month"
+  ExpiresByType image/gif               "access plus 1 month"
+  ExpiresByType image/svg+xml           "access plus 1 month"
+  ExpiresByType image/x-icon            "access plus 1 year"
+  ExpiresByType text/css                "access plus 1 week"
+  ExpiresByType application/javascript  "access plus 1 week"
+  ExpiresByType font/woff2              "access plus 1 year"
+</IfModule>

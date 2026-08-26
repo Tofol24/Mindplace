@@ -249,9 +249,8 @@ Ejerce desde 2006, cuando fundó el Centre APRENS en Inca.
 | 2006 | Fundador y psicólogo responsable del Centre APRENS, Inca |
 | 2009 | Psicólogo de la Mutua Balear |
 | 2002–2020 | Psicólogo del CD Constancia |
-| 2015–2024 | Vocal del Área de Psicología del Deporte y la Actividad Física del COPIB |
-| Actualidad | Miembro del Grupo de Trabajo de Psicología del Deporte y la Actividad Física del COPIB |
-| Actualidad | Profesor asociado y tutor de prácticas en la Universitat de les Illes Balears |
+| 2015–2024 | Exvocal del Área de Psicología del Deporte y la Actividad Física del COPIB, y posteriormente vinculado a su Grupo de Trabajo de Psicología Deportiva |
+| — | Profesor asociado y tutor de prácticas en la Universitat de les Illes Balears |
 
 → *Ver: Trayectoria y publicaciones*
 
@@ -378,10 +377,9 @@ Un solo bloque en `<head>`, con `@graph` para no repetir la entidad del centro e
       "@id": "https://www.aprens.es/cristofol-villalonga-psicologo-mallorca/#persona",
       "name": "Cristòfol Villalonga Melis",
       "alternateName": [
+        "Tòfol Villalonga",
         "Tòfol Villalonga Melis",
-        "Tófol Villalonga Melis",
-        "Cristóbal Villalonga Melis",
-        "Tòfol Villalonga"
+        "Cristóbal Villalonga Melis"
       ],
       "jobTitle": ["Psicólogo General Sanitario", "Neuropsicólogo clínico"],
       "description": "Psicólogo General Sanitario y neuropsicólogo clínico, colegiado B-01599. Consulta en Inca, Mallorca, y atención online.",
@@ -422,11 +420,11 @@ Un solo bloque en `<head>`, con `@graph` para no repetir la entidad del centro e
       "knowsLanguage": ["ca", "es"],
       "award": "Premio a la Excelencia Profesional en Psicología, III Premios Joan Calafat (Grupo Salut i Força), 2025",
       "sameAs": [
-        "PENDIENTE · URL del buscador de colegiados del COPIB",
-        "https://copib.es/es/noticias/psicologo-tofol-villalonga-recibe-premio-joan-calafat-excelencia-profesional",
-        "https://www.mundopsicologos.com/centros/cristofol-villalonga-melis",
-        "https://www.doctoralia.es/tofol-villalonga-melis/psicologo/inca"
-      ]
+        "https://www.tofolvillalonga.com/",
+        "https://www.doctoralia.es/tofol-villalonga-melis/psicologo/inca",
+        "https://www.mundopsicologos.com/centros/cristofol-villalonga-melis"
+      ],
+      "subjectOf": [ "→ las dos notas del COPIB, como NewsArticle. Ver profesional.php" ]
     },
     {
       "@type": "ProfessionalService",
@@ -514,3 +512,31 @@ Verificación contra las reglas de la FASE 2:
 - ❌ No contiene ninguna palabra de la lista prohibida
 - ❌ No dice «el mejor», ni promete resultados, ni cuantifica éxito
 - ✅ Corrige la vocalía del COPIB a cargo pasado con sus fechas
+
+
+---
+
+## 9. Ajustes aprobados y aplicados
+
+Revisión del 26 de agosto de 2026. Los siete ajustes solicitados están incorporados
+en los ficheros de `seo/fase-3/`.
+
+| # | Ajuste | Dónde queda aplicado |
+|---|---|---|
+| 1 | Nada de «Vocal» en presente: «Exvocal del Área … (2015–2024)» | `profesional.php` §D y `correcciones-en-paginas-existentes.md` §3 |
+| 2 | No afirmar vigencia en 2026 del Grupo de Trabajo: «posteriormente vinculado a» | ídem |
+| 3 | Premio Joan Calafat como reconocimiento verificable vía COPIB | `profesional.php` §B (`award` + `subjectOf`) y §D |
+| 4 | Identidad principal Cristòfol Villalonga Melis / B-01599; `alternateName` sin «Tófol» | `profesional.php` §B |
+| 5 | tofolvillalonga.com/Doctoralia como entidad secundaria a alinear, no a combatir | `sameAs` + pendientes de FASE 8 en `INSTALACION.md` |
+| 6 | `sameAs` solo para páginas de identidad; noticias del COPIB fuera | `profesional.php` §B: van en `subjectOf` |
+| 7 | APRENS como fuente principal de identidad, trayectoria y enfoque | toda la arquitectura de §D |
+
+### Nota sobre el ajuste 6
+
+La observación es correcta y schema.org tiene la propiedad exacta para lo que describes:
+**`subjectOf`**, que declara una obra creativa *sobre* la entidad. Las dos notas del COPIB
+entran ahí como `NewsArticle` con su `datePublished` y su `publisher`.
+
+El resultado es el que pedías, y además mejor que dejarlas solo como enlace en el texto: la
+relación «esta persona es el sujeto de esta publicación institucional» queda declarada de forma
+legible por máquina, sin que ninguna noticia se confunda con una página de identidad.
