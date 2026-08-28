@@ -2,7 +2,11 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v124";
+const CACHE = "aprens-v125";
+// Caché aparte y versionada para las ilustraciones de los cuentos:
+// se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
+// actualización global de la app (no entran en SHELL).
+const CUENTOS = "aprens-cuentos-v1";
 const SHELL = [
   "./",
   "./index.html",
@@ -55,6 +59,24 @@ const SHELL = [
   "./tools-standalone/tiempo_limite_peques.html",
   "./tools-standalone/assets/editorial/tiempo-limite.webp",
   "./tools-standalone/cuando-todo-demasiado.html",
+  // Cuentos de Nil — app shell (HTML + CSS/JS + fuentes). Las imágenes NO,
+  // van a la caché aparte "aprens-cuentos-v1" (bajo demanda).
+  "./tools-standalone/cuentos/index.html",
+  "./tools-standalone/cuentos/c1.html",
+  "./tools-standalone/cuentos/c2.html",
+  "./tools-standalone/cuentos/c3.html",
+  "./tools-standalone/cuentos/mapa.html",
+  "./tools-standalone/cuentos/assets/reader.css",
+  "./tools-standalone/cuentos/assets/cuentos.js",
+  "./tools-standalone/cuentos/assets/fonts/fonts.css",
+  "./tools-standalone/cuentos/assets/fonts/f1.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f2.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f3.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f4.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f5.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f6.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f7.woff2",
+  "./tools-standalone/cuentos/assets/fonts/f8.woff2",
   "./tools-standalone/fondos_frases_aprens.html",
   "./tools-standalone/la_manada_aprens.html",
   "./tools-standalone/assets/editorial/la-manada.webp",
@@ -159,7 +181,7 @@ self.addEventListener("install", e => {
 
 self.addEventListener("activate", e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== CUENTOS).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -170,6 +192,21 @@ self.addEventListener("fetch", e => {
   // Peticiones con Range (audio en streaming): dejar pasar al navegador,
   // no cachear respuestas parciales (206) para no romper la reproducción.
   if (req.headers.has("range")) return;
+  // Ilustraciones de los cuentos: caché aparte, bajo demanda (cache-first).
+  // Así se cargan al abrir un cuento y quedan disponibles offline, sin
+  // reinstalarse con cada actualización global de la app.
+  const url = new URL(req.url);
+  if (url.pathname.indexOf("/cuentos/img/") !== -1) {
+    e.respondWith(
+      caches.open(CUENTOS).then(c =>
+        c.match(req).then(hit => hit || fetch(req).then(res => {
+          if (res && res.ok) c.put(req, res.clone());
+          return res;
+        }))
+      )
+    );
+    return;
+  }
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
