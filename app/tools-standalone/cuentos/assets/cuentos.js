@@ -119,23 +119,26 @@ window.initReader=function(id){
   });
 
   // chrome
-  var bar=document.getElementById("bar"), count=document.getElementById("count");
+  var bar=document.getElementById("bar"), count=document.getElementById("count"), prevBtn=document.getElementById("prevBtn");
   var idx=0; try{var sv2=parseInt(localStorage.getItem(POS),10); if(sv2>=0&&sv2<els.length)idx=sv2;}catch(e){}
   try{if(localStorage.getItem(CALM)==="1")stage.classList.add("calm");}catch(e){}
   function updateChrome(){
     var storyLike=(pages[idx].k==="story"||pages[idx].k==="closing");
     if(storyLike){var num=(idx-1); count.textContent=num+" / "+total; count.style.display="";}
     else {count.style.display="none";}
+    prevBtn.hidden=(idx<=0); // "Atrás" oculto solo en la portada
   }
   function show(n2){ if(n2<0||n2>=els.length||n2===idx)return; els[idx].classList.remove("on"); idx=n2; els[idx].classList.add("on"); updateChrome(); try{localStorage.setItem(POS,idx);}catch(e){} wake(); }
   els[idx].classList.add("on"); updateChrome();
 
-  // auto-hide chrome
+  // La barra de navegación (Inicio / Atrás / Modo tranquilo) queda SIEMPRE visible
+  // para no perder al lector. Solo el contador de página se difumina al leer.
   var t=null;
-  function wake(){ bar.classList.remove("hide"); count.classList.remove("hide"); if(t)clearTimeout(t); t=setTimeout(function(){ bar.classList.add("hide"); count.classList.add("hide"); },2600); }
+  function wake(){ count.classList.remove("hide"); if(t)clearTimeout(t); t=setTimeout(function(){ count.classList.add("hide"); },2600); }
   wake();
 
-  function toggleChrome(){ if(bar.classList.contains("hide"))wake(); else {bar.classList.add("hide");count.classList.add("hide");if(t)clearTimeout(t);} }
+  function toggleChrome(){ if(count.classList.contains("hide"))wake(); else {count.classList.add("hide");if(t)clearTimeout(t);} }
+  prevBtn.onclick=function(){ show(idx-1); };
   document.getElementById("calmBtn").onclick=function(){ var on=stage.classList.toggle("calm"); this.textContent=on?"Salir del modo":"Modo tranquilo"; try{localStorage.setItem(CALM,on?"1":"0");}catch(e){} wake(); };
   document.getElementById("calmBtn").textContent=stage.classList.contains("calm")?"Salir del modo":"Modo tranquilo";
   document.addEventListener("keydown",function(e){ if(e.key==="ArrowRight")show(idx+1); else if(e.key==="ArrowLeft")show(idx-1); else wake(); });
