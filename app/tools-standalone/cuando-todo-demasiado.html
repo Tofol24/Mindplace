@@ -499,9 +499,17 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
 <section class="view" id="v-ninorojo" aria-labelledby="nrH">
   <div class="kick">Soy yo</div>
   <h2 class="h-view" id="nrH" style="font-size:26px">Ahora no tienes que resolver nada.</h2>
-  <p class="desc">Estoy aquí. Elige solo si quieres.</p>
+  <p class="desc">Estoy aquí.</p>
   <div class="grid" id="ninoRojo"></div>
-  <button class="btn sec wide" style="margin-top:18px" onclick="go('ninonec')">Ya estoy un poco mejor</button>
+  <button class="btn sec wide" style="margin-top:18px" onclick="go('nino')">Ya estoy un poco mejor</button>
+</section>
+
+<!-- NIÑO · REDUCIDA (🟠 reducir / 🔵 recuperar) -->
+<section class="view" id="v-ninoreduce" aria-labelledby="nreH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="nreH">¿Qué necesito ahora?</h2>
+  <div class="grid" id="ninoReduce"></div>
+  <button class="btn sec wide" style="margin-top:16px" onclick="go('nino')">Ya estoy mejor</button>
 </section>
 
 </main>
@@ -521,7 +529,7 @@ function crisisNow(){go(prefs.role==='nino'?'nino':'padre');}
 function clearAll(){if(confirm('¿Borrar TODOS tus datos de este dispositivo (plan, preferencias y registros)? Esta acción no se puede deshacer.')){try{localStorage.removeItem(LS.plan);localStorage.removeItem(LS.reg);localStorage.removeItem(LS.prefs);}catch(e){}prefs={calm:false};applyCalm();renderPlan();miniToast('Todos tus datos han sido borrados de este dispositivo.');}}
 
 /* ---------- NAV ---------- */
-var titles={splash:'APRENS',role:'Elige',padre:'Padre / madre',nino:'Soy yo',ninonec:'Soy yo',ninorojo:'Soy yo',
+var titles={splash:'APRENS',role:'Elige',padre:'Padre / madre',nino:'Soy yo',ninonec:'Soy yo',ninorojo:'Soy yo',ninoreduce:'Soy yo',
  quepasa:'¿Qué está pasando?',semaforo:'El semáforo',primeroyo:'Primero yo',quenecesita:'¿Qué necesita?',
  quedigo:'¿Qué le digo?',hablo:'¿Hablo o espero?',fuera:'Fuera de casa',entrenar:'Entrenar',entender:'Entender lo que pasó',
  plan:'Nuestro plan',registro:'Registro',intereses:'Intereses',social:'Códigos sociales',edad:'Los 10-11 años',seguridad:'Seguridad'};
@@ -753,10 +761,15 @@ function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 var ninoEst=[['🙂','todavía puedo','verde'],['😕','empieza a costarme','amarillo'],['😣','necesito parar','naranja'],['🔥','demasiado','rojo'],['🌧️','recuperándome','azul']];
 (function(){var c=document.getElementById('ninoEstado');ninoEst.forEach(function(e){var b=document.createElement('button');b.className='big';b.style.gridColumn=e[2]==='azul'?'1 / -1':'auto';
  b.innerHTML='<span class="ic">'+e[0]+'</span><span>'+e[1]+'</span>';
- b.onclick=function(){ go(e[2]==='rojo' ? 'ninorojo' : 'ninonec'); };c.appendChild(b);});})();
-/* niño en rojo: pantalla mínima, baja carga ejecutiva */
+ b.onclick=function(){ var s=e[2]; go(s==='rojo'?'ninorojo':(s==='naranja'||s==='azul')?'ninoreduce':'ninonec'); };c.appendChild(b);});})();
+/* 🔴 rojo: pantalla mínima de acompañamiento (máxima protección, mínima demanda) */
 var ninoRoj=[['🤝','Quédate cerca','Estoy aquí, cerca de ti.'],['🌙','Quiero estar solo','Vale. Me quedo cerca, sin molestar.'],['⏸️','Pausa','Paramos. No hace falta nada más.']];
 (function(){var c=document.getElementById('ninoRojo');ninoRoj.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='96px';b.style.fontSize='20px';
+ b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
+ b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
+/* 🟠 reducir / 🔵 recuperar: interfaz reducida (pocas opciones de regulación/comunicación, sin analizar) */
+var ninoReduc=[['⏸️','Pausa','Paramos. No hace falta nada más.'],['⏳','Necesito tiempo','Tómate el tiempo que necesites.'],['🤝','Quédate cerca','Estoy aquí, cerca de ti.'],['🌙','Quiero estar solo','Vale. Me quedo cerca, sin molestar.'],['📋','Explícame qué va a pasar','Te cuento, con calma, lo que viene.']];
+(function(){var c=document.getElementById('ninoReduce');ninoReduc.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='84px';b.style.fontSize='18px';
  b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
  b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
 var ninoNec=[['🤫','silencio'],['🎧','menos ruido'],['↔️','espacio'],['🤝','que te quedes'],['🚪','salir'],['🚶','moverme'],['🥤','agua'],['⏳','tiempo'],['📋','saber qué viene'],['❓','no lo sé']];
