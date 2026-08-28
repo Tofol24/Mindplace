@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F6F2">
+<title>APRENS · Cuando todo se hace demasiado</title>
+<style>
+:root{
+  --bg:#F7F6F2; --card:#FFFFFF; --ink:#28312F; --muted:#5f6b66;
+  --verde:#6F8F83; --azul:#7895A8; --ocre:#C6A66B; --coral:#C9786E;
+  --line:#e6e3da; --soft:0 8px 26px rgba(40,49,47,.07);
+  --radius:20px; --tap:48px;
+  --amarillo:#D9B65A; --naranja:#D08A54; --rojo:#C9786E; --azulr:#7895A8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+body.calm .decor{display:none!important}
+body.calm *{animation:none!important;transition:none!important}
+h1,h2,h3{line-height:1.25;margin:0 0 .3em}
+p{margin:0 0 .8em}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 40px}
+a{color:var(--azul)}
+
+/* App bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(247,246,242,.92);backdrop-filter:saturate(1.2) blur(8px);
+  border-bottom:1px solid var(--line)}
+.bar-in{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px;
+  padding-top:calc(8px + env(safe-area-inset-top))}
+.iconbtn{min-width:var(--tap);min-height:var(--tap);border:none;background:transparent;border-radius:14px;
+  font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.iconbtn:hover{background:#00000008}
+.iconbtn:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.bar-title{flex:1;text-align:center;font-weight:700;font-size:15px;letter-spacing:.01em}
+.calmtog{font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);background:var(--card);
+  border-radius:20px;min-height:46px;padding:0 14px}
+.calmtog[aria-pressed="true"]{background:var(--verde);color:#fff;border-color:var(--verde)}
+
+/* Views */
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Splash */
+#v-splash{text-align:center;padding:14vh 20px}
+.logo{font-weight:800;letter-spacing:.24em;font-size:30px;color:var(--verde);padding-left:.24em}
+.logo small{display:block;letter-spacing:.34em;font-size:10px;color:var(--muted);font-weight:700;margin-top:10px;text-transform:uppercase}
+#v-splash h1{font-family:Georgia,serif;font-weight:700;font-size:26px;margin-top:28px}
+#v-splash .lead{color:var(--muted);max-width:420px;margin:6px auto 26px}
+
+/* Kicker + heads */
+.kick{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--verde);margin:22px 0 6px}
+.h-view{font-family:Georgia,serif;font-size:23px;margin:0 0 4px}
+.desc{color:var(--muted);margin:0 0 16px}
+
+/* Cards / grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);
+  padding:16px;text-align:left;width:100%;color:var(--ink);display:flex;flex-direction:column;gap:6px;min-height:var(--tap);
+  transition:transform .15s ease, box-shadow .15s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(40,49,47,.11)}
+.card:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.card .n{font-size:12px;font-weight:800;color:var(--ocre)}
+.card .ic{font-size:24px}
+.card .t{font-weight:700;font-size:15px}
+.card .s{font-size:12.5px;color:var(--muted);line-height:1.35}
+.card.full{grid-column:1 / -1}
+.card.plain{box-shadow:none;background:#fff9}
+
+/* Big buttons (child) */
+.big{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--soft);
+  min-height:110px;font-size:19px;font-weight:700;color:var(--ink);padding:18px}
+.big .ic{font-size:34px}
+.big:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.big:active{transform:scale(.99)}
+
+/* Panels */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:18px;margin:12px 0}
+.panel.tint{background:#f0f3f0;box-shadow:none}
+.note{background:#eef2f3;border:1px solid #dbe4e7;border-radius:16px;padding:14px 16px;color:#3a4a52;margin:12px 0;font-size:14.5px}
+.note.warn{background:#f7ece9;border-color:#eccfc9;color:#7a463d}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:16px;min-height:var(--tap);
+  padding:10px 14px;font-size:14.5px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.chip .ic{font-size:18px}
+.chip[aria-pressed="true"]{background:var(--verde);color:#fff;border-color:var(--verde)}
+.chip:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+
+/* Semaforo */
+.levels{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.level{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);background:var(--card);
+  border-radius:16px;padding:14px;min-height:var(--tap);text-align:left;width:100%;color:var(--ink)}
+.level:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.level .dot{width:26px;height:26px;border-radius:50%;flex:none;margin-top:2px}
+.level[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink) inset}
+.level .lt{font-weight:800}
+.level .ls{font-size:13px;color:var(--muted)}
+.dot-verde{background:var(--verde)} .dot-amarillo{background:var(--amarillo)}
+.dot-naranja{background:var(--naranja)} .dot-rojo{background:var(--rojo)} .dot-azul{background:var(--azulr)}
+
+/* Stepper (primero yo) */
+.step{display:none}
+.step.active{display:block;animation:fade .2s ease}
+.stepnum{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--ocre);text-transform:uppercase}
+.stepq{font-family:Georgia,serif;font-size:22px;margin:6px 0 12px}
+
+/* Buttons */
+.btn{border:none;border-radius:16px;min-height:var(--tap);padding:12px 20px;font-size:15px;font-weight:700;
+  background:var(--verde);color:#fff;box-shadow:var(--soft)}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.wide{display:block;width:100%;margin:8px 0}
+.btn:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.btn:active{transform:translateY(1px)}
+.btn.danger{background:var(--coral)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1;min-width:140px}
+
+/* Phrase banks */
+.phr{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0;
+  font-family:Georgia,serif;font-size:16px}
+.phr small{display:block;font-family:inherit;color:var(--muted);font-size:12px;margin-top:4px}
+details.learn{margin:14px 0;border-top:1px dashed var(--line);padding-top:10px}
+details.learn>summary{cursor:pointer;font-weight:700;color:var(--azul);list-style:none;min-height:44px;display:flex;align-items:center;gap:8px}
+details.learn>summary::-webkit-details-marker{display:none}
+details.learn>summary::before{content:"›";font-size:20px;transition:transform .2s}
+details.learn[open]>summary::before{transform:rotate(90deg)}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;background:#eef2f0;color:var(--verde);margin-bottom:8px}
+.tag.now{background:#f2ede2;color:var(--ocre)}
+
+/* Forms */
+label.f{display:block;font-weight:700;font-size:14px;margin:14px 0 5px}
+input.f,textarea.f,select.f{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+  font-size:15px;font-family:inherit;background:var(--card);color:var(--ink);min-height:var(--tap)}
+textarea.f{min-height:70px;resize:vertical}
+input.f:focus,textarea.f:focus,select.f:focus{outline:3px solid var(--azul);outline-offset:1px;border-color:var(--azul)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:90px;border:1px solid var(--line);background:var(--card);border-radius:12px;
+  min-height:44px;font-size:13.5px;font-weight:600;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--azul);color:#fff;border-color:var(--azul)}
+
+/* patterns bars */
+.bar-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+.bar-row .lb{width:120px;font-size:13px;color:var(--muted)}
+.bar-track{flex:1;height:12px;background:#eceae2;border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:var(--verde);border-radius:8px}
+.bar-row .vv{width:26px;text-align:right;font-size:12px;color:var(--muted)}
+
+.reco{background:#eef2f0;border:1px solid #d9e2dd;border-radius:16px;padding:14px 16px;margin:12px 0;font-size:15px}
+.foot{margin:34px 0 10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+.foot b{color:var(--verde);letter-spacing:.06em}
+.micro{font-size:13px;color:var(--muted)}
+.center{text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
+.pill{display:inline-flex;gap:6px;align-items:center;background:#eef2f3;border-radius:20px;padding:6px 12px;font-size:12.5px;color:#42565e;margin:3px 4px 3px 0}
+@media(max-width:360px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<!-- APP BAR -->
+<header class="bar" id="appbar" hidden>
+  <div class="bar-in">
+    <button class="iconbtn" id="backBtn" aria-label="Volver">←</button>
+    <div class="bar-title" id="barTitle">APRENS</div>
+    <button class="calmtog" id="calmBtn" aria-pressed="false" aria-label="Activar modo tranquilo">Modo tranquilo</button>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+<!-- 0 · SPLASH -->
+<section class="view active" id="v-splash" aria-labelledby="splashH">
+  <div class="logo decor">aprens<small>Psicologia · Aprenentatge · Consciència</small></div>
+  <h1 id="splashH">Cuando todo se hace demasiado</h1>
+  <p class="lead">Una guía para acompañar la frustración, entender lo que está pasando y volver poco a poco.</p>
+  <button class="btn" style="min-width:250px;font-size:17px" onclick="crisisNow()">En crisis ahora</button>
+  <div style="height:12px"></div>
+  <button class="btn sec" style="min-width:250px" onclick="go('role')">Entrar con calma</button>
+  <p class="micro" style="margin-top:26px">Herramienta psicoeducativa. No sustituye una valoración profesional individualizada.</p>
+</section>
+
+<!-- 1 · ROLE -->
+<section class="view" id="v-role" aria-labelledby="roleH">
+  <div class="kick">¿Quién va a usarla ahora?</div>
+  <h2 class="h-view" id="roleH">Elige</h2>
+  <div class="grid">
+    <button class="card full" onclick="pickRole('padre')" style="align-items:flex-start">
+      <span class="ic">🧭</span><span class="t">Soy padre / madre</span>
+      <span class="s">Para acompañar, prevenir, entender o entrenar. También para regularme yo primero.</span>
+    </button>
+    <button class="card full" onclick="pickRole('nino')" style="align-items:flex-start">
+      <span class="ic">🌿</span><span class="t">Soy yo</span>
+      <span class="s">Para decir cómo estoy y qué necesito, sin tener que explicarlo con palabras.</span>
+    </button>
+  </div>
+  <div class="note">Tus registros permanecen en este dispositivo. No hay cuentas, ni analytics, ni cookies de terceros.</div>
+</section>
+
+<!-- 2 · PADRE HOME -->
+<section class="view" id="v-padre" aria-labelledby="padreH">
+  <div class="kick">Ahora mismo</div>
+  <h2 class="h-view" id="padreH">¿En qué estás?</h2>
+  <p class="desc">Puedes usar esto en plena situación o en un momento de calma.</p>
+  <div class="grid">
+    <button class="card" onclick="go('primeroyo')"><span class="ic">🫁</span><span class="t">Necesito regularme yo</span><span class="s">Primero yo · 30 s</span></button>
+    <button class="card" onclick="go('quenecesita')"><span class="ic">🧩</span><span class="t">Se está desbordando</span><span class="s">¿Qué necesita ahora?</span></button>
+    <button class="card" onclick="go('hablo')"><span class="ic">🤔</span><span class="t">¿Hablo o espero?</span><span class="s">Decidir en el momento</span></button>
+    <button class="card" onclick="go('fuera')"><span class="ic">🚪</span><span class="t">Estamos fuera de casa</span><span class="s">Protocolo + salir</span></button>
+  </div>
+
+  <div class="kick">Las herramientas</div>
+  <div class="grid">
+    <button class="card" onclick="go('quepasa')"><span class="n">1</span><span class="ic">🔎</span><span class="t">¿Qué está pasando?</span><span class="s">La conducta es información</span></button>
+    <button class="card" onclick="go('semaforo')"><span class="n">2</span><span class="ic">🚦</span><span class="t">El semáforo</span><span class="s">Capacidad disponible</span></button>
+    <button class="card" onclick="go('primeroyo')"><span class="n">3</span><span class="ic">🫁</span><span class="t">Primero yo</span><span class="s">Regulación del adulto</span></button>
+    <button class="card" onclick="go('quenecesita')"><span class="n">4</span><span class="ic">🧩</span><span class="t">¿Qué necesita ahora?</span><span class="s">Selector + guía</span></button>
+    <button class="card" onclick="go('quedigo')"><span class="n">5</span><span class="ic">💬</span><span class="t">¿Qué le digo?</span><span class="s">Frases por momento</span></button>
+    <button class="card" onclick="go('hablo')"><span class="n">6</span><span class="ic">🌗</span><span class="t">¿Hablo o espero?</span><span class="s">Árbol de decisión</span></button>
+    <button class="card" onclick="go('fuera')"><span class="n">7</span><span class="ic">🚪</span><span class="t">Fuera de casa</span><span class="s">Protocolo público</span></button>
+    <button class="card" onclick="go('entrenar')"><span class="n">8</span><span class="ic">🌱</span><span class="t">Entrenar cuando está bien</span><span class="s">Microentrenamientos</span></button>
+    <button class="card" onclick="go('entender')"><span class="n">9</span><span class="ic">🧭</span><span class="t">Entender lo que pasó</span><span class="s">Después, sin interrogar</span></button>
+    <button class="card" onclick="go('plan')"><span class="n">10</span><span class="ic">📋</span><span class="t">Nuestro plan</span><span class="s">Plan familiar</span></button>
+  </div>
+
+  <div class="kick">Para comprender mejor</div>
+  <div class="grid">
+    <button class="card" onclick="go('registro')"><span class="ic">🗂️</span><span class="t">Registro de patrones</span><span class="s">Opcional · descubrir pistas</span></button>
+    <button class="card" onclick="go('intereses')"><span class="ic">🧲</span><span class="t">Intereses y repeticiones</span><span class="s">¿Qué función cumplen?</span></button>
+    <button class="card" onclick="go('social')"><span class="ic">👀</span><span class="t">Códigos sociales</span><span class="s">Lo que otros parecen saber</span></button>
+    <button class="card" onclick="go('edad')"><span class="ic">📈</span><span class="t">Los 10-11 años</span><span class="s">Más edad ≠ más regulación</span></button>
+    <button class="card full" onclick="go('seguridad')" style="border-color:#eccfc9;background:#fbf4f2"><span class="ic">🛟</span><span class="t">Seguridad</span><span class="s">Cuando la prioridad ya no es enseñar, sino proteger</span></button>
+  </div>
+  <div class="note">Recuerda: <b>lo que ves es el final del proceso, no siempre el principio.</b> La pregunta útil es: ¿qué ha ido acumulando su sistema antes de llegar aquí?</div>
+</section>
+
+<!-- HERR 1 · QUE PASA -->
+<section class="view" id="v-quepasa" aria-labelledby="qpH">
+  <span class="tag">Aprender</span>
+  <h2 class="h-view" id="qpH">¿Qué está pasando?</h2>
+  <p class="desc">Muchos episodios que por fuera parecen una rabieta, un desafío o una mala conducta, por dentro son un <b>desbordamiento</b>: el sistema ha llegado a su límite.</p>
+  <div class="panel">
+    <div id="flowSteps"></div>
+  </div>
+  <div class="note"><b>La conducta es información.</b> No dice «me estás manipulando». Dice «algo ha sido demasiado». Etiquetas como <i>caprichoso, manipulador, maleducado o desafiante</i> cierran la mirada; no la abren.</div>
+  <details class="learn"><summary>Quiero entender por qué</summary>
+    <p>Antes de la conducta visible suele haber una acumulación invisible: un cambio inesperado, romperse una expectativa, cansancio, hambre, sobrecarga sensorial, demasiadas demandas, esfuerzo de adaptación (masking), no sentirse comprendido, interrumpir un interés muy absorbente, rechazo social…</p>
+    <p>La conducta —gritar, bloquearse, escapar, repetir, negarse, aumentar movimientos— es el <b>desagüe</b> de todo eso. No el origen. Y no toda conducta difícil «es del TEA»: mantenemos una mirada funcional e individualizada, caso a caso.</p>
+  </details>
+</section>
+
+<!-- HERR 2 · SEMAFORO -->
+<section class="view" id="v-semaforo" aria-labelledby="smH">
+  <span class="tag">Ahora / Aprender</span>
+  <h2 class="h-view" id="smH">El semáforo</h2>
+  <p class="desc">No mide «portarse bien o mal». Mide <b>capacidad disponible</b>. Puedes marcarlo tú, o dejar que lo marque sin hablar.</p>
+  <div class="levels" id="semLevels"></div>
+  <div id="semReco"></div>
+  <div class="note"><b>Cuanto más rojo está el sistema, menos palabras necesita.</b></div>
+</section>
+
+<!-- HERR 3 · PRIMERO YO -->
+<section class="view" id="v-primeroyo" aria-labelledby="pyH">
+  <span class="tag now">Ahora · 30 s</span>
+  <h2 class="h-view" id="pyH">Primero yo</h2>
+  <p class="desc">Antes de regular a tu hijo, recupera tu propio espacio. Primero acompaño mi cuerpo para poder acompañar el suyo.</p>
+  <p class="center" style="font-weight:800;color:var(--verde);letter-spacing:.04em;margin:-6px 0 10px;font-size:14px">PARO → NOTO → ACOMPAÑO → ELIJO</p>
+  <div class="panel">
+    <div class="step active" data-step="0">
+      <div class="stepnum">Paso 1 · Paro</div>
+      <div class="stepq">Paro.</div>
+      <p>No respondas todavía, si no hay peligro. Solo un instante antes de actuar.</p>
+      <button class="btn wide" onclick="pyNext(1)">Sigo</button>
+    </div>
+    <div class="step" data-step="1">
+      <div class="stepnum">Paso 2 · Noto</div>
+      <div class="stepq">¿Dónde noto ahora mi propia tensión?</div>
+      <div class="chips" id="pyBody"></div>
+      <p class="micro">Si te ayuda, una respiración lenta puede acompañar este momento. No es obligatoria: solo una posibilidad.</p>
+      <button class="btn wide" onclick="pyNext(2)">Sigo</button>
+    </div>
+    <div class="step" data-step="2">
+      <div class="stepnum">Paso 3 · Acompaño</div>
+      <div class="stepq">Acompaño.</div>
+      <p class="phr">«Esto también es difícil para mí.»</p>
+      <p class="phr">«Puedo notar mi tensión sin obedecerla inmediatamente.»</p>
+      <button class="btn wide" onclick="pyNext(3)">Sigo</button>
+    </div>
+    <div class="step" data-step="3">
+      <div class="stepnum">Paso 4 · Elijo</div>
+      <div class="stepq">¿Qué necesita ahora mi hijo de mí?</div>
+      <div class="chips" id="pyChoose"></div>
+      <button class="btn wide" onclick="pyDone()">Listo</button>
+    </div>
+    <div class="step" data-step="4">
+      <div class="reco" style="font-family:Georgia,serif">No has solucionado todavía la situación. Has hecho algo anterior y muy importante: <b>recuperar capacidad para acompañarla.</b></div>
+      <div class="row">
+        <button class="btn sec" onclick="go('quenecesita')">¿Qué necesita?</button>
+        <button class="btn sec" onclick="pyReset()">Otra vez</button>
+      </div>
+    </div>
+  </div>
+  <div class="note">La respiración no es para hacer desaparecer una emoción. Es una manera de generar presencia.</div>
+</section>
+
+<!-- HERR 4 · QUE NECESITA -->
+<section class="view" id="v-quenecesita" aria-labelledby="qnH">
+  <span class="tag now">Ahora</span>
+  <h2 class="h-view" id="qnH">¿Qué necesita ahora?</h2>
+  <p class="desc">Marca lo que intuyas. No hace falta acertar: es una hipótesis para empezar.</p>
+  <div class="chips" id="qnChips"></div>
+  <div id="qnReco"></div>
+</section>
+
+<!-- HERR 5 · QUE DIGO -->
+<section class="view" id="v-quedigo" aria-labelledby="qdH">
+  <span class="tag">Ahora</span>
+  <h2 class="h-view" id="qdH">¿Qué le digo?</h2>
+  <p class="desc">Frases sencillas, según el momento. Evita moralizar. Menos es más.</p>
+  <div id="phrBanks"></div>
+</section>
+
+<!-- HERR 6 · HABLO O ESPERO -->
+<section class="view" id="v-hablo" aria-labelledby="hoH">
+  <span class="tag now">Ahora</span>
+  <h2 class="h-view" id="hoH">¿Hablo o espero?</h2>
+  <div class="panel" id="treeBox"></div>
+  <div class="note">A veces acompañar es <b>hablar</b>. A veces es <b>callar</b>. A veces es <b>alejarse un metro</b>. A veces es <b>salir del lugar</b>. Presencia no es invasión.</div>
+</section>
+
+<!-- HERR 7 · FUERA DE CASA -->
+<section class="view" id="v-fuera" aria-labelledby="fcH">
+  <span class="tag now">Ahora</span>
+  <h2 class="h-view" id="fcH">Cuando pasa fuera de casa</h2>
+  <button class="btn wide" onclick="go('primeroyo')">Primero yo · 10 s</button>
+  <p class="micro" style="margin:-2px 0 8px">El juicio de los demás puede activarte a ti antes de poder acompañarle. Empieza por tu propio cuerpo.</p>
+  <button class="btn danger wide" onclick="showExit()">Necesito salir de aquí</button>
+  <div id="exitBox"></div>
+  <div class="panel">
+    <ol style="padding-left:20px;margin:0">
+      <li><b>Seguridad</b> primero.</li>
+      <li><b>Baja las demandas.</b></li>
+      <li><b>Reduce estímulos</b> (ruido, luz, gente).</li>
+      <li><b>Olvida un momento</b> «qué pensará la gente».</li>
+      <li><b>Pocas palabras.</b></li>
+      <li><b>Sal</b> si hace falta.</li>
+      <li><b>Recupera.</b></li>
+      <li><b>Analiza después</b>, no ahora.</li>
+    </ol>
+  </div>
+  <div class="note warn">Tu prioridad no es demostrar a los demás que controlas a tu hijo. Tu prioridad es ayudarle a <b>recuperar capacidad.</b></div>
+</section>
+
+<!-- HERR 8 · ENTRENAR -->
+<section class="view" id="v-entrenar" aria-labelledby="enH">
+  <span class="tag">Aprender · en calma</span>
+  <h2 class="h-view" id="enH">Entrenar cuando está bien</h2>
+  <p class="desc">Lo que queremos usar cuando todo se hace difícil, hay que practicarlo cuando todavía es fácil. Nunca provoques una crisis a propósito.</p>
+  <div class="panel tint"><b>La lógica que entrenamos</b>
+    <div class="micro" style="line-height:1.9;margin-top:6px;text-align:center">
+      Algo no sale como esperaba<br>↓<br>mi cuerpo se activa<br>↓<br><b>puedo aprender a notarlo antes</b><br>↓<br>paro<br>↓<br>noto<br>↓<br>me acompaño / pido ayuda<br>↓<br>cuando recupero capacidad, <b>elijo</b>
+    </div>
+    <p class="micro" style="margin:10px 0 0">Respirar o notar el cuerpo son una <b>puerta para acompañar</b> la activación —si al niño le ayudan—, nunca una obligación para «quitar» la emoción.</p>
+  </div>
+  <div class="panel"><b>A · Respiración de presencia</b><p class="micro">1 a 3 respiraciones. Sin objetivo de «calmarse». Solo estar un momento con el cuerpo.</p></div>
+  <div class="panel"><b>B · AIS adaptado</b><p class="micro">«¿Dónde notas tu cuerpo?»</p><div class="chips" id="enBody"></div></div>
+  <div class="panel"><b>C · Reconocer niveles</b><p class="micro">Practicar a nombrar: «todavía puedo» · «empieza a costarme» · «necesito parar».</p></div>
+  <div class="panel"><b>D · Pedir pausa</b><p class="micro">Un botón que puede usar sin explicar nada.</p><button class="btn sec wide" onclick="miniToast('Vale. Paramos. No hace falta explicar por qué.')">NECESITO UN DESCANSO</button></div>
+  <div class="panel"><b>E · Pequeños cambios previsibles</b><p class="micro">«Hoy cambiaremos una cosa pequeña y practicaremos qué hacemos cuando algo no sale exactamente como esperábamos.»</p></div>
+</section>
+
+<!-- HERR 9 · ENTENDER -->
+<section class="view" id="v-entender" aria-labelledby="etH">
+  <span class="tag">Después</span>
+  <h2 class="h-view" id="etH">Entender lo que pasó</h2>
+  <div class="note">Solo cuando ya se ha recuperado. No es un interrogatorio: no buscamos culpables, buscamos <b>pistas</b>.</div>
+  <p class="micro" style="font-weight:700;margin-top:8px">¿Qué pudo hacerlo difícil?</p>
+  <div class="chips" id="etWhat"></div>
+  <p class="micro" style="font-weight:700">¿Qué notó primero?</p>
+  <div class="chips" id="etFirst"></div>
+  <label class="f" for="etNext">¿Qué podría ayudarnos la próxima vez?</label>
+  <textarea class="f" id="etNext" placeholder="Una idea pequeña y concreta…"></textarea>
+  <button class="btn wide" onclick="saveFromEntender()">Guardar como registro</button>
+</section>
+
+<!-- HERR 10 · PLAN -->
+<section class="view" id="v-plan" aria-labelledby="plH">
+  <span class="tag">Plan familiar</span>
+  <h2 class="h-view" id="plH">Nuestro plan</h2>
+  <p class="desc">Se guarda solo en este dispositivo. Puedes editarlo, imprimirlo o copiarlo cuando quieras.</p>
+  <div id="planForm"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn" onclick="savePlan()">Guardar</button>
+    <button class="btn sec" onclick="printPlan()">Imprimir</button>
+    <button class="btn sec" onclick="copyPlan()">Copiar</button>
+  </div>
+  <hr class="soft">
+  <div class="kick">Datos y privacidad</div>
+  <p class="micro">Todo se guarda solo en este dispositivo. No hay cuentas, ni analytics, ni cookies de terceros.</p>
+  <button class="btn sec danger wide" onclick="clearAll()">Borrar mis datos</button>
+  <p class="micro center" style="margin-top:4px">Borra el plan, las preferencias y los registros de este dispositivo.</p>
+</section>
+
+<!-- REGISTRO -->
+<section class="view" id="v-registro" aria-labelledby="rgH">
+  <span class="tag">Opcional</span>
+  <h2 class="h-view" id="rgH">Registro de patrones</h2>
+  <p class="desc">Muy breve. Con el tiempo, deja ver qué se repite. No emite diagnósticos.</p>
+  <div id="regForm"></div>
+  <button class="btn wide" onclick="saveReg()">Guardar registro</button>
+  <div id="regPatterns"></div>
+  <div id="regList"></div>
+  <div class="row" style="margin-top:10px">
+    <button class="btn sec" onclick="exportReg()">Exportar como texto</button>
+    <button class="btn sec danger" onclick="clearReg()">Borrar registros</button>
+  </div>
+</section>
+
+<!-- INTERESES -->
+<section class="view" id="v-intereses" aria-labelledby="inH">
+  <span class="tag">Aprender</span>
+  <h2 class="h-view" id="inH">Intereses y repeticiones</h2>
+  <p class="desc">Los intereses muy absorbentes y las conductas repetitivas no son solo «un problema». Pueden cumplir funciones distintas.</p>
+  <div class="chips" style="pointer-events:none">
+    <span class="chip">😊 disfrute</span><span class="chip">🔁 predictibilidad</span><span class="chip">🫁 regulación</span>
+    <span class="chip">🌤️ recuperación</span><span class="chip">🧩 menos incertidumbre</span><span class="chip">🏠 refugio cognitivo</span>
+  </div>
+  <div class="panel tint">
+    <p>La pregunta no es «¿cómo se lo quito para que aprenda?». La pregunta es: <b>¿qué función está cumpliendo ahora?</b></p>
+    <p style="margin:0">Distinguir, sin demonizar ninguno:</p>
+    <p style="margin:6px 0 0"><span class="pill">🧲 Interés</span> <span class="pill">🫁 Regulación</span> <span class="pill">🛑 Evitación rígida</span></p>
+  </div>
+  <div class="note">Retirar sistemáticamente un interés como castigo suele quitar un recurso justo cuando más lo necesita.</div>
+</section>
+
+<!-- SOCIAL -->
+<section class="view" id="v-social" aria-labelledby="soH">
+  <span class="tag">Aprender</span>
+  <h2 class="h-view" id="soH">Los códigos que otros parecen saber</h2>
+  <p class="desc">Muchas situaciones sociales llevan información implícita que puede no captarse automáticamente: cuándo alguien bromea, cuándo quiere terminar, ironía, dobles sentidos, reglas no dichas de un grupo…</p>
+  <div class="note">No es «le falta empatía». Es más preciso decir: <b>puede sentir profundamente lo que le ocurre al otro y, a la vez, necesitar ayuda para identificar algunas claves de la situación.</b></div>
+  <div class="panel"><b>¿Qué pistas puedo mirar?</b>
+    <div class="chips" style="pointer-events:none;margin-top:8px">
+      <span class="chip">👀 la cara (si mirar resulta cómodo)</span><span class="chip">👂 el tono de voz</span>
+      <span class="chip">🗣️ las palabras</span><span class="chip">↔️ la distancia</span><span class="chip">⏱️ el tiempo</span><span class="chip">🌍 el contexto</span>
+    </div>
+  </div>
+  <div class="micro">Nunca obligamos al contacto ocular: mirar puede aumentar la carga de procesamiento.</div>
+</section>
+
+<!-- EDAD -->
+<section class="view" id="v-edad" aria-labelledby="edH">
+  <span class="tag">Aprender</span>
+  <h2 class="h-view" id="edH">Los 10-11 años</h2>
+  <p class="phr" style="font-size:18px">«Mi hijo es mayor, pero algunas crisis parecen más grandes.»</p>
+  <p>No estamos retrocediendo necesariamente. <b>El escenario se ha hecho más complejo.</b></p>
+  <div class="panel tint">
+    <p style="margin:0 0 6px">Ahora es más mayor y más fuerte, su lenguaje es más elaborado… pero a la vez:</p>
+    <p class="micro" style="margin:0">las demandas sociales aumentan · compara más · percibe mejor las diferencias · las amistades se complican · aparecen códigos menos explícitos · sube la exigencia académica · se espera más autonomía.</p>
+  </div>
+  <div class="note"><b>Más edad ≠ automáticamente más capacidad de regulación.</b> Sus recursos de autorregulación pueden no crecer al mismo ritmo que esas demandas.</div>
+</section>
+
+<!-- SEGURIDAD -->
+<section class="view" id="v-seguridad" aria-labelledby="seH">
+  <span class="tag" style="background:#f7ece9;color:#a5584a">Seguridad</span>
+  <h2 class="h-view" id="seH">Cuando la prioridad ya no es enseñar, sino proteger</h2>
+  <div class="note warn">Si hay riesgo de autolesión, golpearse contra superficies, agredir gravemente, salir corriendo hacia el tráfico u otro peligro, usar objetos peligrosos, o no poder garantizar la seguridad: <b>la prioridad es reducir el riesgo físico</b> y buscar ayuda profesional o servicios de emergencia cuando corresponda.</div>
+  <p><b>Primero seguridad. Después regulación. Mucho después, aprendizaje.</b></p>
+  <p class="micro">Esta aplicación no sustituye una evaluación psicológica, pediátrica o psiquiátrica, ni una intervención individualizada.</p>
+  <div class="panel tint"><p style="margin:0">«Todas las emociones pueden ser acompañadas. No todas las conductas pueden permitirse.» Se pueden poner límites claros ante el riesgo o el daño, <b>sin humillar.</b></p></div>
+</section>
+
+<!-- NIÑO HOME -->
+<section class="view" id="v-nino" aria-labelledby="niH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="niH">¿Cómo estoy?</h2>
+  <div class="grid" id="ninoEstado"></div>
+</section>
+
+<!-- NIÑO NECESITO -->
+<section class="view" id="v-ninonec" aria-labelledby="nnH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="nnH">¿Qué necesito?</h2>
+  <div class="grid" id="ninoNec"></div>
+  <hr class="soft">
+  <div class="grid" id="ninoBig"></div>
+</section>
+
+<!-- NIÑO · ROJO (pantalla mínima de acompañamiento) -->
+<section class="view" id="v-ninorojo" aria-labelledby="nrH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="nrH" style="font-size:26px">Ahora no tienes que resolver nada.</h2>
+  <p class="desc">Estoy aquí.</p>
+  <div class="grid" id="ninoRojo"></div>
+  <button class="btn sec wide" style="margin-top:18px" onclick="go('nino')">Ya estoy un poco mejor</button>
+</section>
+
+<!-- NIÑO · REDUCIDA (🟠 reducir / 🔵 recuperar) -->
+<section class="view" id="v-ninoreduce" aria-labelledby="nreH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="nreH">¿Qué necesito ahora?</h2>
+  <div class="grid" id="ninoReduce"></div>
+  <button class="btn sec wide" style="margin-top:16px" onclick="go('nino')">Ya estoy mejor</button>
+</section>
+
+</main>
+
+<div id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:12px 18px;border-radius:16px;max-width:90%;box-shadow:var(--soft);
+  font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;text-align:center"></div>
+
+<script>
+"use strict";
+var LS={plan:'aprens_des_plan',prefs:'aprens_des_prefs',reg:'aprens_des_reg'};
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var prefs=load(LS.prefs,{calm:false});
+function pickRole(r){prefs.role=r;save(LS.prefs,prefs);go(r);}
+function crisisNow(){go(prefs.role==='nino'?'nino':'padre');}
+function clearAll(){if(confirm('¿Borrar TODOS tus datos de este dispositivo (plan, preferencias y registros)? Esta acción no se puede deshacer.')){try{localStorage.removeItem(LS.plan);localStorage.removeItem(LS.reg);localStorage.removeItem(LS.prefs);}catch(e){}prefs={calm:false};applyCalm();renderPlan();miniToast('Todos tus datos han sido borrados de este dispositivo.');}}
+
+/* ---------- NAV ---------- */
+var titles={splash:'APRENS',role:'Elige',padre:'Padre / madre',nino:'Soy yo',ninonec:'Soy yo',ninorojo:'Soy yo',ninoreduce:'Soy yo',
+ quepasa:'¿Qué está pasando?',semaforo:'El semáforo',primeroyo:'Primero yo',quenecesita:'¿Qué necesita?',
+ quedigo:'¿Qué le digo?',hablo:'¿Hablo o espero?',fuera:'Fuera de casa',entrenar:'Entrenar',entender:'Entender lo que pasó',
+ plan:'Nuestro plan',registro:'Registro',intereses:'Intereses',social:'Códigos sociales',edad:'Los 10-11 años',seguridad:'Seguridad'};
+var stack=[];
+function go(v,noPush){
+  var cur=document.querySelector('.view.active');
+  if(cur&&!noPush){var id=cur.id.replace('v-','');if(id!==v)stack.push(id);}
+  document.querySelectorAll('.view').forEach(function(s){s.classList.remove('active')});
+  var el=document.getElementById('v-'+v); if(!el){return}
+  el.classList.add('active');
+  var bar=document.getElementById('appbar');
+  bar.hidden=(v==='splash');
+  document.getElementById('barTitle').textContent=titles[v]||'APRENS';
+  window.scrollTo(0,0);
+  var h=el.querySelector('.h-view,h1,h2'); if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});}
+  if(v==='semaforo')renderSem();
+  if(v==='primeroyo')pyReset();
+  if(v==='plan')renderPlan();
+  if(v==='registro'){renderReg();renderRegList();renderPatterns();}
+  if(v==='entender')resetEntender();
+}
+document.getElementById('backBtn').onclick=function(){
+  var prev=stack.pop()||'role';
+  go(prev,true);
+};
+/* calm */
+function applyCalm(){document.body.classList.toggle('calm',!!prefs.calm);
+  var b=document.getElementById('calmBtn');b.setAttribute('aria-pressed',prefs.calm?'true':'false');}
+document.getElementById('calmBtn').onclick=function(){prefs.calm=!prefs.calm;save(LS.prefs,prefs);applyCalm();};
+applyCalm();
+
+/* toast */
+var toastT;
+function miniToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';
+  clearTimeout(toastT);toastT=setTimeout(function(){t.style.opacity='0'},2600);}
+
+/* ---------- HERR 1 flow ---------- */
+var flow=[['🔀','Cambio / demanda / frustración','Algo no fue como esperaba, o se le pidió demasiado.'],
+ ['⚡','Tensión interna','El cuerpo se activa antes de que él elija.'],
+ ['🔒','Menos flexibilidad','Cuesta más adaptarse, negociar, cambiar de idea.'],
+ ['🔁','Más necesidad de control o repetición','Busca predictibilidad: repetir, insistir, aferrarse.'],
+ ['🌊','Desbordamiento','El sistema llega al límite. Aparece la conducta visible.']];
+(function(){var c=document.getElementById('flowSteps');flow.forEach(function(f,i){
+ var d=document.createElement('button');d.className='level';d.style.width='100%';d.style.marginBottom='8px';
+ d.innerHTML='<span class="ic" style="font-size:22px">'+f[0]+'</span><span><span class="lt">'+f[1]+'</span><span class="ls" style="display:none">'+f[2]+'</span></span>';
+ d.onclick=function(){var s=d.querySelector('.ls');s.style.display=s.style.display==='none'?'block':'none';};
+ c.appendChild(d);
+ if(i<flow.length-1){var a=document.createElement('div');a.className='center micro';a.textContent='↓';a.style.margin='2px 0';c.appendChild(a);}
+});})();
+
+/* ---------- SEMAFORO ---------- */
+var sem=[['verde','🟢','Todavía puedo','Puede hablar, negociar, aprender.'],
+ ['amarillo','🟡','Estoy acumulando','Necesita menos demandas y más anticipación.'],
+ ['naranja','🟠','Me cuesta mucho','Reducir lenguaje y demandas.'],
+ ['rojo','🔴','Ya no puedo procesar más','Prioridad: seguridad + presencia + menos estímulos.'],
+ ['azul','🔵','Estoy recuperándome','Todavía NO es momento de analizar lo ocurrido.']];
+function renderSem(){var c=document.getElementById('semLevels');c.innerHTML='';document.getElementById('semReco').innerHTML='';
+ sem.forEach(function(s){var b=document.createElement('button');b.className='level';b.setAttribute('aria-pressed','false');
+  b.innerHTML='<span class="dot dot-'+s[0]+'"></span><span><span class="lt">'+s[2]+'</span><br><span class="ls">'+s[3]+'</span></span>';
+  b.onclick=function(){c.querySelectorAll('.level').forEach(function(x){x.setAttribute('aria-pressed','false')});
+   b.setAttribute('aria-pressed','true');
+   document.getElementById('semReco').innerHTML='<div class="reco">'+s[3]+(s[0]==='rojo'||s[0]==='naranja'?' <b>Cuanto más rojo, menos palabras.</b>':'')+'</div>';};
+  c.appendChild(b);});}
+
+/* ---------- PRIMERO YO ---------- */
+var bodyParts=['🫀 pecho','🌀 barriga','😮‍💨 garganta','😬 mandíbula','✋ manos','🧠 cabeza','🌡️ todo el cuerpo','❓ no lo sé'];
+var needsPY=['🤫 menos palabras','↔️ espacio','🛡️ seguridad','⏳ tiempo','📋 anticipación','🚪 salir del lugar','🎧 menos estímulos','🤝 acompañamiento','⛔ un límite claro','❓ no lo sé todavía'];
+function fillChips(id,arr,single){var c=document.getElementById(id);if(!c)return;c.innerHTML='';
+ arr.forEach(function(t){var b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed','false');
+  b.innerHTML='<span>'+t+'</span>';
+  b.onclick=function(){if(single){c.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed','false')});}
+   b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');};
+  c.appendChild(b);});}
+function pyReset(){document.querySelectorAll('#v-primeroyo .step').forEach(function(s){s.classList.remove('active')});
+ document.querySelector('#v-primeroyo .step[data-step="0"]').classList.add('active');
+ fillChips('pyBody',bodyParts,false);fillChips('pyChoose',needsPY,true);}
+function pyNext(n){document.querySelectorAll('#v-primeroyo .step').forEach(function(s){s.classList.remove('active')});
+ document.querySelector('#v-primeroyo .step[data-step="'+n+'"]').classList.add('active');}
+function pyDone(){pyNext(4);}
+
+/* ---------- QUE NECESITA ---------- */
+var qn=[['🤫','menos palabras','Habla lo justo. Frases de 3-4 palabras.'],['↔️','distancia','Ofrece espacio; quédate cerca pero sin invadir.'],
+ ['🤝','compañía','«Estoy aquí. No hace falta que hagas nada.»'],['🎧','menos ruido','Reduce el sonido del entorno si puedes.'],
+ ['🌑','menos luz','Busca un rincón con menos estímulo visual.'],['🚪','salir','Cambiar de lugar puede bajar la carga.'],
+ ['⏳','tiempo','No hay prisa por resolver. Dale minutos.'],['📋','saber qué pasará','Anticipa el siguiente paso, sencillo y concreto.'],
+ ['🧸','objeto/interés regulador','Permite el objeto o interés que le regula.'],['🚶','movimiento','Moverse puede ayudar a descargar.'],
+ ['🥤','beber/comer','A veces es hambre o sed acumuladas.'],['❓','no lo sé','No saberlo también es información: empieza reduciendo demandas.']];
+(function(){var c=document.getElementById('qnChips');qn.forEach(function(q){var b=document.createElement('button');b.className='chip';
+ b.setAttribute('aria-pressed','false');b.innerHTML='<span class="ic">'+q[0]+'</span><span>'+q[1]+'</span>';
+ b.onclick=function(){c.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');
+  document.getElementById('qnReco').innerHTML='<div class="reco">'+q[2]+'</div>';window.scrollTo(0,document.body.scrollHeight);};
+ c.appendChild(b);});})();
+
+/* ---------- QUE DIGO ---------- */
+var banks=[['Antes del desbordamiento',['Veo que esto está empezando a costarte.','No era como esperabas.','Podemos buscar otra manera.','Te aviso de lo que va a pasar después.']],
+ ['Durante',['Estoy aquí.','No tienes que explicármelo ahora.','Vamos a hacer menos cosas.','No necesitas mirarme.','Te doy espacio.','Cuando puedas, seguimos.','Ahora no tenemos que resolverlo.','Voy a ayudarte a que esto sea más seguro.']],
+ ['Después',['Ha sido muy intenso.','No necesitas sentirte culpable por haberte desbordado.','Cuando estés preparado podemos intentar entender qué lo hizo tan difícil.','¿Hay algo que podamos hacer diferente la próxima vez?']]];
+(function(){var c=document.getElementById('phrBanks');banks.forEach(function(b){
+ var h=document.createElement('div');h.className='kick';h.textContent=b[0];c.appendChild(h);
+ b[1].forEach(function(p){var d=document.createElement('div');d.className='phr';d.textContent='«'+p+'»';c.appendChild(d);});});})();
+
+/* ---------- HABLO O ESPERO (árbol) ---------- */
+function renderTree(node){
+ var box=document.getElementById('treeBox');box.innerHTML='';
+ var q=document.createElement('div');q.className='stepq';q.style.fontSize='20px';q.textContent=node.q;box.appendChild(q);
+ if(node.info){var p=document.createElement('div');p.className='reco';p.innerHTML=node.info;box.appendChild(p);}
+ (node.opts||[]).forEach(function(o){var b=document.createElement('button');b.className='btn sec wide';b.textContent=o.t;
+  b.onclick=function(){renderTree(o.next)};box.appendChild(b);});
+ if(node.restart){var r=document.createElement('button');r.className='btn wide';r.textContent='Empezar de nuevo';r.style.marginTop='10px';
+  r.onclick=function(){renderTree(TREE)};box.appendChild(r);}
+}
+var TREE={q:'¿Hay peligro inmediato?',opts:[
+ {t:'Sí',next:{q:'Protege con calma.',info:'Reduce el riesgo físico. Pocas palabras. Cuerpo tranquilo. La seguridad va antes que cualquier explicación.',restart:1}},
+ {t:'No',next:{q:'¿Puede procesar lenguaje ahora?',opts:[
+   {t:'No / no lo sé',next:{q:'Menos palabras + presencia.',info:'«Estoy aquí.» Baja demandas y estímulos. No expliques nada todavía.',restart:1}},
+   {t:'Sí',next:{q:'¿Busca ayuda o necesita espacio?',opts:[
+     {t:'Busca ayuda',next:{q:'Acércate y acompaña.',info:'Frases cortas. Ofrece opciones simples. «Cuando puedas, seguimos.»',restart:1}},
+     {t:'Necesita espacio',next:{q:'Aléjate un metro, sin desaparecer.',info:'«Te doy espacio. Sigo cerca.» La presencia no tiene que ser invasión.',restart:1}}
+   ]}}
+ ]}}
+]};
+
+/* ---------- FUERA · salir ---------- */
+function showExit(){document.getElementById('exitBox').innerHTML='<div class="reco" style="font-size:16px"><b>Ahora mismo:</b><br>1. Seguridad.<br>2. Menos palabras.<br>3. Sal a un sitio más tranquilo.<br>4. No expliques nada todavía.<br>5. Espera. Recupera.<br><br><i>Lo demás puede esperar.</i></div>';window.scrollTo(0,0);}
+
+/* ---------- ENTRENAR body ---------- */
+fillChips('enBody',['🫀 pecho','🌀 barriga','😮‍💨 garganta','✋ manos','🦵 piernas','🧠 cabeza','❓ no sé'],false);
+
+/* ---------- ENTENDER ---------- */
+var whatOpts=['🔀 cambió el plan','🎯 no salió como esperaba','🎮 perdí','🚫 me dijeron que no','🔊 demasiado ruido','👥 demasiada gente','😴 estaba cansado','🍽️ tenía hambre','🙉 alguien no me entendió','❓ no entendí qué querían','💔 sentí que no me aceptaban','⏸️ tuve que parar algo que me gustaba','⏳ llevaba mucho aguantando','🤷 no lo sé','➕ otra cosa'];
+var firstOpts=['🫀 el cuerpo','💭 pensamientos','🏃 ganas de escapar','😡 enfado','🔊 ruido','🧊 bloqueo','🤷 no sé'];
+function resetEntender(){fillChips('etWhat',whatOpts,false);fillChips('etFirst',firstOpts,true);document.getElementById('etNext').value='';}
+function pressedTexts(id){var a=[];document.querySelectorAll('#'+id+' .chip[aria-pressed="true"]').forEach(function(c){a.push(c.textContent.trim())});return a;}
+function saveFromEntender(){
+ var regs=load(LS.reg,[]);
+ regs.unshift({t:Date.now(),antes:pressedTexts('etWhat').join(', '),senales:pressedTexts('etFirst').join(', '),
+  respuesta:'',recuperacion:'',aprendizaje:document.getElementById('etNext').value.trim(),acum:''});
+ save(LS.reg,regs);miniToast('Guardado en el registro de patrones.');
+}
+
+/* ---------- PLAN ---------- */
+var planFields=[
+ ['nombre','Nombre del niño','input'],
+ ['senales','Mis primeras señales son…','ta'],
+ ['acumula','Lo que suele acumularme tensión…','ta'],
+ ['amarillo','Cuando estoy amarillo me ayuda…','ta'],
+ ['rojoNo','Cuando estoy rojo NO me ayuda…','ta'],
+ ['rojoSi','Cuando estoy rojo puede ayudar…','ta'],
+ ['hablar','Prefiero que me hablen','seg:mucho,poco,nada'],
+ ['fisico','Contacto físico','seg:me ayuda,preguntar primero,no quiero'],
+ ['ruido','Ruido','seg:poco,bastante,mucho'],
+ ['movim','Movimiento','seg:me ayuda,indiferente,me molesta'],
+ ['lugar','Mi lugar seguro es…','input'],
+ ['objeto','Mi objeto / interés regulador puede ser…','input'],
+ ['frase','Una frase que me ayuda escuchar es…','input'],
+ ['despues','Cuando vuelva a estar disponible podremos…','ta']];
+function renderPlan(){
+ var p=load(LS.plan,{});var c=document.getElementById('planForm');c.innerHTML='';
+ planFields.forEach(function(f){
+  var lab=document.createElement('label');lab.className='f';lab.textContent=f[1];lab.setAttribute('for','pf_'+f[0]);c.appendChild(lab);
+  if(f[2]==='input'){var i=document.createElement('input');i.className='f';i.id='pf_'+f[0];i.value=p[f[0]]||'';c.appendChild(i);}
+  else if(f[2]==='ta'){var t=document.createElement('textarea');t.className='f';t.id='pf_'+f[0];t.value=p[f[0]]||'';c.appendChild(t);}
+  else if(f[2].indexOf('seg:')===0){var opts=f[2].slice(4).split(',');var wrap=document.createElement('div');wrap.className='seg';wrap.id='pf_'+f[0];
+   opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o;b.setAttribute('aria-pressed',p[f[0]]===o?'true':'false');
+    b.onclick=function(){wrap.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');};
+    wrap.appendChild(b);});c.appendChild(wrap);}
+ });
+}
+function collectPlan(){var p={};planFields.forEach(function(f){var el=document.getElementById('pf_'+f[0]);
+ if(f[2].indexOf('seg:')===0){var s=el.querySelector('[aria-pressed="true"]');p[f[0]]=s?s.textContent:'';}
+ else p[f[0]]=el.value.trim();});return p;}
+function savePlan(){save(LS.plan,collectPlan());miniToast('Plan guardado en este dispositivo.');}
+function planText(){var p=collectPlan();var L=['PLAN FAMILIAR DE DESBORDAMIENTO — APRENS',''];
+ planFields.forEach(function(f){L.push(f[1]+'\n  '+(p[f[0]]||'—'));});L.push('','Centre APRENS · aprens.es');return L.join('\n');}
+function copyPlan(){var t=planText();if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){miniToast('Plan copiado al portapapeles.')},function(){fallbackCopy(t)});}else fallbackCopy(t);}
+function fallbackCopy(t){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');miniToast('Plan copiado.')}catch(e){miniToast('No se pudo copiar; puedes imprimirlo.')}document.body.removeChild(a);}
+function printPlan(){savePlan();var p=collectPlan();var w=window.open('','_blank');
+ var rows=planFields.map(function(f){return '<tr><th style="text-align:left;vertical-align:top;padding:8px 12px 8px 0;width:44%">'+f[1]+'</th><td style="padding:8px 0;border-bottom:1px solid #eee">'+((p[f[0]]||'—').replace(/</g,'&lt;'))+'</td></tr>';}).join('');
+ w.document.write('<html><head><meta charset="utf-8"><title>Plan familiar · APRENS</title></head><body style="font-family:-apple-system,Segoe UI,Arial;color:#28312F;max-width:640px;margin:30px auto;padding:0 20px"><h1 style="font-family:Georgia,serif">Nuestro plan de desbordamiento</h1><table style="width:100%;border-collapse:collapse">'+rows+'</table><p style="color:#6F8F83;letter-spacing:.06em;margin-top:24px">APRENS · Psicologia · Aprenentatge · Consciència — aprens.es</p><p style="font-size:12px;color:#888">Herramienta psicoeducativa. No sustituye una valoración profesional individualizada.</p></body></html>');
+ w.document.close();setTimeout(function(){w.print()},300);}
+
+/* ---------- REGISTRO ---------- */
+var regFields=[['antes','ANTES · ¿Qué estaba ocurriendo?'],['acum','ACUMULACIÓN · ¿Qué llevaba tiempo acumulándose?'],
+ ['senales','SEÑALES · ¿Qué se notó primero?'],['desborde','DESBORDAMIENTO · ¿Qué ocurrió?'],
+ ['respuesta','RESPUESTA DEL ENTORNO · ¿Qué hicimos?'],['recuperacion','RECUPERACIÓN · ¿Qué ayudó?'],
+ ['aprendizaje','QUÉ APRENDEMOS · ¿Qué intentaremos la próxima vez?']];
+function renderReg(){var c=document.getElementById('regForm');c.innerHTML='';regFields.forEach(function(f){
+ var l=document.createElement('label');l.className='f';l.textContent=f[1];l.setAttribute('for','rf_'+f[0]);c.appendChild(l);
+ var t=document.createElement('textarea');t.className='f';t.id='rf_'+f[0];t.style.minHeight='54px';c.appendChild(t);});}
+var patternKeys=[['cambio','cambios'],['cansancio','cansancio'],['demanda','demandas'],['ruido','ruido'],['hambre','hambre'],
+ ['social','interacción social'],['interrup','interrupción'],['espera','espera'],['rechazo','rechazo/frustración'],['desconocido','desconocido']];
+function tagText(s){s=(s||'').toLowerCase();var out=[];
+ if(/cambi|plan/.test(s))out.push('cambio');if(/cansad|cansancio|sueñ|agotad/.test(s))out.push('cansancio');
+ if(/demand|deber|tarea|much/.test(s))out.push('demanda');if(/ruid|son/.test(s))out.push('ruido');
+ if(/hambr|comer|com/.test(s))out.push('hambre');if(/amig|social|gente|niñ|compañ/.test(s))out.push('social');
+ if(/interrump|parar|corta/.test(s))out.push('interrup');if(/esper|cola|turno/.test(s))out.push('espera');
+ if(/no|rechaz|frustr|perd|injust/.test(s))out.push('rechazo');if(out.length===0)out.push('desconocido');return out;}
+function saveReg(){var r={t:Date.now()};regFields.forEach(function(f){r[f[0]]=document.getElementById('rf_'+f[0]).value.trim();});
+ var regs=load(LS.reg,[]);regs.unshift(r);save(LS.reg,regs);renderReg();renderRegList();renderPatterns();miniToast('Registro guardado.');}
+function renderRegList(){var regs=load(LS.reg,[]);var c=document.getElementById('regList');
+ if(!regs.length){c.innerHTML='<p class="micro" style="margin-top:14px">Todavía no hay registros. El primero puede esperar a un momento de calma.</p>';return;}
+ c.innerHTML='<div class="kick">Registros ('+regs.length+')</div>';
+ regs.slice(0,12).forEach(function(r,i){var d=new Date(r.t);var box=document.createElement('div');box.className='panel';box.style.padding='12px 14px';
+  box.innerHTML='<div class="micro" style="font-weight:700">'+d.toLocaleDateString()+' · '+d.toLocaleTimeString().slice(0,5)+'</div>'+
+   (r.antes?'<div class="micro"><b>Antes:</b> '+esc(r.antes)+'</div>':'')+
+   (r.senales?'<div class="micro"><b>Señales:</b> '+esc(r.senales)+'</div>':'')+
+   (r.aprendizaje?'<div class="micro"><b>Próxima vez:</b> '+esc(r.aprendizaje)+'</div>':'');
+  c.appendChild(box);});}
+function renderPatterns(){var regs=load(LS.reg,[]);var c=document.getElementById('regPatterns');
+ if(regs.length<2){c.innerHTML='';return;}
+ var counts={};patternKeys.forEach(function(k){counts[k[0]]=0;});
+ regs.forEach(function(r){var tset={};tagText(r.antes+' '+r.acum+' '+r.senales).forEach(function(t){tset[t]=1;});Object.keys(tset).forEach(function(t){counts[t]=(counts[t]||0)+1;});});
+ var max=1;patternKeys.forEach(function(k){if(counts[k[0]]>max)max=counts[k[0]];});
+ var rows=patternKeys.filter(function(k){return counts[k[0]]>0;}).sort(function(a,b){return counts[b[0]]-counts[a[0]];});
+ var html='<div class="kick">Lo que más se repite</div>';
+ rows.forEach(function(k){var w=Math.round(counts[k[0]]/max*100);
+  html+='<div class="bar-row"><span class="lb">'+k[1]+'</span><span class="bar-track"><span class="bar-fill" style="width:'+w+'%"></span></span><span class="vv">'+counts[k[0]]+'</span></div>';});
+ html+='<p class="micro" style="margin-top:6px">Esto no es un diagnóstico: son pistas para anticipar.</p>';
+ c.innerHTML=html;}
+function exportReg(){var regs=load(LS.reg,[]);if(!regs.length){miniToast('No hay registros que exportar.');return;}
+ var L=['REGISTRO DE PATRONES — APRENS',''];regs.forEach(function(r){var d=new Date(r.t);
+  L.push('· '+d.toLocaleString());regFields.forEach(function(f){if(r[f[0]])L.push('  '+f[1]+': '+r[f[0]]);});L.push('');});
+ L.push('Centre APRENS · aprens.es');var t=L.join('\n');
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){miniToast('Registro copiado al portapapeles.')},function(){fallbackCopy(t)});}else fallbackCopy(t);}
+function clearReg(){if(confirm('¿Borrar todos los registros de este dispositivo? No se puede deshacer.')){save(LS.reg,[]);renderRegList();renderPatterns();miniToast('Registros borrados.');}}
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ---------- NIÑO ---------- */
+var ninoEst=[['🙂','todavía puedo','verde'],['😕','empieza a costarme','amarillo'],['😣','necesito parar','naranja'],['🔥','demasiado','rojo'],['🌧️','recuperándome','azul']];
+(function(){var c=document.getElementById('ninoEstado');ninoEst.forEach(function(e){var b=document.createElement('button');b.className='big';b.style.gridColumn=e[2]==='azul'?'1 / -1':'auto';
+ b.innerHTML='<span class="ic">'+e[0]+'</span><span>'+e[1]+'</span>';
+ b.onclick=function(){ var s=e[2]; go(s==='rojo'?'ninorojo':(s==='naranja'||s==='azul')?'ninoreduce':'ninonec'); };c.appendChild(b);});})();
+/* 🔴 rojo: pantalla mínima de acompañamiento (máxima protección, mínima demanda) */
+var ninoRoj=[['🤝','Quédate cerca','Estoy aquí, cerca de ti.'],['🌙','Quiero estar solo','Vale. Me quedo cerca, sin molestar.'],['⏸️','Pausa','Paramos. No hace falta nada más.']];
+(function(){var c=document.getElementById('ninoRojo');ninoRoj.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='96px';b.style.fontSize='20px';
+ b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
+ b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
+/* 🟠 reducir / 🔵 recuperar: interfaz reducida (pocas opciones de regulación/comunicación, sin analizar) */
+var ninoReduc=[['⏸️','Pausa','Paramos. No hace falta nada más.'],['⏳','Necesito tiempo','Tómate el tiempo que necesites.'],['🤝','Quédate cerca','Estoy aquí, cerca de ti.'],['🌙','Quiero estar solo','Vale. Me quedo cerca, sin molestar.'],['📋','Explícame qué va a pasar','Te cuento, con calma, lo que viene.']];
+(function(){var c=document.getElementById('ninoReduce');ninoReduc.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='84px';b.style.fontSize='18px';
+ b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
+ b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
+var ninoNec=[['🤫','silencio'],['🎧','menos ruido'],['↔️','espacio'],['🤝','que te quedes'],['🚪','salir'],['🚶','moverme'],['🥤','agua'],['⏳','tiempo'],['📋','saber qué viene'],['❓','no lo sé']];
+(function(){var c=document.getElementById('ninoNec');ninoNec.forEach(function(n){var b=document.createElement('button');b.className='big';
+ b.innerHTML='<span class="ic">'+n[0]+'</span><span style="font-size:15px">'+n[1]+'</span>';
+ b.onclick=function(){miniToast('Vale. Vamos a hacer esto un poco más fácil.');};c.appendChild(b);});})();
+var ninoBig=[['NECESITO UNA PAUSA'],['AHORA NO PUEDO HABLAR'],['QUÉDATE CERCA'],['QUIERO ESTAR SOLO UN MOMENTO'],['EXPLÍCAME QUÉ VA A PASAR'],['ESTO NO ERA LO QUE ESPERABA'],['ESTOY MUY ENFADADO'],['HAY DEMASIADO RUIDO / DEMASIADAS COSAS'],['NECESITO TIEMPO'],['NO LO SÉ']];
+(function(){var c=document.getElementById('ninoBig');ninoBig.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='70px';b.style.fontSize='17px';
+ b.textContent=n[0];b.onclick=function(){miniToast('Recibido. Estoy aquí.');};c.appendChild(b);});})();
+
+/* init tree */
+renderTree(TREE);
+/* keyboard: Esc = back */
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.getElementById('appbar').hidden){document.getElementById('backBtn').click();}});
+</script>
+</body>
+</html>

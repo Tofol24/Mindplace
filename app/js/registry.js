@@ -106,6 +106,10 @@ window.APRENS_TOOLS = [
     desc:"Para madres y padres: enseñar a tu peque a empezar por sí mismo. Primero la honestidad emocional (compartir la sensación y pedir un abrazo, desde la complicidad y no la culpa), luego el entrenamiento del tiempo límite de 2 minutos, la tolerancia a la frustración sin ser rescatado y los límites claros. Bilingüe castellano/català.",
     migrada:true, iframe:"tools-standalone/tiempo_limite_peques.html" },
 
+  { id:"peques_desbordamiento", emoji:"🌊", nombre:"Cuando todo se hace demasiado",
+    desc:"Para familias con perfil TEA (9–12 años): acompañar el desbordamiento ante la frustración y los cambios, no «parar rabietas». Semáforo de capacidad, «primero yo» (regulación del adulto), qué necesita / qué le digo / hablo o espero, fuera de casa, entrenar en calma, entender lo que pasó y un plan familiar. Doble entrada niño/adulto. Modo tranquilo. Todo se guarda solo en el dispositivo.",
+    migrada:true, iframe:"tools-standalone/cuando-todo-demasiado.html" },
+
   { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
     migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
