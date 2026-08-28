@@ -110,6 +110,10 @@ window.APRENS_TOOLS = [
     desc:"Para familias con perfil TEA (9–12 años): acompañar el desbordamiento ante la frustración y los cambios, no «parar rabietas». Semáforo de capacidad, «primero yo» (regulación del adulto), qué necesita / qué le digo / hablo o espero, fuera de casa, entrenar en calma, entender lo que pasó y un plan familiar. Doble entrada niño/adulto. Modo tranquilo. Todo se guarda solo en el dispositivo.",
     migrada:true, iframe:"tools-standalone/cuando-todo-demasiado.html" },
 
+  { id:"cuentos_nil", emoji:"📖", nombre:"Los cuentos de Nil",
+    desc:"Tres cuentos visuales para peques (9–12) con perfil TEA: reconocer cuánto espacio (capacidad) queda por dentro, no «portarse bien». «No era así como tenía que pasar» (cambios), «Hoy todo pesaba más» (acumulación y fuera de casa) y «No salió como yo pensaba» (frustración social). Incluye «¿Y a mí qué me pasa?» para hacer tu propio mapa. Se lee en calma, no durante una crisis. Todo se guarda solo en el dispositivo.",
+    migrada:true, iframe:"tools-standalone/cuentos/index.html" },
+
   { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",
     migrada:true, iframe:"tools-standalone/fondos_frases_aprens.html" },
