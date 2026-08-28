@@ -37,7 +37,7 @@ a{color:var(--azul)}
 .iconbtn:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
 .bar-title{flex:1;text-align:center;font-weight:700;font-size:15px;letter-spacing:.01em}
 .calmtog{font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);background:var(--card);
-  border-radius:20px;min-height:40px;padding:0 12px}
+  border-radius:20px;min-height:46px;padding:0 14px}
 .calmtog[aria-pressed="true"]{background:var(--verde);color:#fff;border-color:var(--verde)}
 
 /* Views */
@@ -182,7 +182,9 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
   <div class="logo decor">aprens<small>Psicologia · Aprenentatge · Consciència</small></div>
   <h1 id="splashH">Cuando todo se hace demasiado</h1>
   <p class="lead">Una guía para acompañar la frustración, entender lo que está pasando y volver poco a poco.</p>
-  <button class="btn" style="min-width:220px" onclick="go('role')">Empezar</button>
+  <button class="btn" style="min-width:250px;font-size:17px" onclick="crisisNow()">En crisis ahora</button>
+  <div style="height:12px"></div>
+  <button class="btn sec" style="min-width:250px" onclick="go('role')">Entrar con calma</button>
   <p class="micro" style="margin-top:26px">Herramienta psicoeducativa. No sustituye una valoración profesional individualizada.</p>
 </section>
 
@@ -191,11 +193,11 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
   <div class="kick">¿Quién va a usarla ahora?</div>
   <h2 class="h-view" id="roleH">Elige</h2>
   <div class="grid">
-    <button class="card full" onclick="go('padre')" style="align-items:flex-start">
+    <button class="card full" onclick="pickRole('padre')" style="align-items:flex-start">
       <span class="ic">🧭</span><span class="t">Soy padre / madre</span>
       <span class="s">Para acompañar, prevenir, entender o entrenar. También para regularme yo primero.</span>
     </button>
-    <button class="card full" onclick="go('nino')" style="align-items:flex-start">
+    <button class="card full" onclick="pickRole('nino')" style="align-items:flex-start">
       <span class="ic">🌿</span><span class="t">Soy yo</span>
       <span class="s">Para decir cómo estoy y qué necesito, sin tener que explicarlo con palabras.</span>
     </button>
@@ -270,39 +272,35 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
   <span class="tag now">Ahora · 30 s</span>
   <h2 class="h-view" id="pyH">Primero yo</h2>
   <p class="desc">Antes de regular a tu hijo, recupera tu propio espacio. Primero acompaño mi cuerpo para poder acompañar el suyo.</p>
+  <p class="center" style="font-weight:800;color:var(--verde);letter-spacing:.04em;margin:-6px 0 10px;font-size:14px">PARO → NOTO → ACOMPAÑO → ELIJO</p>
   <div class="panel">
     <div class="step active" data-step="0">
-      <div class="stepnum">Paso 1 · Para</div>
-      <div class="stepq">Para.</div>
+      <div class="stepnum">Paso 1 · Paro</div>
+      <div class="stepq">Paro.</div>
       <p>No respondas todavía, si no hay peligro. Solo un instante antes de actuar.</p>
       <button class="btn wide" onclick="pyNext(1)">Sigo</button>
     </div>
     <div class="step" data-step="1">
-      <div class="stepnum">Paso 2 · Respira</div>
-      <div class="stepq">Respira.</div>
-      <p>Una respiración lenta. No para relajarte a la fuerza: solo para volver a tu cuerpo un segundo.</p>
+      <div class="stepnum">Paso 2 · Noto</div>
+      <div class="stepq">¿Dónde noto ahora mi propia tensión?</div>
+      <div class="chips" id="pyBody"></div>
+      <p class="micro">Si te ayuda, una respiración lenta puede acompañar este momento. No es obligatoria: solo una posibilidad.</p>
       <button class="btn wide" onclick="pyNext(2)">Sigo</button>
     </div>
     <div class="step" data-step="2">
-      <div class="stepnum">Paso 3 · Nota</div>
-      <div class="stepq">¿Dónde notas ahora tu propia tensión?</div>
-      <div class="chips" data-single="0" id="pyBody"></div>
+      <div class="stepnum">Paso 3 · Acompaño</div>
+      <div class="stepq">Acompaño.</div>
+      <p class="phr">«Esto también es difícil para mí.»</p>
+      <p class="phr">«Puedo notar mi tensión sin obedecerla inmediatamente.»</p>
       <button class="btn wide" onclick="pyNext(3)">Sigo</button>
     </div>
     <div class="step" data-step="3">
-      <div class="stepnum">Paso 4 · Acompaña</div>
-      <div class="stepq">Acompaña.</div>
-      <p class="phr">«Esto también es difícil para mí.»</p>
-      <p class="phr">«Puedo notar mi tensión sin obedecerla inmediatamente.»</p>
-      <button class="btn wide" onclick="pyNext(4)">Sigo</button>
-    </div>
-    <div class="step" data-step="4">
-      <div class="stepnum">Paso 5 · Elige</div>
+      <div class="stepnum">Paso 4 · Elijo</div>
       <div class="stepq">¿Qué necesita ahora mi hijo de mí?</div>
       <div class="chips" id="pyChoose"></div>
       <button class="btn wide" onclick="pyDone()">Listo</button>
     </div>
-    <div class="step" data-step="5">
+    <div class="step" data-step="4">
       <div class="reco" style="font-family:Georgia,serif">No has solucionado todavía la situación. Has hecho algo anterior y muy importante: <b>recuperar capacidad para acompañarla.</b></div>
       <div class="row">
         <button class="btn sec" onclick="go('quenecesita')">¿Qué necesita?</button>
@@ -342,6 +340,8 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
 <section class="view" id="v-fuera" aria-labelledby="fcH">
   <span class="tag now">Ahora</span>
   <h2 class="h-view" id="fcH">Cuando pasa fuera de casa</h2>
+  <button class="btn wide" onclick="go('primeroyo')">Primero yo · 10 s</button>
+  <p class="micro" style="margin:-2px 0 8px">El juicio de los demás puede activarte a ti antes de poder acompañarle. Empieza por tu propio cuerpo.</p>
   <button class="btn danger wide" onclick="showExit()">Necesito salir de aquí</button>
   <div id="exitBox"></div>
   <div class="panel">
@@ -402,6 +402,11 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
     <button class="btn sec" onclick="printPlan()">Imprimir</button>
     <button class="btn sec" onclick="copyPlan()">Copiar</button>
   </div>
+  <hr class="soft">
+  <div class="kick">Datos y privacidad</div>
+  <p class="micro">Todo se guarda solo en este dispositivo. No hay cuentas, ni analytics, ni cookies de terceros.</p>
+  <button class="btn sec danger wide" onclick="clearAll()">Borrar mis datos</button>
+  <p class="micro center" style="margin-top:4px">Borra el plan, las preferencias y los registros de este dispositivo.</p>
 </section>
 
 <!-- REGISTRO -->
@@ -490,6 +495,15 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
   <div class="grid" id="ninoBig"></div>
 </section>
 
+<!-- NIÑO · ROJO (pantalla mínima de acompañamiento) -->
+<section class="view" id="v-ninorojo" aria-labelledby="nrH">
+  <div class="kick">Soy yo</div>
+  <h2 class="h-view" id="nrH" style="font-size:26px">Ahora no tienes que resolver nada.</h2>
+  <p class="desc">Estoy aquí. Elige solo si quieres.</p>
+  <div class="grid" id="ninoRojo"></div>
+  <button class="btn sec wide" style="margin-top:18px" onclick="go('ninonec')">Ya estoy un poco mejor</button>
+</section>
+
 </main>
 
 <div id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
@@ -502,9 +516,12 @@ var LS={plan:'aprens_des_plan',prefs:'aprens_des_prefs',reg:'aprens_des_reg'};
 function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var prefs=load(LS.prefs,{calm:false});
+function pickRole(r){prefs.role=r;save(LS.prefs,prefs);go(r);}
+function crisisNow(){go(prefs.role==='nino'?'nino':'padre');}
+function clearAll(){if(confirm('¿Borrar TODOS tus datos de este dispositivo (plan, preferencias y registros)? Esta acción no se puede deshacer.')){try{localStorage.removeItem(LS.plan);localStorage.removeItem(LS.reg);localStorage.removeItem(LS.prefs);}catch(e){}prefs={calm:false};applyCalm();renderPlan();miniToast('Todos tus datos han sido borrados de este dispositivo.');}}
 
 /* ---------- NAV ---------- */
-var titles={splash:'APRENS',role:'Elige',padre:'Padre / madre',nino:'Soy yo',ninonec:'Soy yo',
+var titles={splash:'APRENS',role:'Elige',padre:'Padre / madre',nino:'Soy yo',ninonec:'Soy yo',ninorojo:'Soy yo',
  quepasa:'¿Qué está pasando?',semaforo:'El semáforo',primeroyo:'Primero yo',quenecesita:'¿Qué necesita?',
  quedigo:'¿Qué le digo?',hablo:'¿Hablo o espero?',fuera:'Fuera de casa',entrenar:'Entrenar',entender:'Entender lo que pasó',
  plan:'Nuestro plan',registro:'Registro',intereses:'Intereses',social:'Códigos sociales',edad:'Los 10-11 años',seguridad:'Seguridad'};
@@ -583,7 +600,7 @@ function pyReset(){document.querySelectorAll('#v-primeroyo .step').forEach(funct
  fillChips('pyBody',bodyParts,false);fillChips('pyChoose',needsPY,true);}
 function pyNext(n){document.querySelectorAll('#v-primeroyo .step').forEach(function(s){s.classList.remove('active')});
  document.querySelector('#v-primeroyo .step[data-step="'+n+'"]').classList.add('active');}
-function pyDone(){pyNext(5);}
+function pyDone(){pyNext(4);}
 
 /* ---------- QUE NECESITA ---------- */
 var qn=[['🤫','menos palabras','Habla lo justo. Frases de 3-4 palabras.'],['↔️','distancia','Ofrece espacio; quédate cerca pero sin invadir.'],
@@ -736,7 +753,12 @@ function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 var ninoEst=[['🙂','todavía puedo','verde'],['😕','empieza a costarme','amarillo'],['😣','necesito parar','naranja'],['🔥','demasiado','rojo'],['🌧️','recuperándome','azul']];
 (function(){var c=document.getElementById('ninoEstado');ninoEst.forEach(function(e){var b=document.createElement('button');b.className='big';b.style.gridColumn=e[2]==='azul'?'1 / -1':'auto';
  b.innerHTML='<span class="ic">'+e[0]+'</span><span>'+e[1]+'</span>';
- b.onclick=function(){go('ninonec');};c.appendChild(b);});})();
+ b.onclick=function(){ go(e[2]==='rojo' ? 'ninorojo' : 'ninonec'); };c.appendChild(b);});})();
+/* niño en rojo: pantalla mínima, baja carga ejecutiva */
+var ninoRoj=[['🤝','Quédate cerca','Estoy aquí, cerca de ti.'],['🌙','Quiero estar solo','Vale. Me quedo cerca, sin molestar.'],['⏸️','Pausa','Paramos. No hace falta nada más.']];
+(function(){var c=document.getElementById('ninoRojo');ninoRoj.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='96px';b.style.fontSize='20px';
+ b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
+ b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
 var ninoNec=[['🤫','silencio'],['🎧','menos ruido'],['↔️','espacio'],['🤝','que te quedes'],['🚪','salir'],['🚶','moverme'],['🥤','agua'],['⏳','tiempo'],['📋','saber qué viene'],['❓','no lo sé']];
 (function(){var c=document.getElementById('ninoNec');ninoNec.forEach(function(n){var b=document.createElement('button');b.className='big';
  b.innerHTML='<span class="ic">'+n[0]+'</span><span style="font-size:15px">'+n[1]+'</span>';
