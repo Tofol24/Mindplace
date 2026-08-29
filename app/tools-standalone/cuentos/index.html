@@ -5,46 +5,41 @@
 <link rel="stylesheet" href="assets/reader.css">
 </head><body>
 <div class="ix">
-  <div class="kick">APRENS · Cuentos</div>
-  <h1>Los cuentos de Nil</h1>
-  <p class="lead">Siete cuentos para acompañar los momentos en que todo se hace demasiado. Para leer en calma, no durante una crisis.</p>
-  <div class="ventana">En cada página hay una pequeña ventana. No dice si Nil está bien o mal: dice cuánto espacio le queda por dentro para pensar, escuchar y elegir.</div>
-  <div class="list">
-    <a class="cuento" href="c1.html">
-      <div class="thumb"><img src="img/c1-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 1</div><h2>No era así como tenía que pasar</h2></div>
-    </a>
-    <a class="cuento" href="c2.html">
-      <div class="thumb"><img src="img/c2-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 2</div><h2>Hoy todo pesaba más</h2></div>
-    </a>
-    <a class="cuento" href="c3.html">
-      <div class="thumb"><img src="img/c3-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 3</div><h2>No salió como yo pensaba</h2></div>
-    </a>
-    <a class="cuento" href="c4.html">
-      <div class="thumb"><img src="img/c4-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 4</div><h2>Un poco más</h2></div>
-    </a>
-    <a class="cuento" href="c5.html">
-      <div class="thumb"><img src="img/c5-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 5</div><h2>Hoy lo noté a tiempo</h2></div>
-    </a>
-    <a class="cuento" href="c6.html">
-      <div class="thumb"><img src="img/c6-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 6</div><h2>Una raya torcida</h2></div>
-    </a>
-    <a class="cuento" href="c7.html">
-      <div class="thumb"><img src="img/c7-p01.webp" alt=""></div>
-      <div class="meta"><div class="n">Cuento 7</div><h2>Antes de algo nuevo</h2></div>
-    </a>
-    <a class="cuento tool" href="mapa.html">
-      <div class="ic">🧭</div>
-      <div class="meta"><div class="n">Para ti</div><h2>¿Y a mí qué me pasa?</h2></div>
-    </a>
-  </div>
-  <div class="foot">Se lee mejor en calma, acompañando. Todo se guarda solo en tu dispositivo.</div>
+  <div class="kick" id="kick"></div>
+  <h1 id="title"></h1>
+  <p class="lead" id="lead"></p>
+  <div class="ventana" id="ventana"></div>
+  <div class="list" id="list"></div>
+  <div class="foot" id="foot"></div>
 </div>
+<script src="assets/content.js"></script>
 <script src="assets/cuentos.js"></script>
-<script>try{window.warmCuentos&&window.warmCuentos();}catch(e){}</script>
+<script>
+(function(){
+  var LANG=window.CUENTOS_LANG||"es", C=window.CUENTOS_CONTENT, UI=C.ui[LANG];
+  document.documentElement.lang=LANG;
+  document.title=UI.hubTitle;
+  document.getElementById("kick").textContent=UI.hubKick;
+  document.getElementById("title").textContent=UI.hubTitle;
+  document.getElementById("lead").textContent=UI.hubLead;
+  document.getElementById("ventana").textContent=UI.ventanaHub;
+  document.getElementById("foot").textContent=UI.foot;
+  var list=document.getElementById("list"), n=0;
+  C.order.forEach(function(id){
+    n++;
+    var b=C.books[id][LANG];
+    var a=document.createElement("a"); a.className="cuento"; a.href=id+".html";
+    a.innerHTML='<div class="thumb"><img src="img/'+id+'-p01.webp" alt="" loading="lazy"></div>'+
+      '<div class="meta"><div class="n">'+UI.cuentoLabel+' '+n+'</div><h2></h2></div>';
+    a.querySelector("h2").textContent=b.title;
+    list.appendChild(a);
+  });
+  var t=document.createElement("a"); t.className="cuento tool"; t.href="mapa.html";
+  t.innerHTML='<div class="ic">🧭</div><div class="meta"><div class="n"></div><h2></h2></div>';
+  t.querySelector(".n").textContent=UI.toolKick;
+  t.querySelector("h2").textContent=UI.toolTitle;
+  list.appendChild(t);
+  try{window.warmCuentos&&window.warmCuentos();}catch(e){}
+})();
+</script>
 </body></html>
