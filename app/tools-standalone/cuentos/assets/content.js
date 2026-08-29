@@ -303,14 +303,14 @@ window.CUENTOS_CONTENT = {
      "És a punt d'acabar una línia nova. La té sencera al cap.",
      "—Nil, el sopar és a punt. Ho has de deixar.",
      "—Una mica més. Només aquesta línia.",
-     "Torna a sentir la veu. Ara més a prop. A en Nil se li va estrènyer el llapis.",
+     "Un altre cop la veu. Més a prop. Els dits d'en Nil es van estrènyer al voltant del llapis.",
      "Sortir de cop és com si et traguessin de cop d'un lloc calentó i et duguessin al fred.",
      "En Nil nota les mans dures. No vol aixecar la vista. Tot el de fora molesta.",
      "—No, ara no! Encara no he acabat!",
      "No és el sopar. És que l'han fet sortir de cop d'allò on estava tan ficat, i ja no li queda lloc.",
      "La seva mare ho entén. Deixa d'empènyer-lo amb paraules.\n—Espera. Trobarem una manera d'aturar-nos.",
      "—Desem el mapa just aquí. Quan tornis, pots continuar des d'aquest punt.",
-     "El mapa està segur. En Nil respira. Es pot deixar una cosa si saps que no es perd.",
+     "El mapa està segur. En Nil afluixa una mica. Es pot deixar una cosa si saps que no es perd.",
      "Més tard, en Nil se'n recorda:\n—Em costa molt sortir de dins d'una cosa que m'agrada. Si sé quan hauré d'aturar-me, i que no es perd, em costa menys."
     ],
     "ideas": [
@@ -479,7 +479,7 @@ window.CUENTOS_CONTENT = {
      "El que és nou, quan no sap què passarà, l'omple de cop.",
      "Saber algunes coses li fa lloc.",
      "No cal saber-ho tot: pot preguntar.",
-     "Anticipar algunes coses em pot ajudar a fer lloc."
+     "Anticipar algunes coses el pot ajudar a fer lloc."
     ],
     "frase": "Saber algunes coses m'ajuda. No em cal saber-les totes.",
     "head": "Coses que en Nil ja sap d'ell mateix",
