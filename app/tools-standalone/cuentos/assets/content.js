@@ -1,7 +1,7 @@
-/* APRENS · Cuentos — FUENTE CANÓNICA (ES+CA): cuentos + capa adulta + textos de marco.
+/* APRENS · Cuentos — FUENTE CANÓNICA (ES+CA): cuentos + capa adulta + textos de marco + copy de cubierta.
    Único dataset versionado. No editar texto fuera de aquí (los .md son documentos humanos). */
 window.CUENTOS_CONTENT = {
- "version": 3,
+ "version": 4,
  "order": [
   "c1",
   "c2",
@@ -283,7 +283,7 @@ window.CUENTOS_CONTENT = {
      "No es la cena. Es que lo han sacado de dentro sin avisar, y ya no le queda sitio.",
      "Su madre lo entiende. Deja de empujarlo con palabras.\n—Espera. Vamos a encontrar una manera de parar.",
      "—Guardamos el mapa justo aquí. Cuando vuelvas, puedes seguir desde este punto.",
-     "El mapa está a salvo. Nil respira. Se puede dejar algo si sabes que no se pierde.",
+     "El mapa está a salvo. Nil se afloja un poco. Se puede dejar algo si sabes que no se pierde.",
      "Más tarde, Nil se acuerda:\n—Me cuesta mucho salir de dentro de algo que me gusta. Si sé cuándo tendré que parar, y que no se pierde, me cuesta menos."
     ],
     "ideas": [
@@ -453,7 +453,7 @@ window.CUENTOS_CONTENT = {
      "Lo nuevo, cuando no sabe qué va a pasar, le llena de golpe.",
      "Saber algunas cosas le hace sitio.",
      "No hace falta saberlo todo: puede preguntar.",
-     "Anticipar algunas cosas puede ayudarme a hacer sitio."
+     "Anticipar algunas cosas puede ayudarle a hacer sitio."
     ],
     "frase": "Saber algunas cosas me ayuda. No necesito saberlas todas.",
     "head": "Cosas que Nil ya sabe de sí mismo",
@@ -967,7 +967,12 @@ window.CUENTOS_CONTENT = {
    "qr3Sub": "Escanea el código para continuar en APRENS · Los cuentos de Nil.",
    "qrFallback": "Los cuentos de Nil · APRENS — aprens.es/nil",
    "prologueHead": "Antes de empezar a leer",
-   "appendixHead": "Para comprender lo que hay detrás"
+   "appendixHead": "Para comprender lo que hay detrás",
+   "author": "Cristòfol Villalonga · APRENS",
+   "blurb": [
+    "Siete historias para acompañar los momentos en que todo se hace demasiado. A través de Nil iremos descubriendo qué ocurre cuando queda poco espacio por dentro para pensar, escuchar y elegir, y cómo la presencia de un adulto puede ayudar a recuperarlo.",
+    "Para leer en calma, acompañando. Incluye «¿Y a mí qué me pasa?» para que cada niño pueda explorar sus propias pistas."
+   ]
   },
   "ca": {
    "credits": [
@@ -990,7 +995,12 @@ window.CUENTOS_CONTENT = {
    "qr3Sub": "Escaneja el codi per continuar a APRENS · Els contes d'en Nil.",
    "qrFallback": "Els contes d'en Nil · APRENS — aprens.es/nil",
    "prologueHead": "Abans de començar a llegir",
-   "appendixHead": "Per comprendre el que hi ha darrere"
+   "appendixHead": "Per comprendre el que hi ha darrere",
+   "author": "Cristòfol Villalonga · APRENS",
+   "blurb": [
+    "Set històries per acompanyar els moments en què tot es fa massa. A través d'en Nil anirem descobrint què passa quan queda poc espai per dins per pensar, escoltar i triar, i com la presència d'un adult pot ajudar a recuperar-lo.",
+    "Per llegir amb calma, acompanyant. Inclou «I a mi què em passa?» perquè cada infant pugui explorar les seves pròpies pistes."
+   ]
   }
  }
 };
