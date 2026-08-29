@@ -34,7 +34,7 @@ var BOOKS={
    "Nil todavía no quiere hablar. Se queda mirando sus mapas. Su madre no le pregunta nada.",
    "Más tarde, cuando ya hay sitio otra vez, Nil se acuerda:\n—Cuando has dicho «otro día», la barriga se me ha puesto dura enseguida."],
   ideas:["A veces los cambios pesan mucho.","Cuando insiste mucho, quizá le queda poco espacio.","Cuando queda poco espacio, necesita menos palabras.","«Estoy aquí» a veces basta."],
-  frase:"No tengo que poder con todo yo solo."},
+  frase:"No tengo que poder con todo yo solo.",head:"Cosas que ahora sabemos de Nil"},
  c2:{title:"Hoy todo pesaba más",sub:SUB,
   story:[
    "Hay días fáciles. Y hay días que, sin saber muy bien por qué, pesan más desde por la mañana.",
@@ -53,7 +53,7 @@ var BOOKS={
    "Poco a poco, el cuerpo de Nil se fue soltando. No estaba «ya bien». Estaba recuperándose.",
    "En casa, más tarde, Nil dijo:\n—Hoy ya me había levantado con poco sitio."],
   ideas:["Cuando está cansado, las cosas pequeñas pueden hacerse enormes.","A veces no es una cosa: es esto + esto + esto.","Fuera de casa también se puede parar y hacer sitio.","Recuperarse no es estar listo para hablar todavía."],
-  frase:"Cuando todo se hace demasiado, podemos hacer espacio."},
+  frase:"Cuando todo se hace demasiado, podemos hacer espacio.",head:"Cosas que ahora sabemos de Nil"},
  c3:{title:"No salió como yo pensaba",sub:SUB,
   story:[
    "Nil había preparado su mapa nuevo toda la semana. Hoy quería enseñárselo a los demás y jugar juntos a las estaciones.",
@@ -70,7 +70,73 @@ var BOOKS={
    "No salió como lo había imaginado. Cuando volvió a tener sitio, pudo decidir qué quería hacer.",
    "Luego pensó:\n—Puedo enfadarme mucho y, aun así, pedir un momento. Las dos cosas caben."],
   ideas:["A veces las cosas no salen como las había imaginado, y eso duele de verdad.","Puede sentir mucho sin que sea «portarse mal».","A veces puede pedir un momento, un poco de tiempo o que le expliquen qué va a pasar.","Y a veces no llega a tiempo, y también está bien."],
-  frase:"No tengo que poder con todo yo solo."}
+  frase:"No tengo que poder con todo yo solo.",head:"Pistas que Nil ha ido descubriendo"},
+ c4:{title:"Un poco más",sub:SUB,
+  story:[
+   "Cuando Nil dibuja sus líneas de tren, el tiempo desaparece.",
+   "Está a punto de terminar una línea nueva. La tiene entera en la cabeza.",
+   "—Nil, la cena está lista. Hay que dejarlo.",
+   "—Un poco más. Solo esta línea.",
+   "Otra vez la voz. Más cerca. A Nil se le apretó el lápiz.",
+   "Salir de golpe es como que te saquen de un sitio calentito al frío.",
+   "Nil nota las manos duras. No quiere levantar la vista. Todo lo de fuera molesta.",
+   "—¡No, ahora no! ¡Todavía no he acabado!",
+   "No es la cena. Es que lo han sacado de dentro sin avisar, y ya no le queda sitio.",
+   "Su madre lo entiende. Deja de empujarlo con palabras.\n—Espera. Vamos a encontrar una manera de parar.",
+   "—Guardamos el mapa justo aquí. Cuando vuelvas, puedes seguir desde este punto.",
+   "El mapa está a salvo. Nil respira. Se puede dejar algo si sabes que no se pierde.",
+   "Más tarde, Nil se acuerda:\n—Me cuesta mucho salir de dentro de algo que me gusta. Si sé cuándo tendré que parar, y que no se pierde, me cuesta menos."],
+  ideas:["A veces está tan dentro de algo que le gusta que salir de golpe le duele.","Saber con un poco de tiempo cuándo tendrá que parar puede ayudar.","Saber que no se pierde ayuda.","Salir despacio no es «hacerse el remolón»."],
+  frase:"Puedo volver. No lo pierdo.",head:"Pistas que Nil ha ido descubriendo"},
+ c5:{title:"Hoy lo noté a tiempo",sub:SUB,
+  story:[
+   "Hoy es un día normal. Nil se ha levantado bien.",
+   "En el bus había ruido. En el patio, más.",
+   "Y una actividad cambió sin avisar.",
+   "Nil notó una pista: las manos, y que el ruido le molestaba más.",
+   "Nil se quedó un instante con aquella pista. Quizá necesitaba un poco menos de ruido.",
+   "—¿Puedo salir un momento? —preguntó bajito.",
+   "Un rincón más tranquilo. Menos ruido. Un rato con su mapa.",
+   "No estaba «genial». Solo un poco mejor. Con un poco más de sitio.",
+   "Con un poco de sitio, el día siguió. Y una cosa salió bien.",
+   "Nil pensó: —Hoy lo he notado a tiempo.",
+   "Otros días no llega a tiempo. Y también está bien. No es que lo haga mal.",
+   "Su madre lo vio: —Has sabido lo que necesitabas."],
+  ideas:["A veces nota las señales a tiempo y puede pedir un momento.","No siempre puede, y no pasa nada.","Notar lo que necesita es algo suyo, no un examen."],
+  frase:"A veces, cuando lo noto a tiempo, puedo hacerme un poco de sitio antes.",head:"Pistas que Nil ha ido descubriendo"},
+ c6:{title:"Una raya torcida",sub:SUB,
+  story:[
+   "Nil está haciendo el mejor mapa de todos. Con muchísimo cuidado.",
+   "Le está quedando genial. Se lo imagina acabado, perfecto.",
+   "Y entonces… el lápiz se va. Una raya torcida.",
+   "La raya torcida se hace enorme. Ahora todo el mapa parece mal.",
+   "—Está mal. Ya no sirve.",
+   "Le entran ganas de arrugarlo y empezar de cero.",
+   "Lo aparta de un manotazo.\n—Lo he estropeado todo.",
+   "Ya no ve el mapa. Solo ve la raya.",
+   "Su madre no lo arregla ni dice «no pasa nada». Dice:\n—Ya lo sé. Querías que quedara perfecto.",
+   "Se queda cerca. No arregla nada. Espera.",
+   "Poco a poco, queda un poco de sitio.",
+   "Más tarde, Nil vuelve a mirar. La raya sigue ahí. Pero ahora también puede volver a ver el resto del mapa.",
+   "Puede dejarla, corregirla o convertirla en otra cosa. Ahora puede elegir."],
+  ideas:["Cuando algo no le sale perfecto, a veces siente que todo está mal.","Una parte que sale mal no hace desaparecer todo lo demás.","No necesita que le arreglen ni que le digan «no pasa nada»: necesita que le acompañen.","Puede equivocarse y el resto sigue estando."],
+  frase:"Me puedo equivocar, y no se estropea todo.",head:"Cosas que Nil ya sabe de sí mismo"},
+ c7:{title:"Antes de algo nuevo",sub:SUB,
+  story:[
+   "Un día cualquiera, su madre le dijo:\n—El lunes empiezas una cosa nueva.",
+   "Nil se quedó callado.\n—¿Cómo será?",
+   "—¿Quién habrá? ¿Qué haremos? ¿Y si…?",
+   "Esa noche, la cabeza le daba vueltas. No podía parar de pensar.",
+   "Nil nota la barriga dura. No puede dormir. Todo es «¿y si…?».",
+   "—No quiero ir.",
+   "Su madre no dice «no pasa nada, será divertido». Ve que lo que llena es no saber.",
+   "—Podemos hacer un mapa con las cosas que sí sabemos.",
+   "Había cosas que seguían sin saber. Pero ya no eran todas. Nil seguía nervioso, pero un poco menos.",
+   "Su madre señaló los huecos del mapa:\n—No lo sabremos todo. Lo que no sepamos ahora, lo iremos descubriendo. Y puedes preguntar cuando lo necesites.",
+   "Llegó el lunes. Era nuevo. Algunas cosas costaron, otras no.",
+   "Después, Nil pensó:\n—No saber qué va a pasar me llena. Saber algunas cosas me ayuda. No hace falta saberlo todo, y puedo preguntar."],
+  ideas:["Lo nuevo, cuando no sabe qué va a pasar, le llena de golpe.","Saber algunas cosas le hace sitio.","No hace falta saberlo todo: puede preguntar.","Anticipar algunas cosas puede ayudarme a hacer sitio."],
+  frase:"Saber algunas cosas me ayuda. No necesito saberlas todas.",head:"Cosas que Nil ya sabe de sí mismo"}
 };
 window.CUENTOS_BOOKS=BOOKS;
 
@@ -110,7 +176,7 @@ window.initReader=function(id){
         '<p>Esta pequeña ventana nos ayudará a verlo mientras acompañamos a Nil.</p></div>';
     } else if(pg.k==="closing"){
       d.innerHTML='<div class="rd-closing"><div class="rd-art"><img src="'+pg.img+'" alt=""></div>'+
-        '<div class="cbox"><h3>Cosas que ahora sabemos de Nil</h3><ul>'+B.ideas.map(function(x){return '<li>'+x+'</li>';}).join("")+
+        '<div class="cbox"><h3>'+(B.head||"Cosas que ahora sabemos de Nil")+'</h3><ul>'+B.ideas.map(function(x){return '<li>'+x+'</li>';}).join("")+
         '</ul><div class="frase">'+B.frase+'</div></div></div>';
     } else {
       d.innerHTML='<div class="rd-art"><img src="'+pg.img+'" alt=""></div><div class="rd-band"><p>'+pg.t+'</p></div>';
