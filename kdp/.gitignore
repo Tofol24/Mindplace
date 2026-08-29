@@ -1,0 +1,8 @@
+# Pesados: no se versionan (se regeneran desde content.js + másters)
+art/*.png
+!art/README.md
+output/*
+!output/.gitkeep
+generators/.fonts/
+__pycache__/
+*.pyc
