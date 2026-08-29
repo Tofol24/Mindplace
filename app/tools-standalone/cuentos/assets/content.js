@@ -1,7 +1,7 @@
-/* APRENS · Cuentos — FUENTE CANÓNICA de contenido (ES + CA): cuentos + capa adulta.
+/* APRENS · Cuentos — FUENTE CANÓNICA (ES+CA): cuentos + capa adulta + textos de marco.
    Único dataset versionado. No editar texto fuera de aquí (los .md son documentos humanos). */
 window.CUENTOS_CONTENT = {
- "version": 2,
+ "version": 3,
  "order": [
   "c1",
   "c2",
@@ -120,7 +120,8 @@ window.CUENTOS_CONTENT = {
      "«Estoy aquí» a veces basta."
     ],
     "frase": "No tengo que poder con todo yo solo.",
-    "head": "Cosas que ahora sabemos de Nil"
+    "head": "Cosas que ahora sabemos de Nil",
+    "situacion": "Cuando algo cambia"
    },
    "ca": {
     "title": "No havia de passar així",
@@ -147,7 +148,8 @@ window.CUENTOS_CONTENT = {
      "«Soc aquí» de vegades n'hi ha prou."
     ],
     "frase": "No he de poder amb tot jo sol.",
-    "head": "Coses que ara sabem d'en Nil"
+    "head": "Coses que ara sabem d'en Nil",
+    "situacion": "Quan alguna cosa canvia"
    }
   },
   "c2": {
@@ -177,7 +179,8 @@ window.CUENTOS_CONTENT = {
      "Recuperarse no es estar listo para hablar todavía."
     ],
     "frase": "Cuando todo se hace demasiado, podemos hacer espacio.",
-    "head": "Cosas que ahora sabemos de Nil"
+    "head": "Cosas que ahora sabemos de Nil",
+    "situacion": "Cuando se acumulan demasiadas cosas"
    },
    "ca": {
     "title": "Avui tot pesava més",
@@ -205,7 +208,8 @@ window.CUENTOS_CONTENT = {
      "Recuperar-se no vol dir estar a punt per parlar encara."
     ],
     "frase": "Quan tot es fa massa, podem fer espai.",
-    "head": "Coses que ara sabem d'en Nil"
+    "head": "Coses que ara sabem d'en Nil",
+    "situacion": "Quan s'acumulen massa coses"
    }
   },
   "c3": {
@@ -233,7 +237,8 @@ window.CUENTOS_CONTENT = {
      "Y a veces no llega a tiempo, y también está bien."
     ],
     "frase": "No tengo que poder con todo yo solo.",
-    "head": "Pistas que Nil ha ido descubriendo"
+    "head": "Pistas que Nil ha ido descubriendo",
+    "situacion": "Cuando los demás no hacen lo que imaginaba"
    },
    "ca": {
     "title": "No va sortir com jo pensava",
@@ -259,7 +264,8 @@ window.CUENTOS_CONTENT = {
      "I de vegades no hi arriba a temps, i també està bé."
     ],
     "frase": "No he de poder amb tot jo sol.",
-    "head": "Pistes que en Nil ha anat descobrint"
+    "head": "Pistes que en Nil ha anat descobrint",
+    "situacion": "Quan els altres no fan el que imaginava"
    }
   },
   "c4": {
@@ -287,7 +293,8 @@ window.CUENTOS_CONTENT = {
      "Salir despacio no es «hacerse el remolón»."
     ],
     "frase": "Puedo volver. No lo pierdo.",
-    "head": "Pistas que Nil ha ido descubriendo"
+    "head": "Pistas que Nil ha ido descubriendo",
+    "situacion": "Cuando cuesta dejar algo importante"
    },
    "ca": {
     "title": "Una mica més",
@@ -313,7 +320,8 @@ window.CUENTOS_CONTENT = {
      "Sortir a poc a poc no és «fer el ronsa»."
     ],
     "frase": "Puc tornar. No ho perdo.",
-    "head": "Pistes que en Nil ha anat descobrint"
+    "head": "Pistes que en Nil ha anat descobrint",
+    "situacion": "Quan costa deixar una cosa important"
    }
   },
   "c5": {
@@ -339,7 +347,8 @@ window.CUENTOS_CONTENT = {
      "Notar lo que necesita es algo suyo, no un examen."
     ],
     "frase": "A veces, cuando lo noto a tiempo, puedo hacerme un poco de sitio antes.",
-    "head": "Pistas que Nil ha ido descubriendo"
+    "head": "Pistas que Nil ha ido descubriendo",
+    "situacion": "Cuando consigo notar mis pistas antes"
    },
    "ca": {
     "title": "Avui me n'he adonat a temps",
@@ -363,7 +372,8 @@ window.CUENTOS_CONTENT = {
      "Adonar-se del que necessita forma part d'anar-se coneixent, no és un examen."
     ],
     "frase": "De vegades, quan me n'adono a temps, em puc fer una mica de lloc abans.",
-    "head": "Pistes que en Nil ha anat descobrint"
+    "head": "Pistes que en Nil ha anat descobrint",
+    "situacion": "Quan noto les meves pistes abans"
    }
   },
   "c6": {
@@ -391,7 +401,8 @@ window.CUENTOS_CONTENT = {
      "Puede equivocarse y el resto sigue estando."
     ],
     "frase": "Me puedo equivocar, y no se estropea todo.",
-    "head": "Cosas que Nil ya sabe de sí mismo"
+    "head": "Cosas que Nil ya sabe de sí mismo",
+    "situacion": "Cuando algo no me sale como quería"
    },
    "ca": {
     "title": "Una ratlla torta",
@@ -417,7 +428,8 @@ window.CUENTOS_CONTENT = {
      "Es pot equivocar i la resta continua sent-hi."
     ],
     "frase": "Em puc equivocar, i no s'espatlla tot.",
-    "head": "Coses que en Nil ja sap d'ell mateix"
+    "head": "Coses que en Nil ja sap d'ell mateix",
+    "situacion": "Quan alguna cosa no em surt com volia"
    }
   },
   "c7": {
@@ -444,7 +456,8 @@ window.CUENTOS_CONTENT = {
      "Anticipar algunas cosas puede ayudarme a hacer sitio."
     ],
     "frase": "Saber algunas cosas me ayuda. No necesito saberlas todas.",
-    "head": "Cosas que Nil ya sabe de sí mismo"
+    "head": "Cosas que Nil ya sabe de sí mismo",
+    "situacion": "Cuando todavía no sé qué va a pasar"
    },
    "ca": {
     "title": "Abans d'una cosa nova",
@@ -469,7 +482,8 @@ window.CUENTOS_CONTENT = {
      "Anticipar algunes coses em pot ajudar a fer lloc."
     ],
     "frase": "Saber algunes coses m'ajuda. No em cal saber-les totes.",
-    "head": "Coses que en Nil ja sap d'ell mateix"
+    "head": "Coses que en Nil ja sap d'ell mateix",
+    "situacion": "Quan encara no sé què passarà"
    }
   }
  },
@@ -929,6 +943,54 @@ window.CUENTOS_CONTENT = {
      "text": "No cal conèixer aquests models per fer servir el llibre. Els contes estan pensats per funcionar per si mateixos. Per a qui vulgui aprofundir en el marc teòric i les seves aplicacions, APRENS disposa de materials específics."
     }
    ]
+  }
+ },
+ "frame": {
+  "es": {
+   "credits": [
+    "© APRENS · Los cuentos de Nil",
+    "Texto e idea: Cristòfol Villalonga · APRENS",
+    "Ilustraciones: [pendiente]",
+    "Primera edición: 2026",
+    "ISBN: [pendiente]",
+    "aprens.es/nil"
+   ],
+   "ventanaTitle": "La ventana",
+   "ventanaLead": "En cada página hay una pequeña ventana. No dice si Nil está bien o mal: nos ayuda a ver cuánto espacio parece quedarle por dentro para pensar, escuchar y elegir.",
+   "transTitle": "Y ahora… ¿y tú?",
+   "trans": "Durante estos cuentos has ido descubriendo las pistas de Nil. Quizá algunas se parecen a las tuyas. O quizá las tuyas son diferentes. No hay una forma correcta de sentir que queda poco espacio.",
+   "yamiTitle": "¿Y a mí qué me pasa?",
+   "yamiIntro": "Si quieres, puedes explorar qué cosas llenan tu ventana, cómo lo notas en tu cuerpo y qué suele ayudarte. No hay respuestas correctas ni puntuaciones. Lo que escribas se guarda solo en este dispositivo.",
+   "qr1": "Si quieres, puedes explorar la ventana de forma interactiva.",
+   "qr2": "«¿Y a mí qué me pasa?» — versión interactiva para hacer tu propio mapa.",
+   "qr3Title": "Ahora puedes mirar tu propia ventana.",
+   "qr3Sub": "Escanea el código para continuar en APRENS · Los cuentos de Nil.",
+   "qrFallback": "Los cuentos de Nil · APRENS — aprens.es/nil",
+   "prologueHead": "Antes de empezar a leer",
+   "appendixHead": "Para comprender lo que hay detrás"
+  },
+  "ca": {
+   "credits": [
+    "© APRENS · Els contes d'en Nil",
+    "Text i idea: Cristòfol Villalonga · APRENS",
+    "Il·lustracions: [pendent]",
+    "Primera edició: 2026",
+    "ISBN: [pendent]",
+    "aprens.es/nil"
+   ],
+   "ventanaTitle": "La finestra",
+   "ventanaLead": "A cada pàgina hi ha una petita finestra. No diu si en Nil està bé o malament: ens ajuda a veure quant espai sembla que li queda per dins per pensar, escoltar i triar.",
+   "transTitle": "I ara… i tu?",
+   "trans": "Durant aquests contes has anat descobrint les pistes d'en Nil. Potser algunes s'assemblen a les teves. O potser les teves són diferents. No hi ha una manera correcta de sentir que queda poc espai.",
+   "yamiTitle": "I a mi què em passa?",
+   "yamiIntro": "Si vols, pots explorar quines coses omplen la teva finestra, com ho notes al cos i què acostuma a ajudar-te. No hi ha respostes correctes ni puntuacions. El que escriguis es desa només en aquest dispositiu.",
+   "qr1": "Si vols, pots explorar la finestra de manera interactiva.",
+   "qr2": "«I a mi què em passa?» — versió interactiva per fer el teu propi mapa.",
+   "qr3Title": "Ara pots mirar la teva pròpia finestra.",
+   "qr3Sub": "Escaneja el codi per continuar a APRENS · Els contes d'en Nil.",
+   "qrFallback": "Els contes d'en Nil · APRENS — aprens.es/nil",
+   "prologueHead": "Abans de començar a llegir",
+   "appendixHead": "Per comprendre el que hi ha darrere"
   }
  }
 };
