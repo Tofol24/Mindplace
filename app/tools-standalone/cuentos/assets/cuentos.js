@@ -16,7 +16,7 @@ function ventana(state,size){
 }
 
 /* Datos: se leen de la FUENTE CANÓNICA content.js (ES + CA). */
-var C=window.CUENTOS_CONTENT, LANG=(window.CUENTOS_LANG||"es"), UI=C.ui[LANG];
+var C=window.CUENTOS_CONTENT, LANG=window.CUENTOS_LANG||(function(){try{return localStorage.getItem("aprens_cuentos_lang");}catch(e){return null;}}())||"es"; if(!C.ui[LANG])LANG="es"; var UI=C.ui[LANG];
 var BOOKS={};
 C.order.forEach(function(id){var b=C.books[id][LANG];BOOKS[id]={title:b.title,sub:UI.sub,story:b.story,ideas:b.ideas,frase:b.frase,head:b.head};});
 window.CUENTOS_BOOKS=BOOKS;
@@ -66,6 +66,9 @@ window.initReader=function(id){
 
   // chrome
   var bar=document.getElementById("bar"), count=document.getElementById("count"), prevBtn=document.getElementById("prevBtn");
+  // rótulos e idioma según la selección (ES/CA)
+  try{document.documentElement.lang=LANG; document.title=B.title;
+      var homeA=bar.querySelector(".home"); if(homeA)homeA.textContent=UI.home; prevBtn.textContent=UI.back;}catch(e){}
   var idx=0; try{var sv2=parseInt(localStorage.getItem(POS),10); if(sv2>=0&&sv2<els.length)idx=sv2;}catch(e){}
   try{if(localStorage.getItem(CALM)==="1")stage.classList.add("calm");}catch(e){}
   function updateChrome(){
@@ -85,8 +88,8 @@ window.initReader=function(id){
 
   function toggleChrome(){ if(count.classList.contains("hide"))wake(); else {count.classList.add("hide");if(t)clearTimeout(t);} }
   prevBtn.onclick=function(){ show(idx-1); };
-  document.getElementById("calmBtn").onclick=function(){ var on=stage.classList.toggle("calm"); this.textContent=on?"Salir del modo":"Modo tranquilo"; try{localStorage.setItem(CALM,on?"1":"0");}catch(e){} wake(); };
-  document.getElementById("calmBtn").textContent=stage.classList.contains("calm")?"Salir del modo":"Modo tranquilo";
+  document.getElementById("calmBtn").onclick=function(){ var on=stage.classList.toggle("calm"); this.textContent=on?UI.calmOff:UI.calmOn; try{localStorage.setItem(CALM,on?"1":"0");}catch(e){} wake(); };
+  document.getElementById("calmBtn").textContent=stage.classList.contains("calm")?UI.calmOff:UI.calmOn;
   document.addEventListener("keydown",function(e){ if(e.key==="ArrowRight")show(idx+1); else if(e.key==="ArrowLeft")show(idx-1); else wake(); });
 
   // navegación por posición del clic (deja pasar botones/enlaces/inputs)
