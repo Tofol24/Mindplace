@@ -3,8 +3,18 @@
 <meta name="robots" content="noindex,nofollow"><title>Los cuentos de Nil</title>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/reader.css">
+<style>
+.langsel{display:flex;gap:0;justify-content:flex-end;margin:0 0 6px}
+.langsel button{font-family:var(--sans,system-ui);font-weight:700;font-size:12px;letter-spacing:.06em;
+  border:1px solid var(--line,#e3decf);background:var(--card,#fff);color:var(--muted,#8a8f86);
+  padding:6px 12px;cursor:pointer}
+.langsel button:first-child{border-radius:999px 0 0 999px}
+.langsel button:last-child{border-radius:0 999px 999px 0;border-left:0}
+.langsel button.on{background:var(--sage,#6f8f83);color:#fff;border-color:var(--sage,#6f8f83)}
+</style>
 </head><body>
 <div class="ix">
+  <div class="langsel" id="langsel"></div>
   <div class="kick" id="kick"></div>
   <h1 id="title"></h1>
   <p class="lead" id="lead"></p>
@@ -16,9 +26,20 @@
 <script src="assets/cuentos.js"></script>
 <script>
 (function(){
-  var LANG=window.CUENTOS_LANG||"es", C=window.CUENTOS_CONTENT, UI=C.ui[LANG];
+  var LKEY="aprens_cuentos_lang";
+  function getLang(){try{var l=localStorage.getItem(LKEY);if(l==="ca"||l==="es")return l;}catch(e){}return "es";}
+  function setLang(l){try{localStorage.setItem(LKEY,l);}catch(e){}location.reload();}
+  var LANG=getLang(), C=window.CUENTOS_CONTENT, UI=C.ui[LANG];
   document.documentElement.lang=LANG;
   document.title=UI.hubTitle;
+  // selector de idioma
+  var ls=document.getElementById("langsel");
+  [["es","ES"],["ca","CA"]].forEach(function(o){
+    var b=document.createElement("button"); b.type="button"; b.textContent=o[1];
+    if(o[0]===LANG)b.className="on"; b.setAttribute("aria-label",o[0]==="es"?"Español":"Català");
+    b.onclick=function(){ if(o[0]!==LANG)setLang(o[0]); };
+    ls.appendChild(b);
+  });
   document.getElementById("kick").textContent=UI.hubKick;
   document.getElementById("title").textContent=UI.hubTitle;
   document.getElementById("lead").textContent=UI.hubLead;
