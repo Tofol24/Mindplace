@@ -121,7 +121,24 @@ window.CUENTOS_CONTENT = {
     ],
     "frase": "No tengo que poder con todo yo solo.",
     "head": "Cosas que ahora sabemos de Nil",
-    "situacion": "Cuando algo cambia"
+    "situacion": "Cuando algo cambia",
+    "states": [
+     "verde",
+     "verde",
+     "amarillo",
+     "amarillo",
+     "naranja",
+     "naranja",
+     "naranja",
+     "rojo",
+     "rojo",
+     "rojo",
+     "rojo",
+     "azul",
+     "azul",
+     "verde",
+     "verde"
+    ]
    },
    "ca": {
     "title": "No havia de passar així",
@@ -149,7 +166,24 @@ window.CUENTOS_CONTENT = {
     ],
     "frase": "No he de poder amb tot jo sol.",
     "head": "Coses que ara sabem d'en Nil",
-    "situacion": "Quan alguna cosa canvia"
+    "situacion": "Quan alguna cosa canvia",
+    "states": [
+     "verde",
+     "verde",
+     "amarillo",
+     "amarillo",
+     "naranja",
+     "naranja",
+     "naranja",
+     "rojo",
+     "rojo",
+     "rojo",
+     "rojo",
+     "azul",
+     "azul",
+     "verde",
+     "verde"
+    ]
    }
   },
   "c2": {

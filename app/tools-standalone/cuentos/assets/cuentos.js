@@ -6,8 +6,9 @@ function pad(n){return (n<10?"0":"")+n;}
 /* ventana de capacidad (SVG) — misma gramática que la herramienta 🌊 */
 function ventana(state,size){
   var C={verde:{light:'#6F8F83',rows:1,perRow:1,frame:'#4a4a42',mut:0},amarillo:{light:'#C6A66B',rows:1,perRow:3,frame:'#4a4a42',mut:0},naranja:{light:'#CE8A56',rows:2,perRow:3,frame:'#464038',mut:.05},rojo:{light:'#B85C52',rows:3,perRow:4,frame:'#3a332f',mut:.16},azul:{light:'#7895A8',rows:1,perRow:3,frame:'#45474a',mut:.10,door:true}}[state];
+  var uid=(ventana._n=(ventana._n||0)+1),gid="g"+state+uid,cid="c"+state+uid;
   var inX=20,inW=160,floor=172,top=34;
-  var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g'+state+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C.light+'" stop-opacity="0.95"/><stop offset="1" stop-color="'+C.light+'" stop-opacity="0.30"/></linearGradient><clipPath id="c'+state+'"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" rx="8"/></clipPath></defs><rect x="8" y="8" width="184" height="184" rx="18" fill="#efe9dc" stroke="'+C.frame+'" stroke-width="6"/><g clip-path="url(#c'+state+')"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" fill="url(#g'+state+')"/>';
+  var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C.light+'" stop-opacity="0.95"/><stop offset="1" stop-color="'+C.light+'" stop-opacity="0.30"/></linearGradient><clipPath id="'+cid+'"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" rx="8"/></clipPath></defs><rect x="8" y="8" width="184" height="184" rx="18" fill="#efe9dc" stroke="'+C.frame+'" stroke-width="6"/><g clip-path="url(#'+cid+')"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" fill="url(#'+gid+')"/>';
   if(C.mut)s+='<rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" fill="#28312F" opacity="'+C.mut+'"/>';
   s+='<line x1="'+inX+'" y1="'+floor+'" x2="'+(inX+inW)+'" y2="'+floor+'" stroke="#28312F" stroke-opacity="0.28" stroke-width="2"/>';
   var r=15;for(var row=0;row<C.rows;row++){var cy=floor-r-row*(2*r+4)-2;for(var i=0;i<C.perRow;i++){var sp=(C.perRow>1)?(inW-2*r-8):0;var cx=(C.perRow===1)?(inX+inW/2):(inX+r+6+i*(sp/(C.perRow-1)));s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#28312F" opacity="0.16"/><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#28312F" stroke-opacity="0.34" stroke-width="2"/>';}}
@@ -18,7 +19,7 @@ function ventana(state,size){
 /* Datos: se leen de la FUENTE CANÓNICA content.js (ES + CA). */
 var C=window.CUENTOS_CONTENT, LANG=window.CUENTOS_LANG||(function(){try{return localStorage.getItem("aprens_cuentos_lang");}catch(e){return null;}}())||"es"; if(!C.ui[LANG])LANG="es"; var UI=C.ui[LANG];
 var BOOKS={};
-C.order.forEach(function(id){var b=C.books[id][LANG];BOOKS[id]={title:b.title,sub:UI.sub,story:b.story,ideas:b.ideas,frase:b.frase,head:b.head};});
+C.order.forEach(function(id){var b=C.books[id][LANG];BOOKS[id]={title:b.title,sub:UI.sub,story:b.story,ideas:b.ideas,frase:b.frase,head:b.head,states:b.states};});
 window.CUENTOS_BOOKS=BOOKS;
 
 /* -------- cache warming (índice) -------- */
@@ -39,7 +40,7 @@ window.initReader=function(id){
 
   // páginas
   var pages=[{k:"cover"},{k:"intro"}];
-  for(var i=0;i<n;i++)pages.push({k:"story",t:B.story[i],img:img(i+1)});
+  for(var i=0;i<n;i++)pages.push({k:"story",t:B.story[i],img:img(i+1),state:(B.states&&B.states[i])||null});
   pages.push({k:"closing",img:img(n+1)});
 
   var vp=document.getElementById("viewport"), els=[];
@@ -59,7 +60,8 @@ window.initReader=function(id){
         '<div class="cbox"><h3>'+(B.head||"Cosas que ahora sabemos de Nil")+'</h3><ul>'+B.ideas.map(function(x){return '<li>'+x+'</li>';}).join("")+
         '</ul><div class="frase">'+B.frase+'</div></div></div>';
     } else {
-      d.innerHTML='<div class="rd-art"><img src="'+pg.img+'" alt=""></div><div class="rd-band"><p>'+pg.t+'</p></div>';
+      var win=pg.state?'<div class="rd-win" aria-hidden="true">'+ventana(pg.state,120)+'</div>':'';
+      d.innerHTML='<div class="rd-art"><img src="'+pg.img+'" alt=""></div><div class="rd-band'+(pg.state?' has-win':'')+'">'+win+'<p>'+pg.t+'</p></div>';
     }
     vp.appendChild(d); els.push(d);
   });
