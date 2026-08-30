@@ -21,6 +21,11 @@ body{background:var(--stage);font-family:var(--sans);color:var(--ink);-webkit-fo
   display:flex;align-items:center;padding:clamp(20px,5vw,40px)}
 .rd-band p{font-family:var(--serif);font-weight:400;font-size:clamp(20px,5.6vw,30px);line-height:1.5;
   letter-spacing:.1px;white-space:pre-line;text-wrap:pretty}
+/* Ventana de capacidad del estado, junto al texto (el nicho de la ilustración
+   sigue siendo la señal principal; esto es una referencia limpia y discreta). */
+.rd-band.has-win{gap:clamp(14px,4.5vw,30px)}
+.rd-win{flex:0 0 auto;line-height:0}
+.rd-win svg{width:clamp(60px,17vw,104px);height:auto;display:block}
 /* chrome */
 .rd-bar{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;
   gap:10px;padding:12px 14px;background:linear-gradient(#00000055,#0000);pointer-events:none}
