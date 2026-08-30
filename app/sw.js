@@ -6,7 +6,7 @@ const CACHE = "aprens-v128";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
-const CUENTOS = "aprens-cuentos-v1";
+const CUENTOS = "aprens-cuentos-v2";
 const SHELL = [
   "./",
   "./index.html",
