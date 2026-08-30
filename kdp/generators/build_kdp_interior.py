@@ -211,10 +211,10 @@ def build(lang):
         doc.begin(); cx=PAGE/2
         c.setFillColor(MUT); c.setFont("NuB",12)
         c.drawCentredString(cx,PAGE*0.72,f"{ui['hubTitle'].upper()}   ·   {ui['cuentoLabel'].upper()} {C['order'].index(cid)+1}")
-        cts=ps("cvt","FrSB",30,36,INK,align=TA_CENTER); cw=PAGE*0.78
-        pw,ph=para(b["title"],cts).wrap(cw,5*inch); para(b["title"],cts).drawOn(c,(PAGE-cw)/2,PAGE*0.60-ph)
+        cts=ps("cvt","FrSB",30,36,INK,align=TA_CENTER); cw=PAGE*0.78; cxl=(PAGE-cw)/2
+        pt=para(b["title"],cts); pw,ph=pt.wrap(cw,5*inch); pt.drawOn(c,cxl,PAGE*0.60-ph)
         css=ps("cvs","Nu",13,17,MUT,align=TA_CENTER)
-        para(b["situacion"],css).drawOn(c,(PAGE-cw)/2,PAGE*0.60-ph-26)
+        psu=para(b["situacion"],css); _,sh=psu.wrap(cw,2*inch); psu.drawOn(c,cxl,PAGE*0.60-ph-14-sh)
         lw=3.2*inch; ly=PAGE*0.40; lx0=cx-lw/2
         c.setStrokeColor(LINE); c.setLineWidth(2); c.setLineCap(1); c.line(lx0,ly,lx0+lw,ly)
         cols=[SAGE,OCRE,CORAL,ROJO,AZUL]
