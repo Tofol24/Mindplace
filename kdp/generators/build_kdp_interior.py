@@ -203,11 +203,25 @@ def build(lang):
         doc.end()
     for cid in C["order"]:
         b=C["books"][cid][lang]; story=b["story"]; last=len(story)+1
-        # portada de cuento: ilustracion a SANGRE completa + banda de titulo
-        L,R=doc.begin(); art(c,0,0,PAGE,PAGE,f"{cid}-p01")
-        c.setFillColor(HexColor("#00000055")); c.rect(0,0,PAGE,PAGE*0.30,fill=1,stroke=0)
-        c.setFillColor(HexColor("#FFFFFF")); c.setFont("FrSB",30); c.drawString(SAFE,PAGE*0.16,b["title"])
-        c.setFont("Nu",13); c.setFillColor(HexColor("#FFFFFFDD")); c.drawString(SAFE,PAGE*0.16-24,b["situacion"]); doc.end()
+        # portada interior del cuento: APERTURA EDITORIAL PROPIA (sin escena narrativa).
+        # No consume ni repite ninguna ilustracion p01-p15: titulo + identificacion +
+        # motivo discreto del universo de Nil (linea de metro con 5 estaciones = colores
+        # de la ventana de capacidad, verde->azul). Asi las 99 ilustraciones quedan
+        # reservadas integramente para las escenas narrativas.
+        doc.begin(); cx=PAGE/2
+        c.setFillColor(MUT); c.setFont("NuB",12)
+        c.drawCentredString(cx,PAGE*0.72,f"{ui['hubTitle'].upper()}   ·   {ui['cuentoLabel'].upper()} {C['order'].index(cid)+1}")
+        cts=ps("cvt","FrSB",30,36,INK,align=TA_CENTER); cw=PAGE*0.78
+        pw,ph=para(b["title"],cts).wrap(cw,5*inch); para(b["title"],cts).drawOn(c,(PAGE-cw)/2,PAGE*0.60-ph)
+        css=ps("cvs","Nu",13,17,MUT,align=TA_CENTER)
+        para(b["situacion"],css).drawOn(c,(PAGE-cw)/2,PAGE*0.60-ph-26)
+        lw=3.2*inch; ly=PAGE*0.40; lx0=cx-lw/2
+        c.setStrokeColor(LINE); c.setLineWidth(2); c.setLineCap(1); c.line(lx0,ly,lx0+lw,ly)
+        cols=[SAGE,OCRE,CORAL,ROJO,AZUL]
+        for k,col in enumerate(cols):
+            sx=lx0+lw*k/(len(cols)-1)
+            c.setFillColor(PAPER); c.setStrokeColor(col); c.setLineWidth(2.6); c.circle(sx,ly,5.6,fill=1,stroke=1)
+        doc.end()
         # escenas: cuadrado adaptativo + texto continuacion
         for i,txt in enumerate(story):
             compose(f"{cid}-p{str(i+1).zfill(2)}", [(txt,S["story"],0)], STORY_MIN)
