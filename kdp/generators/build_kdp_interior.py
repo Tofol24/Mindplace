@@ -172,25 +172,62 @@ def build(lang):
         x=L+i*(sw+10); c.setFillColor(STATE_COL.get(k,SAGE)); c.roundRect(x,sy,sw,sw*0.7,6,fill=1,stroke=0)
         c.setFillColor(INK); c.setFont("Nu",8); c.drawCentredString(x+sw/2,sy-12,lab)
     qr_box(c,PAGE/2,BLEED+1.15*inch,1.1*inch,F["qr1"],F["qrFallback"]); doc.end()
-    # 5) Cuentos
+    # 5) Cuentos — SISTEMA EDITORIAL V1 (congelado):
+    #    · La ilustración conserva SIEMPRE su 1:1 completo (nunca crop).
+    #    · 6,9" es el tamaño máximo; se reduce SOLO lo que el texto necesite.
+    #    · El texto mantiene cuerpo/interlineado/márgenes; nunca se encoge la tipografía.
+    #    · La zona de texto continúa la ilustración: mismo papel, sin caja ni pie de foto.
+    #    · Mínimo razonable con AVISO: por debajo es problema de composición, no de escala.
+    AMAX=6.9*inch; ATOP=BLEED+0.5*inch; ABOT=BLEED+0.55*inch; AGAP=0.34*inch
+    STORY_MIN=5.0*inch; CLOSE_MIN=3.6*inch
+    hstyle=ps("ch","NuB",11,15,SAGE); fstyle=ps("cf","FrSB",15,20,AZUL)
+    def th(txt,style,w): return para(txt,style).wrap(w,20_000)[1]
+    def fit_side(blocks,amin):
+        # blocks: [(txt,style,gap)] ; devuelve lado del cuadrado (<=AMAX) que deja
+        # respirar todo el texto dentro de [ATOP..ABOT]; avisa si baja del mínimo.
+        avail=PAGE-ATOP-ABOT; side=AMAX
+        while side>=amin:
+            tot=sum(th(t,s,side)+g for t,s,g in blocks)
+            if side+AGAP+tot<=avail: return side,False
+            side-=0.05*inch
+        return amin,True
+    def compose(imgid, blocks, amin):
+        L,R=doc.begin()
+        side,warn=fit_side(blocks,amin)
+        if warn: print(f"  AVISO {imgid}: el texto no respira a min {amin/inch:.2f}\" (revisar composicion)")
+        ax=(PAGE-side)/2; ay=PAGE-ATOP-side
+        art(c,ax,ay,side,side,imgid)                 # cuadrado 1:1 completo, centrado
+        yy=ay-AGAP                                   # texto como continuacion (sin caja)
+        for t,s,g in blocks:
+            used=dpar(c,t,s,ax,yy,side); yy-=used+g
+        doc.end()
     for cid in C["order"]:
         b=C["books"][cid][lang]; story=b["story"]; last=len(story)+1
-        L,R=doc.begin(); art(c,BLEED,BLEED,PAGE-2*BLEED,PAGE-2*BLEED,f"{cid}-p01")
-        c.setFillColor(HexColor("#00000055")); c.rect(0,0,PAGE,PAGE*0.30,fill=1,stroke=0)
-        c.setFillColor(HexColor("#FFFFFF")); c.setFont("FrSB",30); c.drawString(SAFE,PAGE*0.16,b["title"])
-        c.setFont("Nu",13); c.setFillColor(HexColor("#FFFFFFDD")); c.drawString(SAFE,PAGE*0.16-24,b["situacion"]); doc.end()
+        # portada interior del cuento: APERTURA EDITORIAL PROPIA (sin escena narrativa).
+        # No consume ni repite ninguna ilustracion p01-p15: titulo + identificacion +
+        # motivo discreto del universo de Nil (linea de metro con 5 estaciones = colores
+        # de la ventana de capacidad, verde->azul). Asi las 99 ilustraciones quedan
+        # reservadas integramente para las escenas narrativas.
+        doc.begin(); cx=PAGE/2
+        c.setFillColor(MUT); c.setFont("NuB",12)
+        c.drawCentredString(cx,PAGE*0.72,f"{ui['hubTitle'].upper()}   ·   {ui['cuentoLabel'].upper()} {C['order'].index(cid)+1}")
+        cts=ps("cvt","FrSB",30,36,INK,align=TA_CENTER); cw=PAGE*0.78; cxl=(PAGE-cw)/2
+        pt=para(b["title"],cts); pw,ph=pt.wrap(cw,5*inch); pt.drawOn(c,cxl,PAGE*0.60-ph)
+        css=ps("cvs","Nu",13,17,MUT,align=TA_CENTER)
+        psu=para(b["situacion"],css); _,sh=psu.wrap(cw,2*inch); psu.drawOn(c,cxl,PAGE*0.60-ph-14-sh)
+        lw=3.2*inch; ly=PAGE*0.40; lx0=cx-lw/2
+        c.setStrokeColor(LINE); c.setLineWidth(2); c.setLineCap(1); c.line(lx0,ly,lx0+lw,ly)
+        cols=[SAGE,OCRE,CORAL,ROJO,AZUL]
+        for k,col in enumerate(cols):
+            sx=lx0+lw*k/(len(cols)-1)
+            c.setFillColor(PAPER); c.setStrokeColor(col); c.setLineWidth(2.6); c.circle(sx,ly,5.6,fill=1,stroke=1)
+        doc.end()
+        # escenas: cuadrado adaptativo + texto continuacion
         for i,txt in enumerate(story):
-            L,R=doc.begin(); ah=PAGE*0.60
-            art(c,BLEED,PAGE-BLEED-ah,PAGE-2*BLEED,ah,f"{cid}-p{str(i+1).zfill(2)}")
-            c.setFillColor(HexColor("#FBFAF6")); c.rect(0,0,PAGE,PAGE-BLEED-ah,fill=1,stroke=0)
-            dpar(c,txt,S["story"],L,PAGE-BLEED-ah-24,R-L); doc.end()
-        L,R=doc.begin(); ah=PAGE*0.42
-        art(c,BLEED,PAGE-BLEED-ah,PAGE-2*BLEED,ah,f"{cid}-p{str(last).zfill(2)}")
-        yy=PAGE-BLEED-ah-30
-        c.setFillColor(SAGE); c.setFont("NuB",11); c.drawString(L,yy,b["head"].upper()); yy-=22
-        for idea in b["ideas"]:
-            ph=dpar(c,"•  "+idea,S["idea"],L,yy,R-L); yy-=ph+6
-        yy-=6; dpar(c,b["frase"],ps("f","FrSB",15,20,AZUL),L,yy,R-L); doc.end()
+            compose(f"{cid}-p{str(i+1).zfill(2)}", [(txt,S["story"],0)], STORY_MIN)
+        # cierre: cuadrado adaptativo + recap (head + ideas + frase) como continuacion
+        recap=[(b["head"].upper(),hstyle,16)]+[("•  "+it,S["idea"],8) for it in b["ideas"]]+[(b["frase"],fstyle,0)]
+        compose(f"{cid}-p{str(last).zfill(2)}", recap, CLOSE_MIN)
     # 6) Transición
     L,R=doc.begin(); c.setFillColor(INK); c.setFont("FrSB",22); c.drawString(L,PAGE*0.6,F["transTitle"])
     dpar(c,F["trans"],S["p"],L,PAGE*0.6-26,R-L); doc.end()
