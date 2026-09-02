@@ -28,3 +28,10 @@
   Cache-Control: public, max-age=0, must-revalidate
 /formentor-flow/index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# Cuestionario clínico individual, cifrado (enlace privado, no listado).
+# El contenido va cifrado dentro del propio HTML: sin el código de acceso no
+# hay nada legible. Estas cabeceras evitan además que se indexe o se cachee.
+/tools-standalone/c-8fc7c69d856f.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: private, max-age=0, must-revalidate
