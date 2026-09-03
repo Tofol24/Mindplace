@@ -30,5 +30,6 @@ listo en cada herramienta; mientras no exista, se muestra un degradado cálido).
 | `mapa-interno.webp` | Mapa interno | Torso (cuello–pecho–vientre) en penumbra cálida, respiración visible. Sensación de "mapa" del cuerpo; el rostro puede no aparecer. |
 | `protocolo-ais.webp` | Protocolo AIS (audio) | Persona con auriculares y ojos cerrados escuchando, cabeza algo inclinada, luz suave. El canal auditivo. |
 | `herramienta-diaria.webp` | Herramienta diaria | Ritual sereno de mañana: respirar junto a una ventana con luz dorada, una taza o una planta cerca. Práctica diaria. |
+| `evaluacion-trauma.webp` | Evaluación de trauma | Persona sentada junto a una ventana en penumbra cálida, girada hacia la luz; de perfil o con el rostro fuera de encuadre. La idea es **mirar de frente algo difícil sin quedar aplastado por ello**: recogimiento y dignidad, no angustia. Terracota quemada y oliva, sombra a la izquierda y luz entrando por la derecha. **Nada de imaginería de violencia, accidentes, hospitales, llanto ni manos en la cara.** *(hueco ya cableado)* |
 
 *Honestidad emocional ya tiene sus fotos (es la referencia del estilo).*
