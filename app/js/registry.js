@@ -62,6 +62,10 @@ window.APRENS_TOOLS = [
     desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
     migrada:true, iframe:"tools-standalone/screening-tec.html" },
 
+  { id:"evaluacion_trauma", emoji:"🧭", nombre:"Evaluación de trauma",
+    desc:"Cribado y seguimiento de estrés postraumático (LEC-5 + PCL-5): el paciente responde desde el móvil y devuelve un código; el profesional obtiene el informe con criterios DSM-5 y propuesta de plan.",
+    migrada:true, iframe:"tools-standalone/evaluacion-trauma.html" },
+
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",
     desc:"El cuerpo como mapa: cuello, pecho y barriga (interocepción AIS).",
     migrada:true, iframe:"tools-standalone/mapa-interno.html" },
