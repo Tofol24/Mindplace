@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Evaluación de trauma (LEC-5 + PCL-5) · APRENS Psicologia</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --azul:#566a70;--azulLt:#dde3e5;--verde:#5c7d54;--verdeLt:#e0ead6;
+    --naranja:#C2704F;--rojo:#b0432f;--gris:#6f675c;--oro:#a7802f;--lila:#8a5a72;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  body{font-family:var(--sans);background:linear-gradient(170deg,#EDF0F0 0%,#F4EEE1 100%);color:#2b2a30;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  ::selection{background:#566a70;color:#fff;}
+  .wrap{max-width:880px;margin:0 auto;padding:26px 18px 80px;}
+  .phero{position:relative;min-height:30vh;max-height:320px;display:flex;align-items:flex-end;overflow:hidden;background:linear-gradient(150deg,#6d6a78 0%,#5b6470 46%,#5f6350 100%);}
+  .phero-copy{position:relative;z-index:2;color:#F6ECDD;padding:0 20px 22px;max-width:880px;margin:0 auto;width:100%;}
+  .phero .eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:#f2d9b8;margin:0 0 10px;font-weight:600;}
+  .phero h1{font-family:var(--serif);font-size:clamp(26px,6.6vw,38px);line-height:1.08;color:#fff;font-weight:600;letter-spacing:-.01em;margin:0;}
+  .phero-tag{margin-top:12px;font-family:var(--serif);font-style:italic;font-size:clamp(14px,2.4vw,18px);color:#F6ECDD;max-width:28em;}
+
+  .btn{border:none;border-radius:30px;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;}
+  .bp{background:var(--azul);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(74,63,48,.28);}
+  .bpg{background:var(--verde);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(46,125,94,.25);}
+  .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 22px;font-size:13px;}
+  .bs:hover{background:var(--azulLt);}
+  .bsm{padding:9px 17px;font-size:13px;}
+  .bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+  .bcopy{background:#fff;color:var(--gris);border:2px solid #E7DECB;padding:12px 20px;font-size:14px;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+
+  .card{background:#fff;border-radius:16px;padding:24px;border:1px solid #E7DECB;box-shadow:0 12px 30px -24px rgba(43,40,35,.4);margin-bottom:18px;}
+  .ctit{font-weight:600;font-size:12px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px;}
+  .hero{background:#fff;border-radius:16px;padding:28px 26px 24px;border:1px solid #E7DECB;box-shadow:0 12px 30px -24px rgba(43,40,35,.4);margin-bottom:20px;border-top:4px solid var(--azul);}
+  .htitulo{font-family:var(--serif);font-size:24px;color:var(--azul);margin-bottom:8px;}
+  .hsubt{color:var(--gris);font-size:14px;line-height:1.7;}
+  .frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--azul);padding:12px 16px;line-height:1.55;margin-top:14px;}
+  .aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12.5px;color:#3d4a4e;line-height:1.65;margin-bottom:18px;}
+  .aviso.warn{background:#FBEDE6;border-left-color:var(--naranja);color:#7a3f27;}
+  .aviso.ok{background:var(--verdeLt);border-left-color:var(--verde);color:#2f4a2b;}
+
+  .selector{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;}
+  .mcard{display:block;width:100%;background:#fff;border-radius:16px;padding:28px 22px;border:3px solid #E7DECB;cursor:pointer;transition:all .2s;text-align:center;font-family:inherit;-webkit-appearance:none;}
+  @media(hover:hover){.mcard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,63,48,.14);}.mcard.cli:hover{border-color:var(--azul);}.mcard.px:hover{border-color:var(--verde);}}
+  .mcard:active{transform:scale(.98);}
+  .mico{font-size:38px;margin-bottom:10px;}
+  .mtit{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:8px;}
+  .mdesc{font-size:13px;color:var(--gris);line-height:1.6;}
+
+  .qbox{background:#fff;border-radius:16px;padding:26px;border:1px solid #E7DECB;box-shadow:0 12px 30px -24px rgba(43,40,35,.4);}
+  .qprog{height:6px;background:#E7DECB;border-radius:3px;margin-bottom:20px;overflow:hidden;}
+  .qprog-f{height:100%;background:var(--azul);border-radius:3px;transition:width .4s;}
+  .qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;}
+  .qbadge{padding:4px 12px;border-radius:20px;font-size:11.5px;font-weight:600;background:var(--azulLt);color:var(--azul);}
+  .qnum{color:var(--gris);font-size:13px;white-space:nowrap;}
+  .qtxt{font-size:17px;line-height:1.6;margin-bottom:22px;}
+  .qlabels{display:flex;justify-content:space-between;font-size:11px;color:var(--gris);padding:0 2px;margin-bottom:8px;}
+  .opts{display:flex;flex-direction:column;gap:8px;}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid #E7DECB;border-radius:12px;padding:13px 15px;font-size:14.5px;font-family:inherit;color:#2b2a30;cursor:pointer;transition:all .14s;line-height:1.45;}
+  @media(hover:hover){.opt:hover{border-color:var(--azul);background:#FAFCFC;}}
+  .opt:active{transform:scale(.99);}
+  .opt.sel{border-color:var(--azul);background:var(--azulLt);font-weight:600;}
+  .opt-n{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#F0EDE4;color:var(--gris);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+  .opt.sel .opt-n{background:var(--azul);color:#fff;}
+  .qnav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;}
+
+  .lecrow{border:2px solid #E7DECB;border-radius:12px;padding:13px 14px;margin-bottom:9px;transition:all .16s;}
+  .lecrow.on{border-color:var(--azul);background:#FAFCFC;}
+  .lecq{font-size:14.5px;line-height:1.5;margin-bottom:9px;}
+  .lecq b{color:var(--azul);font-weight:700;margin-right:5px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:2px solid #E7DECB;background:#fff;border-radius:20px;padding:6px 12px;font-size:12px;font-family:inherit;color:var(--gris);cursor:pointer;transition:all .14s;}
+  .chip.on{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600;}
+  .chip.no.on{background:var(--gris);border-color:var(--gris);}
+
+  .ipt{display:block;width:100%;border:2px solid #E7DECB;border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:16px;outline:none;margin-bottom:12px;-webkit-appearance:none;background:#fff;color:#111;}
+  .ipt:focus{border-color:var(--azul);}
+  textarea.ipt{min-height:96px;resize:vertical;line-height:1.55;}
+  .lbl{font-size:13px;font-weight:600;color:#3a3833;margin-bottom:6px;display:block;}
+  .hint{font-size:12px;color:var(--gris);line-height:1.5;margin:-6px 0 12px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .cbox{background:#F7F4EC;border:2px solid #E7DECB;border-radius:12px;padding:16px;font-size:13px;line-height:1.7;color:#333;max-height:320px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:16px;}
+  .codebox{background:var(--azul);color:#fff;border-radius:14px;padding:22px 18px;text-align:center;margin-bottom:16px;}
+  .codebox .cl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;opacity:.8;margin-bottom:10px;}
+  .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(15px,4.4vw,21px);font-weight:700;letter-spacing:.12em;line-height:1.9;word-break:break-all;-webkit-user-select:all;user-select:all;}
+  .acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+
+  .sc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+  .sc{background:#fff;border:1px solid #E7DECB;border-radius:13px;padding:16px 14px;}
+  .sc-n{font-size:11px;color:var(--gris);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+  .sc-v{font-family:var(--serif);font-size:27px;font-weight:700;color:var(--azul);line-height:1.2;margin-top:3px;}
+  .sc-d{font-size:11.5px;color:var(--gris);margin-top:2px;}
+  .bar{height:7px;background:#EDE7DA;border-radius:4px;margin-top:9px;overflow:hidden;}
+  .bar-f{height:100%;border-radius:4px;transition:width .5s;}
+
+  .crit{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border-radius:11px;border:2px solid #E7DECB;margin-bottom:7px;background:#fff;}
+  .crit.si{border-color:var(--naranja);background:#FDF6F2;}
+  .crit.no{opacity:.72;}
+  .crit-ic{font-size:17px;flex-shrink:0;line-height:1.3;}
+  .crit-t{font-size:13.5px;line-height:1.5;flex:1;}
+  .crit-t b{display:block;font-size:12px;color:var(--azul);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+  .verdict{border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;color:#fff;}
+  .verdict .vt{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:6px;}
+  .verdict .vs{font-size:13px;line-height:1.6;opacity:.94;}
+  .flag{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.55;padding:9px 0;border-bottom:1px solid #F0EDE4;}
+  .flag:last-child{border-bottom:none;}
+  .pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;margin:3px 3px 3px 0;background:var(--azulLt);color:var(--azul);}
+  .hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border:2px solid #E7DECB;border-radius:11px;margin-bottom:7px;background:#fff;}
+  .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal-bx{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+  .foot{text-align:center;font-size:11.5px;color:var(--gris);line-height:1.7;margin-top:26px;}
+  .sos{background:#FBEDE6;border:2px solid #E8C4B0;border-radius:12px;padding:14px 16px;font-size:13px;line-height:1.65;color:#7a3f27;margin-bottom:16px;}
+  @media(max-width:600px){.selector,.row2,.sc-grid{grid-template-columns:1fr;}}
+  @media print{.btn,.acc,.qnav{display:none!important;}body{background:#fff;}}
+</style>
+</head>
+<body>
+<section class="phero">
+  <div class="phero-copy">
+    <p class="eyebrow">APRENS · Evaluación clínica</p>
+    <h1>Evaluación de trauma</h1>
+    <p class="phero-tag">Lo que viviste y cómo sigue viviendo hoy en ti. Sin prisa, a tu ritmo.</p>
+  </div>
+</section>
+<div class="wrap" id="app"></div>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   APRENS · EVALUACIÓN DE TRAUMA  ·  LEC-5 + PCL-5  ·  v1
+   ----------------------------------------------------------------------
+   Instrumentos de dominio público (U.S. National Center for PTSD, VA):
+     · LEC-5  — Life Events Checklist for DSM-5 (Weathers et al., 2013)
+     · PCL-5  — PTSD Checklist for DSM-5 (Weathers et al., 2013)
+   Secciones de subtipo disociativo, duración, latencia y funcionamiento:
+   redacción propia de APRENS a partir de los criterios DSM-5.
+
+   NO contiene material de tests comerciales con licencia.
+   Uso: cribado y seguimiento. NO sustituye a la entrevista clínica ni
+   establece diagnóstico por sí solo.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ═══ CLAVE DE ACCESO PROFESIONAL — CÁMBIALA ANTES DE PUBLICAR ═══ */
+const CLAVE_MAESTRA = "APRENS-2026";
+
+const KEY="aprens_trauma_db";
+const VER="1";
+const HOY=()=>new Date().toISOString().split("T")[0];
+
+/* ═══ SECCIÓN 1 · LEC-5 (17 sucesos) ═══ */
+const LEC=[
+ "Desastre natural (inundación, huracán, tornado, terremoto…).",
+ "Incendio o explosión.",
+ "Accidente de transporte (coche, barco, tren, avión…).",
+ "Accidente grave en el trabajo, en casa o durante una actividad de ocio.",
+ "Exposición a sustancias tóxicas (productos químicos peligrosos, radiación…).",
+ "Agresión física (que le atacaran, golpearan, abofetearan, patearan o maltrataran).",
+ "Agresión con arma (que le dispararan, apuñalaran o amenazaran con un cuchillo, pistola o bomba).",
+ "Agresión sexual (violación, intento de violación, ser obligado/a a realizar cualquier acto sexual mediante fuerza o amenaza).",
+ "Otra experiencia sexual no deseada o incómoda.",
+ "Combate o exposición a una zona de guerra (en el ejército o como civil).",
+ "Cautiverio (ser secuestrado/a, retenido/a como rehén o prisionero/a de guerra).",
+ "Enfermedad o lesión potencialmente mortal.",
+ "Sufrimiento humano extremo.",
+ "Muerte violenta repentina (homicidio, suicidio).",
+ "Muerte accidental repentina de una persona cercana.",
+ "Lesión grave, daño o muerte que usted causó a otra persona.",
+ "Cualquier otro acontecimiento muy estresante."
+];
+/* Máscara de bits por suceso (orden = potencia de 2) */
+const LEC_OPC=[
+ {b:1, k:"me",   t:"Me ocurrió a mí"},
+ {b:2, k:"vi",   t:"Lo presencié"},
+ {b:4, k:"supe", t:"Lo supe (alguien cercano)"},
+ {b:8, k:"trab", t:"Formó parte de mi trabajo"},
+ {b:16,k:"dud",  t:"No estoy seguro/a"},
+ {b:32,k:"no",   t:"No me aplica"}
+];
+
+/* ═══ SECCIÓN 2 · PCL-5 (20 ítems, 0-4) ═══ */
+const ESC5=["Nada","Un poco","Moderadamente","Bastante","Extremadamente"];
+const PCL=[
+ {c:"B",t:"Recuerdos repetitivos, molestos y no deseados de la experiencia estresante."},
+ {c:"B",t:"Sueños repetitivos y molestos relacionados con la experiencia estresante."},
+ {c:"B",t:"Sentirse o actuar de repente como si estuviera viviendo de nuevo la experiencia estresante (como si realmente estuviera allí otra vez)."},
+ {c:"B",t:"Sentirse muy alterado/a cuando algo le recordó la experiencia estresante."},
+ {c:"B",t:"Tener reacciones físicas intensas cuando algo le recordó la experiencia estresante (palpitaciones, dificultad para respirar, sudoración…)."},
+ {c:"C",t:"Evitar recuerdos, pensamientos o sentimientos relacionados con la experiencia estresante."},
+ {c:"C",t:"Evitar cosas externas que le recuerden la experiencia estresante (personas, lugares, conversaciones, actividades, objetos o situaciones)."},
+ {c:"D",t:"Dificultad para recordar partes importantes de la experiencia estresante."},
+ {c:"D",t:"Tener creencias negativas muy fuertes sobre usted, sobre otras personas o sobre el mundo (por ejemplo: «soy mala persona», «hay algo muy mal en mí», «no se puede confiar en nadie», «el mundo es totalmente peligroso»)."},
+ {c:"D",t:"Culparse a usted o culpar a otra persona por la experiencia estresante o por lo que ocurrió después."},
+ {c:"D",t:"Tener sentimientos negativos intensos como miedo, horror, ira, culpa o vergüenza."},
+ {c:"D",t:"Pérdida de interés en actividades que antes le gustaban."},
+ {c:"D",t:"Sentirse distante o alejado/a de las demás personas."},
+ {c:"D",t:"Dificultad para experimentar sentimientos positivos (por ejemplo, ser incapaz de sentir felicidad o afecto hacia las personas cercanas)."},
+ {c:"E",t:"Comportamiento irritable, arrebatos de ira o actuar de forma agresiva."},
+ {c:"E",t:"Asumir demasiados riesgos o hacer cosas que podrían causarle daño."},
+ {c:"E",t:"Estar «superalerta», vigilante o en guardia."},
+ {c:"E",t:"Sentirse nervioso/a o sobresaltarse con facilidad."},
+ {c:"E",t:"Dificultad para concentrarse."},
+ {c:"E",t:"Dificultad para conciliar el sueño o para mantenerse dormido/a."}
+];
+const CLUSTER={
+ B:{n:"B · Intrusión",     min:1, ids:[0,1,2,3,4],              col:"#8a5a72"},
+ C:{n:"C · Evitación",     min:1, ids:[5,6],                    col:"#C2704F"},
+ D:{n:"D · Cognición y ánimo", min:2, ids:[7,8,9,10,11,12,13],  col:"#566a70"},
+ E:{n:"E · Activación",    min:2, ids:[14,15,16,17,18,19],      col:"#5c7d54"}
+};
+
+/* ═══ SECCIÓN 3 · Subtipo disociativo (redacción APRENS · DSM-5) ═══ */
+const DISO=[
+ {k:"desper",t:"Hay momentos en los que se siente fuera de su cuerpo, como si se viera desde fuera o como si no fuera del todo usted."},
+ {k:"desrea",t:"Hay momentos en los que lo que le rodea le parece irreal, extraño, lejano o como en un sueño."}
+];
+const DURACION=["Menos de 1 mes","Entre 1 y 3 meses","Más de 3 meses"];
+const LATENCIA=["Enseguida, casi desde que ocurrió","Durante los primeros 6 meses","6 meses o más después"];
+const CUANDO=["En la infancia o adolescencia","Hace más de un año","En el último año","En el último mes"];
+const REPETICION=["Ocurrió una sola vez","Ocurrió en varias ocasiones","Ocurrió de forma repetida o continuada"];
+
+/* ═══ SECCIÓN 4 · Funcionamiento (redacción APRENS) ═══ */
+const ESCFUNC=["Nada","Un poco","Moderadamente","Bastante","Muchísimo"];
+const FUNC=[
+ {k:"F1",t:"Estos problemas han afectado a su trabajo o a sus estudios."},
+ {k:"F2",t:"Estos problemas han afectado a sus relaciones sociales y a su vida fuera de casa."},
+ {k:"F3",t:"Estos problemas han afectado a sus relaciones familiares o de pareja."},
+ {k:"F4",t:"Estos problemas han afectado a cómo se cuida (sueño, alimentación, salud, higiene)."},
+ {k:"F5",t:"Estos problemas han afectado a su ocio y a las cosas que le daban placer."}
+];
+const FUNC_SN=[
+ {k:"F6",t:"En el último mes, ¿ha consultado con un médico u otro profesional de la salud por estos problemas?"},
+ {k:"F7",t:"En el último mes, ¿ha aumentado el consumo de alcohol, otras sustancias o medicación para dormir o calmarse?"}
+];
+
+/* ═══ CONSENTIMIENTO (RGPD) ═══ */
+const CONSENT_VER=1;
+const CONSENT_TEXTO=`INFORMACIÓN Y CONSENTIMIENTO · PROTECCIÓN DE DATOS (RGPD)
+
+De conformidad con el Reglamento (UE) 679/2016 (RGPD) y la Ley Orgánica 3/2018 (LOPDPGDD), se le facilita la siguiente información sobre el tratamiento de sus datos:
+
+RESPONSABLE: CRISTOBAL VILLALONGA MELIS, CIF: 78210217M. Dir. postal: CALLE VERGE DE L'ESPERANÇA, 70, 2º, 07300 INCA. Teléfono: 636937661. Correo: tofol@aprens.es. Delegado de Protección de Datos: Protecmir (https://www.protecmir.es · protecmirlegal@protecmir.com).
+
+FINALIDAD: Tratamos la información que nos facilita para prestarle servicios de atención psicológica, incluyendo diagnóstico y/o tratamiento psicológico, y mantenerle informado sobre la atención prestada. No se elabora ningún perfil comercial. Los datos se conservan en el historial clínico durante un plazo mínimo de 5 años desde el alta de cada proceso asistencial, y mientras sean útiles para la finalidad indicada y existan responsabilidades derivadas del tratamiento.
+
+LEGITIMACIÓN: Ejecución de contrato y medidas precontractuales, cumplimiento de obligación legal, y consentimiento del interesado (art. 6.1.A, B y C RGPD). Resulta de aplicación la Ley 41/2002 (autonomía del paciente, historiales clínicos, art. 14-19) y la Ley 34/2002 (servicios de la sociedad de la información, art. 20-21).
+
+DESTINATARIOS: Los datos no se comunican a terceros ajenos a la entidad salvo obligación legal. Terceros proveedores pueden acceder como encargados de tratamiento en el marco de la prestación del servicio. La entidad podrá realizar comunicaciones a hospitales, aseguradoras de salud y Administración Pública competente. No hay previsión de transferencia internacional de datos.
+
+DERECHOS: Acceso, rectificación, supresión, limitación, oposición y portabilidad, dirigiéndose por correo postal con copia del DNI a CRISTOBAL VILLALONGA MELIS (dirección arriba) o a tofol@aprens.es. Puede reclamar ante la Agencia Española de Protección de Datos (www.aepd.es).
+
+NOTA: Esta herramienta es de uso anónimo: no le solicita nombre completo, NIF, email, teléfono ni dirección. Lo que escriba sobre el suceso se queda únicamente en su dispositivo: el código de resultado que envía a su psicólogo contiene solo números, nunca el relato. Es un instrumento complementario de evaluación clínica y no sustituye el consentimiento informado firmado de su proceso asistencial.`;
+const CONSENT_OPCIONALES=[
+ "Autorizo recibir las sesiones de atención psicológica mediante herramientas de comunicación (p. ej. WhatsApp), que cuentan con cifrado que garantiza la confidencialidad.",
+ "Consiento el envío de informes y documentación de los servicios de atención psicológica mediante correo electrónico y/o WhatsApp."
+];
+
+/* ═══ CODIFICACIÓN DEL CÓDIGO CORTO ═══
+   Formato (sin separadores internos; los guiones son solo visuales):
+     AP5 1 <AAMMDD> <alias3> <edad2><sexo> <lec17> <pcl20> <extra7> <func7> <cons> <chk>
+   Alfabeto A36 (0-9 A-Z): seguro para WhatsApp, para dictar y para mayúsculas.
+   El punto "." marca «sin contestar». Nunca viaja texto clínico en el código.  */
+const A36="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const e36=n=>A36[Math.max(0,Math.min(35,n|0))];
+const d36=c=>{const i=A36.indexOf(c);return i<0?0:i;};
+/* LEC: máscara de 6 bits → valor 0-17 (16 = "no estoy seguro", 17 = "no me aplica") */
+function lecEnc(m){m=m|0;if(m&32)return 17;if(m&16)return 16;return m&15;}
+function lecDec(v){return v===17?32:v===16?16:(v&15);}
+function checksum(s){let h=7;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))%36;}return A36[h];}
+function agrupa(s){return (s.match(/.{1,5}/g)||[]).join("-");}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+</script>
+<script>
+/* ══════════════ ESTADO ══════════════ */
+let modo=null, vista="selector", S=null, qIdx=0, ultimoCodigo="", informeActual=null, aliasSel=null;
+
+function nuevoS(){
+  return {fecha:HOY(),alias:"",edad:"",sexo:"-",lec:{},idx:{ev:0,cuando:0,repet:0,relato:""},
+          pcl:new Array(20).fill(null),diso:{desper:null,desrea:null},dur:null,lat:null,
+          func:{},sn:{},consent:null};
+}
+function getDB(){try{return JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){return {};}}
+function setDB(d){try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+
+/* ══════════════ CÓDIGO ══════════════ */
+function genCodigo(s){
+  const f=(s.fecha||HOY()).replace(/-/g,"").slice(2);
+  const al=((s.alias||"").toUpperCase().replace(/[^A-Z0-9]/g,"")+"...").slice(0,3);
+  const ed=String(s.edad||"").replace(/\D/g,"").slice(0,2).padStart(2,"0");
+  const sx=({H:"H",M:"M",X:"X"})[s.sexo]||".";
+  let lec="";for(let i=0;i<17;i++)lec+=e36(lecEnc(s.lec[i]||0));
+  let pcl="";for(let i=0;i<20;i++)pcl+=(s.pcl[i]==null?".":String(s.pcl[i]));
+  const ex=[e36(s.idx.ev||0),String(s.idx.cuando||0),String(s.idx.repet||0),
+            (s.dur==null?".":String(s.dur)),(s.lat==null?".":String(s.lat)),
+            (s.diso.desper==null?".":String(s.diso.desper)),(s.diso.desrea==null?".":String(s.diso.desrea))].join("");
+  const fn=FUNC.map(x=>s.func[x.k]==null?".":String(s.func[x.k])).join("")
+          +FUNC_SN.map(x=>s.sn[x.k]==null?".":String(s.sn[x.k])).join("");
+  const cons=s.consent?e36(1+(s.consent.opc[0]?2:0)+(s.consent.opc[1]?4:0)):"0";
+  const cuerpo="AP5"+VER+f+al+ed+sx+lec+pcl+ex+fn+cons;
+  return agrupa(cuerpo+checksum(cuerpo));
+}
+function limpiaCodigo(t){return String(t||"").toUpperCase().replace(/[^0-9A-Z.]/g,"");}
+function parseCodigo(txt){
+  const c=limpiaCodigo(txt);
+  if(c.slice(0,3)!=="AP5")return {err:"Ese código no parece de esta evaluación: debe empezar por AP5."};
+  if(c.length!==69)return {err:"El código está incompleto o le sobran caracteres ("+c.length+" en vez de 69). Pide que te lo reenvíen copiado y pegado entero."};
+  if(checksum(c.slice(0,68))!==c[68])return {err:"El código falla la verificación: algún carácter se ha copiado mal. Pide que te lo reenvíen."};
+  try{
+    const s=nuevoS();
+    let i=4;
+    const f=c.slice(i,i+6);i+=6;
+    s.fecha="20"+f.slice(0,2)+"-"+f.slice(2,4)+"-"+f.slice(4,6);
+    s.alias=c.slice(i,i+3).replace(/\./g,"");i+=3;
+    s.edad=c.slice(i,i+2).replace(/^0/,"");i+=2;
+    s.sexo=c[i]==="."?"-":c[i];i+=1;
+    for(let k=0;k<17;k++){s.lec[k]=lecDec(d36(c[i+k]));}i+=17;
+    for(let k=0;k<20;k++){const ch=c[i+k];s.pcl[k]=ch==="."?null:+ch;}i+=20;
+    s.idx.ev=d36(c[i]); s.idx.cuando=+c[i+1]||0; s.idx.repet=+c[i+2]||0;
+    s.dur=c[i+3]==="."?null:+c[i+3]; s.lat=c[i+4]==="."?null:+c[i+4];
+    s.diso.desper=c[i+5]==="."?null:+c[i+5]; s.diso.desrea=c[i+6]==="."?null:+c[i+6];
+    i+=7;
+    FUNC.forEach((x,k)=>{const ch=c[i+k];s.func[x.k]=ch==="."?null:+ch;});
+    FUNC_SN.forEach((x,k)=>{const ch=c[i+5+k];s.sn[x.k]=ch==="."?null:+ch;});
+    i+=7;
+    const cv=d36(c[i]);
+    s.consent=cv?{aceptado:1,ver:CONSENT_VER,opc:[(cv&2)?1:0,(cv&4)?1:0]}:null;
+    return {s:s,code:agrupa(c)};
+  }catch(e){return {err:"No he podido leer el código. Revisa que esté completo."};}
+}
+
+/* ══════════════ CORRECCIÓN ══════════════ */
+function corregir(s){
+  const r={};
+  r.pclResp=s.pcl.filter(v=>v!=null).length;
+  r.total=s.pcl.reduce((a,v)=>a+(v||0),0);
+  r.cl={};
+  Object.keys(CLUSTER).forEach(k=>{
+    const c=CLUSTER[k];
+    const sum=c.ids.reduce((a,i)=>a+(s.pcl[i]||0),0);
+    const n=c.ids.filter(i=>(s.pcl[i]||0)>=2).length;
+    r.cl[k]={sum:sum,n:n,max:c.ids.length*4,cumple:n>=c.min,min:c.min,nombre:c.n,col:c.col};
+  });
+  /* Criterio A · exposición */
+  const mIdx=s.idx.ev>0?(s.lec[s.idx.ev-1]||0):0;
+  r.expo=LEC_OPC.filter(o=>(mIdx&o.b)&&o.k!=="no"&&o.k!=="dud").map(o=>o.t);
+  r.critA=r.expo.length>0;
+  r.nLec=Object.keys(s.lec).filter(i=>{const m=s.lec[i]||0;return (m&1)||(m&2)||(m&4)||(m&8);}).length;
+  r.critB=r.cl.B.cumple; r.critC=r.cl.C.cumple; r.critD=r.cl.D.cumple; r.critE=r.cl.E.cumple;
+  r.critF=s.dur!=null&&s.dur>=1;
+  r.funcMax=Math.max.apply(null,FUNC.map(x=>s.func[x.k]==null?-1:s.func[x.k]));
+  r.critG=r.funcMax>=2;
+  r.areas=FUNC.filter(x=>(s.func[x.k]||0)>=2).length;
+  r.diag=r.critA&&r.critB&&r.critC&&r.critD&&r.critE&&r.critF&&r.critG;
+  r.diso=(s.diso.desper||0)>=2||(s.diso.desrea||0)>=2;
+  r.retardada=s.lat===2;
+  r.banda = r.total>=50?{n:"Grave",c:"#b0432f",d:"Sintomatología postraumática grave"}
+          : r.total>=33?{n:"Moderada-alta",c:"#C2704F",d:"Por encima del punto de corte habitual (31-33)"}
+          : r.total>=31?{n:"En el punto de corte",c:"#a7802f",d:"Zona de corte habitual (31-33): valorar en entrevista"}
+          : r.total>=15?{n:"Leve / subumbral",c:"#5c7d54",d:"Por debajo del punto de corte habitual"}
+          : {n:"Mínima",c:"#6f675c",d:"Sintomatología mínima en el último mes"};
+  /* Banderas clínicas */
+  r.flags=[];
+  if((s.pcl[15]||0)>=2) r.flags.push({i:"⚠️",t:"Ítem 16 (asumir riesgos / conductas que pueden causar daño): "+ESC5[s.pcl[15]]+". Explorar conducta de riesgo e ideación autolítica en entrevista."});
+  if((s.pcl[8]||0)>=3||(s.pcl[9]||0)>=3) r.flags.push({i:"🧠",t:"Cogniciones postraumáticas intensas (creencias negativas y/o culpa). Diana clara de trabajo cognitivo antes o junto a la exposición."});
+  if(s.sn.F7===1) r.flags.push({i:"🍷",t:"Refiere aumento del consumo de alcohol, sustancias o medicación para dormir/calmarse. Valorar antes de iniciar exposición."});
+  if(r.diso) r.flags.push({i:"🌫️",t:"Síntomas disociativos clínicamente presentes: priorizar anclaje/AIS y ventana de tolerancia; graduar más la exposición."});
+  if((s.pcl[19]||0)>=3||(s.pcl[1]||0)>=3) r.flags.push({i:"🌙",t:"Alteración del sueño y/o pesadillas marcadas. Valorar higiene del sueño y trabajo específico de pesadillas."});
+  if(r.cl.C.sum>=6) r.flags.push({i:"🚪",t:"Evitación alta (C = "+r.cl.C.sum+"/8): la escalera de exposición es la intervención de primera línea."});
+  if(s.idx.repet===2||s.idx.cuando===0) r.flags.push({i:"🔁",t:"Suceso repetido/continuado o de inicio en la infancia-adolescencia: valorar traumatización compleja (síntomas de autoorganización) más allá del TEPT simple."});
+  if(r.pclResp<20) r.flags.push({i:"❔",t:"Información incompleta: faltan "+(20-r.pclResp)+" ítems del PCL-5. Las puntuaciones son orientativas."});
+  return r;
+}
+
+/* Sugerencia de plan enlazada con las apps de APRENS */
+function sugerencias(s,r){
+  const out=[];
+  if(r.diso||r.cl.E.sum>=14) out.push({ic:"🫁",t:"Regulación primero",d:"Antes de exponer: anclaje e interocepción (AIS) para ampliar la ventana de tolerancia.",app:"bajar-alerta.html",n:"Bajar la alerta"});
+  if(r.cl.C.sum>=4) out.push({ic:"🪜",t:"Exposición gradual",d:"Construir la escalera de peldaños con las dos llaves: el QUÉ (conductual) y el CÓMO (acompañamiento interno AIS).",app:"../exposicion/index.html",n:"La escalera"});
+  if(r.cl.B.sum>=6) out.push({ic:"🤝",t:"Acompañar la intrusión",d:"Entrenar estar con el recuerdo/sensación sin luchar ni comprobar, en dosis cortas y fuera de crisis.",app:"acompanar-sensacion.html",n:"Acompañar la sensación"});
+  if((s.pcl[14]||0)>=2||(s.pcl[16]||0)>=3) out.push({ic:"🔥",t:"Irritabilidad e hiperalerta",d:"Autorregistro posterior a episodios de enfado o impulso, y detección de la latencia.",app:"control-ira.html",n:"Control de ira"});
+  if(r.cl.D.sum>=10) out.push({ic:"🧭",t:"Reconstruir dirección",d:"Recuperar contacto con valores y actividad con sentido frente al aplanamiento y la retirada.",app:"brujula-valores.html",n:"Brújula de valores"});
+  out.push({ic:"📊",t:"Seguimiento",d:"Repetir esta evaluación cada 4-6 semanas y registrar la práctica diaria entre sesiones.",app:"tracker-tec.html",n:"Tracker TEC"});
+  return out;
+}
+
+/* ══════════════ INFORME DE TEXTO ══════════════ */
+function informeTexto(s,r,code){
+  const L=[];
+  const sn=v=>v===1?"Sí":v===0?"No":"—";
+  L.push("EVALUACIÓN DE TRAUMA · LEC-5 + PCL-5 (APRENS)");
+  L.push("Fecha de administración: "+s.fecha+"   ·   Alias: "+(s.alias||"—")+"   ·   Edad: "+(s.edad||"—")+"   ·   Sexo: "+(s.sexo||"—"));
+  L.push("");
+  L.push("SUCESO ÍNDICE");
+  L.push("· Suceso: "+(s.idx.ev>0?(s.idx.ev+". "+LEC[s.idx.ev-1]):"No especificado"));
+  L.push("· Tipo de exposición: "+(r.expo.length?r.expo.join(" / "):"no marcada"));
+  L.push("· Cuándo: "+(CUANDO[s.idx.cuando]||"—")+"   ·   "+(REPETICION[s.idx.repet]||"—"));
+  L.push("· Sucesos vitales marcados en el LEC-5: "+r.nLec+"/17");
+  L.push("");
+  L.push("PCL-5 · ÚLTIMO MES");
+  L.push("· Puntuación total: "+r.total+"/80  ("+r.banda.n+" — "+r.banda.d+")");
+  Object.keys(CLUSTER).forEach(k=>{const c=r.cl[k];
+    L.push("· "+c.nombre+": suma "+c.sum+"/"+c.max+"  ·  síntomas presentes (≥2): "+c.n+"/"+CLUSTER[k].ids.length+"  ·  criterio "+(c.cumple?"CUMPLE":"no cumple")+" (mínimo "+c.min+")");});
+  L.push("");
+  L.push("CRITERIOS DSM-5 (orientativo)");
+  L.push("· A Exposición: "+(r.critA?"Sí":"No"));
+  L.push("· B Intrusión: "+(r.critB?"Sí":"No")+"   · C Evitación: "+(r.critC?"Sí":"No")+"   · D Cognición/ánimo: "+(r.critD?"Sí":"No")+"   · E Activación: "+(r.critE?"Sí":"No"));
+  L.push("· F Duración >1 mes: "+(r.critF?"Sí":"No")+" ("+(DURACION[s.dur]||"—")+")");
+  L.push("· G Malestar/deterioro: "+(r.critG?"Sí":"No")+" ("+r.areas+" áreas afectadas de 5)");
+  L.push("· Cribado positivo para TEPT: "+(r.diag?"SÍ — cumple todos los criterios":"No — no cumple todos los criterios"));
+  L.push("· Subtipo disociativo: "+(r.diso?"presente (despersonalización "+(s.diso.desper==null?"—":s.diso.desper)+", desrealización "+(s.diso.desrea==null?"—":s.diso.desrea)+")":"no")); 
+  L.push("· Expresión retardada: "+(r.retardada?"sí (≥6 meses)":"no")+" ("+(LATENCIA[s.lat]||"—")+")");
+  L.push("");
+  L.push("FUNCIONAMIENTO (último mes)");
+  FUNC.forEach(x=>L.push("· "+x.t+" → "+(s.func[x.k]==null?"—":ESCFUNC[s.func[x.k]])));
+  FUNC_SN.forEach(x=>L.push("· "+x.t+" → "+sn(s.sn[x.k])));
+  if(r.flags.length){L.push("");L.push("BANDERAS CLÍNICAS");r.flags.forEach(f=>L.push("· "+f.t));}
+  L.push("");
+  L.push("RESPUESTAS PCL-5 (ítem: 0-4)");
+  L.push(s.pcl.map((v,i)=>(i+1)+":"+(v==null?"-":v)).join("  "));
+  L.push("");
+  L.push("Instrumentos: LEC-5 y PCL-5 (Weathers et al., 2013 · National Center for PTSD, dominio público).");
+  L.push("Resultado de cribado. No constituye diagnóstico: requiere entrevista clínica y juicio profesional.");
+  L.push("Código de origen: "+(code||"—"));
+  return L.join("\n");
+}
+</script>
+<script>
+/* ══════════════ CONFIGURACIÓN DE ENVÍO ══════════════ */
+const WA_PSICOLOGO="34636937661";        /* número del profesional, formato internacional sin + */
+const PROG_KEY="aprens_trauma_progreso"; /* autoguardado del paciente en su propio dispositivo */
+
+const app=()=>document.getElementById("app");
+function ir(v){vista=v;window.scrollTo({top:0,behavior:"smooth"});render();}
+function guardarProgreso(){try{localStorage.setItem(PROG_KEY,JSON.stringify({S:S,vista:vista,qIdx:qIdx}));}catch(e){}}
+function borrarProgreso(){try{localStorage.removeItem(PROG_KEY);}catch(e){}}
+function hayProgreso(){try{const d=JSON.parse(localStorage.getItem(PROG_KEY)||"null");return d&&d.S?d:null;}catch(e){return null;}}
+
+function copiar(t,idOk){
+  const ok=()=>{const m=document.getElementById(idOk||"okm");if(m){m.textContent="✓ Copiado";m.style.display="block";setTimeout(()=>{m.style.display="none";},3000);}};
+  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+    navigator.clipboard.writeText(t).then(ok).catch(met2);
+  }else met2();
+  function met2(){
+    try{const a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";
+      document.body.appendChild(a);a.focus();a.select();a.setSelectionRange(0,t.length);
+      document.execCommand("copy");a.remove();ok();
+    }catch(e){}
+  }
+}
+function barra(pct){return '<div class="qprog"><div class="qprog-f" style="width:'+pct+'%"></div></div>';}
+const SOS='<div class="sos"><strong>Si en algún momento sientes que no puedes más</strong><br>Llama al <strong>024</strong> (atención a la conducta suicida, gratuito y 24 h) o al <strong>112</strong>. Y avisa a tu psicólogo: no hace falta esperar a la próxima sesión.</div>';
+
+/* ══════════════ RENDER ══════════════ */
+function render(){
+  const V={
+    selector:vSelector, pac_consent:vConsent, pac_datos:vDatos, pac_lec:vLec, pac_suceso:vSuceso,
+    pac_pcl:vPcl, pac_extra:vExtra, pac_func:vFunc, pac_fin:vFin,
+    prof_inicio:vProfInicio, prof_informe:vProfInforme, prof_historial:vProfHistorial
+  };
+  app().innerHTML=(V[vista]||vSelector)();
+}
+
+/* ── Selector de modo ── */
+function vSelector(){
+  const pr=hayProgreso();
+  return `
+  <div class="hero">
+    <div class="htitulo">Evaluación de trauma · LEC-5 + PCL-5</div>
+    <div class="hsubt">Una evaluación en cuatro partes: qué situaciones difíciles has vivido, cómo te han afectado durante el <strong>último mes</strong>, desde cuándo, y en qué medida está tocando tu vida diaria. Se tarda unos <strong>10-15 minutos</strong> y no hay límite de tiempo.</div>
+    <div class="frase">No se trata de revivir lo que pasó, sino de mirar con precisión cómo sigue viviendo hoy en ti. Eso es lo que permite decidir por dónde empezar.</div>
+  </div>
+  ${pr?`<div class="aviso ok">Tienes una evaluación a medias en este dispositivo (${esc(pr.S.fecha)}). <button class="btn bs bsm" style="margin-left:6px" onclick="retomar()">Retomar donde lo dejé</button> <button class="btn bcopy bsm" onclick="if(confirm('¿Empezar de cero y borrar lo que llevabas?')){borrarProgreso();render();}">Empezar de nuevo</button></div>`:""}
+  <div class="selector">
+    <button class="mcard px" onclick="modoPaciente()">
+      <div class="mico">🧑‍💻</div>
+      <div class="mtit" style="color:var(--verde)">Soy paciente</div>
+      <div class="mdesc">Responder la evaluación. Al terminar obtendrás un código que envías a tu psicólogo.</div>
+    </button>
+    <button class="mcard cli" onclick="pedirClave()">
+      <div class="mico">🔐</div>
+      <div class="mtit" style="color:var(--azul)">Soy el profesional</div>
+      <div class="mdesc">Corregir un código, ver el informe con criterios DSM-5 y seguir la evolución.</div>
+    </button>
+  </div>
+  <div class="aviso"><strong>Sobre esta herramienta.</strong> Utiliza el <strong>LEC-5</strong> (listado de acontecimientos) y el <strong>PCL-5</strong> (20 síntomas), instrumentos de dominio público del National Center for PTSD (Weathers et al., 2013). Es un instrumento de <strong>cribado y seguimiento</strong>: orienta, no diagnostica. El diagnóstico lo establece el profesional en entrevista clínica.</div>
+  <div class="foot">APRENS Psicologia · Tòfol Villalonga<br>Uso anónimo: no se envía ningún dato a ningún servidor.</div>`;
+}
+function retomar(){const pr=hayProgreso();if(!pr)return;S=pr.S;qIdx=pr.qIdx||0;modo="paciente";ir(pr.vista||"pac_lec");}
+function modoPaciente(){modo="paciente";S=nuevoS();qIdx=0;ir("pac_consent");}
+
+/* ── Consentimiento ── */
+let consentTmp={base:false,opc:[false,false]};
+function vConsent(){
+  return `
+  <div class="card">
+    <div class="ctit">Antes de empezar</div>
+    <div class="cbox">${esc(CONSENT_TEXTO)}</div>
+    <div class="opts">
+      <button class="opt ${consentTmp.base?"sel":""}" style="align-items:flex-start" onclick="togCons('base')">
+        <span class="opt-n">${consentTmp.base?"✔":""}</span>
+        <span>He leído la información y <strong>doy mi consentimiento</strong> para el tratamiento de mis datos con la finalidad indicada.</span>
+      </button>
+      ${CONSENT_OPCIONALES.map((t,i)=>`
+      <button class="opt ${consentTmp.opc[i]?"sel":""}" style="align-items:flex-start" onclick="togCons(${i})">
+        <span class="opt-n">${consentTmp.opc[i]?"✔":""}</span>
+        <span style="font-size:13.5px;color:var(--gris)">${esc(t)} <em>(opcional)</em></span>
+      </button>`).join("")}
+    </div>
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="ir('selector')">← Atrás</button>
+      <button class="btn bp" ${consentTmp.base?"":"disabled"} onclick="aceptarConsent()">Continuar →</button>
+    </div>
+    ${consentTmp.base?"":'<div class="hint" style="text-align:right;margin:8px 0 0">Marca la primera casilla para continuar.</div>'}
+  </div>`;
+}
+function togCons(k){
+  if(k==="base")consentTmp.base=!consentTmp.base;
+  else consentTmp.opc[k]=!consentTmp.opc[k];
+  render();
+}
+function aceptarConsent(){
+  S.consent={aceptado:1,fecha:HOY(),ver:CONSENT_VER,
+             opc:[consentTmp.opc[0]?1:0,consentTmp.opc[1]?1:0]};
+  guardarProgreso();ir("pac_datos");
+}
+
+/* ── Datos mínimos ── */
+function vDatos(){
+  return `
+  <div class="card">
+    <div class="ctit">Paso 1 de 5 · Datos mínimos</div>
+    ${barra(10)}
+    <div class="aviso">No pedimos tu nombre. Usa <strong>tres letras o números</strong> que tu psicólogo pueda reconocer (por ejemplo, tus iniciales). Así el resultado sigue siendo anónimo.</div>
+    <label class="lbl">Clave de tres caracteres</label>
+    <input class="ipt" id="dAlias" maxlength="3" autocomplete="off" autocapitalize="characters" placeholder="Ej.: MJP" value="${esc(S.alias)}" style="text-transform:uppercase;letter-spacing:.3em;font-weight:700">
+    <div class="row2">
+      <div><label class="lbl">Edad</label><input class="ipt" id="dEdad" inputmode="numeric" maxlength="2" placeholder="Ej.: 34" value="${esc(S.edad)}"></div>
+      <div><label class="lbl">Sexo</label>
+        <select class="ipt" id="dSexo">
+          <option value="-" ${S.sexo==="-"?"selected":""}>Prefiero no decirlo</option>
+          <option value="M" ${S.sexo==="M"?"selected":""}>Mujer</option>
+          <option value="H" ${S.sexo==="H"?"selected":""}>Hombre</option>
+          <option value="X" ${S.sexo==="X"?"selected":""}>Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="ir('pac_consent')">← Atrás</button>
+      <button class="btn bp" onclick="guardarDatos()">Continuar →</button>
+    </div>
+  </div>`;
+}
+function guardarDatos(){
+  S.alias=(document.getElementById("dAlias").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,3);
+  S.edad=(document.getElementById("dEdad").value||"").replace(/\D/g,"").slice(0,2);
+  S.sexo=document.getElementById("dSexo").value;
+  guardarProgreso();ir("pac_lec");
+}
+
+/* ── Sección 1 · LEC-5 ── */
+function vLec(){
+  return `
+  <div class="card">
+    <div class="ctit">Paso 2 de 5 · Situaciones vividas</div>
+    ${barra(28)}
+    <div class="hsubt" style="margin-bottom:16px">A continuación aparece un listado de situaciones difíciles o estresantes que a veces ocurren. Para <strong>cada una</strong>, marca lo que corresponda a lo largo de toda tu vida. Puedes marcar <strong>más de una opción</strong> en la misma fila. Si no te ha ocurrido, marca «No me aplica».</div>
+    <div class="aviso">No hace falta que expliques nada aquí. Solo marcar. Si alguna te remueve, puedes parar, respirar y seguir cuando quieras.</div>
+    ${LEC.map((t,i)=>{
+      const m=S.lec[i]||0;
+      return `<div class="lecrow ${m?"on":""}" id="lr${i}">
+        <div class="lecq"><b>${i+1}.</b>${esc(t)}</div>
+        <div class="chips">${LEC_OPC.map(o=>`<button class="chip ${o.k==="no"||o.k==="dud"?"no":""} ${(m&o.b)?"on":""}" onclick="togLec(${i},${o.b})">${o.t}</button>`).join("")}</div>
+      </div>`;}).join("")}
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="ir('pac_datos')">← Atrás</button>
+      <button class="btn bp" onclick="ir('pac_suceso')">Continuar →</button>
+    </div>
+  </div>`;
+}
+function togLec(i,b){
+  let m=S.lec[i]||0;
+  const EXCL=16|32;                       /* "no estoy seguro" y "no me aplica" son excluyentes */
+  if(b&EXCL){ m=(m&b)?0:b; }
+  else{ m=(m&EXCL)?0:m; m=(m&b)?(m&~b):(m|b); }
+  S.lec[i]=m;guardarProgreso();
+  const row=document.getElementById("lr"+i);
+  row.classList.toggle("on",!!m);
+  row.querySelectorAll(".chip").forEach((c,k)=>c.classList.toggle("on",!!(m&LEC_OPC[k].b)));
+}
+
+/* ── Suceso índice ── */
+function vSuceso(){
+  const marcados=LEC.map((t,i)=>({t:t,i:i,m:S.lec[i]||0})).filter(x=>x.m&&!(x.m&48));
+  return `
+  <div class="card">
+    <div class="ctit">Paso 2 de 5 · El acontecimiento que más te afecta</div>
+    ${barra(38)}
+    <div class="hsubt" style="margin-bottom:14px">De todo lo que has marcado, indica <strong>cuál es el que más malestar te causa en la actualidad</strong>. Todas las preguntas que vienen después se refieren <strong>solo a ese</strong>.</div>
+    ${marcados.length?"":'<div class="aviso warn">No has marcado ninguna situación como vivida, presenciada, conocida o de tu trabajo. Puedes volver atrás y revisarlo, o elegir «Otro acontecimiento» aquí abajo.</div>'}
+    <div class="opts" style="margin-bottom:18px">
+      ${marcados.map(x=>`<button class="opt ${S.idx.ev===x.i+1?"sel":""}" onclick="setIdx(${x.i+1})"><span class="opt-n">${x.i+1}</span><span>${esc(x.t)}</span></button>`).join("")}
+      <button class="opt ${S.idx.ev===18?"sel":""}" onclick="setIdx(18)"><span class="opt-n">+</span><span>Otro acontecimiento estresante que no está en la lista</span></button>
+    </div>
+    <label class="lbl">Descríbelo brevemente (opcional)</label>
+    <textarea class="ipt" id="sRel" placeholder="Con una o dos frases basta.">${esc(S.idx.relato)}</textarea>
+    <div class="hint">🔒 Esto <strong>no viaja</strong> en el código que envías: se queda solo en este dispositivo, para que puedas recuperarlo tú en sesión si quieres.</div>
+    <label class="lbl">¿Cuándo ocurrió?</label>
+    <div class="opts" style="margin-bottom:16px">${CUANDO.map((t,i)=>`<button class="opt ${S.idx.cuando===i?"sel":""}" onclick="setCuando(${i})"><span class="opt-n">${i+1}</span><span>${t}</span></button>`).join("")}</div>
+    <label class="lbl">¿Ocurrió una vez o varias?</label>
+    <div class="opts">${REPETICION.map((t,i)=>`<button class="opt ${S.idx.repet===i?"sel":""}" onclick="setRepet(${i})"><span class="opt-n">${i+1}</span><span>${t}</span></button>`).join("")}</div>
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="salvaRelato();ir('pac_lec')">← Atrás</button>
+      <button class="btn bp" onclick="salvaRelato();qIdx=0;ir('pac_pcl')">Continuar →</button>
+    </div>
+  </div>`;
+}
+function salvaRelato(){const t=document.getElementById("sRel");if(t){S.idx.relato=t.value;}guardarProgreso();}
+function setIdx(n){salvaRelato();S.idx.ev=n;guardarProgreso();render();}
+function setCuando(n){salvaRelato();S.idx.cuando=n;guardarProgreso();render();}
+function setRepet(n){salvaRelato();S.idx.repet=n;guardarProgreso();render();}
+</script>
+<script>
+/* ── Sección 2 · PCL-5 (un ítem por pantalla) ── */
+function vPcl(){
+  const it=PCL[qIdx], v=S.pcl[qIdx];
+  const suceso=S.idx.ev>0&&S.idx.ev<18?LEC[S.idx.ev-1]:"el acontecimiento que has indicado";
+  return `
+  <div class="qbox">
+    <div class="ctit">Paso 3 de 5 · Síntomas del último mes</div>
+    ${barra(40+Math.round((qIdx/PCL.length)*32))}
+    <div class="qmeta">
+      <span class="qbadge">${CLUSTER[it.c].n}</span>
+      <span class="qnum">${qIdx+1} / ${PCL.length}</span>
+    </div>
+    ${qIdx===0?`<div class="aviso">Piensa en el <strong>último mes</strong> y en relación con <em>${esc(suceso.replace(/\.$/,""))}</em>. Para cada frase, indica cuánto te ha molestado.</div>`:""}
+    <div class="qtxt">En el último mes, ¿cuánto te ha molestado…<br><strong>${esc(it.t)}</strong></div>
+    <div class="opts">
+      ${ESC5.map((t,i)=>`<button class="opt ${v===i?"sel":""}" onclick="respPcl(${i})"><span class="opt-n">${i}</span><span>${t}</span></button>`).join("")}
+    </div>
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="atrasPcl()">← Atrás</button>
+      <button class="btn bcopy bsm" onclick="saltarPcl()" ${v!=null?'style="visibility:hidden"':""}>Prefiero no contestar</button>
+    </div>
+  </div>`;
+}
+function respPcl(v){S.pcl[qIdx]=v;avanzaPcl();}
+function saltarPcl(){S.pcl[qIdx]=null;avanzaPcl();}
+function avanzaPcl(){
+  guardarProgreso();
+  if(qIdx<PCL.length-1){qIdx++;window.scrollTo({top:0,behavior:"smooth"});render();}
+  else ir("pac_extra");
+}
+function atrasPcl(){
+  if(qIdx>0){qIdx--;window.scrollTo({top:0,behavior:"smooth"});render();}
+  else ir("pac_suceso");
+}
+
+/* ── Sección 3 · Disociación, duración y latencia ── */
+function vExtra(){
+  const done=S.diso.desper!=null&&S.diso.desrea!=null&&S.dur!=null&&S.lat!=null;
+  return `
+  <div class="card">
+    <div class="ctit">Paso 4 de 5 · Desde cuándo y de qué forma</div>
+    ${barra(78)}
+    ${DISO.map((d,i)=>`
+      <label class="lbl" style="margin-top:${i?18:0}px">En el último mes, ¿cuánto te ha molestado…</label>
+      <div class="qtxt" style="font-size:15.5px;margin-bottom:12px">${esc(d.t)}</div>
+      <div class="opts" style="margin-bottom:6px">${ESC5.map((t,k)=>`<button class="opt ${S.diso[d.k]===k?"sel":""}" onclick="setD('${d.k}',${k})"><span class="opt-n">${k}</span><span>${t}</span></button>`).join("")}</div>`).join("")}
+    <label class="lbl" style="margin-top:22px">¿Desde cuándo tienes estos problemas?</label>
+    <div class="opts" style="margin-bottom:6px">${DURACION.map((t,i)=>`<button class="opt ${S.dur===i?"sel":""}" onclick="setDur(${i})"><span class="opt-n">${i+1}</span><span>${t}</span></button>`).join("")}</div>
+    <label class="lbl" style="margin-top:22px">¿Cuánto tardaron en aparecer, desde que ocurrió el acontecimiento?</label>
+    <div class="opts">${LATENCIA.map((t,i)=>`<button class="opt ${S.lat===i?"sel":""}" onclick="setLat(${i})"><span class="opt-n">${i+1}</span><span>${t}</span></button>`).join("")}</div>
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="qIdx=PCL.length-1;ir('pac_pcl')">← Atrás</button>
+      <button class="btn bp" ${done?"":"disabled"} onclick="ir('pac_func')">Continuar →</button>
+    </div>
+    ${done?"":'<div class="hint" style="text-align:right;margin:8px 0 0">Responde las cuatro preguntas para continuar.</div>'}
+  </div>`;
+}
+function setD(k,v){S.diso[k]=v;guardarProgreso();render();}
+function setDur(v){S.dur=v;guardarProgreso();render();}
+function setLat(v){S.lat=v;guardarProgreso();render();}
+
+/* ── Sección 4 · Funcionamiento ── */
+function vFunc(){
+  const done=FUNC.every(x=>S.func[x.k]!=null)&&FUNC_SN.every(x=>S.sn[x.k]!=null);
+  return `
+  <div class="card">
+    <div class="ctit">Paso 5 de 5 · Cómo está afectando a tu vida</div>
+    ${barra(92)}
+    <div class="hsubt" style="margin-bottom:16px">Pensando en el <strong>último mes</strong>, ¿en qué medida estos problemas han afectado a cada área?</div>
+    ${FUNC.map((x,i)=>`
+      <div class="qtxt" style="font-size:15.5px;margin:${i?20:0}px 0 10px">${esc(x.t)}</div>
+      <div class="opts">${ESCFUNC.map((t,k)=>`<button class="opt ${S.func[x.k]===k?"sel":""}" onclick="setF('${x.k}',${k})"><span class="opt-n">${k}</span><span>${t}</span></button>`).join("")}</div>`).join("")}
+    ${FUNC_SN.map(x=>`
+      <div class="qtxt" style="font-size:15.5px;margin:22px 0 10px">${esc(x.t)}</div>
+      <div class="opts"><button class="opt ${S.sn[x.k]===1?"sel":""}" onclick="setSN('${x.k}',1)"><span class="opt-n">Sí</span><span>Sí</span></button>
+      <button class="opt ${S.sn[x.k]===0?"sel":""}" onclick="setSN('${x.k}',0)"><span class="opt-n">No</span><span>No</span></button></div>`).join("")}
+    <div class="qnav">
+      <button class="btn bs bsm" onclick="ir('pac_extra')">← Atrás</button>
+      <button class="btn bpg" ${done?"":"disabled"} onclick="finalizar()">Terminar y generar el código →</button>
+    </div>
+    ${done?"":'<div class="hint" style="text-align:right;margin:8px 0 0">Contesta a todas para terminar.</div>'}
+  </div>`;
+}
+function setF(k,v){S.func[k]=v;guardarProgreso();render();}
+function setSN(k,v){S.sn[k]=v;guardarProgreso();render();}
+function finalizar(){S.fecha=HOY();ultimoCodigo=genCodigo(S);guardarProgreso();ir("pac_fin");}
+
+/* ── Cierre del paciente ── */
+function vFin(){
+  const code=ultimoCodigo||genCodigo(S);
+  const msg="Hola Tòfol, he terminado la evaluación de trauma. Este es mi código de resultado:\n\n"+code;
+  const wa="https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent(msg);
+  const r=corregir(S);
+  return `
+  <div class="hero">
+    <div class="htitulo">Ya está. Gracias por el trabajo que acabas de hacer.</div>
+    <div class="hsubt">Responder a todo esto no es un trámite: es mirar de frente algo que duele. Lo que sigue no lo tienes que interpretar tú. Envía el código a tu psicólogo y lo veréis juntos en sesión.</div>
+    <div class="frase">Que hoy siga doliendo no significa que estés mal hecho/a. Significa que tu sistema aprendió a protegerte de una forma que ya no te sirve, y eso se puede reentrenar.</div>
+  </div>
+  <div class="codebox">
+    <div class="cl">Tu código de resultado · ${esc(S.fecha)}</div>
+    <div class="code" id="codeView">${esc(code)}</div>
+  </div>
+  <div class="acc">
+    <a href="${wa}" target="_blank" rel="noopener" class="btn bwa">📱 Enviar por WhatsApp</a>
+    <button class="btn bcopy" onclick='copiar(${JSON.stringify(code)})'>📋 Copiar el código</button>
+  </div>
+  <div id="okm" style="display:none;text-align:center;color:var(--verde);font-weight:600;margin-bottom:12px"></div>
+  <div class="aviso">🔒 El código solo contiene números y letras: <strong>ni tu nombre ni lo que has escrito sobre el suceso viajan en él</strong>. Si prefieres, puedes dictárselo a tu psicólogo por teléfono.</div>
+  ${(S.pcl[15]||0)>=2||r.total>=45?SOS:""}
+  <div class="card">
+    <div class="ctit">Mientras tanto</div>
+    <div class="hsubt">Hasta que lo veáis en sesión, lo más útil no es analizar lo que pasó, sino <strong>entrenar presencia interna cuando no hace falta</strong>: sesiones cortas, fuera de la crisis, para que tu cuerpo aprenda que puede estar contigo sin que le exijas cambiar.</div>
+    <div class="acc" style="justify-content:flex-start;margin-top:14px">
+      <a class="btn bs bsm" href="bajar-alerta.html">🫁 Bajar la alerta</a>
+      <a class="btn bs bsm" href="acompanar-sensacion.html">🤝 Acompañar la sensación</a>
+    </div>
+  </div>
+  <div class="acc"><button class="btn bcopy bsm" onclick="if(confirm('¿Borrar la evaluación de este dispositivo? Asegúrate de haber enviado el código antes.')){borrarProgreso();S=null;modo=null;ir('selector');}">🧹 Borrar mis datos de este dispositivo</button></div>
+  <div class="foot">APRENS Psicologia · LEC-5 y PCL-5 (National Center for PTSD, dominio público)</div>`;
+}
+</script>
+<script>
+/* ══════════════ ZONA PROFESIONAL ══════════════ */
+function pedirClave(){
+  const ov=document.createElement("div");ov.className="modal-ov";ov.id="modalC";
+  ov.innerHTML=`<div class="modal-bx">
+    <div style="font-family:var(--serif);font-size:20px;color:var(--azul);margin-bottom:6px">Acceso profesional</div>
+    <div style="font-size:13px;color:var(--gris);line-height:1.55;margin-bottom:16px">Esta zona es solo para el profesional. Si eres paciente, vuelve atrás y elige «Soy paciente».</div>
+    <input id="mcK" type="text" class="ipt" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Clave de acceso">
+    <div id="mcErr" style="font-size:13px;color:var(--rojo);margin-bottom:10px;display:none"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn bs bsm" style="flex:1" onclick="document.getElementById('modalC').remove()">Cancelar</button>
+      <button class="btn bp bsm" style="flex:1" id="mcOk">Entrar</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  const go=()=>{
+    if((document.getElementById("mcK").value||"").trim().toUpperCase()===CLAVE_MAESTRA.toUpperCase()){
+      ov.remove();modo="profesional";ir("prof_inicio");
+    }else{const e=document.getElementById("mcErr");e.textContent="Clave incorrecta.";e.style.display="block";}
+  };
+  document.getElementById("mcOk").onclick=go;
+  document.getElementById("mcK").addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+  document.getElementById("mcK").focus();
+}
+
+function enlacePaciente(){
+  const u=new URL(window.location.href);u.search="?m=px";u.hash="";return u.toString();
+}
+function vProfInicio(){
+  const db=getDB(), alias=Object.keys(db).sort();
+  const link=enlacePaciente();
+  const waLink="https://wa.me/?text="+encodeURIComponent("Hola, te paso la evaluación de la que hablamos. Se hace desde el móvil, en unos 10-15 minutos, y no hay prisa. Al terminar te dará un código: envíamelo por aquí.\n\n"+link);
+  return `
+  <div class="hero">
+    <div class="htitulo">Zona profesional</div>
+    <div class="hsubt">Envía el enlace al paciente, pega aquí el código que te devuelva y obtén el informe con puntuaciones por clúster, criterios DSM-5 y propuesta de plan.</div>
+  </div>
+  <div class="card">
+    <div class="ctit">1 · Enviar la evaluación al paciente</div>
+    <div class="cbox" style="max-height:none;font-family:ui-monospace,Menlo,monospace;font-size:12.5px">${esc(link)}</div>
+    <div class="acc" style="justify-content:flex-start">
+      <a class="btn bwa bsm" href="${waLink}" target="_blank" rel="noopener">📱 Enviar por WhatsApp</a>
+      <button class="btn bcopy bsm" onclick='copiar(${JSON.stringify(link)},"okm1")'>📋 Copiar enlace</button>
+    </div>
+    <div id="okm1" style="display:none;color:var(--verde);font-weight:600;margin-top:10px"></div>
+    <div class="hint" style="margin:12px 0 0">El enlace abre directamente el modo paciente. Nada se envía a ningún servidor: el paciente responde en su móvil y te devuelve solo el código.</div>
+  </div>
+  <div class="card">
+    <div class="ctit">2 · Corregir un código</div>
+    <textarea class="ipt" id="pCode" placeholder="Pega aquí el código que te ha enviado el paciente (empieza por AP5-…)" style="font-family:ui-monospace,Menlo,monospace;font-size:14px;letter-spacing:.06em"></textarea>
+    <div id="pErr" class="aviso warn" style="display:none"></div>
+    <button class="btn bp" onclick="corregirCodigo()">Corregir y ver el informe →</button>
+  </div>
+  <div class="card">
+    <div class="ctit">3 · Historial guardado en este dispositivo</div>
+    ${alias.length?alias.map(a=>{
+      const ev=db[a].ev||[];const ult=ev[ev.length-1];
+      return `<div class="hrow">
+        <div><div style="font-weight:700;font-size:15px">${esc(a)}</div>
+        <div style="font-size:12px;color:var(--gris)">${ev.length} evaluación(es) · última ${esc(ult?ult.fecha:"—")} · PCL-5 ${ult?ult.total:"—"}/80</div></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn bs bsm" onclick="verHistorial('${esc(a)}')">Ver</button>
+          <button class="btn bcopy bsm" onclick="if(confirm('¿Borrar todo el historial de ${esc(a)}?')){const d=getDB();delete d['${esc(a)}'];setDB(d);render();}">🗑</button>
+        </div></div>`;}).join("")
+      :'<div class="hint">Todavía no has guardado ninguna evaluación en este dispositivo.</div>'}
+  </div>
+  <div class="acc"><button class="btn bcopy bsm" onclick="modo=null;ir('selector')">← Salir</button></div>`;
+}
+function corregirCodigo(){
+  const res=parseCodigo(document.getElementById("pCode").value);
+  const e=document.getElementById("pErr");
+  if(res.err){e.textContent=res.err;e.style.display="block";return;}
+  S=res.s;ultimoCodigo=res.code;informeActual=corregir(S);ir("prof_informe");
+}
+
+function vProfInforme(){
+  const s=S, r=informeActual||corregir(S);
+  const pct=v=>Math.round(v*100);
+  const sug=sugerencias(s,r);
+  const txt=informeTexto(s,r,ultimoCodigo);
+  return `
+  <div class="hero" style="border-top-color:${r.banda.c}">
+    <div class="htitulo">Informe · ${esc(s.alias||"sin alias")}</div>
+    <div class="hsubt">Administración del <strong>${esc(s.fecha)}</strong> · ${esc(s.edad||"—")} años · ${({M:"mujer",H:"hombre",X:"otro"})[s.sexo]||"sexo no indicado"} · ${r.pclResp}/20 ítems contestados</div>
+  </div>
+
+  <div class="verdict" style="background:${r.diag?"#b0432f":r.total>=31?"#C2704F":"#566a70"}">
+    <div class="vt">${r.diag?"Cribado POSITIVO para TEPT":"No cumple todos los criterios de TEPT"}</div>
+    <div class="vs">${r.diag
+      ?"Se cumplen los criterios A-G del DSM-5 en el cribado. Confirmar en entrevista clínica."
+      :"Faltan criterios ("+["A","B","C","D","E","F","G"].filter(k=>!r["crit"+k]).join(", ")+"). Puede tratarse de un cuadro subumbral, de otro diagnóstico o de información incompleta."}
+      ${r.diso?"<br>Con síntomas disociativos.":""}${r.retardada?"<br>Con expresión retardada (≥6 meses).":""}</div>
+  </div>
+
+  <div class="sc-grid">
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-n">PCL-5 · Puntuación total</div>
+      <div class="sc-v" style="color:${r.banda.c}">${r.total}<span style="font-size:16px;color:var(--gris)"> / 80</span></div>
+      <div class="sc-d"><strong>${r.banda.n}</strong> — ${r.banda.d}</div>
+      <div class="bar"><div class="bar-f" style="width:${pct(r.total/80)}%;background:${r.banda.c}"></div></div>
+      <div class="sc-d" style="margin-top:7px">Punto de corte habitual para cribado: 31-33.</div>
+    </div>
+    ${Object.keys(CLUSTER).map(k=>{const c=r.cl[k];return `
+    <div class="sc">
+      <div class="sc-n">${c.nombre}</div>
+      <div class="sc-v" style="color:${c.col}">${c.sum}<span style="font-size:15px;color:var(--gris)"> / ${c.max}</span></div>
+      <div class="sc-d">${c.n} de ${CLUSTER[k].ids.length} síntomas presentes (≥2) · mínimo ${c.min} → <strong style="color:${c.cumple?c.col:"var(--gris)"}">${c.cumple?"cumple":"no cumple"}</strong></div>
+      <div class="bar"><div class="bar-f" style="width:${pct(c.sum/c.max)}%;background:${c.col}"></div></div>
+    </div>`;}).join("")}
+  </div>
+
+  <div class="card">
+    <div class="ctit">Suceso índice y exposición</div>
+    <div style="font-size:14.5px;line-height:1.65">
+      <strong>${s.idx.ev>0&&s.idx.ev<18?esc(s.idx.ev+". "+LEC[s.idx.ev-1]):"Otro acontecimiento (no especificado en la lista)"}</strong><br>
+      <span style="color:var(--gris)">${esc(CUANDO[s.idx.cuando]||"—")} · ${esc(REPETICION[s.idx.repet]||"—")}</span>
+    </div>
+    <div style="margin-top:10px">${r.expo.length?r.expo.map(t=>`<span class="pill">${esc(t)}</span>`).join(""):'<span class="pill" style="background:#F3E3DC;color:var(--rojo)">Sin tipo de exposición marcado</span>'}</div>
+    <div class="hint" style="margin:12px 0 0">Sucesos marcados en el LEC-5 (vividos, presenciados, conocidos o por trabajo): <strong>${r.nLec} de 17</strong>. El relato escrito por el paciente no viaja en el código: pedírselo en sesión.</div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Criterios DSM-5</div>
+    ${[["A","Exposición a acontecimiento traumático",r.critA,r.expo.join(" / ")||"sin marcar"],
+       ["B","Síntomas de intrusión (≥1)",r.critB,r.cl.B.n+" de 5 · suma "+r.cl.B.sum+"/20"],
+       ["C","Evitación (≥1)",r.critC,r.cl.C.n+" de 2 · suma "+r.cl.C.sum+"/8"],
+       ["D","Alteraciones cognitivas y del ánimo (≥2)",r.critD,r.cl.D.n+" de 7 · suma "+r.cl.D.sum+"/28"],
+       ["E","Alteraciones de la activación y reactividad (≥2)",r.critE,r.cl.E.n+" de 6 · suma "+r.cl.E.sum+"/24"],
+       ["F","Duración superior a 1 mes",r.critF,DURACION[s.dur]||"sin contestar"],
+       ["G","Malestar clínico o deterioro funcional",r.critG,r.areas+" de 5 áreas afectadas (≥ moderadamente)"]
+      ].map(x=>`<div class="crit ${x[2]?"si":"no"}"><div class="crit-ic">${x[2]?"✔️":"○"}</div><div class="crit-t"><b>Criterio ${x[0]}</b>${esc(x[1])}<br><span style="color:var(--gris);font-size:12.5px">${esc(x[3])}</span></div></div>`).join("")}
+    <div class="crit ${r.diso?"si":"no"}"><div class="crit-ic">${r.diso?"✔️":"○"}</div><div class="crit-t"><b>Especificador · síntomas disociativos</b>Despersonalización ${s.diso.desper==null?"—":s.diso.desper+"/4"} · Desrealización ${s.diso.desrea==null?"—":s.diso.desrea+"/4"}</div></div>
+    <div class="crit ${r.retardada?"si":"no"}"><div class="crit-ic">${r.retardada?"✔️":"○"}</div><div class="crit-t"><b>Especificador · expresión retardada</b>${esc(LATENCIA[s.lat]||"sin contestar")}</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Funcionamiento en el último mes</div>
+    ${FUNC.map(x=>{const v=s.func[x.k];return `<div class="flag"><div style="flex:1">${esc(x.t)}</div><div style="font-weight:700;color:${v>=3?"var(--rojo)":v>=2?"var(--naranja)":"var(--gris)"};white-space:nowrap">${v==null?"—":ESCFUNC[v]}</div></div>`;}).join("")}
+    ${FUNC_SN.map(x=>`<div class="flag"><div style="flex:1">${esc(x.t)}</div><div style="font-weight:700;color:${s.sn[x.k]===1?"var(--naranja)":"var(--gris)"}">${s.sn[x.k]===1?"Sí":s.sn[x.k]===0?"No":"—"}</div></div>`).join("")}
+  </div>
+
+  ${r.flags.length?`<div class="card"><div class="ctit">Banderas clínicas</div>${r.flags.map(f=>`<div class="flag"><div>${f.i}</div><div>${esc(f.t)}</div></div>`).join("")}</div>`:""}
+
+  <div class="card">
+    <div class="ctit">Propuesta de plan · herramientas APRENS</div>
+    ${sug.map(x=>`<div class="flag"><div style="font-size:19px">${x.ic}</div><div style="flex:1"><strong>${x.t}</strong> — ${esc(x.d)}<br><a href="${x.app}" style="color:var(--azul);font-weight:600;font-size:12.5px">→ ${esc(x.n)}</a></div></div>`).join("")}
+    <div class="hint" style="margin-top:12px">Regla de secuencia: si hay disociación marcada o activación muy alta, primero ventana de tolerancia (AIS) y solo después la escalera de exposición. La evitación alta indica exposición, no más psicoeducación.</div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Informe para la historia clínica</div>
+    <div class="cbox">${esc(txt)}</div>
+    <div class="acc" style="justify-content:flex-start">
+      <button class="btn bcopy bsm" onclick='copiar(${JSON.stringify(txt)},"okm2")'>📋 Copiar informe</button>
+      <button class="btn bs bsm" onclick="window.print()">🖨 Imprimir / PDF</button>
+      <button class="btn bpg bsm" onclick="guardarEval()">💾 Guardar en el historial</button>
+    </div>
+    <div id="okm2" style="display:none;color:var(--verde);font-weight:600;margin-top:10px"></div>
+  </div>
+  <div class="acc"><button class="btn bs bsm" onclick="ir('prof_inicio')">← Volver</button></div>
+  <div class="foot">LEC-5 y PCL-5 · Weathers, Blake, Schnurr, Kaloupek, Marx &amp; Keane (2013) · National Center for PTSD (dominio público).<br>Resultado de cribado: no sustituye la entrevista clínica ni establece diagnóstico.</div>`;
+}
+
+function guardarEval(){
+  const a=(S.alias||"SIN").toUpperCase();
+  const db=getDB();
+  if(!db[a])db[a]={ev:[]};
+  const r=informeActual||corregir(S);
+  const reg={fecha:S.fecha,total:r.total,cl:{B:r.cl.B.sum,C:r.cl.C.sum,D:r.cl.D.sum,E:r.cl.E.sum},
+             diag:r.diag,diso:r.diso,code:limpiaCodigo(ultimoCodigo)};
+  db[a].ev=(db[a].ev||[]).filter(x=>x.code!==reg.code);
+  db[a].ev.push(reg);
+  db[a].ev.sort((x,y)=>x.fecha<y.fecha?-1:1);
+  setDB(db);
+  const m=document.getElementById("okm2");
+  if(m){m.textContent="✓ Guardado en el historial de "+a;m.style.display="block";}
+}
+function verHistorial(a){aliasSel=a;ir("prof_historial");}
+function vProfHistorial(){
+  const db=getDB(), ev=(db[aliasSel]&&db[aliasSel].ev)||[];
+  const max=Math.max(80,...ev.map(x=>x.total));
+  return `
+  <div class="hero"><div class="htitulo">Evolución · ${esc(aliasSel)}</div>
+  <div class="hsubt">${ev.length} administración(es) guardadas en este dispositivo.</div></div>
+  <div class="card">
+    <div class="ctit">PCL-5 total (0-80)</div>
+    ${ev.map((x,i)=>{
+      const prev=i?ev[i-1].total:null, d=prev==null?null:x.total-prev;
+      return `<div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+          <span><strong>${esc(x.fecha)}</strong>${x.diag?' <span class="pill" style="background:#F3E3DC;color:var(--rojo)">cribado +</span>':""}${x.diso?' <span class="pill">disociativo</span>':""}</span>
+          <span style="font-weight:700">${x.total}/80 ${d==null?"":(d<0?'<span style="color:var(--verde)">▼ '+Math.abs(d)+"</span>":d>0?'<span style="color:var(--rojo)">▲ '+d+"</span>":'<span style="color:var(--gris)">=</span>')}</span>
+        </div>
+        <div class="bar" style="height:11px"><div class="bar-f" style="width:${Math.round(x.total/max*100)}%;background:${x.total>=33?"#b0432f":x.total>=15?"#C2704F":"#5c7d54"}"></div></div>
+        <div class="hint" style="margin:5px 0 0">B ${x.cl.B} · C ${x.cl.C} · D ${x.cl.D} · E ${x.cl.E}</div>
+      </div>`;}).join("")||'<div class="hint">Sin registros.</div>'}
+    <div class="hint" style="margin-top:10px">Cambio clínicamente significativo orientativo en el PCL-5: <strong>10-20 puntos</strong> de reducción.</div>
+  </div>
+  <div class="card">
+    <div class="ctit">Reabrir un informe</div>
+    ${ev.map(x=>`<div class="hrow"><div>${esc(x.fecha)} · ${x.total}/80</div><button class="btn bs bsm" onclick='reabrir(${JSON.stringify(x.code)})'>Ver informe</button></div>`).join("")||'<div class="hint">Sin registros.</div>'}
+  </div>
+  <div class="acc"><button class="btn bs bsm" onclick="ir('prof_inicio')">← Volver</button></div>`;
+}
+function reabrir(code){
+  const res=parseCodigo(code);
+  if(res.err){alert(res.err);return;}
+  S=res.s;ultimoCodigo=res.code;informeActual=corregir(S);ir("prof_informe");
+}
+
+/* ══════════════ ARRANQUE ══════════════ */
+(function(){
+  const q=new URLSearchParams(window.location.search);
+  if(q.get("m")==="px"){
+    const pr=hayProgreso();
+    if(pr){S=pr.S;qIdx=pr.qIdx||0;modo="paciente";vista=pr.vista||"pac_lec";}
+    else modoPaciente();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
