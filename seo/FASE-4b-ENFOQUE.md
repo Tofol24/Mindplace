@@ -167,3 +167,97 @@ por la puerta de atrás lo que el texto se cuida de no afirmar por la principal.
 2. **¿Qué quieres que pase con quien lea esto y no quiera trabajo TEC/AIS?** He propuesto decir
    explícitamente que puede trabajar solo con las intervenciones respaldadas. Confírmame si estás
    de acuerdo: es una promesa que la consulta tiene que poder cumplir.
+
+---
+
+## 8. Resolución de las dos preguntas abiertas
+
+Respondidas el 26 de agosto de 2026.
+
+### 8.1 «En breve voy a publicar la TEC en Amazon»
+
+| | |
+|---|---|
+| **Qué cambia** | TEC/AIS deja de ser un marco sin fuente pública. Pasa a ser **descrito, fechado, atribuido y citable**. Hoy, si alguien pregunta «¿qué es exactamente TEC?», no hay dónde mirar; con el libro, sí. Es una mejora real de legibilidad para personas y para sistemas. |
+| **Qué NO cambia** | **Nada del nivel de evidencia.** Autopublicar no es revisión por pares, y un libro que describe un modelo no es evidencia de que ese modelo funcione. La formulación «no es un tratamiento con eficacia diferencial establecida» se mantiene sin alteración. |
+
+**Reglas de uso cuando exista:**
+
+- No se cita hasta que esté publicado con identificador estable. Nada de «próximamente».
+- Se cita como **«el marco está descrito en…»**, nunca como «avalado por» ni «basado en».
+- El enlace es informativo, no promocional. Un bucle libro → terapia → libro en una página
+  sanitaria se lee como venta y erosiona la confianza que esta arquitectura intenta construir.
+- En datos estructurados entraría como `Book` con `author` = la Person del grafo. **No** como
+  respaldo de `MedicalTherapy`, que sigue descartado.
+
+### 8.2 «Sí, ya que la terapia TEC bebe directamente de la ACT»
+
+Confirmada la frase que permite al paciente trabajar únicamente con las intervenciones
+respaldadas. Pero la justificación abre una cuestión que la página debe resolver de forma explícita.
+
+**La derivación da linaje, no evidencia.** Declarar que TEC parte de ACT es bueno y honesto: sitúa
+el marco en una tradición con respaldo en guías. Pero no transfiere el aval. Si lo transfiriera,
+bastaría renombrar cualquier terapia establecida para heredar sus estudios.
+
+**Y hay una tensión que conviene cerrar antes de escribir:**
+
+| Si… | Entonces… |
+|---|---|
+| TEC ≈ ACT | Presentarlo como marco propio con nombre propio **infla su novedad** |
+| TEC ≠ ACT | La promesa de «trabajar solo con lo respaldado» significa hacer algo genuinamente distinto, y **la consulta tiene que poder cumplirla** |
+
+No se puede sostener a la vez que es lo bastante distinto para tener nombre propio y lo bastante
+igual para que la promesa sea trivial.
+
+**Resolución adoptada** — modesta, defendible, y coherente con ambas cosas:
+
+> TEC/AIS es una **sistematización propia** de principios procedentes de la terapia de aceptación
+> y compromiso, combinados con entrenamiento atencional e interoceptivo. Lo propio es la forma de
+> organizarlo y aplicarlo, no los principios de los que parte, que son los de un enfoque con
+> respaldo en guías de práctica clínica.
+
+Con esta formulación:
+
+- El linaje queda **declarado**, que es lo que aporta legitimidad honesta.
+- La novedad reclamada es **acotada**: la sistematización, no los principios.
+- La promesa es **significativa y cumplible**: se puede trabajar con TCC y ACT sin la
+  sistematización propia.
+- Y resiste que alguien compare la web con la literatura, que es exactamente la prueba que este
+  proyecto tiene que pasar.
+
+---
+
+## 9. Texto de las dos secciones críticas
+
+El resto de la página sigue el esquema de la sección 3. Estas dos son las que deciden si la página
+es creíble, así que van redactadas para aprobar palabra por palabra.
+
+### Bloque de separación
+
+> **A partir de aquí, desarrollo propio**
+>
+> Lo que viene a continuación se ha desarrollado en este centro. Se explica aparte, y con sus
+> límites, porque no tiene el mismo respaldo que lo anterior.
+
+### H2 · ¿Qué es el marco TEC/AIS?
+
+> Es una sistematización propia del trabajo atencional e interoceptivo, desarrollada por Cristòfol
+> Villalonga a partir de su práctica clínica.
+>
+> Parte de principios de la terapia de aceptación y compromiso —cambiar la relación con las
+> experiencias internas en lugar de intentar suprimirlas, y recuperar la acción en las áreas que
+> importan— y los combina con entrenamiento sistemático de la atención y del registro de lo que
+> ocurre en el cuerpo. **Lo propio es la manera de organizarlo y aplicarlo, no los principios de
+> los que parte.**
+>
+> **Qué respaldo tiene, dicho con precisión.** Los principios de los que parte proceden de un
+> enfoque con recomendación en guías de práctica clínica. La sistematización concreta que se
+> describe aquí **no cuenta con evidencia publicada que permita afirmar que funciona mejor que las
+> intervenciones ya respaldadas**, y por tanto no se presenta como alternativa a ellas ni sustituye
+> a ninguna.
+>
+> Se explica en la primera visita. **Quien prefiera trabajar únicamente con las intervenciones
+> respaldadas por guías puede hacerlo**, y el trabajo se organiza así sin ningún inconveniente.
+
+Esa última frase convierte una declaración de límites en una garantía para el paciente. Es también
+un compromiso operativo: la consulta tiene que poder cumplirlo.
