@@ -32,7 +32,7 @@
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
       ids:["retorno_trabajo","toco_desde_dentro"] },
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
-      ids:["pedalea_desde_dentro"] },
+      ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
       ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
