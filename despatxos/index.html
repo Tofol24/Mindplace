@@ -1221,14 +1221,14 @@
       const m=sesMes.value;
       const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
 
-      // Inicializar selector de professional si no existeix
+      // Inicializar selector de professional si no existeix (exclou Tòfol)
       let profSel=document.getElementById('sesProfSel');
       if(!profSel){
         const row=document.createElement('div'); row.className='row';
         row.innerHTML='<label>Professional</label>';
         const sel=document.createElement('select'); sel.id='sesProfSel'; sel.onchange=()=>renderSessions();
         sel.appendChild(Object.assign(document.createElement('option'), {value:'', textContent:'Totes'}));
-        PROFS.forEach(p=>sel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
+        PROFS.filter(p=>p.id!=='tofol').forEach(p=>sel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
         row.appendChild(sel);
         document.querySelector('#tab-sessions .row').after(row);
         profSel=sel;
@@ -1243,8 +1243,8 @@
       document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Data</th><th>Hora</th><th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th class="num">Comissió</th><th>Pacient</th><th>Estat</th>';
       document.getElementById('sesListTitle').textContent='📊 Detall de sessions i comissions · '+mesLabel(m);
 
-      // Filtra per professional si és seleccionat
-      let rows=monthRows;
+      // Filtra per professional si és seleccionat (sempre exclou Tòfol)
+      let rows=monthRows.filter(r=>r.prof!=='tofol');
       if(selSesProf) rows=rows.filter(r=>r.prof===selSesProf);
 
       // Agrupa per professional per subtotals
