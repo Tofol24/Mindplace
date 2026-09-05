@@ -1234,6 +1234,10 @@
       const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
       console.log('monthRows count:', monthRows.length);
 
+      // Add visible debug indicator
+      const debugEl=document.getElementById('sesScope');
+      debugEl.innerHTML = '🔍 <b>OWNER VIEW ACTIVE</b> - owner=true me='+me + '<br>' + debugEl.innerHTML;
+
       // Inicializar selector de professional si no existeix (exclou Tòfol)
       let profSel=document.getElementById('sesProfSel');
       if(!profSel){
