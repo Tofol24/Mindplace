@@ -62,6 +62,10 @@ window.APRENS_TOOLS = [
     desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
     migrada:true, iframe:"tools-standalone/screening-tec.html" },
 
+  { id:"evaluacion_trauma", emoji:"🧭", nombre:"Evaluación de trauma",
+    desc:"Cribado y seguimiento de estrés postraumático (LEC-5 + PCL-5): el paciente responde desde el móvil y devuelve un código; el profesional obtiene el informe con criterios DSM-5 y propuesta de plan.",
+    migrada:true, iframe:"tools-standalone/evaluacion-trauma.html" },
+
   { id:"mapa_atencion_interna", emoji:"🫀", nombre:"Mapa interno",
     desc:"El cuerpo como mapa: cuello, pecho y barriga (interocepción AIS).",
     migrada:true, iframe:"tools-standalone/mapa-interno.html" },
@@ -90,6 +94,10 @@ window.APRENS_TOOLS = [
     desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a tu cuerpo, modo prueba, revisión semanal y ICE. Nombre y diminutivo editables.",
     migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" },
 
+  { id:"entre_punto_y_punto", emoji:"🎾", nombre:"Entre punto y punto",
+    desc:"Tenis de competición (adolescente): mapa atencional del juego (saque, resto, error no forzado, bucle, punto clave, cambio de lado, miradas de fuera, cansancio), autorregistro al salir de la pista con los tres parámetros TEC, exposición en imaginación para sostener la tensión y verse jugando bien con ella dentro, y escalera progresiva de mirada hacia adentro (AIS) hasta la pista con la raqueta.",
+    migrada:true, iframe:"tools-standalone/entre_punto_y_punto_aprens.html" },
+
   { id:"estoy_aqui_conmigo", emoji:"🤍", nombre:"Estoy aquí conmigo",
     desc:"Para adolescentes: entrenar la presencia interna y el apego seguro con una misma tras una ruptura o cuando cuesta sostener la soledad. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia, registro y plan de apoyo (TEC–AIS).",
     migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" },
@@ -105,6 +113,14 @@ window.APRENS_TOOLS = [
   { id:"tiempo_limite", emoji:"⏱️", nombre:"El tiempo límite (peques)",
     desc:"Para madres y padres: enseñar a tu peque a empezar por sí mismo. Primero la honestidad emocional (compartir la sensación y pedir un abrazo, desde la complicidad y no la culpa), luego el entrenamiento del tiempo límite de 2 minutos, la tolerancia a la frustración sin ser rescatado y los límites claros. Bilingüe castellano/català.",
     migrada:true, iframe:"tools-standalone/tiempo_limite_peques.html" },
+
+  { id:"peques_desbordamiento", emoji:"🌊", nombre:"Cuando todo se hace demasiado",
+    desc:"Para familias con perfil TEA (9–12 años): acompañar el desbordamiento ante la frustración y los cambios, no «parar rabietas». Semáforo de capacidad, «primero yo» (regulación del adulto), qué necesita / qué le digo / hablo o espero, fuera de casa, entrenar en calma, entender lo que pasó y un plan familiar. Doble entrada niño/adulto. Modo tranquilo. Todo se guarda solo en el dispositivo.",
+    migrada:true, iframe:"tools-standalone/cuando-todo-demasiado.html" },
+
+  { id:"cuentos_nil", emoji:"📖", nombre:"Los cuentos de Nil",
+    desc:"Tres cuentos visuales para peques (9–12) con perfil TEA: reconocer cuánto espacio (capacidad) queda por dentro, no «portarse bien». «No era así como tenía que pasar» (cambios), «Hoy todo pesaba más» (acumulación y fuera de casa) y «No salió como yo pensaba» (frustración social). Incluye «¿Y a mí qué me pasa?» para hacer tu propio mapa. Se lee en calma, no durante una crisis. Todo se guarda solo en el dispositivo.",
+    migrada:true, iframe:"tools-standalone/cuentos/index.html" },
 
   { id:"fondos_frases", emoji:"🖼️", nombre:"Fondos de frases",
     desc:"Convierte una frase que te acompañe (de tus herramientas o la tuya) en el fondo de pantalla de tu móvil: elige frase y fondo, y guarda la imagen.",

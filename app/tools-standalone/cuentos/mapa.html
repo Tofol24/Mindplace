@@ -1,0 +1,178 @@
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>¿Y a mí qué me pasa?</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/reader.css">
+</head><body>
+<div class="mp">
+  <header>
+    <div class="ttl"><div class="kick" id="kick"></div><h1 id="h1"></h1></div>
+    <div style="display:flex;gap:8px;flex:none">
+      <a class="back" id="idx" href="index.html"></a>
+      <button class="back" id="wipeTop" type="button" style="color:var(--coral);border-color:#e6cfca"></button>
+    </div>
+  </header>
+  <div class="prog" id="prog"></div>
+  <main id="main"></main>
+  <nav>
+    <button class="nav back2" id="back" type="button" style="display:none"></button>
+    <button class="nav next" id="next" type="button"></button>
+  </nav>
+</div>
+<script>
+var LANG=(function(){try{var l=localStorage.getItem("aprens_cuentos_lang");if(l==="ca"||l==="es")return l;}catch(e){}return "es";}());
+document.documentElement.lang=LANG;
+var T={
+ es:{title:"¿Y a mí qué me pasa?",kick:"Un mapa tuyo",idx:"‹ Índice",wipe:"Borrar",
+   back:"Atrás",start:"Empezar",next:"Siguiente",done:"Hecho",
+   introH:"Esto no es un examen.",
+   introP1:"No hay respuestas buenas ni malas. Solo <b>pistas sobre ti</b>: lo que notas cuando todo se hace demasiado, y lo que te ayuda a hacer espacio.",
+   introP2:"Puedes hacerlo con calma, y cambiarlo otro día.",
+   sH:"Cuando empiezo a tener demasiadas cosas, a veces noto…",
+   sHint:"Marca lo que reconozcas. Puedes elegir varias, o ninguna.",
+   sOpts:[["🖐️","las manos"],["🌀","la barriga"],["💓","el pecho"],["🧠","la cabeza"],["🔊","el ruido"],["🔥","el calor"],["🚪","ganas de irme"],["🤫","ganas de que nadie me hable"]],
+   aH:"Cuando necesito recuperar espacio, a veces me ayuda…",
+   aHint:"Lo que a ti te sirve. No tiene por qué servirle a otros.",
+   aOpts:[["⏸️","una pausa"],["🌙","estar solo"],["🤝","que alguien esté cerca"],["🔈","el silencio"],["🗺️","saber qué va a pasar"],["🏃","moverme"],["⭐","algo que me gusta mucho"]],
+   fH:"Cuando me queda muy poco espacio, prefiero que me digan…",
+   fHint:"Elige las frases que a ti te van bien.",
+   fOpts:[["","«Estoy aquí.»"],["","«No hace falta hablar ahora.»"],["","«Cuando quieras, seguimos.»"],["","«Vamos a un sitio más tranquilo.»"]],
+   mapH:"Mi mapa",mapHint:"Puede cambiar otro día. Es tuyo.",
+   g1:"Cuando empiezo a tener demasiadas cosas, noto",
+   g2:"Lo que me ayuda a recuperar espacio",
+   g3:"Cuando me queda muy poco espacio, prefiero que me digan",
+   closing:"Cuando todo se hace demasiado, podemos hacer espacio. Y no tienes que hacerlo tú solo.",
+   copy:"📋 Copiar mi mapa",print:"🖨️ Imprimir",again:"Empezar de nuevo",wipeAll:"Borrar mis respuestas",
+   otra:"otra cosa (opcional)",empty:"— (todavía sin marcar)",copied:"Copiado ✓",
+   confirmWipe:"¿Borrar tus respuestas? Se borrará lo que has marcado.",
+   txtTitle:"MI MAPA (¿Y a mí qué me pasa?)",
+   txtL1:"Cuando empiezo a tener demasiadas cosas, noto:",
+   txtL2:"Lo que me ayuda a recuperar espacio:",
+   txtL3:"Cuando me queda muy poco espacio, prefiero que me digan:",
+   txtClosing:"Cuando todo se hace demasiado, podemos hacer espacio. Y no tengo que hacerlo yo solo."},
+ ca:{title:"I a mi què em passa?",kick:"Un mapa teu",idx:"‹ Índex",wipe:"Esborrar",
+   back:"Enrere",start:"Comença",next:"Següent",done:"Fet",
+   introH:"Això no és un examen.",
+   introP1:"No hi ha respostes bones ni dolentes. Només <b>pistes sobre tu</b>: el que notes quan tot es fa massa, i el que t'ajuda a fer espai.",
+   introP2:"Ho pots fer amb calma, i canviar-ho un altre dia.",
+   sH:"Quan començo a tenir massa coses, de vegades noto…",
+   sHint:"Marca el que reconeguis. Pots triar-ne diverses, o cap.",
+   sOpts:[["🖐️","les mans"],["🌀","la panxa"],["💓","el pit"],["🧠","el cap"],["🔊","el soroll"],["🔥","la calor"],["🚪","ganes d'anar-me'n"],["🤫","ganes que ningú em parli"]],
+   aH:"Quan necessito recuperar espai, de vegades m'ajuda…",
+   aHint:"El que a tu et serveix. No té per què servir als altres.",
+   aOpts:[["⏸️","una pausa"],["🌙","estar sol"],["🤝","que algú estigui a prop"],["🔈","el silenci"],["🗺️","saber què passarà"],["🏃","moure'm"],["⭐","una cosa que m'agrada molt"]],
+   fH:"Quan em queda molt poc espai, prefereixo que em diguin…",
+   fHint:"Tria les frases que a tu et van bé.",
+   fOpts:[["","«Soc aquí.»"],["","«No cal parlar ara.»"],["","«Quan vulguis, continuem.»"],["","«Anem a un lloc més tranquil.»"]],
+   mapH:"El meu mapa",mapHint:"Pot canviar un altre dia. És teu.",
+   g1:"Quan començo a tenir massa coses, noto",
+   g2:"El que m'ajuda a recuperar espai",
+   g3:"Quan em queda molt poc espai, prefereixo que em diguin",
+   closing:"Quan tot es fa massa, podem fer espai. I no ho has de fer tu sol.",
+   copy:"📋 Copiar el meu mapa",print:"🖨️ Imprimir",again:"Tornar a començar",wipeAll:"Esborrar les meves respostes",
+   otra:"una altra cosa (opcional)",empty:"— (encara sense marcar)",copied:"Copiat ✓",
+   confirmWipe:"Esborrar les teves respostes? S'esborrarà el que has marcat.",
+   txtTitle:"EL MEU MAPA (I a mi què em passa?)",
+   txtL1:"Quan començo a tenir massa coses, noto:",
+   txtL2:"El que m'ajuda a recuperar espai:",
+   txtL3:"Quan em queda molt poc espai, prefereixo que em diguin:",
+   txtClosing:"Quan tot es fa massa, podem fer espai. I no ho he de fer jo sol."}
+};
+var t=T[LANG];
+document.title=t.title;
+document.getElementById("kick").textContent=t.kick;
+document.getElementById("h1").textContent=t.title;
+document.getElementById("idx").textContent=t.idx;
+document.getElementById("wipeTop").textContent=t.wipe;
+
+var LS="aprens_mimapa";
+var state={senales:[],ayuda:[],frases:[],otraSen:"",otraAyu:"",otraFra:""};
+try{var raw=localStorage.getItem(LS); if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){}}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+var STEPS=[
+ {id:"intro",kind:"intro"},
+ {id:"senales",kind:"multi",key:"senales",okey:"otraSen",h:t.sH,hint:t.sHint,opts:t.sOpts},
+ {id:"ayuda",kind:"multi",key:"ayuda",okey:"otraAyu",h:t.aH,hint:t.aHint,opts:t.aOpts},
+ {id:"frases",kind:"multi",key:"frases",okey:"otraFra",frase:true,h:t.fH,hint:t.fHint,opts:t.fOpts},
+ {id:"map",kind:"map"}
+];
+var i=0, main=document.getElementById('main'), prog=document.getElementById('prog');
+STEPS.forEach(function(){prog.appendChild(document.createElement('i'));});
+function render(){
+  main.innerHTML="";
+  var st=STEPS[i], d=document.createElement('div'); d.className="step on"; d.id="s-"+st.id;
+  if(st.kind==="intro"){
+    d.innerHTML='<h2>'+t.introH+'</h2><p class="lead">'+t.introP1+'</p><p class="lead">'+t.introP2+'</p>';
+  } else if(st.kind==="multi"){
+    var arr=state[st.key];
+    var html='<h2>'+st.h+'</h2><p class="hint">'+st.hint+'</p><div class="opts">';
+    st.opts.forEach(function(o){
+      var on=arr.indexOf(o[1])>=0;
+      html+='<div class="opt'+(on?' on':'')+(st.frase?' frase':'')+'" data-v="'+esc(o[1])+'">'+
+        (o[0]?'<span class="em">'+o[0]+'</span>':'')+'<span>'+o[1]+'</span>'+
+        '<span class="tick">'+(on?'✓':'')+'</span></div>';
+    });
+    html+='</div><div class="otra"><input type="text" id="otra" placeholder="'+t.otra+'" value="'+esc(state[st.okey]||"")+'"></div>';
+    d.innerHTML=html;
+    d.querySelectorAll('.opt').forEach(function(el){
+      el.onclick=function(){
+        var v=el.getAttribute('data-v'), pos=arr.indexOf(v);
+        if(pos>=0){arr.splice(pos,1);el.classList.remove('on');el.querySelector('.tick').textContent="";}
+        else{arr.push(v);el.classList.add('on');el.querySelector('.tick').textContent="✓";}
+        save();
+      };
+    });
+    d.querySelector('#otra').oninput=function(){state[st.okey]=this.value;save();};
+  } else if(st.kind==="map"){
+    d.innerHTML=buildMap(); wireMap(d);
+  }
+  main.appendChild(d);
+  prog.querySelectorAll('i').forEach(function(e,idx){e.classList.toggle('done',idx<=i);});
+  document.getElementById('back').style.display=i>0?"block":"none";
+  var nx=document.getElementById('next');
+  nx.textContent=i===0?t.start:(i===STEPS.length-1?t.done:t.next);
+  nx.style.display=i===STEPS.length-1?"none":"block";
+  window.scrollTo(0,0);
+}
+function chips(arr,otra){var all=arr.slice(); if(otra)all.push(otra);
+  if(!all.length)return '<div class="empty">'+t.empty+'</div>';
+  return '<div class="chips">'+all.map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join("")+'</div>';}
+function buildMap(){
+  return '<h2>'+t.mapH+'</h2><p class="hint">'+t.mapHint+'</p>'+
+   '<div class="map">'+
+   '<div class="grp"><div class="glbl">'+t.g1+'</div>'+chips(state.senales,state.otraSen)+'</div>'+
+   '<div class="grp"><div class="glbl">'+t.g2+'</div>'+chips(state.ayuda,state.otraAyu)+'</div>'+
+   '<div class="grp"><div class="glbl">'+t.g3+'</div>'+chips(state.frases,state.otraFra)+'</div>'+
+   '</div>'+
+   '<div class="closing-line">'+t.closing+'</div>'+
+   '<div class="acts"><button class="primary" id="copy" type="button">'+t.copy+'</button>'+
+   '<button id="print" type="button">'+t.print+'</button>'+
+   '<button id="again" type="button">'+t.again+'</button></div>'+
+   '<div class="borrar"><button id="wipe" type="button">'+t.wipeAll+'</button></div>'+
+   '<div class="saved" id="saved"></div>';
+}
+function mapText(){function line(a,o){var all=a.slice();if(o)all.push(o);return all.length?all.join(", "):"—";}
+  return t.txtTitle+"\n\n"+
+   t.txtL1+"\n"+line(state.senales,state.otraSen)+"\n\n"+
+   t.txtL2+"\n"+line(state.ayuda,state.otraAyu)+"\n\n"+
+   t.txtL3+"\n"+line(state.frases,state.otraFra)+"\n\n"+
+   t.txtClosing;}
+function fallbackCopy(x){var ta=document.createElement('textarea');ta.value=x;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+function wireMap(d){
+  d.querySelector('#copy').onclick=function(){var x=mapText(),ok=function(){d.querySelector('#saved').textContent=t.copied;};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(x).then(ok,function(){fallbackCopy(x);ok();});}else{fallbackCopy(x);ok();}};
+  d.querySelector('#print').onclick=function(){window.print();};
+  d.querySelector('#again').onclick=wipe;
+  d.querySelector('#wipe').onclick=wipe;
+  save();
+}
+function wipe(){ if(confirm(t.confirmWipe)){
+  state={senales:[],ayuda:[],frases:[],otraSen:"",otraAyu:"",otraFra:""};save();i=0;render();}}
+document.getElementById('next').onclick=function(){ if(i<STEPS.length-1){i++;render();} };
+document.getElementById('back').onclick=function(){ if(i>0){i--;render();} };
+document.getElementById('wipeTop').onclick=wipe;
+document.getElementById('back').textContent=t.back;
+render();
+</script>
+</body></html>

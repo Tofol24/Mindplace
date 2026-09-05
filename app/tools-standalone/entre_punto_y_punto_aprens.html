@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3d6659">
+<title>Entre punto y punto · APRENS</title>
+<style>
+  :root{
+    --bg:#f3f0e7; --bg2:#ece7da; --card:#fffdf8; --tinta:#292620; --suau:#726a5c;
+    --pista:#3d6659; --pista-d:#2b4a3f; --pista-lt:#e0ece6;
+    --tierra:#c1714c; --tierra-d:#985534; --tierra-lt:#f7e6db;
+    --pelota:#b98f18; --pelota-lt:#f6edcf;
+    --mono:#6d7683; --mono-d:#4f5761; --mono-lt:#e8ebef;
+    --calma:#5d8f77; --calma-d:#3f6b56; --calma-lt:#e3efe8;
+    --alerta:#b5433a;
+    --oro:#a9781f;
+    --linia:#e3dbc9; --linia2:#d6cdb8;
+    --ombra:0 6px 22px rgba(60,50,30,.10); --ombra-s:0 2px 10px rgba(60,50,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:16px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#1b1e1c; --bg2:#161917; --card:#232825; --tinta:#ebe6db; --suau:#a2998a;
+    --pista:#79b399; --pista-d:#9ecbb4; --pista-lt:#233330;
+    --tierra:#dd9469; --tierra-d:#ecab84; --tierra-lt:#3a2a1e;
+    --pelota:#d9b451; --pelota-lt:#392f16;
+    --mono:#9aa3ae; --mono-d:#b6bdc6; --mono-lt:#292e33;
+    --calma:#82c3a1; --calma-d:#a2d3ba; --calma-lt:#22302a;
+    --alerta:#e0796f;
+    --oro:#d7ac5a;
+    --linia:#383f3a; --linia2:#454d47;
+    --ombra:0 6px 22px rgba(0,0,0,.35); --ombra-s:0 2px 10px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--tinta);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased;
+    padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  .wrap{max-width:640px;margin:0 auto;padding:0 15px}
+
+  /* Barra superior */
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--bg) 62%,rgba(243,240,231,0));padding:14px 15px 8px;display:flex;align-items:center;gap:11px;max-width:640px;margin:0 auto}
+  :root[data-theme="dark"] .top{background:linear-gradient(180deg,var(--bg) 62%,rgba(27,30,28,0))}
+  .logo{width:34px;height:34px;border-radius:50%;background:var(--pista);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.1}
+  .top .ts{font-size:10.5px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:17px;display:grid;place-items:center}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:6px 0 2px;font-weight:700;line-height:1.15}
+  .view-s{color:var(--suau);font-size:14px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--pista-d);background:var(--pista-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:8px 0 6px}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:9px;line-height:1.2}
+  .card h2 .e{font-size:20px;flex:0 0 auto}
+  .card h3{font-family:var(--serif);font-size:16px;margin:14px 0 4px}
+  .card .lead{color:var(--suau);font-size:14px;margin:4px 0 10px}
+  .card p{margin:8px 0}
+  .muted{color:var(--suau);font-size:13.5px}
+  .tiny{font-size:12.5px;color:var(--suau)}
+
+  .quote{font-family:var(--serif);font-style:italic;color:var(--pista-d);background:var(--pista-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--pista);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:13px 18px;min-height:48px;transition:transform .07s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--pista-d);border:1.5px solid var(--pista)}
+  .btn.tierra{background:var(--tierra)}
+  .btn.calma{background:var(--calma)}
+  .btn.sm{padding:9px 13px;min-height:40px;font-size:13.5px;border-radius:10px}
+  .btn.gris{background:var(--mono)}
+  .btn.danger{background:var(--alerta)}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}
+  .btnrow .btn{flex:1}
+  .btn:focus-visible,.qa:focus-visible,.opt:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible,.mom:focus-visible,.lvl:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--pista-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px}
+
+  /* Accesos rápidos */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:10px 0}
+  .qa{background:var(--card);border:1px solid var(--linia);border-radius:14px;padding:15px 13px;text-align:left;cursor:pointer;font-family:inherit;color:var(--tinta);box-shadow:var(--ombra-s);display:flex;flex-direction:column;gap:5px;min-height:92px}
+  .qa .qe{font-size:23px}
+  .qa .qn{font-weight:700;font-size:14.5px;line-height:1.2}
+  .qa .qd{font-size:11.5px;color:var(--suau);line-height:1.3}
+  .qa:active{transform:scale(.98)}
+
+  .stat3{display:flex;gap:9px;text-align:center}
+  .stat3>div{flex:1;background:var(--pista-lt);border:1px solid var(--linia);border-radius:12px;padding:12px 5px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:23px;color:var(--pista-d);line-height:1}
+  .stat3 span{font-size:10.5px;color:var(--suau);line-height:1.25;display:block;margin-top:3px}
+
+  /* Formularios */
+  .fld{margin:16px 0}
+  .fld>label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+  .fld .hint{display:block;font-size:12.5px;color:var(--suau);font-weight:400;margin-top:2px}
+  input[type=text],input[type=number],input[type=time],input[type=date],textarea,select{
+    width:100%;border:1.5px solid var(--linia2);border-radius:11px;padding:11px 12px;font-family:inherit;font-size:15px;
+    color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:62px;line-height:1.5}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pista)}
+  .scale{display:flex;gap:4px;flex-wrap:wrap}
+  .scaleb{flex:1;min-width:26px;min-height:42px;border:1.5px solid var(--linia2);border-radius:9px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;color:var(--suau)}
+  .scaleb.sel{background:var(--pista);border-color:var(--pista);color:#fff}
+  .scale-ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--suau);margin-top:5px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{min-height:42px;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--tinta);padding:9px 13px;display:inline-flex;align-items:center;gap:6px;text-align:left}
+  .chip.sel{background:var(--pista-lt);border-color:var(--pista);color:var(--pista-d);font-weight:600}
+  .opt{display:block;width:100%;text-align:left;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:12px 14px;margin:7px 0;line-height:1.4}
+  .opt.sel{background:var(--pista-lt);border-color:var(--pista);color:var(--pista-d);font-weight:600}
+
+  .ok-flash{background:var(--calma-lt);border:1px solid var(--calma);color:var(--calma-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .safe{display:flex;gap:10px;background:var(--tierra-lt);border:1px solid #e8cdb8;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--tierra-d);line-height:1.45;align-items:flex-start;margin:12px 0}
+  :root[data-theme="dark"] .safe{border-color:#5c4028}
+  .safe .i{flex:0 0 auto;font-size:17px}
+
+  /* Mapa atencional: momentos */
+  .mom{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--linia);border-radius:13px;background:var(--card);cursor:pointer;font-family:inherit;color:var(--tinta);padding:12px 13px;margin:8px 0;box-shadow:var(--ombra-s)}
+  .mom .me{font-size:21px;flex:0 0 auto}
+  .mom .mn{flex:1;font-weight:700;font-size:14.5px;line-height:1.25}
+  .mom .mc{font-size:11px;color:var(--suau);font-weight:400;display:block;margin-top:2px}
+  .mom .mar{color:var(--suau);flex:0 0 auto;font-size:15px}
+  .mom.open{border-color:var(--pista);background:var(--pista-lt)}
+  .mdet{display:none;border:1px solid var(--linia);border-top:0;border-radius:0 0 13px 13px;background:var(--card);margin:-9px 0 12px;padding:14px 14px 16px}
+  .mdet.show{display:block;animation:fade .25s ease}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 4px}
+  @media(max-width:430px){.vs{grid-template-columns:1fr}}
+  .vsbox{border-radius:12px;padding:12px 13px;font-size:13.2px;line-height:1.45}
+  .vsbox.no{background:var(--mono-lt);border:1px solid var(--linia)}
+  .vsbox.si{background:var(--calma-lt);border:1px solid #cde0d5}
+  .vsbox h4{margin:0 0 6px;font-size:13px;letter-spacing:.02em}
+  .vsbox.no h4{color:var(--mono-d)}
+  .vsbox.si h4{color:var(--calma-d)}
+  .vsbox ul{margin:0;padding-left:16px}
+  .vsbox li{margin:3px 0}
+  .ancla{background:var(--pelota-lt);border:1px solid #e6d59c;border-radius:12px;padding:11px 13px;font-size:13.5px;margin-top:10px;color:var(--tinta)}
+  :root[data-theme="dark"] .ancla{border-color:#5a4b1c}
+  .ancla b{color:var(--oro)}
+
+  /* Práctica / cronómetro */
+  .timerbox{text-align:center;margin:18px 0 6px}
+  .clock{font-family:var(--serif);font-size:46px;font-weight:700;line-height:1;color:var(--pista-d)}
+  .guide{color:var(--suau);font-size:14.5px;margin-top:8px;min-height:44px;line-height:1.45;padding:0 6px}
+  .ring{width:150px;height:150px;border-radius:50%;margin:14px auto 6px;display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 45%,var(--pista-lt),var(--calma-lt));
+    box-shadow:inset 0 0 0 2px rgba(61,102,89,.22);transition:transform 1.2s ease-in-out}
+  .ring.big{transform:scale(1.12)}
+  .ring .rin{width:104px;height:104px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:var(--ombra-s);text-align:center;padding:6px}
+  .ring .rf{font-size:15px;font-weight:700;color:var(--pista-d)}
+
+  /* Pasos wizard */
+  .prog{height:6px;background:var(--linia);border-radius:3px;overflow:hidden;margin:4px 0 14px}
+  .prog i{display:block;height:100%;background:var(--tierra);border-radius:3px;transition:width .35s}
+  .stepbadge{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tierra-d);background:var(--tierra-lt);border:1px solid var(--linia);padding:4px 11px;border-radius:999px;font-weight:700}
+
+  /* Niveles adentro */
+  .lvl{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;border:1px solid var(--linia);border-radius:13px;background:var(--card);cursor:pointer;font-family:inherit;color:var(--tinta);padding:13px;margin:9px 0;box-shadow:var(--ombra-s)}
+  .lvl.lock{opacity:.5}
+  .lvl.on{border-color:var(--calma);background:var(--calma-lt)}
+  .lvl .ln{width:30px;height:30px;border-radius:50%;background:var(--pista);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;font-family:var(--serif);flex:0 0 auto}
+  .lvl.done .ln{background:var(--calma)}
+  .lvl.lock .ln{background:var(--mono)}
+  .lvl .lt{display:block;font-weight:700;font-size:14.5px;line-height:1.25}
+  .lvl .ld{display:block;font-size:12.5px;color:var(--suau);line-height:1.35;margin-top:3px}
+  .bar{display:block;height:5px;background:var(--linia);border-radius:3px;overflow:hidden;margin-top:7px}
+  .bar i{display:block;height:100%;background:var(--calma);border-radius:3px}
+
+  /* Registros */
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:12px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rt{font-weight:600;font-size:13.5px}
+  .rec .rd{font-size:11.5px;color:var(--suau);flex:0 0 auto}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .rec .del{background:none;border:0;color:var(--alerta);cursor:pointer;font-size:12.5px;padding:4px}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0;margin:0}
+
+  /* Frases */
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--calma-lt);border:1px solid #d3e3d9;border-radius:12px;padding:10px 12px;margin:7px 0}
+  :root[data-theme="dark"] .verb{border-color:#2d3a33}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--calma-d);font-size:15px;line-height:1.4}
+  .verb .va{display:flex;gap:4px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px;color:var(--suau)}
+  .fav-on{color:var(--oro)}
+  .grp-t{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--pista-d);font-weight:700;margin:14px 0 4px}
+
+  .chart{width:100%;height:auto;display:block;margin:6px 0}
+  .chart-lbl{font-size:11.5px;color:var(--suau);text-align:center;margin-bottom:6px}
+  table.rsm{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.rsm td{padding:7px 0;border-bottom:1px solid var(--linia)}
+  table.rsm td:last-child{text-align:right;font-weight:700}
+
+  /* Nav inferior */
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 1px;font-size:9.5px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}
+  .tab.on{color:var(--pista-d)}
+
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.5}
+  footer b{font-family:var(--serif);color:var(--pista-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(max-width:360px){.clock{font-size:38px}.qa{min-height:84px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div><div class="tt">Entre punto y punto</div><div class="ts">APRENS · TEC / AIS · Tenis de competición</div></div>
+  <span class="sp"></span>
+  <button class="iconbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Cambiar modo claro/oscuro" title="Modo claro/oscuro">🌙</button>
+</div>
+
+<main class="wrap" id="app"></main>
+
+<nav class="nav" id="nav"></nav>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   ENTRE PUNTO Y PUNTO · APRENS
+   ------------------------------------------------------------
+   Herramienta autónoma para tenista de competición (adolescente).
+   Tres funciones, articuladas sobre TEC (latencia / densidad /
+   continuidad) y AIS (atención interoceptiva sistemática):
+
+   1) MAPA ATENCIONAL — psicoeducación: en cada momento del juego,
+      dónde se va la atención (mono: pensamiento, evaluación, futuro)
+      y dónde tiene que ir (tarea, sensorial, aquí y ahora).
+   2) DESPUÉS — autorregistro posterior al entreno o al partido:
+      dónde se fue, cuánto tardó en darse cuenta (latencia), cuántas
+      veces volvió a propósito (densidad), si pudo sostener el foco
+      (continuidad), bucles y tensión corporal.
+   3) ENTRENAR entre semana — dos vías:
+      · Exposición en imaginación: evocar la escena, dejar que suba
+        la tensión, acompañarla (no quitarla) e imaginarse jugando
+        BIEN con la tensión dentro. Habituación + generalización.
+      · Mirada hacia adentro: escalera progresiva de 6 niveles de
+        interocepción, del reposo hasta la pista con la raqueta.
+
+   Todo local (localStorage). Sin backend ni dependencias externas.
+   ============================================================ */
+
+/* ---------- almacenamiento ---------- */
+var LS="entrepunto_db_v1";
+var DEFAULT={
+  settings:{nombre:"", cuerpo:"", dark:false, nivelAdentro:1,
+    direccion:"Compito para jugar bien, no para dejar de sentir. La tensión puede venir conmigo.",
+    intencion:"", favFrases:[]},
+  sesiones:[], imag:[], adentro:[], plan:null, frasesUser:[]
+};
+var DB=load();
+function load(){
+  try{
+    var d=JSON.parse(localStorage.getItem(LS)); if(!d) return clone(DEFAULT);
+    var base=clone(DEFAULT); for(var k in d){ base[k]=d[k]; }
+    for(var s in DEFAULT.settings){ if(base.settings[s]===undefined) base.settings[s]=DEFAULT.settings[s]; }
+    return base;
+  }catch(e){ return clone(DEFAULT); }
+}
+function save(){ try{ localStorage.setItem(LS,JSON.stringify(DB)); }catch(e){} }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* ---------- utilidades ---------- */
+function esc(s){ return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function jq(s){ return String(s==null?"":s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function uid(){ return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+function p2(n){ return ("0"+n).slice(-2); }
+function hoy(){ var d=new Date(); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function nowHM(){ var d=new Date(); return p2(d.getHours())+":"+p2(d.getMinutes()); }
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]; }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+function within30(iso){ return iso>=daysAgo(29); }
+function media(arr,f){ var v=arr.map(function(x){ return typeof f==="function"?f(x):x[f]; }).filter(function(n){ return typeof n==="number"&&!isNaN(n); }); if(!v.length) return null; return Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*10)/10; }
+function ultimos(arr,n){ return arr.slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); }).slice(0,n||50); }
+function NOM(){ return (DB.settings.nombre||"").trim(); }
+function CUERPO(){ return (DB.settings.cuerpo||"").trim()||"mi cuerpo"; }
+
+/* Integración con el ecosistema APRENS: cada registro se guarda también en
+   el aprens_db compartido del paciente. No montamos la barra flotante de
+   export para no chocar con la navegación inferior propia: la exportación
+   de esta herramienta vive en «Datos y ajustes». */
+function aprensSave(rec){ if(window.Aprens){ try{ Aprens.save(rec); }catch(e){} } }
+if(window.Aprens){ try{ Aprens.config({toolId:"entre_punto_y_punto", toolName:"Entre punto y punto", toolVersion:1}); }catch(e){} }
+
+/* ---------- constructor de formularios ---------- */
+/* field: {k,l,t:'scale'|'text'|'num'|'textarea'|'time'|'select'|'chips'|'chips1'|'options', opts, hint, ends, min, max, ph} */
+function fieldHTML(f){
+  var id="f_"+f.k, h='<div class="fld" data-k="'+f.k+'" data-t="'+f.t+'">';
+  h+='<label for="'+id+'">'+esc(f.l)+(f.hint?'<span class="hint">'+esc(f.hint)+'</span>':'')+'</label>';
+  if(f.t==='scale'){
+    var min=f.min==null?0:f.min, max=f.max==null?10:f.max;
+    h+='<div class="scale" role="group" aria-label="'+esc(f.l)+'">';
+    for(var i=min;i<=max;i++) h+='<button type="button" class="scaleb" data-v="'+i+'" onclick="pickScale(this)">'+i+'</button>';
+    h+='</div>';
+    if(f.ends) h+='<div class="scale-ends"><span>'+esc(f.ends[0])+'</span><span>'+esc(f.ends[1])+'</span></div>';
+  } else if(f.t==='text'){ h+='<input type="text" id="'+id+'" placeholder="'+esc(f.ph||"")+'">';
+  } else if(f.t==='num'){ h+='<input type="number" id="'+id+'" placeholder="'+esc(f.ph||"")+'" inputmode="numeric">';
+  } else if(f.t==='time'){ h+='<input type="time" id="'+id+'" value="'+nowHM()+'">';
+  } else if(f.t==='textarea'){ h+='<textarea id="'+id+'" placeholder="'+esc(f.ph||"")+'"></textarea>';
+  } else if(f.t==='select'){ h+='<select id="'+id+'"><option value="">Elige…</option>'; f.opts.forEach(function(o){ h+='<option value="'+esc(o)+'">'+esc(o)+'</option>'; }); h+='</select>';
+  } else if(f.t==='chips'||f.t==='chips1'){ h+='<div class="chips" data-multi="'+(f.t==='chips'?1:0)+'">'; f.opts.forEach(function(o){ h+='<button type="button" class="chip" data-v="'+esc(o)+'" onclick="pickChip(this)">'+esc(o)+'</button>'; }); h+='</div>';
+  } else if(f.t==='options'){ f.opts.forEach(function(o){ h+='<button type="button" class="opt" data-v="'+esc(o)+'" onclick="pickOpt(this)">'+esc(o)+'</button>'; }); }
+  h+='</div>'; return h;
+}
+function formHTML(fields){ return fields.map(fieldHTML).join(''); }
+function pickScale(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); box.parentNode.dataset.val=b.dataset.v; box.dataset.val=b.dataset.v; }
+function pickChip(b){ var box=b.parentNode, multi=box.dataset.multi==='1'; if(!multi){ box.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); } b.classList.toggle('sel'); }
+function pickOpt(b){ var box=b.parentNode; box.querySelectorAll('.opt').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function readForm(scope){
+  var out={};
+  scope.querySelectorAll('.fld').forEach(function(fl){
+    var k=fl.dataset.k, t=fl.dataset.t, v;
+    if(t==='scale'){ v=fl.dataset.val!=null?parseInt(fl.dataset.val,10):null; }
+    else if(t==='chips'||t==='chips1'){ v=[].slice.call(fl.querySelectorAll('.chip.sel')).map(function(x){ return x.dataset.v; }); if(t==='chips1') v=v[0]||null; }
+    else if(t==='options'){ var sel=fl.querySelector('.opt.sel'); v=sel?sel.dataset.v:null; }
+    else { var el=fl.querySelector('input,textarea,select'); v=el?el.value.trim():null; if(v==='') v=null; if(t==='num'&&v!=null) v=parseFloat(v); }
+    out[k]=v;
+  });
+  return out;
+}
+/* escalas sueltas fuera de .fld (data-k en el propio .scale) */
+function scaleBtns(k){ var s='<div class="scale" data-k="'+k+'">'; for(var i=0;i<=10;i++) s+='<button type="button" class="scaleb" data-v="'+i+'" onclick="pickScaleK(this)">'+i+'</button>'; return s+'</div>'; }
+function pickScaleK(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
+function getK(k){ var el=document.querySelector('.scale[data-k="'+k+'"]'); return el&&el.dataset.val!=null?parseInt(el.dataset.val,10):null; }
+function val(id){ var e=document.getElementById(id); return e?(e.value||'').trim():''; }
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||"Guardado ✓"; f.classList.add('show'); f.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ f.classList.remove('show'); },3000); } }
+
+/* ============================================================
+   CONTENIDO CLÍNICO
+   ============================================================ */
+
+/* --- Mapa atencional: los momentos del juego --- */
+var MOMENTOS=[
+  { id:"saque", e:"🎾", n:"Antes de sacar", c:"Mi ritual de saque",
+    mono:["«No puedo hacer doble falta.»","Mirar el marcador y calcular.","Pensar qué dirán desde fuera si fallo.","Repasar el saque anterior que se fue."],
+    tarea:["El bote de la pelota: sonido y ritmo.","La presión de los dedos en la empuñadura.","Una sola intención: dirección o altura.","Una respiración larga antes de subir la pelota."],
+    ancla:"El sonido del bote y la mano en la empuñadura.",
+    consigna:"Boto, respiro, elijo un objetivo. Lo demás no es asunto mío ahora." },
+  { id:"resto", e:"🛡️", n:"Al restar", c:"Reaccionar, no adivinar",
+    mono:["Adelantar el resultado del punto.","«Que no me saque fuerte otra vez.»","Mirar la cara del rival buscando pistas de todo menos de la pelota."],
+    tarea:["Split-step: los pies vivos.","Los ojos en la pelota desde la mano del rival.","Peso adelante, raqueta arriba."],
+    ancla:"El pequeño salto de los pies justo antes del impacto.",
+    consigna:"Pies vivos, ojos en la pelota. Reacciono, no predigo." },
+  { id:"error", e:"❌", n:"Tras un error no forzado", c:"Los 20 segundos que más entrenan",
+    mono:["«Otra vez lo mismo.»","Insultarte por dentro.","Repetir mentalmente el golpe fallado.","Cambiar el plan entero por un punto."],
+    tarea:["Paso 1 · Lo veo: una palabra técnica, no un juicio («llegué tarde»).","Paso 2 · Lo suelto: giro hacia el fondo y respiro.","Paso 3 · Siguiente: una intención para el punto que viene."],
+    ancla:"Girarte hacia el fondo de la pista, tocar las cuerdas, una respiración larga.",
+    consigna:"Lo he visto. Lo suelto. Voy a la siguiente." },
+  { id:"bucle", e:"🔁", n:"Cuando entro en bucle", c:"Rumiar entre puntos",
+    mono:["El mismo pensamiento dando vueltas.","Discutir contigo misma dentro de la cabeza.","Buscar la explicación de por qué juegas mal ahora mismo."],
+    tarea:["Cortar con un ancla sensorial, no con otro pensamiento.","Volver al plan de UN punto, no del partido.","Nombrar el bucle: «esto es un bucle», y devolver la atención."],
+    ancla:"Pasar los dedos por las cuerdas y notar la textura. El aire entrando por la nariz.",
+    consigna:"No estoy discutiendo con mi cabeza: estoy tocando las cuerdas." },
+  { id:"tension", e:"😤", n:"Cuando sube la tensión", c:"Estómago, pecho, garganta",
+    mono:["Leer la tensión como señal de que va a ir mal.","Intentar quitarla antes de jugar.","«Estoy nerviosa, hoy no va a salir.»"],
+    tarea:["Localizarla: ¿dónde exactamente?","Nombrarla: presión, calor, nudo, vibración.","Dejarla ahí y jugar el punto CON ella dentro."],
+    ancla:"La barriga moviéndose al respirar mientras caminas hacia la posición.",
+    consigna:"Esto es adrenalina, no peligro. Puedo jugar con ella dentro." },
+  { id:"clave", e:"⚡", n:"Punto importante", c:"Break, 30-30, set point",
+    mono:["Adelantarte: «si pierdo este…».","Jugar para no perder en vez de para jugar.","Elegir el golpe que menos dominas por miedo."],
+    tarea:["Reducir a UNA decisión táctica clara.","Elegir el patrón que sabes hacer, no el perfecto.","Ritual completo, sin acelerar."],
+    ancla:"El ritual de siempre, a la misma velocidad de siempre.",
+    consigna:"Un punto. Una intención. La que sé hacer." },
+  { id:"cambio", e:"🔄", n:"Cambio de lado", c:"Los 90 segundos de recambio",
+    mono:["Repasar todo lo que va mal.","Mirar a la grada buscando cara de aprobación.","Hacer cuentas de lo que queda."],
+    tarea:["Tres respiraciones con la toalla.","Beber, notar el agua fría.","Una frase de plan para los dos juegos siguientes."],
+    ancla:"La toalla en la cara y tres respiraciones contadas.",
+    consigna:"Cuerpo primero, plan después. Los juicios no juegan." },
+  { id:"fuera", e:"👀", n:"Miradas de fuera", c:"Entrenador, familia, rival, grada",
+    mono:["Leer caras para saber si lo estás haciendo bien.","Jugar para que alguien se quede tranquilo.","Interpretar un gesto del rival como un mensaje sobre ti."],
+    tarea:["Devolver la mirada a la línea de fondo.","Volver a tu ritual: es tuyo, no de ellos.","Si necesitas mirar a tu entrenador, mira el plan, no la cara."],
+    ancla:"La línea de fondo bajo tus zapatillas.",
+    consigna:"Su cara no juega mi punto." },
+  { id:"cansancio", e:"⏱️", n:"Cansancio y partido largo", c:"Tercer set, piernas pesadas",
+    mono:["«No puedo más.»","Calcular cuánto queda.","Confundir la fatiga con una orden de abandonar."],
+    tarea:["Acortar el horizonte: solo este punto.","Escuchar las piernas como información, no como orden.","Cuidar el ritual: cuando cansa, es cuando más sujeta."],
+    ancla:"El peso de las piernas y el aire llegando abajo, a la barriga.",
+    consigna:"Las piernas hablan, no mandan." },
+  { id:"final", e:"🏁", n:"Al acabar el partido", c:"Gane o pierda",
+    mono:["«Soy lo que ha marcado el marcador.»","Repasar solo los errores.","Decidir quién eres a partir de un resultado."],
+    tarea:["Separar el rendimiento de tu valor como persona.","Revisar el proceso: atención, ritual, intenciones.","Nombrar una cosa que has sostenido bien."],
+    ancla:"Los pies en el suelo al salir de la pista, una respiración larga.",
+    consigna:"Reviso cómo he jugado, no quién soy." }
+];
+function momById(id){ for(var i=0;i<MOMENTOS.length;i++) if(MOMENTOS[i].id===id) return MOMENTOS[i]; return null; }
+function momNombres(){ return MOMENTOS.map(function(m){ return m.e+" "+m.n; }); }
+function momIdDeNombre(nom){ for(var i=0;i<MOMENTOS.length;i++){ if((MOMENTOS[i].e+" "+MOMENTOS[i].n)===nom) return MOMENTOS[i].id; } return null; }
+
+/* --- Escenas de exposición en imaginación --- */
+var ESCENAS=[
+  { id:"saque_clave", e:"🎾", n:"Saque en un momento clave",
+    intro:"Vas 5-4 en el tie-break. Sacas tú.",
+    beats:["Sitúate: la pista, la luz, la superficie bajo tus zapatillas. ¿Hace calor? ¿Hay ruido?",
+           "Mira el marcador. 5-4. Sacas tú. Deja que eso llegue.",
+           "Estás detrás de la línea con la pelota en la mano. Botas. ¿Qué nota la mano?",
+           "Ahora nota lo que pasa por dentro: estómago, pecho, garganta, brazo.",
+           "No lo arregles. Solo mira dónde está y cómo es."] },
+  { id:"dos_errores", e:"❌", n:"Dos errores no forzados seguidos",
+    intro:"Dos derechas fáciles a la red, una detrás de otra.",
+    beats:["Ponte en el punto: la bola sube, la ves cómoda, la mandas a la red.",
+           "El punto siguiente: otra vez. La misma. A la red.",
+           "Escucha lo primero que dice tu cabeza. No lo corrijas: escúchalo.",
+           "Nota el cuerpo: la mandíbula, los hombros, el estómago.",
+           "Quédate ahí unos segundos, con la rabia y con la prisa por arreglarlo."] },
+  { id:"por_detras", e:"📉", n:"Ir por detrás en el marcador",
+    intro:"0-3 abajo en el primer set y notas que no entras en el partido.",
+    beats:["Mírate en la pista: 0-3. Todavía queda mucho, pero no lo sientes así.",
+           "Nota el impulso de acelerar, de arreglarlo todo en un golpe.",
+           "¿Dónde está eso en el cuerpo? ¿Empuja hacia delante, aprieta, sube?",
+           "Deja que la urgencia esté ahí sin obedecerla.",
+           "Respira sin intentar calmarte. Solo respira estando así."] },
+  { id:"mirada", e:"👀", n:"Con gente mirando",
+    intro:"Tu familia o tu entrenador en la grada, y tú fallando.",
+    beats:["Sitúate en la pista con ellos ahí. ¿Dónde están sentados?",
+           "Falla un punto y nota el impulso de mirar hacia la grada.",
+           "Imagina la cara que temes ver. Deja que aparezca.",
+           "¿Qué se te pone en la garganta, en el pecho, en el estómago?",
+           "Quédate con esa sensación sin mirar hacia arriba."] },
+  { id:"injusto", e:"⚖️", n:"Una decisión injusta",
+    intro:"Te cantan fuera una bola que tú has visto dentro.",
+    beats:["Ve el bote: para ti, dentro. Escucha el «fuera».",
+           "Nota la subida: rápida, caliente, urgente.",
+           "¿Dónde nace? ¿Pecho, mandíbula, brazos, cara?",
+           "No la justifiques ni la reprimas: acompáñala unos segundos.",
+           "Nota también el impulso de discutir, y déjalo pasar sin obedecerlo."] },
+  { id:"leido", e:"🎯", n:"El rival te está leyendo",
+    intro:"Sabe dónde vas a sacar y te está ganando la mano.",
+    beats:["Ponte en el punto en el que notas que te ha leído otra vez.",
+           "Nota la duda: «¿y ahora qué hago?».",
+           "El cuerpo: ¿se encoge, se acelera, se paraliza?",
+           "Quédate con la duda sin resolverla todavía.",
+           "Solo mírala: es incomodidad, no es peligro."] },
+  { id:"cansada", e:"🥵", n:"Cansancio en el tercer set",
+    intro:"Piernas pesadas, calor, y todavía queda partido.",
+    beats:["Nota las piernas: peso, calor, temblor pequeño.",
+           "La respiración corta, la boca seca.",
+           "Escucha el «no puedo más» apareciendo.",
+           "Deja que la frase esté ahí sin discutirla y sin creértela.",
+           "Nota que puedes seguir respirando dentro de esto."] },
+  { id:"volver", e:"🔙", n:"Volver a jugar tras una derrota dura",
+    intro:"Primer entreno después de un partido que dolió.",
+    beats:["Entra en la pista. Nota lo que pesa al entrar.",
+           "Aparece el recuerdo del partido. Déjalo aparecer.",
+           "¿Dónde se nota? ¿Pecho, garganta, estómago?",
+           "Quédate ahí sin taparlo con actividad.",
+           "Nota que la pista sigue siendo un sitio al que quieres volver."] }
+];
+function escById(id){ for(var i=0;i<ESCENAS.length;i++) if(ESCENAS[i].id===id) return ESCENAS[i]; return null; }
+
+/* Consignas de acompañamiento (fase 4 de la exposición) */
+var CONSIGNAS_ACOMP=[
+  "No estás quitando la sensación: le estás haciendo sitio.",
+  "Respira sin forzar. La respiración no es para que se vaya.",
+  "Ponle nombre: presión, calor, nudo, vibración, peso.",
+  "Mira sus bordes: ¿dónde empieza y dónde acaba?",
+  "¿Se mueve? ¿Cambia de sitio, de tamaño, de temperatura?",
+  "Esto es adrenalina. Es desagradable y no es peligroso.",
+  "Estoy aquí contigo, {C}. No te dejo solo con esto.",
+  "No hace falta que baje para que puedas jugar.",
+  "Suelta un poco los hombros y deja que el resto siga como está.",
+  "Cada segundo que te quedas, tu cuerpo aprende que puede."
+];
+var CONSIGNAS_EJEC=[
+  "Con la tensión todavía dentro, ve tu ritual completo: bote, respiración, intención.",
+  "No te imagines relajada: imagínate tensa y competente.",
+  "Mira tus pies moviéndose bien aunque el estómago siga apretado.",
+  "Ve el golpe saliendo limpio con el nudo todavía ahí.",
+  "Si en la imagen fallas, vuelve al protocolo: lo veo, lo suelto, siguiente.",
+  "Termina el punto y ve tu cara al acabar: presente, no perfecta."
+];
+
+/* --- Escalera de la mirada hacia adentro (AIS progresivo) --- */
+var NIVELES=[
+  { n:1, t:"Notar que hay un dentro", dur:60, meta:4,
+    d:"60 segundos. Sentada, en calma. Solo comprobar que hay señal.",
+    guide:["Siéntate y deja el móvil apoyado.","Respira normal. No lo cambies.","Busca UNA zona donde notes algo: garganta, pecho o barriga.","Quédate ahí. No hace falta que sea intenso.","Si te vas, vuelve. Irse y volver es el ejercicio."] },
+  { n:2, t:"Las tres anclas", dur:90, meta:4,
+    d:"90 segundos. Recorrer garganta, pecho y barriga.",
+    guide:["Garganta: ¿abierta, cerrada, con nudo, neutra?","Pecho: ¿ancho, apretado, rápido, quieto?","Barriga: ¿blanda, dura, con movimiento?","Vuelve a la que más habla y quédate.","Sin arreglar nada. Solo visitar."] },
+  { n:3, t:"Describir sin juzgar", dur:120, meta:5,
+    d:"2 minutos. Palabras de descripción, no de valoración.",
+    guide:["Elige la zona que más nota.","¿Qué forma tiene? ¿Punto, banda, bola, capa?","¿Qué temperatura? ¿Se mueve o está quieta?","Di por dentro la palabra: presión, calor, vibración, peso.","Si aparece «esto está mal», cámbialo por una palabra descriptiva."] },
+  { n:4, t:"Quedarse un poco más", dur:180, meta:5,
+    d:"3 minutos. Tolerar sin resolver. Aquí empieza la habituación.",
+    guide:["Localiza la sensación y quédate.","Aparecerá el impulso de moverte o de mirar el móvil. Míralo pasar.","No compruebes si ha bajado. Comprobar la alimenta.","Nota que cambia sola, sin que tú hagas nada.","Éxito = haberte quedado, no que se vaya."] },
+  { n:5, t:"Adentro con el cuerpo activo", dur:150, meta:5,
+    d:"2-3 min justo después de esfuerzo (series, carrera, saltos). El puente hacia la competición.",
+    guide:["Acabas de esforzarte. El corazón va rápido.","Eso NO es ansiedad: es tu cuerpo trabajando.","Nota el pecho, el pulso, la respiración corta.","Quédate con la activación sin interpretarla.","Este es el mismo cuerpo que notarás en un punto importante."] },
+  { n:6, t:"Adentro con los ojos en la tarea", dur:120, meta:6,
+    d:"2 min con la raqueta en las manos o botando la pelota. Atención doble.",
+    guide:["Raqueta en las manos, de pie. Ojos abiertos.","Bota la pelota a un ritmo constante.","Atención al bote: sonido y mano.","Sin soltar el bote, comprueba la barriga. Vuelve al bote.","Ir y volver entre tarea y cuerpo: esto es lo que harás en pista."] }
+];
+function nivelActual(){ var n=DB.settings.nivelAdentro||1; return Math.max(1,Math.min(NIVELES.length,n)); }
+function practicasNivel(n){ return DB.adentro.filter(function(x){ return x.nivel===n; }).length; }
+
+/* --- Banco de frases --- */
+var FRASES=[
+  { g:"Entre punto y punto", l:["Lo he visto. Lo suelto. Voy a la siguiente.","Un punto. Una intención.","No discuto con mi cabeza: toco las cuerdas.","Ritual completo, a mi velocidad."] },
+  { g:"Cuando sube la tensión", l:["Esto es adrenalina, no peligro.","Puedo jugar con ella dentro.","No hace falta que baje para que yo juegue.","Estoy aquí contigo, {C}."] },
+  { g:"Cuando aparece el juicio", l:["Su cara no juega mi punto.","Reviso cómo he jugado, no quién soy.","Fallar es información, no una sentencia.","Exigirme no es maltratarme."] },
+  { g:"Cuando cuesta seguir", l:["Las piernas hablan, no mandan.","Solo este punto.","Cansada y presente también vale.","Sostener ya es ganar algo."] }
+];
+var FRASES_DIA=[
+  "Compito para jugar bien, no para dejar de sentir.",
+  "La tensión puede venir conmigo a la pista.",
+  "Irse y volver es el ejercicio; no irse nunca no existe.",
+  "Hoy entreno cómo vuelvo, no cuántas veces me voy.",
+  "Mi valor no lo decide el marcador.",
+  "Estoy aquí contigo, {C}. No juegas sola.",
+  "Un punto. Una intención. La que sé hacer.",
+  "El ritual sujeta justo cuando cuesta."
+];
+function fraseDelDia(){ var d=new Date(); var i=(d.getFullYear()+d.getMonth()*31+d.getDate())%FRASES_DIA.length; return FRASES_DIA[i].replace("{C}",CUERPO()); }
+
+/* ============================================================
+   NAVEGACIÓN
+   ============================================================ */
+var VIEW="home", VIEWS={};
+var NAV=[
+  {id:"home",     e:"🏠", l:"Casa"},
+  {id:"mapa",     e:"🎾", l:"Mapa"},
+  {id:"despues",  e:"📝", l:"Después"},
+  {id:"entrenar", e:"🧠", l:"Entrenar"},
+  {id:"mas",      e:"⋯",  l:"Más"}
+];
+var SUB={imag:"entrenar", adentro:"entrenar", semana:"mas", frases:"mas", plan:"mas", datos:"mas", porque:"mas"};
+function go(v){ pararTodo(); VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  var app=document.getElementById('app');
+  app.innerHTML=(VIEWS[VIEW]||VIEWS.home)();
+  var act=SUB[VIEW]||VIEW;
+  document.getElementById('nav').innerHTML=NAV.map(function(n){
+    return '<button class="tab '+(act===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>';
+  }).join('');
+  var b=document.getElementById('themeBtn'); if(b) b.textContent=DB.settings.dark?'☀️':'🌙';
+}
+function qa(v,e,n,d){ return '<button class="qa" onclick="go(\''+v+'\')"><span class="qe">'+e+'</span><span class="qn">'+esc(n)+'</span><span class="qd">'+esc(d)+'</span></button>'; }
+function footerHTML(){ return '<footer><b>APRENS</b> · Entre punto y punto<br>Material de apoyo terapéutico (TEC/AIS · psicología del deporte). Se interpreta dentro de tu proceso en sesión.<br>No sustituye atención médica ni la valoración de tu equipo técnico.</footer>'; }
+
+/* ---------------- CASA ---------------- */
+VIEWS.home=function(){
+  var ses7=DB.sesiones.filter(function(x){ return within7(x.date); });
+  var im7=DB.imag.filter(function(x){ return within7(x.date); });
+  var ad7=DB.adentro.filter(function(x){ return within7(x.date); });
+  var nom=NOM();
+  var h='<h1 class="view-t">'+(nom?'Hola, '+esc(nom):'Entre punto y punto')+'</h1>';
+  h+='<p class="view-s">Lo que entrenas aquí no es dejar de sentir tensión: es saber dónde poner la atención mientras la sientes.</p>';
+  h+='<div class="quote">'+esc(fraseDelDia())+'</div>';
+
+  h+='<div class="card"><h2><span class="e">📅</span>Tu semana</h2>';
+  h+='<div class="stat3"><div><b>'+ses7.length+'</b><span>registros de entreno o partido</span></div>';
+  h+='<div><b>'+im7.length+'</b><span>escenas en imaginación</span></div>';
+  h+='<div><b>'+ad7.length+'</b><span>miradas hacia adentro</span></div></div>';
+  h+='<p class="tiny" style="margin-top:12px">'+esc(sugerencia(ses7.length,im7.length,ad7.length))+'</p></div>';
+
+  h+='<div class="qgrid">';
+  h+=qa('despues','📝','Después de entrenar','Registro al salir de la pista');
+  h+=qa('mapa','🎾','Mapa atencional','Dónde va y dónde tiene que ir');
+  h+=qa('imag','🧠','Escena en imaginación','Entrenar la tensión en casa');
+  h+=qa('adentro','🫀','Mirada hacia adentro','Nivel '+nivelActual()+' de '+NIVELES.length);
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">🧭</span>Mi dirección</h2>';
+  h+='<p class="lead">Para qué compito, más allá del resultado. Puedes cambiarlo cuando quieras.</p>';
+  h+='<textarea id="dirInput" rows="3">'+esc(DB.settings.direccion||'')+'</textarea>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<button class="btn ghost full" style="margin-top:10px" onclick="guardaDireccion()">Guardar mi dirección</button></div>';
+
+  h+='<div class="card"><h2><span class="e">🎯</span>Intención para el próximo entreno</h2>';
+  h+='<p class="lead">Una sola cosa. Concreta y de proceso, no de resultado.</p>';
+  h+='<input type="text" id="intInput" placeholder="Ej.: ritual completo en todos los saques del 2º set" value="'+esc(DB.settings.intencion||'')+'">';
+  h+='<button class="btn full" style="margin-top:10px" onclick="guardaIntencion()">Guardar intención</button></div>';
+
+  h+='<div class="card"><h2><span class="e">🙋</span>¿Cómo te llamas?</h2>';
+  h+='<p class="lead">Solo se guarda en este móvil. El segundo nombre es cómo quieres llamar a tu cuerpo cuando le hablas (como quien acompaña a alguien de tu equipo).</p>';
+  h+='<div class="fld"><label for="nmName">Tu nombre</label><input type="text" id="nmName" value="'+esc(DB.settings.nombre||'')+'" placeholder="(opcional)"></div>';
+  h+='<div class="fld"><label for="nmCue">Cómo llamas a tu cuerpo</label><input type="text" id="nmCue" value="'+esc(DB.settings.cuerpo||'')+'" placeholder="Ej.: mi cuerpo, la peque, mi motor…"></div>';
+  h+='<button class="btn ghost full" onclick="saveNames()">Guardar</button></div>';
+  h+=footerHTML(); return h;
+};
+function sugerencia(s,i,a){
+  if(!s&&!i&&!a) return "Empieza por el mapa atencional: entender dónde tiene que ir la atención en cada momento del juego. Después, registra el primer entreno.";
+  if(!s) return "Todavía no has registrado ningún entreno esta semana. El registro justo al salir de la pista es el que más información da.";
+  if(!a) return "Esta semana no has entrenado la mirada hacia adentro. Con 60-90 segundos al día ya cuenta: lo importante es la frecuencia, no la duración.";
+  if(!i) return "Prueba una escena en imaginación entre semana: es el ensayo de la tensión que después aparecerá en el partido.";
+  return "Buena semana. Ahora la clave es la continuidad: mantener el ritmo aunque una semana venga cargada.";
+}
+function guardaDireccion(){ DB.settings.direccion=val('dirInput'); save(); flash("Dirección guardada ✓"); }
+function guardaIntencion(){ DB.settings.intencion=val('intInput'); save(); render(); }
+function saveNames(){ DB.settings.nombre=val('nmName'); DB.settings.cuerpo=val('nmCue'); save(); render(); }
+
+/* ---------------- MAPA ATENCIONAL ---------------- */
+VIEWS.mapa=function(){
+  var h='<h1 class="view-t">🎾 Mapa atencional</h1>';
+  h+='<p class="view-s">En cada momento del juego hay un sitio donde se va la atención y un sitio donde tiene que estar. Esto no se improvisa en el partido: se aprende antes.</p>';
+  h+='<div class="card"><h2><span class="e">💡</span>La idea de fondo</h2>';
+  h+='<p>Tu atención no puede estar en dos sitios a la vez. Cuando está en <b>el pensamiento</b> (el marcador, lo que dirán, el error de antes), no está en <b>la tarea</b> (la pelota, los pies, el ritual).</p>';
+  h+='<p class="lead">No se trata de no distraerse nunca: eso no existe. Se trata de <b>darte cuenta antes</b> (latencia), <b>volver más veces</b> (densidad) y <b>sostener el foco cuando vuelves</b> (continuidad).</p>';
+  h+='<div class="quote">Irse y volver es el ejercicio. No irse nunca no es una opción real.</div></div>';
+  h+='<div class="kick">Toca cada momento</div>';
+  MOMENTOS.forEach(function(m){
+    h+='<button class="mom" id="mom_'+m.id+'" onclick="toggleMom(\''+m.id+'\')"><span class="me">'+m.e+'</span>';
+    h+='<span class="mn">'+esc(m.n)+'<span class="mc">'+esc(m.c)+'</span></span><span class="mar" id="mar_'+m.id+'">＋</span></button>';
+    h+='<div class="mdet" id="det_'+m.id+'">';
+    h+='<div class="vs"><div class="vsbox no"><h4>🐒 Dónde se va</h4><ul>'+m.mono.map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')+'</ul></div>';
+    h+='<div class="vsbox si"><h4>🎯 Dónde tiene que ir</h4><ul>'+m.tarea.map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')+'</ul></div></div>';
+    h+='<div class="ancla"><b>Ancla:</b> '+esc(m.ancla)+'</div>';
+    h+='<div class="verb"><span class="vt">'+esc(m.consigna)+'</span><span class="va"><button title="Copiar" onclick="event.stopPropagation();copiar(\''+jq(m.consigna)+'\',this)">📋</button></span></div>';
+    h+='</div>';
+  });
+  h+='<div class="card"><h2><span class="e">🧾</span>Llevarlo a la pista</h2>';
+  h+='<p class="lead">Elige 2 momentos para esta semana y prepara con ellos tu plan de partido.</p>';
+  h+='<button class="btn full" onclick="go(\'plan\')">Ir a mi plan de partido</button></div>';
+  h+=footerHTML(); return h;
+};
+function toggleMom(id){
+  var d=document.getElementById('det_'+id), b=document.getElementById('mom_'+id), a=document.getElementById('mar_'+id);
+  if(!d) return;
+  var abrir=!d.classList.contains('show');
+  d.classList.toggle('show',abrir); b.classList.toggle('open',abrir); a.textContent=abrir?'－':'＋';
+}
+
+/* ---------------- DESPUÉS DE ENTRENAR / PARTIDO ---------------- */
+VIEWS.despues=function(){
+  var h='<h1 class="view-t">📝 Después de entrenar</h1>';
+  h+='<p class="view-s">Hazlo al salir de la pista, mientras lo tienes fresco: 2-3 minutos. No es para puntuarte: es para ver dónde se te va la atención y cómo vuelves.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="sesForm">';
+  h+=formHTML([
+    {k:'tipo',l:'¿Qué ha sido?',t:'chips1',opts:['Entrenamiento','Partido de entreno','Competición','Físico / gimnasio']},
+    {k:'foco',l:'Atención en la tarea',hint:'0 = casi todo el rato en mi cabeza · 10 = casi todo el rato en lo que estaba haciendo',t:'scale',ends:['En mi cabeza','En la tarea']},
+    {k:'sobrepensamiento',l:'Sobrepensamiento',hint:'Cuánto has estado dándole vueltas mientras jugabas',t:'scale',ends:['Nada','Todo el rato']},
+    {k:'tension',l:'Tensión corporal durante la sesión',t:'scale',ends:['Ninguna','Muchísima']},
+    {k:'zonas',l:'¿Dónde la has notado?',hint:'Puedes marcar varias',t:'chips',opts:['Estómago','Pecho','Garganta','Hombros','Mandíbula','Brazo / antebrazo','Piernas','Cabeza','No la he notado']},
+    {k:'momentos',l:'¿En qué momentos se te ha ido la atención?',hint:'Los mismos del mapa atencional. Marca todos los que reconozcas',t:'chips',opts:momNombres()},
+    {k:'latencia',l:'Cuando te ibas, ¿cuánto tardabas en darte cuenta?',hint:'TEC · latencia',t:'options',opts:['Casi al instante, dentro del mismo punto','En el punto siguiente','Al acabar el juego','Al acabar el set o más tarde','No me he dado cuenta hasta ahora']},
+    {k:'densidad',l:'¿Cuántas veces has vuelto a propósito?',hint:'TEC · densidad. Volver = usar el ritual, las cuerdas, la respiración, una frase',t:'chips1',opts:['Ninguna','1 o 2','3 a 5','6 a 10','Más de 10']},
+    {k:'comovolvi',l:'¿Qué has usado para volver?',t:'chips',opts:['Bote de pelota','Cuerdas','Respiración','Toalla / cambio de lado','Una frase','Ritual completo','Nada, se pasó solo']},
+    {k:'continuidad',l:'Cuando volvías, ¿podías sostener el foco?',hint:'TEC · continuidad',t:'scale',ends:['Me iba enseguida','Aguantaba bien']},
+    {k:'bucle',l:'¿Te has quedado enganchada en algún pensamiento? ¿Cuál?',t:'textarea',ph:'Escríbelo tal cual sonaba en tu cabeza'},
+    {k:'destacado',l:'Un momento en el que te fuiste y volviste',hint:'Este es el que más entrena. Cuéntalo aunque sea corto',t:'textarea',ph:'Ej.: 3-4, doble falta, me giré al fondo, respiré y saqué a la T'},
+    {k:'bien',l:'Una cosa que has sostenido bien hoy',t:'textarea',ph:'Aunque el resultado no acompañara'},
+    {k:'proxima',l:'Intención para el próximo entreno',t:'text',ph:'Una sola, de proceso'}
+  ]);
+  h+='<button class="btn full" onclick="saveSesion()">Guardar el registro</button>';
+  h+='<p class="tiny" style="margin-top:10px">No hace falta rellenarlo todo. Lo que dejes en blanco simplemente no se guarda.</p></div>';
+  h+=recientes(DB.sesiones,'sesiones',function(x){
+    return (x.tipo||'Sesión')+' · foco '+(x.foco!=null?x.foco:'–')+'/10 · tensión '+(x.tension!=null?x.tension:'–')+'/10'+(x.momentos&&x.momentos.length?' · '+x.momentos.length+' momento(s)':'');
+  },'Todavía no hay registros. El primero, hoy al salir de la pista.');
+  h+=footerHTML(); return h;
+};
+var LAT_SCORE={'Casi al instante, dentro del mismo punto':4,'En el punto siguiente':3,'Al acabar el juego':2,'Al acabar el set o más tarde':1,'No me he dado cuenta hasta ahora':0};
+var DEN_SCORE={'Ninguna':0,'1 o 2':1,'3 a 5':2,'6 a 10':3,'Más de 10':4};
+function saveSesion(){
+  var d=readForm(document.getElementById('sesForm'));
+  d.id=uid(); d.ts=Date.now(); d.date=hoy(); d.hora=nowHM();
+  d.lat_score=d.latencia!=null?LAT_SCORE[d.latencia]:null;
+  d.den_score=d.densidad!=null?DEN_SCORE[d.densidad]:null;
+  d.momentos_id=(d.momentos||[]).map(momIdDeNombre).filter(Boolean);
+  DB.sesiones.push(d);
+  if(d.proxima) DB.settings.intencion=d.proxima;
+  save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'latencia',modulo:'registro_post_sesion',tipo:d.tipo,
+    foco:d.foco,sobrepensamiento:d.sobrepensamiento,tension:d.tension,zonas:(d.zonas||[]).join(' | '),
+    momentos:(d.momentos||[]).join(' | '),latencia:d.latencia,densidad:d.densidad,continuidad:d.continuidad});
+  render(); go('despues');
+  setTimeout(function(){ flash(devolucion(d)); },60);
+}
+function devolucion(d){
+  var p=[];
+  if(d.lat_score!=null){
+    p.push(d.lat_score>=3?"Te has dado cuenta pronto: esa es la latencia que entrenamos."
+      : d.lat_score===2?"Te has dado cuenta al acabar el juego. El siguiente paso es pillarlo dentro del punto."
+      : "Hoy te has dado cuenta tarde. No es un fallo: es justo el dato que buscábamos.");
+  }
+  if(d.den_score!=null && d.den_score<=1) p.push("Volver a propósito pocas veces es normal al principio: la próxima, prueba a usar el ritual como excusa para volver.");
+  if(d.den_score!=null && d.den_score>=3) p.push("Muchas vueltas a propósito: eso es densidad, y es lo que después sujeta en competición.");
+  if(d.destacado) p.push("Has anotado un momento de irte y volver. Eso es exactamente el ejercicio.");
+  if(!p.length) p.push("Registro guardado.");
+  return "Guardado ✓ "+p.join(" ");
+}
+
+/* ============================================================
+   CRONÓMETRO COMPARTIDO
+   ============================================================ */
+var TICK=null, TLEFT=0, TDUR=0, TLINES=[], TEND=null;
+function startTimer(dur,lines,onEnd){
+  stopTimer(); TDUR=dur; TLEFT=dur; TLINES=lines||[]; TEND=onEnd||null;
+  paintTimer();
+  TICK=setInterval(function(){ TLEFT--; paintTimer(); if(TLEFT<=0){ var f=TEND; stopTimer(); if(f) f(); } },1000);
+}
+function paintTimer(){
+  var c=document.getElementById('clock'); if(!c){ stopTimer(); return; }
+  c.textContent=Math.floor(TLEFT/60)+':'+p2(TLEFT%60);
+  var g=document.getElementById('guide');
+  if(g&&TLINES.length){ var i=Math.min(TLINES.length-1,Math.floor((TDUR-TLEFT)/Math.max(1,TDUR/TLINES.length))); g.textContent=TLINES[i]; }
+  var r=document.getElementById('ring'); if(r) r.classList.toggle('big',((TDUR-TLEFT)%10)<5);
+}
+function stopTimer(){ if(TICK){ clearInterval(TICK); TICK=null; } }
+function pararTodo(){ stopTimer(); }
+function timerHTML(txt){
+  return '<div class="ring" id="ring"><div class="rin"><div class="rf" id="clock">0:00</div></div></div>'+
+         '<div class="guide" id="guide">'+esc(txt||'')+'</div>';
+}
+
+/* ---------------- ENTRENAR (elección) ---------------- */
+VIEWS.entrenar=function(){
+  var h='<h1 class="view-t">🧠 Entrenar entre semana</h1>';
+  h+='<p class="view-s">Lo que en el partido no da tiempo a aprender, se entrena fuera. Dos vías, y las dos suman.</p>';
+  h+='<div class="card"><h2><span class="e">🎬</span>Exposición en imaginación</h2>';
+  h+='<p class="lead">Recrear una escena del juego hasta que la tensión suba de verdad, acompañarla sin quitarla, y verte jugando bien <b>con ella dentro</b>.</p>';
+  h+='<p class="tiny">Para qué sirve: el día del partido la tensión va a estar. Si tu cuerpo ya la ha vivido acompañado muchas veces, deja de ser una señal de alarma y pasa a ser ruido de fondo mientras juegas.</p>';
+  h+='<button class="btn tierra full" style="margin-top:12px" onclick="go(\'imag\')">Hacer una escena</button>';
+  h+='<p class="tiny" style="margin-top:8px">'+DB.imag.length+' escena(s) registradas · '+DB.imag.filter(function(x){return within7(x.date);}).length+' esta semana</p></div>';
+  h+='<div class="card"><h2><span class="e">🫀</span>Mirada hacia adentro</h2>';
+  h+='<p class="lead">La escalera progresiva: aprender a leer tu cuerpo por dentro con claridad, del reposo hasta la pista con la raqueta en las manos.</p>';
+  h+='<p class="tiny">Para qué sirve: si no notas la tensión hasta que ya te ha desbordado, no puedes hacer nada con ella. Esto entrena que la señal te llegue antes.</p>';
+  var nv=nivelActual(), pr=practicasNivel(nv), meta=NIVELES[nv-1].meta;
+  h+='<div class="bar" style="margin-top:12px"><i style="width:'+Math.min(100,Math.round(pr/meta*100))+'%"></i></div>';
+  h+='<p class="tiny" style="margin-top:6px">Nivel '+nv+' de '+NIVELES.length+' · '+esc(NIVELES[nv-1].t)+' · '+pr+'/'+meta+' prácticas</p>';
+  h+='<button class="btn calma full" style="margin-top:10px" onclick="go(\'adentro\')">Ir a la escalera</button></div>';
+  h+='<div class="safe"><span class="i">💡</span><span>Ritmo recomendado: la mirada hacia adentro casi cada día (1-3 minutos) y una escena en imaginación 2-3 veces por semana, nunca justo antes de dormir si te deja muy activada.</span></div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- EXPOSICIÓN EN IMAGINACIÓN ---------------- */
+var IM=null;
+function imReset(){ IM={paso:0,escena:null,custom:'',intensidad:'Media',ti:null,zi:[],tp:null,zp:[],emo:[],tf:null,dispo:null,ejec:null,nota:''}; }
+var ZONAS=['Estómago','Pecho','Garganta','Hombros','Mandíbula','Brazo / antebrazo','Piernas','Cabeza'];
+var EMOS=['Miedo','Rabia','Vergüenza','Frustración','Tristeza','Urgencia','Bloqueo'];
+
+VIEWS.imag=function(){
+  if(!IM) imReset();
+  var h='<h1 class="view-t">🎬 Escena en imaginación</h1>';
+  h+='<div class="prog"><i style="width:'+Math.round(IM.paso/6*100)+'%"></i></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+=[imPaso0,imPaso1,imPaso2,imPaso3,imPaso4,imPaso5,imPaso6][IM.paso]();
+  h+=footerHTML(); return h;
+};
+function imHead(n,t,s){ return '<div class="stepbadge">Paso '+n+' de 6</div><h2 style="font-family:var(--serif);font-size:19px;margin:10px 0 2px">'+esc(t)+'</h2><p class="muted" style="margin:0 0 12px">'+esc(s)+'</p>'; }
+
+function imPaso0(){
+  var h='<div class="card">'+imHead(0,'Elige la escena','No la más fácil ni la peor: una que sepas que te mueve algo.');
+  h+='<div class="safe"><span class="i">⚠️</span><span>Busca un sitio tranquilo, siéntate y dedícale entre 8 y 15 minutos. Si en algún momento te desborda, para: abre los ojos, mira cinco cosas de la habitación y déjalo para otro día. Coméntalo en sesión.</span></div>';
+  ESCENAS.forEach(function(e){
+    h+='<button class="opt'+(IM.escena===e.id?' sel':'')+'" onclick="imPickEscena(\''+e.id+'\')"><b>'+e.e+' '+esc(e.n)+'</b><br><span class="tiny">'+esc(e.intro)+'</span></button>';
+  });
+  h+='<button class="opt'+(IM.escena==='custom'?' sel':'')+'" onclick="imPickEscena(\'custom\')"><b>✏️ Mi propia escena</b><br><span class="tiny">Escríbela tú</span></button>';
+  if(IM.escena==='custom') h+='<div class="fld"><label for="imCustom">¿Qué escena quieres trabajar?</label><textarea id="imCustom" placeholder="Dónde estás, en qué momento del partido, qué pasa justo antes">'+esc(IM.custom)+'</textarea></div>';
+  h+='<div class="fld"><label>¿Con qué intensidad quieres entrar?</label><div class="chips" data-multi="0" id="imInt">';
+  ['Suave','Media','Fuerte'].forEach(function(o){ h+='<button type="button" class="chip'+(IM.intensidad===o?' sel':'')+'" data-v="'+o+'" onclick="pickChip(this)">'+o+'</button>'; });
+  h+='</div><span class="hint">Si es de las primeras veces, empieza en suave. Se sube de nivel cuando la anterior ya se sostiene.</span></div>';
+  h+='<button class="btn tierra full" onclick="imGo(1)">Empezar</button></div>';
+  h+=recientes(DB.imag,'imag',function(x){
+    return esc0(x.escena_nombre)+' · pico '+(x.t_pico!=null?x.t_pico:'–')+' → final '+(x.t_fin!=null?x.t_fin:'–');
+  },'Todavía no has hecho ninguna escena.');
+  return h;
+}
+function esc0(s){ return String(s==null?'':s); }
+function imPickEscena(id){ imGuardaPaso0(); IM.escena=id; render(); }
+function imGuardaPaso0(){
+  var c=document.getElementById('imCustom'); if(c) IM.custom=c.value.trim();
+  var s=document.querySelector('#imInt .chip.sel'); if(s) IM.intensidad=s.dataset.v;
+}
+function imEscenaNombre(){ if(IM.escena==='custom') return IM.custom||'Escena propia'; var e=escById(IM.escena); return e?e.n:''; }
+function imBeats(){ if(IM.escena==='custom'){ return ['Ponte ahí: dónde estás, qué ves, qué oyes.','Deja que la situación avance como avanza de verdad.','Nota lo primero que dice tu cabeza.','Ahora el cuerpo: estómago, pecho, garganta, hombros.','No lo arregles. Solo mira dónde está y cómo es.']; } var e=escById(IM.escena); return e?e.beats:[]; }
+
+function imPaso1(){
+  var h='<div class="card">'+imHead(1,'Antes de entrar','Un minuto de mirada hacia adentro para saber de dónde partes.');
+  h+=timerHTML('Pulsa empezar y respira normal, sin cambiar nada.');
+  h+='<button class="btn full" id="imB1" onclick="imStart1()">Empezar el minuto</button>';
+  h+='<div class="fld" style="margin-top:18px"><label>Tensión ahora, antes de imaginar nada</label>'+scaleBtns('ti')+'<div class="scale-ends"><span>Ninguna</span><span>Muchísima</span></div></div>';
+  h+='<div class="fld"><label>¿Dónde?</label><div class="chips" data-multi="1" id="imZi">'+ZONAS.map(function(z){ return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChip(this)">'+z+'</button>'; }).join('')+'</div></div>';
+  h+='<div class="btnrow"><button class="btn ghost" onclick="imGo(0)">Atrás</button><button class="btn tierra" onclick="imGo(2)">Siguiente</button></div></div>';
+  return h;
+}
+function imAvisa(){ var g=document.getElementById('guide'); if(g) g.textContent='Listo. Marca la tensión que notas ahora.'; }
+function imStart1(){ startTimer(60,['Respira normal. No lo cambies.','Recorre garganta, pecho y barriga.','¿Cuál de las tres habla más?','Quédate ahí unos segundos.'],imAvisa); }
+function imStart2(){ startTimer(IM.intensidad==='Fuerte'?180:IM.intensidad==='Media'?150:120,imBeats(),imAvisa2); }
+function imStart4(){ startTimer(180,CONSIGNAS_ACOMP.map(function(s){ return s.replace('{C}',CUERPO()); }),imAvisa3); }
+function imStart5(){ startTimer(150,CONSIGNAS_EJEC,imAvisa4); }
+
+function imPaso2(){
+  var h='<div class="card">'+imHead(2,'Evocar la escena','Que suba de verdad. Si no sube nada, no hay nada que entrenar.');
+  h+='<div class="quote">'+esc(imEscenaNombre())+'</div>';
+  h+=timerHTML('Cierra los ojos si te ayuda y sigue las indicaciones.');
+  h+='<button class="btn tierra full" onclick="imStart2()">Empezar la evocación</button>';
+  h+='<p class="tiny" style="margin-top:12px">Cuanto más concreto, mejor: la luz, el sonido de la pelota, el marcador, quién hay. El cuerpo responde a los detalles, no a las ideas.</p>';
+  h+='<div class="btnrow" style="margin-top:14px"><button class="btn ghost" onclick="imGo(1)">Atrás</button><button class="btn tierra" onclick="imGo(3)">Ya está subiendo</button></div></div>';
+  return h;
+}
+function imAvisa2(){ var g=document.getElementById('guide'); if(g) g.textContent='Sin salir de la escena, pasa al siguiente paso y mide lo que notas.'; }
+
+function imPaso3(){
+  var h='<div class="card">'+imHead(3,'El pico','Mide lo que hay ahora, sin salir de la escena.');
+  h+='<div class="fld"><label>Tensión ahora</label>'+scaleBtns('tp')+'<div class="scale-ends"><span>Ninguna</span><span>Muchísima</span></div></div>';
+  h+='<div class="fld"><label>¿Dónde la notas?</label><div class="chips" data-multi="1" id="imZp">'+ZONAS.map(function(z){ return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChip(this)">'+z+'</button>'; }).join('')+'</div></div>';
+  h+='<div class="fld"><label>¿Qué emoción hay debajo?</label><div class="chips" data-multi="1" id="imEmo">'+EMOS.map(function(z){ return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChip(this)">'+z+'</button>'; }).join('')+'</div></div>';
+  h+='<p class="tiny">Si la tensión está por debajo de 4, vuelve atrás y entra con más detalle o sube la intensidad.</p>';
+  h+='<div class="btnrow" style="margin-top:14px"><button class="btn ghost" onclick="imGo(2)">Volver a evocar</button><button class="btn tierra" onclick="imGo(4)">Acompañarla</button></div></div>';
+  return h;
+}
+
+function imPaso4(){
+  var h='<div class="card">'+imHead(4,'Acompañarla','Aquí está el entrenamiento: quedarte con ella sin hacer nada para quitarla.');
+  h+='<div class="quote">Éxito no es que baje. Éxito es que te quedes.</div>';
+  h+=timerHTML('Mantén la escena de fondo y quédate con la sensación.');
+  h+='<button class="btn calma full" onclick="imStart4()">Acompañar 3 minutos</button>';
+  h+='<p class="tiny" style="margin-top:12px">Si notas que te distraes o que huyes hacia otro tema, no pasa nada: vuelve a la zona del cuerpo. Irse y volver también aquí es el ejercicio.</p>';
+  h+='<div class="btnrow" style="margin-top:14px"><button class="btn ghost" onclick="imGo(3)">Atrás</button><button class="btn tierra" onclick="imGo(5)">Siguiente</button></div></div>';
+  return h;
+}
+function imAvisa3(){ var g=document.getElementById('guide'); if(g) g.textContent='Bien. Ahora, sin quitar la tensión, vas a verte jugando.'; }
+
+function imPaso5(){
+  var h='<div class="card">'+imHead(5,'Jugarlo bien con la tensión dentro','El paso que después se generaliza a la pista.');
+  h+='<p>No te imagines calmada. Imagínate <b>tensa y competente</b>: el nudo sigue ahí y tú haces tu ritual, eliges tu intención y juegas el punto.</p>';
+  h+=timerHTML('Vuelve a la misma escena, ahora con tu manera de jugarla.');
+  h+='<button class="btn full" onclick="imStart5()">Verme jugándolo</button>';
+  h+='<p class="tiny" style="margin-top:12px">Esto es lo que le enseña a tu cuerpo que la tensión y jugar bien pueden convivir. Si en la imagen todo sale perfecto y sin nervios, no sirve: repítela con la tensión puesta.</p>';
+  h+='<div class="btnrow" style="margin-top:14px"><button class="btn ghost" onclick="imGo(4)">Atrás</button><button class="btn tierra" onclick="imGo(6)">Cerrar la práctica</button></div></div>';
+  return h;
+}
+function imAvisa4(){ var g=document.getElementById('guide'); if(g) g.textContent='Abre los ojos poco a poco y cierra la práctica.'; }
+
+function imPaso6(){
+  var h='<div class="card">'+imHead(6,'Cerrar','Abre los ojos, mira la habitación y responde con calma.');
+  h+='<div class="fld"><label>Tensión ahora, al terminar</label>'+scaleBtns('tf')+'<div class="scale-ends"><span>Ninguna</span><span>Muchísima</span></div></div>';
+  h+='<div class="fld"><label>Disposición a competir sintiendo esto</label><span class="hint">No «ganas de», sino: ¿podrías jugar con esta sensación dentro?</span>'+scaleBtns('dispo')+'<div class="scale-ends"><span>Nada</span><span>Del todo</span></div></div>';
+  h+='<div class="fld" data-k="ejec" data-t="options"><label>¿Has podido verte jugando bien con la tensión todavía puesta?</label>';
+  ['Sí, con claridad','A medias','No, la imagen se me iba','No, necesitaba que bajara primero'].forEach(function(o){ h+='<button type="button" class="opt" data-v="'+o+'" onclick="pickOpt(this)">'+esc(o)+'</button>'; });
+  h+='</div>';
+  h+='<div class="fld"><label for="imNota">¿Qué te llevas de esta práctica?</label><textarea id="imNota" placeholder="Una frase basta"></textarea></div>';
+  h+='<button class="btn calma full" onclick="imSave()">Guardar la práctica</button>';
+  h+='<div class="btnrow" style="margin-top:10px"><button class="btn ghost" onclick="imGo(5)">Atrás</button></div></div>';
+  return h;
+}
+function imGo(n){
+  stopTimer();
+  if(IM.paso===0){ imGuardaPaso0(); if(n===1&&!IM.escena){ alert('Elige antes una escena.'); return; } }
+  if(IM.paso===1){ IM.ti=getK('ti'); IM.zi=selChips('imZi'); }
+  if(IM.paso===3){ IM.tp=getK('tp'); IM.zp=selChips('imZp'); IM.emo=selChips('imEmo'); }
+  IM.paso=n; render(); window.scrollTo(0,0);
+}
+function selChips(id){ var b=document.getElementById(id); if(!b) return []; return [].slice.call(b.querySelectorAll('.chip.sel')).map(function(x){ return x.dataset.v; }); }
+function imSave(){
+  IM.tf=getK('tf'); IM.dispo=getK('dispo');
+  var e=document.querySelector('[data-k="ejec"] .opt.sel'); IM.ejec=e?e.dataset.v:null;
+  IM.nota=val('imNota');
+  var d={id:uid(),ts:Date.now(),date:hoy(),hora:nowHM(),escena:IM.escena,escena_nombre:imEscenaNombre(),
+    intensidad:IM.intensidad,t_ini:IM.ti,zonas_ini:IM.zi,t_pico:IM.tp,zonas_pico:IM.zp,emociones:IM.emo,
+    t_fin:IM.tf,disposicion:IM.dispo,ejecucion:IM.ejec,nota:IM.nota};
+  DB.imag.push(d); save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'densidad',modulo:'exposicion_imaginacion',
+    escena:d.escena_nombre,intensidad:d.intensidad,tension_inicial:d.t_ini,tension_pico:d.t_pico,
+    tension_final:d.t_fin,disposicion:d.disposicion,ejecucion_con_tension:d.ejecucion});
+  var msg="Práctica guardada ✓ ";
+  if(d.t_pico!=null&&d.t_fin!=null){
+    msg+= d.t_fin<d.t_pico ? "La tensión ha bajado de "+d.t_pico+" a "+d.t_fin+" sin que hicieras nada para quitarla: eso es habituación."
+        : "La tensión no ha bajado, y aun así te has quedado. Eso también entrena, y a veces entrena más.";
+  }
+  var mismas=DB.imag.filter(function(x){ return x.escena===d.escena; });
+  if(mismas.length>1){ var pic=media(mismas.slice(-4),'t_pico'); if(pic!=null) msg+=" Pico medio en esta escena (últimas veces): "+pic+"/10.";}
+  imReset(); render(); go('imag');
+  setTimeout(function(){ flash(msg); },60);
+}
+
+/* ---------------- MIRADA HACIA ADENTRO (escalera AIS) ---------------- */
+var AD=null;
+function adReset(){ AD={nivel:null,fase:'lista'}; }
+VIEWS.adentro=function(){
+  if(!AD) adReset();
+  var h='<h1 class="view-t">🫀 Mirada hacia adentro</h1>';
+  h+='<p class="view-s">Seis niveles. No se trata de relajarse: se trata de que la señal de tu cuerpo te llegue clara y a tiempo, también con el pulso alto.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  if(AD.fase==='practica') return h+adPractica()+footerHTML();
+  var nv=nivelActual();
+  h+='<div class="card"><h2><span class="e">🪜</span>La escalera</h2>';
+  h+='<p class="lead">Cada nivel se abre cuando el anterior está rodado. No corras: lo que importa es la frecuencia, no llegar arriba.</p></div>';
+  NIVELES.forEach(function(L){
+    var pr=practicasNivel(L.n), abierto=L.n<=nv, hecho=pr>=L.meta;
+    h+='<button class="lvl'+(abierto?'':' lock')+(L.n===nv?' on':'')+(hecho?' done':'')+'" '+(abierto?'onclick="adAbrir('+L.n+')"':'disabled')+'>';
+    h+='<span class="ln">'+(hecho?'✓':L.n)+'</span><span style="flex:1"><span class="lt">'+esc(L.t)+'</span>';
+    h+='<span class="ld">'+esc(L.d)+'</span>';
+    h+='<span class="bar"><i style="width:'+Math.min(100,Math.round(pr/L.meta*100))+'%"></i></span>';
+    h+='<span class="ld">'+(abierto?pr+' de '+L.meta+' prácticas':'Se abre al completar el nivel anterior')+'</span></span></button>';
+  });
+  h+=recientes(DB.adentro,'adentro',function(x){ return 'Nivel '+x.nivel+' · claridad '+(x.c_ini!=null?x.c_ini:'–')+'→'+(x.c_fin!=null?x.c_fin:'–'); },'Todavía no hay prácticas. Empieza por el nivel 1: son 60 segundos.');
+  return h+footerHTML();
+};
+function adAbrir(n){ stopTimer(); AD={nivel:n,fase:'practica'}; render(); window.scrollTo(0,0); }
+function adPractica(){
+  var L=NIVELES[AD.nivel-1];
+  var h='<div class="card"><div class="stepbadge">Nivel '+L.n+'</div>';
+  h+='<h2 style="font-family:var(--serif);font-size:19px;margin:10px 0 2px">'+esc(L.t)+'</h2>';
+  h+='<p class="muted" style="margin:0 0 10px">'+esc(L.d)+'</p>';
+  h+='<div class="card" style="background:var(--calma-lt);border-color:#cde0d5;box-shadow:none;margin:12px 0"><ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6">'+L.guide.map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')+'</ul></div>';
+  h+='<div class="fld"><label>Antes · ¿con qué claridad notas tu cuerpo por dentro?</label>'+scaleBtns('ci')+'<div class="scale-ends"><span>No noto nada</span><span>Lo noto clarísimo</span></div></div>';
+  h+=timerHTML('Cuando estés lista, empieza.');
+  h+='<button class="btn calma full" onclick="adStart()">Empezar ('+(L.dur<60?L.dur+' s':Math.round(L.dur/60*10)/10+' min')+')</button>';
+  h+='<div id="adAfter" style="display:none;margin-top:16px">';
+  h+='<div class="fld"><label>Después · claridad de la señal</label>'+scaleBtns('cf')+'<div class="scale-ends"><span>No noto nada</span><span>Lo noto clarísimo</span></div></div>';
+  h+='<div class="fld" data-k="idas" data-t="chips1"><label>¿Cuántas veces se te ha ido la cabeza?</label><div class="chips" data-multi="0">'+['Ninguna','1 o 2','3 a 5','Muchas, no paraba'].map(function(o){ return '<button type="button" class="chip" data-v="'+o+'" onclick="pickChip(this)">'+o+'</button>'; }).join('')+'</div><span class="hint">Irse no es fallar. Es el dato.</span></div>';
+  h+='<div class="fld"><label for="adNota">¿Qué has notado?</label><textarea id="adNota" placeholder="Zona, forma, temperatura, si cambiaba…"></textarea></div>';
+  h+='<button class="btn calma full" onclick="adSave()">Registrar la práctica</button></div>';
+  h+='<button class="btn ghost full" style="margin-top:10px" onclick="adVolver()">Volver a la escalera</button></div>';
+  return h;
+}
+function adStart(){ var L=NIVELES[AD.nivel-1]; startTimer(L.dur,L.guide,adFin); }
+function adFin(){ var g=document.getElementById('guide'); if(g) g.textContent='Práctica completada. ¿Cómo ha ido?'; var a=document.getElementById('adAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
+function adVolver(){ stopTimer(); AD={nivel:null,fase:'lista'}; render(); window.scrollTo(0,0); }
+function adSave(){
+  var L=NIVELES[AD.nivel-1];
+  var idasEl=document.querySelector('[data-k="idas"] .chip.sel');
+  var d={id:uid(),ts:Date.now(),date:hoy(),hora:nowHM(),nivel:L.n,titulo:L.t,dur:L.dur,
+    c_ini:getK('ci'),c_fin:getK('cf'),idas:idasEl?idasEl.dataset.v:null,nota:val('adNota')};
+  DB.adentro.push(d);
+  var msg="Práctica registrada ✓";
+  var pr=practicasNivel(L.n);
+  if(L.n===nivelActual() && pr>=L.meta && L.n<NIVELES.length){
+    DB.settings.nivelAdentro=L.n+1;
+    msg="¡Nivel "+L.n+" completado! Se abre el nivel "+(L.n+1)+": "+NIVELES[L.n].t+".";
+  } else if(L.n===nivelActual() && pr<L.meta){
+    msg="Práctica registrada ✓ Te faltan "+(L.meta-pr)+" para abrir el siguiente nivel.";
+  }
+  save();
+  aprensSave({id:d.id,date:d.date,ts:d.ts,param:'densidad',modulo:'mirada_adentro',
+    nivel:d.nivel,duracion_seg:d.dur,claridad_antes:d.c_ini,claridad_despues:d.c_fin,idas:d.idas});
+  adVolver();
+  setTimeout(function(){ flash(msg); },60);
+}
+
+/* ---------------- MÁS ---------------- */
+VIEWS.mas=function(){
+  var h='<h1 class="view-t">⋯ Más</h1><p class="view-s">Repaso, materiales y datos.</p>';
+  h+='<div class="qgrid">';
+  h+=qa('semana','📊','Mi semana','Resumen para llevar a sesión');
+  h+=qa('plan','🧾','Plan de partido','Lo que llevo a la pista');
+  h+=qa('frases','🤍','Mis frases','Banco de autoverbalizaciones');
+  h+=qa('porque','📖','Por qué funciona','Latencia, densidad y continuidad');
+  h+=qa('adentro','🫀','Mirada hacia adentro','La escalera de 6 niveles');
+  h+=qa('datos','💾','Datos y ajustes','Exportar, importar, borrar');
+  h+='</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- POR QUÉ FUNCIONA ---------------- */
+VIEWS.porque=function(){
+  var h='<h1 class="view-t">📖 Por qué funciona</h1><p class="view-s">Lo que estás entrenando tiene tres medidas. Las tres se trabajan en orden.</p>';
+  h+='<div class="card"><h2><span class="e">⏱️</span>1 · Latencia</h2>';
+  h+='<p>El tiempo que pasa desde que te vas hasta que te das cuenta. Al principio te das cuenta al acabar el set; luego, al acabar el juego; luego, dentro del mismo punto.</p>';
+  h+='<p class="lead">En pista se ve así: antes te enterabas de que ibas en bucle cuando ya habías perdido tres juegos. Ahora lo pillas en el cambio de lado. Después, entre punto y punto.</p></div>';
+  h+='<div class="card"><h2><span class="e">🔁</span>2 · Densidad</h2>';
+  h+='<p>Cuántas veces vuelves a propósito a lo largo de la sesión. No importa que sean vueltas perfectas: importa que sean muchas.</p>';
+  h+='<p class="lead">El ritual del saque, tocar las cuerdas, una respiración en el cambio de lado. Cada vuelta es una repetición de gimnasio para tu atención.</p></div>';
+  h+='<div class="card"><h2><span class="e">📈</span>3 · Continuidad</h2>';
+  h+='<p>Cuánto aguantas el foco después de volver, y cuántos días sostienes la práctica. Es lo último que llega y lo que más cambia los partidos largos.</p></div>';
+  h+='<div class="card"><h2><span class="e">🎬</span>Y la exposición en imaginación, ¿para qué?</h2>';
+  h+='<p>Tu cuerpo aprende por experiencia, no por explicaciones. Si cada vez que aparece la tensión tú intentas quitarla, tu cuerpo concluye que la tensión es peligrosa y la vuelve a mandar más fuerte.</p>';
+  h+='<p>Cuando en imaginación dejas que suba y <b>te quedas con ella acompañándola</b>, tu cuerpo aprende otra cosa: que se puede sostener. Y cuando además te ves <b>jugando bien con ella dentro</b>, aprende que tensión y buen tenis no son incompatibles.</p>';
+  h+='<div class="quote">El día del partido la tensión estará. La diferencia es que tu cuerpo ya la habrá vivido acompañado muchas veces.</div>';
+  h+='<p class="lead">Por eso el objetivo nunca es que la sensación baje. El objetivo es que deje de mandar.</p></div>';
+  h+=footerHTML(); return h;
+};
+
+/* ---------------- PLAN DE PARTIDO ---------------- */
+VIEWS.plan=function(){
+  var p=DB.plan||{};
+  var h='<h1 class="view-t">🧾 Plan de partido</h1><p class="view-s">Lo que llevas a la pista, en una pantalla. Léelo antes de salir a calentar.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" id="planForm">';
+  h+='<div class="fld"><label for="pl1">Intención 1 · táctica</label><input type="text" id="pl1" value="'+esc(p.i1||'')+'" placeholder="Ej.: primer saque al cuerpo en los puntos pares"></div>';
+  h+='<div class="fld"><label for="pl2">Intención 2 · atencional</label><input type="text" id="pl2" value="'+esc(p.i2||'')+'" placeholder="Ej.: ritual completo en todos mis saques"></div>';
+  h+='<div class="fld"><label for="pl3">Intención 3 · cuerpo</label><input type="text" id="pl3" value="'+esc(p.i3||'')+'" placeholder="Ej.: tres respiraciones en cada cambio de lado"></div>';
+  h+='<div class="fld"><label>Momentos que hoy voy a vigilar</label><div class="chips" data-multi="1" id="plMom">';
+  MOMENTOS.forEach(function(m){ var sel=(p.momentos||[]).indexOf(m.id)>=0; h+='<button type="button" class="chip'+(sel?' sel':'')+'" data-v="'+m.id+'" onclick="pickChip(this)">'+m.e+' '+esc(m.n)+'</button>'; });
+  h+='</div></div>';
+  h+='<div class="fld"><label for="plAncla">Mi ancla de hoy</label><input type="text" id="plAncla" value="'+esc(p.ancla||'')+'" placeholder="Ej.: el sonido del bote de la pelota"></div>';
+  h+='<div class="fld"><label for="plFrase">Mi frase de hoy</label><input type="text" id="plFrase" value="'+esc(p.frase||'')+'" placeholder="Ej.: un punto, una intención"></div>';
+  h+='<button class="btn full" onclick="savePlan()">Guardar el plan</button></div>';
+  if(DB.plan){
+    h+='<div class="card"><h2><span class="e">📋</span>Así queda</h2><div class="quote" id="planTxt" style="white-space:pre-wrap">'+esc(planTexto())+'</div>';
+    h+='<div class="btnrow"><button class="btn ghost" onclick="copiar(document.getElementById(\'planTxt\').textContent,this)">📋 Copiar</button>';
+    h+='<button class="btn ghost" onclick="enviarWA(document.getElementById(\'planTxt\').textContent)">📱 Enviar</button></div></div>';
+  }
+  h+=footerHTML(); return h;
+};
+function savePlan(){
+  DB.plan={i1:val('pl1'),i2:val('pl2'),i3:val('pl3'),ancla:val('plAncla'),frase:val('plFrase'),
+    momentos:selChips('plMom'),ts:Date.now(),date:hoy()};
+  save(); render(); go('plan'); setTimeout(function(){ flash("Plan guardado ✓"); },60);
+}
+function planTexto(){
+  var p=DB.plan||{}, l=["PLAN DE PARTIDO"];
+  if(p.i1) l.push("1 · "+p.i1);
+  if(p.i2) l.push("2 · "+p.i2);
+  if(p.i3) l.push("3 · "+p.i3);
+  if(p.ancla) l.push("Ancla: "+p.ancla);
+  if(p.frase) l.push("Frase: "+p.frase);
+  if(p.momentos&&p.momentos.length){
+    l.push("Vigilo: "+p.momentos.map(function(id){ var m=momById(id); return m?m.n:id; }).join(", "));
+    l.push("");
+    p.momentos.forEach(function(id){ var m=momById(id); if(m) l.push("· "+m.n+" → "+m.consigna); });
+  }
+  return l.join("\n");
+}
+
+/* ---------------- FRASES ---------------- */
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">🤍 Mis frases</h1><p class="view-s">Autoverbalizaciones para entre punto y punto. Marca con ★ las que te sirvan de verdad: son las que llevarás al plan de partido.</p>';
+  var fav=DB.settings.favFrases||[];
+  if(fav.length){ h+='<div class="grp-t">★ Tus favoritas</div>'; fav.forEach(function(t){ h+=verbRow(t,false); }); }
+  if(DB.frasesUser.length){ h+='<div class="grp-t">Tuyas</div>'; DB.frasesUser.forEach(function(f,i){ h+=verbRow(f.txt,true,i); }); }
+  FRASES.forEach(function(g){
+    h+='<div class="grp-t">'+esc(g.g)+'</div>';
+    g.l.forEach(function(t){ h+=verbRow(t.replace('{C}',CUERPO()),false); });
+  });
+  h+='<div class="card"><h2><span class="e">✏️</span>Añadir la tuya</h2>';
+  h+='<input type="text" id="newFrase" placeholder="La frase que de verdad te funciona">';
+  h+='<button class="btn full" style="margin-top:10px" onclick="crearFrase()">Añadir</button></div>';
+  h+=footerHTML(); return h;
+};
+function verbRow(txt,isUser,idx){
+  var fav=(DB.settings.favFrases||[]).indexOf(txt)>=0;
+  var h='<div class="verb"><span class="vt">'+esc(txt)+'</span><span class="va">';
+  h+='<button title="Favorita" class="'+(fav?'fav-on':'')+'" onclick="toggleFav(\''+jq(txt)+'\',this)">'+(fav?'★':'☆')+'</button>';
+  h+='<button title="Copiar" onclick="copiar(\''+jq(txt)+'\',this)">📋</button>';
+  if(isUser) h+='<button title="Borrar" onclick="delFrase('+idx+')">🗑️</button>';
+  return h+'</span></div>';
+}
+function crearFrase(){ var t=val('newFrase'); if(!t) return; addFraseUser(t); save(); render(); go('frases'); }
+function addFraseUser(txt){ if(!txt) return; if(DB.frasesUser.some(function(f){ return f.txt===txt; })) return; DB.frasesUser.unshift({txt:txt,ts:Date.now()}); }
+function delFrase(i){ if(!confirm('¿Borrar esta frase?')) return; DB.frasesUser.splice(i,1); save(); render(); go('frases'); }
+function toggleFav(txt,btn){
+  if(!DB.settings.favFrases) DB.settings.favFrases=[];
+  var i=DB.settings.favFrases.indexOf(txt);
+  if(i>=0){ DB.settings.favFrases.splice(i,1); btn.textContent='☆'; btn.classList.remove('fav-on'); }
+  else { DB.settings.favFrases.push(txt); btn.textContent='★'; btn.classList.add('fav-on'); }
+  save();
+}
+
+/* ---------------- MI SEMANA ---------------- */
+VIEWS.semana=function(){
+  var s7=DB.sesiones.filter(function(x){ return within7(x.date); });
+  var i7=DB.imag.filter(function(x){ return within7(x.date); });
+  var a7=DB.adentro.filter(function(x){ return within7(x.date); });
+  var h='<h1 class="view-t">📊 Mi semana</h1><p class="view-s">Para mirarla tú y para llevarla a sesión. No es una nota: es información.</p>';
+  h+='<div class="card"><h2><span class="e">🔢</span>Últimos 7 días</h2>';
+  h+='<div class="stat3"><div><b>'+s7.length+'</b><span>sesiones registradas</span></div><div><b>'+i7.length+'</b><span>escenas</span></div><div><b>'+a7.length+'</b><span>miradas adentro</span></div></div>';
+  h+='<p class="tiny" style="margin-top:12px">Días con alguna práctica: <b>'+diasActivos(7)+' de 7</b> · racha actual: <b>'+racha()+'</b> día(s).</p></div>';
+
+  h+='<div class="card"><h2><span class="e">🧭</span>Tus tres parámetros</h2>';
+  h+='<table class="rsm">';
+  h+=tr('Latencia · me doy cuenta pronto (0-4)',media(s7,'lat_score'));
+  h+=tr('Densidad · vuelvo a propósito (0-4)',media(s7,'den_score'));
+  h+=tr('Continuidad · sostengo el foco (0-10)',media(s7,'continuidad'));
+  h+='</table>';
+  h+='<p class="tiny" style="margin-top:10px">Se trabajan en este orden: primero darse cuenta antes, después volver más veces, y solo entonces sostener más rato.</p></div>';
+
+  h+='<div class="card"><h2><span class="e">🎾</span>En pista</h2><table class="rsm">';
+  h+=tr('Atención en la tarea (0-10)',media(s7,'foco'));
+  h+=tr('Sobrepensamiento (0-10)',media(s7,'sobrepensamiento'));
+  h+=tr('Tensión corporal (0-10)',media(s7,'tension'));
+  h+='</table>'+topMomentos(s7)+'</div>';
+
+  h+=chartCard('Atención en la tarea · últimas 10 sesiones',DB.sesiones.slice(-10).map(function(x){ return x.foco; }));
+  h+=chartCard('Tensión pico en imaginación · últimas 10 escenas',DB.imag.slice(-10).map(function(x){ return x.t_pico; }));
+  h+=chartCard('Claridad interoceptiva · últimas 10 prácticas',DB.adentro.slice(-10).map(function(x){ return x.c_fin; }));
+
+  h+='<div class="card"><h2><span class="e">📋</span>Resumen para sesión</h2>';
+  h+='<div class="quote" id="rsmTxt" style="white-space:pre-wrap;font-style:normal;font-family:inherit;font-size:13.5px">'+esc(resumenTexto())+'</div>';
+  h+='<div class="btnrow"><button class="btn ghost" onclick="copiar(document.getElementById(\'rsmTxt\').textContent,this)">📋 Copiar</button>';
+  h+='<button class="btn ghost" onclick="enviarWA(document.getElementById(\'rsmTxt\').textContent)">📱 Enviar</button></div>';
+  h+='<p class="tiny" style="margin-top:8px">No incluye lo que has escrito en los campos de texto: eso es tuyo y lo cuentas si quieres.</p></div>';
+  h+=footerHTML(); return h;
+};
+function tr(l,v){ return '<tr><td>'+esc(l)+'</td><td>'+(v!=null?v:'–')+'</td></tr>'; }
+function diasActivos(n){
+  var set={}, all=DB.sesiones.concat(DB.imag,DB.adentro);
+  all.forEach(function(x){ if(x.date>=daysAgo(n-1)) set[x.date]=1; });
+  return Object.keys(set).length;
+}
+function racha(){
+  var set={}, all=DB.sesiones.concat(DB.imag,DB.adentro);
+  all.forEach(function(x){ set[x.date]=1; });
+  var c=0; for(var i=0;i<400;i++){ if(set[daysAgo(i)]) c++; else if(i>0) break; }
+  return c;
+}
+function topMomentos(arr){
+  var cnt={};
+  arr.forEach(function(s){ (s.momentos||[]).forEach(function(m){ cnt[m]=(cnt[m]||0)+1; }); });
+  var ks=Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; }).slice(0,3);
+  if(!ks.length) return '<p class="tiny" style="margin-top:12px">Todavía no hay momentos marcados esta semana.</p>';
+  var h='<p class="tiny" style="margin-top:14px;font-weight:700">Dónde se te va más la atención:</p><ul style="margin:4px 0 0;padding-left:18px;font-size:13.5px">';
+  ks.forEach(function(k){ h+='<li>'+esc(k)+' <span class="tiny">('+cnt[k]+')</span></li>'; });
+  return h+'</ul>';
+}
+function resumenTexto(){
+  var s7=DB.sesiones.filter(function(x){ return within7(x.date); });
+  var i7=DB.imag.filter(function(x){ return within7(x.date); });
+  var a7=DB.adentro.filter(function(x){ return within7(x.date); });
+  var l=["ENTRE PUNTO Y PUNTO · últimos 7 días"];
+  if(NOM()) l.push("Deportista: "+NOM());
+  l.push("");
+  l.push("Sesiones registradas: "+s7.length+" · Escenas en imaginación: "+i7.length+" · Miradas hacia adentro: "+a7.length);
+  l.push("Días con práctica: "+diasActivos(7)+"/7 · Racha: "+racha());
+  l.push("");
+  l.push("TEC");
+  l.push("· Latencia (0-4): "+n(media(s7,'lat_score')));
+  l.push("· Densidad (0-4): "+n(media(s7,'den_score')));
+  l.push("· Continuidad (0-10): "+n(media(s7,'continuidad')));
+  l.push("");
+  l.push("En pista");
+  l.push("· Atención en la tarea: "+n(media(s7,'foco'))+"/10");
+  l.push("· Sobrepensamiento: "+n(media(s7,'sobrepensamiento'))+"/10");
+  l.push("· Tensión corporal: "+n(media(s7,'tension'))+"/10");
+  var cnt={}; s7.forEach(function(s){ (s.momentos||[]).forEach(function(m){ cnt[m]=(cnt[m]||0)+1; }); });
+  var ks=Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; }).slice(0,3);
+  if(ks.length) l.push("· Momentos con más fuga: "+ks.join(", "));
+  if(i7.length){
+    l.push("");
+    l.push("Imaginación");
+    l.push("· Tensión pico media: "+n(media(i7,'t_pico'))+"/10 → final "+n(media(i7,'t_fin'))+"/10");
+    l.push("· Disposición a competir sintiéndolo: "+n(media(i7,'disposicion'))+"/10");
+  }
+  l.push("");
+  l.push("Mirada hacia adentro: nivel "+nivelActual()+" de "+NIVELES.length+" ("+NIVELES[nivelActual()-1].t+")");
+  return l.join("\n");
+}
+function n(v){ return v==null?'–':v; }
+
+/* ---------------- DATOS Y AJUSTES ---------------- */
+VIEWS.datos=function(){
+  var h='<h1 class="view-t">💾 Datos y ajustes</h1><p class="view-s">Todo vive en este móvil.</p>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card"><h2><span class="e">🔒</span>Privacidad</h2>';
+  h+='<p class="lead">Los registros se guardan solo en el navegador de este dispositivo. No se envían a ningún sitio ni salen de aquí a menos que tú los exportes o los copies.</p>';
+  h+='<p class="tiny">Si borras los datos del navegador o desinstalas la app, se pierden. Exporta de vez en cuando si quieres una copia.</p></div>';
+  h+='<div class="card"><h2><span class="e">🙋</span>Nombres</h2>';
+  h+='<div class="fld"><label for="stNom">Tu nombre</label><input type="text" id="stNom" value="'+esc(DB.settings.nombre||'')+'"></div>';
+  h+='<div class="fld"><label for="stCue">Cómo llamas a tu cuerpo</label><input type="text" id="stCue" value="'+esc(DB.settings.cuerpo||'')+'"></div>';
+  h+='<button class="btn ghost full" onclick="saveNombres()">Guardar</button></div>';
+  h+='<div class="card"><h2><span class="e">📤</span>Exportar</h2>';
+  h+='<p class="lead">'+DB.sesiones.length+' sesiones · '+DB.imag.length+' escenas · '+DB.adentro.length+' prácticas de mirada adentro.</p>';
+  h+='<div class="btnrow"><button class="btn" onclick="exportJSON()">Archivo JSON</button><button class="btn" onclick="exportCSV()">Hoja CSV</button></div></div>';
+  h+='<div class="card"><h2><span class="e">📥</span>Importar</h2>';
+  h+='<p class="lead">Restaurar una copia anterior. Reemplaza los datos actuales.</p>';
+  h+='<input type="file" id="impFile" accept="application/json,.json" onchange="importJSON(event)"></div>';
+  h+='<div class="card"><h2><span class="e">🗑️</span>Borrar todo</h2>';
+  h+='<p class="lead">Elimina todos los registros de este dispositivo. No se puede deshacer.</p>';
+  h+='<button class="btn danger full" onclick="resetAll()">Borrar todos mis datos</button></div>';
+  h+=footerHTML(); return h;
+};
+function saveNombres(){ DB.settings.nombre=val('stNom'); DB.settings.cuerpo=val('stCue'); save(); flash("Guardado ✓"); }
+function exportJSON(){ downloadFile('entre_punto_'+hoy()+'.json',JSON.stringify(DB,null,2),'application/json'); }
+function exportCSV(){
+  var rows=[["modulo","fecha","hora","campo","valor"]];
+  function push(mod,rec){ for(var k in rec){ if(['id','ts'].indexOf(k)>=0) continue; var v=rec[k]; if(Array.isArray(v)) v=v.join(' | '); rows.push([mod,rec.date||'',rec.hora||'',k,String(v==null?'':v)]); } }
+  DB.sesiones.forEach(function(r){ push('sesion',r); });
+  DB.imag.forEach(function(r){ push('imaginacion',r); });
+  DB.adentro.forEach(function(r){ push('adentro',r); });
+  var csv=rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  downloadFile('entre_punto_'+hoy()+'.csv','﻿'+csv,'text/csv');
+}
+function downloadFile(name,content,type){
+  try{
+    var blob=new Blob([content],{type:type}), url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); },1000); flash("Archivo generado ✓");
+  }catch(e){ alert('No se pudo generar el archivo.'); }
+}
+function importJSON(ev){
+  var file=ev.target.files[0]; if(!file) return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var d=JSON.parse(r.result); if(!d.settings) throw 0;
+      if(confirm('¿Reemplazar los datos actuales por los del archivo?')){ DB=d; save(); render(); go('datos'); setTimeout(function(){ flash("Datos importados ✓"); },60); }
+    }catch(e){ alert('Archivo no válido.'); }
+  };
+  r.readAsText(file); ev.target.value='';
+}
+function resetAll(){
+  if(!confirm('¿Seguro que quieres borrar TODOS tus registros?')) return;
+  if(!confirm('Esta acción no se puede deshacer. ¿Confirmas?')) return;
+  DB=clone(DEFAULT); save(); imReset(); adReset(); render(); go('home');
+}
+
+/* ============================================================
+   HELPERS COMUNES
+   ============================================================ */
+function recientes(arr,store,fmt,emptyMsg){
+  var list=ultimos(arr,6);
+  if(!list.length) return '<div class="card"><p class="empty">'+esc(emptyMsg||'Sin registros.')+'</p></div>';
+  var h='<div class="kick">Últimos registros</div>';
+  list.forEach(function(x){
+    h+='<div class="rec"><div class="rh"><span class="rt">'+esc(fmt(x))+'</span><span class="rd">'+fechaLarga(x.date)+' · '+esc(x.hora||'')+'</span></div>';
+    if(x.nota||x.destacado) h+='<div class="rb">'+esc(x.nota||x.destacado)+'</div>';
+    h+='<div style="text-align:right"><button class="del" onclick="delRec(\''+store+'\',\''+x.id+'\')">Borrar</button></div></div>';
+  });
+  return h;
+}
+function delRec(store,id){
+  if(!DB[store]) return;
+  if(!confirm('¿Borrar este registro?')) return;
+  DB[store]=DB[store].filter(function(x){ return x.id!==id; });
+  save(); render();
+}
+function chartCard(title,vals){
+  vals=vals.filter(function(v){ return typeof v==='number'&&!isNaN(v); });
+  return '<div class="card"><div class="chart-lbl">'+esc(title)+'</div>'+(vals.length?barChart(vals):'<p class="empty">Sin datos todavía.</p>')+'</div>';
+}
+function barChart(vals){
+  var W=320,H=90,n=vals.length,bw=W/n,max=10,s='';
+  for(var i=0;i<n;i++){
+    var v=Math.max(0,Math.min(max,vals[i])), bh=Math.max(2,v/max*(H-18)), x=i*bw+bw*0.16, y=H-18-bh;
+    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw*0.68).toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="var(--pista)"></rect>';
+    s+='<text x="'+(x+bw*0.34).toFixed(1)+'" y="'+(H-5)+'" font-size="9" text-anchor="middle" fill="var(--suau)">'+v+'</text>';
+  }
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Gráfico de barras">'+s+'</svg>';
+}
+function copiar(txt,btn){
+  txt=String(txt);
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓ Copiado'; setTimeout(function(){ btn.textContent=o; },1600); } }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(fb); } else { fb(); }
+}
+function enviarWA(txt){ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); }
+function toggleTheme(){ DB.settings.dark=!DB.settings.dark; applyTheme(); save(); }
+function applyTheme(){ document.documentElement.setAttribute('data-theme',DB.settings.dark?'dark':'light'); var b=document.getElementById('themeBtn'); if(b) b.textContent=DB.settings.dark?'☀️':'🌙'; }
+
+/* ---------------- init ---------------- */
+imReset(); adReset(); applyTheme(); render();
+</script>
+</body>
+</html>

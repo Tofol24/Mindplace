@@ -1,0 +1,12 @@
+# APRENS · redirecciones del sitio "aprens-inicio" (aprens.es)
+#
+# Enlace permanente para el LIBRO IMPRESO «Los cuentos de Nil».
+# Los ejemplares en papel son para siempre: el QR y la URL impresa apuntan a
+# aprens.es/nil (dominio propio y estable), NUNCA a una ruta técnica de Netlify.
+# Si algún día cambia el servidor o se reorganizan las carpetas, basta con
+# actualizar el destino de esta línea; los libros ya impresos siguen funcionando.
+#
+# Se usa 302 (temporal) a propósito: así los navegadores y buscadores no fijan
+# en caché el destino y el redireccionamiento sigue siendo modificable.
+/nil    https://aprens-app.netlify.app/tools-standalone/cuentos/index.html    302
+/nil/*  https://aprens-app.netlify.app/tools-standalone/cuentos/:splat        302
