@@ -1215,6 +1215,16 @@
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
     const owner=isOwner();
     console.log('renderSessions: owner=', owner, 'me=', me, 'OWNER_OF=', OWNER_OF);
+    // DEBUG: show owner status visually
+    if(!document.getElementById('debugOwner')){
+      const dbg=document.createElement('div');
+      dbg.id='debugOwner';
+      dbg.style.cssText='position:fixed;top:60px;right:12px;background:#fc3;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:700;z-index:999;';
+      dbg.textContent='DEBUG: owner='+owner+' me='+me;
+      document.body.appendChild(dbg);
+    } else {
+      document.getElementById('debugOwner').textContent='DEBUG: owner='+owner+' me='+me;
+    }
     document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals (amb comissions).' : 'Veus les teves.';
 
     // Si es owner, mostra vista detallada amb filtro per professional
@@ -1239,8 +1249,12 @@
       const sesCards=document.getElementById('sesCards');
       const sesListWrap=document.getElementById('sesListWrap');
       console.log('sesCards element:', sesCards, 'sesListWrap element:', sesListWrap);
+      console.log('sesListWrap display before:', sesListWrap?.style.display);
       if(sesCards) sesCards.style.display='none';
-      if(sesListWrap) sesListWrap.style.display='';
+      if(sesListWrap) {
+        sesListWrap.style.display='block';
+        console.log('sesListWrap display after:', sesListWrap.style.display);
+      }
       const tb=document.getElementById('sesListBody'); tb.innerHTML='';
       document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Data</th><th>Hora</th><th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th class="num">Comissió</th><th>Pacient</th><th>Estat</th>';
       document.getElementById('sesListTitle').textContent='📊 Detall de sessions i comissions · '+mesLabel(m);
