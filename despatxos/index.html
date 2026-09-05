@@ -1214,12 +1214,15 @@
   function renderSessions(){
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
     const owner=isOwner();
+    console.log('renderSessions: owner=', owner, 'me=', me, 'OWNER_OF=', OWNER_OF);
     document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals (amb comissions).' : 'Veus les teves.';
 
     // Si es owner, mostra vista detallada amb filtro per professional
     if(owner){
+      console.log('Owner view branch: showing detailed table');
       const m=sesMes.value;
       const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
+      console.log('monthRows count:', monthRows.length);
 
       // Inicializar selector de professional si no existeix (exclou Tòfol)
       let profSel=document.getElementById('sesProfSel');
@@ -1233,8 +1236,11 @@
       selSesProf=profSel.value||null;
 
       // Oculta los cards y muestra el listado
-      document.getElementById('sesCards').style.display='none';
-      document.getElementById('sesListWrap').style.display='';
+      const sesCards=document.getElementById('sesCards');
+      const sesListWrap=document.getElementById('sesListWrap');
+      console.log('sesCards element:', sesCards, 'sesListWrap element:', sesListWrap);
+      if(sesCards) sesCards.style.display='none';
+      if(sesListWrap) sesListWrap.style.display='';
       const tb=document.getElementById('sesListBody'); tb.innerHTML='';
       document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Data</th><th>Hora</th><th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th class="num">Comissió</th><th>Pacient</th><th>Estat</th>';
       document.getElementById('sesListTitle').textContent='📊 Detall de sessions i comissions · '+mesLabel(m);
