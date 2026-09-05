@@ -229,7 +229,7 @@
     <!-- ================= SESSIONS PER ESTAT ================= -->
     <section id="tab-sessions" style="display:none;">
       <div class="panel">
-        <h2>Sessions per estat</h2>
+        <h2>📊 Sessions per estat <span id="ownerModeLabel"></span></h2>
         <div class="sub">Resum del mes: sessions agrupades pel seu estat. Toca un grup per veure'n la llista. <span id="sesScope"></span></div>
         <div class="row">
           <label>Mes</label>
@@ -1231,8 +1231,7 @@
     if(owner){
       console.log('Owner view branch: showing detailed table');
       // SHOW OWNER MODE IS ACTIVE - visible indicator
-      const h2=document.querySelector('#tab-sessions h2');
-      if(h2) h2.textContent='🔍 OWNER MODE ACTIVE - DETAILED VIEW';
+      document.getElementById('ownerModeLabel').textContent=' · 🔍 OWNER MODE ACTIVE';
       const m=sesMes.value;
       const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
       console.log('monthRows count:', monthRows.length);
