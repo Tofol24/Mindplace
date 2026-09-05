@@ -1210,10 +1210,97 @@
       { key:'sensepac',    icon:'⚠️', label:'Sense pacient assignat',  pred:r=>r.prof===me && !r.pacient_id },
     ];
   }
+  let selSesProf=null; // filterfilter per professional (owner only)
   function renderSessions(){
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
     const owner=isOwner();
-    document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals.' : 'Veus les teves.';
+    document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals (amb comissions).' : 'Veus les teves.';
+
+    // Si es owner, mostra vista detallada amb filtro per professional
+    if(owner){
+      const m=sesMes.value;
+      const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
+
+      // Inicializar selector de professional si no existeix
+      let profSel=document.getElementById('sesProfSel');
+      if(!profSel){
+        const row=document.createElement('div'); row.className='row';
+        row.innerHTML='<label>Professional</label>';
+        const sel=document.createElement('select'); sel.id='sesProfSel'; sel.onchange=()=>renderSessions();
+        sel.appendChild(Object.assign(document.createElement('option'), {value:'', textContent:'Totes'}));
+        PROFS.forEach(p=>sel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
+        row.appendChild(sel);
+        document.querySelector('#tab-sessions .row').after(row);
+        profSel=sel;
+      } else {
+        selSesProf=profSel.value||null;
+      }
+
+      // Oculta los cards y muestra el listado
+      document.getElementById('sesCards').style.display='none';
+      document.getElementById('sesListWrap').style.display='';
+      const tb=document.getElementById('sesListBody'); tb.innerHTML='';
+      document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Data</th><th>Hora</th><th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th class="num">Comissió</th><th>Pacient</th><th>Estat</th>';
+      document.getElementById('sesListTitle').textContent='📊 Detall de sessions i comissions · '+mesLabel(m);
+
+      // Filtra per professional si és seleccionat
+      let rows=monthRows;
+      if(selSesProf) rows=rows.filter(r=>r.prof===selSesProf);
+
+      // Agrupa per professional per subtotals
+      const byProf={};
+      rows.forEach(r=>{
+        if(!byProf[r.prof]) byProf[r.prof]={n:0,brut:0,com:0,sessions:[]};
+        byProf[r.prof].n++;
+        byProf[r.prof].brut+=sessPreu(r);
+        byProf[r.prof].com+=calcComision(r);
+        byProf[r.prof].sessions.push(r);
+      });
+
+      if(!rows.length){
+        tb.innerHTML='<tr><td colspan="9" class="muted">Cap sessió aquest mes.</td></tr>';
+        return;
+      }
+
+      let totalN=0, totalBr=0, totalCom=0;
+      const estLbl={feta:'Realitzada',pend:'Pendent',no:'No realitzada'};
+      const profs=Object.keys(byProf).sort();
+      profs.forEach(pf=>{
+        const pdata=byProf[pf];
+        totalN+=pdata.n; totalBr+=pdata.brut; totalCom+=pdata.com;
+
+        // Fila de subtotal professional
+        const trSub=document.createElement('tr'); trSub.className='subtot';
+        const pname=prof(pf)?.nom||pf;
+        trSub.innerHTML='<td><b>'+escapeHtml(pname)+'</b></td><td colspan="6"></td><td class="num"><b>'+pdata.n+'</b></td><td class="num"><b>'+pdata.brut.toFixed(0)+' €</b></td><td class="num"><b>'+pdata.com.toFixed(0)+' €</b></td>';
+        tb.appendChild(trSub);
+
+        // Llistats de sessions
+        pdata.sessions.sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start)).forEach(r=>{
+          const pc=r.pacient_id?pacById(r.pacient_id):null;
+          const e=r.estat||'feta';
+          const cob=(e==='feta') ? (r.cobrat===false?' · 💰 pendent':' · ✅ cobrada') : '';
+          const pacCell = pc ? escapeHtml(pc.nom) : ((r.prof===me && !r.pacient_id) ? '⚠️ —' : '—');
+          const tr=document.createElement('tr');
+          tr.innerHTML='<td>'+escapeHtml(pname)+'</td><td>'+r.date+'</td><td>'+r.start+'</td>'+
+            '<td>'+r.desp+'</td><td class="num">'+r.dur+"'</td>"+
+            '<td class="num">'+((r.preu!=null&&r.preu!=='')?r.preu+' €':'—')+'</td>'+
+            '<td class="num"><b>'+calcComision(r).toFixed(2)+' €</b></td>'+
+            '<td>'+pacCell+'</td>'+
+            '<td>'+(estLbl[e]||e)+cob+'</td>';
+          tb.appendChild(tr);
+        });
+      });
+
+      // TOTAL
+      const trTot=document.createElement('tr'); trTot.className='tot';
+      trTot.innerHTML='<td colspan="7">TOTAL</td><td class="num"><b>'+totalN+'</b></td><td class="num"><b>'+totalBr.toFixed(0)+' €</b></td><td class="num"><b>'+totalCom.toFixed(0)+' €</b></td>';
+      tb.appendChild(trTot);
+      return;
+    }
+
+    // VISTA ESTÁNDAR (no owner): cards + click
+    document.getElementById('sesCards').style.display='';
     const m=sesMes.value;
     const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);   // sessions reals del mes (sense ocupacions externes)
     const groups=sesGroups();
