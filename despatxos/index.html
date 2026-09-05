@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Despatxos · APRENS</title>
+<title>Despatxos · APRENS (v2)</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   :root{
@@ -97,6 +97,7 @@
   th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris);}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
   tr.tot td{font-weight:800;border-top:2px solid var(--azul);border-bottom:none;color:var(--azul);}
+  tr.subtot td{font-weight:500;border-top:1px solid var(--linia);background:rgba(0,0,0,0.02);color:var(--gris);}
   .pill{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;}
   .muted{color:var(--gris);font-size:12.5px;}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
@@ -228,7 +229,7 @@
     <!-- ================= SESSIONS PER ESTAT ================= -->
     <section id="tab-sessions" style="display:none;">
       <div class="panel">
-        <h2>Sessions per estat</h2>
+        <h2>📊 Sessions per estat <span id="ownerModeLabel"></span></h2>
         <div class="sub">Resum del mes: sessions agrupades pel seu estat. Toca un grup per veure'n la llista. <span id="sesScope"></span></div>
         <div class="row">
           <label>Mes</label>
@@ -806,6 +807,10 @@
   const isOwner = () => me==='tofol' || myRole==='owner';
   const visibleProfs = () => isOwner() ? PROFS : PROFS.filter(p=>p.id===me);
   const sessPreu = r => (r.preu!=null && r.preu!=='') ? Number(r.preu) : Number(cfg.preus[r.prof]||0);
+  const calcComision = r => {
+    if (r.prof === 'mariana') return (r.dur / 60) * 10;
+    return sessPreu(r) * cfg.pct / 100;
+  };
 
   const loginEl=document.getElementById('login');
   const lwho=document.getElementById('lwho'), lpass=document.getElementById('lpass'), lerr=document.getElementById('lerr');
@@ -1205,10 +1210,115 @@
       { key:'sensepac',    icon:'⚠️', label:'Sense pacient assignat',  pred:r=>r.prof===me && !r.pacient_id },
     ];
   }
+  let selSesProf=null; // filter per professional (owner only)
   function renderSessions(){
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
     const owner=isOwner();
-    document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals.' : 'Veus les teves.';
+    console.log('renderSessions: owner=', owner, 'me=', me, 'OWNER_OF=', OWNER_OF);
+    // DEBUG: show owner status visually
+    if(!document.getElementById('debugOwner')){
+      const dbg=document.createElement('div');
+      dbg.id='debugOwner';
+      dbg.style.cssText='position:fixed;top:60px;right:12px;background:#fc3;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:700;z-index:999;';
+      dbg.textContent='DEBUG: owner='+owner+' me='+me;
+      document.body.appendChild(dbg);
+    } else {
+      document.getElementById('debugOwner').textContent='DEBUG: owner='+owner+' me='+me;
+    }
+    document.getElementById('sesScope').textContent = owner ? 'Veus les de totes les professionals (amb comissions).' : 'Veus les teves.';
+
+    // Si es owner, mostra vista detallada amb filtro per professional
+    if(owner){
+      console.log('Owner view branch: showing detailed table');
+      // SHOW OWNER MODE IS ACTIVE - visible indicator
+      document.getElementById('ownerModeLabel').textContent=' · 🔍 OWNER MODE ACTIVE';
+      const m=sesMes.value;
+      const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
+      console.log('monthRows count:', monthRows.length);
+
+      // Inicializar selector de professional si no existeix (exclou Tòfol)
+      let profSel=document.getElementById('sesProfSel');
+      if(!profSel){
+        profSel=document.createElement('select'); profSel.id='sesProfSel'; profSel.onchange=()=>renderSessions();
+        profSel.appendChild(Object.assign(document.createElement('option'), {value:'', textContent:'Totes'}));
+        PROFS.filter(p=>p.id!=='tofol').forEach(p=>profSel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
+        // Insertar el select después del input de mes
+        sesMes.after(profSel);
+      }
+      selSesProf=profSel.value||null;
+
+      // Oculta los cards y muestra el listado
+      const sesCards=document.getElementById('sesCards');
+      const sesListWrap=document.getElementById('sesListWrap');
+      console.log('sesCards element:', sesCards, 'sesListWrap element:', sesListWrap);
+      console.log('sesListWrap display before:', sesListWrap?.style.display);
+      if(sesCards) sesCards.style.display='none';
+      if(sesListWrap) {
+        sesListWrap.style.display='block';
+        console.log('sesListWrap display after:', sesListWrap.style.display);
+      }
+      const tb=document.getElementById('sesListBody'); tb.innerHTML='';
+      document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Data</th><th>Hora</th><th>Despatx</th><th class="num">Durada</th><th class="num">Preu</th><th class="num">Comissió</th><th>Pacient</th><th>Estat</th>';
+      document.getElementById('sesListTitle').textContent='📊 Detall de sessions i comissions · '+mesLabel(m);
+
+      // Filtra per professional si és seleccionat (sempre exclou Tòfol)
+      let rows=monthRows.filter(r=>r.prof!=='tofol');
+      if(selSesProf) rows=rows.filter(r=>r.prof===selSesProf);
+
+      // Agrupa per professional per subtotals
+      const byProf={};
+      rows.forEach(r=>{
+        if(!byProf[r.prof]) byProf[r.prof]={n:0,brut:0,com:0,sessions:[]};
+        byProf[r.prof].n++;
+        byProf[r.prof].brut+=sessPreu(r);
+        byProf[r.prof].com+=calcComision(r);
+        byProf[r.prof].sessions.push(r);
+      });
+
+      if(!rows.length){
+        tb.innerHTML='<tr><td colspan="9" class="muted">Cap sessió aquest mes.</td></tr>';
+        return;
+      }
+
+      let totalN=0, totalBr=0, totalCom=0;
+      const estLbl={feta:'Realitzada',pend:'Pendent',no:'No realitzada'};
+      const profs=Object.keys(byProf).sort();
+      profs.forEach(pf=>{
+        const pdata=byProf[pf];
+        totalN+=pdata.n; totalBr+=pdata.brut; totalCom+=pdata.com;
+
+        // Fila de subtotal professional
+        const trSub=document.createElement('tr'); trSub.className='subtot';
+        const pname=prof(pf)?.nom||pf;
+        trSub.innerHTML='<td><b>'+escapeHtml(pname)+'</b></td><td colspan="6"></td><td class="num"><b>'+pdata.n+'</b></td><td class="num"><b>'+pdata.brut.toFixed(0)+' €</b></td><td class="num"><b>'+pdata.com.toFixed(0)+' €</b></td>';
+        tb.appendChild(trSub);
+
+        // Llistats de sessions
+        pdata.sessions.sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start)).forEach(r=>{
+          const pc=r.pacient_id?pacById(r.pacient_id):null;
+          const e=r.estat||'feta';
+          const cob=(e==='feta') ? (r.cobrat===false?' · 💰 pendent':' · ✅ cobrada') : '';
+          const pacCell = pc ? escapeHtml(pc.nom) : ((r.prof===me && !r.pacient_id) ? '⚠️ —' : '—');
+          const tr=document.createElement('tr');
+          tr.innerHTML='<td>'+escapeHtml(pname)+'</td><td>'+r.date+'</td><td>'+r.start+'</td>'+
+            '<td>'+r.desp+'</td><td class="num">'+r.dur+"'</td>"+
+            '<td class="num">'+((r.preu!=null&&r.preu!=='')?r.preu+' €':'—')+'</td>'+
+            '<td class="num"><b>'+calcComision(r).toFixed(2)+' €</b></td>'+
+            '<td>'+pacCell+'</td>'+
+            '<td>'+(estLbl[e]||e)+cob+'</td>';
+          tb.appendChild(tr);
+        });
+      });
+
+      // TOTAL
+      const trTot=document.createElement('tr'); trTot.className='tot';
+      trTot.innerHTML='<td colspan="7">TOTAL</td><td class="num"><b>'+totalN+'</b></td><td class="num"><b>'+totalBr.toFixed(0)+' €</b></td><td class="num"><b>'+totalCom.toFixed(0)+' €</b></td>';
+      tb.appendChild(trTot);
+      return;
+    }
+
+    // VISTA ESTÁNDAR (no owner): cards + click
+    document.getElementById('sesCards').style.display='';
     const m=sesMes.value;
     const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);   // sessions reals del mes (sense ocupacions externes)
     const groups=sesGroups();
@@ -1217,7 +1327,8 @@
       // El grup "pendpac" és una PREVISIÓ: compta totes les dates, no només el mes triat.
       const src = g.forecast ? Store.all().filter(r=> r.estat!=='ext') : monthRows;
       const list=src.filter(g.pred);
-      const brut=list.reduce((s,r)=>s+sessPreu(r),0), com=brut*cfg.pct/100, net=brut-com;
+      let brut=0, com=0; list.forEach(r=>{ brut+=sessPreu(r); com+=calcComision(r); });
+      const net=brut-com;
       let sub='';
       if(g.key==='cobrades')       sub='<div class="ksub">Brut '+brut.toFixed(0)+' € · Comissió '+com.toFixed(0)+' € · Net '+net.toFixed(0)+' €</div>';
       else if(g.key==='realitzades') sub='<div class="ksub">Brut '+brut.toFixed(0)+' €</div>';
@@ -1235,22 +1346,71 @@
 
     // Vista especial de PREVISIÓ: comissió prevista per mesos (totes les dates)
     if(g.forecast){
-      document.getElementById('sesListTitle').textContent='🧾 Comissió prevista per mes · fetes amb pacient i pendents de cobrar (totes les dates)';
-      document.getElementById('sesListHead').innerHTML='<th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió prevista</th>';
       const list=Store.all().filter(r=> r.estat!=='ext').filter(g.pred);
-      const byMonth={};
-      list.forEach(r=>{ const mm=(r.date||'').slice(0,7); if(!mm) return; (byMonth[mm]=byMonth[mm]||{n:0,brut:0}); byMonth[mm].n++; byMonth[mm].brut+=sessPreu(r); });
-      const months=Object.keys(byMonth).sort();
-      if(!months.length){ tb.innerHTML='<tr><td colspan="4" class="muted">Cap sessió feta amb pacient pendent de cobrar. 🎉</td></tr>'; return; }
-      let tn=0,tbr=0;
-      months.forEach(mm=>{ const a=byMonth[mm], com=a.brut*cfg.pct/100; tn+=a.n; tbr+=a.brut;
-        const tr=document.createElement('tr');
-        tr.innerHTML='<td>'+mesLabel(mm)+'</td><td class="num">'+a.n+'</td><td class="num">'+a.brut.toFixed(0)+' €</td><td class="num"><b>'+com.toFixed(0)+' €</b></td>';
+      if(!list.length){
+        document.getElementById('sesListTitle').textContent='🧾 Comissió prevista · fetes amb pacient i pendents de cobrar (totes les dates)';
+        document.getElementById('sesListHead').innerHTML='<th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió prevista</th>';
+        tb.innerHTML='<tr><td colspan="4" class="muted">Cap sessió feta amb pacient pendent de cobrar. 🎉</td></tr>';
+        return;
+      }
+
+      if(owner){
+        // Owner view: per professional + mes (amb calcComision per a Mariana)
+        document.getElementById('sesListTitle').textContent='🧾 Comissió prevista per professional i mes · fetes amb pacient i pendents de cobrar (totes les dates)';
+        document.getElementById('sesListHead').innerHTML='<th>Professional</th><th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió prevista</th>';
+
+        const byProf={};
+        list.forEach(r=>{
+          if(!byProf[r.prof]) byProf[r.prof]={months:{}};
+          const mm=(r.date||'').slice(0,7);
+          if(!mm) return;
+          if(!byProf[r.prof].months[mm]) byProf[r.prof].months[mm]={n:0, brut:0, com:0};
+          byProf[r.prof].months[mm].n++;
+          byProf[r.prof].months[mm].brut+=sessPreu(r);
+          byProf[r.prof].months[mm].com+=calcComision(r);
+        });
+
+        const profs=Object.keys(byProf).sort();
+        let totalN=0, totalBr=0, totalCom=0;
+        profs.forEach(pf=>{
+          const pname=prof(pf)?.nom||pf;
+          const months=Object.keys(byProf[pf].months).sort();
+          let pn=0, pbr=0, pcom=0;
+          months.forEach((mm,idx)=>{
+            const a=byProf[pf].months[mm];
+            pn+=a.n; pbr+=a.brut; pcom+=a.com; totalN+=a.n; totalBr+=a.brut; totalCom+=a.com;
+
+            const tr=document.createElement('tr');
+            const pnCell = idx===0 ? '<td><b>'+escapeHtml(pname)+'</b></td>' : '<td></td>';
+            tr.innerHTML=pnCell+'<td>'+mesLabel(mm)+'</td><td class="num">'+a.n+'</td><td class="num">'+a.brut.toFixed(0)+' €</td><td class="num"><b>'+a.com.toFixed(0)+' €</b></td>';
+            tb.appendChild(tr);
+          });
+          // Subtotal per professional
+          const tr=document.createElement('tr'); tr.className='subtot';
+          tr.innerHTML='<td></td><td><i>Subtotal '+escapeHtml(pname)+'</i></td><td class="num">'+pn+'</td><td class="num">'+pbr.toFixed(0)+' €</td><td class="num"><b>'+pcom.toFixed(0)+' €</b></td>';
+          tb.appendChild(tr);
+        });
+
+        const tr=document.createElement('tr'); tr.className='tot';
+        tr.innerHTML='<td colspan="2">TOTAL</td><td class="num">'+totalN+'</td><td class="num">'+totalBr.toFixed(0)+' €</td><td class="num">'+totalCom.toFixed(0)+' €</td>';
         tb.appendChild(tr);
-      });
-      const tr=document.createElement('tr'); tr.className='tot';
-      tr.innerHTML='<td>TOTAL</td><td class="num">'+tn+'</td><td class="num">'+tbr.toFixed(0)+' €</td><td class="num">'+(tbr*cfg.pct/100).toFixed(0)+' €</td>';
-      tb.appendChild(tr);
+      } else {
+        // Regular view: per mes (amb calcComision)
+        document.getElementById('sesListTitle').textContent='🧾 Comissió prevista per mes · fetes amb pacient i pendents de cobrar (totes les dates)';
+        document.getElementById('sesListHead').innerHTML='<th>Mes</th><th class="num">Sessions</th><th class="num">Brut</th><th class="num">Comissió prevista</th>';
+        const byMonth={};
+        list.forEach(r=>{ const mm=(r.date||'').slice(0,7); if(!mm) return; if(!byMonth[mm]) byMonth[mm]={n:0,brut:0,com:0}; byMonth[mm].n++; byMonth[mm].brut+=sessPreu(r); byMonth[mm].com+=calcComision(r); });
+        const months=Object.keys(byMonth).sort();
+        let tn=0,tbr=0,tcom=0;
+        months.forEach(mm=>{ const a=byMonth[mm]; tn+=a.n; tbr+=a.brut; tcom+=a.com;
+          const tr=document.createElement('tr');
+          tr.innerHTML='<td>'+mesLabel(mm)+'</td><td class="num">'+a.n+'</td><td class="num">'+a.brut.toFixed(0)+' €</td><td class="num"><b>'+a.com.toFixed(0)+' €</b></td>';
+          tb.appendChild(tr);
+        });
+        const tr=document.createElement('tr'); tr.className='tot';
+        tr.innerHTML='<td>TOTAL</td><td class="num">'+tn+'</td><td class="num">'+tbr.toFixed(0)+' €</td><td class="num">'+tcom.toFixed(0)+' €</td>';
+        tb.appendChild(tr);
+      }
       return;
     }
 
@@ -1289,13 +1449,13 @@
       '<th class="num">'+(caixa?'Facturació cobrada':'Facturació')+'</th>'+
       '<th class="num">'+(caixa?'Comissió a facturar':'Comissió')+'</th>';
 
-    const agg={}; visibleProfs().forEach(p=>agg[p.id]={n:0,fact:0});
-    Store.all().forEach(r=>{ if(!agg[r.prof]) return; const imp=importPeriode(r); if(imp!=null){ agg[r.prof].n++; agg[r.prof].fact+=imp; } });
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={n:0,fact:0,dur:0});
+    Store.all().forEach(r=>{ if(!agg[r.prof]) return; const imp=importPeriode(r); if(imp!=null){ agg[r.prof].n++; agg[r.prof].fact+=imp; agg[r.prof].dur+=r.dur||0; } });
 
     let totN=0,totFact=0,totCom=0;
     const tb=document.getElementById('repBody'); tb.innerHTML='';
     visibleProfs().forEach(p=>{
-      const a=agg[p.id]; const com=a.fact*cfg.pct/100; totN+=a.n; totFact+=a.fact; totCom+=com;
+      const a=agg[p.id]; const com = (p.id==='mariana') ? ((a.dur/60)*10) : (a.fact*cfg.pct/100); totN+=a.n; totFact+=a.fact; totCom+=com;
       const tr=document.createElement('tr');
       tr.innerHTML='<td><span class="pill" style="background:'+p.color+'"></span>'+p.nom+' <span class="muted">('+p.rol+')</span></td>'+
         '<td class="num">'+a.n+'</td>'+
@@ -1310,8 +1470,8 @@
     }
 
     // Pendent de cobrament ACUMULAT (realitzat i no cobrat, de qualsevol data)
-    let pendImp=0; Store.all().forEach(r=>{ if(!agg[r.prof]) return; if((r.estat||'feta')==='feta' && r.cobrat===false) pendImp+=sessPreu(r); });
-    const pendCom = pendImp*cfg.pct/100;
+    let pendImp=0, pendDur=0; Store.all().forEach(r=>{ if(!agg[r.prof]) return; if((r.estat||'feta')==='feta' && r.cobrat===false) { pendImp+=sessPreu(r); pendDur+=r.dur||0; } });
+    const pendCom = me==='mariana' ? ((pendDur/60)*10) : (pendImp*cfg.pct/100);
 
     const k=document.getElementById('kpis');
     const lbl = periode.value==='mes' ? ('Mes '+(mesPick.value||'')) : 'Setmana seleccionada';
@@ -1330,10 +1490,10 @@
 
   document.getElementById('csvBtn').onclick=()=>{
     const caixa = baseCom.value==='caixa';
-    const agg={}; visibleProfs().forEach(p=>agg[p.id]={n:0,fact:0});
-    Store.all().forEach(r=>{ if(!agg[r.prof]) return; const imp=importPeriode(r); if(imp!=null){ agg[r.prof].n++; agg[r.prof].fact+=imp; } });
-    let csv='Professional;Rol;'+(caixa?'Sessions cobrades':'Realitzades')+';'+(caixa?'Facturacio cobrada':'Facturacio')+';Comissio '+cfg.pct+'%\n';
-    visibleProfs().forEach(p=>{ const a=agg[p.id]; const com=a.fact*cfg.pct/100;
+    const agg={}; visibleProfs().forEach(p=>agg[p.id]={n:0,fact:0,dur:0});
+    Store.all().forEach(r=>{ if(!agg[r.prof]) return; const imp=importPeriode(r); if(imp!=null){ agg[r.prof].n++; agg[r.prof].fact+=imp; agg[r.prof].dur+=r.dur||0; } });
+    let csv='Professional;Rol;'+(caixa?'Sessions cobrades':'Realitzades')+';'+(caixa?'Facturacio cobrada':'Facturacio')+';Comissio\n';
+    visibleProfs().forEach(p=>{ const a=agg[p.id]; const com = (p.id==='mariana') ? ((a.dur/60)*10) : (a.fact*cfg.pct/100);
       csv+=[p.nom,p.rol,a.n,a.fact.toFixed(0),com.toFixed(2)].join(';')+'\n'; });
     const per = periode.value==='mes' ? (mesPick.value||'') : ('setmana-'+(setPick.value||''));
     const who = isOwner()? '' : (me+'-');
@@ -1523,16 +1683,16 @@
   anyPick.onchange=renderExt; baseExt.onchange=renderExt;
 
   function monthAgg(year, month){ // segons base: realitzades del mes, o cobrades el mes
-    let sessions=0, brut=0; const caixa = baseExt.value==='caixa';
+    let sessions=0, brut=0, dur=0; const caixa = baseExt.value==='caixa';
     Store.all().forEach(r=>{
       if(!isOwner() && r.prof!==me) return;
       const e=r.estat||'feta';
       let d;
       if(caixa){ if(!(r.cobrat===true && e!=='no')) return; d=parseDate(dataCobrament(r)); }
       else { if(e!=='feta') return; d=parseDate(r.date); }
-      if(d.getFullYear()===year && (d.getMonth()+1)===month){ sessions++; brut+=sessPreu(r); }
+      if(d.getFullYear()===year && (d.getMonth()+1)===month){ sessions++; brut+=sessPreu(r); dur+=r.dur||0; }
     });
-    return {sessions, brut};
+    return {sessions, brut, dur};
   }
   const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
 
@@ -1546,7 +1706,7 @@
     const tb=document.getElementById('extBody'); tb.innerHTML='';
     let yS=0,yBrut=0,yCom=0,yNet=0;
     for(let m=1;m<=12;m++){
-      const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+      const a=monthAgg(year,m); const com = (me==='mariana') ? ((a.dur/60)*10) : (a.brut*pct/100); const net=a.brut-com;
       yS+=a.sessions; yBrut+=a.brut; yCom+=com; yNet+=net;
       const tr=document.createElement('tr');
       tr.innerHTML='<td>'+cap(MESOS[m-1])+'</td>'+
@@ -1597,8 +1757,8 @@
 
   document.getElementById('csvExtBtn').onclick=()=>{
     const year=Number(anyPick.value||curDate.getFullYear()); const pct=cfg.pct;
-    let csv='Mes;Sessions;Brut;Comissio '+pct+'%;Net\n';
-    for(let m=1;m<=12;m++){ const a=monthAgg(year,m); const com=a.brut*pct/100; const net=a.brut-com;
+    let csv='Mes;Sessions;Brut;Comissio;Net\n';
+    for(let m=1;m<=12;m++){ const a=monthAgg(year,m); const com = (me==='mariana') ? ((a.dur/60)*10) : (a.brut*pct/100); const net=a.brut-com;
       csv+=[MESOS[m-1],a.sessions,a.brut.toFixed(0),com.toFixed(2),net.toFixed(2)].join(';')+'\n'; }
     const who=isOwner()?'':(me+'-');
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a');
