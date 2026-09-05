@@ -1210,7 +1210,7 @@
       { key:'sensepac',    icon:'⚠️', label:'Sense pacient assignat',  pred:r=>r.prof===me && !r.pacient_id },
     ];
   }
-  let selSesProf=null; // filterfilter per professional (owner only)
+  let selSesProf=null; // filter per professional (owner only)
   function renderSessions(){
     if(!sesMes.value) sesMes.value=fmtDate(curDate).slice(0,7);
     const owner=isOwner();
@@ -1224,17 +1224,13 @@
       // Inicializar selector de professional si no existeix (exclou Tòfol)
       let profSel=document.getElementById('sesProfSel');
       if(!profSel){
-        const row=document.createElement('div'); row.className='row';
-        row.innerHTML='<label>Professional</label>';
-        const sel=document.createElement('select'); sel.id='sesProfSel'; sel.onchange=()=>renderSessions();
-        sel.appendChild(Object.assign(document.createElement('option'), {value:'', textContent:'Totes'}));
-        PROFS.filter(p=>p.id!=='tofol').forEach(p=>sel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
-        row.appendChild(sel);
-        document.querySelector('#tab-sessions .row').after(row);
-        profSel=sel;
-      } else {
-        selSesProf=profSel.value||null;
+        profSel=document.createElement('select'); profSel.id='sesProfSel'; profSel.onchange=()=>renderSessions();
+        profSel.appendChild(Object.assign(document.createElement('option'), {value:'', textContent:'Totes'}));
+        PROFS.filter(p=>p.id!=='tofol').forEach(p=>profSel.appendChild(Object.assign(document.createElement('option'), {value:p.id, textContent:p.nom})));
+        // Insertar el select después del input de mes
+        sesMes.after(profSel);
       }
+      selSesProf=profSel.value||null;
 
       // Oculta los cards y muestra el listado
       document.getElementById('sesCards').style.display='none';
