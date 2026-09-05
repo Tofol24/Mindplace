@@ -1230,13 +1230,12 @@
     // Si es owner, mostra vista detallada amb filtro per professional
     if(owner){
       console.log('Owner view branch: showing detailed table');
+      // SHOW OWNER MODE IS ACTIVE - visible indicator
+      const h2=document.querySelector('#tab-sessions h2');
+      if(h2) h2.textContent='🔍 OWNER MODE ACTIVE - DETAILED VIEW';
       const m=sesMes.value;
       const monthRows=Store.all().filter(r=> r.estat!=='ext' && r.date && r.date.slice(0,7)===m);
       console.log('monthRows count:', monthRows.length);
-
-      // Add visible debug indicator
-      const debugEl=document.getElementById('sesScope');
-      debugEl.innerHTML = '🔍 <b>OWNER VIEW ACTIVE</b> - owner=true me='+me + '<br>' + debugEl.innerHTML;
 
       // Inicializar selector de professional si no existeix (exclou Tòfol)
       let profSel=document.getElementById('sesProfSel');
