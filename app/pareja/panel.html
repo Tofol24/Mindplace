@@ -692,6 +692,80 @@ function baseSessions(){
   ].map(function(s,i){ return {n:i+1, tema:s.t, fecha:"", objetivo:"", episodio:"", activador:"",
     aSiente:"", bSiente:"", ciclo:"", ais:"", interv:"", ensayo:"", tarea:"", indicador:"", obs:"", coord:false, coordTxt:""}; });
 }
+/* ---- Autocompletado de fichas de sesión (propuesta editable) -----------
+   Según el tema de la sesión y la información del caso (ciclo, objetivos, plan),
+   propone contenido para cada apartado. Solo rellena CAMPOS VACÍOS: nunca pisa
+   lo que la profesional ya haya escrito. Todo queda editable.               */
+function autofillSession(s){
+  var A=CASE.A, B=CASE.B, c=CASE.cycle;
+  var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
+  var t=(s.tema||"").toLowerCase();
+  var aC=(A.ciclo||{}), bC=(B.ciclo||{});
+  var aLine=[aC.emocion,aC.interprete,aC.hiciste].filter(Boolean).join(" · ");
+  var bLine=[bC.emocion,bC.interprete,bC.hiciste].filter(Boolean).join(" · ");
+  var P={};
+  function withCycle(){ P.activador=c.activador; P.aSiente=aLine; P.bSiente=bLine; P.ciclo=cycleSentence(); }
+  if(/encuadre|mapa/.test(t)){
+    P.objetivo="Encuadre del proceso y devolución del mapa inicial (fortalezas, patrón y objetivos).";
+    P.interv="Psicoeducación del enfoque TEC/Co-AIS; encuadre y expectativas compartidas.";
+    P.ensayo="Devolución del mapa y del ciclo; recoger las reacciones de ambos.";
+    P.tarea="Observar (sin cambiar nada) un momento de tensión y cómo lo vive cada uno por dentro.";
+    P.indicador="Comprensión compartida del mapa y del encuadre.";
+  } else if(/ciclo/.test(t)){
+    withCycle();
+    P.objetivo="Reconocer juntos el ciclo de escalada y su función protectora (sin culpa).";
+    P.interv="Externalizar el ciclo; nombrar las protecciones de cada uno.";
+    P.ensayo="Reconstruir en consulta, paso a paso, un episodio reciente.";
+    P.tarea="Detectar el ciclo en un episodio y anotar el primer signo corporal.";
+    P.indicador="Capacidad de nombrar el ciclo en el momento.";
+  } else if(/ais|regulaci|escalada/.test(t)){
+    withCycle();
+    P.objetivo="Introducir AIS/Co-AIS para ampliar la latencia y frenar la escalada.";
+    P.ais="AIS: notar la sensación, permanecer unos segundos, elegir la respuesta. Co-AIS: poder regularse en presencia del otro.";
+    P.interv="Ampliación de la latencia sensación → elección.";
+    P.ensayo="Ejercicio de AIS guiado ante una activación leve evocada en consulta.";
+    P.tarea="Antes de responder en un roce cotidiano: 3 respiraciones + nombrar la sensación.";
+    P.indicador="Nº de escaladas frenadas con AIS.";
+  } else if(/comunic|honest/.test(t)){
+    P.objetivo="Practicar comunicación honesta en primera persona y escucha sin defenderse.";
+    P.interv="Peticiones en primera persona; escucha activa; validación.";
+    P.ensayo="Diálogo estructurado (hablante / escucha) sobre un tema de baja carga.";
+    P.tarea="Una conversación pautada en casa, con turnos, sobre un tema acordado.";
+    P.indicador="Conversaciones difíciles completadas sin ruptura.";
+  } else if(/l[ií]mit|necesidad/.test(t)){
+    P.objetivo="Diferenciar necesidad / deseo / petición / límite y sostenerlos con respeto.";
+    P.interv="Clarificación necesidad/deseo/petición/límite; entrenamiento asertivo.";
+    P.ensayo="Formular en consulta una petición y un límite reales.";
+    P.tarea="Expresar un límite con respeto y sostenerlo una vez.";
+    P.indicador="Límites sostenidos sin castigo.";
+  } else if(/prioritari|espec[ií]fic/.test(t)){
+    var g=appr[0];
+    P.objetivo= g ? ("Área prioritaria: "+catTitle(g.cat)+" — "+g.objetivo) : "Trabajar el área prioritaria del caso (a definir con la pareja).";
+    if(g){ P.interv=(INTERV[g.cat]||[]).slice(0,3).join(" · "); P.indicador=g.indicador||defIndicador(g.cat); }
+    P.tarea="Practicar en casa la conducta diana del objetivo prioritario.";
+  } else if(/modelo|acuerdo/.test(t)){
+    P.objetivo="Construir el modelo de relación propio y acuerdos explícitos en las áreas clave.";
+    P.interv="Negociación de acuerdos; contrato relacional revisable.";
+    P.ensayo="Negociar en consulta un acuerdo concreto en un área de discrepancia.";
+    P.tarea="Poner por escrito un acuerdo y probarlo una semana.";
+    P.indicador="Nº de acuerdos escritos y cumplidos.";
+  } else if(/reevalu|revis/.test(t)){
+    P.objetivo="Reevaluar avances (repetir escalas), revisar objetivos y siguientes pasos.";
+    P.interv="Revisión de indicadores; ajuste del plan.";
+    P.tarea="Repetir las escalas de seguimiento.";
+    P.indicador="Cambio en escalas clave respecto a la línea base.";
+  } else if(appr[0]){
+    var g0=appr[0]; P.objetivo="Avanzar en: "+g0.objetivo;
+    P.interv=(INTERV[g0.cat]||[]).slice(0,2).join(" · "); P.indicador=g0.indicador||defIndicador(g0.cat);
+  }
+  return P;
+}
+function fillSession(i){
+  var s=CASE.sessions[i], P=autofillSession(s), touched=0;
+  Object.keys(P).forEach(function(k){ if(P[k] && (!s[k] || !String(s[k]).trim())){ s[k]=P[k]; touched++; } });
+  return touched;
+}
+
 function tabSesiones(){
   // adaptar temas a objetivos aprobados (sugerencia)
   var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
@@ -699,7 +773,10 @@ function tabSesiones(){
     +'. Ajusta los temas de sesión a estos objetivos.</div>' : '';
   var list=CASE.sessions.map(function(s,i){ return sessionCard(s,i); }).join("");
   return card('<h1>Sesiones</h1><p class="muted">Propuesta inicial de 8 sesiones, adaptable. Cada ficha es editable.</p>'
-    +sug+'<button class="btn ghost mini" id="btnAddSes" type="button">+ Añadir sesión</button>')+list;
+    +sug
+    +'<div class="row"><button class="btn primary mini" id="btnFillAll" type="button">Autocompletar fichas (campos vacíos)</button>'
+    +'<button class="btn ghost mini" id="btnAddSes" type="button">+ Añadir sesión</button></div>'
+    +'<p class="legend">Propuesta a partir del caso (ciclo, objetivos, plan). Solo rellena lo vacío; revisa y edita antes de usar.</p>')+list;
 }
 function sessionCard(s,i){
   function ta(f,l){ return '<div class="field" style="margin:6px 0"><label class="lbl small">'+l+'</label>'
@@ -707,7 +784,8 @@ function sessionCard(s,i){
   function tx(f,l){ return '<div class="field" style="margin:6px 0"><label class="lbl small">'+l+'</label>'
     +'<input type="text" data-sf="'+f+'" data-si="'+i+'" value="'+esc(s[f])+'"></div>'; }
   return card('<div class="row" style="justify-content:space-between"><h3 style="margin:0">Sesión '+s.n+'</h3>'
-      +'<input type="text" data-sf="fecha" data-si="'+i+'" value="'+esc(s.fecha)+'" placeholder="Fecha" style="max-width:150px"></div>'
+      +'<div class="row"><button class="btn ghost mini" data-fillone="'+i+'" type="button">Autocompletar</button>'
+      +'<input type="text" data-sf="fecha" data-si="'+i+'" value="'+esc(s.fecha)+'" placeholder="Fecha" style="max-width:140px"></div></div>'
     +tx("tema","Tema")+tx("objetivo","Objetivo de sesión")+ta("episodio","Episodio analizado")+tx("activador","Activador")
     +'<div class="grid2">'+ta("aSiente","A: siente / interpreta / hace")+ta("bSiente","B: siente / interpreta / hace")+'</div>'
     +ta("ciclo","Ciclo")+ta("ais","AIS / Co-AIS")+ta("interv","Intervención")+ta("ensayo","Ensayo en consulta")
@@ -723,6 +801,15 @@ tabSesiones.after=function(){
   body.addEventListener("change",function(e){var t=e.target; if(t.getAttribute&&t.getAttribute("data-sf")==="coord"){ /* ya gestionado */ }});
   var add=el("btnAddSes"); if(add) add.addEventListener("click",function(){
     var n=CASE.sessions.length+1; CASE.sessions.push({n:n,tema:"",fecha:"",objetivo:"",episodio:"",activador:"",aSiente:"",bSiente:"",ciclo:"",ais:"",interv:"",ensayo:"",tarea:"",indicador:"",obs:"",coord:false,coordTxt:""}); openTab("sesiones"); });
+  // Autocompletar todas las fichas (solo campos vacíos)
+  var fillAll=el("btnFillAll"); if(fillAll) fillAll.addEventListener("click",function(){
+    var tot=0; CASE.sessions.forEach(function(s,i){ tot+=fillSession(i); });
+    openTab("sesiones");
+    if(!tot) alert("Las fichas ya tienen contenido en los campos que se autocompletan. (No se sobrescribe lo que ya has escrito.)");
+  });
+  // Autocompletar una sola ficha
+  body.addEventListener("click",function(e){ var t=e.target; var one=t.getAttribute&&t.getAttribute("data-fillone");
+    if(one!=null){ fillSession(+one); openTab("sesiones"); } });
 };
 
 /* ==========================================================================
