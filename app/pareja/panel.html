@@ -88,6 +88,11 @@ tr.hot td{background:#fbf1ee}
 @media(max-width:640px){.kv{grid-template-columns:1fr}}
 .legend{font-size:12px;color:var(--muted);margin-top:6px}
 svg{max-width:100%;height:auto}
+/* Diálogo Guardar caso */
+.modalov{position:fixed;inset:0;background:rgba(20,30,27,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modalbox{background:#fff;border-radius:14px;max-width:560px;width:100%;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+input[type=file]{font:inherit;font-size:13px}
 /* Devolución para la pareja (documento pensado para compartir con ambos) */
 .creport{line-height:1.6}
 .creport .chead{background:linear-gradient(135deg,#5F8377,#496a5e);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:8px}
@@ -111,6 +116,7 @@ svg{max-width:100%;height:auto}
   <div class="in">
     <div class="brand">APRENS · Mapa Clínico de Pareja<small>TEC · Co-AIS — panel profesional</small></div>
     <div class="sp"></div>
+    <button id="btnSave" type="button">Guardar caso</button>
     <button id="btnClear" type="button">Borrar caso</button>
   </div>
 </header>
@@ -143,6 +149,18 @@ svg{max-width:100%;height:auto}
         <button class="btn ghost" id="btnDemo" type="button">Cargar ejemplo (demostración)</button>
       </div>
       <p class="legend">Herramienta de apoyo clínico. No emite diagnósticos ni decide sobre la continuidad de la relación. Todas las hipótesis y propuestas deben ser validadas por la profesional.</p>
+    </div>
+    <div class="card">
+      <h1>Continuar un caso guardado</h1>
+      <p class="muted">Importa un caso que guardaste antes (con «Guardar caso») para seguir donde lo dejaste, sin volver a pegar las evaluaciones.</p>
+      <div class="row">
+        <input type="file" id="fileImport" accept=".json,application/json" aria-label="Archivo de caso guardado">
+        <button class="btn ghost" id="btnRecoverLS" type="button">Recuperar de este dispositivo</button>
+      </div>
+      <label class="lbl" for="pasteImport" style="margin-top:10px">…o pega aquí el caso guardado</label>
+      <textarea id="pasteImport" placeholder="Pega el contenido del archivo de caso…"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="btnImport" type="button">Importar caso</button></div>
+      <p id="importMsg" class="note warn hide" role="status" aria-live="polite"></p>
     </div>
   </section>
 
@@ -997,6 +1015,62 @@ el("btnClear").addEventListener("click",function(){
   if(!confirm("¿Borrar el caso cargado? Se eliminarán todos los datos y ediciones de esta sesión.")) return;
   CASE=null; el("inA").value=""; el("inB").value=""; el("intakeMsg").classList.add("hide");
   el("panel").classList.add("hide"); el("intake").classList.remove("hide"); window.scrollTo(0,0);
+});
+
+/* ==========================================================================
+   GUARDAR / IMPORTAR CASO  (explícito, local — nada automático)
+   Guarda TODO el desarrollo (A, B, ciclo, objetivos, plan, sesiones, seguimiento)
+   en un archivo .json que la profesional custodia y puede volver a importar.
+   ========================================================================== */
+var CASE_LS="aprens_pareja_caso";
+function casePayload(){ return JSON.stringify({app:"APRENS_PAIR_CASE_V1",guardado:new Date().toISOString(),caso:CASE}); }
+function caseName(){ var id=((CASE&&CASE.A&&CASE.A.idPareja)||"caso").replace(/[^\w-]+/g,"_");
+  return "APRENS-pareja-"+id+"-"+new Date().toISOString().slice(0,10)+".json"; }
+el("btnSave").addEventListener("click",function(){
+  if(!CASE){ alert("No hay ningún caso cargado para guardar."); return; }
+  var txt=casePayload(), name=caseName();
+  try{ var blob=new Blob([txt],{type:"application/json"}); var u=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=u; a.download=name; document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(u); a.remove();},600); }catch(e){}
+  openSaveModal(txt,name);
+});
+function openSaveModal(txt,name){
+  var ov=document.createElement("div"); ov.className="modalov";
+  ov.innerHTML='<div class="modalbox"><h3 style="margin-top:0">Guardar caso</h3>'
+    +'<p class="small muted">Se ha descargado <b>'+esc(name)+'</b>. Guárdalo en tus registros; podrás <b>importarlo</b> más adelante para continuar sin volver a pegar las evaluaciones. Si la descarga no funciona, copia el texto de abajo y guárdalo tú.</p>'
+    +'<textarea class="mono" readonly aria-label="Datos del caso">'+esc(txt)+'</textarea>'
+    +'<div class="row" style="margin-top:10px">'
+    +'<button class="btn ghost mini" data-mc="copy" type="button">Copiar</button>'
+    +'<button class="btn ghost mini" data-mc="ls" type="button">Guardar en este dispositivo</button>'
+    +'<button class="btn primary mini" data-mc="close" type="button">Cerrar</button></div>'
+    +'<p class="small muted" data-mc="msg" role="status" aria-live="polite"></p></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener("click",function(e){
+    var a=e.target.getAttribute&&e.target.getAttribute("data-mc");
+    if(e.target===ov||a==="close"){ ov.remove(); return; }
+    if(!a) return; var msg=ov.querySelector('[data-mc="msg"]');
+    if(a==="copy") copyText(txt,msg);
+    if(a==="ls"){ try{ localStorage.setItem(CASE_LS,txt); msg.textContent="Guardado en este dispositivo. Al reabrir el panel podrás recuperarlo con «Recuperar de este dispositivo»."; }catch(e){ msg.textContent="No se pudo guardar en este navegador."; } }
+  });
+}
+function loadCaseObj(payload){
+  var d; try{ d=(typeof payload==="string")?JSON.parse(payload.replace(/^[^{]*/, "").replace(/[^}]*$/, "")):payload; }
+  catch(e){ return "No se reconoce el archivo/texto del caso."; }
+  var c=(d && d.app==="APRENS_PAIR_CASE_V1" && d.caso) ? d.caso : d;
+  if(!c || !c.A || !c.B) return "El archivo no contiene un caso válido (faltan las evaluaciones A/B).";
+  c.cycle=c.cycle||buildCycle(c.A,c.B); c.goals=c.goals||[]; c.sessions=c.sessions||baseSessions(); c.followups=c.followups||[];
+  CASE=c; el("intake").classList.add("hide"); el("panel").classList.remove("hide"); renderTabs(); openTab("general"); window.scrollTo(0,0);
+  return null;
+}
+function importFrom(txt){ var err=loadCaseObj(txt); var m=el("importMsg");
+  if(err){ m.className="note alert"; m.classList.remove("hide"); m.textContent=err; } }
+el("btnImport").addEventListener("click",function(){ importFrom(el("pasteImport").value); });
+el("fileImport").addEventListener("change",function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var r=new FileReader(); r.onload=function(){ importFrom(String(r.result)); }; r.readAsText(f); });
+el("btnRecoverLS").addEventListener("click",function(){
+  var raw=null; try{ raw=localStorage.getItem(CASE_LS); }catch(e){}
+  if(!raw){ var m=el("importMsg"); m.className="note warn"; m.classList.remove("hide"); m.textContent="No hay ningún caso guardado en este dispositivo."; return; }
+  importFrom(raw);
 });
 
 /* ==========================================================================
