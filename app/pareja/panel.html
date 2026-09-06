@@ -88,7 +88,22 @@ tr.hot td{background:#fbf1ee}
 @media(max-width:640px){.kv{grid-template-columns:1fr}}
 .legend{font-size:12px;color:var(--muted);margin-top:6px}
 svg{max-width:100%;height:auto}
-@media print{ header.top,.tabs,.noprint{display:none!important} .card{box-shadow:none;border:1px solid #ccc} body{background:#fff} }
+/* Devolución para la pareja (documento pensado para compartir con ambos) */
+.creport{line-height:1.6}
+.creport .chead{background:linear-gradient(135deg,#5F8377,#496a5e);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:8px}
+.creport .chead .ck{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;font-weight:700}
+.creport .chead h2{color:#fff;font-size:26px;margin:6px 0 4px;text-wrap:balance}
+.creport .chead p{margin:0;opacity:.96}
+.creport section{border-left:3px solid #cfe0d8;padding:2px 0 2px 16px;margin:22px 0}
+.creport h3{font-size:17px;color:#496a5e;margin:0 0 6px}
+.creport ul{margin:6px 0;padding-left:20px}.creport li{margin:6px 0}
+.creport .step{display:flex;gap:12px;margin:9px 0;align-items:flex-start}
+.creport .step .n{flex:0 0 26px;height:26px;border-radius:50%;background:#eaf1ee;color:#496a5e;font-weight:800;
+  display:flex;align-items:center;justify-content:center;font-size:13px}
+.creport .closing{background:#f2f7f5;border:1px solid #dbe6e1;border-radius:14px;padding:16px 18px;font-size:16px;color:#2f473f}
+.creport .foot{color:#69706a;font-size:13px;margin-top:18px}
+@media print{ header.top,.tabs,.noprint{display:none!important} .card{box-shadow:none;border:1px solid #ccc} body{background:#fff}
+  .creport .chead{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
 <body>
@@ -767,19 +782,89 @@ function chartFor(key,label){
    PESTAÑA 13 · INFORME
    ========================================================================== */
 function tabExportar(){
-  return card('<h1>Informe clínico</h1><p class="muted">Genera un resumen estructurado editable. Revisa y valida antes de usarlo.</p>'
-    +'<div class="row"><button class="btn primary" id="btnReport" type="button">Generar resumen clínico</button>'
-    +'<button class="btn ghost" id="btnPrint" type="button">Imprimir / Guardar PDF</button>'
+  return card('<h1>Informes</h1><p class="muted">Dos documentos, editables antes de usarlos. Revisa y valida siempre el contenido.</p>'
+    +'<div class="row">'
+    +'<button class="btn primary" id="btnReport" type="button">Resumen clínico (para ti)</button>'
+    +'<button class="btn primary" id="btnCouple" type="button" style="background:#496a5e">Devolución para la pareja</button>'
+    +'</div>'
+    +'<div class="note info" style="margin-top:10px"><b>Resumen clínico</b>: uso profesional y coordinación (incluye seguridad si aplica). <b>Devolución para la pareja</b>: para compartir con ambos — cálida, clara y sin datos sensibles ni de seguridad.</div>'
+    +'<div class="row" style="margin-top:10px"><button class="btn ghost" id="btnPrint" type="button">Imprimir / Guardar PDF</button>'
     +'<button class="btn ghost" id="btnCopyR" type="button">Copiar texto</button></div>'
     +'<p id="repMsg" class="small muted" role="status" aria-live="polite"></p>'
     +'<div id="report" class="card" style="margin-top:12px" contenteditable="false"></div>');
 }
 tabExportar.after=function(){
-  el("btnReport").addEventListener("click",function(){ el("report").innerHTML=buildReport(); el("report").setAttribute("contenteditable","true"); });
-  el("btnPrint").addEventListener("click",function(){ if(!el("report").innerHTML){el("report").innerHTML=buildReport();} window.print(); });
-  el("btnCopyR").addEventListener("click",function(){ if(!el("report").innerHTML){el("report").innerHTML=buildReport();}
-    var txt=el("report").innerText; copyText(txt, el("repMsg")); });
+  function show(html){ el("report").innerHTML=html; el("report").setAttribute("contenteditable","true"); el("repMsg").textContent="Documento editable: puedes retocarlo aquí antes de imprimir o copiar."; window.scrollTo(0,document.body.scrollHeight); }
+  el("btnReport").addEventListener("click",function(){ show(buildReport()); });
+  el("btnCouple").addEventListener("click",function(){ show(buildCoupleReport()); });
+  el("btnPrint").addEventListener("click",function(){ if(!el("report").innerHTML){show(buildReport());} window.print(); });
+  el("btnCopyR").addEventListener("click",function(){ if(!el("report").innerHTML){show(buildReport());}
+    copyText(el("report").innerText, el("repMsg")); });
 };
+
+/* ---- DEVOLUCIÓN PARA LA PAREJA (documento para compartir) --------------
+   Solo contenido apto para ambos: fortalezas, patrón compartido (sin culpa),
+   objetivos aprobados, plan en lenguaje cercano y hoja de ruta de sesiones.
+   NUNCA incluye seguridad, datos privados de un miembro, ni discrepancias como
+   culpa. Editable por la profesional antes de compartir.                   */
+function catTitle(cat){ return ({REGULACION:"Calmar la escalada",COMUNICACION:"Comunicarnos mejor",
+  LIMITES:"Necesidades y límites",CONFIANZA:"Reconstruir la confianza",INTIMIDAD:"Cercanía e intimidad",
+  AUTONOMIA:"Autonomía y espacio propio",COOPERACION:"Funcionar como equipo",PROYECTO:"Nuestro proyecto",
+  DECISION:"Decidir con calma"})[cat]||"Nuestro trabajo"; }
+function coupleInterv(cat){ return ({
+  REGULACION:"Aprenderéis a notar antes cuándo el cuerpo se activa y a daros unos segundos (AIS) antes de responder, para que las discusiones no escalen.",
+  COMUNICACION:"Practicaréis decir lo que necesitáis en primera persona y escuchar al otro sin defenderos de inmediato.",
+  LIMITES:"Aprenderéis a pedir y sostener lo que necesitáis con respeto, y a aceptar los límites del otro.",
+  CONFIANZA:"Acordaréis formas concretas de transparencia e iréis soltando la necesidad de comprobar.",
+  INTIMIDAD:"Recuperaréis afecto y cercanía, y podréis hablar de intimidad sin presión.",
+  AUTONOMIA:"Cuidaréis el espacio propio de cada uno y aprenderéis a acompañaros por dentro sin depender solo del otro.",
+  COOPERACION:"Os repartiréis el día a día como equipo y resolveréis los problemas juntos.",
+  PROYECTO:"Iréis dibujando juntos qué relación queréis y con qué acuerdos.",
+  DECISION:"Os daréis tiempo para decidir con calma, desde lo que de verdad os importa."
+})[cat]||"Lo concretaremos juntos en sesión."; }
+
+function buildCoupleReport(){
+  var st=strengthsShared();
+  var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
+  var c=CASE.cycle;
+  // Fortalezas (en positivo, compartidas)
+  var fort=[];
+  st.valores.forEach(function(v){ fort.push("Compartís el valor de ser <b>"+esc(v.toLowerCase())+"</b>."); });
+  st.areas.forEach(function(a){ fort.push("Hoy vivís bien juntos: <b>"+esc(a.toLowerCase())+"</b>."); });
+  st.motivos.forEach(function(m){ fort.push(esc(m)); });
+  if(!fort.length) fort.push("En las primeras sesiones pondremos nombre, juntos, a lo que os sostiene como pareja.");
+  // Patrón compartido (sin culpa)
+  var patron = c.activador
+    ? "A veces, cuando "+esc((c.activador||"").toLowerCase())+", entre los dos se pone en marcha un mismo ciclo: "
+      +"uno tiende a "+esc((c.protA||"protegerse a su manera").toLowerCase())+" y el otro a "+esc((c.protB||"protegerse a su manera").toLowerCase())+". "
+      +"Sin quererlo, cada respuesta alimenta la del otro. <b>No es culpa de nadie</b>: es un patrón que aprenderéis a reconocer pronto y a frenar."
+    : "Miraremos juntos el patrón que se repite en los momentos difíciles, para reconocerlo pronto y poder frenarlo. No se trata de buscar culpables.";
+  // Objetivos
+  var goals = appr.length
+    ? "<ul>"+appr.map(function(g){ return "<li>"+esc(g.objetivo)+"</li>"; }).join("")+"</ul>"
+    : "<p>En las primeras sesiones definiremos juntos dos o tres objetivos concretos y realistas.</p>";
+  // Cómo lo haremos (plan en lenguaje cercano)
+  var comoItems={}; appr.forEach(function(g){ comoItems[g.cat]=true; });
+  var como = Object.keys(comoItems).length
+    ? "<ul>"+Object.keys(comoItems).map(function(cat){ return "<li><b>"+esc(catTitle(cat))+":</b> "+esc(coupleInterv(cat))+"</li>"; }).join("")+"</ul>"
+    : "<p>Combinaremos entender qué os pasa por dentro, aprender a calmar la escalada y practicar nuevas formas de hablaros y cuidaros.</p>";
+  // Hoja de ruta de sesiones
+  var ses = CASE.sessions.slice(0,8).map(function(s,i){
+    return '<div class="step"><div class="n">'+(i+1)+'</div><div>'+esc(s.tema||("Sesión "+(i+1)))+'</div></div>'; }).join("");
+
+  return '<div class="creport">'
+    +'<div class="chead"><div class="ck">APRENS · Mapa de Pareja</div>'
+      +'<h2>Vuestro resumen y plan de trabajo</h2>'
+      +'<p>Un mapa de dónde estáis y de cómo vamos a acompañaros en este proceso. Lo revisaremos y ajustaremos juntos.</p></div>'
+    +'<section><h3>Lo que os sostiene</h3><ul>'+fort.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></section>'
+    +'<section><h3>El patrón que vamos a trabajar</h3><p>'+patron+'</p></section>'
+    +'<section><h3>Hacia dónde vamos · nuestros objetivos</h3>'+goals+'</section>'
+    +'<section><h3>Cómo lo haremos</h3>'+como+'</section>'
+    +'<section><h3>Una hoja de ruta orientativa</h3><p class="muted small" style="margin-top:0">El orden y el número de sesiones se adaptan a vosotros.</p>'+ses+'</section>'
+    +'<div class="closing">El objetivo no es dejar de sentir, sino aprender a hacer sitio por dentro para poder <b>elegir cómo queréis trataros</b>, incluso cuando algo duele. Y recordad: no tenéis que poder con todo solos — para eso estamos.</div>'
+    +'<p class="foot">Documento de devolución para compartir. Es un resumen de trabajo, no un diagnóstico, y lo iremos ajustando a lo largo del proceso.</p>'
+    +'</div>';
+}
 function buildReport(){
   var A=CASE.A,B=CASE.B; var st=strengthsShared(); var hot=discrepList().filter(function(d){return d.hot;});
   var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
