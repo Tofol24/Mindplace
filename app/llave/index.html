@@ -17,6 +17,12 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#b0703c">
 <title>La llave de paso · APRENS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="La llave de paso">
 <style>
   :root{
     --bg:#f3f0ea; --bg2:#eae5da; --card:#fffdf9; --tinta:#28251f; --suau:#756d61;
@@ -206,7 +212,7 @@
 <main class="wrap" id="app"></main>
 <nav class="nav" id="nav"></nav>
 
-<script src="../js/aprens-core.js"></script>
+<script src="assets/js/aprens-core.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -986,6 +992,9 @@ function exportJSON(){ try{
 function borrarTodo(){ if(confirm('¿Borrar TODOS los datos de este dispositivo?')){ if(confirm('No se puede deshacer. ¿Confirmas?')){ DB=clone(DEFAULT); save(); go('furgo'); } } }
 
 render();
+
+/* PWA: instalable y disponible sin cobertura (sótanos, garajes, obra) */
+if("serviceWorker" in navigator && window.top===window.self){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
 </body>
 </html>

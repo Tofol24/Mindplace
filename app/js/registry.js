@@ -147,7 +147,7 @@ window.APRENS_TOOLS = [
 
   { id:"llave_de_paso", emoji:"🔧", nombre:"La llave de paso",
     desc:"Para oficios autónomos que trabajan a domicilio (fontanería, instalaciones, reparaciones): entrenar el AIS en los momentos reales de la jornada, antes de bajar de la furgoneta y al volver a subir. Respiración curiosa con anclaje en la barriga, parada de pensamiento, el segundo de antes de contestar al cliente (límites), bandeja para la carga administrativa, y cierre del día antes de entrar en casa con honestidad emocional de tono sereno y abrazo sentido. Informe diario para el psicólogo por WhatsApp.",
-    migrada:true, iframe:"tools-standalone/la_llave_de_paso_aprens.html" },
+    migrada:true, iframe:"llave/index.html" },
 
   { id:"cuerpo_en_alerta", emoji:"🌿", nombre:"Cuando el cuerpo sigue en alerta",
     desc:"Acompañamiento tras una experiencia traumática (accidente, agresión, amenaza): comprender la respuesta protectora, orientarse al presente, acompañar la activación con AIS, diferenciar recuerdo/alerta/peligro, recuperar territorio por valores, registro diario, mapa y plan de crisis. Botón «Necesito parar» siempre disponible (ACT · TEC · AIS).",
