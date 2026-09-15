@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<!--
+  LA LLAVE DE PASO · APRENS
+  Fontanero autónomo · cuadro ansioso-depresivo de larga evolución.
+  Entrenamiento TEC-AIS en los momentos reales de su jornada:
+  antes de bajar de la furgoneta, al volver a subir, y antes de entrar en casa.
+  Respiración curiosa con anclaje en la barriga (densidad), parada de pensamiento
+  y pausa antes de contestar al cliente (latencia), bandeja para la carga
+  administrativa, límites, honestidad emocional con tono sereno y abrazo sentido.
+  Informe diario para enviar al psicólogo por WhatsApp.
+  Standalone · sin recursos externos (CSP) · datos solo en el dispositivo.
+-->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#b0703c">
+<title>La llave de paso · APRENS</title>
+<style>
+  :root{
+    --bg:#f3f0ea; --bg2:#eae5da; --card:#fffdf9; --tinta:#28251f; --suau:#756d61;
+    --cobre:#b0703c; --cobre-d:#8a5427; --cobre-lt:#f4e4d2;
+    --agua:#2f7f93; --agua-d:#215f6e; --agua-lt:#dcecf0;
+    --verde:#4f8a66; --verde-d:#39674c; --verde-lt:#e2efe6;
+    --alerta:#a9564e; --alerta-lt:#f6e5e2;
+    --pizarra:#4b5b66; --pizarra-d:#374751; --pizarra-lt:#dfe6ea;
+    --oro:#a9781f; --linia:#e6ddcd; --linia2:#dbcfb9;
+    --ombra:0 8px 26px rgba(90,70,30,.10); --ombra-s:0 2px 12px rgba(90,70,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#eae5da 0%,var(--bg) 240px);color:var(--tinta);line-height:1.55;font-size:16.5px;
+    -webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .wrap{max-width:620px;margin:0 auto;padding:0 15px}
+
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--bg) 62%,rgba(243,240,234,0));padding:12px 15px 10px;display:flex;align-items:center;gap:10px;max-width:620px;margin:0 auto}
+  .logo{width:33px;height:33px;border-radius:50%;background:var(--cobre);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:15.5px;line-height:1.05}
+  .top .ts{font-size:10px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);min-width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:12.5px;font-weight:600;padding:0 11px;font-family:inherit}
+  .iconbtn.stop{border-color:#dcb4af;color:var(--alerta)}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:8px 0 2px;font-weight:700;line-height:1.18}
+  .view-s{color:var(--suau);font-size:14.5px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cobre-d);background:var(--cobre-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:6px 0}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:9px;line-height:1.25}
+  .card h2 .e{font-size:20px;flex:0 0 auto}
+  .card .lead{color:var(--suau);font-size:14px;margin:2px 0 10px}
+  .muted{color:var(--suau);font-size:13.5px}
+  .quote{font-family:var(--serif);font-style:italic;color:var(--cobre-d);background:var(--cobre-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+  .nota{font-size:13px;color:var(--suau);background:var(--bg2);border-radius:12px;padding:11px 13px;margin:10px 0;line-height:1.5}
+  .nota b{color:var(--tinta)}
+
+  /* Botones grandes de acción */
+  .big{display:flex;align-items:center;gap:14px;width:100%;border:0;border-radius:18px;cursor:pointer;font-family:inherit;
+    padding:19px 17px;margin:11px 0;text-align:left;color:#fff;box-shadow:var(--ombra-s);transition:transform .07s}
+  .big:active{transform:scale(.99)}
+  .big .bi{font-size:29px;flex:0 0 auto}
+  .big .bt{display:block;font-weight:700;font-size:17.5px;line-height:1.15}
+  .big .bd{display:block;font-size:12.5px;opacity:.93;font-weight:400;margin-top:3px;line-height:1.35}
+  .big.cobre{background:linear-gradient(150deg,var(--cobre),#965d2c)}
+  .big.agua{background:linear-gradient(150deg,var(--agua),#256b7c)}
+  .big.verde{background:linear-gradient(150deg,var(--verde),#417458)}
+  .big.slate{background:linear-gradient(150deg,var(--pizarra),#3d4d57)}
+
+  .quick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:13px 0}
+  .qb{background:var(--card);border:1.5px solid var(--linia2);border-radius:14px;padding:12px 6px;cursor:pointer;font-family:inherit;text-align:center;color:var(--tinta);transition:transform .07s}
+  .qb:active{transform:scale(.97)}
+  .qb .qe{font-size:22px;display:block;margin-bottom:3px}
+  .qb .ql{font-size:11.5px;font-weight:600;line-height:1.25;display:block}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;background:var(--cobre);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:14px 18px;min-height:50px;transition:transform .07s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--cobre-d);border:1.5px solid var(--cobre)}
+  .btn.agua{background:var(--agua)}
+  .btn.verde{background:var(--verde)}
+  .btn.slate{background:var(--pizarra)}
+  .btn.wa{background:#1f9e53}
+  .btn.sm{padding:9px 14px;min-height:42px;font-size:13.5px;border-radius:11px}
+  .btn.danger{background:var(--alerta)}
+  .btn[disabled]{opacity:.5}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}.btnrow .btn{flex:1}
+  .btn:focus-visible,.big:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible,.qb:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--cobre-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px;min-height:40px}
+
+  .stat3{display:flex;gap:9px;text-align:center;flex-wrap:wrap}
+  .stat3>div{flex:1;min-width:76px;background:var(--cobre-lt);border:1px solid var(--linia);border-radius:13px;padding:12px 6px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:24px;color:var(--cobre-d);line-height:1}
+  .stat3 span{font-size:10.5px;color:var(--suau);line-height:1.3;display:block;margin-top:3px}
+  .stat3>div.a{background:var(--agua-lt)} .stat3>div.a b{color:var(--agua-d)}
+  .stat3>div.v{background:var(--verde-lt)} .stat3>div.v b{color:var(--verde-d)}
+
+  /* Anillo de respiración */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0}
+  .ring{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,var(--agua-lt),#bcd9e0);box-shadow:inset 0 0 0 2px rgba(47,127,147,.25);transition:transform 1s ease-in-out}
+  .ring .ri{width:126px;height:126px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;box-shadow:var(--ombra-s);padding:8px}
+  .ring .rf{font-family:var(--serif);font-size:21px;color:var(--agua-d)}
+  .ring .rs{font-size:12px;color:var(--suau);margin-top:2px}
+  .rverb{font-family:var(--serif);font-style:italic;color:var(--agua-d);text-align:center;font-size:15.5px;margin:12px auto 2px;max-width:23em;min-height:3.4em;line-height:1.42;transition:opacity .4s}
+
+  /* Manómetro */
+  .mano{display:block;margin:4px auto 2px;max-width:230px}
+  .mano-lbl{text-align:center;font-size:13px;color:var(--suau);margin-top:-6px}
+
+  /* Chips / escalas */
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{flex:1 1 auto;min-width:92px;min-height:48px;border:1.5px solid var(--linia2);border-radius:13px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;line-height:1.22}
+  .chip.sel{border-width:2px;font-weight:600}
+  .chip.sel[data-pole="mal"]{background:var(--alerta-lt);border-color:var(--alerta);color:#8d403a}
+  .chip.sel[data-pole="mid"]{background:#f6edd2;border-color:var(--oro);color:var(--cobre-d)}
+  .chip.sel[data-pole="bien"]{background:var(--verde-lt);border-color:var(--verde);color:var(--verde-d)}
+  .chip.sel:not([data-pole]){background:var(--cobre-lt);border-color:var(--cobre);color:var(--cobre-d)}
+  .scale{display:flex;gap:4px}
+  .scaleb{flex:1;min-width:0;min-height:46px;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:var(--suau);padding:0}
+  .scaleb.sel{background:var(--cobre);border-color:var(--cobre);color:#fff}
+  .scaleb.sel.a{background:var(--agua);border-color:var(--agua)}
+  .scale-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--suau);margin-top:5px}
+  input[type=text],textarea{width:100%;border:1.5px solid var(--linia2);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:58px;line-height:1.5}
+  input:focus,textarea:focus{outline:none;border-color:var(--cobre)}
+  label.fld{display:block;font-size:13px;color:var(--suau);margin:10px 0 4px;font-weight:600}
+  .ok-flash{background:var(--verde-lt);border:1px solid var(--verde);color:var(--verde-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:8px 0}
+  @media(max-width:430px){.two{grid-template-columns:1fr}}
+  @media(max-width:340px){.quick{grid-template-columns:1fr 1fr}}
+  .col{border-radius:13px;padding:13px;font-size:13px;line-height:1.45}
+  .col.bien{background:var(--verde-lt);border:1px solid #cfe0d4}
+  .col.mal{background:var(--alerta-lt);border:1px solid #e6cdc9}
+  .col h4{margin:0 0 6px;font-size:13.5px}.col.bien h4{color:var(--verde-d)}.col.mal h4{color:#8d403a}
+  .col ul{margin:0;padding-left:16px}.col li{margin:3px 0}
+
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--agua-lt);border:1px solid #c9dee4;border-radius:13px;padding:11px 12px;margin:7px 0}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--agua-d);font-size:15px;line-height:1.42}
+  .verb .va{display:flex;gap:3px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px;min-height:34px}
+  .fav-on{color:var(--oro)}
+
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rd{font-size:11.5px;color:var(--suau)}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0}
+
+  /* Bandeja */
+  .item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:10px 12px;margin:8px 0}
+  .item.done{opacity:.5}
+  .item.done .it{text-decoration:line-through}
+  .item .ic{font-size:19px;flex:0 0 auto}
+  .item .it{flex:1;font-size:14.5px;line-height:1.35;word-break:break-word}
+  .item .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:5px;min-height:38px;min-width:34px;color:var(--suau)}
+  .item .ib.ok{color:var(--verde)}
+  .catrow{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}
+  .cat{border:1.5px solid var(--linia2);background:var(--card);border-radius:999px;padding:7px 13px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--tinta);min-height:40px}
+  .cat.sel{background:var(--cobre-lt);border-color:var(--cobre);color:var(--cobre-d);font-weight:600}
+
+  /* Pasos numerados */
+  .steps{counter-reset:s;padding:0;margin:10px 0;list-style:none}
+  .steps li{counter-increment:s;position:relative;padding:9px 0 9px 40px;font-size:14.5px;line-height:1.48;border-bottom:1px solid var(--bg2)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:9px;width:26px;height:26px;border-radius:50%;background:var(--agua-lt);color:var(--agua-d);font-weight:700;font-size:13px;display:grid;place-items:center;font-family:var(--serif)}
+
+  .ldc{display:flex;gap:8px;text-align:center;margin:10px 0}
+  .ldc>div{flex:1;border-radius:13px;padding:11px 5px;border:1px solid var(--linia)}
+  .ldc b{display:block;font-family:var(--serif);font-size:21px;line-height:1.1}
+  .ldc span{font-size:10px;color:var(--suau);display:block;margin-top:3px;line-height:1.3}
+  .ldc .L{background:var(--agua-lt)} .ldc .L b{color:var(--agua-d)}
+  .ldc .D{background:var(--cobre-lt)} .ldc .D b{color:var(--cobre-d)}
+  .ldc .C{background:var(--verde-lt)} .ldc .C b{color:var(--verde-d)}
+
+  .msgbox{background:var(--bg2);border:1.5px solid var(--linia);border-radius:12px;padding:13px;font-size:12.5px;line-height:1.7;color:#3a352c;max-height:250px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin:11px 0;-webkit-user-select:all;user-select:all}
+
+  .stopcard{background:var(--alerta-lt);border:1.5px solid #dcb4af;border-radius:var(--r);padding:18px 16px;margin:14px 0}
+  .stopcard h2{color:#8d403a}
+  .callbtn{display:flex;align-items:center;gap:11px;width:100%;border:1.5px solid #dcb4af;background:var(--card);border-radius:14px;padding:14px 15px;margin:9px 0;cursor:pointer;font-family:inherit;font-size:15.5px;font-weight:600;color:var(--tinta);text-decoration:none;text-align:left}
+  .callbtn .ce{font-size:22px}
+  .callbtn small{display:block;font-weight:400;font-size:12px;color:var(--suau);margin-top:2px}
+
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--cobre-d)}
+
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:620px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}.tab.on{color:var(--cobre-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div><div class="tt">La llave de paso</div><div class="ts" id="topSub">APRENS · TEC–AIS</div></div>
+  <span class="sp"></span>
+  <button class="iconbtn stop" onclick="go('parar')" aria-label="Necesito parar">🛟 Parar</button>
+</div>
+
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav"></nav>
+
+<script src="../js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   LA LLAVE DE PASO · APRENS
+   Fontanero autónomo · TEC–AIS
+   Todo local, sin backend ni recursos externos.
+   ============================================================ */
+
+var LS="llave_paso_db_v1", MEM=null;
+function lsGet(){ try{return localStorage.getItem(LS);}catch(e){return MEM;} }
+function lsSet(v){ try{localStorage.setItem(LS,v);}catch(e){MEM=v;} }
+var DEFAULT={ settings:{nombre:"",telPsico:"",telPareja:""}, eventos:[], dias:{}, bandeja:[], frasesFav:[], frasesUser:[] };
+var DB=load();
+function load(){ try{ var d=JSON.parse(lsGet()); if(!d) return clone(DEFAULT); var b=clone(DEFAULT);
+  for(var k in d){ b[k]=d[k]; } for(var s in DEFAULT.settings){ if(b.settings[s]===undefined) b.settings[s]=DEFAULT.settings[s]; } return b;
+  }catch(e){ return clone(DEFAULT); } }
+function save(){ try{ lsSet(JSON.stringify(DB)); }catch(e){} }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function esc(s){ return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function q(s){ return String(s==null?"":s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function uid(){ return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+function p2(n){ return ("0"+n).slice(-2); }
+function hoy(){ var d=new Date(); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function nowHM(){ var d=new Date(); return p2(d.getHours())+":"+p2(d.getMinutes()); }
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-"); var m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return parseInt(p[2],10)+" "+m[parseInt(p[1],10)-1]; }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+function nombre(){ return (DB.settings.nombre||"").trim(); }
+
+var DIA_DEF={ resp:0, paradas:0, abrazos:0, honestidad:0, limites:0, siAutomatico:0, trabajos:0,
+  presionIni:null, presionFin:null, barriga:"", acomp:[], latencia:null, cierre:false, dejado:"", nota:"" };
+function dia(d){ d=d||hoy(); if(!DB.dias[d]) DB.dias[d]=clone(DIA_DEF);
+  for(var k in DIA_DEF){ if(DB.dias[d][k]===undefined) DB.dias[d][k]=clone(DIA_DEF)[k]; }
+  return DB.dias[d]; }
+
+if(window.Aprens){ try{ Aprens.config({toolId:"llave_de_paso", toolName:"La llave de paso", toolVersion:1}); }catch(e){} }
+function ev(t,extra){
+  DB.eventos.push(Object.assign({t:t,ts:Date.now(),date:hoy(),hm:nowHM()},extra||{}));
+  if(DB.eventos.length>1200) DB.eventos=DB.eventos.slice(-1200);
+  if(window.Aprens){ try{ Aprens.save({id:uid(),date:hoy(),ts:Date.now(),modulo:'llave_'+t,param:(t==='parada'||t==='limite'?'latencia':'densidad')}); }catch(e){} }
+  save();
+}
+
+/* ---------- racha / continuidad ---------- */
+function activo(d){ return d && (d.resp>0||d.paradas>0||d.abrazos>0||d.honestidad>0||d.cierre); }
+function racha(){ var n=0; for(var i=0;i<400;i++){ var k=daysAgo(i); var d=DB.dias[k];
+    if(activo(d)){ n++; } else if(i>0){ break; } else { /* hoy aún vacío: no rompe la racha */ } }
+  return n; }
+
+/* ---------- navegación ---------- */
+var VIEW="furgo", timers=[];
+function clearTimers(){ timers.forEach(function(t){ clearInterval(t); clearTimeout(t); }); timers=[]; }
+var NAV=[
+  {id:"furgo",e:"🚐",l:"Furgoneta"},
+  {id:"respira",e:"🫧",l:"Respirar"},
+  {id:"bandeja",e:"🧰",l:"Bandeja"},
+  {id:"dia",e:"📓",l:"Mi día"},
+  {id:"mas",e:"⋯",l:"Más"}
+];
+function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.furgo)();
+  var navId=VIEW; if(["antes","vuelvo","cierre","parada","limites"].indexOf(VIEW)>=0) navId="furgo";
+  if(["honestidad","abrazo"].indexOf(VIEW)>=0) navId="furgo";
+  if(["frases","ajustes","porque","parar"].indexOf(VIEW)>=0) navId="mas";
+  document.getElementById('nav').innerHTML=NAV.map(function(n){
+    return '<button class="tab '+(navId===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join('');
+  var n=nombre(); document.getElementById('topSub').textContent = n? ('APRENS · para '+n) : 'APRENS · TEC–AIS';
+}
+var VIEWS={};
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||"Hecho ✓"; f.classList.add('show'); setTimeout(function(){ f.classList.remove('show'); },3000); } }
+
+/* ---------- motor de respiración (reutilizable) ---------- */
+/* fases: [texto, segundos, escala] */
+var RESP_FASES=[["Coge aire",4,1.16],["·",1,1.16],["Suelta despacio",6,0.84]];
+function breathRun(opts){
+  opts=opts||{};
+  var fases=opts.fases||RESP_FASES, ciclos=opts.ciclos||3, verbs=opts.verbs||[], onEnd=opts.onEnd;
+  var i=-1, c=0, v=0;
+  setVerb(verbs[0]);
+  function step(){
+    i++;
+    if(i>=fases.length){ i=0; c++; v++; setVerb(verbs[v%(verbs.length||1)]);
+      if(c>=ciclos){ fin(); return; } }
+    var f=fases[i], ring=document.getElementById('ring'); if(!ring) return;
+    var rf=document.getElementById('rf'); if(rf) rf.textContent=f[0];
+    ring.style.transitionDuration=f[1]+'s'; ring.style.transform='scale('+f[2]+')';
+    var left=f[1]; var rs=document.getElementById('rs'); if(rs) rs.textContent=left+'s';
+    var iv=setInterval(function(){ left--; var r=document.getElementById('rs'); if(!r){ clearInterval(iv); return; }
+      r.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(iv); step(); } },1000);
+    timers.push(iv);
+  }
+  function fin(){ var ring=document.getElementById('ring');
+    if(ring){ ring.style.transitionDuration='.6s'; ring.style.transform='scale(1)'; }
+    var rf=document.getElementById('rf'); if(rf) rf.textContent=opts.finTxt||'Aquí';
+    var rs=document.getElementById('rs'); if(rs) rs.textContent='';
+    setVerb(opts.finVerb||'Ya estás aquí. Nota la barriga un segundo más.');
+    if(onEnd) onEnd();
+  }
+  function setVerb(t){ var el=document.getElementById('rverb'); if(!el||!t) return;
+    el.style.opacity=0; setTimeout(function(){ el.textContent=t; el.style.opacity=1; },250); }
+  step();
+}
+function ringHTML(inicial,verbo,size){
+  var s=size?('width:'+size+'px;height:'+size+'px'):'';
+  return '<div class="ring-wrap"><div class="ring" id="ring" style="'+s+'"><div class="ri"><div>'+
+    '<div class="rf" id="rf">'+esc(inicial||'Prepárate')+'</div><div class="rs" id="rs"></div></div></div></div>'+
+    '<div class="rverb" id="rverb">'+esc(verbo||'')+'</div></div>';
+}
+
+/* ---------- manómetro (SVG) ---------- */
+function manoHTML(v){
+  var val=(v===null||v===undefined)?null:v;
+  var pct=(val===null?0:val/10);
+  var a0=-220, a1=40, ang=a0+(a1-a0)*pct;
+  var cx=100, cy=100, r=72;
+  function pt(deg,rad){ var t=deg*Math.PI/180; return [cx+rad*Math.cos(t), cy+rad*Math.sin(t)]; }
+  var arcS=pt(a0,r), arcE=pt(a1,r);
+  var needle=pt(ang,r-14);
+  var col = val===null? '#c9c1b4' : (val<=3?'#4f8a66':(val<=6?'#a9781f':'#a9564e'));
+  var h='<svg class="mano" viewBox="0 0 200 140" role="img" aria-label="Manómetro de presión">';
+  h+='<path d="M '+arcS[0].toFixed(1)+' '+arcS[1].toFixed(1)+' A '+r+' '+r+' 0 1 1 '+arcE[0].toFixed(1)+' '+arcE[1].toFixed(1)+'" fill="none" stroke="#e6ddcd" stroke-width="13" stroke-linecap="round"/>';
+  if(val!==null){
+    var nd=pt(ang,r);
+    var large=( (ang-a0) > 180 )?1:0;
+    h+='<path d="M '+arcS[0].toFixed(1)+' '+arcS[1].toFixed(1)+' A '+r+' '+r+' 0 '+large+' 1 '+nd[0].toFixed(1)+' '+nd[1].toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="13" stroke-linecap="round"/>';
+    h+='<line x1="'+cx+'" y1="'+cy+'" x2="'+needle[0].toFixed(1)+'" y2="'+needle[1].toFixed(1)+'" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>';
+  }
+  h+='<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+col+'"/>';
+  h+='<text x="100" y="128" text-anchor="middle" font-family="Georgia,serif" font-size="27" font-weight="700" fill="'+col+'">'+(val===null?'—':val)+'</text>';
+  h+='</svg>';
+  return h;
+}
+function presionTxt(v){ if(v===null||v===undefined) return 'sin medir';
+  return v<=3?'baja · la instalación aguanta':(v<=6?'media · ojo, va subiendo':'alta · esto revienta por el punto más débil'); }
+
+/* ================= FURGONETA · hub ================= */
+VIEWS.furgo=function(){
+  var d=dia(), n=nombre();
+  var h='<span class="kick">'+fechaLarga(hoy())+(racha()>1?(' · '+racha()+' días seguidos'):'')+'</span>';
+  h+='<h1 class="view-t">'+(n?('Hola, '+esc(n)+'.'):'La llave de paso')+'</h1>';
+  h+='<p class="view-s">Toda instalación lleva una llave de paso. Cuando la presión sube, no discutes con el agua: <b>cierras un momento</b>. Tú también tienes una: la respiración y tu barriga.</p>';
+
+  h+='<button class="big cobre" onclick="go(\'antes\')"><span class="bi">🔑</span><span><span class="bt">Antes de bajar</span><span class="bd">Estás aparcado, aún no has abierto la puerta. Respiración curiosa y con qué cuerpo entras · 40 s</span></span></button>';
+  h+='<button class="big agua" onclick="go(\'vuelvo\')"><span class="bi">🚐</span><span><span class="bt">Al volver a la furgoneta</span><span class="bd">Trabajo terminado. ¿Cómo me he acompañado ahí dentro?</span></span></button>';
+  h+='<button class="big verde" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">Antes de entrar en casa</span><span class="bd">Cerrar el día, honestidad emocional y abrazo sentido</span></span></button>';
+
+  h+='<div class="quick">';
+  h+='<button class="qb" onclick="go(\'parada\')"><span class="qe">🛑</span><span class="ql">Parada de<br>pensamiento</span></button>';
+  h+='<button class="qb" onclick="go(\'limites\')"><span class="qe">📞</span><span class="ql">Me piden<br>algo ahora</span></button>';
+  h+='<button class="qb" onclick="go(\'bandeja\')"><span class="qe">🧰</span><span class="ql">Lo llevo en<br>la cabeza</span></button>';
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>Hoy</h2><div class="stat3">'+
+     '<div class="a"><b>'+d.resp+'</b><span>respiraciones<br>curiosas</span></div>'+
+     '<div><b>'+d.paradas+'</b><span>paradas de<br>pensamiento</span></div>'+
+     '<div class="v"><b>'+d.abrazos+'</b><span>abrazos<br>sentidos</span></div></div>';
+  h+='<p class="muted" style="margin-top:11px">Esto no cuenta cuántos trabajos has hecho. Cuenta <b>cuántas veces has vuelto a estar contigo</b> mientras los hacías.</p>';
+  if(!d.cierre && d.resp+d.paradas>0) h+='<div class="btnrow" style="margin-top:10px"><button class="btn sm verde" onclick="go(\'cierre\')">🏠 Cerrar el día</button><button class="btn sm ghost" onclick="go(\'dia\')">📓 Ver mi día</button></div>';
+  h+='</div>';
+
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  if(pend>0) h+='<div class="nota">Tienes <b>'+pend+' cosa'+(pend===1?'':'s')+'</b> en la bandeja. Están anotadas: <b>no hace falta que las lleves en la cabeza</b> mientras trabajas. <button class="link" onclick="go(\'bandeja\')">Abrir bandeja</button></div>';
+  else h+='<div class="nota">Lo que te ronde la cabeza mientras trabajas (una factura, una llamada, un material) <b>déjalo en la bandeja</b>. Sacarlo de la cabeza no es hacerlo: es dejar de cargarlo todo el día.</div>';
+
+  h+='<div class="quote">No se trata de trabajar menos. Se trata de no llegar a casa con la instalación entera encima.</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ================= ANTES DE BAJAR ================= */
+var VERB_ANTES=[
+  "No respiro para calmarme. Respiro para volver a notarme.",
+  "¿Qué noto en la barriga ahora mismo? Sin explicarlo: solo notarlo.",
+  "Voy contigo, cuerpo. Esta casa la hacemos juntos.",
+  "Entro presente, no en alerta. Sea quien sea quien abra la puerta."
+];
+VIEWS.antes=function(){
+  var h='<h1 class="view-t">Antes de bajar</h1><p class="view-s">Estás aparcado. Aún no has cogido la caja. Tres respiraciones <b>curiosas</b>: no para relajarte, para <b>volver a tu barriga</b> antes de entrar.</p>';
+  h+=ringHTML('Prepárate',VERB_ANTES[0]);
+  h+='<div class="btnrow"><button class="btn full agua" id="antesBtn" onclick="antesStart(this)">Empezar</button></div>';
+  h+='<div class="nota">Mientras respiras, lleva la atención <b>a la barriga</b>. No la cambies ni la relajes a la fuerza: solo mira cómo está. Dura, blanda, con nudo, movida. Eso ya es el ejercicio.</div>';
+
+  h+='<div id="antesAfter" style="display:none">';
+  h+='<div class="card"><h2><span class="e">🫃</span>¿Cómo tienes la barriga?</h2><p class="lead">Sin buscar el porqué. Solo cómo está.</p><div class="chips" id="cBarriga">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="dura / con nudo" onclick="pickBarriga(this)">Dura, con nudo</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="a medias" onclick="pickBarriga(this)">A medias</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="blanda / suelta" onclick="pickBarriga(this)">Blanda, suelta</button>'+
+     '</div></div>';
+  h+='<div class="card"><h2><span class="e">🔑</span>¿Con qué vas a esta casa?</h2><p class="lead">No cómo va a ir el trabajo. Con qué <b>te acompañas tú</b> al entrar.</p><div class="chips" id="cAcomp">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="me arrastro" onclick="pickAcomp(this)">Me arrastro</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="mezcla" onclick="pickAcomp(this)">Una mezcla</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="me acompaño" onclick="pickAcomp(this)">Me acompaño</button>'+
+     '</div><div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:12px"><button class="btn full" onclick="antesBajo()">✅ Ya bajo</button></div>'+
+     '<button class="link" style="display:block;margin:8px auto 0" onclick="go(\'antes\')">Otra respiración</button></div>';
+  h+='</div>';
+  h+=footerHTML(); return h;
+};
+function antesStart(btn){ btn.style.display='none';
+  breathRun({ciclos:3, verbs:VERB_ANTES, finTxt:'Barriga', finVerb:'Nota la barriga un segundo más. Ya puedes bajar.', onEnd:function(){
+    var d=dia(); d.resp++; save(); ev('resp',{momento:'antes'});
+    var a=document.getElementById('antesAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'start'}); }
+  }});
+}
+function pickBarriga(b){ document.getElementById('cBarriga').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(); d.barriga=b.dataset.v; save(); ev('barriga',{v:b.dataset.v}); }
+function pickAcomp(b){ document.getElementById('cAcomp').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(); d.acomp.push(b.dataset.v); save();
+  flash(b.dataset.v==='me acompaño'?'Así. Entras con tu cuerpo al lado, no tirando de él.':
+       (b.dataset.v==='mezcla'?'Bien visto. Cada respiro te acerca a entrar acompañado.':
+        'Reconocerlo ya es acompañarte. Prueba una frase antes de abrir la puerta.')); }
+function antesBajo(){ var d=dia(); d.trabajos++; save(); ev('bajo');
+  flash('Bajas contigo. Salga como salga el trabajo, has entrado presente.');
+  setTimeout(function(){ go('furgo'); },900); }
+
+/* ================= AL VOLVER A LA FURGONETA ================= */
+var recap={acomp:null,cliente:null,dejo:""};
+VIEWS.vuelvo=function(){
+  recap={acomp:null,cliente:null,dejo:""};
+  var h='<h1 class="view-t">Al volver a la furgoneta</h1><p class="view-s">Trabajo terminado. Antes de arrancar hacia el siguiente, <b>treinta segundos de recapitulación</b>. No de cómo ha ido el trabajo: de cómo te has acompañado tú.</p>';
+
+  h+='<div class="card"><h2><span class="e">🧭</span>1 · ¿Cómo me he acompañado ahí dentro?</h2><p class="lead">0 = me he dejado tirado · 10 = he estado conmigo todo el rato</p>'+
+     '<div class="scale" id="sAcomp">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb" data-v="'+i+'" onclick="recapAcomp(this)">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>Me he dejado</span><span>He estado conmigo</span></div>'+
+     '<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🗣️</span>2 · ¿Qué ha pasado con el cliente?</h2><p class="lead">Sin juicio. Solo el dato.</p><div class="chips" id="cCli">'+
+     '<button type="button" class="chip" data-pole="bien" data-v="normal" onclick="recapCli(this)">Normal, sin más</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="me ha presionado" onclick="recapCli(this)">Me ha presionado</button>'+
+     '<button type="button" class="chip" data-pole="mal" data-v="he dicho que sí sin querer" onclick="recapCli(this)">He dicho que sí sin querer</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="he puesto un límite" onclick="recapCli(this)">He podido poner un límite</button>'+
+     '</div><div id="cliExtra"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🧰</span>3 · ¿Qué se queda aquí?</h2><p class="lead">Lo que este trabajo ha dejado suelto en tu cabeza. Lo anotas y se queda en la furgoneta, no dentro de ti.</p>'+
+     '<input type="text" id="vDejo" placeholder="Ej.: pasar el presupuesto de los Ferrer">'+
+     '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="vuelvoABandeja()">🧰 A la bandeja</button></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🫧</span>4 · Una respiración curiosa antes de arrancar</h2><p class="lead">Una sola. Con la atención en la barriga, no en el siguiente aviso.</p>'+
+     ringHTML('Prepárate','Este trabajo ya está. El siguiente todavía no ha empezado.',150)+
+     '<button class="btn full agua" id="vBtn" onclick="vuelvoResp(this)">Respirar</button></div>';
+
+  h+='<div class="btnrow"><button class="btn full" onclick="vuelvoCerrar()">Cerrar este trabajo</button></div>';
+  h+='<div class="quote">Entre casa y casa hay un tramo que es tuyo. No lo llenes con el siguiente cliente.</div>';
+  h+=footerHTML(); return h;
+};
+function recapAcomp(b){ document.getElementById('sAcomp').querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  recap.acomp=parseInt(b.dataset.v,10);
+  flash(recap.acomp>=7?'Has estado contigo. Eso es lo que entrenamos.':
+       (recap.acomp>=4?'A medias, y lo has visto. Verlo ya es volver.':
+        'Hoy te has dejado un poco atrás. No es un fallo: es el dato que nos dice dónde entrenar.')); }
+function recapCli(b){ document.getElementById('cCli').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  recap.cliente=b.dataset.v;
+  var ex=document.getElementById('cliExtra'); if(!ex) return;
+  if(recap.cliente==='he dicho que sí sin querer'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">Ha salido el <b>sí automático</b>. No te castigues: ese sí lleva años ahí y sale antes de que te dé tiempo a pensar. Lo que entrenamos es <b>el segundo de antes</b>, no el resultado.<br><br>¿Qué te habría gustado decir?<br></div><input type="text" id="vFrase" placeholder="Ej.: esta semana la tengo cerrada, te lo miro para la que viene"><div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="guardarFraseLimite()">Guardar como frase mía</button><button class="btn sm ghost" onclick="go(\'limites\')">Ver frases de límite</button></div>';
+  } else if(recap.cliente==='he puesto un límite'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">Has puesto un límite. Eso cuenta más que el trabajo que has hecho: <b>es lo que te devuelve el día</b>.</div>';
+  } else if(recap.cliente==='me ha presionado'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">La prisa era suya. Si se te ha metido en el cuerpo, una respiración curiosa aquí mismo la devuelve a su sitio.</div>';
+  } else { ex.innerHTML=''; }
+}
+function guardarFraseLimite(){ var el=document.getElementById('vFrase'); if(!el) return; var t=(el.value||'').trim(); if(!t) return;
+  if(DB.frasesUser.indexOf(t)<0) DB.frasesUser.unshift(t); save(); el.value=''; flash('Guardada en tus frases ✓'); }
+function vuelvoResp(btn){ btn.style.display='none';
+  breathRun({ciclos:1, verbs:["Observa el aire, no lo corrijas.","¿Qué queda en la barriga de lo de ahí dentro?"], finTxt:'Aquí', finVerb:'Listo. Arrancas tú, no la prisa.', onEnd:function(){
+    var d=dia(); d.resp++; save(); ev('resp',{momento:'vuelvo'}); }}); }
+function vuelvoABandeja(){ var el=document.getElementById('vDejo'); var t=(el.value||'').trim(); if(!t){ flash('Escribe primero qué se queda aquí.'); return; }
+  addBandeja(t,'💧'); el.value=''; flash('Anotado en la bandeja. Ya no tienes que sostenerlo tú.'); }
+function vuelvoCerrar(){
+  var d=dia();
+  if(recap.cliente==='he dicho que sí sin querer') d.siAutomatico++;
+  if(recap.cliente==='he puesto un límite'){ d.limites++; }
+  save(); ev('recap',{acomp:recap.acomp,cliente:recap.cliente});
+  flash('Trabajo cerrado.'); setTimeout(function(){ go('furgo'); },800);
+}
+
+/* ================= PARADA DE PENSAMIENTO ================= */
+VIEWS.parada=function(){
+  var h='<h1 class="view-t">Parada de pensamiento</h1><p class="view-s">La cabeza ha empezado a dar vueltas. No vamos a discutir con ella: <b>se purga, no se debate</b>. Como el aire en un radiador: no le explicas por qué sobra, abres la purga y sale.</p>';
+  h+='<div class="card"><ol class="steps">'+
+     '<li><b>Nota que estás dando vueltas.</b> Eso ya es parar: un segundo antes no lo sabías.</li>'+
+     '<li><b>Di «hasta aquí» por dentro.</b> No «cállate». Solo: hasta aquí.</li>'+
+     '<li><b>Una exhalación larga</b>, soltando hombros y mandíbula.</li>'+
+     '<li><b>Vuelve a la barriga.</b> ¿Qué notas ahí ahora? Esa es tu ancla, no el pensamiento.</li>'+
+     '<li><b>Si era algo por hacer</b>, a la bandeja. Si no era nada por hacer, no necesitaba tu día.</li>'+
+     '</ol>';
+  h+=ringHTML('Suelta','Hasta aquí. Vuelvo a la barriga.',150);
+  h+='<button class="btn full slate" id="pBtn" onclick="paradaResp(this)">Una exhalación larga</button>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="btnrow" style="margin-top:10px"><button class="btn ghost" onclick="paradaHecha()">Hecha, vuelvo al trabajo</button></div></div>';
+  h+='<div class="card"><h2><span class="e">🧰</span>¿Era algo por hacer?</h2><p class="lead">Anótalo y sal de la cabeza.</p><input type="text" id="pPend" placeholder="Ej.: llamar al del material"><div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="paradaABandeja()">A la bandeja</button></div></div>';
+  h+='<div class="quote">Darle vueltas no es resolverlo. Es pagar dos veces por lo mismo.</div>';
+  h+=footerHTML(); return h;
+};
+function paradaResp(btn){ btn.disabled=true;
+  breathRun({fases:[["Coge aire",4,1.16],["Suelta muy despacio",7,0.82]], ciclos:2,
+    verbs:["Hasta aquí.","Vuelvo a la barriga. ¿Qué hay ahí ahora?"], finTxt:'Barriga',
+    finVerb:'La cabeza puede seguir hablando. Tú ya estás en otro sitio.',
+    onEnd:function(){ if(btn) btn.disabled=false; }}); }
+function paradaHecha(){ var d=dia(); d.paradas++; save(); ev('parada');
+  flash('Parada hecha. Llevas '+dia().paradas+' hoy.'); setTimeout(function(){ go('furgo'); },900); }
+function paradaABandeja(){ var el=document.getElementById('pPend'); var t=(el.value||'').trim(); if(!t){ flash('Escríbelo primero.'); return; }
+  addBandeja(t,'📞'); el.value=''; flash('Fuera de la cabeza, dentro de la bandeja.'); }
+
+/* ================= LÍMITES · me piden algo ahora ================= */
+var FRASES_LIM=[
+  "Ahora mismo no te lo puedo confirmar. Lo miro y te digo algo antes de esta tarde.",
+  "Esta semana la tengo cerrada. Puedo el martes que viene.",
+  "Hoy termino a las siete. Mañana a primera hora lo tienes.",
+  "Urgencias hoy no puedo coger. Si es una fuga, te digo quién puede ir.",
+  "Te lo puedo hacer, pero no por ese precio.",
+  "Te paso el presupuesto y, si te va bien, lo agendamos.",
+  "Te entiendo que corra. Aun así, antes del jueves no puedo.",
+  "Prefiero decirte que no ahora que dejarte tirado el viernes."
+];
+VIEWS.limites=function(){
+  var h='<h1 class="view-t">Me piden algo ahora</h1><p class="view-s">Está sonando el teléfono, o lo tienes delante. <b>Antes de contestar, un segundo.</b> El sí automático sale más rápido que tú: por eso entrenamos el segundo de antes.</p>';
+  h+='<div class="card" style="border-color:#dbcfb9"><h2><span class="e">⏸️</span>No contestes todavía</h2>'+
+     '<ol class="steps"><li><b>Una respiración</b>. Solo una. Nadie se muere en seis segundos.</li>'+
+     '<li><b>Barriga:</b> ¿se ha apretado? Si se ha apretado, es que ya quieres decir que no.</li>'+
+     '<li><b>Gana tiempo</b> antes de comprometerte. Pedir tiempo <b>no es decir que no</b>: es no decir que sí en automático.</li></ol>';
+  h+=ringHTML('Uno','Una respiración antes de contestar.',150);
+  h+='<button class="btn full agua" id="lBtn" onclick="limResp(this)">Respirar antes de contestar</button>';
+  h+='<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">💬</span>Frases para ganar tiempo y poner límite</h2><p class="lead">Tócalas para copiarlas. Tono normal, ni de disculpa ni de pelea.</p>';
+  h+=FRASES_LIM.map(function(t){ return '<div class="verb"><span class="vt">'+esc(t)+'</span><span class="va"><button aria-label="Copiar" onclick="copiar(\''+q(t)+'\',this)">📋</button></span></div>'; }).join('');
+  h+='</div>';
+
+  h+='<div class="two"><div class="col mal"><h4>😰 Lo que pasa cuando digo que sí</h4><ul><li>Encajo el trabajo donde no cabe</li><li>Voy corriendo todo el día</li><li>Llego tarde a casa y con mala cara</li><li>El cliente lo da por normal y repite</li><li>Y yo me enfado conmigo, no con él</li></ul></div>'+
+     '<div class="col bien"><h4>🙂 Lo que pasa cuando pido tiempo</h4><ul><li>Decido yo, no la prisa del otro</li><li>El trabajo entra donde cabe</li><li>Lo hago mejor y cobro lo que vale</li><li>El cliente aprende cómo trabajas</li><li>Llego a casa con batería</li></ul></div></div>';
+
+  h+='<div class="card"><h2><span class="e">📝</span>¿Qué has hecho al final?</h2><div class="chips" id="cLim">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="si" onclick="limReg(this)">Dije que sí sin querer</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="tiempo" onclick="limReg(this)">Pedí tiempo</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="limite" onclick="limReg(this)">Puse el límite</button>'+
+     '</div></div>';
+  h+='<div class="quote">Decir que no a una urgencia de otro no es abandonarlo. Es no abandonarte a ti.</div>';
+  h+=footerHTML(); return h;
+};
+function limResp(btn){ btn.disabled=true;
+  breathRun({fases:[["Coge aire",4,1.16],["Suelta",6,0.84]], ciclos:1,
+    verbs:["¿Se te ha apretado la barriga? Eso también es una respuesta."], finTxt:'Ahora sí',
+    finVerb:'Ahora contesta tú, no el automático.',
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'limite'}); if(btn) btn.disabled=false; }}); }
+function limReg(b){ document.getElementById('cLim').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(), v=b.dataset.v;
+  if(v==='si'){ d.siAutomatico++; flash('Anotado, sin juicio. Lo que entrenamos es la pausa de antes, no el resultado.'); }
+  else { d.limites++; flash(v==='tiempo'?'Pedir tiempo ya es poner límite. Ahí has ganado tú.':'Límite puesto. Esto es lo que te devuelve el día.'); }
+  save(); ev('limite',{v:v}); }
+
+/* ================= ANTES DE ENTRAR EN CASA ================= */
+var hon={zona:null,textura:null,necesito:null,dicho:false};
+/* zona: [clave, emoji, "con artículo", género, número] */
+var HON_ZONAS=[
+  ["barriga","🫃","la barriga","f","sg"],
+  ["pecho","🫀","el pecho","m","sg"],
+  ["garganta","🗣️","la garganta","f","sg"],
+  ["hombros","💪","los hombros","m","pl"],
+  ["mandíbula","😬","la mandíbula","f","sg"],
+  ["cuerpo","🧍","el cuerpo entero","m","sg"]
+];
+function zonaInfo(k){ for(var i=0;i<HON_ZONAS.length;i++){ if(HON_ZONAS[i][0]===k) return HON_ZONAS[i]; } return null; }
+/* concuerda el adjetivo con la zona: "pesado" → "pesada" / "pesados" */
+function concordar(adj,gen,num){
+  var parts=String(adj).split(" "), w=parts[0];
+  if(/o$/.test(w)) w=w.slice(0,-1)+(gen==="f"?"a":"o");
+  if(num==="pl") w=w+"s";
+  parts[0]=w; return parts.join(" ");
+}
+var HON_TEXT=["pesado","apretado","vacío","ruidoso por dentro","cansado","encogido","revuelto","tenso"];
+var HON_NEC=["un rato de silencio","que no me pregunten por el trabajo","un abrazo","diez minutos y luego estoy","no necesito nada, solo que lo sepas"];
+VIEWS.cierre=function(){
+  hon={zona:null,textura:null,necesito:null,dicho:false};
+  var d=dia();
+  var h='<h1 class="view-t">Antes de entrar en casa</h1><p class="view-s">Estás aparcado delante de casa. Un minuto aquí, en la furgoneta. <b>La presión del día se cierra fuera</b>, para que no entre por la puerta antes que tú.</p>';
+
+  /* 1 · respiración */
+  h+='<div class="card"><h2><span class="e">🫧</span>1 · Tres respiraciones curiosas</h2><p class="lead">Suelta despacio. Afloja hombros y mandíbula. Atención a la barriga.</p>'+
+     ringHTML('Prepárate','El día ya está hecho. Esto es lo que queda por dentro.')+
+     '<button class="btn full agua" id="cBtn" onclick="cierreResp(this)">Empezar</button></div>';
+
+  /* 2 · cerrar la llave */
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  h+='<div class="card"><h2><span class="e">🔧</span>2 · Cierro la llave de paso</h2><p>Los avisos, los presupuestos, las facturas y el que no te ha cogido el teléfono <b>se quedan aquí hasta mañana</b>. No es que no importen: es que ahora no tocan.</p>'+
+     '<input type="text" id="ciDejo" placeholder="¿Qué se queda fuera hoy? (opcional)">'+
+     '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="cierreABandeja()">🧰 Anotar en la bandeja</button></div>'+
+     (pend>0?'<div class="nota" style="margin-top:10px">En la bandeja quedan <b>'+pend+'</b>. Están ahí, escritas. <b>No hace falta que las repases esta noche.</b></div>':'')+
+     '</div>';
+
+  /* 3 · honestidad emocional */
+  h+='<div class="card"><h2><span class="e">💬</span>3 · Honestidad emocional</h2><p class="lead">Decirle a tu pareja cómo estás. <b>No por qué estás así</b>: cómo estás. Son dos cosas distintas y solo una se puede decir con tono sereno.</p>';
+  h+='<label class="fld">¿Dónde lo notas?</label><div class="chips" id="cZona">'+
+     HON_ZONAS.map(function(z){ return '<button type="button" class="chip" data-v="'+z[0]+'" onclick="honZona(this)">'+z[1]+' '+z[2]+'</button>'; }).join('')+'</div>';
+  h+='<label class="fld">¿Cómo está eso? (textura, no motivo)</label><div class="chips" id="cText">'+
+     HON_TEXT.map(function(t){ return '<button type="button" class="chip" data-v="'+t+'" onclick="honText(this)">'+t+'</button>'; }).join('')+'</div>';
+  h+='<div class="nota" style="margin-top:12px"><b>Suspende el porqué.</b> Si aparece el «no sé por qué», o el «es que el cliente…», déjalo pasar. El porqué convierte una frase honesta en una queja, y entonces ella tiene que defenderse en vez de escucharte.</div>';
+  h+='<label class="fld">¿Qué necesitas? (opcional)</label><div class="chips" id="cNec">'+
+     HON_NEC.map(function(t){ return '<button type="button" class="chip" data-v="'+t+'" onclick="honNec(this)">'+t+'</button>'; }).join('')+'</div>';
+  h+='<div id="honOut"></div></div>';
+
+  /* 4 · abrazo sentido */
+  h+='<div class="card"><h2><span class="e">🤍</span>4 · Abrazo sentido</h2><p class="lead">No el abrazo de pasar por al lado. El que se nota.</p>'+
+     '<ol class="steps"><li><b>Antes de abrazar, respira una vez</b> y mira qué hay en tu barriga.</li>'+
+     '<li><b>Abraza y quédate tres respiraciones ahí.</b> Con la atención en tu cuerpo, no en el reloj.</li>'+
+     '<li><b>Nota lo que cambia</b> mientras abrazas. No hace falta decir nada.</li></ol>'+
+     '<div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:10px"><button class="btn verde full" onclick="abrazoDado()">🤍 Abrazo sentido dado</button></div>'+
+     '<p class="muted" style="margin-top:10px">Hoy llevas <b>'+d.abrazos+'</b>.</p></div>';
+
+  /* 5 · manómetro final */
+  h+='<div class="card"><h2><span class="e">🎚️</span>5 · ¿Con cuánta presión cierras el día?</h2>'+manoHTML(d.presionFin)+
+     '<div class="scale" id="sPresFin">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionFin===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'fin\')">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>Suelto</span><span>A punto de reventar</span></div></div>';
+
+  h+='<div class="btnrow"><button class="btn full verde" onclick="cierreDone()">Cerrar el día y entrar</button></div>';
+  h+='<div class="quote">Trabajas por los tuyos. Llegar con algo que darles también es parte del trabajo.</div>';
+  h+=footerHTML(); return h;
+};
+function cierreResp(btn){ btn.style.display='none';
+  breathRun({ciclos:3, verbs:["No respiro para dormirme. Respiro para saber cómo llego.","¿Qué hay en la barriga después de hoy?","Esto no hay que arreglarlo. Solo saber que está."],
+    finTxt:'Aquí', finVerb:'Ya sabes con qué llegas. Eso es lo que vas a poder decir.',
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'cierre'}); }}); }
+function cierreABandeja(){ var el=document.getElementById('ciDejo'); var t=(el.value||'').trim(); if(!t){ flash('Escríbelo primero, si hay algo.'); return; }
+  addBandeja(t,'🧾'); var d=dia(); d.dejado=t; save(); el.value=''; flash('Se queda fuera. Mañana lo tienes escrito.'); }
+function honZona(b){ document.getElementById('cZona').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); hon.zona=b.dataset.v; honRender(); }
+function honText(b){ document.getElementById('cText').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); hon.textura=b.dataset.v; honRender(); }
+function honNec(b){ var sel=b.classList.contains('sel');
+  document.getElementById('cNec').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); });
+  if(!sel){ b.classList.add('sel'); hon.necesito=b.dataset.v; } else { hon.necesito=null; } honRender(); }
+function honFrase(){
+  if(!hon.zona||!hon.textura) return "";
+  var z=zonaInfo(hon.zona); if(!z) return "";
+  var f="Llego con "+z[2]+" "+concordar(hon.textura,z[3],z[4])+".";
+  f+=" No te lo digo para que lo arregles ni para quejarme: te lo digo para que sepas dónde estoy.";
+  if(hon.necesito){ f+= hon.necesito==='no necesito nada, solo que lo sepas' ? " No necesito nada, solo que lo sepas." : (" Me iría bien "+hon.necesito+"."); }
+  return f;
+}
+function honRender(){
+  var out=document.getElementById('honOut'); if(!out) return;
+  var f=honFrase();
+  if(!f){ out.innerHTML='<div class="nota" style="margin-top:12px">Elige <b>dónde</b> lo notas y <b>cómo está</b>, y te monto la frase.</div>'; return; }
+  var h='<div class="quote" style="margin-top:14px" id="honFraseTxt">'+esc(f)+'</div>';
+  h+='<div class="nota"><b>Tono sereno:</b> ni de queja, ni de disculpa, ni de aviso. Es un parte del estado de la instalación, no una acusación. Si te sale el «es que…», para y vuelve a la frase.</div>';
+  h+='<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="copiar(\''+q(f)+'\',this)">📋 Copiar</button><button class="btn sm verde" onclick="honDicho()">✅ Lo he dicho</button></div>';
+  out.innerHTML=h;
+}
+function honDicho(){ var d=dia(); d.honestidad++; hon.dicho=true; save(); ev('honestidad',{zona:hon.zona,textura:hon.textura});
+  flash('Dicho. Y sin explicar el porqué: eso es lo difícil y lo has hecho.'); }
+function abrazoDado(){ var d=dia(); d.abrazos++; save(); ev('abrazo'); flash('Abrazo sentido ✓ Hoy llevas '+d.abrazos+'.'); setTimeout(render,600); }
+function setPresion(b,cual){
+  var cont=b.parentNode; cont.querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var v=parseInt(b.dataset.v,10), d=dia();
+  if(cual==='fin') d.presionFin=v; else d.presionIni=v;
+  save(); ev('presion',{cual:cual,v:v});
+  var mano=cont.parentNode.querySelector('.mano'); if(mano){ var tmp=document.createElement('div'); tmp.innerHTML=manoHTML(v); mano.parentNode.replaceChild(tmp.firstChild,mano); }
+}
+function cierreDone(){ var d=dia(); d.cierre=true; save(); ev('cierre');
+  flash('Día cerrado. Entra tú, no el día. 🤍'); setTimeout(function(){ go('dia'); },1100); }
+
+/* ================= BANDEJA ================= */
+var CATS=[["💧","Trabajo"],["🧾","Factura / papeleo"],["📞","Llamada"],["🛒","Material"],["🏠","Casa"]];
+var catSel="💧";
+function addBandeja(txt,cat){ DB.bandeja.unshift({id:uid(),t:txt,c:cat||catSel,done:false,ts:Date.now(),date:hoy()}); save(); ev('bandeja'); }
+VIEWS.bandeja=function(){
+  var abiertos=DB.bandeja.filter(function(x){ return !x.done; });
+  var hechos=DB.bandeja.filter(function(x){ return x.done; }).slice(0,12);
+  var h='<h1 class="view-t">Lo llevo en la cabeza</h1><p class="view-s">Todo lo que te ronda mientras trabajas. Aquí no se hace: aquí <b>se suelta</b>. Escribirlo no es una tarea más, es dejar de cargarlo.</p>';
+  h+='<div class="card"><h2><span class="e">🧰</span>Anotar</h2>'+
+     '<input type="text" id="bTxt" placeholder="Ej.: factura de los Ferrer" onkeydown="if(event.key===\'Enter\'){bandejaAdd();}">'+
+     '<div class="catrow" id="catRow">'+CATS.map(function(c){ return '<button type="button" class="cat'+(catSel===c[0]?' sel':'')+'" data-v="'+c[0]+'" onclick="pickCat(this)">'+c[0]+' '+c[1]+'</button>'; }).join('')+'</div>'+
+     '<button class="btn full" onclick="bandejaAdd()">Sacarlo de la cabeza</button>'+
+     '<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">📋</span>Pendiente <span style="font-size:13px;color:var(--suau);font-weight:400">('+abiertos.length+')</span></h2>';
+  if(!abiertos.length) h+='<p class="empty">Nada pendiente. Si hay algo dando vueltas por tu cabeza, anótalo arriba.</p>';
+  else h+=abiertos.map(function(x){ return '<div class="item"><span class="ic">'+x.c+'</span><span class="it">'+esc(x.t)+'</span>'+
+     '<button class="ib ok" aria-label="Hecho" onclick="bandejaDone(\''+x.id+'\')">✓</button>'+
+     '<button class="ib" aria-label="Borrar" onclick="bandejaDel(\''+x.id+'\')">✕</button></div>'; }).join('');
+  if(abiertos.length>3) h+='<div class="nota">Son muchas. <b>Elige tres para hoy</b> y el resto que esperen: no caben más en un día de furgoneta.</div>';
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">🧾</span>El rato de papeleo</h2><p>El papeleo no se desordena porque seas desordenado. Se desordena porque <b>no tiene hora</b>. Ponle una: quince minutos fijos, el mismo día de la semana, con el móvil en silencio.</p>'+
+     '<div class="quote" style="margin-top:10px">Quince minutos con hora valen más que tres horas cuando ya no puedes más.</div></div>';
+
+  if(hechos.length){ h+='<div class="card"><h2><span class="e">✅</span>Hechas</h2>'+
+     hechos.map(function(x){ return '<div class="item done"><span class="ic">'+x.c+'</span><span class="it">'+esc(x.t)+'</span><button class="ib" aria-label="Borrar" onclick="bandejaDel(\''+x.id+'\')">✕</button></div>'; }).join('')+'</div>'; }
+  h+=footerHTML(); return h;
+};
+function pickCat(b){ document.getElementById('catRow').querySelectorAll('.cat').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); catSel=b.dataset.v; }
+function bandejaAdd(){ var el=document.getElementById('bTxt'); var t=(el.value||'').trim(); if(!t) return;
+  addBandeja(t,catSel); el.value=''; go('bandeja'); }
+function bandejaDone(id){ DB.bandeja.forEach(function(x){ if(x.id===id) x.done=!x.done; }); save(); go('bandeja'); }
+function bandejaDel(id){ DB.bandeja=DB.bandeja.filter(function(x){ return x.id!==id; }); save(); go('bandeja'); }
+
+/* ================= MI DÍA · registro e informe ================= */
+VIEWS.dia=function(){
+  var d=dia(), n=nombre();
+  var h='<h1 class="view-t">Mi día</h1><p class="view-s">Lo que le vas a pasar a tu psicólogo. No es un examen: es el <b>parte de obra</b> del día.</p>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>'+esc(fechaLarga(hoy()))+'</h2><div class="stat3">'+
+     '<div class="a"><b>'+d.resp+'</b><span>respiraciones<br>curiosas</span></div>'+
+     '<div><b>'+d.paradas+'</b><span>paradas de<br>pensamiento</span></div>'+
+     '<div class="v"><b>'+d.abrazos+'</b><span>abrazos<br>sentidos</span></div></div>';
+  h+='<div class="stat3" style="margin-top:9px">'+
+     '<div class="v"><b>'+d.honestidad+'</b><span>veces que lo<br>he dicho</span></div>'+
+     '<div class="v"><b>'+d.limites+'</b><span>límites<br>puestos</span></div>'+
+     '<div><b>'+d.siAutomatico+'</b><span>síes<br>automáticos</span></div></div>';
+  h+='<p class="muted" style="margin-top:11px">Los síes automáticos <b>no restan</b>. Son el dato que nos dice dónde sigue la presión.</p></div>';
+
+  /* presión de inicio */
+  h+='<div class="card"><h2><span class="e">🎚️</span>Manómetro</h2><p class="lead">La presión con la que has empezado y con la que has cerrado.</p>';
+  h+='<div class="two"><div><p class="muted" style="text-align:center;margin:0 0 4px"><b>Al empezar</b></p>'+manoHTML(d.presionIni)+
+     '<div class="scale" id="sPresIni">'+[0,2,4,6,8,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionIni===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'ini\')">'+i+'</button>'; }).join('')+'</div></div>';
+  h+='<div><p class="muted" style="text-align:center;margin:0 0 4px"><b>Al cerrar</b></p>'+manoHTML(d.presionFin)+
+     '<div class="scale" id="sPresFin2">'+[0,2,4,6,8,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionFin===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'fin\')">'+i+'</button>'; }).join('')+'</div></div></div>';
+  h+='<p class="muted" style="margin-top:9px">Ahora mismo: <b>'+presionTxt(d.presionFin!==null?d.presionFin:d.presionIni)+'</b></p></div>';
+
+  /* latencia */
+  h+='<div class="card"><h2><span class="e">⏱️</span>El segundo de antes</h2><p class="lead">Hoy, cuando te han pedido algo o te ha subido la prisa, <b>¿cuánto has podido esperar antes de responder?</b></p>'+
+     '<div class="scale" id="sLat">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb a'+(d.latencia===i?' sel':'')+'" data-v="'+i+'" onclick="setLat(this)">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>Salió solo</span><span>Pude parar</span></div></div>';
+
+  /* L / D / C */
+  h+='<div class="card"><h2><span class="e">🧭</span>Lo que entrenas</h2><div class="ldc">'+
+     '<div class="L"><b>'+(d.latencia===null?'—':d.latencia)+'</b><span>Latencia<br>el segundo de antes</span></div>'+
+     '<div class="D"><b>'+(d.resp+d.paradas)+'</b><span>Densidad<br>vueltas a la barriga</span></div>'+
+     '<div class="C"><b>'+racha()+'</b><span>Continuidad<br>días seguidos</span></div></div>'+
+     '<p class="muted">La <b>densidad</b> no es respirar mejor: es respirar <b>más veces al día</b>. Y la <b>continuidad</b> no es hacerlo perfecto: es que mañana vuelva a haber un día.</p></div>';
+
+  h+='<div class="card"><h2><span class="e">📝</span>Nota del día</h2><textarea id="dNota" placeholder="Si quieres añadir algo para la sesión…" oninput="setNota(this.value)">'+esc(d.nota||'')+'</textarea></div>';
+
+  /* INFORME */
+  h+='<div class="card"><h2><span class="e">📤</span>Pasárselo a tu psicólogo</h2><p class="lead">Este es el texto. Puedes leerlo antes de enviarlo.</p>';
+  h+='<div class="msgbox" id="msgBox">'+esc(informeTxt())+'</div>';
+  h+='<div class="btnrow"><button class="btn wa full" onclick="enviarWA()">Enviar por WhatsApp</button></div>';
+  h+='<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="copiarInforme(this)">📋 Copiar</button><button class="btn sm ghost" onclick="go(\'ajustes\')">⚙️ Número</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="nota">Mandarlo cada día <b>no es para que te vigilen</b>. Es la continuidad: escribirlo cierra el día, y que alguien lo lea hace que no lo sostengas solo.</div></div>';
+
+  h+=semanaHTML();
+  h+=footerHTML(); return h;
+};
+function setLat(b){ document.getElementById('sLat').querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(); d.latencia=parseInt(b.dataset.v,10); save(); ev('latencia',{v:d.latencia}); refrescarInforme(); }
+function setNota(v){ var d=dia(); d.nota=v; save(); }
+function refrescarInforme(){ var b=document.getElementById('msgBox'); if(b) b.textContent=informeTxt(); }
+
+function informeTxt(){
+  var d=dia(), n=nombre(), L=[];
+  L.push("LA LLAVE DE PASO · "+fechaLarga(hoy())+(n?(" · "+n):""));
+  L.push("");
+  L.push("Respiraciones curiosas: "+d.resp);
+  L.push("Paradas de pensamiento: "+d.paradas);
+  L.push("Abrazo sentido: "+(d.abrazos>0?(d.abrazos+" ✓"):"hoy no"));
+  L.push("Honestidad emocional: "+(d.honestidad>0?("sí, "+d.honestidad+" vez"+(d.honestidad>1?"es":"")+" (tono sereno, sin explicar el porqué)"):"hoy no"));
+  L.push("Límites: "+d.limites+" puesto"+(d.limites===1?"":"s")+" · "+d.siAutomatico+(d.siAutomatico===1?" sí automático":" síes automáticos"));
+  L.push("");
+  L.push("Manómetro: "+(d.presionIni===null?"—":d.presionIni)+" al empezar → "+(d.presionFin===null?"—":d.presionFin)+" al cerrar");
+  if(d.barriga) L.push("Barriga: "+d.barriga);
+  var lat=(d.latencia===null?"—":d.latencia+"/10");
+  L.push("Latencia (el segundo de antes): "+lat);
+  L.push("Densidad (vueltas a la barriga): "+(d.resp+d.paradas));
+  L.push("Continuidad: "+racha()+" día"+(racha()===1?"":"s")+" seguido"+(racha()===1?"":"s"));
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  L.push("En la bandeja "+(pend===1?"queda 1 cosa anotada":("quedan "+pend+" cosas anotadas"))+", no en la cabeza");
+  if(d.dejado) L.push("Se ha quedado fuera de casa: «"+d.dejado+"»");
+  L.push("Cierre del día: "+(d.cierre?"hecho ✓":"pendiente"));
+  if((d.nota||"").trim()){ L.push(""); L.push("Nota: "+d.nota.trim()); }
+  return L.join("\n");
+}
+function enviarWA(){
+  var tel=(DB.settings.telPsico||'').replace(/[^\d]/g,'');
+  var url='https://wa.me/'+tel+'?text='+encodeURIComponent(informeTxt());
+  try{ window.open(url,'_blank'); }catch(e){ location.href=url; }
+  if(!tel) flash('Si pones el número en Ajustes, se abre directo con tu psicólogo.');
+  ev('informe');
+}
+function copiarInforme(btn){ copiar(informeTxt(),btn); }
+
+function semanaHTML(){
+  var keys=Object.keys(DB.dias).filter(within7).sort().reverse();
+  if(!keys.length) return '';
+  var h='<div class="card"><h2><span class="e">🗓️</span>Estos días</h2>';
+  h+=keys.map(function(k){ var d=DB.dias[k];
+    return '<div class="rec"><div class="rh"><span class="rd"><b>'+esc(fechaLarga(k))+'</b></span><span class="rd">'+(d.cierre?'🏠 cerrado':'')+'</span></div>'+
+      '<div class="rb">'+d.resp+' respiraciones · '+d.paradas+' paradas · '+d.abrazos+' abrazo'+(d.abrazos===1?'':'s')+
+      (d.honestidad>0?' · 💬 lo dijo':'')+(d.limites>0?(' · 🚫 '+d.limites+' límite'+(d.limites===1?'':'s')):'')+'</div></div>'; }).join('');
+  h+='<div class="btnrow" style="margin-top:8px"><button class="btn sm ghost" onclick="copiarSemana(this)">📋 Copiar la semana</button></div></div>';
+  return h;
+}
+function copiarSemana(btn){
+  var keys=Object.keys(DB.dias).filter(within7).sort();
+  var L=['LA LLAVE DE PASO · semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())+(nombre()?(' · '+nombre()):'')];
+  var tr=0,tp=0,ta=0,th=0,tl=0,ts=0,tc=0;
+  keys.forEach(function(k){ var d=DB.dias[k]; tr+=d.resp; tp+=d.paradas; ta+=d.abrazos; th+=d.honestidad; tl+=d.limites; ts+=d.siAutomatico; if(d.cierre) tc++;
+    L.push('· '+fechaLarga(k)+': '+d.resp+' resp · '+d.paradas+' paradas · '+d.abrazos+' abrazo'+(d.abrazos===1?'':'s')+' · '+(d.honestidad>0?'lo dijo':'no lo dijo')+' · cierre '+(d.cierre?'sí':'no')); });
+  L.push('');
+  L.push('Totales: '+tr+' respiraciones curiosas · '+tp+' paradas de pensamiento · '+ta+' abrazos sentidos');
+  L.push('Honestidad emocional: '+th+' veces · Límites: '+tl+' · Síes automáticos: '+ts);
+  L.push('Cierres de día: '+tc+'/'+keys.length+' · Continuidad: '+racha()+' días seguidos');
+  copiar(L.join('\n'),btn);
+}
+
+/* ================= MÁS ================= */
+VIEWS.mas=function(){
+  var h='<h1 class="view-t">Más</h1><p class="view-s">El porqué de todo esto, tus frases y los ajustes.</p>';
+  h+='<button class="big slate" onclick="go(\'porque\')"><span class="bi">🔧</span><span><span class="bt">Por qué la llave de paso</span><span class="bd">la presión, la fuga y el punto más débil</span></span></button>';
+  h+='<button class="big cobre" onclick="go(\'frases\')"><span class="bi">💬</span><span><span class="bt">Mis frases</span><span class="bd">para acompañarte y para poner límites</span></span></button>';
+  h+='<button class="big agua" onclick="go(\'limites\')"><span class="bi">📞</span><span><span class="bt">Me piden algo ahora</span><span class="bd">el segundo de antes de contestar</span></span></button>';
+  h+='<div class="card"><h2><span class="e">⚙️</span>Ajustes y datos</h2><div class="btnrow"><button class="btn sm ghost" onclick="go(\'ajustes\')">Ajustes</button><button class="btn sm ghost" onclick="exportJSON()">⬇️ Archivo .json</button></div>'+
+     '<div class="nota" style="margin-top:11px">Todo lo que escribes aquí <b>se queda en tu móvil</b>. No se sube a ningún sitio. Lo único que sale eres tú, cuando pulsas «enviar por WhatsApp».</div></div>';
+  h+='<div class="stopcard"><h2><span class="e">🛟</span>Necesito parar</h2><p class="muted">Si ahora mismo la cabeza te está llevando a un sitio oscuro, entra aquí.</p><button class="btn full danger" style="margin-top:9px" onclick="go(\'parar\')">Abrir</button></div>';
+  h+='<div class="card" style="border-color:#dcb4af"><h2><span class="e">🗑️</span>Borrar</h2><p class="lead">Elimina todos los datos de este dispositivo.</p><button class="btn sm danger" onclick="borrarTodo()">Borrar todo</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+=footerHTML(); return h;
+};
+
+VIEWS.porque=function(){
+  var h='<h1 class="view-t">Por qué la llave de paso</h1><p class="view-s">Tú esto lo sabes mejor que nadie. Solo hay que aplicarlo hacia dentro.</p>';
+  h+='<div class="card"><h2><span class="e">🌡️</span>La presión</h2><p>Una instalación con la presión alta no revienta por donde más aguanta. <b>Revienta por el punto más débil.</b> En ti, el punto más débil no es el trabajo: es lo de casa, el ánimo y las ganas. Por eso trabajamos la presión, no el trabajo.</p></div>';
+  h+='<div class="card"><h2><span class="e">💧</span>La fuga</h2><p>Una fuga pequeña no te inunda en un día. Pero si gotea doce horas, al final te encuentras el suelo encharcado y no sabes de dónde viene. Las cosas por hacer que llevas en la cabeza <b>gotean todo el día</b>. Por eso existe la bandeja: para que goteen ahí y no en ti.</p><button class="btn sm ghost" style="margin-top:9px" onclick="go(\'bandeja\')">🧰 Ir a la bandeja</button></div>';
+  h+='<div class="card"><h2><span class="e">🌀</span>El aire en el circuito</h2><p>Cuando hay aire dentro, el radiador hace ruido y no calienta, por mucho que subas la caldera. Los pensamientos en bucle son eso: aire. <b>No se discuten, se purgan.</b> Eso es la parada de pensamiento.</p><button class="btn sm ghost" style="margin-top:9px" onclick="go(\'parada\')">🛑 Parada de pensamiento</button></div>';
+  h+='<div class="card"><h2><span class="e">🫃</span>Por qué la barriga</h2><p>Cuando la cabeza va a mil, decirte «tranquilo» no sirve: <b>la cabeza no se apaga con la cabeza</b>. Lo que sí funciona es cambiar de sitio la atención. Y el sitio más honesto que tienes es la barriga: ahí se nota antes que en ningún otro lado si algo te está apretando.</p><p class="muted" style="margin-top:8px">Por eso es <b>respiración curiosa</b> y no respiración relajante: no vas a cambiar cómo respiras. Vas a <b>mirar</b> cómo respiras. Mirar ya cambia dónde estás.</p></div>';
+  h+='<div class="card"><h2><span class="e">🚐</span>Por qué en la furgoneta</h2><p>Porque es el único sitio del día que es solo tuyo. Antes de bajar todavía no eres «el fontanero», y al subir ya has dejado de serlo. <b>Ese tramo es donde te recoges</b>, y es lo que hace que a casa llegues tú y no el día entero.</p></div>';
+  h+='<div class="quote">No entrenamos para que trabajes mejor. Entrenamos para que haya alguien dentro mientras trabajas.</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ================= RESPIRAR ================= */
+var VERB_RESP=[
+  "No vas a cambiar la respiración. Solo vas a mirarla.",
+  "¿Por dónde entra el aire? ¿Frío, templado?",
+  "Lleva la atención a la barriga. ¿Sube? ¿Está dura? ¿Está quieta?",
+  "Si no notas gran cosa, también vale. Eso es lo que hay hoy.",
+  "La curiosidad no busca respuestas. Busca contacto.",
+  "Cada vez que vuelves, estás entrenando. Aunque te hayas ido mil veces."
+];
+VIEWS.respira=function(){
+  var d=dia();
+  var h='<h1 class="view-t">Respiración curiosa</h1><p class="view-s">Tu herramienta base. <b>No respiras para calmarte</b>: respiras para volver a notarte. Si sale calma, bien; y si no sale, también sirve.</p>';
+  h+=ringHTML('Prepárate',VERB_RESP[0]);
+  h+='<div class="btnrow"><button class="btn agua" id="r3" onclick="respStart(3,this)">3 respiraciones</button><button class="btn ghost" id="r6" onclick="respStart(6,this)">6 respiraciones</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" style="margin-top:16px"><h2><span class="e">🫃</span>Dónde va la atención</h2><p>Mientras el círculo se abre y se cierra, tú <b>no cuidas el aire: cuidas dónde estás</b>. Y hoy estás en la barriga.</p>'+
+     '<ol class="steps"><li>Nota la barriga <b>tal como está</b>, sin aflojarla a propósito.</li>'+
+     '<li>Cuando la cabeza se vaya (se irá), <b>no discutas</b>: vuelve a la barriga.</li>'+
+     '<li>Si aparece el «por qué estoy así», déjalo pasar. Hoy no toca entender: toca notar.</li></ol></div>';
+  h+='<div class="card"><h2><span class="e">📍</span>Cuándo</h2><p class="lead">Estos son tus momentos. No hace falta buscar hueco: ya están en tu día.</p>'+
+     '<ol class="steps"><li><b>Al entrar en la furgoneta</b>, antes de arrancar.</li>'+
+     '<li><b>Antes de bajar</b> en cada casa.</li>'+
+     '<li><b>Al volver a subir</b>, antes de mirar el móvil.</li>'+
+     '<li><b>Antes de contestar</b> cuando te piden algo.</li>'+
+     '<li><b>Delante de casa</b>, antes de abrir la puerta.</li></ol>'+
+     '<p class="muted">Cinco momentos que ya existen. La cuenta no es de minutos: es de <b>cuántas veces has vuelto</b>.</p></div>';
+  h+='<div class="card"><div class="stat3"><div class="a"><b>'+d.resp+'</b><span>hoy</span></div><div><b>'+(d.resp+d.paradas)+'</b><span>vueltas a la<br>barriga hoy</span></div><div class="v"><b>'+racha()+'</b><span>días<br>seguidos</span></div></div></div>';
+  h+='<div class="quote">Volver mil veces no es fracasar mil veces. Es entrenar mil veces.</div>';
+  h+=footerHTML(); return h;
+};
+function respStart(n,btn){
+  document.getElementById('r3').style.display='none'; document.getElementById('r6').style.display='none';
+  breathRun({ciclos:n, verbs:VERB_RESP, finTxt:'Barriga', finVerb:'Ya está. Quédate un segundo más antes de seguir.',
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'libre',ciclos:n});
+      flash('Sumada. Hoy llevas '+d.resp+'.'); setTimeout(function(){ if(VIEW==='respira') render(); },1400); }});
+}
+
+/* ================= FRASES ================= */
+var FRASES=[
+  "No respiro para calmarme. Respiro para volver a notarme.",
+  "Voy contigo, cuerpo. Esta casa la hacemos juntos.",
+  "La prisa es suya. El ritmo lo pongo yo.",
+  "Pedir tiempo no es decir que no. Es no decir que sí en automático.",
+  "Decir que no a la urgencia de otro no es abandonarlo. Es no abandonarme a mí.",
+  "Darle vueltas no es resolverlo: es pagar dos veces por lo mismo.",
+  "No revienta por donde más aguanta. Revienta por el punto más débil.",
+  "Lo que llevo en la cabeza va en la bandeja, no en el cuerpo.",
+  "Puedo hacer bien mi trabajo sin castigarme mientras lo hago.",
+  "No tengo que caer bien a todos los clientes para valer lo que valgo.",
+  "El día se cierra fuera de casa.",
+  "Digo cómo estoy, no por qué estoy así.",
+  "No lo digo para que lo arreglen. Lo digo para que sepan dónde estoy.",
+  "Gracias, cuerpo, por sostener el día. Ya casi.",
+  "Volver mil veces no es fracasar mil veces: es entrenar mil veces.",
+  "Hoy también cuenta, aunque haya sido un día de mierda."
+];
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">Mis frases</h1><p class="view-s">Para llevar una o dos en la cabeza mientras conduces. Márcalas con la estrella o cópialas.</p>';
+  h+='<div class="card"><h2><span class="e">✍️</span>Crear la mía</h2><textarea id="newFrase" placeholder="Una frase que quieras llevar contigo…"></textarea><button class="btn sm" style="margin-top:9px" onclick="crearFrase()">Añadir</button></div>';
+  var all=DB.frasesUser.map(function(x){ return {t:x,u:true}; }).concat(FRASES.map(function(x){ return {t:x,u:false}; }));
+  all.sort(function(a,b){ return (DB.frasesFav.indexOf(b.t)>=0?1:0)-(DB.frasesFav.indexOf(a.t)>=0?1:0); });
+  h+=all.map(function(o){ var fav=DB.frasesFav.indexOf(o.t)>=0; var t=q(o.t);
+    return '<div class="verb"><span class="vt">'+esc(o.t)+'</span><span class="va">'+
+      '<button aria-label="Favorita" class="'+(fav?'fav-on':'')+'" onclick="favFrase(\''+t+'\',this)">'+(fav?'★':'☆')+'</button>'+
+      '<button aria-label="Copiar" onclick="copiar(\''+t+'\',this)">📋</button>'+
+      (o.u?'<button aria-label="Borrar" onclick="delFrase(\''+t+'\')">🗑️</button>':'')+'</span></div>'; }).join('');
+  h+=footerHTML(); return h;
+};
+function crearFrase(){ var t=(document.getElementById('newFrase').value||'').trim(); if(!t) return;
+  if(DB.frasesUser.indexOf(t)<0) DB.frasesUser.unshift(t); save(); go('frases'); }
+function delFrase(t){ t=String(t); DB.frasesUser=DB.frasesUser.filter(function(f){ return f!==t; }); DB.frasesFav=DB.frasesFav.filter(function(f){ return f!==t; }); save(); go('frases'); }
+function favFrase(t,btn){ t=String(t); var i=DB.frasesFav.indexOf(t);
+  if(i>=0){ DB.frasesFav.splice(i,1); btn.textContent='☆'; btn.classList.remove('fav-on'); }
+  else { DB.frasesFav.push(t); btn.textContent='★'; btn.classList.add('fav-on'); } save(); }
+
+/* ================= AJUSTES ================= */
+VIEWS.ajustes=function(){
+  var s=DB.settings;
+  var h='<h1 class="view-t">Ajustes</h1><p class="view-s">Para que esto sea tuyo de verdad. Todo se queda en este móvil.</p>';
+  h+='<div class="card"><h2><span class="e">👤</span>Tu nombre</h2><p class="lead">Solo para que la app te salude a ti y para que el informe lleve tu nombre.</p>'+
+     '<input type="text" id="aNom" value="'+esc(s.nombre||'')+'" placeholder="Tu nombre"></div>';
+  h+='<div class="card"><h2><span class="e">💬</span>WhatsApp de tu psicólogo</h2><p class="lead">Con prefijo y sin espacios (ej.: 34600112233). Si lo dejas vacío, al enviar podrás elegir el contacto a mano.</p>'+
+     '<input type="text" id="aPsico" value="'+esc(s.telPsico||'')+'" inputmode="tel" placeholder="34600112233"></div>';
+  h+='<div class="card"><h2><span class="e">🤍</span>Teléfono de tu pareja</h2><p class="lead">Solo se usa en la pantalla «Necesito parar», para que no tengas que buscarlo si algún día lo necesitas.</p>'+
+     '<input type="text" id="aPareja" value="'+esc(s.telPareja||'')+'" inputmode="tel" placeholder="600112233"></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="btnrow"><button class="btn full" onclick="guardarAjustes()">Guardar</button></div>';
+  h+='<div class="card" style="margin-top:16px"><h2><span class="e">⏰</span>Que no se te olvide</h2><p>Esta app no te va a avisar sola. Lo que funciona de verdad es <b>engancharla a algo que ya haces</b>:</p>'+
+     '<ol class="steps"><li><b>Ponla en la pantalla de inicio</b> del móvil, la primera, con el icono a la vista.</li>'+
+     '<li><b>Una pegatina en el volante</b> o en el salpicadero. Cuando la veas, una respiración.</li>'+
+     '<li><b>Una alarma a las 21:00</b> que se llame «parte del día» para mandar el informe.</li></ol>'+
+     '<p class="muted">El objetivo no es acordarse. Es que <b>el sitio te lo recuerde</b>.</p></div>';
+  h+=footerHTML(); return h;
+};
+function guardarAjustes(){
+  DB.settings.nombre=(document.getElementById('aNom').value||'').trim();
+  DB.settings.telPsico=(document.getElementById('aPsico').value||'').replace(/[^\d+]/g,'');
+  DB.settings.telPareja=(document.getElementById('aPareja').value||'').replace(/[^\d+]/g,'');
+  save(); flash('Guardado ✓'); render();
+}
+
+/* ================= NECESITO PARAR ================= */
+VIEWS.parar=function(){
+  var s=DB.settings;
+  var h='<h1 class="view-t">Necesito parar</h1><p class="view-s">Si ahora mismo la cabeza te está llevando a un sitio oscuro, no hace falta que hagas nada bien. Solo <b>esperar acompañado</b>.</p>';
+  h+='<div class="stopcard"><h2><span class="e">🫁</span>Primero, el cuerpo</h2><p class="muted">Suelta el aire muy despacio. No tienes que sentirte mejor. Solo tienes que quedarte.</p>'+
+     ringHTML('Suelta','Esto que sientes ahora no es el final. Es un pico, y los picos bajan.',160)+
+     '<button class="btn full slate" id="spBtn" onclick="pararResp(this)">Respirar conmigo</button></div>';
+
+  h+='<div class="card"><h2><span class="e">📵</span>No decidas nada ahora</h2><p>Con el cuerpo así, <b>todo lo que pienses va a parecer definitivo y no lo es</b>. Ya has pasado por aquí antes y pasó. No es una frase bonita: es tu historial.</p>'+
+     '<ol class="steps"><li><b>No te quedes solo.</b> Aunque no te apetezca hablar, estar al lado de alguien ya cambia el cuerpo.</li>'+
+     '<li><b>Llama a alguien</b> de los de abajo. No hace falta que expliques nada: «no estoy bien, ¿puedes estar un rato?» es suficiente.</li>'+
+     '<li><b>Si tomas medicación</b>, no la cambies ni la dejes por tu cuenta hoy.</li></ol></div>';
+
+  h+='<div class="card"><h2><span class="e">📞</span>Llamar ahora</h2>';
+  if(s.telPareja) h+='<a class="callbtn" href="tel:'+esc(s.telPareja)+'"><span class="ce">🤍</span><span>Tu pareja<small>'+esc(s.telPareja)+'</small></span></a>';
+  if(s.telPsico) h+='<a class="callbtn" href="tel:'+esc(s.telPsico)+'"><span class="ce">🧭</span><span>Tu psicólogo<small>'+esc(s.telPsico)+'</small></span></a>';
+  h+='<a class="callbtn" href="tel:024"><span class="ce">☎️</span><span>024 · Línea de atención a la conducta suicida<small>Gratuita, 24 h, confidencial. En toda España.</small></span></a>';
+  h+='<a class="callbtn" href="tel:112"><span class="ce">🚑</span><span>112 · Emergencias<small>Si crees que ahora mismo no puedes garantizar tu seguridad.</small></span></a>';
+  if(!s.telPareja&&!s.telPsico) h+='<div class="nota">Pon el teléfono de tu pareja y el de tu psicólogo en <button class="link" onclick="go(\'ajustes\')">Ajustes</button> para tenerlos aquí, a un toque, sin buscarlos.</div>';
+  h+='</div>';
+
+  h+='<div class="quote">Que hoy pese así no significa que vaya a pesar así siempre. Significa que hoy pesa. Y hoy se acaba.</div>';
+  h+='<div class="nota">Esta pantalla <b>no sustituye</b> a tu psicólogo ni a tu médico. Si esto se repite o va a más, díselo en la siguiente sesión aunque ya se te haya pasado.</div>';
+  h+='<div class="btnrow" style="margin-top:12px"><button class="btn ghost full" onclick="go(\'furgo\')">Volver</button></div>';
+  h+=footerHTML(); return h;
+};
+function pararResp(btn){ btn.disabled=true;
+  breathRun({fases:[["Coge aire",4,1.14],["Suelta muy despacio",8,0.80]], ciclos:4,
+    verbs:["No tienes que sentirte mejor. Solo quedarte.","Esto es un pico. Los picos bajan.","Estás haciendo lo más difícil: esperar.","No estás solo. Hay gente a un botón."],
+    finTxt:'Aquí', finVerb:'Has aguantado. Ahora llama a alguien.',
+    onEnd:function(){ if(btn) btn.disabled=false; ev('parar'); }}); }
+
+/* ================= COMUNES ================= */
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · Entrenamiento TEC–AIS<br>Material de apoyo terapéutico personalizado. Se interpreta dentro de tu proceso en sesión.<br>Todo se guarda solo en este dispositivo.</footer>'; }
+function copiar(txt,btn){ txt=String(txt);
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓'; setTimeout(function(){ btn.textContent=o; },1500); } }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(fb); } else { fb(); }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
+}
+function exportJSON(){ try{
+    var blob=new Blob([JSON.stringify({app:'la_llave_de_paso',v:1,exportado:new Date().toISOString(),db:DB},null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='llave_de_paso_'+hoy()+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(url); },1000); flash('Archivo generado ✓');
+  }catch(e){ alert('No se pudo generar el archivo.'); } }
+function borrarTodo(){ if(confirm('¿Borrar TODOS los datos de este dispositivo?')){ if(confirm('No se puede deshacer. ¿Confirmas?')){ DB=clone(DEFAULT); save(); go('furgo'); } } }
+
+render();
+</script>
+</body>
+</html>
