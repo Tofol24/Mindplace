@@ -17,6 +17,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#b0703c">
 <title>La llave de paso · APRENS</title>
+<script>if(window.top!==window.self)document.documentElement.classList.add("embed");</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-512.png">
@@ -50,6 +51,10 @@
   .top .sp{margin-left:auto}
   .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);min-width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:12.5px;font-weight:600;padding:0 11px;font-family:inherit}
   .iconbtn.stop{border-color:#dcb4af;color:var(--alerta)}
+  /* Embebida en el hub de APRENS: el hub ya pone logo, titulo y "Atras".
+     Se oculta el duplicado y se conserva el boton "Parar" siempre accesible. */
+  .embed .top{padding:7px 15px 4px}
+  .embed .top .logo,.embed .top .tw{display:none}
 
   h1.view-t{font-family:var(--serif);font-size:24px;margin:8px 0 2px;font-weight:700;line-height:1.18}
   .view-s{color:var(--suau);font-size:14.5px;margin:0 0 14px}
@@ -204,7 +209,7 @@
 <body>
 <div class="top">
   <div class="logo">ap</div>
-  <div><div class="tt">La llave de paso</div><div class="ts" id="topSub">APRENS · TEC–AIS</div></div>
+  <div class="tw"><div class="tt">La llave de paso</div><div class="ts" id="topSub">APRENS · TEC–AIS</div></div>
   <span class="sp"></span>
   <button class="iconbtn stop" onclick="go('parar')" aria-label="Necesito parar">🛟 Parar</button>
 </div>
