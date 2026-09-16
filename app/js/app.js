@@ -306,6 +306,104 @@
       </section>`;
   }
 
+  // ---- Índice de apartados (al principio del hub) -------------------------
+  // Botones que llevan directos a cada apartado. No son enlaces con #ancla
+  // porque el hash es del router (#/ y #/tool/...): al cambiarlo se repintaría
+  // el hub y se perdería la posición. Se desplaza con scroll, sin tocar la URL.
+  function slugSec(txt){
+    const base = txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    return base ? "sec-"+base : "";
+  }
+  function irASeccion(sec){
+    const head = document.querySelector(".header");
+    const off = (head ? head.offsetHeight : 0) + 10;   // la cabecera es sticky
+    const y = sec.getBoundingClientRect().top + window.pageYOffset - off;
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: Math.max(0,y), behavior: quieto ? "auto" : "smooth" });
+    sec.classList.remove("idx-hit");
+    void sec.offsetWidth;                 // reinicia el destello si se repite apartado
+    sec.classList.add("idx-hit");
+    sec.setAttribute("tabindex","-1");
+    try{ sec.focus({preventScroll:true}); }catch(e){}
+  }
+  function montarIndice(){
+    const secs = Array.from(screen.querySelectorAll(".hub-sec"));
+    if(secs.length < 2) return;
+    const nav = document.createElement("nav");
+    nav.className = "hub-idx";
+    nav.setAttribute("aria-label","Índice de apartados");
+    const tit = document.createElement("div");
+    tit.className = "hub-idx-t";
+    tit.innerHTML = '<span aria-hidden="true">🧭</span>Ir directo a un apartado';
+    const chips = document.createElement("div");
+    chips.className = "hub-idx-chips";
+
+    secs.forEach((sec,i)=>{
+      const t = sec.querySelector(".hub-sec-t");
+      if(!t) return;
+      const nombre = t.textContent.trim();
+      if(!sec.id){
+        let id = slugSec(nombre) || ("sec-"+i);
+        if(document.getElementById(id)) id = id+"-"+i;
+        sec.id = id;
+      }
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "idx-chip";
+      b.dataset.sec = sec.id;
+
+      const emo = sec.querySelector(".hub-sec-e");
+      const img = sec.querySelector(".hub-sec-thumb img");
+      if(emo){
+        const ie = document.createElement("span");
+        ie.className = "idx-e"; ie.setAttribute("aria-hidden","true");
+        ie.textContent = emo.textContent;
+        b.appendChild(ie);
+      } else if(img){
+        const w = document.createElement("span"); w.className = "idx-thumb";
+        const im = document.createElement("img");
+        im.src = img.getAttribute("src"); im.alt = ""; im.loading = "lazy";
+        w.appendChild(im); b.appendChild(w);
+      }
+      // En el botón cabe el nombre corto (lo de antes del «·»); el título
+      // completo queda en el apartado y en la etiqueta accesible del botón.
+      const n = document.createElement("span");
+      n.className = "idx-n"; n.textContent = nombre.split(" · ")[0];
+      b.setAttribute("aria-label", "Ir a " + nombre);
+      b.title = nombre;
+      b.appendChild(n);
+
+      // Nº de fichas del apartado: la rejilla que va justo después del título.
+      let el = sec.nextElementSibling, grid = null;
+      while(el && !el.classList.contains("hub-sec")){
+        if(el.classList.contains("hub-grid")){ grid = el; break; }
+        el = el.nextElementSibling;
+      }
+      const cuantas = grid ? grid.children.length : 0;
+      if(cuantas){
+        const c = document.createElement("span");
+        c.className = "idx-c";
+        c.textContent = String(cuantas);
+        c.setAttribute("aria-label", cuantas===1 ? "1 ficha" : cuantas+" fichas");
+        b.appendChild(c);
+      }
+      chips.appendChild(b);
+    });
+    if(!chips.children.length) return;
+
+    chips.addEventListener("click", ev=>{
+      const b = ev.target.closest(".idx-chip");
+      if(!b) return;
+      const sec = document.getElementById(b.dataset.sec);
+      if(sec) irASeccion(sec);
+    });
+    nav.appendChild(tit); nav.appendChild(chips);
+    const bienvenida = screen.querySelector(".hub-welcome");
+    if(bienvenida) bienvenida.insertAdjacentElement("afterend", nav);
+    else screen.insertAdjacentElement("afterbegin", nav);
+  }
+
   function renderHub(){
     removeExportBar();
     screen.classList.remove("iframe-host");
@@ -358,6 +456,7 @@
       ${librosHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
     wireCont();
+    montarIndice();
   }
 
   function renderTool(id){
