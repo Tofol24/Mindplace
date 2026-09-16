@@ -63,6 +63,39 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  // «Los libros de Tòfol Villalonga»: enlaces de compra en Amazon (se abren fuera de la app).
+  // Son enlaces normales: no cargan nada externo dentro de la app (la CSP sigue intacta).
+  const LIBROS = [
+    { nombre:"Cría desde dentro", idioma:"Castellano", color:"#1F5F86",
+      desc:"El arte de acompañar a tus hijos conectando con tus propias sensaciones.",
+      kindle:"https://amzn.eu/d/07TG2A10", papel:"https://amzn.eu/d/05wsQQvM" },
+    { nombre:"Trasciende desde dentro", idioma:"Castellano", color:"#D99A1E",
+      desc:"La conciencia que acepta, transforma y trasciende.",
+      kindle:"https://amzn.eu/d/0aorDOw7", papel:"https://amzn.eu/d/0ahyQbHm" },
+    { nombre:"Lidera tu mon(e)a", idioma:"Castellano", color:"#2B2926",
+      desc:"Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones.",
+      kindle:"https://amzn.eu/d/08vcVg1T", papel:"https://amzn.eu/d/06pa0Kut" },
+    { nombre:"Lidera la teva mon(e)a", idioma:"Català", color:"#2B2926",
+      desc:"Estratègies pràctiques per reduir el sobrepensament, liderar la teva atenció i millorar les teves relacions.",
+      kindle:"https://amzn.eu/d/07cTo4UW", papel:"https://amzn.eu/d/09x62GXb" },
+    { nombre:"Teoría del Efecto Consciente (TEC)", idioma:"Castellano", color:"#C23A3A",
+      desc:"La atención como vector causal: un metamodelo para la psicología clínica.",
+      kindle:"https://www.amazon.es/dp/B0HJNZY46W", papel:"https://www.amazon.es/dp/B0HJWL6K65" }
+  ];
+  function librosHTML(){
+    const cards = LIBROS.map(l=>`<div class="hub-card libro-card" style="border-left-color:${l.color}">
+      <span class="hub-emoji">📖</span>
+      <span class="hub-name">${l.nombre}</span>
+      <span class="hub-tag">${l.idioma}</span>
+      <span class="hub-desc">${l.desc}</span>
+      <span class="libro-btns">
+        <a class="libro-btn" href="${l.kindle}" target="_blank" rel="noopener" aria-label="${l.nombre} · Kindle en Amazon">Kindle ↗</a>
+        <a class="libro-btn alt" href="${l.papel}" target="_blank" rel="noopener" aria-label="${l.nombre} · tapa blanda en Amazon">Tapa blanda ↗</a>
+      </span></div>`).join("");
+    return `<div class="hub-sec" id="libros"><span class="hub-sec-e">📚</span><span class="hub-sec-t">Los libros de Tòfol Villalonga</span></div>
+      <div class="hub-sec-d">Para profundizar en lo que trabajamos en consulta. Los enlaces abren Amazon fuera de la app.</div>
+      <div class="hub-grid libros-grid">${cards}</div>`;
+  }
   // Historia del mono y el coche (relato → para qué → qué hacer), colapsable
   function historiaHTML(){
     return `<details class="hub-story" id="historia">
@@ -322,6 +355,7 @@
       ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
+      ${librosHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
     wireCont();
   }
