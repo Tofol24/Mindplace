@@ -1,0 +1,32 @@
+{
+  "name": "La llave de paso · APRENS",
+  "short_name": "Llave de paso",
+  "description": "Entrenamiento TEC-AIS para la jornada: respiración curiosa antes de bajar de la furgoneta, parada de pensamiento, límites y cierre del día antes de entrar en casa.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f0ea",
+  "theme_color": "#b0703c",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

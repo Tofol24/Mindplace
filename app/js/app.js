@@ -30,7 +30,7 @@
     { emoji:"🪜", label:"Superar miedos", desc:"Exposición gradual, paso a paso.",
       ids:["escalera_exposicion","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
-      ids:["retorno_trabajo","toco_desde_dentro"] },
+      ids:["retorno_trabajo","toco_desde_dentro","llave_de_paso"] },
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
       ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",

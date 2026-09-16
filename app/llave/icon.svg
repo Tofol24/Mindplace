@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="La llave de paso">
+  <rect width="512" height="512" rx="112" fill="#f3f0ea"/>
+  <!-- tubería -->
+  <rect x="48" y="300" width="416" height="56" rx="12" fill="#c98f52"/>
+  <rect x="48" y="300" width="416" height="20" rx="10" fill="#dcab74"/>
+  <!-- bridas -->
+  <rect x="140" y="282" width="26" height="92" rx="7" fill="#8a5427"/>
+  <rect x="346" y="282" width="26" height="92" rx="7" fill="#8a5427"/>
+  <!-- cuerpo de la válvula -->
+  <path d="M178 286h156a10 10 0 0 1 10 10v64a10 10 0 0 1-10 10H178a10 10 0 0 1-10-10v-64a10 10 0 0 1 10-10z" fill="#b0703c"/>
+  <!-- vástago -->
+  <rect x="242" y="176" width="28" height="118" rx="9" fill="#8a5427"/>
+  <!-- volante -->
+  <circle cx="256" cy="156" r="82" fill="none" stroke="#b0703c" stroke-width="26"/>
+  <circle cx="256" cy="156" r="26" fill="#8a5427"/>
+  <g stroke="#b0703c" stroke-width="20" stroke-linecap="round">
+    <line x1="256" y1="156" x2="256" y2="88"/>
+    <line x1="256" y1="156" x2="315" y2="190"/>
+    <line x1="256" y1="156" x2="197" y2="190"/>
+  </g>
+  <!-- gota: lo que se regula -->
+  <path d="M410 392c0 16-12 28-27 28s-27-12-27-28 27-46 27-46 27 30 27 46z" fill="#2f7f93"/>
+</svg>

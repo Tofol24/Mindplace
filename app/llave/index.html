@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<!--
+  LA LLAVE DE PASO · APRENS
+  Fontanero autónomo · cuadro ansioso-depresivo de larga evolución.
+  Entrenamiento TEC-AIS en los momentos reales de su jornada:
+  antes de bajar de la furgoneta, al volver a subir, y antes de entrar en casa.
+  Respiración curiosa con anclaje en la barriga (densidad), parada de pensamiento
+  y pausa antes de contestar al cliente (latencia), bandeja para la carga
+  administrativa, límites, honestidad emocional con tono sereno y abrazo sentido.
+  Informe diario para enviar al psicólogo por WhatsApp.
+  Standalone · sin recursos externos (CSP) · datos solo en el dispositivo.
+-->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#b0703c">
+<title>La llave de paso · APRENS</title>
+<script>if(window.top!==window.self)document.documentElement.classList.add("embed");</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="La llave de paso">
+<style>
+  :root{
+    --bg:#f3f0ea; --bg2:#eae5da; --card:#fffdf9; --tinta:#28251f; --suau:#756d61;
+    --cobre:#b0703c; --cobre-d:#8a5427; --cobre-lt:#f4e4d2;
+    --agua:#2f7f93; --agua-d:#215f6e; --agua-lt:#dcecf0;
+    --verde:#4f8a66; --verde-d:#39674c; --verde-lt:#e2efe6;
+    --alerta:#a9564e; --alerta-lt:#f6e5e2;
+    --pizarra:#4b5b66; --pizarra-d:#374751; --pizarra-lt:#dfe6ea;
+    --oro:#a9781f; --linia:#e6ddcd; --linia2:#dbcfb9;
+    --ombra:0 8px 26px rgba(90,70,30,.10); --ombra-s:0 2px 12px rgba(90,70,30,.07);
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#eae5da 0%,var(--bg) 240px);color:var(--tinta);line-height:1.55;font-size:16.5px;
+    -webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .wrap{max-width:620px;margin:0 auto;padding:0 15px}
+
+  .top{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--bg) 62%,rgba(243,240,234,0));padding:12px 15px 10px;display:flex;align-items:center;gap:10px;max-width:620px;margin:0 auto}
+  .logo{width:33px;height:33px;border-radius:50%;background:var(--cobre);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--serif);font-size:12px;flex:0 0 auto}
+  .top .tt{font-family:var(--serif);font-weight:700;font-size:15.5px;line-height:1.05}
+  .top .ts{font-size:10px;color:var(--suau)}
+  .top .sp{margin-left:auto}
+  .iconbtn{background:var(--card);border:1px solid var(--linia);color:var(--tinta);min-width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:12.5px;font-weight:600;padding:0 11px;font-family:inherit}
+  .iconbtn.stop{border-color:#dcb4af;color:var(--alerta)}
+  .lang{display:inline-flex;border:1px solid var(--linia);border-radius:999px;overflow:hidden;background:var(--card);box-shadow:var(--ombra-s);flex:0 0 auto}
+  .lang button{border:0;background:transparent;font-family:inherit;font-size:11.5px;font-weight:700;letter-spacing:.05em;padding:8px 11px;cursor:pointer;color:var(--suau);min-height:38px}
+  .lang button.on{background:var(--cobre);color:#fff}
+  /* Embebida en el hub de APRENS: el hub ya pone logo, titulo y "Atras".
+     Se oculta el duplicado y se conserva el boton "Parar" siempre accesible. */
+  .embed .top{padding:7px 15px 4px}
+  .embed .top .logo,.embed .top .tw{display:none}
+
+  h1.view-t{font-family:var(--serif);font-size:24px;margin:8px 0 2px;font-weight:700;line-height:1.18}
+  .view-s{color:var(--suau);font-size:14.5px;margin:0 0 14px}
+  .kick{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cobre-d);background:var(--cobre-lt);border:1px solid var(--linia);padding:5px 12px;border-radius:999px;font-weight:600;margin:6px 0}
+
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:18px 16px;margin:14px 0;box-shadow:var(--ombra-s)}
+  .card h2{font-family:var(--serif);font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:9px;line-height:1.25}
+  .card h2 .e{font-size:20px;flex:0 0 auto}
+  .card .lead{color:var(--suau);font-size:14px;margin:2px 0 10px}
+  .muted{color:var(--suau);font-size:13.5px}
+  .quote{font-family:var(--serif);font-style:italic;color:var(--cobre-d);background:var(--cobre-lt);border-left:4px solid var(--oro);border-radius:0 12px 12px 0;padding:12px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+  .nota{font-size:13px;color:var(--suau);background:var(--bg2);border-radius:12px;padding:11px 13px;margin:10px 0;line-height:1.5}
+  .nota b{color:var(--tinta)}
+
+  /* Botones grandes de acción */
+  .big{display:flex;align-items:center;gap:14px;width:100%;border:0;border-radius:18px;cursor:pointer;font-family:inherit;
+    padding:19px 17px;margin:11px 0;text-align:left;color:#fff;box-shadow:var(--ombra-s);transition:transform .07s}
+  .big:active{transform:scale(.99)}
+  .big .bi{font-size:29px;flex:0 0 auto}
+  .big .bt{display:block;font-weight:700;font-size:17.5px;line-height:1.15}
+  .big .bd{display:block;font-size:12.5px;opacity:.93;font-weight:400;margin-top:3px;line-height:1.35}
+  .big.cobre{background:linear-gradient(150deg,var(--cobre),#965d2c)}
+  .big.agua{background:linear-gradient(150deg,var(--agua),#256b7c)}
+  .big.verde{background:linear-gradient(150deg,var(--verde),#417458)}
+  .big.slate{background:linear-gradient(150deg,var(--pizarra),#3d4d57)}
+
+  .quick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:13px 0}
+  .qb{background:var(--card);border:1.5px solid var(--linia2);border-radius:14px;padding:12px 6px;cursor:pointer;font-family:inherit;text-align:center;color:var(--tinta);transition:transform .07s}
+  .qb:active{transform:scale(.97)}
+  .qb .qe{font-size:22px;display:block;margin-bottom:3px}
+  .qb .ql{font-size:11.5px;font-weight:600;line-height:1.25;display:block}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;background:var(--cobre);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;padding:14px 18px;min-height:50px;transition:transform .07s}
+  .btn:active{transform:scale(.98)}
+  .btn.full{width:100%}
+  .btn.ghost{background:transparent;color:var(--cobre-d);border:1.5px solid var(--cobre)}
+  .btn.agua{background:var(--agua)}
+  .btn.verde{background:var(--verde)}
+  .btn.slate{background:var(--pizarra)}
+  .btn.wa{background:#1f9e53}
+  .btn.sm{padding:9px 14px;min-height:42px;font-size:13.5px;border-radius:11px}
+  .btn.danger{background:var(--alerta)}
+  .btn[disabled]{opacity:.5}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap}.btnrow .btn{flex:1}
+  .btn:focus-visible,.big:focus-visible,.chip:focus-visible,.scaleb:focus-visible,.tab:focus-visible,.qb:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+  .link{background:none;border:0;color:var(--cobre-d);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:13.5px;padding:8px 4px;min-height:40px}
+
+  .stat3{display:flex;gap:9px;text-align:center;flex-wrap:wrap}
+  .stat3>div{flex:1;min-width:76px;background:var(--cobre-lt);border:1px solid var(--linia);border-radius:13px;padding:12px 6px}
+  .stat3 b{display:block;font-family:var(--serif);font-size:24px;color:var(--cobre-d);line-height:1}
+  .stat3 span{font-size:10.5px;color:var(--suau);line-height:1.3;display:block;margin-top:3px}
+  .stat3>div.a{background:var(--agua-lt)} .stat3>div.a b{color:var(--agua-d)}
+  .stat3>div.v{background:var(--verde-lt)} .stat3>div.v b{color:var(--verde-d)}
+
+  /* Anillo de respiración */
+  .ring-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0}
+  .ring{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,var(--agua-lt),#bcd9e0);box-shadow:inset 0 0 0 2px rgba(47,127,147,.25);transition:transform 1s ease-in-out}
+  .ring .ri{width:126px;height:126px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;box-shadow:var(--ombra-s);padding:8px}
+  .ring .rf{font-family:var(--serif);font-size:21px;color:var(--agua-d)}
+  .ring .rs{font-size:12px;color:var(--suau);margin-top:2px}
+  .rverb{font-family:var(--serif);font-style:italic;color:var(--agua-d);text-align:center;font-size:15.5px;margin:12px auto 2px;max-width:23em;min-height:3.4em;line-height:1.42;transition:opacity .4s}
+
+  /* Manómetro */
+  .mano{display:block;margin:4px auto 2px;max-width:230px}
+  .mano-lbl{text-align:center;font-size:13px;color:var(--suau);margin-top:-6px}
+
+  /* Chips / escalas */
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{flex:1 1 auto;min-width:92px;min-height:48px;border:1.5px solid var(--linia2);border-radius:13px;background:var(--card);cursor:pointer;font-family:inherit;font-size:14px;color:var(--tinta);padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;line-height:1.22}
+  .chip.sel{border-width:2px;font-weight:600}
+  .chip.sel[data-pole="mal"]{background:var(--alerta-lt);border-color:var(--alerta);color:#8d403a}
+  .chip.sel[data-pole="mid"]{background:#f6edd2;border-color:var(--oro);color:var(--cobre-d)}
+  .chip.sel[data-pole="bien"]{background:var(--verde-lt);border-color:var(--verde);color:var(--verde-d)}
+  .chip.sel:not([data-pole]){background:var(--cobre-lt);border-color:var(--cobre);color:var(--cobre-d)}
+  .scale{display:flex;gap:4px}
+  .scaleb{flex:1;min-width:0;min-height:46px;border:1.5px solid var(--linia2);border-radius:11px;background:var(--card);cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;color:var(--suau);padding:0}
+  .scaleb.sel{background:var(--cobre);border-color:var(--cobre);color:#fff}
+  .scaleb.sel.a{background:var(--agua);border-color:var(--agua)}
+  .scale-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--suau);margin-top:5px}
+  input[type=text],textarea{width:100%;border:1.5px solid var(--linia2);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:15px;color:var(--tinta);background:var(--card)}
+  textarea{resize:vertical;min-height:58px;line-height:1.5}
+  input:focus,textarea:focus{outline:none;border-color:var(--cobre)}
+  label.fld{display:block;font-size:13px;color:var(--suau);margin:10px 0 4px;font-weight:600}
+  .ok-flash{background:var(--verde-lt);border:1px solid var(--verde);color:var(--verde-d);border-radius:12px;padding:13px 15px;margin:12px 0;font-size:14px;display:none}
+  .ok-flash.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:8px 0}
+  @media(max-width:430px){.two{grid-template-columns:1fr}}
+  @media(max-width:340px){.quick{grid-template-columns:1fr 1fr}}
+  .col{border-radius:13px;padding:13px;font-size:13px;line-height:1.45}
+  .col.bien{background:var(--verde-lt);border:1px solid #cfe0d4}
+  .col.mal{background:var(--alerta-lt);border:1px solid #e6cdc9}
+  .col h4{margin:0 0 6px;font-size:13.5px}.col.bien h4{color:var(--verde-d)}.col.mal h4{color:#8d403a}
+  .col ul{margin:0;padding-left:16px}.col li{margin:3px 0}
+
+  .verb{display:flex;gap:9px;align-items:flex-start;background:var(--agua-lt);border:1px solid #c9dee4;border-radius:13px;padding:11px 12px;margin:7px 0}
+  .verb .vt{flex:1;font-family:var(--serif);font-style:italic;color:var(--agua-d);font-size:15px;line-height:1.42}
+  .verb .va{display:flex;gap:3px;flex:0 0 auto}
+  .verb .va button{background:none;border:0;cursor:pointer;font-size:15px;padding:3px;min-height:34px}
+  .fav-on{color:var(--oro)}
+
+  .rec{background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:11px 13px;margin:9px 0}
+  .rec .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rec .rd{font-size:11.5px;color:var(--suau)}
+  .rec .rb{font-size:13px;color:var(--suau);margin-top:5px;line-height:1.5}
+  .empty{color:var(--suau);font-style:italic;font-size:13.5px;padding:8px 0}
+
+  /* Bandeja */
+  .item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--linia);border-radius:13px;padding:10px 12px;margin:8px 0}
+  .item.done{opacity:.5}
+  .item.done .it{text-decoration:line-through}
+  .item .ic{font-size:19px;flex:0 0 auto}
+  .item .it{flex:1;font-size:14.5px;line-height:1.35;word-break:break-word}
+  .item .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:5px;min-height:38px;min-width:34px;color:var(--suau)}
+  .item .ib.ok{color:var(--verde)}
+  .catrow{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}
+  .cat{border:1.5px solid var(--linia2);background:var(--card);border-radius:999px;padding:7px 13px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--tinta);min-height:40px}
+  .cat.sel{background:var(--cobre-lt);border-color:var(--cobre);color:var(--cobre-d);font-weight:600}
+
+  /* Pasos numerados */
+  .steps{counter-reset:s;padding:0;margin:10px 0;list-style:none}
+  .steps li{counter-increment:s;position:relative;padding:9px 0 9px 40px;font-size:14.5px;line-height:1.48;border-bottom:1px solid var(--bg2)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:9px;width:26px;height:26px;border-radius:50%;background:var(--agua-lt);color:var(--agua-d);font-weight:700;font-size:13px;display:grid;place-items:center;font-family:var(--serif)}
+
+  .ldc{display:flex;gap:8px;text-align:center;margin:10px 0}
+  .ldc>div{flex:1;border-radius:13px;padding:11px 5px;border:1px solid var(--linia)}
+  .ldc b{display:block;font-family:var(--serif);font-size:21px;line-height:1.1}
+  .ldc span{font-size:10px;color:var(--suau);display:block;margin-top:3px;line-height:1.3}
+  .ldc .L{background:var(--agua-lt)} .ldc .L b{color:var(--agua-d)}
+  .ldc .D{background:var(--cobre-lt)} .ldc .D b{color:var(--cobre-d)}
+  .ldc .C{background:var(--verde-lt)} .ldc .C b{color:var(--verde-d)}
+
+  .msgbox{background:var(--bg2);border:1.5px solid var(--linia);border-radius:12px;padding:13px;font-size:12.5px;line-height:1.7;color:#3a352c;max-height:250px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin:11px 0;-webkit-user-select:all;user-select:all}
+
+  .stopcard{background:var(--alerta-lt);border:1.5px solid #dcb4af;border-radius:var(--r);padding:18px 16px;margin:14px 0}
+  .stopcard h2{color:#8d403a}
+  .callbtn{display:flex;align-items:center;gap:11px;width:100%;border:1.5px solid #dcb4af;background:var(--card);border-radius:14px;padding:14px 15px;margin:9px 0;cursor:pointer;font-family:inherit;font-size:15.5px;font-weight:600;color:var(--tinta);text-decoration:none;text-align:left}
+  .callbtn .ce{font-size:22px}
+  .callbtn small{display:block;font-weight:400;font-size:12px;color:var(--suau);margin-top:2px}
+
+  footer{text-align:center;color:var(--suau);font-size:12px;margin:26px 0 10px;line-height:1.55}
+  footer b{font-family:var(--serif);color:var(--cobre-d)}
+
+  .nav{position:fixed;bottom:0;left:0;right:0;z-index:45;background:var(--card);border-top:1px solid var(--linia);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));max-width:620px;margin:0 auto}
+  .tab{flex:1;background:none;border:0;cursor:pointer;font-family:inherit;color:var(--suau);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px}
+  .tab .te{font-size:19px}.tab.on{color:var(--cobre-d)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">ap</div>
+  <div class="tw"><div class="tt" id="topTit">La llave de paso</div><div class="ts" id="topSub">APRENS · TEC–AIS</div></div>
+  <span class="sp"></span>
+  <div class="lang" role="group" aria-label="Idioma / Idioma">
+    <button id="btEs" class="on" onclick="setLang('es')">CAST</button>
+    <button id="btCa" onclick="setLang('ca')">CAT</button>
+  </div>
+  <button class="iconbtn stop" id="btStop" onclick="go('parar')" aria-label="Necesito parar">🛟 Parar</button>
+</div>
+
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav"></nav>
+
+<script src="assets/js/aprens-core.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   LA LLAVE DE PASO · APRENS
+   Fontanería y oficios autónomos a domicilio · TEC–AIS
+   Todo local, sin backend ni recursos externos.
+
+   BILINGÜE castellano / català.
+   A diferencia de tiempo_limite_peques.html, que es material de lectura y
+   guarda todo su texto en un diccionario T={es,ca}, esta herramienta es
+   interactiva y su texto va repartido por los constructores de vista. Aquí
+   cada literal se escribe con t("castellà","català"): las dos versiones
+   quedan juntas en el mismo sitio, así que no se puede añadir una frase
+   nueva y olvidar traducirla, ni se acumulan claves huérfanas.
+   ============================================================ */
+
+var LS="llave_paso_db_v1", MEM=null;
+function lsGet(){ try{return localStorage.getItem(LS);}catch(e){return MEM;} }
+function lsSet(v){ try{localStorage.setItem(LS,v);}catch(e){MEM=v;} }
+var DEFAULT={ settings:{nombre:"",telPsico:"",telPareja:"",lang:""}, eventos:[], dias:{}, bandeja:[], frasesFav:[], frasesUser:[] };
+var DB=load();
+function load(){ try{ var d=JSON.parse(lsGet()); if(!d) return clone(DEFAULT); var b=clone(DEFAULT);
+  for(var k in d){ b[k]=d[k]; } for(var s in DEFAULT.settings){ if(b.settings[s]===undefined) b.settings[s]=DEFAULT.settings[s]; } return b;
+  }catch(e){ return clone(DEFAULT); } }
+function save(){ try{ lsSet(JSON.stringify(DB)); }catch(e){} }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* ---------- idioma ---------- */
+/* Orden de preferencia: ?lang= en la URL (para poder mandar el enlace ya en
+   catalán) > lo que el usuario eligiera antes > castellano. */
+var LANG=(function(){
+  var u=(new URLSearchParams(location.search).get("lang")||"").toLowerCase();
+  if(u==="ca"||u==="es") return u;
+  if(DB.settings.lang==="ca"||DB.settings.lang==="es") return DB.settings.lang;
+  return "es";
+})();
+function t(es,ca){ return LANG==="ca" ? ca : es; }
+function setLang(l){
+  LANG=l; DB.settings.lang=l; save();
+  document.documentElement.lang=l;
+  document.getElementById("btEs").classList.toggle("on", l==="es");
+  document.getElementById("btCa").classList.toggle("on", l==="ca");
+  render(); window.scrollTo(0,0);
+}
+
+function esc(s){ return String(s==null?"":s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function q(s){ return String(s==null?"":s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function uid(){ return Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36); }
+function p2(n){ return ("0"+n).slice(-2); }
+function hoy(){ var d=new Date(); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function nowHM(){ var d=new Date(); return p2(d.getHours())+":"+p2(d.getMinutes()); }
+var MESES={es:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
+           ca:["gen","feb","març","abr","maig","juny","jul","ago","set","oct","nov","des"]};
+function fechaLarga(iso){ if(!iso) return ""; var p=iso.split("-");
+  return parseInt(p[2],10)+" "+MESES[LANG][parseInt(p[1],10)-1]; }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function within7(iso){ return iso>=daysAgo(6); }
+function nombre(){ return (DB.settings.nombre||"").trim(); }
+function plural(n,sing,plu){ return n===1?sing:plu; }
+
+var DIA_DEF={ resp:0, paradas:0, abrazos:0, honestidad:0, limites:0, siAutomatico:0, trabajos:0,
+  presionIni:null, presionFin:null, barriga:"", acomp:[], latencia:null, cierre:false, dejado:"", nota:"" };
+function dia(d){ d=d||hoy(); if(!DB.dias[d]) DB.dias[d]=clone(DIA_DEF);
+  for(var k in DIA_DEF){ if(DB.dias[d][k]===undefined) DB.dias[d][k]=clone(DIA_DEF)[k]; }
+  return DB.dias[d]; }
+
+if(window.Aprens){ try{ Aprens.config({toolId:"llave_de_paso", toolName:"La llave de paso", toolVersion:1}); }catch(e){} }
+function ev(t_,extra){
+  DB.eventos.push(Object.assign({t:t_,ts:Date.now(),date:hoy(),hm:nowHM()},extra||{}));
+  if(DB.eventos.length>1200) DB.eventos=DB.eventos.slice(-1200);
+  if(window.Aprens){ try{ Aprens.save({id:uid(),date:hoy(),ts:Date.now(),modulo:'llave_'+t_,param:(t_==='parada'||t_==='limite'?'latencia':'densidad')}); }catch(e){} }
+  save();
+}
+
+/* ---------- racha / continuidad ---------- */
+function activo(d){ return d && (d.resp>0||d.paradas>0||d.abrazos>0||d.honestidad>0||d.cierre); }
+function racha(){ var n=0; for(var i=0;i<400;i++){ var k=daysAgo(i); var d=DB.dias[k];
+    if(activo(d)){ n++; } else if(i>0){ break; } }
+  return n; }
+
+/* ---------- navegación ---------- */
+var VIEW="furgo", timers=[];
+function clearTimers(){ timers.forEach(function(x){ clearInterval(x); clearTimeout(x); }); timers=[]; }
+function navItems(){ return [
+  {id:"furgo",  e:"🚐", l:t("Furgoneta","Furgoneta")},
+  {id:"respira",e:"🫧", l:t("Respirar","Respirar")},
+  {id:"bandeja",e:"🧰", l:t("Bandeja","Safata")},
+  {id:"dia",    e:"📓", l:t("Mi día","El meu dia")},
+  {id:"mas",    e:"⋯",  l:t("Más","Més")}
+]; }
+function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
+function render(){
+  document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.furgo)();
+  var navId=VIEW;
+  if(["antes","vuelvo","cierre","parada","limites"].indexOf(VIEW)>=0) navId="furgo";
+  if(["frases","ajustes","porque","parar"].indexOf(VIEW)>=0) navId="mas";
+  document.getElementById('nav').innerHTML=navItems().map(function(n){
+    return '<button class="tab '+(navId===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join('');
+  var n=nombre();
+  document.getElementById('topTit').textContent=t("La llave de paso","La clau de pas");
+  document.getElementById('topSub').textContent = n? (t("APRENS · para ","APRENS · per a ")+n) : 'APRENS · TEC–AIS';
+  var st=document.getElementById('btStop');
+  if(st){ st.textContent=t("🛟 Parar","🛟 Parar"); st.setAttribute('aria-label',t("Necesito parar","Necessito parar")); }
+}
+var VIEWS={};
+function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||t("Hecho ✓","Fet ✓"); f.classList.add('show'); setTimeout(function(){ f.classList.remove('show'); },3000); } }
+
+/* ---------- motor de respiración (reutilizable) ---------- */
+function respFases(){ return [[t("Coge aire","Agafa aire"),4,1.16],["·",1,1.16],[t("Suelta despacio","Deixa anar a poc a poc"),6,0.84]]; }
+function breathRun(opts){
+  opts=opts||{};
+  var fases=opts.fases||respFases(), ciclos=opts.ciclos||3, verbs=opts.verbs||[], onEnd=opts.onEnd;
+  var i=-1, c=0, v=0;
+  setVerb(verbs[0]);
+  function step(){
+    i++;
+    if(i>=fases.length){ i=0; c++; v++; setVerb(verbs[v%(verbs.length||1)]);
+      if(c>=ciclos){ fin(); return; } }
+    var f=fases[i], ring=document.getElementById('ring'); if(!ring) return;
+    var rf=document.getElementById('rf'); if(rf) rf.textContent=f[0];
+    ring.style.transitionDuration=f[1]+'s'; ring.style.transform='scale('+f[2]+')';
+    var left=f[1]; var rs=document.getElementById('rs'); if(rs) rs.textContent=left+'s';
+    var iv=setInterval(function(){ left--; var r=document.getElementById('rs'); if(!r){ clearInterval(iv); return; }
+      r.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(iv); step(); } },1000);
+    timers.push(iv);
+  }
+  function fin(){ var ring=document.getElementById('ring');
+    if(ring){ ring.style.transitionDuration='.6s'; ring.style.transform='scale(1)'; }
+    var rf=document.getElementById('rf'); if(rf) rf.textContent=opts.finTxt||t("Aquí","Aquí");
+    var rs=document.getElementById('rs'); if(rs) rs.textContent='';
+    setVerb(opts.finVerb||t("Ya estás aquí. Nota la barriga un segundo más.","Ja hi ets. Nota la panxa un segon més."));
+    if(onEnd) onEnd();
+  }
+  function setVerb(x){ var el=document.getElementById('rverb'); if(!el||!x) return;
+    el.style.opacity=0; setTimeout(function(){ el.textContent=x; el.style.opacity=1; },250); }
+  step();
+}
+function ringHTML(inicial,verbo,size){
+  var s=size?('width:'+size+'px;height:'+size+'px'):'';
+  return '<div class="ring-wrap"><div class="ring" id="ring" style="'+s+'"><div class="ri"><div>'+
+    '<div class="rf" id="rf">'+esc(inicial||t("Prepárate","Prepara't"))+'</div><div class="rs" id="rs"></div></div></div></div>'+
+    '<div class="rverb" id="rverb">'+esc(verbo||'')+'</div></div>';
+}
+
+/* ---------- manómetro (SVG) ---------- */
+function manoHTML(v){
+  var val=(v===null||v===undefined)?null:v;
+  var pct=(val===null?0:val/10);
+  var a0=-220, a1=40, ang=a0+(a1-a0)*pct;
+  var cx=100, cy=100, r=72;
+  function pt(deg,rad){ var th=deg*Math.PI/180; return [cx+rad*Math.cos(th), cy+rad*Math.sin(th)]; }
+  var arcS=pt(a0,r), arcE=pt(a1,r), needle=pt(ang,r-14);
+  var col = val===null? '#c9c1b4' : (val<=3?'#4f8a66':(val<=6?'#a9781f':'#a9564e'));
+  var h='<svg class="mano" viewBox="0 0 200 140" role="img" aria-label="'+t("Manómetro de presión","Manòmetre de pressió")+'">';
+  h+='<path d="M '+arcS[0].toFixed(1)+' '+arcS[1].toFixed(1)+' A '+r+' '+r+' 0 1 1 '+arcE[0].toFixed(1)+' '+arcE[1].toFixed(1)+'" fill="none" stroke="#e6ddcd" stroke-width="13" stroke-linecap="round"/>';
+  if(val!==null){
+    var nd=pt(ang,r), large=((ang-a0)>180)?1:0;
+    h+='<path d="M '+arcS[0].toFixed(1)+' '+arcS[1].toFixed(1)+' A '+r+' '+r+' 0 '+large+' 1 '+nd[0].toFixed(1)+' '+nd[1].toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="13" stroke-linecap="round"/>';
+    h+='<line x1="'+cx+'" y1="'+cy+'" x2="'+needle[0].toFixed(1)+'" y2="'+needle[1].toFixed(1)+'" stroke="'+col+'" stroke-width="4" stroke-linecap="round"/>';
+  }
+  h+='<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+col+'"/>';
+  h+='<text x="100" y="128" text-anchor="middle" font-family="Georgia,serif" font-size="27" font-weight="700" fill="'+col+'">'+(val===null?'—':val)+'</text>';
+  h+='</svg>';
+  return h;
+}
+function presionTxt(v){ if(v===null||v===undefined) return t("sin medir","sense mesurar");
+  return v<=3 ? t("baja · la instalación aguanta","baixa · la instal·lació aguanta")
+    : (v<=6 ? t("media · ojo, va subiendo","mitjana · compte, va pujant")
+            : t("alta · esto revienta por el punto más débil","alta · això peta pel punt més feble")); }
+
+/* ================= FURGONETA · hub ================= */
+VIEWS.furgo=function(){
+  var d=dia(), n=nombre(), r=racha();
+  var h='<span class="kick">'+fechaLarga(hoy())+(r>1?(' · '+r+t(" días seguidos"," dies seguits")):'')+'</span>';
+  h+='<h1 class="view-t">'+(n?(t("Hola, ","Hola, ")+esc(n)+'.'):t("La llave de paso","La clau de pas"))+'</h1>';
+  h+='<p class="view-s">'+t(
+     'Toda instalación lleva una llave de paso. Cuando la presión sube, no discutes con el agua: <b>cierras un momento</b>. Tú también tienes una: la respiración y tu barriga.',
+     "Tota instal·lació porta una clau de pas. Quan la pressió puja, no discuteixes amb l'aigua: <b>tanques un moment</b>. Tu també en tens una: la respiració i la teva panxa.")+'</p>';
+
+  h+='<button class="big cobre" onclick="go(\'antes\')"><span class="bi">🔑</span><span><span class="bt">'+
+     t("Antes de bajar","Abans de baixar")+'</span><span class="bd">'+
+     t("Estás aparcado, aún no has abierto la puerta. Respiración curiosa y con qué cuerpo entras · 40 s",
+       "Estàs aparcat, encara no has obert la porta. Respiració curiosa i amb quin cos hi entres · 40 s")+'</span></span></button>';
+  h+='<button class="big agua" onclick="go(\'vuelvo\')"><span class="bi">🚐</span><span><span class="bt">'+
+     t("Al volver a la furgoneta","En tornar a la furgoneta")+'</span><span class="bd">'+
+     t("Trabajo terminado. ¿Cómo me he acompañado ahí dentro?","Feina acabada. Com m'he acompanyat allà dins?")+'</span></span></button>';
+  h+='<button class="big verde" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">'+
+     t("Antes de entrar en casa","Abans d'entrar a casa")+'</span><span class="bd">'+
+     t("Cerrar el día, honestidad emocional y abrazo sentido","Tancar el dia, honestedat emocional i abraçada sentida")+'</span></span></button>';
+
+  h+='<div class="quick">';
+  h+='<button class="qb" onclick="go(\'parada\')"><span class="qe">🛑</span><span class="ql">'+t("Parada de<br>pensamiento","Parada de<br>pensament")+'</span></button>';
+  h+='<button class="qb" onclick="go(\'limites\')"><span class="qe">📞</span><span class="ql">'+t("Me piden<br>algo ahora","Em demanen<br>alguna cosa")+'</span></button>';
+  h+='<button class="qb" onclick="go(\'bandeja\')"><span class="qe">🧰</span><span class="ql">'+t("Lo llevo en<br>la cabeza","Ho porto al<br>cap")+'</span></button>';
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>'+t("Hoy","Avui")+'</h2><div class="stat3">'+
+     '<div class="a"><b>'+d.resp+'</b><span>'+t("respiraciones<br>curiosas","respiracions<br>curioses")+'</span></div>'+
+     '<div><b>'+d.paradas+'</b><span>'+t("paradas de<br>pensamiento","parades de<br>pensament")+'</span></div>'+
+     '<div class="v"><b>'+d.abrazos+'</b><span>'+t("abrazos<br>sentidos","abraçades<br>sentides")+'</span></div></div>';
+  h+='<p class="muted" style="margin-top:11px">'+t(
+     'Esto no cuenta cuántos trabajos has hecho. Cuenta <b>cuántas veces has vuelto a estar contigo</b> mientras los hacías.',
+     "Això no compta quantes feines has fet. Compta <b>quantes vegades has tornat a ser-hi amb tu</b> mentre les feies.")+'</p>';
+  if(!d.cierre && d.resp+d.paradas>0) h+='<div class="btnrow" style="margin-top:10px"><button class="btn sm verde" onclick="go(\'cierre\')">🏠 '+
+     t("Cerrar el día","Tancar el dia")+'</button><button class="btn sm ghost" onclick="go(\'dia\')">📓 '+t("Ver mi día","Veure el meu dia")+'</button></div>';
+  h+='</div>';
+
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  if(pend>0) h+='<div class="nota">'+t("Tienes <b>"+pend+" cosa"+(pend===1?"":"s")+"</b> en la bandeja. Están anotadas: <b>no hace falta que las lleves en la cabeza</b> mientras trabajas. ",
+     "Tens <b>"+pend+" cosa"+(pend===1?"":"es")+"</b> a la safata. Estan apuntades: <b>no cal que les portis al cap</b> mentre treballes. ")+
+     '<button class="link" onclick="go(\'bandeja\')">'+t("Abrir bandeja","Obrir la safata")+'</button></div>';
+  else h+='<div class="nota">'+t(
+     'Lo que te ronde la cabeza mientras trabajas (una factura, una llamada, un material) <b>déjalo en la bandeja</b>. Sacarlo de la cabeza no es hacerlo: es dejar de cargarlo todo el día.',
+     "El que et rondi pel cap mentre treballes (una factura, una trucada, un material) <b>deixa-ho a la safata</b>. Treure-ho del cap no és fer-ho: és deixar de carregar-ho tot el dia.")+'</div>';
+
+  h+='<div class="quote">'+t("No se trata de trabajar menos. Se trata de no llegar a casa con la instalación entera encima.",
+     "No es tracta de treballar menys. Es tracta de no arribar a casa amb tota la instal·lació a sobre.")+'</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ================= ANTES DE BAJAR ================= */
+function verbAntes(){ return [
+  t("No respiro para calmarme. Respiro para volver a notarme.","No respiro per calmar-me. Respiro per tornar a notar-me."),
+  t("¿Qué noto en la barriga ahora mismo? Sin explicarlo: solo notarlo.","Què noto a la panxa ara mateix? Sense explicar-ho: només notar-ho."),
+  t("Voy contigo, cuerpo. Esta casa la hacemos juntos.","Vinc amb tu, cos. Aquesta casa la fem junts."),
+  t("Entro presente, no en alerta. Sea quien sea quien abra la puerta.","Hi entro present, no en alerta. Sigui qui sigui qui obri la porta.")
+]; }
+VIEWS.antes=function(){
+  var h='<h1 class="view-t">'+t("Antes de bajar","Abans de baixar")+'</h1><p class="view-s">'+t(
+    'Estás aparcado. Aún no has cogido la caja. Tres respiraciones <b>curiosas</b>: no para relajarte, para <b>volver a tu barriga</b> antes de entrar.',
+    "Estàs aparcat. Encara no has agafat la caixa. Tres respiracions <b>curioses</b>: no per relaxar-te, per <b>tornar a la teva panxa</b> abans d'entrar.")+'</p>';
+  h+=ringHTML(null,verbAntes()[0]);
+  h+='<div class="btnrow"><button class="btn full agua" id="antesBtn" onclick="antesStart(this)">'+t("Empezar","Començar")+'</button></div>';
+  h+='<div class="nota">'+t(
+    'Mientras respiras, lleva la atención <b>a la barriga</b>. No la cambies ni la relajes a la fuerza: solo mira cómo está. Dura, blanda, con nudo, movida. Eso ya es el ejercicio.',
+    "Mentre respires, porta l'atenció <b>a la panxa</b>. No la canviïs ni la relaxis a la força: només mira com està. Dura, tova, amb un nus, moguda. Això ja és l'exercici.")+'</div>';
+
+  h+='<div id="antesAfter" style="display:none">';
+  h+='<div class="card"><h2><span class="e">🫃</span>'+t("¿Cómo tienes la barriga?","Com tens la panxa?")+'</h2><p class="lead">'+
+     t("Sin buscar el porqué. Solo cómo está.","Sense buscar el perquè. Només com està.")+'</p><div class="chips" id="cBarriga">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="dura" onclick="pickBarriga(this)">'+t("Dura, con nudo","Dura, amb un nus")+'</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="media" onclick="pickBarriga(this)">'+t("A medias","A mitges")+'</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="blanda" onclick="pickBarriga(this)">'+t("Blanda, suelta","Tova, solta")+'</button>'+
+     '</div></div>';
+  h+='<div class="card"><h2><span class="e">🔑</span>'+t("¿Con qué vas a esta casa?","Amb què vas a aquesta casa?")+'</h2><p class="lead">'+
+     t("No cómo va a ir el trabajo. Con qué <b>te acompañas tú</b> al entrar.","No com anirà la feina. Amb què <b>t'acompanyes tu</b> en entrar-hi.")+'</p><div class="chips" id="cAcomp">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="arrastro" onclick="pickAcomp(this)">'+t("Me arrastro","M'arrossego")+'</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="mezcla" onclick="pickAcomp(this)">'+t("Una mezcla","Una barreja")+'</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="acompano" onclick="pickAcomp(this)">'+t("Me acompaño","M'acompanyo")+'</button>'+
+     '</div><div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:12px"><button class="btn full" onclick="antesBajo()">✅ '+t("Ya bajo","Ja baixo")+'</button></div>'+
+     '<button class="link" style="display:block;margin:8px auto 0" onclick="go(\'antes\')">'+t("Otra respiración","Una altra respiració")+'</button></div>';
+  h+='</div>';
+  h+=footerHTML(); return h;
+};
+/* etiquetas legibles de los valores guardados (la clave es estable, el texto no) */
+function labelBarriga(v){ return v==="dura"?t("dura, con nudo","dura, amb un nus")
+  :(v==="media"?t("a medias","a mitges"):(v==="blanda"?t("blanda, suelta","tova, solta"):String(v||""))); }
+function labelAcomp(v){ return v==="arrastro"?t("me arrastro","m'arrossego")
+  :(v==="mezcla"?t("una mezcla","una barreja"):t("me acompaño","m'acompanyo")); }
+
+function antesStart(btn){ btn.style.display='none';
+  breathRun({ciclos:3, verbs:verbAntes(), finTxt:t("Barriga","Panxa"),
+    finVerb:t("Nota la barriga un segundo más. Ya puedes bajar.","Nota la panxa un segon més. Ja pots baixar."),
+    onEnd:function(){
+      var d=dia(); d.resp++; save(); ev('resp',{momento:'antes'});
+      var a=document.getElementById('antesAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'start'}); }
+    }});
+}
+function pickBarriga(b){ document.getElementById('cBarriga').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(); d.barriga=b.dataset.v; save(); ev('barriga',{v:b.dataset.v}); }
+function pickAcomp(b){ document.getElementById('cAcomp').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(), v=b.dataset.v; d.acomp.push(v); save();
+  flash(v==='acompano' ? t("Así. Entras con tu cuerpo al lado, no tirando de él.","Així. Hi entres amb el cos al costat, no estirant-lo.")
+     : (v==='mezcla' ? t("Bien visto. Cada respiro te acerca a entrar acompañado.","Ben vist. Cada respiració t'acosta a entrar-hi acompanyat.")
+       : t("Reconocerlo ya es acompañarte. Prueba una frase antes de abrir la puerta.","Reconèixer-ho ja és acompanyar-te. Prova una frase abans d'obrir la porta."))); }
+function antesBajo(){ var d=dia(); d.trabajos++; save(); ev('bajo');
+  flash(t("Bajas contigo. Salga como salga el trabajo, has entrado presente.","Baixes amb tu. Surti com surti la feina, hi has entrat present."));
+  setTimeout(function(){ go('furgo'); },900); }
+
+/* ================= AL VOLVER A LA FURGONETA ================= */
+var recap={acomp:null,cliente:null};
+VIEWS.vuelvo=function(){
+  recap={acomp:null,cliente:null};
+  var h='<h1 class="view-t">'+t("Al volver a la furgoneta","En tornar a la furgoneta")+'</h1><p class="view-s">'+t(
+    'Trabajo terminado. Antes de arrancar hacia el siguiente, <b>treinta segundos de recapitulación</b>. No de cómo ha ido el trabajo: de cómo te has acompañado tú.',
+    "Feina acabada. Abans d'arrencar cap a la següent, <b>trenta segons de recapitulació</b>. No de com ha anat la feina: de com t'has acompanyat tu.")+'</p>';
+
+  h+='<div class="card"><h2><span class="e">🧭</span>1 · '+t("¿Cómo me he acompañado ahí dentro?","Com m'he acompanyat allà dins?")+'</h2><p class="lead">'+
+     t("0 = me he dejado tirado · 10 = he estado conmigo todo el rato","0 = m'he deixat tirat · 10 = hi he estat amb mi tota l'estona")+'</p>'+
+     '<div class="scale" id="sAcomp">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb" data-v="'+i+'" onclick="recapAcomp(this)">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>'+t("Me he dejado","M'he deixat")+'</span><span>'+t("He estado conmigo","Hi he estat amb mi")+'</span></div>'+
+     '<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🗣️</span>2 · '+t("¿Qué ha pasado con el cliente?","Què ha passat amb el client?")+'</h2><p class="lead">'+
+     t("Sin juicio. Solo el dato.","Sense jutjar. Només la dada.")+'</p><div class="chips" id="cCli">'+
+     '<button type="button" class="chip" data-pole="bien" data-v="normal" onclick="recapCli(this)">'+t("Normal, sin más","Normal, res més")+'</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="presion" onclick="recapCli(this)">'+t("Me ha presionado","M'ha pressionat")+'</button>'+
+     '<button type="button" class="chip" data-pole="mal" data-v="si" onclick="recapCli(this)">'+t("He dicho que sí sin querer","He dit que sí sense voler")+'</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="limite" onclick="recapCli(this)">'+t("He podido poner un límite","He pogut posar un límit")+'</button>'+
+     '</div><div id="cliExtra"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🧰</span>3 · '+t("¿Qué se queda aquí?","Què es queda aquí?")+'</h2><p class="lead">'+t(
+     'Lo que este trabajo ha dejado suelto en tu cabeza. Lo anotas y se queda en la furgoneta, no dentro de ti.',
+     "El que aquesta feina t'ha deixat solt al cap. Ho apuntes i es queda a la furgoneta, no dins teu.")+'</p>'+
+     '<input type="text" id="vDejo" placeholder="'+t("Ej.: pasar el presupuesto de los Ferrer","Ex.: passar el pressupost dels Ferrer")+'">'+
+     '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="vuelvoABandeja()">🧰 '+t("A la bandeja","A la safata")+'</button></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🫧</span>4 · '+t("Una respiración curiosa antes de arrancar","Una respiració curiosa abans d'arrencar")+'</h2><p class="lead">'+
+     t("Una sola. Con la atención en la barriga, no en el siguiente aviso.","Una de sola. Amb l'atenció a la panxa, no al següent avís.")+'</p>'+
+     ringHTML(null,t("Este trabajo ya está. El siguiente todavía no ha empezado.","Aquesta feina ja està. La següent encara no ha començat."),150)+
+     '<button class="btn full agua" id="vBtn" onclick="vuelvoResp(this)">'+t("Respirar","Respirar")+'</button></div>';
+
+  h+='<div class="btnrow"><button class="btn full" onclick="vuelvoCerrar()">'+t("Cerrar este trabajo","Tancar aquesta feina")+'</button></div>';
+  h+='<div class="quote">'+t("Entre casa y casa hay un tramo que es tuyo. No lo llenes con el siguiente cliente.",
+     "Entre casa i casa hi ha un tram que és teu. No l'omplis amb el client següent.")+'</div>';
+  h+=footerHTML(); return h;
+};
+function recapAcomp(b){ document.getElementById('sAcomp').querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  recap.acomp=parseInt(b.dataset.v,10);
+  flash(recap.acomp>=7 ? t("Has estado contigo. Eso es lo que entrenamos.","Hi has estat amb tu. Això és el que entrenem.")
+     : (recap.acomp>=4 ? t("A medias, y lo has visto. Verlo ya es volver.","A mitges, i ho has vist. Veure-ho ja és tornar.")
+       : t("Hoy te has dejado un poco atrás. No es un fallo: es el dato que nos dice dónde entrenar.",
+           "Avui t'has deixat una mica enrere. No és una errada: és la dada que ens diu on entrenar."))); }
+function recapCli(b){ document.getElementById('cCli').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  recap.cliente=b.dataset.v;
+  var ex=document.getElementById('cliExtra'); if(!ex) return;
+  if(recap.cliente==='si'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">'+t(
+      'Ha salido el <b>sí automático</b>. No te castigues: ese sí lleva años ahí y sale antes de que te dé tiempo a pensar. Lo que entrenamos es <b>el segundo de antes</b>, no el resultado.<br><br>¿Qué te habría gustado decir?',
+      "Ha sortit el <b>sí automàtic</b>. No et castiguis: aquest sí fa anys que hi és i surt abans que et doni temps a pensar. El que entrenem és <b>el segon d'abans</b>, no el resultat.<br><br>Què t'hauria agradat dir?")+'</div>'+
+      '<input type="text" id="vFrase" placeholder="'+t("Ej.: esta semana la tengo cerrada, te lo miro para la que viene","Ex.: aquesta setmana la tinc tancada, t'ho miro per a la que ve")+'">'+
+      '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="guardarFraseLimite()">'+t("Guardar como frase mía","Desar-la com a frase meva")+'</button>'+
+      '<button class="btn sm ghost" onclick="go(\'limites\')">'+t("Ver frases de límite","Veure frases de límit")+'</button></div>';
+  } else if(recap.cliente==='limite'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">'+t(
+      'Has puesto un límite. Eso cuenta más que el trabajo que has hecho: <b>es lo que te devuelve el día</b>.',
+      "Has posat un límit. Això compta més que la feina que has fet: <b>és el que et torna el dia</b>.")+'</div>';
+  } else if(recap.cliente==='presion'){
+    ex.innerHTML='<div class="nota" style="margin-top:12px">'+t(
+      'La prisa era suya. Si se te ha metido en el cuerpo, una respiración curiosa aquí mismo la devuelve a su sitio.',
+      "La pressa era seva. Si se t'ha ficat al cos, una respiració curiosa aquí mateix la torna al seu lloc.")+'</div>';
+  } else { ex.innerHTML=''; }
+}
+function guardarFraseLimite(){ var el=document.getElementById('vFrase'); if(!el) return; var x=(el.value||'').trim(); if(!x) return;
+  if(DB.frasesUser.indexOf(x)<0) DB.frasesUser.unshift(x); save(); el.value=''; flash(t("Guardada en tus frases ✓","Desada a les teves frases ✓")); }
+function vuelvoResp(btn){ btn.style.display='none';
+  breathRun({ciclos:1, verbs:[t("Observa el aire, no lo corrijas.","Observa l'aire, no el corregeixis."),
+      t("¿Qué queda en la barriga de lo de ahí dentro?","Què queda a la panxa d'allò de dins?")],
+    finTxt:t("Aquí","Aquí"), finVerb:t("Listo. Arrancas tú, no la prisa.","Llest. Arrenques tu, no la pressa."),
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'vuelvo'}); }}); }
+function vuelvoABandeja(){ var el=document.getElementById('vDejo'); var x=(el.value||'').trim();
+  if(!x){ flash(t("Escribe primero qué se queda aquí.","Escriu primer què es queda aquí.")); return; }
+  addBandeja(x,'💧'); el.value=''; flash(t("Anotado en la bandeja. Ya no tienes que sostenerlo tú.","Apuntat a la safata. Ja no ho has de sostenir tu.")); }
+function vuelvoCerrar(){
+  var d=dia();
+  if(recap.cliente==='si') d.siAutomatico++;
+  if(recap.cliente==='limite') d.limites++;
+  save(); ev('recap',{acomp:recap.acomp,cliente:recap.cliente});
+  flash(t("Trabajo cerrado.","Feina tancada.")); setTimeout(function(){ go('furgo'); },800);
+}
+
+/* ================= PARADA DE PENSAMIENTO ================= */
+VIEWS.parada=function(){
+  var h='<h1 class="view-t">'+t("Parada de pensamiento","Parada de pensament")+'</h1><p class="view-s">'+t(
+    'La cabeza ha empezado a dar vueltas. No vamos a discutir con ella: <b>se purga, no se debate</b>. Como el aire en un radiador: no le explicas por qué sobra, abres la purga y sale.',
+    "El cap ha començat a donar voltes. No hi discutirem: <b>es purga, no es debat</b>. Com l'aire d'un radiador: no li expliques per què hi sobra, obres la purga i surt.")+'</p>';
+  h+='<div class="card"><ol class="steps">'+
+     '<li>'+t("<b>Nota que estás dando vueltas.</b> Eso ya es parar: un segundo antes no lo sabías.",
+              "<b>Adona't que hi estàs donant voltes.</b> Això ja és parar: un segon abans no ho sabies.")+'</li>'+
+     '<li>'+t("<b>Di «hasta aquí» por dentro.</b> No «cállate». Solo: hasta aquí.",
+              "<b>Digues «fins aquí» per dins.</b> No «calla». Només: fins aquí.")+'</li>'+
+     '<li>'+t("<b>Una exhalación larga</b>, soltando hombros y mandíbula.",
+              "<b>Una expiració llarga</b>, afluixant espatlles i mandíbula.")+'</li>'+
+     '<li>'+t("<b>Vuelve a la barriga.</b> ¿Qué notas ahí ahora? Esa es tu ancla, no el pensamiento.",
+              "<b>Torna a la panxa.</b> Què hi notes ara? Aquesta és la teva àncora, no el pensament.")+'</li>'+
+     '<li>'+t("<b>Si era algo por hacer</b>, a la bandeja. Si no era nada por hacer, no necesitaba tu día.",
+              "<b>Si era alguna cosa per fer</b>, a la safata. Si no era res per fer, no necessitava el teu dia.")+'</li>'+
+     '</ol>';
+  h+=ringHTML(t("Suelta","Deixa anar"),t("Hasta aquí. Vuelvo a la barriga.","Fins aquí. Torno a la panxa."),150);
+  h+='<button class="btn full slate" id="pBtn" onclick="paradaResp(this)">'+t("Una exhalación larga","Una expiració llarga")+'</button>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="btnrow" style="margin-top:10px"><button class="btn ghost" onclick="paradaHecha()">'+
+     t("Hecha, vuelvo al trabajo","Feta, torno a la feina")+'</button></div></div>';
+  h+='<div class="card"><h2><span class="e">🧰</span>'+t("¿Era algo por hacer?","Era alguna cosa per fer?")+'</h2><p class="lead">'+
+     t("Anótalo y sal de la cabeza.","Apunta-ho i surt del cap.")+'</p><input type="text" id="pPend" placeholder="'+
+     t("Ej.: llamar al del material","Ex.: trucar al del material")+'">'+
+     '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="paradaABandeja()">'+t("A la bandeja","A la safata")+'</button></div></div>';
+  h+='<div class="quote">'+t("Darle vueltas no es resolverlo. Es pagar dos veces por lo mismo.",
+     "Donar-hi voltes no és resoldre-ho. És pagar dues vegades pel mateix.")+'</div>';
+  h+=footerHTML(); return h;
+};
+function paradaResp(btn){ btn.disabled=true;
+  breathRun({fases:[[t("Coge aire","Agafa aire"),4,1.16],[t("Suelta muy despacio","Deixa anar molt a poc a poc"),7,0.82]], ciclos:2,
+    verbs:[t("Hasta aquí.","Fins aquí."), t("Vuelvo a la barriga. ¿Qué hay ahí ahora?","Torno a la panxa. Què hi ha ara?")],
+    finTxt:t("Barriga","Panxa"),
+    finVerb:t("La cabeza puede seguir hablando. Tú ya estás en otro sitio.","El cap pot continuar parlant. Tu ja ets en un altre lloc."),
+    onEnd:function(){ if(btn) btn.disabled=false; }}); }
+function paradaHecha(){ var d=dia(); d.paradas++; save(); ev('parada');
+  flash(t("Parada hecha. Llevas "+d.paradas+" hoy.","Parada feta. En portes "+d.paradas+" avui."));
+  setTimeout(function(){ go('furgo'); },900); }
+function paradaABandeja(){ var el=document.getElementById('pPend'); var x=(el.value||'').trim();
+  if(!x){ flash(t("Escríbelo primero.","Escriu-ho primer.")); return; }
+  addBandeja(x,'📞'); el.value=''; flash(t("Fuera de la cabeza, dentro de la bandeja.","Fora del cap, dins de la safata.")); }
+
+/* ================= LÍMITES · me piden algo ahora ================= */
+function frasesLimite(){ return [
+  t("Ahora mismo no te lo puedo confirmar. Lo miro y te digo algo antes de esta tarde.",
+    "Ara mateix no t'ho puc confirmar. M'ho miro i et dic alguna cosa abans d'aquesta tarda."),
+  t("Esta semana la tengo cerrada. Puedo el martes que viene.",
+    "Aquesta setmana la tinc tancada. Puc dimarts que ve."),
+  t("Hoy termino a las siete. Mañana a primera hora lo tienes.",
+    "Avui plego a les set. Demà a primera hora ho tens."),
+  t("Urgencias hoy no puedo coger. Si es una fuga, te digo quién puede ir.",
+    "Urgències avui no en puc agafar. Si és una fuita, et dic qui hi pot anar."),
+  t("Te lo puedo hacer, pero no por ese precio.",
+    "T'ho puc fer, però no per aquest preu."),
+  t("Te paso el presupuesto y, si te va bien, lo agendamos.",
+    "Et passo el pressupost i, si et va bé, ho agendem."),
+  t("Te entiendo que corra. Aun así, antes del jueves no puedo.",
+    "T'entenc que corri. Tot i així, abans de dijous no puc."),
+  t("Prefiero decirte que no ahora que dejarte tirado el viernes.",
+    "Prefereixo dir-te que no ara que deixar-te penjat divendres.")
+]; }
+VIEWS.limites=function(){
+  var h='<h1 class="view-t">'+t("Me piden algo ahora","Em demanen alguna cosa ara")+'</h1><p class="view-s">'+t(
+    'Está sonando el teléfono, o lo tienes delante. <b>Antes de contestar, un segundo.</b> El sí automático sale más rápido que tú: por eso entrenamos el segundo de antes.',
+    "Està sonant el telèfon, o el tens al davant. <b>Abans de contestar, un segon.</b> El sí automàtic surt més ràpid que tu: per això entrenem el segon d'abans.")+'</p>';
+  h+='<div class="card" style="border-color:#dbcfb9"><h2><span class="e">⏸️</span>'+t("No contestes todavía","No contestis encara")+'</h2>'+
+     '<ol class="steps"><li>'+t("<b>Una respiración</b>. Solo una. Nadie se muere en seis segundos.",
+        "<b>Una respiració</b>. Només una. Ningú es mor en sis segons.")+'</li>'+
+     '<li>'+t("<b>Barriga:</b> ¿se ha apretado? Si se ha apretado, es que ya quieres decir que no.",
+        "<b>Panxa:</b> s'ha tibat? Si s'ha tibat, és que ja vols dir que no.")+'</li>'+
+     '<li>'+t("<b>Gana tiempo</b> antes de comprometerte. Pedir tiempo <b>no es decir que no</b>: es no decir que sí en automático.",
+        "<b>Guanya temps</b> abans de comprometre't. Demanar temps <b>no és dir que no</b>: és no dir que sí en automàtic.")+'</li></ol>';
+  h+=ringHTML(t("Uno","Una"),t("Una respiración antes de contestar.","Una respiració abans de contestar."),150);
+  h+='<button class="btn full agua" id="lBtn" onclick="limResp(this)">'+t("Respirar antes de contestar","Respirar abans de contestar")+'</button>';
+  h+='<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">💬</span>'+t("Frases para ganar tiempo y poner límite","Frases per guanyar temps i posar límit")+'</h2><p class="lead">'+
+     t("Tócalas para copiarlas. Tono normal, ni de disculpa ni de pelea.","Toca-les per copiar-les. To normal, ni de disculpa ni de baralla.")+'</p>';
+  h+=frasesLimite().map(function(x){ return '<div class="verb"><span class="vt">'+esc(x)+'</span><span class="va"><button aria-label="'+
+     t("Copiar","Copiar")+'" onclick="copiar(\''+q(x)+'\',this)">📋</button></span></div>'; }).join('');
+  h+='</div>';
+
+  h+='<div class="two"><div class="col mal"><h4>😰 '+t("Lo que pasa cuando digo que sí","El que passa quan dic que sí")+'</h4><ul>'+
+     '<li>'+t("Encajo el trabajo donde no cabe","Encaixo la feina on no hi cap")+'</li>'+
+     '<li>'+t("Voy corriendo todo el día","Vaig corrents tot el dia")+'</li>'+
+     '<li>'+t("Llego tarde a casa y con mala cara","Arribo tard a casa i amb mala cara")+'</li>'+
+     '<li>'+t("El cliente lo da por normal y repite","El client ho dona per normal i repeteix")+'</li>'+
+     '<li>'+t("Y yo me enfado conmigo, no con él","I jo m'enfado amb mi, no amb ell")+'</li></ul></div>'+
+     '<div class="col bien"><h4>🙂 '+t("Lo que pasa cuando pido tiempo","El que passa quan demano temps")+'</h4><ul>'+
+     '<li>'+t("Decido yo, no la prisa del otro","Decideixo jo, no la pressa de l'altre")+'</li>'+
+     '<li>'+t("El trabajo entra donde cabe","La feina entra on hi cap")+'</li>'+
+     '<li>'+t("Lo hago mejor y cobro lo que vale","La faig millor i cobro el que val")+'</li>'+
+     '<li>'+t("El cliente aprende cómo trabajas","El client aprèn com treballes")+'</li>'+
+     '<li>'+t("Llego a casa con batería","Arribo a casa amb bateria")+'</li></ul></div></div>';
+
+  h+='<div class="card"><h2><span class="e">📝</span>'+t("¿Qué has hecho al final?","Què has fet al final?")+'</h2><div class="chips" id="cLim">'+
+     '<button type="button" class="chip" data-pole="mal" data-v="si" onclick="limReg(this)">'+t("Dije que sí sin querer","Vaig dir que sí sense voler")+'</button>'+
+     '<button type="button" class="chip" data-pole="mid" data-v="tiempo" onclick="limReg(this)">'+t("Pedí tiempo","Vaig demanar temps")+'</button>'+
+     '<button type="button" class="chip" data-pole="bien" data-v="limite" onclick="limReg(this)">'+t("Puse el límite","Vaig posar el límit")+'</button>'+
+     '</div></div>';
+  h+='<div class="quote">'+t("Decir que no a una urgencia de otro no es abandonarlo. Es no abandonarte a ti.",
+     "Dir que no a una urgència d'un altre no és abandonar-lo. És no abandonar-te a tu.")+'</div>';
+  h+=footerHTML(); return h;
+};
+function limResp(btn){ btn.disabled=true;
+  breathRun({fases:[[t("Coge aire","Agafa aire"),4,1.16],[t("Suelta","Deixa anar"),6,0.84]], ciclos:1,
+    verbs:[t("¿Se te ha apretado la barriga? Eso también es una respuesta.","Se t'ha tibat la panxa? Això també és una resposta.")],
+    finTxt:t("Ahora sí","Ara sí"), finVerb:t("Ahora contesta tú, no el automático.","Ara contesta tu, no l'automàtic."),
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'limite'}); if(btn) btn.disabled=false; }}); }
+function limReg(b){ document.getElementById('cLim').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(), v=b.dataset.v;
+  if(v==='si'){ d.siAutomatico++; flash(t("Anotado, sin juicio. Lo que entrenamos es la pausa de antes, no el resultado.",
+      "Apuntat, sense jutjar. El que entrenem és la pausa d'abans, no el resultat.")); }
+  else { d.limites++; flash(v==='tiempo' ? t("Pedir tiempo ya es poner límite. Ahí has ganado tú.","Demanar temps ja és posar límit. Aquí has guanyat tu.")
+      : t("Límite puesto. Esto es lo que te devuelve el día.","Límit posat. Això és el que et torna el dia.")); }
+  save(); ev('limite',{v:v}); }
+
+/* ================= ANTES DE ENTRAR EN CASA ================= */
+/* La frase que dirá en voz alta tiene que sonar bien en las dos lenguas, y el
+   catalán no concuerda como el castellano (buit/buida, «los hombros» pero
+   «les espatlles»). Así que no se deduce la forma: se guardan las cuatro.
+   zona: clave · emoji · {lengua:[con artículo, género, número]}
+   textura: clave · {lengua:[masc.sg, fem.sg, masc.pl, fem.pl]} */
+var hon={zona:null,textura:null,necesito:null};
+var HON_ZONAS=[
+  ["barriga","🫃",{es:["la barriga","f","sg"],   ca:["la panxa","f","sg"]}],
+  ["pecho","🫀",  {es:["el pecho","m","sg"],     ca:["el pit","m","sg"]}],
+  ["garganta","🗣️",{es:["la garganta","f","sg"], ca:["la gola","f","sg"]}],
+  ["hombros","💪",{es:["los hombros","m","pl"],  ca:["les espatlles","f","pl"]}],
+  ["mandibula","😬",{es:["la mandíbula","f","sg"],ca:["la mandíbula","f","sg"]}],
+  ["cuerpo","🧍", {es:["el cuerpo entero","m","sg"],ca:["el cos sencer","m","sg"]}]
+];
+var HON_TEXT=[
+  ["pesado",  {es:["pesado","pesada","pesados","pesadas"], ca:["pesat","pesada","pesats","pesades"]}],
+  ["apretado",{es:["apretado","apretada","apretados","apretadas"], ca:["tibant","tibant","tibants","tibants"]}],
+  ["vacio",   {es:["vacío","vacía","vacíos","vacías"], ca:["buit","buida","buits","buides"]}],
+  ["ruidoso", {es:["ruidoso por dentro","ruidosa por dentro","ruidosos por dentro","ruidosas por dentro"],
+               ca:["sorollós per dins","sorollosa per dins","sorollosos per dins","sorolloses per dins"]}],
+  ["cansado", {es:["cansado","cansada","cansados","cansadas"], ca:["cansat","cansada","cansats","cansades"]}],
+  ["encogido",{es:["encogido","encogida","encogidos","encogidas"], ca:["encongit","encongida","encongits","encongides"]}],
+  ["revuelto",{es:["revuelto","revuelta","revueltos","revueltas"], ca:["regirat","regirada","regirats","regirades"]}],
+  ["tenso",   {es:["tenso","tensa","tensos","tensas"], ca:["tens","tensa","tensos","tenses"]}]
+];
+function honNecs(){ return [
+  ["silencio", t("un rato de silencio","una estona de silenci")],
+  ["notrabajo",t("que no me pregunten por el trabajo","que no em preguntin per la feina")],
+  ["abrazo",   t("un abrazo","una abraçada")],
+  ["diezmin",  t("diez minutos y luego estoy","deu minuts i després hi soc")],
+  ["nada",     t("no necesito nada, solo que lo sepas","no necessito res, només que ho sàpigues")]
+]; }
+function zonaInfo(k){ for(var i=0;i<HON_ZONAS.length;i++){ if(HON_ZONAS[i][0]===k) return HON_ZONAS[i][2][LANG]; } return null; }
+function textForma(k,gen,num){ for(var i=0;i<HON_TEXT.length;i++){ if(HON_TEXT[i][0]===k){
+    return HON_TEXT[i][1][LANG][(gen==="f"?1:0)+(num==="pl"?2:0)]; } } return ""; }
+function textBase(k){ return textForma(k,"m","sg"); }
+function necLabel(k){ var N=honNecs(); for(var i=0;i<N.length;i++){ if(N[i][0]===k) return N[i][1]; } return ""; }
+
+VIEWS.cierre=function(){
+  hon={zona:null,textura:null,necesito:null};
+  var d=dia();
+  var h='<h1 class="view-t">'+t("Antes de entrar en casa","Abans d'entrar a casa")+'</h1><p class="view-s">'+t(
+    'Estás aparcado delante de casa. Un minuto aquí, en la furgoneta. <b>La presión del día se cierra fuera</b>, para que no entre por la puerta antes que tú.',
+    "Estàs aparcat davant de casa. Un minut aquí, a la furgoneta. <b>La pressió del dia es tanca a fora</b>, perquè no entri per la porta abans que tu.")+'</p>';
+
+  h+='<div class="card"><h2><span class="e">🫧</span>1 · '+t("Tres respiraciones curiosas","Tres respiracions curioses")+'</h2><p class="lead">'+
+     t("Suelta despacio. Afloja hombros y mandíbula. Atención a la barriga.","Deixa anar a poc a poc. Afluixa espatlles i mandíbula. Atenció a la panxa.")+'</p>'+
+     ringHTML(null,t("El día ya está hecho. Esto es lo que queda por dentro.","El dia ja està fet. Això és el que queda per dins."))+
+     '<button class="btn full agua" id="cBtn" onclick="cierreResp(this)">'+t("Empezar","Començar")+'</button></div>';
+
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  h+='<div class="card"><h2><span class="e">🔧</span>2 · '+t("Cierro la llave de paso","Tanco la clau de pas")+'</h2><p>'+t(
+     'Los avisos, los presupuestos, las facturas y el que no te ha cogido el teléfono <b>se quedan aquí hasta mañana</b>. No es que no importen: es que ahora no tocan.',
+     "Els avisos, els pressupostos, les factures i el que no t'ha agafat el telèfon <b>es queden aquí fins demà</b>. No és que no importin: és que ara no toquen.")+'</p>'+
+     '<input type="text" id="ciDejo" placeholder="'+t("¿Qué se queda fuera hoy? (opcional)","Què es queda a fora avui? (opcional)")+'">'+
+     '<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="cierreABandeja()">🧰 '+t("Anotar en la bandeja","Apuntar a la safata")+'</button></div>'+
+     (pend>0?('<div class="nota" style="margin-top:10px">'+t("En la bandeja quedan <b>"+pend+"</b>. Están ahí, escritas. <b>No hace falta que las repases esta noche.</b>",
+       "A la safata en queden <b>"+pend+"</b>. Hi són, escrites. <b>No cal que les repassis aquesta nit.</b>")+'</div>'):'')+
+     '</div>';
+
+  h+='<div class="card"><h2><span class="e">💬</span>3 · '+t("Honestidad emocional","Honestedat emocional")+'</h2><p class="lead">'+t(
+     'Decirle a tu pareja cómo estás. <b>No por qué estás así</b>: cómo estás. Son dos cosas distintas y solo una se puede decir con tono sereno.',
+     "Dir-li a la teva parella com estàs. <b>No per què estàs així</b>: com estàs. Són dues coses diferents i només una es pot dir amb to serè.")+'</p>';
+  h+='<label class="fld">'+t("¿Dónde lo notas?","On ho notes?")+'</label><div class="chips" id="cZona">'+
+     HON_ZONAS.map(function(z){ return '<button type="button" class="chip" data-v="'+z[0]+'" onclick="honZona(this)">'+z[1]+' '+z[2][LANG][0]+'</button>'; }).join('')+'</div>';
+  h+='<label class="fld">'+t("¿Cómo está eso? (textura, no motivo)","Com està això? (textura, no motiu)")+'</label><div class="chips" id="cText">'+
+     HON_TEXT.map(function(x){ return '<button type="button" class="chip" data-v="'+x[0]+'" onclick="honText(this)">'+textBase(x[0])+'</button>'; }).join('')+'</div>';
+  h+='<div class="nota" style="margin-top:12px">'+t(
+     '<b>Suspende el porqué.</b> Si aparece el «no sé por qué», o el «es que el cliente…», déjalo pasar. El porqué convierte una frase honesta en una queja, y entonces ella tiene que defenderse en vez de escucharte.',
+     "<b>Suspèn el perquè.</b> Si apareix el «no sé per què», o l'«és que el client…», deixa-ho passar. El perquè converteix una frase honesta en una queixa, i llavors ella s'ha de defensar en comptes d'escoltar-te.")+'</div>';
+  h+='<label class="fld">'+t("¿Qué necesitas? (opcional)","Què necessites? (opcional)")+'</label><div class="chips" id="cNec">'+
+     honNecs().map(function(x){ return '<button type="button" class="chip" data-v="'+x[0]+'" onclick="honNec(this)">'+x[1]+'</button>'; }).join('')+'</div>';
+  h+='<div id="honOut"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🤍</span>4 · '+t("Abrazo sentido","Abraçada sentida")+'</h2><p class="lead">'+
+     t("No el abrazo de pasar por al lado. El que se nota.","No l'abraçada de passar pel costat. La que es nota.")+'</p>'+
+     '<ol class="steps"><li>'+t("<b>Antes de abrazar, respira una vez</b> y mira qué hay en tu barriga.",
+        "<b>Abans d'abraçar, respira un cop</b> i mira què hi ha a la teva panxa.")+'</li>'+
+     '<li>'+t("<b>Abraza y quédate tres respiraciones ahí.</b> Con la atención en tu cuerpo, no en el reloj.",
+        "<b>Abraça i queda-t'hi tres respiracions.</b> Amb l'atenció al teu cos, no al rellotge.")+'</li>'+
+     '<li>'+t("<b>Nota lo que cambia</b> mientras abrazas. No hace falta decir nada.",
+        "<b>Nota què canvia</b> mentre abraces. No cal dir res.")+'</li></ol>'+
+     '<div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:10px"><button class="btn verde full" onclick="abrazoDado()">🤍 '+
+     t("Abrazo sentido dado","Abraçada sentida feta")+'</button></div>'+
+     '<p class="muted" style="margin-top:10px">'+t("Hoy llevas <b>"+d.abrazos+"</b>.","Avui en portes <b>"+d.abrazos+"</b>.")+'</p></div>';
+
+  h+='<div class="card"><h2><span class="e">🎚️</span>5 · '+t("¿Con cuánta presión cierras el día?","Amb quanta pressió tanques el dia?")+'</h2>'+manoHTML(d.presionFin)+
+     '<div class="scale" id="sPresFin">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionFin===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'fin\')">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>'+t("Suelto","Solt")+'</span><span>'+t("A punto de reventar","A punt de petar")+'</span></div></div>';
+
+  h+='<div class="btnrow"><button class="btn full verde" onclick="cierreDone()">'+t("Cerrar el día y entrar","Tancar el dia i entrar")+'</button></div>';
+  h+='<div class="quote">'+t("Trabajas por los tuyos. Llegar con algo que darles también es parte del trabajo.",
+     "Treballes pels teus. Arribar amb alguna cosa per donar-los també és part de la feina.")+'</div>';
+  h+=footerHTML(); return h;
+};
+function cierreResp(btn){ btn.style.display='none';
+  breathRun({ciclos:3, verbs:[
+      t("No respiro para dormirme. Respiro para saber cómo llego.","No respiro per adormir-me. Respiro per saber com arribo."),
+      t("¿Qué hay en la barriga después de hoy?","Què hi ha a la panxa després d'avui?"),
+      t("Esto no hay que arreglarlo. Solo saber que está.","Això no s'ha d'arreglar. Només saber que hi és.")],
+    finTxt:t("Aquí","Aquí"), finVerb:t("Ya sabes con qué llegas. Eso es lo que vas a poder decir.","Ja saps amb què arribes. Això és el que podràs dir."),
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'cierre'}); }}); }
+function cierreABandeja(){ var el=document.getElementById('ciDejo'); var x=(el.value||'').trim();
+  if(!x){ flash(t("Escríbelo primero, si hay algo.","Escriu-ho primer, si hi ha alguna cosa.")); return; }
+  addBandeja(x,'🧾'); var d=dia(); d.dejado=x; save(); el.value='';
+  flash(t("Se queda fuera. Mañana lo tienes escrito.","Es queda a fora. Demà ho tens escrit.")); }
+function honZona(b){ document.getElementById('cZona').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); hon.zona=b.dataset.v; honRender(); }
+function honText(b){ document.getElementById('cText').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); hon.textura=b.dataset.v; honRender(); }
+function honNec(b){ var sel=b.classList.contains('sel');
+  document.getElementById('cNec').querySelectorAll('.chip').forEach(function(x){ x.classList.remove('sel'); });
+  if(!sel){ b.classList.add('sel'); hon.necesito=b.dataset.v; } else { hon.necesito=null; } honRender(); }
+function honFrase(){
+  if(!hon.zona||!hon.textura) return "";
+  var z=zonaInfo(hon.zona); if(!z) return "";
+  var f=t("Llego con ","Arribo amb ")+z[0]+" "+textForma(hon.textura,z[1],z[2])+".";
+  f+=t(" No te lo digo para que lo arregles ni para quejarme: te lo digo para que sepas dónde estoy.",
+       " No t'ho dic perquè ho arreglis ni per queixar-me: t'ho dic perquè sàpigues on soc.");
+  if(hon.necesito){ f+= hon.necesito==="nada"
+     ? t(" No necesito nada, solo que lo sepas."," No necessito res, només que ho sàpigues.")
+     : (t(" Me iría bien "," M'aniria bé ")+necLabel(hon.necesito)+"."); }
+  return f;
+}
+function honRender(){
+  var out=document.getElementById('honOut'); if(!out) return;
+  var f=honFrase();
+  if(!f){ out.innerHTML='<div class="nota" style="margin-top:12px">'+t(
+     "Elige <b>dónde</b> lo notas y <b>cómo está</b>, y te monto la frase.",
+     "Tria <b>on</b> ho notes i <b>com està</b>, i et munto la frase.")+'</div>'; return; }
+  var h='<div class="quote" style="margin-top:14px">'+esc(f)+'</div>';
+  h+='<div class="nota">'+t(
+     '<b>Tono sereno:</b> ni de queja, ni de disculpa, ni de aviso. Es un parte del estado de la instalación, no una acusación. Si te sale el «es que…», para y vuelve a la frase.',
+     "<b>To serè:</b> ni de queixa, ni de disculpa, ni d'advertiment. És un comunicat de l'estat de la instal·lació, no una acusació. Si et surt l'«és que…», para i torna a la frase.")+'</div>';
+  h+='<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="copiar(\''+q(f)+'\',this)">📋 '+t("Copiar","Copiar")+
+     '</button><button class="btn sm verde" onclick="honDicho()">✅ '+t("Lo he dicho","Ho he dit")+'</button></div>';
+  out.innerHTML=h;
+}
+function honDicho(){ var d=dia(); d.honestidad++; save(); ev('honestidad',{zona:hon.zona,textura:hon.textura});
+  flash(t("Dicho. Y sin explicar el porqué: eso es lo difícil y lo has hecho.","Dit. I sense explicar el perquè: això és el difícil i ho has fet.")); }
+function abrazoDado(){ var d=dia(); d.abrazos++; save(); ev('abrazo');
+  flash(t("Abrazo sentido ✓ Hoy llevas "+d.abrazos+".","Abraçada sentida ✓ Avui en portes "+d.abrazos+"."));
+  setTimeout(render,600); }
+function setPresion(b,cual){
+  var cont=b.parentNode; cont.querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var v=parseInt(b.dataset.v,10), d=dia();
+  if(cual==='fin') d.presionFin=v; else d.presionIni=v;
+  save(); ev('presion',{cual:cual,v:v});
+  var mano=cont.parentNode.querySelector('.mano');
+  if(mano){ var tmp=document.createElement('div'); tmp.innerHTML=manoHTML(v); mano.parentNode.replaceChild(tmp.firstChild,mano); }
+  refrescarInforme();
+}
+function cierreDone(){ var d=dia(); d.cierre=true; save(); ev('cierre');
+  flash(t("Día cerrado. Entra tú, no el día. 🤍","Dia tancat. Entra tu, no el dia. 🤍")); setTimeout(function(){ go('dia'); },1100); }
+
+/* ================= BANDEJA ================= */
+function cats(){ return [["💧",t("Trabajo","Feina")],["🧾",t("Factura / papeleo","Factura / paperassa")],
+  ["📞",t("Llamada","Trucada")],["🛒",t("Material","Material")],["🏠",t("Casa","Casa")]]; }
+var catSel="💧";
+function addBandeja(txt,cat){ DB.bandeja.unshift({id:uid(),t:txt,c:cat||catSel,done:false,ts:Date.now(),date:hoy()}); save(); ev('bandeja'); }
+VIEWS.bandeja=function(){
+  var abiertos=DB.bandeja.filter(function(x){ return !x.done; });
+  var hechos=DB.bandeja.filter(function(x){ return x.done; }).slice(0,12);
+  var h='<h1 class="view-t">'+t("Lo llevo en la cabeza","Ho porto al cap")+'</h1><p class="view-s">'+t(
+    'Todo lo que te ronda mientras trabajas. Aquí no se hace: aquí <b>se suelta</b>. Escribirlo no es una tarea más, es dejar de cargarlo.',
+    "Tot el que et ronda mentre treballes. Aquí no es fa: aquí <b>es deixa anar</b>. Escriure-ho no és una tasca més, és deixar de carregar-ho.")+'</p>';
+  h+='<div class="card"><h2><span class="e">🧰</span>'+t("Anotar","Apuntar")+'</h2>'+
+     '<input type="text" id="bTxt" placeholder="'+t("Ej.: factura de los Ferrer","Ex.: factura dels Ferrer")+'" onkeydown="if(event.key===\'Enter\'){bandejaAdd();}">'+
+     '<div class="catrow" id="catRow">'+cats().map(function(c){ return '<button type="button" class="cat'+(catSel===c[0]?' sel':'')+'" data-v="'+c[0]+'" onclick="pickCat(this)">'+c[0]+' '+c[1]+'</button>'; }).join('')+'</div>'+
+     '<button class="btn full" onclick="bandejaAdd()">'+t("Sacarlo de la cabeza","Treure-ho del cap")+'</button>'+
+     '<div class="ok-flash" id="okflash"></div></div>';
+
+  h+='<div class="card"><h2><span class="e">📋</span>'+t("Pendiente","Pendent")+' <span style="font-size:13px;color:var(--suau);font-weight:400">('+abiertos.length+')</span></h2>';
+  if(!abiertos.length) h+='<p class="empty">'+t("Nada pendiente. Si hay algo dando vueltas por tu cabeza, anótalo arriba.",
+     "Res pendent. Si hi ha alguna cosa donant voltes pel teu cap, apunta-la a dalt.")+'</p>';
+  else h+=abiertos.map(function(x){ return '<div class="item"><span class="ic">'+x.c+'</span><span class="it">'+esc(x.t)+'</span>'+
+     '<button class="ib ok" aria-label="'+t("Hecho","Fet")+'" onclick="bandejaDone(\''+x.id+'\')">✓</button>'+
+     '<button class="ib" aria-label="'+t("Borrar","Esborrar")+'" onclick="bandejaDel(\''+x.id+'\')">✕</button></div>'; }).join('');
+  if(abiertos.length>3) h+='<div class="nota">'+t("Son muchas. <b>Elige tres para hoy</b> y el resto que esperen: no caben más en un día de furgoneta.",
+     "Són moltes. <b>Tria'n tres per avui</b> i la resta que esperin: no en caben més en un dia de furgoneta.")+'</div>';
+  h+='</div>';
+
+  h+='<div class="card"><h2><span class="e">🧾</span>'+t("El rato de papeleo","L'estona de paperassa")+'</h2><p>'+t(
+     'El papeleo no se desordena porque seas desordenado. Se desordena porque <b>no tiene hora</b>. Ponle una: quince minutos fijos, el mismo día de la semana, con el móvil en silencio.',
+     "La paperassa no es desordena perquè siguis desordenat. Es desordena perquè <b>no té hora</b>. Posa-n'hi una: quinze minuts fixos, el mateix dia de la setmana, amb el mòbil en silenci.")+'</p>'+
+     '<div class="quote" style="margin-top:10px">'+t("Quince minutos con hora valen más que tres horas cuando ya no puedes más.",
+     "Quinze minuts amb hora valen més que tres hores quan ja no pots més.")+'</div></div>';
+
+  if(hechos.length){ h+='<div class="card"><h2><span class="e">✅</span>'+t("Hechas","Fetes")+'</h2>'+
+     hechos.map(function(x){ return '<div class="item done"><span class="ic">'+x.c+'</span><span class="it">'+esc(x.t)+'</span>'+
+     '<button class="ib" aria-label="'+t("Borrar","Esborrar")+'" onclick="bandejaDel(\''+x.id+'\')">✕</button></div>'; }).join('')+'</div>'; }
+  h+=footerHTML(); return h;
+};
+function pickCat(b){ document.getElementById('catRow').querySelectorAll('.cat').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); catSel=b.dataset.v; }
+function bandejaAdd(){ var el=document.getElementById('bTxt'); var x=(el.value||'').trim(); if(!x) return;
+  addBandeja(x,catSel); el.value=''; go('bandeja'); }
+function bandejaDone(id){ DB.bandeja.forEach(function(x){ if(x.id===id) x.done=!x.done; }); save(); go('bandeja'); }
+function bandejaDel(id){ DB.bandeja=DB.bandeja.filter(function(x){ return x.id!==id; }); save(); go('bandeja'); }
+
+/* ================= MI DÍA · registro e informe ================= */
+VIEWS.dia=function(){
+  var d=dia();
+  var h='<h1 class="view-t">'+t("Mi día","El meu dia")+'</h1><p class="view-s">'+t(
+    'Lo que le vas a pasar a tu psicólogo. No es un examen: es el <b>parte de obra</b> del día.',
+    "El que passaràs al teu psicòleg. No és un examen: és el <b>full d'obra</b> del dia.")+'</p>';
+
+  h+='<div class="card"><h2><span class="e">📊</span>'+esc(fechaLarga(hoy()))+'</h2><div class="stat3">'+
+     '<div class="a"><b>'+d.resp+'</b><span>'+t("respiraciones<br>curiosas","respiracions<br>curioses")+'</span></div>'+
+     '<div><b>'+d.paradas+'</b><span>'+t("paradas de<br>pensamiento","parades de<br>pensament")+'</span></div>'+
+     '<div class="v"><b>'+d.abrazos+'</b><span>'+t("abrazos<br>sentidos","abraçades<br>sentides")+'</span></div></div>';
+  h+='<div class="stat3" style="margin-top:9px">'+
+     '<div class="v"><b>'+d.honestidad+'</b><span>'+t("veces que lo<br>he dicho","vegades que<br>ho he dit")+'</span></div>'+
+     '<div class="v"><b>'+d.limites+'</b><span>'+t("límites<br>puestos","límits<br>posats")+'</span></div>'+
+     '<div><b>'+d.siAutomatico+'</b><span>'+t("síes<br>automáticos","sís<br>automàtics")+'</span></div></div>';
+  h+='<p class="muted" style="margin-top:11px">'+t(
+     'Los síes automáticos <b>no restan</b>. Son el dato que nos dice dónde sigue la presión.',
+     "Els sís automàtics <b>no resten</b>. Són la dada que ens diu on continua la pressió.")+'</p></div>';
+
+  h+='<div class="card"><h2><span class="e">🎚️</span>'+t("Manómetro","Manòmetre")+'</h2><p class="lead">'+
+     t("La presión con la que has empezado y con la que has cerrado.","La pressió amb què has començat i amb què has tancat.")+'</p>';
+  h+='<div class="two"><div><p class="muted" style="text-align:center;margin:0 0 4px"><b>'+t("Al empezar","En començar")+'</b></p>'+manoHTML(d.presionIni)+
+     '<div class="scale" id="sPresIni">'+[0,2,4,6,8,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionIni===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'ini\')">'+i+'</button>'; }).join('')+'</div></div>';
+  h+='<div><p class="muted" style="text-align:center;margin:0 0 4px"><b>'+t("Al cerrar","En tancar")+'</b></p>'+manoHTML(d.presionFin)+
+     '<div class="scale" id="sPresFin2">'+[0,2,4,6,8,10].map(function(i){ return '<button type="button" class="scaleb'+(d.presionFin===i?' sel':'')+'" data-v="'+i+'" onclick="setPresion(this,\'fin\')">'+i+'</button>'; }).join('')+'</div></div></div>';
+  h+='<p class="muted" style="margin-top:9px">'+t("Ahora mismo: ","Ara mateix: ")+'<b>'+presionTxt(d.presionFin!==null?d.presionFin:d.presionIni)+'</b></p></div>';
+
+  h+='<div class="card"><h2><span class="e">⏱️</span>'+t("El segundo de antes","El segon d'abans")+'</h2><p class="lead">'+t(
+     'Hoy, cuando te han pedido algo o te ha subido la prisa, <b>¿cuánto has podido esperar antes de responder?</b>',
+     "Avui, quan t'han demanat alguna cosa o t'ha pujat la pressa, <b>quant has pogut esperar abans de respondre?</b>")+'</p>'+
+     '<div class="scale" id="sLat">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" class="scaleb a'+(d.latencia===i?' sel':'')+'" data-v="'+i+'" onclick="setLat(this)">'+i+'</button>'; }).join('')+'</div>'+
+     '<div class="scale-ends"><span>'+t("Salió solo","Va sortir sol")+'</span><span>'+t("Pude parar","Vaig poder parar")+'</span></div></div>';
+
+  h+='<div class="card"><h2><span class="e">🧭</span>'+t("Lo que entrenas","El que entrenes")+'</h2><div class="ldc">'+
+     '<div class="L"><b>'+(d.latencia===null?'—':d.latencia)+'</b><span>'+t("Latencia<br>el segundo de antes","Latència<br>el segon d'abans")+'</span></div>'+
+     '<div class="D"><b>'+(d.resp+d.paradas)+'</b><span>'+t("Densidad<br>vueltas a la barriga","Densitat<br>tornades a la panxa")+'</span></div>'+
+     '<div class="C"><b>'+racha()+'</b><span>'+t("Continuidad<br>días seguidos","Continuïtat<br>dies seguits")+'</span></div></div>'+
+     '<p class="muted">'+t(
+     'La <b>densidad</b> no es respirar mejor: es respirar <b>más veces al día</b>. Y la <b>continuidad</b> no es hacerlo perfecto: es que mañana vuelva a haber un día.',
+     "La <b>densitat</b> no és respirar millor: és respirar <b>més vegades al dia</b>. I la <b>continuïtat</b> no és fer-ho perfecte: és que demà torni a haver-hi un dia.")+'</p></div>';
+
+  h+='<div class="card"><h2><span class="e">📝</span>'+t("Nota del día","Nota del dia")+'</h2><textarea id="dNota" placeholder="'+
+     t("Si quieres añadir algo para la sesión…","Si vols afegir alguna cosa per a la sessió…")+'" oninput="setNota(this.value)">'+esc(d.nota||'')+'</textarea></div>';
+
+  h+='<div class="card"><h2><span class="e">📤</span>'+t("Pasárselo a tu psicólogo","Passar-ho al teu psicòleg")+'</h2><p class="lead">'+
+     t("Este es el texto. Puedes leerlo antes de enviarlo.","Aquest és el text. El pots llegir abans d'enviar-lo.")+'</p>';
+  h+='<div class="msgbox" id="msgBox">'+esc(informeTxt())+'</div>';
+  h+='<div class="btnrow"><button class="btn wa full" onclick="enviarWA()">'+t("Enviar por WhatsApp","Enviar per WhatsApp")+'</button></div>';
+  h+='<div class="btnrow" style="margin-top:9px"><button class="btn sm ghost" onclick="copiarInforme(this)">📋 '+t("Copiar","Copiar")+
+     '</button><button class="btn sm ghost" onclick="go(\'ajustes\')">⚙️ '+t("Número","Número")+'</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="nota">'+t(
+     'Mandarlo cada día <b>no es para que te vigilen</b>. Es la continuidad: escribirlo cierra el día, y que alguien lo lea hace que no lo sostengas solo.',
+     "Enviar-ho cada dia <b>no és perquè et vigilin</b>. És la continuïtat: escriure-ho tanca el dia, i que algú ho llegeixi fa que no ho sostinguis tu sol.")+'</div></div>';
+
+  h+=semanaHTML();
+  h+=footerHTML(); return h;
+};
+function setLat(b){ document.getElementById('sLat').querySelectorAll('.scaleb').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel');
+  var d=dia(); d.latencia=parseInt(b.dataset.v,10); save(); ev('latencia',{v:d.latencia}); refrescarInforme(); }
+function setNota(v){ var d=dia(); d.nota=v; save(); refrescarInforme(); }
+function refrescarInforme(){ var b=document.getElementById('msgBox'); if(b) b.textContent=informeTxt(); }
+
+function informeTxt(){
+  var d=dia(), n=nombre(), L=[], r=racha();
+  var pend=DB.bandeja.filter(function(x){ return !x.done; }).length;
+  L.push(t("LA LLAVE DE PASO · ","LA CLAU DE PAS · ")+fechaLarga(hoy())+(n?(" · "+n):""));
+  L.push("");
+  L.push(t("Respiraciones curiosas: ","Respiracions curioses: ")+d.resp);
+  L.push(t("Paradas de pensamiento: ","Parades de pensament: ")+d.paradas);
+  L.push(t("Abrazo sentido: ","Abraçada sentida: ")+(d.abrazos>0?(d.abrazos+" ✓"):t("hoy no","avui no")));
+  L.push(t("Honestidad emocional: ","Honestedat emocional: ")+(d.honestidad>0
+    ? t("sí, "+d.honestidad+" "+plural(d.honestidad,"vez","veces")+" (tono sereno, sin explicar el porqué)",
+        "sí, "+d.honestidad+" "+plural(d.honestidad,"vegada","vegades")+" (to serè, sense explicar el perquè)")
+    : t("hoy no","avui no")));
+  L.push(t("Límites: "+d.limites+" "+plural(d.limites,"puesto","puestos")+" · "+d.siAutomatico+" "+plural(d.siAutomatico,"sí automático","síes automáticos"),
+          "Límits: "+d.limites+" "+plural(d.limites,"posat","posats")+" · "+d.siAutomatico+" "+plural(d.siAutomatico,"sí automàtic","sís automàtics")));
+  L.push("");
+  L.push(t("Manómetro: ","Manòmetre: ")+(d.presionIni===null?"—":d.presionIni)+t(" al empezar → "," en començar → ")+(d.presionFin===null?"—":d.presionFin)+t(" al cerrar"," en tancar"));
+  if(d.barriga) L.push(t("Barriga: ","Panxa: ")+labelBarriga(d.barriga));
+  L.push(t("Latencia (el segundo de antes): ","Latència (el segon d'abans): ")+(d.latencia===null?"—":d.latencia+"/10"));
+  L.push(t("Densidad (vueltas a la barriga): ","Densitat (tornades a la panxa): ")+(d.resp+d.paradas));
+  L.push(t("Continuidad: "+r+" "+plural(r,"día seguido","días seguidos"),
+          "Continuïtat: "+r+" "+plural(r,"dia seguit","dies seguits")));
+  L.push(t(pend===1?"En la bandeja queda 1 cosa anotada, no en la cabeza":"En la bandeja quedan "+pend+" cosas anotadas, no en la cabeza",
+          pend===1?"A la safata queda 1 cosa apuntada, no al cap":"A la safata queden "+pend+" coses apuntades, no al cap"));
+  if(d.dejado) L.push(t("Se ha quedado fuera de casa: «","S'ha quedat fora de casa: «")+d.dejado+"»");
+  L.push(t("Cierre del día: ","Tancament del dia: ")+(d.cierre?t("hecho ✓","fet ✓"):t("pendiente","pendent")));
+  if((d.nota||"").trim()){ L.push(""); L.push(t("Nota: ","Nota: ")+d.nota.trim()); }
+  return L.join("\n");
+}
+function enviarWA(){
+  var tel=(DB.settings.telPsico||'').replace(/[^\d]/g,'');
+  var url='https://wa.me/'+tel+'?text='+encodeURIComponent(informeTxt());
+  try{ window.open(url,'_blank'); }catch(e){ location.href=url; }
+  if(!tel) flash(t("Si pones el número en Ajustes, se abre directo con tu psicólogo.",
+                   "Si poses el número a Ajustos, s'obre directament amb el teu psicòleg."));
+  ev('informe');
+}
+function copiarInforme(btn){ copiar(informeTxt(),btn); }
+
+function semanaHTML(){
+  var keys=Object.keys(DB.dias).filter(within7).sort().reverse();
+  if(!keys.length) return '';
+  var h='<div class="card"><h2><span class="e">🗓️</span>'+t("Estos días","Aquests dies")+'</h2>';
+  h+=keys.map(function(k){ var d=DB.dias[k];
+    return '<div class="rec"><div class="rh"><span class="rd"><b>'+esc(fechaLarga(k))+'</b></span><span class="rd">'+
+      (d.cierre?t("🏠 cerrado","🏠 tancat"):'')+'</span></div>'+
+      '<div class="rb">'+d.resp+t(" respiraciones · "," respiracions · ")+d.paradas+t(" paradas · "," parades · ")+
+      d.abrazos+" "+t(plural(d.abrazos,"abrazo","abrazos"),plural(d.abrazos,"abraçada","abraçades"))+
+      (d.honestidad>0?t(" · 💬 lo dijo"," · 💬 ho va dir"):'')+
+      (d.limites>0?(" · 🚫 "+d.limites+" "+t(plural(d.limites,"límite","límites"),plural(d.limites,"límit","límits"))):'')+'</div></div>'; }).join('');
+  h+='<div class="btnrow" style="margin-top:8px"><button class="btn sm ghost" onclick="copiarSemana(this)">📋 '+
+     t("Copiar la semana","Copiar la setmana")+'</button></div></div>';
+  return h;
+}
+function copiarSemana(btn){
+  var keys=Object.keys(DB.dias).filter(within7).sort();
+  var L=[t("LA LLAVE DE PASO · semana ","LA CLAU DE PAS · setmana ")+fechaLarga(daysAgo(6))+" → "+fechaLarga(hoy())+(nombre()?(" · "+nombre()):"")];
+  var tr=0,tp=0,ta=0,th=0,tl=0,ts=0,tc=0;
+  keys.forEach(function(k){ var d=DB.dias[k]; tr+=d.resp; tp+=d.paradas; ta+=d.abrazos; th+=d.honestidad; tl+=d.limites; ts+=d.siAutomatico; if(d.cierre) tc++;
+    L.push("· "+fechaLarga(k)+": "+d.resp+t(" resp · "," resp · ")+d.paradas+t(" paradas · "," parades · ")+d.abrazos+" "+
+      t(plural(d.abrazos,"abrazo","abrazos"),plural(d.abrazos,"abraçada","abraçades"))+" · "+
+      (d.honestidad>0?t("lo dijo","ho va dir"):t("no lo dijo","no ho va dir"))+t(" · cierre "," · tancament ")+(d.cierre?t("sí","sí"):"no")); });
+  L.push("");
+  L.push(t("Totales: ","Totals: ")+tr+t(" respiraciones curiosas · "," respiracions curioses · ")+tp+
+    t(" paradas de pensamiento · "," parades de pensament · ")+ta+t(" abrazos sentidos"," abraçades sentides"));
+  L.push(t("Honestidad emocional: ","Honestedat emocional: ")+th+t(" veces · Límites: "," vegades · Límits: ")+tl+
+    t(" · Síes automáticos: "," · Sís automàtics: ")+ts);
+  L.push(t("Cierres de día: ","Tancaments de dia: ")+tc+"/"+keys.length+t(" · Continuidad: "," · Continuïtat: ")+racha()+t(" días seguidos"," dies seguits"));
+  copiar(L.join("\n"),btn);
+}
+
+/* ================= RESPIRAR ================= */
+function verbResp(){ return [
+  t("No vas a cambiar la respiración. Solo vas a mirarla.","No canviaràs la respiració. Només la miraràs."),
+  t("¿Por dónde entra el aire? ¿Frío, templado?","Per on entra l'aire? Fred, tebi?"),
+  t("Lleva la atención a la barriga. ¿Sube? ¿Está dura? ¿Está quieta?","Porta l'atenció a la panxa. Puja? És dura? Està quieta?"),
+  t("Si no notas gran cosa, también vale. Eso es lo que hay hoy.","Si no notes gran cosa, també val. Això és el que hi ha avui."),
+  t("La curiosidad no busca respuestas. Busca contacto.","La curiositat no busca respostes. Busca contacte."),
+  t("Cada vez que vuelves, estás entrenando. Aunque te hayas ido mil veces.","Cada cop que tornes, estàs entrenant. Encara que te n'hagis anat mil vegades.")
+]; }
+VIEWS.respira=function(){
+  var d=dia();
+  var h='<h1 class="view-t">'+t("Respiración curiosa","Respiració curiosa")+'</h1><p class="view-s">'+t(
+    'Tu herramienta base. <b>No respiras para calmarte</b>: respiras para volver a notarte. Si sale calma, bien; y si no sale, también sirve.',
+    "La teva eina base. <b>No respires per calmar-te</b>: respires per tornar a notar-te. Si surt calma, bé; i si no surt, també serveix.")+'</p>';
+  h+=ringHTML(null,verbResp()[0]);
+  h+='<div class="btnrow"><button class="btn agua" id="r3" onclick="respStart(3,this)">'+t("3 respiraciones","3 respiracions")+
+     '</button><button class="btn ghost" id="r6" onclick="respStart(6,this)">'+t("6 respiraciones","6 respiracions")+'</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="card" style="margin-top:16px"><h2><span class="e">🫃</span>'+t("Dónde va la atención","On va l'atenció")+'</h2><p>'+t(
+     'Mientras el círculo se abre y se cierra, tú <b>no cuidas el aire: cuidas dónde estás</b>. Y hoy estás en la barriga.',
+     "Mentre el cercle s'obre i es tanca, tu <b>no cuides l'aire: cuides on ets</b>. I avui ets a la panxa.")+'</p>'+
+     '<ol class="steps"><li>'+t("Nota la barriga <b>tal como está</b>, sin aflojarla a propósito.",
+        "Nota la panxa <b>tal com està</b>, sense afluixar-la expressament.")+'</li>'+
+     '<li>'+t("Cuando la cabeza se vaya (se irá), <b>no discutas</b>: vuelve a la barriga.",
+        "Quan el cap se'n vagi (se n'anirà), <b>no discuteixis</b>: torna a la panxa.")+'</li>'+
+     '<li>'+t("Si aparece el «por qué estoy así», déjalo pasar. Hoy no toca entender: toca notar.",
+        "Si apareix el «per què estic així», deixa-ho passar. Avui no toca entendre: toca notar.")+'</li></ol></div>';
+  h+='<div class="card"><h2><span class="e">📍</span>'+t("Cuándo","Quan")+'</h2><p class="lead">'+t(
+     'Estos son tus momentos. No hace falta buscar hueco: ya están en tu día.',
+     "Aquests són els teus moments. No cal buscar forat: ja són al teu dia.")+'</p>'+
+     '<ol class="steps"><li>'+t("<b>Al entrar en la furgoneta</b>, antes de arrancar.","<b>En entrar a la furgoneta</b>, abans d'arrencar.")+'</li>'+
+     '<li>'+t("<b>Antes de bajar</b> en cada casa.","<b>Abans de baixar</b> a cada casa.")+'</li>'+
+     '<li>'+t("<b>Al volver a subir</b>, antes de mirar el móvil.","<b>En tornar a pujar</b>, abans de mirar el mòbil.")+'</li>'+
+     '<li>'+t("<b>Antes de contestar</b> cuando te piden algo.","<b>Abans de contestar</b> quan et demanen alguna cosa.")+'</li>'+
+     '<li>'+t("<b>Delante de casa</b>, antes de abrir la puerta.","<b>Davant de casa</b>, abans d'obrir la porta.")+'</li></ol>'+
+     '<p class="muted">'+t("Cinco momentos que ya existen. La cuenta no es de minutos: es de <b>cuántas veces has vuelto</b>.",
+        "Cinc moments que ja existeixen. El compte no és de minuts: és de <b>quantes vegades has tornat</b>.")+'</p></div>';
+  h+='<div class="card"><div class="stat3"><div class="a"><b>'+d.resp+'</b><span>'+t("hoy","avui")+'</span></div>'+
+     '<div><b>'+(d.resp+d.paradas)+'</b><span>'+t("vueltas a la<br>barriga hoy","tornades a la<br>panxa avui")+'</span></div>'+
+     '<div class="v"><b>'+racha()+'</b><span>'+t("días<br>seguidos","dies<br>seguits")+'</span></div></div></div>';
+  h+='<div class="quote">'+t("Volver mil veces no es fracasar mil veces. Es entrenar mil veces.",
+     "Tornar mil vegades no és fracassar mil vegades. És entrenar mil vegades.")+'</div>';
+  h+=footerHTML(); return h;
+};
+function respStart(n,btn){
+  document.getElementById('r3').style.display='none'; document.getElementById('r6').style.display='none';
+  breathRun({ciclos:n, verbs:verbResp(), finTxt:t("Barriga","Panxa"),
+    finVerb:t("Ya está. Quédate un segundo más antes de seguir.","Ja està. Queda-t'hi un segon més abans de continuar."),
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'libre',ciclos:n});
+      flash(t("Sumada. Hoy llevas "+d.resp+".","Sumada. Avui en portes "+d.resp+"."));
+      setTimeout(function(){ if(VIEW==='respira') render(); },1400); }});
+}
+
+/* ================= MÁS ================= */
+VIEWS.mas=function(){
+  var h='<h1 class="view-t">'+t("Más","Més")+'</h1><p class="view-s">'+
+     t("El porqué de todo esto, tus frases y los ajustes.","El perquè de tot això, les teves frases i els ajustos.")+'</p>';
+  h+='<button class="big slate" onclick="go(\'porque\')"><span class="bi">🔧</span><span><span class="bt">'+
+     t("Por qué la llave de paso","Per què la clau de pas")+'</span><span class="bd">'+
+     t("la presión, la fuga y el punto más débil","la pressió, la fuita i el punt més feble")+'</span></span></button>';
+  h+='<button class="big cobre" onclick="go(\'frases\')"><span class="bi">💬</span><span><span class="bt">'+
+     t("Mis frases","Les meves frases")+'</span><span class="bd">'+
+     t("para acompañarte y para poner límites","per acompanyar-te i per posar límits")+'</span></span></button>';
+  h+='<button class="big agua" onclick="go(\'limites\')"><span class="bi">📞</span><span><span class="bt">'+
+     t("Me piden algo ahora","Em demanen alguna cosa")+'</span><span class="bd">'+
+     t("el segundo de antes de contestar","el segon d'abans de contestar")+'</span></span></button>';
+  h+='<div class="card"><h2><span class="e">⚙️</span>'+t("Ajustes y datos","Ajustos i dades")+'</h2><div class="btnrow">'+
+     '<button class="btn sm ghost" onclick="go(\'ajustes\')">'+t("Ajustes","Ajustos")+'</button>'+
+     '<button class="btn sm ghost" onclick="exportJSON()">⬇️ '+t("Archivo .json","Fitxer .json")+'</button></div>'+
+     '<div class="nota" style="margin-top:11px">'+t(
+     'Todo lo que escribes aquí <b>se queda en tu móvil</b>. No se sube a ningún sitio. Lo único que sale eres tú, cuando pulsas «enviar por WhatsApp».',
+     "Tot el que escrius aquí <b>es queda al teu mòbil</b>. No es puja enlloc. L'únic que surt ets tu, quan prems «enviar per WhatsApp».")+'</div></div>';
+  h+='<div class="stopcard"><h2><span class="e">🛟</span>'+t("Necesito parar","Necessito parar")+'</h2><p class="muted">'+
+     t("Si ahora mismo la cabeza te está llevando a un sitio oscuro, entra aquí.","Si ara mateix el cap et porta a un lloc fosc, entra aquí.")+'</p>'+
+     '<button class="btn full danger" style="margin-top:9px" onclick="go(\'parar\')">'+t("Abrir","Obrir")+'</button></div>';
+  h+='<div class="card" style="border-color:#dcb4af"><h2><span class="e">🗑️</span>'+t("Borrar","Esborrar")+'</h2><p class="lead">'+
+     t("Elimina todos los datos de este dispositivo.","Elimina totes les dades d'aquest dispositiu.")+'</p>'+
+     '<button class="btn sm danger" onclick="borrarTodo()">'+t("Borrar todo","Esborrar-ho tot")+'</button></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+=footerHTML(); return h;
+};
+
+VIEWS.porque=function(){
+  var h='<h1 class="view-t">'+t("Por qué la llave de paso","Per què la clau de pas")+'</h1><p class="view-s">'+
+     t("Tú esto lo sabes mejor que nadie. Solo hay que aplicarlo hacia dentro.",
+       "Això tu ho saps millor que ningú. Només cal aplicar-ho cap endins.")+'</p>';
+  h+='<div class="card"><h2><span class="e">🌡️</span>'+t("La presión","La pressió")+'</h2><p>'+t(
+     'Una instalación con la presión alta no revienta por donde más aguanta. <b>Revienta por el punto más débil.</b> En ti, el punto más débil no es el trabajo: es lo de casa, el ánimo y las ganas. Por eso trabajamos la presión, no el trabajo.',
+     "Una instal·lació amb la pressió alta no peta per on més aguanta. <b>Peta pel punt més feble.</b> En tu, el punt més feble no és la feina: és el de casa, l'ànim i les ganes. Per això treballem la pressió, no la feina.")+'</p></div>';
+  h+='<div class="card"><h2><span class="e">💧</span>'+t("La fuga","La fuita")+'</h2><p>'+t(
+     'Una fuga pequeña no te inunda en un día. Pero si gotea doce horas, al final te encuentras el suelo encharcado y no sabes de dónde viene. Las cosas por hacer que llevas en la cabeza <b>gotean todo el día</b>. Por eso existe la bandeja: para que goteen ahí y no en ti.',
+     "Una fuita petita no t'inunda en un dia. Però si degota dotze hores, al final et trobes el terra entollat i no saps d'on ve. Les coses per fer que portes al cap <b>degoten tot el dia</b>. Per això existeix la safata: perquè degotin allà i no dins teu.")+'</p>'+
+     '<button class="btn sm ghost" style="margin-top:9px" onclick="go(\'bandeja\')">🧰 '+t("Ir a la bandeja","Anar a la safata")+'</button></div>';
+  h+='<div class="card"><h2><span class="e">🌀</span>'+t("El aire en el circuito","L'aire al circuit")+'</h2><p>'+t(
+     'Cuando hay aire dentro, el radiador hace ruido y no calienta, por mucho que subas la caldera. Los pensamientos en bucle son eso: aire. <b>No se discuten, se purgan.</b> Eso es la parada de pensamiento.',
+     "Quan hi ha aire a dins, el radiador fa soroll i no escalfa, per molt que apugis la caldera. Els pensaments en bucle són això: aire. <b>No es discuteixen, es purguen.</b> Això és la parada de pensament.")+'</p>'+
+     '<button class="btn sm ghost" style="margin-top:9px" onclick="go(\'parada\')">🛑 '+t("Parada de pensamiento","Parada de pensament")+'</button></div>';
+  h+='<div class="card"><h2><span class="e">🫃</span>'+t("Por qué la barriga","Per què la panxa")+'</h2><p>'+t(
+     'Cuando la cabeza va a mil, decirte «tranquilo» no sirve: <b>la cabeza no se apaga con la cabeza</b>. Lo que sí funciona es cambiar de sitio la atención. Y el sitio más honesto que tienes es la barriga: ahí se nota antes que en ningún otro lado si algo te está apretando.',
+     "Quan el cap va a mil, dir-te «tranquil» no serveix: <b>el cap no s'apaga amb el cap</b>. El que sí funciona és canviar de lloc l'atenció. I el lloc més honest que tens és la panxa: allà es nota abans que enlloc si alguna cosa t'està prement.")+'</p>'+
+     '<p class="muted" style="margin-top:8px">'+t(
+     'Por eso es <b>respiración curiosa</b> y no respiración relajante: no vas a cambiar cómo respiras. Vas a <b>mirar</b> cómo respiras. Mirar ya cambia dónde estás.',
+     "Per això és <b>respiració curiosa</b> i no respiració relaxant: no canviaràs com respires. <b>Miraràs</b> com respires. Mirar ja canvia on ets.")+'</p></div>';
+  h+='<div class="card"><h2><span class="e">🚐</span>'+t("Por qué en la furgoneta","Per què a la furgoneta")+'</h2><p>'+t(
+     'Porque es el único sitio del día que es solo tuyo. Antes de bajar todavía no eres «el fontanero», y al subir ya has dejado de serlo. <b>Ese tramo es donde te recoges</b>, y es lo que hace que a casa llegues tú y no el día entero.',
+     "Perquè és l'únic lloc del dia que és només teu. Abans de baixar encara no ets «el lampista», i en pujar ja has deixat de ser-ho. <b>Aquest tram és on et reculls</b>, i és el que fa que a casa hi arribis tu i no el dia sencer.")+'</p></div>';
+  h+='<div class="quote">'+t("No entrenamos para que trabajes mejor. Entrenamos para que haya alguien dentro mientras trabajas.",
+     "No entrenem perquè treballis millor. Entrenem perquè hi hagi algú a dins mentre treballes.")+'</div>';
+  h+=footerHTML(); return h;
+};
+
+/* ================= FRASES ================= */
+function frasesBase(){ return [
+  t("No respiro para calmarme. Respiro para volver a notarme.","No respiro per calmar-me. Respiro per tornar a notar-me."),
+  t("Voy contigo, cuerpo. Esta casa la hacemos juntos.","Vinc amb tu, cos. Aquesta casa la fem junts."),
+  t("La prisa es suya. El ritmo lo pongo yo.","La pressa és seva. El ritme el poso jo."),
+  t("Pedir tiempo no es decir que no. Es no decir que sí en automático.","Demanar temps no és dir que no. És no dir que sí en automàtic."),
+  t("Decir que no a la urgencia de otro no es abandonarlo. Es no abandonarme a mí.","Dir que no a la urgència d'un altre no és abandonar-lo. És no abandonar-me a mi."),
+  t("Darle vueltas no es resolverlo: es pagar dos veces por lo mismo.","Donar-hi voltes no és resoldre-ho: és pagar dues vegades pel mateix."),
+  t("No revienta por donde más aguanta. Revienta por el punto más débil.","No peta per on més aguanta. Peta pel punt més feble."),
+  t("Lo que llevo en la cabeza va en la bandeja, no en el cuerpo.","El que porto al cap va a la safata, no al cos."),
+  t("Puedo hacer bien mi trabajo sin castigarme mientras lo hago.","Puc fer bé la meva feina sense castigar-me mentre la faig."),
+  t("No tengo que caer bien a todos los clientes para valer lo que valgo.","No he de caure bé a tots els clients per valer el que valc."),
+  t("El día se cierra fuera de casa.","El dia es tanca fora de casa."),
+  t("Digo cómo estoy, no por qué estoy así.","Dic com estic, no per què estic així."),
+  t("No lo digo para que lo arreglen. Lo digo para que sepan dónde estoy.","No ho dic perquè ho arreglin. Ho dic perquè sàpiguen on soc."),
+  t("Gracias, cuerpo, por sostener el día. Ya casi.","Gràcies, cos, per sostenir el dia. Ja quasi."),
+  t("Volver mil veces no es fracasar mil veces: es entrenar mil veces.","Tornar mil vegades no és fracassar mil vegades: és entrenar mil vegades."),
+  t("Hoy también cuenta, aunque haya sido un día de mierda.","Avui també compta, encara que hagi estat un dia de merda.")
+]; }
+VIEWS.frases=function(){
+  var h='<h1 class="view-t">'+t("Mis frases","Les meves frases")+'</h1><p class="view-s">'+t(
+    'Para llevar una o dos en la cabeza mientras conduces. Márcalas con la estrella o cópialas.',
+    "Per portar-ne una o dues al cap mentre condueixes. Marca-les amb l'estrella o copia-les.")+'</p>';
+  h+='<div class="card"><h2><span class="e">✍️</span>'+t("Crear la mía","Crear-ne una de meva")+'</h2><textarea id="newFrase" placeholder="'+
+     t("Una frase que quieras llevar contigo…","Una frase que vulguis portar amb tu…")+'"></textarea>'+
+     '<button class="btn sm" style="margin-top:9px" onclick="crearFrase()">'+t("Añadir","Afegir")+'</button></div>';
+  var all=DB.frasesUser.map(function(x){ return {t:x,u:true}; }).concat(frasesBase().map(function(x){ return {t:x,u:false}; }));
+  all.sort(function(a,b){ return (DB.frasesFav.indexOf(b.t)>=0?1:0)-(DB.frasesFav.indexOf(a.t)>=0?1:0); });
+  h+=all.map(function(o){ var fav=DB.frasesFav.indexOf(o.t)>=0, x=q(o.t);
+    return '<div class="verb"><span class="vt">'+esc(o.t)+'</span><span class="va">'+
+      '<button aria-label="'+t("Favorita","Preferida")+'" class="'+(fav?'fav-on':'')+'" onclick="favFrase(\''+x+'\',this)">'+(fav?'★':'☆')+'</button>'+
+      '<button aria-label="'+t("Copiar","Copiar")+'" onclick="copiar(\''+x+'\',this)">📋</button>'+
+      (o.u?'<button aria-label="'+t("Borrar","Esborrar")+'" onclick="delFrase(\''+x+'\')">🗑️</button>':'')+'</span></div>'; }).join('');
+  h+=footerHTML(); return h;
+};
+function crearFrase(){ var x=(document.getElementById('newFrase').value||'').trim(); if(!x) return;
+  if(DB.frasesUser.indexOf(x)<0) DB.frasesUser.unshift(x); save(); go('frases'); }
+function delFrase(x){ x=String(x); DB.frasesUser=DB.frasesUser.filter(function(f){ return f!==x; });
+  DB.frasesFav=DB.frasesFav.filter(function(f){ return f!==x; }); save(); go('frases'); }
+function favFrase(x,btn){ x=String(x); var i=DB.frasesFav.indexOf(x);
+  if(i>=0){ DB.frasesFav.splice(i,1); btn.textContent='☆'; btn.classList.remove('fav-on'); }
+  else { DB.frasesFav.push(x); btn.textContent='★'; btn.classList.add('fav-on'); } save(); }
+
+/* ================= AJUSTES ================= */
+VIEWS.ajustes=function(){
+  var s=DB.settings;
+  var h='<h1 class="view-t">'+t("Ajustes","Ajustos")+'</h1><p class="view-s">'+
+     t("Para que esto sea tuyo de verdad. Todo se queda en este móvil.","Perquè això sigui teu de debò. Tot es queda en aquest mòbil.")+'</p>';
+  h+='<div class="card"><h2><span class="e">👤</span>'+t("Tu nombre","El teu nom")+'</h2><p class="lead">'+t(
+     'Solo para que la app te salude a ti y para que el informe lleve tu nombre.',
+     "Només perquè l'app et saludi a tu i perquè el full porti el teu nom.")+'</p>'+
+     '<input type="text" id="aNom" value="'+esc(s.nombre||'')+'" placeholder="'+t("Tu nombre","El teu nom")+'"></div>';
+  h+='<div class="card"><h2><span class="e">💬</span>'+t("WhatsApp de tu psicólogo","WhatsApp del teu psicòleg")+'</h2><p class="lead">'+t(
+     'Con prefijo y sin espacios (ej.: 34600112233). Si lo dejas vacío, al enviar podrás elegir el contacto a mano.',
+     "Amb prefix i sense espais (ex.: 34600112233). Si el deixes buit, en enviar podràs triar el contacte a mà.")+'</p>'+
+     '<input type="text" id="aPsico" value="'+esc(s.telPsico||'')+'" inputmode="tel" placeholder="34600112233"></div>';
+  h+='<div class="card"><h2><span class="e">🤍</span>'+t("Teléfono de tu pareja","Telèfon de la teva parella")+'</h2><p class="lead">'+t(
+     'Solo se usa en la pantalla «Necesito parar», para que no tengas que buscarlo si algún día lo necesitas.',
+     "Només s'usa a la pantalla «Necessito parar», perquè no l'hagis de buscar si algun dia el necessites.")+'</p>'+
+     '<input type="text" id="aPareja" value="'+esc(s.telPareja||'')+'" inputmode="tel" placeholder="600112233"></div>';
+  h+='<div class="ok-flash" id="okflash"></div>';
+  h+='<div class="btnrow"><button class="btn full" onclick="guardarAjustes()">'+t("Guardar","Desar")+'</button></div>';
+  h+='<div class="card" style="margin-top:16px"><h2><span class="e">⏰</span>'+t("Que no se te olvide","Que no se t'oblidi")+'</h2><p>'+t(
+     'Esta app no te va a avisar sola. Lo que funciona de verdad es <b>engancharla a algo que ya haces</b>:',
+     "Aquesta app no t'avisarà sola. El que funciona de debò és <b>enganxar-la a alguna cosa que ja fas</b>:")+'</p>'+
+     '<ol class="steps"><li>'+t("<b>Ponla en la pantalla de inicio</b> del móvil, la primera, con el icono a la vista.",
+        "<b>Posa-la a la pantalla d'inici</b> del mòbil, la primera, amb la icona a la vista.")+'</li>'+
+     '<li>'+t("<b>Una pegatina en el volante</b> o en el salpicadero. Cuando la veas, una respiración.",
+        "<b>Un adhesiu al volant</b> o al davantal. Quan el vegis, una respiració.")+'</li>'+
+     '<li>'+t("<b>Una alarma a las 21:00</b> que se llame «parte del día» para mandar el informe.",
+        "<b>Una alarma a les 21:00</b> que es digui «full del dia» per enviar-lo.")+'</li></ol>'+
+     '<p class="muted">'+t("El objetivo no es acordarse. Es que <b>el sitio te lo recuerde</b>.",
+        "L'objectiu no és recordar-se'n. És que <b>el lloc t'ho recordi</b>.")+'</p></div>';
+  h+=footerHTML(); return h;
+};
+function guardarAjustes(){
+  DB.settings.nombre=(document.getElementById('aNom').value||'').trim();
+  DB.settings.telPsico=(document.getElementById('aPsico').value||'').replace(/[^\d+]/g,'');
+  DB.settings.telPareja=(document.getElementById('aPareja').value||'').replace(/[^\d+]/g,'');
+  save(); flash(t("Guardado ✓","Desat ✓")); render();
+}
+
+/* ================= NECESITO PARAR ================= */
+VIEWS.parar=function(){
+  var s=DB.settings;
+  var h='<h1 class="view-t">'+t("Necesito parar","Necessito parar")+'</h1><p class="view-s">'+t(
+    'Si ahora mismo la cabeza te está llevando a un sitio oscuro, no hace falta que hagas nada bien. Solo <b>esperar acompañado</b>.',
+    "Si ara mateix el cap et porta a un lloc fosc, no cal que facis res bé. Només <b>esperar acompanyat</b>.")+'</p>';
+  h+='<div class="stopcard"><h2><span class="e">🫁</span>'+t("Primero, el cuerpo","Primer, el cos")+'</h2><p class="muted">'+t(
+     'Suelta el aire muy despacio. No tienes que sentirte mejor. Solo tienes que quedarte.',
+     "Deixa anar l'aire molt a poc a poc. No t'has de sentir millor. Només t'has de quedar.")+'</p>'+
+     ringHTML(t("Suelta","Deixa anar"),t("Esto que sientes ahora no es el final. Es un pico, y los picos bajan.",
+       "Això que sents ara no és el final. És un pic, i els pics baixen."),160)+
+     '<button class="btn full slate" id="spBtn" onclick="pararResp(this)">'+t("Respirar conmigo","Respirar amb mi")+'</button></div>';
+
+  h+='<div class="card"><h2><span class="e">📵</span>'+t("No decidas nada ahora","No decideixis res ara")+'</h2><p>'+t(
+     'Con el cuerpo así, <b>todo lo que pienses va a parecer definitivo y no lo es</b>. Ya has pasado por aquí antes y pasó. No es una frase bonita: es tu historial.',
+     "Amb el cos així, <b>tot el que pensis semblarà definitiu i no ho és</b>. Ja has passat per aquí abans i va passar. No és una frase bonica: és el teu historial.")+'</p>'+
+     '<ol class="steps"><li>'+t("<b>No te quedes solo.</b> Aunque no te apetezca hablar, estar al lado de alguien ya cambia el cuerpo.",
+        "<b>No et quedis sol.</b> Encara que no et vingui de gust parlar, ser al costat d'algú ja canvia el cos.")+'</li>'+
+     '<li>'+t("<b>Llama a alguien</b> de los de abajo. No hace falta que expliques nada: «no estoy bien, ¿puedes estar un rato?» es suficiente.",
+        "<b>Truca a algú</b> dels de sota. No cal que expliquis res: «no estic bé, pots estar una estona?» ja n'hi ha prou.")+'</li>'+
+     '<li>'+t("<b>Si tomas medicación</b>, no la cambies ni la dejes por tu cuenta hoy.",
+        "<b>Si prens medicació</b>, no la canviïs ni la deixis pel teu compte avui.")+'</li></ol></div>';
+
+  h+='<div class="card"><h2><span class="e">📞</span>'+t("Llamar ahora","Trucar ara")+'</h2>';
+  if(s.telPareja) h+='<a class="callbtn" href="tel:'+esc(s.telPareja)+'"><span class="ce">🤍</span><span>'+
+     t("Tu pareja","La teva parella")+'<small>'+esc(s.telPareja)+'</small></span></a>';
+  if(s.telPsico) h+='<a class="callbtn" href="tel:'+esc(s.telPsico)+'"><span class="ce">🧭</span><span>'+
+     t("Tu psicólogo","El teu psicòleg")+'<small>'+esc(s.telPsico)+'</small></span></a>';
+  h+='<a class="callbtn" href="tel:024"><span class="ce">☎️</span><span>'+
+     t("024 · Línea de atención a la conducta suicida","024 · Línia d'atenció a la conducta suïcida")+'<small>'+
+     t("Gratuita, 24 h, confidencial. En toda España.","Gratuïta, 24 h, confidencial. A tot l'Estat.")+'</small></span></a>';
+  h+='<a class="callbtn" href="tel:112"><span class="ce">🚑</span><span>'+t("112 · Emergencias","112 · Emergències")+'<small>'+
+     t("Si crees que ahora mismo no puedes garantizar tu seguridad.","Si creus que ara mateix no pots garantir la teva seguretat.")+'</small></span></a>';
+  if(!s.telPareja&&!s.telPsico) h+='<div class="nota">'+t(
+     "Pon el teléfono de tu pareja y el de tu psicólogo en ","Posa el telèfon de la teva parella i el del teu psicòleg a ")+
+     '<button class="link" onclick="go(\'ajustes\')">'+t("Ajustes","Ajustos")+'</button>'+
+     t(" para tenerlos aquí, a un toque, sin buscarlos."," per tenir-los aquí, a un toc, sense buscar-los.")+'</div>';
+  h+='</div>';
+
+  h+='<div class="quote">'+t("Que hoy pese así no significa que vaya a pesar así siempre. Significa que hoy pesa. Y hoy se acaba.",
+     "Que avui pesi així no vol dir que pesarà així sempre. Vol dir que avui pesa. I avui s'acaba.")+'</div>';
+  h+='<div class="nota">'+t(
+     'Esta pantalla <b>no sustituye</b> a tu psicólogo ni a tu médico. Si esto se repite o va a más, díselo en la siguiente sesión aunque ya se te haya pasado.',
+     "Aquesta pantalla <b>no substitueix</b> el teu psicòleg ni el teu metge. Si això es repeteix o va a més, digues-l'hi a la sessió següent encara que ja t'hagi passat.")+'</div>';
+  h+='<div class="btnrow" style="margin-top:12px"><button class="btn ghost full" onclick="go(\'furgo\')">'+t("Volver","Tornar")+'</button></div>';
+  h+=footerHTML(); return h;
+};
+function pararResp(btn){ btn.disabled=true;
+  breathRun({fases:[[t("Coge aire","Agafa aire"),4,1.14],[t("Suelta muy despacio","Deixa anar molt a poc a poc"),8,0.80]], ciclos:4,
+    verbs:[t("No tienes que sentirte mejor. Solo quedarte.","No t'has de sentir millor. Només quedar-t'hi."),
+           t("Esto es un pico. Los picos bajan.","Això és un pic. Els pics baixen."),
+           t("Estás haciendo lo más difícil: esperar.","Estàs fent el més difícil: esperar."),
+           t("No estás solo. Hay gente a un botón.","No estàs sol. Hi ha gent a un botó.")],
+    finTxt:t("Aquí","Aquí"), finVerb:t("Has aguantado. Ahora llama a alguien.","Has aguantat. Ara truca a algú."),
+    onEnd:function(){ if(btn) btn.disabled=false; ev('parar'); }}); }
+
+/* ================= COMUNES ================= */
+function footerHTML(){ return '<footer><b>Centre APRENS</b> · '+t("Entrenamiento TEC–AIS","Entrenament TEC–AIS")+'<br>'+
+  t("Material de apoyo terapéutico personalizado. Se interpreta dentro de tu proceso en sesión.",
+    "Material de suport terapèutic personalitzat. S'interpreta dins del teu procés en sessió.")+'<br>'+
+  t("Todo se guarda solo en este dispositivo.","Tot es desa només en aquest dispositiu.")+'</footer>'; }
+function copiar(txt,btn){ txt=String(txt);
+  function ok(){ if(btn){ var o=btn.textContent; btn.textContent='✓'; setTimeout(function(){ btn.textContent=o; },1500); } }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(fb); } else { fb(); }
+  function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
+}
+function exportJSON(){ try{
+    var blob=new Blob([JSON.stringify({app:'la_llave_de_paso',v:1,exportado:new Date().toISOString(),db:DB},null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='llave_de_paso_'+hoy()+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+    flash(t("Archivo generado ✓","Fitxer generat ✓"));
+  }catch(e){ alert(t("No se pudo generar el archivo.","No s'ha pogut generar el fitxer.")); } }
+function borrarTodo(){ if(confirm(t("¿Borrar TODOS los datos de este dispositivo?","Esborrar TOTES les dades d'aquest dispositiu?"))){
+    if(confirm(t("No se puede deshacer. ¿Confirmas?","No es pot desfer. Ho confirmes?"))){ DB=clone(DEFAULT); save(); go('furgo'); } } }
+
+/* arranque */
+document.documentElement.lang=LANG;
+document.getElementById("btEs").classList.toggle("on", LANG==="es");
+document.getElementById("btCa").classList.toggle("on", LANG==="ca");
+render();
+
+/* PWA: instalable y disponible sin cobertura (sótanos, garajes, obra) */
+if("serviceWorker" in navigator && window.top===window.self){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+</script>
+</body>
+</html>
