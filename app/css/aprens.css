@@ -211,3 +211,13 @@ table.t td.r{text-align:center;font-weight:700}
 .cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:14px;font-size:12px;line-height:1.7;
   color:#333;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:12px;user-select:all}
 .acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* Los libros de Tòfol Villalonga (hub) */
+.libro-card{cursor:default;display:flex;flex-direction:column}
+.libro-card:active{transform:none}
+.libro-card .hub-tag{align-self:flex-start;margin:6px 0 0}
+.libro-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:12px}
+.libro-btn{flex:1 1 auto;text-align:center;font-size:12.5px;font-weight:700;text-decoration:none;padding:9px 10px;border-radius:10px;
+  background:var(--azul);color:#fff;border:1.5px solid var(--azul);min-height:38px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
+.libro-btn.alt{background:transparent;color:var(--azul)}
+.libro-btn:focus-visible{outline:3px solid var(--oro,#B9805A);outline-offset:2px}
