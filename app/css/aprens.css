@@ -243,3 +243,5 @@ table.t td.r{text-align:center;font-weight:700}
 @keyframes idxFlash{from{background:rgba(63,107,116,.18)}to{background:transparent}}
 .hub-sec.idx-hit{border-radius:10px;outline:none;animation:idxFlash 1.2s ease-out}
 @media (prefers-reduced-motion:reduce){.hub-sec.idx-hit{animation:none}}
+/* Herramienta alojada en otra web: se abre fuera de la app */
+.hub-tag.fuera{background:#f6efe1;color:var(--oro)}

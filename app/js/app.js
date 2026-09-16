@@ -141,6 +141,15 @@
         <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
         <span class="hub-tag soon">Próximamente</span></div>`;
     }
+    // Herramienta alojada en otra web (no dentro de la app): enlace normal que
+    // se abre fuera. No entra por el router ni por un iframe (la CSP solo
+    // permite marcos del propio origen).
+    if(t.externa){
+      return `<a class="hub-card" href="${t.externa}" target="_blank" rel="noopener"
+        aria-label="${t.nombre} · se abre fuera de la app"><span class="hub-emoji">${t.emoji}</span>
+        <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
+        <span class="hub-tag fuera">Abrir fuera ↗</span></a>`;
+    }
     return `<a class="hub-card" href="#/tool/${t.id}"><span class="hub-emoji">${t.emoji}</span>
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
       <span class="hub-tag">Abrir →</span></a>`;
@@ -461,7 +470,9 @@
 
   function renderTool(id){
     const tool = (window.APRENS_TOOLS||[]).find(t=>t.id===id);
-    if(!tool || !tool.migrada){ location.hash = "#/"; return; }
+    // Las externas no tienen pantalla dentro de la app: si se llega por URL,
+    // se vuelve al hub (desde el hub se abren con su enlace).
+    if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
