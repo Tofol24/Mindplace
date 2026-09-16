@@ -157,13 +157,9 @@ window.APRENS_TOOLS = [
     desc:"Cuestionario para mirar tu relación desde dentro: contexto, lo que funciona, un conflicto reciente, tus formas de protegerte, cercanía y autonomía, confianza, intimidad y objetivos. Se responde individualmente, con el código de pareja que os da vuestro psicólogo/a, y se guarda solo en tu dispositivo.",
     migrada:true, iframe:"pareja/evaluacion.html" },
 
-  // Vive en su propia web (aprens-dolorcronico.netlify.app), no dentro de la
-  // app: por eso es un enlace que se abre fuera y no un iframe. La CSP de
-  // APRENS solo permite marcos del propio origen (frame-src 'self') y se queda
-  // intacta: la app no carga nada de ese dominio.
   { id:"dolor_cronico", emoji:"\ud83e\ude79", nombre:"Cuestionario de dolor crónico",
-    desc:"Valoración del dolor crónico y del contexto psicosocial que lo acompaña, referida a las últimas cuatro semanas. Se abre fuera de la app, en su propia web, y al terminar envía las respuestas a tu psicólogo.",
-    migrada:true, externa:"https://aprens-dolorcronico.netlify.app/" }
+    desc:"Valoración del dolor crónico y del contexto psicosocial que lo acompaña, referida a las últimas cuatro semanas: cómo es el dolor, cómo condiciona tu día a día y qué te ayuda. Al terminar eliges tú si lo envías a tu psicólogo.",
+    migrada:true, iframe:"tools-standalone/dolor-cronico.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
