@@ -65,19 +65,23 @@
 
   // «Los libros de Tòfol Villalonga»: enlaces de compra en Amazon (se abren fuera de la app).
   // Son enlaces normales: no cargan nada externo dentro de la app (la CSP sigue intacta).
+  // Cada libro con su ASIN a la vista: los enlaces cortos (amzn.eu/d/...) no
+  // dejan ver a qué libro van y estaban desplazados una posición, así que cada
+  // ficha llevaba al libro anterior. Con la URL canónica se comprueba de un
+  // vistazo que el enlace es el de su ficha.
   const LIBROS = [
     { nombre:"Cría desde dentro", idioma:"Castellano", color:"#1F5F86",
       desc:"El arte de acompañar a tus hijos conectando con tus propias sensaciones.",
-      kindle:"https://amzn.eu/d/07TG2A10", papel:"https://amzn.eu/d/05wsQQvM" },
+      kindle:"https://www.amazon.es/dp/B0FD9NS3PJ", papel:"https://www.amazon.es/dp/B0FDC5N8KM" },
     { nombre:"Trasciende desde dentro", idioma:"Castellano", color:"#D99A1E",
       desc:"La conciencia que acepta, transforma y trasciende.",
-      kindle:"https://amzn.eu/d/0aorDOw7", papel:"https://amzn.eu/d/0ahyQbHm" },
+      kindle:"https://www.amazon.es/dp/B0FD9NSFZW", papel:"https://www.amazon.es/dp/B0FDF628W3" },
     { nombre:"Lidera tu mon(e)a", idioma:"Castellano", color:"#2B2926",
       desc:"Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones.",
-      kindle:"https://amzn.eu/d/08vcVg1T", papel:"https://amzn.eu/d/06pa0Kut" },
+      kindle:"https://www.amazon.es/dp/B0DW919TSR", papel:"https://www.amazon.es/dp/B0DW8R9ZBC" },
     { nombre:"Lidera la teva mon(e)a", idioma:"Català", color:"#2B2926",
       desc:"Estratègies pràctiques per reduir el sobrepensament, liderar la teva atenció i millorar les teves relacions.",
-      kindle:"https://amzn.eu/d/07cTo4UW", papel:"https://amzn.eu/d/09x62GXb" },
+      kindle:"https://www.amazon.es/dp/B0DW8ZQY19", papel:"https://www.amazon.es/dp/B0DWFMRFZW" },
     { nombre:"Teoría del Efecto Consciente (TEC)", idioma:"Castellano", color:"#C23A3A",
       desc:"La atención como vector causal: un metamodelo para la psicología clínica.",
       kindle:"https://www.amazon.es/dp/B0HJNZY46W", papel:"https://www.amazon.es/dp/B0HJWL6K65" }
