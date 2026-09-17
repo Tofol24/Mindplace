@@ -53,6 +53,8 @@
   '  transform:translate(-50%,-50%) scale(.86);opacity:.35;will-change:transform,opacity;pointer-events:none;}' +
   '.ra-layer{overflow:visible;pointer-events:none;}' +
   '.ra-figure{opacity:.96;}' +
+  '.respiro-ais.ra-dark .ra-stage{background:radial-gradient(120% 90% at 50% 42%,#141c28 0%,#0a0e16 66%,#05070c 100%);border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.28),inset 0 0 70px rgba(0,0,0,.55);overflow:hidden;}' +
+  '.respiro-ais.ra-dark .ra-figure{opacity:1;}' +
   '.ra-zone-glow{opacity:0;}' +
   '.ra-zone-label text{font-family:var(--ra-mono);font-size:23px;letter-spacing:3px;fill:var(--ra-muted);font-weight:600;}' +
   '.ra-zone-label line{stroke:var(--ra-muted);stroke-opacity:.4;stroke-width:2;}' +
@@ -166,6 +168,17 @@
       '<circle cx="410" cy="772" r="56" fill="#FCEBB6" fill-opacity=".45" stroke="#EBCB77" stroke-width="2"/>'
   };
 
+  /* ---------- Ilustración realista (imagen del organismo, dibujo del terapeuta) ----------
+     Fondo oscuro (visor); el recorrido sigue la anatomía: nariz → tráquea → entre los
+     pulmones → estómago/vientre. Se muestra sobre un visor oscuro para funcionar en
+     páginas de fondo claro. */
+  var REALISTIC = {
+    src: '../assets/respiro/organismo.webp',
+    viewBox: '0 0 1024 1536',
+    route: [[508,235],[508,340],[508,430],[512,560],[516,700],[512,860],[505,1000]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }
+  };
+
   /* ---------- Textos ---------- */
   var I18N = {
     es: {
@@ -255,11 +268,21 @@
     var showZones = opts.showZones !== false;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    var fig = opts.image ? {
-      viewBox: opts.image.viewBox || '0 0 820 1240',
-      route: opts.image.route, anchors: opts.image.anchors,
-      glow: opts.image.glow || {}, labels: opts.image.labels || {}
-    } : (opts.figure === 'child' ? CHILD : ORGANISM);
+    /* Figura: por defecto la ilustración realista (imagen). 'organism-svg' usa la
+       silueta vectorial ligera; 'child' la infantil; opts.image una imagen propia. */
+    var fig, isImage = false, imgSrc = null, dark = false;
+    if (opts.image){
+      isImage = true; imgSrc = opts.image.src; dark = !!opts.dark;
+      fig = { viewBox: opts.image.viewBox || '0 0 820 1240', route: opts.image.route,
+              anchors: opts.image.anchors, glow: opts.image.glow || {}, labels: opts.image.labels || null };
+    } else if (opts.figure === 'child'){
+      fig = CHILD;
+    } else if (opts.figure === 'organism-svg'){
+      fig = ORGANISM;
+    } else {                                  /* 'organism' / 'realistic' (defecto) */
+      isImage = true; imgSrc = REALISTIC.src; dark = true;
+      fig = { viewBox: REALISTIC.viewBox, route: REALISTIC.route, anchors: REALISTIC.anchors, glow: {}, labels: null };
+    }
 
     /* textos combinados (permite frases a medida por herramienta, p. ej. flor/vela) */
     function str(){
@@ -276,11 +299,14 @@
     var eng = makeEngine(rhythm);
     prepRoute(fig, eng.Q_EXIT);
     var ZQ = { z1: 0, z2: 0.5, z3: 1 };
-    var useZones = showZones && !opts.image && !!fig.labels;
+    var useZones = showZones && !isImage && !!fig.labels;
+    var vb = fig.viewBox.split(/\s+/);   /* "0 0 W H" */
+    var ls = (parseFloat(vb[2]) || 820) / 820;   /* escala de las luces según el ancho del viewBox */
+    function rr(n){ return (n * ls).toFixed(1); }
 
     /* markup */
-    var figLayer = opts.image
-      ? '<img class="ra-figure" src="' + opts.image.src + '" alt="" width="820" height="1240" draggable="false" style="object-fit:contain;">'
+    var figLayer = isImage
+      ? '<img class="ra-figure" src="' + imgSrc + '" alt="" draggable="false" style="object-fit:contain;">'
       : '';
     var zonesMarkup = '';
     if (useZones){
@@ -293,8 +319,9 @@
       });
     }
     container.classList.add('respiro-ais');
+    if (dark) container.classList.add('ra-dark');
     container.innerHTML =
-      '<div class="ra-stage">' +
+      '<div class="ra-stage" style="aspect-ratio:' + vb[2] + '/' + vb[3] + '">' +
         '<div class="ra-halo" aria-hidden="true"></div>' +
         figLayer +
         '<svg class="ra-layer" viewBox="' + fig.viewBox + '" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
@@ -304,14 +331,14 @@
             '<radialGradient id="raDot"><stop offset="0%" stop-color="#FFF6DF" stop-opacity="1"/><stop offset="35%" stop-color="#F3C877" stop-opacity=".75"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>' +
             '<radialGradient id="raAnchor"><stop offset="0%" stop-color="#FFFBEF" stop-opacity="1"/><stop offset="30%" stop-color="#FFE08A" stop-opacity=".92"/><stop offset="66%" stop-color="#F6C24E" stop-opacity=".34"/><stop offset="100%" stop-color="#F6C24E" stop-opacity="0"/></radialGradient>' +
           '</defs>' +
-          (opts.image ? '' : '<g class="ra-figure">' + fig.svg + '</g>') +
+          (isImage ? '' : '<g class="ra-figure">' + fig.svg + '</g>') +
           zonesMarkup +
           '<g class="ra-anchor" data-el="anchor"><g data-el="anchorScale">' +
-            '<circle r="128" fill="url(#raAnchor)"/><circle r="64" fill="none" stroke="#FFD97A" stroke-opacity=".72" stroke-width="2.5"/><circle r="10" fill="#FFFBEF"/></g></g>' +
-          '<path class="ra-trail-soft" data-el="trailSoft" d=""/>' +
-          '<path class="ra-trail-core" data-el="trailCore" d=""/>' +
-          '<g class="ra-air" data-el="air"><circle r="40" fill="url(#raAir)"/><circle r="8" fill="#EAF6FF"/></g>' +
-          '<g class="ra-dot" data-el="dot"><circle r="44" fill="url(#raDot)"/><circle r="9" fill="#FFF6DF"/></g>' +
+            '<circle r="' + rr(128) + '" fill="url(#raAnchor)"/><circle r="' + rr(64) + '" fill="none" stroke="#FFD97A" stroke-opacity=".72" stroke-width="' + rr(2.5) + '"/><circle r="' + rr(10) + '" fill="#FFFBEF"/></g></g>' +
+          '<path class="ra-trail-soft" data-el="trailSoft" d="" style="stroke-width:' + rr(16) + 'px"/>' +
+          '<path class="ra-trail-core" data-el="trailCore" d="" style="stroke-width:' + rr(4) + 'px"/>' +
+          '<g class="ra-air" data-el="air"><circle r="' + rr(40) + '" fill="url(#raAir)"/><circle r="' + rr(8) + '" fill="#EAF6FF"/></g>' +
+          '<g class="ra-dot" data-el="dot"><circle r="' + rr(44) + '" fill="url(#raDot)"/><circle r="' + rr(9) + '" fill="#FFF6DF"/></g>' +
         '</svg>' +
       '</div>' +
       '<div class="ra-ui"><div class="ra-pill" aria-live="polite"><span class="pl"></span><span class="pn"></span><span class="ph"></span></div></div>' +
@@ -430,7 +457,7 @@
       toggle: function(){ if (running) api.stop(); else api.start(); },
       isRunning: function(){ return running; },
       setLang: function(l){ lang = (l === 'en') ? 'en' : 'es'; lastPhase = null; paintLabels(); if (running){ /* refresca pastilla en el próximo frame */ } },
-      destroy: function(){ api.stop(); container.innerHTML = ''; container.classList.remove('respiro-ais','ra-running'); }
+      destroy: function(){ api.stop(); container.innerHTML = ''; container.classList.remove('respiro-ais','ra-running','ra-dark'); container.removeAttribute('data-phase'); }
     };
     if (control) control.addEventListener('click', api.toggle);
 
@@ -439,5 +466,5 @@
     return api;
   }
 
-  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM, CHILD: CHILD };
+  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM, CHILD: CHILD, REALISTIC: REALISTIC };
 })(typeof window !== 'undefined' ? window : this);
