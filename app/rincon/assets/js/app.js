@@ -72,10 +72,13 @@
   function juegoRespiracion() {
     stopTimer();
     var TOTAL = 4;
+    var figMode = "child";   // 'child' = flor y vela (dibujo) · 'child-real' = organismo realista
     view.innerHTML =
       '<div class="game">' +
         '<h2>🌸 La flor y la vela</h2>' +
         '<p class="lead">Huele la flor por la nariz… y apaga la vela por la boca, despacito. Fíjate: una lucecita se queda encendida en tu barriga.</p>' +
+        '<div class="fig-toggle"><button class="ghost-btn on" id="figDibujo" type="button">🎨 Dibujo</button>' +
+          '<button class="ghost-btn" id="figReal" type="button">🫁 Real</button></div>' +
         '<div id="respiroBox"></div>' +
         '<div class="breath-count" id="bCount">' + TOTAL + ' respiraciones</div>' +
         '<div class="game-acts"><button class="big-btn" id="bStart">Empezar</button>' +
@@ -84,30 +87,42 @@
       '</div>';
     $("#bHome").addEventListener("click", goHome);
     var count = $("#bCount"), done = $("#bDone"), start = $("#bStart"), box = $("#respiroBox");
-    // La respiración de dos luces (componente RespiroAIS) con figura infantil:
-    // el aire (azul) es el cebo y la conciencia (amarilla) se queda como lucecita en la barriga.
-    start.addEventListener("click", function () {
-      stopTimer(); done.textContent = ""; count.textContent = TOTAL + " respiraciones";
+    var LABELS = {
+      phase: { inhale: "Huele la flor", anchor: "Guárdalo", exhale: "Apaga la vela", pause: "Descansa" },
+      hint: { inhale: "entra el aire 🌸", anchor: "la lucecita se queda en la barriga", exhale: "sopla y apaga 🕯️", pause: "muy bien" }
+    };
+    // La respiración de dos luces (componente RespiroAIS): el aire (azul) es el cebo
+    // y la conciencia (amarilla) se queda como lucecita en la barriga.
+    function mountFig(autostart) {
       if (!window.RespiroAIS) return;
-      start.textContent = "Otra vez";
+      if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
       activeRespiro = RespiroAIS.mount(box, {
-        lang: "es", figure: "child", showControl: false, showZones: false, autostart: true,
-        rhythm: { inhale: 4000, anchor: 2000, exhale: 6000, pause: 2000 },
-        labels: {
-          phase: { inhale: "Huele la flor", anchor: "Guárdalo", exhale: "Apaga la vela", pause: "Descansa" },
-          hint: { inhale: "entra el aire 🌸", anchor: "la lucecita se queda en la barriga", exhale: "sopla y apaga 🕯️", pause: "muy bien" }
-        },
+        lang: "es", figure: figMode, showControl: false, showZones: false, autostart: !!autostart,
+        rhythm: { inhale: 4000, anchor: 2000, exhale: 6000, pause: 2000 }, labels: LABELS,
         onCycle: function (n) {
           count.textContent = Math.max(0, TOTAL - n) + " respiraciones";
           if (n >= TOTAL) {
-            activeRespiro.stop();
-            count.textContent = "";
+            activeRespiro.stop(); count.textContent = "";
             done.textContent = "Has respirado como una campeona. La lucecita se queda contigo. 🌟";
-            confeti(); marcarPractica("respiracion");
+            confeti(); marcarPractica("respiracion"); start.textContent = "Otra vez";
           }
         }
       });
+    }
+    function setFig(mode) {
+      figMode = mode;
+      $("#figDibujo").classList.toggle("on", mode === "child");
+      $("#figReal").classList.toggle("on", mode === "child-real");
+      var running = activeRespiro && activeRespiro.isRunning();
+      mountFig(running);   // conserva el estado (si respiraba, sigue)
+    }
+    $("#figDibujo").addEventListener("click", function () { setFig("child"); });
+    $("#figReal").addEventListener("click", function () { setFig("child-real"); });
+    start.addEventListener("click", function () {
+      done.textContent = ""; count.textContent = TOTAL + " respiraciones";
+      mountFig(true); start.textContent = "Otra vez";
     });
+    mountFig(false);   // vista previa en reposo con la figura por defecto
   }
 
   /* ---------------- 🤍 ABRAZO SENTIDO ---------------- */

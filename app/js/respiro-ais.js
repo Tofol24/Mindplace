@@ -178,6 +178,13 @@
     route: [[508,235],[508,340],[508,430],[512,560],[516,700],[512,860],[505,1000]],
     anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }
   };
+  /* Versión infantil realista (mismo estilo, cuerpo de niño). */
+  var REALISTIC_CHILD = {
+    src: '../assets/respiro/organismo_nino.webp',
+    viewBox: '0 0 1024 1536',
+    route: [[508,225],[508,330],[508,420],[510,520],[512,600],[510,700],[505,790]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }
+  };
 
   /* ---------- Textos ---------- */
   var I18N = {
@@ -277,6 +284,9 @@
               anchors: opts.image.anchors, glow: opts.image.glow || {}, labels: opts.image.labels || null };
     } else if (opts.figure === 'child'){
       fig = CHILD;
+    } else if (opts.figure === 'child-real'){
+      isImage = true; imgSrc = REALISTIC_CHILD.src; dark = true;
+      fig = { viewBox: REALISTIC_CHILD.viewBox, route: REALISTIC_CHILD.route, anchors: REALISTIC_CHILD.anchors, glow: {}, labels: null };
     } else if (opts.figure === 'organism-svg'){
       fig = ORGANISM;
     } else {                                  /* 'organism' / 'realistic' (defecto) */
@@ -466,5 +476,5 @@
     return api;
   }
 
-  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM, CHILD: CHILD, REALISTIC: REALISTIC };
+  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM, CHILD: CHILD, REALISTIC: REALISTIC, REALISTIC_CHILD: REALISTIC_CHILD };
 })(typeof window !== 'undefined' ? window : this);
