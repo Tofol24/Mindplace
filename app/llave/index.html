@@ -244,7 +244,7 @@
 var LS="llave_paso_db_v1", MEM=null;
 function lsGet(){ try{return localStorage.getItem(LS);}catch(e){return MEM;} }
 function lsSet(v){ try{localStorage.setItem(LS,v);}catch(e){MEM=v;} }
-var DEFAULT={ settings:{nombre:"",telPsico:"",telPareja:"",lang:""}, eventos:[], dias:{}, bandeja:[], frasesFav:[], frasesUser:[] };
+var DEFAULT={ settings:{nombre:"",telPsico:"",telPareja:"",lang:"",voz:false}, eventos:[], dias:{}, bandeja:[], frasesFav:[], frasesUser:[] };
 var DB=load();
 function load(){ try{ var d=JSON.parse(lsGet()); if(!d) return clone(DEFAULT); var b=clone(DEFAULT);
   for(var k in d){ b[k]=d[k]; } for(var s in DEFAULT.settings){ if(b.settings[s]===undefined) b.settings[s]=DEFAULT.settings[s]; } return b;
@@ -319,7 +319,7 @@ function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
 function render(){
   document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.furgo)();
   var navId=VIEW;
-  if(["antes","vuelvo","cierre","parada","limites"].indexOf(VIEW)>=0) navId="furgo";
+  if(["antes","vuelvo","cierre","parada","limites","flojo"].indexOf(VIEW)>=0) navId="furgo";
   if(["frases","ajustes","porque","parar"].indexOf(VIEW)>=0) navId="mas";
   document.getElementById('nav').innerHTML=navItems().map(function(n){
     return '<button class="tab '+(navId===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join('');
@@ -331,6 +331,27 @@ function render(){
 }
 var VIEWS={};
 function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textContent=msg||t("Hecho ✓","Fet ✓"); f.classList.add('show'); setTimeout(function(){ f.classList.remove('show'); },3000); } }
+
+/* ---------- guía por voz (opcional, hands-free para el oficio) ---------- */
+/* Un fontanero tiene las manos ocupadas/sucias: poder respirar guiado por voz,
+   sin mirar la pantalla, es la diferencia entre hacerlo o no. Usa la voz del
+   propio dispositivo (SpeechSynthesis); nada sale del móvil. Opcional y silenciable. */
+var VOZ_OK=('speechSynthesis' in window);
+function speak(txt){
+  if(!DB.settings.voz || !VOZ_OK || !txt) return;
+  try{
+    var u=new SpeechSynthesisUtterance(String(txt).replace(/<[^>]+>/g,''));
+    u.lang=(LANG==='ca'?'ca-ES':'es-ES'); u.rate=0.92; u.pitch=1;
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function vozLabel(){ return (DB.settings.voz?'🔊 ':'🔇 ')+t("Guía por voz","Guia per veu"); }
+function toggleVoz(){
+  DB.settings.voz=!DB.settings.voz; save();
+  var b=document.getElementById('vozBtn'); if(b) b.innerHTML=vozLabel();
+  if(DB.settings.voz){ speak(t("Guía por voz activada","Guia per veu activada")); }
+  else if(VOZ_OK){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+}
 
 /* ---------- motor de respiración (reutilizable) ---------- */
 function respFases(){ return [[t("Coge aire","Agafa aire"),4,1.16],["·",1,1.16],[t("Suelta despacio","Deixa anar a poc a poc"),6,0.84]]; }
@@ -345,6 +366,7 @@ function breathRun(opts){
       if(c>=ciclos){ fin(); return; } }
     var f=fases[i], ring=document.getElementById('ring'); if(!ring) return;
     var rf=document.getElementById('rf'); if(rf) rf.textContent=f[0];
+    if(f[0] && f[0]!=='·') speak(f[0]);
     ring.style.transitionDuration=f[1]+'s'; ring.style.transform='scale('+f[2]+')';
     var left=f[1]; var rs=document.getElementById('rs'); if(rs) rs.textContent=left+'s';
     var iv=setInterval(function(){ left--; var r=document.getElementById('rs'); if(!r){ clearInterval(iv); return; }
@@ -355,7 +377,8 @@ function breathRun(opts){
     if(ring){ ring.style.transitionDuration='.6s'; ring.style.transform='scale(1)'; }
     var rf=document.getElementById('rf'); if(rf) rf.textContent=opts.finTxt||t("Aquí","Aquí");
     var rs=document.getElementById('rs'); if(rs) rs.textContent='';
-    setVerb(opts.finVerb||t("Ya estás aquí. Nota la barriga un segundo más.","Ja hi ets. Nota la panxa un segon més."));
+    var fv=opts.finVerb||t("Ya estás aquí. Nota la barriga un segundo más.","Ja hi ets. Nota la panxa un segon més.");
+    setVerb(fv); speak(fv);
     if(onEnd) onEnd();
   }
   function setVerb(x){ var el=document.getElementById('rverb'); if(!el||!x) return;
@@ -366,7 +389,9 @@ function ringHTML(inicial,verbo,size){
   var s=size?('width:'+size+'px;height:'+size+'px'):'';
   return '<div class="ring-wrap"><div class="ring" id="ring" style="'+s+'"><div class="ri"><div>'+
     '<div class="rf" id="rf">'+esc(inicial||t("Prepárate","Prepara't"))+'</div><div class="rs" id="rs"></div></div></div></div>'+
-    '<div class="rverb" id="rverb">'+esc(verbo||'')+'</div></div>';
+    '<div class="rverb" id="rverb">'+esc(verbo||'')+'</div>'+
+    (VOZ_OK?('<div style="text-align:center;margin-top:8px"><button type="button" class="link" id="vozBtn" onclick="toggleVoz()">'+vozLabel()+'</button></div>'):'')+
+    '</div>';
 }
 
 /* ---------- manómetro (SVG) ---------- */
@@ -414,6 +439,9 @@ VIEWS.furgo=function(){
   h+='<button class="big verde" onclick="go(\'cierre\')"><span class="bi">🏠</span><span><span class="bt">'+
      t("Antes de entrar en casa","Abans d'entrar a casa")+'</span><span class="bd">'+
      t("Cerrar el día, honestidad emocional y abrazo sentido","Tancar el dia, honestedat emocional i abraçada sentida")+'</span></span></button>';
+
+  h+='<div style="text-align:center;margin:2px 0 12px"><button type="button" class="link" onclick="go(\'flojo\')">🌧️ '+
+     t("Hoy me cuesta — modo mínimo","Avui em costa — mode mínim")+'</button></div>';
 
   h+='<div class="quick">';
   h+='<button class="qb" onclick="go(\'parada\')"><span class="qe">🛑</span><span class="ql">'+t("Parada de<br>pensamiento","Parada de<br>pensament")+'</span></button>';
@@ -859,6 +887,39 @@ function setPresion(b,cual){
 }
 function cierreDone(){ var d=dia(); d.cierre=true; save(); ev('cierre');
   flash(t("Día cerrado. Entra tú, no el día. 🤍","Dia tancat. Entra tu, no el dia. 🤍")); setTimeout(function(){ go('dia'); },1100); }
+
+/* ================= MODO DÍA FLOJO =================
+   Para la parte depresiva: los días bajos, cualquier fricción o cifra pesa.
+   Aquí no se mide ni se envía nada; solo un minuto de estar contigo. La
+   respiración y el abrazo se registran en silencio (para no romper la
+   continuidad/racha), pero NO se muestran contadores. */
+VIEWS.flojo=function(){
+  var h='<h1 class="view-t">'+t("Hoy me cuesta","Avui em costa")+'</h1><p class="view-s">'+t(
+    'Días así también cuentan. <b>Hoy no hacemos todo</b>: solo un minuto contigo. Nada que medir, nada que enviar. Estar, y ya.',
+    "Dies així també compten. <b>Avui no ho fem tot</b>: només un minut amb tu. Res a mesurar, res a enviar. Ser-hi, i prou.")+'</p>';
+  h+='<div class="card"><h2><span class="e">🫧</span>'+t("Una respiración curiosa","Una respiració curiosa")+'</h2><p class="lead">'+
+     t("Suelta despacio. No para arreglar nada. Solo para volver a notarte un segundo.","Deixa anar a poc a poc. No per arreglar res. Només per tornar a notar-te un segon.")+'</p>'+
+     ringHTML(null,t("No tienes que poder con todo. Solo estar aquí un momento.","No has de poder amb tot. Només ser aquí un moment."))+
+     '<button class="btn full agua" id="flojoBtn" onclick="flojoStart(this)">'+t("Empezar","Començar")+'</button></div>';
+  h+='<div class="card"><h2><span class="e">🤍</span>'+t("Un gesto contigo","Un gest amb tu")+'</h2><p class="lead">'+t(
+     'Ponte una mano en la barriga y quédate tres respiraciones. No hace falta nada más.',
+     "Posa't una mà a la panxa i queda-t'hi tres respiracions. No cal res més.")+'</p>'+
+     '<div class="ok-flash" id="okflash"></div>'+
+     '<div class="btnrow" style="margin-top:8px"><button class="btn verde full" onclick="flojoGesto()">🤍 '+t("Hecho","Fet")+'</button></div></div>';
+  h+='<div class="quote">'+t("No estás fallando por tener un día flojo. Estás aquí, y eso ya es acompañarte.",
+     "No estàs fallant per tenir un dia fluix. Ets aquí, i això ja és acompanyar-te.")+'</div>';
+  h+='<div class="btnrow"><button class="btn full ghost" onclick="go(\'furgo\')">'+t("Volver","Tornar")+'</button></div>';
+  h+=footerHTML(); return h;
+};
+function flojoStart(btn){ btn.style.display='none';
+  breathRun({ciclos:3, verbs:[
+      t("No tienes que poder con todo. Solo respirar una vez.","No has de poder amb tot. Només respirar un cop."),
+      t("Nota la barriga. No la cambies. Solo mírala.","Nota la panxa. No la canviïs. Només mira-la."),
+      t("Estás aquí. Con eso basta ahora mismo.","Ets aquí. Amb això n'hi ha prou ara mateix.")],
+    finTxt:t("Aquí","Aquí"), finVerb:t("Ya está. Un minuto contigo, hoy también.","Ja està. Un minut amb tu, avui també."),
+    onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'flojo'}); }}); }
+function flojoGesto(){ var d=dia(); d.abrazos++; save(); ev('abrazo',{momento:'flojo'});
+  flash(t("Bien. Eso es estar contigo.","Bé. Això és ser-hi amb tu.")); }
 
 /* ================= BANDEJA ================= */
 function cats(){ return [["💧",t("Trabajo","Feina")],["🧾",t("Factura / papeleo","Factura / paperassa")],
