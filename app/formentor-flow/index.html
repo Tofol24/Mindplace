@@ -36,6 +36,8 @@
   header .ht{flex:1;}
   header .ht .b{font-family:var(--serif);font-size:1.05rem;line-height:1.1;}
   header .ht .s{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--arena);margin-top:2px;}
+  .breathe{flex:none;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mar);background:var(--arena);border:1px solid var(--arena);border-radius:16px;padding:6px 11px;cursor:pointer;min-height:32px;}
+  .breathe:active{transform:scale(.97);}
   .lang{display:flex;gap:4px;flex:none;}
   .lang button{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:6px 9px;cursor:pointer;min-height:32px;}
   .lang button.on{background:var(--arena);color:var(--mar);border-color:var(--arena);}
@@ -197,6 +199,7 @@
   <header>
     <svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="15" stroke="#C7B393" stroke-width="1.3"/><path d="M6 20c3.2 0 3.2-9 6.5-9s3.3 9 6.5 9 3.2-9 6.5-9" stroke="#FCFBF7" stroke-width="1.7" stroke-linecap="round"/></svg>
     <div class="ht"><div class="b">Formentor Flow</div><div class="s" id="hsub">Manager</div></div>
+    <button class="breathe" id="breatheBtn" type="button" aria-label="Un respiro"></button>
     <div class="lang">
       <button id="l-es" class="on" type="button">ES</button>
       <button id="l-en" type="button">EN</button>
@@ -469,7 +472,8 @@ var STR={
     momTitle:"Momentos del turno", momSub:"No solo cuando algo estalla. También para entrar, sostener un pico y salir.", momDone:"Listo ✓",
     figBody:"Cuerpo", figTree:"Árbol", zoneCanopy:"COPA", zoneTrunk:"TRONCO", zoneRoots:"RAÍCES",
     zoneCanopyL:"la copa", zoneTrunkL:"el tronco", zoneRootsL:"las raíces",
-    cueCuriosity:"Respira con curiosidad · la atención baja a las raíces"
+    cueCuriosity:"Respira con curiosidad · la atención baja a las raíces",
+    breatheBtn:"Respiro"
   },
   en:{
     hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
@@ -502,7 +506,8 @@ var STR={
     momTitle:"Shift moments", momSub:"Not only when something blows up. Also to enter, hold a peak and leave.", momDone:"Done ✓",
     figBody:"Body", figTree:"Tree", zoneCanopy:"CANOPY", zoneTrunk:"TRUNK", zoneRoots:"ROOTS",
     zoneCanopyL:"the canopy", zoneTrunkL:"the trunk", zoneRootsL:"the roots",
-    cueCuriosity:"Breathe with curiosity · attention settles into the roots"
+    cueCuriosity:"Breathe with curiosity · attention settles into the roots",
+    breatheBtn:"Breathe"
   }
 };
 
@@ -511,7 +516,7 @@ var STR={
    los momentos anclan la pausa AIS a las transiciones que el mando YA tiene
    (entrar, un pico previsto, salir). Reutilizan la pantalla PARA (figura +
    respiración + anclaje), sin pasos de decisión y sin guardar nada. */
-var MOMORDER=["antesTurno","antesPico","relevo","cierreTurno"];
+var MOMORDER=["antesTurno","antesPico","relevo","cierreTurno","respiro"];
 var MOMENTOS={
   antesTurno:{ color:"#1B5A68", mode:"foco",
     name:{es:"Antes del turno", en:"Before the shift"},
@@ -528,7 +533,13 @@ var MOMENTOS={
   cierreTurno:{ color:"#5C7A56", mode:"bajar",
     name:{es:"Al salir", en:"Leaving"},
     q:{es:"¿Qué me llevo del turno y qué se queda aquí?", en:"What do I take from the shift and what stays here?"},
-    micro:{es:"La presión que recibo no tiene por qué convertirse en la que llevo a casa.", en:"The pressure I receive doesn't have to become the pressure I carry home."} }
+    micro:{es:"La presión que recibo no tiene por qué convertirse en la que llevo a casa.", en:"The pressure I receive doesn't have to become the pressure I carry home."} },
+  /* Respiro disponible siempre, ligado a la pegatina del Pi de Formentor:
+     ves el pino (móvil, carpeta) → abres → respiras. Abre en modo Árbol. */
+  respiro:{ color:"#5C7A56", mode:"bajar", figMode:"tree",
+    name:{es:"En cualquier momento", en:"Anytime"},
+    q:{es:"Has visto el pino. ¿Bajas un momento a las raíces?", en:"You saw the pine. Will you drop to the roots for a moment?"},
+    micro:{es:"Un respiro curioso, aquí y ahora: baja a las raíces y sigue.", en:"One curious breath, here and now: drop to the roots and carry on."} }
 };
 
 /* ---------- situations (order matters) ---------- */
@@ -629,6 +640,7 @@ function setScreen(id){var s=document.querySelectorAll('.screen');for(var i=0;i<
 function renderHome(){
   var t=U();
   el('hsub').textContent=t.hsub; el('home-q').textContent=t.homeQ; el('home-l').textContent=t.homeL;
+  el('breatheBtn').textContent=t.breatheBtn;
   el('home-priv').innerHTML=t.priv; el('foot').textContent=t.foot;
   var wrap=el('sits'); wrap.innerHTML='';
   SITORDER.forEach(function(k){
@@ -915,6 +927,7 @@ function openFlow(k){
 }
 function openMomento(k){
   state.sit=null; state.momento=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false; state.anchor=null;
+  if(MOMENTOS[k].figMode) state.figMode=MOMENTOS[k].figMode;
   setScreen('s-flow'); renderCtx(); showStep('para');
 }
 function home(){ stopBreath(); stopRec(); state.momento=null; setScreen('s-home'); }
@@ -930,6 +943,7 @@ function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
 /* ---------- events ---------- */
 el('l-es').addEventListener('click',function(){setLang('es');});
 el('l-en').addEventListener('click',function(){setLang('en');});
+el('breatheBtn').addEventListener('click',function(){ openMomento('respiro'); });
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
