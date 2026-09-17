@@ -357,7 +357,7 @@
       if (s.cycle !== cycles){ cycles = s.cycle; renderCount(); if (typeof opts.onCycle === 'function') opts.onCycle(cycles); }
     }
 
-    function loop(now){ var ms = now - t0; render(eng.at(ms), ms); raf = requestAnimationFrame(loop); }
+    function loop(now){ if (!running) return; var ms = now - t0; render(eng.at(ms), ms); if (running) raf = requestAnimationFrame(loop); }
 
     var api = {
       start: function(){ if (running) return; running = true; cycles = 0; t0 = performance.now(); paintLabels(); raf = requestAnimationFrame(loop); },
