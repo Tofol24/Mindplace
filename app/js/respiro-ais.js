@@ -79,6 +79,11 @@
   '.ra-count{margin-top:8px;min-height:16px;font-family:var(--ra-mono);font-size:11px;letter-spacing:.12em;' +
   '  text-transform:uppercase;color:var(--ra-muted);text-align:center;}' +
   '.ra-count b{font-family:var(--ra-serif);font-size:15px;color:var(--ra-mind);margin-right:4px;letter-spacing:0;}' +
+  '.ra-legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:9px;font-family:var(--ra-mono);font-size:10px;letter-spacing:.05em;color:var(--ra-muted);}' +
+  '.ra-legend span{display:inline-flex;align-items:center;gap:6px;}' +
+  '.ra-legend i{width:11px;height:11px;border-radius:50%;flex:none;}' +
+  '.ra-legend .ra-lg-air{background:radial-gradient(circle at 40% 40%,#EAF6FF,#3FA6D8);}' +
+  '.ra-legend .ra-lg-mind{background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458);}' +
   '.ra-flame{transform-box:fill-box;transform-origin:center bottom;}' +
   '.respiro-ais[data-phase="exhale"] .ra-flame{animation:raFlicker .5s ease-in-out infinite;}' +
   '@keyframes raFlicker{0%,100%{transform:rotate(-8deg) scaleY(.88);}50%{transform:rotate(9deg) scaleY(1.1);}}' +
@@ -97,7 +102,7 @@
   var ORGANISM = {
     viewBox: '0 0 820 1240',
     route: [[410,250],[410,338],[410,400],[410,500],[410,600],[410,718],[410,832]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 },
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,178],
     glow: { z1: [410,400,120], z2: [410,585,190], z3: [410,832,175] },
     labels: { z1: [548,400], z2: [612,560], z3: [560,850] },
     svg: '' +
@@ -128,7 +133,7 @@
   var CHILD = {
     viewBox: '0 0 820 1240',
     route: [[410,300],[410,370],[410,440],[410,540],[410,620],[410,700],[410,772]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 },
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,188],
     svg: '' +
       /* cuerpo */
       '<path d="M352 366 C348 404 322 414 288 438 C232 474 208 505 214 566 C218 622 248 662 253 720 C258 786 253 862 262 922 C266 968 308 998 410 998 C512 998 554 968 558 922 C567 862 562 786 567 720 C572 662 602 622 606 566 C612 505 588 474 532 438 C498 414 472 404 468 366 Z" fill="#F6DFCC" fill-opacity=".92" stroke="#E0A98C" stroke-width="3"/>' +
@@ -176,14 +181,14 @@
     src: '../assets/respiro/organismo.webp',
     viewBox: '0 0 1024 1536',
     route: [[508,235],[508,340],[508,430],[512,560],[516,700],[512,860],[505,1000]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,150]
   };
   /* Versión infantil realista (mismo estilo, cuerpo de niño). */
   var REALISTIC_CHILD = {
     src: '../assets/respiro/organismo_nino.webp',
     viewBox: '0 0 1024 1536',
     route: [[508,225],[508,330],[508,420],[510,520],[512,600],[510,700],[505,790]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,120]
   };
 
   /* ---------- Textos ---------- */
@@ -193,6 +198,7 @@
       phase: { inhale: 'Inhala', anchor: 'Quédate', exhale: 'Exhala', pause: 'Pausa' },
       hint:  { inhale: 'el aire entra y la atención baja', anchor: 'la conciencia se queda en el vientre',
                exhale: 'el aire sube y sale; la conciencia permanece', pause: 'respira natural' },
+      legend: { air: 'el aire · entra por la nariz', mind: 'tu atención consciente · desde la cabeza' },
       start: 'Empezar', stop: 'Parar', one: 'respiración', many: 'respiraciones'
     },
     en: {
@@ -200,6 +206,7 @@
       phase: { inhale: 'Breathe in', anchor: 'Stay', exhale: 'Breathe out', pause: 'Pause' },
       hint:  { inhale: 'air comes in, attention drops', anchor: 'awareness stays in the belly',
                exhale: 'air rises and leaves; awareness remains', pause: 'breathe naturally' },
+      legend: { air: 'the air · in through the nose', mind: 'your conscious attention · from the head' },
       start: 'Start', stop: 'Stop', one: 'breath', many: 'breaths'
     }
   };
@@ -273,6 +280,7 @@
     var rhythm = opts.rhythm || { inhale: 3000, anchor: 2000, exhale: 7000, pause: 1000 };
     var showControl = opts.showControl !== false;
     var showZones = opts.showZones !== false;
+    var showLegend = opts.legend !== false;
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* Figura: por defecto la ilustración realista (imagen). 'organism-svg' usa la
@@ -281,17 +289,17 @@
     if (opts.image){
       isImage = true; imgSrc = opts.image.src; dark = !!opts.dark;
       fig = { viewBox: opts.image.viewBox || '0 0 820 1240', route: opts.image.route,
-              anchors: opts.image.anchors, glow: opts.image.glow || {}, labels: opts.image.labels || null };
+              anchors: opts.image.anchors, glow: opts.image.glow || {}, labels: opts.image.labels || null, brain: opts.image.brain };
     } else if (opts.figure === 'child'){
       fig = CHILD;
     } else if (opts.figure === 'child-real'){
       isImage = true; imgSrc = REALISTIC_CHILD.src; dark = true;
-      fig = { viewBox: REALISTIC_CHILD.viewBox, route: REALISTIC_CHILD.route, anchors: REALISTIC_CHILD.anchors, glow: {}, labels: null };
+      fig = { viewBox: REALISTIC_CHILD.viewBox, route: REALISTIC_CHILD.route, anchors: REALISTIC_CHILD.anchors, glow: {}, labels: null, brain: REALISTIC_CHILD.brain };
     } else if (opts.figure === 'organism-svg'){
       fig = ORGANISM;
     } else {                                  /* 'organism' / 'realistic' (defecto) */
       isImage = true; imgSrc = REALISTIC.src; dark = true;
-      fig = { viewBox: REALISTIC.viewBox, route: REALISTIC.route, anchors: REALISTIC.anchors, glow: {}, labels: null };
+      fig = { viewBox: REALISTIC.viewBox, route: REALISTIC.route, anchors: REALISTIC.anchors, glow: {}, labels: null, brain: REALISTIC.brain };
     }
 
     /* textos combinados (permite frases a medida por herramienta, p. ej. flor/vela) */
@@ -302,6 +310,7 @@
         zones: Object.assign({}, b.zones, o.zones),
         phase: Object.assign({}, b.phase, o.phase),
         hint: Object.assign({}, b.hint, o.hint),
+        legend: Object.assign({}, b.legend, o.legend),
         start: o.start || b.start, stop: o.stop || b.stop, one: o.one || b.one, many: o.many || b.many
       };
     }
@@ -310,6 +319,23 @@
     prepRoute(fig, eng.Q_EXIT);
     var ZQ = { z1: 0, z2: 0.5, z3: 1 };
     var useZones = showZones && !isImage && !!fig.labels;
+
+    /* Recorrido de la ATENCIÓN (amarilla): empieza en el cerebro (más arriba que la
+       nariz), sigue al aire hacia abajo y se funde en el vientre. */
+    var nosePt = pointAt(fig, eng.Q_EXIT);
+    var brainPt = fig.brain || nosePt;
+    var brainLen = Math.hypot(brainPt[0] - nosePt[0], brainPt[1] - nosePt[1]);
+    var noseBellyLen = Math.max(1, fig._cum[fig.anchors.z3] - fig._cum[fig.anchors.ext]);
+    var brainFrac = brainLen / (brainLen + noseBellyLen);
+    function mindPoint(t){   /* t: 0 = cerebro · 1 = vientre */
+      if (t <= brainFrac){
+        var u = brainFrac > 0 ? t / brainFrac : 1;
+        return [brainPt[0] + (nosePt[0] - brainPt[0]) * u, brainPt[1] + (nosePt[1] - brainPt[1]) * u];
+      }
+      var q = eng.Q_EXIT + (1 - eng.Q_EXIT) * ((t - brainFrac) / (1 - brainFrac));
+      return pointAt(fig, q);
+    }
+    function pathPts(pts){ var d = '', i; for (i = 0; i < pts.length; i++){ d += (i ? 'L' : 'M') + pts[i][0].toFixed(1) + ' ' + pts[i][1].toFixed(1); } return d; }
     var vb = fig.viewBox.split(/\s+/);   /* "0 0 W H" */
     var ls = (parseFloat(vb[2]) || 820) / 820;   /* escala de las luces según el ancho del viewBox */
     function rr(n){ return (n * ls).toFixed(1); }
@@ -352,6 +378,7 @@
         '</svg>' +
       '</div>' +
       '<div class="ra-ui"><div class="ra-pill" aria-live="polite"><span class="pl"></span><span class="pn"></span><span class="ph"></span></div></div>' +
+      (showLegend ? '<div class="ra-legend"><span><i class="ra-lg-air"></i><span class="ra-lg-air-t"></span></span><span><i class="ra-lg-mind"></i><span class="ra-lg-mind-t"></span></span></div>' : '') +
       (showControl ? '<button class="ra-control" type="button"></button>' : '') +
       '<div class="ra-count" aria-live="polite"></div>';
 
@@ -378,6 +405,11 @@
       var t = str();
       if (control) control.textContent = running ? t.stop : t.start;
       if (useZones) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].text.textContent = t.zones[z]; });
+      if (showLegend){
+        var la = q('.ra-lg-air-t'), lm = q('.ra-lg-mind-t');
+        if (la) la.textContent = t.legend.air;
+        if (lm) lm.textContent = t.legend.mind;
+      }
       renderCount();
     }
     function renderCount(){
@@ -403,25 +435,32 @@
       haloEl.style.transform = 'translate(-50%,-50%) scale(' + b.toFixed(4) + ')';
       haloEl.style.opacity = (0.45 + (s.breath - 0.86) / 0.14 * 0.4).toFixed(3);
 
-      /* AZUL = aire (sigue s.q en todas las fases: baja al inhalar, sube y sale al exhalar) */
-      var p = pointAt(fig, s.q);
+      /* AZUL = aire. Entra por la NARIZ al inhalar y baja; al exhalar sube y sale por la nariz. */
+      var airQ = (s.phase === 'inhale') ? (eng.Q_EXIT + (1 - eng.Q_EXIT) * s.q) : s.q;
+      var p = pointAt(fig, airQ);
       airEl.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')');
       airEl.style.opacity = (s.phase === 'pause' ? 0 : (s.phase === 'anchor' ? s.dot * 0.55 : s.dot)).toFixed(3);
 
-      /* AMARILLA = conciencia (solo baja al inhalar, siguiendo al aire; se funde en el vientre) */
+      /* AMARILLA = atención consciente. Parte del CEREBRO (más arriba que la nariz),
+         sigue al aire hacia abajo (el aire es el cebo) y se funde en el vientre. */
       if (s.phase === 'inhale'){
-        var cq = Math.max(0, s.q - 0.12), cp = pointAt(fig, cq);
+        var pm = mindPoint(s.q);
         var fade = Math.max(0, Math.min(1, (1 - s.progress) / 0.2));
-        dotEl.setAttribute('transform', 'translate(' + cp[0].toFixed(1) + ' ' + cp[1].toFixed(1) + ')');
+        dotEl.setAttribute('transform', 'translate(' + pm[0].toFixed(1) + ' ' + pm[1].toFixed(1) + ')');
         dotEl.style.opacity = (s.dot * fade).toFixed(3);
       } else { dotEl.style.opacity = 0; }
 
-      /* estela: azul al exhalar, cálida al inhalar */
+      /* estela: al inhalar sigue a la atención (cálida, desde el cerebro); al exhalar al aire (azul). */
       if (!reduce && (s.phase === 'inhale' || s.phase === 'exhale')){
-        var back = eng.at(Math.max(0, ms - 520)), qs = [];
-        var q0 = back.phase === s.phase ? back.q : (s.phase === 'inhale' ? 0 : 1), i;
-        for (i = 0; i <= 8; i++) qs.push(q0 + (s.q - q0) * i / 8);
-        var d = pathFrom(fig, qs);
+        var back = eng.at(Math.max(0, ms - 520)), pts = [], i, u;
+        if (s.phase === 'inhale'){
+          var t0 = back.phase === 'inhale' ? back.q : 0;
+          for (i = 0; i <= 8; i++){ u = t0 + (s.q - t0) * i / 8; pts.push(mindPoint(u)); }
+        } else {
+          var q0 = back.phase === 'exhale' ? back.q : 1;
+          for (i = 0; i <= 8; i++){ u = q0 + (s.q - q0) * i / 8; pts.push(pointAt(fig, u)); }
+        }
+        var d = pathPts(pts);
         trailSoft.setAttribute('d', d); trailCore.setAttribute('d', d);
         trailSoft.style.opacity = (s.dot * 0.28).toFixed(3); trailCore.style.opacity = (s.dot * 0.9).toFixed(3);
         var ex = s.phase === 'exhale';
