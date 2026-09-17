@@ -142,6 +142,7 @@
 <nav class="nav" id="nav"></nav>
 
 <script src="../js/aprens-core.js"></script>
+<script src="../js/respiro-ais.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -176,8 +177,8 @@ function ev(t,extra){ DB.eventos.push(Object.assign({t:t,ts:Date.now(),date:hoy(
 if(window.Aprens){ try{ Aprens.config({toolId:"toco_desde_dentro", toolName:"Toco desde dentro", toolVersion:1}); }catch(e){} }
 
 /* ---------- navegación ---------- */
-var VIEW="casa", timers=[];
-function clearTimers(){ timers.forEach(function(t){clearInterval(t);clearTimeout(t);}); timers=[]; }
+var VIEW="casa", timers=[], activeRespiro=null;
+function clearTimers(){ timers.forEach(function(t){clearInterval(t);clearTimeout(t);}); timers=[]; if(activeRespiro){activeRespiro.destroy();activeRespiro=null;} }
 var NAV=[
   {id:"casa",e:"🏠",l:"Casa"},
   {id:"tocar",e:"🚪",l:"Antes de tocar"},
@@ -217,7 +218,7 @@ var TOCAR_VERB=["Estoy contigo, cuerpo. Esta puerta la tocamos juntos.","No te a
 var tIdx=-1, tCiclo=0, tT=null, tVerb=0;
 VIEWS.tocar=function(){
   var h='<h1 class="view-t">Antes de tocar</h1><p class="view-s">Tres respiraciones cortas para entrar acompañado. Sin retener el aire.</p>';
-  h+='<div class="ring-wrap"><div class="ring" id="ring"><div class="ri"><div><div class="rf" id="rf">Prepárate</div><div class="rs" id="rs"></div></div></div></div><div class="rverb" id="rverb">Estoy contigo, cuerpo. Vamos a esta puerta juntos.</div></div>';
+  h+='<div class="ring-wrap"><div id="respiroBox"></div><div class="rverb" id="rverb">Estoy contigo, cuerpo. Vamos a esta puerta juntos.</div></div>';
   h+='<div class="btnrow"><button class="btn full reto" id="tocarBtn" onclick="tocarStart(this)">Empezar</button></div>';
   h+='<div id="tocarAfter" style="display:none"><div class="card"><h2>¿Cómo vas a esta puerta?</h2><div class="chips" id="tocarAcomp">'+
      '<button type="button" class="chip" data-pole="ob" data-v="obligación" onclick="tocarAcomp(this)">Desde la obligación</button>'+
@@ -229,17 +230,22 @@ VIEWS.tocar=function(){
   h+='<div class="nota">Toca cuando estés listo. Haber respirado antes ya cambia con qué cuerpo entras, tanto si dicen sí como si dicen no.</div>';
   h+=footerHTML(); return h;
 };
-function tocarStart(btn){ btn.style.display='none'; tIdx=-1; tCiclo=0; tVerb=0; tocarFase(); }
-function tocarFase(){
-  tIdx++;
-  if(tIdx>=TOCAR_FASES.length){ tIdx=0; tCiclo++; tVerb++; setVerb(); if(tCiclo>=3){ tocarFin(); return; } }
-  var f=TOCAR_FASES[tIdx], ring=document.getElementById('ring'); if(!ring) return;
-  document.getElementById('rf').textContent=f.f;
-  ring.style.transitionDuration=f.d+'s'; ring.style.transform='scale('+f.s+')';
-  var left=f.d; document.getElementById('rs').textContent=left+'s';
-  tT=setInterval(function(){ left--; var rs=document.getElementById('rs'); if(!rs){clearInterval(tT);return;} rs.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(tT); tocarFase(); } },1000); timers.push(tT);
+function tocarStart(btn){
+  btn.style.display='none';
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBox'); if(!box || !window.RespiroAIS) return;
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4000, anchor:Math.max(1000,900), exhale:6000, pause:Math.max(0,700) },
+    labels:{ phase:{inhale:'Coge aire', anchor:'·', exhale:'Suelta', pause:'Presente'},
+             hint:{inhale:'entro acompañando mi cuerpo', anchor:'estoy contigo', exhale:'suelto, sin forzar', pause:'un reto, no una amenaza'} },
+    onCycle:function(n){
+      var el=document.getElementById('rverb');
+      if(el && n<3){ el.style.opacity=0; setTimeout(function(){ el.textContent=TOCAR_VERB[n%TOCAR_VERB.length]; el.style.opacity=1; },250); }
+      if(n>=3){ activeRespiro.stop(); tocarFin(); }
+    }
+  });
 }
-function setVerb(){ var el=document.getElementById('rverb'); if(!el) return; el.style.opacity=0; setTimeout(function(){ el.textContent=TOCAR_VERB[tVerb%TOCAR_VERB.length]; el.style.opacity=1; },250); }
 function tocarFin(){ if(tT)clearInterval(tT); var ring=document.getElementById('ring'); if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';}
   var rf=document.getElementById('rf'); if(rf) rf.textContent='Presente'; var rs=document.getElementById('rs'); if(rs) rs.textContent='';
   var a=document.getElementById('tocarAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); }
@@ -256,18 +262,24 @@ var noT=null;
 VIEWS.no=function(){
   var h='<h1 class="view-t">Me han dicho que no</h1><p class="view-s">El «no» es a la oferta de hoy, no a ti. Vamos a soltar el pinchazo para que no se acumule en el cuerpo.</p>';
   h+='<div class="card"><ol class="muted" style="padding-left:18px;line-height:2"><li><b>Nota</b> el pinchazo (pecho, estómago). No es peligro, es un «no».</li><li><b>Una exhalación</b> larga, soltando hombros y mandíbula.</li><li><b>Dítelo</b>: «un no me acerca al siguiente sí; no me define».</li><li><b>Siguiente puerta</b>, con tu cuerpo al lado.</li></ol>';
-  h+='<div class="ring-wrap"><div class="ring" id="ring" style="width:150px;height:150px"><div class="ri" style="width:100px;height:100px"><div><div class="rf" id="rf" style="font-size:17px">Suelta</div><div class="rs" id="rs"></div></div></div></div></div>';
+  h+='<div class="ring-wrap"><div id="respiroBoxNo"></div></div>';
   h+='<div class="btnrow"><button class="btn full slate" id="noBtn" onclick="noBreath(this)">Una exhalación larga</button></div>';
   h+='<div class="ok-flash" id="okflash"></div>';
   h+='<div class="btnrow" style="margin-top:6px"><button class="btn ghost" onclick="noReg()">Soltado, sigo</button></div></div>';
   h+='<div class="quote">Que te digan que no es parte del trabajo, no una nota sobre tu valor.</div>';
   h+=footerHTML(); return h;
 };
-function noBreath(btn){ btn.disabled=true; var ring=document.getElementById('ring'); var seq=[['Coge aire',4,1.16],['Suelta',6,0.84]], i=-1;
-  function step(){ i++; if(i>=seq.length){ if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';} document.getElementById('rf').textContent='Bien'; btn.disabled=false; return; }
-    var s=seq[i]; document.getElementById('rf').textContent=s[0]; ring.style.transitionDuration=s[1]+'s'; ring.style.transform='scale('+s[2]+')';
-    var left=s[1]; document.getElementById('rs').textContent=left+'s'; var iv=setInterval(function(){left--;var rs=document.getElementById('rs');if(!rs){clearInterval(iv);return;}rs.textContent=(left>0?left:0)+'s';if(left<=0){clearInterval(iv);step();}},1000); timers.push(iv); }
-  step();
+function noBreath(btn){
+  btn.disabled=true;
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBoxNo'); if(!box || !window.RespiroAIS){ btn.disabled=false; return; }
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4000, anchor:Math.max(0,900), exhale:6000, pause:Math.max(0,700) },
+    labels:{ phase:{inhale:'Coge aire', anchor:'·', exhale:'Suelta', pause:'Bien'},
+             hint:{inhale:'nota el pinchazo, sin pelear', anchor:'suelta hombros y mandíbula', exhale:'exhalación larga', pause:'un no no me define'} },
+    onCycle:function(n){ if(n>=1){ activeRespiro.stop(); btn.disabled=false; flash('Bien. Has soltado una exhalación larga.'); } }
+  });
 }
 function noReg(){ var d=dia(); d.noes++; save(); ev('no'); flash('Soltado. Vamos a la siguiente, contigo.'); setTimeout(function(){ go('casa'); },700); }
 
@@ -275,17 +287,23 @@ function noReg(){ var d=dia(); d.noes++; save(); ev('no'); flash('Soltado. Vamos
 var ciT=null;
 VIEWS.cierre=function(){
   var h='<h1 class="view-t">Cierre antes de llegar a casa</h1><p class="view-s">Un minuto en la furgoneta, antes de entrar. Para que el cansancio y la tensión del día no entren contigo por la puerta.</p>';
-  h+='<div class="card"><h2><span class="e">🫁</span>1 · Tres respiraciones largas</h2><p class="lead">Suelta el aire despacio, afloja hombros y mandíbula.</p><div class="ring-wrap"><div class="ring" id="ring"><div class="ri"><div><div class="rf" id="rf">Prepárate</div><div class="rs" id="rs"></div></div></div></div></div><button class="btn full reto" id="ciBtn" onclick="cierreBreath(this)">Empezar</button></div>';
+  h+='<div class="card"><h2><span class="e">🫁</span>1 · Tres respiraciones largas</h2><p class="lead">Suelta el aire despacio, afloja hombros y mandíbula.</p><div class="ring-wrap"><div id="respiroBoxCierre"></div></div><button class="btn full reto" id="ciBtn" onclick="cierreBreath(this)">Empezar</button></div>';
   h+='<div class="card"><h2><span class="e">🚛</span>2 · Dejo el trabajo en la furgoneta</h2><p>Los «no», las cifras y las prisas se quedan aquí hasta mañana. No tienen por qué entrar en casa.</p></div>';
   h+='<div class="card"><h2><span class="e">🤍</span>3 · ¿Con qué quiero llegar?</h2><p class="lead">Una intención breve para los tuyos.</p><input type="text" id="ciIntencion" placeholder="Ej.: llego con paciencia y presencia para mi familia"><div class="ok-flash" id="okflash"></div><button class="btn full" style="margin-top:11px" onclick="cierreDone()">Cerrar el día</button></div>';
   h+='<div class="quote">Trabajas por los tuyos. Llegar con batería para ellos también es parte del trabajo.</div>';
   h+=footerHTML(); return h;
 };
-function cierreBreath(btn){ btn.style.display='none'; var ring=document.getElementById('ring'); var fases=[['Coge aire',4,1.16],['·',1,1.16],['Suelta',6,0.84]], i=-1, c=0;
-  function step(){ i++; if(i>=fases.length){ i=0; c++; if(c>=3){ if(ring){ring.style.transitionDuration='.6s';ring.style.transform='scale(1)';} document.getElementById('rf').textContent='Listo'; document.getElementById('rs').textContent=''; return; } }
-    var f=fases[i]; document.getElementById('rf').textContent=f[0]; ring.style.transitionDuration=f[1]+'s'; ring.style.transform='scale('+f[2]+')';
-    var left=f[1]; document.getElementById('rs').textContent=left+'s'; var iv=setInterval(function(){left--;var rs=document.getElementById('rs');if(!rs){clearInterval(iv);return;}rs.textContent=(left>0?left:0)+'s';if(left<=0){clearInterval(iv);step();}},1000); timers.push(iv); }
-  step();
+function cierreBreath(btn){
+  btn.style.display='none';
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBoxCierre'); if(!box || !window.RespiroAIS){ btn.style.display=''; return; }
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4000, anchor:Math.max(1000,900), exhale:6000, pause:Math.max(0,700) },
+    labels:{ phase:{inhale:'Coge aire', anchor:'·', exhale:'Suelta', pause:'Listo'},
+             hint:{inhale:'entra el aire, despacio', anchor:'afloja hombros y mandíbula', exhale:'suelta el aire largo', pause:'dejo el día en la furgoneta'} },
+    onCycle:function(n){ if(n>=3){ activeRespiro.stop(); btn.style.display=''; btn.textContent='Listo ✓'; } }
+  });
 }
 function cierreDone(){ var d=dia(); d.cierre=true; d.intencion=(document.getElementById('ciIntencion').value||'').trim(); save(); ev('cierre');
   flash('Día cerrado. Entra a casa contigo. 🤍'); setTimeout(function(){ go('casa'); },900); }
