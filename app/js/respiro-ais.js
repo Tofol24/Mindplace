@@ -22,10 +22,12 @@
    USO:
      var r = RespiroAIS.mount(document.getElementById('miCaja'), {
        lang: 'es',                 // 'es' | 'en'
+       figure: 'organism',         // 'organism' (adulto, con órganos) | 'child' (silueta + flor + vela)
        autostart: false,           // arrancar solo al montar
        showControl: true,          // pinta su propio botón Empezar/Parar
-       showZones: true,            // etiquetas cuello/pecho/barriga
+       showZones: true,            // etiquetas cuello/pecho/barriga (solo figura organism)
        rhythm: {inhale:3000, anchor:2000, exhale:7000, pause:1000},
+       labels: { phase:{...}, hint:{...} },  // frases a medida (p. ej. flor/vela)
        onCycle: function(n){}      // callback por ciclo completado
      });
      r.start(); r.stop(); r.toggle(); r.setLang('en'); r.destroy();
@@ -75,7 +77,10 @@
   '.ra-count{margin-top:8px;min-height:16px;font-family:var(--ra-mono);font-size:11px;letter-spacing:.12em;' +
   '  text-transform:uppercase;color:var(--ra-muted);text-align:center;}' +
   '.ra-count b{font-family:var(--ra-serif);font-size:15px;color:var(--ra-mind);margin-right:4px;letter-spacing:0;}' +
-  '@media (prefers-reduced-motion:reduce){.ra-trail-soft,.ra-trail-core{display:none;}}';
+  '.ra-flame{transform-box:fill-box;transform-origin:center bottom;}' +
+  '.respiro-ais[data-phase="exhale"] .ra-flame{animation:raFlicker .5s ease-in-out infinite;}' +
+  '@keyframes raFlicker{0%,100%{transform:rotate(-8deg) scaleY(.88);}50%{transform:rotate(9deg) scaleY(1.1);}}' +
+  '@media (prefers-reduced-motion:reduce){.ra-trail-soft,.ra-trail-core{display:none;}.respiro-ais[data-phase="exhale"] .ra-flame{animation:none;}}';
 
   function injectCSS() {
     if (document.getElementById('respiro-ais-css')) return;
@@ -113,6 +118,52 @@
       /* vientre / vísceras */
       '<path d="M330 748 C318 800 322 880 360 928 C400 972 440 972 470 928 C500 884 502 800 490 748 C440 764 380 764 330 748 Z" fill="#e7c892" fill-opacity=".5" stroke="#c79a55" stroke-width="2.5"/>' +
       '<path d="M360 786 C400 806 430 794 462 782 M356 828 C398 852 436 840 470 824 M366 874 C402 894 430 886 458 872" fill="none" stroke="#c79a55" stroke-width="2.2" stroke-opacity=".75" stroke-linecap="round"/>'
+  };
+
+  /* ---------- Ilustración infantil: silueta + flor + vela + lucecita en la barriga ----------
+     Funde la vela (la exhalación: apagarla) con la silueta y la lucecita que se queda en la
+     barriga (la conciencia), para que se entienda la finalidad. Sin órganos. */
+  var CHILD = {
+    viewBox: '0 0 820 1240',
+    route: [[410,300],[410,370],[410,440],[410,540],[410,620],[410,700],[410,772]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 },
+    svg: '' +
+      /* cuerpo */
+      '<path d="M352 366 C348 404 322 414 288 438 C232 474 208 505 214 566 C218 622 248 662 253 720 C258 786 253 862 262 922 C266 968 308 998 410 998 C512 998 554 968 558 922 C567 862 562 786 567 720 C572 662 602 622 606 566 C612 505 588 474 532 438 C498 414 472 404 468 366 Z" fill="#F6DFCC" fill-opacity=".92" stroke="#E0A98C" stroke-width="3"/>' +
+      '<ellipse cx="410" cy="210" rx="150" ry="165" fill="#F6DFCC" fill-opacity=".92" stroke="#E0A98C" stroke-width="3"/>' +
+      /* cara */
+      '<circle cx="330" cy="242" r="24" fill="#F3B49A" fill-opacity=".7"/>' +
+      '<circle cx="490" cy="242" r="24" fill="#F3B49A" fill-opacity=".7"/>' +
+      '<circle cx="362" cy="196" r="10" fill="#5b4a4a"/>' +
+      '<circle cx="458" cy="196" r="10" fill="#5b4a4a"/>' +
+      '<path d="M374 252 Q410 284 446 252" fill="none" stroke="#5b4a4a" stroke-width="6" stroke-linecap="round"/>' +
+      /* flor (izquierda · oler = inspirar) */
+      '<path d="M232 320 C252 372 260 416 258 452" fill="none" stroke="#7CA86A" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M246 392 C232 380 214 384 210 400 C226 408 242 402 246 392 Z" fill="#8FBE7C" stroke="#6E9A5E" stroke-width="1.5"/>' +
+      '<g>' +
+        '<ellipse cx="216" cy="252" rx="24" ry="30" fill="#EBB6D2" stroke="#CE85AC" stroke-width="1.6"/>' +
+        '<ellipse cx="252" cy="278" rx="30" ry="24" fill="#EBB6D2" stroke="#CE85AC" stroke-width="1.6"/>' +
+        '<ellipse cx="238" cy="320" rx="24" ry="30" fill="#EBB6D2" stroke="#CE85AC" stroke-width="1.6"/>' +
+        '<ellipse cx="194" cy="320" rx="24" ry="30" fill="#EBB6D2" stroke="#CE85AC" stroke-width="1.6"/>' +
+        '<ellipse cx="180" cy="278" rx="30" ry="24" fill="#EBB6D2" stroke="#CE85AC" stroke-width="1.6"/>' +
+        '<circle cx="216" cy="287" r="17" fill="#F6D06B" stroke="#E0B23F" stroke-width="1.6"/>' +
+      '</g>' +
+      /* vela (derecha · apagar = exhalar) */
+      '<rect x="548" y="300" width="40" height="98" rx="9" fill="#F3E7C9" stroke="#D9C48E" stroke-width="2"/>' +
+      '<rect x="552" y="300" width="12" height="98" rx="6" fill="#FBF3DE" opacity=".7"/>' +
+      '<line x1="568" y1="300" x2="568" y2="288" stroke="#6b5b4a" stroke-width="4" stroke-linecap="round"/>' +
+      '<g class="ra-flame">' +
+        '<path d="M568 250 C552 270 552 286 568 292 C584 286 584 270 568 250 Z" fill="#F4A03C"/>' +
+        '<path d="M568 266 C560 276 560 286 568 290 C576 286 576 276 568 266 Z" fill="#FCE7A6"/>' +
+      '</g>' +
+      /* lucecita en la barriga (donde se queda la conciencia) */
+      '<g stroke="#EBCB77" stroke-width="3" stroke-linecap="round" opacity=".55">' +
+        '<line x1="410" y1="694" x2="410" y2="676"/><line x1="410" y1="850" x2="410" y2="868"/>' +
+        '<line x1="332" y1="772" x2="314" y2="772"/><line x1="488" y1="772" x2="506" y2="772"/>' +
+        '<line x1="356" y1="718" x2="344" y2="706"/><line x1="464" y1="718" x2="476" y2="706"/>' +
+        '<line x1="356" y1="826" x2="344" y2="838"/><line x1="464" y1="826" x2="476" y2="838"/>' +
+      '</g>' +
+      '<circle cx="410" cy="772" r="56" fill="#FCEBB6" fill-opacity=".45" stroke="#EBCB77" stroke-width="2"/>'
   };
 
   /* ---------- Textos ---------- */
@@ -208,18 +259,31 @@
       viewBox: opts.image.viewBox || '0 0 820 1240',
       route: opts.image.route, anchors: opts.image.anchors,
       glow: opts.image.glow || {}, labels: opts.image.labels || {}
-    } : ORGANISM;
+    } : (opts.figure === 'child' ? CHILD : ORGANISM);
+
+    /* textos combinados (permite frases a medida por herramienta, p. ej. flor/vela) */
+    function str(){
+      var b = I18N[lang], o = opts.labels;
+      if (!o) return b;
+      return {
+        zones: Object.assign({}, b.zones, o.zones),
+        phase: Object.assign({}, b.phase, o.phase),
+        hint: Object.assign({}, b.hint, o.hint),
+        start: o.start || b.start, stop: o.stop || b.stop, one: o.one || b.one, many: o.many || b.many
+      };
+    }
 
     var eng = makeEngine(rhythm);
     prepRoute(fig, eng.Q_EXIT);
     var ZQ = { z1: 0, z2: 0.5, z3: 1 };
+    var useZones = showZones && !opts.image && !!fig.labels;
 
     /* markup */
     var figLayer = opts.image
       ? '<img class="ra-figure" src="' + opts.image.src + '" alt="" width="820" height="1240" draggable="false" style="object-fit:contain;">'
       : '';
     var zonesMarkup = '';
-    if (showZones && !opts.image){
+    if (useZones){
       ['z1','z2','z3'].forEach(function(z){
         var gl = fig.glow[z], lb = fig.labels[z], p = fig.route[fig.anchors[z]];
         zonesMarkup += '<g class="ra-zone" data-zone="' + z + '">' +
@@ -265,7 +329,7 @@
     var pill = q('.ra-pill'), phLbl = q('.ra-pill .pl'), phNum = q('.ra-pill .pn'), phHint = q('.ra-pill .ph');
     var control = q('.ra-control'), count = q('.ra-count');
     var zoneEls = {};
-    if (showZones && !opts.image) ['z1','z2','z3'].forEach(function(z){
+    if (useZones) ['z1','z2','z3'].forEach(function(z){
       var grp = container.querySelector('.ra-zone[data-zone="' + z + '"]');
       zoneEls[z] = { grp: grp, glow: grp.querySelector('.ra-zone-glow'), text: grp.querySelector('text') };
     });
@@ -274,15 +338,15 @@
     var raf = null, t0 = 0, running = false, lastPhase = null, lastN = null, cycles = 0;
 
     function paintLabels(){
-      var t = I18N[lang];
+      var t = str();
       if (control) control.textContent = running ? t.stop : t.start;
-      if (showZones && !opts.image) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].text.textContent = t.zones[z]; });
+      if (useZones) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].text.textContent = t.zones[z]; });
       renderCount();
     }
     function renderCount(){
       if (!count) return;
       if (cycles <= 0){ count.innerHTML = ''; return; }
-      var t = I18N[lang];
+      var t = str();
       count.innerHTML = '<b>' + cycles + '</b>' + (cycles === 1 ? t.one : t.many);
     }
 
@@ -290,13 +354,14 @@
       haloEl.style.transform = 'translate(-50%,-50%) scale(.86)'; haloEl.style.opacity = '.35';
       dotEl.style.opacity = 0; airEl.style.opacity = 0; anchorEl.style.opacity = 0;
       trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', '');
-      if (showZones && !opts.image) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].glow.style.opacity = 0; zoneEls[z].grp.classList.remove('on'); });
-      container.classList.remove('ra-running'); lastPhase = null; lastN = null;
+      if (useZones) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].glow.style.opacity = 0; zoneEls[z].grp.classList.remove('on'); });
+      container.classList.remove('ra-running'); container.removeAttribute('data-phase'); lastPhase = null; lastN = null;
     }
 
     function render(s, ms){
       if (!s){ reset(); return; }
       container.classList.add('ra-running');
+      container.setAttribute('data-phase', s.phase);
       var b = reduce ? 0.93 : s.breath;
       haloEl.style.transform = 'translate(-50%,-50%) scale(' + b.toFixed(4) + ')';
       haloEl.style.opacity = (0.45 + (s.breath - 0.86) / 0.14 * 0.4).toFixed(3);
@@ -335,7 +400,7 @@
       anchorEl.style.opacity = s.anchor.toFixed(3);
 
       /* realce de zona por cercanía */
-      if (showZones && !opts.image){
+      if (useZones){
         var best = null, bestV = 0;
         ['z1','z2','z3'].forEach(function(z){
           var v = Math.max(0, 1 - Math.abs(s.q - ZQ[z]) / 0.3) * s.dot;
@@ -349,7 +414,7 @@
 
       /* pastilla de fase */
       if (s.phase !== lastPhase || s.n !== lastN){
-        var t = I18N[lang];
+        var t = str();
         phLbl.textContent = t.phase[s.phase]; phNum.textContent = s.n; phHint.textContent = t.hint[s.phase];
         lastPhase = s.phase; lastN = s.n;
       }
@@ -374,5 +439,5 @@
     return api;
   }
 
-  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM };
+  global.RespiroAIS = { mount: mount, I18N: I18N, ORGANISM: ORGANISM, CHILD: CHILD };
 })(typeof window !== 'undefined' ? window : this);
