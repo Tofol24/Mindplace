@@ -139,15 +139,26 @@
   .tree svg{display:block;height:250px;max-height:40vh;width:auto;pointer-events:none;}
   .para-stage.running .treefig{opacity:.12;transition:opacity .55s ease;}
   /* flechas descendentes: al respirar, la atención baja a las raíces */
-  .descend{position:absolute;top:47%;bottom:13%;left:50%;transform:translateX(-50%);width:40px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;pointer-events:none;opacity:0;transition:opacity .6s ease;z-index:0;}
-  .para-stage.running .descend{opacity:1;}
-  .descend .arw{font-size:20px;line-height:1;color:var(--mar-3);animation:descFlow 2.8s ease-in-out infinite;}
-  .descend .arw:nth-child(2){animation-delay:.55s;} .descend .arw:nth-child(3){animation-delay:1.1s;}
-  @keyframes descFlow{0%{opacity:0;transform:translateY(-6px) scale(.9);}35%{opacity:.85;}70%{opacity:.85;}100%{opacity:0;transform:translateY(12px) scale(1);}}
+  .descend{position:absolute;top:20%;bottom:12%;left:50%;transform:translateX(-50%);width:44px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;pointer-events:none;opacity:0;transition:opacity .5s ease;z-index:0;}
+  .descend .arw{font-size:22px;line-height:1;color:var(--mar-3);animation:descFlow 3s ease-in-out infinite;}
+  .descend .arw:nth-child(2){animation-delay:.6s;} .descend .arw:nth-child(3){animation-delay:1.2s;} .descend .arw:nth-child(4){animation-delay:1.8s;}
+  @keyframes descFlow{0%{opacity:0;transform:translateY(-10px) scale(.85);}35%{opacity:.9;}70%{opacity:.9;}100%{opacity:0;transform:translateY(16px) scale(1);}}
+  /* INSPIRA → baja (cian) · EXHALA → sube (verde, giramos el contenedor) */
+  .para-stage.ph-in .descend{opacity:1;transform:translateX(-50%) rotate(0deg);}
+  .para-stage.ph-in .descend .arw{color:#3FA6B8;}
+  .para-stage.ph-ex .descend{opacity:1;transform:translateX(-50%) rotate(180deg);}
+  .para-stage.ph-ex .descend .arw{color:#6FA35E;}
+  .para-stage.ph-hold .descend,.para-stage.ph-pausa .descend{opacity:0;}
+  /* RETIENE → punto luminoso en las raíces: se almacena y se suelta la tensión */
+  .rootglow{position:absolute;left:50%;bottom:13%;width:120px;height:88px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(199,150,60,.6),rgba(168,124,57,.14) 55%,transparent 72%);opacity:0;transition:opacity .5s ease;pointer-events:none;z-index:0;}
+  .para-stage.ph-hold .rootglow{opacity:1;animation:rootPulse 1.8s ease-in-out infinite;}
+  @keyframes rootPulse{0%,100%{opacity:.5;transform:translateX(-50%) scale(.92);}50%{opacity:1;transform:translateX(-50%) scale(1.06);}}
   /* las raíces (barriga) son el destino: se iluminan al respirar */
   .para-stage.running .zone[data-z="belly"]{opacity:.72!important;}
   .para-stage.running .zone[data-z="belly"] .glow{opacity:.92;transform:scale(1.2);}
-  @media(prefers-reduced-motion:reduce){.descend .arw{animation:none;opacity:.75;}}
+  /* al respirar el círculo se vuelve transparente: las flechas se ven atravesarlo */
+  .para-stage.running .ring{background:transparent;}
+  @media(prefers-reduced-motion:reduce){.descend .arw{animation:none;opacity:.8;}.rootglow{animation:none;}}
 
   /* ordena */
   .qlist{list-style:none;display:flex;flex-direction:column;gap:9px;}
@@ -192,6 +203,35 @@
   .btn.gold{background:var(--llauto);color:var(--blanc);border-color:var(--llauto);}
   .btn:active{transform:scale(.98);}
   .btn.copied{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
+
+  /* ---- pantalla de entrada: curiosidad / control ---- */
+  .entry-q{font-family:var(--serif);font-size:1.5rem;line-height:1.2;color:var(--mar);text-align:center;margin:6px 4px 18px;}
+  .fork{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+  .bigfork{display:flex;align-items:center;gap:14px;text-align:left;padding:18px 18px;border-radius:20px;border:1.5px solid var(--linia);background:var(--blanc);cursor:pointer;min-height:88px;}
+  .bigfork:active{transform:scale(.99);}
+  .bigfork.cur{border-color:#8CA57F;background:#F2F5EE;}
+  .bigfork.con{border-color:#D2A08C;background:#F8F0EC;}
+  .bigfork .fk-e{font-size:30px;flex:none;line-height:1;}
+  .bigfork .fk-n{display:block;font-family:var(--serif);font-size:1.35rem;color:var(--mar);line-height:1.1;}
+  .bigfork.cur .fk-n{color:var(--pi-2,#47623F);} .bigfork.con .fk-n{color:#8F4229;}
+  .bigfork .fk-d{display:block;font-family:var(--read,"Newsreader",Georgia,serif);font-size:.86rem;color:var(--tinta-2);margin-top:4px;line-height:1.35;}
+  .daycard{background:var(--piedra);border:1px solid var(--linia);border-radius:16px;padding:15px 17px;margin-bottom:16px;}
+  .daybal .dl{font-family:var(--read,Georgia,serif);font-style:italic;font-size:.92rem;color:var(--tinta-3);}
+  .barrow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .barrow .cur{color:var(--pi-2,#47623F);} .barrow .con{color:#8F4229;}
+  .bar{height:8px;border-radius:6px;background:#E7C4B6;overflow:hidden;}
+  .bar>span{display:block;height:100%;background:#7C9A6E;border-radius:6px;}
+  .daymsg{font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--mar-2);margin-top:11px;text-wrap:balance;}
+  .diario-link{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mar-3);background:none;border:0;cursor:pointer;padding:0;}
+  .back-link{display:inline-block;margin:0 0 10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-3);background:none;border:0;cursor:pointer;padding:6px 0;}
+  /* diario */
+  .diaday{padding:11px 2px;border-bottom:1px solid var(--linia-2,#E9E3D6);}
+  .diaday:last-child{border-bottom:0;}
+  .dd-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .dd-date{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-2);}
+  .dd-cnt{font-family:var(--serif);font-size:.95rem;color:var(--tinta);}
+  .dd-cnt .cur{color:var(--pi-2,#47623F);} .dd-cnt .con{color:#8F4229;}
+  .dd-none{font-family:var(--read,Georgia,serif);font-style:italic;font-size:.85rem;color:var(--tinta-3);margin-left:10px;}
 </style>
 </head>
 <body>
@@ -208,11 +248,45 @@
 
   <main>
     <!-- HOME -->
-    <section class="screen on" id="s-home">
+    <!-- ENTRADA: ¿desde dónde entras? -->
+    <section class="screen on" id="s-entry">
+      <h1 class="entry-q" id="entry-q"></h1>
+      <div class="fork">
+        <button class="bigfork cur" id="entryCur" type="button">
+          <span class="fk-e">🌱</span>
+          <span class="fk-t"><span class="fk-n" id="curN"></span><span class="fk-d" id="curD"></span></span>
+        </button>
+        <button class="bigfork con" id="entryCon" type="button">
+          <span class="fk-e">⚡</span>
+          <span class="fk-t"><span class="fk-n" id="conN"></span><span class="fk-d" id="conD"></span></span>
+        </button>
+      </div>
+      <div class="daycard">
+        <div class="daybal" id="dayBal"></div>
+        <div class="daymsg" id="dayMsg"></div>
+        <button class="diario-link" id="diarioLink" type="button"></button>
+        <button class="btn" id="diarioActivate" type="button" style="display:none;margin-top:10px"></button>
+      </div>
+      <div class="privacy" id="entry-priv"></div>
+    </section>
+
+    <!-- LISTA (curiosidad / control) -->
+    <section class="screen" id="s-home">
+      <button class="back-link" id="listBack" type="button"></button>
       <h1 id="home-q"></h1>
       <p class="lead" id="home-l"></p>
       <div class="sits" id="sits"></div>
-      <div class="privacy" id="home-priv"></div>
+    </section>
+
+    <!-- DIARIO local -->
+    <section class="screen" id="s-diario">
+      <button class="back-link" id="diaBack" type="button"></button>
+      <h1 id="dia-q"></h1>
+      <p class="lead" id="dia-l"></p>
+      <div id="diarioList"></div>
+      <button class="btn" id="diarioClear" type="button" style="margin-top:16px"></button>
+      <button class="diario-link" id="diarioDeact" type="button" style="display:block;margin:12px auto 0"></button>
+      <div class="privacy" id="dia-priv"></div>
     </section>
 
     <!-- FLOW -->
@@ -371,7 +445,8 @@
               </g>
             </svg>
           </div>
-          <div class="descend" aria-hidden="true"><span class="arw">⌄</span><span class="arw">⌄</span><span class="arw">⌄</span></div>
+          <div class="rootglow" aria-hidden="true"></div>
+          <div class="descend" aria-hidden="true"><span class="arw">⌄</span><span class="arw">⌄</span><span class="arw">⌄</span><span class="arw">⌄</span></div>
           <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
           <div class="stage-cue" id="stageCue"></div>
         </div>
@@ -445,7 +520,7 @@ var STR={
     hsub:"Manager", foot:"Formentor Flow · Manager — método Centre APRENS · en el dispositivo",
     homeQ:"¿Qué necesita el sistema ahora?",
     homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
-    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin registros, sin analítica y sin conexión propia. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.",
+    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin analítica y sin conexión propia. El <b>diario</b> es opcional y viene desactivado; si lo activas, se guarda solo en tu dispositivo (nunca en un servidor ni a RRHH) y puedes borrarlo. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo.",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
     inhala:"Inhala", reten:"Retén", pausa:"Pausa", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
@@ -473,13 +548,34 @@ var STR={
     figBody:"Cuerpo", figTree:"Árbol", zoneCanopy:"COPA", zoneTrunk:"TRONCO", zoneRoots:"RAÍCES",
     zoneCanopyL:"la copa", zoneTrunkL:"el tronco", zoneRootsL:"las raíces",
     cueCuriosity:"Respira con curiosidad · la atención baja a las raíces",
-    breatheBtn:"Respiro"
+    breatheBtn:"Respiro",
+    entryQ:"¿Desde dónde entras ahora?",
+    curN:"Curiosidad", curD:"Acompañarme: entrar, salir, relevo… o solo respirar con el pino.",
+    conN:"Control", conD:"Ante una incidencia, un conflicto, una sobrecarga… eso que noto intenso.",
+    curShort:"Curiosidad", conShort:"Control",
+    curTitle:"Curiosidad", curLead:"Un respiro para acompañarme. Sin anclar: la atención baja a las raíces.",
+    conTitle:"Control", conLead:"Ordenar y comunicar ante una situación. Primero anclas donde lo notas.",
+    back:"← Volver",
+    todayNone:"Hoy aún no has entrado.",
+    msgNone:"Cuando quieras, elige cómo entras.",
+    msgOnlyCur:"Hoy solo desde la curiosidad. Buen acompañamiento.",
+    msgOnlyCon:"Hoy desde el control. Acompaña igual; cuando puedas, prueba la curiosidad.",
+    msgMoreCur:"Hoy vienes más desde la curiosidad que desde el control. Buena señal.",
+    msgMoreCon:"Hoy pesa más el control. Es necesario a veces; si puedes, un respiro de curiosidad.",
+    diarioLink:"Ver mi diario →",
+    diarioTitle:"Mi diario", diarioLead:"Cómo te has ido acompañando estos días. Solo en tu dispositivo.",
+    diarioClear:"Borrar mi diario",
+    diarioPriv:"Este diario se guarda <b>solo en tu dispositivo</b>. Nadie más lo ve. Nunca va a RRHH.",
+    diaNone:"día sin pausa", today:"Hoy", yesterday:"Ayer",
+    diaDays:["dom","lun","mar","mié","jue","vie","sáb"], diaMon:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
+    diarioOff:"El diario está desactivado. Si quieres, actívalo para ver cómo te acompañas — solo en tu móvil.",
+    diarioActivate:"Activar mi diario", diarioDeact:"Desactivar el diario"
   },
   en:{
     hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
     homeQ:"What does the system need now?",
     homeL:"Pick what's happening. A few steps to turn pressure into information.",
-    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no records, no analytics and no connection of its own. Voice dictation, if you use it, relies on your device's or browser's own speech recognition.",
+    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no analytics and no connection of its own. The <b>diary</b> is optional and off by default; if you turn it on, it's stored on your device only (never on a server or to HR) and you can delete it. Voice dictation, if you use it, relies on your device's own speech recognition.",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
     inhala:"Breathe in", reten:"Hold", pausa:"Pause", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
@@ -507,7 +603,28 @@ var STR={
     figBody:"Body", figTree:"Tree", zoneCanopy:"CANOPY", zoneTrunk:"TRUNK", zoneRoots:"ROOTS",
     zoneCanopyL:"the canopy", zoneTrunkL:"the trunk", zoneRootsL:"the roots",
     cueCuriosity:"Breathe with curiosity · attention settles into the roots",
-    breatheBtn:"Breathe"
+    breatheBtn:"Breathe",
+    entryQ:"Where are you entering from?",
+    curN:"Curiosity", curD:"Be with myself: enter, leave, handover… or just breathe with the pine.",
+    conN:"Control", conD:"Facing an incident, a conflict, an overload… that intense feeling.",
+    curShort:"Curiosity", conShort:"Control",
+    curTitle:"Curiosity", curLead:"A breath to be with myself. No anchor: attention settles into the roots.",
+    conTitle:"Control", conLead:"Order and communicate under a situation. First anchor where you feel it.",
+    back:"← Back",
+    todayNone:"You haven't entered yet today.",
+    msgNone:"Choose how you enter, whenever you like.",
+    msgOnlyCur:"Today only from curiosity. Good self-accompaniment.",
+    msgOnlyCon:"Today from control. It accompanies too; when you can, try curiosity.",
+    msgMoreCur:"Today you come more from curiosity than control. Good sign.",
+    msgMoreCon:"Today control weighs more. Sometimes it's needed; if you can, a curious breath.",
+    diarioLink:"See my diary →",
+    diarioTitle:"My diary", diarioLead:"How you've been with yourself these days. On your device only.",
+    diarioClear:"Delete my diary",
+    diarioPriv:"This diary is stored <b>on your device only</b>. No one else sees it. It never goes to HR.",
+    diaNone:"day without a pause", today:"Today", yesterday:"Yesterday",
+    diaDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], diaMon:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    diarioOff:"The diary is off. If you like, turn it on to see how you're with yourself — on your device only.",
+    diarioActivate:"Turn on my diary", diarioDeact:"Turn off the diary"
   }
 };
 
@@ -630,41 +747,93 @@ function startRec(ta,key,btn){
 function stopRec(){ if(rec){try{rec.onend=null;rec.stop();}catch(e){} rec=null;} if(recBtn){recBtn.classList.remove('rec');recBtn=null;} }
 
 /* ---------- state ---------- */
-var state={sit:null,momento:null,step:"para",dir:"down",vals:{},checks:{},exOpen:false,figMode:"body"};
+var state={sit:null,momento:null,branch:null,step:"para",dir:"down",vals:{},checks:{},exOpen:false,figMode:"body"};
 var STEPS=["para","ordena","comunica","verifica"];
 function U(){return STR[LANG];}
 function el(id){return document.getElementById(id);}
 function setScreen(id){var s=document.querySelectorAll('.screen');for(var i=0;i<s.length;i++)s[i].classList.remove('on');el(id).classList.add('on');}
 
 /* ---------- home ---------- */
-function renderHome(){
+/* ---------- diario local (solo en el dispositivo) ---------- */
+var DKEY="ff_diario_v1", DMEM=null;
+function loadDiario(){ try{ var s=localStorage.getItem(DKEY); var d=s?JSON.parse(s):null; if(!d) return {days:{},enabled:false}; if(d.enabled===undefined)d.enabled=false; if(!d.days)d.days={}; return d; }catch(e){ return DMEM||{days:{},enabled:false}; } }
+function saveDiario(){ try{ localStorage.setItem(DKEY,JSON.stringify(DIARIO)); }catch(e){ DMEM=DIARIO; } }
+var DIARIO=loadDiario();
+function dkey(dt){ dt=dt||new Date(); function p(n){return(n<10?'0':'')+n;} return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate()); }
+function activateDiario(){ DIARIO.enabled=true; saveDiario(); renderEntry(); }
+function deactivateDiario(){ DIARIO.enabled=false; saveDiario(); goEntry(); }
+function tap(kind){ if(!DIARIO.enabled) return; var k=dkey(); if(!DIARIO.days[k]) DIARIO.days[k]={cur:0,con:0};
+  DIARIO.days[k][kind==='curiosidad'?'cur':'con']++;
+  var ks=Object.keys(DIARIO.days).sort(); while(ks.length>90){ delete DIARIO.days[ks.shift()]; }
+  saveDiario(); }
+function dayMsg(cur,con,t){ if(cur+con===0)return t.msgNone; if(con===0)return t.msgOnlyCur; if(cur===0)return t.msgOnlyCon; return cur>=con?t.msgMoreCur:t.msgMoreCon; }
+
+/* ---------- pantalla de entrada (curiosidad / control) ---------- */
+function renderEntry(){
   var t=U();
-  el('hsub').textContent=t.hsub; el('home-q').textContent=t.homeQ; el('home-l').textContent=t.homeL;
-  el('breatheBtn').textContent=t.breatheBtn;
-  el('home-priv').innerHTML=t.priv; el('foot').textContent=t.foot;
+  el('hsub').textContent=t.hsub; el('breatheBtn').textContent=t.breatheBtn; el('foot').textContent=t.foot;
+  el('entry-q').textContent=t.entryQ;
+  el('curN').textContent=t.curN; el('curD').textContent=t.curD;
+  el('conN').textContent=t.conN; el('conD').textContent=t.conD;
+  el('entry-priv').innerHTML=t.priv;
+  renderDayCard();
+}
+function renderDayCard(){
+  var t=U();
+  if(!DIARIO.enabled){
+    el('dayBal').innerHTML='';
+    el('dayMsg').textContent=t.diarioOff;
+    el('diarioLink').style.display='none';
+    el('diarioActivate').style.display=''; el('diarioActivate').textContent=t.diarioActivate;
+    return;
+  }
+  el('diarioActivate').style.display='none';
+  el('diarioLink').style.display='';
+  var d=DIARIO.days[dkey()]||{cur:0,con:0}, total=d.cur+d.con, bal=el('dayBal');
+  if(total===0){ bal.innerHTML='<span class="dl">'+t.todayNone+'</span>'; }
+  else{ var cp=Math.round(d.cur/total*100);
+    bal.innerHTML='<div class="barrow"><span class="cur">'+t.curShort+' · '+d.cur+'</span><span class="con">'+t.conShort+' · '+d.con+'</span></div>'+
+      '<div class="bar"><span style="width:'+cp+'%"></span></div>'; }
+  el('dayMsg').textContent=dayMsg(d.cur,d.con,t);
+  el('diarioLink').textContent=t.diarioLink;
+}
+
+/* ---------- lista curiosidad / control ---------- */
+function goBranch(kind){ tap(kind); state.branch=kind; renderList(); setScreen('s-home'); window.scrollTo(0,0); }
+function renderList(){
+  var t=U(), cur=(state.branch==='curiosidad');
+  el('listBack').textContent=t.back;
+  el('home-q').textContent=cur?t.curTitle:t.conTitle;
+  el('home-l').textContent=cur?t.curLead:t.conLead;
   var wrap=el('sits'); wrap.innerHTML='';
-  SITORDER.forEach(function(k){
-    var s=SITU[k];
+  var order=cur?MOMORDER:SITORDER, src=cur?MOMENTOS:SITU, open=cur?openMomento:openFlow;
+  order.forEach(function(k){ var s=src[k];
     var b=document.createElement('button'); b.className='sit'; b.type='button';
     b.innerHTML='<span class="d" style="background:'+s.color+'"></span>'+s.name[LANG]+'<span class="ar">→</span>';
-    b.addEventListener('click',function(){openFlow(k);});
-    wrap.appendChild(b);
-  });
-  var mt=document.createElement('div');
-  mt.style.cssText='margin:20px 4px 2px;font:600 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#855F26;display:flex;align-items:center;gap:9px;';
-  mt.innerHTML='<span style="width:20px;height:1px;background:#A87C39;display:inline-block"></span>'+t.momTitle;
-  var ms=document.createElement('div');
-  ms.style.cssText='margin:0 4px 12px;font:italic 13px/1.4 "Newsreader",Georgia,serif;color:#47535A;';
-  ms.textContent=t.momSub;
-  wrap.appendChild(mt); wrap.appendChild(ms);
-  MOMORDER.forEach(function(k){
-    var m=MOMENTOS[k];
-    var b=document.createElement('button'); b.className='sit'; b.type='button';
-    b.innerHTML='<span class="d" style="background:'+m.color+'"></span>'+m.name[LANG]+'<span class="ar">→</span>';
-    b.addEventListener('click',function(){openMomento(k);});
+    b.addEventListener('click',function(){ open(k); });
     wrap.appendChild(b);
   });
 }
+
+/* ---------- diario ---------- */
+function renderDiario(){
+  var t=U();
+  el('diaBack').textContent=t.back; el('dia-q').textContent=t.diarioTitle; el('dia-l').textContent=t.diarioLead;
+  el('diarioClear').textContent=t.diarioClear; el('diarioDeact').textContent=t.diarioDeact; el('dia-priv').innerHTML=t.diarioPriv;
+  var list=el('diarioList'); list.innerHTML=''; var today=new Date();
+  for(var i=0;i<14;i++){
+    var dt=new Date(today); dt.setDate(today.getDate()-i);
+    var rec=DIARIO.days[dkey(dt)];
+    var label=(i===0?t.today:(i===1?t.yesterday:(t.diaDays[dt.getDay()]+' '+dt.getDate()+' '+t.diaMon[dt.getMonth()])));
+    var row=document.createElement('div'); row.className='diaday';
+    if(!rec||rec.cur+rec.con===0){ row.innerHTML='<span class="dd-date">'+label+'</span><span class="dd-none">'+t.diaNone+'</span>'; }
+    else{ var total=rec.cur+rec.con, cp=Math.round(rec.cur/total*100);
+      row.innerHTML='<div class="dd-top"><span class="dd-date">'+label+'</span><span class="dd-cnt"><b class="cur">'+rec.cur+'</b> · <b class="con">'+rec.con+'</b></span></div><div class="bar"><span style="width:'+cp+'%"></span></div>'; }
+    list.appendChild(row);
+  }
+}
+function clearDiario(){ DIARIO={days:{}}; saveDiario(); renderDiario(); }
+function goEntry(){ renderEntry(); setScreen('s-entry'); window.scrollTo(0,0); }
 
 /* ---------- step bar ---------- */
 function renderStepBar(){
@@ -837,11 +1006,12 @@ function startBreath(){
     r.style.transform='scale('+scale.toFixed(3)+')';
     r.style.opacity=(0.6+0.4*((scale-MIN)/(MAX-MIN))).toFixed(3);
     var n=Math.floor(within/1000)+1; if(n>ph[3])n=ph[3];
-    if(n!==last||typ!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(typ)+'</span><span class="bn">'+n+'</span>'; last=n; lastT=typ; }
+    if(n!==last||typ!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(typ)+'</span><span class="bn">'+n+'</span>'; last=n;
+      if(typ!==lastT){ var st2=el('paraStage'); if(st2){ st2.classList.remove('ph-in','ph-ex','ph-hold','ph-pausa'); st2.classList.add('ph-'+typ); } lastT=typ; } }
     breathRAF=requestAnimationFrame(loop);
   })();
 }
-function stopBreath(){ if(breathRAF){cancelAnimationFrame(breathRAF);breathRAF=null;} }
+function stopBreath(){ if(breathRAF){cancelAnimationFrame(breathRAF);breathRAF=null;} var st=el('paraStage'); if(st) st.classList.remove('ph-in','ph-ex','ph-hold','ph-pausa'); }
 
 /* ORDENA (adaptive per situation) */
 function renderOrdena(){
@@ -930,12 +1100,14 @@ function openMomento(k){
   if(MOMENTOS[k].figMode) state.figMode=MOMENTOS[k].figMode;
   setScreen('s-flow'); renderCtx(); showStep('para');
 }
-function home(){ stopBreath(); stopRec(); state.momento=null; setScreen('s-home'); }
+function home(){ stopBreath(); stopRec(); state.momento=null; goEntry(); }
 function setLang(l){
   stopRec(); LANG=l;
   el('l-es').classList.toggle('on',l==='es'); el('l-en').classList.toggle('on',l==='en');
   document.documentElement.lang=l;
-  renderHome();
+  renderEntry();
+  if(el('s-home').classList.contains('on')) renderList();
+  if(el('s-diario').classList.contains('on')) renderDiario();
   if(el('s-flow').classList.contains('on')){ renderCtx(); showStep(state.step); }
 }
 function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
@@ -943,7 +1115,15 @@ function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
 /* ---------- events ---------- */
 el('l-es').addEventListener('click',function(){setLang('es');});
 el('l-en').addEventListener('click',function(){setLang('en');});
-el('breatheBtn').addEventListener('click',function(){ openMomento('respiro'); });
+el('breatheBtn').addEventListener('click',function(){ tap('curiosidad'); openMomento('respiro'); });
+el('entryCur').addEventListener('click',function(){ goBranch('curiosidad'); });
+el('entryCon').addEventListener('click',function(){ goBranch('control'); });
+el('diarioLink').addEventListener('click',function(){ renderDiario(); setScreen('s-diario'); window.scrollTo(0,0); });
+el('listBack').addEventListener('click',goEntry);
+el('diaBack').addEventListener('click',goEntry);
+el('diarioClear').addEventListener('click',clearDiario);
+el('diarioActivate').addEventListener('click',activateDiario);
+el('diarioDeact').addEventListener('click',deactivateDiario);
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
@@ -985,7 +1165,7 @@ if('serviceWorker' in navigator){
 }
 
 /* ---------- init ---------- */
-renderHome();
+renderEntry();
 </script>
 </body>
 </html>
