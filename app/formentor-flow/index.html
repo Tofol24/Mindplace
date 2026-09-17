@@ -265,6 +265,7 @@
         <div class="daybal" id="dayBal"></div>
         <div class="daymsg" id="dayMsg"></div>
         <button class="diario-link" id="diarioLink" type="button"></button>
+        <button class="btn" id="diarioActivate" type="button" style="display:none;margin-top:10px"></button>
       </div>
       <div class="privacy" id="entry-priv"></div>
     </section>
@@ -284,6 +285,7 @@
       <p class="lead" id="dia-l"></p>
       <div id="diarioList"></div>
       <button class="btn" id="diarioClear" type="button" style="margin-top:16px"></button>
+      <button class="diario-link" id="diarioDeact" type="button" style="display:block;margin:12px auto 0"></button>
       <div class="privacy" id="dia-priv"></div>
     </section>
 
@@ -518,7 +520,7 @@ var STR={
     hsub:"Manager", foot:"Formentor Flow · Manager — método Centre APRENS · en el dispositivo",
     homeQ:"¿Qué necesita el sistema ahora?",
     homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
-    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin analítica y sin conexión propia. El <b>diario</b> se guarda solo en tu dispositivo (nunca en un servidor ni a RRHH) y puedes borrarlo. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo.",
+    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin analítica y sin conexión propia. El <b>diario</b> es opcional y viene desactivado; si lo activas, se guarda solo en tu dispositivo (nunca en un servidor ni a RRHH) y puedes borrarlo. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo.",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
     inhala:"Inhala", reten:"Retén", pausa:"Pausa", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
@@ -565,13 +567,15 @@ var STR={
     diarioClear:"Borrar mi diario",
     diarioPriv:"Este diario se guarda <b>solo en tu dispositivo</b>. Nadie más lo ve. Nunca va a RRHH.",
     diaNone:"día sin pausa", today:"Hoy", yesterday:"Ayer",
-    diaDays:["dom","lun","mar","mié","jue","vie","sáb"], diaMon:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]
+    diaDays:["dom","lun","mar","mié","jue","vie","sáb"], diaMon:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
+    diarioOff:"El diario está desactivado. Si quieres, actívalo para ver cómo te acompañas — solo en tu móvil.",
+    diarioActivate:"Activar mi diario", diarioDeact:"Desactivar el diario"
   },
   en:{
     hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
     homeQ:"What does the system need now?",
     homeL:"Pick what's happening. A few steps to turn pressure into information.",
-    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no analytics and no connection of its own. The <b>diary</b> is stored on your device only (never on a server or to HR) and you can delete it. Voice dictation, if you use it, relies on your device's own speech recognition.",
+    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no analytics and no connection of its own. The <b>diary</b> is optional and off by default; if you turn it on, it's stored on your device only (never on a server or to HR) and you can delete it. Voice dictation, if you use it, relies on your device's own speech recognition.",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
     inhala:"Breathe in", reten:"Hold", pausa:"Pause", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
@@ -618,7 +622,9 @@ var STR={
     diarioClear:"Delete my diary",
     diarioPriv:"This diary is stored <b>on your device only</b>. No one else sees it. It never goes to HR.",
     diaNone:"day without a pause", today:"Today", yesterday:"Yesterday",
-    diaDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], diaMon:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    diaDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], diaMon:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    diarioOff:"The diary is off. If you like, turn it on to see how you're with yourself — on your device only.",
+    diarioActivate:"Turn on my diary", diarioDeact:"Turn off the diary"
   }
 };
 
@@ -750,11 +756,13 @@ function setScreen(id){var s=document.querySelectorAll('.screen');for(var i=0;i<
 /* ---------- home ---------- */
 /* ---------- diario local (solo en el dispositivo) ---------- */
 var DKEY="ff_diario_v1", DMEM=null;
-function loadDiario(){ try{ var s=localStorage.getItem(DKEY); return s?JSON.parse(s):{days:{}}; }catch(e){ return DMEM||{days:{}}; } }
+function loadDiario(){ try{ var s=localStorage.getItem(DKEY); var d=s?JSON.parse(s):null; if(!d) return {days:{},enabled:false}; if(d.enabled===undefined)d.enabled=false; if(!d.days)d.days={}; return d; }catch(e){ return DMEM||{days:{},enabled:false}; } }
 function saveDiario(){ try{ localStorage.setItem(DKEY,JSON.stringify(DIARIO)); }catch(e){ DMEM=DIARIO; } }
 var DIARIO=loadDiario();
 function dkey(dt){ dt=dt||new Date(); function p(n){return(n<10?'0':'')+n;} return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate()); }
-function tap(kind){ var k=dkey(); if(!DIARIO.days[k]) DIARIO.days[k]={cur:0,con:0};
+function activateDiario(){ DIARIO.enabled=true; saveDiario(); renderEntry(); }
+function deactivateDiario(){ DIARIO.enabled=false; saveDiario(); goEntry(); }
+function tap(kind){ if(!DIARIO.enabled) return; var k=dkey(); if(!DIARIO.days[k]) DIARIO.days[k]={cur:0,con:0};
   DIARIO.days[k][kind==='curiosidad'?'cur':'con']++;
   var ks=Object.keys(DIARIO.days).sort(); while(ks.length>90){ delete DIARIO.days[ks.shift()]; }
   saveDiario(); }
@@ -771,7 +779,17 @@ function renderEntry(){
   renderDayCard();
 }
 function renderDayCard(){
-  var t=U(), d=DIARIO.days[dkey()]||{cur:0,con:0}, total=d.cur+d.con, bal=el('dayBal');
+  var t=U();
+  if(!DIARIO.enabled){
+    el('dayBal').innerHTML='';
+    el('dayMsg').textContent=t.diarioOff;
+    el('diarioLink').style.display='none';
+    el('diarioActivate').style.display=''; el('diarioActivate').textContent=t.diarioActivate;
+    return;
+  }
+  el('diarioActivate').style.display='none';
+  el('diarioLink').style.display='';
+  var d=DIARIO.days[dkey()]||{cur:0,con:0}, total=d.cur+d.con, bal=el('dayBal');
   if(total===0){ bal.innerHTML='<span class="dl">'+t.todayNone+'</span>'; }
   else{ var cp=Math.round(d.cur/total*100);
     bal.innerHTML='<div class="barrow"><span class="cur">'+t.curShort+' · '+d.cur+'</span><span class="con">'+t.conShort+' · '+d.con+'</span></div>'+
@@ -801,7 +819,7 @@ function renderList(){
 function renderDiario(){
   var t=U();
   el('diaBack').textContent=t.back; el('dia-q').textContent=t.diarioTitle; el('dia-l').textContent=t.diarioLead;
-  el('diarioClear').textContent=t.diarioClear; el('dia-priv').innerHTML=t.diarioPriv;
+  el('diarioClear').textContent=t.diarioClear; el('diarioDeact').textContent=t.diarioDeact; el('dia-priv').innerHTML=t.diarioPriv;
   var list=el('diarioList'); list.innerHTML=''; var today=new Date();
   for(var i=0;i<14;i++){
     var dt=new Date(today); dt.setDate(today.getDate()-i);
@@ -1104,6 +1122,8 @@ el('diarioLink').addEventListener('click',function(){ renderDiario(); setScreen(
 el('listBack').addEventListener('click',goEntry);
 el('diaBack').addEventListener('click',goEntry);
 el('diarioClear').addEventListener('click',clearDiario);
+el('diarioActivate').addEventListener('click',activateDiario);
+el('diarioDeact').addEventListener('click',deactivateDiario);
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
