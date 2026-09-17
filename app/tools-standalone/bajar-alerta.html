@@ -159,6 +159,7 @@ input[type=range]::-moz-range-thumb{border-color:var(--azul);}
   <div><div class="htitle">Bajar la alerta</div></div>
 </div>
 <div class="wrap" id="app"></div>
+<script src="../js/respiro-ais.js"></script>
 <script>
 let vista="intro", paso=0;
 let nivelIni=6, nivelFin=6;
@@ -219,7 +220,7 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancla la mirada dentro <span style=
 
 const PASOS=[
   {ico:"🛑", tit:"Para y mira", sub:"Abre bien los ojos. Mira despacio 3 cosas a tu alrededor.", tipo:"ok", btn:"Ya miro →"},
-  {ico:"🫁", tit:"Respira y ancla", sub:"Respira con el círculo. Toca dónde apoyarte ahora.", tipo:"ancla"},
+  {ico:"🫁", tit:"Respira y ancla", sub:"Respira con las dos luces. Toca dónde apoyarte ahora.", tipo:"ancla"},
   {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Tócalo. No hace falta explicar.", tipo:"emocion"},
   {ico:"👣", tit:"Una acción pequeña", sub:"Elige algo concreto para volver a tu día.", tipo:"micro"}
 ];
@@ -233,28 +234,20 @@ function emojiNivel(v){return v<=2?"😌":v<=4?"🙂":v<=6?"😐":v<=8?"😟":"�
 /* Respiración guiada ADAPTADA al nivel de alerta inicial (0-10): más alerta →
    exhalación más larga y sin retenciones; menos → coherente ~6/min */
 function ritmoResp(frac){ if(frac>=0.8)return[2,0,6,0]; if(frac>=0.6)return[3,1,6,1]; if(frac>=0.4)return[4,2,6,2]; return[5,0,5,0]; }
-function fasesDe(r){ var IN=1.32, OUT=0.68;
-  var f=[{txt:"Coge aire",dur:r[0]*1000,scale:IN,kind:'in'}];
-  if(r[1]>0)f.push({txt:"Retén",dur:r[1]*1000,scale:IN,kind:'in'});
-  f.push({txt:"Suelta",dur:r[2]*1000,scale:OUT,kind:'out'});
-  if(r[3]>0)f.push({txt:"Pausa",dur:r[3]*1000,scale:OUT,kind:'out'});
-  return f; }
 function hintDe(r){ var s="Coge aire "+r[0]+"s"; if(r[1]>0)s+=" · retén "+r[1]+"s"; s+=" · suelta "+r[2]+"s"; if(r[3]>0)s+=" · pausa "+r[3]+"s"; return s; }
-let FASES_RESP=[], respIdx=0, respTimer=null, respCiclos=0;
-function startBreath(){ stopBreath(); var r=ritmoResp((nivelIni||5)/10); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCiclos=0; var c=document.getElementById('respCount'); if(c)c.textContent="Respiración 1"; runResp(); }
-function runResp(){
-  var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
-  var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
-  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out, background .8s ease, border-color .8s ease';
-  ring.style.transform='scale('+f.scale+')';
-  ring.classList.toggle('inhale', f.kind==='in');
-  ring.classList.toggle('exhale', f.kind==='out');
-  if(lbl) lbl.textContent=f.txt;
-  respIdx=(respIdx+1)%FASES_RESP.length;
-  if(respIdx===0){ respCiclos++; var c=document.getElementById('respCount'); if(c)c.textContent="Respiración "+(respCiclos+1); }
-  respTimer=setTimeout(runResp,f.dur);
+/* Respiración de dos luces (componente RespiroAIS), con el ritmo adaptado al nivel
+   de alerta: el aire (azul) es el cebo; la conciencia (amarilla) baja y se queda
+   en el vientre. Garantizamos un anclaje y una pausa breves para que se vea. */
+let respiroInstance=null;
+function startBreath(){
+  stopBreath();
+  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS) return;
+  var r=ritmoResp((nivelIni||5)/10);
+  var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r);
+  respiroInstance=RespiroAIS.mount(box,{ lang:'es', showControl:true, showZones:true, autostart:true,
+    rhythm:{ inhale:r[0]*1000, anchor:Math.max(r[1]*1000,1000), exhale:r[2]*1000, pause:Math.max(r[3]*1000,800) } });
 }
-function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
+function stopBreath(){ if(respiroInstance){ respiroInstance.stop(); respiroInstance=null; } }
 
 function render(){
   stopBreath();
@@ -291,7 +284,7 @@ function pasoView(){
   if(s.tipo==="ok"){
     cuerpo=`<button class="btn big green" onclick="next()">${s.btn}</button>`;
   } else if(s.tipo==="ancla"){
-    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">Respira</span></div><div class="breath-hint" id="respHint">Respira con el círculo</div><div class="breath-count" id="respCount"></div></div>
+    cuerpo=`<div id="respiroBox"></div><div class="breath-hint" id="respHint">Respira con las dos luces</div>
       <div class="opts">${ANCLAS.map((o,i)=>opt('ancla',i,o)).join("")}</div>
       ${MAPA_SVG}
       <button class="btn big green" onclick="next()">Siguiente →</button>`;

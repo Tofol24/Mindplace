@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v137";
+const CACHE = "aprens-v141";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -17,6 +17,9 @@ const SHELL = [
   "./js/aprens-core.js",
   "./js/registry.js",
   "./js/app.js",
+  "./js/respiro-ais.js",
+  "./assets/respiro/organismo.webp",
+  "./assets/respiro/organismo_nino.webp",
   "./js/tools/cuestionario-tec.js",
   "./js/tools/estado-mono.js",
   "./js/tools/donde-esta-mono.js",
@@ -28,6 +31,7 @@ const SHELL = [
   "./tools-standalone/ais-curiosidad.html",
   "./tools-standalone/assets/editorial/ais-curiosidad.webp",
   "./tools-standalone/bajar-alerta.html",
+  "./tools-standalone/respiro-ais.html",
   "./tools-standalone/assets/editorial/bajar-alerta.webp",
   "./tools-standalone/brujula-valores.html",
   "./tools-standalone/assets/editorial/brujula-valores.webp",
