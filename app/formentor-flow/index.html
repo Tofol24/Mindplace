@@ -391,7 +391,8 @@ var STR={
     eligeLbl:"Elige · antes de decirlo",
     golden:"¿Cómo quiero tratar a esta persona mientras lo resolvemos? ¿Cómo querría recibir yo este mensaje?",
     verQ:"Antes de cerrar: ¿la comunicación ha quedado clara?",
-    checks:["Sabe qué hacer.","Sabe para cuándo.","Sabe qué es prioritario.","Puede comunicar una dificultad.","Sabemos cuándo comprobarlo."]
+    checks:["Sabe qué hacer.","Sabe para cuándo.","Sabe qué es prioritario.","Puede comunicar una dificultad.","Sabemos cuándo comprobarlo."],
+    momTitle:"Momentos del turno", momSub:"No solo cuando algo estalla. También para entrar, sostener un pico y salir.", momDone:"Listo ✓"
   },
   en:{
     hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
@@ -420,8 +421,30 @@ var STR={
     eligeLbl:"Choose · before you say it",
     golden:"How do I want to treat this person while we sort this out? How would I want to receive this message?",
     verQ:"Before closing: is the message clear?",
-    checks:["Knows what to do.","Knows by when.","Knows what's the priority.","Can flag a difficulty.","We know when to check."]
+    checks:["Knows what to do.","Knows by when.","Knows what's the priority.","Can flag a difficulty.","We know when to check."],
+    momTitle:"Shift moments", momSub:"Not only when something blows up. Also to enter, hold a peak and leave.", momDone:"Done ✓"
   }
+};
+
+/* ---------- momentos del turno (AIS proactivo, sin decisión) ----------
+   A diferencia de las situaciones (reactivas: PARA→ORDENA→COMUNICA→VERIFICA),
+   los momentos anclan la pausa AIS a las transiciones que el mando YA tiene
+   (entrar, un pico previsto, salir). Reutilizan la pantalla PARA (figura +
+   respiración + anclaje), sin pasos de decisión y sin guardar nada. */
+var MOMORDER=["antesTurno","antesPico","cierreTurno"];
+var MOMENTOS={
+  antesTurno:{ color:"#1B5A68", mode:"foco",
+    name:{es:"Antes del turno", en:"Before the shift"},
+    q:{es:"¿Con qué cuerpo entro a planta?", en:"What body am I bringing onto the floor?"},
+    micro:{es:"No entras solo al hotel. Entras contigo.", en:"You don't enter the hotel alone. You enter with yourself."} },
+  antesPico:{ color:"#A87C39", mode:"foco",
+    name:{es:"Antes de un pico", en:"Before a peak"},
+    q:{es:"Antes del pico: ¿qué suelto para llegar entero?", en:"Before the peak: what do I let go to arrive whole?"},
+    micro:{es:"El pico va a pasar. Elige cómo quieres estar cuando llegue.", en:"The peak will pass. Choose how you want to be when it arrives."} },
+  cierreTurno:{ color:"#5C7A56", mode:"bajar",
+    name:{es:"Al salir", en:"Leaving"},
+    q:{es:"¿Qué me llevo del turno y qué se queda aquí?", en:"What do I take from the shift and what stays here?"},
+    micro:{es:"La presión que recibo no tiene por qué convertirse en la que llevo a casa.", en:"The pressure I receive doesn't have to become the pressure I carry home."} }
 };
 
 /* ---------- situations (order matters) ---------- */
@@ -531,10 +554,25 @@ function renderHome(){
     b.addEventListener('click',function(){openFlow(k);});
     wrap.appendChild(b);
   });
+  var mt=document.createElement('div');
+  mt.style.cssText='margin:20px 4px 2px;font:600 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#855F26;display:flex;align-items:center;gap:9px;';
+  mt.innerHTML='<span style="width:20px;height:1px;background:#A87C39;display:inline-block"></span>'+t.momTitle;
+  var ms=document.createElement('div');
+  ms.style.cssText='margin:0 4px 12px;font:italic 13px/1.4 "Newsreader",Georgia,serif;color:#47535A;';
+  ms.textContent=t.momSub;
+  wrap.appendChild(mt); wrap.appendChild(ms);
+  MOMORDER.forEach(function(k){
+    var m=MOMENTOS[k];
+    var b=document.createElement('button'); b.className='sit'; b.type='button';
+    b.innerHTML='<span class="d" style="background:'+m.color+'"></span>'+m.name[LANG]+'<span class="ar">→</span>';
+    b.addEventListener('click',function(){openMomento(k);});
+    wrap.appendChild(b);
+  });
 }
 
 /* ---------- step bar ---------- */
 function renderStepBar(){
+  if(state.momento){ el('stepbar').innerHTML=''; return; }
   var t=U(), bar=el('stepbar'), idx=STEPS.indexOf(state.step);
   bar.innerHTML='';
   STEPS.forEach(function(k,i){
@@ -548,7 +586,17 @@ function renderStepBar(){
 
 /* ---------- context + example ---------- */
 function renderCtx(){
-  var s=SITU[state.sit], t=U();
+  var t=U();
+  if(state.momento){
+    var m=MOMENTOS[state.momento];
+    el('ctxDot').style.background=m.color;
+    el('ctxName').textContent=m.name[LANG];
+    el('exBtn').style.display='none';
+    el('example').classList.remove('on'); el('example').innerHTML='';
+    return;
+  }
+  el('exBtn').style.display='';
+  var s=SITU[state.sit];
   el('ctxDot').style.background=s.color;
   el('ctxName').textContent=s.name[LANG];
   el('exBtn').textContent=state.exOpen?t.exampleHide:t.example;
@@ -576,12 +624,20 @@ function showStep(step){
 /* PARA + breathing 4-4 */
 function renderPara(){
   var t=U();
-  el('paraQ').textContent=t.paraQ;
-  el('paraX').innerHTML=t.paraX;
+  if(state.momento){
+    var m=MOMENTOS[state.momento];
+    el('paraQ').textContent=m.q[LANG];
+    el('paraX').innerHTML='<em>'+m.micro[LANG]+'</em>';
+    el('paraNext').textContent=t.momDone;
+  } else {
+    el('paraQ').textContent=t.paraQ;
+    el('paraX').innerHTML=t.paraX;
+    el('paraNext').textContent=t.paraNext;
+  }
   el('paraAis').textContent=t.ais;
   el('znNeck').textContent=t.zoneNeck; el('znChest').textContent=t.zoneChest; el('znBelly').textContent=t.zoneBelly;
   el('startBtn').textContent=t.startBtnLbl;
-  el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
+  el('paraBack').textContent=t.paraBack;
   showBreathIdle();
 }
 var ZID={neck:'zNeck',chest:'zChest',belly:'zBelly'}, ZLBL={neck:'zoneNeckL',chest:'zoneChestL',belly:'zoneBellyL'};
@@ -624,6 +680,7 @@ var BREATH={
   bajar:   {cls:'bBajar',   dur:12000,phases:[['in',4],['hold',2],['ex',6]]}
 };
 var SITMODE={incidencia:'reinicio',sobrecarga:'foco',prioridad:'foco',coordinacion:'foco',conflicto:'bajar',relevo:'bajar'};
+function currentBreathMode(){ return state.momento ? (MOMENTOS[state.momento].mode||'foco') : (SITMODE[state.sit]||'foco'); }
 function breathLabel(typ){var u=U();return typ==='in'?u.inhala:typ==='ex'?u.exhala:typ==='pausa'?u.pausa:u.reten;}
 function breathStaticTxt(m){return m.phases.map(function(p){return breathLabel(p[0])+' '+p[1];}).join(' · ');}
 function breathAt(phases,ms){var t=0;for(var i=0;i<phases.length;i++){var len=phases[i][1]*1000;if(ms<t+len){var n=Math.floor((ms-t)/1000)+1;if(n>phases[i][1])n=phases[i][1];return{type:phases[i][0],n:n};}t+=len;}var L=phases[phases.length-1];return{type:L[0],n:L[1]};}
@@ -634,7 +691,7 @@ function startBreath(){
   if(st){ st.classList.remove('has-anchor'); st.classList.add('running'); }
   el('paraAis').style.display='none';
   el('startBtn').style.display='none';
-  var m=BREATH[SITMODE[state.sit]||'foco'];
+  var m=BREATH[currentBreathMode()];
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MIN=reduce?0.88:0.7, MAX=reduce?1.06:1.12;
   var total=0, bounds=[];
@@ -742,10 +799,14 @@ function renderVerifica(){
 
 /* ---------- navigation ---------- */
 function openFlow(k){
-  state.sit=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false;
+  state.sit=k; state.momento=null; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false;
   setScreen('s-flow'); renderCtx(); showStep('para');
 }
-function home(){ stopBreath(); stopRec(); setScreen('s-home'); }
+function openMomento(k){
+  state.sit=null; state.momento=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false; state.anchor=null;
+  setScreen('s-flow'); renderCtx(); showStep('para');
+}
+function home(){ stopBreath(); stopRec(); state.momento=null; setScreen('s-home'); }
 function setLang(l){
   stopRec(); LANG=l;
   el('l-es').classList.toggle('on',l==='es'); el('l-en').classList.toggle('on',l==='en');
@@ -771,7 +832,7 @@ el('startBtn').addEventListener('click',function(){
   startBreath();
 });
 el('paraBack').addEventListener('click',home);
-el('paraNext').addEventListener('click',function(){showStep('ordena');});
+el('paraNext').addEventListener('click',function(){ if(state.momento){ home(); return; } showStep('ordena');});
 el('ordBack').addEventListener('click',function(){showStep('para');});
 el('ordNext').addEventListener('click',function(){showStep('comunica');});
 el('comBack').addEventListener('click',function(){showStep('ordena');});
