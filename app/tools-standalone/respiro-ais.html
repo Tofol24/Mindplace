@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Respiro AIS · dos luces · APRENS</title>
+<meta name="description" content="Respiración de dos luces (aire y conciencia) sobre la silueta del cuerpo · APRENS (TEC · AIS).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
+<style>
+  :root{
+    --fd:#f1e9db; --blanc:#FCFBF7; --az:#565a41; --azl:#e8ead9;
+    --vd:#5c7d54; --au:#a9781f; --gr:#6f665b; --linia:#e0dccf;
+    --serif:"Fraunces","Iowan Old Style",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--fd);}
+  body{font-family:var(--sans);color:var(--az);line-height:1.5;-webkit-font-smoothing:antialiased;
+    min-height:100vh;padding:22px 16px calc(28px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;}
+  .wrap{width:100%;max-width:460px;}
+  header{text-align:center;margin-bottom:6px;}
+  .kicker{font-family:var(--sans);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--au);}
+  h1{font-family:var(--serif);font-weight:500;font-size:1.5rem;color:var(--az);margin-top:4px;}
+  .lead{font-size:.95rem;color:var(--gr);margin:8px 4px 4px;text-align:center;}
+  .legend{display:flex;justify-content:center;gap:18px;margin:12px 0 2px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:.85rem;color:var(--gr);}
+  .legend i{width:13px;height:13px;border-radius:50%;display:inline-block;}
+  .legend .air{background:radial-gradient(circle at 40% 40%,#EAF6FF,#3FA6D8);}
+  .legend .mind{background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458);}
+  #respiro{margin:6px auto 0;}
+  .lang{display:flex;justify-content:center;gap:6px;margin:18px 0 0;}
+  .lang button{font-family:var(--sans);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gr);
+    background:var(--blanc);border:1px solid var(--linia);border-radius:20px;padding:6px 14px;cursor:pointer;}
+  .lang button.on{color:var(--blanc);background:var(--vd);border-color:var(--vd);font-weight:600;}
+  footer{margin-top:22px;font-size:.78rem;color:var(--gr);text-align:center;opacity:.85;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="kicker">TEC · AIS</div>
+      <h1 id="t-title">Respiro · dos luces</h1>
+    </header>
+    <p class="lead" id="t-lead">El aire es el cebo; la conciencia lo sigue hacia dentro y se queda en el vientre.</p>
+    <div class="legend">
+      <span><i class="air"></i><span id="t-air">Aire</span></span>
+      <span><i class="mind"></i><span id="t-mind">Conciencia</span></span>
+    </div>
+
+    <div id="respiro"></div>
+
+    <div class="lang">
+      <button id="l-es" class="on" type="button">ES</button>
+      <button id="l-en" type="button">EN</button>
+    </div>
+    <footer id="t-foot">Sin cuenta, sin analítica, sin conexión. Nada se guarda.</footer>
+  </div>
+
+  <script src="../js/respiro-ais.js"></script>
+  <script>
+    var T = {
+      es:{ title:'Respiro · dos luces', lead:'El aire es el cebo; la conciencia lo sigue hacia dentro y se queda en el vientre.',
+           air:'Aire', mind:'Conciencia', foot:'Sin cuenta, sin analítica, sin conexión. Nada se guarda.' },
+      en:{ title:'Breath · two lights', lead:'The air is the bait; awareness follows it inward and stays in the belly.',
+           air:'Air', mind:'Awareness', foot:'No account, no analytics, no connection. Nothing is stored.' }
+    };
+    var r = RespiroAIS.mount(document.getElementById('respiro'), { lang:'es', showControl:true, showZones:true });
+    function setLang(l){
+      document.documentElement.lang = l;
+      document.getElementById('l-es').classList.toggle('on', l==='es');
+      document.getElementById('l-en').classList.toggle('on', l==='en');
+      var t = T[l];
+      document.getElementById('t-title').textContent = t.title;
+      document.getElementById('t-lead').textContent = t.lead;
+      document.getElementById('t-air').textContent = t.air;
+      document.getElementById('t-mind').textContent = t.mind;
+      document.getElementById('t-foot').textContent = t.foot;
+      r.setLang(l);
+    }
+    document.getElementById('l-es').addEventListener('click', function(){ setLang('es'); });
+    document.getElementById('l-en').addEventListener('click', function(){ setLang('en'); });
+  </script>
+</body>
+</html>
