@@ -339,6 +339,7 @@
               <radialGradient id="gZone"><stop offset="0%" stop-color="#F3C877" stop-opacity=".62"/><stop offset="60%" stop-color="#E9B458" stop-opacity=".16"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
               <radialGradient id="gDot"><stop offset="0%" stop-color="#FFF6DF" stop-opacity="1"/><stop offset="35%" stop-color="#F3C877" stop-opacity=".75"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
               <radialGradient id="gAnchor"><stop offset="0%" stop-color="#FFF3D6" stop-opacity=".95"/><stop offset="22%" stop-color="#F3C877" stop-opacity=".62"/><stop offset="62%" stop-color="#E9B458" stop-opacity=".16"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gAir"><stop offset="0%" stop-color="#EAF6FF" stop-opacity="1"/><stop offset="35%" stop-color="#7CC4E6" stop-opacity=".8"/><stop offset="100%" stop-color="#3FA6D8" stop-opacity="0"/></radialGradient>
             </defs>
             <g id="zonesBody" class="view-layer" data-view="body"></g>
             <g id="zonesTree" class="view-layer" data-view="tree"></g>
@@ -351,6 +352,10 @@
             </g>
             <path class="flow-trail-soft" id="trailSoft" d=""/>
             <path class="flow-trail-core" id="trailCore" d=""/>
+            <g class="flow-dot" id="airDot">
+              <circle r="40" fill="url(#gAir)"/>
+              <circle r="8" fill="#EAF6FF"/>
+            </g>
             <g class="flow-dot" id="flowDot">
               <circle r="44" fill="url(#gDot)"/>
               <circle r="9" fill="#FFF6DF"/>
@@ -437,7 +442,7 @@ var AIS_DEBUG = false;
 var AISEngine = (function(){
   var T = AIS_BREATH, CYCLE = T.inhale + T.anchor + T.exhale + T.pause;
   var Q_EXIT = -0.38;   /* tramo visual COPA/GARGANTA → EXTERIOR (fuera del modelo de 3 zonas) */
-  var RESID = 0.3;      /* huella de las raíces: nivel fijo de presencia, no indicador de mejoría */
+  var RESID = 0.55;     /* luz de conciencia que QUEDA en las raíces: permanece brillante al exhalar aunque el aire suba y salga */
   function sine(x){ return -(Math.cos(Math.PI * x) - 1) / 2; }
   function smooth(a, b, x){ var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
 
@@ -612,6 +617,7 @@ var BreathingIllustration = (function(){
   var stage = document.getElementById('paraStage');
   var haloEl = document.getElementById('breathHalo');
   var dotEl = document.getElementById('flowDot');
+  var airEl = document.getElementById('airDot');
   var anchorEl = document.getElementById('anchorHalo'), anchorScale = document.getElementById('anchorScale');
   var trailSoft = document.getElementById('trailSoft'), trailCore = document.getElementById('trailCore');
   var phLbl = document.getElementById('phLbl'), phNum = document.getElementById('phNum'), phHint = document.getElementById('phHint');
@@ -683,7 +689,7 @@ var BreathingIllustration = (function(){
     var g = GEO[ui.view], zs = zoneEls[ui.view];
     if (!s){   /* reposo */
       haloEl.style.transform = 'translate(-50%,-50%) scale(.86)'; haloEl.style.opacity = '.35';
-      dotEl.style.opacity = 0; anchorEl.style.opacity = 0;
+      dotEl.style.opacity = 0; airEl.style.opacity = 0; anchorEl.style.opacity = 0;
       trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', '');
       ['body','tree'].forEach(function(v){ ['z1','z2','z3'].forEach(function(z){ var o = zoneEls[v][z]; o.glow.style.opacity = 0; o.dot.style.opacity = 0; o.grp.classList.remove('on'); }); });
       stage.classList.remove('running'); lastPhase = null; lastN = null;
@@ -696,18 +702,30 @@ var BreathingIllustration = (function(){
     haloEl.style.transform = 'translate(-50%,-50%) scale(' + b.toFixed(4) + ')';
     haloEl.style.opacity = (0.45 + (s.breath - 0.86) / 0.14 * 0.4).toFixed(3);
 
-    /* punto de atención + estela */
+    /* DOS LUCES:
+       · AZUL = aire → baja al inhalar y sube/sale al exhalar (sigue s.q).
+       · AMARILLA = conciencia → baja siguiendo al aire (el aire es el cebo) y se
+         QUEDA en las raíces (luz de anclaje); no sube al exhalar. */
     var p = pointAt(g, s.q);
-    dotEl.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')');
-    dotEl.style.opacity = s.dot.toFixed(3);
+    airEl.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')');
+    airEl.style.opacity = (s.phase === 'pause' ? 0 : (s.phase === 'anchor' ? s.dot * 0.55 : s.dot)).toFixed(3);
+    if (s.phase === 'inhale'){
+      var cq = Math.max(0, s.q - 0.12), cp = pointAt(g, cq);
+      var fade = Math.max(0, Math.min(1, (1 - s.progress) / 0.2));   /* se funde en las raíces al final */
+      dotEl.setAttribute('transform', 'translate(' + cp[0].toFixed(1) + ' ' + cp[1].toFixed(1) + ')');
+      dotEl.style.opacity = (s.dot * fade).toFixed(3);
+    } else { dotEl.style.opacity = 0; }
+    /* estela del aire: azul al exhalar (sube/sale), cálida al inhalar */
     if (!reduce && (s.phase === 'inhale' || s.phase === 'exhale')){
       var back = AISEngine.at(Math.max(0, ms - 520)), qs = [];
       var q0 = back.phase === s.phase ? back.q : (s.phase === 'inhale' ? 0 : 1);
       for (var i = 0; i <= 8; i++) qs.push(q0 + (s.q - q0) * i / 8);
       var d = pathFrom(g, qs);
       trailSoft.setAttribute('d', d); trailCore.setAttribute('d', d);
-      var to = (s.dot * 0.9).toFixed(3);
-      trailSoft.style.opacity = (s.dot * 0.28).toFixed(3); trailCore.style.opacity = to;
+      trailSoft.style.opacity = (s.dot * 0.28).toFixed(3); trailCore.style.opacity = (s.dot * 0.9).toFixed(3);
+      var ex = s.phase === 'exhale';
+      trailSoft.style.stroke = ex ? '#7CC4E6' : '#FFE9B8';
+      trailCore.style.stroke = ex ? '#EAF6FF' : '#FFF3D6';
     } else { trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', ''); }
 
     /* anclaje en barriga/raíces: aparece y permanece como huella */
