@@ -338,16 +338,16 @@
             <defs>
               <radialGradient id="gZone"><stop offset="0%" stop-color="#F3C877" stop-opacity=".62"/><stop offset="60%" stop-color="#E9B458" stop-opacity=".16"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
               <radialGradient id="gDot"><stop offset="0%" stop-color="#FFF6DF" stop-opacity="1"/><stop offset="35%" stop-color="#F3C877" stop-opacity=".75"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
-              <radialGradient id="gAnchor"><stop offset="0%" stop-color="#FFF3D6" stop-opacity=".95"/><stop offset="22%" stop-color="#F3C877" stop-opacity=".62"/><stop offset="62%" stop-color="#E9B458" stop-opacity=".16"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gAnchor"><stop offset="0%" stop-color="#FFFBEF" stop-opacity="1"/><stop offset="30%" stop-color="#FFE08A" stop-opacity=".92"/><stop offset="66%" stop-color="#F6C24E" stop-opacity=".34"/><stop offset="100%" stop-color="#F6C24E" stop-opacity="0"/></radialGradient>
               <radialGradient id="gAir"><stop offset="0%" stop-color="#EAF6FF" stop-opacity="1"/><stop offset="35%" stop-color="#7CC4E6" stop-opacity=".8"/><stop offset="100%" stop-color="#3FA6D8" stop-opacity="0"/></radialGradient>
             </defs>
             <g id="zonesBody" class="view-layer" data-view="body"></g>
             <g id="zonesTree" class="view-layer" data-view="tree"></g>
             <g class="anchor-halo" id="anchorHalo">
               <g id="anchorScale">
-                <circle r="120" fill="url(#gAnchor)"/>
-                <circle r="64" fill="none" stroke="#F3C877" stroke-opacity=".55" stroke-width="2.5"/>
-                <circle r="9" fill="#FFF6DF"/>
+                <circle r="128" fill="url(#gAnchor)"/>
+                <circle r="64" fill="none" stroke="#FFD97A" stroke-opacity=".72" stroke-width="2.5"/>
+                <circle r="10" fill="#FFFBEF"/>
               </g>
             </g>
             <path class="flow-trail-soft" id="trailSoft" d=""/>
@@ -442,7 +442,7 @@ var AIS_DEBUG = false;
 var AISEngine = (function(){
   var T = AIS_BREATH, CYCLE = T.inhale + T.anchor + T.exhale + T.pause;
   var Q_EXIT = -0.38;   /* tramo visual COPA/GARGANTA → EXTERIOR (fuera del modelo de 3 zonas) */
-  var RESID = 0.55;     /* luz de conciencia que QUEDA en las raíces: permanece brillante al exhalar aunque el aire suba y salga */
+  var RESID = 0.62;     /* luz de conciencia que QUEDA en las raíces: permanece brillante al exhalar aunque el aire suba y salga */
   function sine(x){ return -(Math.cos(Math.PI * x) - 1) / 2; }
   function smooth(a, b, x){ var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
 
