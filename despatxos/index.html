@@ -606,11 +606,9 @@
     all(){ return DATA; },
     async refresh(){
       if(SUPABASE){
-        const { data, error } = await sb.from('agenda_view').select('*');
+        const { data, error } = await sb.from('agenda_view').select('*').order('created_at', { ascending: false });
         if(error){ console.error('agenda_view error:', error); return; }
-        console.log('agenda_view returned', data?.length, 'rows:', data);
         DATA = data||[];
-        console.log('DATA after refresh:', DATA.length, 'rows');
       }
       else { DATA = Local.load(); }
     },
