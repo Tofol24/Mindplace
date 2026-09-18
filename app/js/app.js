@@ -319,6 +319,31 @@
       </section>`;
   }
 
+  // ---- El AIS en un vistazo · la silueta y las dos luces ------------------
+  // El núcleo de todo el método, mostrado con el ejercicio de la silueta:
+  // la atención consciente (luz amarilla) nace en la cabeza, el aire (azul)
+  // hace de cebo, y la atención baja a la barriga y se queda dando presencia.
+  function aisNucleoHTML(){
+    return `
+      <section class="porque ais-nucleo">
+        <div class="pq-tit">El AIS, en un vistazo</div>
+        <p class="pq-lead">Todas las herramientas de este espacio entrenan un mismo gesto: llevar <b>tu atención consciente</b> a lo que siente el cuerpo, y quedarte. Puedes verlo —y probarlo— aquí:</p>
+        <div id="aisNucleoBox" style="max-width:250px;margin:8px auto 2px"></div>
+        <div class="ais-nucleo-pasos" style="display:flex;flex-direction:column;gap:9px;margin:12px 2px 4px;font-size:.95rem;line-height:1.45;color:#4a544e">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458)"></span><span><b>Tu atención consciente</b> (luz amarilla) nace arriba, en la cabeza — donde solemos vivir: pensando, dándole vueltas.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#EAF6FF,#3FA6D8)"></span><span><b>El aire</b> (luz azul) entra por la nariz y hace de <b>cebo</b>: le da a tu atención algo sencillo a lo que seguir hacia dentro.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458)"></span><span>Así tu atención <b>baja hasta la barriga</b> y <b>se queda</b> ahí, dando presencia — aunque el aire vuelva a salir.</span></div>
+        </div>
+        <div class="pq-sello">Aparecer para el cuerpo, permanecer, y desde una actitud en la que el cuerpo se sienta querido.</div>
+        <details class="pq-more"><summary>Qué entrenamos con todas las herramientas</summary>
+          <div class="pq-full">
+            <p>El objetivo de cada ejercicio es que este <b>gesto atencional</b> se vuelva tuyo, casi automático: que tu conciencia —que tiende a quedarse arriba, en la cabeza— aprenda el camino de <b>bajar y dar presencia allá abajo</b>, en las tripas, donde el cuerpo siente.</p>
+            <p>No se trata de pensar el cuerpo, ni de calmarlo, ni de arreglarlo. Se trata de <b>estar</b> con lo que hay, desde una actitud amable, para que el cuerpo compruebe —una y otra vez— que no lo abandonas. Ese vector de tu atención, repetido, es la <b>nueva relación contigo</b>.</p>
+          </div>
+        </details>
+      </section>`;
+  }
+
   // ---- Índice de apartados (al principio del hub) -------------------------
   // Botones que llevan directos a cada apartado. No son enlaces con #ancla
   // porque el hash es del router (#/ y #/tool/...): al cambiarlo se repintaría
@@ -459,6 +484,7 @@
         </div>
       </div>
       ${porqueHTML()}
+      ${aisNucleoHTML()}
       ${continuidadHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
@@ -470,6 +496,21 @@
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
     wireCont();
     montarIndice();
+    montarNucleoAIS();
+  }
+
+  // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
+  var hubRespiro = null;
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } }
+  function montarNucleoAIS(){
+    pararNucleoAIS();
+    var box = document.getElementById("aisNucleoBox");
+    if(box && window.RespiroAIS){
+      hubRespiro = RespiroAIS.mount(box, {
+        lang:"es", figure:"organism", showControl:true, showZones:false,
+        rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 }
+      });
+    }
   }
 
   function renderTool(id){
@@ -477,6 +518,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    pararNucleoAIS();
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
