@@ -36,6 +36,14 @@
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
 
+  /* Resolver rutas de imagen relativas a ESTE script (no a la página), para que
+     funcione tanto en /tools-standalone/ como en el hub /, /bienestar/, etc. */
+  var SELF_SRC = (document.currentScript && document.currentScript.src) || '';
+  function assetURL(name){
+    if (SELF_SRC && /\/js\/respiro-ais\.js/.test(SELF_SRC)) return SELF_SRC.replace(/\/js\/respiro-ais\.js.*$/, '/assets/respiro/' + name);
+    return '../assets/respiro/' + name;
+  }
+
   /* ---------- CSS (una sola vez) ---------- */
   var CSS = '' +
   '.respiro-ais{--ra-air:#3FA6D8;--ra-air-hi:#EAF6FF;--ra-mind:#E9B458;--ra-mind-hi:#FFFBEF;' +
@@ -178,14 +186,14 @@
      pulmones → estómago/vientre. Se muestra sobre un visor oscuro para funcionar en
      páginas de fondo claro. */
   var REALISTIC = {
-    src: '../assets/respiro/organismo.webp',
+    src: assetURL('organismo.webp'),
     viewBox: '0 0 1024 1536',
     route: [[508,235],[508,340],[508,430],[512,560],[516,700],[512,860],[505,1000]],
     anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,128]
   };
   /* Versión infantil realista (mismo estilo, cuerpo de niño). */
   var REALISTIC_CHILD = {
-    src: '../assets/respiro/organismo_nino.webp',
+    src: assetURL('organismo_nino.webp'),
     viewBox: '0 0 1024 1536',
     route: [[508,225],[508,330],[508,420],[510,520],[512,600],[510,700],[505,790]],
     anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,104]
