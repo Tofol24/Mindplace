@@ -605,7 +605,13 @@
   const Store = {
     all(){ return DATA; },
     async refresh(){
-      if(SUPABASE){ const { data, error } = await sb.from('agenda_view').select('*'); if(error){ console.error(error); return; } DATA = data||[]; }
+      if(SUPABASE){
+        const { data, error } = await sb.from('agenda_view').select('*');
+        if(error){ console.error('agenda_view error:', error); return; }
+        console.log('agenda_view returned', data?.length, 'rows:', data);
+        DATA = data||[];
+        console.log('DATA after refresh:', DATA.length, 'rows');
+      }
       else { DATA = Local.load(); }
     },
     add(b){                            // optimista: pinta ja i persisteix en segon pla
