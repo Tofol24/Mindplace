@@ -611,14 +611,43 @@
     add(b){                            // optimista: pinta ja i persisteix en segon pla
       if(!b.id) b.id = uid();
       DATA = DATA.concat([b]);
-      if(SUPABASE){ sb.from('reserves').insert(cleanRow(b)).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
+      if(SUPABASE){
+        sb.from('reserves').insert(cleanRow(b)).then(({data, error})=>{
+          if(error){
+            console.error('Insert error:', error);
+            alert('❌ Error al guardar: '+(error.message || JSON.stringify(error)));
+          } else {
+            console.log('Insert success:', data);
+          }
+          Store.refresh().then(rerenderAll);
+        }).catch(e=>{
+          console.error('Insert catch:', e);
+          alert('❌ Error de red: '+e.message);
+          Store.refresh().then(rerenderAll);
+        });
+      }
       else { const a=Local.load(); a.push(b); Local.save(a); }
       return b;
     },
     update(b){                         // edita una reserva existent (mateix id)
       const i=DATA.findIndex(x=>x.id===b.id);
       if(i>=0) DATA = DATA.slice(0,i).concat([b], DATA.slice(i+1));
-      if(SUPABASE){ const row=cleanRow(b); delete row.id; sb.from('reserves').update(row).eq('id',b.id).then(({error})=>{ if(error){ alert('No s\'ha pogut desar: '+error.message); } Store.refresh().then(rerenderAll); }); }
+      if(SUPABASE){
+        const row=cleanRow(b); delete row.id;
+        sb.from('reserves').update(row).eq('id',b.id).then(({data, error})=>{
+          if(error){
+            console.error('Update error:', error);
+            alert('❌ Error al guardar: '+(error.message || JSON.stringify(error)));
+          } else {
+            console.log('Update success:', data);
+          }
+          Store.refresh().then(rerenderAll);
+        }).catch(e=>{
+          console.error('Update catch:', e);
+          alert('❌ Error de red: '+e.message);
+          Store.refresh().then(rerenderAll);
+        });
+      }
       else { const a=Local.load(); const j=a.findIndex(x=>x.id===b.id); if(j>=0){ a[j]=b; Local.save(a); } }
       return b;
     },
