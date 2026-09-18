@@ -325,8 +325,9 @@
   // hace de cebo, y la atención baja a la barriga y se queda dando presencia.
   function aisNucleoHTML(){
     return `
+      <div class="hub-sec"><span class="hub-sec-e">🫁</span><span class="hub-sec-t">El AIS, en un vistazo</span></div>
+      <div class="hub-sec-d">El eje de todo el método, en un gesto. Míralo —y pruébalo— aquí.</div>
       <section class="porque ais-nucleo">
-        <div class="pq-tit">El AIS, en un vistazo</div>
         <p class="pq-lead">Todas las herramientas de este espacio entrenan un mismo gesto: llevar <b>tu atención consciente</b> a lo que siente el cuerpo, y quedarte. Puedes verlo —y probarlo— aquí:</p>
         <div id="aisNucleoBox" style="max-width:250px;margin:8px auto 2px"></div>
         <div class="ais-nucleo-pasos" style="display:flex;flex-direction:column;gap:9px;margin:12px 2px 4px;font-size:.95rem;line-height:1.45;color:#4a544e">
@@ -335,7 +336,9 @@
           <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458)"></span><span>Así tu atención <b>baja hasta la barriga</b> y <b>se queda</b> ahí, dando presencia — aunque el aire vuelva a salir.</span></div>
         </div>
         <div class="pq-sello">Aparecer para el cuerpo, permanecer, y desde una actitud en la que el cuerpo se sienta querido.</div>
-        <details class="pq-more"><summary>Qué entrenamos con todas las herramientas</summary>
+        <button type="button" class="hs-act" id="aisGoRespira" style="width:100%;margin-top:14px;cursor:pointer;font:inherit;text-align:left">
+          <span class="se">🫁</span><span class="st">Ir a las herramientas de respiración<small>Practica este gesto en tu día a día</small></span><span class="sarr">→</span></button>
+        <details class="pq-more" style="margin-top:12px"><summary>Qué entrenamos con todas las herramientas</summary>
           <div class="pq-full">
             <p>El objetivo de cada ejercicio es que este <b>gesto atencional</b> se vuelva tuyo, casi automático: que tu conciencia —que tiende a quedarse arriba, en la cabeza— aprenda el camino de <b>bajar y dar presencia allá abajo</b>, en las tripas, donde el cuerpo siente.</p>
             <p>No se trata de pensar el cuerpo, ni de calmarlo, ni de arreglarlo. Se trata de <b>estar</b> con lo que hay, desde una actitud amable, para que el cuerpo compruebe —una y otra vez— que no lo abandonas. Ese vector de tu atención, repetido, es la <b>nueva relación contigo</b>.</p>
@@ -511,6 +514,14 @@
         rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 }
       });
     }
+    // Acceso directo a las herramientas de respiración (apartado «Práctica AIS»).
+    var goBtn = document.getElementById("aisGoRespira");
+    if(goBtn){ goBtn.onclick = function(){
+      var target = Array.from(screen.querySelectorAll(".hub-sec")).find(function(s){
+        var t = s.querySelector(".hub-sec-t"); return t && t.textContent.trim().indexOf("Práctica AIS") === 0;
+      });
+      if(target) irASeccion(target);
+    }; }
   }
 
   function renderTool(id){
