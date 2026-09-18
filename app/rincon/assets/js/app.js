@@ -35,7 +35,11 @@
   ];
 
   var timer = null;
-  function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
+  var activeRespiro = null;
+  function stopTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+    if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
+  }
 
   function goHome() { stopTimer(); homeBtn.hidden = true; renderMenu(); }
   homeBtn.addEventListener("click", goHome);
@@ -68,44 +72,57 @@
   function juegoRespiracion() {
     stopTimer();
     var TOTAL = 4;
+    var figMode = "child";   // 'child' = flor y vela (dibujo) · 'child-real' = organismo realista
     view.innerHTML =
       '<div class="game">' +
         '<h2>🌸 La flor y la vela</h2>' +
-        '<p class="lead">Huele la flor por la nariz… y apaga la vela por la boca, despacito.</p>' +
-        '<div class="breath-stage"><div class="breath-orb" id="orb"><span class="breath-emoji" id="orbEmoji">🌸</span></div></div>' +
-        '<div class="breath-word" id="bWord">¿List@?</div>' +
+        '<p class="lead">Huele la flor por la nariz… y apaga la vela por la boca, despacito. Fíjate: una lucecita se queda encendida en tu barriga.</p>' +
+        '<div class="fig-toggle"><button class="ghost-btn on" id="figDibujo" type="button">🎨 Dibujo</button>' +
+          '<button class="ghost-btn" id="figReal" type="button">🫁 Real</button></div>' +
+        '<div id="respiroBox"></div>' +
         '<div class="breath-count" id="bCount">' + TOTAL + ' respiraciones</div>' +
         '<div class="game-acts"><button class="big-btn" id="bStart">Empezar</button>' +
           '<button class="ghost-btn" id="bHome">Otro juego</button></div>' +
         '<div class="done-msg" id="bDone"></div>' +
       '</div>';
     $("#bHome").addEventListener("click", goHome);
-    var orb = $("#orb"), emoji = $("#orbEmoji"), word = $("#bWord"), count = $("#bCount"), done = $("#bDone"), start = $("#bStart");
-    // fases suman 14s: ritmo lento y marcado 4-2-6-2 (en sintonía con @keyframes breathe)
-    var CICLO = 14000;
-    var FASES = [
-      { t: 0, w: "Huele la flor 🌸", e: "🌸" },     // inspira · 4s
-      { t: 4000, w: "Guarda el aire…", e: "🌸" },   // retén · 2s
-      { t: 6000, w: "Apaga la vela 🕯️", e: "🕯️" }, // sopla despacio · 6s
-      { t: 12000, w: "Descansa", e: "😌" }           // descansa · 2s
-    ];
-    var t0 = 0, ciclos = 0;
-    start.addEventListener("click", function () {
-      stopTimer(); done.textContent = ""; ciclos = 0; count.textContent = TOTAL + " respiraciones";
-      orb.classList.add("run"); start.textContent = "Otra vez";
-      t0 = Date.now();
-      timer = setInterval(function () {
-        var e = Date.now() - t0;
-        if (e >= CICLO) { e = e % CICLO; t0 = Date.now() - e; ciclos++; count.textContent = Math.max(0, TOTAL - ciclos) + " respiraciones"; }
-        if (ciclos >= TOTAL) {
-          stopTimer(); orb.classList.remove("run"); word.textContent = "¡Muy bien! 🌟"; emoji.textContent = "😌";
-          count.textContent = ""; done.textContent = "Has respirado como una campeona."; confeti(); marcarPractica("respiracion"); return;
+    var count = $("#bCount"), done = $("#bDone"), start = $("#bStart"), box = $("#respiroBox");
+    var LABELS = {
+      phase: { inhale: "Huele la flor", anchor: "Guárdalo", exhale: "Apaga la vela", pause: "Descansa" },
+      hint: { inhale: "entra el aire 🌸", anchor: "la lucecita se queda en la barriga", exhale: "sopla y apaga 🕯️", pause: "muy bien" }
+    };
+    // La respiración de dos luces (componente RespiroAIS): el aire (azul) es el cebo
+    // y la conciencia (amarilla) se queda como lucecita en la barriga.
+    function mountFig(autostart) {
+      if (!window.RespiroAIS) return;
+      if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
+      activeRespiro = RespiroAIS.mount(box, {
+        lang: "es", figure: figMode, showControl: false, showZones: false, autostart: !!autostart,
+        rhythm: { inhale: 4000, anchor: 2000, exhale: 6000, pause: 2000 }, labels: LABELS,
+        onCycle: function (n) {
+          count.textContent = Math.max(0, TOTAL - n) + " respiraciones";
+          if (n >= TOTAL) {
+            activeRespiro.stop(); count.textContent = "";
+            done.textContent = "Has respirado como una campeona. La lucecita se queda contigo. 🌟";
+            confeti(); marcarPractica("respiracion"); start.textContent = "Otra vez";
+          }
         }
-        var cur = FASES[0];
-        for (var i = 0; i < FASES.length; i++) { if (e >= FASES[i].t) cur = FASES[i]; }
-        word.textContent = cur.w; emoji.textContent = cur.e;
-      }, 120);
+      });
+    }
+    function setFig(mode) {
+      figMode = mode;
+      $("#figDibujo").classList.toggle("on", mode === "child");
+      $("#figReal").classList.toggle("on", mode === "child-real");
+      var running = activeRespiro && activeRespiro.isRunning();
+      mountFig(running);   // conserva el estado (si respiraba, sigue)
+    }
+    $("#figDibujo").addEventListener("click", function () { setFig("child"); });
+    $("#figReal").addEventListener("click", function () { setFig("child-real"); });
+    start.addEventListener("click", function () {
+      done.textContent = ""; count.textContent = TOTAL + " respiraciones";
+      mountFig(true); start.textContent = "Otra vez";
     });
+    mountFig(false);   // vista previa en reposo con la figura por defecto
   }
 
   /* ---------------- 🤍 ABRAZO SENTIDO ---------------- */

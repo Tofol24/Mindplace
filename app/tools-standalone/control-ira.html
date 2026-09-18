@@ -131,6 +131,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 </div>
 <div class="wrap" id="app"></div>
 
+<script src="../js/respiro-ais.js"></script>
 <script>
 /* ── Textos por idioma (ES por defecto; CA disponible con el selector) ── */
 const I18N={
@@ -147,14 +148,14 @@ const I18N={
    mapaSub:"Mira una zona del cuerpo y lleva ahí la atención mientras respiras. La imagen es la rampa; después intenta sentirla.",
    ariaMapa:"Mapa del cuerpo con tres zonas", ariaCuello:"Cuello", ariaPecho:"Pecho", ariaBarriga:"Vientre",
    nivells:[["😌","Tranquilo"],["🙂","Un poco"],["😐","Activado"],["😠","Muy activado"],["😡","Al límite"]],
-   paso:{respira:{ico:"🫁",tit:"Para y respira",sub:"Respira con el círculo antes de hacer nada."},
+   paso:{respira:{ico:"🫁",tit:"Para y respira",sub:"Respira con las dos luces antes de hacer nada."},
      que:{ico:"❓",tit:"¿Qué ha pasado?",sub:"Toca lo que más se acerque (opcional)."},
      cos:{ico:"🫀",tit:"¿Dónde lo notas?",sub:"Toca las zonas del cuerpo (las que quieras)."},
      canal:{ico:"🧭",tit:"Canalízalo",sub:"Elige una manera de bajar la activación."}},
    ques:[["💬","Me han dicho algo"],["📌","Una norma u orden"],["🏠","En casa"],["💼","En el trabajo"],["🚦","Una injusticia"],["❓","Otra cosa"]],
    cosos:[["🧠","Cabeza / mandíbula"],["❤️","Pecho / corazón"],["🫃","Vientre"],["💪","Manos / brazos"],["🦵","Piernas"],["🔥","Calor general"]],
    canals:[["🫁","Respirar hondo"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escribir o dibujar"],["🚶","Caminar o moverme"],["🔌","Desconectar un rato"],["💬","Hablar con alguien"]],
-   respPrep:"Prepárate", respHint:"Respira con el círculo", respCountWord:"Respiración",
+   respPrep:"Prepárate", respHint:"Respira con las dos luces", respCountWord:"Respiración",
    fase:{in:"Toma aire",hold:"Retén",out:"Suelta",pause:"Pausa"},
    hint:{in:"Toma aire",hold:"retén",out:"suelta",pause:"pausa"},
    introTit:"¿Cómo estás de activado/a?", introSub:"Cuando notes que la rabia sube. Toca tu nivel ahora.",
@@ -187,14 +188,14 @@ const I18N={
    mapaSub:"Mira una zona del cos i porta-hi l'atenció mentre respires. La imatge és la rampa; després intenta sentir-la.",
    ariaMapa:"Mapa del cos amb tres zones", ariaCuello:"Coll", ariaPecho:"Pit", ariaBarriga:"Panxa",
    nivells:[["😌","Tranquil"],["🙂","Una mica"],["😐","Activat"],["😠","Molt activat"],["😡","Al límit"]],
-   paso:{respira:{ico:"🫁",tit:"Para i respira",sub:"Respira amb el cercle abans de fer res."},
+   paso:{respira:{ico:"🫁",tit:"Para i respira",sub:"Respira amb els dos llums abans de fer res."},
      que:{ico:"❓",tit:"Què ha passat?",sub:"Toca el que més s'acosti (opcional)."},
      cos:{ico:"🫀",tit:"On ho notes?",sub:"Toca les zones del cos (les que vulguis)."},
      canal:{ico:"🧭",tit:"Canalitza-ho",sub:"Tria una manera de baixar l'activació."}},
    ques:[["💬","M'han dit una cosa"],["📌","Una norma o ordre"],["🏠","A casa"],["💼","A la feina"],["🚦","Una injustícia"],["❓","Una altra cosa"]],
    cosos:[["🧠","Cap / mandíbula"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"]],
    canals:[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"]],
-   respPrep:"Prepara't", respHint:"Respira amb el cercle", respCountWord:"Respiració",
+   respPrep:"Prepara't", respHint:"Respira amb els dos llums", respCountWord:"Respiració",
    fase:{in:"Agafa aire",hold:"Retén",out:"Deixa anar",pause:"Pausa"},
    hint:{in:"Agafa aire",hold:"retén",out:"deixa anar",pause:"pausa"},
    introTit:"Com estàs d'activat/da?", introSub:"Quan notis que la ràbia puja. Toca el teu nivell ara.",
@@ -285,21 +286,25 @@ function fasesDe(r){ var IN=1.32, OUT=0.68; var f=T().fase;
   if(r[3]>0)a.push({txt:f.pause,dur:r[3]*1000,scale:OUT,kind:'out'});
   return a; }
 function hintDe(r){ var h=T().hint; var s=h.in+" "+r[0]+"s"; if(r[1]>0)s+=" · "+h.hold+" "+r[1]+"s"; s+=" · "+h.out+" "+r[2]+"s"; if(r[3]>0)s+=" · "+h.pause+" "+r[3]+"s"; return s; }
-let FASES_RESP=[], respIdx=0, respTimer=null, respCicles=0;
-function startBreath(){ stopBreath(); var r=ritmoResp((nivell||3)/5); FASES_RESP=fasesDe(r); var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r); respIdx=0; respCicles=0; var c=document.getElementById('respCount'); if(c)c.textContent=T().respCountWord+" 1"; runResp(); }
-function runResp(){
-  var ring=document.getElementById('ring'); if(!ring||!FASES_RESP.length) return;
-  var f=FASES_RESP[respIdx], lbl=document.getElementById('respLbl');
-  ring.style.transition='transform '+(f.dur/1000)+'s ease-in-out, background .8s ease, border-color .8s ease';
-  ring.style.transform='scale('+f.scale+')';
-  ring.classList.toggle('inhale', f.kind==='in');
-  ring.classList.toggle('exhale', f.kind==='out');
-  if(lbl) lbl.textContent=f.txt;
-  respIdx=(respIdx+1)%FASES_RESP.length;
-  if(respIdx===0){ respCicles++; var c=document.getElementById('respCount'); if(c)c.textContent=T().respCountWord+" "+(respCicles+1); }
-  respTimer=setTimeout(runResp,f.dur);
+let respTimer=null, activeRespiro=null;
+function startBreath(){
+  stopBreath();
+  var r=ritmoResp((nivell||3)/5);
+  var h=document.getElementById('respHint'); if(h)h.textContent=hintDe(r);
+  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS) return;
+  var f=T().fase;
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:r[0]*1000, anchor:Math.max(r[1]*1000,900), exhale:r[2]*1000, pause:Math.max(r[3]*1000,700) },
+    labels:{ phase:{ inhale:f.in, anchor:f.hold, exhale:f.out, pause:f.pause },
+             legend: lang==='ca'
+               ? { air:"l'aire · entra pel nas", mind:'la teva atenció conscient · des del cap' }
+               : { air:'el aire · entra por la nariz', mind:'tu atención consciente · desde la cabeza' },
+             one: lang==='ca' ? 'respiració' : 'respiración',
+             many: lang==='ca' ? 'respiracions' : 'respiraciones' }
+  });
 }
-function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} }
+function stopBreath(){ if(respTimer){clearTimeout(respTimer);respTimer=null;} if(activeRespiro){activeRespiro.destroy();activeRespiro=null;} }
 
 function render(){ stopBreath(); if(vista==="intro")return intro(); if(vista==="paso")return pasoView(); if(vista==="resultado")return resultado(); }
 
@@ -327,7 +332,7 @@ function pasoView(){ const t=T();
   const s={ico:PASO_ICO[tipo], tit:t.paso[tipo].tit, sub:t.paso[tipo].sub};
   if(tipo==="respira"){
     const mostraMapa = plan.length>1;   // en «parar ya» / activación alta, solo el círculo
-    cuerpo=`<div class="breath"><div class="ring" id="ring"><span id="respLbl">${t.respPrep}</span></div><div class="breath-hint" id="respHint">${t.respHint}</div><div class="breath-count" id="respCount"></div></div>
+    cuerpo=`<div class="breath"><div id="respiroBox"></div><div class="breath-hint" id="respHint">${t.respHint}</div><div class="breath-count" id="respCount"></div></div>
       ${mostraMapa?mapaSVG():''}
       <button class="btn big green" onclick="next()">${last?t.jaMillor:t.jaEstic}</button>`;
   } else if(tipo==="que"){

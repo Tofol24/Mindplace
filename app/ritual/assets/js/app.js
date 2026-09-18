@@ -104,24 +104,20 @@
   /* ============================================================
      RESPIRACIÓN GUIADA
      ============================================================ */
-  var breathTimer = null, breathStart = 0;
-  var FASES = [ // suman 11s, en sintonía con la animación .breathe
-    { w: "Coge aire…", t: 0 }, { w: "Mantén", t: 2000 }, { w: "Suelta…", t: 4600 }, { w: "Descansa", t: 7000 }
-  ];
+  /* Respiración de dos luces (componente RespiroAIS): el aire (azul) es el cebo,
+     la conciencia (amarilla) lo sigue hacia dentro y se queda en el vientre. */
+  var respiro = null;
   function toggleBreath() {
-    var el = $("#breath"), word = $("#breathWord"), btn = $("#breathBtn");
-    if (breathTimer) {
-      clearInterval(breathTimer); breathTimer = null;
-      el.classList.remove("run"); word.textContent = "Respira"; btn.textContent = "Empezar la respiración guiada";
-      return;
+    var btn = $("#breathBtn"), box = $("#breathBox");
+    if (!respiro) {
+      if (!box || !window.RespiroAIS) return;
+      respiro = RespiroAIS.mount(box, {
+        lang: "es", showControl: false, showZones: true,
+        rhythm: { inhale: 4000, anchor: 2000, exhale: 6000, pause: 2000 }
+      });
     }
-    el.classList.add("run"); btn.textContent = "Parar";
-    breathStart = Date.now();
-    breathTimer = setInterval(function () {
-      var e = (Date.now() - breathStart) % 11000, cur = FASES[0].w;
-      for (var i = 0; i < FASES.length; i++) { if (e >= FASES[i].t) cur = FASES[i].w; }
-      word.textContent = cur;
-    }, 120);
+    respiro.toggle();
+    btn.textContent = respiro.isRunning() ? "Parar" : "Empezar la respiración guiada";
   }
 
   /* ============================================================

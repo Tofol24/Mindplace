@@ -417,12 +417,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       Ho fas perquè t'interessa descobrir com et sents per dins. Sense objectiu. Cada 1-2 hores: la consciència baixa a la panxa.
     </div>
     <div class="breath-wrap">
-      <div class="breath-ring" id="breathRing">
-        <div style="text-align:center;">
-          <div class="breath-phase" id="breathPhase">Preparat?</div>
-          <div class="breath-sec" id="breathSec" style="display:none;"></div>
-        </div>
-      </div>
+      <div id="respiroBox"></div>
       <div class="breath-sub" id="breathSub">Prem per explorar la teva respiració</div>
       <div style="font-size:11px;color:var(--verde);margin-top:7px;text-align:center;font-weight:600;" id="breathSess"></div>
     </div>
@@ -650,6 +645,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 
 </div><!-- /wrap -->
 
+<script src="../js/respiro-ais.js"></script>
 <script>
 const DIES=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
 const DIES_FULL=['Dilluns','Dimarts','Dimecres','Dijous','Divendres','Dissabte','Diumenge'];
@@ -802,36 +798,38 @@ function setRitualPresent(v){
 }
 
 // === BREATHING ===
-let bInt=null,bPhN=0,bTim=0,bCyc=0,bRun=false;
-const BPHAS=[{txt:'Inspira...',sec:4,sc:1.32,bg:'#D6E4F0'},{txt:'Reté...',sec:2,sc:1.32,bg:'#D4EDDA'},{txt:'Expira...',sec:6,sc:1.0,bg:'#F7F4EF'},{txt:'Pausa...',sec:2,sc:1.0,bg:'#F0F4F8'}];
+let bRun=false,activeRespiro=null;
 function iniciarRespiracio(){
   if(bRun){pararRespiracio();return;}
-  bRun=true;bPhN=0;bTim=0;bCyc=0;
+  bRun=true;
   document.getElementById('breathBtns').innerHTML='<button class="btn bs" onclick="iniciarRespiracio()">Parar</button>';
-  document.getElementById('breathSec').style.display='block';
-  tickB();bInt=setInterval(tickB,1000);
+  var sub=document.getElementById('breathSub'); if(sub)sub.innerText='Cicle · 4-2-6-2 · sense pressa';
+  if(activeRespiro){activeRespiro.destroy();activeRespiro=null;}
+  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS){bRun=false;return;}
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4000, anchor:Math.max(2000,900), exhale:6000, pause:Math.max(2000,700) },
+    labels:{ phase:{ inhale:'Inspira', anchor:'Reté', exhale:'Expira', pause:'Pausa' },
+             hint:{ inhale:'agafa aire, baixant a la panxa', anchor:'reté un instant', exhale:'deixa anar a poc a poc', pause:'sense pressa' },
+             legend:{ air:'l\'aire · entra pel nas', mind:'la teva atenció conscient · des del cap' },
+             one:'respiració', many:'respiracions' },
+    onCycle:function(n){ if(n>=4){ finalitzarRespiracio(); } }
+  });
 }
-function tickB(){
-  const ph=BPHAS[bPhN];
-  document.getElementById('breathPhase').innerText=ph.txt;
-  document.getElementById('breathSec').innerText=ph.sec-bTim;
-  document.getElementById('breathSub').innerText='Cicle '+(bCyc+1)+' · 4-2-6-2 · sense pressa';
-  const r=document.getElementById('breathRing');
-  r.style.transform='scale('+ph.sc+')';r.style.background='radial-gradient(circle,'+ph.bg+' 0%,#fff 100%)';
-  bTim++;if(bTim>=ph.sec){bTim=0;bPhN++;if(bPhN>=4){bPhN=0;bCyc++;}}
-  if(bCyc>=4){
-    pararRespiracio();dades[diaActiu].rSess++;dades[diaActiu].resp++;
-    document.getElementById('n-resp').innerText=dades[diaActiu].resp;
-    document.getElementById('breathSess').innerText='✓ '+dades[diaActiu].rSess+' sessions avui';
-    updateStars();
-  }
+function finalitzarRespiracio(){
+  if(activeRespiro){activeRespiro.stop();}
+  bRun=false;
+  dades[diaActiu].rSess++;dades[diaActiu].resp++;
+  document.getElementById('n-resp').innerText=dades[diaActiu].resp;
+  var sub=document.getElementById('breathSub'); if(sub)sub.innerText='Molt bé 👌';
+  document.getElementById('breathSess').innerText='✓ '+dades[diaActiu].rSess+' sessions avui';
+  document.getElementById('breathBtns').innerHTML='<button class="btn bp" onclick="iniciarRespiracio()">Tornar a explorar</button>';
+  updateStars();
 }
 function pararRespiracio(){
-  clearInterval(bInt);bRun=false;
-  document.getElementById('breathRing').style.transform='scale(1)';
-  document.getElementById('breathPhase').innerText='Molt bé 👌';
-  document.getElementById('breathSec').style.display='none';
-  document.getElementById('breathSub').innerText='Com t\'has sentit per dins?';
+  if(activeRespiro){activeRespiro.destroy();activeRespiro=null;}
+  bRun=false;
+  var sub=document.getElementById('breathSub'); if(sub)sub.innerText='Com t\'has sentit per dins?';
   document.getElementById('breathBtns').innerHTML='<button class="btn bp" onclick="iniciarRespiracio()">Tornar a explorar</button>';
 }
 

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<!-- APRENS · Cuestionario de valoración del dolor crónico y contexto psicosocial.
+     Copia integrada en la app (antes vivía solo en aprens-dolorcronico.netlify.app).
+     Autocontenido: no carga ningún recurso externo, así que cumple la CSP del sitio.
+     El envío sigue siendo del paciente: WhatsApp (o correo como alternativa) y una
+     copia de respaldo al formulario de Netlify «cuestionario-dolor» del propio sitio. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cuestionario de valoración del dolor crónico y contexto psicosocial</title>
+<style>
+:root{
+  --azul:#1B365D; --azul2:#2A4E7E; --azul-suave:#EDF2F9;
+  --gris:#5A5A5A; --gris2:#8A8A8A; --linea:#DCE2EA;
+  --fondo:#F5F7FA; --blanco:#FFFFFF;
+  --verde:#1E7A4B; --verde-bg:#E3F1E4;
+  --ambar:#9A6206; --ambar-bg:#FDEBD0;
+  --rojo:#9B2226; --rojo-bg:#F8D7DA;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--fondo); color:#1A1A1A; font-size:16px; line-height:1.5;
+  padding-bottom:96px;
+}
+header{
+  position:sticky; top:0; z-index:50; background:var(--azul); color:#fff;
+  padding:12px 16px calc(10px + env(safe-area-inset-bottom,0px)); box-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+.h-t{font-size:17px;font-weight:700;letter-spacing:.4px}
+.h-s{font-size:12px;opacity:.82;margin-top:1px}
+.barra{height:5px;background:rgba(255,255,255,.22);border-radius:4px;margin-top:9px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:#F0C86A;transition:width .3s}
+.h-p{font-size:11px;opacity:.85;margin-top:5px}
+main{max-width:780px;margin:0 auto;padding:16px 14px}
+.intro{background:var(--blanco);border-radius:14px;padding:16px 16px 4px;border:1px solid var(--linea);margin-bottom:16px}
+.intro h1{font-size:19px;margin:0 0 8px;color:var(--azul);line-height:1.3}
+.intro p{font-size:14px;color:var(--gris);margin:0 0 12px}
+.sec{background:var(--blanco);border-radius:14px;border:1px solid var(--linea);margin-bottom:14px;overflow:hidden}
+.sec>h2{
+  margin:0;padding:14px 16px;font-size:15px;font-weight:700;color:var(--azul);
+  background:var(--azul-suave);cursor:pointer;display:flex;align-items:center;gap:10px;
+}
+.sec>h2 .n{
+  flex:none;width:26px;height:26px;border-radius:50%;background:var(--azul);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700
+}
+.sec>h2 .chev{margin-left:auto;font-size:12px;color:var(--azul2);transition:transform .2s}
+.sec.cerrada .chev{transform:rotate(-90deg)}
+.sec.cerrada .cuerpo{display:none}
+.cuerpo{padding:6px 16px 16px}
+.ayuda{font-size:13px;color:var(--gris);background:#FAFBFD;border-left:3px solid var(--azul2);padding:9px 12px;border-radius:0 8px 8px 0;margin:12px 0}
+.item{padding:14px 0;border-bottom:1px solid #EEF1F5}
+.item:last-child{border-bottom:none}
+.q{font-size:15px;margin-bottom:10px;font-weight:500}
+.q small{display:block;font-weight:400;color:var(--gris2);font-size:12.5px;margin-top:2px}
+.opts{display:flex;flex-wrap:wrap;gap:7px}
+.opt{
+  border:1.5px solid var(--linea);background:#fff;border-radius:22px;padding:8px 13px;
+  font-size:14px;cursor:pointer;user-select:none;transition:.12s;color:#333
+}
+.opt:active{transform:scale(.97)}
+.opt.on{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600}
+.esc{display:flex;gap:4px;flex-wrap:wrap}
+.esc .opt{padding:8px 0;min-width:38px;flex:1 1 38px;text-align:center;border-radius:9px;font-size:14px}
+.esc-lab{display:flex;justify-content:space-between;font-size:11px;color:var(--gris2);margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr;gap:0}
+input[type=text],input[type=number],textarea,select{
+  width:100%;border:1.5px solid var(--linea);border-radius:10px;padding:10px 12px;
+  font-size:15px;font-family:inherit;background:#fff;color:#1A1A1A
+}
+textarea{min-height:74px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.pro{border:2px dashed var(--ambar);background:#FFFDF7;border-radius:14px;margin-bottom:14px}
+.pro>h2{background:var(--ambar-bg);color:var(--ambar)}
+.pro>h2 .n{background:var(--ambar)}
+.aviso{
+  background:var(--rojo-bg);border:1px solid #E9B0B4;border-radius:10px;padding:11px 13px;
+  font-size:13.5px;color:var(--rojo);margin:12px 0
+}
+.acciones{
+  position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:9px;z-index:60;
+  box-shadow:0 -3px 14px rgba(0,0,0,.07)
+}
+.btn{
+  flex:1;border:none;border-radius:26px;padding:13px 10px;font-size:15px;font-weight:600;
+  cursor:pointer;font-family:inherit
+}
+.bp{background:var(--azul);color:#fff}
+.bs{background:#fff;color:var(--azul);border:1.5px solid var(--azul)}
+.bwa{background:#25D366;color:#fff}
+.bwa:disabled{background:#9ED9B4}
+.enlace-mail{display:block;text-align:center;font-size:13px;color:var(--azul);margin-top:12px;text-decoration:underline;cursor:pointer}
+.btn:active{opacity:.85}
+#resultado{display:none}
+.tarjeta{background:#fff;border:1px solid var(--linea);border-radius:14px;padding:16px;margin-bottom:14px}
+.tarjeta h3{margin:0 0 12px;font-size:16px;color:var(--azul)}
+.ind{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #EEF1F5}
+.ind:last-child{border-bottom:none}
+.ind .sem{flex:none;width:11px;height:11px;border-radius:50%}
+.ind .nom{flex:1;font-size:14px}
+.ind .val{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.sv{background:var(--verde)} .sa{background:#E0A11B} .sr{background:var(--rojo)} .sg{background:#B6BFCB}
+.bandera{border-radius:9px;padding:9px 12px;font-size:13.5px;margin-bottom:7px;line-height:1.45}
+.b-r{background:var(--rojo-bg);color:var(--rojo);border:1px solid #E9B0B4}
+.b-a{background:var(--ambar-bg);color:var(--ambar);border:1px solid #EFD5A8}
+.b-v{background:var(--verde-bg);color:var(--verde);border:1px solid #BFDCC4}
+#salida{
+  width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;
+  line-height:1.5;white-space:pre-wrap
+}
+.pie{text-align:center;font-size:11.5px;color:var(--gris2);padding:18px 10px 4px;line-height:1.6}
+.toast{
+  position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;
+  padding:11px 20px;border-radius:24px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:80
+}
+.toast.on{opacity:1}
+@media(min-width:620px){ .grid2{grid-template-columns:1fr 1fr;gap:0 22px} }
+.cab-print{display:none}
+@media print{
+  .cab-print{display:block;margin-bottom:8px;border-bottom:2px solid #1B365D;padding-bottom:6px}
+  .cp-marca{font-family:"Times New Roman",Georgia,serif;font-size:15pt;font-weight:700;color:#1B365D;letter-spacing:.5px}
+  .cp-sub{font-size:8pt;color:#5A5A5A;margin-top:-2px}
+  .cp-tit{font-size:11pt;font-weight:700;color:#1B365D;margin-top:6px}
+  .cp-datos{display:flex;gap:14px;flex-wrap:wrap;font-size:8.5pt;margin-top:6px;color:#333}
+  header,.acciones,.toast,.chev,#resultado{display:none!important}
+  body{background:#fff;padding:0;font-size:9pt;line-height:1.25}
+  main{max-width:none;padding:0}
+  .intro{border:1px solid #999;padding:8px 10px 2px;margin-bottom:8px;border-radius:6px}
+  .intro h1{font-size:12pt;margin:0 0 4px}
+  .intro p{font-size:8.5pt;margin:0 0 6px}
+  .sec{break-inside:auto;border:1px solid #999;box-shadow:none;margin-bottom:7px;border-radius:6px}
+  .sec>h2{padding:5px 9px;font-size:10pt;background:#E8EDF4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sec>h2 .n{width:17px;height:17px;font-size:8pt;background:#1B365D!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sec.cerrada .cuerpo{display:block}
+  .cuerpo{padding:2px 9px 7px}
+  .ayuda{font-size:8pt;padding:4px 8px;margin:6px 0}
+  .item{padding:5px 0;break-inside:avoid;page-break-inside:avoid}
+  .q{font-size:9pt;margin-bottom:4px;font-weight:600}
+  .q small{font-size:7.5pt;margin-top:0}
+  .opts,.chips,.esc{gap:3px}
+  .opt{border:1px solid #777;padding:2px 6px;font-size:8pt;border-radius:9px}
+  .esc .opt{min-width:20px;flex:0 0 auto;padding:2px 5px}
+  .esc-lab{font-size:7pt;margin-top:2px}
+  .opt.on{background:#ccc!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  textarea{min-height:34px;border:1px solid #777}
+  .pro{border:1px dashed #9A6206}
+  .aviso{font-size:8pt;padding:5px 8px;margin:6px 0}
+  .pie{font-size:7.5pt;padding:8px 0 0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-t">SERVICIO DE PSICOLOGÍA</div>
+  <div class="h-s">Cuestionario de valoración del dolor crónico y contexto psicosocial</div>
+  <div class="barra"><i id="barra"></i></div>
+  <div class="h-p" id="progreso">0 de 0 respondidas</div>
+</header>
+
+<main>
+  <div class="cab-print">
+    <div class="cp-marca">MUTUA BALEAR</div>
+    <div class="cp-sub">MCSS Nº 183 · Servicio de Psicología</div>
+    <div class="cp-tit">Cuestionario de valoración del dolor crónico y contexto psicosocial</div>
+    <div class="cp-datos">
+      <span>Paciente: ________________________________</span>
+      <span>Caso / Historia: ______________</span>
+      <span>Fecha: ____ / ____ / ______</span>
+    </div>
+  </div>
+
+  <div class="intro">
+    <h1>Antes de empezar</h1>
+    <p>Este cuestionario sirve para conocer mejor cómo es su dolor y cómo afecta a su vida diaria.
+       No hay respuestas buenas ni malas: lo importante es que responda según su experiencia real de las
+       <strong>últimas cuatro semanas</strong>. Se tarda entre 15 y 20 minutos. Si alguna pregunta no la
+       entiende o no sabe qué contestar, déjela en blanco y coméntelo en la entrevista.</p>
+    <p style="font-size:13px">La información es confidencial y forma parte de su historia clínica.
+       Se utiliza únicamente para la valoración psicológica y no se comparte con su empresa.
+       Al final podrá enviar sus respuestas a su psicólogo por WhatsApp con un solo botón.</p>
+  </div>
+
+  <div id="formulario"></div>
+
+  <div id="resultado"></div>
+
+  <div id="gracias" style="display:none">
+    <div class="tarjeta" style="text-align:center">
+      <div style="font-size:44px;line-height:1;margin-bottom:10px">✓</div>
+      <h3 style="font-size:18px">Respuestas enviadas</h3>
+      <p style="font-size:15px;color:var(--gris);margin:0 auto;max-width:440px">
+        Gracias por dedicar este tiempo. Su psicólogo revisará sus respuestas antes de la
+        próxima visita y las comentará con usted en consulta.
+      </p>
+      <p style="font-size:13.5px;color:var(--gris2);margin-top:14px">
+        Si mientras tanto se encuentra mal o necesita hablar con alguien, no espere a la cita:
+        contacte con su centro sanitario.
+      </p>
+      <span class="enlace-mail" id="linkMail">¿No se ha abierto WhatsApp? Enviar por correo</span>
+    </div>
+  </div>
+
+  <form name="cuestionario-dolor" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="text" name="paciente">
+    <input type="text" name="caso">
+    <input type="text" name="fecha">
+    <input type="text" name="bot-field">
+    <textarea name="resumen"></textarea>
+  </form>
+
+  <div class="pie">
+    Servicio de Psicología · Instrumento de apoyo a la entrevista clínica<br>
+    No sustituye la valoración profesional ni constituye un diagnóstico<br>
+    Sus respuestas no quedan guardadas en este dispositivo: se pierden al cerrar la página
+  </div>
+</main>
+
+<div class="acciones">
+  <button class="btn bs" id="btnImprimir">Imprimir</button>
+  <button class="btn bs" id="btnCorregir" style="display:none">Corrección</button>
+  <button class="btn bwa" id="btnWA">Enviar por WhatsApp</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ================= CONFIGURACIÓN =================
+   1. WHATSAPP_DESTINO: número al que el paciente enviará sus respuestas.
+      Formato: prefijo del país + número, sin «+», sin espacios (ej. 34612345678).
+   1b. EMAIL_DESTINO: correo de respaldo y destino del resumen técnico completo.
+   2. FORM_NETLIFY: nombre del formulario en Netlify (no cambiar salvo que
+      se renombre también el <form> oculto del final del HTML).
+   3. Vista profesional con índices y banderas: añadir #pro a la URL.
+      Ejemplo: https://tu-sitio.netlify.app/#pro
+   ================================================= */
+var EMAIL_DESTINO   = "aprens.tofol@gmail.com";
+var WHATSAPP_DESTINO = "34636937661";   /* prefijo país + número, sin + ni espacios */
+var FORM_NETLIFY  = "cuestionario-dolor";
+var MODO_PRO = (location.hash || "").toLowerCase().indexOf("pro") >= 0;
+
+
+/* ============ ESCALAS REUTILIZABLES ============ */
+var E11 = {tipo:"esc", min:0, max:10, izq:"0 · Ninguno", der:"10 · El peor imaginable"};
+var E11i = {tipo:"esc", min:0, max:10, izq:"0 · No interfiere", der:"10 · Interfiere del todo"};
+var FREC = {tipo:"opts", op:[["0","Nunca"],["1","Casi nunca"],["2","A veces"],["3","A menudo"],["4","Siempre"]]};
+var ACUER = {tipo:"opts", op:[["0","Nada"],["1","Un poco"],["2","Bastante"],["3","Mucho"],["4","Totalmente"]]};
+var CAPAZ = {tipo:"opts", op:[["0","Sin dificultad"],["1","Con alguna dificultad"],["2","Con mucha dificultad"],["3","Solo con ayuda"],["4","No puedo hacerlo"]]};
+var SINO = {tipo:"opts", op:[["0","No"],["1","Sí"]]};
+
+/* ============ DEFINICIÓN DEL INSTRUMENTO ============ */
+var SECCIONES = [
+{n:"A", t:"Su dolor: dónde y desde cuándo", items:[
+  {id:"a_zona", q:"¿En qué zona del cuerpo tiene el dolor principal?", cfg:{tipo:"opts", multi:true, op:[
+    ["mano_izq","Mano / muñeca izquierda"],["mano_der","Mano / muñeca derecha"],
+    ["brazo_izq","Brazo u hombro izquierdo"],["brazo_der","Brazo u hombro derecho"],
+    ["cuello","Cuello"],["espalda","Espalda"],["lumbar","Zona lumbar"],
+    ["pierna_izq","Pierna o pie izquierdo"],["pierna_der","Pierna o pie derecho"],
+    ["cabeza","Cabeza"],["otra","Otra zona"]]}},
+  {id:"a_otras_zonas", q:"¿El dolor se ha extendido a otras zonas distintas de la lesión inicial?", cfg:{tipo:"opts", op:[
+    ["0","No, sigue en la misma zona"],["1","Se irradia un poco alrededor"],["2","Sí, ha aparecido dolor en otras zonas del cuerpo"]]}},
+  {id:"a_tiempo", q:"¿Cuánto tiempo lleva con este dolor?", cfg:{tipo:"opts", op:[
+    ["0","Menos de 6 meses"],["1","Entre 6 y 12 meses"],["2","Entre 1 y 2 años"],["3","Más de 2 años"]]}},
+  {id:"a_patron", q:"¿Cómo es el dolor a lo largo del día?", cfg:{tipo:"opts", op:[
+    ["cont","Constante, siempre está"],["cont_crisis","Constante con crisis más fuertes"],
+    ["inter","Va y viene"],["crisis","Solo en crisis puntuales"]]}},
+  {id:"a_noche", q:"¿Le despierta el dolor por la noche?", cfg:FREC}
+]},
+
+{n:"B", t:"Intensidad del dolor", ayuda:"Marque un número del 0 al 10, donde 0 es «ningún dolor» y 10 es «el peor dolor imaginable».", items:[
+  {id:"b_ahora", q:"Su dolor en este momento", cfg:E11, idx:"intensidad"},
+  {id:"b_medio", q:"Su dolor habitual en la última semana (por término medio)", cfg:E11, idx:"intensidad"},
+  {id:"b_peor", q:"El peor dolor que ha tenido en la última semana", cfg:E11, idx:"intensidad"},
+  {id:"b_mejor", q:"El dolor más leve que ha tenido en la última semana", cfg:E11, idx:"intensidad"},
+  {id:"b_alivio", q:"¿Cuánto le alivia el tratamiento que toma ahora?", cfg:{tipo:"esc", min:0, max:10, izq:"0 · Nada", der:"10 · Alivio completo"}}
+]},
+
+{n:"C", t:"Cómo es su dolor", ayuda:"Piense en el dolor de la zona principal. Marque «Sí» solo si reconoce claramente esa sensación.", items:[
+  {id:"c_quema", q:"Sensación de quemazón o ardor", cfg:SINO, idx:"neuro"},
+  {id:"c_electr", q:"Descargas eléctricas o latigazos", cfg:SINO, idx:"neuro"},
+  {id:"c_calamb", q:"Calambres o rampas", cfg:SINO, idx:"neuro"},
+  {id:"c_hormig", q:"Hormigueo o pinchazos como agujas", cfg:SINO, idx:"neuro"},
+  {id:"c_dormido", q:"Sensación de zona dormida o acorchada (pérdida de sensibilidad)", cfg:SINO, idx:"neuro"},
+  {id:"c_roce", q:"Le duele con el simple roce de la ropa o una caricia", cfg:SINO, idx:"neuro"},
+  {id:"c_frio", q:"Empeora con el frío o con los cambios de temperatura", cfg:SINO, idx:"neuro"},
+  {id:"c_profundo", q:"Dolor sordo y profundo, como un peso", cfg:SINO},
+  {id:"c_agudo", q:"Dolor punzante, como un cuchillo", cfg:SINO},
+  {id:"c_empeora", q:"¿Qué hace que empeore? (puede marcar varias)", cfg:{tipo:"opts", multi:true, op:[
+    ["mov","Moverme o usar la zona"],["reposo","Estar quieto mucho rato"],["frio","El frío o la humedad"],
+    ["estres","Los nervios o el estrés"],["cansancio","El cansancio"],["noche","Por la noche"],["nada","Nada en concreto"]]}},
+  {id:"c_mejora", q:"¿Qué hace que mejore? (puede marcar varias)", cfg:{tipo:"opts", multi:true, op:[
+    ["medic","La medicación"],["calor","El calor"],["reposo2","El reposo"],["mov2","El movimiento suave"],
+    ["distrac","Distraerme, estar acompañado"],["nada2","Nada lo mejora"]]}}
+]},
+
+{n:"D", t:"Cómo afecta el dolor a su vida", ayuda:"En la última semana, ¿cuánto ha interferido el dolor en cada una de estas áreas? 0 = no interfiere, 10 = interfiere completamente.", items:[
+  {id:"d_activ", q:"Actividad general del día a día", cfg:E11i, idx:"interf"},
+  {id:"d_animo", q:"Su estado de ánimo", cfg:E11i, idx:"interf"},
+  {id:"d_camin", q:"Capacidad para caminar y desplazarse", cfg:E11i, idx:"interf"},
+  {id:"d_trab", q:"Trabajo (dentro y fuera de casa)", cfg:E11i, idx:"interf"},
+  {id:"d_relac", q:"Relación con otras personas", cfg:E11i, idx:"interf"},
+  {id:"d_sueno", q:"Sueño", cfg:E11i, idx:"interf"},
+  {id:"d_disfr", q:"Disfrutar de la vida", cfg:E11i, idx:"interf"},
+  {id:"d_auto", q:"Cuidado personal (ducharse, vestirse, comer)", cfg:E11i, idx:"interf"},
+  {id:"d_casa", q:"Tareas de casa (cocinar, limpiar, compra)", cfg:E11i, idx:"interf"},
+  {id:"d_ocio", q:"Aficiones, deporte, vida social", cfg:E11i, idx:"interf"}
+]},
+
+{n:"E", t:"Qué puede y qué no puede hacer", ayuda:"Indique la dificultad real que tiene HOY para cada actividad, por causa del dolor o de la limitación física.", items:[
+  {id:"e_bote", q:"Abrir un bote o una botella nueva", cfg:CAPAZ, idx:"func"},
+  {id:"e_llave", q:"Girar una llave en la cerradura", cfg:CAPAZ, idx:"func"},
+  {id:"e_boton", q:"Abrocharse botones o una cremallera", cfg:CAPAZ, idx:"func"},
+  {id:"e_cortar", q:"Cortar los alimentos con cuchillo y tenedor", cfg:CAPAZ, idx:"func"},
+  {id:"e_bolsa", q:"Llevar una bolsa de la compra", cfg:CAPAZ, idx:"func"},
+  {id:"e_escribir", q:"Escribir o manejar el móvil", cfg:CAPAZ, idx:"func"},
+  {id:"e_ducha", q:"Ducharse y secarse solo", cfg:CAPAZ, idx:"func"},
+  {id:"e_vestir", q:"Vestirse solo", cfg:CAPAZ, idx:"func"},
+  {id:"e_limpiar", q:"Limpiar la casa o hacer la cama", cfg:CAPAZ, idx:"func"},
+  {id:"e_cocinar", q:"Cocinar", cfg:CAPAZ, idx:"func"},
+  {id:"e_conducir", q:"Conducir o usar el transporte público", cfg:CAPAZ, idx:"func"},
+  {id:"e_herram", q:"Manejar herramientas o hacer su trabajo habitual", cfg:CAPAZ, idx:"func"},
+  {id:"e_dejado", q:"¿Hay alguna actividad importante para usted que haya tenido que dejar por completo?", cfg:{tipo:"texto", ph:"Escríbalo aquí (por ejemplo: trabajar, deporte, tocar un instrumento, cuidar de alguien...)"}}
+]},
+
+{n:"F", t:"Sueño, energía y otras molestias", items:[
+  {id:"f_conciliar", q:"Me cuesta quedarme dormido", cfg:FREC, idx:"somat"},
+  {id:"f_desperta", q:"Me despierto varias veces por la noche", cfg:FREC, idx:"somat"},
+  {id:"f_descanso", q:"Me levanto descansado por la mañana", cfg:{tipo:"opts", inv:true, op:[["4","Nunca"],["3","Casi nunca"],["2","A veces"],["1","A menudo"],["0","Siempre"]]}, idx:"somat"},
+  {id:"f_energia", q:"Me falta energía durante el día", cfg:FREC, idx:"somat"},
+  {id:"f_apetito", q:"He notado cambios en el apetito o en el peso", cfg:FREC, idx:"somat"},
+  {id:"f_concentr", q:"Me cuesta concentrarme o me falla la memoria", cfg:FREC, idx:"somat"}
+]},
+
+{n:"G", t:"Su salud en general", ayuda:"Marque las enfermedades o problemas de salud que tenga, además del dolor por el que viene.", items:[
+  {id:"g_enferm", q:"¿Padece alguna de estas condiciones?", cfg:{tipo:"opts", multi:true, op:[
+    ["ninguna","Ninguna"],["diabetes","Diabetes"],["tension","Tensión alta"],["corazon","Problemas de corazón"],
+    ["respir","Problemas respiratorios (asma, EPOC)"],["tiroides","Tiroides"],["reuma","Artrosis, artritis o reuma"],
+    ["migrana","Migrañas"],["digest","Problemas digestivos"],["renal","Problemas de riñón"],
+    ["neuro","Problema neurológico (epilepsia, ictus...)"],["psiq","Ansiedad o depresión diagnosticadas"],
+    ["sueno","Trastorno del sueño (apnea, insomnio)"],["otra2","Otra"]]}},
+  {id:"g_otro_dolor", q:"¿Tiene otro dolor crónico distinto del que motiva esta consulta?", cfg:SINO},
+  {id:"g_medic", q:"Medicación que toma actualmente (nombre y para qué)", cfg:{tipo:"texto", ph:"Ej.: pregabalina para el dolor, paracetamol, pastillas para dormir..."}},
+  {id:"g_efectos", q:"¿La medicación le produce efectos molestos (sueño, mareo, embotamiento)?", cfg:FREC},
+  {id:"g_rescate", q:"¿Con qué frecuencia necesita medicación extra para las crisis de dolor?", cfg:{tipo:"opts", op:[
+    ["0","Nunca"],["1","Alguna vez al mes"],["2","Alguna vez a la semana"],["3","Casi a diario"],["4","Varias veces al día"]]}, idx:"alerta_med"},
+  {id:"g_alcohol", q:"¿Bebe alcohol?", cfg:{tipo:"opts", op:[["0","Nunca o casi nunca"],["1","Los fines de semana"],["2","Casi a diario"],["3","A diario y en cantidad"]]}, idx:"consumo"},
+  {id:"g_tabaco", q:"¿Fuma?", cfg:{tipo:"opts", op:[["0","No"],["1","Sí, poco"],["2","Sí, más de 10 al día"]]}},
+  {id:"g_otras_sust", q:"¿Consume cannabis u otras sustancias para calmar el dolor o dormir?", cfg:{tipo:"opts", op:[["0","No"],["1","Alguna vez"],["2","Con frecuencia"]]}, idx:"consumo"},
+  {id:"g_alergias", q:"Alergias conocidas", cfg:{tipo:"texto", ph:"Escriba «ninguna» si no tiene"}}
+]},
+
+{n:"H", t:"Su familia y las personas de su entorno", items:[
+  {id:"h_convive", q:"¿Con quién vive habitualmente?", cfg:{tipo:"opts", op:[
+    ["solo","Solo"],["pareja","Con mi pareja"],["pareja_hijos","Con mi pareja e hijos"],
+    ["hijos","Con mis hijos"],["familia","Con otros familiares"],["compa","Con compañeros de piso"],["otro3","Otra situación"]]}, idx:"apoyo_conv"},
+  {id:"h_familia_cerca", q:"¿Tiene familia cercana viviendo en la isla o cerca de usted?", cfg:{tipo:"opts", op:[
+    ["2","Sí, y nos vemos con frecuencia"],["1","Sí, pero nos vemos poco"],["0","No, mi familia vive lejos o en otro país"]]}, idx:"apoyo", inv:true},
+  {id:"h_contacto", q:"¿Con qué frecuencia habla o se ve con su familia?", cfg:{tipo:"opts", op:[
+    ["3","A diario"],["2","Varias veces por semana"],["1","Alguna vez al mes"],["0","Casi nunca"]]}, idx:"apoyo", inv:true},
+  {id:"h_cargas", q:"¿Tiene personas a su cargo (hijos menores, mayores dependientes)?", cfg:SINO},
+  {id:"h_confianza", q:"¿Tiene alguien de confianza con quien pueda hablar de sus preocupaciones?", cfg:{tipo:"opts", op:[
+    ["3","Sí, varias personas"],["2","Sí, una persona"],["1","Alguien, pero no del todo"],["0","No tengo con quién hablar de esto"]]}, idx:"apoyo", inv:true},
+  {id:"h_acompana", q:"¿Hay alguien que pueda acompañarle a las citas médicas o a una intervención?", cfg:{tipo:"opts", op:[
+    ["3","Sí, sin problema"],["2","Sí, aunque le costaría organizarse"],["1","Solo en caso muy necesario"],["0","No, tendría que ir solo"]]}, idx:"apoyo", inv:true, clave:true},
+  {id:"h_cuidados", q:"Si necesitara ayuda en casa durante unos días tras una intervención, ¿podría contar con alguien?", cfg:{tipo:"opts", op:[
+    ["3","Sí, viviría acompañado"],["2","Sí, alguien vendría a ayudarme"],["1","Solo alguna visita puntual"],["0","No, estaría solo"]]}, idx:"apoyo", inv:true, clave:true},
+  {id:"h_soledad", q:"Me siento solo", cfg:FREC, idx:"soledad"},
+  {id:"h_entienden", q:"Las personas de mi entorno entienden lo que me pasa con el dolor", cfg:{tipo:"opts", inv:true, op:[["4","Nada"],["3","Poco"],["2","Bastante"],["1","Mucho"],["0","Totalmente"]]}, idx:"soledad"},
+  {id:"h_carga", q:"Siento que soy una carga para los demás por mi situación", cfg:FREC, idx:"soledad"}
+]},
+
+{n:"I", t:"Su situación económica y su vivienda", ayuda:"Estas preguntas ayudan a saber si necesita apoyo o alguna adaptación. Puede dejar en blanco lo que no quiera contestar.", items:[
+  {id:"i_ingresos", q:"¿De qué vive actualmente?", cfg:{tipo:"opts", op:[
+    ["trabajo","Sigo trabajando"],["baja","Prestación por baja laboral"],["paro","Prestación por desempleo"],
+    ["ayuda","Ayuda o subsidio"],["familia2","Me mantiene mi familia"],["sin","Sin ingresos propios"]]}, idx:"econ"},
+  {id:"i_llegar", q:"¿Le resulta difícil llegar a fin de mes?", cfg:{tipo:"opts", op:[
+    ["0","No, sin dificultad"],["1","Con algún apuro"],["2","Con bastante dificultad"],["3","No llego, tengo deudas"]]}, idx:"econ"},
+  {id:"i_gastos_salud", q:"¿Ha tenido que renunciar a algún tratamiento, medicación o desplazamiento por su coste?", cfg:SINO, idx:"econ", clave:true},
+  {id:"i_vivienda", q:"¿Cómo es su vivienda?", cfg:{tipo:"opts", op:[
+    ["propia","En propiedad"],["alquiler","De alquiler"],["compartida","Habitación o piso compartido"],["cedida","Cedida o de un familiar"],["inest","Situación inestable"]]}, idx:"hogar"},
+  {id:"i_escaleras", q:"¿Tiene que subir escaleras para llegar a su casa?", cfg:{tipo:"opts", op:[
+    ["0","No, o hay ascensor"],["1","Sí, uno o dos pisos"],["2","Sí, más de dos pisos sin ascensor"]]}, idx:"hogar"},
+  {id:"i_bano", q:"¿Su baño está adaptado a sus limitaciones (agarraderas, plato de ducha, silla)?", cfg:{tipo:"opts", op:[
+    ["0","Sí, o no lo necesito"],["1","Parcialmente"],["2","No, y me supone un problema"]]}, idx:"hogar"},
+  {id:"i_adaptac", q:"¿Necesita alguna adaptación o ayuda técnica que no tiene?", cfg:{tipo:"texto", ph:"Ej.: barra en la ducha, utensilios adaptados, ayuda para vestirse..."}},
+  {id:"i_transporte", q:"¿Cómo se desplaza al centro sanitario?", cfg:{tipo:"opts", op:[
+    ["0","Coche propio o me llevan"],["1","Transporte público, sin problema"],["2","Transporte público, me cuesta mucho"],["3","Tengo verdaderas dificultades para venir"]]}, idx:"hogar", clave:true}
+]},
+
+{n:"J", t:"Su situación laboral", items:[
+  {id:"j_situacion", q:"¿Cuál es su situación laboral actual?", cfg:{tipo:"opts", op:[
+    ["it","De baja laboral"],["alta_trab","De alta y trabajando"],["alta_no","De alta pero sin trabajar"],
+    ["desempleo","En desempleo"],["incap","En proceso de incapacidad"],["otra4","Otra"]]}},
+  {id:"j_tiempo_baja", q:"¿Cuánto tiempo lleva sin trabajar?", cfg:{tipo:"opts", op:[
+    ["0","Sigo trabajando"],["1","Menos de 6 meses"],["2","Entre 6 meses y 1 año"],["3","Entre 1 y 2 años"],["4","Más de 2 años"]]}},
+  {id:"j_volver", q:"¿Cree que podrá volver a su trabajo habitual?", cfg:{tipo:"opts", op:[
+    ["si","Sí, creo que sí"],["adapt","Sí, pero con cambios o adaptaciones"],["no","No, creo que no podré"],["nose","No lo sé"]]}},
+  {id:"j_import", q:"Mi trabajo era una parte importante de quién soy", cfg:ACUER},
+  {id:"j_preocup", q:"La incertidumbre sobre mi futuro laboral me preocupa", cfg:ACUER, idx:"estres"}
+]},
+
+{n:"K", t:"Cómo lleva el dolor", items:[
+  {id:"k_pensando", q:"No puedo dejar de pensar en el dolor", cfg:FREC, idx:"catastr"},
+  {id:"k_peor", q:"Temo que el dolor vaya a peor y nunca mejore", cfg:FREC, idx:"catastr"},
+  {id:"k_insoport", q:"Siento que el dolor es insoportable y me supera", cfg:FREC, idx:"catastr"},
+  {id:"k_puedo", q:"A pesar del dolor, puedo hacer cosas que son importantes para mí", cfg:{tipo:"opts", inv:true, op:[["4","Nunca"],["3","Casi nunca"],["2","A veces"],["1","A menudo"],["0","Siempre"]]}, idx:"autoefic"},
+  {id:"k_planes", q:"Sigo haciendo planes y manteniendo mis rutinas", cfg:{tipo:"opts", inv:true, op:[["4","Nunca"],["3","Casi nunca"],["2","A veces"],["1","A menudo"],["0","Siempre"]]}, idx:"autoefic"},
+  {id:"k_esperar", q:"Estoy esperando a que se me quite el dolor para retomar mi vida", cfg:FREC, idx:"catastr"},
+  {id:"k_activo", q:"¿Qué hace usted cuando el dolor aprieta? (puede marcar varias)", cfg:{tipo:"opts", multi:true, op:[
+    ["parar","Parar y descansar"],["medic2","Tomar medicación"],["seguir","Seguir hasta que puedo más"],
+    ["respirar","Respirar, calmarme"],["distraer","Distraerme con algo"],["hablar","Hablarlo con alguien"],
+    ["aislar","Encerrarme, no ver a nadie"],["enfad","Enfadarme, perder los nervios"]]}},
+  {id:"k_rhb", q:"¿Ha cumplido con la rehabilitación y los tratamientos indicados?", cfg:{tipo:"opts", op:[
+    ["3","Sí, siempre y sin faltar"],["2","Casi siempre"],["1","A ratos, con altibajos"],["0","Me ha costado mucho cumplir"]]}, idx:"adher", inv:true}
+]},
+
+{n:"L", t:"Su estado de ánimo estas últimas semanas", ayuda:"Marque con qué frecuencia le ha ocurrido durante las dos últimas semanas.", items:[
+  {id:"l_animo", q:"Me he sentido bajo de ánimo o triste", cfg:FREC, idx:"emo"},
+  {id:"l_interes", q:"He perdido interés o ganas de hacer cosas", cfg:FREC, idx:"emo"},
+  {id:"l_nervios", q:"Me he sentido nervioso o con la tensión por dentro", cfg:FREC, idx:"emo"},
+  {id:"l_irrit", q:"He estado irritable, salto por cualquier cosa", cfg:FREC, idx:"emo"},
+  {id:"l_futuro", q:"Veo el futuro con esperanza", cfg:{tipo:"opts", inv:true, op:[["4","Nunca"],["3","Casi nunca"],["2","A veces"],["1","A menudo"],["0","Siempre"]]}, idx:"emo", clave:true},
+  {id:"l_recuerdos", q:"Me vienen a la cabeza imágenes o recuerdos del accidente sin querer", cfg:FREC, idx:"trauma"},
+  {id:"l_evito", q:"Evito lugares, ruidos o situaciones que me recuerdan a lo que pasó", cfg:FREC, idx:"trauma"},
+  {id:"l_alerta", q:"Estoy más alerta o me sobresalto con facilidad", cfg:FREC, idx:"trauma"}
+]},
+
+{n:"M", t:"Lo que espera del neuroestimulador", ayuda:"Sus expectativas son importantes: nos ayudan a prepararle mejor para el procedimiento.", items:[
+  {id:"m_explic", q:"¿Le han explicado en qué consiste el dispositivo que le proponen?", cfg:{tipo:"opts", op:[
+    ["3","Sí, y lo he entendido bien"],["2","Sí, pero me quedan dudas"],["1","Me lo explicaron por encima"],["0","No me lo han explicado"]]}, idx:"compren", inv:true, clave:true},
+  {id:"m_objetivo", q:"Según lo que ha entendido, ¿para qué sirve principalmente?", cfg:{tipo:"opts", op:[
+    ["dolor","Para reducir el dolor"],["mover","Para que la mano vuelva a moverse"],
+    ["sensib","Para recuperar la sensibilidad"],["curar","Para curar la lesión del nervio"],["nose2","No lo sé con seguridad"]]}, idx:"compren", clave:true},
+  {id:"m_prueba", q:"¿Sabía que hay una fase de prueba antes del implante definitivo y que puede no funcionar?", cfg:{tipo:"opts", op:[
+    ["2","Sí, lo sabía"],["1","Algo he oído"],["0","No lo sabía"]]}, idx:"compren", inv:true, clave:true},
+  {id:"m_cuanto", q:"¿Cuánto espera que le baje el dolor?", cfg:{tipo:"opts", op:[
+    ["0","Un poco, algo es algo"],["1","Alrededor de la mitad"],["2","Casi todo"],["3","Espero quedarme sin dolor"],["4","Espero volver a estar como antes del accidente"]]}, idx:"expect", clave:true},
+  {id:"m_si_no", q:"Si la fase de prueba no funcionara, ¿cómo cree que lo llevaría?", cfg:{tipo:"opts", op:[
+    ["0","Sería un golpe, pero seguiría buscando opciones"],["1","Me costaría, pero lo aceptaría"],
+    ["2","Me hundiría bastante"],["3","Sería el fin, no me quedaría nada"]]}, idx:"expect", clave:true},
+  {id:"m_decision", q:"¿La decisión de hacerse el implante es suya?", cfg:{tipo:"opts", op:[
+    ["3","Sí, totalmente mía y la tengo clara"],["2","Sí, aunque tengo dudas normales"],
+    ["1","Lo hago sobre todo porque me lo recomiendan"],["0","Me siento presionado a hacerlo"]]}, idx:"compren", inv:true, clave:true},
+  {id:"m_miedo", q:"¿Qué es lo que más le preocupa del procedimiento?", cfg:{tipo:"texto", ph:"Escriba lo que le venga: el quirófano, que no funcione, llevar un aparato, el trabajo..."}},
+  {id:"m_esperanza", q:"Si el dolor bajara, ¿qué es lo primero que le gustaría volver a hacer?", cfg:{tipo:"texto", ph:"Esto nos ayuda a saber qué es importante para usted"}}
+]},
+
+{n:"N", t:"Sobre este cuestionario", ayuda:"Estas últimas preguntas nos ayudan a interpretar correctamente sus respuestas.", items:[
+  {id:"n_idioma", q:"¿Es el español su lengua materna?", cfg:{tipo:"opts", op:[["si2","Sí"],["no2","No"]]}, idx:"validez", clave:true},
+  {id:"n_entendido", q:"¿Ha entendido bien todas las preguntas?", cfg:{tipo:"opts", op:[
+    ["0","Sí, todas"],["1","Casi todas"],["2","Me ha costado bastante"],["3","No he entendido varias"]]}, idx:"validez", clave:true},
+  {id:"n_ayuda", q:"¿Ha necesitado ayuda de alguien para rellenarlo?", cfg:{tipo:"opts", op:[
+    ["no3","No, lo he hecho solo"],["si3","Sí, alguien me ha ayudado"],["prof","Me lo ha leído un profesional"]]}, idx:"validez"},
+  {id:"n_sincero", q:"¿Ha podido responder con total sinceridad?", cfg:{tipo:"opts", op:[
+    ["0","Sí, completamente"],["1","Casi siempre"],["2","En algunas cosas me he guardado información"]]}, idx:"validez", clave:true},
+  {id:"n_anadir", q:"¿Hay algo importante que quiera contarnos y no le hayamos preguntado?", cfg:{tipo:"texto", ph:"Escriba aquí lo que considere"}}
+]},
+
+{n:"O", t:"Para terminar: sus datos y su autorización", ayuda:"Necesitamos saber de quién son las respuestas para poder incorporarlas a su historia clínica.", items:[
+  {id:"o_nombre", q:"Su nombre y apellidos", cfg:{tipo:"texto", ph:"Nombre y apellidos"}, clave:true},
+  {id:"o_caso", q:"Número de caso o de historia, si lo conoce", cfg:{tipo:"texto", ph:"Puede dejarlo en blanco si no lo tiene a mano"}},
+  {id:"o_consent", q:"¿Autoriza enviar estas respuestas a su psicólogo por WhatsApp?", cfg:{tipo:"opts", op:[
+    ["si","Sí, autorizo el envío"],["no","No, prefiero entregarlo en consulta"]]}, clave:true}
+]}
+];
+
+/* ============ RENDER ============ */
+var R = {};
+var totalItems = 0;
+
+function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+
+function renderItem(it, cont){
+  var wrap = el("div","item");
+  var q = el("div","q"); q.textContent = it.q;
+  if(it.clave){ var s=el("small","","· pregunta clave para la valoración"); q.appendChild(s); }
+  wrap.appendChild(q);
+  var c = it.cfg;
+
+  if(c.tipo === "texto"){
+    var ta = el("textarea"); ta.placeholder = c.ph||""; ta.id = it.id;
+    ta.addEventListener("input", function(){ R[it.id]= ta.value.trim()? ta.value.trim():undefined; actualizar(); });
+    wrap.appendChild(ta);
+  } else if(c.tipo === "esc"){
+    totalItems++;
+    var box = el("div","esc");
+    for(var v=c.min; v<=c.max; v++){
+      (function(val){
+        var b = el("div","opt", String(val));
+        b.addEventListener("click", function(){
+          var hs = box.querySelectorAll(".opt");
+          for(var k=0;k<hs.length;k++) hs[k].classList.remove("on");
+          b.classList.add("on"); R[it.id]=val; actualizar();
+        });
+        box.appendChild(b);
+      })(v);
+    }
+    wrap.appendChild(box);
+    var lab = el("div","esc-lab");
+    lab.appendChild(el("span","",c.izq)); lab.appendChild(el("span","",c.der));
+    wrap.appendChild(lab);
+  } else {
+    totalItems++;
+    var box2 = el("div", c.multi? "chips":"opts");
+    for(var i=0;i<c.op.length;i++){
+      (function(par){
+        var b = el("div","opt", par[1]);
+        b.addEventListener("click", function(){
+          if(c.multi){
+            b.classList.toggle("on");
+            var arr = R[it.id] || [];
+            var ix = arr.indexOf(par[0]);
+            if(ix>=0) arr.splice(ix,1); else arr.push(par[0]);
+            R[it.id] = arr.length? arr : undefined;
+          } else {
+            var hs = box2.querySelectorAll(".opt");
+            for(var k=0;k<hs.length;k++) hs[k].classList.remove("on");
+            b.classList.add("on");
+            R[it.id] = par[0];
+          }
+          actualizar();
+        });
+        box2.appendChild(b);
+      })(c.op[i]);
+    }
+    wrap.appendChild(box2);
+  }
+  cont.appendChild(wrap);
+}
+
+function renderSeccion(s, esPro){
+  var sec = el("div", esPro? "sec pro cerrada":"sec");
+  var h = el("h2");
+  var n = el("span","n", s.n); h.appendChild(n);
+  h.appendChild(el("span","",s.t));
+  h.appendChild(el("span","chev","▼"));
+  h.addEventListener("click", function(){ sec.classList.toggle("cerrada"); });
+  sec.appendChild(h);
+  var cuerpo = el("div","cuerpo");
+  if(esPro){
+    var av = el("div","aviso");
+    av.textContent = "Este bloque NO debe autoadministrarse. La exploración de riesgo se realiza y se registra siempre en entrevista, por el profesional.";
+    cuerpo.appendChild(av);
+  }
+  if(s.ayuda) cuerpo.appendChild(el("div","ayuda", s.ayuda));
+  for(var i=0;i<s.items.length;i++) renderItem(s.items[i], cuerpo);
+  sec.appendChild(cuerpo);
+  return sec;
+}
+
+(function init(){
+  var cont = document.getElementById("formulario");
+  for(var i=0;i<SECCIONES.length;i++) cont.appendChild(renderSeccion(SECCIONES[i], false));
+  actualizar();
+})();
+
+function actualizar(){
+  var n=0;
+  for(var k in R){ if(R[k]!==undefined && R[k]!==null && R[k]!=="") n++; }
+  var pct = totalItems? Math.min(100, Math.round(n/totalItems*100)) : 0;
+  document.getElementById("barra").style.width = pct+"%";
+  document.getElementById("progreso").textContent = n+" de "+totalItems+" respondidas · "+pct+"%";
+}
+
+/* ============ CORRECCIÓN ============ */
+function num(id){ var v=R[id]; if(v===undefined) return null; var f=parseFloat(v); return isNaN(f)? null:f; }
+function media(ids){
+  var s=0,c=0;
+  for(var i=0;i<ids.length;i++){ var v=num(ids[i]); if(v!==null){ s+=v; c++; } }
+  return c? {v:s/c, n:c, tot:ids.length} : {v:null, n:0, tot:ids.length};
+}
+function sem(v, cortes){
+  if(v===null) return "sg";
+  if(v>=cortes[1]) return "sr";
+  if(v>=cortes[0]) return "sa";
+  return "sv";
+}
+function f1(v){ return v===null? "—" : (Math.round(v*10)/10).toString().replace(".",","); }
+
+function calcular(){
+  var I = {};
+
+  I.intensidad = media(["b_ahora","b_medio","b_peor","b_mejor"]);
+  I.interf = media(["d_activ","d_animo","d_camin","d_trab","d_relac","d_sueno","d_disfr","d_auto","d_casa","d_ocio"]);
+  var func = media(["e_bote","e_llave","e_boton","e_cortar","e_bolsa","e_escribir","e_ducha","e_vestir","e_limpiar","e_cocinar","e_conducir","e_herram"]);
+  I.func = {v: func.v===null? null : func.v/4*100, n:func.n, tot:func.tot};
+
+  var neuroIds=["c_quema","c_electr","c_calamb","c_hormig","c_dormido","c_roce","c_frio"];
+  var nn=0, nc=0;
+  for(var i=0;i<neuroIds.length;i++){ var v=num(neuroIds[i]); if(v!==null){ nc++; if(v===1) nn++; } }
+  I.neuro = {v: nc? nn:null, n:nc, tot:7};
+
+  I.somat = media(["f_conciliar","f_desperta","f_descanso","f_energia","f_apetito","f_concentr"]);
+  I.apoyo = media(["h_familia_cerca","h_contacto","h_confianza","h_acompana","h_cuidados"]);
+  I.soledad = media(["h_soledad","h_entienden","h_carga"]);
+  I.econ = media(["i_llegar","i_gastos_salud"]);
+  I.hogar = media(["i_escaleras","i_bano","i_transporte"]);
+  I.catastr = media(["k_pensando","k_peor","k_insoport","k_esperar"]);
+  I.autoefic = media(["k_puedo","k_planes"]);
+  I.emo = media(["l_animo","l_interes","l_nervios","l_irrit","l_futuro"]);
+  I.trauma = media(["l_recuerdos","l_evito","l_alerta"]);
+
+  /* --- banderas --- */
+  var rojas=[], ambar=[], verdes=[];
+
+  if(I.intensidad.v!==null && I.intensidad.v>=7) ambar.push("Intensidad media del dolor elevada ("+f1(I.intensidad.v)+"/10).");
+  if(I.interf.v!==null && I.interf.v>=7) rojas.push("Interferencia funcional severa ("+f1(I.interf.v)+"/10): el dolor condiciona la práctica totalidad de las áreas vitales.");
+  else if(I.interf.v!==null && I.interf.v>=5) ambar.push("Interferencia funcional moderada ("+f1(I.interf.v)+"/10).");
+  if(I.func.v!==null && I.func.v>=60) rojas.push("Discapacidad funcional alta del miembro afecto ("+f1(I.func.v)+"%): dependencia para actividades básicas.");
+  else if(I.func.v!==null && I.func.v>=35) ambar.push("Discapacidad funcional moderada ("+f1(I.func.v)+"%).");
+  if(I.neuro.v!==null && I.neuro.v>=4) verdes.push("Cribado positivo de componente neuropático ("+I.neuro.v+"/7 descriptores): coherente con la indicación de neuromodulación.");
+  if(R.a_otras_zonas==="2") ambar.push("Extensión del dolor a zonas ajenas a la lesión inicial: valorar sensibilización central y ajustar expectativas del dispositivo.");
+  if(I.somat.v!==null && I.somat.v>=2.5) ambar.push("Carga somático-vegetativa marcada (sueño, energía, concentración): "+f1(I.somat.v)+"/4.");
+
+  if(R.h_convive==="solo") ambar.push("Convive solo.");
+  if(R.h_cuidados==="0"||R.h_cuidados==="1") rojas.push("SOPORTE POSTOPERATORIO INSUFICIENTE: no dispone de acompañamiento domiciliario tras la intervención. Requiere plan explícito antes de programar.");
+  if(R.h_acompana==="0") rojas.push("Sin acompañante disponible para citas o intervención.");
+  if(I.apoyo.v!==null && I.apoyo.v<=1.2) rojas.push("Índice de apoyo social muy bajo ("+f1(I.apoyo.v)+"/3).");
+  else if(I.apoyo.v!==null && I.apoyo.v<=2) ambar.push("Índice de apoyo social reducido ("+f1(I.apoyo.v)+"/3).");
+  if(I.soledad.v!==null && I.soledad.v>=2.5) ambar.push("Vivencia de soledad e incomprensión elevada ("+f1(I.soledad.v)+"/4).");
+
+  if(R.i_gastos_salud==="1") rojas.push("Ha renunciado a tratamiento o desplazamiento por motivos económicos: riesgo directo para la adherencia al protocolo del dispositivo.");
+  if(R.i_llegar==="3") rojas.push("Situación económica crítica (no llega a fin de mes, con deudas).");
+  else if(R.i_llegar==="2") ambar.push("Dificultad económica significativa.");
+  if(R.i_transporte==="3") rojas.push("Dificultades graves de desplazamiento al centro: compromete el seguimiento y las revisiones del dispositivo.");
+  if(R.i_bano==="2"||R.i_escaleras==="2") ambar.push("Vivienda no adaptada a la limitación funcional (baño y/o accesos).");
+  if(R.i_vivienda==="inest") rojas.push("Situación de vivienda inestable.");
+
+  if(R.g_rescate==="3"||R.g_rescate==="4") ambar.push("Uso muy frecuente de analgesia de rescate: valorar patrón de consumo y refractariedad.");
+  if(R.g_alcohol==="3"||R.g_otras_sust==="2") rojas.push("Indicadores de consumo de riesgo: requiere exploración específica (criterio de cribado para neuromodulación).");
+  else if(R.g_alcohol==="2"||R.g_otras_sust==="1") ambar.push("Consumo a valorar en entrevista.");
+
+  if(I.catastr.v!==null && I.catastr.v>=3) rojas.push("Catastrofismo elevado ("+f1(I.catastr.v)+"/4): predictor de peor respuesta a la neuromodulación. Indicación de trabajo cognitivo previo.");
+  else if(I.catastr.v!==null && I.catastr.v>=2.2) ambar.push("Catastrofismo moderado ("+f1(I.catastr.v)+"/4).");
+  if(I.autoefic.v!==null && I.autoefic.v>=3) ambar.push("Autoeficacia y actividad conductual bajas: vida en suspenso a la espera de la resolución del dolor.");
+  if(R.k_esperar==="4"||R.k_esperar==="3") ambar.push("Patrón de espera pasiva («esperar a que se quite el dolor para retomar la vida»).");
+  if(R.k_rhb==="0") ambar.push("Dificultades de adherencia autoinformadas.");
+  else if(R.k_rhb==="3") verdes.push("Adherencia terapéutica autoinformada alta.");
+
+  if(I.emo.v!==null && I.emo.v>=3) rojas.push("Carga emocional elevada ("+f1(I.emo.v)+"/4): explorar en entrevista y contrastar con el PAI.");
+  else if(I.emo.v!==null && I.emo.v>=2.2) ambar.push("Carga emocional moderada ("+f1(I.emo.v)+"/4).");
+  if(R.l_futuro==="4"||R.l_futuro==="3") rojas.push("Desesperanza: EXPLORACIÓN DE RIESGO EN ENTREVISTA OBLIGATORIA (bloque P).");
+  if(I.trauma.v!==null && I.trauma.v>=2.5) ambar.push("Sintomatología postraumática relevante ("+f1(I.trauma.v)+"/4): valorar cribado específico.");
+
+  if(R.m_objetivo && R.m_objetivo!=="dolor") rojas.push("EXPECTATIVA DESAJUSTADA sobre la finalidad del dispositivo: el paciente no identifica el objetivo analgésico. Requiere reinformación antes del consentimiento.");
+  if(R.m_cuanto==="3"||R.m_cuanto==="4") rojas.push("Expectativa de resultado irrealista (ausencia total de dolor o restitución previa al accidente). Calibrar antes de la fase de prueba.");
+  if(R.m_prueba==="0") ambar.push("Desconoce la existencia de la fase de prueba y su resultado no garantizado.");
+  if(R.m_si_no==="3") rojas.push("Ausencia de plan alternativo ante el fracaso de la prueba («sería el fin»): riesgo de descompensación. Trabajo psicológico previo indicado.");
+  else if(R.m_si_no==="2") ambar.push("Tolerancia baja al posible fracaso de la fase de prueba.");
+  if(R.m_decision==="0") rojas.push("Percepción de presión externa en la decisión: revisar voluntariedad del consentimiento.");
+  else if(R.m_decision==="3") verdes.push("Decisión autónoma, clara y asumida.");
+  if(R.m_explic==="3"&&R.m_objetivo==="dolor") verdes.push("Comprensión adecuada del procedimiento y de su finalidad.");
+
+  if(R.n_idioma==="no2") ambar.push("Español no es lengua materna: interpretar autoinformes con cautela y verificar comprensión del consentimiento con mediación idiomática.");
+  if(R.n_entendido==="2"||R.n_entendido==="3") rojas.push("Dificultades de comprensión del cuestionario: validez del autoinforme comprometida.");
+  if(R.n_sincero==="2") ambar.push("El paciente reconoce haber omitido información: leer el perfil como suelo y no como techo.");
+
+  if(!rojas.length && !ambar.length) verdes.push("No se identifican banderas de alerta en el cribado psicosocial.");
+
+  return {I:I, rojas:rojas, ambar:ambar, verdes:verdes};
+}
+
+function corregir(){
+  var c = calcular();
+  pintar(c.I, c.rojas, c.ambar, c.verdes);
+}
+
+function pintar(I, rojas, ambar, verdes){
+  var out = document.getElementById("resultado");
+  out.innerHTML = "";
+  out.style.display = "block";
+  document.getElementById("formulario").style.display = "none";
+  document.querySelector(".intro").style.display = "none";
+
+  var t1 = el("div","tarjeta");
+  t1.appendChild(el("h3","","Índices de corrección"));
+  var filas = [
+    ["Intensidad media del dolor (0–10)", I.intensidad, f1(I.intensidad.v), sem(I.intensidad.v,[5,7])],
+    ["Interferencia funcional (0–10)", I.interf, f1(I.interf.v), sem(I.interf.v,[5,7])],
+    ["Discapacidad del miembro afecto (%)", I.func, f1(I.func.v)+"%", sem(I.func.v,[35,60])],
+    ["Descriptores neuropáticos (0–7)", I.neuro, I.neuro.v===null?"—":I.neuro.v+"/7", I.neuro.v===null?"sg":(I.neuro.v>=4?"sv":"sa")],
+    ["Carga somático-vegetativa (0–4)", I.somat, f1(I.somat.v), sem(I.somat.v,[2,3])],
+    ["Apoyo social percibido (0–3)", I.apoyo, f1(I.apoyo.v), I.apoyo.v===null?"sg":(I.apoyo.v<=1.2?"sr":(I.apoyo.v<=2?"sa":"sv"))],
+    ["Soledad e incomprensión (0–4)", I.soledad, f1(I.soledad.v), sem(I.soledad.v,[2,3])],
+    ["Vulnerabilidad económica (0–3)", I.econ, f1(I.econ.v), sem(I.econ.v,[1,2])],
+    ["Barreras del hogar y desplazamiento (0–3)", I.hogar, f1(I.hogar.v), sem(I.hogar.v,[1,2])],
+    ["Catastrofismo ante el dolor (0–4)", I.catastr, f1(I.catastr.v), sem(I.catastr.v,[2.2,3])],
+    ["Autoeficacia / actividad (0–4, invertido)", I.autoefic, f1(I.autoefic.v), sem(I.autoefic.v,[2,3])],
+    ["Malestar emocional (0–4)", I.emo, f1(I.emo.v), sem(I.emo.v,[2.2,3])],
+    ["Sintomatología postraumática (0–4)", I.trauma, f1(I.trauma.v), sem(I.trauma.v,[2,3])]
+  ];
+  for(var i=0;i<filas.length;i++){
+    var f = filas[i];
+    var d = el("div","ind");
+    d.appendChild(el("span","sem "+f[3]));
+    var nm = el("span","nom", f[0]);
+    if(f[1].n < f[1].tot) nm.appendChild(el("small","", " ("+f[1].n+"/"+f[1].tot+" ítems)"));
+    d.appendChild(nm);
+    d.appendChild(el("span","val", f[2]));
+    t1.appendChild(d);
+  }
+  out.appendChild(t1);
+
+  var t2 = el("div","tarjeta");
+  t2.appendChild(el("h3","","Banderas para la valoración de idoneidad"));
+  function pinta(arr, cls){ for(var i=0;i<arr.length;i++){ t2.appendChild(el("div","bandera "+cls, arr[i])); } }
+  pinta(rojas,"b-r"); pinta(ambar,"b-a"); pinta(verdes,"b-v");
+  out.appendChild(t2);
+
+  var t3 = el("div","tarjeta");
+  t3.appendChild(el("h3","","Resumen para el informe"));
+  var ta = el("textarea"); ta.id="salida"; ta.value = texto(I, rojas, ambar, verdes);
+  t3.appendChild(ta);
+  var bc = el("button","btn bp","Copiar resumen");
+  bc.style.marginTop="12px";
+  bc.addEventListener("click", function(){
+    ta.select(); ta.setSelectionRange(0,999999);
+    var ok=false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok=false; }
+    if(!ok && navigator.clipboard){ navigator.clipboard.writeText(ta.value); ok=true; }
+    toast(ok? "Resumen copiado":"Seleccione y copie manualmente");
+  });
+  t3.appendChild(bc);
+  out.appendChild(t3);
+
+  var bv = el("button","btn bs","Volver al cuestionario");
+  bv.addEventListener("click", function(){
+    out.style.display="none";
+    document.getElementById("formulario").style.display="block";
+    document.querySelector(".intro").style.display="block";
+    window.scrollTo(0,0);
+  });
+  out.appendChild(bv);
+  window.scrollTo(0,0);
+}
+
+function texto(I, rojas, ambar, verdes){
+  var L = [];
+  var hoy = new Date();
+  var dd = ("0"+hoy.getDate()).slice(-2)+"/"+("0"+(hoy.getMonth()+1)).slice(-2)+"/"+hoy.getFullYear();
+  L.push("CUESTIONARIO DE VALORACIÓN DEL DOLOR CRÓNICO Y CONTEXTO PSICOSOCIAL");
+  L.push("Administrado el "+dd+" · autoinforme complementario a la entrevista clínica y al PAI");
+  L.push("");
+  L.push("CARACTERIZACIÓN DEL DOLOR");
+  L.push("Intensidad media (media de dolor actual, habitual, peor y mejor de la última semana): "+f1(I.intensidad.v)+"/10.");
+  if(I.neuro.v!==null) L.push("Descriptores de perfil neuropático reconocidos: "+I.neuro.v+" de 7"+(I.neuro.v>=4?" (cribado positivo, congruente con la indicación de neuromodulación)":"")+".");
+  L.push("Interferencia funcional global: "+f1(I.interf.v)+"/10.");
+  L.push("Discapacidad autoinformada del miembro afecto: "+f1(I.func.v)+"%.");
+  if(R.e_dejado) L.push("Actividad significativa abandonada: "+R.e_dejado);
+  L.push("");
+  L.push("REPERCUSIÓN SOMÁTICA Y EMOCIONAL");
+  L.push("Carga somático-vegetativa (sueño, energía, apetito, concentración): "+f1(I.somat.v)+"/4.");
+  L.push("Malestar emocional autoinformado: "+f1(I.emo.v)+"/4. Sintomatología postraumática: "+f1(I.trauma.v)+"/4.");
+  L.push("Catastrofismo ante el dolor: "+f1(I.catastr.v)+"/4. Autoeficacia y actividad conductual (invertido): "+f1(I.autoefic.v)+"/4.");
+  L.push("");
+  L.push("CONTEXTO PSICOSOCIAL");
+  L.push("Apoyo social percibido: "+f1(I.apoyo.v)+"/3. Vivencia de soledad: "+f1(I.soledad.v)+"/4.");
+  L.push("Vulnerabilidad económica: "+f1(I.econ.v)+"/3. Barreras de vivienda y desplazamiento: "+f1(I.hogar.v)+"/3.");
+  L.push("");
+  L.push("EXPECTATIVAS Y COMPRENSIÓN DEL PROCEDIMIENTO");
+  var mo = {dolor:"reducción del dolor (adecuada)", mover:"recuperación de la movilidad (desajustada)", sensib:"recuperación de la sensibilidad (desajustada)", curar:"curación de la lesión nerviosa (desajustada)", nose2:"no identificada"};
+  if(R.m_objetivo) L.push("Finalidad del dispositivo identificada por el paciente: "+mo[R.m_objetivo]+".");
+  var mc = {"0":"mejoría parcial","1":"reducción aproximada del 50%","2":"reducción casi completa","3":"ausencia total de dolor","4":"restitución al estado previo al accidente"};
+  if(R.m_cuanto) L.push("Expectativa de resultado: "+mc[R.m_cuanto]+".");
+  var md = {"3":"autónoma y firme","2":"autónoma con dudas normales","1":"guiada por recomendación externa","0":"con percepción de presión externa"};
+  if(R.m_decision) L.push("Naturaleza de la decisión: "+md[R.m_decision]+".");
+  if(R.m_miedo) L.push("Principal preocupación expresada: "+R.m_miedo);
+  if(R.m_esperanza) L.push("Objetivo vital que el paciente vincula a la mejoría: "+R.m_esperanza);
+  L.push("");
+  L.push("VALIDEZ DE LA ADMINISTRACIÓN");
+  L.push("Lengua materna española: "+(R.n_idioma==="no2"?"no":(R.n_idioma==="si2"?"sí":"no consta"))+". Comprensión del cuestionario: "+
+    ({"0":"completa","1":"casi completa","2":"con dificultad","3":"insuficiente"}[R.n_entendido]||"no consta")+".");
+  L.push("Cumplimentación: "+({no3:"autónoma", si3:"con ayuda de un tercero", prof:"asistida por profesional"}[R.n_ayuda]||"no consta")+".");
+  L.push("");
+  if(rojas.length){ L.push("BANDERAS DE ALERTA"); for(var i=0;i<rojas.length;i++) L.push("· "+rojas[i]); L.push(""); }
+  if(ambar.length){ L.push("ASPECTOS A VALORAR"); for(var j=0;j<ambar.length;j++) L.push("· "+ambar[j]); L.push(""); }
+  if(verdes.length){ L.push("INDICADORES FAVORABLES"); for(var k=0;k<verdes.length;k++) L.push("· "+verdes[k]); L.push(""); }
+  L.push("Instrumento de apoyo a la entrevista clínica. Los índices son descriptivos y no diagnósticos;");
+  L.push("su interpretación corresponde al profesional y debe realizarse por convergencia con la");
+  L.push("exploración clínica y con el resto del protocolo psicométrico.");
+  return L.join("\n");
+}
+
+function toast(m){
+  var t = document.getElementById("toast");
+  t.textContent = m; t.classList.add("on");
+  setTimeout(function(){ t.classList.remove("on"); }, 1900);
+}
+
+/* ============ ENVÍO DEL RESUMEN ============ */
+function faltantes(){
+  var f = [];
+  if(!R.o_nombre) f.push("su nombre");
+  if(!R.o_consent) f.push("la autorización de envío");
+  return f;
+}
+
+function construirResumen(){
+  var I = calcular();
+  return {txt: texto(I.I, I.rojas, I.ambar, I.verdes), I:I};
+}
+
+/* Mensaje que el paciente ve y envía: datos descriptivos, sin interpretación clínica */
+function mensajeWA(I){
+  var L = [];
+  var op = function(id, mapa){ return R[id]? (mapa[R[id]] || R[id]) : "no contesta"; };
+  L.push("CUESTIONARIO DE DOLOR CRÓNICO");
+  L.push(R.o_nombre + (R.o_caso? " · Caso " + R.o_caso : "") + " · " + fechaHoy());
+  L.push("");
+  L.push("DOLOR");
+  var par = function(pares){
+    var t = [];
+    for(var i=0;i<pares.length;i++){ if(pares[i][1] !== null) t.push(pares[i][0] + " " + f1(pares[i][1]) + pares[i][2]); }
+    return t.length? t.join(" · ") : null;
+  };
+  var ln = function(v){ if(v) L.push(v); };
+  ln(par([["Intensidad media", I.intensidad.v, "/10"], ["Interferencia", I.interf.v, "/10"]]));
+  ln(par([["Dificultad con manos y actividades:", I.func.v, "%"]]));
+  if(I.neuro.v !== null) L.push("Descriptores de dolor nervioso: " + I.neuro.v + "/7");
+  L.push("Tiempo de evolución: " + op("a_tiempo", {"0":"<6 meses","1":"6-12 meses","2":"1-2 años","3":">2 años"}));
+  L.push("");
+  L.push("REPERCUSIÓN");
+  ln(par([["Sueño y energía", I.somat.v, "/4"], ["Estado de ánimo", I.emo.v, "/4"]]));
+  ln(par([["Afrontamiento del dolor", I.catastr.v, "/4"], ["Actividad", I.autoefic.v, "/4"]]));
+  ln(par([["Recuerdos del accidente", I.trauma.v, "/4"]]));
+  L.push("");
+  L.push("ENTORNO");
+  L.push("Convivencia: " + op("h_convive", {solo:"vive solo", pareja:"con pareja", pareja_hijos:"con pareja e hijos", hijos:"con hijos", familia:"con familiares", compa:"piso compartido", otro3:"otra"}));
+  ln(par([["Apoyo social", I.apoyo.v, "/3"], ["Soledad", I.soledad.v, "/4"]]));
+  L.push("Acompañante para la intervención: " + op("h_acompana", {"3":"sí","2":"sí, con dificultad","1":"solo si es necesario","0":"no"}));
+  L.push("Ayuda en casa tras la intervención: " + op("h_cuidados", {"3":"acompañado","2":"alguien vendría","1":"visitas puntuales","0":"estaría solo"}));
+  ln(par([["Economía", I.econ.v, "/3"], ["Vivienda y desplazamiento", I.hogar.v, "/3"]]));
+  L.push("");
+  L.push("EL DISPOSITIVO");
+  L.push("Para qué cree que sirve: " + op("m_objetivo", {dolor:"reducir el dolor", mover:"recuperar movilidad", sensib:"recuperar sensibilidad", curar:"curar el nervio", nose2:"no lo sabe"}));
+  L.push("Espera: " + op("m_cuanto", {"0":"mejoría parcial","1":"reducción del 50%","2":"reducción casi completa","3":"quedarse sin dolor","4":"volver al estado previo"}));
+  L.push("Conoce la fase de prueba: " + op("m_prueba", {"2":"sí","1":"algo","0":"no"}));
+  L.push("Decisión: " + op("m_decision", {"3":"propia y clara","2":"propia con dudas","1":"por recomendación","0":"se siente presionado"}));
+  if(R.m_miedo)     L.push("Le preocupa: " + R.m_miedo);
+  if(R.m_esperanza) L.push("Querría volver a: " + R.m_esperanza);
+  if(R.e_dejado)    L.push("Ha dejado de hacer: " + R.e_dejado);
+  L.push("");
+  L.push("CUMPLIMENTACIÓN");
+  L.push("Lengua materna española: " + op("n_idioma", {si2:"sí", no2:"no"}) + " · Comprensión: " +
+    op("n_entendido", {"0":"completa","1":"casi completa","2":"con dificultad","3":"insuficiente"}));
+  L.push("Rellenado: " + op("n_ayuda", {no3:"solo", si3:"con ayuda", prof:"asistido"}));
+  if(R.n_anadir) L.push("Añade: " + R.n_anadir);
+  return L.join("\n");
+}
+
+function mostrarGracias(){
+  document.getElementById("formulario").style.display = "none";
+  document.querySelector(".intro").style.display = "none";
+  document.getElementById("resultado").style.display = "none";
+  document.getElementById("gracias").style.display = "block";
+  var bw = document.getElementById("btnWA"); if(bw) bw.style.display = "none";
+  window.scrollTo(0,0);
+}
+
+function fechaHoy(){
+  var d = new Date();
+  return ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+"/"+d.getFullYear();
+}
+
+function abrirMailto(asunto, cuerpo){
+  var url = "mailto:"+EMAIL_DESTINO+"?subject="+encodeURIComponent(asunto)+"&body="+encodeURIComponent(cuerpo);
+  if(url.length > 1900){
+    url = "mailto:"+EMAIL_DESTINO+"?subject="+encodeURIComponent(asunto)+
+          "&body="+encodeURIComponent("El resumen completo está copiado en el portapapeles. Péguelo aquí antes de enviar (mantener pulsado y «Pegar»).");
+  }
+  window.location.href = url;
+}
+
+function copiarTexto(t){
+  try{
+    var ta = document.createElement("textarea");
+    ta.value = t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,999999);
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if(!ok && navigator.clipboard) navigator.clipboard.writeText(t);
+    return true;
+  }catch(e){
+    if(navigator.clipboard){ navigator.clipboard.writeText(t); return true; }
+    return false;
+  }
+}
+
+function enviar(){
+  var f = faltantes();
+  if(f.length){
+    var secs = document.querySelectorAll(".sec");
+    if(secs.length) secs[secs.length-1].classList.remove("cerrada");
+    if(secs.length) secs[secs.length-1].scrollIntoView({behavior:"smooth", block:"start"});
+    toast("Falta "+f.join(" y ")+" (último bloque)");
+    return;
+  }
+  if(R.o_consent === "no"){
+    toast("Guarde o imprima el cuestionario y entréguelo en consulta");
+    return;
+  }
+
+  var res = construirResumen();
+  var cuerpo = "Paciente: "+R.o_nombre+"\nCaso/Historia: "+(R.o_caso||"no indicado")+"\nFecha: "+fechaHoy()+"\n\n"+res.txt;
+  var asunto = "Cuestionario de dolor crónico · "+R.o_nombre+" · "+fechaHoy();
+
+  copiarTexto(cuerpo);
+
+  var datos = "form-name="+encodeURIComponent(FORM_NETLIFY)+
+              "&paciente="+encodeURIComponent(R.o_nombre)+
+              "&caso="+encodeURIComponent(R.o_caso||"")+
+              "&fecha="+encodeURIComponent(fechaHoy())+
+              "&resumen="+encodeURIComponent(res.txt);
+
+  var btn = document.getElementById("btnEnviar");
+  btn.disabled = true; btn.textContent = "Enviando…";
+
+  var hecho = false;
+  function fallback(){
+    if(hecho) return; hecho = true;
+    btn.disabled = false; btn.textContent = "Enviar a mi psicólogo";
+    toast("Abriendo su correo…");
+    setTimeout(function(){ abrirMailto(asunto, cuerpo); }, 500);
+    setTimeout(mostrarGracias, 2200);
+  }
+
+  if(location.protocol === "file:"){ fallback(); return; }
+
+  try{
+    var x = new XMLHttpRequest();
+    x.open("POST", "/", true);
+    x.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    x.timeout = 8000;
+    x.onload = function(){
+      if(hecho) return;
+      if(x.status >= 200 && x.status < 400){ hecho = true; mostrarGracias(); }
+      else fallback();
+    };
+    x.onerror = fallback;
+    x.ontimeout = fallback;
+    x.send(datos);
+  }catch(e){ fallback(); }
+}
+
+function enviarWA(){
+  var f = faltantes();
+  if(f.length){
+    var secs = document.querySelectorAll(".sec");
+    if(secs.length){
+      secs[secs.length-1].classList.remove("cerrada");
+      secs[secs.length-1].scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    toast("Falta " + f.join(" y ") + " (último bloque)");
+    return;
+  }
+  if(R.o_consent === "no"){
+    toast("Imprima el cuestionario y entréguelo en consulta");
+    return;
+  }
+
+  var c = calcular();
+  var msg = mensajeWA(c.I);
+
+  /* copia de respaldo del resumen técnico completo al correo, en segundo plano */
+  try{
+    if(location.protocol !== "file:"){
+      var datos = "form-name=" + encodeURIComponent(FORM_NETLIFY) +
+                  "&paciente=" + encodeURIComponent(R.o_nombre) +
+                  "&caso=" + encodeURIComponent(R.o_caso || "") +
+                  "&fecha=" + encodeURIComponent(fechaHoy()) +
+                  "&resumen=" + encodeURIComponent(texto(c.I, c.rojas, c.ambar, c.verdes));
+      var x = new XMLHttpRequest();
+      x.open("POST", "/", true);
+      x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      x.timeout = 6000;
+      x.send(datos);
+    }
+  }catch(e){}
+
+  copiarTexto(msg);
+  var url = "https://wa.me/" + WHATSAPP_DESTINO + "?text=" + encodeURIComponent(msg);
+  var w = window.open(url, "_blank");
+  if(!w) window.location.href = url;
+  setTimeout(mostrarGracias, 1600);
+}
+
+document.getElementById("btnWA").addEventListener("click", enviarWA);
+
+var lm = document.getElementById("linkMail");
+if(lm) lm.addEventListener("click", enviar);
+
+if(MODO_PRO){
+  document.getElementById("btnCorregir").style.display = "block";
+  document.getElementById("btnCorregir").addEventListener("click", corregir);
+}
+document.getElementById("btnImprimir").addEventListener("click", function(){
+  var secs = document.querySelectorAll(".sec");
+  for(var i=0;i<secs.length;i++) secs[i].classList.remove("cerrada");
+  window.print();
+});
+</script>
+</body>
+</html>

@@ -88,7 +88,27 @@ tr.hot td{background:#fbf1ee}
 @media(max-width:640px){.kv{grid-template-columns:1fr}}
 .legend{font-size:12px;color:var(--muted);margin-top:6px}
 svg{max-width:100%;height:auto}
-@media print{ header.top,.tabs,.noprint{display:none!important} .card{box-shadow:none;border:1px solid #ccc} body{background:#fff} }
+/* Diálogo Guardar caso */
+.modalov{position:fixed;inset:0;background:rgba(20,30,27,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modalbox{background:#fff;border-radius:14px;max-width:560px;width:100%;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+input[type=file]{font:inherit;font-size:13px}
+/* Devolución para la pareja (documento pensado para compartir con ambos) */
+.creport{line-height:1.6}
+.creport .chead{background:linear-gradient(135deg,#5F8377,#496a5e);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:8px}
+.creport .chead .ck{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;font-weight:700}
+.creport .chead h2{color:#fff;font-size:26px;margin:6px 0 4px;text-wrap:balance}
+.creport .chead p{margin:0;opacity:.96}
+.creport section{border-left:3px solid #cfe0d8;padding:2px 0 2px 16px;margin:22px 0}
+.creport h3{font-size:17px;color:#496a5e;margin:0 0 6px}
+.creport ul{margin:6px 0;padding-left:20px}.creport li{margin:6px 0}
+.creport .step{display:flex;gap:12px;margin:9px 0;align-items:flex-start}
+.creport .step .n{flex:0 0 26px;height:26px;border-radius:50%;background:#eaf1ee;color:#496a5e;font-weight:800;
+  display:flex;align-items:center;justify-content:center;font-size:13px}
+.creport .closing{background:#f2f7f5;border:1px solid #dbe6e1;border-radius:14px;padding:16px 18px;font-size:16px;color:#2f473f}
+.creport .foot{color:#69706a;font-size:13px;margin-top:18px}
+@media print{ header.top,.tabs,.noprint{display:none!important} .card{box-shadow:none;border:1px solid #ccc} body{background:#fff}
+  .creport .chead{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
 </style>
 </head>
 <body>
@@ -96,6 +116,7 @@ svg{max-width:100%;height:auto}
   <div class="in">
     <div class="brand">APRENS · Mapa Clínico de Pareja<small>TEC · Co-AIS — panel profesional</small></div>
     <div class="sp"></div>
+    <button id="btnSave" type="button">Guardar caso</button>
     <button id="btnClear" type="button">Borrar caso</button>
   </div>
 </header>
@@ -128,6 +149,18 @@ svg{max-width:100%;height:auto}
         <button class="btn ghost" id="btnDemo" type="button">Cargar ejemplo (demostración)</button>
       </div>
       <p class="legend">Herramienta de apoyo clínico. No emite diagnósticos ni decide sobre la continuidad de la relación. Todas las hipótesis y propuestas deben ser validadas por la profesional.</p>
+    </div>
+    <div class="card">
+      <h1>Continuar un caso guardado</h1>
+      <p class="muted">Importa un caso que guardaste antes (con «Guardar caso») para seguir donde lo dejaste, sin volver a pegar las evaluaciones.</p>
+      <div class="row">
+        <input type="file" id="fileImport" accept=".json,application/json" aria-label="Archivo de caso guardado">
+        <button class="btn ghost" id="btnRecoverLS" type="button">Recuperar de este dispositivo</button>
+      </div>
+      <label class="lbl" for="pasteImport" style="margin-top:10px">…o pega aquí el caso guardado</label>
+      <textarea id="pasteImport" placeholder="Pega el contenido del archivo de caso…"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="btnImport" type="button">Importar caso</button></div>
+      <p id="importMsg" class="note warn hide" role="status" aria-live="polite"></p>
     </div>
   </section>
 
@@ -677,6 +710,80 @@ function baseSessions(){
   ].map(function(s,i){ return {n:i+1, tema:s.t, fecha:"", objetivo:"", episodio:"", activador:"",
     aSiente:"", bSiente:"", ciclo:"", ais:"", interv:"", ensayo:"", tarea:"", indicador:"", obs:"", coord:false, coordTxt:""}; });
 }
+/* ---- Autocompletado de fichas de sesión (propuesta editable) -----------
+   Según el tema de la sesión y la información del caso (ciclo, objetivos, plan),
+   propone contenido para cada apartado. Solo rellena CAMPOS VACÍOS: nunca pisa
+   lo que la profesional ya haya escrito. Todo queda editable.               */
+function autofillSession(s){
+  var A=CASE.A, B=CASE.B, c=CASE.cycle;
+  var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
+  var t=(s.tema||"").toLowerCase();
+  var aC=(A.ciclo||{}), bC=(B.ciclo||{});
+  var aLine=[aC.emocion,aC.interprete,aC.hiciste].filter(Boolean).join(" · ");
+  var bLine=[bC.emocion,bC.interprete,bC.hiciste].filter(Boolean).join(" · ");
+  var P={};
+  function withCycle(){ P.activador=c.activador; P.aSiente=aLine; P.bSiente=bLine; P.ciclo=cycleSentence(); }
+  if(/encuadre|mapa/.test(t)){
+    P.objetivo="Encuadre del proceso y devolución del mapa inicial (fortalezas, patrón y objetivos).";
+    P.interv="Psicoeducación del enfoque TEC/Co-AIS; encuadre y expectativas compartidas.";
+    P.ensayo="Devolución del mapa y del ciclo; recoger las reacciones de ambos.";
+    P.tarea="Observar (sin cambiar nada) un momento de tensión y cómo lo vive cada uno por dentro.";
+    P.indicador="Comprensión compartida del mapa y del encuadre.";
+  } else if(/ciclo/.test(t)){
+    withCycle();
+    P.objetivo="Reconocer juntos el ciclo de escalada y su función protectora (sin culpa).";
+    P.interv="Externalizar el ciclo; nombrar las protecciones de cada uno.";
+    P.ensayo="Reconstruir en consulta, paso a paso, un episodio reciente.";
+    P.tarea="Detectar el ciclo en un episodio y anotar el primer signo corporal.";
+    P.indicador="Capacidad de nombrar el ciclo en el momento.";
+  } else if(/ais|regulaci|escalada/.test(t)){
+    withCycle();
+    P.objetivo="Introducir AIS/Co-AIS para ampliar la latencia y frenar la escalada.";
+    P.ais="AIS: notar la sensación, permanecer unos segundos, elegir la respuesta. Co-AIS: poder regularse en presencia del otro.";
+    P.interv="Ampliación de la latencia sensación → elección.";
+    P.ensayo="Ejercicio de AIS guiado ante una activación leve evocada en consulta.";
+    P.tarea="Antes de responder en un roce cotidiano: 3 respiraciones + nombrar la sensación.";
+    P.indicador="Nº de escaladas frenadas con AIS.";
+  } else if(/comunic|honest/.test(t)){
+    P.objetivo="Practicar comunicación honesta en primera persona y escucha sin defenderse.";
+    P.interv="Peticiones en primera persona; escucha activa; validación.";
+    P.ensayo="Diálogo estructurado (hablante / escucha) sobre un tema de baja carga.";
+    P.tarea="Una conversación pautada en casa, con turnos, sobre un tema acordado.";
+    P.indicador="Conversaciones difíciles completadas sin ruptura.";
+  } else if(/l[ií]mit|necesidad/.test(t)){
+    P.objetivo="Diferenciar necesidad / deseo / petición / límite y sostenerlos con respeto.";
+    P.interv="Clarificación necesidad/deseo/petición/límite; entrenamiento asertivo.";
+    P.ensayo="Formular en consulta una petición y un límite reales.";
+    P.tarea="Expresar un límite con respeto y sostenerlo una vez.";
+    P.indicador="Límites sostenidos sin castigo.";
+  } else if(/prioritari|espec[ií]fic/.test(t)){
+    var g=appr[0];
+    P.objetivo= g ? ("Área prioritaria: "+catTitle(g.cat)+" — "+g.objetivo) : "Trabajar el área prioritaria del caso (a definir con la pareja).";
+    if(g){ P.interv=(INTERV[g.cat]||[]).slice(0,3).join(" · "); P.indicador=g.indicador||defIndicador(g.cat); }
+    P.tarea="Practicar en casa la conducta diana del objetivo prioritario.";
+  } else if(/modelo|acuerdo/.test(t)){
+    P.objetivo="Construir el modelo de relación propio y acuerdos explícitos en las áreas clave.";
+    P.interv="Negociación de acuerdos; contrato relacional revisable.";
+    P.ensayo="Negociar en consulta un acuerdo concreto en un área de discrepancia.";
+    P.tarea="Poner por escrito un acuerdo y probarlo una semana.";
+    P.indicador="Nº de acuerdos escritos y cumplidos.";
+  } else if(/reevalu|revis/.test(t)){
+    P.objetivo="Reevaluar avances (repetir escalas), revisar objetivos y siguientes pasos.";
+    P.interv="Revisión de indicadores; ajuste del plan.";
+    P.tarea="Repetir las escalas de seguimiento.";
+    P.indicador="Cambio en escalas clave respecto a la línea base.";
+  } else if(appr[0]){
+    var g0=appr[0]; P.objetivo="Avanzar en: "+g0.objetivo;
+    P.interv=(INTERV[g0.cat]||[]).slice(0,2).join(" · "); P.indicador=g0.indicador||defIndicador(g0.cat);
+  }
+  return P;
+}
+function fillSession(i){
+  var s=CASE.sessions[i], P=autofillSession(s), touched=0;
+  Object.keys(P).forEach(function(k){ if(P[k] && (!s[k] || !String(s[k]).trim())){ s[k]=P[k]; touched++; } });
+  return touched;
+}
+
 function tabSesiones(){
   // adaptar temas a objetivos aprobados (sugerencia)
   var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
@@ -684,7 +791,10 @@ function tabSesiones(){
     +'. Ajusta los temas de sesión a estos objetivos.</div>' : '';
   var list=CASE.sessions.map(function(s,i){ return sessionCard(s,i); }).join("");
   return card('<h1>Sesiones</h1><p class="muted">Propuesta inicial de 8 sesiones, adaptable. Cada ficha es editable.</p>'
-    +sug+'<button class="btn ghost mini" id="btnAddSes" type="button">+ Añadir sesión</button>')+list;
+    +sug
+    +'<div class="row"><button class="btn primary mini" id="btnFillAll" type="button">Autocompletar fichas (campos vacíos)</button>'
+    +'<button class="btn ghost mini" id="btnAddSes" type="button">+ Añadir sesión</button></div>'
+    +'<p class="legend">Propuesta a partir del caso (ciclo, objetivos, plan). Solo rellena lo vacío; revisa y edita antes de usar.</p>')+list;
 }
 function sessionCard(s,i){
   function ta(f,l){ return '<div class="field" style="margin:6px 0"><label class="lbl small">'+l+'</label>'
@@ -692,7 +802,8 @@ function sessionCard(s,i){
   function tx(f,l){ return '<div class="field" style="margin:6px 0"><label class="lbl small">'+l+'</label>'
     +'<input type="text" data-sf="'+f+'" data-si="'+i+'" value="'+esc(s[f])+'"></div>'; }
   return card('<div class="row" style="justify-content:space-between"><h3 style="margin:0">Sesión '+s.n+'</h3>'
-      +'<input type="text" data-sf="fecha" data-si="'+i+'" value="'+esc(s.fecha)+'" placeholder="Fecha" style="max-width:150px"></div>'
+      +'<div class="row"><button class="btn ghost mini" data-fillone="'+i+'" type="button">Autocompletar</button>'
+      +'<input type="text" data-sf="fecha" data-si="'+i+'" value="'+esc(s.fecha)+'" placeholder="Fecha" style="max-width:140px"></div></div>'
     +tx("tema","Tema")+tx("objetivo","Objetivo de sesión")+ta("episodio","Episodio analizado")+tx("activador","Activador")
     +'<div class="grid2">'+ta("aSiente","A: siente / interpreta / hace")+ta("bSiente","B: siente / interpreta / hace")+'</div>'
     +ta("ciclo","Ciclo")+ta("ais","AIS / Co-AIS")+ta("interv","Intervención")+ta("ensayo","Ensayo en consulta")
@@ -708,6 +819,15 @@ tabSesiones.after=function(){
   body.addEventListener("change",function(e){var t=e.target; if(t.getAttribute&&t.getAttribute("data-sf")==="coord"){ /* ya gestionado */ }});
   var add=el("btnAddSes"); if(add) add.addEventListener("click",function(){
     var n=CASE.sessions.length+1; CASE.sessions.push({n:n,tema:"",fecha:"",objetivo:"",episodio:"",activador:"",aSiente:"",bSiente:"",ciclo:"",ais:"",interv:"",ensayo:"",tarea:"",indicador:"",obs:"",coord:false,coordTxt:""}); openTab("sesiones"); });
+  // Autocompletar todas las fichas (solo campos vacíos)
+  var fillAll=el("btnFillAll"); if(fillAll) fillAll.addEventListener("click",function(){
+    var tot=0; CASE.sessions.forEach(function(s,i){ tot+=fillSession(i); });
+    openTab("sesiones");
+    if(!tot) alert("Las fichas ya tienen contenido en los campos que se autocompletan. (No se sobrescribe lo que ya has escrito.)");
+  });
+  // Autocompletar una sola ficha
+  body.addEventListener("click",function(e){ var t=e.target; var one=t.getAttribute&&t.getAttribute("data-fillone");
+    if(one!=null){ fillSession(+one); openTab("sesiones"); } });
 };
 
 /* ==========================================================================
@@ -767,19 +887,89 @@ function chartFor(key,label){
    PESTAÑA 13 · INFORME
    ========================================================================== */
 function tabExportar(){
-  return card('<h1>Informe clínico</h1><p class="muted">Genera un resumen estructurado editable. Revisa y valida antes de usarlo.</p>'
-    +'<div class="row"><button class="btn primary" id="btnReport" type="button">Generar resumen clínico</button>'
-    +'<button class="btn ghost" id="btnPrint" type="button">Imprimir / Guardar PDF</button>'
+  return card('<h1>Informes</h1><p class="muted">Dos documentos, editables antes de usarlos. Revisa y valida siempre el contenido.</p>'
+    +'<div class="row">'
+    +'<button class="btn primary" id="btnReport" type="button">Resumen clínico (para ti)</button>'
+    +'<button class="btn primary" id="btnCouple" type="button" style="background:#496a5e">Devolución para la pareja</button>'
+    +'</div>'
+    +'<div class="note info" style="margin-top:10px"><b>Resumen clínico</b>: uso profesional y coordinación (incluye seguridad si aplica). <b>Devolución para la pareja</b>: para compartir con ambos — cálida, clara y sin datos sensibles ni de seguridad.</div>'
+    +'<div class="row" style="margin-top:10px"><button class="btn ghost" id="btnPrint" type="button">Imprimir / Guardar PDF</button>'
     +'<button class="btn ghost" id="btnCopyR" type="button">Copiar texto</button></div>'
     +'<p id="repMsg" class="small muted" role="status" aria-live="polite"></p>'
     +'<div id="report" class="card" style="margin-top:12px" contenteditable="false"></div>');
 }
 tabExportar.after=function(){
-  el("btnReport").addEventListener("click",function(){ el("report").innerHTML=buildReport(); el("report").setAttribute("contenteditable","true"); });
-  el("btnPrint").addEventListener("click",function(){ if(!el("report").innerHTML){el("report").innerHTML=buildReport();} window.print(); });
-  el("btnCopyR").addEventListener("click",function(){ if(!el("report").innerHTML){el("report").innerHTML=buildReport();}
-    var txt=el("report").innerText; copyText(txt, el("repMsg")); });
+  function show(html){ el("report").innerHTML=html; el("report").setAttribute("contenteditable","true"); el("repMsg").textContent="Documento editable: puedes retocarlo aquí antes de imprimir o copiar."; window.scrollTo(0,document.body.scrollHeight); }
+  el("btnReport").addEventListener("click",function(){ show(buildReport()); });
+  el("btnCouple").addEventListener("click",function(){ show(buildCoupleReport()); });
+  el("btnPrint").addEventListener("click",function(){ if(!el("report").innerHTML){show(buildReport());} window.print(); });
+  el("btnCopyR").addEventListener("click",function(){ if(!el("report").innerHTML){show(buildReport());}
+    copyText(el("report").innerText, el("repMsg")); });
 };
+
+/* ---- DEVOLUCIÓN PARA LA PAREJA (documento para compartir) --------------
+   Solo contenido apto para ambos: fortalezas, patrón compartido (sin culpa),
+   objetivos aprobados, plan en lenguaje cercano y hoja de ruta de sesiones.
+   NUNCA incluye seguridad, datos privados de un miembro, ni discrepancias como
+   culpa. Editable por la profesional antes de compartir.                   */
+function catTitle(cat){ return ({REGULACION:"Calmar la escalada",COMUNICACION:"Comunicarnos mejor",
+  LIMITES:"Necesidades y límites",CONFIANZA:"Reconstruir la confianza",INTIMIDAD:"Cercanía e intimidad",
+  AUTONOMIA:"Autonomía y espacio propio",COOPERACION:"Funcionar como equipo",PROYECTO:"Nuestro proyecto",
+  DECISION:"Decidir con calma"})[cat]||"Nuestro trabajo"; }
+function coupleInterv(cat){ return ({
+  REGULACION:"Aprenderéis a notar antes cuándo el cuerpo se activa y a daros unos segundos (AIS) antes de responder, para que las discusiones no escalen.",
+  COMUNICACION:"Practicaréis decir lo que necesitáis en primera persona y escuchar al otro sin defenderos de inmediato.",
+  LIMITES:"Aprenderéis a pedir y sostener lo que necesitáis con respeto, y a aceptar los límites del otro.",
+  CONFIANZA:"Acordaréis formas concretas de transparencia e iréis soltando la necesidad de comprobar.",
+  INTIMIDAD:"Recuperaréis afecto y cercanía, y podréis hablar de intimidad sin presión.",
+  AUTONOMIA:"Cuidaréis el espacio propio de cada uno y aprenderéis a acompañaros por dentro sin depender solo del otro.",
+  COOPERACION:"Os repartiréis el día a día como equipo y resolveréis los problemas juntos.",
+  PROYECTO:"Iréis dibujando juntos qué relación queréis y con qué acuerdos.",
+  DECISION:"Os daréis tiempo para decidir con calma, desde lo que de verdad os importa."
+})[cat]||"Lo concretaremos juntos en sesión."; }
+
+function buildCoupleReport(){
+  var st=strengthsShared();
+  var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
+  var c=CASE.cycle;
+  // Fortalezas (en positivo, compartidas)
+  var fort=[];
+  st.valores.forEach(function(v){ fort.push("Compartís el valor de ser <b>"+esc(v.toLowerCase())+"</b>."); });
+  st.areas.forEach(function(a){ fort.push("Hoy vivís bien juntos: <b>"+esc(a.toLowerCase())+"</b>."); });
+  st.motivos.forEach(function(m){ fort.push(esc(m)); });
+  if(!fort.length) fort.push("En las primeras sesiones pondremos nombre, juntos, a lo que os sostiene como pareja.");
+  // Patrón compartido (sin culpa)
+  var patron = c.activador
+    ? "A veces, cuando "+esc((c.activador||"").toLowerCase())+", entre los dos se pone en marcha un mismo ciclo: "
+      +"uno tiende a "+esc((c.protA||"protegerse a su manera").toLowerCase())+" y el otro a "+esc((c.protB||"protegerse a su manera").toLowerCase())+". "
+      +"Sin quererlo, cada respuesta alimenta la del otro. <b>No es culpa de nadie</b>: es un patrón que aprenderéis a reconocer pronto y a frenar."
+    : "Miraremos juntos el patrón que se repite en los momentos difíciles, para reconocerlo pronto y poder frenarlo. No se trata de buscar culpables.";
+  // Objetivos
+  var goals = appr.length
+    ? "<ul>"+appr.map(function(g){ return "<li>"+esc(g.objetivo)+"</li>"; }).join("")+"</ul>"
+    : "<p>En las primeras sesiones definiremos juntos dos o tres objetivos concretos y realistas.</p>";
+  // Cómo lo haremos (plan en lenguaje cercano)
+  var comoItems={}; appr.forEach(function(g){ comoItems[g.cat]=true; });
+  var como = Object.keys(comoItems).length
+    ? "<ul>"+Object.keys(comoItems).map(function(cat){ return "<li><b>"+esc(catTitle(cat))+":</b> "+esc(coupleInterv(cat))+"</li>"; }).join("")+"</ul>"
+    : "<p>Combinaremos entender qué os pasa por dentro, aprender a calmar la escalada y practicar nuevas formas de hablaros y cuidaros.</p>";
+  // Hoja de ruta de sesiones
+  var ses = CASE.sessions.slice(0,8).map(function(s,i){
+    return '<div class="step"><div class="n">'+(i+1)+'</div><div>'+esc(s.tema||("Sesión "+(i+1)))+'</div></div>'; }).join("");
+
+  return '<div class="creport">'
+    +'<div class="chead"><div class="ck">APRENS · Mapa de Pareja</div>'
+      +'<h2>Vuestro resumen y plan de trabajo</h2>'
+      +'<p>Un mapa de dónde estáis y de cómo vamos a acompañaros en este proceso. Lo revisaremos y ajustaremos juntos.</p></div>'
+    +'<section><h3>Lo que os sostiene</h3><ul>'+fort.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></section>'
+    +'<section><h3>El patrón que vamos a trabajar</h3><p>'+patron+'</p></section>'
+    +'<section><h3>Hacia dónde vamos · nuestros objetivos</h3>'+goals+'</section>'
+    +'<section><h3>Cómo lo haremos</h3>'+como+'</section>'
+    +'<section><h3>Una hoja de ruta orientativa</h3><p class="muted small" style="margin-top:0">El orden y el número de sesiones se adaptan a vosotros.</p>'+ses+'</section>'
+    +'<div class="closing">El objetivo no es dejar de sentir, sino aprender a hacer sitio por dentro para poder <b>elegir cómo queréis trataros</b>, incluso cuando algo duele. Y recordad: no tenéis que poder con todo solos — para eso estamos.</div>'
+    +'<p class="foot">Documento de devolución para compartir. Es un resumen de trabajo, no un diagnóstico, y lo iremos ajustando a lo largo del proceso.</p>'
+    +'</div>';
+}
 function buildReport(){
   var A=CASE.A,B=CASE.B; var st=strengthsShared(); var hot=discrepList().filter(function(d){return d.hot;});
   var appr=CASE.goals.filter(function(g){return g.estado==="aprobado";});
@@ -825,6 +1015,62 @@ el("btnClear").addEventListener("click",function(){
   if(!confirm("¿Borrar el caso cargado? Se eliminarán todos los datos y ediciones de esta sesión.")) return;
   CASE=null; el("inA").value=""; el("inB").value=""; el("intakeMsg").classList.add("hide");
   el("panel").classList.add("hide"); el("intake").classList.remove("hide"); window.scrollTo(0,0);
+});
+
+/* ==========================================================================
+   GUARDAR / IMPORTAR CASO  (explícito, local — nada automático)
+   Guarda TODO el desarrollo (A, B, ciclo, objetivos, plan, sesiones, seguimiento)
+   en un archivo .json que la profesional custodia y puede volver a importar.
+   ========================================================================== */
+var CASE_LS="aprens_pareja_caso";
+function casePayload(){ return JSON.stringify({app:"APRENS_PAIR_CASE_V1",guardado:new Date().toISOString(),caso:CASE}); }
+function caseName(){ var id=((CASE&&CASE.A&&CASE.A.idPareja)||"caso").replace(/[^\w-]+/g,"_");
+  return "APRENS-pareja-"+id+"-"+new Date().toISOString().slice(0,10)+".json"; }
+el("btnSave").addEventListener("click",function(){
+  if(!CASE){ alert("No hay ningún caso cargado para guardar."); return; }
+  var txt=casePayload(), name=caseName();
+  try{ var blob=new Blob([txt],{type:"application/json"}); var u=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=u; a.download=name; document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(u); a.remove();},600); }catch(e){}
+  openSaveModal(txt,name);
+});
+function openSaveModal(txt,name){
+  var ov=document.createElement("div"); ov.className="modalov";
+  ov.innerHTML='<div class="modalbox"><h3 style="margin-top:0">Guardar caso</h3>'
+    +'<p class="small muted">Se ha descargado <b>'+esc(name)+'</b>. Guárdalo en tus registros; podrás <b>importarlo</b> más adelante para continuar sin volver a pegar las evaluaciones. Si la descarga no funciona, copia el texto de abajo y guárdalo tú.</p>'
+    +'<textarea class="mono" readonly aria-label="Datos del caso">'+esc(txt)+'</textarea>'
+    +'<div class="row" style="margin-top:10px">'
+    +'<button class="btn ghost mini" data-mc="copy" type="button">Copiar</button>'
+    +'<button class="btn ghost mini" data-mc="ls" type="button">Guardar en este dispositivo</button>'
+    +'<button class="btn primary mini" data-mc="close" type="button">Cerrar</button></div>'
+    +'<p class="small muted" data-mc="msg" role="status" aria-live="polite"></p></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener("click",function(e){
+    var a=e.target.getAttribute&&e.target.getAttribute("data-mc");
+    if(e.target===ov||a==="close"){ ov.remove(); return; }
+    if(!a) return; var msg=ov.querySelector('[data-mc="msg"]');
+    if(a==="copy") copyText(txt,msg);
+    if(a==="ls"){ try{ localStorage.setItem(CASE_LS,txt); msg.textContent="Guardado en este dispositivo. Al reabrir el panel podrás recuperarlo con «Recuperar de este dispositivo»."; }catch(e){ msg.textContent="No se pudo guardar en este navegador."; } }
+  });
+}
+function loadCaseObj(payload){
+  var d; try{ d=(typeof payload==="string")?JSON.parse(payload.replace(/^[^{]*/, "").replace(/[^}]*$/, "")):payload; }
+  catch(e){ return "No se reconoce el archivo/texto del caso."; }
+  var c=(d && d.app==="APRENS_PAIR_CASE_V1" && d.caso) ? d.caso : d;
+  if(!c || !c.A || !c.B) return "El archivo no contiene un caso válido (faltan las evaluaciones A/B).";
+  c.cycle=c.cycle||buildCycle(c.A,c.B); c.goals=c.goals||[]; c.sessions=c.sessions||baseSessions(); c.followups=c.followups||[];
+  CASE=c; el("intake").classList.add("hide"); el("panel").classList.remove("hide"); renderTabs(); openTab("general"); window.scrollTo(0,0);
+  return null;
+}
+function importFrom(txt){ var err=loadCaseObj(txt); var m=el("importMsg");
+  if(err){ m.className="note alert"; m.classList.remove("hide"); m.textContent=err; } }
+el("btnImport").addEventListener("click",function(){ importFrom(el("pasteImport").value); });
+el("fileImport").addEventListener("change",function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var r=new FileReader(); r.onload=function(){ importFrom(String(r.result)); }; r.readAsText(f); });
+el("btnRecoverLS").addEventListener("click",function(){
+  var raw=null; try{ raw=localStorage.getItem(CASE_LS); }catch(e){}
+  if(!raw){ var m=el("importMsg"); m.className="note warn"; m.classList.remove("hide"); m.textContent="No hay ningún caso guardado en este dispositivo."; return; }
+  importFrom(raw);
 });
 
 /* ==========================================================================

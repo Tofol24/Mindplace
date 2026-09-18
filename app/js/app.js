@@ -30,7 +30,7 @@
     { emoji:"🪜", label:"Superar miedos", desc:"Exposición gradual, paso a paso.",
       ids:["escalera_exposicion","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
-      ids:["retorno_trabajo","toco_desde_dentro"] },
+      ids:["retorno_trabajo","toco_desde_dentro","llave_de_paso"] },
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
       ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
@@ -63,6 +63,43 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  // «Los libros de Tòfol Villalonga»: enlaces de compra en Amazon (se abren fuera de la app).
+  // Son enlaces normales: no cargan nada externo dentro de la app (la CSP sigue intacta).
+  // Cada libro con su ASIN a la vista: los enlaces cortos (amzn.eu/d/...) no
+  // dejan ver a qué libro van y estaban desplazados una posición, así que cada
+  // ficha llevaba al libro anterior. Con la URL canónica se comprueba de un
+  // vistazo que el enlace es el de su ficha.
+  const LIBROS = [
+    { nombre:"Cría desde dentro", idioma:"Castellano", color:"#1F5F86",
+      desc:"El arte de acompañar a tus hijos conectando con tus propias sensaciones.",
+      kindle:"https://www.amazon.es/dp/B0FD9NS3PJ", papel:"https://www.amazon.es/dp/B0FDC5N8KM" },
+    { nombre:"Trasciende desde dentro", idioma:"Castellano", color:"#D99A1E",
+      desc:"La conciencia que acepta, transforma y trasciende.",
+      kindle:"https://www.amazon.es/dp/B0FD9NSFZW", papel:"https://www.amazon.es/dp/B0FDF628W3" },
+    { nombre:"Lidera tu mon(e)a", idioma:"Castellano", color:"#2B2926",
+      desc:"Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones.",
+      kindle:"https://www.amazon.es/dp/B0DW919TSR", papel:"https://www.amazon.es/dp/B0DW8R9ZBC" },
+    { nombre:"Lidera la teva mon(e)a", idioma:"Català", color:"#2B2926",
+      desc:"Estratègies pràctiques per reduir el sobrepensament, liderar la teva atenció i millorar les teves relacions.",
+      kindle:"https://www.amazon.es/dp/B0DW8ZQY19", papel:"https://www.amazon.es/dp/B0DWFMRFZW" },
+    { nombre:"Teoría del Efecto Consciente (TEC)", idioma:"Castellano", color:"#C23A3A",
+      desc:"La atención como vector causal: un metamodelo para la psicología clínica.",
+      kindle:"https://www.amazon.es/dp/B0HJNZY46W", papel:"https://www.amazon.es/dp/B0HJWL6K65" }
+  ];
+  function librosHTML(){
+    const cards = LIBROS.map(l=>`<div class="hub-card libro-card" style="border-left-color:${l.color}">
+      <span class="hub-emoji">📖</span>
+      <span class="hub-name">${l.nombre}</span>
+      <span class="hub-tag">${l.idioma}</span>
+      <span class="hub-desc">${l.desc}</span>
+      <span class="libro-btns">
+        <a class="libro-btn" href="${l.kindle}" target="_blank" rel="noopener" aria-label="${l.nombre} · Kindle en Amazon">Kindle ↗</a>
+        <a class="libro-btn alt" href="${l.papel}" target="_blank" rel="noopener" aria-label="${l.nombre} · tapa blanda en Amazon">Tapa blanda ↗</a>
+      </span></div>`).join("");
+    return `<div class="hub-sec" id="libros"><span class="hub-sec-e">📚</span><span class="hub-sec-t">Los libros de Tòfol Villalonga</span></div>
+      <div class="hub-sec-d">Para profundizar en lo que trabajamos en consulta. Los enlaces abren Amazon fuera de la app.</div>
+      <div class="hub-grid libros-grid">${cards}</div>`;
+  }
   // Historia del mono y el coche (relato → para qué → qué hacer), colapsable
   function historiaHTML(){
     return `<details class="hub-story" id="historia">
@@ -107,6 +144,15 @@
       return `<div class="hub-card soon"><span class="hub-emoji">${t.emoji}</span>
         <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
         <span class="hub-tag soon">Próximamente</span></div>`;
+    }
+    // Herramienta alojada en otra web (no dentro de la app): enlace normal que
+    // se abre fuera. No entra por el router ni por un iframe (la CSP solo
+    // permite marcos del propio origen).
+    if(t.externa){
+      return `<a class="hub-card" href="${t.externa}" target="_blank" rel="noopener"
+        aria-label="${t.nombre} · se abre fuera de la app"><span class="hub-emoji">${t.emoji}</span>
+        <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
+        <span class="hub-tag fuera">Abrir fuera ↗</span></a>`;
     }
     return `<a class="hub-card" href="#/tool/${t.id}"><span class="hub-emoji">${t.emoji}</span>
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
@@ -273,6 +319,132 @@
       </section>`;
   }
 
+  // ---- El AIS en un vistazo · la silueta y las dos luces ------------------
+  // El núcleo de todo el método, mostrado con el ejercicio de la silueta:
+  // la atención consciente (luz amarilla) nace en la cabeza, el aire (azul)
+  // hace de cebo, y la atención baja a la barriga y se queda dando presencia.
+  function aisNucleoHTML(){
+    return `
+      <div class="hub-sec"><span class="hub-sec-e">🫁</span><span class="hub-sec-t">El AIS, en un vistazo</span></div>
+      <div class="hub-sec-d">El eje de todo el método, en un gesto. Míralo —y pruébalo— aquí.</div>
+      <section class="porque ais-nucleo">
+        <p class="pq-lead">Todas las herramientas de este espacio entrenan un mismo gesto: llevar <b>tu atención consciente</b> a lo que siente el cuerpo, y quedarte. Puedes verlo —y probarlo— aquí:</p>
+        <div id="aisNucleoBox" style="max-width:250px;margin:8px auto 2px"></div>
+        <div class="ais-nucleo-pasos" style="display:flex;flex-direction:column;gap:9px;margin:12px 2px 4px;font-size:.95rem;line-height:1.45;color:#4a544e">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458)"></span><span><b>Tu atención consciente</b> (luz amarilla) nace arriba, en la cabeza — donde solemos vivir: pensando, dándole vueltas.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#EAF6FF,#3FA6D8)"></span><span><b>El aire</b> (luz azul) entra por la nariz y hace de <b>cebo</b>: le da a tu atención algo sencillo a lo que seguir hacia dentro.</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:13px;height:13px;border-radius:50%;flex:none;margin-top:4px;background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458)"></span><span>Así tu atención <b>baja hasta la barriga</b> y <b>se queda</b> ahí, dando presencia — aunque el aire vuelva a salir.</span></div>
+        </div>
+        <div class="pq-sello">Aparecer para el cuerpo, permanecer, y desde una actitud en la que el cuerpo se sienta querido.</div>
+        <button type="button" class="hs-act" id="aisGoRespira" style="width:100%;margin-top:14px;cursor:pointer;font:inherit;text-align:left">
+          <span class="se">🫁</span><span class="st">Ir a las herramientas de respiración<small>Practica este gesto en tu día a día</small></span><span class="sarr">→</span></button>
+        <details class="pq-more" style="margin-top:12px"><summary>Qué entrenamos con todas las herramientas</summary>
+          <div class="pq-full">
+            <p>El objetivo de cada ejercicio es que este <b>gesto atencional</b> se vuelva tuyo, casi automático: que tu conciencia —que tiende a quedarse arriba, en la cabeza— aprenda el camino de <b>bajar y dar presencia allá abajo</b>, en las tripas, donde el cuerpo siente.</p>
+            <p>No se trata de pensar el cuerpo, ni de calmarlo, ni de arreglarlo. Se trata de <b>estar</b> con lo que hay, desde una actitud amable, para que el cuerpo compruebe —una y otra vez— que no lo abandonas. Ese vector de tu atención, repetido, es la <b>nueva relación contigo</b>.</p>
+          </div>
+        </details>
+      </section>`;
+  }
+
+  // ---- Índice de apartados (al principio del hub) -------------------------
+  // Botones que llevan directos a cada apartado. No son enlaces con #ancla
+  // porque el hash es del router (#/ y #/tool/...): al cambiarlo se repintaría
+  // el hub y se perdería la posición. Se desplaza con scroll, sin tocar la URL.
+  function slugSec(txt){
+    const base = txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    return base ? "sec-"+base : "";
+  }
+  function irASeccion(sec){
+    const head = document.querySelector(".header");
+    const off = (head ? head.offsetHeight : 0) + 10;   // la cabecera es sticky
+    const y = sec.getBoundingClientRect().top + window.pageYOffset - off;
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: Math.max(0,y), behavior: quieto ? "auto" : "smooth" });
+    sec.classList.remove("idx-hit");
+    void sec.offsetWidth;                 // reinicia el destello si se repite apartado
+    sec.classList.add("idx-hit");
+    sec.setAttribute("tabindex","-1");
+    try{ sec.focus({preventScroll:true}); }catch(e){}
+  }
+  function montarIndice(){
+    const secs = Array.from(screen.querySelectorAll(".hub-sec"));
+    if(secs.length < 2) return;
+    const nav = document.createElement("nav");
+    nav.className = "hub-idx";
+    nav.setAttribute("aria-label","Índice de apartados");
+    const tit = document.createElement("div");
+    tit.className = "hub-idx-t";
+    tit.innerHTML = '<span aria-hidden="true">🧭</span>Ir directo a un apartado';
+    const chips = document.createElement("div");
+    chips.className = "hub-idx-chips";
+
+    secs.forEach((sec,i)=>{
+      const t = sec.querySelector(".hub-sec-t");
+      if(!t) return;
+      const nombre = t.textContent.trim();
+      if(!sec.id){
+        let id = slugSec(nombre) || ("sec-"+i);
+        if(document.getElementById(id)) id = id+"-"+i;
+        sec.id = id;
+      }
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "idx-chip";
+      b.dataset.sec = sec.id;
+
+      const emo = sec.querySelector(".hub-sec-e");
+      const img = sec.querySelector(".hub-sec-thumb img");
+      if(emo){
+        const ie = document.createElement("span");
+        ie.className = "idx-e"; ie.setAttribute("aria-hidden","true");
+        ie.textContent = emo.textContent;
+        b.appendChild(ie);
+      } else if(img){
+        const w = document.createElement("span"); w.className = "idx-thumb";
+        const im = document.createElement("img");
+        im.src = img.getAttribute("src"); im.alt = ""; im.loading = "lazy";
+        w.appendChild(im); b.appendChild(w);
+      }
+      // En el botón cabe el nombre corto (lo de antes del «·»); el título
+      // completo queda en el apartado y en la etiqueta accesible del botón.
+      const n = document.createElement("span");
+      n.className = "idx-n"; n.textContent = nombre.split(" · ")[0];
+      b.setAttribute("aria-label", "Ir a " + nombre);
+      b.title = nombre;
+      b.appendChild(n);
+
+      // Nº de fichas del apartado: la rejilla que va justo después del título.
+      let el = sec.nextElementSibling, grid = null;
+      while(el && !el.classList.contains("hub-sec")){
+        if(el.classList.contains("hub-grid")){ grid = el; break; }
+        el = el.nextElementSibling;
+      }
+      const cuantas = grid ? grid.children.length : 0;
+      if(cuantas){
+        const c = document.createElement("span");
+        c.className = "idx-c";
+        c.textContent = String(cuantas);
+        c.setAttribute("aria-label", cuantas===1 ? "1 ficha" : cuantas+" fichas");
+        b.appendChild(c);
+      }
+      chips.appendChild(b);
+    });
+    if(!chips.children.length) return;
+
+    chips.addEventListener("click", ev=>{
+      const b = ev.target.closest(".idx-chip");
+      if(!b) return;
+      const sec = document.getElementById(b.dataset.sec);
+      if(sec) irASeccion(sec);
+    });
+    nav.appendChild(tit); nav.appendChild(chips);
+    const bienvenida = screen.querySelector(".hub-welcome");
+    if(bienvenida) bienvenida.insertAdjacentElement("afterend", nav);
+    else screen.insertAdjacentElement("afterbegin", nav);
+  }
+
   function renderHub(){
     removeExportBar();
     screen.classList.remove("iframe-host");
@@ -315,6 +487,7 @@
         </div>
       </div>
       ${porqueHTML()}
+      ${aisNucleoHTML()}
       ${continuidadHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
@@ -322,13 +495,41 @@
       ${historiaHTML()}
       ${secciones}
       ${docsHTML()}
+      ${librosHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
     wireCont();
+    montarIndice();
+    montarNucleoAIS();
+  }
+
+  // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
+  var hubRespiro = null;
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } }
+  function montarNucleoAIS(){
+    pararNucleoAIS();
+    var box = document.getElementById("aisNucleoBox");
+    if(box && window.RespiroAIS){
+      hubRespiro = RespiroAIS.mount(box, {
+        lang:"es", figure:"organism", showControl:true, showZones:false,
+        rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 }
+      });
+    }
+    // Acceso directo a las herramientas de respiración (apartado «Práctica AIS»).
+    var goBtn = document.getElementById("aisGoRespira");
+    if(goBtn){ goBtn.onclick = function(){
+      var target = Array.from(screen.querySelectorAll(".hub-sec")).find(function(s){
+        var t = s.querySelector(".hub-sec-t"); return t && t.textContent.trim().indexOf("Práctica AIS") === 0;
+      });
+      if(target) irASeccion(target);
+    }; }
   }
 
   function renderTool(id){
     const tool = (window.APRENS_TOOLS||[]).find(t=>t.id===id);
-    if(!tool || !tool.migrada){ location.hash = "#/"; return; }
+    // Las externas no tienen pantalla dentro de la app: si se llega por URL,
+    // se vuelve al hub (desde el hub se abren con su enlace).
+    if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    pararNucleoAIS();
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";

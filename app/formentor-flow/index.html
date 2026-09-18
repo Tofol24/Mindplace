@@ -36,6 +36,8 @@
   header .ht{flex:1;}
   header .ht .b{font-family:var(--serif);font-size:1.05rem;line-height:1.1;}
   header .ht .s{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--arena);margin-top:2px;}
+  .breathe{flex:none;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mar);background:var(--arena);border:1px solid var(--arena);border-radius:16px;padding:6px 11px;cursor:pointer;min-height:32px;}
+  .breathe:active{transform:scale(.97);}
   .lang{display:flex;gap:4px;flex:none;}
   .lang button{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.7);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:6px 9px;cursor:pointer;min-height:32px;}
   .lang button.on{background:var(--arena);color:var(--mar);border-color:var(--arena);}
@@ -81,51 +83,110 @@
   .example .ln.good{color:var(--pi-2);}
   .example .mk{font-weight:700;margin-right:6px;}
 
-  /* para */
-  /* stage: apila la figura anatómica (fondo) y el círculo de respiración (delante) */
-  .para-stage{display:grid;place-items:center;width:100%;padding:10px 0 2px;position:relative;}
-  .para-stage>*{grid-column:1;grid-row:1;}
-  .anatomy{transition:opacity .55s ease;}
-  .anatomy svg{display:block;height:250px;max-height:40vh;width:auto;pointer-events:none;}
-  /* la figura y los órganos se atenúan al respirar → quedan al fondo */
-  .figure{transition:opacity .55s ease;}
-  .para-stage.running .figure{opacity:.08;}
-  /* zonas de anclaje tocables */
-  .zone{pointer-events:none;transition:opacity .4s ease;}
-  .zone .hit{fill:#000;fill-opacity:0;pointer-events:all;cursor:pointer;}
-  .zone:focus-visible{outline:none;}
-  .zone:focus-visible .selring{opacity:.9;}
-  .zone .glow{transition:opacity .4s ease,transform .4s ease;transform-box:fill-box;transform-origin:center;}
-  .zone .selring{opacity:0;transition:opacity .3s ease;transform-box:fill-box;transform-origin:center;}
-  .zone .tag{transition:fill .3s ease;}
-  .zone.sel .glow{transform:scale(1.16);}
-  .zone.sel .selring{opacity:.9;animation:zonePulse 1.9s ease-in-out infinite;}
-  .zone.sel .tag{font-weight:800;}
-  @keyframes zonePulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:.95;transform:scale(1.06);}}
-  @media(prefers-reduced-motion:reduce){.zone.sel .selring{animation:none;opacity:.9;}}
-  .para-stage.has-anchor .zone:not(.sel){opacity:.35;}
-  /* al respirar: figura al fondo, pero el ancla elegida sigue perceptible */
-  .para-stage.running .zone:not(.sel){opacity:.1;}
-  .para-stage.running .zone.sel{opacity:.55;}
-  .para-stage.running .zone.sel .selring{animation:none;opacity:.4;}
-  .para-stage.running .zone .hit{pointer-events:none;cursor:default;}
-  .stage-cue{align-self:end;justify-self:center;margin-bottom:0;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--llauto-2);background:rgba(244,240,232,.9);padding:5px 13px;border-radius:20px;text-align:center;max-width:88%;}
-  .para-stage.running .stage-cue{display:none;}
+  /* para — componente AIS de respiración (congelado; ver BreathingIllustration en el script) */
+  :root{--llum:#E9B458;--halo-a:rgba(46,124,138,.20);--halo-b:rgba(199,179,147,.10);}
+  /* ================= BreathingIllustration ================= */
+  .breathing-stage{
+    position:relative;
+    width:min(100%, calc(56vh * 820 / 1240));
+    aspect-ratio:820 / 1240;
+    margin:14px auto 50px;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;-webkit-user-select:none;
+    touch-action:manipulation;
+  }
+  @supports (height:1svh){ .breathing-stage{width:min(100%, calc(56svh * 820 / 1240));} }
+  .breathing-stage > *{position:absolute;inset:0;width:100%;height:100%;}
 
-  .breath{display:grid;place-items:center;transition:opacity .45s ease;}
-  .para-stage:not(.running) .breath{opacity:0;pointer-events:none;}
-  .ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--mar-3);display:grid;place-items:center;color:var(--mar-2);transform:scale(.7);will-change:transform,opacity;background:var(--piedra);}
-  /* la respiración la anima startBreath() por JS: la escala del círculo se calcula por frame según inhala/retén/exhala */
-  .ring .bl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
-  .ring .bn{display:block;font-family:var(--serif);font-size:28px;line-height:1;margin-top:4px;}
-  .ring-txt{text-align:center;pointer-events:none;}
+  /* capa 0: halo de respiración (detrás de la ilustración, se ve por la transparencia) */
+  .breath-halo{
+    inset:auto;left:50%;top:var(--halo-y,45%);
+    width:96%;height:auto;aspect-ratio:1;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--halo-a) 0%, var(--halo-b) 46%, rgba(199,179,147,0) 70%);
+    transform:translate(-50%,-50%) scale(.86);
+    opacity:.35;
+    will-change:transform,opacity;
+    pointer-events:none;
+    transition:top .35s ease;
+  }
+  .breathing-stage[data-view="tree"]{--halo-y:52%;}
+  .breathing-stage[data-view="body"]{--halo-y:46%;}
+
+  /* capa 1: ilustración (intacta) */
+  .base-illustration{
+    object-fit:contain;display:block;
+    opacity:0;transition:opacity .25s ease;
+    pointer-events:none;
+    -webkit-user-drag:none;
+  }
+  .breathing-stage[data-view="body"] .base-illustration[data-view="body"],
+  .breathing-stage[data-view="tree"] .base-illustration[data-view="tree"]{opacity:1;}
+
+  /* capa 2: interacción */
+  .interaction-layer{overflow:visible;pointer-events:none;}
+  .view-layer{display:none;}
+  .breathing-stage[data-view="body"] .view-layer[data-view="body"],
+  .breathing-stage[data-view="tree"] .view-layer[data-view="tree"]{display:inline;}
+  .hit-zone{fill:transparent;stroke:transparent;pointer-events:all;cursor:pointer;outline:none;}
+  .show-hits .hit-zone{stroke:#B0563A;stroke-width:3;stroke-dasharray:10 8;fill:rgba(176,86,58,.06);}
+  .hit-zone:focus-visible{stroke:var(--llauto);stroke-width:4;stroke-dasharray:none;}
+  .zone-glow{opacity:0;}
+  .zone-dot{fill:var(--llum);opacity:0;}
+  .zone-mark{fill:none;stroke:var(--llum);stroke-width:3;stroke-dasharray:6 7;opacity:0;transition:opacity .3s ease;}
+  .zone.noticed .zone-mark{opacity:.95;}
+  .zone-label rect{fill:rgba(252,251,247,.86);stroke:rgba(16,58,68,.14);stroke-width:1.5;}
+  .zone-label text{font-family:var(--mono);font-size:24px;letter-spacing:3px;fill:var(--mar);font-weight:600;}
+  .zone-label line{stroke:rgba(16,58,68,.35);stroke-width:2;}
+  .zone-label{opacity:.62;transition:opacity .35s ease;}
+  .zone.on .zone-label,.zone.noticed .zone-label{opacity:1;}
+  .zone.noticed .zone-label text{fill:var(--llauto-2);}
+
+  .flow-trail-soft{fill:none;stroke:var(--llum);stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:.28;}
+  .flow-trail-core{fill:none;stroke:#FFF3D6;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:.9;}
+  .flow-dot,.anchor-halo{opacity:0;}
+
+  /* capa 3: UI */
+  .breathing-ui{inset:auto 0 auto 0;top:calc(100% + 8px);height:40px;display:flex;justify-content:center;pointer-events:none;}
+  .phase-pill{
+    display:flex;align-items:baseline;gap:9px;
+    background:rgba(252,251,247,.9);border:1px solid var(--linia);
+    border-radius:24px;padding:6px 15px 7px;
+    color:var(--mar-2);
+    opacity:0;transition:opacity .3s ease;
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  }
+  .breathing-stage.running .phase-pill{opacity:1;}
+  .phase-pill .pl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+  .phase-pill .pn{font-family:var(--serif);font-size:22px;line-height:1;min-width:.7em;text-align:center;}
+  .phase-pill .ph{font-family:var(--serif);font-style:italic;font-size:.82rem;color:var(--tinta-2);}
+
+  @media (prefers-reduced-motion:reduce){
+    .flow-trail-soft,.flow-trail-core{display:none;}
+    .base-illustration,.breath-halo{transition:none;}
+  }
+  /* ========================================================= */
+  /* Manager · ajuste responsive: en pantallas bajas (Safari con barras, iPhone SE) la ilustración cede
+     altura para que «Empezar» quede visible sin desplazar. En pantallas normales manda el 56svh del componente. */
+  #paraStage{width:min(100%, calc(56vh * 820 / 1240), calc(max(100vh - 360px - env(safe-area-inset-top) - env(safe-area-inset-bottom), 180px) * 820 / 1240));}
+  @supports (height:1svh){ #paraStage{width:min(100%, calc(56svh * 820 / 1240), calc(max(100svh - 360px - env(safe-area-inset-top) - env(safe-area-inset-bottom), 180px) * 820 / 1240));} }
+  .stage-cue{text-align:center;margin-top:4px;min-height:18px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--llauto-2);}
+  .ais-metaphor{text-align:center;font-size:.84rem;color:var(--tinta-2);margin:6px 12px 4px;}
+  .ais-rhythm{text-align:center;margin-top:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-3);}
+  .ais-debug{margin-top:14px;border-top:1px dashed var(--linia);padding-top:10px;font-size:.82rem;color:var(--tinta-2);}
+  .ais-debug pre{margin-top:6px;font-family:var(--mono);font-size:10px;line-height:1.6;color:var(--tinta-3);}
   .para-ais{text-align:center;font-family:var(--serif);font-style:italic;font-size:.97rem;line-height:1.4;color:var(--mar-2);margin:12px 14px 4px;}
-  .start-btn{display:block;margin:2px auto 0;}
-  .breath-count{text-align:center;margin-top:10px;min-height:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mar-3);}
+  .start-btn{display:block;margin:8px auto 0;}
+  .breath-count{text-align:center;margin-top:6px;min-height:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mar-3);}
   .breath-count .bc-n{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--llauto-2);margin-right:4px;letter-spacing:0;}
   .para-q{font-family:var(--serif);font-size:1.3rem;line-height:1.2;color:var(--mar);text-align:center;margin:14px 4px 12px;}
   .para-x{background:var(--blanc);border:1px solid var(--linia);border-radius:14px;padding:15px 17px;margin-bottom:8px;font-size:.93rem;color:var(--tinta);}
   .para-x em{color:var(--llauto-2);font-style:italic;}
+
+  /* ---- modo cuerpo / árbol (Pi de Formentor) ---- */
+  .figmode{display:flex;justify-content:center;gap:6px;margin:8px 0 -4px;}
+  .figmode button{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-3);background:var(--piedra);border:1px solid var(--linia);border-radius:20px;padding:5px 12px;cursor:pointer;}
+  .figmode button.on{color:var(--mar);border-color:var(--mar-3);background:var(--blanc);font-weight:700;}
 
   /* ordena */
   .qlist{list-style:none;display:flex;flex-direction:column;gap:9px;}
@@ -170,6 +231,35 @@
   .btn.gold{background:var(--llauto);color:var(--blanc);border-color:var(--llauto);}
   .btn:active{transform:scale(.98);}
   .btn.copied{background:var(--pi);color:var(--blanc);border-color:var(--pi);}
+
+  /* ---- pantalla de entrada: curiosidad / control ---- */
+  .entry-q{font-family:var(--serif);font-size:1.5rem;line-height:1.2;color:var(--mar);text-align:center;margin:6px 4px 18px;}
+  .fork{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+  .bigfork{display:flex;align-items:center;gap:14px;text-align:left;padding:18px 18px;border-radius:20px;border:1.5px solid var(--linia);background:var(--blanc);cursor:pointer;min-height:88px;}
+  .bigfork:active{transform:scale(.99);}
+  .bigfork.cur{border-color:#8CA57F;background:#F2F5EE;}
+  .bigfork.con{border-color:#D2A08C;background:#F8F0EC;}
+  .bigfork .fk-e{font-size:30px;flex:none;line-height:1;}
+  .bigfork .fk-n{display:block;font-family:var(--serif);font-size:1.35rem;color:var(--mar);line-height:1.1;}
+  .bigfork.cur .fk-n{color:var(--pi-2,#47623F);} .bigfork.con .fk-n{color:#8F4229;}
+  .bigfork .fk-d{display:block;font-family:var(--read,"Newsreader",Georgia,serif);font-size:.86rem;color:var(--tinta-2);margin-top:4px;line-height:1.35;}
+  .daycard{background:var(--piedra);border:1px solid var(--linia);border-radius:16px;padding:15px 17px;margin-bottom:16px;}
+  .daybal .dl{font-family:var(--read,Georgia,serif);font-style:italic;font-size:.92rem;color:var(--tinta-3);}
+  .barrow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .barrow .cur{color:var(--pi-2,#47623F);} .barrow .con{color:#8F4229;}
+  .bar{height:8px;border-radius:6px;background:#E7C4B6;overflow:hidden;}
+  .bar>span{display:block;height:100%;background:#7C9A6E;border-radius:6px;}
+  .daymsg{font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--mar-2);margin-top:11px;text-wrap:balance;}
+  .diario-link{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mar-3);background:none;border:0;cursor:pointer;padding:0;}
+  .back-link{display:inline-block;margin:0 0 10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-3);background:none;border:0;cursor:pointer;padding:6px 0;}
+  /* diario */
+  .diaday{padding:11px 2px;border-bottom:1px solid var(--linia-2,#E9E3D6);}
+  .diaday:last-child{border-bottom:0;}
+  .dd-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .dd-date{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-2);}
+  .dd-cnt{font-family:var(--serif);font-size:.95rem;color:var(--tinta);}
+  .dd-cnt .cur{color:var(--pi-2,#47623F);} .dd-cnt .con{color:#8F4229;}
+  .dd-none{font-family:var(--read,Georgia,serif);font-style:italic;font-size:.85rem;color:var(--tinta-3);margin-left:10px;}
 </style>
 </head>
 <body>
@@ -177,6 +267,7 @@
   <header>
     <svg class="mk" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="15" stroke="#C7B393" stroke-width="1.3"/><path d="M6 20c3.2 0 3.2-9 6.5-9s3.3 9 6.5 9 3.2-9 6.5-9" stroke="#FCFBF7" stroke-width="1.7" stroke-linecap="round"/></svg>
     <div class="ht"><div class="b">Formentor Flow</div><div class="s" id="hsub">Manager</div></div>
+    <button class="breathe" id="breatheBtn" type="button" aria-label="Un respiro"></button>
     <div class="lang">
       <button id="l-es" class="on" type="button">ES</button>
       <button id="l-en" type="button">EN</button>
@@ -185,11 +276,45 @@
 
   <main>
     <!-- HOME -->
-    <section class="screen on" id="s-home">
+    <!-- ENTRADA: ¿desde dónde entras? -->
+    <section class="screen on" id="s-entry">
+      <h1 class="entry-q" id="entry-q"></h1>
+      <div class="fork">
+        <button class="bigfork cur" id="entryCur" type="button">
+          <span class="fk-e">🌱</span>
+          <span class="fk-t"><span class="fk-n" id="curN"></span><span class="fk-d" id="curD"></span></span>
+        </button>
+        <button class="bigfork con" id="entryCon" type="button">
+          <span class="fk-e">⚡</span>
+          <span class="fk-t"><span class="fk-n" id="conN"></span><span class="fk-d" id="conD"></span></span>
+        </button>
+      </div>
+      <div class="daycard">
+        <div class="daybal" id="dayBal"></div>
+        <div class="daymsg" id="dayMsg"></div>
+        <button class="diario-link" id="diarioLink" type="button"></button>
+        <button class="btn" id="diarioActivate" type="button" style="display:none;margin-top:10px"></button>
+      </div>
+      <div class="privacy" id="entry-priv"></div>
+    </section>
+
+    <!-- LISTA (curiosidad / control) -->
+    <section class="screen" id="s-home">
+      <button class="back-link" id="listBack" type="button"></button>
       <h1 id="home-q"></h1>
       <p class="lead" id="home-l"></p>
       <div class="sits" id="sits"></div>
-      <div class="privacy" id="home-priv"></div>
+    </section>
+
+    <!-- DIARIO local -->
+    <section class="screen" id="s-diario">
+      <button class="back-link" id="diaBack" type="button"></button>
+      <h1 id="dia-q"></h1>
+      <p class="lead" id="dia-l"></p>
+      <div id="diarioList"></div>
+      <button class="btn" id="diarioClear" type="button" style="margin-top:16px"></button>
+      <button class="diario-link" id="diarioDeact" type="button" style="display:block;margin:12px auto 0"></button>
+      <div class="privacy" id="dia-priv"></div>
     </section>
 
     <!-- FLOW -->
@@ -203,105 +328,51 @@
 
       <!-- PARA -->
       <div class="step-body" id="st-para">
-        <div class="para-stage" id="paraStage">
-          <div class="anatomy" id="anatomy">
-            <svg viewBox="0 0 260 322" width="260" height="322" role="img" aria-label="Cuerpo: cuello, pecho y barriga">
-              <defs>
-                <radialGradient id="gNeck" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#2E7C8A" stop-opacity=".62"/><stop offset="64%" stop-color="#2E7C8A" stop-opacity=".1"/><stop offset="100%" stop-color="#2E7C8A" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="gChest" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#C06A3E" stop-opacity=".55"/><stop offset="64%" stop-color="#C06A3E" stop-opacity=".1"/><stop offset="100%" stop-color="#C06A3E" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="gBelly" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6E8A52" stop-opacity=".55"/><stop offset="64%" stop-color="#6E8A52" stop-opacity=".1"/><stop offset="100%" stop-color="#6E8A52" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="oBody" cx="50%" cy="32%" r="78%"><stop offset="0%" stop-color="#1B5A68" stop-opacity=".17"/><stop offset="100%" stop-color="#103A44" stop-opacity=".07"/></radialGradient>
-                <linearGradient id="oBrain" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5DAEBB"/><stop offset="100%" stop-color="#1B5A68"/></linearGradient>
-                <linearGradient id="oLung" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E7B09B"/><stop offset="100%" stop-color="#A9634E"/></linearGradient>
-                <radialGradient id="oHeart" cx="42%" cy="30%" r="75%"><stop offset="0%" stop-color="#D07C57"/><stop offset="100%" stop-color="#7E3A24"/></radialGradient>
-                <linearGradient id="oLiver" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#CBA159"/><stop offset="100%" stop-color="#7C561F"/></linearGradient>
-                <linearGradient id="oStom" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BE7C51"/><stop offset="100%" stop-color="#6E3320"/></linearGradient>
-                <linearGradient id="oGut" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8EAA68"/><stop offset="100%" stop-color="#47623F"/></linearGradient>
-              </defs>
-              <!-- figura + órganos (decorativa, se atenúa al respirar) -->
-              <g class="figure">
-                <g class="body" fill="url(#oBody)" stroke="#103A44" stroke-opacity=".28" stroke-width="1.4">
-                  <circle cx="118" cy="40" r="27"/>
-                  <path d="M118,68 C148,68 162,84 170,108 C178,130 172,160 170,188 C168,220 160,250 138,270 L98,270 C76,250 68,220 66,188 C64,160 58,130 66,108 C74,84 88,68 118,68 Z"/>
-                </g>
-                <g class="organs">
-                  <!-- cerebro: hemisferios + circunvoluciones + cerebelo + tronco -->
-                  <path d="M102,32 C99,20 108,12 118,12.5 C128,12 137,20 134,32 C139,35 137,44 129,45 C123,51 113,51 107,45 C99,44 97,35 102,32 Z" fill="url(#oBrain)" fill-opacity=".82" stroke="#12414B" stroke-opacity=".42" stroke-width="1"/>
-                  <path d="M118,13 V45 M110,17 c6,4 6,10 0,14 M126,17 c-6,4 -6,10 0,14 M104,27 c5,1 6,7 2,11 M132,27 c-5,1 -6,7 -2,11" stroke="#0F3B44" stroke-opacity=".45" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-                  <path d="M105,20 c6,-5 22,-5 28,0" stroke="#EAF3F2" stroke-opacity=".22" stroke-width="2" fill="none" stroke-linecap="round"/>
-                  <ellipse cx="118" cy="50" rx="9" ry="5" fill="url(#oBrain)" fill-opacity=".72" stroke="#12414B" stroke-opacity=".35" stroke-width=".8"/>
-                  <path d="M118,54 v9" stroke="#2E7C8A" stroke-opacity=".6" stroke-width="3" fill="none"/>
-                  <!-- tráquea (anillos) + tiroides -->
-                  <rect x="113" y="62" width="10" height="30" rx="5" fill="#9CB6BB" fill-opacity=".55" stroke="#3B6B73" stroke-opacity=".32" stroke-width=".8"/>
-                  <path d="M113,68 h10 M113,74 h10 M113,80 h10 M113,86 h10" stroke="#3B6B73" stroke-opacity=".35" stroke-width="1"/>
-                  <path d="M112,72 c-5,1 -6,8 0,9 c2,-3 2,-6 0,-9 Z M124,72 c5,1 6,8 0,9 c-2,-3 -2,-6 0,-9 Z" fill="#B0563A" fill-opacity=".4"/>
-                  <!-- pulmones (lóbulos + cisuras) -->
-                  <path d="M111,110 C100,111 88,122 87,143 C86,161 90,177 104,180 C110,181 113,175 113,167 C113,150 113,128 112,116 C112,112 112,110 111,110 Z" fill="url(#oLung)" fill-opacity=".8" stroke="#94513E" stroke-opacity=".4" stroke-width="1"/>
-                  <path d="M125,110 C136,111 148,122 149,143 C150,161 146,177 132,180 C126,181 123,175 123,167 C123,150 123,128 124,116 C124,112 124,110 125,110 Z" fill="url(#oLung)" fill-opacity=".8" stroke="#94513E" stroke-opacity=".4" stroke-width="1"/>
-                  <path d="M100,131 c6,3 9,3 11,2 M98,151 c7,3 10,3 13,1 M136,131 c-6,3 -9,3 -11,2 M138,151 c-7,3 -10,3 -13,1" stroke="#8A4A38" stroke-opacity=".45" stroke-width="1" fill="none"/>
-                  <path d="M96,120 c4,-4 10,-6 14,-5 M140,120 c-4,-4 -10,-6 -14,-5" stroke="#F5DBD1" stroke-opacity=".32" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-                  <!-- corazón (ventrículos + cayado aórtico + brillo) -->
-                  <path d="M118,179 C114,171 106,151 110,143 C113,137 120,139 121,147 C123,140 130,139 132,145 C136,153 128,169 118,179 Z" fill="url(#oHeart)" fill-opacity=".92" stroke="#6B2F1C" stroke-opacity=".48" stroke-width="1"/>
-                  <path d="M121,147 c1,-8 1,-15 -2,-21 M126,145 c3,-7 8,-9 12,-8" stroke="#5E2716" stroke-opacity=".6" stroke-width="2" fill="none" stroke-linecap="round"/>
-                  <path d="M112,150 c2,-4 6,-6 9,-5" stroke="#F2D0C1" stroke-opacity=".38" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-                  <!-- hígado -->
-                  <path d="M88,184 C104,181 128,183 140,187 C142,193 138,199 128,201 C112,204 95,203 89,197 C85,193 85,186 88,184 Z" fill="url(#oLiver)" fill-opacity=".84" stroke="#6E4C1B" stroke-opacity=".42" stroke-width="1"/>
-                  <path d="M117,186 c0,6 -1,11 -4,14" stroke="#5C3F16" stroke-opacity=".48" stroke-width="1.2" fill="none"/>
-                  <path d="M92,187 c10,-3 28,-2 40,2" stroke="#EEDFBB" stroke-opacity=".3" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-                  <!-- estómago (forma en J) -->
-                  <path d="M131,181 C143,179 151,188 150,199 C149,209 139,213 132,207 C127,202 124,209 122,203 C120,196 123,185 131,181 Z" fill="url(#oStom)" fill-opacity=".82" stroke="#5C2A1A" stroke-opacity=".42" stroke-width="1"/>
-                  <!-- intestino grueso: marco cólico (⊓) + ciego + sigmoide + haustras -->
-                  <path d="M97,250 V213 a7,7 0 0 1 7,-7 H132 a7,7 0 0 1 7,7 V250" fill="none" stroke="url(#oGut)" stroke-opacity=".95" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="97" cy="252" r="6" fill="url(#oGut)" fill-opacity=".95" stroke="#3B5233" stroke-opacity=".35" stroke-width="1"/>
-                  <path d="M139,250 q-2,9 -13,10" fill="none" stroke="url(#oGut)" stroke-opacity=".92" stroke-width="8" stroke-linecap="round"/>
-                  <g stroke="#37502F" stroke-opacity=".32" stroke-width="1">
-                    <path d="M92,221 h10 M92,231 h10 M92,241 h10"/>
-                    <path d="M134,221 h10 M134,231 h10 M134,241 h10"/>
-                    <path d="M108,203 v8 M118,203 v8 M128,203 v8"/>
-                  </g>
-                  <!-- intestino delgado (asas) -->
-                  <path d="M107,224 q6,-5 12,0 q6,5 12,0 M107,233 q6,5 12,0 q6,-5 12,0 M109,242 q5,-4 10,0 q5,4 10,0" stroke="#3E5836" stroke-opacity=".62" stroke-width="3.1" fill="none" stroke-linecap="round"/>
-                </g>
+        <div class="breathing-stage" id="paraStage" data-view="body">
+          <div class="breath-halo" id="breathHalo" aria-hidden="true"></div>
+
+          <img class="base-illustration" data-view="body" src="assets/cuerpo.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
+          <img class="base-illustration" data-view="tree" src="assets/arbol.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
+
+          <svg class="interaction-layer" id="layer" viewBox="0 0 820 1240" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
+            <defs>
+              <radialGradient id="gZone"><stop offset="0%" stop-color="#F3C877" stop-opacity=".62"/><stop offset="60%" stop-color="#E9B458" stop-opacity=".16"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gDot"><stop offset="0%" stop-color="#FFF6DF" stop-opacity="1"/><stop offset="35%" stop-color="#F3C877" stop-opacity=".75"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gAnchor"><stop offset="0%" stop-color="#FFFBEF" stop-opacity="1"/><stop offset="30%" stop-color="#FFE08A" stop-opacity=".92"/><stop offset="66%" stop-color="#F6C24E" stop-opacity=".34"/><stop offset="100%" stop-color="#F6C24E" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gAir"><stop offset="0%" stop-color="#EAF6FF" stop-opacity="1"/><stop offset="35%" stop-color="#7CC4E6" stop-opacity=".8"/><stop offset="100%" stop-color="#3FA6D8" stop-opacity="0"/></radialGradient>
+            </defs>
+            <g id="zonesBody" class="view-layer" data-view="body"></g>
+            <g id="zonesTree" class="view-layer" data-view="tree"></g>
+            <g class="anchor-halo" id="anchorHalo">
+              <g id="anchorScale">
+                <circle r="128" fill="url(#gAnchor)"/>
+                <circle r="64" fill="none" stroke="#FFD97A" stroke-opacity=".72" stroke-width="2.5"/>
+                <circle r="10" fill="#FFFBEF"/>
               </g>
-              <!-- zonas de anclaje (tocables) -->
-              <g class="zone" id="zNeck" data-z="neck" role="button" tabindex="0" aria-label="Anclar la atención en el cuello">
-                <ellipse class="glow" cx="118" cy="80" rx="30" ry="15" fill="url(#gNeck)"/>
-                <ellipse class="selring" cx="118" cy="80" rx="27" ry="15" fill="none" stroke="#2E7C8A" stroke-width="2"/>
-                <circle class="dot" cx="118" cy="80" r="3.6" fill="#2E7C8A"/>
-                <line x1="146" y1="80" x2="178" y2="70" stroke="#2E7C8A" stroke-width="1.2"/>
-                <text class="tag" id="znNeck" x="182" y="74" fill="#1B5A68">CUELLO</text>
-                <ellipse class="hit" cx="118" cy="80" rx="36" ry="21"/>
-              </g>
-              <g class="zone" id="zChest" data-z="chest" role="button" tabindex="0" aria-label="Anclar la atención en el pecho">
-                <ellipse class="glow" cx="118" cy="150" rx="50" ry="38" fill="url(#gChest)"/>
-                <ellipse class="selring" cx="118" cy="150" rx="46" ry="35" fill="none" stroke="#C06A3E" stroke-width="2"/>
-                <circle class="dot" cx="118" cy="150" r="4" fill="#B0563A"/>
-                <line x1="164" y1="150" x2="188" y2="150" stroke="#B0563A" stroke-width="1.2"/>
-                <text class="tag" id="znChest" x="192" y="154" fill="#8F4229">PECHO</text>
-                <ellipse class="hit" cx="118" cy="150" rx="54" ry="42"/>
-              </g>
-              <g class="zone" id="zBelly" data-z="belly" role="button" tabindex="0" aria-label="Anclar la atención en la barriga">
-                <ellipse class="glow" cx="118" cy="228" rx="46" ry="34" fill="url(#gBelly)"/>
-                <ellipse class="selring" cx="118" cy="228" rx="43" ry="32" fill="none" stroke="#6E8A52" stroke-width="2"/>
-                <circle class="dot" cx="118" cy="228" r="4" fill="#5C7A56"/>
-                <line x1="160" y1="228" x2="186" y2="234" stroke="#5C7A56" stroke-width="1.2"/>
-                <text class="tag" id="znBelly" x="190" y="238" fill="#47623F">BARRIGA</text>
-                <ellipse class="hit" cx="118" cy="228" rx="50" ry="37"/>
-              </g>
-            </svg>
+            </g>
+            <path class="flow-trail-soft" id="trailSoft" d=""/>
+            <path class="flow-trail-core" id="trailCore" d=""/>
+            <g class="flow-dot" id="airDot">
+              <circle r="40" fill="url(#gAir)"/>
+              <circle r="8" fill="#EAF6FF"/>
+            </g>
+            <g class="flow-dot" id="flowDot">
+              <circle r="44" fill="url(#gDot)"/>
+              <circle r="9" fill="#FFF6DF"/>
+            </g>
+          </svg>
+
+          <div class="breathing-ui">
+            <div class="phase-pill" aria-live="polite"><span class="pl" id="phLbl"></span><span class="pn" id="phNum"></span><span class="ph" id="phHint"></span></div>
           </div>
-          <div class="breath"><div class="ring" id="ring"><div class="ring-txt" id="ringTxt"></div></div></div>
-          <div class="stage-cue" id="stageCue"></div>
         </div>
-        <div class="para-ais" id="paraAis"></div>
+        <div class="stage-cue" id="stageCue" aria-live="polite"></div>
         <button class="btn primary start-btn" id="startBtn" type="button"></button>
         <div class="breath-count" id="breathCount"></div>
+        <div class="figmode" id="figmode"></div>
+        <div class="para-ais" id="paraAis"></div>
+        <p class="ais-metaphor" id="aisMetaphor"></p>
+        <div class="ais-rhythm" id="aisRhythm"></div>
         <div class="para-q" id="paraQ"></div>
         <div class="para-x" id="paraX"></div>
         <div class="actions">
@@ -362,22 +433,365 @@
    ============================================================ */
 var LANG='es';
 
+/* =========================================================
+   1) MOTOR — tiempo y estado. No sabe nada de imágenes.
+   ========================================================= */
+var AIS_BREATH = { inhale: 3000, anchor: 2000, exhale: 7000, pause: 1000 };
+/* Modo prueba: zonas táctiles visibles y variables de estado. En Manager: false. */
+var AIS_DEBUG = false;
+var AISEngine = (function(){
+  var T = AIS_BREATH, CYCLE = T.inhale + T.anchor + T.exhale + T.pause;
+  var Q_EXIT = -0.38;   /* tramo visual COPA/GARGANTA → EXTERIOR (fuera del modelo de 3 zonas) */
+  var RESID = 0.62;     /* luz de conciencia que QUEDA en las raíces: permanece brillante al exhalar aunque el aire suba y salga */
+  function sine(x){ return -(Math.cos(Math.PI * x) - 1) / 2; }
+  function smooth(a, b, x){ var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+
+  /* Estado visual en un instante (ms desde el inicio). Determinista: sirve para el punto y para la estela. */
+  function at(ms){
+    var cyc = Math.floor(ms / CYCLE), c = ms - cyc * CYCLE;
+    var s = { cycle: cyc };
+    if (c < T.inhale){
+      var p = c / T.inhale;
+      s.phase = 'inhale'; s.elapsed = c; s.dur = T.inhale; s.progress = p;
+      s.q = sine(p);                                   /* 0 garganta/copa → 1 barriga/raíces */
+      s.dot = Math.min(1, p / 0.12);
+      s.anchor = cyc > 0 ? RESID * (1 - smooth(0, 0.7, p)) : 0;   /* la huella se funde mientras el indicador vuelve a bajar */
+      s.breath = 0.86 + 0.14 * sine(p);
+    } else if (c < T.inhale + T.anchor){
+      var p2 = (c - T.inhale) / T.anchor;
+      s.phase = 'anchor'; s.elapsed = c - T.inhale; s.dur = T.anchor; s.progress = p2;
+      s.q = 1; s.dot = 1 - smooth(0, 0.35, p2) * 0.6;
+      s.anchor = smooth(0, 0.35, p2);                               /* aparece el anclaje */
+      s.breath = 1;
+    } else if (c < T.inhale + T.anchor + T.exhale){
+      var p3 = (c - T.inhale - T.anchor) / T.exhale, u = sine(p3);
+      s.phase = 'exhale'; s.elapsed = c - T.inhale - T.anchor; s.dur = T.exhale; s.progress = p3;
+      s.q = 1 - (1 - Q_EXIT) * u;                      /* 1 → 0 → exterior, continuo */
+      s.dot = s.q >= 0 ? Math.min(1, 0.4 + smooth(0, 0.12, p3) * 0.6) : 1 - s.q / Q_EXIT;
+      s.anchor = RESID + (1 - RESID) * (1 - smooth(0, 0.07, p3));   /* paso breve (~0,5 s) a huella; luego constante toda la exhalación */
+      s.breath = 1 - 0.14 * u;
+    } else {
+      var p4 = (c - T.inhale - T.anchor - T.exhale) / T.pause;
+      s.phase = 'pause'; s.elapsed = c - T.inhale - T.anchor - T.exhale; s.dur = T.pause; s.progress = p4;
+      s.q = Q_EXIT; s.dot = 0; s.anchor = RESID; s.breath = 0.86;   /* huella constante en la pausa */
+    }
+    s.n = Math.min(Math.round(s.dur / 1000), Math.floor(s.elapsed / 1000) + 1);
+    return s;
+  }
+
+  var state = {
+    running: false, t0: 0, raf: null,
+    breathPhase: 'idle', breathCount: 0, breathProgress: 0,
+    attentionPos: 0, activeZone: null, noticedZone: null, view: 'body'
+  };
+  var listeners = [];
+  function emit(s, ms){ for (var i = 0; i < listeners.length; i++) listeners[i](s, ms); }
+  function loop(now){
+    var ms = now - state.t0, s = at(ms);
+    state.breathPhase = s.phase; state.breathProgress = s.progress;
+    state.attentionPos = Math.max(0, s.q); state.breathCount = s.cycle;
+    emit(s, ms);
+    state.raf = requestAnimationFrame(loop);
+  }
+  return {
+    CYCLE: CYCLE, Q_EXIT: Q_EXIT, at: at, state: state,
+    on: function(fn){ listeners.push(fn); },
+    start: function(){ if (state.running) return; state.running = true; state.t0 = performance.now(); state.raf = requestAnimationFrame(loop); },
+    stop: function(){
+      if (state.raf) cancelAnimationFrame(state.raf);
+      state.raf = null; state.running = false;
+      state.breathPhase = 'idle'; state.breathProgress = 0; state.attentionPos = 0; state.activeZone = null;
+      emit(null, 0);
+    }
+  };
+})();
+
+/* =========================================================
+   2) GEOMETRÍA — coordenadas en el viewBox 820×1240 de cada ilustración.
+   Recorrido: EXTERIOR → z1 (garganta/copa) → z2 (pecho/tronco) → z3 (barriga/raíces)
+   ========================================================= */
+var GEO = {
+  body: {
+    route: [[399,55],[399,170],[399,300],[399,510],[403,600],[413,660],[406,730],[403,860]],
+    anchors: { ext: 0, z1: 2, z2: 3, z3: 7 },      /* índices en route */
+    hits: { z1:[399,290,70,55], z2:[399,510,185,150], z3:[402,865,160,190] },
+    labels:{ z1:[486,300,'L'], z2:[620,470,'L'], z3:[594,880,'L'] },
+    glow:  { z1:[399,300,80], z2:[399,510,150], z3:[403,860,165] },
+    haloY: '46%'
+  },
+  tree: {
+    route: [[416,14],[416,120],[416,330],[416,560],[419,770],[421,880],[422,1010]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 },
+    hits: { z1:[418,380,315,340], z2:[419,775,85,58], z3:[420,1025,300,195] },
+    labels:{ z1:[620,110,'L'], z2:[520,775,'L'], z3:[632,1150,'L'] },
+    glow:  { z1:[416,330,210], z2:[419,770,90], z3:[422,1010,190] },
+    haloY: '52%'
+  }
+};
+/* q ∈ [Q_EXIT, 1]: Q_EXIT = exterior, 0 = z1, 0.5 = z2, 1 = z3. El mismo q da el mismo punto semántico en ambas vistas. */
+var ZQ = { z1: 0, z2: 0.5, z3: 1 };
+function prepRoute(g){
+  var pts = g.route, cum = [0];
+  for (var i = 1; i < pts.length; i++) cum.push(cum[i-1] + Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]));
+  var a = g.anchors;
+  g._cum = cum;
+  g._keys = [ [AISEngine.Q_EXIT, cum[a.ext]], [0, cum[a.z1]], [0.5, cum[a.z2]], [1, cum[a.z3]] ];
+}
+function pointAt(g, q){
+  var k = g._keys, L;
+  if (q <= k[0][0]) L = k[0][1];
+  else if (q >= k[3][0]) L = k[3][1];
+  else for (var i = 0; i < 3; i++) if (q <= k[i+1][0]){ L = k[i][1] + (q - k[i][0]) / (k[i+1][0] - k[i][0]) * (k[i+1][1] - k[i][1]); break; }
+  var cum = g._cum, pts = g.route;
+  for (var j = 1; j < cum.length; j++) if (L <= cum[j]){
+    var f = (L - cum[j-1]) / (cum[j] - cum[j-1] || 1);
+    return [pts[j-1][0] + f * (pts[j][0] - pts[j-1][0]), pts[j-1][1] + f * (pts[j][1] - pts[j-1][1])];
+  }
+  return pts[pts.length - 1].slice();
+}
+prepRoute(GEO.body); prepRoute(GEO.tree);
+
+/* =========================================================
+   3) TEXTOS
+   ========================================================= */
+var AIS_I18N = {
+  es: {
+    sub: 'Manager · Respiración AIS',
+    views: { body: 'Cuerpo', tree: 'Árbol' },
+    sits: { reinicio: 'Reinicio', foco: 'Foco', bajar: 'Bajar' },
+    zones: { body: { z1: 'GARGANTA', z2: 'PECHO', z3: 'BARRIGA' }, tree: { z1: 'COPA', z2: 'TRONCO', z3: 'RAÍCES' } },
+    z3in: { body: 'la barriga', tree: 'las raíces' },
+    zin: { body: { z1: 'la garganta', z2: 'el pecho', z3: 'la barriga' }, tree: { z1: 'la copa', z2: 'el tronco', z3: 'las raíces' } },
+    phase: { inhale: 'Inhala', anchor: 'Quédate', exhale: 'Exhala', pause: 'Pausa' },
+    hint: { inhale: 'la atención baja', anchor: 'nota y acompaña', exhale: 'el aire sale despacio', pause: 'respira natural' },
+    consigna: {
+      reinicio: 'Algo acaba de pasar. Antes de responder, baja hasta {z3}.',
+      foco: 'Mucho a la vez. Lleva la atención a un solo sitio: {z3}.',
+      bajar: 'No necesitas comprobar si ha bajado. Vuelve a {z3} y acompaña lo que notes.'
+    },
+    metaphor: {
+      body: 'La respiración guía la atención hacia dentro y hacia abajo.',
+      tree: 'La presión puede estar fuera. Vuelves a las raíces para sostenerte desde dentro.'
+    },
+    cueIdle: 'Toca donde lo notes, o empieza', cueNoticed: 'Lo notas en {z}',
+    start: 'Empezar', stop: 'Parar',
+    one: 'respiración', many: 'respiraciones',
+    rhythm: 'Inhala 3 · Quédate 2 · Exhala 7 · Pausa 1',
+    hits: 'Mostrar zonas táctiles (comprobación)',
+    foot: 'Prueba aislada del componente · no guarda datos',
+    aria: { z1: 'Lo noto en {z}', z2: 'Lo noto en {z}', z3: 'Lo noto en {z}' }
+  },
+  en: {
+    sub: 'Manager · AIS breathing',
+    views: { body: 'Body', tree: 'Tree' },
+    sits: { reinicio: 'Reset', foco: 'Focus', bajar: 'Settle' },
+    zones: { body: { z1: 'THROAT', z2: 'CHEST', z3: 'BELLY' }, tree: { z1: 'CROWN', z2: 'TRUNK', z3: 'ROOTS' } },
+    z3in: { body: 'the belly', tree: 'the roots' },
+    zin: { body: { z1: 'your throat', z2: 'your chest', z3: 'your belly' }, tree: { z1: 'the crown', z2: 'the trunk', z3: 'the roots' } },
+    phase: { inhale: 'Breathe in', anchor: 'Stay', exhale: 'Breathe out', pause: 'Pause' },
+    hint: { inhale: 'attention moves down', anchor: 'notice and stay with it', exhale: 'air leaves slowly', pause: 'breathe naturally' },
+    consigna: {
+      reinicio: 'Something just happened. Before you respond, drop down to {z3}.',
+      foco: 'Too much at once. Bring your attention to one place: {z3}.',
+      bajar: 'No need to check whether it has gone down. Return to {z3} and stay with what you notice.'
+    },
+    metaphor: {
+      body: 'The breath guides attention inward and down.',
+      tree: 'Pressure may be outside. You return to the roots to hold yourself from within.'
+    },
+    cueIdle: 'Tap where you notice it, or start', cueNoticed: 'You notice it in {z}',
+    start: 'Start', stop: 'Stop',
+    one: 'breath', many: 'breaths',
+    rhythm: 'In 3 · Stay 2 · Out 7 · Pause 1',
+    hits: 'Show touch zones (check)',
+    foot: 'Standalone component test · stores no data',
+    aria: { z1: 'I notice it in {z}', z2: 'I notice it in {z}', z3: 'I notice it in {z}' }
+  }
+};
+
+/* =========================================================
+   4) COMPONENTE VISUAL — BreathingIllustration
+   ========================================================= */
+var BreathingIllustration = (function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var stage = document.getElementById('paraStage');
+  var haloEl = document.getElementById('breathHalo');
+  var dotEl = document.getElementById('flowDot');
+  var airEl = document.getElementById('airDot');
+  var anchorEl = document.getElementById('anchorHalo'), anchorScale = document.getElementById('anchorScale');
+  var trailSoft = document.getElementById('trailSoft'), trailCore = document.getElementById('trailCore');
+  var phLbl = document.getElementById('phLbl'), phNum = document.getElementById('phNum'), phHint = document.getElementById('phHint');
+  var ui = { lang: 'es', view: 'body' };
+  var zoneEls = { body: {}, tree: {} };
+  var tapCb = null;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function el(tag, attrs, parent){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+
+  function build(view, root){
+    var g = GEO[view];
+    ['z1','z2','z3'].forEach(function(z){
+      var grp = el('g', { 'class': 'zone', 'data-zone': z }, root);
+      var gl = g.glow[z];
+      el('circle', { 'class': 'zone-glow', cx: gl[0], cy: gl[1], r: gl[2], fill: 'url(#gZone)' }, grp);
+      var p = g.route[g.anchors[z]];
+      el('circle', { 'class': 'zone-dot', cx: p[0], cy: p[1], r: 7 }, grp);
+      var h = g.hits[z];
+      el('ellipse', { 'class': 'zone-mark', cx: h[0], cy: h[1], rx: Math.max(40, h[2] * 0.72), ry: Math.max(34, h[3] * 0.72) }, grp);
+      var lb = g.labels[z], lg = el('g', { 'class': 'zone-label' }, grp);
+      el('line', { x1: p[0] + 14, y1: p[1], x2: lb[0] - 6, y2: lb[1] }, lg);
+      var rect = el('rect', { x: lb[0], y: lb[1] - 22, rx: 22, ry: 22, height: 44, width: 160 }, lg);
+      var tx = el('text', { x: lb[0] + 18, y: lb[1] + 8 }, lg);
+      var hit = el('ellipse', { 'class': 'hit-zone', 'data-zone': z, cx: h[0], cy: h[1], rx: h[2], ry: h[3], tabindex: '0', role: 'button' }, grp);
+      hit.addEventListener('click', function(e){ e.preventDefault(); toggleNoticed(z); });
+      hit.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleNoticed(z); } });
+      zoneEls[view][z] = { grp: grp, glow: grp.children[0], dot: grp.children[1], rect: rect, text: tx, hit: hit };
+    });
+  }
+  build('body', document.getElementById('zonesBody'));
+  build('tree', document.getElementById('zonesTree'));
+
+  function toggleNoticed(z){
+    var st = AISEngine.state;
+    st.noticedZone = st.noticedZone === z ? null : z;
+    paintNoticed();
+    if (tapCb) tapCb(st.noticedZone);
+  }
+  function paintNoticed(){
+    ['body','tree'].forEach(function(v){
+      ['z1','z2','z3'].forEach(function(z){
+        zoneEls[v][z].grp.classList.toggle('noticed', AISEngine.state.noticedZone === z);
+        zoneEls[v][z].hit.setAttribute('aria-pressed', AISEngine.state.noticedZone === z ? 'true' : 'false');
+      });
+    });
+  }
+
+  function paintLabels(){
+    var t = AIS_I18N[ui.lang];
+    ['body','tree'].forEach(function(v){
+      ['z1','z2','z3'].forEach(function(z){
+        var o = zoneEls[v][z], name = t.zones[v][z];
+        o.text.textContent = name;
+        o.rect.setAttribute('width', Math.round(name.length * 17.5 + 36));   /* ancho por nº de caracteres: evita getBBox en elementos ocultos (Safari) */
+        o.hit.setAttribute('aria-label', t.aria[z].replace('{z}', t.zin[v][z]));
+      });
+    });
+  }
+
+  function pathFrom(g, qs){
+    var d = '';
+    for (var i = 0; i < qs.length; i++){ var p = pointAt(g, qs[i]); d += (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }
+    return d;
+  }
+
+  var lastPhase = null, lastN = null;
+  function render(s, ms){
+    var g = GEO[ui.view], zs = zoneEls[ui.view];
+    if (!s){   /* reposo */
+      haloEl.style.transform = 'translate(-50%,-50%) scale(.86)'; haloEl.style.opacity = '.35';
+      dotEl.style.opacity = 0; airEl.style.opacity = 0; anchorEl.style.opacity = 0;
+      trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', '');
+      ['body','tree'].forEach(function(v){ ['z1','z2','z3'].forEach(function(z){ var o = zoneEls[v][z]; o.glow.style.opacity = 0; o.dot.style.opacity = 0; o.grp.classList.remove('on'); }); });
+      stage.classList.remove('running'); lastPhase = null; lastN = null;
+      return;
+    }
+    stage.classList.add('running');
+
+    /* halo de respiración: solo transform + opacity */
+    var b = reduce ? 0.93 : s.breath;
+    haloEl.style.transform = 'translate(-50%,-50%) scale(' + b.toFixed(4) + ')';
+    haloEl.style.opacity = (0.45 + (s.breath - 0.86) / 0.14 * 0.4).toFixed(3);
+
+    /* DOS LUCES:
+       · AZUL = aire → baja al inhalar y sube/sale al exhalar (sigue s.q).
+       · AMARILLA = conciencia → baja siguiendo al aire (el aire es el cebo) y se
+         QUEDA en las raíces (luz de anclaje); no sube al exhalar. */
+    var p = pointAt(g, s.q);
+    airEl.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')');
+    airEl.style.opacity = (s.phase === 'pause' ? 0 : (s.phase === 'anchor' ? s.dot * 0.55 : s.dot)).toFixed(3);
+    if (s.phase === 'inhale'){
+      var cq = Math.max(0, s.q - 0.12), cp = pointAt(g, cq);
+      var fade = Math.max(0, Math.min(1, (1 - s.progress) / 0.2));   /* se funde en las raíces al final */
+      dotEl.setAttribute('transform', 'translate(' + cp[0].toFixed(1) + ' ' + cp[1].toFixed(1) + ')');
+      dotEl.style.opacity = (s.dot * fade).toFixed(3);
+    } else { dotEl.style.opacity = 0; }
+    /* estela del aire: azul al exhalar (sube/sale), cálida al inhalar */
+    if (!reduce && (s.phase === 'inhale' || s.phase === 'exhale')){
+      var back = AISEngine.at(Math.max(0, ms - 520)), qs = [];
+      var q0 = back.phase === s.phase ? back.q : (s.phase === 'inhale' ? 0 : 1);
+      for (var i = 0; i <= 8; i++) qs.push(q0 + (s.q - q0) * i / 8);
+      var d = pathFrom(g, qs);
+      trailSoft.setAttribute('d', d); trailCore.setAttribute('d', d);
+      trailSoft.style.opacity = (s.dot * 0.28).toFixed(3); trailCore.style.opacity = (s.dot * 0.9).toFixed(3);
+      var ex = s.phase === 'exhale';
+      trailSoft.style.stroke = ex ? '#7CC4E6' : '#FFE9B8';
+      trailCore.style.stroke = ex ? '#EAF6FF' : '#FFF3D6';
+    } else { trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', ''); }
+
+    /* anclaje en barriga/raíces: aparece y permanece como huella */
+    var ap = g.route[g.anchors.z3];
+    var breathe = (s.phase === 'anchor' && !reduce) ? 1 + 0.05 * Math.sin(s.progress * Math.PI) : 1;
+    anchorEl.setAttribute('transform', 'translate(' + ap[0] + ' ' + ap[1] + ')');
+    anchorScale.setAttribute('transform', 'scale(' + breathe.toFixed(4) + ')');
+    anchorEl.style.opacity = s.anchor.toFixed(3);
+
+    /* zona activa = cercanía de la atención a cada zona */
+    var best = null, bestV = 0;
+    ['z1','z2','z3'].forEach(function(z){
+      var v = Math.max(0, 1 - Math.abs(s.q - ZQ[z]) / 0.3) * s.dot;
+      if (s.phase === 'anchor' && z === 'z3') v = 1;
+      var o = zs[z];
+      o.glow.style.opacity = (v * 0.85).toFixed(3);
+      o.dot.style.opacity = (v * 0.9).toFixed(3);
+      if (v > bestV){ bestV = v; best = z; }
+    });
+    var active = bestV > 0.45 ? best : null;
+    AISEngine.state.activeZone = active;
+    ['body','tree'].forEach(function(v){ ['z1','z2','z3'].forEach(function(z){ zoneEls[v][z].grp.classList.toggle('on', z === active); }); });
+
+    /* texto de fase */
+    if (s.phase !== lastPhase || s.n !== lastN){
+      var t = AIS_I18N[ui.lang];
+      phLbl.textContent = t.phase[s.phase];
+      phNum.textContent = s.n;
+      phHint.textContent = t.hint[s.phase];
+      lastPhase = s.phase; lastN = s.n;
+    }
+  }
+  AISEngine.on(render);
+
+  return {
+    setView: function(v){
+      ui.view = v; AISEngine.state.view = v;
+      stage.setAttribute('data-view', v);
+      /* No se toca el temporizador: el siguiente frame dibuja el mismo q en la otra ilustración. */
+      if (!AISEngine.state.running) render(null, 0);
+    },
+    setLang: function(l){ ui.lang = l; lastPhase = null; paintLabels(); },
+    toggleHits: function(on){ stage.classList.toggle('show-hits', on); },
+    onZoneTap: function(fn){ tapCb = fn; },
+    setNoticed: function(z){ AISEngine.state.noticedZone = z; paintNoticed(); },
+    init: function(){ paintLabels(); paintNoticed(); render(null, 0); }
+  };
+})();
+
+
 /* ---------- UI strings ---------- */
 var STR={
   es:{
     hsub:"Manager", foot:"Formentor Flow · Manager — método Centre APRENS · en el dispositivo",
     homeQ:"¿Qué necesita el sistema ahora?",
     homeL:"Elige lo que está pasando. Te acompaño en unos pasos para convertir la presión en información.",
-    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin registros, sin analítica y sin conexión propia. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo o navegador.",
+    priv:"<b>Esta herramienta no evalúa cómo trabajas. Te ayuda a ordenar cómo responder.</b> Sin cuenta, sin analítica y sin conexión propia. El <b>diario</b> es opcional y viene desactivado; si lo activas, se guarda solo en tu dispositivo (nunca en un servidor ni a RRHH) y puedes borrarlo. El dictado por voz, si lo usas, emplea el reconocimiento del propio dispositivo.",
     steps:{para:"Para",ordena:"Ordena",comunica:"Comunica",verifica:"Verifica"},
     inhala:"Inhala", reten:"Retén", pausa:"Pausa", exhala:"Exhala", breathStatic:"Inhala 3 · Retén 1 · Exhala 4",
     paraQ:"¿Vas a transmitir información o activación?",
     paraX:"Una respiración. <em>¿Cómo llegas a esta situación?</em> No necesitas cambiarlo, solo detectarlo antes de comunicar. Un breve contacto con el cuerpo (5–15 s) para recuperar capacidad ejecutiva.",
-    ais:"Aparece atencionalmente en tu barriga, tu pecho, tu cuello… y simplemente siente. No analices, no luches.",
+    ais:"Aparece atencionalmente en tu barriga, tu pecho, tu garganta… y simplemente siente. No analices, no luches.",
     cuePick:"Toca una zona para anclar tu atención", cueAnchored:"Atención en {z} · toca Empezar",
     startBtnLbl:"▶ Empezar a respirar",
-    zoneNeck:"CUELLO", zoneChest:"PECHO", zoneBelly:"BARRIGA",
-    zoneNeckL:"el cuello", zoneChestL:"el pecho", zoneBellyL:"la barriga",
+    zoneNeck:"GARGANTA", zoneChest:"PECHO", zoneBelly:"BARRIGA",
+    zoneNeckL:"la garganta", zoneChestL:"el pecho", zoneBellyL:"la barriga",
     cyclesLbl:"ciclos", cyclesOne:"ciclo",
     paraBack:"← Inicio", paraNext:"Ya estoy →",
     ordNext:"Comunicar →", ordBack:"← Para",
@@ -391,22 +805,48 @@ var STR={
     eligeLbl:"Elige · antes de decirlo",
     golden:"¿Cómo quiero tratar a esta persona mientras lo resolvemos? ¿Cómo querría recibir yo este mensaje?",
     verQ:"Antes de cerrar: ¿la comunicación ha quedado clara?",
-    checks:["Sabe qué hacer.","Sabe para cuándo.","Sabe qué es prioritario.","Puede comunicar una dificultad.","Sabemos cuándo comprobarlo."]
+    checks:["Sabe qué hacer.","Sabe para cuándo.","Sabe qué es prioritario.","Puede comunicar una dificultad.","Sabemos cuándo comprobarlo."],
+    momTitle:"Momentos del turno", momSub:"No solo cuando algo estalla. También para entrar, sostener un pico y salir.", momDone:"Listo ✓",
+    figBody:"Cuerpo", figTree:"Árbol", zoneCanopy:"COPA", zoneTrunk:"TRONCO", zoneRoots:"RAÍCES",
+    zoneCanopyL:"la copa", zoneTrunkL:"el tronco", zoneRootsL:"las raíces",
+    cueCuriosity:"Respira con curiosidad · la atención baja a las raíces",
+    breatheBtn:"Respiro",
+    entryQ:"¿Desde dónde entras ahora?",
+    curN:"Curiosidad", curD:"Acompañarme: entrar, salir, relevo… o solo respirar con el pino.",
+    conN:"Control", conD:"Ante una incidencia, un conflicto, una sobrecarga… eso que noto intenso.",
+    curShort:"Curiosidad", conShort:"Control",
+    curTitle:"Curiosidad", curLead:"Un respiro para acompañarme. Sin anclar: la atención baja a las raíces.",
+    conTitle:"Control", conLead:"Ordenar y comunicar ante una situación. Primero anclas donde lo notas.",
+    back:"← Volver",
+    todayNone:"Hoy aún no has entrado.",
+    msgNone:"Cuando quieras, elige cómo entras.",
+    msgOnlyCur:"Hoy solo desde la curiosidad. Buen acompañamiento.",
+    msgOnlyCon:"Hoy desde el control. Acompaña igual; cuando puedas, prueba la curiosidad.",
+    msgMoreCur:"Hoy vienes más desde la curiosidad que desde el control. Buena señal.",
+    msgMoreCon:"Hoy pesa más el control. Es necesario a veces; si puedes, un respiro de curiosidad.",
+    diarioLink:"Ver mi diario →",
+    diarioTitle:"Mi diario", diarioLead:"Cómo te has ido acompañando estos días. Solo en tu dispositivo.",
+    diarioClear:"Borrar mi diario",
+    diarioPriv:"Este diario se guarda <b>solo en tu dispositivo</b>. Nadie más lo ve. Nunca va a RRHH.",
+    diaNone:"día sin pausa", today:"Hoy", yesterday:"Ayer",
+    diaDays:["dom","lun","mar","mié","jue","vie","sáb"], diaMon:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
+    diarioOff:"El diario está desactivado. Si quieres, actívalo para ver cómo te acompañas — solo en tu móvil.",
+    diarioActivate:"Activar mi diario", diarioDeact:"Desactivar el diario"
   },
   en:{
     hsub:"Manager", foot:"Formentor Flow · Manager — a Centre APRENS method · on-device",
     homeQ:"What does the system need now?",
     homeL:"Pick what's happening. A few steps to turn pressure into information.",
-    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no records, no analytics and no connection of its own. Voice dictation, if you use it, relies on your device's or browser's own speech recognition.",
+    priv:"<b>This tool does not assess how you work. It helps you order how to respond.</b> No account, no analytics and no connection of its own. The <b>diary</b> is optional and off by default; if you turn it on, it's stored on your device only (never on a server or to HR) and you can delete it. Voice dictation, if you use it, relies on your device's own speech recognition.",
     steps:{para:"Pause",ordena:"Order",comunica:"Communicate",verifica:"Verify"},
     inhala:"Breathe in", reten:"Hold", pausa:"Pause", exhala:"Breathe out", breathStatic:"In 3 · Hold 1 · Out 4",
     paraQ:"Will you pass on information or activation?",
     paraX:"One breath. <em>How are you arriving at this?</em> You don't need to change it, just notice it before you communicate. A brief contact with the body (5–15 s) to recover executive capacity.",
-    ais:"Bring your attention to your belly, your chest, your neck… and simply feel. Don't analyse, don't fight it.",
+    ais:"Bring your attention to your belly, your chest, your throat… and simply feel. Don't analyse, don't fight it.",
     cuePick:"Tap a zone to anchor your attention", cueAnchored:"Attention on {z} · tap Start",
     startBtnLbl:"▶ Start breathing",
-    zoneNeck:"NECK", zoneChest:"CHEST", zoneBelly:"BELLY",
-    zoneNeckL:"the neck", zoneChestL:"the chest", zoneBellyL:"the belly",
+    zoneNeck:"THROAT", zoneChest:"CHEST", zoneBelly:"BELLY",
+    zoneNeckL:"the throat", zoneChestL:"the chest", zoneBellyL:"the belly",
     cyclesLbl:"cycles", cyclesOne:"cycle",
     paraBack:"← Home", paraNext:"I'm ready →",
     ordNext:"Communicate →", ordBack:"← Pause",
@@ -420,8 +860,65 @@ var STR={
     eligeLbl:"Choose · before you say it",
     golden:"How do I want to treat this person while we sort this out? How would I want to receive this message?",
     verQ:"Before closing: is the message clear?",
-    checks:["Knows what to do.","Knows by when.","Knows what's the priority.","Can flag a difficulty.","We know when to check."]
+    checks:["Knows what to do.","Knows by when.","Knows what's the priority.","Can flag a difficulty.","We know when to check."],
+    momTitle:"Shift moments", momSub:"Not only when something blows up. Also to enter, hold a peak and leave.", momDone:"Done ✓",
+    figBody:"Body", figTree:"Tree", zoneCanopy:"CANOPY", zoneTrunk:"TRUNK", zoneRoots:"ROOTS",
+    zoneCanopyL:"the canopy", zoneTrunkL:"the trunk", zoneRootsL:"the roots",
+    cueCuriosity:"Breathe with curiosity · attention settles into the roots",
+    breatheBtn:"Breathe",
+    entryQ:"Where are you entering from?",
+    curN:"Curiosity", curD:"Be with myself: enter, leave, handover… or just breathe with the pine.",
+    conN:"Control", conD:"Facing an incident, a conflict, an overload… that intense feeling.",
+    curShort:"Curiosity", conShort:"Control",
+    curTitle:"Curiosity", curLead:"A breath to be with myself. No anchor: attention settles into the roots.",
+    conTitle:"Control", conLead:"Order and communicate under a situation. First anchor where you feel it.",
+    back:"← Back",
+    todayNone:"You haven't entered yet today.",
+    msgNone:"Choose how you enter, whenever you like.",
+    msgOnlyCur:"Today only from curiosity. Good self-accompaniment.",
+    msgOnlyCon:"Today from control. It accompanies too; when you can, try curiosity.",
+    msgMoreCur:"Today you come more from curiosity than control. Good sign.",
+    msgMoreCon:"Today control weighs more. Sometimes it's needed; if you can, a curious breath.",
+    diarioLink:"See my diary →",
+    diarioTitle:"My diary", diarioLead:"How you've been with yourself these days. On your device only.",
+    diarioClear:"Delete my diary",
+    diarioPriv:"This diary is stored <b>on your device only</b>. No one else sees it. It never goes to HR.",
+    diaNone:"day without a pause", today:"Today", yesterday:"Yesterday",
+    diaDays:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], diaMon:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    diarioOff:"The diary is off. If you like, turn it on to see how you're with yourself — on your device only.",
+    diarioActivate:"Turn on my diary", diarioDeact:"Turn off the diary"
   }
+};
+
+/* ---------- momentos del turno (AIS proactivo, sin decisión) ----------
+   A diferencia de las situaciones (reactivas: PARA→ORDENA→COMUNICA→VERIFICA),
+   los momentos anclan la pausa AIS a las transiciones que el mando YA tiene
+   (entrar, un pico previsto, salir). Reutilizan la pantalla PARA (figura +
+   respiración + anclaje), sin pasos de decisión y sin guardar nada. */
+var MOMORDER=["antesTurno","antesPico","relevo","cierreTurno","respiro"];
+var MOMENTOS={
+  antesTurno:{ color:"#1B5A68", mode:"foco",
+    name:{es:"Antes del turno", en:"Before the shift"},
+    q:{es:"¿Con qué cuerpo entro a planta?", en:"What body am I bringing onto the floor?"},
+    micro:{es:"No entras solo al hotel. Entras contigo.", en:"You don't enter the hotel alone. You enter with yourself."} },
+  antesPico:{ color:"#A87C39", mode:"foco",
+    name:{es:"Antes de un pico", en:"Before a peak"},
+    q:{es:"Antes del pico: ¿qué suelto para llegar entero?", en:"Before the peak: what do I let go to arrive whole?"},
+    micro:{es:"El pico va a pasar. Elige cómo quieres estar cuando llegue.", en:"The peak will pass. Choose how you want to be when it arrives."} },
+  relevo:{ color:"#2E7C8A", mode:"bajar",
+    name:{es:"En el relevo", en:"At handover"},
+    q:{es:"¿Entrego el turno con calma o lo descargo?", en:"Am I handing over calmly, or dumping it?"},
+    micro:{es:"Entregar el turno presente es parte del trabajo, no un trámite.", en:"Handing over present is part of the job, not a formality."} },
+  cierreTurno:{ color:"#5C7A56", mode:"bajar",
+    name:{es:"Al salir", en:"Leaving"},
+    q:{es:"¿Qué me llevo del turno y qué se queda aquí?", en:"What do I take from the shift and what stays here?"},
+    micro:{es:"La presión que recibo no tiene por qué convertirse en la que llevo a casa.", en:"The pressure I receive doesn't have to become the pressure I carry home."} },
+  /* Respiro disponible siempre, ligado a la pegatina del Pi de Formentor:
+     ves el pino (móvil, carpeta) → abres → respiras. Abre en modo Árbol. */
+  respiro:{ color:"#5C7A56", mode:"bajar", figMode:"tree",
+    name:{es:"En cualquier momento", en:"Anytime"},
+    q:{es:"Has visto el pino. ¿Bajas un momento a las raíces?", en:"You saw the pine. Will you drop to the roots for a moment?"},
+    micro:{es:"Un respiro curioso, aquí y ahora: baja a las raíces y sigue.", en:"One curious breath, here and now: drop to the roots and carry on."} }
 };
 
 /* ---------- situations (order matters) ---------- */
@@ -512,29 +1009,97 @@ function startRec(ta,key,btn){
 function stopRec(){ if(rec){try{rec.onend=null;rec.stop();}catch(e){} rec=null;} if(recBtn){recBtn.classList.remove('rec');recBtn=null;} }
 
 /* ---------- state ---------- */
-var state={sit:null,step:"para",dir:"down",vals:{},checks:{},exOpen:false};
+var state={sit:null,momento:null,branch:null,step:"para",dir:"down",vals:{},checks:{},exOpen:false,figMode:"body"};
 var STEPS=["para","ordena","comunica","verifica"];
 function U(){return STR[LANG];}
 function el(id){return document.getElementById(id);}
 function setScreen(id){var s=document.querySelectorAll('.screen');for(var i=0;i<s.length;i++)s[i].classList.remove('on');el(id).classList.add('on');}
 
 /* ---------- home ---------- */
-function renderHome(){
+/* ---------- diario local (solo en el dispositivo) ---------- */
+var DKEY="ff_diario_v1", DMEM=null;
+function loadDiario(){ try{ var s=localStorage.getItem(DKEY); var d=s?JSON.parse(s):null; if(!d) return {days:{},enabled:false}; if(d.enabled===undefined)d.enabled=false; if(!d.days)d.days={}; return d; }catch(e){ return DMEM||{days:{},enabled:false}; } }
+function saveDiario(){ try{ localStorage.setItem(DKEY,JSON.stringify(DIARIO)); }catch(e){ DMEM=DIARIO; } }
+var DIARIO=loadDiario();
+function dkey(dt){ dt=dt||new Date(); function p(n){return(n<10?'0':'')+n;} return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate()); }
+function activateDiario(){ DIARIO.enabled=true; saveDiario(); renderEntry(); }
+function deactivateDiario(){ DIARIO.enabled=false; saveDiario(); goEntry(); }
+function tap(kind){ if(!DIARIO.enabled) return; var k=dkey(); if(!DIARIO.days[k]) DIARIO.days[k]={cur:0,con:0};
+  DIARIO.days[k][kind==='curiosidad'?'cur':'con']++;
+  var ks=Object.keys(DIARIO.days).sort(); while(ks.length>90){ delete DIARIO.days[ks.shift()]; }
+  saveDiario(); }
+function dayMsg(cur,con,t){ if(cur+con===0)return t.msgNone; if(con===0)return t.msgOnlyCur; if(cur===0)return t.msgOnlyCon; return cur>=con?t.msgMoreCur:t.msgMoreCon; }
+
+/* ---------- pantalla de entrada (curiosidad / control) ---------- */
+function renderEntry(){
   var t=U();
-  el('hsub').textContent=t.hsub; el('home-q').textContent=t.homeQ; el('home-l').textContent=t.homeL;
-  el('home-priv').innerHTML=t.priv; el('foot').textContent=t.foot;
+  el('hsub').textContent=t.hsub; el('breatheBtn').textContent=t.breatheBtn; el('foot').textContent=t.foot;
+  el('entry-q').textContent=t.entryQ;
+  el('curN').textContent=t.curN; el('curD').textContent=t.curD;
+  el('conN').textContent=t.conN; el('conD').textContent=t.conD;
+  el('entry-priv').innerHTML=t.priv;
+  renderDayCard();
+}
+function renderDayCard(){
+  var t=U();
+  if(!DIARIO.enabled){
+    el('dayBal').innerHTML='';
+    el('dayMsg').textContent=t.diarioOff;
+    el('diarioLink').style.display='none';
+    el('diarioActivate').style.display=''; el('diarioActivate').textContent=t.diarioActivate;
+    return;
+  }
+  el('diarioActivate').style.display='none';
+  el('diarioLink').style.display='';
+  var d=DIARIO.days[dkey()]||{cur:0,con:0}, total=d.cur+d.con, bal=el('dayBal');
+  if(total===0){ bal.innerHTML='<span class="dl">'+t.todayNone+'</span>'; }
+  else{ var cp=Math.round(d.cur/total*100);
+    bal.innerHTML='<div class="barrow"><span class="cur">'+t.curShort+' · '+d.cur+'</span><span class="con">'+t.conShort+' · '+d.con+'</span></div>'+
+      '<div class="bar"><span style="width:'+cp+'%"></span></div>'; }
+  el('dayMsg').textContent=dayMsg(d.cur,d.con,t);
+  el('diarioLink').textContent=t.diarioLink;
+}
+
+/* ---------- lista curiosidad / control ---------- */
+function goBranch(kind){ tap(kind); state.branch=kind; renderList(); setScreen('s-home'); window.scrollTo(0,0); }
+function renderList(){
+  var t=U(), cur=(state.branch==='curiosidad');
+  el('listBack').textContent=t.back;
+  el('home-q').textContent=cur?t.curTitle:t.conTitle;
+  el('home-l').textContent=cur?t.curLead:t.conLead;
   var wrap=el('sits'); wrap.innerHTML='';
-  SITORDER.forEach(function(k){
-    var s=SITU[k];
+  var order=cur?MOMORDER:SITORDER, src=cur?MOMENTOS:SITU, open=cur?openMomento:openFlow;
+  order.forEach(function(k){ var s=src[k];
     var b=document.createElement('button'); b.className='sit'; b.type='button';
     b.innerHTML='<span class="d" style="background:'+s.color+'"></span>'+s.name[LANG]+'<span class="ar">→</span>';
-    b.addEventListener('click',function(){openFlow(k);});
+    b.addEventListener('click',function(){ open(k); });
     wrap.appendChild(b);
   });
 }
 
+/* ---------- diario ---------- */
+function renderDiario(){
+  var t=U();
+  el('diaBack').textContent=t.back; el('dia-q').textContent=t.diarioTitle; el('dia-l').textContent=t.diarioLead;
+  el('diarioClear').textContent=t.diarioClear; el('diarioDeact').textContent=t.diarioDeact; el('dia-priv').innerHTML=t.diarioPriv;
+  var list=el('diarioList'); list.innerHTML=''; var today=new Date();
+  for(var i=0;i<14;i++){
+    var dt=new Date(today); dt.setDate(today.getDate()-i);
+    var rec=DIARIO.days[dkey(dt)];
+    var label=(i===0?t.today:(i===1?t.yesterday:(t.diaDays[dt.getDay()]+' '+dt.getDate()+' '+t.diaMon[dt.getMonth()])));
+    var row=document.createElement('div'); row.className='diaday';
+    if(!rec||rec.cur+rec.con===0){ row.innerHTML='<span class="dd-date">'+label+'</span><span class="dd-none">'+t.diaNone+'</span>'; }
+    else{ var total=rec.cur+rec.con, cp=Math.round(rec.cur/total*100);
+      row.innerHTML='<div class="dd-top"><span class="dd-date">'+label+'</span><span class="dd-cnt"><b class="cur">'+rec.cur+'</b> · <b class="con">'+rec.con+'</b></span></div><div class="bar"><span style="width:'+cp+'%"></span></div>'; }
+    list.appendChild(row);
+  }
+}
+function clearDiario(){ DIARIO={days:{}}; saveDiario(); renderDiario(); }
+function goEntry(){ renderEntry(); setScreen('s-entry'); window.scrollTo(0,0); }
+
 /* ---------- step bar ---------- */
 function renderStepBar(){
+  if(state.momento){ el('stepbar').innerHTML=''; return; }
   var t=U(), bar=el('stepbar'), idx=STEPS.indexOf(state.step);
   bar.innerHTML='';
   STEPS.forEach(function(k,i){
@@ -548,7 +1113,17 @@ function renderStepBar(){
 
 /* ---------- context + example ---------- */
 function renderCtx(){
-  var s=SITU[state.sit], t=U();
+  var t=U();
+  if(state.momento){
+    var m=MOMENTOS[state.momento];
+    el('ctxDot').style.background=m.color;
+    el('ctxName').textContent=m.name[LANG];
+    el('exBtn').style.display='none';
+    el('example').classList.remove('on'); el('example').innerHTML='';
+    return;
+  }
+  el('exBtn').style.display='';
+  var s=SITU[state.sit];
   el('ctxDot').style.background=s.color;
   el('ctxName').textContent=s.name[LANG];
   el('exBtn').textContent=state.exOpen?t.exampleHide:t.example;
@@ -576,38 +1151,75 @@ function showStep(step){
 /* PARA + breathing 4-4 */
 function renderPara(){
   var t=U();
-  el('paraQ').textContent=t.paraQ;
-  el('paraX').innerHTML=t.paraX;
-  el('paraAis').textContent=t.ais;
-  el('znNeck').textContent=t.zoneNeck; el('znChest').textContent=t.zoneChest; el('znBelly').textContent=t.zoneBelly;
+  if(state.momento){
+    var m=MOMENTOS[state.momento];
+    el('paraQ').textContent=m.q[LANG];
+    el('paraX').innerHTML='<em>'+m.micro[LANG]+'</em>';
+    el('paraNext').textContent=t.momDone;
+  } else {
+    el('paraQ').textContent=t.paraQ;
+    el('paraX').innerHTML=t.paraX;
+    el('paraNext').textContent=t.paraNext;
+  }
+  BreathingIllustration.setLang(LANG);
+  el('aisRhythm').textContent=AIS_I18N[LANG].rhythm;
   el('startBtn').textContent=t.startBtnLbl;
-  el('paraBack').textContent=t.paraBack; el('paraNext').textContent=t.paraNext;
+  el('paraBack').textContent=t.paraBack;
+  applyFigMode();
   showBreathIdle();
+}
+/* Consigna AIS: cambia según el modo de la situación/momento; el ritmo 3·2·7·1 es siempre el mismo. */
+function renderAisTexts(){
+  var a=AIS_I18N[LANG], v=state.figMode==='tree'?'tree':'body';
+  el('paraAis').textContent=a.consigna[currentBreathMode()].replace('{z3}',a.z3in[v]);
+  el('aisMetaphor').textContent=a.metaphor[v];
+}
+function applyFigMode(){
+  var st=el('paraStage'); if(st) st.classList.toggle('mode-tree', state.figMode==='tree');
+  BreathingIllustration.setView(state.figMode==='tree'?'tree':'body');  /* no reinicia el ciclo */
+  renderAisTexts(); renderCue();
+  var t=U(), fm=el('figmode'); if(!fm) return;
+  fm.innerHTML='';
+  [['body',t.figBody],['tree',t.figTree]].forEach(function(pair){
+    var b=document.createElement('button'); b.type='button'; b.textContent=pair[1];
+    if(state.figMode===pair[0]) b.className='on';
+    b.addEventListener('click',function(){ setFigMode(pair[0]); });
+    fm.appendChild(b);
+  });
+}
+function setFigMode(m){ state.figMode=m; applyFigMode(); }
+function allZones(){ return document.querySelectorAll('.zone'); }
+var AISZ={neck:'z1',chest:'z2',belly:'z3'}, AISZR={z1:'neck',z2:'chest',z3:'belly'};
+function anchorLabel(z){ return AIS_I18N[LANG].zin[state.figMode==='tree'?'tree':'body'][AISZ[z]]; }
+/* Texto bajo la ilustración: antes de empezar, el flujo de Manager; respirando, solo «Lo notas en…» si se ha tocado una zona. */
+function renderCue(){
+  var t=U(), c=el('stageCue'); if(!c) return;
+  if(AISEngine.state.running){ c.textContent = state.anchor && AISEngine.state.noticedZone ? AIS_I18N[LANG].cueNoticed.replace('{z}',anchorLabel(state.anchor)) : ''; return; }
+  if(state.anchor && AISEngine.state.noticedZone) c.textContent=t.cueAnchored.replace('{z}',anchorLabel(state.anchor));
+  else c.textContent = state.momento ? t.cueCuriosity : t.cuePick;
 }
 var ZID={neck:'zNeck',chest:'zChest',belly:'zBelly'}, ZLBL={neck:'zoneNeckL',chest:'zoneChestL',belly:'zoneBellyL'};
 /* Estado inicial: la figura anatómica en primer plano. El usuario toca una de las
-   tres zonas (cuello/pecho/barriga) para anclar su atención; esa zona se resalta.
+   tres zonas (garganta/pecho/barriga) para anclar su atención; esa zona se resalta.
    Luego, al pulsar Empezar, la figura pasa al fondo y arranca delante el ciclo. */
 function showBreathIdle(){
   stopBreath();
-  var t=U(), st=el('paraStage'), r=el('ring');
+  var st=el('paraStage');
   state.anchor=null;
+  BreathingIllustration.setNoticed(null);
   breathCycles=0; renderBreathCount();
   if(st){ st.classList.remove('running','has-anchor'); }
-  for(var k in ZID){ var g=el(ZID[k]); if(g) g.classList.remove('sel'); }
-  if(r){ r.style.transform=''; r.style.opacity=''; }
-  el('stageCue').textContent=t.cuePick;
   el('paraAis').style.display='';
-  el('startBtn').style.display='none';
+  /* curiosidad: sin anclar, se puede empezar ya · control: primero tocar dónde se nota */
+  el('startBtn').style.display = state.momento ? '' : 'none';
+  renderCue();
 }
 function setAnchor(z){
-  if(state.step!=='para'||breathRAF)return;
+  if(state.step!=='para')return;
   state.anchor=z;
-  var t=U(), st=el('paraStage');
-  st.classList.add('has-anchor');
-  for(var k in ZID){ var g=el(ZID[k]); if(g) g.classList.toggle('sel',k===z); }
-  el('stageCue').textContent=t.cueAnchored.replace('{z}',t[ZLBL[z]]);
-  el('startBtn').style.display='';
+  el('paraStage').classList.toggle('has-anchor', !!z);
+  if(!AISEngine.state.running) el('startBtn').style.display = (z || state.momento) ? '' : 'none';
+  renderCue();
 }
 function renderBreathCount(){
   var c=el('breathCount'); if(!c)return; var u=U();
@@ -616,52 +1228,32 @@ function renderBreathCount(){
   c.innerHTML='<span class="bc-n">'+breathCycles+'</span>'+lbl;
 }
 var breathRAF=null, breathT0=0, breathCycles=0;
-/* Ritmos de respiración por tipo de situación (regular, no relajar).
-   reinicio 3-0-6 (agudo) · foco 4-4-4-4 (box) · bajar 4-2-6 (exhala larga). */
+/* Ritmos antiguos por situación: ya no se usan para respirar (el componente AIS usa siempre 3·2·7·1).
+   SITMODE sigue decidiendo la consigna (reinicio / foco / bajar). */
 var BREATH={
   reinicio:{cls:'bReinicio',dur:9000, phases:[['in',3],['ex',6]]},
   foco:    {cls:'bFoco',    dur:16000,phases:[['in',4],['hold',4],['ex',4],['pausa',4]]},
   bajar:   {cls:'bBajar',   dur:12000,phases:[['in',4],['hold',2],['ex',6]]}
 };
 var SITMODE={incidencia:'reinicio',sobrecarga:'foco',prioridad:'foco',coordinacion:'foco',conflicto:'bajar',relevo:'bajar'};
+function currentBreathMode(){ return state.momento ? (MOMENTOS[state.momento].mode||'foco') : (SITMODE[state.sit]||'foco'); }
 function breathLabel(typ){var u=U();return typ==='in'?u.inhala:typ==='ex'?u.exhala:typ==='pausa'?u.pausa:u.reten;}
 function breathStaticTxt(m){return m.phases.map(function(p){return breathLabel(p[0])+' '+p[1];}).join(' · ');}
 function breathAt(phases,ms){var t=0;for(var i=0;i<phases.length;i++){var len=phases[i][1]*1000;if(ms<t+len){var n=Math.floor((ms-t)/1000)+1;if(n>phases[i][1])n=phases[i][1];return{type:phases[i][0],n:n};}t+=len;}var L=phases[phases.length-1];return{type:L[0],n:L[1]};}
 function bEase(t){ return t*t*(3-2*t); } /* smoothstep */
 function startBreath(){
-  stopBreath();
-  var ring=el('ring'), st=el('paraStage');
-  if(st){ st.classList.remove('has-anchor'); st.classList.add('running'); }
-  el('paraAis').style.display='none';
+  var st=el('paraStage');
+  if(st){ st.classList.remove('has-anchor'); }
   el('startBtn').style.display='none';
-  var m=BREATH[SITMODE[state.sit]||'foco'];
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var MIN=reduce?0.88:0.7, MAX=reduce?1.06:1.12;
-  var total=0, bounds=[];
-  m.phases.forEach(function(p){ bounds.push([p[0],total,total+p[1]*1000,p[1]]); total+=p[1]*1000; });
-  if(ring) ring.style.transform='scale('+MIN+')';
-  breathT0=performance.now();
   breathCycles=0; renderBreathCount();
-  var last=-1,lastT='',prevMs=0;
-  (function loop(){
-    var r=el('ring'), tx=el('ringTxt'); if(!r||!tx){breathRAF=null;return;}
-    var ms=(performance.now()-breathT0)%total;
-    if(ms<prevMs){ breathCycles++; renderBreathCount(); } prevMs=ms;
-    var ph=bounds[bounds.length-1];
-    for(var i=0;i<bounds.length;i++){ if(ms<bounds[i][2]){ ph=bounds[i]; break; } }
-    var typ=ph[0], within=ms-ph[1], len=ph[2]-ph[1], p=len>0?within/len:0, scale;
-    if(typ==='in') scale=MIN+(MAX-MIN)*bEase(p);
-    else if(typ==='ex') scale=MAX-(MAX-MIN)*bEase(p);
-    else if(typ==='hold') scale=MAX;
-    else scale=MIN;
-    r.style.transform='scale('+scale.toFixed(3)+')';
-    r.style.opacity=(0.6+0.4*((scale-MIN)/(MAX-MIN))).toFixed(3);
-    var n=Math.floor(within/1000)+1; if(n>ph[3])n=ph[3];
-    if(n!==last||typ!==lastT){ tx.innerHTML='<span class="bl">'+breathLabel(typ)+'</span><span class="bn">'+n+'</span>'; last=n; lastT=typ; }
-    breathRAF=requestAnimationFrame(loop);
-  })();
+  AISEngine.start();
+  renderCue();
 }
-function stopBreath(){ if(breathRAF){cancelAnimationFrame(breathRAF);breathRAF=null;} }
+function stopBreath(){ if(AISEngine.state.running) AISEngine.stop(); }
+AISEngine.on(function(){
+  var n=AISEngine.state.running?AISEngine.state.breathCount:0;
+  if(n!==breathCycles){ breathCycles=n; renderBreathCount(); }
+});
 
 /* ORDENA (adaptive per situation) */
 function renderOrdena(){
@@ -742,15 +1334,22 @@ function renderVerifica(){
 
 /* ---------- navigation ---------- */
 function openFlow(k){
-  state.sit=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false;
+  state.sit=k; state.momento=null; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false;
   setScreen('s-flow'); renderCtx(); showStep('para');
 }
-function home(){ stopBreath(); stopRec(); setScreen('s-home'); }
+function openMomento(k){
+  state.sit=null; state.momento=k; state.step='para'; state.dir='down'; state.vals={}; state.checks={}; state.exOpen=false; state.anchor=null;
+  if(MOMENTOS[k].figMode) state.figMode=MOMENTOS[k].figMode;
+  setScreen('s-flow'); renderCtx(); showStep('para');
+}
+function home(){ stopBreath(); stopRec(); state.momento=null; goEntry(); }
 function setLang(l){
   stopRec(); LANG=l;
   el('l-es').classList.toggle('on',l==='es'); el('l-en').classList.toggle('on',l==='en');
   document.documentElement.lang=l;
-  renderHome();
+  renderEntry();
+  if(el('s-home').classList.contains('on')) renderList();
+  if(el('s-diario').classList.contains('on')) renderDiario();
   if(el('s-flow').classList.contains('on')){ renderCtx(); showStep(state.step); }
 }
 function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
@@ -758,20 +1357,37 @@ function setDir(d){ stopRec(); state.dir=d; renderComunica(); }
 /* ---------- events ---------- */
 el('l-es').addEventListener('click',function(){setLang('es');});
 el('l-en').addEventListener('click',function(){setLang('en');});
+el('breatheBtn').addEventListener('click',function(){ tap('curiosidad'); openMomento('respiro'); });
+el('entryCur').addEventListener('click',function(){ goBranch('curiosidad'); });
+el('entryCon').addEventListener('click',function(){ goBranch('control'); });
+el('diarioLink').addEventListener('click',function(){ renderDiario(); setScreen('s-diario'); window.scrollTo(0,0); });
+el('listBack').addEventListener('click',goEntry);
+el('diaBack').addEventListener('click',goEntry);
+el('diarioClear').addEventListener('click',clearDiario);
+el('diarioActivate').addEventListener('click',activateDiario);
+el('diarioDeact').addEventListener('click',deactivateDiario);
 el('exBtn').addEventListener('click',function(){ state.exOpen=!state.exOpen; renderCtx(); });
 el('dir-down').addEventListener('click',function(){setDir('down');});
 el('dir-up').addEventListener('click',function(){setDir('up');});
-['neck','chest','belly'].forEach(function(z){
-  var g=el(ZID[z]); if(!g)return;
-  g.addEventListener('click',function(){ setAnchor(z); });
-  g.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setAnchor(z); } });
-});
+BreathingIllustration.onZoneTap(function(zk){ setAnchor(zk ? AISZR[zk] : null); });
 el('startBtn').addEventListener('click',function(){
-  if(state.step!=='para'||breathRAF||!state.anchor)return; /* hay que elegir zona antes */
+  if(state.step!=='para'||AISEngine.state.running)return;
+  if(!state.anchor){
+    if(state.momento){ state.anchor='belly'; } /* curiosidad → destino: las raíces */
+    else { return; } /* situaciones: hay que anclar primero */
+  }
   startBreath();
 });
+if(AIS_DEBUG){ /* solo pruebas: zonas táctiles visibles + estado */
+  var dbg=document.createElement('div'); dbg.className='ais-debug';
+  dbg.innerHTML='<label><input type="checkbox" id="aisHits"> zonas táctiles</label><pre id="aisState"></pre>';
+  el('aisRhythm').parentNode.insertBefore(dbg, el('aisRhythm').nextSibling);
+  el('aisHits').addEventListener('change',function(){ BreathingIllustration.toggleHits(this.checked); });
+  AISEngine.on(function(){ var s=AISEngine.state; el('aisState').textContent=
+    'breathPhase '+s.breathPhase+'\nattentionPos '+s.attentionPos.toFixed(2)+'\nactiveZone '+(s.activeZone||'—')+'\nnoticedZone '+(s.noticedZone||'—')+'\nbreathCount '+s.breathCount+'\nview '+s.view; });
+}
 el('paraBack').addEventListener('click',home);
-el('paraNext').addEventListener('click',function(){showStep('ordena');});
+el('paraNext').addEventListener('click',function(){ if(state.momento){ home(); return; } showStep('ordena');});
 el('ordBack').addEventListener('click',function(){showStep('para');});
 el('ordNext').addEventListener('click',function(){showStep('comunica');});
 el('comBack').addEventListener('click',function(){showStep('ordena');});
@@ -792,7 +1408,8 @@ if('serviceWorker' in navigator){
 }
 
 /* ---------- init ---------- */
-renderHome();
+BreathingIllustration.init();
+renderEntry();
 </script>
 </body>
 </html>

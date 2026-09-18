@@ -72,6 +72,27 @@ COMUNICA) para preservar el objetivo de uso en 30-90 s y la ausencia de formular
 (prioridad UX). La composición se hace en COMUNICA con placeholders por situación y dictado.
 Es una decisión coherente y reversible: el volcado ORDENA→COMUNICA puede añadirse si se prefiere.
 
+### Respiración AIS · componente congelado (CUERPO / ÁRBOL)
+- **PARA** usa ahora un único componente de respiración (`BreathingIllustration`) con tres
+  capas separadas: ilustración original intacta (`assets/cuerpo.webp`, `assets/arbol.webp`,
+  lienzo común 820×1240) · capa SVG invisible de zonas táctiles con el mismo viewBox · motor JS.
+- **Patrón único 3 · 2 · 7 · 1** (inhala · quédate · exhala · pausa) en todas las situaciones y
+  momentos. La situación solo cambia la **consigna** (reinicio / foco / bajar), no el ritmo.
+- **Recorrido atencional dentro de una respiración:** inhala = descenso completo
+  garganta/copa → pecho/tronco → barriga/raíces · quédate = anclaje en barriga/raíces ·
+  exhala = ascenso lento hasta salir por arriba · pausa = reposo.
+- La huella de las raíces queda tenue y constante durante la exhalación y la pausa; se funde al
+  bajar de nuevo. El brillo no representa reducción de tensión, solo presencia/anclaje.
+- Cambiar CUERPO ↔ ÁRBOL no reinicia el ciclo: el mismo punto del recorrido en la otra imagen.
+  Vocabulario propio por vista (garganta/pecho/barriga · copa/tronco/raíces).
+- Terminología unificada de la zona equivalente a COPA: **garganta** (ES) / **throat** (EN) en
+  etiquetas y textos de Manager (antes «cuello» / «neck»). Las claves internas (`neck`) no cambian.
+- Sustituye la figura SVG dibujada a mano, el árbol esquemático, las flechas por fase y el
+  círculo de respiración. `AIS_DEBUG = false` (zonas táctiles y estado solo en pruebas).
+- Responsive: «Empezar» y el contador pasan justo debajo de la ilustración, y en pantallas bajas
+  la ilustración cede altura para que el botón quede visible sin desplazar.
+- sw.js: CACHE `formentor-flow-v22` + precache de las dos ilustraciones.
+
 ---
 
 ## No hecho (por diseño)
