@@ -102,7 +102,7 @@
   var ORGANISM = {
     viewBox: '0 0 820 1240',
     route: [[410,250],[410,338],[410,400],[410,500],[410,600],[410,718],[410,832]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,178],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,150],
     glow: { z1: [410,400,120], z2: [410,585,190], z3: [410,832,175] },
     labels: { z1: [548,400], z2: [612,560], z3: [560,850] },
     svg: '' +
@@ -133,7 +133,7 @@
   var CHILD = {
     viewBox: '0 0 820 1240',
     route: [[410,300],[410,370],[410,440],[410,540],[410,620],[410,700],[410,772]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,188],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [410,150],
     svg: '' +
       /* cuerpo */
       '<path d="M352 366 C348 404 322 414 288 438 C232 474 208 505 214 566 C218 622 248 662 253 720 C258 786 253 862 262 922 C266 968 308 998 410 998 C512 998 554 968 558 922 C567 862 562 786 567 720 C572 662 602 622 606 566 C612 505 588 474 532 438 C498 414 472 404 468 366 Z" fill="#F6DFCC" fill-opacity=".92" stroke="#E0A98C" stroke-width="3"/>' +
@@ -181,14 +181,14 @@
     src: '../assets/respiro/organismo.webp',
     viewBox: '0 0 1024 1536',
     route: [[508,235],[508,340],[508,430],[512,560],[516,700],[512,860],[505,1000]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,150]
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,128]
   };
   /* Versión infantil realista (mismo estilo, cuerpo de niño). */
   var REALISTIC_CHILD = {
     src: '../assets/respiro/organismo_nino.webp',
     viewBox: '0 0 1024 1536',
     route: [[508,225],[508,330],[508,420],[510,520],[512,600],[510,700],[505,790]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,120]
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 }, brain: [508,104]
   };
 
   /* ---------- Textos ---------- */
@@ -320,13 +320,13 @@
     var ZQ = { z1: 0, z2: 0.5, z3: 1 };
     var useZones = showZones && !isImage && !!fig.labels;
 
-    /* Recorrido de la ATENCIÓN (amarilla): empieza en el cerebro (más arriba que la
-       nariz), sigue al aire hacia abajo y se funde en el vientre. */
+    /* Recorrido de la ATENCIÓN (amarilla): NACE en la FRENTE (bien arriba, para
+       diferenciarla del aire) y desciende siguiendo al aire hasta el vientre.
+       Reservamos un tramo amplio (frente→nariz) del recorrido para que se vea
+       claramente que parte de la cabeza, no de la garganta. */
     var nosePt = pointAt(fig, eng.Q_EXIT);
     var brainPt = fig.brain || nosePt;
-    var brainLen = Math.hypot(brainPt[0] - nosePt[0], brainPt[1] - nosePt[1]);
-    var noseBellyLen = Math.max(1, fig._cum[fig.anchors.z3] - fig._cum[fig.anchors.ext]);
-    var brainFrac = brainLen / (brainLen + noseBellyLen);
+    var brainFrac = fig.brain ? 0.34 : 0;
     function mindPoint(t){   /* t: 0 = cerebro · 1 = vientre */
       if (t <= brainFrac){
         var u = brainFrac > 0 ? t / brainFrac : 1;
