@@ -392,19 +392,27 @@
       ]
     }
   };
-  var miniKey = "sentarse", miniI = 0, miniAcc = "", orbT = null;
+  var miniKey = "sentarse", miniI = 0, miniAcc = "", orbT = null, activeRespiro = null;
   function openMini(key) { miniKey = key || "sentarse"; miniI = 0; miniAcc = ""; $("miniOverlay").style.display = "flex"; renderMini(); }
   function renderMini() {
     var def = MINIS[miniKey], s = def.pasos[miniI], last = miniI === def.pasos.length - 1;
     $("miniTitle").textContent = def.titulo;
     $("miniBody").innerHTML = '<div class="mini-step"><div class="m-n">' + s.n + '</div><h2>' + esc(s.h) + '</h2>' +
-      (s.orb ? '<div class="mini-orb" id="orb">🫁</div>' : "") +
+      (s.orb ? '<div id="respiroBox" style="max-width:230px;margin:0 auto"></div>' : "") +
       '<p>' + esc(s.p) + '</p>' +
       (s.input ? '<input class="mini-input" id="miniIn" placeholder="Mi microacción de hoy…">' : "") +
       '<button class="btn-primary" id="miniNext">' + (last ? "Terminar" : "Siguiente") + '</button>' +
       (miniI > 0 ? '<button class="btn-soft" id="miniPrev">‹ Atrás</button>' : "") + '</div>';
     if (orbT) { clearInterval(orbT); orbT = null; }
-    if (s.orb) { var o = $("orb"); var big = false; orbT = setInterval(function () { big = !big; o.classList.toggle("big", big); }, 4000); }
+    if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
+    // Respiración de dos luces (compacta): el aire (azul) por la nariz; la atención
+    // (amarilla) desde la cabeza, que se queda en el vientre.
+    if (s.orb && window.RespiroAIS) {
+      activeRespiro = RespiroAIS.mount($("respiroBox"), {
+        lang: "es", figure: "organism", showControl: false, autostart: true,
+        rhythm: { inhale: 4000, anchor: 900, exhale: 6000, pause: 700 }
+      });
+    }
     $("miniNext").onclick = function () {
       if (s.input) miniAcc = ($("miniIn").value || "").trim();
       if (last) finishMini(); else { miniI++; renderMini(); }
@@ -413,6 +421,7 @@
   }
   function finishMini() {
     if (orbT) { clearInterval(orbT); orbT = null; }
+    if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
     var def = MINIS[miniKey];
     try { if (window.Aprens) { Aprens.config({ toolId: def.toolId, toolName: def.toolName, toolVersion: 1 }); Aprens.save({ id: Date.now(), date: hoy(), ts: Date.now(), param: "densidad", microaccion: miniAcc }); } } catch (e) {}
     $("miniOverlay").style.display = "none";
@@ -587,7 +596,7 @@
   function wire() {
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (tab) { tab.onclick = function () { switchView(tab.getAttribute("data-view")); }; });
     $("toolBack").onclick = closeTool;
-    $("miniBack").onclick = function () { if (orbT) { clearInterval(orbT); orbT = null; } $("miniOverlay").style.display = "none"; };
+    $("miniBack").onclick = function () { if (orbT) { clearInterval(orbT); orbT = null; } if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; } $("miniOverlay").style.display = "none"; };
     $("histBack").onclick = function () { $("histOverlay").style.display = "none"; };
     $("btnAjustes").onclick = function () { $("ajName").value = (A.perfil && A.perfil.nombre) || ""; $("ajustes").style.display = "flex"; };
     $("ajClose").onclick = function () { $("ajustes").style.display = "none"; };

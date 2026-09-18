@@ -311,8 +311,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
     <div class="card">
       <div class="ctit">Respiración guiada</div>
       <div class="breath">
-        <div class="bcircle" id="breathC">Toca empezar</div>
-        <div class="bphase" id="breathP"></div>
+        <div id="respiroBox"></div>
         <button class="btn bp bsm" id="breathBtn" onclick="iniciarResp()" style="margin-top:8px;">🌬️ Respira conmigo (4 rondas)</button>
       </div>
       <p style="font-size:12px; color:var(--gris); line-height:1.6; margin-top:10px;">Respiración <b>curiosa</b>: en vez de respirar para calmarte, observa con curiosidad cómo entra y sale el aire, sin cambiar nada. Al terminar suma una a "Respiración curiosa".</p>
@@ -400,6 +399,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 </div>
 
 <script src="../js/aprens-core.js"></script>
+<script src="../js/respiro-ais.js"></script>
 <script>
 /* ===================== DATOS ===================== */
 var KEY='aprens_agenda_atencional_db';
@@ -604,6 +604,7 @@ function sugerenciasConducta(){
 var curView='plan';
 function go(v){
   curView=v;
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; breathBusy=false; }
   document.querySelectorAll('.view').forEach(function(s){ s.classList.remove('on'); });
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.navb').forEach(function(b){ b.classList.toggle('on', b.dataset.v===v); });
@@ -998,18 +999,21 @@ function renderHon(){
 function delHon(i){ getReg(todayStr()).honestidad.splice(i,1); save(); renderHon(); }
 
 /* respiración guiada */
-var breathBusy=false;
+var breathBusy=false, activeRespiro=null;
 function iniciarResp(){
   if(breathBusy) return; breathBusy=true;
-  var c=document.getElementById('breathC'), p=document.getElementById('breathP'), btn=document.getElementById('breathBtn');
+  var btn=document.getElementById('breathBtn');
   btn.disabled=true; btn.style.opacity=.5;
-  var rondas=4, n=0;
-  function ciclo(){
-    if(n>=rondas){ c.classList.remove('big'); c.textContent='✓ Hecho'; p.textContent='Suma una respiración curiosa'; btn.disabled=false; btn.style.opacity=1; breathBusy=false; bump('respCuriosa',1); return; }
-    p.textContent='Inhala… observa cómo entra el aire'; c.textContent='Inhala'; c.classList.add('big');
-    setTimeout(function(){ p.textContent='Exhala… observa cómo sale'; c.textContent='Exhala'; c.classList.remove('big'); setTimeout(function(){ n++; ciclo(); }, 4000); }, 4000);
-  }
-  ciclo();
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBox');
+  if(!box||!window.RespiroAIS){ btn.disabled=false; btn.style.opacity=1; breathBusy=false; return; }
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4000, anchor:900, exhale:4000, pause:700 },
+    labels:{ phase:{ inhale:'Inhala', anchor:'quédate', exhale:'Exhala', pause:'pausa' },
+             hint:{ inhale:'observa cómo entra el aire', anchor:'sin cambiar nada', exhale:'observa cómo sale', pause:'sin cambiar nada' } },
+    onCycle:function(n){ if(n>=4){ activeRespiro.stop(); btn.disabled=false; btn.style.opacity=1; breathBusy=false; bump('respCuriosa',1); } }
+  });
 }
 
 /* ===================== VALORES ===================== */
