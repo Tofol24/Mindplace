@@ -128,6 +128,11 @@
   .view-layer{display:none;}
   .breathing-stage[data-view="body"] .view-layer[data-view="body"],
   .breathing-stage[data-view="tree"] .view-layer[data-view="tree"]{display:inline;}
+  /* copa = maraña de pensamientos: se remueve suavemente en reposo y se aquieta al respirar */
+  @keyframes copaSway{0%,100%{transform:rotate(-1.7deg)}50%{transform:rotate(1.7deg)}}
+  #pinoCopa{transform-box:fill-box;transform-origin:50% 94%;animation:copaSway 6.5s ease-in-out infinite;}
+  .breathing-stage.running #pinoCopa{animation-duration:12s;}
+  @media(prefers-reduced-motion:reduce){#pinoCopa{animation:none;}}
   .hit-zone{fill:transparent;stroke:transparent;pointer-events:all;cursor:pointer;outline:none;}
   .show-hits .hit-zone{stroke:#B0563A;stroke-width:3;stroke-dasharray:10 8;fill:rgba(176,86,58,.06);}
   .hit-zone:focus-visible{stroke:var(--llauto);stroke-width:4;stroke-dasharray:none;}
@@ -331,8 +336,8 @@
         <div class="breathing-stage" id="paraStage" data-view="body">
           <div class="breath-halo" id="breathHalo" aria-hidden="true"></div>
 
-          <img class="base-illustration" data-view="body" src="assets/cuerpo.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
-          <img class="base-illustration" data-view="tree" src="assets/arbol.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
+          <img class="base-illustration" data-view="body" src="assets/organismo.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
+          <img class="base-illustration" data-view="tree" src="assets/organismo.webp" alt="" width="820" height="1240" decoding="async" draggable="false">
 
           <svg class="interaction-layer" id="layer" viewBox="0 0 820 1240" preserveAspectRatio="xMidYMid meet" aria-hidden="false">
             <defs>
@@ -340,7 +345,33 @@
               <radialGradient id="gDot"><stop offset="0%" stop-color="#FFF6DF" stop-opacity="1"/><stop offset="35%" stop-color="#F3C877" stop-opacity=".75"/><stop offset="100%" stop-color="#E9B458" stop-opacity="0"/></radialGradient>
               <radialGradient id="gAnchor"><stop offset="0%" stop-color="#FFFBEF" stop-opacity="1"/><stop offset="30%" stop-color="#FFE08A" stop-opacity=".92"/><stop offset="66%" stop-color="#F6C24E" stop-opacity=".34"/><stop offset="100%" stop-color="#F6C24E" stop-opacity="0"/></radialGradient>
               <radialGradient id="gAir"><stop offset="0%" stop-color="#EAF6FF" stop-opacity="1"/><stop offset="35%" stop-color="#7CC4E6" stop-opacity=".8"/><stop offset="100%" stop-color="#3FA6D8" stop-opacity="0"/></radialGradient>
+              <radialGradient id="gLeaf"><stop offset="0%" stop-color="#8AA57F"/><stop offset="60%" stop-color="#5C7A56" stop-opacity=".9"/><stop offset="100%" stop-color="#415c3d" stop-opacity="0"/></radialGradient>
+              <filter id="leafSoft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
             </defs>
+
+            <!-- Pi de Formentor fusionado (solo vista Árbol): copa en la frente, tronco por el cuerpo, raíces en la barriga -->
+            <g id="pino" class="view-layer" data-view="tree" transform="scale(0.80078 0.80729)">
+              <g fill="none" stroke="#6B4A2B" stroke-linecap="round" stroke-opacity=".82" opacity="0.5">
+                <path d="M505,995 C 470,1055 432,1095 384,1182" stroke-width="15"/>
+                <path d="M505,995 C 540,1055 588,1096 648,1184" stroke-width="15"/>
+                <path d="M505,995 C 500,1062 496,1112 501,1206" stroke-width="13"/>
+                <path d="M505,996 C 452,1042 418,1078 360,1126" stroke-width="10"/>
+                <path d="M505,996 C 560,1042 600,1078 662,1124" stroke-width="10"/>
+                <path d="M505,996 C 486,1050 470,1096 452,1176" stroke-width="7"/>
+                <path d="M505,996 C 524,1050 542,1096 560,1176" stroke-width="7"/>
+              </g>
+              <path d="M508,250 C 500,430 528,600 510,770 C 500,872 506,932 505,995" fill="none" stroke="#6B4A2B" stroke-width="34" stroke-linecap="round" opacity="0.46"/>
+              <path d="M508,250 C 500,430 528,600 510,770 C 500,872 506,932 505,995" fill="none" stroke="#8a6a48" stroke-width="9" stroke-linecap="round" opacity="0.38"/>
+              <g id="pinoCopa" filter="url(#leafSoft)" opacity="0.64">
+                <ellipse cx="505" cy="146" rx="152" ry="122" fill="url(#gLeaf)"/>
+                <ellipse cx="628" cy="176" rx="104" ry="74" fill="url(#gLeaf)"/>
+                <ellipse cx="702" cy="220" rx="78" ry="52" fill="url(#gLeaf)"/>
+                <ellipse cx="398" cy="176" rx="88" ry="66" fill="url(#gLeaf)"/>
+                <ellipse cx="500" cy="72" rx="96" ry="66" fill="url(#gLeaf)"/>
+                <ellipse cx="574" cy="118" rx="70" ry="52" fill="url(#gLeaf)"/>
+              </g>
+            </g>
+
             <g id="zonesBody" class="view-layer" data-view="body"></g>
             <g id="zonesTree" class="view-layer" data-view="tree"></g>
             <g class="anchor-halo" id="anchorHalo">
@@ -510,22 +541,28 @@ var AISEngine = (function(){
    2) GEOMETRÍA — coordenadas en el viewBox 820×1240 de cada ilustración.
    Recorrido: EXTERIOR → z1 (garganta/copa) → z2 (pecho/tronco) → z3 (barriga/raíces)
    ========================================================= */
+/* Ilustración base: organismo real (820×1240). El AIRE (azul) recorre nariz→barriga por 'route';
+   la CONCIENCIA (amarilla) NACE en la copa/frente y baja por 'mind' hasta las raíces/barriga.
+   Cuerpo y Árbol comparten el recorrido; sólo cambian las etiquetas y dónde está z1
+   (garganta en Cuerpo, copa/frente en Árbol). */
 var GEO = {
   body: {
-    route: [[399,55],[399,170],[399,300],[399,510],[403,600],[413,660],[406,730],[403,860]],
-    anchors: { ext: 0, z1: 2, z2: 3, z3: 7 },      /* índices en route */
-    hits: { z1:[399,290,70,55], z2:[399,510,185,150], z3:[402,865,160,190] },
-    labels:{ z1:[486,300,'L'], z2:[620,470,'L'], z3:[594,880,'L'] },
-    glow:  { z1:[399,300,80], z2:[399,510,150], z3:[403,860,165] },
+    route: [[407,175],[407,245],[407,300],[407,395],[407,470],[409,600],[408,700],[405,807]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 7 },      /* índices en route */
+    mind:  [[406,120],[406,220],[407,320],[407,440],[407,560],[406,690],[405,807]],
+    hits: { z1:[407,300,74,58], z2:[407,470,180,150], z3:[405,810,165,190] },
+    labels:{ z1:[500,300,'L'], z2:[600,455,'L'], z3:[585,815,'L'] },
+    glow:  { z1:[407,300,72], z2:[407,470,150], z3:[405,807,165] },
     haloY: '46%'
   },
   tree: {
-    route: [[416,14],[416,120],[416,330],[416,560],[419,770],[421,880],[422,1010]],
-    anchors: { ext: 0, z1: 2, z2: 4, z3: 6 },
-    hits: { z1:[418,380,315,340], z2:[419,775,85,58], z3:[420,1025,300,195] },
-    labels:{ z1:[620,110,'L'], z2:[520,775,'L'], z3:[632,1150,'L'] },
-    glow:  { z1:[416,330,210], z2:[419,770,90], z3:[422,1010,190] },
-    haloY: '52%'
+    route: [[407,175],[407,245],[407,300],[407,395],[407,470],[409,600],[408,700],[405,807]],
+    anchors: { ext: 0, z1: 2, z2: 4, z3: 7 },
+    mind:  [[406,120],[406,220],[407,320],[407,440],[407,560],[406,690],[405,807]],
+    hits: { z1:[405,130,300,150], z2:[407,470,95,120], z3:[405,880,300,190] },
+    labels:{ z1:[560,120,'L'], z2:[540,470,'L'], z3:[600,905,'L'] },
+    glow:  { z1:[405,120,150], z2:[407,470,95], z3:[405,807,175] },
+    haloY: '50%'
   }
 };
 /* q ∈ [Q_EXIT, 1]: Q_EXIT = exterior, 0 = z1, 0.5 = z2, 1 = z3. El mismo q da el mismo punto semántico en ambas vistas. */
@@ -536,6 +573,20 @@ function prepRoute(g){
   var a = g.anchors;
   g._cum = cum;
   g._keys = [ [AISEngine.Q_EXIT, cum[a.ext]], [0, cum[a.z1]], [0.5, cum[a.z2]], [1, cum[a.z3]] ];
+  /* recorrido de la conciencia: copa/frente (q=0) → raíces/barriga (q=1) */
+  var m = g.mind, mc = [0];
+  for (var j = 1; j < m.length; j++) mc.push(mc[j-1] + Math.hypot(m[j][0]-m[j-1][0], m[j][1]-m[j-1][1]));
+  g._mcum = mc;
+}
+/* punto de la conciencia para q∈[0,1] (se recorta): 0 = copa/frente, 1 = raíces/barriga */
+function mindPointAt(g, q){
+  var m = g.mind, mc = g._mcum, total = mc[mc.length-1];
+  var L = Math.min(1, Math.max(0, q)) * total;
+  for (var j = 1; j < mc.length; j++) if (L <= mc[j]){
+    var f = (L - mc[j-1]) / (mc[j] - mc[j-1] || 1);
+    return [m[j-1][0] + f * (m[j][0] - m[j-1][0]), m[j-1][1] + f * (m[j][1] - m[j-1][1])];
+  }
+  return m[m.length-1].slice();
 }
 function pointAt(g, q){
   var k = g._keys, L;
@@ -571,7 +622,7 @@ var AIS_I18N = {
     },
     metaphor: {
       body: 'La respiración guía la atención hacia dentro y hacia abajo.',
-      tree: 'La presión puede estar fuera. Vuelves a las raíces para sostenerte desde dentro.'
+      tree: 'La copa —tus pensamientos— se remueve con la presión. Tu conciencia baja de la copa a las raíces para sostenerte desde dentro.'
     },
     cueIdle: 'Toca donde lo notes, o empieza', cueNoticed: 'Lo notas en {z}',
     start: 'Empezar', stop: 'Parar',
@@ -597,7 +648,7 @@ var AIS_I18N = {
     },
     metaphor: {
       body: 'The breath guides attention inward and down.',
-      tree: 'Pressure may be outside. You return to the roots to hold yourself from within.'
+      tree: 'The crown —your thoughts— stirs under pressure. Your awareness drops from the crown to the roots to hold you from within.'
     },
     cueIdle: 'Tap where you notice it, or start', cueNoticed: 'You notice it in {z}',
     start: 'Start', stop: 'Stop',
@@ -710,7 +761,8 @@ var BreathingIllustration = (function(){
     airEl.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')');
     airEl.style.opacity = (s.phase === 'pause' ? 0 : (s.phase === 'anchor' ? s.dot * 0.55 : s.dot)).toFixed(3);
     if (s.phase === 'inhale'){
-      var cq = Math.max(0, s.q - 0.12), cp = pointAt(g, cq);
+      /* la conciencia NACE en la copa/frente (q pequeño) y baja por el tronco hasta las raíces */
+      var cq = Math.max(0, s.q - 0.06), cp = mindPointAt(g, cq);
       var fade = Math.max(0, Math.min(1, (1 - s.progress) / 0.2));   /* se funde en las raíces al final */
       dotEl.setAttribute('transform', 'translate(' + cp[0].toFixed(1) + ' ' + cp[1].toFixed(1) + ')');
       dotEl.style.opacity = (s.dot * fade).toFixed(3);
