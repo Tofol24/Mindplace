@@ -1,13 +1,14 @@
 /* Formentor Flow · Manager — Service Worker
    Precache del shell → funciona 100% offline tras la primera visita.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "formentor-flow-v14";
+const CACHE = "formentor-flow-v25";
 const SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./assets/icon.svg",
-  "./assets/icon-maskable.svg"
+  "./assets/icon-maskable.svg",
+  "./assets/organismo.webp"
 ];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

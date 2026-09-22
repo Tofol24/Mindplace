@@ -24,6 +24,9 @@ window.APRENS_TOOLS = [
   { id:"bajar_alerta", emoji:"🫁", nombre:"Bajar la alerta",
     desc:"4 pasos para volver al aquí y ahora cuando te notas en alerta.",
     migrada:true, iframe:"tools-standalone/bajar-alerta.html" },
+  { id:"respiro_ais", emoji:"💛", nombre:"Respiro · dos luces",
+    desc:"Respirar viendo dos luces: el aire (el cebo) y tu conciencia, que baja y se queda en el vientre.",
+    migrada:true, iframe:"tools-standalone/respiro-ais.html" },
   { id:"brujula_valores", emoji:"🧭", nombre:"Brújula de valores",
     desc:"Tus áreas vitales: qué te importa y con qué forma estás ahí (ACT).",
     migrada:true, iframe:"tools-standalone/brujula-valores.html" },
@@ -145,9 +148,21 @@ window.APRENS_TOOLS = [
     desc:"El mapa del malestar en versión animada y narrada (voz del dispositivo): buscar el control (sobrepensar) frente a parar y volver al cuerpo.",
     migrada:true, iframe:"tools-standalone/historia-control.html" },
 
+  { id:"llave_de_paso", emoji:"🔧", nombre:"La llave de paso",
+    desc:"Para oficios autónomos que trabajan a domicilio (fontanería, instalaciones, reparaciones): entrenar el AIS en los momentos reales de la jornada, antes de bajar de la furgoneta y al volver a subir. Respiración curiosa con anclaje en la barriga, parada de pensamiento, el segundo de antes de contestar al cliente (límites), bandeja para la carga administrativa, y cierre del día antes de entrar en casa con honestidad emocional de tono sereno y abrazo sentido. Informe diario para el psicólogo por WhatsApp.",
+    migrada:true, iframe:"llave/index.html" },
+
   { id:"cuerpo_en_alerta", emoji:"🌿", nombre:"Cuando el cuerpo sigue en alerta",
     desc:"Acompañamiento tras una experiencia traumática (accidente, agresión, amenaza): comprender la respuesta protectora, orientarse al presente, acompañar la activación con AIS, diferenciar recuerdo/alerta/peligro, recuperar territorio por valores, registro diario, mapa y plan de crisis. Botón «Necesito parar» siempre disponible (ACT · TEC · AIS).",
-    migrada:true, iframe:"tools-standalone/cuerpo-en-alerta.html" }
+    migrada:true, iframe:"tools-standalone/cuerpo-en-alerta.html" },
+
+  { id:"mapa_pareja", emoji:"\ud83d\udc9e", nombre:"Mapa de Pareja",
+    desc:"Cuestionario para mirar tu relación desde dentro: contexto, lo que funciona, un conflicto reciente, tus formas de protegerte, cercanía y autonomía, confianza, intimidad y objetivos. Se responde individualmente, con el código de pareja que os da vuestro psicólogo/a, y se guarda solo en tu dispositivo.",
+    migrada:true, iframe:"pareja/evaluacion.html" },
+
+  { id:"dolor_cronico", emoji:"\ud83e\ude79", nombre:"Cuestionario de dolor crónico",
+    desc:"Valoración del dolor crónico y del contexto psicosocial que lo acompaña, referida a las últimas cuatro semanas: cómo es el dolor, cómo condiciona tu día a día y qué te ayuda. Al terminar eliges tú si lo envías a tu psicólogo.",
+    migrada:true, iframe:"tools-standalone/dolor-cronico.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];

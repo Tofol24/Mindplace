@@ -51,6 +51,9 @@ main{max-width:720px; margin:0 auto; padding:clamp(20px,5vw,40px) clamp(18px,5vw
   background:var(--sol); border-radius:30px; padding:15px 30px; box-shadow:0 10px 24px -12px rgba(69,61,87,.5); transition:transform .12s, filter .15s;}
 .big-btn:hover{filter:brightness(1.04);} .big-btn:active{transform:translateY(1px);}
 .ghost-btn{border:2px solid var(--lila); background:transparent; color:var(--lila-dark); border-radius:30px; padding:12px 24px; font-weight:700; cursor:pointer; font-size:15px;}
+.fig-toggle{display:flex; gap:8px; justify-content:center; margin:2px 0 10px;}
+.fig-toggle .ghost-btn{padding:7px 16px; font-size:13px; border-radius:22px;}
+.fig-toggle .ghost-btn.on{background:var(--lila); border-color:var(--lila); color:#fff;}
 .game-acts{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:24px;}
 .done-msg{font-family:var(--serif); font-style:italic; font-size:19px; color:var(--menta-dark); min-height:26px; margin-top:16px;}
 

@@ -246,10 +246,8 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
   <div><div class="htit">Herramienta diaria</div><div class="hsub">APRENS Psicologia &middot; Presencia y honestidad</div></div>
 </div>
 <div class="rmodal" id="rmodal" role="dialog" aria-modal="true" aria-label="Respiración guiada">
-  <div class="rfase" id="rfase" aria-live="assertive">Inhala</div>
-  <div class="rcirc" id="rcirc"><div class="rcnt" id="rcnt">4</div></div>
-  <div class="rbar"><div class="rbarf" id="rbarf" style="width:0%"></div></div>
-  <div class="rinfo" id="rinfo">Ciclo 1 de 3</div>
+  <div id="rbox" style="width:min(86vw,340px)"></div>
+  <div class="rinfo" id="rinfo">Ronda 1 de 3</div>
   <button class="rstop" onclick="stopR()">Detener</button>
 </div>
 <div class="gmodal" id="gModal" role="dialog" aria-modal="true" aria-label="Grounding 5-4-3-2-1">
@@ -448,6 +446,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     </div>
   </div>
 </div>
+<script src="../js/respiro-ais.js"></script>
 <script>
 var LOGO="data:image/png;base64,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";
 document.getElementById("lgImg").src=LOGO;
@@ -484,9 +483,6 @@ vincle:"Vínculo",fraseText:"No sé por qué pero siento una sensación en {zona
 copiat:"Copiado",copiar:"Copiar",
 repte:"Reto",activitat:"Actividad",contacte:"Contacto"
 };
-
-var CICLE=[{f:"Inhala",s:4,e:1},{f:"Retiene",s:2,e:1},{f:"Exhala",s:6,e:0},{f:"Pausa",s:2,e:0}];
-var RONDES=3,TSEG=14;
 
 // ─── localStorage helpers ───────────────────────────────────────────────────
 function lsGet(k,def){try{var v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
@@ -800,50 +796,39 @@ function selH(el,v,field){
   saveToday(); updPend(); updResum();
 }
 
-var rTmr=null,rRonda=0,rFi=0,rSeg=0,rTip="verd";
-function cicloDe(r){ var c=[{f:"Inhala",s:r[0],e:1}]; if(r[1]>0)c.push({f:"Retiene",s:r[1],e:1}); c.push({f:"Exhala",s:r[2],e:0}); if(r[3]>0)c.push({f:"Pausa",s:r[3],e:0}); return c; }
-var CICLE=cicloDe([4,2,6,2]);
-var RONDES=3,TSEG=14;
+/* Respiración de dos luces (componente RespiroAIS): el aire (azul) es el cebo;
+   la conciencia (amarilla) baja siguiéndolo y se queda en el vientre. Se hacen
+   RONDES respiraciones; el punto rojo (reactivo) alarga la exhalación. */
+var RONDES=3, rTip="verd", respiroDia=null;
 function startR(tip){
   rTip=tip;
-  // Adaptar al estado: punto rojo (reactivo/activado) → exhalación más larga, retención mínima
-  CICLE = (tip==="verm") ? cicloDe([3,1,6,1]) : cicloDe([4,2,6,2]);
-  TSEG = CICLE.reduce(function(a,c){return a+c.s;},0);
-  rRonda=0; rFi=0; rSeg=CICLE[0].s;
+  var rhythm = (tip==="verm")
+    ? { inhale:3000, anchor:1000, exhale:6000, pause:1000 }
+    : { inhale:4000, anchor:2000, exhale:6000, pause:2000 };
+  var box=document.getElementById("rbox");
+  document.getElementById("rinfo").textContent="Ronda 1 de "+RONDES;
   document.getElementById("rmodal").classList.add("on");
-  updR(); rTmr=setInterval(tickR,1000);
-}
-function updR(){
-  var f=CICLE[rFi];
-  document.getElementById("rfase").textContent=f.f;
-  document.getElementById("rcnt").textContent=rSeg;
-  var c=document.getElementById("rcirc");
-  if(f.e) c.classList.add("exp"); else c.classList.remove("exp");
-  var el=0; for(var i=0;i<rFi;i++) el+=CICLE[i].s;
-  el+=(CICLE[rFi].s-rSeg);
-  document.getElementById("rbarf").style.width=Math.round(el/TSEG*100)+"%";
-}
-function tickR(){
-  rSeg--;
-  if(rSeg<=0){
-    rFi++;
-    if(rFi>=CICLE.length){rFi=0;rRonda++;
-      if(rRonda>=RONDES){
-        stopR();
-        if(rTip==="verd") D.r.vd++; else D.r.vm++;
-        document.getElementById("cntVd").textContent=D.r.vd;
-        document.getElementById("cntVm").textContent=D.r.vm;
-        document.getElementById("cntTot").querySelector(".cbig").textContent=D.r.vd+D.r.vm;
-        if(D.r.vd>0) document.getElementById("btnVerd").classList.add("psel");
-        if(D.r.vm>0) document.getElementById("btnVermell").classList.add("psel");
-        saveToday(); updPend(); updEvo(); updResum(); return;
-      }
+  if(respiroDia){ respiroDia.destroy(); respiroDia=null; }
+  if(!window.RespiroAIS){ return; }
+  respiroDia = RespiroAIS.mount(box, {
+    lang:"es", showControl:false, showZones:true, autostart:true, rhythm:rhythm,
+    onCycle:function(n){
+      if(n>=RONDES){ finishR(); return; }
+      document.getElementById("rinfo").textContent="Ronda "+(n+1)+" de "+RONDES;
     }
-    rSeg=CICLE[rFi].s;
-  }
-  updR();
+  });
 }
-function stopR(){ clearInterval(rTmr); document.getElementById("rmodal").classList.remove("on"); }
+function finishR(){
+  stopR();
+  if(rTip==="verd") D.r.vd++; else D.r.vm++;
+  document.getElementById("cntVd").textContent=D.r.vd;
+  document.getElementById("cntVm").textContent=D.r.vm;
+  document.getElementById("cntTot").querySelector(".cbig").textContent=D.r.vd+D.r.vm;
+  if(D.r.vd>0) document.getElementById("btnVerd").classList.add("psel");
+  if(D.r.vm>0) document.getElementById("btnVermell").classList.add("psel");
+  saveToday(); updPend(); updEvo(); updResum();
+}
+function stopR(){ if(respiroDia){ respiroDia.stop(); } document.getElementById("rmodal").classList.remove("on"); }
 
 // ─── PWA / NOTIF ─────────────────────────────────────────────────────────────
 var pwaEv=null;

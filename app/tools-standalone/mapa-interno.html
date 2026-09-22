@@ -336,7 +336,7 @@
     <h2><span class="ic">🌬️</span>Respira y mira la zona</h2>
     <p class="lead">Deja que la atención descanse en esa parte del cuerpo mientras respiras. La imagen te marca el sitio; tú solo intenta notarlo.</p>
     <div class="breath-wrap">
-      <div class="breath" id="breath"><span id="breathEmoji" style="font-size:30px"></span></div>
+      <div id="respiroBox"></div>
       <div class="brcap" id="brcap">Toca «Empezar» y respira a tu ritmo</div>
     </div>
     <button class="btn ghost small" style="width:100%" id="btnBreath" onclick="toggleBreath()">Empezar a respirar</button>
@@ -458,6 +458,7 @@
 </div>
 
 <script src="../js/aprens-core.js"></script>
+<script src="../js/respiro-ais.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════════════
    DATOS · ZONAS  (edita aquí guías, frases y colores de cada zona)
@@ -640,20 +641,24 @@ function setInten(v,btn){ btn.parentNode.querySelectorAll('button').forEach(func
 function setCurio(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.curio=v; }
 
 /* ════════════════════════ RESPIRACIÓN (orbe) ════════════════════════ */
-var brRun=false, brInt=null;
+var brRun=false, activeRespiro=null;
 function toggleBreath(){ brRun?pararBreath():iniciarBreath(); }
 function iniciarBreath(){
   brRun=true;
-  document.getElementById('breath').classList.add('run');
   document.getElementById('btnBreath').textContent='Parar';
-  var fases=['Inspira…','Espira…'];
-  var i=0;
-  document.getElementById('brcap').textContent=fases[0];
-  brInt=setInterval(function(){ i=(i+1)%2; document.getElementById('brcap').textContent=fases[i]; },4500);
+  var c=document.getElementById('brcap'); if(c) c.textContent='Respira a tu ritmo';
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS){ brRun=false; return; }
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:true,
+    rhythm:{ inhale:4500, anchor:800, exhale:4500, pause:700 },
+    labels:{ phase:{ inhale:'Inspira', anchor:'quédate', exhale:'Espira', pause:'pausa' },
+             hint:{ inhale:'deja la atención en la zona', anchor:'nota la zona', exhale:'suelta despacio', pause:'descansa un instante' } }
+  });
 }
 function pararBreath(){
-  brRun=false; clearInterval(brInt);
-  var br=document.getElementById('breath'); if(br) br.classList.remove('run');
+  brRun=false;
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
   var b=document.getElementById('btnBreath'); if(b) b.textContent='Empezar a respirar';
   var c=document.getElementById('brcap'); if(c) c.textContent='Toca «Empezar» y respira a tu ritmo';
 }
