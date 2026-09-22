@@ -319,6 +319,43 @@
       </section>`;
   }
 
+  // Las tres puertas (L/D/C): marco por parámetro TEC. Espeja las «puertas» de
+  // aprens-inicio; cada una abre su herramienta principal y sugiere dos afines.
+  function puertasHTML(){
+    const byId = {}; (window.APRENS_TOOLS||[]).forEach(t=>{ byId[t.id]=t; });
+    const P = [
+      { emoji:"🛑", tit:"Parar a tiempo", sub:"Latencia", col:"var(--azul)",
+        obj:"Ganar un instante entre lo que sientes y lo que haces, para elegir en vez de reaccionar.",
+        main:"bajar_alerta", chips:["control_ira","estoy_aqui_conmigo"] },
+      { emoji:"🌬️", tit:"Estar presente", sub:"Densidad", col:"var(--verde)",
+        obj:"Calmar por dentro y sostener lo que sientes, sin luchar contra ello.",
+        main:"herramienta_diaria", chips:["acompanar_sensacion","ais_basicas"] },
+      { emoji:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", col:"var(--oro)",
+        obj:"Que tus acciones, día a día, vayan hacia lo que de verdad te importa.",
+        main:"brujula_valores", chips:["honestidad_emocional","agenda_atencional"] }
+    ];
+    const cards = P.map(d=>{
+      const main = byId[d.main];
+      const chips = d.chips.map(id=>byId[id]).filter(Boolean)
+        .map(t=>`<a class="puerta-chip" href="#/tool/${t.id}">${t.emoji} ${t.nombre}</a>`).join("");
+      const cta = main
+        ? `<a class="puerta-cta" href="#/tool/${main.id}">${main.emoji} Empezar · ${main.nombre} →</a>`
+        : "";
+      return `<div class="puerta" style="--pc:${d.col}">
+        <div class="puerta-h"><span class="puerta-e">${d.emoji}</span>
+          <span class="puerta-tt"><b>${d.tit}</b><small>${d.sub}</small></span></div>
+        <p class="puerta-obj">${d.obj}</p>
+        ${cta}
+        ${chips?`<div class="puerta-chips">${chips}</div>`:""}
+      </div>`;
+    }).join("");
+    return `<section class="puertas">
+      <div class="hub-sec"><span class="hub-sec-e">🚪</span><span class="hub-sec-t">Las tres puertas · por dónde entrar</span></div>
+      <div class="hub-sec-d">Todo el trabajo se ordena en tres: <b>parar a tiempo</b> (latencia), <b>estar presente</b> (densidad) y <b>seguir tu dirección</b> (continuidad). Elige por tu objetivo de hoy — tu psicólogo/a te dirá cuál te toca.</div>
+      <div class="puertas-grid">${cards}</div>
+    </section>`;
+  }
+
   // ---- El AIS en un vistazo · la silueta y las dos luces ------------------
   // El núcleo de todo el método, mostrado con el ejercicio de la silueta:
   // la atención consciente (luz amarilla) nace en la cabeza, el aire (azul)
@@ -488,6 +525,7 @@
       </div>
       ${porqueHTML()}
       ${aisNucleoHTML()}
+      ${puertasHTML()}
       ${continuidadHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
