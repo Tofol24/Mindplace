@@ -394,10 +394,11 @@
         if (ax.delta != null) parts.push(pr[0] + " " + (ax.delta < -0.05 ? "↓" : ax.delta > 0.05 ? "↑" : "=") + fmtDelta(ax.delta));
       });
       if (parts.length) {
-        var imp = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta < -0.05; }).length;
-        var wor = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta > 0.05; }).length;
-        var trend = imp > wor ? "tendencia global a la baja (menor captación atencional excesiva)"
-          : wor > imp ? "tendencia global al alza (mayor captación atencional)"
+        // L/D/C del screening puntúan 0–10 con alto = mejor: subir es mejorar.
+        var imp = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta > 0.05; }).length;
+        var wor = ["L", "D", "C"].filter(function (k) { return sr[k].delta != null && sr[k].delta < -0.05; }).length;
+        var trend = imp > wor ? "tendencia global al alza (mayor regulación, menor sobrepensamiento)"
+          : wor > imp ? "tendencia global a la baja (menor regulación)"
           : "sin cambios netos relevantes entre medidas";
         lines.push("Screening L/D/C: " + parts.join(", ") + " → " + trend + ".");
       }
@@ -423,7 +424,7 @@
 
     function axisRow(label, ax) {
       var arrow = ax.delta == null ? "" : (ax.delta < -0.05 ? "↓" : ax.delta > 0.05 ? "↑" : "→");
-      var cls = ax.delta == null ? "" : (ax.delta < -0.05 ? "good" : ax.delta > 0.05 ? "bad" : "flat");
+      var cls = ax.delta == null ? "" : (ax.delta > 0.05 ? "good" : ax.delta < -0.05 ? "bad" : "flat");
       return '<tr><th>' + esc(label) + '</th><td>' + fmt(ax.first) + '</td><td>' + fmt(ax.last) +
         '</td><td class="' + cls + '">' + arrow + " " + fmtDelta(ax.delta) + '</td></tr>';
     }
@@ -478,7 +479,7 @@
           '<div><span class="inf-lbl">Generado</span><b>' + esc(today) + '</b></div></div>' +
 
         '<section class="inf-sec"><h2><span class="inf-num">1</span> Evolución del screening</h2>' +
-          '<p class="inf-lead">Captación atencional excesiva: latencia (tardanza en desengancharse), densidad (intensidad) y continuidad (persistencia). Un descenso indica menor sobrepensamiento.</p>' + screeningHTML + '</section>' +
+          '<p class="inf-lead">Parámetros TEC del screening (0–10, más alto = mejor): latencia (espacio entre la activación interna y la respuesta), densidad (ruido interno; alto = poco ruido) y continuidad (sostener atención y dirección sin fragmentarse). Un ascenso indica mayor regulación y menor sobrepensamiento.</p>' + screeningHTML + '</section>' +
 
         '<section class="inf-sec"><h2><span class="inf-num">2</span> Adherencia y realización de tareas</h2>' +
           '<p class="inf-lead">Capacidad del paciente para llevar a cabo las prácticas indicadas: constancia y cobertura del periodo.</p>' + adhHTML + '</section>' +
