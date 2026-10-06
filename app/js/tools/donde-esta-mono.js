@@ -38,8 +38,8 @@
       pasos:['<b>PARA.</b> Nota el impulso de hacer «eso» que alivia y di STOP un momento.',
              '<b>SIENTE.</b> Lleva la atención al cuerpo: ¿dónde está la urgencia? Pecho, manos, estómago.',
              '<b>ACOMPAÑA.</b> Respira hacia ahí y sostén la sensación 20-60 seg SIN ejecutar la conducta.',
-             '<b>ACTÚA.</b> Cuando baje la ola, elige un paso pequeño con sentido, no el alivio rápido.'],
-      tool:{nombre:'Bajar la alerta', url:'https://aprens-bajaralerta.netlify.app', desc:'Para parar antes de actuar y bajar revoluciones cuando el impulso compulsivo te empuja.'},
+             '<b>ACTÚA.</b> Sin esperar a que baje la ola, elige un paso pequeño con sentido, no el alivio rápido.'],
+      tool:{nombre:'Bajar la alerta', url:'https://aprens-bajaralerta.netlify.app', desc:'Para parar antes de actuar cuando el impulso compulsivo te empuja: cuatro pasos para volver al aquí y ahora.'},
       alt:{nombre:'Acompañar la sensación', url:'https://aprens-acompanar-sensacion.netlify.app'} },
     delante:{ em:'🐒🙅', tit:'Lo llevo delante, juzgándolo', etiqueta:'delante (lo juzgo)', color:'delante', param:'densidad',
       galt:'Delante, juzgándolo', gald:'Lo juzgo, me reprocho y me sobreexijo no sentir.',
@@ -211,7 +211,7 @@
           <div class="wa">
             <h4>📋 Tu resumen</h4>
             <textarea data-out readonly></textarea>
-            <div style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Esta herramienta se usa cuando te pasa algo.</div>
+            <div style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Úsala cuando te pase algo y, además, haz el check-in a horas fijas aunque estés bien: así el mono aprende que no tiene que alarmarse para que lo mires.</div>
             <div class="row2">
               <button class="btn wabtn" data-send="wa">Enviar por WhatsApp</button>
               <button class="btn copybtn" data-send="copy">Copiar</button>

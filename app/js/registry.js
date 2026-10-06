@@ -90,7 +90,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"ritual/index.html" },
 
   { id:"rincon_calma", emoji:"🧸", nombre:"Rincón de calma",
-    desc:"Juegos infantiles cortos, visuales y lúdicos para practicar la calma: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
+    desc:"Juegos infantiles cortos, visuales y lúdicos para practicar estar con lo que siento: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
     migrada:true, iframe:"rincon/index.html" },
 
   { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",

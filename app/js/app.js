@@ -394,7 +394,7 @@
         obj:"Ganar un instante entre lo que sientes y lo que haces, para elegir en vez de reaccionar.",
         main:"bajar_alerta", chips:["control_ira","estoy_aqui_conmigo"] },
       { emoji:"🌬️", tit:"Estar presente", sub:"Densidad", col:"var(--verde)",
-        obj:"Calmar por dentro y sostener lo que sientes, sin luchar contra ello.",
+        obj:"Aparecer por dentro y sostener lo que sientes, sin luchar contra ello.",
         main:"herramienta_diaria", chips:["acompanar_sensacion","ais_basicas"] },
       { emoji:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", col:"var(--oro)",
         obj:"Que tus acciones, día a día, vayan hacia lo que de verdad te importa.",
