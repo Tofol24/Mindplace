@@ -201,14 +201,14 @@ VIEWS.home=function(){
 
   <div class="card">
     <div class="ctit">Cada día, dos frentes</div>
-    <p class="sm"><b>1) Por dentro</b> — calmar y acompañar: respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto.</p>
+    <p class="sm"><b>1) Por dentro</b> — aparecer y acompañar: respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto.</p>
     <p class="sm"><b>2) Por fuera</b> — recuperar terreno: un peldaño de tu escalera de salidas y, cuando toque, exposición en imaginación.</p>
     <p class="sm mut">No hace falta hacerlo todo. Tu psicóloga/o te dirá en qué poner el foco esta semana.</p>
   </div>
 
   <div class="ctit" style="margin:4px 0 2px">Por dentro · herramientas AIS</div>
   <div class="hub">
-    <button class="tool c-verde" onclick="go('respiracion')"><span class="e">🫁</span><span class="n">Respiración curiosa</span><span class="d">Calmarte observando el cuerpo con curiosidad.</span></button>
+    <button class="tool c-verde" onclick="go('respiracion')"><span class="e">🫁</span><span class="n">Respiración curiosa</span><span class="d">Acercarte a lo que sientes, con curiosidad.</span></button>
     <button class="tool c-naranja" onclick="go('parada')"><span class="e">🛑</span><span class="n">Parar la rumiación</span><span class="d">Cuando la cabeza da vueltas al conflicto.</span></button>
     <button class="tool c-lila" onclick="go('abrazo')"><span class="e">🤍</span><span class="n">Abrazo sentido</span><span class="d">Acompañarte con cariño, con los tuyos dentro.</span></button>
     <button class="tool c-verde" onclick="go('sobresalto')"><span class="e">🌊</span><span class="n">Estar con el sobresalto</span><span class="d">Cuando una sensación o un susto te sacude.</span></button>
@@ -244,6 +244,7 @@ VIEWS.respiracion=function(){
       <li>No tengo que cambiarla ni entenderla. Solo <b>estar con ella</b>.</li>
     </ul>
     <div class="frase">«No necesito que estés bien para estar contigo. Estoy aquí también cuando cuesta.»</div>
+    <div class="warn">Y ahora, <b>vuelve</b>: ¿cuál es el siguiente paso pequeño? Retoma lo que estabas haciendo, con la sensación que haya.</div>
     <button class="btn bs full" onclick="marca('Respiración curiosa');go('home')">Hecho ✓</button>
   </div>`;
 };
@@ -328,6 +329,7 @@ VIEWS.abrazo=function(){
       <li>Deja que tu cuerpo reciba el apoyo. No tienes que sostenerlo todo tú solo/a.</li>
     </ul>
     <div class="frase">Compartir el dolor nos hace cómplices, no nos hace débiles.</div>
+    <div class="warn">Desde aquí, <b>vuelve a tu día</b> con un paso concreto: lo que tocaba hacer, o algo cotidiano y pequeño.</div>
     <button class="btn bs full" onclick="marca('Abrazo sentido');go('home')">Hecho ✓</button>
   </div>`;
 };
@@ -336,13 +338,14 @@ VIEWS.abrazo=function(){
 VIEWS.sobresalto=function(){
   return `
   <h2>Estar con el sobresalto</h2>
-  <p class="mut sm">Cuando algo te sobresalta o sube una oleada de ansiedad, el cuerpo cree que hay peligro. Tu trabajo no es apagarlo, es <b>acompañarlo</b> hasta que baje — y baja.</p>
+  <p class="mut sm">Cuando algo te sobresalta o sube una oleada de ansiedad, el cuerpo cree que hay peligro. Tu trabajo no es apagarlo, es <b>acompañarlo</b>. A veces bajará y a veces no: no es eso lo que mides, sino que te has quedado contigo.</p>
   <div class="card">
     <div class="pasoline"><div class="pasonum">1</div><div><b>Paro</b> un momento. No actúo desde el susto.</div></div>
     <div class="pasoline"><div class="pasonum">2</div><div><b>Localizo</b> dónde lo noto (pecho, garganta, barriga, hombros).</div></div>
     <div class="pasoline"><div class="pasonum">3</div><div><b>Describo con curiosidad</b>: ¿presión, calor, temblor, nudo? ¿se mueve, cambia?</div></div>
     <div class="pasoline"><div class="pasonum">4</div><div><b>Me quedo</b> con ella respirando, sin empujarla fuera. «Esto es alerta, no peligro».</div></div>
-    <div class="pasoline"><div class="pasonum">5</div><div><b>Suelto el porqué.</b> No necesito entenderlo ahora. Solo estar, hasta que afloje.</div></div>
+    <div class="pasoline"><div class="pasonum">5</div><div><b>Suelto el porqué.</b> No necesito entenderlo ahora. Solo estar unos segundos más, sin esperar que cambie.</div></div>
+    <div class="pasoline"><div class="pasonum">6</div><div><b>Vuelvo.</b> Elijo un paso pequeño ahora —seguir caminando, entrar, beber agua— y pongo ahí la atención. La sensación puede venir conmigo.</div></div>
     <div id="aisBox" class="breath-wrap" style="max-width:190px;margin:8px auto 2px"></div>
     <div class="warn">Tus dolores de hombros, la tensión… también se escuchan así: con atención amable, sin pelearte con el cuerpo.</div>
     <button class="btn bs full" onclick="marca('Acompañar el sobresalto');go('home')">Hecho ✓</button>

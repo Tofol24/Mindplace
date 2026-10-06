@@ -802,9 +802,10 @@ function selH(el,v,field){
 var RONDES=3, rTip="verd", respiroDia=null;
 function startR(tip){
   rTip=tip;
-  var rhythm = (tip==="verm")
+  // Los botones envían 'vermell' (punto rojo): cualquier cosa que no sea 'verd' es reactivo.
+  var rhythm = (tip!=="verd")
     ? { inhale:3000, anchor:1000, exhale:6000, pause:1000 }
-    : { inhale:4000, anchor:2000, exhale:6000, pause:2000 };
+    : { inhale:4000, anchor:2000, exhale:6000, pause:1500 };
   var box=document.getElementById("rbox");
   document.getElementById("rinfo").textContent="Ronda 1 de "+RONDES;
   document.getElementById("rmodal").classList.add("on");

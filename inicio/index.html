@@ -551,7 +551,7 @@
         <div class="wa">
           <h4>📋 Tu resumen</h4>
           <textarea id="outResumen" readonly></textarea>
-          <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Esta herramienta se usa cuando te pasa algo.</div>
+          <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Úsala cuando te pase algo y, además, practícala <b>3 veces al día aunque estés bien</b>: así el gesto está disponible cuando lo necesitas.</div>
           <div class="row2">
             <button class="btn wabtn" onclick="enviarWA()">Enviar por WhatsApp</button>
             <button class="btn copybtn" onclick="copiar()">Copiar</button>
@@ -569,7 +569,7 @@
 // ═══ Catálogo de herramientas (espejo del panel: nombre, url, params L/D/C, icono y descripción para el paciente) ═══
 const TOOLS=[
   {nombre:"¿Cómo llevas a tu mono?", url:"https://aprens-app.netlify.app/#/tool/estado_mono",        ic:"🐒", params:["L","D"],     desc:"Check-in con el cuento: ¿dónde llevas hoy lo incómodo? Una mirada más pausada que el detective."},
-  {nombre:"Bajar la alerta",         url:"https://aprens-app.netlify.app/#/tool/bajar_alerta",        ic:"🧯", params:["L"], tema:"impulsos",         desc:"Cuando estás muy activado/a y quieres bajar revoluciones antes de reaccionar."},
+  {nombre:"Bajar la alerta",         url:"https://aprens-app.netlify.app/#/tool/bajar_alerta",        ic:"🧯", params:["L"], tema:"impulsos",         desc:"Para parar antes de reaccionar cuando estás muy activado/a: cuatro pasos para volver al aquí y ahora."},
   {nombre:"Control de ira",          url:"https://aprens-app.netlify.app/#/tool/control_ira",         ic:"🔥", params:["L","D"], tema:"impulsos",     desc:"Autorregistro para DESPUÉS de un episodio de enfado: apuntar qué pasó, dónde lo notaste y cómo lo regulaste. Para parar en caliente, usa «Bajar la alerta»."},
   {nombre:"Acompañar la sensación",  url:"https://aprens-app.netlify.app/#/tool/acompanar_sensacion", ic:"🫁", params:["L","D"],     desc:"Cuando notas presión en el pecho, náuseas o ansiedad en el cuerpo."},
   {nombre:"AIS desde la curiosidad", url:"https://aprens-app.netlify.app/#/tool/ais_curiosidad",      ic:"🔎", params:["L","D"],     desc:"Mirar lo que sientes con curiosidad, observando sus cualidades sin el «por qué»."},
@@ -586,7 +586,7 @@ const TOOLS=[
   {nombre:"La familia de Koa (cuento)", url:"https://aprens-app.netlify.app/#/tool/cuento_familia", ic:"🐨", params:["D"], peques:true, pdfs:[{l:"Castellano",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-es.pdf"},{l:"Català",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-ca.pdf"}], desc:"Cuento ilustrado para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Con pregunta y gesto en cada página y guía para mamá."},
   {nombre:"La exploradora valiente", url:"https://aprens-app.netlify.app/#/tool/exploradora_valiente", ic:"🗺️", params:["D","C"], peques:true, desc:"Exposición gradual para la ansiedad de separación: escaleras de misiones de valiente, mapa de seguridad y las dos llaves (para madres y padres)."},
   {nombre:"Ritual diario · calma y atención", url:"https://aprens-app.netlify.app/#/tool/ritual_calma", ic:"🌙", params:["L","D"], peques:true, desc:"Ritual diario de audios AIS, normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1 (para regulación y rabietas)."},
-  {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], peques:true, desc:"Juegos cortos y visuales para practicar la calma: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
+  {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], peques:true, desc:"Juegos cortos y visuales para practicar estar con lo que siento: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
   {nombre:"Tracker TEC",             url:"https://aprens-app.netlify.app/#/tool/tracker_tec",               ic:"📊", params:["L","C"],     desc:"Tu seguimiento de paradas y rutina diaria."},
   {nombre:"Brújula de valores",      url:"https://aprens-app.netlify.app/#/tool/brujula_valores",     ic:"🧭", params:["C"],         desc:"Mirar qué te importa y cómo de cerca estás por tu forma de estar."},
   {nombre:"Agenda atencional",       url:"https://aprens-app.netlify.app/#/tool/agenda_atencional",   ic:"🗓️", params:["L","D","C"], desc:"Organiza tu semana y dónde poner tu atención en cada momento."},
@@ -595,7 +595,7 @@ const TOOLS=[
 
 const DOORS=[
   {k:"L", ic:"🛑", tit:"Parar a tiempo",     sub:"Latencia",     color:"var(--azul)",   bg:"var(--azulLt)",  obj:"Tu objetivo aquí: ganar un instante entre lo que sientes y lo que haces, para poder elegir en vez de reaccionar. Para parar en caliente empieza por «Bajar la alerta» (o respiración); «Control de ira» es el autorregistro para después.", main:"Bajar la alerta"},
-  {k:"D", ic:"🌬️", tit:"Estar presente",     sub:"Densidad",     color:"var(--verde)",  bg:"var(--verdeLt)", obj:"Tu objetivo aquí: calmar por dentro y sostener lo que sientes, sin luchar contra ello.", main:"Herramienta diaria"},
+  {k:"D", ic:"🌬️", tit:"Estar presente",     sub:"Densidad",     color:"var(--verde)",  bg:"var(--verdeLt)", obj:"Tu objetivo aquí: aparecer por dentro y sostener lo que sientes, sin luchar contra ello.", main:"Herramienta diaria"},
   {k:"C", ic:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", color:"var(--oro)",    bg:"var(--oroLt)",   obj:"Tu objetivo aquí: que tus acciones, día a día, vayan hacia lo que de verdad te importa.", main:"Brújula de valores"}
 ];
 
@@ -679,7 +679,7 @@ function render(){
   // Menú grande visual — cada tarjeta lleva a su sección de abajo
   const MTXT={
     L:'Ganar un instante entre lo que sientes y lo que haces, para elegir en vez de reaccionar.',
-    D:'Calmar por dentro y sostener lo que sientes, sin luchar contra ello.',
+    D:'Aparecer por dentro y sostener lo que sientes, sin luchar contra ello.',
     C:'Que tus acciones, día a día, vayan hacia lo que de verdad te importa.'
   };
   const MENU=[
@@ -846,8 +846,8 @@ var POS = {
     pasos:['<b>PARA.</b> Nota el impulso de hacer «eso» que alivia y di STOP un momento.',
            '<b>SIENTE.</b> Lleva la atención al cuerpo: ¿dónde está la urgencia? Pecho, manos, estómago.',
            '<b>ACOMPAÑA.</b> Respira hacia ahí y sostén la sensación 20-60 seg SIN ejecutar la conducta.',
-           '<b>ACTÚA.</b> Cuando baje la ola, elige un paso pequeño con sentido, no el alivio rápido.'],
-    tool:{nombre:'Bajar la alerta', url:'https://aprens-app.netlify.app/#/tool/bajar_alerta', desc:'Para parar antes de actuar y bajar revoluciones cuando el impulso compulsivo te empuja.'},
+           '<b>ACTÚA.</b> Sin esperar a que baje la ola, elige un paso pequeño con sentido, no el alivio rápido.'],
+    tool:{nombre:'Bajar la alerta', url:'https://aprens-app.netlify.app/#/tool/bajar_alerta', desc:'Para parar antes de actuar cuando el impulso compulsivo te empuja: cuatro pasos para volver al aquí y ahora.'},
     alt:{nombre:'Acompañar la sensación', url:'https://aprens-app.netlify.app/#/tool/acompanar_sensacion'}
   },
   delante:{

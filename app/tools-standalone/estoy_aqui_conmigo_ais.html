@@ -382,7 +382,7 @@ function step(t){ return '<div class="step">'+esc(t)+'</div>'; }
 function arr(){ return '<div class="arr">↓</div>'; }
 
 /* ---------------- STOP ---------------- */
-var STOP_SEQ=["Me he dado cuenta.","Ahora no necesito resolver nada.","Puedo esperar unos segundos antes de actuar.","Llevo mi atención hacia dentro."];
+var STOP_SEQ=["Me he dado cuenta.","Ahora no necesito resolver nada.","Puedo esperar unos segundos antes de actuar.","Llevo mi atención hacia dentro.","Elijo: ¿qué paso pequeño, coherente conmigo, doy ahora?"];
 var stopIdx=-1, stopAuto=null;
 VIEWS.stop=function(){
   var h='<h1 class="view-t">Botón STOP</h1>';
@@ -404,7 +404,7 @@ function stopNext(){
   aisTimers.push(stopAuto);
 }
 function finStop(){ if(stopAuto)clearInterval(stopAuto);
-  document.getElementById('stopSeq').innerHTML='<div class="sn">Has recuperado tu atención.</div><div class="btnrow" style="margin-top:8px"><button class="btn" onclick="go(\'respiro\')">Seguir con la respiración</button></div><button class="link" style="display:block;margin:10px auto 0" onclick="go(\'stop\')">Repetir STOP</button>';
+  document.getElementById('stopSeq').innerHTML='<div class="sn">Has recuperado tu atención y has elegido un paso. Ve a por él — la sensación puede venir contigo.</div><div class="btnrow" style="margin-top:8px"><button class="btn" onclick="go(\'respiro\')">Seguir con la respiración</button></div><button class="link" style="display:block;margin:10px auto 0" onclick="go(\'stop\')">Repetir STOP</button>';
   logPractica('stop');
 }
 
@@ -413,7 +413,7 @@ var RESP_FASES=[{f:"Entro",d:4,s:1.14},{f:"·",d:1,s:1.14},{f:"Te noto",d:6,s:0.
 var RESP_MSG=["Entro.","Te noto.","Me quedo contigo."];
 var respIdx=-1, respCiclo=0, respT=null;
 VIEWS.respiro=function(){
-  var h='<h1 class="view-t">Respiración de presencia</h1><p class="view-s">Tres respiraciones tranquilas. Sin retener el aire ni forzar. Solo estar.</p>';
+  var h='<h1 class="view-t">Respiración de presencia</h1><p class="view-s">Tres respiraciones de presencia. Sin retener el aire ni forzar. Solo estar.</p>';
   h+='<div class="ring-wrap"><div id="respiroBox"></div><div class="quote" id="respMsg" style="text-align:center;border-left:0;border-radius:14px;margin-top:14px">Cada respiración curiosa es una forma de decir: estoy aquí contigo.</div></div>';
   h+='<div class="btnrow"><button class="btn full" id="respBtn" onclick="respStart(this)">Empezar</button></div>';
   h+='<div id="respAfter" style="display:none"><div class="card"><h2>¿Dónde resulta más fácil dejar ahora tu atención?</h2><div class="chips" id="respZona">'+

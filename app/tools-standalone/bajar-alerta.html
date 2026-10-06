@@ -221,7 +221,7 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancla la mirada dentro <span style=
 const PASOS=[
   {ico:"🛑", tit:"Para y mira", sub:"Abre bien los ojos. Mira despacio 3 cosas a tu alrededor.", tipo:"ok", btn:"Ya miro →"},
   {ico:"🫁", tit:"Respira y ancla", sub:"Respira con las dos luces. Toca dónde apoyarte ahora.", tipo:"ancla"},
-  {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Tócalo. No hace falta explicar.", tipo:"emocion"},
+  {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Tócalo y dilo así: «No sé por qué, pero noto esto aquí». No hace falta explicar.", tipo:"emocion"},
   {ico:"👣", tit:"Una acción pequeña", sub:"Elige algo concreto para volver a tu día.", tipo:"micro"}
 ];
 const ANCLAS=[["🐾","mi animal"],["💧","agua fresca"],["🤚","algo con textura"],["🦶","los pies en el suelo"],["☕","una bebida"],["🌬️","el aire"]];
@@ -350,7 +350,7 @@ function setFin(v){nivelFin=+v;const t=document.getElementById("tv2");if(!t)retu
 function verResumen(){
   const diff=nivelIni-nivelFin;
   const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
-  const L=["🧭 Bajar la alerta — APRENS","Fecha: "+fecha,"","Alerta antes: "+nivelIni+"/10","Alerta después: "+nivelFin+"/10"+(diff>0?"  (bajó "+diff+")":"")];
+  const L=["🧭 Bajar la alerta — APRENS","Fecha: "+fecha,"","Alerta antes: "+nivelIni+"/10","Alerta después: "+nivelFin+"/10"];
   if(ancla)L.push("","Me anclé en: "+ancla);
   if(anclaZona)L.push("Ancla visual (mirar dentro): "+ZNOM[anclaZona]);
   if(frase)L.push("Noté: "+frase);
@@ -362,9 +362,10 @@ function verResumen(){
     antes:nivelIni, despues:nivelFin, baja:diff, ancla:ancla||"", anclaZona:anclaZona||"", frase:frase||"", micro:micro||"", ayuda:"" };
   if(window.Aprens) Aprens.mountBar();
 
+  // TEC: no se practica para que baje el número; la calma, si llega, es subproducto.
   const msgUp = diff>0
-    ? `Tu alerta bajó <b>${diff} ${diff===1?'punto':'puntos'}</b>. Tu cuerpo está aprendiendo a regularse. 👏`
-    : `Hoy no ha bajado en número, y también vale: has parado y te has acompañado. Cuanto más lo repitas, antes responderá tu cuerpo.`;
+    ? `Has parado, te has acompañado y has elegido un paso. <b>Eso es lo que entrenas</b> — baje o no el número.`
+    : `Hoy el número no ha bajado, y la práctica vale igual: has parado, te has acompañado y has vuelto a tu día. No practicas para que baje; practicas para no dejarte solo/a con ello.`;
 
   app.innerHTML=`
     <div class="res">
@@ -376,7 +377,7 @@ function verResumen(){
     </div>
     <p class="res-msg">${msgUp}</p>
     <div class="card">
-      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Esta herramienta se usa cuando te pasa algo.</div>
+      <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left"><b>⏱️ ¿Cuándo enviármelo?</b> En cuanto termines, <b>mándamelo en ese momento</b>. Úsala cuando te pase algo y, además, practícala <b>3 veces al día aunque estés bien</b>: así el gesto está disponible cuando lo necesitas.</div>
       <div class="acc">
         <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar a mi psicólogo/a</a>
         <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>

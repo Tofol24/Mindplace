@@ -48,14 +48,14 @@
   var LIKERT = ["Nunca", "Casi nunca", "A veces", "A menudo", "Casi siempre"];
   var AXIS = { L: "Latencia (la pausa antes de reaccionar)", D: "Densidad (sentirte por dentro)", C: "Continuidad (sostener y actuar)" };
   var FOCO_REC = {
-    L: { practica: "calma", txt: "Reaccionas rápido, sin pausa: como cuando el mono coge el volante. Empezamos recuperándolo con calma." },
+    L: { practica: "calma", txt: "Reaccionas rápido, sin pausa: como cuando el mono coge el volante. Empezamos recuperándolo: parar, sentir y elegir." },
     D: { practica: "curiosidad", txt: "Te cuesta sentirte por dentro. Empezamos anclando la atención en el cuerpo, con curiosidad." },
     C: { practica: "valores", txt: "Te dispersas y cuesta sostener. Empezamos conectando con lo que de verdad te importa." }
   };
 
   var PRACTICES = {
-    calma:      { kind: "iframe", file: "bajar-alerta.html",       emoji: "🫁", tit: "Calma en 4 pasos",        why: "Ahora el mono tiene el volante. Vamos a recuperarlo, sin pelear." },
-    muscular:   { kind: "iframe", file: "ais-muscular.html",       emoji: "💪", tit: "Tensar y soltar",         why: "Cuando algo te activa, el cuerpo aprieta. Tensa y suelta cada grupo: enséñale a pasar de la tensión a la calma." },
+    calma:      { kind: "iframe", file: "bajar-alerta.html",       emoji: "🫁", tit: "Parar en 4 pasos",        why: "Ahora el mono tiene el volante. Vamos a recuperarlo, sin pelear: parar, sentir, nombrar, actuar." },
+    muscular:   { kind: "iframe", file: "ais-muscular.html",       emoji: "💪", tit: "Tensar y soltar",         why: "Cuando algo te activa, el cuerpo aprieta. Tensa y suelta cada grupo: enséñale que puedes estar con la tensión y notar el contraste al soltar." },
     mapa:       { kind: "iframe", file: "mapa-interno.html",        emoji: "🫀", tit: "Mapa de tu cuerpo",        why: "Lleva la atención dentro: que tu cuerpo note que estás ahí." },
     acompanar:  { kind: "iframe", file: "acompanar-sensacion.html", emoji: "🤝", tit: "Acompaña lo que sientes",  why: "Sentarte junto al mono: estar con lo que sientes, sin luchar." },
     sentarse:   { kind: "mini",   mini: "sentarse", emoji: "🧘", tit: "Sentarme junto al mono",   why: "La práctica base, 3 minutos: parar, sentir, validar y dar un paso." },
@@ -66,7 +66,7 @@
     agenda:     { kind: "iframe", file: "agenda-atencional.html",   emoji: "🗓️", tit: "Tu semana con atención",   why: "Llevar la presencia a tu día a día." }
   };
   var PHASES = [
-    { n: 1, nombre: "Anclar y bajar la alerta", objetivo: "Que el cuerpo empiece a sentirse percibido y baje la alerta.", practicas: ["calma", "muscular", "sentarse", "mapa", "acompanar"] },
+    { n: 1, nombre: "Aparecer para el cuerpo", objetivo: "Que el cuerpo empiece a sentirse percibido, también en calma.", practicas: ["calma", "muscular", "sentarse", "mapa", "acompanar"] },
     { n: 2, nombre: "Mirar con curiosidad",     objetivo: "La atención interna deja de buscar el peligro y pasa a explorar.", practicas: ["curiosidad", "mapa", "sentarse"] },
     { n: 3, nombre: "Acompañarte con amor",     objetivo: "Cambiar la relación con el dolor: de control a cuidado.", practicas: ["amor", "acompanar", "sentarse"] },
     { n: 4, nombre: "Vivir desde tus valores",  objetivo: "Llevar el cambio hacia fuera: los demás, el mundo, tus valores.", practicas: ["valores", "agenda", "sentarse"] }
@@ -191,7 +191,7 @@
       '<div class="story-emoji">🌱</div><h2>Tu punto de partida</h2>' +
       '<p class="story-body">' + esc(rec.txt) + '</p>' +
       '<div class="ph-tool" style="cursor:default"><span class="e">' + pr.emoji + '</span><b>' + esc(pr.tit) + '</b></div>' +
-      '<p class="muted" style="margin:12px 0 14px">Estás en la <b>Fase 1 · Anclar y bajar la alerta</b>. Te iré sugiriendo el siguiente paso cada día. Puedes avanzar a tu ritmo.</p>' +
+      '<p class="muted" style="margin:12px 0 14px">Estás en la <b>Fase 1 · Aparecer para el cuerpo</b>. Te iré sugiriendo el siguiente paso cada día. Puedes avanzar a tu ritmo.</p>' +
       '<button class="btn-primary" id="resGo">Empezar mi primera práctica</button>' +
       '<button class="btn-soft" id="resLater">Ahora no</button>',
       function () {
@@ -380,7 +380,7 @@
         { n: "1 · Para", h: "Respira y aterriza", p: "Tres respiraciones lentas. Inhala por la nariz unos segundos, suelta el aire despacio por la boca, como si saliera por una pajita. Sin prisa.", orb: true },
         { n: "2 · Siente", h: "Mira hacia dentro", p: "Lleva la atención al pecho, la barriga o el cuello. ¿Dónde notas algo? No lo cambies: solo acompáñalo unos segundos. «No sé por qué, pero lo noto aquí.»" },
         { n: "3 · Acompaña", h: "Valida al mono", p: "Háblale con respeto, como a alguien que tiene miedo: «Está bien sentir esto. Tengo derecho a sentirme así. No estás solo.»" },
-        { n: "4 · Actúa", h: "Una microacción con valor", p: "Desde esa calma, elige el paso más pequeño que vaya en la dirección de quien quieres ser. Pequeño, concreto y posible ahora.", input: true }
+        { n: "4 · Actúa", h: "Una microacción con valor", p: "Desde aquí, tal como estés, elige el paso más pequeño que vaya en la dirección de quien quieres ser. Pequeño, concreto y posible ahora.", input: true }
       ]
     },
     respira: {
@@ -388,7 +388,8 @@
       pasos: [
         { n: "1 · Para", h: "Para el pensamiento", p: "Di «STOP» por dentro. Corta el piloto automático un segundo. No tienes que resolver nada ahora mismo." },
         { n: "2 · Respira con curiosidad", h: "Una respiración, como la primera vez", p: "Inhala despacio y observa el aire con curiosidad: ¿por dónde entra?, ¿frío o tibio?, ¿hasta dónde llega? No lo cambies: solo míralo por dentro.", orb: true },
-        { n: "3 · Aquí y ahora", h: "Vuelve al presente", p: "Nombra 3 cosas que ves, 2 que oyes y 1 que sientes en el cuerpo. Estás aquí. Estás contigo." }
+        { n: "3 · Aquí y ahora", h: "Vuelve al presente", p: "Nombra 3 cosas que ves, 2 que oyes y 1 que sientes en el cuerpo. Estás aquí. Estás contigo." },
+        { n: "4 · Vuelve", h: "Un paso con valor", p: "Desde aquí, tal como estés, elige el paso más pequeño que vaya en tu dirección y vuelve a lo que estabas haciendo. La sensación puede venir contigo.", input: true }
       ]
     }
   };

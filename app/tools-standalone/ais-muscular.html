@@ -394,7 +394,7 @@ function verResumen(){
   const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
 
   const L=["💪 AIS muscular — APRENS","Fecha: "+fecha,"",
-    "Activación antes: "+activIni+"/10","Activación después: "+activFin+"/10"+(diff>0?"  (bajó "+diff+")":""),
+    "Activación antes: "+activIni+"/10","Activación después: "+activFin+"/10",
     "Grupos trabajados: "+nHechos+"/5"+(listaHechos?" ("+listaHechos+")":"")];
   if(zonaNom)L.push("Más tensión en: "+zonaNom);
   L.push("","(Enviado desde mi práctica de tensión y distensión)");
@@ -405,9 +405,10 @@ function verResumen(){
     grupos:nHechos, grupos_lista:listaHechos, zona_mas_tension:zonaMasTension||"" };
   if(window.Aprens) Aprens.mountBar();
 
+  // TEC: lo que se entrena es estar con la tensión sin pelearse con ella; el número es orientativo.
   const msgUp = diff>0
-    ? `Tu tensión bajó <b>${diff} ${diff===1?'punto':'puntos'}</b>. Le estás enseñando al cuerpo a soltar. 👏`
-    : `Hoy no ha bajado en número, y también vale: has llevado la atención al cuerpo y has practicado soltar. Con la repetición, tu cuerpo suelta antes.`;
+    ? `Has llevado la atención al músculo y has notado el contraste al soltar. <b>Eso es la práctica</b> — baje o no el número.`
+    : `Hoy el número no ha bajado, y la práctica vale igual: lo que entrenas es estar con la tensión sin pelearte con ella.`;
 
   app.innerHTML=`
     <div class="res">
@@ -420,7 +421,7 @@ function verResumen(){
     </div>
     <p class="res-msg">${msgUp}</p>
     <div class="card">
-      <div class="aviso"><b>⏱️ ¿Cuándo enviármelo?</b> Cuando la uses ante una situación que te activa, <b>mándamela en ese momento</b>: así vemos qué situaciones tensan tu cuerpo y cómo responde.</div>
+      <div class="aviso"><b>⏱️ ¿Cuándo enviármelo?</b> Practícala a horas fijas (por ejemplo, mañana y noche) aunque estés bien. Y si la usas ante una situación que te activa, <b>mándamela en ese momento</b>: así vemos qué situaciones tensan tu cuerpo y cómo responde.</div>
       <div class="acc">
         <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar a mi psicólogo/a</a>
         <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>

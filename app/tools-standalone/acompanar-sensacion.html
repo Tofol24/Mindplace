@@ -168,7 +168,7 @@
 </section>
 
 <div class="introband">
-  <p class="sub">Ahora tu tarea no es quitar la angustia: es <b>acompañarla</b>. Cuanto menos luches y compruebes, menos fuerza tendrá.</p>
+  <p class="sub">Ahora tu tarea no es quitar la angustia: es <b>acompañarla</b>. No tienes que hacer que se vaya; cuanto menos luches y compruebes, menos espacio ocupará en tu día.</p>
   <button class="topcta" onclick="anar('practica')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
     Hacer una parada AIS
@@ -437,8 +437,8 @@
     var frac=(parada.ini!=null?parada.ini:3)/5;
     var r=ritmoResp(frac);
     var hint=document.getElementById('rhint');
-    if(frac>=0.8) hint.textContent="Estás muy activada: suelta el aire largo, sin retener. Deja que el cuerpo se afloje.";
-    else if(frac<0.4) hint.textContent="Respiración tranquila y pareja: entra y sale con calma.";
+    if(frac>=0.8) hint.textContent="Estás muy activada: suelta el aire largo, sin retener. No tienes que conseguir nada; solo seguir el aire hacia dentro.";
+    else if(frac<0.4) hint.textContent="Respiración pareja: el aire entra y sale a su ritmo, y tu atención lo acompaña.";
     else hint.textContent="El aire entra suave hacia el abdomen y sale un poco más largo.";
     var box=document.getElementById('respiroBox'); if(!box || !window.RespiroAIS) return;
     activeRespiro=RespiroAIS.mount(box,{
@@ -466,7 +466,7 @@
     document.getElementById('balanc').innerHTML=EMO[parada.ini]+' <span style="opacity:.5">→</span> '+EMO[parada.fin]+
       (dif>0?'  <b>−'+dif+'</b>':(dif<0?'  <b style="color:var(--calid-d)">+'+(-dif)+'</b>':'  <b>=</b>'));
     var msg=document.getElementById('resMsg');
-    if(dif>0) msg.textContent="La intensidad ha bajado. Bien: tu cuerpo aprende que no había peligro.";
+    if(dif>0) msg.textContent="Has estado con ella y has vuelto a tu día. Bajara o no, eso es lo que entrenas.";
     else if(dif===0) msg.textContent="Se ha mantenido y has podido estar con ella. Eso también es entrenar.";
     else msg.textContent="Ha subido un poco, y aun así la has acompañado. Lo importante es que has seguido.";
     document.querySelectorAll('.pstep').forEach(function(s){s.classList.remove('show');});
