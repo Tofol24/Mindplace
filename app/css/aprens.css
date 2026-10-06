@@ -132,6 +132,10 @@ body{
   padding:2px 7px;border-radius:20px;margin-top:8px;background:var(--azulLt);color:var(--azul)}
 .hub-tag.soon{background:#eceef1;color:var(--gris)}
 
+/* ---- Viñeta «para · respira · vuelve» (componente compartido) ---- */
+.vineta-sec{background:#fff;border-radius:18px;padding:4px 16px 16px;margin:12px 0 18px;box-shadow:0 4px 24px rgba(43,38,32,.07)}
+.vineta-sec .hub-sec{margin-top:12px}
+
 /* ---- Las tres puertas (L/D/C) ---- */
 .puertas{margin-bottom:18px}
 .puertas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:8px}

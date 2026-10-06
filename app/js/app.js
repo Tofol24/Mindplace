@@ -591,6 +591,7 @@
       </div>
       ${porqueHTML()}
       ${aisNucleoHTML()}
+      ${vinetaHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
       ${cvHoyHTML()}
@@ -606,11 +607,36 @@
     wireCV();
     montarIndice();
     montarNucleoAIS();
+    montarVineta();
+  }
+
+  // «Para · respira · vuelve»: la parada de pensamiento (TEC 11.2 §1) en tres
+  // viñetas, con la silueta AIS en la tercera. Componente compartido
+  // (js/vineta-atencion.js), el mismo que usan las herramientas standalone.
+  function vinetaHTML(){
+    const byId = {}; (window.APRENS_TOOLS||[]).forEach(t=>{ byId[t.id]=t; });
+    const chips = ["herramienta_diaria","agenda_atencional","salidas_paso_a_paso"].map(id=>byId[id]).filter(Boolean)
+      .map(t=>`<a class="puerta-chip" href="#/tool/${t.id}">${t.emoji} ${t.nombre}</a>`).join("");
+    return `<section class="vineta-sec">
+      <div class="hub-sec"><span class="hub-sec-e">🎞️</span><span class="hub-sec-t">Para · respira · vuelve</span></div>
+      <div class="hub-sec-d">La parada de pensamiento, en tres viñetas. <i>«Al darme cuenta de que me distraigo, sobrepienso o entro en piloto automático: digo STOP, hago una respiración y llevo la atención al estómago, pecho o cuello durante 4–5 segundos. Aunque no sienta nada, la mantengo ahí. Solo después, vuelvo a lo que estaba haciendo.»</i></div>
+      <div id="vinetaHub" style="margin-top:10px"></div>
+      ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
+    </section>`;
+  }
+  var hubVineta = null;
+  function pararVineta(){ if(hubVineta){ try{ hubVineta.destroy(); }catch(e){} hubVineta = null; } }
+  function montarVineta(){
+    pararVineta();
+    var box = document.getElementById("vinetaHub");
+    if(box && window.VinetaAtencion){
+      hubVineta = VinetaAtencion.mount(box, { silueta:true, titulo:"", pie:true });
+    }
   }
 
   // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
   var hubRespiro = null;
-  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } }
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); }
   function montarNucleoAIS(){
     pararNucleoAIS();
     var box = document.getElementById("aisNucleoBox");
