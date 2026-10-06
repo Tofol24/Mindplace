@@ -116,6 +116,7 @@ button{font-family:inherit}
 
 /* ---------- Botón informe en la cabecera de detalle ---------- */
 .d-head .d-informe{margin-left:auto}
+.d-head .d-csv{font-size:12.5px}
 
 /* ---------- Overlay / documento del informe ---------- */
 .informe-overlay{position:fixed;inset:0;background:rgba(15,42,63,.6);z-index:70;

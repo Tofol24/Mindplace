@@ -182,7 +182,8 @@
     escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
     agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS",
-    cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta"
+    cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
+    microaccion_valor: "Micro-acción con valor (0/1)"
   };
   var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
@@ -263,6 +264,7 @@
       case "mapa_atencion_interna": return (r.tipo === "recorrido" ? "Recorrido completo" : (r.zona || "Zona")) + cualTxt(r.cualidades);
       case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (pick(r.patron, r.perfil) ? " · " + pick(r.patron, r.perfil) : "") + (pick(r.codigo3, r.codigo) ? " · cód " + pick(r.codigo3, r.codigo) : "");
       case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : ""));
+      case "microaccion_valor": return num(r.cv) === 1 ? "✔ 1 · " + (r.descripcion ? firstLine(r.descripcion) : "micro-acción hecha") : "○ 0 · hoy no";
       default: return r.texto ? firstLine(r.texto) : "—";
     }
   }
@@ -411,14 +413,100 @@
       if (oc.muscular) lines.push("AIS muscular (tensión→distensión): activación " + oc.muscular.antes + " → " + oc.muscular.despues + " (" + pctSign(oc.muscular.pct) + ") en " + oc.muscular.n + " sesión" + (oc.muscular.n === 1 ? "" : "es") + ".");
       if (oc.valores && oc.valores.discDelta != null) lines.push("Valores (ACT): discrepancia " + oc.valores.discFirst + " → " + oc.valores.discLast + " (" + fmtDelta(oc.valores.discDelta) + "); cercanía " + fmt(oc.valores.cerFirst) + " → " + fmt(oc.valores.cerLast) + ".");
       if (oc.mono) { var pl = Math.round(100 * oc.mono.counts.lado / oc.mono.total); lines.push("Posición del mono: " + pl + "% de los check-ins «a mi lado» (acompañamiento) sobre " + oc.mono.total + " registros."); }
+      if (oc.cv) lines.push("Micro-acción con valor (0/1): " + oc.cv.ones + " de " + oc.cv.n + " días con 1 (" + oc.cv.pct + "%); primeras dos semanas " + fmtPct(oc.cv.first.pct) + " → últimas dos semanas " + fmtPct(oc.cv.last.pct) + ".");
     }
     if (!lines.length) lines.push("Datos insuficientes para una síntesis cuantitativa; se muestran los registros disponibles.");
     return lines;
   }
 
+  /* 4 · CONDUCTA VALIOSA (0/1): registro diario «Micro-acción con valor» del hub
+     (TEC 11.4 / Anexo D). Criterio de resultado primario: actuar desde los
+     valores mientras la sensación está presente. */
+  function cvReport(p) {
+    var b = p.tools.microaccion_valor; if (!b || !b.records || !b.records.length) return null;
+    var recs = b.records.filter(function (r) { return num(r.cv) != null && recDate(r); })
+      .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
+    if (!recs.length) return null;
+    var d0 = recDate(recs[0]), d1 = recDate(recs[recs.length - 1]);
+    function win(arr) { var o = arr.filter(function (r) { return num(r.cv) === 1; }).length; return { n: arr.length, ones: o, pct: arr.length ? Math.round(100 * o / arr.length) : null }; }
+    var all = win(recs);
+    return {
+      n: all.n, ones: all.ones, pct: all.pct, from: d0, to: d1,
+      first: win(recs.filter(function (r) { return daysBetween(d0, recDate(r)) < 14; })),
+      last: win(recs.filter(function (r) { return daysBetween(recDate(r), d1) < 14; })),
+      last7: win(recs.filter(function (r) { return daysBetween(recDate(r), d1) < 7; })),
+      ejemplos: recs.filter(function (r) { return num(r.cv) === 1 && r.descripcion; }).slice(-3).map(function (r) { return r.descripcion; })
+    };
+  }
+  function fmtPct(v) { return v == null ? "—" : v + "%"; }
+
+  /* ───────── Exportación CSV · TEC Anexo E (registro diario del paciente) ─────────
+     Columnas E.2 del libro. Una fila por día con actividad. Lo que no consta se
+     deja vacío (no se inventa un 0). UTF-8 con BOM, separador «;», CRLF. */
+  var AIS_TOOLS = ["ais_curiosidad", "ais_amor", "ais_muscular", "bajar_alerta", "acompanar_sensacion", "herramienta_diaria",
+    "protocolo_ais", "estoy_aqui_conmigo", "toco_desde_dentro", "mapa_atencion_interna", "tracker_ais", "sentarse_mono",
+    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "control_ira", "retorno_trabajo"];
+  function zonaE(z) {
+    var s = String(z || "").toLowerCase(); if (!s) return "";
+    if (/pech|t[oó]rax|coraz/.test(s)) return "Pecho";
+    if (/barrig|est[oó]mag|abdom|vientr|tripa/.test(s)) return "Barriga";
+    if (/gargant|cuell|nuca/.test(s)) return "Garganta";
+    if (/hombr|espald|trapec/.test(s)) return "Hombros";
+    return "Otro";
+  }
+  function csvDiarioRows(p) {
+    var days = {};
+    function D(d) { return days[d] || (days[d] = { ais: 0, cv: null, desc: [], act: [], zona: [], fh: null, seg: null }); }
+    allRecords(p).forEach(function (x) {
+      var d = recDate(x.r); if (!d) return;
+      var r = x.r, t = x.tool, o = D(d);
+      if (AIS_TOOLS.indexOf(t) >= 0 || (t === "cuerpo_en_alerta" && r.ais === "Sí")) o.ais++;
+      if (t === "microaccion_valor") { o.cv = num(r.cv); if (r.descripcion) o.desc.unshift(r.descripcion); }
+      else {
+        var m = pick(r.micro, r.microaccion, r.paso_valor); if (m) o.desc.push(m);
+        if (t === "cuerpo_en_alerta" && ["Valiosa", "Asertiva", "Protectora necesaria"].indexOf(r.tipo_accion) >= 0 && o.cv == null) o.cv = 1;
+      }
+      // Activación del día (0–10, alto = más activación): el seguimiento la guarda invertida (alto = mejor).
+      if (t === "screening_seg" && num(r.activacion) != null) o.seg = round1(10 - num(r.activacion));
+      [pick(r.antes, r.alerta_antes, r.activacion_antes), r.intensidad_antes, (t === "cuerpo_en_alerta" ? r.activacion : null)]
+        .forEach(function (v) { if (num(v) != null && !isNaN(num(v))) o.act.push(num(v)); });
+      var z = pick(r.zona, r.zona_activacion, r.ancla); if (z) o.zona.push(z);
+      if (t === "honestidad_emocional") o.fh = 1;
+      if (r.frase_honesta != null && r.frase_honesta !== "") o.fh = (r.frase_honesta === 0 || r.frase_honesta === "0" || r.frase_honesta === false) ? 0 : 1;
+    });
+    var rows = [["id_paciente", "fecha", "practico_ais", "n_practicas_dia", "conducta_valiosa", "descripcion_cv", "nivel_activacion_dia", "zona_activacion", "frase_honesta", "notas_paciente"]];
+    Object.keys(days).sort().forEach(function (d) {
+      var o = days[d];
+      var act = o.seg != null ? o.seg : (o.act.length ? round1(o.act.reduce(function (a, c) { return a + c; }, 0) / o.act.length) : "");
+      rows.push([p.codigo, d, o.ais ? 1 : 0, o.ais, o.cv == null ? "" : o.cv, String(o.desc[0] || "").slice(0, 200), act, zonaE(o.zona[0]), o.fh == null ? "" : o.fh, ""]);
+    });
+    return rows;
+  }
+  function csvLDCRows(p) {
+    var data = [];
+    allRecords(p).forEach(function (x) {
+      var r = x.r; if (num(r.L) == null && num(r.indice) == null) return;
+      data.push([p.codigo, recDate(r), x.tool, num(r.L), num(r.D), num(r.C), num(r.indice)]);
+    });
+    data.sort(function (a, c) { return String(a[1]).localeCompare(String(c[1])); });
+    return [["id_paciente", "fecha", "herramienta", "L", "D", "C", "indice"]].concat(data);
+  }
+  function csvCell(v) {
+    if (v == null) return "";
+    var s = String(v).replace(/\r?\n/g, " ");
+    return /[;"]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function downloadCSV(name, rows) {
+    var txt = "﻿" + rows.map(function (r) { return r.map(csvCell).join(";"); }).join("\r\n") + "\r\n";
+    var blob = new Blob([txt], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
   /* Ensambla el documento imprimible (HTML) del informe. */
   function buildInforme(p) {
     var sr = screeningReport(p), ad = adherenceReport(p), oc = outcomesReport(p);
+    var cvr = cvReport(p); if (cvr) { oc = oc || {}; oc.cv = cvr; }
     var rng = dateRange(p), today = new Date().toISOString().slice(0, 10);
     var syn = synthLines(sr, ad, oc);
 
@@ -464,6 +552,13 @@
       outParts.push('<div class="inf-out"><h4>Posición del mono</h4>' +
         '<div class="inf-ba"><span>' + pl + '%</span><em>«a mi lado» (acompañamiento) · ' + oc.mono.total + ' check-ins</em></div>' +
         '<p class="inf-note">' + POS_ORDER.map(function (k) { return POS_LABEL[k].replace(/ \(.*\)/, "") + ": " + oc.mono.counts[k]; }).join(" · ") + '.</p></div>');
+    }
+    if (cvr) {
+      outParts.push('<div class="inf-out"><h4>Micro-acción con valor (0/1)</h4>' +
+        '<div class="inf-ba"><span>' + fmtPct(cvr.first.pct) + '</span><i>→</i><span>' + fmtPct(cvr.last.pct) + '</span>' +
+        '<em>días con 1 · primeras dos semanas → últimas dos semanas (' + cvr.ones + ' de ' + cvr.n + ' días en total)</em></div>' +
+        '<p class="inf-note">Criterio de resultado primario (TEC): actuar desde los valores mientras la sensación está presente, no esperar a que baje.' +
+        (cvr.ejemplos.length ? ' Últimas: ' + esc(cvr.ejemplos.join(' · ')) + '.' : '') + '</p></div>');
     }
     var outHTML = outParts.length ? outParts.join("") : '<p class="inf-empty">Sin registros con medida antes→después.</p>';
 
@@ -591,19 +686,22 @@
     $("detailBody").style.display = p ? "block" : "none";
     if (!p) return;
 
-    var rng = dateRange(p), mono = monoDist(p), al = alertaStat(p), val = valoresStat(p), ca = alertaData(p);
+    var rng = dateRange(p), mono = monoDist(p), al = alertaStat(p), val = valoresStat(p), ca = alertaData(p), cvr = cvReport(p);
     var pctLado = mono.total ? Math.round(100 * mono.counts.lado / mono.total) : null;
     var body = $("detailBody");
 
     body.innerHTML =
       '<div class="d-head"><h2>' + esc(p.codigo) + '</h2>' +
         '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span>' +
-        '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button></div>' +
+        '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button>' +
+        '<button id="btnCsvDia" class="btn d-csv" title="Registro diario del paciente · formato TEC Anexo E.2 (UTF-8, separador ;)">⬇ CSV diario</button>' +
+        '<button id="btnCsvLdc" class="btn d-csv" title="Evolución L/D/C e índice de seguimiento (0–10)">⬇ CSV L/D/C</button></div>' +
       '<div class="stat-row">' +
         stat(totalRecords(p), "registros") +
         stat(Object.keys(p.tools).length, "herramientas usadas") +
         stat(pctLado == null ? "—" : pctLado + "%", "% «a mi lado»") +
         stat(al ? (al.antes + "→" + al.despues) : "—", "alerta media (antes→después)") +
+        stat(cvr ? cvr.ones + "/" + cvr.n : "—", "micro-acción con valor (días 1 / registrados)") +
       '</div>' +
       '<div class="grid2">' +
         '<div class="card"><h3>Evolución L / D / C</h3>' +
@@ -645,6 +743,9 @@
     drawLCC(p);
     drawAlerta(p);
     var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
+    var today = new Date().toISOString().slice(0, 10);
+    var bd = $("btnCsvDia"); if (bd) bd.onclick = function () { downloadCSV("aprens_" + p.codigo + "_diario_" + today + ".csv", csvDiarioRows(p)); toast("CSV diario descargado (Anexo E.2)"); };
+    var bl = $("btnCsvLdc"); if (bl) bl.onclick = function () { downloadCSV("aprens_" + p.codigo + "_LDC_" + today + ".csv", csvLDCRows(p)); toast("CSV L/D/C descargado"); };
   }
 
   /* ───────────────────────── Informe (overlay imprimible) ─────────────────── */

@@ -76,6 +76,27 @@ body{
 .cont-rec-note{flex-basis:100%;font-size:11.5px;color:var(--gris);line-height:1.5}
 .cont-rec-alt{display:inline-block;margin-top:6px;font-style:italic;opacity:.9}
 .cont-rec-hint{margin-top:8px;font-size:12px;color:var(--gris);line-height:1.55;background:var(--verdeLt);border-radius:10px;padding:9px 12px}
+/* Micro-acción con valor · registro diario 0/1 (TEC) */
+.cvdia{background:#fff;border:1px solid var(--linea);border-left:4px solid var(--verde);border-radius:18px;padding:16px 18px 14px;margin-bottom:18px;box-shadow:0 4px 24px rgba(43,38,32,.07)}
+.cv-h{font-family:var(--serif);font-size:17px;color:var(--azul);margin-bottom:4px}
+.cv-q{font-size:14px;color:var(--tinta);line-height:1.5}
+.cv-txt{font-size:12.5px;color:var(--gris);line-height:1.55;margin-top:6px}
+.cv-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.cv-btn{border:2px solid var(--linea);background:#fff;color:var(--tinta);font-family:var(--sans);font-weight:600;font-size:13px;padding:9px 16px;border-radius:22px;cursor:pointer;-webkit-appearance:none}
+.cv-btn.si.on{background:var(--verde);border-color:var(--verde);color:#fff}
+.cv-btn.no.on{background:var(--gris);border-color:var(--gris);color:#fff}
+.cv-desc{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.cv-desc input{flex:1;min-width:160px;font-family:var(--sans);font-size:13px;border:2px solid var(--linea);border-radius:10px;padding:8px 10px;background:#fff;color:var(--tinta)}
+.cv-save{background:var(--azul);color:#fff;border:0;border-radius:22px;font-family:var(--sans);font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer}
+.cv-week{display:flex;align-items:center;gap:6px;margin-top:12px;flex-wrap:wrap}
+.cv-dot{display:inline-flex;flex-direction:column;align-items:center;width:26px;line-height:1}
+.cv-dot i{font-style:normal;font-size:16px;color:#C9D1D9}
+.cv-dot.si i{color:var(--verde)}
+.cv-dot.no i{color:var(--gris)}
+.cv-dot small{font-size:9px;color:var(--gris);margin-top:2px}
+.cv-dot.hoy small{color:var(--azul);font-weight:700}
+.cv-week-n{font-size:11.5px;color:var(--gris);margin-left:6px}
+.cv-sub{font-size:11.5px;color:var(--gris);line-height:1.5;margin-top:10px;border-top:1px dashed var(--linea);padding-top:8px}
 .htitulo{font-family:var(--serif);font-size:23px;color:var(--azul);margin-bottom:6px}
 .hsubt{color:var(--gris);font-size:14px;line-height:1.6}
 .frase{font-style:italic;color:var(--azul);font-size:13px;background:var(--azulLt);border-radius:0 10px 10px 0;
