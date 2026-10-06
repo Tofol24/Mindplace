@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Paso a paso, de vuelta a mí · APRENS</title>
+<style>
+:root{
+  --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+  --naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;--lila:#7B4FC1;
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;margin:0;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif}
+.htitle{font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;font-size:17px;font-weight:700}
+.hsub{font-size:10px;opacity:.75;margin-top:1px}
+.hback{margin-left:auto;background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:20px;padding:7px 14px;font-size:13px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:600;cursor:pointer;display:none}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px calc(60px + env(safe-area-inset-bottom))}
+.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px}
+.ctit{font-weight:600;font-size:13px;color:var(--azul);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.hero{background:#fff;border-radius:18px;padding:30px 28px 26px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:20px;border-top:4px solid var(--oro)}
+h1{font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;font-size:25px;margin:0 0 8px;color:var(--azul);line-height:1.2}
+h2{font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;font-size:20px;margin:0 0 10px;color:var(--azul)}
+h3{font-size:15px;margin:16px 0 6px;color:var(--azul)}
+p{line-height:1.62;margin:0 0 12px;font-size:15px}
+.mut{color:var(--gris)}.sm{font-size:13px}
+.btn{border:none;border-radius:30px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-appearance:none;touch-action:manipulation}
+.bp{background:var(--azul);color:#fff;padding:13px 28px;font-size:14px;box-shadow:0 4px 14px rgba(27,79,140,.3)}
+.bpg{background:var(--verde);color:#fff;padding:14px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3)}
+.bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 22px;font-size:13px}
+.bsm{padding:9px 18px;font-size:13px}
+.bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3)}
+.bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 20px;font-size:14px}
+.full{width:100%}
+.frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 10px 10px 0;border-left:4px solid var(--oro);padding:13px 16px;line-height:1.6;margin:16px 0}
+.aviso{background:var(--azulLt);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:13px 16px;font-size:12.5px;color:var(--azul);line-height:1.6;margin-bottom:18px}
+.warn{background:#FCEEE4;border-left:4px solid var(--naranja);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13px;color:#8a4b1f;line-height:1.6;margin:14px 0}
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:480px){.hub{grid-template-columns:1fr}}
+.tool{background:#fff;border-radius:16px;padding:18px 16px;box-shadow:0 4px 20px rgba(27,79,140,.08);border-left:4px solid var(--azul);cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:4px;transition:transform .12s}
+.tool:active{transform:scale(.98)}
+.tool .e{font-size:26px}
+.tool .n{font-family:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;font-size:16px;color:var(--azul);font-weight:700;line-height:1.2;margin-top:4px}
+.tool .d{font-size:12px;color:var(--gris);line-height:1.4}
+.tool.c-verde{border-left-color:var(--verde)}.tool.c-oro{border-left-color:var(--oro)}.tool.c-lila{border-left-color:var(--lila)}.tool.c-naranja{border-left-color:var(--naranja)}
+ul.tidy{margin:4px 0 12px;padding-left:20px;line-height:1.6;font-size:14.5px}
+ul.tidy li{margin:5px 0}
+label.f{display:block;font-weight:600;font-size:13px;margin:12px 0 5px;color:#1a1a2e}
+input[type=text],textarea,select{width:100%;border:2px solid #E3EAF3;border-radius:12px;padding:12px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;color:#1a1a2e;background:#fff}
+input:focus,textarea:focus,select:focus{border-color:var(--azul);outline:none}
+textarea{resize:vertical;min-height:64px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.sel{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.pill{border:2px solid #E3EAF3;background:#fff;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--gris);cursor:pointer}
+.pill.on{background:var(--azul);border-color:var(--azul);color:#fff}
+/* escala 0-10 */
+.suds{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.sb{flex:1;min-width:26px;border:2px solid #E3EAF3;background:#fff;border-radius:9px;padding:9px 0;text-align:center;font-weight:700;font-size:13px;color:var(--gris);cursor:pointer}
+.sb.on{background:var(--naranja);border-color:var(--naranja);color:#fff}
+.sb.lo.on{background:var(--verde);border-color:var(--verde)}
+.sb.hi.on{background:var(--rojo);border-color:var(--rojo)}
+/* respiración */
+.breath-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:10px 0 4px}
+.breath{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#D6E4F0,#1B4F8C);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:16px;box-shadow:0 8px 30px rgba(27,79,140,.35);transition:transform .2s}
+.breath.anim{animation:bre 11s ease-in-out infinite}
+@keyframes bre{0%{transform:scale(.72)}36%{transform:scale(1.08)}45%{transform:scale(1.08)}100%{transform:scale(.72)}}
+.pasoline{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
+.pasonum{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--azulLt);color:var(--azul);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.step{background:var(--fondo);border:1px solid #E3EAF3;border-radius:14px;padding:14px;margin-bottom:10px}
+.step.done{border-color:var(--verde);background:var(--verdeLt)}
+.step .sh{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--azul);font-size:15px}
+.step .lvl{margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:#fff;color:var(--gris);border:1px solid #E3EAF3}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:480px){.keys{grid-template-columns:1fr}}
+.key{background:#fff;border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5}
+.key b{display:block;color:var(--azul);margin-bottom:3px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.cbox{background:var(--fondo);border:2px solid #E8EFF7;border-radius:12px;padding:16px;font-size:12.5px;line-height:1.7;color:#333;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin-bottom:16px}
+.acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
+.chk{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eef2f7;font-size:14.5px;cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk .box{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:2px solid #cdd8e6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.chk.on .box{background:var(--verde);border-color:var(--verde)}
+.chk.on span{color:var(--gris);text-decoration:line-through}
+@media(hover:hover){.btn:hover{filter:brightness(1.05)}.tool:hover{border-left-width:6px}}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo">ap</div>
+  <div>
+    <div class="htitle">Paso a paso, de vuelta a mí</div>
+    <div class="hsub">APRENS Psicologia · acompañamiento diario</div>
+  </div>
+  <button class="hback" id="hback" onclick="go('home')">← Inicio</button>
+</div>
+
+<div class="wrap" id="screen"></div>
+
+<script>
+"use strict";
+var $=function(s){return document.querySelector(s);};
+/* ---- datos en memoria (sin guardado, privacidad) ---- */
+var D={
+  fecha:new Date().toLocaleDateString('es-ES'),
+  peldano:null,         // nº de peldaño trabajado hoy
+  sudsAntes:null,sudsPico:null,sudsDesp:null,
+  imagAntes:null,imagDesp:null,imagReps:0,
+  rumia:null,           // 0-10 cuánto he rumiado
+  animo:null,           // 0-10
+  herramientas:{},      // qué he practicado
+  dia:{},               // checklist del día
+  salida:'',            // texto de la salida de hoy
+  logro:'',             // un logro
+  nota:''               // nota para el psicólogo
+};
+var pelDone={};         // peldaños marcados como logrados
+
+/* ===== Escalera de exposición en vivo ===== */
+var ESCALERA=[
+  {t:"Asomarme al portal o la calle, solo/a, 3–5 minutos",lvl:"Muy suave",
+   que:"Baja al portal o sal a la puerta. Quédate el tiempo que puedas y vuelve cuando tú decidas, no cuando el miedo mande.",
+   como:"Antes: 3 respiraciones curiosas. Fuera: nota los pies en el suelo y una cosa que veas/oigas. No huyes del nervio: lo acompañas."},
+  {t:"Vuelta corta a la manzana, en hora tranquila",lvl:"Suave",
+   que:"Camina una vuelta a tu ritmo. Si aparece el impulso de volver corriendo, haz una parada de 10 segundos y sigue un poco más.",
+   como:"Lleva la atención al cuerpo (pecho, barriga) mientras caminas. El objetivo no es no sentir nervio, es estar contigo mientras lo sientes."},
+  {t:"Ir andando a una tienda cercana y comprar algo",lvl:"Suave-media",
+   que:"Entra, haz la compra y paga. Aunque notes prisa por salir, quédate unos segundos más tras pagar.",
+   como:"Respiración curiosa antes de entrar. Dentro: si sube la alerta, abrazo sentido breve (mano en el pecho) y sigues."},
+  {t:"Sentarme en un banco o cafetería tranquila 10–15 min",lvl:"Media",
+   que:"Elige un sitio con poca gente. Quédate sentado/a el tiempo marcado, hagas lo que hagas con el móvil o un café.",
+   como:"Observa las sensaciones como quien mira el oleaje: suben y bajan. Suelta el «¿y si…?». Vuelve a lo que ves y oyes."},
+  {t:"Lugar con más gente en hora de menos afluencia",lvl:"Media-alta",
+   que:"Mercado, supermercado grande o centro comercial, cuando haya poca gente. Haz un recorrido y un recado pequeño.",
+   como:"Ancla la atención en la respiración y en caminar. Si llega un sobresalto, párate, nómbralo («esto es alerta, no peligro») y continúa."},
+  {t:"Recado en una zona donde podría haber conocidos",lvl:"Alta",
+   que:"Un sitio donde quepa la idea de cruzarte con alguien conocido. Haz lo que ibas a hacer, sin acortarlo por ese miedo.",
+   como:"Recuerda con suavidad: hacer tu vida y que te vean es legítimo. Si aparece «¿y si me ven?», parada de pensamiento y vuelta al cuerpo."},
+  {t:"Quedar con alguien de confianza en un sitio público",lvl:"Alta",
+   que:"Plan corto en un lugar con gente, acompañado/a. Deja que esa persona sea tu apoyo, no tu escudo para huir.",
+   como:"Antes de entrar, abrazo sentido pensando en quien te acompaña. Permítete disfrutar un momento; no tienes que estar en guardia todo el rato."},
+  {t:"Ir solo/a a un sitio concurrido en hora punta",lvl:"Reto",
+   que:"El peldaño más alto. Ve solo/a a un lugar lleno y quédate sosteniendo la idea de ser visto/a, sin conductas de escape.",
+   como:"Trae todo lo entrenado: respiración curiosa, acompañar la sensación, soltar el porqué. Sal cuando el plan termine, no cuando el miedo pique."}
+];
+
+/* ========== NAVEGACIÓN ========== */
+function go(v){ VIEW=v; render(); window.scrollTo(0,0); }
+var VIEW='home';
+function render(){
+  $('#hback').style.display = VIEW==='home' ? 'none' : 'inline-flex';
+  $('#screen').innerHTML = (VIEWS[VIEW]||VIEWS.home)();
+  if(bindAfter[VIEW]) bindAfter[VIEW]();
+}
+var bindAfter={};
+
+/* ========== VISTAS ========== */
+var VIEWS={};
+
+VIEWS.home=function(){
+  return `
+  <div class="hero">
+    <h1>Tu espacio, paso a paso 🌿</h1>
+    <p>Un lugar para <b>cuidarte por dentro</b> y, poco a poco, <b>recuperar tu vida fuera de casa</b> — poder ir donde quieras, sin que el miedo te marque los sitios.</p>
+    <p class="sm mut">No busca que dejes de sentir miedo, sino que aprendas a <b>estar contigo mientras lo sientes</b>, hasta que el cuerpo compruebe que puede. Aquí trabajas lo de dentro y tus salidas; lo que tengas pendiente fuera, por sus cauces y con tu psicólogo/a.</p>
+    <div class="frase">«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»</div>
+  </div>
+
+  <div class="card">
+    <div class="ctit">Cada día, dos frentes</div>
+    <p class="sm"><b>1) Por dentro</b> — calmar y acompañar: respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto.</p>
+    <p class="sm"><b>2) Por fuera</b> — recuperar terreno: un peldaño de tu escalera de salidas y, cuando toque, exposición en imaginación.</p>
+    <p class="sm mut">No hace falta hacerlo todo. Tu psicóloga/o te dirá en qué poner el foco esta semana.</p>
+  </div>
+
+  <div class="ctit" style="margin:4px 0 2px">Por dentro · herramientas AIS</div>
+  <div class="hub">
+    <button class="tool c-verde" onclick="go('respiracion')"><span class="e">🫁</span><span class="n">Respiración curiosa</span><span class="d">Calmarte observando el cuerpo con curiosidad.</span></button>
+    <button class="tool c-naranja" onclick="go('parada')"><span class="e">🛑</span><span class="n">Parar la rumiación</span><span class="d">Cuando la cabeza da vueltas al conflicto.</span></button>
+    <button class="tool c-lila" onclick="go('abrazo')"><span class="e">🤍</span><span class="n">Abrazo sentido</span><span class="d">Acompañarte con cariño, con los tuyos dentro.</span></button>
+    <button class="tool c-verde" onclick="go('sobresalto')"><span class="e">🌊</span><span class="n">Estar con el sobresalto</span><span class="d">Cuando una sensación o un susto te sacude.</span></button>
+  </div>
+
+  <div class="ctit" style="margin:16px 0 2px">Por fuera · recuperar mi vida</div>
+  <div class="hub">
+    <button class="tool" onclick="go('escalera')"><span class="e">🪜</span><span class="n">Mi escalera de salidas</span><span class="d">Exposición gradual: salir solo/a, paso a paso.</span></button>
+    <button class="tool" onclick="go('imaginacion')"><span class="e">🎬</span><span class="n">Exposición en imaginación</span><span class="d">Ensayar por dentro lo que temo, sin huir.</span></button>
+    <button class="tool c-oro" onclick="go('dia')"><span class="e">🗓️</span><span class="n">Mi día a día</span><span class="d">Estructura y pequeños pasos con sentido.</span></button>
+    <button class="tool c-oro" onclick="go('registro')"><span class="e">📝</span><span class="n">Registro del día</span><span class="d">Anotar cómo fue y enviárselo a tu psicólogo.</span></button>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="warn" style="margin:0">Si en algún momento aparecen pensamientos de no querer seguir o de hacerte daño, no te quedes a solas con eso: habla con tu psicólogo/a o tu psiquiatra. Urgencias en España: <b>024</b> (conducta suicida) o <b>112</b>.</div>
+  </div>
+  <p class="sm mut" style="text-align:center">Esta aplicación no guarda nada. Lo que escribas se borra al cerrar; por eso, si quieres, envíaselo a tu psicólogo/a desde «Registro del día».</p>`;
+};
+
+/* ---- Respiración curiosa ---- */
+VIEWS.respiracion=function(){
+  return `
+  <h2>Respiración curiosa</h2>
+  <p class="mut sm">No respiras para quitarte el nervio, sino para <b>acercarte a lo que sientes con curiosidad</b>, como quien observa sin juzgar. Unos 2–3 minutos.</p>
+  <div class="card">
+    <div class="breath-wrap">
+      <div class="breath" id="breath">Prepárate</div>
+      <div id="breathTxt" class="sm mut" style="text-align:center;min-height:20px"></div>
+      <button class="btn bpg" id="breathBtn" onclick="toggleBreath()">▶ Empezar</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctit">Mientras respiras, observa con curiosidad</div>
+    <ul class="tidy">
+      <li>¿Dónde noto el aire al entrar y al salir?</li>
+      <li>¿Qué sensación hay en el pecho o en la barriga? ¿Cambia?</li>
+      <li>No tengo que cambiarla ni entenderla. Solo <b>estar con ella</b>.</li>
+    </ul>
+    <div class="frase">«No necesito que estés bien para estar contigo. Estoy aquí también cuando cuesta.»</div>
+    <button class="btn bs full" onclick="marca('Respiración curiosa');go('home')">Hecho ✓</button>
+  </div>`;
+};
+var breathOn=false,breathTimer=null;
+function toggleBreath(){
+  var b=$('#breath'),t=$('#breathTxt'),btn=$('#breathBtn');
+  if(breathOn){ breathOn=false; b.classList.remove('anim'); b.textContent='Prepárate'; t.textContent=''; btn.textContent='▶ Empezar'; if(breathTimer)clearInterval(breathTimer); return; }
+  breathOn=true; b.classList.add('anim'); btn.textContent='⏸ Parar';
+  var fase=0; // ciclo 11s: inhala 4 (0-36%), sostén 1, exhala 6
+  function tick(){
+    var cycle=[['Inhala… despacio',4000],['Sostén',1000],['Exhala… suelta',6000]];
+    b.textContent=cycle[fase][0].split('…')[0];
+    t.textContent=cycle[fase][0];
+    var dur=cycle[fase][1];
+    fase=(fase+1)%3;
+    breathTimer=setTimeout(function(){ if(breathOn)tick(); },dur);
+  }
+  tick();
+}
+bindAfter.respiracion=function(){ breathOn=false; };
+
+/* ---- Parada de pensamiento / rumiación ---- */
+VIEWS.parada=function(){
+  return `
+  <h2>Parar la rumiación</h2>
+  <p class="mut sm">La rumiación es el intento de controlar lo que ya pasó o lo que podría pasar. No resuelve: <b>alimenta la alerta</b> y te saca del presente. No se trata de discutir con el pensamiento, sino de <b>soltarlo y volver al cuerpo</b>.</p>
+  <div class="card">
+    <div class="pasoline"><div class="pasonum">1</div><div><b>PARA.</b> En cuanto te des cuenta de que estás dándole vueltas (al tema que te preocupa, a lo que pasó, al «¿y si…?»), di para ti: <i>«Stop. Esto es rumiar».</i></div></div>
+    <div class="pasoline"><div class="pasonum">2</div><div><b>NOMBRA sin entrar.</b> «Otra vez el pensamiento del conflicto.» No lo analizas, no buscas la respuesta perfecta. Solo lo reconoces.</div></div>
+    <div class="pasoline"><div class="pasonum">3</div><div><b>RESPIRA.</b> Una respiración curiosa. Lleva la atención a los pies, a las manos, al aire. Al presente.</div></div>
+    <div class="pasoline"><div class="pasonum">4</div><div><b>REORIENTA.</b> Elige una acción pequeña y con sentido ahora: beber agua, una tarea del día, salir un momento. La rumiación suelta cuando mueves la atención, no cuando «ganas» el debate.</div></div>
+    <div class="warn">Si el pensamiento vuelve 20 veces, lo sueltas 20 veces. No es fracasar: <b>así se entrena</b>. Cada vez que vuelves al presente, el patrón se debilita un poco.</div>
+    <button class="btn bs full" onclick="marca('Parada de pensamiento');go('home')">Hecho ✓</button>
+  </div>`;
+};
+
+/* ---- Abrazo sentido ---- */
+VIEWS.abrazo=function(){
+  return `
+  <h2>Abrazo sentido</h2>
+  <p class="mut sm">Un gesto de cariño hacia ti, sobre todo cuando el malestar aprieta. Puedes hacerlo solo/a o de verdad, pidiendo un abrazo a alguien de confianza.</p>
+  <div class="card">
+    <div class="ctit">Contigo</div>
+    <ul class="tidy">
+      <li>Pon una mano en el pecho y otra en la barriga, o rodéate con los brazos.</li>
+      <li>Nota el calor y un poco de peso de tus manos. Respira despacio ahí.</li>
+      <li>Dite por dentro, sintiéndolo: <i>«Lo estás pasando mal y no te voy a dejar solo/a».</i></li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="ctit">Con los tuyos</div>
+    <ul class="tidy">
+      <li>Pídele un abrazo a alguien de confianza, sin tener que explicarlo todo: «Necesito un abrazo un momento».</li>
+      <li>Mientras te abraza, lleva la atención a la sensación del contacto y a tu respiración.</li>
+      <li>Deja que tu cuerpo reciba el apoyo. No tienes que sostenerlo todo tú solo/a.</li>
+    </ul>
+    <div class="frase">Compartir el dolor nos hace cómplices, no nos hace débiles.</div>
+    <button class="btn bs full" onclick="marca('Abrazo sentido');go('home')">Hecho ✓</button>
+  </div>`;
+};
+
+/* ---- Estar con el sobresalto / la sensación ---- */
+VIEWS.sobresalto=function(){
+  return `
+  <h2>Estar con el sobresalto</h2>
+  <p class="mut sm">Cuando algo te sobresalta o sube una oleada de ansiedad, el cuerpo cree que hay peligro. Tu trabajo no es apagarlo, es <b>acompañarlo</b> hasta que baje — y baja.</p>
+  <div class="card">
+    <div class="pasoline"><div class="pasonum">1</div><div><b>Paro</b> un momento. No actúo desde el susto.</div></div>
+    <div class="pasoline"><div class="pasonum">2</div><div><b>Localizo</b> dónde lo noto (pecho, garganta, barriga, hombros).</div></div>
+    <div class="pasoline"><div class="pasonum">3</div><div><b>Describo con curiosidad</b>: ¿presión, calor, temblor, nudo? ¿se mueve, cambia?</div></div>
+    <div class="pasoline"><div class="pasonum">4</div><div><b>Me quedo</b> con ella respirando, sin empujarla fuera. «Esto es alerta, no peligro».</div></div>
+    <div class="pasoline"><div class="pasonum">5</div><div><b>Suelto el porqué.</b> No necesito entenderlo ahora. Solo estar, hasta que afloje.</div></div>
+    <div class="warn">Tus dolores de hombros, la tensión… también se escuchan así: con atención amable, sin pelearte con el cuerpo.</div>
+    <button class="btn bs full" onclick="marca('Acompañar el sobresalto');go('home')">Hecho ✓</button>
+  </div>`;
+};
+
+/* ---- Escalera de exposición en vivo ---- */
+VIEWS.escalera=function(){
+  var steps=ESCALERA.map(function(s,i){
+    var done=pelDone[i];
+    return `<div class="step${done?' done':''}">
+      <div class="sh">${done?'✓ ':''}Peldaño ${i+1} · ${s.t}<span class="lvl">${s.lvl}</span></div>
+      <div class="keys">
+        <div class="key"><b>Qué hago (fuera)</b>${s.que}</div>
+        <div class="key"><b>Cómo me acompaño (dentro)</b>${s.como}</div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn bs bsm" onclick="trabajar(${i})">Hoy trabajo este</button>
+        <button class="btn ${done?'bpg':'bs'} bsm" onclick="togglePel(${i})">${done?'Logrado ✓':'Marcar logrado'}</button>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <h2>Mi escalera de salidas</h2>
+  <p class="mut sm">Recuperar la calle <b>poco a poco</b>. No saltes peldaños: repite cada uno hasta que la ansiedad al hacerlo baje de forma clara, y entonces sube. El miedo baja <b>quedándote</b>, no evitando.</p>
+  <div class="aviso">La regla de oro: sales del sitio <b>cuando el plan termina</b>, no cuando el miedo pica. Si te vas huyendo, el miedo aprende que tenía razón.</div>
+  ${steps}
+  <div class="card" id="regSalida">
+    <div class="ctit">Registrar la salida de hoy</div>
+    <label class="f">¿Qué peldaño has trabajado?</label>
+    <div class="sel" id="selPel"></div>
+    <label class="f">Ansiedad ANTES de salir (0 nada – 10 máxima)</label><div class="suds" id="sA"></div>
+    <label class="f">Ansiedad en el PICO (lo más alto durante)</label><div class="suds" id="sP"></div>
+    <label class="f">Ansiedad DESPUÉS / al terminar</label><div class="suds" id="sD"></div>
+    <label class="f">¿Qué te ayudó a quedarte?</label>
+    <textarea id="salidaTxt" placeholder="p. ej. respiración curiosa, recordar que hacer mi vida y que me vean es legítimo…">${D.salida||''}</textarea>
+    <button class="btn bpg full" style="margin-top:12px" onclick="guardarSalida()">Guardar salida ✓</button>
+    <p class="sm mut" id="salidaMsg" style="text-align:center;margin-top:8px"></p>
+  </div>`;
+};
+bindAfter.escalera=function(){
+  // selector de peldaño
+  var sp=$('#selPel'); if(sp){ sp.innerHTML=ESCALERA.map(function(s,i){return '<span class="pill'+(D.peldano===i+1?' on':'')+'" data-pel="'+(i+1)+'">'+(i+1)+'</span>';}).join('');
+    sp.onclick=function(e){var p=e.target.getAttribute('data-pel'); if(!p)return; D.peldano=+p; bindAfter.escalera();}; }
+  sudsBind('#sA','sudsAntes'); sudsBind('#sP','sudsPico'); sudsBind('#sD','sudsDesp');
+};
+function trabajar(i){ D.peldano=i+1; var e=$('#regSalida'); if(e)e.scrollIntoView({behavior:'smooth'}); bindAfter.escalera(); }
+function togglePel(i){ pelDone[i]=!pelDone[i]; render(); }
+function guardarSalida(){ D.salida=($('#salidaTxt')||{}).value||''; var m=$('#salidaMsg'); if(m)m.textContent='Guardado en esta sesión. Recuerda enviarlo desde «Registro del día».'; marca('Salida (exposición)'); }
+
+/* ---- Exposición en imaginación ---- */
+VIEWS.imaginacion=function(){
+  return `
+  <h2>Exposición en imaginación</h2>
+  <p class="mut sm">Ensayar por dentro la situación que temes (un lugar, un encuentro, un recuerdo difícil) <b>sin huir</b>, para que pierda fuerza. Hazlo en un rato tranquilo, no en plena crisis.</p>
+  <div class="card">
+    <div class="ctit">Cómo hacerlo · 8–12 minutos</div>
+    <div class="pasoline"><div class="pasonum">1</div><div>Siéntate cómoda. 3 respiraciones curiosas para aterrizar.</div></div>
+    <div class="pasoline"><div class="pasonum">2</div><div>Trae la escena temida con detalle: el lugar, las caras, lo que se dice, lo que temes que piensen de ti. <b>Déjala estar</b>, no la apartes.</div></div>
+    <div class="pasoline"><div class="pasonum">3</div><div>Observa cómo el cuerpo se activa. Localiza la sensación y <b>quédate con ella</b>, respirando, con una mano en el pecho si ayuda.</div></div>
+    <div class="pasoline"><div class="pasonum">4</div><div>No resuelves la escena ni te defiendes. Solo la sostienes mientras acompañas tu cuerpo, hasta que la ansiedad empiece a <b>bajar sola</b>.</div></div>
+    <div class="pasoline"><div class="pasonum">5</div><div>Repite la misma escena 2–3 veces en la sesión. Cada vuelta suele subir menos. Cierra volviendo a la respiración y al aquí.</div></div>
+    <div class="frase">No es revivir para sufrir: es enseñarle a tu cuerpo que puede estar con ese recuerdo sin que te arrastre.</div>
+  </div>
+  <div class="card">
+    <div class="ctit">Registrar</div>
+    <label class="f">Ansiedad al empezar (0–10)</label><div class="suds" id="iA"></div>
+    <label class="f">Ansiedad al terminar (0–10)</label><div class="suds" id="iD"></div>
+    <label class="f">¿Cuántas veces has repetido la escena?</label>
+    <div class="sel" id="iReps"></div>
+    <button class="btn bpg full" style="margin-top:12px" onclick="marca('Exposición en imaginación');$('#imagMsg').textContent='Guardado en esta sesión.'">Guardar ✓</button>
+    <p class="sm mut" id="imagMsg" style="text-align:center;margin-top:8px"></p>
+  </div>
+  <div class="warn">Si notas que te desbordas o aparecen imágenes muy intensas que no puedes sostener, para, respira, usa el abrazo sentido y coméntalo en sesión. Esto se hace poco a poco y, al principio, mejor con tu psicólogo/a.</div>`;
+};
+bindAfter.imaginacion=function(){
+  sudsBind('#iA','imagAntes'); sudsBind('#iD','imagDesp');
+  var r=$('#iReps'); if(r){ r.innerHTML=[1,2,3,4].map(function(n){return '<span class="pill'+(D.imagReps===n?' on':'')+'" data-r="'+n+'">'+n+'×</span>';}).join('');
+    r.onclick=function(e){var n=e.target.getAttribute('data-r'); if(!n)return; D.imagReps=+n; bindAfter.imaginacion();}; }
+};
+
+/* ---- Mi día a día ---- */
+var DIA=[
+  "Levantarme y vestirme a una hora fija (aunque no haya plan)",
+  "Una práctica de dentro (respiración, abrazo o acompañar la sensación)",
+  "Un peldaño de la escalera o una salida corta",
+  "Algo de movimiento dentro de mis límites (paseo, pilates, fisio)",
+  "Un contacto con alguien que me cuida (familia, amistades)",
+  "Una tarea pequeña con sentido (casa, recado, algo mío)",
+  "Rato de descanso elegido, no por agotamiento"
+];
+VIEWS.dia=function(){
+  var items=DIA.map(function(txt,i){var on=D.dia[i];return '<div class="chk'+(on?' on':'')+'" onclick="toggleDia('+i+')"><div class="box">'+(on?'✓':'')+'</div><span>'+txt+'</span></div>';}).join('');
+  return `
+  <h2>Mi día a día</h2>
+  <p class="mut sm">Un día sin estructura alimenta la evitación. Darle <b>ritmo y sentido</b> ayuda al cuerpo a recuperarse. No hace falta todo; elige lo que puedas hoy, sin exigirte.</p>
+  <div class="card">
+    <div class="ctit">Hoy me propongo</div>
+    ${items}
+  </div>
+  <div class="frase">Hacer tu vida y cuidarte —salir, ver a los tuyos, moverte— es parte del tratamiento, y es legítimo.</div>
+  <button class="btn bs full" onclick="go('home')">Volver</button>`;
+};
+function toggleDia(i){ D.dia[i]=!D.dia[i]; render(); }
+
+/* ---- Registro del día + envío ---- */
+VIEWS.registro=function(){
+  return `
+  <h2>Registro del día</h2>
+  <p class="mut sm">Una foto de cómo ha ido hoy, para ti y para compartir con tu psicólogo/a. No guarda nada: envíalo si quieres que quede.</p>
+  <div class="card">
+    <label class="f">¿Cuánto he rumiado hoy? (0 nada – 10 todo el rato)</label><div class="suds" id="rR"></div>
+    <label class="f">¿Cómo ha estado mi ánimo? (0 muy bajo – 10 bien)</label><div class="suds" id="rM"></div>
+    <label class="f">Un logro de hoy, por pequeño que sea</label>
+    <textarea id="rLogro" placeholder="p. ej. salí al portal; corté una rumiación; pedí un abrazo…">${D.logro||''}</textarea>
+    <label class="f">Algo que quiera contarle a mi psicólogo/a</label>
+    <textarea id="rNota" placeholder="cómo me siento, dudas, qué me costó…">${D.nota||''}</textarea>
+  </div>
+  <div class="card">
+    <div class="ctit">Enviar a tu psicólogo/a</div>
+    <div class="aviso">No guarda nada. Copia el texto o ábrelo en WhatsApp para enviárselo.</div>
+    <div class="cbox" id="msgBox">Pulsa «Preparar resumen» para generarlo.</div>
+    <div class="acc"><button class="btn bp bsm" onclick="prep()">✍ Preparar resumen</button></div>
+    <div class="acc">
+      <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar por WhatsApp</a>
+      <button class="btn bcopy" onclick="copiar(this)">📋 Copiar texto</button>
+    </div>
+  </div>`;
+};
+bindAfter.registro=function(){ sudsBind('#rR','rumia'); sudsBind('#rM','animo'); };
+
+/* ---- utilidades ---- */
+function marca(nombre){ D.herramientas[nombre]=(D.herramientas[nombre]||0)+1; }
+function sudsBind(sel,campo){
+  var c=$(sel); if(!c)return;
+  c.innerHTML=''; for(var i=0;i<=10;i++){ var cls='sb'+(i<=3?' lo':'')+(i>=8?' hi':'')+(D[campo]===i?' on':''); c.innerHTML+='<div class="'+cls+'" data-v="'+i+'">'+i+'</div>'; }
+  c.onclick=function(e){ var v=e.target.getAttribute('data-v'); if(v===null)return; D[campo]=+v; sudsBind(sel,campo); };
+}
+function prep(){
+  // recoger campos de texto visibles
+  if($('#rLogro')) D.logro=$('#rLogro').value;
+  if($('#rNota')) D.nota=$('#rNota').value;
+  var L=[];
+  L.push('APRENS · Registro del día');
+  L.push('Fecha: '+D.fecha);
+  L.push('');
+  if(D.peldano||D.sudsAntes!=null||D.salida){
+    L.push('— Salida (exposición en vivo) —');
+    if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+ESCALERA.length);
+    var s=[]; if(D.sudsAntes!=null)s.push('antes '+D.sudsAntes); if(D.sudsPico!=null)s.push('pico '+D.sudsPico); if(D.sudsDesp!=null)s.push('después '+D.sudsDesp);
+    if(s.length) L.push('Ansiedad (0-10): '+s.join(' · '));
+    if(D.salida) L.push('Qué me ayudó: '+D.salida);
+    L.push('');
+  }
+  if(D.imagAntes!=null||D.imagDesp!=null||D.imagReps){
+    L.push('— Exposición en imaginación —');
+    var s2=[]; if(D.imagAntes!=null)s2.push('inicio '+D.imagAntes); if(D.imagDesp!=null)s2.push('final '+D.imagDesp);
+    if(s2.length) L.push('Ansiedad (0-10): '+s2.join(' · ')); if(D.imagReps) L.push('Repeticiones: '+D.imagReps);
+    L.push('');
+  }
+  var ht=Object.keys(D.herramientas); if(ht.length){ L.push('— Herramientas de dentro practicadas —'); L.push(ht.join(' · ')); L.push(''); }
+  var nd=0; for(var k in D.dia){ if(D.dia[k])nd++; }
+  if(nd) { L.push('Rutina del día: '+nd+' de '+DIA.length+' pasos'); }
+  if(D.rumia!=null) L.push('Rumiación hoy (0-10): '+D.rumia);
+  if(D.animo!=null) L.push('Ánimo hoy (0-10): '+D.animo);
+  if(D.logro) { L.push(''); L.push('Logro de hoy: '+D.logro); }
+  if(D.nota) { L.push(''); L.push('Para mi psicólogo/a: '+D.nota); }
+  L.push('');
+  L.push('(Enviado desde mi app de acompañamiento APRENS)');
+  $('#msgBox').textContent=L.join('\n');
+}
+function abrirWA(e){ e.preventDefault(); if($('#msgBox').textContent.indexOf('Pulsa')===0)prep(); var t=$('#msgBox').innerText||$('#msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function copiar(btn){
+  if($('#msgBox').textContent.indexOf('Pulsa')===0)prep();
+  var box=$('#msgBox'),txt=box.innerText||box.textContent;
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(txt).then(function(){btn.textContent='✓ Copiado';setTimeout(function(){btn.textContent='📋 Copiar texto';},2200);}); }
+  else{ var r=document.createRange();r.selectNodeContents(box);var s=window.getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');}catch(e){} s.removeAllRanges(); btn.textContent='✓ Copiado';setTimeout(function(){btn.textContent='📋 Copiar texto';},2200); }
+}
+
+render();
+</script>
+</body>
+</html>

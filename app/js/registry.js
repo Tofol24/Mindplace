@@ -162,7 +162,11 @@ window.APRENS_TOOLS = [
 
   { id:"dolor_cronico", emoji:"\ud83e\ude79", nombre:"Cuestionario de dolor crónico",
     desc:"Valoración del dolor crónico y del contexto psicosocial que lo acompaña, referida a las últimas cuatro semanas: cómo es el dolor, cómo condiciona tu día a día y qué te ayuda. Al terminar eliges tú si lo envías a tu psicólogo.",
-    migrada:true, iframe:"tools-standalone/dolor-cronico.html" }
+    migrada:true, iframe:"tools-standalone/dolor-cronico.html" },
+
+  { id:"salidas_paso_a_paso", emoji:"🚶", nombre:"Paso a paso · recuperar las salidas",
+    desc:"Para agorafobia y evitación social: recuperar la calle poco a poco. Escalera de exposición gradual en vivo con las dos llaves (QUÉ conductual · CÓMO acompañamiento AIS) y registro antes/pico/después, exposición en imaginación, y las herramientas de dentro (respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto) más estructura del día. Registro diario para el psicólogo por WhatsApp.",
+    migrada:true, iframe:"tools-standalone/salidas-paso-a-paso.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
