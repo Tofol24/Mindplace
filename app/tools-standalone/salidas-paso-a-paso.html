@@ -108,6 +108,8 @@ textarea{resize:vertical;min-height:64px}
 
 <div class="wrap" id="screen"></div>
 
+<!-- Silueta AIS con las dos luces (componente compartido de la app) -->
+<script src="../js/respiro-ais.js"></script>
 <script>
 "use strict";
 var $=function(s){return document.querySelector(s);};
@@ -173,11 +175,13 @@ var NIVELES=["Muy suave","Suave","Media","Alta","Reto"];
 function go(v){ VIEW=v; render(); window.scrollTo(0,0); }
 var VIEW='home';
 function render(){
+  if(aisRespiro){ try{aisRespiro.destroy();}catch(e){} aisRespiro=null; }
   $('#hback').style.display = VIEW==='home' ? 'none' : 'inline-flex';
   $('#screen').innerHTML = (VIEWS[VIEW]||VIEWS.home)();
   if(bindAfter[VIEW]) bindAfter[VIEW]();
 }
 var bindAfter={};
+var aisRespiro=null;
 
 /* ========== VISTAS ========== */
 var VIEWS={};
@@ -226,11 +230,7 @@ VIEWS.respiracion=function(){
   <h2>Respiración curiosa</h2>
   <p class="mut sm">No respiras para quitarte el nervio, sino para <b>acercarte a lo que sientes con curiosidad</b>, como quien observa sin juzgar. Unos 2–3 minutos.</p>
   <div class="card">
-    <div class="breath-wrap">
-      <div class="breath" id="breath">Prepárate</div>
-      <div id="breathTxt" class="sm mut" style="text-align:center;min-height:20px"></div>
-      <button class="btn bpg" id="breathBtn" onclick="toggleBreath()">▶ Empezar</button>
-    </div>
+    <div id="aisBox" class="breath-wrap" style="max-width:280px;margin:0 auto"></div>
   </div>
   <div class="card">
     <div class="ctit">Mientras respiras, observa con curiosidad</div>
@@ -259,7 +259,21 @@ function toggleBreath(){
   }
   tick();
 }
-bindAfter.respiracion=function(){ breathOn=false; };
+function breathFallback(){
+  return '<div class="breath" id="breath">Prepárate</div>'
+    +'<div id="breathTxt" class="sm mut" style="text-align:center;min-height:20px"></div>'
+    +'<button class="btn bpg" id="breathBtn" onclick="toggleBreath()">▶ Empezar</button>';
+}
+var aisRespiro=null;
+bindAfter.respiracion=function(){
+  breathOn=false;
+  var box=$('#aisBox'); if(!box)return;
+  if(window.RespiroAIS){
+    try{ aisRespiro=RespiroAIS.mount(box,{lang:'es',figure:'organism',showControl:true,showZones:false,
+         rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}}); return; }catch(e){}
+  }
+  box.innerHTML=breathFallback();   // reserva (si se abre fuera de la app)
+};
 
 /* ---- Parada de pensamiento / rumiación ---- */
 VIEWS.parada=function(){
