@@ -260,6 +260,72 @@
     }); }
   }
 
+  // ============================================================
+  //  Micro-acción con valor · registro diario 0/1 (TEC: cap. 11.4 y Anexo D)
+  //  «¿Hice hoy al menos una micro-acción desde mis valores, aunque sintiera
+  //  activación?». Se guarda en aprens_db (viaja con el .json al panel).
+  //  Escribe directo en el DB para no tocar el estado de Aprens.config().
+  // ============================================================
+  const CV_TOOL = { id:"microaccion_valor", nombre:"Micro-acción con valor (0/1)" };
+  function cvEsc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+  function cvDB(){ try{ const d=JSON.parse(localStorage.getItem("aprens_db")); if(d&&d.tools) return d; }catch(e){} return {schema:1, actualizado:null, paciente:{codigo:""}, tools:{}}; }
+  function cvRecords(){ const b=cvDB().tools[CV_TOOL.id]; return (b&&b.records)||[]; }
+  function cvSave(cv, desc){
+    const d=cvDB(); const b=d.tools[CV_TOOL.id]||(d.tools[CV_TOOL.id]={meta:{nombre:CV_TOOL.nombre,v:1},records:[]});
+    b.meta={nombre:CV_TOOL.nombre,v:1};
+    const hoy=_isoDay(new Date());
+    const rec={id:"cv-"+hoy, date:hoy, ts:Date.now(), param:"continuidad", cv:cv?1:0, descripcion:String(desc||"").trim().slice(0,200)};
+    const i=b.records.findIndex(r=>r.date===hoy||r.id===rec.id); if(i>=0) b.records[i]=rec; else b.records.push(rec);
+    b.records.sort((a,c)=>String(a.date).localeCompare(String(c.date)));
+    d.actualizado=new Date().toISOString();
+    try{ localStorage.setItem("aprens_db", JSON.stringify(d)); }catch(e){}
+  }
+  function cvHoyHTML(){
+    const hoy=_isoDay(new Date()); const byDate={}; cvRecords().forEach(r=>{ if(r.date) byDate[r.date]=r; });
+    const hoyRec=byDate[hoy]||null; const DIAS=["D","L","M","X","J","V","S"];
+    let dots="", unos=0, con=0;
+    for(let n=6;n>=0;n--){
+      const iso=_diaMenos(hoy,n); const r=byDate[iso]; const p=iso.split("-").map(Number);
+      const wd=DIAS[new Date(p[0],p[1]-1,p[2]).getDay()];
+      let cls="none", sym="·"; if(r){ con++; if(r.cv===1){ unos++; cls="si"; sym="●"; } else { cls="no"; sym="○"; } }
+      dots+=`<span class="cv-dot ${cls}${iso===hoy?" hoy":""}" title="${iso}"><i>${sym}</i><small>${wd}</small></span>`;
+    }
+    const estado = hoyRec
+      ? (hoyRec.cv===1
+          ? `<b>Hoy: 1.</b> ${hoyRec.descripcion?`«${cvEsc(hoyRec.descripcion)}»`:"Has actuado hacia lo que te importa, con lo que hubiera dentro."}`
+          : `<b>Hoy: 0.</b> No pasa nada: mañana vuelve a estar la pregunta. Si aún queda día, puedes cambiarlo.`)
+      : `Marca <b>1</b> si hoy has dado al menos un paso pequeño hacia lo que te importa <b>aunque hubiera activación</b>; <b>0</b> si no. Sin juicio: es un registro, no una nota.`;
+    return `<section class="cvdia" id="cvdia">
+      <div class="cv-h">Mi micro-acción de hoy · 0/1</div>
+      <div class="cv-q">¿He hecho hoy al menos una <b>micro-acción desde mis valores</b>, aunque sintiera activación?</div>
+      <div class="cv-txt">${estado}</div>
+      <div class="cv-btns">
+        <button class="cv-btn si${hoyRec&&hoyRec.cv===1?" on":""}" data-cv="1" type="button">Sí · 1</button>
+        <button class="cv-btn no${hoyRec&&hoyRec.cv===0?" on":""}" data-cv="0" type="button">Hoy no · 0</button>
+      </div>
+      <div class="cv-desc"${hoyRec&&hoyRec.cv===1?"":" hidden"}>
+        <input id="cvDesc" maxlength="200" placeholder="¿Cuál? (opcional, breve)" value="${hoyRec?cvEsc(hoyRec.descripcion||""):""}">
+        <button class="cv-save" id="cvSave" type="button">Guardar</button>
+      </div>
+      <div class="cv-week">${dots}<span class="cv-week-n">${unos}/${con} ${con===1?"día registrado":"días registrados"} · últimos 7</span></div>
+      <div class="cv-sub">Pequeña, observable, hacia lo que te importa — <b>no para aliviar</b>. El objetivo no es que desaparezca la sensación: es actuar desde tus valores mientras está presente. Se guarda en tu dispositivo y viaja con tu .json al panel.</div>
+    </section>`;
+  }
+  function wireCV(){
+    const sec=document.getElementById("cvdia"); if(!sec) return;
+    const hoy=_isoDay(new Date());
+    function refresh(){ sec.outerHTML=cvHoyHTML(); wireCV(); }
+    sec.querySelectorAll(".cv-btn").forEach(b=>{ b.onclick=()=>{
+      const cv=b.getAttribute("data-cv")==="1"; const prev=cvRecords().find(r=>r.date===hoy);
+      cvSave(cv, cv&&prev?prev.descripcion:""); refresh();
+    }; });
+    const save=document.getElementById("cvSave"), inp=document.getElementById("cvDesc");
+    if(save&&inp){
+      save.onclick=()=>{ cvSave(true, inp.value); refresh(); };
+      inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); save.onclick(); } });
+    }
+  }
+
   // «La teoría, en vídeo»: tres vídeos breves con el profesional (portada del hub)
   function teoriaVideosHTML(){
     const vids=[
@@ -527,6 +593,7 @@
       ${aisNucleoHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
+      ${cvHoyHTML()}
       ${focoBanner}
       ${teoriaVideosHTML()}
       ${recorridoHTML()}
@@ -536,6 +603,7 @@
       ${librosHTML()}
       <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
     wireCont();
+    wireCV();
     montarIndice();
     montarNucleoAIS();
   }
