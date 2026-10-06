@@ -94,6 +94,12 @@ textarea{resize:vertical;min-height:64px}
 .sugs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .sug{background:var(--azulLt);color:var(--azul);border-radius:16px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;line-height:1.3}
 .pill.nivp.on{background:var(--oro);border-color:var(--oro);color:#fff}
+.vineta{display:grid;grid-template-columns:1fr;gap:12px;margin:8px 0 4px}
+@media(min-width:620px){.vineta{grid-template-columns:1fr 1fr 1fr}}
+.vpanel{background:var(--fondo);border:1px solid #E3EAF3;border-radius:14px;padding:12px 12px 14px;text-align:center}
+.vpanel svg{width:100%;max-width:240px;height:auto;display:block;margin:0 auto}
+.vcap{font-size:12.5px;color:#1a1a2e;margin-top:8px;line-height:1.5}
+.vnum{display:inline-block;background:var(--azul);color:#fff;border-radius:50%;width:22px;height:22px;line-height:22px;font-size:12px;font-weight:700;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -265,21 +271,90 @@ function breathFallback(){
     +'<button class="btn bpg" id="breathBtn" onclick="toggleBreath()">▶ Empezar</button>';
 }
 var aisRespiro=null;
-bindAfter.respiracion=function(){
-  breathOn=false;
+function mountSilueta(){
   var box=$('#aisBox'); if(!box)return;
   if(window.RespiroAIS){
     try{ aisRespiro=RespiroAIS.mount(box,{lang:'es',figure:'organism',showControl:true,showZones:false,
          rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}}); return; }catch(e){}
   }
   box.innerHTML=breathFallback();   // reserva (si se abre fuera de la app)
-};
+}
+bindAfter.respiracion=function(){ breathOn=false; mountSilueta(); };
+bindAfter.sobresalto=function(){ mountSilueta(); };
+bindAfter.abrazo=function(){ mountSilueta(); };
 
 /* ---- Parada de pensamiento / rumiación ---- */
 VIEWS.parada=function(){
   return `
   <h2>Parar la rumiación</h2>
   <p class="mut sm">La rumiación es el intento de controlar lo que ya pasó o lo que podría pasar. No resuelve: <b>alimenta la alerta</b> y te saca del presente. No se trata de discutir con el pensamiento, sino de <b>soltarlo y volver al cuerpo</b>.</p>
+  <div class="card">
+    <div class="ctit">Para · respira · reorienta</div>
+    <div class="vineta">
+      <div class="vpanel"><span class="vnum">1</span>
+        <svg viewBox="0 0 260 162" role="img" aria-label="En automático mientras sobrepienso">
+          <rect x="18" y="120" width="78" height="8" rx="3" fill="#cfd9e1"/>
+          <g stroke="#4a6572" stroke-width="3" stroke-linecap="round" fill="none">
+            <circle cx="56" cy="62" r="11" fill="#e4ecf1" stroke-width="2.4"/>
+            <line x1="56" y1="73" x2="56" y2="108"/>
+            <line x1="56" y1="84" x2="40" y2="100"/>
+            <line x1="56" y1="84" x2="80" y2="104"/>
+            <line x1="56" y1="108" x2="45" y2="134"/>
+            <line x1="56" y1="108" x2="67" y2="134"/>
+          </g>
+          <rect x="78" y="100" width="10" height="9" rx="2" fill="#bcd0dd"/>
+          <circle cx="80" cy="46" r="2.6" fill="#fff" stroke="#c9d3db"/><circle cx="90" cy="39" r="4" fill="#fff" stroke="#c9d3db"/>
+          <ellipse cx="178" cy="44" rx="64" ry="33" fill="#fff" stroke="#c9d3db" stroke-width="2"/>
+          <path d="M130 46 q12 -17 24 -4 q10 11 21 -2 q12 -13 23 3 q9 11 19 0" fill="none" stroke="#9aa7b0" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M136 58 q14 10 27 -2 q10 -10 22 3 q9 9 20 -2" fill="none" stroke="#bcc6cf" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="156" cy="32" r="6" fill="#E9B458"/><circle cx="156" cy="32" r="11" fill="#E9B458" opacity=".25"/>
+          <text x="200" y="36" text-anchor="middle" font-size="10" fill="#6B7280" font-style="italic">¿y si…?</text>
+          <text x="150" y="60" text-anchor="middle" font-size="10" fill="#6B7280" font-style="italic">otra vez…</text>
+        </svg>
+        <div class="vcap">Sobrepienso y mi <b>atención</b> (<span style="color:#C8973A">●</span>) se va arriba, al bucle. El cuerpo hace las cosas en <b>automático</b>.</div>
+      </div>
+      <div class="vpanel"><span class="vnum">2</span>
+        <svg viewBox="0 0 260 162" role="img" aria-label="Me doy cuenta y paro">
+          <rect x="18" y="120" width="78" height="8" rx="3" fill="#cfd9e1"/>
+          <g stroke="#4a6572" stroke-width="3" stroke-linecap="round" fill="none">
+            <circle cx="56" cy="62" r="11" fill="#e4ecf1" stroke-width="2.4"/>
+            <line x1="56" y1="73" x2="56" y2="108"/>
+            <line x1="56" y1="82" x2="40" y2="66"/>
+            <line x1="56" y1="84" x2="74" y2="98"/>
+            <line x1="56" y1="108" x2="45" y2="134"/>
+            <line x1="56" y1="108" x2="67" y2="134"/>
+          </g>
+          <ellipse cx="170" cy="42" rx="50" ry="26" fill="none" stroke="#cdd8e0" stroke-width="2" stroke-dasharray="4 5" opacity=".7"/>
+          <g transform="translate(176,44)">
+            <polygon points="-15,-26 15,-26 26,-15 26,15 15,26 -15,26 -26,15 -26,-15" fill="#C0392B"/>
+            <text x="0" y="5" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">PARA</text>
+          </g>
+        </svg>
+        <div class="vcap">Me doy cuenta: «<b>Para</b>». Suelto el bucle — <b>no discuto</b> con él.</div>
+      </div>
+      <div class="vpanel"><span class="vnum">3</span>
+        <svg viewBox="0 0 260 162" role="img" aria-label="Respiro y reoriento la atención a lo que hacía">
+          <rect x="150" y="120" width="88" height="8" rx="3" fill="#cfd9e1"/>
+          <g stroke="#4a6572" stroke-width="3" stroke-linecap="round" fill="none">
+            <circle cx="60" cy="56" r="11" fill="#e4ecf1" stroke-width="2.4"/>
+            <line x1="60" y1="67" x2="60" y2="104"/>
+            <line x1="60" y1="78" x2="44" y2="94"/>
+            <line x1="60" y1="78" x2="76" y2="94"/>
+            <line x1="60" y1="104" x2="49" y2="130"/>
+            <line x1="60" y1="104" x2="71" y2="130"/>
+          </g>
+          <line x1="60" y1="50" x2="60" y2="98" stroke="#E9B458" stroke-width="3" stroke-dasharray="2 4" opacity=".85"/>
+          <circle cx="60" cy="96" r="7" fill="#E9B458"/><circle cx="60" cy="96" r="12" fill="#E9B458" opacity=".25"/>
+          <path d="M72 52 q10 -4 18 0" stroke="#3FA6D8" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="92" cy="52" r="3.4" fill="#3FA6D8"/>
+          <path d="M92 116 q28 8 52 2" stroke="#2E7D5E" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <polygon points="142,112 152,118 142,124" fill="#2E7D5E"/>
+        </svg>
+        <div class="vcap"><b>Respiro</b> llevando la atención al cuerpo (<span style="color:#C8973A">●</span>), y <b>vuelvo</b> a lo que estaba haciendo — ahora presente.</div>
+      </div>
+    </div>
+    <div class="aviso" style="margin:10px 0 0">No basta con parar y respirar: hay que <b>volver a algo</b>. Por eso ayuda tener claro, en cada momento del día, <b>qué me toca hacer</b> —aunque sea descansar o algo cotidiano— y poner ahí tu atención.<br>
+      <button class="btn bs bsm" style="margin-top:8px" onclick="go('dia')">Ver «Mi día a día» →</button></div>
+  </div>
   <div class="card">
     <div class="pasoline"><div class="pasonum">1</div><div><b>PARA.</b> En cuanto te des cuenta de que estás dándole vueltas (al tema que te preocupa, a lo que pasó, al «¿y si…?»), di para ti: <i>«Stop. Esto es rumiar».</i></div></div>
     <div class="pasoline"><div class="pasonum">2</div><div><b>NOMBRA sin entrar.</b> «Otra vez el pensamiento del conflicto.» No lo analizas, no buscas la respuesta perfecta. Solo lo reconoces.</div></div>
@@ -302,6 +377,7 @@ VIEWS.abrazo=function(){
       <li>Nota el calor y un poco de peso de tus manos. Respira despacio ahí.</li>
       <li>Dite por dentro, sintiéndolo: <i>«Lo estás pasando mal y no te voy a dejar solo/a».</i></li>
     </ul>
+    <div id="aisBox" class="breath-wrap" style="max-width:190px;margin:4px auto 0"></div>
   </div>
   <div class="card">
     <div class="ctit">Con los tuyos</div>
@@ -326,6 +402,7 @@ VIEWS.sobresalto=function(){
     <div class="pasoline"><div class="pasonum">3</div><div><b>Describo con curiosidad</b>: ¿presión, calor, temblor, nudo? ¿se mueve, cambia?</div></div>
     <div class="pasoline"><div class="pasonum">4</div><div><b>Me quedo</b> con ella respirando, sin empujarla fuera. «Esto es alerta, no peligro».</div></div>
     <div class="pasoline"><div class="pasonum">5</div><div><b>Suelto el porqué.</b> No necesito entenderlo ahora. Solo estar, hasta que afloje.</div></div>
+    <div id="aisBox" class="breath-wrap" style="max-width:190px;margin:8px auto 2px"></div>
     <div class="warn">Tus dolores de hombros, la tensión… también se escuchan así: con atención amable, sin pelearte con el cuerpo.</div>
     <button class="btn bs full" onclick="marca('Acompañar el sobresalto');go('home')">Hecho ✓</button>
   </div>`;
