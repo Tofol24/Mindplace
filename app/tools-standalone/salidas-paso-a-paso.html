@@ -85,6 +85,15 @@ textarea{resize:vertical;min-height:64px}
 .chk.on span{color:var(--gris);text-decoration:line-through}
 @media(hover:hover){.btn:hover{filter:brightness(1.05)}.tool:hover{border-left-width:6px}}
 .hide{display:none!important}
+.esc-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;border-top:1px dashed #d7e0ec;padding-top:10px}
+.et{border:1.5px solid #E3EAF3;background:#fff;border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--gris);cursor:pointer}
+.et:disabled{opacity:.35;cursor:default}
+.et.del{color:var(--rojo);border-color:#f2d6d2}
+.step.editing{border:2px solid var(--azul);background:#fff}
+.sughint{font-size:11.5px;color:var(--gris);margin:6px 0 4px}
+.sugs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.sug{background:var(--azulLt);color:var(--azul);border-radius:16px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;line-height:1.3}
+.pill.nivp.on{background:var(--oro);border-color:var(--oro);color:#fff}
 </style>
 </head>
 <body>
@@ -119,7 +128,7 @@ var D={
 var pelDone={};         // peldaños marcados como logrados
 
 /* ===== Escalera de exposición en vivo ===== */
-var ESCALERA=[
+var ESC_DEFAULT=[
   {t:"Asomarme al portal o la calle, solo/a, 3–5 minutos",lvl:"Muy suave",
    que:"Baja al portal o sal a la puerta. Quédate el tiempo que puedas y vuelve cuando tú decidas, no cuando el miedo mande.",
    como:"Antes: 3 respiraciones curiosas. Fuera: nota los pies en el suelo y una cosa que veas/oigas. No huyes del nervio: lo acompañas."},
@@ -145,6 +154,20 @@ var ESCALERA=[
    que:"El peldaño más alto. Ve solo/a a un lugar lleno y quédate sosteniendo la idea de ser visto/a, sin conductas de escape.",
    como:"Trae todo lo entrenado: respiración curiosa, acompañar la sensación, soltar el porqué. Sal cuando el plan termine, no cuando el miedo pique."}
 ];
+/* ---- escalera editable (se guarda solo en este dispositivo) ---- */
+var ESC_KEY="aprens.salidas.escalera.v1";
+function clon(a){return JSON.parse(JSON.stringify(a));}
+function loadEsc(){ try{ var r=localStorage.getItem(ESC_KEY); if(r){var a=JSON.parse(r); if(Array.isArray(a)&&a.length)return a;} }catch(e){} return clon(ESC_DEFAULT); }
+function saveEsc(){ try{ localStorage.setItem(ESC_KEY,JSON.stringify(esc)); }catch(e){} }
+var esc=loadEsc();
+var editIdx=null; // índice del peldaño en edición (o -1 = nuevo)
+/* sugerencias para rellenar tocando (menos escritura) */
+var SUG={
+  sit:["Asomarme al portal","Vuelta a la manzana","Ir a una tienda cercana","Sentarme en una cafetería","Ir al mercado o super","Transporte público (una parada)","Un sitio donde podría haber conocidos","Quedar con alguien en público","Sitio concurrido en hora punta","Hacer un recado yo solo/a"],
+  que:["Quédate el tiempo marcado, no menos.","Vuelve cuando tú decidas, no cuando el miedo mande.","Aunque notes prisa por salir, quédate unos segundos más.","Haz lo que ibas a hacer, sin acortarlo por el miedo.","Repite este paso varios días antes de subir.","Sin conductas de escape (no mirar el móvil para huir)."],
+  como:["Respiración curiosa antes de empezar.","Acompaña la sensación, no la apartes.","Suelta el «¿y si…?» y vuelve al cuerpo.","Abrazo sentido si sube la alerta.","«Esto es alerta, no peligro».","Sal cuando el plan termine, no cuando el miedo pique.","Nota los pies en el suelo y una cosa que veas/oigas."]
+};
+var NIVELES=["Muy suave","Suave","Media","Alta","Reto"];
 
 /* ========== NAVEGACIÓN ========== */
 function go(v){ VIEW=v; render(); window.scrollTo(0,0); }
@@ -194,7 +217,7 @@ VIEWS.home=function(){
   <div class="card" style="margin-top:18px">
     <div class="warn" style="margin:0">Si en algún momento aparecen pensamientos de no querer seguir o de hacerte daño, no te quedes a solas con eso: habla con tu psicólogo/a o tu psiquiatra. Urgencias en España: <b>024</b> (conducta suicida) o <b>112</b>.</div>
   </div>
-  <p class="sm mut" style="text-align:center">Esta aplicación no guarda nada. Lo que escribas se borra al cerrar; por eso, si quieres, envíaselo a tu psicólogo/a desde «Registro del día».</p>`;
+  <p class="sm mut" style="text-align:center">Tu <b>escalera</b> se guarda solo en este dispositivo. El resto (el registro del día) no se guarda: envíalo a tu psicólogo/a desde «Registro del día» si quieres que quede.</p>`;
 };
 
 /* ---- Respiración curiosa ---- */
@@ -295,26 +318,62 @@ VIEWS.sobresalto=function(){
 };
 
 /* ---- Escalera de exposición en vivo ---- */
+function escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escAttr(s){return escHtml(s).replace(/"/g,'&quot;');}
+function editForm(i){
+  var s = i===-1 ? {t:'',lvl:'Media',que:'',como:''} : esc[i];
+  var nivs = NIVELES.map(function(n){return '<span class="pill nivp'+(s.lvl===n?' on':'')+'" data-niv="'+n+'">'+n+'</span>';}).join('');
+  function chips(field,arr){ return '<div class="sugs">'+arr.map(function(t){return '<span class="sug" data-f="'+field+'" data-t="'+escAttr(t)+'">+ '+escHtml(t)+'</span>';}).join('')+'</div>'; }
+  return `<div class="step editing" id="editForm">
+    <div class="sh">${i===-1?'✏️ Nuevo peldaño':'✏️ Editando peldaño '+(i+1)}</div>
+    <label class="f">Nivel</label>
+    <div class="sel" id="edNiv">${nivs}</div>
+    <label class="f">Situación — dónde o qué</label>
+    <input type="text" id="edT" value="${escAttr(s.t)}" placeholder="p. ej. Vuelta a la manzana">
+    <div class="sughint">Toca para rellenar:</div>${chips('edT',SUG.sit)}
+    <label class="f">Qué hago (fuera)</label>
+    <textarea id="edQue" placeholder="la acción concreta y cómo graduarla…">${escHtml(s.que)}</textarea>
+    <div class="sughint">Toca para añadir:</div>${chips('edQue',SUG.que)}
+    <label class="f">Cómo me acompaño (dentro · AIS)</label>
+    <textarea id="edComo" placeholder="respiración, acompañar la sensación…">${escHtml(s.como)}</textarea>
+    <div class="sughint">Toca para añadir:</div>${chips('edComo',SUG.como)}
+    <div class="row" style="margin-top:14px">
+      <button class="btn bpg bsm" onclick="saveStep()">Guardar peldaño ✓</button>
+      <button class="btn bcopy bsm" onclick="cancelEdit()">Cancelar</button>
+    </div>
+  </div>`;
+}
 VIEWS.escalera=function(){
-  var steps=ESCALERA.map(function(s,i){
+  var steps=esc.map(function(s,i){
+    if(editIdx===i) return editForm(i);
     var done=pelDone[i];
     return `<div class="step${done?' done':''}">
-      <div class="sh">${done?'✓ ':''}Peldaño ${i+1} · ${s.t}<span class="lvl">${s.lvl}</span></div>
+      <div class="sh">${done?'✓ ':''}Peldaño ${i+1} · ${escHtml(s.t)}<span class="lvl">${escHtml(s.lvl||'')}</span></div>
       <div class="keys">
-        <div class="key"><b>Qué hago (fuera)</b>${s.que}</div>
-        <div class="key"><b>Cómo me acompaño (dentro)</b>${s.como}</div>
+        <div class="key"><b>Qué hago (fuera)</b>${escHtml(s.que||'')}</div>
+        <div class="key"><b>Cómo me acompaño (dentro)</b>${escHtml(s.como||'')}</div>
       </div>
       <div class="row" style="margin-top:10px">
         <button class="btn bs bsm" onclick="trabajar(${i})">Hoy trabajo este</button>
         <button class="btn ${done?'bpg':'bs'} bsm" onclick="togglePel(${i})">${done?'Logrado ✓':'Marcar logrado'}</button>
       </div>
+      <div class="esc-tools">
+        <button class="et" onclick="moveStep(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="et" onclick="moveStep(${i},1)" ${i===esc.length-1?'disabled':''}>↓</button>
+        <button class="et" onclick="editStep(${i})">✏️ Editar</button>
+        <button class="et del" onclick="delStep(${i})">🗑 Quitar</button>
+      </div>
     </div>`;
   }).join('');
+  var addBlock = editIdx===-1 ? editForm(-1)
+    : '<button class="btn bs full" style="margin-top:2px" onclick="addStep()">+ Añadir un peldaño</button>';
   return `
   <h2>Mi escalera de salidas</h2>
   <p class="mut sm">Recuperar la calle <b>poco a poco</b>. No saltes peldaños: repite cada uno hasta que la ansiedad al hacerlo baje de forma clara, y entonces sube. El miedo baja <b>quedándote</b>, no evitando.</p>
-  <div class="aviso">La regla de oro: sales del sitio <b>cuando el plan termina</b>, no cuando el miedo pica. Si te vas huyendo, el miedo aprende que tenía razón.</div>
+  <div class="aviso">Esta escalera es <b>tuya</b>: edítala con el ✏️, cambia el orden con ↑↓ y añade o quita peldaños. Las sugerencias se ponen tocando, para no escribir tanto. Se guarda en este dispositivo.</div>
   ${steps}
+  ${addBlock}
+  <div style="text-align:center;margin:12px 0 2px"><button class="btn bcopy bsm" onclick="resetEsc()">↺ Restaurar escalera sugerida</button></div>
   <div class="card" id="regSalida">
     <div class="ctit">Registrar la salida de hoy</div>
     <label class="f">¿Qué peldaño has trabajado?</label>
@@ -323,19 +382,42 @@ VIEWS.escalera=function(){
     <label class="f">Ansiedad en el PICO (lo más alto durante)</label><div class="suds" id="sP"></div>
     <label class="f">Ansiedad DESPUÉS / al terminar</label><div class="suds" id="sD"></div>
     <label class="f">¿Qué te ayudó a quedarte?</label>
-    <textarea id="salidaTxt" placeholder="p. ej. respiración curiosa, recordar que hacer mi vida y que me vean es legítimo…">${D.salida||''}</textarea>
+    <textarea id="salidaTxt" placeholder="p. ej. respiración curiosa, recordar que hacer mi vida y que me vean es legítimo…">${escHtml(D.salida||'')}</textarea>
     <button class="btn bpg full" style="margin-top:12px" onclick="guardarSalida()">Guardar salida ✓</button>
     <p class="sm mut" id="salidaMsg" style="text-align:center;margin-top:8px"></p>
   </div>`;
 };
 bindAfter.escalera=function(){
-  // selector de peldaño
-  var sp=$('#selPel'); if(sp){ sp.innerHTML=ESCALERA.map(function(s,i){return '<span class="pill'+(D.peldano===i+1?' on':'')+'" data-pel="'+(i+1)+'">'+(i+1)+'</span>';}).join('');
+  // selector de peldaño para el registro
+  var sp=$('#selPel'); if(sp){ sp.innerHTML=esc.map(function(s,i){return '<span class="pill'+(D.peldano===i+1?' on':'')+'" data-pel="'+(i+1)+'">'+(i+1)+'</span>';}).join('');
     sp.onclick=function(e){var p=e.target.getAttribute('data-pel'); if(!p)return; D.peldano=+p; bindAfter.escalera();}; }
   sudsBind('#sA','sudsAntes'); sudsBind('#sP','sudsPico'); sudsBind('#sD','sudsDesp');
+  // edición: nivel + chips de sugerencias
+  var nv=$('#edNiv'); if(nv){ nv.onclick=function(e){var n=e.target.getAttribute('data-niv'); if(!n)return; [].forEach.call(nv.querySelectorAll('.nivp'),function(p){p.classList.toggle('on',p.getAttribute('data-niv')===n);});}; }
+  var ef=$('#editForm'); if(ef){ ef.addEventListener('click',function(e){
+    var sg=e.target.closest ? e.target.closest('.sug') : null; if(!sg)return;
+    var f=sg.getAttribute('data-f'), t=sg.getAttribute('data-t'), el=document.getElementById(f); if(!el)return;
+    var cur=el.value||''; el.value = cur ? (cur.replace(/\s*$/,'')+ (el.tagName==='TEXTAREA'?' ':' ') + t) : t;
+    el.focus();
+  }); }
 };
 function trabajar(i){ D.peldano=i+1; var e=$('#regSalida'); if(e)e.scrollIntoView({behavior:'smooth'}); bindAfter.escalera(); }
 function togglePel(i){ pelDone[i]=!pelDone[i]; render(); }
+function editStep(i){ editIdx=i; render(); var f=$('#editForm'); if(f)f.scrollIntoView({behavior:'smooth',block:'center'}); }
+function addStep(){ editIdx=-1; render(); var f=$('#editForm'); if(f)f.scrollIntoView({behavior:'smooth',block:'center'}); }
+function cancelEdit(){ editIdx=null; render(); }
+function saveStep(){
+  var onp=document.querySelector('#edNiv .nivp.on'); var niv=onp?onp.getAttribute('data-niv'):'Media';
+  var o={t:($('#edT')||{}).value||'',lvl:niv,que:($('#edQue')||{}).value||'',como:($('#edComo')||{}).value||''};
+  if(!o.t.trim()){ var t=$('#edT'); if(t){t.style.borderColor='#C0392B'; t.focus();} return; }
+  if(editIdx===-1) esc.push(o); else if(editIdx!=null) esc[editIdx]=o;
+  editIdx=null; saveEsc(); render();
+}
+function moveStep(i,dir){ var j=i+dir; if(j<0||j>=esc.length)return; var tmp=esc[i]; esc[i]=esc[j]; esc[j]=tmp;
+  // mantener marcas de logrado con el movimiento
+  var a=pelDone[i], b=pelDone[j]; pelDone[i]=b; pelDone[j]=a; saveEsc(); render(); }
+function delStep(i){ if(esc.length<=1){alert('Deja al menos un peldaño.');return;} if(!confirm('¿Quitar este peldaño?'))return; esc.splice(i,1); pelDone={}; saveEsc(); render(); }
+function resetEsc(){ if(!confirm('¿Restaurar la escalera sugerida? Perderás tus cambios.'))return; esc=clon(ESC_DEFAULT); pelDone={}; editIdx=null; saveEsc(); render(); }
 function guardarSalida(){ D.salida=($('#salidaTxt')||{}).value||''; var m=$('#salidaMsg'); if(m)m.textContent='Guardado en esta sesión. Recuerda enviarlo desde «Registro del día».'; marca('Salida (exposición)'); }
 
 /* ---- Exposición en imaginación ---- */
@@ -436,7 +518,7 @@ function prep(){
   L.push('');
   if(D.peldano||D.sudsAntes!=null||D.salida){
     L.push('— Salida (exposición en vivo) —');
-    if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+ESCALERA.length);
+    if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+esc.length);
     var s=[]; if(D.sudsAntes!=null)s.push('antes '+D.sudsAntes); if(D.sudsPico!=null)s.push('pico '+D.sudsPico); if(D.sudsDesp!=null)s.push('después '+D.sudsDesp);
     if(s.length) L.push('Ansiedad (0-10): '+s.join(' · '));
     if(D.salida) L.push('Qué me ayudó: '+D.salida);
