@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Respiro AIS</title>
+<style>
+  /* Página mínima para embeber la silueta de dos luces en un WKWebView.
+     Fondo transparente: el color lo pone la app nativa. Sin scroll ni rebote. */
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:transparent;
+    -webkit-text-size-adjust:100%; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+  body { display:flex; align-items:center; justify-content:center; }
+  #box { width:100%; height:100%; }
+  /* La escena ocupa toda la altura disponible del WebView (el componente limita por 56vh en la web). */
+  #box .ra-stage { width:min(100%, calc(100vh * 1024 / 1536)); margin:0 auto; }
+  /* Aro breve que confirma la zona tocada (cuello / pecho / barriga). */
+  .zone-ring { fill:none; stroke:#FFE08A; stroke-width:6; opacity:0; pointer-events:none; }
+  .zone-ring.on { animation: ringPulse 1.1s ease-out forwards; }
+  @keyframes ringPulse { 0% { opacity:.95; r:40px; } 100% { opacity:0; r:150px; } }
+</style>
+</head>
+<body>
+<div id="box"></div>
+<script src="js/respiro-ais.js"></script>
+<script>
+(function(){
+  'use strict';
+  /* ---- Puente con Swift (WKScriptMessageHandler "respiro") ---- */
+  function post(msg){
+    try { if (window.webkit && webkit.messageHandlers && webkit.messageHandlers.respiro) webkit.messageHandlers.respiro.postMessage(msg); } catch(e) {}
+    if (window.__respiroTestSink) window.__respiroTestSink(msg);   /* para pruebas en navegador */
+  }
+
+  /* Zonas de anclaje en coordenadas del viewBox de la figura realista (1024×1536):
+     cuello = route[z1], pecho = route[z2], barriga = route[z3]. */
+  var ZONES = { cuello:'z1', pecho:'z2', barriga:'z3' };
+  function zonePoints(fig){
+    return { cuello: fig.route[fig.anchors.z1], pecho: fig.route[fig.anchors.z2], barriga: fig.route[fig.anchors.z3] };
+  }
+
+  var box = document.getElementById('box'), api = null, cfg = null;
+
+  function mountWith(opts){
+    if (api) { try { api.destroy(); } catch(e) {} api = null; }
+    cfg = Object.assign({
+      lang:'es', figure:'organism', showControl:false, showZones:false, legend:false, autostart:false,
+      rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 }
+    }, opts || {});
+    cfg.onCycle = function(n){ if (n > 0) post({ type:'cycle', n:n }); };   /* el primer frame puede dar -1/0 */
+    api = RespiroAIS.mount(box, cfg);
+    wireTaps();
+    post({ type:'ready' });
+  }
+
+  /* Toque sobre la escena → zona más cercana (cuello / pecho / barriga). */
+  function wireTaps(){
+    var stage = box.querySelector('.ra-stage'), svg = box.querySelector('.ra-layer');
+    if (!stage || !svg) return;
+    var fig = RespiroAIS.REALISTIC, pts = zonePoints(fig);
+    var vb = fig.viewBox.split(/\s+/).map(Number), VW = vb[2], VH = vb[3];
+    function onTap(ev){
+      var t = ev.changedTouches ? ev.changedTouches[0] : ev;
+      var r = stage.getBoundingClientRect();
+      /* La escena tiene el mismo aspecto que el viewBox: escala uniforme. */
+      var x = (t.clientX - r.left) / r.width * VW, y = (t.clientY - r.top) / r.height * VH;
+      var best = null, bd = Infinity;
+      Object.keys(pts).forEach(function(z){ var d = Math.hypot(x - pts[z][0], y - pts[z][1]); if (d < bd) { bd = d; best = z; } });
+      if (bd > 260) return;                       /* fuera del cuerpo: se ignora */
+      ring(pts[best]);
+      post({ type:'zone', zone:best, x:Math.round(x), y:Math.round(y) });
+      ev.preventDefault();
+    }
+    stage.addEventListener('touchend', onTap, { passive:false });
+    stage.addEventListener('click', function(ev){ if (!('ontouchend' in window)) onTap(ev); });
+  }
+  function ring(p){
+    var svg = box.querySelector('.ra-layer'); if (!svg) return;
+    var old = svg.querySelector('.zone-ring'); if (old) old.remove();
+    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('class', 'zone-ring'); c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]); c.setAttribute('r', 40);
+    svg.appendChild(c);
+    requestAnimationFrame(function(){ c.classList.add('on'); });
+    setTimeout(function(){ if (c.parentNode) c.remove(); }, 1300);
+  }
+
+  /* API que Swift invoca con evaluateJavaScript */
+  window.respiro = {
+    mount: mountWith,
+    start: function(){ if (api) api.start(); },
+    stop: function(){ if (api) api.stop(); },
+    toggle: function(){ if (api) api.toggle(); },
+    isRunning: function(){ return !!(api && api.isRunning()); },
+    setLang: function(l){ if (api) api.setLang(l); },
+    highlight: function(zone){ var p = zonePoints(RespiroAIS.REALISTIC)[zone]; if (p) ring(p); }
+  };
+
+  /* Opciones iniciales por query string: ?autostart=1&lang=es&control=1&inhale=4000&anchor=2000&exhale=6000&pause=1500 */
+  var q = {}; location.search.replace(/^\?/, '').split('&').forEach(function(kv){ if (!kv) return; var p = kv.split('='); q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
+  var rhythm = { inhale:+q.inhale || 4000, anchor:+q.anchor || 2000, exhale:+q.exhale || 6000, pause:+q.pause || 1500 };
+  mountWith({ lang: q.lang === 'en' ? 'en' : 'es', autostart: q.autostart === '1', showControl: q.control === '1', legend: q.legend === '1', rhythm: rhythm });
+})();
+</script>
+</body>
+</html>
