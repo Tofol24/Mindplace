@@ -39,3 +39,8 @@
 # Protocolo de valoración TDAH (herramienta para profesionales, no para pacientes).
 /tools-standalone/protocolo-tdah.html
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+# Batería neuropsicológica (herramienta para profesionales). Los cuadernos de
+# estímulos los carga cada profesional en su navegador: no se publican aquí.
+/tools-standalone/bateria-neuropsicologica.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
