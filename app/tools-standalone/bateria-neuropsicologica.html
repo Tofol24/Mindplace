@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>APRENS · Batería neuropsicológica</title>
+<style>
+:root{
+  --ink:#1f2f37;--muted:#5d6f77;--line:#d6e0df;--bg:#f3f6f5;--card:#fff;
+  --brand:#17333b;--accent:#18696b;--accent-soft:#e6f0ef;--accent-ink:#135357;
+  --ok:#2c7a63;--warn:#b5832b;--warn-soft:#fff8ea;--bad:#b4533f;--bad-soft:#fff3f0;--deep:#8e3a2c;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg)}
+a{color:var(--accent-ink)}
+header.top{background:var(--brand);color:#fff;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+header.top .kicker{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#a9cbc7}
+header.top h1{font-size:1.15rem;margin:2px 0 0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:6px}
+header.top button{background:#24505a;color:#fff;border:1px solid #3b6b74}
+header.top button.hi{background:#e7f2f0;color:var(--brand);border-color:#e7f2f0}
+.space-badge{display:inline-block;font-size:.72rem;font-weight:700;border-radius:20px;padding:3px 9px;margin-left:8px;vertical-align:middle;background:#e7f2f0;color:var(--brand)}
+.space-badge.mutua{background:#ffe9c7;color:#6b4300}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0;max-width:1320px;margin:auto}
+nav.side{position:sticky;top:64px;align-self:start;height:calc(100vh - 64px);overflow:auto;padding:14px 10px 40px;border-right:1px solid var(--line)}
+nav.side .grp{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+nav.side button{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:transparent;color:var(--ink);border:0;padding:8px 10px;border-radius:8px;font-weight:550}
+nav.side button:hover{background:#e7eeed}
+nav.side button.on{background:var(--accent);color:#fff}
+nav.side .cnt{font-size:.7rem;opacity:.75;font-weight:500}
+select#mobileNav{display:none;margin:10px 12px 0;width:calc(100% - 24px)}
+main{padding:18px 20px 80px;min-width:0}
+section.sec{display:none}
+section.sec.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card h2{font-size:1.08rem;margin:0 0 4px}
+.card h3{font-size:.95rem;margin:14px 0 6px}
+.sechead{margin:2px 0 14px}
+.sechead h2{font-size:1.3rem;margin:0}
+.sechead p{color:var(--muted);margin:4px 0 0;font-size:.9rem;max-width:900px}
+.mini{font-size:.8rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px 14px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin:6px 0 3px}
+input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;font:inherit;font-size:.9rem;padding:7px 9px;border:1px solid #c5d2d2;border-radius:7px;background:#fff;color:var(--ink)}
+textarea{min-height:64px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid #7dbab4;outline-offset:1px}
+button{font:inherit;font-size:.85rem;font-weight:650;border:0;border-radius:7px;padding:8px 12px;background:var(--accent);color:#fff;cursor:pointer}
+button.alt{background:var(--accent-soft);color:var(--accent-ink)}
+button.ghost{background:#fff;border:1px solid #b6cbcb;color:var(--accent-ink)}
+button.small{padding:5px 9px;font-size:.78rem}
+button.big{padding:12px 16px;font-size:1rem}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips label{display:inline-flex;gap:6px;align-items:center;font-weight:500;color:var(--ink);background:#f4f8f7;border:1px solid var(--line);border-radius:20px;padding:4px 10px;margin:3px 4px 3px 0;font-size:.82rem}
+.pill{display:inline-block;font-size:.72rem;border-radius:20px;padding:2px 8px;background:#e9f0f0;color:#33545a;margin:1px 2px;white-space:nowrap}
+.pill.off{background:#f6e3df;color:#7d3528}
+.pill.tea{background:#e4ecfb;color:#2c4a86}
+.pill.aprens{background:#e3f3ea;color:#22603f}
+.pill.done{background:#dcefe7;color:#1f5e47}
+.pill.na{background:#eee;color:#777}
+.notice{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 12px;border-radius:6px;font-size:.84rem;margin:10px 0}
+.notice.info{background:#eef6f6;border-left-color:var(--accent)}
+.notice.bad{background:var(--bad-soft);border-left-color:var(--bad)}
+details.guide{background:#f6f9f8;border:1px solid var(--line);border-radius:9px;padding:8px 12px;margin:10px 0}
+details.guide summary{cursor:pointer;font-weight:650;font-size:.86rem;color:var(--accent-ink)}
+details.guide ol,details.guide ul{margin:6px 0 4px;padding-left:20px;font-size:.85rem;line-height:1.5}
+.test{border-left:4px solid var(--accent)}
+.test.st-na{opacity:.6;border-left-color:#aaa}
+.test.st-hecho{border-left-color:var(--ok)}
+.test .thead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:flex-start}
+.test .thead h3{margin:0;font-size:1.02rem}
+.test .meta{margin-top:4px}
+.statusSel{width:auto!important;min-width:150px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:middle}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:650}
+.tscroll{overflow-x:auto}
+table.scores input,table.scores select{padding:5px 6px;font-size:.84rem}
+table.scores td.n{width:80px}
+table.scores td.m{width:118px}
+table.scores .msd{display:none;gap:4px;margin-top:4px}
+table.scores tr.is-msd .msd{display:flex}
+table.scores tr.is-msd .vcell{display:none}
+.out{font-variant-numeric:tabular-nums;font-size:.8rem;white-space:nowrap}
+.band{display:inline-block;font-size:.72rem;font-weight:700;border-radius:5px;padding:2px 6px}
+.b-hi{background:#e2efe9;color:#1d5a44}
+.b-mid{background:#eef2f2;color:#3b5056}
+.b-lo1{background:#fbf0d8;color:#7a560f}
+.b-lo2{background:#fde4d4;color:#8a4210}
+.b-lo3{background:#f8d9d3;color:#842b1c}
+.computed{background:#f6f9f8;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.84rem}
+.computed b{font-variant-numeric:tabular-nums}
+.timerbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#0f2b31;color:#fff;border-radius:9px;padding:8px 12px;margin:8px 0}
+.timerbox .clock{font-size:1.5rem;font-variant-numeric:tabular-nums;font-weight:700;min-width:84px}
+.timerbox button{background:#2b5d66}
+.timerbox .lbl{font-size:.78rem;color:#b7d3d0}
+.flu{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;background:#fbfdfc}
+.flu .cue{font-size:1.6rem;font-weight:800;color:var(--brand);min-width:44px}
+.flu .tally button{min-width:120px}
+.qgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:8px;font-size:.8rem;text-align:center}
+.qgrid div{background:#eef4f3;border-radius:6px;padding:5px 2px}
+.qgrid .h{background:transparent;color:var(--muted);font-weight:650}
+.qgrid .cur{outline:2px solid var(--accent)}
+.rubric td.c{width:150px}
+.rubric select{min-width:120px}
+.scen{background:#f7faf9;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin:10px 0}
+.scen .stext{font-size:.92rem;line-height:1.5;margin:6px 0;background:#fff;border-left:3px solid var(--accent);padding:8px 10px;border-radius:4px}
+.linked{font-size:.82rem}
+.linked td{padding:4px 6px}
+/* perfil */
+.prof{margin-top:6px}
+.prof .dom{font-weight:750;font-size:.86rem;margin:14px 0 4px;color:var(--brand)}
+.prow{display:grid;grid-template-columns:210px minmax(0,1fr) 150px;gap:10px;align-items:center;padding:3px 0}
+.prow .lab{font-size:.83rem}
+.prow .lab small{color:var(--muted)}
+.ptrack{position:relative;height:22px;background:linear-gradient(to right,#f8dcd5 0,#f8dcd5 16.66%,#fde6d6 16.66%,#fde6d6 25%,#fcf1da 25%,#fcf1da 33.33%,#f1f5f4 33.33%,#f1f5f4 100%);border-radius:5px}
+.ptrack .zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#8aa0a3}
+.ptrack .bar{position:absolute;top:5px;height:12px;border-radius:3px;background:var(--accent)}
+.ptrack .bar.neg{background:#3f7f86}
+.ptrack .dot{position:absolute;top:3px;width:4px;height:16px;margin-left:-2px;border-radius:2px;background:#1b3a40}
+.paxis{display:grid;grid-template-columns:210px minmax(0,1fr) 150px;gap:10px;font-size:.7rem;color:var(--muted)}
+.paxis .ticks{display:flex;justify-content:space-between}
+.rule{border-left:4px solid var(--accent);background:#f5f9f8;border-radius:7px;padding:9px 12px;margin:8px 0}
+.rule.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.rule.alert{border-left-color:var(--bad);background:var(--bad-soft)}
+.rule h4{margin:0 0 3px;font-size:.9rem}
+.rule p{margin:2px 0;font-size:.84rem;line-height:1.5}
+.rule .basis{font-size:.76rem;color:var(--muted)}
+.plan .sess{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0;background:#fff}
+.plan .sess h3{margin:0 0 6px}
+.plan ol{margin:0;padding-left:20px}
+.plan li{margin:5px 0;font-size:.88rem;line-height:1.45}
+.plan li .why{display:block;font-size:.78rem;color:var(--muted)}
+#reportText{min-height:420px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;line-height:1.5}
+.sessrow{display:grid;grid-template-columns:140px 80px minmax(0,1fr) minmax(0,1fr) 36px;gap:6px;margin:5px 0}
+/* cuadernos de estímulos */
+.stviewer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:14px;align-items:start}
+.stimg{background:#20292c;border-radius:10px;min-height:300px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stimg img{max-width:100%;max-height:58vh;object-fit:contain;display:block}
+.stnav{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.stnav .itemlbl{font-weight:750;font-size:.95rem;margin-right:auto}
+.stlist td{font-size:.84rem}
+.drop{border:2px dashed #9fbdbb;border-radius:10px;padding:14px;background:#f7fbfa;text-align:center}
+.drop.over{background:#e3f1ef}
+.sitems{max-height:240px;overflow:auto;margin-top:6px}
+@media(max-width:900px){.stviewer{grid-template-columns:1fr}}
+footer.foot{font-size:.76rem;color:var(--muted);margin-top:26px;line-height:1.5}
+/* overlay / patient */
+#overlay{position:fixed;inset:0;z-index:1000;display:none;background:#fbfbf8}
+#overlay.on{display:block}
+#overlay .exit{position:fixed;top:8px;right:8px;z-index:1001;background:rgba(0,0,0,.08);color:#555;font-size:.75rem}
+.pstage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4vh 5vw;text-align:center;color:#18262b;background:#fbfbf8}
+.pstage .pbig{font-size:min(38vh,30vw);font-weight:800;line-height:1;letter-spacing:.02em}
+.pstage .pword{font-size:min(14vh,9vw);font-weight:800;letter-spacing:.04em}
+.pstage .psmall{font-size:min(3.4vh,4.5vw);color:#4b5d63;max-width:900px;margin-top:3vh;line-height:1.45}
+.pstage .ptitle{font-size:min(4.2vh,5.5vw);font-weight:750;margin-bottom:2vh}
+.pstage .ptext{font-size:min(3.8vh,5vw);line-height:1.55;max-width:1000px;text-align:left;white-space:pre-wrap}
+.pstage .ptimer{position:absolute;bottom:3vh;right:4vw;font-size:4vh;font-weight:700;color:#6a7c81;font-variant-numeric:tabular-nums}
+.pstage .pwait{color:#9aa8ab;font-size:3vh}
+.cgrid{display:grid;gap:2px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.cgrid div{display:flex;align-items:center;justify-content:center;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;border-radius:4px;cursor:pointer;color:#1d2b30}
+.cgrid div.mk{background:#cfe3e1;text-decoration:line-through}
+body.patient{background:#fbfbf8}
+body.patient header.top,body.patient .layout{display:none}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  nav.side{display:none}
+  select#mobileNav{display:block}
+  main{padding:14px 12px 70px}
+  .prow,.paxis{grid-template-columns:120px minmax(0,1fr) 92px}
+  .sessrow{grid-template-columns:1fr 1fr}
+  header.top{position:static}
+}
+@media print{
+  header.top,nav.side,select#mobileNav,.noprint,details.guide,.timerbox{display:none!important}
+  .layout{display:block}
+  main{padding:0}
+  section.sec{display:none!important}
+  body.print-report #sec-informe,body.print-report #sec-perfil{display:block!important}
+  body.print-report #sec-informe .card.noprint{display:none!important}
+  body.print-all section.sec{display:block!important}
+  .card{break-inside:avoid;border-color:#bbb}
+  .ptrack,.band{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #reportText{border:0;min-height:auto}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="kicker">APRENS · Evaluación neuropsicológica · 12+ años</div>
+    <h1>Batería neuropsicológica <span id="spaceBadge" class="space-badge">Espacio APRENS</span></h1>
+  </div>
+  <div class="tools">
+    <button class="hi" id="btnPatientWin" title="Abre una segunda ventana para el paciente (arrástrala a la segunda pantalla)">🖥 Pantalla paciente</button>
+    <button id="btnPatientHere" title="Muestra los estímulos a pantalla completa en este mismo dispositivo">⛶ Mostrar aquí</button>
+    <button id="btnSave">💾 Exportar JSON</button>
+    <button id="btnLoad">📂 Importar</button>
+    <input type="file" id="fileLoad" accept=".json,application/json" hidden>
+    <button id="btnNew">✚ Nuevo caso</button>
+  </div>
+</header>
+<select id="mobileNav" aria-label="Sección"></select>
+<div class="layout">
+<nav class="side" id="sideNav" aria-label="Secciones"></nav>
+<main id="main">
+
+<section class="sec" id="sec-inicio">
+  <div class="sechead"><h2>1 · Caso y condiciones</h2><p>Datos mínimos para elegir baremos y planificar. Usa un código anónimo. El trabajo se guarda solo en este navegador (borrador local) hasta que exportes el JSON.</p></div>
+  <div class="card">
+    <h2>Espacio de evaluación</h2>
+    <div class="row" style="margin-top:8px">
+      <label class="chips" style="margin:0"><label><input type="radio" name="space" value="aprens" data-b="meta.space"> Espacio APRENS (clínico / educativo)</label><label><input type="radio" name="space" value="mutua" data-b="meta.space"> Espacio Mutua Balear (laboral / pericial)</label></label>
+    </div>
+    <p class="mini" id="spaceHelp"></p>
+  </div>
+  <div class="card">
+    <h2>Identificación</h2>
+    <div class="grid">
+      <div><label>Código del caso</label><input data-b="meta.code" placeholder="NP-2026-001"></div>
+      <div><label>Edad (años)</label><input type="number" min="12" max="99" data-b="meta.age" placeholder="16"></div>
+      <div><label>Años de escolaridad</label><input type="number" min="0" max="25" data-b="meta.edu"></div>
+      <div><label>Curso / nivel educativo</label><input data-b="meta.level" placeholder="4º ESO, Bachillerato, FP, grado..."></div>
+      <div><label>Lateralidad</label><select data-b="meta.hand"><option value="">—</option><option>Diestra</option><option>Zurda</option><option>Ambidiestra</option></select></div>
+      <div><label>Lengua dominante / de evaluación</label><input data-b="meta.lang" placeholder="Castellano / Catalán / bilingüe"></div>
+      <div><label>Profesional</label><input data-b="meta.prof" placeholder="Nombre y nº colegiado"></div>
+      <div><label>Fecha de inicio</label><input type="date" data-b="meta.date"></div>
+    </div>
+    <label>Motivo de consulta y pregunta que debe responder la evaluación</label>
+    <textarea data-b="meta.reason" placeholder="Ej.: dificultades de atención y memoria tras TCE leve; ¿hay alteración objetivable y compatible con el puesto?"></textarea>
+    <label>Antecedentes relevantes (neurológicos, del desarrollo, psiquiátricos, consumo, tratamientos)</label>
+    <textarea data-b="meta.history"></textarea>
+  </div>
+  <div class="card" id="ctxAprens">
+    <h2>Contexto APRENS</h2>
+    <div class="grid">
+      <div><label>Rendimiento académico actual</label><select data-b="meta.school.perf"><option value="">—</option><option>Adecuado</option><option>Irregular</option><option>Bajo en algunas áreas</option><option>Bajo generalizado</option><option>No aplica</option></select></div>
+      <div><label>Adaptaciones / apoyos actuales</label><input data-b="meta.school.supports"></div>
+      <div><label>Diagnósticos previos</label><input data-b="meta.school.dx" placeholder="TDAH, dislexia, TEA, ansiedad..."></div>
+      <div><label>Informantes disponibles</label><input data-b="meta.school.informants" placeholder="Familia, tutor/a, orientador/a"></div>
+    </div>
+  </div>
+  <div class="card" id="ctxMutua">
+    <h2>Contexto Mutua Balear</h2>
+    <div class="grid">
+      <div><label>Nº de expediente (anonimizado)</label><input data-b="meta.mutua.exp"></div>
+      <div><label>Contingencia</label><select data-b="meta.mutua.cont"><option value="">—</option><option>Accidente de trabajo</option><option>Enfermedad profesional</option><option>Contingencia común</option><option>Otra</option></select></div>
+      <div><label>Fecha del accidente / lesión</label><input type="date" data-b="meta.mutua.injury"></div>
+      <div><label>Mecanismo / diagnóstico médico</label><input data-b="meta.mutua.mech" placeholder="TCE leve, latigazo, hipoxia, ictus..."></div>
+      <div><label>Situación laboral</label><select data-b="meta.mutua.sit"><option value="">—</option><option>Incapacidad temporal</option><option>Alta, en activo</option><option>Reincorporación progresiva</option><option>Propuesta de incapacidad</option></select></div>
+      <div><label>Puesto de trabajo</label><input data-b="meta.mutua.job"></div>
+    </div>
+    <label>Demandas cognitivas del puesto</label>
+    <div class="chips" id="jobDemands"></div>
+    <label>Pregunta concreta de la mutua</label>
+    <textarea data-b="meta.mutua.q" placeholder="Ej.: ¿existen secuelas cognitivas objetivables? ¿son compatibles con la reincorporación?"></textarea>
+  </div>
+  <div class="card">
+    <h2>Condiciones de la evaluación</h2>
+    <p class="mini">Factores que pueden reducir el rendimiento. Se trasladan a la interpretación como cautelas.</p>
+    <div class="grid" id="condGrid"></div>
+    <label>Observación conductual general (colaboración, fatiga, ritmo, estrategia, ánimo)</label>
+    <textarea data-b="meta.behavior"></textarea>
+  </div>
+  <div class="card">
+    <h2>Sesiones</h2>
+    <div id="sessions"></div>
+    <button class="alt small" id="addSession">+ Añadir sesión</button>
+  </div>
+</section>
+
+<section class="sec" id="sec-plan">
+  <div class="sechead"><h2>2 · Protocolo y orden de aplicación</h2><p>Orden recomendado según edad y espacio. Respeta las demoras de memoria: durante los 20–30 minutos de demora verbal aplica pruebas no verbales para no interferir.</p></div>
+  <div id="planOut" class="plan"></div>
+</section>
+
+<section class="sec" id="sec-aten"><div class="sechead"><h2>3 · Atención</h2><p>Sostenida, selectiva/focalizada, alternante, span auditivo-verbal y velocidad de procesamiento. Se diferencia la modalidad visual y la auditivo-verbal.</p></div><div data-area="aten"></div></section>
+<section class="sec" id="sec-mem"><div class="sechead"><h2>4 · Memoria</h2><p>Memoria de trabajo, memoria episódica verbal y visual, memoria semántica y memoria autobiográfica.</p></div><div data-area="mem"></div></section>
+<section class="sec" id="sec-leng"><div class="sechead"><h2>5 · Lenguaje</h2><p>Fluidez fonológica y semántica, denominación, comprensión y vocabulario.</p></div><div data-area="leng"></div></section>
+<section class="sec" id="sec-fe"><div class="sechead"><h2>6 · Funciones ejecutivas</h2><p>Inhibición, flexibilidad, planificación, razonamiento y abstracción, toma de decisiones y conducta ejecutiva en la vida diaria.</p></div><div data-area="fe"></div></section>
+<section class="sec" id="sec-visu"><div class="sechead"><h2>7 · Visopercepción y visuoconstrucción</h2><p>Necesaria para interpretar bien la memoria visual (copia de Rey) y las pruebas de ejecución visual.</p></div><div data-area="visu"></div></section>
+<section class="sec" id="sec-wech"><div class="sechead"><h2>8 · Escalas Wechsler por áreas</h2><p>Cada subtest se asigna a la función neuropsicológica que mide de forma principal. Introduce las puntuaciones escalares (media 10, DE 3) y los índices compuestos (media 100, DE 15) del manual o de la corrección oficial.</p></div><div data-area="wech"></div></section>
+<section class="sec" id="sec-valid"><div class="sechead"><h2>9 · Validez del rendimiento y nivel premórbido</h2><p>Imprescindible en el espacio Mutua Balear y recomendable siempre que haya litigio, compensación o incongruencias. Sin validez no se interpretan los déficits.</p></div><div data-area="valid"></div></section>
+
+<section class="sec" id="sec-estim">
+  <div class="sechead"><h2>Cuadernos de estímulos · administración</h2><p>Carga tus cuadernos de estímulos (ZIP de imágenes o imágenes sueltas) y pásalos ítem a ítem a la pantalla del paciente, con cronómetro y puntuación por ítem.</p></div>
+  <div class="notice bad"><strong>El material se queda en tu dispositivo.</strong> Los archivos se guardan solo en este navegador (IndexedDB): no se suben a internet ni forman parte de la web. Cada profesional carga su propia copia del material con licencia. No compartas los cuadernos fuera de la consulta: exponer los ítems invalida los baremos.</div>
+  <div class="card noprint"><h2>Añadir un cuaderno</h2>
+    <div class="drop" id="stDrop"><p style="margin:4px 0 10px"><strong>Arrastra aquí un ZIP o imágenes</strong> (JPG, PNG, WEBP) o selecciónalos.</p>
+      <input type="file" id="stFile" accept=".zip,application/zip,image/*" multiple style="max-width:420px;margin:auto"></div>
+    <div class="grid" style="margin-top:10px"><div><label>Nombre del cuaderno</label><input id="stName" placeholder="WISC-V · Puzles visuales"></div><div><label>Prueba / medida de destino (para pasar la suma)</label><select id="stTarget"></select></div><div><label>&nbsp;</label><button id="stAdd" disabled>Añadir cuaderno</button></div></div>
+    <p class="mini" id="stStatus">Las imágenes se ordenan por su nombre de archivo (1, 2, 3, 3-1, 10…). En un PDF, expórtalo antes a imágenes (una por página).</p>
+  </div>
+  <div class="card"><h2>Mis cuadernos en este dispositivo</h2><div id="stList"></div></div>
+  <div class="card" id="stAdminCard" hidden></div>
+</section>
+
+<section class="sec" id="sec-perfil">
+  <div class="sechead"><h2>10 · Perfil e interpretación</h2><p>Todas las puntuaciones se pasan a la misma escala (z) para compararlas. Las hipótesis se generan con reglas explícitas: son propuestas para contrastar, no conclusiones.</p></div>
+  <div class="card">
+    <h2>Perfil por áreas y subáreas</h2>
+    <p class="mini">La barra marca la media z de la subárea; la marca oscura, la peor medida. Zonas sombreadas: z &lt; −1 (bajo), &lt; −1,5 (déficit leve) y &lt; −2 (déficit moderado-grave).</p>
+    <div id="profile" class="prof"></div>
+  </div>
+  <div class="card">
+    <h2>Tabla de puntuaciones</h2>
+    <div class="tscroll"><table id="profTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>Tareas APRENS cualitativas (sin baremo)</h2>
+    <div id="qualOut"></div>
+  </div>
+  <div class="card">
+    <h2>Hipótesis interpretativas</h2>
+    <div id="rulesOut"></div>
+  </div>
+</section>
+
+<section class="sec" id="sec-informe">
+  <div class="sechead"><h2>11 · Informe</h2><p>Borrador estructurado a partir de lo registrado. Revísalo y redáctalo con tu criterio antes de entregarlo.</p></div>
+  <div class="card noprint">
+    <div class="grid">
+      <div><label>Conclusión clínica (redacción del profesional)</label><textarea data-b="report.conclusion" style="min-height:110px"></textarea></div>
+      <div><label>Recomendaciones / orientaciones</label><textarea data-b="report.recs" style="min-height:110px"></textarea></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnGen">↻ Generar borrador</button>
+      <button class="alt" id="btnCopy">Copiar texto</button>
+      <button class="alt" id="btnWord">Exportar a Word (.doc)</button>
+      <button class="alt" id="btnPrint">Imprimir informe + perfil</button>
+      <button class="ghost" id="btnPrintAll">Imprimir protocolo completo</button>
+    </div>
+  </div>
+  <div class="card"><textarea id="reportText" spellcheck="false"></textarea></div>
+</section>
+
+<footer class="foot">
+  APRENS · Batería neuropsicológica v1. Herramienta de organización y apoyo a la interpretación para profesionales. No contiene ítems, láminas ni baremos de pruebas comerciales: aplica siempre el material y la corrección oficiales y verifica la edición, la edad normativa y la licencia. Las tareas marcadas «APRENS» son registros estructurados propios, sin baremo, para análisis cualitativo y seguimiento. Las reglas interpretativas son orientativas y no sustituyen el juicio clínico.
+</footer>
+</main>
+</div>
+
+<div id="overlay" aria-modal="true" role="dialog"><button class="exit" id="overlayExit">✕ salir (Esc)</button><div id="overlayStage"></div></div>
+
+<script>
+'use strict';
+/* ======================= utilidades ======================= */
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{if(v===null||v===undefined)return null;const s=String(v).trim().replace(',','.');if(s==='')return null;const n=Number(s);return Number.isFinite(n)?n:null};
+const fmt=(n,d=2)=>n===null||n===undefined||!Number.isFinite(n)?'—':n.toFixed(d).replace('.',',');
+const getP=(o,p)=>p.split('.').reduce((a,k)=>a==null?undefined:a[k],o);
+function setP(o,p,v){const ks=p.split('.');let a=o;ks.slice(0,-1).forEach(k=>{if(a[k]==null||typeof a[k]!=='object')a[k]={};a=a[k]});a[ks[ks.length-1]]=v}
+const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const params=new URLSearchParams(location.search);
+const IS_PATIENT=params.get('pantalla')==='paciente';
+
+/* normal: cdf e inversa (Acklam) */
+function ncdf(z){const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2);let p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+function ninv(p){const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.357751867269,-30.66479806614716,2.506628277459239],b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572],c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416],pl=0.02425;
+  if(p<pl){const q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+  if(p>1-pl){const q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+  const q=p-0.5,r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
+
+/* ======================= dominios ======================= */
+const DOMAINS=[
+ {id:'aten',name:'Atención',subs:[['sost','Sostenida'],['sel','Selectiva / focalizada'],['alt','Alternante / dividida'],['span','Span atencional auditivo-verbal'],['vel','Velocidad de procesamiento']]},
+ {id:'mem',name:'Memoria',subs:[['mt','Memoria de trabajo'],['verb','Verbal · aprendizaje'],['verbdif','Verbal · recuerdo demorado'],['recon','Reconocimiento'],['vis','Visual'],['sem','Semántica / cultura general'],['auto','Autobiográfica']]},
+ {id:'leng',name:'Lenguaje',subs:[['fon','Fluidez fonológica'],['semf','Fluidez semántica'],['den','Denominación'],['comp','Comprensión'],['voc','Vocabulario / razonamiento verbal']]},
+ {id:'fe',name:'Funciones ejecutivas',subs:[['inh','Inhibición'],['flex','Flexibilidad cognitiva'],['plan','Planificación / organización'],['raz','Razonamiento y abstracción'],['dec','Toma de decisiones / juicio práctico'],['eco','Conducta ejecutiva cotidiana']]},
+ {id:'visu',name:'Visopercepción / visuoconstrucción',subs:[['perc','Visopercepción'],['cons','Visuoconstrucción']]}
+];
+const SUBNAME={};DOMAINS.forEach(d=>d.subs.forEach(([k,n])=>SUBNAME[d.id+'.'+k]=n));
+const DOMNAME=Object.fromEntries(DOMAINS.map(d=>[d.id,d.name]));
+
+const METRICS=[['esc','Escalar (10±3)'],['t','T (50±10)'],['pc','Percentil'],['ci','Compuesta (100±15)'],['z','z'],['dec','Decatipo'],['ene','Eneatipo'],['msd','PD + media/DE']];
+function toZ(metric,v,pd,mn,sd){
+  switch(metric){
+    case 'esc':return v===null?null:(v-10)/3;
+    case 't':return v===null?null:(v-50)/10;
+    case 'ci':return v===null?null:(v-100)/15;
+    case 'z':return v;
+    case 'dec':return v===null?null:(v-5.5)/2;
+    case 'ene':return v===null?null:(v-5)/2;
+    case 'pc':return v===null?null:ninv(Math.min(99.9,Math.max(0.1,v))/100);
+    case 'msd':return pd===null||mn===null||!sd?null:(pd-mn)/sd;
+  }return null}
+function band(z){
+  if(z===null)return null;
+  if(z>=1.33)return['Alto','b-hi'];if(z>=0.67)return['Medio-alto','b-hi'];if(z>-0.67)return['Medio','b-mid'];
+  if(z>-1)return['Medio-bajo','b-mid'];if(z>-1.5)return['Bajo (limítrofe)','b-lo1'];if(z>-2)return['Déficit leve','b-lo2'];return['Déficit moderado-grave','b-lo3']}
+
+/* ======================= catálogo de pruebas ======================= */
+// m: medidas {id,l,sub,mod('v'|'a'),met (métrica por defecto; 'none' = solo PD),inv}
+const WECH={
+ 'WISC-V':{ages:[6,16],subs:[['cub','Cubos','visu.cons','v'],['sem','Semejanzas','fe.raz','a'],['mat','Matrices','fe.raz','v'],['dig','Dígitos (total)','mem.mt','a'],['cla','Claves','aten.vel','v'],['voc','Vocabulario','leng.voc','a'],['bal','Balanzas','fe.raz','v'],['puz','Puzles visuales','visu.perc','v'],['spd','Span de dibujos','mem.mt','v'],['bus','Búsqueda de símbolos','aten.vel','v'],['inf','Información','mem.sem','a'],['lyn','Letras y números','mem.mt','a'],['can','Cancelación','aten.sel','v'],['com','Comprensión','fe.dec','a'],['ari','Aritmética','mem.mt','a']],
+   idx:[['icv','ICV · Comprensión verbal'],['ive','IVE · Visoespacial'],['irf','IRF · Razonamiento fluido'],['imt','IMT · Memoria de trabajo'],['ivp','IVP · Velocidad de procesamiento'],['cit','CIT · CI total'],['icg','ICG · Capacidad general'],['icc','ICC · Competencia cognitiva']],dc:true},
+ 'WISC-IV':{ages:[6,16],subs:[['cub','Cubos','visu.cons','v'],['sem','Semejanzas','fe.raz','a'],['dig','Dígitos (total)','mem.mt','a'],['con','Conceptos','fe.raz','v'],['cla','Claves','aten.vel','v'],['voc','Vocabulario','leng.voc','a'],['lyn','Letras y números','mem.mt','a'],['mat','Matrices','fe.raz','v'],['com','Comprensión','fe.dec','a'],['bus','Búsqueda de símbolos','aten.vel','v'],['fig','Figuras incompletas','visu.perc','v'],['ani','Animales (cancelación)','aten.sel','v'],['inf','Información','mem.sem','a'],['ari','Aritmética','mem.mt','a'],['adi','Adivinanzas','leng.voc','a']],
+   idx:[['icv','ICV · Comprensión verbal'],['irp','IRP · Razonamiento perceptivo'],['imt','IMT · Memoria de trabajo'],['ivp','IVP · Velocidad de procesamiento'],['cit','CIT · CI total']],dc:false},
+ 'WAIS-IV':{ages:[16,90],subs:[['cub','Cubos','visu.cons','v'],['sem','Semejanzas','fe.raz','a'],['dig','Dígitos (total)','mem.mt','a'],['mat','Matrices','fe.raz','v'],['voc','Vocabulario','leng.voc','a'],['ari','Aritmética','mem.mt','a'],['bus','Búsqueda de símbolos','aten.vel','v'],['puz','Puzles visuales','visu.perc','v'],['inf','Información','mem.sem','a'],['cla','Claves','aten.vel','v'],['lyn','Letras y números','mem.mt','a'],['bal','Balanzas','fe.raz','v'],['com','Comprensión','fe.dec','a'],['can','Cancelación','aten.sel','v'],['fig','Figuras incompletas','visu.perc','v']],
+   idx:[['icv','ICV · Comprensión verbal'],['irp','IRP · Razonamiento perceptivo'],['imt','IMT · Memoria de trabajo'],['ivp','IVP · Velocidad de procesamiento'],['cit','CIT · CI total'],['icg','ICG · Capacidad general']],dc:true},
+ 'WAIS-III':{ages:[16,94],subs:[['fig','Figuras incompletas','visu.perc','v'],['voc','Vocabulario','leng.voc','a'],['cla','Clave de números','aten.vel','v'],['sem','Semejanzas','fe.raz','a'],['cub','Cubos','visu.cons','v'],['ari','Aritmética','mem.mt','a'],['mat','Matrices','fe.raz','v'],['dig','Dígitos (total)','mem.mt','a'],['inf','Información','mem.sem','a'],['his','Historietas','fe.plan','v'],['com','Comprensión','fe.dec','a'],['bus','Búsqueda de símbolos','aten.vel','v'],['lyn','Letras y números','mem.mt','a'],['rom','Rompecabezas','visu.cons','v']],
+   idx:[['civ','CIV · CI verbal'],['cim','CIM · CI manipulativo'],['cit','CIT · CI total'],['cv','CV · Comprensión verbal'],['op','OP · Organización perceptiva'],['mt','MT · Memoria de trabajo'],['vp','VP · Velocidad de procesamiento']],dc:false}
+};
+function wechMeasures(){
+  const v=WECH[S.tests.wech?.ver||'WAIS-IV'];
+  const m=v.subs.map(([id,l,sub,mod])=>({id,l,sub,mod,met:'esc'}));
+  m.push({id:'dd',l:'Dígitos directos (proceso)',sub:'aten.span',mod:'a',met:'esc'},{id:'di',l:'Dígitos inversos (proceso)',sub:'mem.mt',mod:'a',met:'esc'});
+  if(v.dc)m.push({id:'dc',l:'Dígitos crecientes (proceso)',sub:'mem.mt',mod:'a',met:'esc'});
+  m.push({id:'sfd',l:'Span fiable directo (PD, ambos ensayos correctos)',met:'none'},{id:'sfi',l:'Span fiable inverso (PD, ambos ensayos correctos)',met:'none'});
+  v.idx.forEach(([id,l])=>m.push({id:'i_'+id,l,met:'ci',isIdx:true}));
+  return m}
+
+const TESTS=[
+/* ---------- ATENCIÓN ---------- */
+{id:'d2r',area:'aten',name:'d2-R · Test de atención',pub:'TEA',ages:[6,80],min:15,mat:'oficial',
+ what:'Atención selectiva visual y concentración bajo presión de tiempo; velocidad y precisión.',
+ m:[{id:'tot',l:'Elementos procesados (velocidad)',sub:'aten.vel',mod:'v',met:'pc'},{id:'con',l:'CON · Concentración',sub:'aten.sel',mod:'v',met:'pc'},{id:'ep',l:'E% · Errores',sub:'aten.sel',mod:'v',met:'pc'},{id:'om',l:'Omisiones (PD)',met:'none'},{id:'co',l:'Comisiones (PD)',met:'none'}],
+ guide:['Usa el cuadernillo y la hoja de respuestas oficiales; lee las instrucciones del manual y haz la práctica.','Cronometra cada línea con el temporizador por líneas (comprueba en el manual el tiempo por línea de tu edición).','Corrige con la plantilla o en TEAcorrige y copia aquí los percentiles o las puntuaciones típicas.','Anota cualitativamente si el rendimiento cae en las últimas líneas: es un indicio de fatiga o de atención sostenida.'],
+ interp:'CON baja con velocidad conservada sugiere imprecisión selectiva; muchas omisiones apuntan a inatención y muchas comisiones a impulsividad. La caída al final de la prueba orienta a atención sostenida.',
+ timer:{type:'lines',sec:20,lines:14}},
+{id:'cpt',area:'aten',name:'Test de rendimiento continuo (CPT-3, AULA Nesplora u otro)',pub:'Varios',ages:[6,90],min:15,mat:'oficial',opt:true,
+ what:'Atención sostenida y control inhibitorio en una tarea larga y monótona.',
+ m:[{id:'om',l:'Omisiones',sub:'aten.sost',mod:'v',met:'t',inv:true},{id:'co',l:'Comisiones',sub:'fe.inh',mod:'v',met:'t',inv:true},{id:'tr',l:'Tiempo de reacción medio',sub:'aten.vel',mod:'v',met:'t',inv:true},{id:'var',l:'Variabilidad del TR',sub:'aten.sost',mod:'v',met:'t',inv:true}],
+ guide:['Aplicación informatizada con el software oficial.','En CPT-3 y AULA una T alta indica más problemas: deja marcada la casilla «mayor = peor».','Anota la evolución por bloques si el informe la da (caída con el tiempo).'],
+ interp:'Las omisiones y la variabilidad del tiempo de reacción reflejan atención sostenida; las comisiones, impulsividad. No confirma ni descarta TDAH por sí solo.'},
+{id:'tmt',area:'aten',name:'Trail Making Test (TMT A y B) · «senderos»',pub:'Dominio público · normas NEURONORMA u otras',ages:[8,90],min:8,mat:'oficial',
+ what:'TMT-A: atención visual, rastreo y velocidad. TMT-B: alternancia y flexibilidad cognitiva.',
+ m:[{id:'at',l:'TMT-A · tiempo (s)',sub:'aten.vel',mod:'v',met:'esc'},{id:'ae',l:'TMT-A · errores (PD)',met:'none'},{id:'bt',l:'TMT-B · tiempo (s)',sub:'fe.flex',mod:'v',met:'esc'},{id:'be',l:'TMT-B · errores (PD)',met:'none'}],
+ guide:['Usa las hojas estándar de la versión cuyas normas vayas a aplicar (A y B, con ensayo de práctica).','Cronometra con el botón de abajo; corrige el error en el momento y deja correr el tiempo.','Escribe el tiempo en segundos en «PD» y la puntuación normativa (escalar o percentil) según tu baremo.','Si usas media y DE de un baremo publicado, el tiempo es «mayor = peor»: marca la casilla.'],
+ interp:'Un cociente B/A ≥ 3 indica un coste de alternancia superior al explicado por la lentitud. Si A y B son igual de bajos, apunta más a velocidad o rastreo visual.',
+ timer:{type:'stopwatch',targets:['at','bt']}},
+{id:'cancel',area:'aten',name:'Cancelación digital APRENS',pub:'APRENS',ages:[12,99],min:4,mat:'aprens',qual:true,
+ what:'Tarea propia en la pantalla del paciente: tachar una letra objetivo entre distractores. Registra aciertos, omisiones y comisiones, comparando la primera y la segunda mitad y el lado izquierdo y el derecho.',
+ m:[],
+ guide:['Abre la pantalla del paciente («Pantalla paciente» o «Mostrar aquí») en una tableta o pantalla táctil.','Pulsa «Iniciar en pantalla del paciente». La persona toca cada letra objetivo; un segundo toque desmarca.','Termina al pulsar «He terminado» o al agotarse el tiempo límite. El resultado aparece aquí.','No tiene baremo: sirve para observar la estrategia, la asimetría izquierda/derecha y la caída del rendimiento, y para el seguimiento de la misma persona.']},
+
+/* ---------- MEMORIA ---------- */
+{id:'tavec',area:'mem',name:'Aprendizaje verbal · TAVEC / TAVECI / RAVLT',pub:'TEA / otros',ages:[3,90],min:45,mat:'oficial',
+ what:'Aprendizaje verbal con ensayos repetidos, interferencia, recuerdo libre y con claves a corto y largo plazo, y reconocimiento.',
+ m:[{id:'e1',l:'Ensayo 1 (PD)',sub:'aten.span',mod:'a',met:'none'},{id:'e2',l:'Ensayo 2 (PD)',met:'none'},{id:'e3',l:'Ensayo 3 (PD)',met:'none'},{id:'e4',l:'Ensayo 4 (PD)',met:'none'},{id:'e5',l:'Ensayo 5 (PD)',met:'none'},
+   {id:'tot',l:'Total ensayos 1–5',sub:'mem.verb',mod:'a',met:'z'},{id:'lb',l:'Lista B / interferencia',met:'z'},
+   {id:'rlcp',l:'Recuerdo libre a corto plazo',sub:'mem.verbdif',mod:'a',met:'z'},{id:'rccp',l:'Recuerdo con claves a corto plazo',sub:'mem.verbdif',mod:'a',met:'z'},
+   {id:'rllp',l:'Recuerdo libre a largo plazo (20′)',sub:'mem.verbdif',mod:'a',met:'z'},{id:'rclp',l:'Recuerdo con claves a largo plazo',sub:'mem.verbdif',mod:'a',met:'z'},
+   {id:'rec',l:'Reconocimiento · aciertos',sub:'mem.recon',mod:'a',met:'z'},{id:'fp',l:'Reconocimiento · falsos positivos',met:'z',inv:true},
+   {id:'intr',l:'Intrusiones (total)',met:'z',inv:true},{id:'pers',l:'Perseveraciones (total)',met:'z',inv:true}],
+ guide:['Elige la versión según la edad: TAVECI hasta los 16 años y TAVEC a partir de los 16. El RAVLT, si usas sus normas.','Lee la lista oficial a ritmo constante (≈1 palabra/s) y anota el orden de recuerdo para valorar la agrupación semántica.','Tras la lista B, recuerdo libre y con claves a corto plazo. Pon en marcha la demora de 20′ y aplica solo pruebas no verbales (copia de Rey, d2-R, TMT, Cubos).','Al acabar la demora: recuerdo libre y con claves a largo plazo, y después reconocimiento.','TAVEC/TAVECI dan puntuaciones z: introdúcelas como «z». Para el RAVLT usa media/DE del baremo.'],
+ interp:'Recuerdo libre bajo con reconocimiento conservado indica un fallo de recuperación (perfil frontal-subcortical). Si también falla el reconocimiento, el fallo es de codificación o consolidación. Muchas intrusiones o falsos positivos apuntan a mala monitorización.',
+ timer:{type:'delay',min:20},versionSel:['TAVEC (16–80)','TAVECI (3–16)','RAVLT']},
+{id:'ml',area:'mem',name:'Memoria lógica / recuerdo de textos (WMS u otra)',pub:'Pearson / otros',ages:[16,90],min:15,mat:'oficial',opt:true,
+ what:'Memoria verbal contextual (historias): recuerdo inmediato, demorado y reconocimiento.',
+ m:[{id:'i',l:'Recuerdo inmediato',sub:'mem.verb',mod:'a',met:'esc'},{id:'d',l:'Recuerdo demorado',sub:'mem.verbdif',mod:'a',met:'esc'},{id:'r',l:'Reconocimiento',sub:'mem.recon',mod:'a',met:'esc'}],
+ guide:['Material y baremos oficiales. Respeta la demora indicada en el manual.','Compárala con el TAVEC: la memoria con contexto suele estar más conservada en los fallos de estrategia.'],
+ interp:'Un texto mejor que la lista indica que la estructura semántica compensa la falta de estrategia de aprendizaje.'},
+{id:'rey',area:'mem',name:'Figura compleja de Rey',pub:'TEA',ages:[4,90],min:15,mat:'oficial',
+ what:'Copia: visuoconstrucción, planificación y organización perceptiva. Memoria: recuerdo visual inmediato (3′) y, si se aplica, demorado (30′).',
+ m:[{id:'cop',l:'Copia · exactitud',sub:'visu.cons',mod:'v',met:'pc'},{id:'ctime',l:'Copia · tiempo (s)',met:'pc'},{id:'mem3',l:'Memoria 3′ · exactitud',sub:'mem.vis',mod:'v',met:'pc'},{id:'mem30',l:'Memoria 30′ · exactitud (si procede)',sub:'mem.vis',mod:'v',met:'pc'}],
+ guide:['Lámina oficial; la persona no sabe que después tendrá que recordarla.','Cronometra la copia y anota la secuencia (cambio de colores o numeración de los trazos) para clasificar el tipo de copia.','A los 3′ (sin tareas visuales intensas en medio), reproducción de memoria. Si tu baremo lo contempla, también a los 30′.','Puntúa los 18 elementos (0–36) con los criterios del manual y transforma con el baremo.'],
+ interp:'Una copia pobre o desorganizada (tipos IV–VI) limita la interpretación de la memoria. Con copia normal y memoria baja, el déficit es de memoria visual.',
+ timer:{type:'stopwatch',targets:['ctime'],delay:3},extra:'reyType'},
+{id:'benton',area:'mem',name:'Test de Retención Visual de Benton (TRVB)',pub:'TEA',ages:[8,90],min:10,mat:'oficial',
+ what:'Memoria visual inmediata, percepción visoespacial y visuoconstrucción (según la forma de administración).',
+ m:[{id:'ac',l:'Aciertos',sub:'mem.vis',mod:'v',met:'pc'},{id:'er',l:'Errores',sub:'mem.vis',mod:'v',met:'pc'}],
+ guide:['Elige la forma y la administración (p. ej., A: exposición de 10″ y reproducción inmediata; C: copia).','Usa el temporizador de exposición. Anota los tipos de error: omisiones, distorsiones, perseveraciones, rotaciones, desplazamientos y errores de tamaño.','Compara con la copia de Rey para separar el componente perceptivo-constructivo del mnésico.'],
+ interp:'Las omisiones y las distorsiones orientan a déficit mnésico; las rotaciones y los desplazamientos, a déficit visoespacial; las perseveraciones, a control ejecutivo.',
+ timer:{type:'expose',sec:10},versionSel:['Forma C/D/E · Adm. A (10″, inmediata)','Adm. B (5″)','Adm. C (copia)','Adm. D (10″, demora 15″)']},
+{id:'autobio',area:'mem',name:'Memoria autobiográfica y semántica personal · APRENS',pub:'APRENS',ages:[12,99],min:15,mat:'aprens',qual:true,
+ what:'Entrevista semiestructurada por periodos vitales. Separa la memoria semántica personal (datos) de la episódica (sucesos concretos) y permite ver gradientes temporales (amnesia retrógrada o anterógrada).',
+ m:[],guide:['Pregunta por cada periodo: datos personales (colegios, direcciones, nombres de amigos o compañeros) y un suceso concreto («cuéntame algo que te pasó en...»).','Puntúa el suceso de 0 a 3: 3 = episodio único con lugar, momento y detalles; 2 = episodio único con pocos detalles o sin lugar/momento; 1 = recuerdo genérico o repetido («íbamos a la playa»); 0 = sin recuerdo o solo datos.','Puntúa los datos de 0 a 3: 3 = precisos y verificables; 2 = parciales; 1 = vagos; 0 = ninguno.','Contrasta con un informante: la confabulación da puntuaciones falsamente altas.'],
+ interp:'Lo reciente peor que lo remoto es un gradiente típico de alteración de la consolidación (lesión reciente o TCE). Lo remoto alterado con lo reciente conservado es atípico: valora factores emocionales o de validez.'},
+
+/* ---------- LENGUAJE ---------- */
+{id:'fon',area:'leng',name:'Fluidez verbal fonológica (letras)',pub:'Paradigma de dominio público · normas NEURONORMA u otras',ages:[6,90],min:5,mat:'aprens-estimulo',
+ what:'Búsqueda léxica con una clave fonológica durante 60″ por letra: estrategia de búsqueda, iniciación y control ejecutivo.',
+ m:[{id:'l1',l:'Letra 1 · PD',sub:'leng.fon',mod:'a',met:'esc'},{id:'l2',l:'Letra 2 · PD',sub:'leng.fon',mod:'a',met:'esc'},{id:'l3',l:'Letra 3 · PD',sub:'leng.fon',mod:'a',met:'esc'},{id:'tot',l:'Total (suma de letras)',sub:'leng.fon',mod:'a',met:'pc'},{id:'err',l:'Errores (repeticiones + intrusiones)',met:'none'}],
+ guide:['Elige el juego de letras de tu baremo: P-M-R (NEURONORMA, España), F-A-S (internacional) o el que uses.','Instrucción: «Dime todas las palabras que empiecen por esta letra en un minuto. No valen nombres propios ni la misma palabra con distinta terminación».','Muestra la letra en la pantalla del paciente y pulsa «Iniciar 60″». Registra cada palabra con los botones: se reparten solas por tramos de 15″.','Las PD se rellenan automáticamente. Introduce la puntuación normativa según tu baremo.'],
+ interp:'Una fonológica claramente peor que la semántica sugiere un fallo de la búsqueda estratégica (frontal). Muchas palabras en los primeros 15″ y casi ninguna después indican poca generación de estrategia.',
+ flu:'fon'},
+{id:'semf',area:'leng',name:'Fluidez verbal semántica (categorías)',pub:'Paradigma de dominio público · normas NEURONORMA u otras',ages:[6,90],min:3,mat:'aprens-estimulo',
+ what:'Búsqueda en el almacén semántico durante 60″ (animales y, opcionalmente, otra categoría o acciones/verbos).',
+ m:[{id:'s1',l:'Animales · PD',sub:'leng.semf',mod:'a',met:'esc'},{id:'s2',l:'2ª categoría · PD',sub:'leng.semf',mod:'a',met:'esc'},{id:'err',l:'Errores (repeticiones + intrusiones)',met:'none'}],
+ guide:['Instrucción: «Dime todos los animales que se te ocurran en un minuto».','Valora la agrupación por subcategorías (granja, selva, mar...) y los cambios entre ellas.','La fluidez de acciones (verbos) es útil cuando se sospecha afectación frontal-subcortical.'],
+ interp:'Una semántica peor que la fonológica orienta a una afectación del almacén semántico (temporal). Si ambas son bajas, a lentitud general o a acceso léxico.',
+ flu:'sem'},
+{id:'bnt',area:'leng',name:'Test de denominación de Boston (BNT)',pub:'Normas NEURONORMA u otras',ages:[6,90],min:15,mat:'oficial',
+ what:'Denominación por confrontación visual: acceso léxico.',
+ m:[{id:'esp',l:'Respuestas espontáneas',sub:'leng.den',mod:'v',met:'esc'},{id:'cs',l:'Con clave semántica (PD)',met:'none'},{id:'cf',l:'Con clave fonémica (PD)',met:'none'}],
+ guide:['Láminas oficiales; aplica la regla de inicio y de suspensión de tu versión.','Anota los tipos de error: semánticos, fonológicos, visuales, circunloquios.','Una mejora clara con la clave fonémica sugiere un fallo de acceso más que de almacén.'],
+ interp:'Los errores visuales orientan a déficit perceptivo; los semánticos, a almacén semántico; si la clave fonémica ayuda, a acceso léxico.'},
+{id:'token',area:'leng',name:'Token Test (versión abreviada)',pub:'Varios',ages:[6,90],min:10,mat:'oficial',opt:true,
+ what:'Comprensión de órdenes verbales de complejidad creciente.',
+ m:[{id:'tot',l:'Total',sub:'leng.comp',mod:'a',met:'pc'}],
+ guide:['Material oficial (fichas). Útil si hay sospecha de afectación del lenguaje o resultados verbales incongruentes.','Una comprensión baja limita la interpretación del resto de las pruebas verbales.'],
+ interp:'Si la comprensión está afectada, revisa la validez de las pruebas verbales antes de interpretar memoria o funciones ejecutivas.'},
+{id:'lengq',area:'leng',name:'Observación del lenguaje · APRENS',pub:'APRENS',ages:[12,99],min:5,mat:'aprens',qual:true,
+ what:'Registro cualitativo de expresión, discurso, repetición, lectura y escritura.',m:[],guide:['Marca lo observado durante la entrevista y las pruebas. Completa con pruebas específicas si aparece alguna alteración.']},
+
+/* ---------- FUNCIONES EJECUTIVAS ---------- */
+{id:'stroop',area:'fe',name:'Stroop · Test de colores y palabras',pub:'TEA (Golden)',ages:[7,80],min:5,mat:'oficial',
+ what:'P (lectura) y C (denominación de colores): velocidad. PC e índice de interferencia: control inhibitorio.',
+ m:[{id:'p',l:'P · Palabras',sub:'aten.vel',mod:'a',met:'t'},{id:'c',l:'C · Colores',sub:'aten.vel',mod:'v',met:'t'},{id:'pc',l:'PC · Palabra-color',sub:'fe.inh',mod:'v',met:'t'},{id:'int',l:'Interferencia',sub:'fe.inh',mod:'v',met:'t'}],
+ guide:['Láminas oficiales. 45″ por lámina (comprueba el tiempo de tu edición) con el temporizador.','Anota los errores autocorregidos y no corregidos en PC y el enlentecimiento progresivo.','Convierte las PD en T con el manual o TEAcorrige. La interferencia se calcula según el manual (PC estimada a partir de P y C).'],
+ interp:'Una interferencia baja con P y C normales indica dificultad de inhibición. Si P y C ya son bajas, la lentitud de lectura o de denominación explica en parte el resultado.',
+ timer:{type:'down',sec:45,label:'Lámina'}},
+{id:'fdt',area:'fe',name:'Test de los Cinco Dígitos (FDT)',pub:'TEA',ages:[7,90],min:8,mat:'oficial',opt:true,
+ what:'Velocidad (lectura y conteo) frente a inhibición y alternancia, con poca carga lectora.',
+ m:[{id:'lec',l:'Lectura',sub:'aten.vel',mod:'v',met:'pc'},{id:'con',l:'Conteo',sub:'aten.vel',mod:'v',met:'pc'},{id:'inh',l:'Inhibición (índice)',sub:'fe.inh',mod:'v',met:'pc'},{id:'flx',l:'Flexibilidad (índice)',sub:'fe.flex',mod:'v',met:'pc'}],
+ guide:['Material oficial. Muy útil en adolescentes con dificultades lectoras, en los que el Stroop queda contaminado.'],
+ interp:'Separa la lentitud de procesamiento del coste ejecutivo con menos influencia de la lectura.'},
+{id:'wcst',area:'fe',name:'Wisconsin Card Sorting Test (WCST)',pub:'TEA',ages:[7,90],min:25,mat:'oficial',opt:true,
+ what:'Formación de conceptos, uso del feedback y flexibilidad.',
+ m:[{id:'cat',l:'Categorías completadas',sub:'fe.flex',mod:'v',met:'pc'},{id:'rp',l:'Respuestas perseverativas',sub:'fe.flex',mod:'v',met:'pc'},{id:'ep',l:'Errores perseverativos',sub:'fe.flex',mod:'v',met:'pc'},{id:'fms',l:'Fallos para mantener la actitud (PD)',met:'none'}],
+ guide:['Versión manual o informatizada oficial.'],
+ interp:'Muchas perseveraciones indican rigidez cognitiva. Muchos fallos para mantener la actitud apuntan más a atención o impulsividad.'},
+{id:'plan',area:'fe',name:'Planificación ecológica · APRENS',pub:'APRENS',ages:[12,99],min:10,mat:'aprens',qual:true,
+ what:'La persona explica cómo organizaría una situación real (un cumpleaños, una fiesta, una semana de exámenes, la vuelta al trabajo). Se puntúan 6 componentes de 0 a 2.',m:[],
+ guide:['Elige un escenario adecuado a la edad y al espacio; muéstralo en la pantalla del paciente.','Instrucción: «Explícame paso a paso cómo lo organizarías, desde ahora hasta que termine». No ayudes; anota la latencia de inicio.','Cuando acabe, una sola pregunta abierta: «¿Algo más que debas tener en cuenta?».','Puntúa cada componente: 2 = presente y adecuado; 1 = parcial o con ayuda; 0 = ausente.']},
+{id:'tol',area:'fe',name:'Planificación estandarizada (Torre de Londres, Mapa del zoo · BADS u otra)',pub:'Varios',ages:[7,90],min:15,mat:'oficial',opt:true,
+ what:'Planificación con baremo para comparar con la tarea ecológica.',
+ m:[{id:'tot',l:'Puntuación total',sub:'fe.plan',mod:'v',met:'pc'},{id:'tim',l:'Tiempo de planificación / ejecución',met:'pc'}],
+ guide:['Material oficial. Compárala con la planificación ecológica APRENS: las disociaciones son clínicamente informativas.']},
+{id:'prob',area:'fe',name:'Resolución de problemas y toma de decisiones · APRENS',pub:'APRENS',ages:[12,99],min:10,mat:'aprens',qual:true,
+ what:'Situaciones cotidianas con conflicto. Se puntúan 5 componentes de 0 a 2: identificar el problema, generar alternativas, anticipar consecuencias, elegir y justificar, y prudencia ante el riesgo.',m:[],
+ guide:['Lee la situación o muéstrala en la pantalla del paciente.','Pregunta: «¿Qué harías? ¿Qué otras opciones hay? ¿Qué pasaría con cada una?».','Puntúa con la rúbrica; anota la impulsividad (respuesta inmediata sin valorar opciones) y la rigidez (una sola alternativa).']},
+{id:'ref',area:'fe',name:'Interpretación de refranes · APRENS',pub:'APRENS',ages:[12,99],min:5,mat:'aprens',qual:true,
+ what:'Abstracción verbal y pensamiento conceptual. Cada refrán se puntúa de 0 a 2.',m:[],
+ guide:['Pregunta: «¿Qué quiere decir este refrán?». Muéstralo en la pantalla del paciente si ayuda.','2 = interpretación abstracta y generalizable; 1 = parcial, semiconcreta o con un ejemplo; 0 = literal o incorrecta.','Ten en cuenta la familiaridad cultural y la lengua: un refrán desconocido no se puntúa (márcalo como «no conoce»).']},
+{id:'brief',area:'fe',name:'BRIEF-2 / BRIEF-A · Conducta ejecutiva cotidiana',pub:'TEA',ages:[5,90],min:15,mat:'oficial',
+ what:'Cuestionario de funcionamiento ejecutivo en la vida diaria (familia, profesorado o autoinforme).',
+ m:[{id:'ieg',l:'Índice ejecutivo global',sub:'fe.eco',met:'t',inv:true},{id:'irc',l:'Regulación conductual',sub:'fe.eco',met:'t',inv:true},{id:'ire',l:'Regulación emocional',sub:'fe.eco',met:'t',inv:true},{id:'irg',l:'Regulación cognitiva / metacognición',sub:'fe.eco',met:'t',inv:true}],
+ guide:['BRIEF-2 (5–18 años; familia, profesorado y autoinforme desde 11) o BRIEF-A (adultos; autoinforme e informante). Comprueba la edición.','En el BRIEF una T alta indica más problemas: la casilla «mayor = peor» ya viene marcada.','Revisa primero las escalas de validez (negatividad e inconsistencia).'],
+ interp:'Tests normales con BRIEF elevado es una disociación frecuente: los tests estructurados no capturan la autorregulación cotidiana. Prioriza el impacto funcional.',versionSel:['BRIEF-2 · Familia','BRIEF-2 · Profesorado','BRIEF-2 · Autoinforme','BRIEF-A · Autoinforme','BRIEF-A · Informante']},
+
+/* ---------- VISOPERCEPCIÓN ---------- */
+{id:'jlo',area:'visu',name:'Juicio de orientación de líneas (Benton JLO) u otra visoperceptiva',pub:'Varios',ages:[7,90],min:10,mat:'oficial',opt:true,
+ what:'Visopercepción espacial sin componente motor.',
+ m:[{id:'tot',l:'Puntuación total',sub:'visu.perc',mod:'v',met:'pc'}],
+ guide:['Material oficial. Útil cuando la copia de Rey o Cubos son bajos, para separar la percepción de la construcción.']},
+
+/* ---------- VALIDEZ ---------- */
+{id:'tomm',area:'valid',name:'TOMM · Test of Memory Malingering',pub:'Varios',ages:[16,90],min:20,mat:'oficial',
+ what:'Validez del rendimiento (esfuerzo): reconocimiento visual que resulta fácil incluso con daño cerebral.',
+ m:[{id:'e1',l:'Ensayo 1 (0–50)',met:'none'},{id:'e2',l:'Ensayo 2 (0–50)',met:'none'},{id:'ret',l:'Retención (0–50)',met:'none'}],
+ guide:['Aplícalo al inicio de la sesión, antes de las pruebas más exigentes.','El criterio habitual de la literatura es menos de 45 en el ensayo 2 o en retención, lo que indica un rendimiento posiblemente no válido.','En menores de 16 años o con discapacidad intelectual, interpreta con más cautela.']},
+{id:'rey15',area:'valid',name:'Test de los 15 ítems de Rey',pub:'Dominio público',ages:[16,90],min:5,mat:'oficial',
+ what:'Prueba de validez breve; poco sensible, útil como cribado.',
+ m:[{id:'rec',l:'Recuerdo (0–15)',met:'none'},{id:'reco',l:'Reconocimiento (si se aplica)',met:'none'}],
+ guide:['Un recuerdo inferior a 9 es un criterio clásico de sospecha. Es poco sensible: un buen resultado no garantiza un esfuerzo adecuado.']},
+{id:'valq',area:'valid',name:'Indicadores internos y observación · APRENS',pub:'APRENS',ages:[12,99],min:0,mat:'aprens',qual:true,
+ what:'Span de dígitos fiable (se calcula desde Wechsler), esfuerzo observado e incongruencias entre pruebas o con la vida diaria.',m:[],
+ guide:['El span de dígitos fiable se calcula con los dos spans fiables del módulo Wechsler; ≤ 7 es un criterio clásico de sospecha en adultos.','Registra las incongruencias: memoria peor que en demencias graves, reconocimiento peor que el recuerdo libre, quejas que no encajan con el mecanismo de la lesión.']},
+{id:'pre',area:'valid',name:'Estimación del nivel premórbido',pub:'Varios',ages:[16,90],min:5,mat:'oficial',
+ what:'Referencia para valorar si hay declive respecto al nivel previo (TAP, Vocabulario, Información, escolaridad, ocupación).',
+ m:[{id:'tap',l:'TAP · CI premórbido estimado',met:'ci'},{id:'est',l:'Otra estimación de CI premórbido',met:'ci'}],
+ guide:['El TAP (Test de Acentuación de Palabras) o el Vocabulario y la Información de Wechsler, que se mantienen relativamente estables, sirven de referencia.','Compara el rendimiento actual con lo esperable para el nivel premórbido, no solo con la media poblacional.']},
+
+/* ---------- WECHSLER ---------- */
+{id:'wech',area:'wech',name:'Escala Wechsler',pub:'Pearson',ages:[6,90],min:80,mat:'oficial',wech:true,
+ what:'Perfil cognitivo general. Aquí cada subtest se lee por la función que mide.',
+ guide:['WISC-V de 6 a 16:11 años; WAIS-IV desde los 16. A los 16 años elige según el nivel esperado: el WISC-V tiene más suelo y el WAIS-IV más techo.','Introduce las escalares (1–19) de la corrección oficial. Los procesos de Dígitos (directos, inversos, crecientes) separan el span de la memoria de trabajo.','Para el span fiable anota la secuencia más larga con los dos ensayos correctos, en directos y en inversos.','No interpretes el CIT si hay discrepancias grandes entre índices: describe el perfil por áreas.'],
+ interp:'Dígitos y Aritmética también dependen de la atención. Claves y Búsqueda de símbolos son de velocidad visomotora. Información y Vocabulario reflejan memoria semántica y nivel premórbido.'}
+];
+const TBYID=Object.fromEntries(TESTS.map(t=>[t.id,t]));
+const measuresOf=t=>t.wech?wechMeasures():(t.m||[]);
+
+/* ======================= contenido propio APRENS ======================= */
+const PLAN_SCEN={
+ adol:[
+  {t:'Tu fiesta de cumpleaños',x:'Este sábado quieres celebrar tu cumpleaños con unos 12 amigos y amigas. Tienes un presupuesto limitado y tus padres te ayudarán solo si les presentas un plan. Explícame paso a paso cómo lo organizarías.'},
+  {t:'Semana de exámenes',x:'La semana que viene tienes tres exámenes (lunes, miércoles y viernes) y un trabajo en grupo que se entrega el jueves. El martes por la tarde tienes entrenamiento. Explícame cómo te organizarías desde hoy.'},
+  {t:'Excursión con amigos',x:'Quieres ir un día de excursión a la playa o a la montaña con tres amigos en transporte público. Explícame todo lo que tendrías que preparar y decidir.'}],
+ adult:[
+  {t:'Organizar una fiesta de cumpleaños',x:'Dentro de dos semanas es el cumpleaños de una persona cercana y te encargas de organizarle una fiesta sorpresa para unas 15 personas. Explícame paso a paso cómo lo harías.'},
+  {t:'Viaje de fin de semana',x:'Quieres hacer un viaje de fin de semana a una ciudad que no conoces, con otra persona. Explícame cómo lo prepararías desde hoy hasta el regreso.'},
+  {t:'Mudanza',x:'Tienes que cambiarte de piso dentro de un mes. Explícame todo lo que harías y en qué orden.'}],
+ mutua:[
+  {t:'Primera semana de reincorporación',x:'Vuelves al trabajo el lunes tras varias semanas de baja. Explícame cómo organizarías esa primera semana: qué tareas retomarías primero, cómo te pondrías al día y qué harías si te notas cansado o te cuesta concentrarte.'},
+  {t:'Jornada con imprevistos',x:'Empiezas tu jornada con cinco tareas pendientes, dos de ellas urgentes. A media mañana tu responsable te pide una sexta tarea «para ya». Explícame cómo organizarías el día.'}]
+};
+const PLAN_CRIT=['Define el objetivo y el resultado final','Identifica los pasos necesarios','Secuencia y prioriza de forma lógica','Tiene en cuenta recursos, tiempo y personas','Anticipa obstáculos y plantea un plan B','Prevé cómo comprobar que todo está listo'];
+const PROB_SCEN={
+ adol:[
+  {t:'Examen copiado',x:'Un compañero te pide que le pases las respuestas de un examen online que hacéis desde casa. Si se lo niegas, se enfadará y es de tu grupo de amigos. ¿Qué harías?'},
+  {t:'Sin móvil y sin batería',x:'Sales del instituto y descubres que el autobús que te lleva a casa no pasa hoy por una huelga. Tu móvil está sin batería y en casa no hay nadie hasta las 8. ¿Qué harías?'},
+  {t:'Presión en redes',x:'En un grupo de mensajería están compartiendo una foto de una compañera para reírse de ella y te piden que la reenvíes. ¿Qué harías?'}],
+ adult:[
+  {t:'Cargo bancario desconocido',x:'Recibes un SMS de tu banco que dice que se ha bloqueado tu tarjeta y que debes pulsar un enlace para desbloquearla. Además ves un cargo de 89 € que no reconoces. ¿Qué harías?'},
+  {t:'Inversión muy rentable',x:'Un conocido te propone una inversión que «duplica el dinero en un mes» y necesita una respuesta hoy. ¿Qué harías?'},
+  {t:'Dos compromisos a la vez',x:'Te das cuenta de que has quedado a la misma hora con dos personas distintas en sitios diferentes y ambas cuentan contigo. ¿Qué harías?'}],
+ mutua:[
+  {t:'Dos urgencias simultáneas',x:'En el trabajo, tu responsable y un cliente te piden a la vez dos tareas urgentes, y no puedes hacer ambas antes de la hora. ¿Qué harías?'},
+  {t:'Duda de seguridad',x:'Durante tu tarea detectas algo que podría ser un riesgo de seguridad, pero no estás seguro y parar el trabajo retrasaría al equipo. ¿Qué harías?'}]
+};
+const PROB_CRIT=['Identifica el problema y lo esencial','Genera más de una alternativa','Anticipa consecuencias','Elige y justifica la decisión','Prudencia ante el riesgo / no impulsividad'];
+const REFRANES=['Más vale pájaro en mano que ciento volando','No por mucho madrugar amanece más temprano','Perro ladrador, poco mordedor','En casa de herrero, cuchillo de palo','A caballo regalado no le mires el diente','Dime con quién andas y te diré quién eres'];
+const AUTO_PER=[['inf','Infancia (antes de los 12)'],['adol','Adolescencia (12–18)'],['adul','Edad adulta (antes de la lesión / hace años)'],['ano','Último año'],['mes','Último mes / esta semana']];
+const LENG_OBS=[['exp','Expresión espontánea'],['disc','Discurso (coherencia, organización)'],['rep','Repetición'],['lec','Lectura'],['esc','Escritura'],['pros','Prosodia / pragmática']];
+const COND=[['sleep','Sueño insuficiente o alterado'],['meds','Medicación con efecto cognitivo'],['mood','Ánimo bajo / ansiedad elevada'],['fatigue','Fatiga o dolor durante la sesión'],['sens','Déficit sensorial no corregido'],['langb','Lengua de evaluación no dominante'],['motiv','Colaboración irregular'],['subst','Consumo de sustancias reciente']];
+const JOBDEM=[['drive','Conducción'],['mach','Manejo de maquinaria'],['sust','Atención sostenida prolongada'],['multi','Multitarea / interrupciones'],['public','Atención al público'],['safety','Decisiones de seguridad'],['proc','Memoria de procedimientos'],['screen','Trabajo con pantallas / datos']];
+
+/* ======================= estado ======================= */
+const KEY='aprens_bateria_neuro_v1';
+const blank=()=>({v:1,meta:{space:'aprens',cond:{},mutua:{dem:{}},school:{}},sessions:[],tests:{wech:{ver:'WAIS-IV'}},report:{}});
+let S=blank();
+try{const raw=localStorage.getItem(KEY);if(raw&&!IS_PATIENT){const d=JSON.parse(raw);if(d&&d.v===1)S=Object.assign(blank(),d)}}catch(e){}
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},250)}
+const T=id=>{if(!S.tests[id])S.tests[id]={};return S.tests[id]};
+const age=()=>num(S.meta.age);
+function group(){const a=age();if(S.meta.space==='mutua')return'mutua';return a!==null&&a<18?'adol':'adult'}
+
+/* ======================= motor de puntuaciones ======================= */
+function mState(tid,mid){const t=T(tid);if(!t.m)t.m={};if(!t.m[mid])t.m[mid]={};return t.m[mid]}
+function mDef(tid,mid){return measuresOf(TBYID[tid]).find(x=>x.id===mid)}
+function metricOf(tid,mid){const st=S.tests[tid]?.m?.[mid];const d=mDef(tid,mid);return st?.metric||d?.met||'esc'}
+function invOf(tid,mid){const st=S.tests[tid]?.m?.[mid];const d=mDef(tid,mid);return st&&st.inv!==undefined?!!st.inv:!!d?.inv}
+function Z(tid,mid){const st=S.tests[tid]?.m?.[mid];if(!st)return null;const met=metricOf(tid,mid);if(met==='none')return null;
+  let z=toZ(met,num(st.v),num(st.pd),num(st.mn),num(st.sd));if(z===null)return null;if(invOf(tid,mid))z=-z;return Math.max(-5,Math.min(5,z))}
+function PD(tid,mid){return num(S.tests[tid]?.m?.[mid]?.pd)}
+const status=tid=>S.tests[tid]?.status||'pendiente';
+function allScored(){const out=[];TESTS.forEach(t=>{if(status(t.id)==='no aplica')return;measuresOf(t).forEach(m=>{const z=Z(t.id,m.id);if(z!==null)out.push({t,m,z})})});return out}
+
+/* ======================= render: navegación ======================= */
+const SECS=[['inicio','Caso y condiciones','Inicio'],['plan','Protocolo','Inicio'],['aten','Atención','Áreas'],['mem','Memoria','Áreas'],['leng','Lenguaje','Áreas'],['fe','Funciones ejecutivas','Áreas'],['visu','Visopercepción','Áreas'],['wech','Wechsler por áreas','Escalas y validez'],['valid','Validez y premórbido','Escalas y validez'],['estim','Cuadernos de estímulos','Administración'],['perfil','Perfil e interpretación','Resultados'],['informe','Informe','Resultados']];
+let cur='inicio',reportEdited=false;
+function renderNav(){
+  let h='',g='';SECS.forEach(([id,n,grp])=>{if(grp!==g){h+=`<div class="grp">${grp}</div>`;g=grp}
+    const tests=TESTS.filter(t=>t.area===id);const done=tests.filter(t=>status(t.id)==='hecho').length;
+    h+=`<button data-sec="${id}" class="${id===cur?'on':''}">${n}${tests.length?`<span class="cnt">${done}/${tests.length}</span>`:''}</button>`});
+  $('#sideNav').innerHTML=h;
+  $('#mobileNav').innerHTML=SECS.map(([id,n])=>`<option value="${id}" ${id===cur?'selected':''}>${n}</option>`).join('')}
+function go(id){cur=id;$$('section.sec').forEach(s=>s.classList.toggle('on',s.id==='sec-'+id));renderNav();
+  if(id==='plan')renderPlan();if(id==='perfil')renderProfile();if(id==='informe'&&!reportEdited)genReport();if(id==='estim')renderEstim();window.scrollTo(0,0)}
+$('#sideNav').addEventListener('click',e=>{const b=e.target.closest('[data-sec]');if(b)go(b.dataset.sec)});
+$('#mobileNav').addEventListener('change',e=>go(e.target.value));
+
+/* ======================= render: pruebas ======================= */
+function ageBadge(t){const a=age();if(a===null)return'';return a<t.ages[0]||a>t.ages[1]?`<span class="pill off">Fuera de rango de edad (${t.ages[0]}–${t.ages[1]})</span>`:''}
+function matPill(t){return t.mat==='aprens'?'<span class="pill aprens">APRENS · sin baremo</span>':t.mat==='aprens-estimulo'?'<span class="pill aprens">Estímulo en pantalla</span><span class="pill">Normas externas</span>':`<span class="pill tea">Material oficial · ${esc(t.pub)}</span>`}
+function scoreTable(t){
+  const ms=measuresOf(t);if(!ms.length)return'';
+  const rows=ms.map(m=>{const st=mState(t.id,m.id),met=metricOf(t.id,m.id),p=`tests.${t.id}.m.${m.id}`;
+    const label=typeof m.l==='function'?m.l():m.l;
+    if(met==='none'&&m.met==='none')return`<tr><td>${esc(label)}</td><td class="n"><input inputmode="decimal" data-b="${p}.pd" value="${esc(st.pd??'')}"></td><td colspan="4" class="mini">${m.sub?'':'Registro directo (para índices y reglas)'}</td></tr>`;
+    return`<tr data-row="${t.id}.${m.id}" class="${met==='msd'?'is-msd':''}"><td>${esc(label)}${m.sub?`<br><span class="mini">${esc(SUBNAME[m.sub]||'')}${m.mod?(m.mod==='v'?' · visual':' · auditivo-verbal'):''}</span>`:''}</td>
+      <td class="n"><input inputmode="decimal" data-b="${p}.pd" value="${esc(st.pd??'')}" aria-label="PD"></td>
+      <td class="m"><select data-b="${p}.metric" data-def="${m.met}">${METRICS.map(([k,n])=>`<option value="${k}" ${k===met?'selected':''}>${n}</option>`).join('')}</select></td>
+      <td class="n"><input class="vcell" inputmode="decimal" data-b="${p}.v" value="${esc(st.v??'')}" aria-label="Puntuación tipificada"><div class="msd"><input inputmode="decimal" placeholder="media" data-b="${p}.mn" value="${esc(st.mn??'')}"><input inputmode="decimal" placeholder="DE" data-b="${p}.sd" value="${esc(st.sd??'')}"></div></td>
+      <td><label class="mini" style="margin:0;font-weight:500"><input type="checkbox" data-b="${p}.inv" ${invOf(t.id,m.id)?'checked':''}> mayor = peor</label></td>
+      <td class="out" data-out="${t.id}.${m.id}"></td></tr>`}).join('');
+  return`<div class="tscroll"><table class="scores"><thead><tr><th>Medida</th><th>PD</th><th>Tipo</th><th>Puntuación</th><th></th><th>z · Pc · nivel</th></tr></thead><tbody>${rows}</tbody></table></div>`}
+function guideBlock(t){return`<details class="guide"><summary>Guía de aplicación e interpretación</summary><ol>${t.guide.map(g=>`<li>${esc(g)}</li>`).join('')}</ol>${t.interp?`<p class="mini"><strong>Claves interpretativas:</strong> ${esc(t.interp)}</p>`:''}</details>`}
+function testCard(t){
+  const st=status(t.id),ts=T(t.id);
+  let h=`<div class="card test st-${st.replace(' ','')}" id="card-${t.id}"><div class="thead"><div><h3>${esc(t.name)}${t.opt?' <span class="pill">opcional</span>':''}</h3>
+   <div class="meta">${matPill(t)}<span class="pill">${t.ages[0]}–${t.ages[1]} años</span>${t.min?`<span class="pill">≈ ${t.min}′</span>`:''}${ageBadge(t)}</div></div>
+   <select class="statusSel" data-b="tests.${t.id}.status"><option ${st==='pendiente'?'selected':''}>pendiente</option><option ${st==='hecho'?'selected':''}>hecho</option><option ${st==='no aplica'?'selected':''}>no aplica</option></select></div>
+   <p class="mini" style="margin:8px 0 0">${esc(t.what)}</p>${t.wech?'':setsFor(t.id)}${guideBlock(t)}`;
+  if(t.versionSel)h+=`<label>Versión / forma</label><select data-b="tests.${t.id}.ver">${t.versionSel.map(v=>`<option ${ts.ver===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`;
+  if(t.wech)h+=wechHeader();
+  if(t.timer)h+=timerBlock(t);
+  if(t.flu)h+=fluBlock(t);
+  h+=scoreTable(t);
+  h+=`<div class="computed" data-comp="${t.id}" ${compText(t.id)?'':'hidden'}>${compText(t.id)}</div>`;
+  if(t.id==='rey')h+=`<label>Tipo de copia (Osterrieth)</label><select data-b="tests.rey.type"><option value="">—</option>${['I · Armazón + detalles','II · Detalles englobados en armazón','III · Contorno general','IV · Yuxtaposición de detalles','V · Detalles sobre fondo confuso','VI · Reducción a esquema familiar','VII · Garabato'].map(o=>`<option ${ts.type===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(t.id==='cancel')h+=cancelBlock();
+  if(t.id==='autobio')h+=autobioBlock();
+  if(t.id==='plan')h+=rubricBlock('plan',PLAN_SCEN,PLAN_CRIT);
+  if(t.id==='prob')h+=rubricBlock('prob',PROB_SCEN,PROB_CRIT);
+  if(t.id==='ref')h+=refBlock();
+  if(t.id==='lengq')h+=lengqBlock();
+  if(t.id==='valq')h+=valqBlock();
+  h+=`<label>Observaciones cualitativas</label><textarea data-b="tests.${t.id}.notes">${esc(ts.notes||'')}</textarea></div>`;
+  return h}
+function linkedCard(area){
+  const subs=DOMAINS.find(d=>d.id===area);if(!subs)return'';
+  const rows=[];TESTS.filter(t=>t.area!==area).forEach(t=>measuresOf(t).forEach(m=>{if(m.sub&&m.sub.startsWith(area+'.'))rows.push({t,m})}));
+  if(!rows.length)return'';
+  return`<div class="card"><h2>También miden esta área (desde otras secciones)</h2><p class="mini">Se incluyen en el perfil automáticamente; no hace falta volver a introducirlas.</p><div class="tscroll"><table class="linked"><tbody>${rows.map(({t,m})=>`<tr><td>${esc(SUBNAME[m.sub])}</td><td>${esc(t.wech?(S.tests.wech.ver+' · '+m.l):t.name.split('·')[0]+' · '+m.l)}</td><td class="out" data-out="${t.id}.${m.id}"></td></tr>`).join('')}</tbody></table></div></div>`}
+function renderArea(area){
+  const host=$(`[data-area="${area}"]`);if(!host)return;
+  let h=area==='valid'&&S.meta.space==='mutua'?'<div class="notice bad"><strong>Espacio Mutua Balear:</strong> incluye al menos dos indicadores de validez independientes (p. ej., TOMM y span de dígitos fiable) antes de concluir que hay déficits.</div>':'';
+  h+=TESTS.filter(t=>t.area===area).map(testCard).join('');
+  h+=linkedCard(area);host.innerHTML=h;refreshOut()}
+function renderAreas(){['aten','mem','leng','fe','visu','wech','valid'].forEach(renderArea)}
+
+/* ---------- Wechsler ---------- */
+function wechHeader(){const v=S.tests.wech.ver||'WAIS-IV';const a=age();
+  let sug='';if(a!==null){sug=a<16?'Por edad corresponde el WISC-V (o el WISC-IV).':a<17?'Con 16 años puedes usar el WISC-V o el WAIS-IV.':'Por edad corresponde el WAIS-IV (o el WAIS-III).'}
+  return`<div class="grid" style="margin-top:8px"><div><label>Versión</label><select data-b="tests.wech.ver" data-rerender="1">${Object.keys(WECH).map(k=>`<option ${k===v?'selected':''}>${k}</option>`).join('')}</select></div><div><label>&nbsp;</label><p class="mini" style="margin:6px 0">${sug} Rango de la versión elegida: ${WECH[v].ages[0]}–${WECH[v].ages[1]} años.</p></div></div>${setsFor('wech')}`}
+
+/* ---------- temporizadores ---------- */
+let audioCtx=null;
+function beep(f=880,d=0.18){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=f;g.gain.value=0.12;o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
+const TM={};// estado de temporizadores por id
+function timerBlock(t){const c=t.timer;
+  if(c.type==='stopwatch')return`<div class="timerbox"><span class="lbl">Cronómetro</span><span class="clock" id="clk-${t.id}">0,0″</span><button class="small" data-tm="sw-start" data-t="${t.id}">▶ Iniciar</button><button class="small" data-tm="sw-stop" data-t="${t.id}">■ Parar</button><button class="small" data-tm="sw-reset" data-t="${t.id}">↺</button>${c.targets.map(x=>`<button class="small" data-tm="sw-put" data-t="${t.id}" data-to="${x}">→ ${esc(mDef(t.id,x).l.split('·')[0]+(mDef(t.id,x).l.includes('·')?'· '+mDef(t.id,x).l.split('·')[1].trim():''))}</button>`).join('')}${c.delay?`<span class="lbl" style="margin-left:8px">Demora</span><span class="clock" id="dly-${t.id}">${c.delay}:00</span><button class="small" data-tm="dl-start" data-t="${t.id}" data-min="${c.delay}">▶ ${c.delay}′</button>`:''}</div>`;
+  if(c.type==='delay')return`<div class="timerbox"><span class="lbl">Demora hasta el recuerdo a largo plazo</span><span class="clock" id="dly-${t.id}">${c.min}:00</span><button class="small" data-tm="dl-start" data-t="${t.id}" data-min="${c.min}">▶ Iniciar ${c.min}′</button><button class="small" data-tm="dl-stop" data-t="${t.id}">■</button><span class="lbl">Avisa con un pitido. Mientras tanto, solo pruebas no verbales.</span></div>`;
+  if(c.type==='down')return`<div class="timerbox"><span class="lbl">${esc(c.label)}</span><span class="clock" id="clk-${t.id}">${c.sec}″</span><button class="small" data-tm="cd-start" data-t="${t.id}" data-sec="${c.sec}">▶ ${c.sec}″</button><button class="small" data-tm="cd-stop" data-t="${t.id}">■</button><span class="lbl">Pitido al final</span></div>`;
+  if(c.type==='lines')return`<div class="timerbox"><span class="lbl">Por líneas</span><span class="clock" id="clk-${t.id}">${c.sec}″</span><span class="lbl" id="ln-${t.id}">línea 0/${c.lines}</span><button class="small" data-tm="ln-start" data-t="${t.id}" data-sec="${c.sec}" data-lines="${c.lines}">▶ Iniciar</button><button class="small" data-tm="cd-stop" data-t="${t.id}">■</button><label class="lbl" style="margin:0">s/línea <input style="width:56px;display:inline-block" type="number" min="5" max="60" value="${c.sec}" id="lnsec-${t.id}"></label><span class="lbl">Pitido y «¡Cambio!» en cada línea</span></div>`;
+  if(c.type==='expose')return`<div class="timerbox"><span class="lbl">Exposición</span><span class="clock" id="clk-${t.id}">${c.sec}″</span><button class="small" data-tm="cd-start" data-t="${t.id}" data-sec="${c.sec}">▶ ${c.sec}″</button><button class="small" data-tm="cd-start" data-t="${t.id}" data-sec="5">▶ 5″</button><button class="small" data-tm="cd-stop" data-t="${t.id}">■</button></div>`;
+  return''}
+function stopTm(id){if(TM[id]?.iv)clearInterval(TM[id].iv);if(TM[id])TM[id].run=false}
+function fmtClock(s){if(s>=60){const m=Math.floor(s/60),r=Math.floor(s%60);return m+':'+String(r).padStart(2,'0')}return(Math.round(s*10)/10).toFixed(1).replace('.',',')+'″'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tm]');if(!b)return;const id=b.dataset.t,a=b.dataset.tm,clk=$('#clk-'+id);
+  if(a==='sw-start'){if(TM[id]?.run)return;const base=TM[id]?.acc||0,st=performance.now();TM[id]={run:true,acc:base,iv:setInterval(()=>{TM[id].cur=base+(performance.now()-st)/1000;clk.textContent=fmtClock(TM[id].cur)},100),st,base}}
+  if(a==='sw-stop'){if(TM[id]){stopTm(id);TM[id].acc=TM[id].cur||TM[id].acc}}
+  if(a==='sw-reset'){stopTm(id);TM[id]={acc:0,cur:0};clk.textContent='0,0″'}
+  if(a==='sw-put'){const v=TM[id]?.cur||TM[id]?.acc;if(v){mState(id,b.dataset.to).pd=String(Math.round(v*10)/10);save();const inp=document.querySelector(`[data-b="tests.${id}.m.${b.dataset.to}.pd"]`);if(inp)inp.value=mState(id,b.dataset.to).pd;refreshOut()}}
+  if(a==='cd-start'||a==='ln-start'){stopTm(id);let sec=Number(b.dataset.sec);if(a==='ln-start'){const s2=num($('#lnsec-'+id)?.value);if(s2)sec=s2}const lines=Number(b.dataset.lines||1);let line=1;const lab=$('#ln-'+id);if(lab)lab.textContent=`línea 1/${lines}`;
+    let end=performance.now()+sec*1000;TM[id]={run:true,iv:setInterval(()=>{const r=(end-performance.now())/1000;if(r<=0){beep(a==='ln-start'&&line<lines?660:880);if(a==='ln-start'&&line<lines){line++;end+=sec*1000;if(lab)lab.textContent=`línea ${line}/${lines}`;flashPatient('¡Cambio!');}else{stopTm(id);clk.textContent='0″';if(lab)lab.textContent='fin';sendTimer(id,0,sec,true);return}}clk.textContent=Math.ceil(Math.max(0,r))+'″'},100)}}
+  if(a==='cd-stop'){stopTm(id)}
+  if(a==='dl-start'){const k='d'+id;stopTm(k);const end=performance.now()+Number(b.dataset.min)*60000,el=$('#dly-'+id);TM[k]={run:true,iv:setInterval(()=>{const r=(end-performance.now())/1000;if(r<=0){stopTm(k);el.textContent='¡YA!';beep(990,.4);setTimeout(()=>beep(990,.4),500);return}el.textContent=fmtClock(r)},500)}}
+  if(a==='dl-stop'){stopTm('d'+id)}
+});
+
+/* ---------- fluidez ---------- */
+const LETTERSETS={'PMR':['P','M','R'],'FAS':['F','A','S'],'PAS':['P','A','S']};
+const SEMCATS=['Animales','Frutas','Cosas del supermercado','Acciones (verbos)','Profesiones','Prendas de ropa'];
+function fluTrials(t){const ts=T(t.id);if(t.flu==='fon'){const set=ts.set||'PMR';const L=set==='otra'?(ts.custom||'P,M,R').split(/[ ,;]+/).filter(Boolean).slice(0,3).map(s=>s[0].toUpperCase()):LETTERSETS[set];return L}
+  return['Animales',ts.cat2||''].filter(Boolean)}
+function fluState(tid,i){const ts=T(tid);if(!ts.tr)ts.tr=[];if(!ts.tr[i])ts.tr[i]={q:[[0,0,0],[0,0,0],[0,0,0],[0,0,0]],w:''};return ts.tr[i]}
+function fluBlock(t){const ts=T(t.id);let h='';
+  if(t.flu==='fon')h+=`<div class="grid"><div><label>Juego de letras</label><select data-b="tests.${t.id}.set" data-rerender="1">${['PMR','FAS','PAS','otra'].map(o=>`<option value="${o}" ${(ts.set||'PMR')===o?'selected':''}>${o==='otra'?'Otras letras…':o.split('').join('-')}</option>`).join('')}</select></div>${(ts.set==='otra')?`<div><label>Letras (separadas por comas)</label><input data-b="tests.${t.id}.custom" data-rerender="1" value="${esc(ts.custom||'')}"></div>`:''}</div>`;
+  else h+=`<div class="grid"><div><label>2ª categoría (opcional)</label><select data-b="tests.${t.id}.cat2" data-rerender="1"><option value="">— ninguna —</option>${SEMCATS.slice(1).map(c=>`<option ${ts.cat2===c?'selected':''}>${c}</option>`).join('')}</select></div></div>`;
+  fluTrials(t).forEach((cue,i)=>{const s=fluState(t.id,i);const k=`${t.id}-${i}`;
+    h+=`<div class="flu" id="flu-${k}"><div class="row" style="justify-content:space-between"><div class="row"><span class="cue">${esc(cue)}</span><button class="small alt" data-show="${t.flu==='fon'?'letter':'cat'}" data-cue="${esc(cue)}">Mostrar al paciente</button></div>
+     <div class="row"><span class="clock" style="font-weight:800;font-variant-numeric:tabular-nums" id="fclk-${k}">60″</span><button class="small" data-flu="start" data-t="${t.id}" data-i="${i}">▶ Iniciar 60″</button><button class="small ghost" data-flu="stop" data-t="${t.id}" data-i="${i}">■</button></div></div>
+     <div class="row tally" style="margin-top:8px"><button data-flu="v" data-t="${t.id}" data-i="${i}">✓ Válida</button><button class="alt" data-flu="r" data-t="${t.id}" data-i="${i}">↻ Repetición</button><button class="alt" data-flu="x" data-t="${t.id}" data-i="${i}">✗ Intrusión / error</button><button class="ghost small" data-flu="undo" data-t="${t.id}" data-i="${i}">Deshacer</button></div>
+     <div class="qgrid" id="fq-${k}">${fluGrid(s,-1)}</div>
+     <label>Palabras dichas (opcional, para analizar agrupaciones y cambios)</label><textarea data-b="tests.${t.id}.tr.${i}.w" style="min-height:44px">${esc(s.w||'')}</textarea></div>`});
+  return h}
+function fluGrid(s,curQ){const tot=s.q.reduce((a,q)=>[a[0]+q[0],a[1]+q[1],a[2]+q[2]],[0,0,0]);
+  return`<div class="h"></div><div class="h">0–15″</div><div class="h">15–30″</div><div class="h">30–45″</div><div class="h">45–60″</div>`+
+   [['Válidas',0],['Repet.',1],['Error',2]].map(([n,j])=>`<div class="h">${n}</div>`+s.q.map((q,qi)=>`<div class="${qi===curQ?'cur':''}">${q[j]}</div>`).join('')).join('')+
+   `<div class="h">Total</div><div style="grid-column:span 4;background:#dcebe9"><strong>${tot[0]}</strong> válidas · ${tot[1]} repet. · ${tot[2]} errores</div>`}
+const FL={};
+function fluSync(tid){const t=TBYID[tid];const n=fluTrials(t).length;let tot=0,err=0;const ids=t.flu==='fon'?['l1','l2','l3']:['s1','s2'];
+  for(let i=0;i<n;i++){const s=fluState(tid,i);const v=s.q.reduce((a,q)=>a+q[0],0);tot+=v;err+=s.q.reduce((a,q)=>a+q[1]+q[2],0);if(ids[i]&&s.q.some(q=>q.some(x=>x>0)))mState(tid,ids[i]).pd=String(v)}
+  if(t.flu==='fon'&&tot>0)mState(tid,'tot').pd=String(tot);if(err>0||tot>0)mState(tid,'err').pd=String(err);
+  ['l1','l2','l3','s1','s2','tot','err'].forEach(m=>{const inp=document.querySelector(`[data-b="tests.${tid}.m.${m}.pd"]`);if(inp&&S.tests[tid]?.m?.[m])inp.value=S.tests[tid].m[m].pd??''});save();refreshOut()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-flu]');if(!b)return;const tid=b.dataset.t,i=Number(b.dataset.i),k=`${tid}-${i}`,a=b.dataset.flu,s=fluState(tid,i);
+  const f=FL[k]||(FL[k]={el:0});const q=()=>Math.min(3,Math.floor((f.run?(performance.now()-f.st)/1000:f.el)/15));
+  if(a==='start'){Object.keys(FL).forEach(x=>{if(FL[x].iv)clearInterval(FL[x].iv);FL[x].run=false});f.st=performance.now();f.run=true;f.el=0;const clk=$('#fclk-'+k);
+    sendShowFromFlu(tid,i);f.iv=setInterval(()=>{const el=(performance.now()-f.st)/1000;f.el=el;const r=60-el;clk.textContent=Math.ceil(Math.max(0,r))+'″';if(showTimerToPatient())sendTimer(k,r,60);$('#fq-'+k).innerHTML=fluGrid(s,q());if(r<=0){clearInterval(f.iv);f.run=false;f.el=59.9;beep();sendTimer(k,0,60,true);$('#fq-'+k).innerHTML=fluGrid(s,-1)}},200);return}
+  if(a==='stop'){if(f.iv)clearInterval(f.iv);f.run=false;return}
+  if(a==='undo'){const h=f.hist||[];const last=h.pop();if(last){s.q[last[0]][last[1]]=Math.max(0,s.q[last[0]][last[1]]-1)}}
+  else{const j={v:0,r:1,x:2}[a];const qi=q();s.q[qi][j]++;(f.hist=f.hist||[]).push([qi,j])}
+  $('#fq-'+k).innerHTML=fluGrid(s,f.run?q():-1);fluSync(tid)});
+
+/* ---------- rúbricas APRENS ---------- */
+function rubricBlock(id,SC,CR){const ts=T(id);if(!ts.items)ts.items=[{}];const pool=[...SC[group()],...(group()==='mutua'?SC.adult:[])];
+  return ts.items.map((it,ix)=>{const sc=pool.find(p=>p.t===it.scen)||pool[ix%pool.length];if(!it.scen)it.scen=sc.t;
+    return`<div class="scen"><div class="grid"><div><label>Escenario ${ix+1}</label><select data-b="tests.${id}.items.${ix}.scen" data-rerender="1">${pool.map(p=>`<option ${p.t===sc.t?'selected':''}>${esc(p.t)}</option>`).join('')}</select></div><div><label>Latencia de inicio (s)</label><input inputmode="decimal" data-b="tests.${id}.items.${ix}.lat" value="${esc(it.lat||'')}"></div></div>
+     <div class="stext">${esc(sc.x)}</div><div class="row"><button class="small alt" data-showtext="${esc(sc.t)}" data-body="${esc(sc.x)}">Mostrar al paciente</button></div>
+     <label>Respuesta (literal o resumida)</label><textarea data-b="tests.${id}.items.${ix}.resp">${esc(it.resp||'')}</textarea>
+     <table class="rubric"><tbody>${CR.map((c,ci)=>`<tr><td>${esc(c)}</td><td class="c"><select data-b="tests.${id}.items.${ix}.s.${ci}"><option value="">—</option>${[[2,'2 · adecuado'],[1,'1 · parcial'],[0,'0 · ausente']].map(([v,n])=>`<option value="${v}" ${String(it.s?.[ci]??'')===String(v)?'selected':''}>${n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table>
+     <div class="computed" data-rub="${id}.${ix}"></div></div>`}).join('')+(ts.items.length<3?`<button class="small alt" data-additem="${id}">+ Añadir otro escenario</button>`:'')}
+function rubScore(id,ix,n){const it=S.tests[id]?.items?.[ix];if(!it?.s)return null;const v=Object.values(it.s).map(num).filter(x=>x!==null);if(!v.length)return null;return{sum:v.reduce((a,b)=>a+b,0),max:v.length*2,full:n*2,n:v.length}}
+function qualDesc(p){return p>=0.8?'adecuado':p>=0.5?'parcial':'con dificultad'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-additem]');if(!b)return;const ts=T(b.dataset.additem);ts.items.push({});save();renderArea('fe')});
+function refBlock(){const ts=T('ref');if(!ts.r)ts.r={};
+  return`<table class="rubric"><tbody>${REFRANES.map((r,i)=>`<tr><td><strong>${esc(r)}</strong><br><input placeholder="Respuesta" data-b="tests.ref.r.${i}.resp" value="${esc(ts.r[i]?.resp||'')}"></td><td class="c"><button class="small alt" data-showtext="Refrán" data-body="${esc(r)}">Mostrar</button></td><td class="c"><select data-b="tests.ref.r.${i}.s"><option value="">—</option>${[['2','2 · abstracto'],['1','1 · parcial'],['0','0 · literal'],['nc','no lo conoce']].map(([v,n])=>`<option value="${v}" ${ts.r[i]?.s===v?'selected':''}>${n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table><div class="computed" data-rub="ref"></div>`}
+function refScore(){const r=S.tests.ref?.r||{};const v=Object.values(r).map(x=>x.s).filter(s=>s==='0'||s==='1'||s==='2').map(Number);if(!v.length)return null;return{sum:v.reduce((a,b)=>a+b,0),max:v.length*2,n:v.length}}
+function autobioBlock(){const ts=T('autobio');if(!ts.p)ts.p={};
+  return`<table class="rubric"><thead><tr><th>Periodo</th><th>Datos personales (0–3)</th><th>Suceso concreto (0–3)</th><th>Notas</th><th></th></tr></thead><tbody>${AUTO_PER.map(([k,n])=>`<tr><td>${n}</td>${['sem','epi'].map(f=>`<td class="c"><select data-b="tests.autobio.p.${k}.${f}"><option value="">—</option>${[3,2,1,0].map(v=>`<option ${String(ts.p[k]?.[f]??'')===String(v)?'selected':''}>${v}</option>`).join('')}</select></td>`).join('')}<td><input data-b="tests.autobio.p.${k}.n" value="${esc(ts.p[k]?.n||'')}"></td><td><button class="small alt" data-showtext="Recuerdos" data-body="${esc(n)}">Mostrar</button></td></tr>`).join('')}</tbody></table>
+  <div class="grid"><div><label>Conocimiento de actualidad (noticias recientes, personajes públicos)</label><select data-b="tests.autobio.news"><option value="">—</option>${['3 · actualizado','2 · parcial','1 · escaso','0 · nulo'].map(o=>`<option ${ts.news===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Contrastado con informante</label><select data-b="tests.autobio.inf"><option value="">—</option>${['Sí, coincide','Sí, con discrepancias','No'].map(o=>`<option ${ts.inf===o?'selected':''}>${o}</option>`).join('')}</select></div></div><div class="computed" data-rub="autobio"></div>`}
+function lengqBlock(){const ts=T('lengq');if(!ts.o)ts.o={};return`<table class="rubric"><tbody>${LENG_OBS.map(([k,n])=>`<tr><td>${n}</td><td class="c"><select data-b="tests.lengq.o.${k}"><option value="">—</option>${['Normal','Alteración leve','Alteración clara','No valorado'].map(o=>`<option ${ts.o[k]===o?'selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table>`}
+function valqBlock(){const ts=T('valq');return`<div class="computed" data-comp="valq">${compText('valq')}</div><div class="grid"><div><label>Esfuerzo observado</label><select data-b="tests.valq.eff"><option value="">—</option>${['Adecuado y constante','Variable','Bajo / abandona con facilidad'].map(o=>`<option ${ts.eff===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Incongruencias detectadas</label><select data-b="tests.valq.inc"><option value="">—</option>${['Ninguna','Alguna, explicable','Relevantes'].map(o=>`<option ${ts.inc===o?'selected':''}>${o}</option>`).join('')}</select></div></div>`}
+
+/* ---------- cancelación ---------- */
+const CAN_TGT=[['E','E entre F, B, P, R, L'],['b','b entre d, p, q, h'],['7','7 entre 1, 4, 9, 2'],['★','★ entre ☆, ✦, ✧, ✪']];
+function cancelBlock(){const ts=T('cancel');const r=ts.last;
+  return`<div class="grid" style="margin-top:8px"><div><label>Objetivo</label><select data-b="tests.cancel.tg">${CAN_TGT.map(([k,n])=>`<option value="${k}" ${(ts.tg||'E')===k?'selected':''}>${esc(n)}</option>`).join('')}</select></div><div><label>Filas × columnas</label><select data-b="tests.cancel.size">${['10x14','12x16','14x20'].map(o=>`<option ${(ts.size||'12x16')===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Tiempo límite (s, 0 = sin límite)</label><input type="number" min="0" max="600" data-b="tests.cancel.lim" value="${esc(ts.lim??'120')}"></div></div>
+  <div class="row" style="margin-top:10px"><button id="cancelStart">▶ Iniciar en pantalla del paciente</button><span class="mini">Requiere la pantalla del paciente abierta (ventana o «Mostrar aquí»).</span></div>
+  <div class="computed" id="cancelRes">${r?cancelText(r):'Sin resultados todavía.'}</div>`}
+function cancelText(r){const pct=x=>r.targets?Math.round(100*x/r.targets):0;
+  return`<b>${r.hits}</b>/${r.targets} objetivos (${pct(r.hits)} %) · omisiones <b>${r.om}</b> · comisiones <b>${r.com}</b> · tiempo <b>${fmt(r.time,1)} s</b>${r.timeout?' (límite)':''}<br>
+  Mitad superior: ${r.hTop}/${r.tTop} · mitad inferior: ${r.hBot}/${r.tBot} · Izquierda: ${r.hL}/${r.tL} · derecha: ${r.hR}/${r.tR}<br>
+  <span class="mini">${Math.abs((r.hL/(r.tL||1))-(r.hR/(r.tR||1)))>=0.2?'⚠ Asimetría izquierda/derecha ≥ 20 %: explora la atención espacial (posible negligencia) y la estrategia de rastreo.':'Sin asimetría lateral relevante.'} ${r.tTop&&r.tBot&&(r.hTop/r.tTop-r.hBot/r.tBot)>=0.2?'⚠ Rendimiento menor en la segunda mitad: compatible con fatiga o caída de la atención sostenida (o con haberse quedado sin tiempo).':''}</span>`}
+
+/* ======================= cálculos derivados por prueba ======================= */
+function compText(tid){
+  if(tid==='tavec'){const e=[1,2,3,4,5].map(i=>PD('tavec','e'+i));if(e.every(x=>x===null))return'';const okE=e.filter(x=>x!==null);
+    const tot=okE.reduce((a,b)=>a+b,0),gain=e[4]!==null&&e[0]!==null?e[4]-e[0]:null,lb=PD('tavec','lb'),rl=PD('tavec','rlcp'),ll=PD('tavec','rllp'),rec=PD('tavec','rec'),fp=PD('tavec','fp');
+    const curve=e.map(x=>x===null?'·':x).join(' → ');
+    let s=`Curva de aprendizaje: <b>${curve}</b> · total <b>${tot}</b>${gain!==null?` · ganancia (E5−E1) <b>${gain}</b>`:''}`;
+    if(lb!==null&&e[0]!==null)s+=` · lista B frente a E1: <b>${lb-e[0]}</b> (interferencia proactiva si es negativa)`;
+    if(rl!==null&&e[4]!==null)s+=`<br>Interferencia retroactiva (RL-CP − E5): <b>${rl-e[4]}</b>`;
+    if(ll!==null&&rl!==null)s+=` · olvido (RL-LP − RL-CP): <b>${ll-rl}</b>${rl>0?` · retención <b>${Math.round(100*ll/rl)} %</b>`:''}`;
+    if(rec!==null&&fp!==null)s+=` · discriminación (aciertos − FP): <b>${rec-fp}</b>`;
+    if(gain!==null&&gain<=2)s+='<br><span class="mini">⚠ Curva plana: poca ganancia con la repetición (estrategia de aprendizaje, atención o fatiga).</span>';
+    return s}
+  if(tid==='tmt'){const a=PD('tmt','at'),b=PD('tmt','bt');if(a===null||b===null||!a)return'';const r=b/a;return`Cociente B/A: <b>${fmt(r)}</b> · diferencia B−A: <b>${fmt(b-a,1)} s</b>${r>=3?' <span class="band b-lo1">coste de alternancia elevado (≥ 3)</span>':''}`}
+  if(tid==='rey'){const c=PD('rey','cop'),m=PD('rey','mem3');if(c===null||m===null||!c)return'';return`Retención (memoria 3′ / copia): <b>${Math.round(100*m/c)} %</b>`}
+  if(tid==='wech'||tid==='valq'){const d=PD('wech','sfd'),i=PD('wech','sfi');if(d===null||i===null)return tid==='valq'?'Span de dígitos fiable: introduce los spans fiables en el módulo Wechsler.':'';const r=d+i;return`Span de dígitos fiable (RDS): <b>${r}</b>${r<=7?' <span class="band b-lo2">≤ 7 · revisar la validez</span>':''}${(age()??99)<16?' <span class="mini">(criterio no validado en menores de 16 años)</span>':''}`}
+  if(tid==='fon'||tid==='semf'){const s=TBYID[tid];const tr=fluTrials(s).map((c,i)=>{const q=fluState(tid,i).q.map(x=>x[0]);const t=q.reduce((a,b)=>a+b,0);return t?`${c}: ${q.join('-')} (${t})`:''}).filter(Boolean);if(!tr.length)return'';
+    return`Producción por tramos de 15″: ${tr.join(' · ')}<br><span class="mini">En una búsqueda eficaz la producción decae poco a poco. Si casi todo sale en los primeros 15″, la generación de estrategias es pobre.</span>`}
+  return''}
+function refreshOut(){
+  $$('[data-out]').forEach(el=>{const[tid,mid]=el.dataset.out.split('.');const met=metricOf(tid,mid);const row=el.closest('tr[data-row]');if(row)row.classList.toggle('is-msd',met==='msd');
+    const z=Z(tid,mid);if(z===null){el.innerHTML='<span class="mini">—</span>';return}const b=band(z);el.innerHTML=`z ${fmt(z)} · Pc ${Math.round(ncdf(z)*100)} <span class="band ${b[1]}">${b[0]}</span>`});
+  $$('[data-comp]').forEach(el=>{const t=compText(el.dataset.comp);el.innerHTML=t;el.hidden=!t});
+  $$('[data-rub]').forEach(el=>{const k=el.dataset.rub;let r=null,txt='';
+    if(k==='ref'){r=refScore();if(r)txt=`Total: <b>${r.sum}/${r.max}</b> (${r.n} refranes puntuados) · ${qualDesc(r.sum/r.max)}`}
+    else if(k==='autobio'){const p=S.tests.autobio?.p||{};const vals=AUTO_PER.map(([k2,n])=>[n,num(p[k2]?.sem),num(p[k2]?.epi)]).filter(x=>x[1]!==null||x[2]!==null);if(vals.length)txt='Gradiente (datos / suceso): '+vals.map(v=>`${v[0].split(' (')[0]} <b>${v[1]??'·'}/${v[2]??'·'}</b>`).join(' · ')}
+    else{const[id,ix]=k.split('.');r=rubScore(id,Number(ix),id==='plan'?PLAN_CRIT.length:PROB_CRIT.length);if(r)txt=`Puntuación: <b>${r.sum}/${r.max}</b>${r.max<r.full?` (${r.n} de ${r.full/2} componentes)`:''} · ${qualDesc(r.sum/r.max)}`}
+    el.innerHTML=txt;el.hidden=!txt});
+  updateNav()}
+function updateNav(){$$('#sideNav [data-sec]').forEach(b=>{const tests=TESTS.filter(t=>t.area===b.dataset.sec);const c=b.querySelector('.cnt');if(c)c.textContent=tests.filter(t=>status(t.id)==='hecho').length+'/'+tests.length})}
+
+/* ======================= enlace de datos ======================= */
+function onField(e){const el=e.target;const p=el.dataset.b;if(!p)return;let v;
+  if(el.type==='checkbox')v=el.checked;else if(el.type==='radio'){if(!el.checked)return;v=el.value}else v=el.value;
+  setP(S,p,v);save();
+  if(p==='meta.space'||p==='meta.age'){applySpace();if(e.type==='change')renderAreas()}
+  if(el.dataset.rerender&&e.type==='change'){const area=el.closest('[data-area]')?.dataset.area;if(area)renderArea(area)}
+  if(/^tests\.[^.]+\.status$/.test(p)){const c=el.closest('.test');if(c){c.className='card test st-'+v.replace(' ','')}}
+  refreshOut()}
+document.addEventListener('input',onField);document.addEventListener('change',onField);
+function fillStatic(){
+  $$('#sec-inicio [data-b]').forEach(el=>{const v=getP(S,el.dataset.b);if(el.type==='radio')el.checked=(v||'aprens')===el.value;else if(el.type==='checkbox')el.checked=!!v;else el.value=v??''});
+  $$('#sec-informe [data-b]').forEach(el=>{el.value=getP(S,el.dataset.b)??''})}
+function renderInicioLists(){
+  $('#condGrid').innerHTML=COND.map(([k,n])=>`<div class="chips"><label><input type="checkbox" data-b="meta.cond.${k}" ${S.meta.cond?.[k]?'checked':''}> ${n}</label></div>`).join('');
+  $('#jobDemands').innerHTML=JOBDEM.map(([k,n])=>`<label><input type="checkbox" data-b="meta.mutua.dem.${k}" ${S.meta.mutua?.dem?.[k]?'checked':''}> ${n}</label>`).join('');
+  renderSessions()}
+function renderSessions(){$('#sessions').innerHTML=(S.sessions||[]).map((s,i)=>`<div class="sessrow"><input type="date" data-b="sessions.${i}.d" value="${esc(s.d||'')}"><input placeholder="min" inputmode="numeric" data-b="sessions.${i}.m" value="${esc(s.m||'')}"><input placeholder="Pruebas aplicadas" data-b="sessions.${i}.o" value="${esc(s.o||'')}"><input placeholder="Incidencias (fatiga, fluctuación...)" data-b="sessions.${i}.x" value="${esc(s.x||'')}"><button class="small ghost" data-delsess="${i}" aria-label="Eliminar">✕</button></div>`).join('')||'<p class="mini">Sin sesiones registradas.</p>'}
+$('#addSession').addEventListener('click',()=>{S.sessions=S.sessions||[];S.sessions.push({d:new Date().toISOString().slice(0,10)});save();renderSessions()});
+$('#sessions').addEventListener('click',e=>{const b=e.target.closest('[data-delsess]');if(!b)return;S.sessions.splice(Number(b.dataset.delsess),1);save();renderSessions()});
+function applySpace(){const m=S.meta.space==='mutua';const b=$('#spaceBadge');b.textContent=m?'Espacio Mutua Balear':'Espacio APRENS';b.classList.toggle('mutua',m);
+  $('#ctxMutua').style.display=m?'':'none';$('#ctxAprens').style.display=m?'none':'';
+  $('#spaceHelp').textContent=m?'Contexto laboral y médico-legal: validez del rendimiento obligatoria, estimación premórbida, relación con el mecanismo de la lesión y con las demandas del puesto.':'Contexto clínico y educativo: adolescentes y adultos; informantes (familia, centro educativo) y perfil para orientar la intervención.'}
+
+/* ======================= protocolo ======================= */
+function renderPlan(){const a=age(),m=S.meta.space==='mutua';
+  if(a===null){$('#planOut').innerHTML='<div class="notice">Introduce la edad en «Caso y condiciones» para generar el protocolo.</div>';return}
+  const adol=a<16,wv=a<16?'WISC-V':a<17?'WISC-V o WAIS-IV':'WAIS-IV',verb=a<16?'TAVECI':'TAVEC',brief=a<18?'BRIEF-2 (familia + profesorado; autoinforme si tiene 11 años o más)':'BRIEF-A (autoinforme + informante)';
+  const chip=id=>{const s=status(id);return`<span class="pill ${s==='hecho'?'done':s==='no aplica'?'na':''}">${s}</span>`};
+  const S1=[[null,'Entrevista clínica y anamnesis','Motivo, historia del desarrollo y escolar o laboral, antecedentes, quejas concretas con ejemplos y objetivos de la evaluación.'],
+    m?['tomm','TOMM · ensayos 1 y 2 (al inicio)','Validez antes de las pruebas exigentes; la retención se aplica más tarde.']:null,
+    ['wech',`${wv} · subtests principales`,'Perfil general. Aplica Dígitos con sus procesos (directos, inversos, crecientes) y anota los spans fiables.'],
+    m?['tomm','TOMM · retención','Tras el intervalo indicado en el manual.']:null].filter(Boolean);
+  const S2=[['tavec',`${verb} · ensayos 1–5, lista B y recuerdo a corto plazo`,'Inicia la demora de 20′ al terminar el recuerdo con claves a corto plazo.'],
+    ['rey','Figura de Rey · copia','Durante la demora verbal (es no verbal). Cronometra y anota la secuencia.'],
+    ['rey','Figura de Rey · memoria a los 3′','A los 3 minutos de la copia.'],
+    ['d2r','d2-R','También no verbal: completa la demora.'],
+    ['tmt','TMT A y B','Antes de que pasen los 20′.'],
+    ['tavec',`${verb} · recuerdo a largo plazo y reconocimiento`,'Cuando suene el aviso de la demora.'],
+    ['stroop','Stroop','Si hay dificultad lectora, valora el FDT como alternativa.'],
+    ['fon','Fluidez fonológica','Con estímulo en la pantalla del paciente.'],
+    ['semf','Fluidez semántica (animales)','Aplica la fonológica y la semántica seguidas para compararlas.']];
+  const S3=[['benton','Benton (TRVB)','Memoria visual con otro formato; contrasta con Rey.'],
+    ['bnt','Denominación (BNT)','Sobre todo si hay quejas de «no me sale la palabra» o una fluidez semántica baja.'],
+    ['plan','Planificación ecológica APRENS',m?'Elige el escenario laboral de reincorporación.':adol?'Escenario de fiesta o de semana de exámenes.':'Escenario de fiesta o de viaje.'],
+    ['prob','Resolución de problemas APRENS','Valora impulsividad, rigidez y prudencia.'],
+    ['ref','Refranes APRENS','Abstracción verbal; ten en cuenta la familiaridad cultural.'],
+    ['autobio','Memoria autobiográfica APRENS',m?'Clave si hay amnesia postraumática: gradiente antes y después del accidente.':'Contrasta con un informante.'],
+    ['brief',brief,'Para entregar a informantes; recógelo antes de la devolución.'],
+    m?['rey15','Rey 15 ítems','Segundo indicador de validez independiente.']:['cpt','CPT (opcional)','Si la pregunta es de atención sostenida o de TDAH.'],
+    m?['pre','Estimación premórbida (TAP)','Referencia para valorar el declive.']:null].filter(Boolean);
+  const blk=(n,dur,arr)=>`<div class="sess"><h3>${n} <span class="pill">${dur}</span></h3><ol>${arr.map(([id,t,w])=>`<li>${id?`<a href="#" data-goto="${id}">${esc(t)}</a> ${chip(id)} ${a<TBYID[id].ages[0]||a>TBYID[id].ages[1]?'<span class="pill off">fuera de rango de edad</span>':''}`:esc(t)}<span class="why">${esc(w)}</span></li>`).join('')}</ol></div>`;
+  let h='';if(a<12)h+='<div class="notice bad">Esta batería está diseñada a partir de los 12 años. Revisa los rangos de edad de cada prueba.</div>';
+  h+=`<div class="notice info"><strong>${adol?'Adolescente':a<18?'Adolescente (16–17)':'Adulto'} · ${m?'Mutua Balear':'APRENS'}.</strong> Escala: ${wv}. Aprendizaje verbal: ${verb}${a===16?' (a los 16 años sirven TAVEC y TAVECI: elige según el baremo más ajustado)':''}. Total ≈ 4–5 h en 3 sesiones; evita sesiones de más de 2 h y anota la fatiga.</div>`;
+  h+=blk('Sesión 1 · Entrevista y perfil general','≈ 120′',S1)+blk('Sesión 2 · Memoria, atención y ejecutivas con tiempo','≈ 90′',S2)+blk('Sesión 3 · Lenguaje, ejecutivas ecológicas y cuestionarios','≈ 75′',S3);
+  h+=`<div class="card"><h2>Guía rápida de qué mide cada cosa</h2><div class="tscroll"><table><thead><tr><th>Área</th><th>Subárea</th><th>Pruebas que la miden</th></tr></thead><tbody>${DOMAINS.map(d=>d.subs.map(([k,n],i)=>{const key=d.id+'.'+k;const list=[];TESTS.forEach(t=>measuresOf(t).forEach(mm=>{if(mm.sub===key){const nm=t.wech?(S.tests.wech.ver+' '+mm.l):t.name.split(' · ')[0].split(' (')[0];if(!list.includes(nm))list.push(nm)}}));
+    const q={'mem.auto':'Memoria autobiográfica APRENS','fe.plan':'Planificación ecológica APRENS','fe.dec':'Resolución de problemas APRENS','fe.raz':'Refranes APRENS'}[key];if(q)list.push(q);
+    return`<tr><td>${i===0?`<strong>${d.name}</strong>`:''}</td><td>${n}</td><td>${esc(list.join(' · ')||'—')}</td></tr>`}).join('')).join('')}</tbody></table></div></div>`;
+  $('#planOut').innerHTML=h}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-goto]');if(!a)return;e.preventDefault();const t=TBYID[a.dataset.goto];go(t.area);setTimeout(()=>$('#card-'+t.id)?.scrollIntoView({behavior:'smooth',block:'start'}),50)});
+
+/* ======================= perfil ======================= */
+function profileData(){const sc=allScored();const by={};sc.forEach(x=>{const k=x.m.sub;if(!k)return;(by[k]=by[k]||[]).push(x)});return{sc,by}}
+function renderProfile(){const{sc,by}=profileData();
+  if(!sc.length){$('#profile').innerHTML='<p class="mini">Aún no hay puntuaciones tipificadas. Introdúcelas en las secciones de cada área.</p>';$('#profTable').innerHTML=''}
+  else{const pos=z=>Math.max(0,Math.min(100,(z+3)/6*100));let h=`<div class="paxis"><div></div><div class="ticks"><span>−3</span><span>−2</span><span>−1</span><span>0</span><span>+1</span><span>+2</span><span>+3</span></div><div></div></div>`;
+    DOMAINS.forEach(d=>{const rows=d.subs.filter(([k])=>by[d.id+'.'+k]);if(!rows.length)return;h+=`<div class="dom">${d.name}</div>`;
+      rows.forEach(([k,n])=>{const arr=by[d.id+'.'+k],zs=arr.map(x=>x.z),mz=mean(zs),mn=Math.min(...zs),b=band(mz);const l=pos(Math.min(0,mz)),w=Math.abs(pos(mz)-50);
+        const tip=arr.map(x=>`${x.t.wech?S.tests.wech.ver:x.t.name.split(' · ')[0]} · ${x.m.l}: z ${fmt(x.z)}`).join('\n');
+        h+=`<div class="prow" title="${esc(tip)}"><div class="lab">${n} <small>(${arr.length})</small></div><div class="ptrack"><div class="zero"></div><div class="bar ${mz<0?'neg':''}" style="left:${mz<0?pos(mz):50}%;width:${w}%"></div>${arr.length>1?`<div class="dot" style="left:${pos(mn)}%" title="Peor medida: z ${fmt(mn)}"></div>`:''}</div><div class="out">z ${fmt(mz)} <span class="band ${b[1]}">${b[0]}</span></div></div>`})});
+    const ms=modalityText();if(ms)h+=`<p class="mini" style="margin-top:10px">${ms}</p>`;
+    $('#profile').innerHTML=h;
+    $('#profTable').innerHTML=`<thead><tr><th>Área · subárea</th><th>Prueba · medida</th><th>PD</th><th>Puntuación</th><th>z</th><th>Pc</th><th>Nivel</th></tr></thead><tbody>${DOMAINS.flatMap(d=>d.subs.flatMap(([k,n])=>(by[d.id+'.'+k]||[]).map(x=>{const st=S.tests[x.t.id].m[x.m.id],b=band(x.z),met=metricOf(x.t.id,x.m.id);return`<tr><td>${d.name} · ${n}</td><td>${esc((x.t.wech?S.tests.wech.ver:x.t.name.split(' · ')[0])+' · '+x.m.l)}</td><td>${esc(st.pd??'')}</td><td>${met==='msd'?'media/DE':esc((st.v??'')+' '+(METRICS.find(q=>q[0]===met)?.[1].split(' ')[0]||''))}</td><td>${fmt(x.z)}</td><td>${Math.round(ncdf(x.z)*100)}</td><td><span class="band ${b[1]}">${b[0]}</span></td></tr>`}))).join('')}</tbody>`}
+  $('#qualOut').innerHTML=qualSummary().map(q=>`<div class="rule"><h4>${esc(q[0])}</h4><p>${q[1]}</p></div>`).join('')||'<p class="mini">Sin tareas cualitativas puntuadas.</p>';
+  $('#rulesOut').innerHTML=rules().map(r=>`<div class="rule ${r.lvl}"><h4>${r.lvl==='alert'?'⛔ ':r.lvl==='warn'?'⚠ ':'• '}${esc(r.t)}</h4><p>${esc(r.b)}</p>${r.basis?`<p class="basis">Base: ${esc(r.basis)}</p>`:''}</div>`).join('')||'<p class="mini">Sin hipótesis automáticas: introduce más resultados.</p>'}
+function modalityText(){const sc=allScored().filter(x=>x.m.sub&&x.m.sub.startsWith('aten.')&&x.m.mod);const v=mean(sc.filter(x=>x.m.mod==='v').map(x=>x.z)),a=mean(sc.filter(x=>x.m.mod==='a').map(x=>x.z));if(v===null||a===null)return'';return`Atención por modalidad · visual: z ${fmt(v)} · auditivo-verbal: z ${fmt(a)}${Math.abs(v-a)>=1?' — diferencia de 1 DE o más entre modalidades.':'.'}`}
+function qualSummary(){const out=[];
+  ['plan','prob'].forEach(id=>{(S.tests[id]?.items||[]).forEach((it,ix)=>{const r=rubScore(id,ix,id==='plan'?PLAN_CRIT.length:PROB_CRIT.length);if(!r)return;const CR=id==='plan'?PLAN_CRIT:PROB_CRIT;const low=CR.filter((c,ci)=>it.s?.[ci]==='0');out.push([`${id==='plan'?'Planificación':'Resolución de problemas'} · ${it.scen}`,`${r.sum}/${r.max} · ${qualDesc(r.sum/r.max)}${low.length?`. Ausente: ${esc(low.join('; ').toLowerCase())}.`:'.'}${it.lat?` Latencia ${esc(it.lat)} s.`:''}`])})});
+  const rf=refScore();if(rf)out.push(['Refranes',`${rf.sum}/${rf.max} · ${qualDesc(rf.sum/rf.max)}`]);
+  const p=S.tests.autobio?.p;if(p&&Object.keys(p).length){const t=AUTO_PER.map(([k,n])=>p[k]&&(p[k].sem!==undefined||p[k].epi!==undefined)?`${n}: ${p[k].sem??'·'}/${p[k].epi??'·'}`:'').filter(Boolean);if(t.length)out.push(['Memoria autobiográfica (datos/suceso, 0–3)',esc(t.join(' · '))])}
+  const c=S.tests.cancel?.last;if(c)out.push(['Cancelación digital APRENS',cancelText(c)]);
+  const lo=S.tests.lengq?.o;if(lo){const alt=LENG_OBS.filter(([k])=>/Alteración/.test(lo[k]||'')).map(([k,n])=>`${n}: ${lo[k].toLowerCase()}`);if(alt.length)out.push(['Observación del lenguaje',esc(alt.join(' · '))])}
+  return out}
+
+/* ======================= reglas interpretativas ======================= */
+function rules(){const R=[],add=(lvl,t,b,basis)=>R.push({lvl,t,b,basis});const a=age();const{by}=profileData();
+  const sub=k=>by[k]?mean(by[k].map(x=>x.z)):null;
+  // condiciones
+  const cond=COND.filter(([k])=>S.meta.cond?.[k]).map(([,n])=>n.toLowerCase());
+  if(cond.length)add('warn','Condiciones que pueden reducir el rendimiento',`Se registró: ${cond.join(', ')}. Valora si explican total o parcialmente los resultados bajos antes de atribuirlos a una disfunción neuropsicológica.`,'Condiciones de la evaluación');
+  // validez
+  const e2=PD('tomm','e2'),ret=PD('tomm','ret'),r15=PD('rey15','rec'),sfd=PD('wech','sfd'),sfi=PD('wech','sfi');let invalid=0;
+  if((e2!==null&&e2<45)||(ret!==null&&ret<45)){invalid++;add('alert','TOMM por debajo del criterio','El ensayo 2 o la retención están por debajo de 45: posible rendimiento no válido. Los déficits observados podrían no reflejar la capacidad real.','TOMM E2/retención < 45')}
+  if(r15!==null&&r15<9){invalid++;add('warn','Rey 15 ítems por debajo del criterio','Un recuerdo inferior a 9 es un indicio de esfuerzo insuficiente (prueba poco sensible y con falsos positivos si hay deterioro grave).','Rey 15 < 9')}
+  if(sfd!==null&&sfi!==null&&sfd+sfi<=7&&(a??99)>=16){invalid++;add('warn','Span de dígitos fiable bajo',`RDS = ${sfd+sfi}. Un valor ≤ 7 es un indicador de validez cuestionable en adultos, salvo deterioro grave o discapacidad intelectual.`,'RDS ≤ 7')}
+  if(invalid>=2)add('alert','Dos o más indicadores de validez alterados','No interpretes los resultados bajos como déficits. Describe el rendimiento como no válido o no interpretable y explora los motivos (contexto, ganancia, ánimo, fatiga).','≥ 2 indicadores');
+  if(S.meta.space==='mutua'&&e2===null&&r15===null&&(sfd===null||sfi===null))add('warn','Falta la valoración de validez','En el espacio Mutua Balear se recomienda incluir al menos dos indicadores de validez antes de concluir que hay secuelas.','Contexto médico-legal');
+  if(S.tests.valq?.eff==='Bajo / abandona con facilidad')add('warn','Esfuerzo observado bajo','El rendimiento puede infraestimar la capacidad. Documenta las conductas observadas.','Observación');
+  // velocidad
+  const vel=sub('aten.vel');
+  if(vel!==null&&vel<=-1.5){const rest=allScored().filter(x=>x.m.sub&&x.m.sub!=='aten.vel').map(x=>x.z);const rm=mean(rest);add('info','Enlentecimiento del procesamiento',`Velocidad de procesamiento z ${fmt(vel)}.${rm!==null&&rm>-1?' Con el resto del perfil relativamente conservado, la lentitud puede explicar los peores resultados en pruebas cronometradas (Stroop, TMT-B, fluidez).':''}`,'Media aten.vel ≤ −1,5')}
+  // TMT
+  const ta=PD('tmt','at'),tb=PD('tmt','bt'),zA=Z('tmt','at'),zB=Z('tmt','bt');
+  if(ta&&tb&&tb/ta>=3)add('info','Coste de alternancia (TMT)',`B/A = ${fmt(tb/ta)}. Un cociente ≥ 3 indica dificultad de flexibilidad o alternancia por encima de la velocidad de rastreo.`,'TMT B/A ≥ 3');
+  if(zA!==null&&zB!==null){if(zB<=-1.5&&zA>-1)add('info','Flexibilidad cognitiva','TMT-B bajo con TMT-A conservado: dificultad específica de alternancia.','TMT-B ≤ −1,5 y TMT-A > −1');else if(zA<=-1.5&&zB<=-1.5)add('info','TMT: lentitud general','A y B están bajos: domina la lentitud o el rastreo visomotor; la flexibilidad no puede valorarse de forma aislada.','TMT-A y B ≤ −1,5')}
+  // Stroop
+  const zi=Z('stroop','int'),zp=Z('stroop','p'),zc=Z('stroop','c'),zpc=Z('stroop','pc');
+  if(zi!==null&&zi<=-1.5){if((zp===null||zp>-1)&&(zc===null||zc>-1))add('info','Control inhibitorio','Interferencia del Stroop baja con lectura y denominación conservadas: dificultad de inhibición de respuestas automáticas.','Stroop interferencia ≤ −1,5');else add('info','Stroop: interpretar con la velocidad','La interferencia es baja, pero también lo son P o C: la lentitud lectora o de denominación contribuye. Valora el FDT si hay dificultad lectora.','Stroop P/C ≤ −1')}
+  else if(zpc!==null&&zpc<=-1.5&&zi!==null&&zi>-1)add('info','Stroop: PC bajo con interferencia normal','La lámina PC es baja, pero la interferencia es proporcional a la lentitud de base: no indica un déficit inhibitorio específico.','PC ≤ −1,5, interferencia > −1');
+  // dígitos
+  const zdd=Z('wech','dd'),zdi=Z('wech','di');
+  if(zdd!==null&&zdi!==null){if(zdd-zdi>=1&&zdi<=-1)add('info','Memoria de trabajo frente a span','Dígitos inversos claramente por debajo de directos: el span de retención se conserva, pero falla la manipulación mental (memoria de trabajo / ejecutivo central).','DD − DI ≥ 1 DE');if(zdd<=-1.5)add('info','Span atencional auditivo-verbal reducido','Dígitos directos bajos: capacidad de retención inmediata o atención auditiva limitadas. Influye en las pruebas verbales largas (TAVEC).','DD ≤ −1,5')}
+  const mtxt=modalityText();if(mtxt.includes('diferencia'))add('info','Disociación por modalidad atencional',mtxt,'Media visual frente a auditivo-verbal en atención');
+  // atención sostenida
+  const om=Z('cpt','om'),co=Z('cpt','co');if(om!==null&&om<=-1.5)add('info','Atención sostenida','Omisiones elevadas en el CPT: fallos de vigilancia mantenida.','CPT omisiones');if(co!==null&&co<=-1.5)add('info','Impulsividad en la respuesta','Comisiones elevadas en el CPT: control inhibitorio motor reducido.','CPT comisiones');
+  const con=Z('d2r','con');if(con!==null&&con<=-1.5)add('info','Atención selectiva visual (d2-R)','Concentración baja. Comprueba si se debe a la velocidad (elementos procesados) o a la precisión (E%).','d2-R CON ≤ −1,5');
+  // memoria verbal
+  const zt=Z('tavec','tot'),zrl=Z('tavec','rllp'),zrc=Z('tavec','rclp'),zcp=Z('tavec','rlcp'),zrec=Z('tavec','rec'),zfp=Z('tavec','fp'),zin=Z('tavec','intr');
+  if((zrl!==null&&zrl<=-1.5)||(zcp!==null&&zcp<=-1.5)){if(zrec!==null&&zrec>-1)add('info','Memoria verbal: perfil de recuperación','Recuerdo libre bajo con reconocimiento conservado: la información se almacena, pero cuesta evocarla. Sugiere un fallo de estrategia o de búsqueda (perfil frontal-subcortical, atencional).','Recuerdo libre ≤ −1,5; reconocimiento > −1');
+    else if(zrec!==null&&zrec<=-1.5)add('info','Memoria verbal: perfil de codificación o consolidación','El recuerdo libre y el reconocimiento están bajos: la información no llega a almacenarse de forma estable. Sugiere afectación de los sistemas de consolidación (temporal medial) o una codificación muy pobre.','Recuerdo y reconocimiento ≤ −1,5')}
+  if(zrc!==null&&zrl!==null&&zrc-zrl>=1)add('info','Beneficio de las claves','Las claves semánticas mejoran claramente el recuerdo: refuerza la hipótesis de dificultad de recuperación.','Claves LP − libre LP ≥ 1 DE');
+  if(zt!==null&&zt<=-1.5&&(zrec===null||zrec>-1))add('info','Aprendizaje verbal reducido','Total de los ensayos 1–5 bajo. Revisa la curva: si es plana, el problema es de estrategia o de atención más que de almacenamiento.','TAVEC total ≤ −1,5');
+  if((zin!==null&&zin<=-1.5)||(zfp!==null&&zfp<=-1.5))add('info','Monitorización de la fuente','Intrusiones o falsos positivos elevados: control ejecutivo del recuerdo débil (frecuente en disfunción frontal).','Intrusiones/FP');
+  const ll=PD('tavec','rllp'),rl=PD('tavec','rlcp');if(ll!==null&&rl&&rl>=5&&ll/rl<0.7)add('info','Olvido acelerado','Pierde más del 30 % entre el corto y el largo plazo: valora la consolidación.','Retención LP/CP < 70 %');
+  // memoria visual
+  const zcop=Z('rey','cop'),zm3=Z('rey','mem3');
+  if(zcop!==null&&zcop<=-1.5)add('info','Visuoconstrucción u organización','Copia de Rey baja: limita la interpretación de la memoria visual. Revisa el tipo de copia y compara con Cubos.','Rey copia ≤ −1,5');
+  else if(zcop!==null&&zm3!==null&&zm3<=-1.5)add('info','Memoria visual','La copia es adecuada y la reproducción de memoria está baja: déficit de memoria visual no explicado por la construcción.','Rey copia > −1,5 y memoria ≤ −1,5');
+  if(/IV|V ·|VI|VII/.test(S.tests.rey?.type||''))add('info','Organización perceptiva en la copia','Tipo de copia fragmentado o poco estructurado: estrategia de planificación débil aunque la puntuación sea aceptable.','Tipo de copia de Osterrieth');
+  const mv=sub('mem.vis'),mvb=mean([sub('mem.verb'),sub('mem.verbdif')].filter(x=>x!==null));
+  if(mv!==null&&mvb!==null&&Math.abs(mv-mvb)>=1)add('info','Disociación entre memoria verbal y visual',`Memoria ${mv<mvb?'visual':'verbal'} claramente inferior (z ${fmt(Math.min(mv,mvb))} frente a ${fmt(Math.max(mv,mvb))}). Orienta a una afectación con especificidad material (lateralidad hemisférica u otros factores como la lectura o el lenguaje).`,'Diferencia ≥ 1 DE');
+  // fluidez
+  const fo=sub('leng.fon'),se=sub('leng.semf');
+  if(fo!==null&&se!==null){if(se-fo>=1)add('info','Fluidez fonológica inferior a la semántica','Sugiere dificultad en la búsqueda estratégica y la iniciación (componente ejecutivo, frontal).','Semántica − fonológica ≥ 1 DE');else if(fo-se>=1)add('info','Fluidez semántica inferior a la fonológica','Sugiere afectación del almacén o de la organización semántica (temporal).','Fonológica − semántica ≥ 1 DE');else if(fo<=-1.5&&se<=-1.5)add('info','Fluidez verbal globalmente baja','Las dos fluidez están bajas: valora la lentitud, el acceso léxico y la iniciación.','Ambas ≤ −1,5')}
+  const zb=Z('bnt','esp');if(zb!==null&&zb<=-1.5)add('info','Denominación',`BNT bajo${se!==null&&se<=-1?' junto con fluidez semántica baja: apunta a una afectación semántica-léxica':''}. Revisa la mejora con claves y la escolaridad o lengua dominante.`,'BNT ≤ −1,5');
+  const ztk=Z('token','tot');if(ztk!==null&&ztk<=-1.5)add('warn','Comprensión verbal reducida','Puede contaminar las pruebas verbales (TAVEC, refranes, escenarios). Interpreta esos resultados con cautela.','Token ≤ −1,5');
+  // Wechsler
+  const ix=Object.fromEntries(WECH[S.tests.wech?.ver||'WAIS-IV'].idx.map(([id,l])=>[id,{l,z:Z('wech','i_'+id)}]).filter(([,v])=>v.z!==null&&!/^(cit|civ|cim|icg|icc)$/.test(v.l.split(' ')[0].toLowerCase())));
+  const ixv=Object.values(ix);if(ixv.length>=3){const mx=ixv.reduce((a,b)=>a.z>b.z?a:b),mn=ixv.reduce((a,b)=>a.z<b.z?a:b);if(mx.z-mn.z>=1)add('info','Perfil Wechsler heterogéneo',`Diferencia de ${Math.round((mx.z-mn.z)*15)} puntos entre ${mx.l.split(' · ')[0]} y ${mn.l.split(' · ')[0]}. El CI total resume mal el funcionamiento: describe el perfil por índices.`,'Discrepancia entre índices ≥ 15 puntos')}
+  const zimt=ix.imt?.z??ix.mt?.z,zivp=ix.ivp?.z??ix.vp?.z,zicv=ix.icv?.z??ix.cv?.z,zr=ix.irp?.z??ix.irf?.z??ix.op?.z;
+  if(zimt!=null&&zivp!=null&&zicv!=null&&zr!=null&&Math.max(zimt,zivp)<Math.min(zicv,zr)-0.67)add('info','Competencia cognitiva por debajo del razonamiento','Memoria de trabajo y velocidad por debajo de comprensión y razonamiento. Es un patrón frecuente en TDAH, TCE o ansiedad; no es específico de ningún diagnóstico.','IMT/IVP < ICV/IR');
+  // FE ecológicas
+  const ieg=Z('brief','ieg'),feTests=mean(['fe.inh','fe.flex','fe.plan'].map(sub).filter(x=>x!==null));
+  if(ieg!==null&&ieg<=-1.5&&feTests!==null&&feTests>-1)add('info','Disociación entre tests y vida diaria','El BRIEF está elevado con pruebas ejecutivas normales: la dificultad aparece en entornos poco estructurados. Las pruebas en consulta infraestiman el problema; prioriza el impacto funcional.','BRIEF IEG T ≥ 65; tests > −1');
+  if(ieg!==null&&ieg>-1&&feTests!==null&&feTests<=-1.5)add('info','Pruebas bajas con BRIEF normal','Dificultad ejecutiva en las pruebas que el informante no percibe: valora la anosognosia, la compensación del entorno o factores de la evaluación.','Tests ≤ −1,5; BRIEF normal');
+  (S.tests.plan?.items||[]).forEach((it,i)=>{const r=rubScore('plan',i,PLAN_CRIT.length);if(r&&r.sum/r.max<0.5)add('info','Planificación ecológica deficitaria',`Escenario «${it.scen}»: ${r.sum}/${r.max}. Contrástalo con las pruebas estandarizadas y con el funcionamiento diario.`,'Rúbrica APRENS < 50 %')});
+  (S.tests.prob?.items||[]).forEach((it,i)=>{const r=rubScore('prob',i,PROB_CRIT.length);if(r&&it.s?.[4]==='0')add('info','Toma de decisiones con riesgo',`En «${it.scen}» no muestra prudencia ante el riesgo. Valora la impulsividad y la vulnerabilidad${S.meta.space==='mutua'?' y su relación con las decisiones de seguridad en el puesto':''}.`,'Rúbrica APRENS')});
+  // autobiográfica
+  const p=S.tests.autobio?.p;if(p){const rec=mean(['ano','mes'].map(k=>num(p[k]?.epi)).filter(x=>x!==null)),rem=mean(['inf','adol','adul'].map(k=>num(p[k]?.epi)).filter(x=>x!==null));
+    if(rec!==null&&rem!==null){if(rem-rec>=1.5)add('info','Gradiente temporal en memoria episódica','Lo reciente se recuerda peor que lo remoto: compatible con una alteración de la consolidación posterior a la lesión.','Episódica remota − reciente ≥ 1,5');if(rec-rem>=1.5)add('warn','Gradiente inverso','Lo remoto se recuerda peor que lo reciente. Es atípico en patología orgánica: valora factores emocionales, culturales o de validez.','Episódica reciente − remota ≥ 1,5')}}
+  // contexto Mutua
+  if(S.meta.space==='mutua'){const dem=JOBDEM.filter(([k])=>S.meta.mutua?.dem?.[k]).map(([,n])=>n.toLowerCase());const lows=DOMAINS.flatMap(d=>d.subs.filter(([k])=>{const v=sub(d.id+'.'+k);return v!==null&&v<=-1.5}).map(([,n])=>n.toLowerCase()));
+    if(dem.length&&lows.length)add('warn','Relación con las demandas del puesto',`Áreas bajas (${lows.join(', ')}) frente a las demandas del puesto (${dem.join(', ')}). Valora la compatibilidad, las adaptaciones o una reincorporación progresiva. Comprueba antes la validez y la relación temporal con la lesión.`,'Puesto frente a perfil')}
+  // edad
+  const out=TESTS.filter(t=>status(t.id)==='hecho'&&a!==null&&(a<t.ages[0]||a>t.ages[1])).map(t=>t.name.split(' · ')[0]);if(out.length)add('warn','Pruebas fuera de rango de edad',`${out.join(', ')}: comprueba el baremo aplicado.`,'Rango de edad');
+  if(!R.length&&allScored().length)add('info','Sin patrones destacados','No se detectan disociaciones ni puntuaciones por debajo de los criterios configurados. Revisa los datos cualitativos y el impacto funcional.','Reglas actuales');
+  return R}
+
+/* ======================= informe ======================= */
+function genReport(){const m=S.meta,mut=m.space==='mutua',{by}=profileData(),L=[];let sn=0;const H=t=>`${++sn}. ${t}`;
+  L.push(`INFORME DE EVALUACIÓN NEUROPSICOLÓGICA · ${mut?'ESPACIO MUTUA BALEAR':'APRENS'}`);L.push('BORRADOR — revisar y redactar antes de entregar');L.push('');
+  L.push(`Caso: ${m.code||'[código]'} · Edad: ${m.age||'[ ]'} años · Escolaridad: ${m.edu||'[ ]'} años${m.level?' ('+m.level+')':''} · Lateralidad: ${m.hand||'[ ]'} · Lengua: ${m.lang||'[ ]'}`);
+  if(m.prof)L.push(`Profesional: ${m.prof}`);
+  if(mut){const u=m.mutua||{};L.push(`Expediente: ${u.exp||'[ ]'} · Contingencia: ${u.cont||'[ ]'} · Fecha de la lesión: ${u.injury||'[ ]'} · Mecanismo: ${u.mech||'[ ]'} · Situación: ${u.sit||'[ ]'} · Puesto: ${u.job||'[ ]'}`);const dem=JOBDEM.filter(([k])=>u.dem?.[k]).map(([,n])=>n);if(dem.length)L.push(`Demandas cognitivas del puesto: ${dem.join(', ')}.`);if(u.q)L.push(`Pregunta de la mutua: ${u.q}`)}
+  L.push('');L.push(H('MOTIVO DE EVALUACIÓN'));L.push(m.reason||'[por completar]');
+  if(m.history){L.push('');L.push(H('ANTECEDENTES'));L.push(m.history)}
+  if(!mut&&(m.school?.perf||m.school?.dx))L.push(`Contexto académico: rendimiento ${m.school.perf||'[ ]'}; diagnósticos previos: ${m.school.dx||'no constan'}; apoyos: ${m.school.supports||'no constan'}.`);
+  L.push('');L.push(H('SESIONES Y CONDICIONES'));(m.sessions||S.sessions||[]).forEach(s=>L.push(`- ${s.d||''} · ${s.m||'?'} min · ${s.o||''}${s.x?' · '+s.x:''}`));
+  const cond=COND.filter(([k])=>m.cond?.[k]).map(([,n])=>n.toLowerCase());L.push(cond.length?`Factores que pueden influir: ${cond.join(', ')}.`:'No se registran factores que limiten la validez de la sesión.');if(m.behavior)L.push(`Observación conductual: ${m.behavior}`);
+  L.push('');L.push(H('PRUEBAS ADMINISTRADAS'));TESTS.filter(t=>status(t.id)==='hecho').forEach(t=>L.push(`- ${t.wech?S.tests.wech.ver:t.name}${S.tests[t.id]?.ver?' · '+S.tests[t.id].ver:''}`));
+  L.push('');L.push(H('VALIDEZ DEL RENDIMIENTO'));const v=[];const e2=PD('tomm','e2'),re=PD('tomm','ret');if(e2!==null)v.push(`TOMM: ensayo 1 ${PD('tomm','e1')??'—'}, ensayo 2 ${e2}${re!==null?', retención '+re:''}`);const r15=PD('rey15','rec');if(r15!==null)v.push(`Rey 15 ítems: ${r15}`);const sd=PD('wech','sfd'),si=PD('wech','sfi');if(sd!==null&&si!==null)v.push(`Span de dígitos fiable: ${sd+si}`);if(S.tests.valq?.eff)v.push(`Esfuerzo observado: ${S.tests.valq.eff.toLowerCase()}`);if(S.tests.valq?.inc)v.push(`Incongruencias: ${S.tests.valq.inc.toLowerCase()}`);L.push(v.length?v.join('. ')+'.':'[No se aplicaron indicadores de validez]');
+  const pre=Z('pre','tap');if(pre!==null)L.push(`Nivel premórbido estimado (TAP): CI ${S.tests.pre.m.tap.v}.`);
+  L.push('');L.push(H('RESULTADOS POR ÁREAS'));L.push('(Escala descriptiva en z: Medio −0,67 a +0,67; Medio-bajo hasta −1; Bajo/limítrofe hasta −1,5; Déficit leve hasta −2; Déficit moderado-grave < −2)');
+  DOMAINS.forEach(d=>{const rows=d.subs.filter(([k])=>by[d.id+'.'+k]);const q=[];if(d.id==='fe'){(S.tests.plan?.items||[]).forEach((it,i)=>{const r=rubScore('plan',i,6);if(r)q.push(`Planificación ecológica (${it.scen}): ${r.sum}/${r.max}, ${qualDesc(r.sum/r.max)} (sin baremo)`)});(S.tests.prob?.items||[]).forEach((it,i)=>{const r=rubScore('prob',i,5);if(r)q.push(`Resolución de problemas (${it.scen}): ${r.sum}/${r.max}, ${qualDesc(r.sum/r.max)} (sin baremo)`)});const rf=refScore();if(rf)q.push(`Refranes: ${rf.sum}/${rf.max}, ${qualDesc(rf.sum/rf.max)} (sin baremo)`)}
+    if(d.id==='mem'){const p=S.tests.autobio?.p;if(p){const t=AUTO_PER.map(([k,n])=>p[k]&&(p[k].sem!==undefined||p[k].epi!==undefined)?`${n} ${p[k].sem??'·'}/${p[k].epi??'·'}`:'').filter(Boolean);if(t.length)q.push(`Memoria autobiográfica (datos/suceso, 0–3): ${t.join('; ')}`)}}
+    if(d.id==='aten'&&S.tests.cancel?.last){const c=S.tests.cancel.last;q.push(`Cancelación digital APRENS: ${c.hits}/${c.targets} objetivos, ${c.om} omisiones, ${c.com} comisiones, ${fmt(c.time,1)} s (sin baremo)`)}
+    if(!rows.length&&!q.length)return;L.push('');L.push(d.name.toUpperCase());
+    rows.forEach(([k,n])=>{const arr=by[d.id+'.'+k],mz=mean(arr.map(x=>x.z));L.push(`· ${n}: ${band(mz)[0].toLowerCase()} (z medio ${fmt(mz)}).`);arr.forEach(x=>{const st=S.tests[x.t.id].m[x.m.id];L.push(`    - ${(x.t.wech?S.tests.wech.ver:x.t.name.split(' · ')[0])} · ${x.m.l}${st.pd?` (PD ${st.pd})`:''}: z ${fmt(x.z)}, Pc ${Math.round(ncdf(x.z)*100)}, ${band(x.z)[0].toLowerCase()}`)})});
+    q.forEach(x=>L.push('· '+x));
+    const notes=TESTS.filter(t=>t.area===d.id&&S.tests[t.id]?.notes).map(t=>`${t.name.split(' · ')[0]}: ${S.tests[t.id].notes}`);notes.forEach(n=>L.push('  Obs. '+n))});
+  const comp=['tavec','tmt','rey'].map(id=>compText(id).replace(/<[^>]+>/g,'').replace(/⚠/g,'')).filter(Boolean);if(comp.length){L.push('');L.push('Índices derivados: '+comp.join(' | '))}
+  L.push('');L.push(H('HIPÓTESIS INTERPRETATIVAS (generadas por reglas, a validar por el profesional)'));rules().forEach(r=>L.push(`- ${r.t}: ${r.b}`));
+  L.push('');L.push(H('CONCLUSIÓN'));L.push(S.report?.conclusion||'[Redacción del profesional: integración de historia, observación, validez y resultados. Indicar si el perfil es o no compatible con la hipótesis de consulta.]');
+  L.push('');L.push(H('RECOMENDACIONES'));L.push(S.report?.recs||(mut?'[Compatibilidad con el puesto, adaptaciones, reincorporación progresiva, rehabilitación cognitiva, revaloración]':'[Orientaciones para la familia y el centro educativo, intervención, adaptaciones, revaloración]'));
+  L.push('');L.push('Nota: las puntuaciones proceden de la corrección oficial de cada prueba; la conversión a z solo homogeneiza escalas. Las tareas APRENS no tienen baremo y se interpretan cualitativamente.');
+  $('#reportText').value=L.join('\n')}
+$('#btnGen').addEventListener('click',()=>{reportEdited=false;genReport()});$('#reportText').addEventListener('input',()=>{reportEdited=true});
+$('#btnCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#reportText').value);toast('Informe copiado')}catch(e){$('#reportText').select();toast('Selecciona y copia manualmente')}});
+$('#btnWord').addEventListener('click',()=>{const txt=$('#reportText').value||'';const html=`<html><head><meta charset="utf-8"><title>Informe</title></head><body style="font-family:Calibri,Arial;font-size:11pt">${txt.split('\n').map(l=>/^[0-9]+\. |^[A-ZÁÉÍÓÚÑ /·-]{6,}$/.test(l)?`<h3>${esc(l)}</h3>`:`<p style="margin:2px 0">${esc(l)||'&nbsp;'}</p>`).join('')}</body></html>`;dl(new Blob(['﻿'+html],{type:'application/msword'}),`Informe_neuropsicologico_${(S.meta.code||'caso').replace(/[^\w-]/g,'_')}.doc`)});
+$('#btnPrint').addEventListener('click',()=>{if(!$('#reportText').value)genReport();renderProfile();document.body.classList.add('print-report');window.print();setTimeout(()=>document.body.classList.remove('print-report'),500)});
+$('#btnPrintAll').addEventListener('click',()=>{renderPlan();renderProfile();document.body.classList.add('print-all');window.print();setTimeout(()=>document.body.classList.remove('print-all'),500)});
+
+/* ======================= exportar / importar ======================= */
+function dl(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+$('#btnSave').addEventListener('click',()=>dl(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),`APRENS_bateria_${(S.meta.code||'caso').replace(/[^\w-]/g,'_')}_${new Date().toISOString().slice(0,10)}.json`));
+$('#btnLoad').addEventListener('click',()=>$('#fileLoad').click());
+$('#fileLoad').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d?.v!==1||!d.meta||!d.tests)throw Error('formato no reconocido');S=Object.assign(blank(),d);save();boot();toast('Caso cargado')}catch(err){alert('No se pudo importar: '+err.message)}e.target.value=''});
+$('#btnNew').addEventListener('click',()=>{if(!confirm('¿Empezar un caso nuevo? El caso actual se borrará de este navegador. Exporta el JSON antes si quieres conservarlo.'))return;S=blank();save();boot();go('inicio')});
+function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';el.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#17333b;color:#fff;padding:9px 14px;border-radius:9px;font-size:.85rem;z-index:2000;transition:opacity .3s';document.body.appendChild(el)}el.textContent=t;el.style.opacity=1;clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity=0,2200)}
+
+/* ======================= pantalla del paciente ======================= */
+const CH_NAME='aprens-neuro-v1';
+const chPsy=('BroadcastChannel' in window)?new BroadcastChannel(CH_NAME):null;
+let lastShow={type:'blank'},overlayOn=false;
+function send(msg){if(msg.type!=='timer')lastShow=msg;try{chPsy&&chPsy.postMessage(msg)}catch(e){}if(overlayOn)patientRender($('#overlayStage'),msg,onPatientResult)}
+let showTimerFlag=false;const showTimerToPatient=()=>showTimerFlag;
+function sendTimer(id,rem,total,end){send({type:'timer',rem,total,end:!!end})}
+function flashPatient(t){send({type:'flash',text:t})}
+function sendShowFromFlu(tid,i){const t=TBYID[tid],cue=fluTrials(t)[i];send(t.flu==='fon'?{type:'letter',big:cue,small:'Palabras que empiecen por esta letra · sin nombres propios · sin repetir la misma palabra con otra terminación'}:{type:'cat',big:cue.toUpperCase(),small:'Di todas las que puedas'})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-show],[data-showtext]');if(!b)return;
+  if(b.dataset.show==='letter')send({type:'letter',big:b.dataset.cue,small:'Palabras que empiecen por esta letra · sin nombres propios · sin repetir la misma palabra con otra terminación'});
+  else if(b.dataset.show==='cat')send({type:'cat',big:b.dataset.cue.toUpperCase(),small:'Di todas las que puedas'});
+  else send({type:'text',title:b.dataset.showtext,body:b.dataset.body});
+  toast(chPsy||overlayOn?'Enviado a la pantalla del paciente':'Abre primero la pantalla del paciente')});
+document.addEventListener('click',e=>{if(e.target.id!=='cancelStart')return;const ts=T('cancel');const[r,c]=(ts.size||'12x16').split('x').map(Number);send({type:'cancel',tg:ts.tg||'E',rows:r,cols:c,lim:num(ts.lim)??120,seed:Date.now()%100000});toast('Tarea enviada a la pantalla del paciente')});
+function onPatientResult(r){T('cancel').last=r;T('cancel').status='hecho';save();const el=$('#cancelRes');if(el)el.innerHTML=cancelText(r);const sel=document.querySelector('[data-b="tests.cancel.status"]');if(sel)sel.value='hecho';toast('Resultado de cancelación recibido')}
+if(chPsy&&!IS_PATIENT)chPsy.onmessage=e=>{const d=e.data||{};if(d.type==='hello')chPsy.postMessage(lastShow);if(d.type==='cancelResult')onPatientResult(d.r)};
+$('#btnPatientWin').addEventListener('click',()=>{const w=window.open(location.pathname+'?pantalla=paciente','aprens_paciente','width=1100,height=760');if(!w)alert('El navegador ha bloqueado la ventana emergente. Permítela o usa «Mostrar aquí».');else toast('Arrastra la ventana a la segunda pantalla y ponla a pantalla completa (F11)')});
+$('#btnPatientHere').addEventListener('click',()=>{overlayOn=true;$('#overlay').classList.add('on');patientRender($('#overlayStage'),lastShow,onPatientResult);try{$('#overlay').requestFullscreen?.()}catch(e){}});
+function closeOverlay(){overlayOn=false;$('#overlay').classList.remove('on');try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
+$('#overlayExit').addEventListener('click',closeOverlay);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlayOn)closeOverlay()});
+
+/* render del lado paciente (compartido por ventana y superposición) */
+function rng(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647}
+const DISTR={'E':['F','B','P','R','L'],'b':['d','p','q','h'],'7':['1','4','9','2'],'★':['☆','✦','✧','✪']};
+let pTimerEl=null;
+function patientRender(host,msg,onResult){
+  if(msg.type==='timer'){if(!pTimerEl||!host.contains(pTimerEl)){pTimerEl=document.createElement('div');pTimerEl.className='ptimer';host.querySelector('.pstage')?.appendChild(pTimerEl)}pTimerEl.textContent=msg.end?'':Math.ceil(Math.max(0,msg.rem))+'″';return}
+  if(msg.type==='flash'){const st=host.querySelector('.pstage');if(!st)return;const f=document.createElement('div');f.style.cssText='position:absolute;top:2vh;left:0;right:0;text-align:center;font-size:6vh;font-weight:800;color:#b4533f';f.textContent=msg.text;st.appendChild(f);setTimeout(()=>f.remove(),900);return}
+  pTimerEl=null;
+  if(msg.type==='letter'||msg.type==='cat'){host.innerHTML=`<div class="pstage"><div class="${msg.type==='letter'?'pbig':'pword'}">${esc(msg.big)}</div><div class="psmall">${esc(msg.small||'')}</div></div>`;return}
+  if(msg.type==='text'){host.innerHTML=`<div class="pstage"><div class="ptitle">${esc(msg.title)}</div><div class="ptext">${esc(msg.body)}</div></div>`;return}
+  if(msg.type==='cancel'){runCancel(host,msg,onResult);return}
+  if(msg.type==='img'){const r=Number(msg.rot)||0,side=r===90||r===270;host.innerHTML=`<div class="pstage" style="padding:1vh"><img alt="" src="${msg.src.startsWith('data:image/')?msg.src:''}" style="max-width:${side?'96vh':'98vw'};max-height:${side?'98vw':'96vh'};object-fit:contain;transform:rotate(${r}deg)"></div>`;return}
+  host.innerHTML=`<div class="pstage"><div class="pwait">APRENS</div></div>`}
+function runCancel(host,cfg,onResult){
+  const R=rng(cfg.seed),N=cfg.rows*cfg.cols,ds=DISTR[cfg.tg]||DISTR.E,cells=[];
+  for(let i=0;i<N;i++){const isT=R()<0.22;cells.push({t:isT,ch:isT?cfg.tg:ds[Math.floor(R()*ds.length)],mk:false})}
+  host.innerHTML=`<div class="pstage" style="justify-content:flex-start;padding-top:2vh"><div class="ptitle" style="margin-bottom:1vh">Toca todas las <span style="font-size:1.4em">${esc(cfg.tg)}</span> &nbsp;·&nbsp; <span class="psmall" style="margin:0">fila a fila, de izquierda a derecha</span></div><div style="display:flex;gap:16px;margin-bottom:1vh"><button class="big" id="cGo">Empezar</button></div><div class="cgrid" id="cGrid" style="visibility:hidden"></div><div style="margin-top:1.5vh"><button class="big alt" id="cEnd" disabled>He terminado</button></div></div>`;
+  const g=host.querySelector('#cGrid'),fs=Math.max(16,Math.min(window.innerHeight*0.62/cfg.rows,window.innerWidth*0.9/cfg.cols)*0.62);
+  g.style.gridTemplateColumns=`repeat(${cfg.cols},${fs*1.45}px)`;g.innerHTML=cells.map((c,i)=>`<div data-i="${i}" style="height:${fs*1.45}px;font-size:${fs}px">${esc(c.ch)}</div>`).join('');
+  let t0=0,done=false,lt=null;
+  const finish=timeout=>{if(done)return;done=true;clearTimeout(lt);const time=(performance.now()-t0)/1000;const half=Math.floor(cfg.rows/2),mid=cfg.cols/2;const r={targets:0,hits:0,om:0,com:0,time,timeout:!!timeout,tTop:0,hTop:0,tBot:0,hBot:0,tL:0,hL:0,tR:0,hR:0,cfg:{tg:cfg.tg,rows:cfg.rows,cols:cfg.cols}};
+    cells.forEach((c,i)=>{const row=Math.floor(i/cfg.cols),col=i%cfg.cols;if(c.t){r.targets++;const top=row<half,left=col<mid;top?r.tTop++:r.tBot++;left?r.tL++:r.tR++;if(c.mk){r.hits++;top?r.hTop++:r.hBot++;left?r.hL++:r.hR++}else r.om++}else if(c.mk)r.com++});
+    host.innerHTML=`<div class="pstage"><div class="pword">¡Gracias!</div><div class="psmall">Has terminado esta tarea.</div></div>`;
+    if(onResult)onResult(r);else try{const c=new BroadcastChannel(CH_NAME);c.postMessage({type:'cancelResult',r});setTimeout(()=>c.close(),500)}catch(e){}};
+  host.querySelector('#cGo').onclick=()=>{g.style.visibility='visible';t0=performance.now();host.querySelector('#cGo').remove();host.querySelector('#cEnd').disabled=false;if(cfg.lim>0)lt=setTimeout(()=>finish(true),cfg.lim*1000)};
+  g.addEventListener('pointerdown',e=>{const d=e.target.closest('[data-i]');if(!d||done||!t0)return;const c=cells[Number(d.dataset.i)];c.mk=!c.mk;d.classList.toggle('mk',c.mk)});
+  host.querySelector('#cEnd').onclick=()=>finish(false)}
+
+/* ======================= cuadernos de estímulos (locales) ======================= */
+const IDB_NAME='aprens-estimulos',IDB_ST='sets';let SETS=[],IDB_OK=true,activeSet=null,pending=[];const DURL=new Map();
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB_NAME,1);r.onupgradeneeded=()=>r.result.createObjectStore(IDB_ST,{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbTx(mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(IDB_ST,mode);const st=tx.objectStore(IDB_ST);const q=fn(st);tx.oncomplete=()=>res(q&&q.result);tx.onerror=()=>rej(tx.error)})}
+async function loadSets(){try{SETS=(await idbTx('readonly',st=>st.getAll()))||[]}catch(e){IDB_OK=false}SETS.sort((a,b)=>a.created-b.created)}
+async function putSet(o){if(IDB_OK)try{await idbTx('readwrite',st=>st.put(o))}catch(e){IDB_OK=false;toast('No se pudo guardar en el navegador; el cuaderno estará disponible solo en esta sesión')}}
+async function delSet(id){if(IDB_OK)try{await idbTx('readwrite',st=>st.delete(id))}catch(e){}}
+const CP437={0x80:'Ç',0x81:'ü',0x82:'é',0x85:'à',0x87:'ç',0x8A:'è',0x90:'É',0x95:'ò',0xA0:'á',0xA1:'í',0xA2:'ó',0xA3:'ú',0xA4:'ñ',0xA5:'Ñ',0xA6:'ª',0xA7:'º',0xB5:'Á',0xD6:'Í',0xE0:'Ó',0xE9:'Ú'};
+const decName=(b,utf8)=>utf8?new TextDecoder().decode(b):Array.from(b).map(c=>c<128?String.fromCharCode(c):(CP437[c]||'?')).join('');
+const IMGEXT=/\.(jpe?g|png|webp|gif)$/i,mimeOf=n=>{const e=(n.match(IMGEXT)||[])[1]?.toLowerCase();return e?'image/'+(e==='jpg'?'jpeg':e):''};
+async function unzipImages(buf){const dv=new DataView(buf),u8=new Uint8Array(buf);let e=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-65557);i--)if(dv.getUint32(i,true)===0x06054b50){e=i;break}
+  if(e<0)throw Error('el archivo no parece un ZIP válido');
+  const n=dv.getUint16(e+10,true);let off=dv.getUint32(e+16,true);const out=[];
+  for(let k=0;k<n;k++){if(dv.getUint32(off,true)!==0x02014b50)break;
+    const flag=dv.getUint16(off+8,true),meth=dv.getUint16(off+10,true),csz=dv.getUint32(off+20,true),nl=dv.getUint16(off+28,true),xl=dv.getUint16(off+30,true),cl=dv.getUint16(off+32,true),lho=dv.getUint32(off+42,true);
+    const name=decName(u8.subarray(off+46,off+46+nl),flag&0x800);off+=46+nl+xl+cl;
+    const base=name.split('/').pop();if(!base||name.includes('__MACOSX')||base.startsWith('.')||!IMGEXT.test(base))continue;
+    const st=lho+30+dv.getUint16(lho+26,true)+dv.getUint16(lho+28,true),raw=u8.slice(st,st+csz),type=mimeOf(base);let blob;
+    if(meth===0)blob=new Blob([raw],{type});
+    else if(meth===8){if(!('DecompressionStream' in window))throw Error('este navegador no descomprime ZIP: descomprímelo y carga las imágenes');blob=new Blob([await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer()],{type})}
+    else continue;
+    out.push({name:base.replace(IMGEXT,''),blob})}
+  return out}
+const natSort=(a,b)=>a.name.localeCompare(b.name,'es',{numeric:true,sensitivity:'base'});
+function toDataURL(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
+async function itemURL(set,i){const k=set.id+':'+i;if(!DURL.has(k))DURL.set(k,await toDataURL(set.items[i].blob));if(DURL.size>40)DURL.delete(DURL.keys().next().value);return DURL.get(k)}
+function targetOptions(sel){const o=['<option value="">— ninguna —</option>'];TESTS.forEach(t=>{const ms=measuresOf(t).filter(m=>m.met!=='none'&&!m.isIdx);if(!ms.length)return;o.push(`<optgroup label="${esc(t.wech?S.tests.wech.ver:t.name.split(' · ')[0])}">`+ms.map(m=>`<option value="${t.id}.${m.id}" ${sel===t.id+'.'+m.id?'selected':''}>${esc(m.l)}</option>`).join('')+'</optgroup>')});return o.join('')}
+function targetLabel(v){if(!v)return'—';const[tid,mid]=v.split('.');const t=TBYID[tid],m=t&&mDef(tid,mid);return m?`${t.wech?S.tests.wech.ver:t.name.split(' · ')[0]} · ${m.l}`:'—'}
+function setsFor(tid){const list=SETS.filter(x=>(x.target||'').split('.')[0]===tid);if(!list.length)return t0Hint(tid);return`<div class="row" style="margin-top:8px">${list.map(x=>`<button class="small alt" data-openset="${x.id}">📖 Administrar · ${esc(x.name)}</button>`).join('')}</div>`}
+function t0Hint(tid){const t=TBYID[tid];return t&&(t.wech||t.mat==='oficial')?`<p class="mini" style="margin:6px 0 0">¿Tienes el cuaderno de estímulos en imágenes? <a href="#" data-goestim="1">Cárgalo para pasarlo en pantalla</a>.</p>`:''}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-goestim]');if(a){e.preventDefault();go('estim')}const b=e.target.closest('[data-openset]');if(b){activeSet=b.dataset.openset;go('estim')}});
+async function readFiles(files){const st=$('#stStatus');pending=[];let zipName='';
+  for(const f of files){try{if(/\.zip$/i.test(f.name)||f.type.includes('zip')){st.textContent=`Descomprimiendo ${f.name}…`;pending.push(...await unzipImages(await f.arrayBuffer()));zipName=zipName||f.name.replace(/\.zip$/i,'').replace(/^\d+[_ ]*/,'').replace(/_/g,' ')}else if(mimeOf(f.name)||f.type.startsWith('image/'))pending.push({name:f.name.replace(IMGEXT,''),blob:f})}catch(err){st.textContent='No se pudo leer '+f.name+': '+err.message;return}}
+  pending.sort(natSort);
+  st.textContent=pending.length?`${pending.length} imágenes listas: ${pending.slice(0,6).map(x=>x.name).join(', ')}${pending.length>6?'…':''}`:'No se han encontrado imágenes.';
+  if(zipName&&!$('#stName').value)$('#stName').value=zipName;$('#stAdd').disabled=!pending.length}
+function wireEstimLoader(){const d=$('#stDrop'),f=$('#stFile');f.addEventListener('change',()=>readFiles(Array.from(f.files)));
+  ['dragenter','dragover'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over')}));['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove('over')}));d.addEventListener('drop',e=>readFiles(Array.from(e.dataTransfer.files)));
+  $('#stAdd').addEventListener('click',async()=>{if(!pending.length)return;const o={id:'st'+Date.now().toString(36),name:$('#stName').value.trim()||'Cuaderno',target:$('#stTarget').value,rot:0,created:Date.now(),items:pending};await putSet(o);SETS.push(o);pending=[];$('#stFile').value='';$('#stName').value='';$('#stAdd').disabled=true;$('#stStatus').textContent=`«${o.name}» añadido (${o.items.length} imágenes).`;activeSet=o.id;renderEstim();renderAreas()})}
+function adm(id){S.admin=S.admin||{};if(!S.admin[id])S.admin[id]={cur:0,it:{},sync:true,auto:false};return S.admin[id]}
+function renderEstim(){
+  $('#stTarget').innerHTML=targetOptions('');
+  $('#stList').innerHTML=SETS.length?`<div class="tscroll"><table class="stlist"><thead><tr><th>Cuaderno</th><th>Imágenes</th><th>Destino</th><th>Girar</th><th></th></tr></thead><tbody>${SETS.map(x=>`<tr><td><strong>${esc(x.name)}</strong></td><td>${x.items.length}</td><td><select data-setf="target" data-set="${x.id}">${targetOptions(x.target)}</select></td><td><select data-setf="rot" data-set="${x.id}">${[0,90,180,270].map(r=>`<option value="${r}" ${Number(x.rot||0)===r?'selected':''}>${r}°</option>`).join('')}</select></td><td style="white-space:nowrap"><button class="small" data-openset="${x.id}">Administrar</button> <button class="small ghost" data-delset="${x.id}" aria-label="Eliminar">✕</button></td></tr>`).join('')}</tbody></table></div>`:`<p class="mini">${IDB_OK?'Aún no hay cuadernos en este navegador.':'Este navegador no permite guardar archivos (modo privado). Los cuadernos solo durarán esta sesión.'}</p>`;
+  renderAdmin()}
+document.addEventListener('change',async e=>{const el=e.target.closest('[data-setf]');if(!el)return;const x=SETS.find(q=>q.id===el.dataset.set);if(!x)return;x[el.dataset.setf]=el.dataset.setf==='rot'?Number(el.value):el.value;await putSet(x);renderAreas();if(activeSet===x.id)renderAdmin()});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-delset]');if(!b)return;const x=SETS.find(q=>q.id===b.dataset.delset);if(!x||!confirm(`¿Eliminar «${x.name}» de este navegador? Las puntuaciones registradas se conservan.`))return;await delSet(x.id);SETS=SETS.filter(q=>q!==x);if(activeSet===x.id)activeSet=null;renderEstim();renderAreas()});
+let itTimer={run:false,st:0,acc:0,iv:null};
+function itElapsed(){return itTimer.acc+(itTimer.run?(performance.now()-itTimer.st)/1000:0)}
+function itStop(){if(itTimer.run){itTimer.acc=itElapsed();itTimer.run=false;clearInterval(itTimer.iv)}}
+function itReset(){itStop();itTimer.acc=0;const c=$('#itClock');if(c)c.textContent='0,0″'}
+function itStart(){if(itTimer.run)return;itTimer.run=true;itTimer.st=performance.now();const set=SETS.find(q=>q.id===activeSet),a=set&&adm(set.id),lim=num(a?.lim);let warned=false;
+  itTimer.iv=setInterval(()=>{const el=itElapsed(),c=$('#itClock');if(c){c.textContent=fmtClock(el);c.style.color=lim&&el>=lim?'#ffb4a3':''}if(lim&&el>=lim&&!warned){warned=true;beep(880,.3)}},100)}
+async function renderAdmin(){const card=$('#stAdminCard');const set=SETS.find(q=>q.id===activeSet);if(!set){card.hidden=true;return}card.hidden=false;const a=adm(set.id);a.cur=Math.min(a.cur||0,set.items.length-1);const i=a.cur,it=a.it[i]||{};const url=await itemURL(set,i);
+  const scored=Object.entries(a.it).filter(([,v])=>v&&v.s!==''&&v.s!==undefined).map(([k,v])=>[Number(k),v]).sort((x,y)=>x[0]-y[0]);const sum=scored.reduce((t,[,v])=>t+(num(v.s)||0),0);
+  card.innerHTML=`<div class="thead" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2 style="margin:0">📖 ${esc(set.name)}</h2><span class="mini">Destino: ${esc(targetLabel(set.target))}</span></div>
+  <div class="stnav"><span class="itemlbl">${esc(set.items[i].name)} <span class="mini">(${i+1}/${set.items.length})</span></span>
+    <select id="stJump" style="width:auto">${set.items.map((x,k)=>`<option value="${k}" ${k===i?'selected':''}>${k+1} · ${esc(x.name)}${a.it[k]?.s!==undefined&&a.it[k]?.s!==''?' ✓':''}</option>`).join('')}</select>
+    <button class="ghost small" id="stPrev">◀ Anterior</button><button class="small" id="stNext">Siguiente ▶</button></div>
+  <div class="stviewer"><div><div class="stimg"><img id="stImg" alt="Estímulo ${i+1}" src="${url}" style="transform:rotate(${set.rot||0}deg)"></div>
+    <div class="stnav"><button id="stShow">🖥 Mostrar al paciente</button><button class="alt" id="stBlank">Pantalla en blanco</button>
+    <label class="mini" style="margin:0;display:flex;gap:5px;align-items:center"><input type="checkbox" id="stSync" ${a.sync?'checked':''}> enviar al cambiar de ítem</label>
+    <label class="mini" style="margin:0;display:flex;gap:5px;align-items:center"><input type="checkbox" id="stAuto" ${a.auto?'checked':''}> iniciar cronómetro al mostrar</label></div>
+    <p class="mini">Teclado: ← → para cambiar de ítem · Espacio para iniciar o parar el cronómetro (con el foco fuera de los campos).</p></div>
+  <div><div class="timerbox"><span class="lbl">Ítem</span><span class="clock" id="itClock">${fmtClock(itElapsed())}</span><button class="small" id="itGo">▶</button><button class="small" id="itStopB">■</button><button class="small" id="itRe">↺</button><label class="lbl" style="margin:0">límite (s) <input style="width:58px;display:inline-block" inputmode="numeric" id="itLim" value="${esc(a.lim||'')}" placeholder="—"></label></div>
+    <label>Respuesta del paciente</label><input id="itResp" value="${esc(it.r||'')}" placeholder="p. ej., 2, 4, 5 · A · «no sé»">
+    <div class="grid"><div><label>Puntuación del ítem</label><select id="itSc"><option value="">—</option>${[0,1,2,3].map(v=>`<option ${String(it.s??'')===String(v)?'selected':''}>${v}</option>`).join('')}</select></div><div><label>Tiempo (s)</label><input id="itT" inputmode="decimal" value="${esc(it.t||'')}"></div></div>
+    <div class="row" style="margin-top:8px"><button class="small" id="itSave">Guardar y siguiente ▶</button></div>
+    <div class="computed">Ítems puntuados: <b>${scored.length}</b> · suma <b>${sum}</b>${set.target?` <button class="small alt" id="itToPD" style="margin-left:6px">→ Pasar ${sum} a la PD de ${esc(targetLabel(set.target))}</button>`:''}</div>
+    <div class="sitems">${scored.length?`<table class="linked"><tbody>${scored.map(([k,v])=>`<tr><td>${k+1} · ${esc(set.items[k]?.name||'')}</td><td>${esc(v.r||'')}</td><td><b>${esc(v.s)}</b></td><td>${v.t?esc(v.t)+' s':''}</td></tr>`).join('')}</tbody></table>`:''}</div>
+    <p class="mini">Aplica las reglas de inicio, retorno y suspensión y los límites de tiempo del manual. La puntuación de cada ítem la decides tú con los criterios oficiales.</p></div></div>`;
+  const goItem=async k=>{if(k<0||k>=set.items.length)return;a.cur=k;itReset();save();await renderAdmin();if(a.sync)showItem()};
+  $('#stPrev').onclick=()=>goItem(i-1);$('#stNext').onclick=()=>goItem(i+1);$('#stJump').onchange=e=>goItem(Number(e.target.value));
+  $('#stShow').onclick=showItem;$('#stBlank').onclick=()=>send({type:'blank'});
+  $('#stSync').onchange=e=>{a.sync=e.target.checked;save()};$('#stAuto').onchange=e=>{a.auto=e.target.checked;save()};
+  $('#itGo').onclick=itStart;$('#itStopB').onclick=()=>{itStop();$('#itT').value=fmt(itElapsed(),1).replace(',','.')};$('#itRe').onclick=itReset;
+  $('#itLim').oninput=e=>{a.lim=e.target.value;save()};
+  const store=()=>{a.it[i]={r:$('#itResp').value,s:$('#itSc').value,t:$('#itT').value||(itElapsed()?String(Math.round(itElapsed()*10)/10):'')};save()};
+  ['itResp','itSc','itT'].forEach(id=>$('#'+id).addEventListener('change',store));
+  $('#itSave').onclick=()=>{if(itTimer.run){itStop();$('#itT').value=String(Math.round(itElapsed()*10)/10)}store();goItem(Math.min(i+1,set.items.length-1))};
+  const tp=$('#itToPD');if(tp)tp.onclick=()=>{const[tid,mid]=set.target.split('.');mState(tid,mid).pd=String(sum);if(status(tid)==='pendiente')T(tid).status='hecho';save();renderAreas();toast(`PD ${sum} registrada en ${targetLabel(set.target)}`)};
+  async function showItem(){const u=await itemURL(set,a.cur);send({type:'img',src:u,rot:set.rot||0});if(a.auto){itReset();itStart()}}}
+document.addEventListener('keydown',e=>{if(cur!=='estim'||!activeSet||overlayOn)return;if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||''))return;
+  if(e.key==='ArrowRight'){e.preventDefault();$('#stNext')?.click()}else if(e.key==='ArrowLeft'){e.preventDefault();$('#stPrev')?.click()}else if(e.key===' '){e.preventDefault();itTimer.run?$('#itStopB')?.click():itStart()}});
+
+/* ======================= arranque ======================= */
+function boot(){applySpace();renderInicioLists();fillStatic();renderAreas();renderNav();if(cur==='plan')renderPlan();if(cur==='perfil')renderProfile();$('#reportText').value=''}
+if(IS_PATIENT){
+  document.body.classList.add('patient');document.title='APRENS · Pantalla del paciente';
+  const host=document.createElement('div');host.style.cssText='position:fixed;inset:0';document.body.appendChild(host);
+  const ch=('BroadcastChannel' in window)?new BroadcastChannel(CH_NAME):null;patientRender(host,{type:'blank'});
+  if(ch){ch.onmessage=e=>patientRender(host,e.data||{},null);ch.postMessage({type:'hello'})}
+  else host.innerHTML='<div class="pstage"><div class="psmall">Este navegador no permite conectar ventanas. Usa «Mostrar aquí» desde la ventana del profesional.</div></div>';
+  host.addEventListener('dblclick',()=>{try{document.documentElement.requestFullscreen()}catch(e){}});
+}else{
+  if(!S.meta.date)S.meta.date=new Date().toISOString().slice(0,10);
+  boot();go('inicio');wireEstimLoader();loadSets().then(()=>{renderAreas();if(cur==='estim')renderEstim()});
+  // casilla para mostrar el cronómetro al paciente
+  const tb=document.createElement('label');tb.className='mini';tb.style.cssText='color:#cfe3e1;display:flex;gap:5px;align-items:center;margin:0';tb.innerHTML='<input type="checkbox" id="showTimer"> cronómetro visible al paciente';$('header.top .tools').prepend(tb);
+  $('#showTimer').addEventListener('change',e=>{showTimerFlag=e.target.checked});
+}
+</script>
+</body>
+</html>
