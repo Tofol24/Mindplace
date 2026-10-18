@@ -285,3 +285,20 @@ table.t td.r{text-align:center;font-weight:700}
 @media (prefers-reduced-motion:reduce){.hub-sec.idx-hit{animation:none}}
 /* Herramienta alojada en otra web: se abre fuera de la app */
 .hub-tag.fuera{background:#f6efe1;color:var(--oro)}
+
+/* ---- Mi recorrido · bloque principal de la portada ---- */
+.rec-hero{display:flex;flex-wrap:wrap;align-items:center;gap:14px;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--rh,#3f6b74) 0%,#2b3d40 140%);
+  border-radius:20px;padding:18px 18px 16px;margin:4px 0 6px;box-shadow:0 12px 30px -16px rgba(30,40,40,.6);transition:transform .15s}
+.rec-hero:hover{transform:translateY(-2px)}
+.rec-hero .rh-ic{flex:0 0 54px;height:54px;border-radius:16px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:28px}
+.rec-hero .rh-b{flex:1 1 220px;min-width:0}
+.rec-hero .rh-k{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.9}
+.rec-hero .rh-t{font-family:var(--serif);font-size:23px;line-height:1.15;margin:2px 0 6px}
+.rec-hero .rh-d{font-size:13.5px;line-height:1.45;opacity:.95}
+.rec-hero .rh-bar{height:7px;border-radius:5px;background:rgba(255,255,255,.25);overflow:hidden;margin:4px 0 6px}
+.rec-hero .rh-bar i{display:block;height:100%;background:#fff;border-radius:5px}
+.rec-hero .rh-m{display:flex;gap:4px;margin-top:10px}
+.rec-hero .rh-m i{flex:1;height:4px;border-radius:3px;background:rgba(255,255,255,.28)}
+.rec-hero .rh-m i.on{background:#fff}
+.rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:var(--rh,#3f6b74);font-weight:700;font-size:15px;padding:10px 16px;border-radius:22px}
+.rh-note{font-size:12.5px;color:var(--gris);margin:4px 4px 16px;line-height:1.45}

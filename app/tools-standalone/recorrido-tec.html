@@ -128,6 +128,8 @@
   .legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:4px;border-radius:2px;}
 
   /* Barra inferior */
+  .hold{width:100%;min-height:96px;border-radius:18px;border:2px solid var(--acc);background:var(--acc-soft);color:var(--acc-d);font-size:16px;font-weight:800;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;}
+  .hold.down{background:var(--acc);color:var(--acc-ink);}
   .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);}
   .tabs .in{display:flex;max-width:760px;width:100%;}
   .tabs button{flex:1;background:none;border:none;padding:9px 4px 10px;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:58px;}
@@ -139,6 +141,12 @@
   .toast.on{opacity:1;}
   .safety{font-size:12.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+  details.vid{margin-top:8px;}
+  details.vid summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;list-style:none;display:inline-flex;background:var(--acc-soft);border-radius:18px;padding:7px 13px;}
+  details.vid summary::-webkit-details-marker{display:none;}
+  details.vid video{display:block;width:100%;max-width:320px;aspect-ratio:9/16;object-fit:contain;background:#000;border-radius:14px;margin-top:8px;}
+  .tasks .pl{display:block;}
+  .tasks .pl details.vid summary{padding:5px 11px;font-size:12.5px;}
   details.vin{margin-top:8px;}
   details.vin summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;list-style:none;display:inline-flex;align-items:center;gap:6px;background:var(--acc-soft);border-radius:18px;padding:6px 12px;}
   details.vin summary::-webkit-details-marker{display:none;}
@@ -264,95 +272,151 @@
      Cada etapa: qué se entrena, práctica diaria, pasos en orden y
      criterios para pasar a la siguiente (no por calendario).
      ============================================================ */
+  // Pasos: [texto, enlace principal, [enlaces secundarios]]. Tipos de enlace:
+  //   tool:<id>[/sección] · sec:<apartado del hub> · video:<nombre> (se ve aquí mismo)
+  //   pdf:<archivo> · eval (pestaña Autoevaluación)
+  // El orden sigue la TEC: primero el porqué, luego aparecer (cap. 11.8),
+  // después permanecer (orden no reversible) y por último elegir y consolidar.
   var E = [
     { n:"Etapa 0", t:"Punto de partida", w:"Días 1–3", col:"var(--e0)", min:0,
-      d:"Una foto inicial de tu atención, para poder ver después el cambio.",
+      d:"Una foto inicial de tu atención, para poder ver después el cambio. Y una primera idea: lo que vas a entrenar no es a sentirte mejor, sino una nueva relación contigo.",
+      idea:"La TEC propone que lo que cambia en terapia no es tanto lo que piensas o sientes, sino hacia dónde va tu atención en el instante entre lo que sientes y lo que haces.",
       frase:"«No vengo a cambiarte. Vengo a estar contigo.»",
       practica:{ t:"Respira 1 minuto con la silueta", d:"Solo para conocer el gesto: la luz azul es el aire; la amarilla, tu atención, que baja y se queda.", go:"tool:respiro_ais" },
       pasos:[
-        ["Mi autoevaluación inicial (aquí, en «Autoevaluación»)", "eval"],
-        ["Cuestionario TEC (o el de seguimiento, si tu psicólogo/a te dio un código)", "tool:cuestionario_tec"],
-        ["¿Dónde llevas hoy a tu mono? Un check-in rápido", "tool:estado_mono"]
+        ["¿Para qué sirven estos ejercicios? (el porqué, en 2 minutos)", "sec:porque"],
+        ["Mi autoevaluación inicial, con la prueba de continuidad", "eval"],
+        ["Cuestionario TEC (o el de seguimiento, si tu psicólogo/a te dio un código)", "tool:cuestionario_tec", ["tool:screening_tec"]],
+        ["¿Dónde está tu mono hoy? El detective te orienta", "tool:donde_esta_mono", ["tool:estado_mono"]]
       ],
       crit:[["auto","evalHecha","He hecho mi autoevaluación inicial"],["chk","c0a","He hecho el cuestionario TEC o el de seguimiento"],["chk","c0b","He leído cómo funciona el recorrido (pestaña «Recorrido»)"]]
     },
-    { n:"Etapa 1", t:"Entender", w:"Semana 1", col:"var(--e1)", min:5,
+    { n:"Etapa 1", t:"Entender", w:"Semanas 1–2", col:"var(--e1)", min:7,
       d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
+      idea:"La atención es un vector: la misma atención produce efectos opuestos según vaya hacia fuera (la amenaza, el juicio, el futuro) o hacia dentro (la sensación presente). Y el sobrepensamiento no es un rasgo: es una conducta que busca alivio.",
       frase:"«La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",
       practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true },
       pasos:[
-        ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce"],
-        ["La manada: por qué respiras", "tool:la_manada"],
-        ["El control y la presencia: el mapa del malestar", "tool:modelo_atencional"],
-        ["La teoría, en vídeo (tres vídeos breves)", "sec:sec-la-teoria-en-video"],
+        ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce", ["tool:historia_animada","pdf:quien-conduce-tu-vida.pdf"]],
+        ["Vídeo: la Teoría del Efecto Consciente", "video:tec"],
+        ["La manada: por qué respiras", "tool:la_manada", ["tool:historia_manada"]],
         ["Laboratorio: la atención es un vector", "tool:laboratorio_tec/s-vector"],
+        ["Vídeo: el sobrepensamiento", "video:sobrepensamiento"],
+        ["El control y la presencia: el mapa del malestar", "tool:modelo_atencional", ["tool:historia_control"]],
         ["Laboratorio: la cadena que mantiene el malestar", "tool:laboratorio_tec/s-cadena"],
-        ["Las herramientas AIS básicas y las tres anclas", "tool:ais_basicas"]
+        ["Vídeo: cómo funciona tu cerebro", "video:cerebro"],
+        ["Laboratorio: los cuatro pilares y las tres puertas (latencia, densidad, continuidad)", "tool:laboratorio_tec/s-pilares", ["sec:sec-las-tres-puertas-por-donde-entrar"]],
+        ["El AIS en un vistazo y las herramientas AIS básicas", "sec:sec-el-ais-en-un-vistazo", ["tool:ais_basicas","pdf:eines-ais-basiques.pdf"]]
       ],
-      crit:[["auto","pasosHechos","He visto las siete piezas"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
+      crit:[["auto","pasosHechos","He visto todas las piezas de la etapa"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
     },
-    { n:"Etapa 2", t:"Aparecer", w:"Semanas 2–4", col:"var(--e2)", min:14,
+    { n:"Etapa 2", t:"Aparecer", w:"Semanas 3–5", col:"var(--e2)", min:14,
       d:"Que tu cuerpo registre que hay una presencia disponible. Visitas breves, tres veces al día, <b>también cuando estás bien</b>. No para calmarte: para aparecer.",
+      idea:"La conciencia acompaña siempre al cuerpo, pero él no puede verla. La respiración es el canal por el que esa presencia se vuelve perceptible: el aire es el cebo. Lo que se entrena aquí es la frecuencia, no la duración: visitas breves y repetidas, no condicionadas al malestar.",
       frase:"«Aunque no note nada especial, vuelvo al cuerpo. No busco calmarme: estoy enseñando a mi cuerpo que mi conciencia también aparece cuando todo parece estar bien.»",
       practica:{ t:"Práctica programada (3–5 min)", d:"Respiración con anclaje: el aire es el cebo; tu atención lo sigue y se queda en la barriga.", go:"tool:herramienta_diaria" },
       pasos:[
+        ["Vídeo: «El día que tu cuerpo empezó a notarte»", "video:cuerpo"],
         ["Organiza tus tres momentos fijos del día", "tool:agenda_atencional"],
-        ["Respiro · dos luces", "tool:respiro_ais"],
+        ["Vídeo: «Respirar es aparecer»", "video:respirar", ["tool:respiro_ais"]],
+        ["Laboratorio: el aire como cebo y la afección interna segura", "tool:laboratorio_tec/s-afeccion"],
         ["El mapa interno: cuello, pecho y barriga", "tool:mapa_atencion_interna"],
+        ["Vídeo: «Sentir conscientemente»", "video:sentir"],
         ["AIS desde la curiosidad", "tool:ais_curiosidad"],
-        ["El recorrido en vídeo: «El día que tu cuerpo empezó a notarte» y «Respirar es aparecer»", "sec:sec-el-recorrido-de-aparecer-a-permanecer"],
+        ["Laboratorio: sentir, pensar, interpretar · ¿AIS o hipervigilancia?", "tool:laboratorio_tec/s-sentir"],
         ["Protocolo AIS en audio (vía auditiva)", "tool:protocolo_ais"],
-        ["AIS muscular: tensar y soltar", "tool:ais_muscular"],
-        ["Laboratorio: ¿AIS o hipervigilancia?", "tool:laboratorio_tec/s-sentir"]
+        ["AIS muscular: tensar y soltar (vía física)", "tool:ais_muscular"]
       ],
       crit:[["auto","programada","He hecho práctica programada al menos 10 de los últimos 14 días"],["auto","proporcion","Practico más en calma que cuando estoy mal"],
             ["chk","c2a","Practico aunque no esté mal: ya no espero al malestar para hacerlo"],["chk","c2b","Puedo localizar una sensación en el cuerpo sin tener que explicar lo que me pasa"],["chk","c2c","Ya no me pregunto «¿para qué sirve si no me calma?»"]]
     },
-    { n:"Etapa 3", t:"Permanecer", w:"Semanas 5–8", col:"var(--e3)", min:21,
+    { n:"Etapa 3", t:"Permanecer", w:"Semanas 6–9", col:"var(--e3)", min:21,
       d:"Que tu cuerpo compruebe que la presencia <b>no se retira</b> cuando la sensación es desagradable. Quedarte un poco más allá del impulso de irte. Permanecer no es aguantar: aguantar busca que desaparezca; permanecer mira a la sensación.",
+      idea:"El aprendizaje ocurre en el margen: el tramo en el que te quedas algo más allá del punto en que el impulso pide retirarse. Y la honestidad emocional —«no sé por qué, pero lo noto aquí»— es la conciencia dando la cara por el cuerpo.",
       frase:"«No hago AIS para quitar esto. Hago AIS para no dejar solo a mi cuerpo mientras esto está presente.»",
       practica:{ t:"Práctica programada + S·R·S·A", d:"Sentir · Respirar · Sostener · Acompañar, 20–60 s. Sigues con los tres momentos fijos del día.", go:"tool:laboratorio_tec/s-ais" },
       pasos:[
+        ["Vídeo: «La pregunta que casi nunca nos hacemos»", "video:pregunta"],
+        ["Laboratorio: la práctica AIS guiada completa (PARA · SIENTE · ACOMPAÑA · ACTÚA)", "tool:laboratorio_tec/s-ais"],
         ["Acompañar la sensación: paradas AIS", "tool:acompanar_sensacion"],
+        ["Vídeo: «Aprender a quedarte»", "video:quedarte"],
         ["AIS desde el amor: acompañarte, no controlarte", "tool:ais_amor"],
-        ["El recorrido en vídeo: «La pregunta…», «Aprender a quedarte»", "sec:sec-el-recorrido-de-aparecer-a-permanecer"],
+        ["Vídeo: la honestidad emocional", "video:honestidad"],
         ["Honestidad emocional: «no sé por qué, pero lo noto aquí»", "tool:honestidad_emocional"],
+        ["Vídeo: «El yo que se construyó sin ti»", "video:yo"],
         ["Estoy aquí conmigo: quedarme sin exigirme", "tool:estoy_aqui_conmigo"],
-        ["Laboratorio: la afección interna segura", "tool:laboratorio_tec/s-afeccion"],
-        ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion"]
+        ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion", ["tool:salidas_paso_a_paso"]]
       ],
       crit:[["auto","programada","Sigo con la práctica programada (10 de 14 días)"],["auto","iti","Mi tolerancia (ITI) sube o se mantiene alta"],
             ["chk","c3a","Me quedo un poco más allá del impulso de irme, sin forzarme a aguantar"],["chk","c3b","He dicho la frase honesta al menos a mí mismo/a"]]
     },
-    { n:"Etapa 4", t:"Elegir y actuar", w:"Semanas 9–11", col:"var(--e4)", min:14,
+    { n:"Etapa 4", t:"Elegir y actuar", w:"Semanas 10–11", col:"var(--e4)", min:14,
       d:"Desde el espacio que has creado, <b>elegir</b>. La latencia se convierte en conducta: una micro-acción con valor cada día, aunque haya activación.",
+      idea:"La latencia es el espacio entre lo que sientes y lo que haces. Cuando ese espacio se habita, aparece la pregunta que cierra el ciclo: «¿qué haría la persona que quiero ser?». La conducta valiosa es el criterio principal de cambio.",
       frase:"«La conducta valiosa no espera a la emoción correcta. La emoción correcta emerge de la conducta valiosa.»",
       practica:{ t:"Práctica programada + micro-acción", d:"Tras la práctica: «¿qué haría la persona que quiero ser?». Un paso pequeño, observable y realizable ahora.", go:"tool:herramienta_diaria" },
       pasos:[
         ["Mi brújula de valores", "tool:brujula_valores"],
-        ["Mi semana con foco y valores", "tool:agenda_atencional"],
-        ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta"],
+        ["Mi semana con foco y valores (revísala con lo aprendido)", "tool:agenda_atencional"],
+        ["Vídeo: la ira, con Tòfol Villalonga", "video:ira"],
+        ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta", ["tool:control_ira"]],
         ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_basicas"],
-        ["Las tres puertas: parar a tiempo, estar presente, seguir tu dirección", "sec:sec-las-tres-puertas-por-donde-entrar"],
+        ["Laboratorio: la teoría aplicada a tu situación", "tool:laboratorio_tec/s-perfiles"],
         ["Laboratorio: mide tus L·D·C", "tool:laboratorio_tec/s-mio"]
       ],
       crit:[["auto","cv","Micro-acción con valor al menos 4 de los últimos 7 días"],["chk","c4a","Sé qué me importa en mis áreas de vida"],["chk","c4b","He hecho algo valioso alguna vez aunque sintiera activación"]]
     },
     { n:"Etapa 5", t:"Consolidar", w:"Semana 12 y después", col:"var(--e5)", min:0,
       d:"Mantener lo aprendido y llevarlo a los vínculos y a contextos más difíciles. Extinguir no es borrar: la sensación puede volver; lo que cambia es tu forma de estar con ella. Por eso la práctica sigue.",
+      idea:"La autoestima no es una opinión sobre ti: es la experiencia acumulada de no abandonarte. Cada vez que vuelves al cuerpo, también cuando duele, incluyes a tu niño interno en tu manada.",
       frase:"«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»",
       practica:{ t:"Práctica programada (mantenimiento)", d:"Tres momentos breves al día. Breve y frecuente vale más que largo y ocasional.", go:"tool:herramienta_diaria" },
       pasos:[
-        ["Reevaluación: cuestionario de seguimiento", "tool:screening_tec"],
+        ["Reevaluación: cuestionario de seguimiento", "tool:screening_tec", ["tool:cuestionario_tec"]],
         ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
         ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional"],
         ["Una frase que te acompañe, como fondo de pantalla", "tool:fondos_frases"],
         ["Tracker TEC: mi rutina de paradas", "tool:tracker_tec"],
-        ["Laboratorio: el espacio APRENS completo", "tool:laboratorio_tec/s-espacio"]
+        ["Laboratorio: el espacio APRENS completo y el glosario", "tool:laboratorio_tec/s-espacio", ["tool:laboratorio_tec/s-glosario"]],
+        ["Para profundizar: los libros de Tòfol Villalonga", "sec:libros"]
       ],
       crit:[]
     }
   ];
+
+  /* ---------- Tipos de paso y material ---------- */
+  function tipo(spec){
+    if(spec==="eval") return ["📏","Medida"];
+    var k = spec.split(":")[0], v = spec.split(":")[1]||"";
+    if(k==="video") return ["🎬","Vídeo"];
+    if(k==="pdf") return ["📄","Lectura"];
+    if(k==="sec") return ["📖","Psicoeducación"];
+    if(v.indexOf("laboratorio_tec")===0) return ["🔬","Laboratorio TEC"];
+    if(/^(quien_conduce|la_manada|modelo_atencional|historia_|donde_esta_mono|estado_mono)/.test(v)) return ["📖","Psicoeducación"];
+    if(/^(cuestionario_tec|screening_tec|tracker_)/.test(v)) return ["📏","Medida"];
+    return ["🫁","Práctica"];
+  }
+  function nombreSpec(spec){
+    var k = spec.split(":")[0], v = spec.split(":")[1]||"";
+    if(k==="pdf") return "PDF";
+    if(k==="sec") return "Abrir en la app";
+    var alt = {historia_animada:"Versión animada", historia_manada:"Versión animada", historia_control:"Versión animada", screening_tec:"Cuestionario de seguimiento",
+      estado_mono:"Check-in con el cuento", respiro_ais:"Respiro · dos luces", ais_basicas:"Herramientas AIS básicas", control_ira:"Control de ira",
+      salidas_paso_a_paso:"Paso a paso · salidas", cuestionario_tec:"Cuestionario TEC", "laboratorio_tec/s-glosario":"Glosario"};
+    return alt[v] || "Abrir";
+  }
+  function videoHTML(name, open){
+    return '<details class="vid"'+(open?' open':'')+'><summary>▶ Ver el vídeo aquí</summary>'
+      + '<video controls playsinline preload="none" poster="../assets/video/poster-'+name+'.png"><source src="../assets/video/video-'+name+'.mp4" type="video/mp4"></video></details>';
+  }
+  function specHTML(spec, principal){
+    var k = spec.split(":")[0], v = spec.split(":")[1]||"";
+    if(spec==="eval") return '<button class="tl" type="button" data-tab="v-eval">📏 Ir a Autoevaluación <span class="ar">→</span></button>';
+    if(k==="video") return videoHTML(v, principal);
+    if(k==="pdf") return '<a class="tl" href="../assets/pdf/'+v+'" target="_blank" rel="noopener">📄 PDF <span class="ar">↓</span></a>';
+    return link(spec, nombreSpec(spec));
+  }
+  function pasoTitulo(p){ var t = tipo(p[1]); return '<span title="'+t[1]+'">'+t[0]+'</span> '+esc(p[0]); }
 
   /* ---------- Métricas a partir del registro ---------- */
   function ultimos(n){ var a=[]; for(var i=n-1;i>=0;i--) a.push(sumaDias(HOY,-i)); return a; }
@@ -405,7 +469,7 @@
     for(var i=0;i<e.pasos.length;i++){ if(!t[i]) return i; }
     return -1;
   }
-  function pasoHTML(p){ return p[1]==="eval" ? '<button class="tl" type="button" data-tab="v-eval">📏 Ir a Autoevaluación <span class="ar">→</span></button>' : link(p[1], "Abrir"); }
+  function pasoHTML(p){ return specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join(""); }
   function renderHoy(){
     stageHead();
     var e = E[S.etapa], d = dia(), m = metr(), av = "";
@@ -420,7 +484,7 @@
     // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
     if(hoyP >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(hoyP+1)+" de "+e.pasos.length, t:e.pasos[hoyP][0], hecho:true,
       d: sp >= 0 ? 'Hecho. Mañana te espera el siguiente. <button class="tl" type="button" id="adelantar">¿Te apetece adelantarlo? <span class="ar">→</span></button>' : 'Hecho. Era el último paso de esta etapa.'});
-    else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length, t:e.pasos[sp][0], paso:e.pasos[sp]});
+    else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length+" · "+tipo(e.pasos[sp][1])[1], t:e.pasos[sp][0], paso:e.pasos[sp]});
     else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
     items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true});
     items.push({k:"n", w:"🌙 Tarde o noche", t: S.etapa===0 ? "Respira 1 minuto antes de dormir" : "Práctica programada (3–5 min)", d:"Al llegar a casa o antes de dormir. También si el día ha ido bien.", go:e.practica.go});
@@ -439,6 +503,9 @@
     done += cerr;
     $("#hoyBar").style.width = Math.round(done*100/total)+"%";
     $("#hoyCount").textContent = done + " de " + total + " hechos hoy" + (done===total ? " · día completo 🌿" : "");
+    // Resumen que lee la portada de la app (tarjeta «Mi recorrido»).
+    var pasoHoy = hoyP >= 0 ? e.pasos[hoyP][0] : (sp >= 0 ? e.pasos[sp][0] : "");
+    S.resumen = {f:HOY, etapa:S.etapa, t:e.t, w:e.w, hechos:done, total:total, paso:pasoHoy, pasoHecho:hoyP>=0}; save();
     $$("#hoyList .chk").forEach(function(b){ b.onclick = function(){
       var k = b.getAttribute("data-k");
       if(k==="t"){ var i = +b.getAttribute("data-paso"); (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[i] = HOY; toast("Paso hecho. Mañana, el siguiente."); }
@@ -496,13 +563,15 @@
     $("#mapa").innerHTML = E.map(function(e,i){
       var cls = i < S.etapa ? "past" : i === S.etapa ? "cur" : "";
       return '<li class="'+cls+'"><span class="dot"></span><div class="mw" style="color:'+e.col+'">'+e.n+' · '+e.w+(i===S.etapa?' · estás aquí':'')+'</div><div class="mt">'+e.t+'</div><div class="md">'+e.d+'</div>'
-        + '<details class="more"><summary>Ver los pasos</summary><ol class="small" style="margin:6px 0 0 18px">'+e.pasos.map(function(p){return '<li>'+esc(p[0])+'</li>';}).join("")+'</ol></details></li>';
+        + '<details class="more"><summary>Ver los pasos</summary><ol class="small" style="margin:6px 0 0 18px;list-style:none">'+e.pasos.map(function(p){return '<li>'+pasoTitulo(p)+'</li>';}).join("")+'</ol></details></li>';
     }).join("");
     var e = E[S.etapa], m = metr(), t = S.tareas[S.etapa] || {};
     var h = '<span class="kick" style="background:var(--bg2)">Ahora: '+e.n+' · '+e.t+'</span>'
+      + '<div class="note acc"><b>La idea de esta etapa.</b> '+e.idea+'</div>'
+      + '<p class="small muted">🎬 vídeo · 📖 psicoeducación · 🔬 Laboratorio TEC · 🫁 práctica · 📏 medida</p>'
       + '<h3>Los pasos, en orden</h3><ul class="tasks">' + e.pasos.map(function(p,i){
         var cls = t[i] ? "done" : (i===siguientePaso() ? "next" : "");
-        return '<li class="'+cls+'"><span class="n">'+(t[i]?'✓':(i+1))+'</span><span class="tx">'+esc(p[0])+'</span>'+(p[1]==="eval"?'':link(p[1],"Abrir"))
+        return '<li class="'+cls+'"><span class="n">'+(t[i]?'✓':(i+1))+'</span><span class="tx">'+pasoTitulo(p)+'<span class="pl">'+pasoHTML(p)+'</span></span>'
           +(cls==="next"?'<button class="tl" type="button" data-hecho="'+i+'">✓ Hecho</button>':'')+'</li>';
       }).join("") + '</ul>';
     if(e.crit.length){
@@ -546,17 +615,27 @@
   function renderEval(){
     var h = '<b>¿Cómo ha sido en la última semana?</b> <span class="small muted">De 0 (nada) a 10 (totalmente).</span>';
     ITEMS.forEach(function(it){ h += '<label class="f" for="ev'+it[0]+'">'+it[1]+': <span class="rv" id="ev'+it[0]+'V">5</span></label><p class="small muted" style="margin:0 0 2px">'+it[2]+'</p><input type="range" id="ev'+it[0]+'" min="0" max="10" value="5">'; });
+    h += '<label class="f">Prueba de continuidad <span class="small muted">(opcional · del Laboratorio TEC)</span></label>'
+      + '<p class="small muted" style="margin:0 0 6px">Lleva la atención a tu barriga o tu pecho. <b>Mantén pulsado</b> mientras sigues ahí; suelta cuando notes que tu atención se ha ido. No hay un tiempo correcto.</p>'
+      + '<button class="hold" id="evHold" type="button">Mantén pulsado</button><p class="small" id="evHoldV"></p>';
     h += '<label class="f">¿Has tenido momentos en los que hayas pensado en hacerte daño?</label><div class="seg" id="evRisk"><button type="button" data-v="0">No</button><button type="button" data-v="1">Sí</button></div><div id="evRiskMsg"></div>';
     h += '<div class="row"><button class="btn" id="evSave" type="button">Guardar mi autoevaluación</button></div>';
     h += '<p class="small muted">Para el seguimiento completo con gráficas, haz también el '+link("tool:screening_tec","cuestionario de seguimiento")+' o el '+link("tool:cuestionario_tec","Cuestionario TEC")+'.</p>';
     $("#evalForm").innerHTML = h;
     ITEMS.forEach(function(it){ $("#ev"+it[0]).oninput = function(){ $("#ev"+it[0]+"V").textContent = this.value; }; });
-    var risk = null;
+    var risk = null, cSeg = null, t0 = 0, hold = $("#evHold");
+    function down(ev){ ev.preventDefault(); t0 = performance.now(); hold.classList.add("down"); hold.textContent = "Sigo aquí…"; }
+    function up(){ if(!t0) return; cSeg = Math.round((performance.now()-t0)/100)/10; t0 = 0; hold.classList.remove("down"); hold.textContent = "Repetir";
+      $("#evHoldV").innerHTML = "Trazo sostenido: <b>"+cSeg+" s</b>. Con la práctica de semanas suele alargarse; no se fuerza."; }
+    hold.addEventListener("pointerdown", down); hold.addEventListener("pointerup", up); hold.addEventListener("pointercancel", up); hold.addEventListener("pointerleave", up);
+    hold.addEventListener("keydown", function(ev){ if((ev.key===" "||ev.key==="Enter") && !t0) down(ev); });
+    hold.addEventListener("keyup", function(ev){ if(ev.key===" "||ev.key==="Enter") up(); });
     $$("#evRisk button").forEach(function(b){ b.onclick = function(){ $$("#evRisk button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); risk = +b.getAttribute("data-v");
       $("#evRiskMsg").innerHTML = risk ? '<div class="note warn"><b>Gracias por decirlo.</b> Esto es importante: habla hoy con tu psicólogo/a. Si sientes que puedes hacerte daño ahora, llama al <b>112</b> o al <b>024</b> (atención a la conducta suicida, 24 h). No estás solo/a con esto.</div>' : ""; }; });
     $("#evSave").onclick = function(){
       var r = {f:HOY, L:+$("#evL").value, D:+$("#evD").value, C:+$("#evC").value};
       if(risk) r.riesgo = 1;
+      if(cSeg != null) r.Cs = cSeg;
       S.evals = S.evals.filter(function(x){ return x.f !== HOY; }); S.evals.push(r); save();
       toast("Autoevaluación guardada."); renderAll();
     };
@@ -579,6 +658,8 @@
       h += '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de la autoevaluación">'+svg+'</svg>'
         + '<div class="legend"><span><i style="background:var(--e1)"></i>Latencia</span><span><i style="background:var(--e2)"></i>Claridad</span><span><i style="background:var(--e3)"></i>Continuidad</span></div>';
     }
+    var cs = ev.filter(function(x){ return x.Cs != null; });
+    if(cs.length) h += '<p class="small">Prueba de continuidad: <b>'+cs[cs.length-1].Cs+' s</b>'+(cs.length>1?' · al inicio: '+cs[0].Cs+' s':'')+'.</p>';
     h += '<p class="small muted">'+ev.length+' autoevaluación(es) · última el '+last.f+'. '+(evalPendiente()?'<b>Toca hacer la siguiente.</b>':'Próxima a partir del '+sumaDias(last.f,28)+'.')+'</p>';
     $("#evalHist").innerHTML = h;
   }
@@ -601,7 +682,7 @@
       + "Ruido interno medio (7 d): " + (m.ruido==null?"—":m.ruido+"/10") + "\n"
       + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días\n" : "")
       + (S.etapa>=3 ? "ITI (7 d): " + (m.itiAhora==null?"—":m.itiAhora+" %") + "\n" : "")
-      + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
+      + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.Cs!=null ? " · continuidad " + ev.Cs + " s" : "") + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
     $("#resumen").textContent = txt;
     $("#btnCopy").onclick = function(){ try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
     $("#btnShare").onclick = function(){ if(navigator.share){ navigator.share({title:"Mi recorrido TEC", text:txt}).catch(function(){}); } else $("#btnCopy").click(); };
