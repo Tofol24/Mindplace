@@ -17,7 +17,7 @@
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
     { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
-      ids:["quien_conduce","la_manada","modelo_atencional","laboratorio_tec"] },
+      ids:["recorrido_tec","quien_conduce","la_manada","modelo_atencional","laboratorio_tec"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_basicas","ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
@@ -368,6 +368,21 @@
       <div class="hub-grid">${cards}</div>`;
   }
 
+  // «Mi recorrido · paso a paso»: lo que toca hoy, leído del estado de la
+  // herramienta (tools-standalone/recorrido-tec.html, mismo origen).
+  function recorridoHoyHTML(){
+    const ETAPAS = ["Punto de partida","Entender","Aparecer","Permanecer","Elegir y actuar","Consolidar"];
+    let st = null;
+    try{ st = JSON.parse(localStorage.getItem("aprens.recorrido.v1")||"null"); }catch(e){ st = null; }
+    const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+    const hoy = st && st.dias ? (st.dias[d.toISOString().slice(0,10)] || {}) : {};
+    const hechos = (hoy.m?1:0)+(hoy.md?1:0)+(hoy.n?1:0)+(hoy.cerrado?1:0);
+    const estado = st
+      ? `Etapa ${st.etapa} · <b>${ETAPAS[st.etapa]||""}</b>. Hoy llevas ${hechos} de 4 momentos (mañana, mediodía, noche y cierre).`
+      : `Si no sabes por dónde empezar, empieza aquí: cada día, <b>qué hacer y en qué orden</b>, según la Teoría del Efecto Consciente. Entender → aparecer → permanecer → elegir → consolidar.`;
+    return `<a class="hs-act" href="#/tool/recorrido_tec" style="margin:4px 0 18px;border:2px solid var(--azul)">
+      <span class="se">🧭</span><span class="st">${st ? "Continuar mi recorrido" : "Mi recorrido · paso a paso"}<small>${estado}</small></span><span class="sarr">→</span></a>`;
+  }
   function porqueHTML(){
     return `
       <section class="porque" id="porque">
@@ -602,6 +617,7 @@
           <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
         </div>
       </div>
+      ${recorridoHoyHTML()}
       ${porqueHTML()}
       ${aisNucleoHTML()}
       ${vinetaHTML()}
