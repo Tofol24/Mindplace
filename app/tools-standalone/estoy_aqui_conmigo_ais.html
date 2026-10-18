@@ -279,6 +279,17 @@ function go(v){ clearTimers(); VIEW=v; render(); window.scrollTo(0,0); }
 function render(){
   document.getElementById('app').innerHTML=(VIEWS[VIEW]||VIEWS.casa)();
   document.getElementById('nav').innerHTML=NAV.map(function(n){ return '<button class="tab '+(VIEW===n.id?'on':'')+'" onclick="go(\''+n.id+'\')"><span class="te">'+n.e+'</span>'+n.l+'</button>'; }).join('');
+  var casa=document.getElementById('casaRespiro');
+  if(casa && window.RespiroAIS){
+    if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+    casa.className=''; casa.innerHTML='';
+    activeRespiro=RespiroAIS.mount(casa,{
+      lang:'es', figure:'organism', showControl:true, showZones:false,
+      rhythm:{ inhale:4000, anchor:1000, exhale:6000, pause:800 },
+      labels:{ phase:{inhale:'Entro', anchor:'·', exhale:'Te noto', pause:'Me quedo'},
+               hint:{inhale:'entro, sin forzar', anchor:'me quedo contigo', exhale:'te noto', pause:'estoy aquí conmigo'} }
+    });
+  }
 }
 
 var VIEWS={};
@@ -293,7 +304,9 @@ function flash(msg){ var f=document.getElementById('okflash'); if(f){ f.textCont
 VIEWS.casa=function(){
   var h='';
   h+='<div class="phero"><img src="assets/editorial/estoy-aqui.webp" alt="" onerror="this.parentNode.remove()"></div>';
-  h+='<div class="breath-wrap"><div class="breath"><div class="inner">Estoy aquí<br>conmigo</div></div></div>';
+  // Silueta de dos luces (componente compartido): el aire (azul) es el cebo y la
+  // conciencia (amarilla) baja y se queda en el vientre. Si no carga, el círculo de siempre.
+  h+='<div class="breath-wrap" id="casaRespiro" style="max-width:280px;margin:10px auto"><div class="breath"><div class="inner">Estoy aquí<br>conmigo</div></div></div>';
   h+='<h1 class="view-t" style="text-align:center">Estoy aquí conmigo</h1>';
   h+='<p class="view-s" style="text-align:center">Entrenamiento para que tu cuerpo note tu presencia.</p>';
   h+='<div class="quote" style="text-align:center;border-left:0;border-radius:14px">No tienes que sentirte bien para acompañarte bien.</div>';
