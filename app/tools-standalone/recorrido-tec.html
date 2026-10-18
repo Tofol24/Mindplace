@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Mi recorrido paso a paso · APRENS. Protocolo cronológico de la Teoría del Efecto Consciente: autoevaluación, etapas (entender, aparecer, permanecer, elegir, consolidar) y orden de trabajo diario.">
+<title>Mi recorrido · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#f3eee4; --bg2:#ebe3d4; --card:#fbf8f1; --ink:#2b2620; --muted:#6f665b; --line:#e1d9c9;
+    --acc:#3f6b74; --acc-d:#2c4f56; --acc-soft:#dde7e7; --acc-ink:#fff;
+    --ok:#2e7d5e; --ok-soft:#d9eee2; --gold:#a9781f; --gold-soft:#f4e7cc; --warn:#b5521d; --warn-soft:#f6e2d6;
+    --e0:#6f665b; --e1:#8f5639; --e2:#2e7d5e; --e3:#3f6b74; --e4:#a9781f; --e5:#7a4f8a;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 6px 20px -14px rgba(42,38,34,.45);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171513; --bg2:#201d1a; --card:#24211d; --ink:#efe8dc; --muted:#b4a999; --line:#3a352e;
+      --acc:#86b6bf; --acc-d:#a9d0d7; --acc-soft:#1f3236; --acc-ink:#10191b;
+      --ok:#7cc4a2; --ok-soft:#1c2f26; --gold:#d8b36a; --gold-soft:#332a17; --warn:#eb9468; --warn-soft:#3a2418;
+      --e0:#b4a999; --e1:#d69a7a; --e2:#7cc4a2; --e3:#86b6bf; --e4:#d8b36a; --e5:#c49ad3;
+      --shadow:0 6px 20px -14px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171513; --bg2:#201d1a; --card:#24211d; --ink:#efe8dc; --muted:#b4a999; --line:#3a352e;
+    --acc:#86b6bf; --acc-d:#a9d0d7; --acc-soft:#1f3236; --acc-ink:#10191b;
+    --ok:#7cc4a2; --ok-soft:#1c2f26; --gold:#d8b36a; --gold-soft:#332a17; --warn:#eb9468; --warn-soft:#3a2418;
+    --e0:#b4a999; --e1:#d69a7a; --e2:#7cc4a2; --e3:#86b6bf; --e4:#d8b36a; --e5:#c49ad3;
+    --shadow:0 6px 20px -14px rgba(0,0,0,.8);
+  }
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom));}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 30px;}
+  h1,h2,h3{font-family:var(--serif);line-height:1.15;}
+  h2{font-size:clamp(22px,5.5vw,28px);margin:4px 0 6px;}
+  h3{font-size:18px;margin:16px 0 6px;}
+  p{margin:6px 0;}
+  a{color:var(--acc);}
+  button,input,select,textarea{font:inherit;color:inherit;}
+  .muted{color:var(--muted);} .small{font-size:13px;}
+  .kick{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.11em;border-radius:20px;padding:4px 11px;background:var(--acc-soft);color:var(--acc-d);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin:12px 0;box-shadow:var(--shadow);}
+  .note{border-radius:12px;padding:11px 14px;font-size:14px;margin:10px 0;}
+  .note.ok{background:var(--ok-soft);} .note.gold{background:var(--gold-soft);} .note.warn{background:var(--warn-soft);} .note.acc{background:var(--acc-soft);}
+  .quote{font-family:var(--serif);font-style:italic;font-size:17px;border-left:4px solid var(--acc);padding:4px 0 4px 13px;margin:12px 0;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--acc);color:var(--acc-ink);border:none;border-radius:24px;padding:10px 18px;font-weight:700;font-size:14.5px;cursor:pointer;min-height:44px;text-decoration:none;}
+  .btn.ghost{background:transparent;color:var(--acc);border:1.5px solid var(--acc);}
+  .btn.soft{background:var(--acc-soft);color:var(--acc-d);}
+  .btn:disabled{opacity:.45;cursor:default;}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+  .theme-b{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:36px;}
+
+  /* Cabecera de etapa */
+  .top{padding:18px 0 4px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .stage-h{border-radius:18px;padding:16px 18px;color:#fff;margin-top:10px;box-shadow:var(--shadow);}
+  .stage-h .sn{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.9;}
+  .stage-h .st{font-family:var(--serif);font-size:clamp(24px,6vw,30px);margin:2px 0 4px;}
+  .stage-h .sd{font-size:14.5px;opacity:.95;}
+  .stage-h .sm{display:flex;gap:6px;margin-top:12px;}
+  .stage-h .sm i{flex:1;height:6px;border-radius:4px;background:rgba(255,255,255,.3);}
+  .stage-h .sm i.on{background:#fff;}
+  :root[data-theme="dark"] .stage-h, :root:not([data-theme="light"]) .stage-h{color:#fff;}
+
+  /* Lista de hoy */
+  .today{list-style:none;margin:8px 0;}
+  .today li{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:8px 0;box-shadow:var(--shadow);}
+  .today li.done{opacity:.72;}
+  .today .chk{flex:0 0 30px;height:30px;border-radius:50%;border:2px solid var(--acc);background:transparent;cursor:pointer;display:grid;place-items:center;font-weight:800;color:var(--acc-ink);}
+  .today li.done .chk{background:var(--ok);border-color:var(--ok);}
+  .today .tb{flex:1;min-width:0;}
+  .today .tw{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+  .today .tt{font-weight:700;font-size:15.5px;}
+  .today .td{font-size:13.5px;color:var(--muted);margin-top:2px;}
+  .tl{display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:6px 12px 6px 9px;font-size:13px;font-weight:600;min-height:36px;margin:6px 6px 0 0;}
+  .tl:hover{border-color:var(--acc);}
+  .tl .ar{color:var(--acc);font-weight:700;}
+  .progress{height:8px;border-radius:6px;background:var(--bg2);overflow:hidden;margin:6px 0;}
+  .progress i{display:block;height:100%;background:var(--ok);transition:width .3s;}
+
+  /* Formularios */
+  label.f{display:block;font-size:13.5px;font-weight:700;margin:12px 0 4px;}
+  input[type=range]{width:100%;accent-color:var(--acc);min-height:32px;}
+  .rv{font-weight:800;color:var(--acc-d);}
+  .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;}
+  .seg button{background:var(--card);border:none;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;min-height:40px;}
+  .seg button.on{background:var(--acc);color:var(--acc-ink);}
+  .step{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;}
+  .step button{width:42px;min-height:40px;border:none;background:var(--card);font-size:18px;font-weight:700;cursor:pointer;}
+  .step span{min-width:36px;text-align:center;font-weight:800;}
+  .crit{list-style:none;}
+  .crit li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .crit li:last-child{border-bottom:none;}
+  .crit input{width:22px;height:22px;margin-top:2px;accent-color:var(--ok);flex:0 0 22px;}
+  .crit .auto{flex:0 0 22px;text-align:center;font-weight:800;}
+
+  /* Mapa de etapas */
+  .map{list-style:none;position:relative;margin:10px 0;}
+  .map li{position:relative;padding:0 0 18px 34px;}
+  .map li:before{content:"";position:absolute;left:10px;top:24px;bottom:0;width:2px;background:var(--line);}
+  .map li:last-child:before{display:none;}
+  .map .dot{position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;border:3px solid var(--line);background:var(--card);}
+  .map li.past .dot{background:var(--ok);border-color:var(--ok);}
+  .map li.cur .dot{border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-soft);}
+  .map .mt{font-family:var(--serif);font-size:18px;}
+  .map .mw{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+  .map .md{font-size:14px;color:var(--muted);}
+  details.more summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:14px;margin-top:6px;}
+
+  .tasks{list-style:none;}
+  .tasks li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+  .tasks li:last-child{border-bottom:none;}
+  .tasks .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-size:12px;font-weight:800;}
+  .tasks li.done .n{background:var(--ok);color:#fff;}
+  .tasks li.next .n{background:var(--acc);color:var(--acc-ink);}
+  .tasks .tx{flex:1;font-size:14.5px;}
+
+  .ldc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;}
+  .ldc div{background:var(--bg2);border-radius:12px;padding:10px 6px;text-align:center;}
+  .ldc b{display:block;font-size:22px;font-family:var(--serif);}
+  .ldc span{font-size:11.5px;color:var(--muted);}
+  .chart{width:100%;height:auto;display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);}
+  .legend i{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:4px;border-radius:2px;}
+
+  /* Barra inferior */
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);}
+  .tabs .in{display:flex;max-width:760px;width:100%;}
+  .tabs button{flex:1;background:none;border:none;padding:9px 4px 10px;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:58px;}
+  .tabs button .e{font-size:20px;line-height:1;}
+  .tabs button.on{color:var(--acc);}
+  .view{display:none;} .view.on{display:block;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;}
+  .toast.on{opacity:1;}
+  .safety{font-size:12.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><span class="kick">Mi recorrido · paso a paso</span></div>
+    <button class="theme-b" id="themeBtn" type="button" aria-label="Cambiar tema claro u oscuro">◐ Tema</button>
+  </div>
+
+  <!-- ============ HOY ============ -->
+  <section class="view" id="v-hoy">
+    <div id="stageHead"></div>
+    <div id="hoyAvisos"></div>
+    <h3>Hoy, en este orden</h3>
+    <div class="progress" aria-hidden="true"><i id="hoyBar"></i></div>
+    <p class="small muted" id="hoyCount"></p>
+    <ul class="today" id="hoyList"></ul>
+    <div class="card" id="cierre"></div>
+    <div class="quote" id="hoyFrase"></div>
+  </section>
+
+  <!-- ============ RECORRIDO ============ -->
+  <section class="view" id="v-plan">
+    <h2>Tu recorrido</h2>
+    <p class="muted">El orden importa: <b>primero entender, después aparecer, después permanecer</b>, y desde ahí elegir. No se avanza por calendario, sino cuando tu práctica lo muestra. Tu psicólogo/a puede ajustar la etapa.</p>
+    <ul class="map" id="mapa"></ul>
+    <div class="card" id="etapaCard"></div>
+  </section>
+
+  <!-- ============ AUTOEVALUACIÓN ============ -->
+  <section class="view" id="v-eval">
+    <h2>Autoevaluación</h2>
+    <p class="muted">Una foto de cómo está tu atención. Se hace al empezar y <b>cada 4 semanas</b>. No es un examen ni un diagnóstico: sirve para ver hacia dónde te mueves. En las tres, <b>más alto = mejor</b>.</p>
+    <div class="card" id="evalForm"></div>
+    <div class="card" id="evalHist"></div>
+  </section>
+
+  <!-- ============ MI SEMANA ============ -->
+  <section class="view" id="v-semana">
+    <h2>Mi semana</h2>
+    <div class="card" id="semana"></div>
+    <div class="card">
+      <b>Enviar a mi psicólogo/a</b>
+      <p class="small muted">Un resumen breve de tu recorrido (etapa, práctica, conducta valiosa y autoevaluación). Tú decides si lo envías.</p>
+      <div class="row"><button class="btn" id="btnCopy" type="button">Copiar resumen</button><button class="btn ghost" id="btnShare" type="button">Compartir…</button></div>
+      <pre id="resumen" class="small" style="white-space:pre-wrap;background:var(--bg2);border-radius:10px;padding:10px;margin-top:6px"></pre>
+    </div>
+    <div class="card">
+      <b>Mis datos</b>
+      <p class="small muted">Todo se guarda solo en este dispositivo.</p>
+      <div class="row"><button class="btn ghost" id="btnReset" type="button">Empezar el recorrido de nuevo</button></div>
+    </div>
+  </section>
+
+  <div class="safety">
+    Este recorrido acompaña tu proceso con tu psicólogo/a; no lo sustituye. El AIS no es una técnica para estar bien: es una forma de estar contigo. Si en algún momento estás en riesgo o piensas en hacerte daño, contacta con tu psicólogo/a o llama al <b>112</b> o al <b>024</b>.
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Secciones">
+  <div class="in">
+    <button type="button" data-v="v-hoy"><span class="e">☀️</span>Hoy</button>
+    <button type="button" data-v="v-plan"><span class="e">🧭</span>Recorrido</button>
+    <button type="button" data-v="v-eval"><span class="e">📏</span>Autoevaluación</button>
+    <button type="button" data-v="v-semana"><span class="e">📊</span>Mi semana</button>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(s,r){return (r||document).querySelector(s);};
+  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var esc = function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});};
+  function iso(d){ d = new Date(d); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  var HOY = iso(new Date());
+  function diasEntre(a,b){ return Math.round((new Date(b+"T12:00:00") - new Date(a+"T12:00:00"))/864e5); }
+  function sumaDias(a,n){ var d = new Date(a+"T12:00:00"); d.setDate(d.getDate()+n); return iso(d); }
+  function toast(t){ var e=$("#toast"); e.textContent=t; e.classList.add("on"); setTimeout(function(){e.classList.remove("on");},1900); }
+
+  /* ---------- Estado (solo este dispositivo; lo lee también la portada de la app) ---------- */
+  var KEY = "aprens.recorrido.v1";
+  function load(){ try{ var v = JSON.parse(localStorage.getItem(KEY)||"null"); if(v && v.v===1) return v; }catch(e){} return null; }
+  function nuevo(){ return {v:1, inicio:HOY, etapa:0, etapaDesde:HOY, dias:{}, evals:[], tareas:{}, crit:{}, porPsico:false}; }
+  var S = load() || nuevo();
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  function dia(f){ f = f||HOY; return S.dias[f] || (S.dias[f] = {}); }
+
+  /* ---------- Tema ---------- */
+  try{ var th = localStorage.getItem("aprens.recorrido.theme"); if(th) document.documentElement.setAttribute("data-theme", th); }catch(e){}
+  $("#themeBtn").onclick = function(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var dark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    var nx = dark ? "light" : "dark"; document.documentElement.setAttribute("data-theme", nx);
+    try{ localStorage.setItem("aprens.recorrido.theme", nx); }catch(e){}
+  };
+
+  /* ---------- Enlaces a la app (router del hub) ---------- */
+  var hub = null;
+  try{ if(window.parent && window.parent !== window && window.parent.APRENS_TOOLS) hub = window.parent; }catch(e){ hub = null; }
+  // spec: "tool:id" · "tool:id/sub" · "sec:id"
+  function href(spec){ var p = spec.split(":"); return p[0]==="sec" ? "#/sec/"+p[1] : "#/tool/"+p[1]; }
+  function link(spec, txt){
+    return '<a class="tl" href="../index.html'+href(spec)+'" target="_top" data-go="'+esc(spec)+'">'+txt+' <span class="ar">→</span></a>';
+  }
+  document.addEventListener("click", function(e){
+    var a = e.target.closest && e.target.closest("a[data-go]");
+    if(!a || !hub) return;
+    e.preventDefault();
+    try{ hub.location.hash = href(a.getAttribute("data-go")); }catch(err){ location.href = a.href; }
+  });
+
+  /* ============================================================
+     EL PROTOCOLO (TEC · caps. 11.8, 15.4, 12.3.1 y Anexo D)
+     Cada etapa: qué se entrena, práctica diaria, pasos en orden y
+     criterios para pasar a la siguiente (no por calendario).
+     ============================================================ */
+  var E = [
+    { n:"Etapa 0", t:"Punto de partida", w:"Días 1–3", col:"var(--e0)", min:0,
+      d:"Una foto inicial de tu atención, para poder ver después el cambio.",
+      frase:"«No vengo a cambiarte. Vengo a estar contigo.»",
+      practica:{ t:"Respira 1 minuto con la silueta", d:"Solo para conocer el gesto: la luz azul es el aire; la amarilla, tu atención, que baja y se queda.", go:"tool:respiro_ais" },
+      pasos:[
+        ["Mi autoevaluación inicial (aquí, en «Autoevaluación»)", "eval"],
+        ["Cuestionario TEC (o el de seguimiento, si tu psicólogo/a te dio un código)", "tool:cuestionario_tec"],
+        ["¿Dónde llevas hoy a tu mono? Un check-in rápido", "tool:estado_mono"]
+      ],
+      crit:[["auto","evalHecha","He hecho mi autoevaluación inicial"],["chk","c0a","He hecho el cuestionario TEC o el de seguimiento"],["chk","c0b","He leído cómo funciona el recorrido (pestaña «Recorrido»)"]]
+    },
+    { n:"Etapa 1", t:"Entender", w:"Semana 1", col:"var(--e1)", min:5,
+      d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
+      frase:"«La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",
+      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", go:"sec:sec-para-respira-vuelve" },
+      pasos:[
+        ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce"],
+        ["La manada: por qué respiras", "tool:la_manada"],
+        ["El control y la presencia: el mapa del malestar", "tool:modelo_atencional"],
+        ["La teoría, en vídeo (tres vídeos breves)", "sec:sec-la-teoria-en-video"],
+        ["Laboratorio: la atención es un vector", "tool:laboratorio_tec/s-vector"],
+        ["Laboratorio: la cadena que mantiene el malestar", "tool:laboratorio_tec/s-cadena"],
+        ["Las herramientas AIS básicas y las tres anclas", "tool:ais_basicas"]
+      ],
+      crit:[["auto","pasosHechos","He visto las siete piezas"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
+    },
+    { n:"Etapa 2", t:"Aparecer", w:"Semanas 2–4", col:"var(--e2)", min:14,
+      d:"Que tu cuerpo registre que hay una presencia disponible. Visitas breves, tres veces al día, <b>también cuando estás bien</b>. No para calmarte: para aparecer.",
+      frase:"«Aunque no note nada especial, vuelvo al cuerpo. No busco calmarme: estoy enseñando a mi cuerpo que mi conciencia también aparece cuando todo parece estar bien.»",
+      practica:{ t:"Práctica programada (3–5 min)", d:"Respiración con anclaje: el aire es el cebo; tu atención lo sigue y se queda en la barriga.", go:"tool:herramienta_diaria" },
+      pasos:[
+        ["Organiza tus tres momentos fijos del día", "tool:agenda_atencional"],
+        ["Respiro · dos luces", "tool:respiro_ais"],
+        ["El mapa interno: cuello, pecho y barriga", "tool:mapa_atencion_interna"],
+        ["AIS desde la curiosidad", "tool:ais_curiosidad"],
+        ["El recorrido en vídeo: «El día que tu cuerpo empezó a notarte» y «Respirar es aparecer»", "sec:sec-el-recorrido-de-aparecer-a-permanecer"],
+        ["Protocolo AIS en audio (vía auditiva)", "tool:protocolo_ais"],
+        ["AIS muscular: tensar y soltar", "tool:ais_muscular"],
+        ["Laboratorio: ¿AIS o hipervigilancia?", "tool:laboratorio_tec/s-sentir"]
+      ],
+      crit:[["auto","programada","He hecho práctica programada al menos 10 de los últimos 14 días"],["auto","proporcion","Practico más en calma que cuando estoy mal"],
+            ["chk","c2a","Practico aunque no esté mal: ya no espero al malestar para hacerlo"],["chk","c2b","Puedo localizar una sensación en el cuerpo sin tener que explicar lo que me pasa"],["chk","c2c","Ya no me pregunto «¿para qué sirve si no me calma?»"]]
+    },
+    { n:"Etapa 3", t:"Permanecer", w:"Semanas 5–8", col:"var(--e3)", min:21,
+      d:"Que tu cuerpo compruebe que la presencia <b>no se retira</b> cuando la sensación es desagradable. Quedarte un poco más allá del impulso de irte. Permanecer no es aguantar: aguantar busca que desaparezca; permanecer mira a la sensación.",
+      frase:"«No hago AIS para quitar esto. Hago AIS para no dejar solo a mi cuerpo mientras esto está presente.»",
+      practica:{ t:"Práctica programada + S·R·S·A", d:"Sentir · Respirar · Sostener · Acompañar, 20–60 s. Sigues con los tres momentos fijos del día.", go:"tool:laboratorio_tec/s-ais" },
+      pasos:[
+        ["Acompañar la sensación: paradas AIS", "tool:acompanar_sensacion"],
+        ["AIS desde el amor: acompañarte, no controlarte", "tool:ais_amor"],
+        ["El recorrido en vídeo: «La pregunta…», «Aprender a quedarte»", "sec:sec-el-recorrido-de-aparecer-a-permanecer"],
+        ["Honestidad emocional: «no sé por qué, pero lo noto aquí»", "tool:honestidad_emocional"],
+        ["Estoy aquí conmigo: quedarme sin exigirme", "tool:estoy_aqui_conmigo"],
+        ["Laboratorio: la afección interna segura", "tool:laboratorio_tec/s-afeccion"],
+        ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion"]
+      ],
+      crit:[["auto","programada","Sigo con la práctica programada (10 de 14 días)"],["auto","iti","Mi tolerancia (ITI) sube o se mantiene alta"],
+            ["chk","c3a","Me quedo un poco más allá del impulso de irme, sin forzarme a aguantar"],["chk","c3b","He dicho la frase honesta al menos a mí mismo/a"]]
+    },
+    { n:"Etapa 4", t:"Elegir y actuar", w:"Semanas 9–11", col:"var(--e4)", min:14,
+      d:"Desde el espacio que has creado, <b>elegir</b>. La latencia se convierte en conducta: una micro-acción con valor cada día, aunque haya activación.",
+      frase:"«La conducta valiosa no espera a la emoción correcta. La emoción correcta emerge de la conducta valiosa.»",
+      practica:{ t:"Práctica programada + micro-acción", d:"Tras la práctica: «¿qué haría la persona que quiero ser?». Un paso pequeño, observable y realizable ahora.", go:"tool:herramienta_diaria" },
+      pasos:[
+        ["Mi brújula de valores", "tool:brujula_valores"],
+        ["Mi semana con foco y valores", "tool:agenda_atencional"],
+        ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta"],
+        ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_basicas"],
+        ["Las tres puertas: parar a tiempo, estar presente, seguir tu dirección", "sec:sec-las-tres-puertas-por-donde-entrar"],
+        ["Laboratorio: mide tus L·D·C", "tool:laboratorio_tec/s-mio"]
+      ],
+      crit:[["auto","cv","Micro-acción con valor al menos 4 de los últimos 7 días"],["chk","c4a","Sé qué me importa en mis áreas de vida"],["chk","c4b","He hecho algo valioso alguna vez aunque sintiera activación"]]
+    },
+    { n:"Etapa 5", t:"Consolidar", w:"Semana 12 y después", col:"var(--e5)", min:0,
+      d:"Mantener lo aprendido y llevarlo a los vínculos y a contextos más difíciles. Extinguir no es borrar: la sensación puede volver; lo que cambia es tu forma de estar con ella. Por eso la práctica sigue.",
+      frase:"«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»",
+      practica:{ t:"Práctica programada (mantenimiento)", d:"Tres momentos breves al día. Breve y frecuente vale más que largo y ocasional.", go:"tool:herramienta_diaria" },
+      pasos:[
+        ["Reevaluación: cuestionario de seguimiento", "tool:screening_tec"],
+        ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
+        ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional"],
+        ["Una frase que te acompañe, como fondo de pantalla", "tool:fondos_frases"],
+        ["Tracker TEC: mi rutina de paradas", "tool:tracker_tec"],
+        ["Laboratorio: el espacio APRENS completo", "tool:laboratorio_tec/s-espacio"]
+      ],
+      crit:[]
+    }
+  ];
+
+  /* ---------- Métricas a partir del registro ---------- */
+  function ultimos(n){ var a=[]; for(var i=n-1;i>=0;i--) a.push(sumaDias(HOY,-i)); return a; }
+  function programadaDia(d){ return d && ((d.m?1:0)+(d.n?1:0)+(d.md?1:0)) > 0; }
+  function metr(){
+    var u14 = ultimos(14), u7 = ultimos(7);
+    var prog14 = u14.filter(function(f){ return programadaDia(S.dias[f]); }).length;
+    var calma = 0, mal = 0; u14.forEach(function(f){ var d=S.dias[f]; if(!d) return; calma += (d.m?1:0)+(d.md?1:0)+(d.n?1:0); mal += (d.mal||0); });
+    var cv7 = u7.filter(function(f){ return S.dias[f] && S.dias[f].cv===1; }).length;
+    var cvReg7 = u7.filter(function(f){ return S.dias[f] && S.dias[f].cv!=null; }).length;
+    function iti(fs){ var A=0,B=0; fs.forEach(function(f){ var d=S.dias[f]; if(d){ A+=d.itA||0; B+=d.itB||0; } }); return A ? Math.round(B*100/A) : null; }
+    var itiAhora = iti(u7), itiAntes = iti(ultimos(14).slice(0,7));
+    var ruido = u7.map(function(f){ return S.dias[f] && S.dias[f].ruido; }).filter(function(x){ return x!=null; });
+    return { prog14:prog14, calma:calma, mal:mal, cv7:cv7, cvReg7:cvReg7, itiAhora:itiAhora, itiAntes:itiAntes,
+      ruido: ruido.length ? Math.round(ruido.reduce(function(a,b){return a+b;},0)/ruido.length*10)/10 : null };
+  }
+  function autoOk(k, m){
+    if(k==="evalHecha") return S.evals.length > 0;
+    if(k==="pasosHechos") return pasosHechos(S.etapa) >= E[S.etapa].pasos.length;
+    if(k==="programada") return m.prog14 >= 10;
+    if(k==="proporcion") return m.calma > 0 && m.calma >= m.mal;
+    if(k==="iti") return m.itiAhora != null && (m.itiAhora >= 60 || (m.itiAntes != null && m.itiAhora >= m.itiAntes));
+    if(k==="cv") return m.cv7 >= 4;
+    return false;
+  }
+  function pasosHechos(e){ var t = S.tareas[e] || {}; return Object.keys(t).length; }
+  function diasEnEtapa(){ return diasEntre(S.etapaDesde, HOY) + 1; }
+  function evalPendiente(){
+    if(!S.evals.length) return true;
+    return diasEntre(S.evals[S.evals.length-1].f, HOY) >= 28;
+  }
+
+  /* ---------- Enlace del psicólogo: #etapa-N fija la etapa ---------- */
+  function hashEtapa(){
+    var m = (location.hash||"").match(/^#etapa-([0-5])$/);
+    if(m){ var n = +m[1]; if(n !== S.etapa){ S.etapa = n; S.etapaDesde = HOY; S.porPsico = true; save(); toast("Tu psicólogo/a te ha situado en la " + E[n].n.toLowerCase()); } }
+  }
+  hashEtapa();
+  window.addEventListener("hashchange", function(){ hashEtapa(); renderAll(); });
+
+  /* ============================ HOY ============================ */
+  function stageHead(){
+    var e = E[S.etapa], marks = "";
+    for(var i=0;i<E.length;i++) marks += '<i class="'+(i<=S.etapa?'on':'')+'"></i>';
+    $("#stageHead").innerHTML = '<div class="stage-h" style="background:'+e.col+'"><div class="sn">'+e.n+' de 5 · '+e.w+' · día '+diasEnEtapa()+'</div>'
+      + '<div class="st">'+e.t+'</div><div class="sd">'+e.d+'</div><div class="sm">'+marks+'</div></div>';
+  }
+  function siguientePaso(){
+    var e = E[S.etapa], t = S.tareas[S.etapa] || {};
+    for(var i=0;i<e.pasos.length;i++){ if(!t[i]) return i; }
+    return -1;
+  }
+  function pasoHTML(p){ return p[1]==="eval" ? '<button class="tl" type="button" data-tab="v-eval">📏 Ir a Autoevaluación <span class="ar">→</span></button>' : link(p[1], "Abrir"); }
+  function renderHoy(){
+    stageHead();
+    var e = E[S.etapa], d = dia(), m = metr(), av = "";
+    if(S.etapa===0) av += '<div class="note acc"><b>Bienvenido/a a tu recorrido.</b> Cada día encontrarás aquí lo que te toca, <b>en orden</b>: una práctica por la mañana, tu paso del día, una parada a mediodía, una práctica por la noche y un cierre de un minuto. Las etapas siguen la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. No hace falta hacerlo perfecto: hace falta volver.</div>';
+    if(evalPendiente() && S.etapa>0) av += '<div class="note gold">🔄 <b>Toca autoevaluarte.</b> Han pasado 4 semanas (o aún no la has hecho). Son 2 minutos. <button class="tl" type="button" data-tab="v-eval">Hacerla <span class="ar">→</span></button></div>';
+    if(S.etapa>=2 && m.mal > m.calma && m.mal >= 3) av += '<div class="note warn"><b>Señal de aviso:</b> estás practicando más cuando estás mal que en calma. No aumentes la práctica de apoyo: vuelve a los tres momentos fijos. Es lo que enseña a tu cuerpo que no tiene que estar mal para recibir tu atención.</div>';
+    $("#hoyAvisos").innerHTML = av;
+
+    var sp = siguientePaso(), items = [], tE = S.tareas[S.etapa] || {}, hoyP = -1;
+    for(var k in tE){ if(tE[k]===HOY) hoyP = Math.max(hoyP, +k); }
+    items.push({k:"m", w:"☀️ Mañana", t:e.practica.t, d:e.practica.d, go:e.practica.go});
+    // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
+    if(hoyP >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(hoyP+1)+" de "+e.pasos.length, t:e.pasos[hoyP][0], hecho:true,
+      d: sp >= 0 ? 'Hecho. Mañana te espera el siguiente. <button class="tl" type="button" id="adelantar">¿Te apetece adelantarlo? <span class="ar">→</span></button>' : 'Hecho. Era el último paso de esta etapa.'});
+    else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length, t:e.pasos[sp][0], paso:e.pasos[sp]});
+    else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
+    items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías."});
+    items.push({k:"n", w:"🌙 Tarde o noche", t: S.etapa===0 ? "Respira 1 minuto antes de dormir" : "Práctica programada (3–5 min)", d:"Al llegar a casa o antes de dormir. También si el día ha ido bien.", go:e.practica.go});
+    var done = 0;
+    $("#hoyList").innerHTML = items.map(function(it){
+      var ok = it.hecho || (it.k==="t" ? false : !!d[it.k]);
+      if(ok) done++;
+      var lk = it.paso ? pasoHTML(it.paso) : (it.go ? link(it.go, "Abrir") : "");
+      return '<li class="'+(ok?'done':'')+'"><button class="chk" type="button" data-k="'+it.k+'" '+(it.k==="t"&&sp>=0&&!it.hecho?'data-paso="'+sp+'"':'')+(it.hecho?' disabled':'')+' aria-label="Marcar como hecho: '+esc(it.t)+'" aria-pressed="'+ok+'">'+(ok?'✓':'')+'</button>'
+        + '<div class="tb"><div class="tw">'+it.w+'</div><div class="tt">'+esc(it.t)+'</div>'+(it.d?'<div class="td">'+it.d+'</div>':'')+(lk?'<div>'+lk+'</div>':'')+'</div></li>';
+    }).join("");
+    var cerr = d.cerrado ? 1 : 0, total = items.length + 1;
+    done += cerr;
+    $("#hoyBar").style.width = Math.round(done*100/total)+"%";
+    $("#hoyCount").textContent = done + " de " + total + " hechos hoy" + (done===total ? " · día completo 🌿" : "");
+    $$("#hoyList .chk").forEach(function(b){ b.onclick = function(){
+      var k = b.getAttribute("data-k");
+      if(k==="t"){ var i = +b.getAttribute("data-paso"); (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[i] = HOY; toast("Paso hecho. Mañana, el siguiente."); }
+      else { d[k] = d[k] ? 0 : 1; }
+      save(); renderAll();
+    };});
+    var ad = $("#adelantar"); if(ad) ad.onclick = function(){ show("v-plan", true); };
+    renderCierre();
+    $("#hoyFrase").innerHTML = e.frase;
+  }
+
+  function stepper(id, val){ return '<span class="step"><button type="button" data-st="'+id+'" data-d="-1" aria-label="Menos">−</button><span id="'+id+'">'+val+'</span><button type="button" data-st="'+id+'" data-d="1" aria-label="Más">+</button></span>'; }
+  function renderCierre(){
+    var d = dia(), e = S.etapa;
+    var h = '<b>📝 Cierre del día</b> <span class="small muted">(1 minuto)</span>'
+      + '<label class="f" for="cRuido">¿Cuánto ruido interno has notado hoy? (0 = poco, 10 = mucho): <span class="rv" id="cRuidoV">'+(d.ruido==null?5:d.ruido)+'</span></label><input type="range" id="cRuido" min="0" max="10" value="'+(d.ruido==null?5:d.ruido)+'">'
+      + '<label class="f">¿Cuántas veces has practicado <i>porque</i> estabas mal?</label>'+stepper("cMal", d.mal||0)
+      + '<p class="small muted">Está bien hacerlo. Solo lo registramos para ver que la práctica en calma siga siendo la principal.</p>';
+    if(e >= 2) h += '<label class="f">¿Hoy hiciste al menos una micro-acción con valor, aunque sintieras activación?</label><div class="seg" id="cCV"><button type="button" data-v="0" class="'+(d.cv===0?'on':'')+'">0 · No</button><button type="button" data-v="1" class="'+(d.cv===1?'on':'')+'">1 · Sí</button></div>';
+    if(e >= 3) h += '<label class="f">Tolerancia (ITI): momentos de malestar que <b>aparecieron</b> hoy, y cuántos <b>sostuviste</b> sin evitarlos</label>'
+      + '<div class="row">Aparecieron '+stepper("cA", d.itA||0)+' Sostuve '+stepper("cB", d.itB||0)+'</div>';
+    h += '<div class="row"><button class="btn" id="cSave" type="button">'+(d.cerrado?'Actualizar cierre ✓':'Cerrar el día')+'</button></div>';
+    $("#cierre").innerHTML = h;
+    var cv = d.cv;
+    $("#cRuido").oninput = function(){ $("#cRuidoV").textContent = this.value; };
+    $$("#cierre [data-st]").forEach(function(b){ b.onclick = function(){
+      var el = $("#"+b.getAttribute("data-st")); var v = Math.max(0, Math.min(30, (+el.textContent) + (+b.getAttribute("data-d"))));
+      if(el.id==="cB") v = Math.min(v, +$("#cA").textContent);
+      el.textContent = v;
+    };});
+    if($("#cCV")) $$("#cCV button").forEach(function(b){ b.onclick = function(){ $$("#cCV button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); cv = +b.getAttribute("data-v"); }; });
+    $("#cSave").onclick = function(){
+      d.ruido = +$("#cRuido").value; d.mal = +$("#cMal").textContent;
+      if(e >= 2 && cv != null) d.cv = cv;
+      if(e >= 3){ d.itA = +$("#cA").textContent; d.itB = Math.min(+$("#cB").textContent, d.itA); }
+      d.cerrado = 1; save(); toast("Día cerrado. Gracias por estar contigo."); renderAll();
+    };
+  }
+
+  /* ========================= RECORRIDO ========================= */
+  function renderPlan(){
+    $("#mapa").innerHTML = E.map(function(e,i){
+      var cls = i < S.etapa ? "past" : i === S.etapa ? "cur" : "";
+      return '<li class="'+cls+'"><span class="dot"></span><div class="mw" style="color:'+e.col+'">'+e.n+' · '+e.w+(i===S.etapa?' · estás aquí':'')+'</div><div class="mt">'+e.t+'</div><div class="md">'+e.d+'</div>'
+        + '<details class="more"><summary>Ver los pasos</summary><ol class="small" style="margin:6px 0 0 18px">'+e.pasos.map(function(p){return '<li>'+esc(p[0])+'</li>';}).join("")+'</ol></details></li>';
+    }).join("");
+    var e = E[S.etapa], m = metr(), t = S.tareas[S.etapa] || {};
+    var h = '<span class="kick" style="background:var(--bg2)">Ahora: '+e.n+' · '+e.t+'</span>'
+      + '<h3>Los pasos, en orden</h3><ul class="tasks">' + e.pasos.map(function(p,i){
+        var cls = t[i] ? "done" : (i===siguientePaso() ? "next" : "");
+        return '<li class="'+cls+'"><span class="n">'+(t[i]?'✓':(i+1))+'</span><span class="tx">'+esc(p[0])+'</span>'+(p[1]==="eval"?'':link(p[1],"Abrir"))
+          +(cls==="next"?'<button class="tl" type="button" data-hecho="'+i+'">✓ Hecho</button>':'')+'</li>';
+      }).join("") + '</ul>';
+    if(e.crit.length){
+      var allOk = true;
+      h += '<h3>Para pasar a la siguiente etapa</h3><p class="small muted">No se decide por el tiempo que pasa, sino por lo que muestra tu práctica. Mínimo orientativo en esta etapa: '+(e.min?e.min+' días':'sin mínimo')+' (llevas '+diasEnEtapa()+').</p><ul class="crit">';
+      e.crit.forEach(function(c){
+        var ok = c[0]==="auto" ? autoOk(c[1], m) : !!S.crit[c[1]];
+        if(!ok) allOk = false;
+        h += c[0]==="auto"
+          ? '<li><span class="auto" style="color:'+(ok?'var(--ok)':'var(--muted)')+'">'+(ok?'✓':'·')+'</span><span>'+esc(c[2])+' <span class="small muted">(lo calcula tu registro)</span></span></li>'
+          : '<li><input type="checkbox" id="'+c[1]+'" '+(ok?'checked':'')+'><label for="'+c[1]+'">'+esc(c[2])+'</label></li>';
+      });
+      h += '</ul>';
+      var tiempoOk = diasEnEtapa() >= e.min;
+      if(allOk && tiempoOk) h += '<div class="note ok">Se cumplen los criterios. Coméntalo en tu próxima sesión o avanza ya.</div>';
+      else h += '<div class="note gold small">Aún no. Está bien: cada etapa necesita su tiempo. '+(S.etapa===2?'Si pasas a sostener malestar antes de haber aparecido, el cuerpo aprende «he vuelto a estar solo con esto».':'')+'</div>';
+      h += '<div class="row"><button class="btn" id="btnNext" type="button">Pasar a la '+E[S.etapa+1].n.toLowerCase()+' →</button>'
+        + (S.etapa>0?'<button class="btn ghost" id="btnPrev" type="button">← Volver a la etapa anterior</button>':'')+'</div>';
+      h += '<p class="small muted" id="nextMsg"></p>';
+      $("#etapaCard").innerHTML = h;
+      $$("#etapaCard .crit input").forEach(function(c){ c.onchange = function(){ S.crit[c.id] = c.checked ? 1 : 0; save(); renderPlan(); }; });
+      $("#btnNext").onclick = function(){
+        if(!(allOk && tiempoOk) && !confirm("Aún no se cumplen todos los criterios de esta etapa. ¿Te ha indicado tu psicólogo/a que avances?")) return;
+        S.etapa++; S.etapaDesde = HOY; S.porPsico = false; save(); toast("Bienvenido/a a la " + E[S.etapa].n.toLowerCase() + ": " + E[S.etapa].t); show("v-hoy"); renderAll();
+      };
+    } else {
+      h += '<div class="note ok">Esta etapa no tiene final: es tu manera de seguir. Mantén los tres momentos al día y vuelve a autoevaluarte cada 4 semanas.</div>'
+        + '<div class="row"><button class="btn ghost" id="btnPrev" type="button">← Volver a la etapa anterior</button></div>';
+      $("#etapaCard").innerHTML = h;
+    }
+    $$("#etapaCard [data-hecho]").forEach(function(b){ b.onclick = function(){ (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[+b.getAttribute("data-hecho")] = HOY; save(); toast("Paso hecho."); renderAll(); }; });
+    var pv = $("#btnPrev"); if(pv) pv.onclick = function(){ if(!confirm("¿Volver a la etapa anterior? Tus registros se conservan.")) return; S.etapa--; S.etapaDesde = HOY; save(); renderAll(); };
+  }
+
+  /* ======================= AUTOEVALUACIÓN ======================= */
+  var ITEMS = [
+    ["L","Latencia · parar a tiempo","Cuando algo me activa, puedo notar lo que siento antes de reaccionar."],
+    ["D","Densidad · claridad interna","Puedo distinguir lo que siento en el cuerpo del ruido de mis pensamientos."],
+    ["C","Continuidad · sostener","Puedo mantener la atención en una sensación del cuerpo sin perderme enseguida."]
+  ];
+  function renderEval(){
+    var h = '<b>¿Cómo ha sido en la última semana?</b> <span class="small muted">De 0 (nada) a 10 (totalmente).</span>';
+    ITEMS.forEach(function(it){ h += '<label class="f" for="ev'+it[0]+'">'+it[1]+': <span class="rv" id="ev'+it[0]+'V">5</span></label><p class="small muted" style="margin:0 0 2px">'+it[2]+'</p><input type="range" id="ev'+it[0]+'" min="0" max="10" value="5">'; });
+    h += '<label class="f">¿Has tenido momentos en los que hayas pensado en hacerte daño?</label><div class="seg" id="evRisk"><button type="button" data-v="0">No</button><button type="button" data-v="1">Sí</button></div><div id="evRiskMsg"></div>';
+    h += '<div class="row"><button class="btn" id="evSave" type="button">Guardar mi autoevaluación</button></div>';
+    h += '<p class="small muted">Para el seguimiento completo con gráficas, haz también el '+link("tool:screening_tec","cuestionario de seguimiento")+' o el '+link("tool:cuestionario_tec","Cuestionario TEC")+'.</p>';
+    $("#evalForm").innerHTML = h;
+    ITEMS.forEach(function(it){ $("#ev"+it[0]).oninput = function(){ $("#ev"+it[0]+"V").textContent = this.value; }; });
+    var risk = null;
+    $$("#evRisk button").forEach(function(b){ b.onclick = function(){ $$("#evRisk button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); risk = +b.getAttribute("data-v");
+      $("#evRiskMsg").innerHTML = risk ? '<div class="note warn"><b>Gracias por decirlo.</b> Esto es importante: habla hoy con tu psicólogo/a. Si sientes que puedes hacerte daño ahora, llama al <b>112</b> o al <b>024</b> (atención a la conducta suicida, 24 h). No estás solo/a con esto.</div>' : ""; }; });
+    $("#evSave").onclick = function(){
+      var r = {f:HOY, L:+$("#evL").value, D:+$("#evD").value, C:+$("#evC").value};
+      if(risk) r.riesgo = 1;
+      S.evals = S.evals.filter(function(x){ return x.f !== HOY; }); S.evals.push(r); save();
+      toast("Autoevaluación guardada."); renderAll();
+    };
+    renderEvalHist();
+  }
+  function renderEvalHist(){
+    var ev = S.evals;
+    if(!ev.length){ $("#evalHist").innerHTML = '<b>Tu evolución</b><p class="small muted">Aún no hay autoevaluaciones. La primera es tu punto de partida.</p>'; return; }
+    var last = ev[ev.length-1], first = ev[0];
+    var h = '<b>Tu evolución</b><div class="ldc">' + ITEMS.map(function(it){
+      var dlt = last[it[0]] - first[it[0]];
+      return '<div><b>'+last[it[0]]+'</b><span>'+it[1].split(" · ")[1]+(ev.length>1?' · '+(dlt>0?'+':'')+dlt+' desde el inicio':'')+'</span></div>';
+    }).join("") + '</div>';
+    if(ev.length > 1){
+      var W=320,H=120,p=12, n=ev.length-1, X=function(i){return p+(W-2*p)*i/n;}, Y=function(v){return H-p-(H-2*p)*v/10;};
+      var cols = {L:"var(--e1)",D:"var(--e2)",C:"var(--e3)"}, svg = '';
+      [0,5,10].forEach(function(v){ svg += '<line x1="'+p+'" x2="'+(W-p)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/>'; });
+      ITEMS.forEach(function(it){ var k=it[0]; svg += '<path d="'+ev.map(function(e,i){return (i?"L":"M")+X(i).toFixed(1)+" "+Y(e[k]).toFixed(1);}).join(" ")+'" fill="none" stroke="'+cols[k]+'" stroke-width="2.4" stroke-linejoin="round"/>'
+        + ev.map(function(e,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(e[k]).toFixed(1)+'" r="3" fill="'+cols[k]+'"/>';}).join(""); });
+      h += '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de la autoevaluación">'+svg+'</svg>'
+        + '<div class="legend"><span><i style="background:var(--e1)"></i>Latencia</span><span><i style="background:var(--e2)"></i>Claridad</span><span><i style="background:var(--e3)"></i>Continuidad</span></div>';
+    }
+    h += '<p class="small muted">'+ev.length+' autoevaluación(es) · última el '+last.f+'. '+(evalPendiente()?'<b>Toca hacer la siguiente.</b>':'Próxima a partir del '+sumaDias(last.f,28)+'.')+'</p>';
+    $("#evalHist").innerHTML = h;
+  }
+
+  /* ========================= MI SEMANA ========================= */
+  function renderSemana(){
+    var m = metr(), u7 = ultimos(7), e = E[S.etapa];
+    var dots = u7.map(function(f){ var d = S.dias[f]||{}, n=(d.m?1:0)+(d.md?1:0)+(d.n?1:0);
+      return '<div style="text-align:center"><div style="width:30px;height:30px;border-radius:50%;margin:0 auto;display:grid;place-items:center;font-weight:800;font-size:13px;background:'+(n>=3?'var(--ok)':n?'var(--ok-soft)':'var(--bg2)')+';color:'+(n>=3?'#fff':'var(--ink)')+'">'+n+'</div><div class="small muted">'+["D","L","M","X","J","V","S"][new Date(f+"T12:00:00").getDay()]+'</div></div>'; }).join("");
+    var h = '<b>Momentos de práctica programada (últimos 7 días)</b><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:10px 0">'+dots+'</div>'
+      + '<div class="ldc"><div><b>'+m.prog14+'/14</b><span>días con práctica programada</span></div><div><b>'+m.calma+' : '+m.mal+'</b><span>en calma : porque estaba mal</span></div><div><b>'+(m.ruido==null?'—':m.ruido)+'</b><span>ruido medio (↓ mejor)</span></div></div>';
+    if(S.etapa >= 2) h += '<p>Micro-acción con valor: <b>'+m.cv7+' de 7 días</b>'+(m.cvReg7<7?' <span class="small muted">('+m.cvReg7+' días registrados)</span>':'')+'.</p>';
+    if(S.etapa >= 3) h += '<p>Tolerancia (ITI) esta semana: <b>'+(m.itiAhora==null?'—':m.itiAhora+' %')+'</b>'+(m.itiAntes!=null?' · la anterior: '+m.itiAntes+' %':'')+'.</p>';
+    $("#semana").innerHTML = h;
+    var ev = S.evals[S.evals.length-1];
+    var txt = "Mi recorrido TEC · " + HOY + "\n"
+      + "Etapa: " + e.n + " · " + e.t + " (día " + diasEnEtapa() + ")" + (S.porPsico ? " · situada por mi psicólogo/a" : "") + "\n"
+      + "Pasos hechos en la etapa: " + pasosHechos(S.etapa) + " de " + e.pasos.length + "\n"
+      + "Práctica programada: " + m.prog14 + " de 14 días · en calma " + m.calma + " / porque estaba mal " + m.mal + "\n"
+      + "Ruido interno medio (7 d): " + (m.ruido==null?"—":m.ruido+"/10") + "\n"
+      + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días\n" : "")
+      + (S.etapa>=3 ? "ITI (7 d): " + (m.itiAhora==null?"—":m.itiAhora+" %") + "\n" : "")
+      + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
+    $("#resumen").textContent = txt;
+    $("#btnCopy").onclick = function(){ try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
+    $("#btnShare").onclick = function(){ if(navigator.share){ navigator.share({title:"Mi recorrido TEC", text:txt}).catch(function(){}); } else $("#btnCopy").click(); };
+    $("#btnReset").onclick = function(){ if(!confirm("¿Empezar el recorrido de nuevo? Se borrarán tus registros de este recorrido en este dispositivo.")) return; S = nuevo(); save(); show("v-hoy"); renderAll(); };
+  }
+
+  /* ---------- Navegación ---------- */
+  var hist = [];
+  function show(id, push){
+    var cur = $(".view.on"); if(cur && cur.id===id) return;
+    if(push && cur) hist.push(cur.id);
+    $$(".view").forEach(function(v){ v.classList.toggle("on", v.id===id); });
+    $$(".tabs button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-v")===id); });
+    window.scrollTo(0,0);
+  }
+  $$(".tabs button").forEach(function(b){ b.onclick = function(){ show(b.getAttribute("data-v"), true); }; });
+  document.addEventListener("click", function(e){ var t = e.target.closest && e.target.closest("[data-tab]"); if(t){ e.preventDefault(); show(t.getAttribute("data-tab"), true); } });
+  // Botón «← Atrás» del hub APRENS: retrocede entre pestañas.
+  window.APRENS_toolBack = function(){ if(hist.length){ show(hist.pop(), false); return true; } return false; };
+
+  function renderAll(){ renderHoy(); renderPlan(); renderEval(); renderSemana(); }
+  renderAll();
+  show("v-hoy");
+})();
+</script>
+</body>
+</html>
