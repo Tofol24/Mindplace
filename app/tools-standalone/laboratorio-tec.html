@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Laboratorio TEC · herramienta psicoeducativa y laboratorio digital del libro «Teoría del Efecto Consciente» (Tòfol Villalonga Melis). Cada concepto enlazado con las herramientas APRENS.">
+<title>Laboratorio TEC · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#f7f4f1; --bg2:#efe9e4; --card:#ffffff; --ink:#1f1a1c; --muted:#6b6066; --line:#e6dcdf;
+    --acc:#b3154a; --acc-d:#8c0f39; --acc-soft:#f8e4eb; --acc-ink:#fff;
+    --sage:#4f7a52; --sage-soft:#e5efe3; --gold:#a7802f; --gold-soft:#f5ecd6; --warn:#b5521d; --warn-soft:#f8e6da;
+    --blue:#2f6d9c; --blue-soft:#e2eef7;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 8px 26px -18px rgba(40,10,20,.45);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#161214; --bg2:#1d181a; --card:#231d20; --ink:#f1e9ec; --muted:#b3a5ab; --line:#3a3035;
+      --acc:#e0507f; --acc-d:#f07ba1; --acc-soft:#3b1d28; --acc-ink:#1a0c11;
+      --sage:#8cc08f; --sage-soft:#1f2f20; --gold:#d8b363; --gold-soft:#332a17; --warn:#ec9364; --warn-soft:#3a2418;
+      --blue:#7fb6e0; --blue-soft:#182a38; --shadow:0 8px 26px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#161214; --bg2:#1d181a; --card:#231d20; --ink:#f1e9ec; --muted:#b3a5ab; --line:#3a3035;
+    --acc:#e0507f; --acc-d:#f07ba1; --acc-soft:#3b1d28; --acc-ink:#1a0c11;
+    --sage:#8cc08f; --sage-soft:#1f2f20; --gold:#d8b363; --gold-soft:#332a17; --warn:#ec9364; --warn-soft:#3a2418;
+    --blue:#7fb6e0; --blue-soft:#182a38; --shadow:0 8px 26px -18px rgba(0,0,0,.8);
+  }
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px 56px;}
+  a{color:var(--acc);}
+  button,input,select,textarea{font:inherit;color:inherit;}
+  h1,h2,h3{font-family:var(--serif);line-height:1.15;}
+  h2{font-size:clamp(24px,5.5vw,32px);margin:6px 0 8px;}
+  h3{font-size:19px;margin:18px 0 6px;}
+  p{margin:8px 0;}
+  .muted{color:var(--muted);}
+  .small{font-size:13px;}
+  .kick{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--acc);background:var(--acc-soft);border-radius:20px;padding:4px 12px;}
+
+  /* Cabecera */
+  .hero{padding:26px 0 10px;display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:center;}
+  @media(max-width:680px){.hero{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(30px,7.5vw,46px);letter-spacing:-.01em;margin:10px 0 6px;}
+  .hero h1 em{font-style:normal;color:var(--acc);}
+  .hero .lead{font-size:16px;color:var(--muted);}
+  .hero svg{width:100%;max-width:300px;justify-self:center;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:12px;}
+  .theme-b{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:36px;}
+
+  /* Navegación */
+  .nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);margin:10px -16px 0;padding:8px 16px;border-bottom:1px solid var(--line);}
+  .nav-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:7px 13px;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;min-height:38px;}
+  .nav button.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);}
+  .nav .grp{flex:0 0 auto;align-self:center;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 2px 0 8px;}
+
+  section.sec{display:none;padding-top:20px;animation:fade .25s ease;}
+  section.sec.on{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:12px 0;box-shadow:var(--shadow);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+  .quote{font-family:var(--serif);font-style:italic;font-size:18px;border-left:4px solid var(--acc);padding:6px 0 6px 14px;margin:14px 0;}
+  .note{border-radius:12px;padding:11px 14px;font-size:14px;margin:10px 0;}
+  .note.ok{background:var(--sage-soft);}
+  .note.warn{background:var(--warn-soft);}
+  .note.acc{background:var(--acc-soft);}
+  .note.gold{background:var(--gold-soft);}
+  .note.blue{background:var(--blue-soft);}
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;margin-right:4px;vertical-align:middle;}
+  .tag.h{background:var(--gold-soft);color:var(--gold);}
+  .tag.f{background:var(--sage-soft);color:var(--sage);}
+  .tag.d{background:var(--warn-soft);color:var(--warn);}
+  .tag.e{background:var(--blue-soft);color:var(--blue);}
+
+  /* Botones */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--acc);color:var(--acc-ink);border:none;border-radius:24px;padding:10px 18px;font-weight:700;font-size:14.5px;cursor:pointer;min-height:44px;text-decoration:none;}
+  .btn.ghost{background:transparent;color:var(--acc);border:1.5px solid var(--acc);}
+  .btn.soft{background:var(--acc-soft);color:var(--acc-d);}
+  .btn:disabled{opacity:.45;cursor:default;}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+  .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;flex-wrap:wrap;}
+  .seg button{background:var(--card);border:none;padding:8px 14px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:40px;}
+  .seg button.on{background:var(--acc);color:var(--acc-ink);}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:6px 12px;font-size:13.5px;cursor:pointer;min-height:38px;}
+  .chip.on{background:var(--acc-soft);border-color:var(--acc);color:var(--acc-d);font-weight:700;}
+
+  /* Enlaces a herramientas APRENS */
+  .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .tl{display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:6px 12px 6px 9px;font-size:13px;font-weight:600;min-height:36px;}
+  .tl:hover{border-color:var(--acc);color:var(--acc-d);}
+  .tl .ar{color:var(--acc);font-weight:700;}
+  .tools-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:12px;}
+
+  /* Formularios */
+  label.f{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:10px 0 4px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font-size:15px;min-height:42px;}
+  textarea{min-height:70px;resize:vertical;}
+  input[type=range]{width:100%;accent-color:var(--acc);min-height:32px;}
+  .rv{font-weight:800;color:var(--acc-d);font-variant-numeric:tabular-nums;}
+
+  /* Tablas */
+  .tbl-wrap{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:12px;}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px;}
+  th,td{padding:9px 11px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);}
+  th{background:var(--bg2);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+  tr:last-child td{border-bottom:none;}
+
+  /* Pilares / acordeón */
+  details.acc{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:10px 0;box-shadow:var(--shadow);}
+  details.acc summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;gap:12px;align-items:center;font-weight:700;}
+  details.acc summary::-webkit-details-marker{display:none;}
+  details.acc summary .n{flex:0 0 32px;height:32px;border-radius:50%;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;font-family:var(--serif);font-size:16px;}
+  details.acc summary .t{flex:1;font-family:var(--serif);font-size:18px;}
+  details.acc summary .chev{transition:transform .2s;color:var(--muted);}
+  details.acc[open] summary .chev{transform:rotate(90deg);}
+  details.acc .body{padding:0 16px 16px 60px;}
+  @media(max-width:520px){details.acc .body{padding:0 14px 14px;}}
+
+  /* Cadena funcional */
+  .chain{display:flex;flex-direction:column;gap:0;margin:12px 0;}
+  .link{position:relative;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:12px;cursor:pointer;border:1.5px solid transparent;}
+  .link:hover{background:var(--bg2);}
+  .link.on{border-color:var(--acc);background:var(--acc-soft);}
+  .link .dot{flex:0 0 14px;height:14px;border-radius:50%;margin-top:4px;background:var(--warn);}
+  .link.ais .dot{background:var(--sage);}
+  .link .lt{font-weight:700;}
+  .link .ls{font-size:13px;color:var(--muted);}
+  .arrow-down{margin-left:18px;color:var(--muted);font-size:14px;line-height:1;}
+
+  /* Perfil ICE */
+  .profile{border-radius:14px;padding:14px 16px;margin-top:12px;border:1.5px solid var(--line);}
+  .profile .pn{font-family:var(--serif);font-size:22px;}
+  .meter{height:8px;border-radius:6px;background:var(--bg2);overflow:hidden;margin:4px 0 10px;}
+  .meter i{display:block;height:100%;background:var(--acc);border-radius:6px;transition:width .25s;}
+  .ldc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;}
+  .ldc div{background:var(--bg2);border-radius:12px;padding:10px;text-align:center;}
+  .ldc b{display:block;font-size:22px;font-family:var(--serif);}
+  .ldc span{font-size:12px;color:var(--muted);}
+
+  /* Práctica guiada */
+  .breath{width:min(260px,70vw);aspect-ratio:1;margin:16px auto;position:relative;display:grid;place-items:center;}
+  .breath .ring{position:absolute;inset:0;border-radius:50%;border:2px dashed var(--line);}
+  .breath .ball{width:38%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,color-mix(in srgb,var(--acc) 55%,#fff),var(--acc));transition:transform 1s ease;box-shadow:0 0 40px -6px var(--acc);}
+  .breath .lbl{position:absolute;bottom:-6px;left:0;right:0;text-align:center;font-weight:700;color:var(--acc-d);}
+  .stepper{display:flex;gap:4px;margin:6px 0 12px;}
+  .stepper i{flex:1;height:5px;border-radius:4px;background:var(--line);}
+  .stepper i.on{background:var(--acc);}
+  .big{font-family:var(--serif);font-size:clamp(22px,5.5vw,30px);text-align:center;margin:14px 0 6px;}
+  .center{text-align:center;}
+
+  .hold{width:100%;min-height:120px;border-radius:20px;border:2px solid var(--acc);background:var(--acc-soft);color:var(--acc-d);font-size:17px;font-weight:800;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;}
+  .hold.down{background:var(--acc);color:var(--acc-ink);}
+
+  .chart{width:100%;height:auto;display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;}
+
+  .quiz-item{padding:10px 0;border-bottom:1px solid var(--line);}
+  .quiz-item:last-child{border-bottom:none;}
+  .quiz-item .q{font-weight:600;margin-bottom:6px;}
+  .quiz-item .fb{font-size:13.5px;margin-top:6px;}
+  .ok-t{color:var(--sage);font-weight:700;}
+  .ko-t{color:var(--warn);font-weight:700;}
+
+  .eco-grp{margin:18px 0 6px;}
+  .eco-grp h3{margin:0 0 2px;}
+  .eco-grp p{font-size:14px;color:var(--muted);margin:2px 0 6px;}
+
+  .gl-item{padding:10px 0;border-bottom:1px solid var(--line);}
+  .gl-item b{font-family:var(--serif);font-size:17px;}
+  .safety{margin-top:30px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);}
+  .foot{font-size:12.5px;color:var(--muted);text-align:center;margin-top:20px;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="kick">Laboratorio digital · TEC</span>
+    <button class="theme-b" id="themeBtn" type="button" aria-label="Cambiar tema claro u oscuro">◐ Tema</button>
+  </div>
+
+  <header class="hero">
+    <div>
+      <h1>Teoría del <em>Efecto</em> Consciente</h1>
+      <p class="lead">La atención como vector causal. Un espacio para <b>entender</b> el modelo, <b>practicar</b> el AIS y <b>medir</b> latencia, densidad y continuidad, enlazado con todas las herramientas APRENS.</p>
+      <p class="small muted" style="margin-top:10px">Basado en <i>Teoría del Efecto Consciente (TEC). La atención como vector causal: un metamodelo para la psicología clínica</i> · Tòfol Villalonga Melis · APRENS Edicions, 2026.</p>
+    </div>
+    <svg viewBox="0 0 300 300" role="img" aria-label="Vectores de atención que convergen hacia el centro del pecho">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="var(--acc)"/></marker></defs>
+      <circle cx="150" cy="200" r="88" fill="none" stroke="var(--line)" stroke-dasharray="2 5"/>
+      <circle cx="150" cy="200" r="58" fill="none" stroke="var(--acc)" opacity=".18"/>
+      <circle cx="150" cy="200" r="36" fill="none" stroke="var(--acc)" opacity=".3"/>
+      <circle cx="150" cy="200" r="20" fill="none" stroke="var(--acc)" opacity=".5"/>
+      <circle cx="150" cy="200" r="9" fill="var(--acc)"><animate attributeName="r" values="8;11;8" dur="4s" repeatCount="indefinite"/></circle>
+      <path d="M150 34 a30 34 0 1 1 -0.1 0 M120 98 q30 22 60 0 M98 300 q-6-120 52-160 q58 40 52 160" fill="none" stroke="var(--muted)" stroke-width="1.6" opacity=".55"/>
+      <circle cx="150" cy="66" r="5" fill="var(--acc)"/>
+      <line x1="150" y1="72" x2="150" y2="172" stroke="var(--acc)" stroke-width="2" marker-end="url(#ah)"/>
+      <path d="M22 120 Q80 130 128 186" fill="none" stroke="var(--acc)" stroke-width="1.8" marker-end="url(#ah)"/>
+      <path d="M278 120 Q220 130 172 186" fill="none" stroke="var(--acc)" stroke-width="1.8" marker-end="url(#ah)"/>
+      <path d="M14 196 Q70 196 122 200" fill="none" stroke="var(--acc)" stroke-width="1.6" stroke-dasharray="3 4" marker-end="url(#ah)"/>
+      <path d="M286 196 Q230 196 178 200" fill="none" stroke="var(--acc)" stroke-width="1.6" stroke-dasharray="3 4" marker-end="url(#ah)"/>
+      <circle cx="22" cy="120" r="5" fill="var(--acc)"/><circle cx="278" cy="120" r="5" fill="var(--acc)"/>
+      <circle cx="14" cy="196" r="4" fill="var(--acc)" opacity=".6"/><circle cx="286" cy="196" r="4" fill="var(--acc)" opacity=".6"/>
+    </svg>
+  </header>
+
+  <nav class="nav" aria-label="Secciones del laboratorio">
+    <div class="nav-scroll" id="nav"></div>
+  </nav>
+
+  <!-- ===================== APRENDER ===================== -->
+  <section class="sec" id="s-inicio" data-label="Empezar" data-grp="Aprender">
+    <h2>¿Qué cambia cuando una persona cambia?</h2>
+    <p>La TEC propone una hipótesis: una parte esencial del cambio terapéutico no ocurre en el <b>contenido</b> de lo que piensas o sientes, sino en la <b>dirección de tu atención</b> en el instante que va entre lo que sientes y lo que haces.</p>
+    <div class="quote">«Lo que cambia es la dirección de la atención, no el contenido de lo que se piensa o siente.»</div>
+    <div class="grid3">
+      <div class="card"><b>📖 Aprender</b><p class="small muted">Los cuatro pilares, el vector atencional, la cadena que mantiene el malestar y la afección interna segura.</p></div>
+      <div class="card"><b>🫁 Practicar</b><p class="small muted">El algoritmo AIS completo (PARA · SIENTE · ACOMPAÑA · ACTÚA) con respiración 4·2·6 y registro.</p></div>
+      <div class="card"><b>📈 Medir</b><p class="small muted">Tu laboratorio L·D·C, la hoja ICE digital y un diseño N=1 con exportación CSV (Anexo E).</p></div>
+    </div>
+    <h3>Las tres ideas que sostienen todo</h3>
+    <div class="card">
+      <p><b>1 · La atención es un vector.</b> La misma cantidad de atención produce efectos opuestos según apunte <b>hacia fuera</b> (la amenaza, el juicio, el futuro temido) o <b>hacia dentro</b> (la sensación presente en el cuerpo).</p>
+      <p><b>2 · Importa la cualidad.</b> Dirigir la atención al cuerpo no basta: regula cuando es <b>no contingente, receptiva y sin finalidad de alivio</b>. Con la cualidad equivocada es hipervigilancia.</p>
+      <p><b>3 · El objetivo no es calmarse.</b> Es cambiar la relación con la señal: poder estar con lo que se siente y, desde ahí, <b>elegir</b> en lugar de reaccionar. La calma, si llega, es subproducto.</p>
+    </div>
+    <div class="note acc">«No vengo a cambiarte. Vengo a estar contigo.» · «Es activación, no es peligro.» · «Respirar no es relajarte: es aparecer.»</div>
+    <p class="tools-lbl">Empieza por las metáforas base en APRENS</p>
+    <div class="tools" data-tools="quien_conduce la_manada modelo_atencional historia_animada"></div>
+  </section>
+
+  <section class="sec" id="s-pilares" data-label="4 pilares" data-grp="Aprender">
+    <span class="kick">Capítulo 3</span>
+    <h2>Los cuatro pilares</h2>
+    <p class="muted">Un sistema, no cuatro piezas sueltas: interocepción, vector, latencia y presencia se refuerzan entre sí.</p>
+
+    <details class="acc" open><summary><span class="n">1</span><span class="t">La interocepción como conducta</span><span class="chev">›</span></summary>
+      <div class="body">
+        <p>Dirigir la atención a señales internas concretas (pecho, barriga, cuello/garganta) y sostenerla sin analizar ni juzgar es un <b>acto entrenable</b>, no una sensación pasiva. Se hace, no se espera.</p>
+        <p class="small muted">Sustrato: ínsula anterior, redes prefrontales de regulación descendente, nervio vago (caps. 5.2–5.7).</p>
+        <div class="tools" data-tools="mapa_atencion_interna ais_curiosidad ais_basicas ais_muscular"></div>
+      </div></details>
+
+    <details class="acc"><summary><span class="n">2</span><span class="t">La atención como vector causal</span><span class="chev">›</span></summary>
+      <div class="body">
+        <p>Su <b>dirección</b> y su <b>cualidad</b> determinan qué repertorio de respuestas queda disponible: amenaza → lucha, huida o bloqueo; presencia → observar y elegir. Pruébalo en el <a href="#" data-go="s-vector">laboratorio del vector</a>.</p>
+        <div class="tools" data-tools="quien_conduce modelo_atencional historia_control"></div>
+      </div></details>
+
+    <details class="acc"><summary><span class="n">3</span><span class="t">La latencia como espacio terapéutico</span><span class="chev">›</span></summary>
+      <div class="body">
+        <p>El intervalo entre activación y respuesta es <b>donde</b> ocurre o no el cambio. Es medible y transversal a cualquier orientación. Con latencia corta manda el automatismo; con latencia ampliada hay espacio para elegir.</p>
+        <div class="tools" data-tools="bajar_alerta herramienta_diaria control_ira"></div>
+      </div></details>
+
+    <details class="acc"><summary><span class="n">4</span><span class="t">La presencia como autoorganización</span><span class="chev">›</span></summary>
+      <div class="body">
+        <p>El estado que emerge cuando los tres anteriores se integran. No es el objetivo: es la <b>condición</b> para la conducta con valor. Imagen del libro: un <b>centro de gravedad</b> alrededor del cual lo periférico (rumiación, impulsos) orbita sin capturarlo.</p>
+        <div class="tools" data-tools="ais_amor estoy_aqui_conmigo brujula_valores"></div>
+      </div></details>
+
+    <h3>Los tres parámetros: L · D · C</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Parámetro</th><th>Qué es</th><th>Dirección deseable</th></tr>
+      <tr><td><b>Latencia (L)</b></td><td>Tiempo entre la activación interna y la respuesta automática. El espacio de elección.</td><td><b>↑ ampliar</b> · &lt;5 s capturado · 5–15 s en desarrollo · &gt;15 s integración</td></tr>
+      <tr><td><b>Densidad (D)</b></td><td>Ruido interno: microoscilaciones emocionales que compiten con la señal corporal. La calidad del espacio.</td><td><b>↓ menos ruido</b></td></tr>
+      <tr><td><b>Continuidad (C)</b></td><td>Capacidad de sostener el trazo atencional sin fragmentarse. Si el espacio puede habitarse.</td><td><b>↑ sostener</b> · inicio 5–15 s; con semanas, 60 s o más</td></tr>
+    </table></div>
+    <div class="note gold">Son <b>circulares</b>: bajar D facilita ampliar L; ampliar L con práctica fortalece C; más C baja D en el siguiente ciclo. Por eso el progreso tiende a acelerarse tras las primeras semanas.</div>
+    <div class="row"><button class="btn soft" data-go="s-perfil">Calcular un perfil ICE →</button><button class="btn ghost" data-go="s-mio">Medir mis L·D·C →</button></div>
+  </section>
+
+  <section class="sec" id="s-vector" data-label="Vector" data-grp="Aprender">
+    <span class="kick">Laboratorio 1 · Capítulo 4</span>
+    <h2>El vector atencional</h2>
+    <p>Mueve la <b>dirección</b> y elige la <b>cualidad</b>. Observa qué repertorio de respuestas queda disponible y qué predice la TEC para L·D·C.</p>
+    <div class="card">
+      <label class="f" for="vDir">Dirección: <span class="rv" id="vDirLbl"></span></label>
+      <input type="range" id="vDir" min="-100" max="100" value="-70" aria-describedby="vDirLbl">
+      <div class="row small muted" style="justify-content:space-between;margin-top:0"><span>← hacia fuera (amenaza, juicio, futuro)</span><span>hacia dentro (sensación presente) →</span></div>
+      <label class="f">Cualidad del vector</label>
+      <div class="seg" id="vQual">
+        <button type="button" data-q="vig" class="on">Vigilante · contingente</button>
+        <button type="button" data-q="rec">Receptiva · no contingente</button>
+      </div>
+      <svg id="vSvg" class="chart" viewBox="0 0 320 200" style="max-width:420px;margin:14px auto 0" role="img" aria-label="Diagrama de la dirección del vector atencional"></svg>
+      <div id="vOut"></div>
+    </div>
+    <div class="note blue small"><b>Por qué la metáfora importa.</b> Un vector tiene magnitud, dirección y punto de aplicación. Decir «presta más atención» no basta: la clínica trabaja la dirección y la cualidad, no la cantidad.</div>
+    <div class="tools" data-tools="quien_conduce historia_animada donde_esta_mono estado_mono"></div>
+  </section>
+
+  <section class="sec" id="s-cadena" data-label="Cadena" data-grp="Aprender">
+    <span class="kick">Laboratorio 2 · Capítulos 5.9 y 8</span>
+    <h2>La cadena que mantiene el malestar</h2>
+    <p>Toca cada eslabón. Después cambia a la ruta AIS para ver dónde se interviene.</p>
+    <div class="seg" id="chMode"><button type="button" data-m="hab" class="on">Ruta habitual</button><button type="button" data-m="ais">Ruta AIS</button></div>
+    <div class="grid2">
+      <div class="chain" id="chain"></div>
+      <div class="card" id="chainInfo" aria-live="polite"></div>
+    </div>
+    <div class="note warn small"><b>El sobrepensamiento es una conducta</b> mantenida por refuerzo negativo, no un rasgo. No se discute el contenido: se ofrece otra cosa en el punto exacto donde la sensación se convierte en discurso. Y la evitación «funcionó»: se nombra con amabilidad, nunca como fallo.</div>
+    <div class="tools" data-tools="modelo_atencional historia_control acompanar_sensacion escalera_exposicion"></div>
+  </section>
+
+  <section class="sec" id="s-afeccion" data-label="Afección segura" data-grp="Aprender">
+    <span class="kick">Laboratorio 3 · Capítulo 9</span>
+    <h2>La afección interna segura</h2>
+    <p>La conciencia que acompaña sin exigir puede funcionar como una <b>figura de apego interna</b>: el organismo registra que no está solo y el sistema de amenaza afloja. <span class="tag h">Hipótesis TEC</span></p>
+    <div class="card">
+      <b>¿Cuándo acude tu atención a tu cuerpo?</b>
+      <div class="row" id="apegoQ">
+        <button class="chip" type="button" data-a="ans">Sobre todo cuando algo va mal</button>
+        <button class="chip" type="button" data-a="evi">Intento no notarlo, lo controlo o lo aparto</button>
+        <button class="chip" type="button" data-a="seg">Varias veces al día, también cuando estoy bien</button>
+      </div>
+      <div id="apegoOut" aria-live="polite"></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <tr><th>La atención…</th><th>Patrón</th><th>Qué aprende el cuerpo</th></tr>
+      <tr><td>acude solo cuando hay alarma</td><td>ansioso</td><td>a activarse para ser atendido («alarma con función de demanda»)</td></tr>
+      <tr><td>ignora, suprime o controla la señal</td><td>evitativo</td><td>que su señal no cuenta</td></tr>
+      <tr><td>acude sin necesidad, también en calma</td><td><b>seguro</b></td><td>que no hace falta demandar</td></tr>
+    </table></div>
+    <h3>El aire como cebo</h3>
+    <p>La respiración no calma por el oxígeno: calma porque <b>mueve la atención hacia dentro</b>. Si la atención va a «hacerlo bien» (técnica, profundidad), el mecanismo falla. «Tú eres su conciencia; para él eres invisible: por eso respiras.»</p>
+    <h3>La honestidad emocional</h3>
+    <p>Decir «no sé por qué, pero siento esto aquí» (señalando, tono sereno) es la conciencia <b>dando la cara por el cuerpo</b>. La seguridad no depende de la respuesta del receptor. Gradación: a solas → terapeuta → vínculos de confianza creciente.</p>
+    <div class="quote">«No practicas para sentir menos; practicas para que tu mono aprenda que, cuando tiene miedo, alguien se queda a su lado.»</div>
+    <div class="tools" data-tools="la_manada historia_manada respiro_ais honestidad_emocional ais_amor estoy_aqui_conmigo"></div>
+  </section>
+
+  <section class="sec" id="s-sentir" data-label="Sentir · pensar" data-grp="Aprender">
+    <span class="kick">Laboratorio 4 · Capítulos 5.6 y 11.1</span>
+    <h2>Sentir, pensar, interpretar</h2>
+    <p>El AIS opera <b>solo en el nivel de sentir</b>. Clasifica cada frase. Si una frase piensa o interpreta, la pregunta que devuelve al cuerpo es: <b>«¿y dónde lo notas?»</b></p>
+    <div class="card" id="sentirQuiz"></div>
+    <h3>¿AIS o hipervigilancia?</h3>
+    <p class="muted">Comparten el objeto (el cuerpo) pero no la función. Responde pensando en tu forma habitual de mirar hacia dentro.</p>
+    <div class="card" id="hiperQuiz"></div>
+    <div class="tools" data-tools="mapa_atencion_interna acompanar_sensacion honestidad_emocional"></div>
+  </section>
+
+  <!-- ===================== PRACTICAR ===================== -->
+  <section class="sec" id="s-ais" data-label="Práctica AIS" data-grp="Practicar">
+    <span class="kick">Capítulo 11 · Anexo D</span>
+    <h2>La práctica AIS guiada</h2>
+    <p class="muted">Cuatro pasos · 3 a 7 minutos · Practícalo también cuando no lo necesites.</p>
+    <div class="card" id="aisBox"></div>
+    <div class="card">
+      <b>Tus prácticas</b>
+      <div id="aisStats"></div>
+    </div>
+    <div class="tools" data-tools="respiro_ais herramienta_diaria ais_basicas protocolo_ais tracker_ais tracker_tec fondos_frases"></div>
+  </section>
+
+  <section class="sec" id="s-mio" data-label="Mis L·D·C" data-grp="Practicar">
+    <span class="kick">Laboratorio personal</span>
+    <h2>Mide tus L · D · C</h2>
+    <p>Tres medidas rápidas de autoinforme. Son <b>orientativas</b>, no diagnósticas: sirven para ver tu evolución. En las tres, la gráfica muestra hacia dónde es mejor.</p>
+    <div class="grid3">
+      <div class="card">
+        <b>L · Latencia</b>
+        <p class="small muted">Piensa en la última vez que algo te activó hoy. ¿Cuántos segundos pasaron entre notar la activación y reaccionar?</p>
+        <input type="number" id="mL" min="0" max="300" step="1" placeholder="segundos" inputmode="numeric" aria-label="Latencia en segundos">
+        <p class="small" id="mLb"></p>
+      </div>
+      <div class="card">
+        <b>D · Ruido interno</b>
+        <p class="small muted">De 0 a 10, ¿cuánto ruido interno notas ahora?</p>
+        <input type="range" id="mD" min="0" max="10" value="5" aria-label="Ruido interno de 0 a 10"> <span class="rv" id="mDv">5</span>
+      </div>
+      <div class="card">
+        <b>C · Continuidad</b>
+        <p class="small muted">Lleva la atención a tu barriga o pecho. <b>Mantén pulsado</b> mientras sigues ahí; suelta cuando notes que se ha ido.</p>
+        <button class="hold" id="mHold" type="button">Mantén pulsado</button>
+        <p class="small center" id="mCv"></p>
+      </div>
+    </div>
+    <div class="row"><button class="btn" id="mSave" type="button">Guardar medida</button><span class="small muted" id="mMsg" aria-live="polite"></span></div>
+    <div class="card">
+      <b>Tu evolución</b>
+      <div id="mChart"></div>
+    </div>
+    <div class="note small"><b>Ojo con «cuanto más, mejor».</b> Una latencia larga con mucho ruido puede ser parálisis, no espacio; más de 45 s puede ser inhibición o evitación encubierta. Coméntalo con tu psicólogo/a.</div>
+    <div class="tools" data-tools="cuestionario_tec screening_tec tracker_tec estado_mono"></div>
+  </section>
+
+  <!-- ===================== MEDIR (PROFESIONAL) ===================== -->
+  <section class="sec" id="s-perfil" data-label="Hoja ICE" data-grp="Medir">
+    <span class="kick">Capítulo 12 · Anexos A y B</span>
+    <h2>Hoja ICE digital y perfil de regulación</h2>
+    <p>Introduce los valores pre y post (Protocolo ICE completo o versión observacional). El laboratorio calcula el perfil según la tabla B.2, los deltas y las señales de alarma.</p>
+    <div class="row">
+      <span class="small"><b>Densidad en:</b></span>
+      <div class="seg" id="dMode"><button type="button" data-d="pct" class="on">% Beta (EEG)</button><button type="button" data-d="vas">Ruido 0–10 (autoinforme)</button></div>
+    </div>
+    <div class="grid2">
+      <div class="card" id="icePre"></div>
+      <div class="card" id="icePost"></div>
+    </div>
+    <div class="card">
+      <div class="grid2">
+        <div><label class="f" for="iceBloque">Bloque más activante (Fase B)</label>
+          <select id="iceBloque"><option value="">—</option><option value="1">1 · Vínculo</option><option value="2">2 · Control</option><option value="3">3 · Identidad</option><option value="4">4 · Ruptura</option></select></div>
+        <div><label class="f" for="iceFen">Descripción fenomenológica post</label>
+          <select id="iceFen"><option value="si">Describe lo que ha notado</option><option value="no">«No he notado nada»</option></select></div>
+      </div>
+    </div>
+    <div id="iceOut" aria-live="polite"></div>
+    <details class="acc"><summary><span class="n">A</span><span class="t">Guion del Protocolo ICE (19–22 min)</span><span class="chev">›</span></summary>
+      <div class="body small">
+        <p><b>Fase A · Pretest (2 min).</b> Encuadre · línea de base ojos cerrados 60 s · respiración 4·2·6 (4 ciclos) · identificación corporal + VAS 0–10.</p>
+        <p><b>Fase B · Estimulación emocional (10 min).</b> Cuatro bloques de 90 s + 30 s de observación: 1 Vínculo · 2 Control · 3 Identidad · 4 Ruptura.</p>
+        <p><b>Fase C · Regulación guiada AIS (5 min).</b> Anclaje barriga 10 s («el aire es el hilo») · sostener sin modificar 60–90 s · frase honesta interna · reorganización 60–90 s.</p>
+        <p><b>Fase D · Postest (2 min).</b> Línea de base post · VAS post · «¿Cómo describirías lo que has notado?»</p>
+        <p class="muted">Referencias: L &lt;5 s capturado, 5–15 en desarrollo, &gt;15 consolidado · D &lt;40 % regulado, 40–60 moderado, &gt;60 hiperactivado · C &lt;10 s fragmentado, 10–30 moderado, &gt;30 consolidado. Umbrales de biomarcadores candidatos, pendientes de validación.</p>
+      </div></details>
+    <div class="tools" data-tools="screening_tec cuestionario_tec evaluacion_trauma dolor_cronico mapa_pareja"></div>
+  </section>
+
+  <section class="sec" id="s-n1" data-label="Diseño N=1" data-grp="Medir">
+    <span class="kick">Capítulo 13 · Anexo E</span>
+    <h2>Laboratorio N=1</h2>
+    <p>El diseño de caso único con medidas repetidas es «el laboratorio del clínico». Registro diario ultra-breve (≤2 min) con las columnas de la plantilla E.2, fases ABAB, gráfica y tamaño del efecto.</p>
+    <div class="card">
+      <div class="grid2">
+        <div><label class="f" for="nId">Código del paciente (nunca nombre real)</label><input type="text" id="nId" maxlength="12" placeholder="P001"></div>
+        <div><label class="f" for="nFase">Fase ABAB</label>
+          <select id="nFase"><option>A1</option><option>B1</option><option>A2</option><option>B2</option></select></div>
+      </div>
+      <p class="small muted">A1 línea base (2 sem.) · B1 intervención AIS (4 sem.) · A2 retirada (1 sem.) · B2 reintroducción (4 sem.).</p>
+    </div>
+    <div class="card">
+      <b>Registro del día</b>
+      <div class="grid2">
+        <div><label class="f" for="nFecha">Fecha</label><input type="date" id="nFecha"></div>
+        <div><label class="f" for="nPract">Nº de prácticas AIS</label><select id="nPract"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3+</option></select></div>
+        <div><label class="f">¿Micro-acción con valor hoy, aunque sintieras activación?</label><div class="seg" id="nCV"><button type="button" data-v="0">0 · No</button><button type="button" data-v="1">1 · Sí</button></div></div>
+        <div><label class="f">¿Usaste la frase honesta?</label><div class="seg" id="nFH"><button type="button" data-v="0">0 · No</button><button type="button" data-v="1">1 · Sí</button></div></div>
+        <div><label class="f" for="nAct">Activación media del día (0–10): <span class="rv" id="nActV">5</span></label><input type="range" id="nAct" min="0" max="10" value="5"></div>
+        <div><label class="f" for="nZona">Zona de activación</label><select id="nZona"><option>Pecho</option><option>Barriga</option><option>Garganta</option><option>Hombros</option><option>Otro</option></select></div>
+        <div><label class="f" for="nLat">Latencia estimada (s, opcional)</label><input type="number" id="nLat" min="0" max="300" inputmode="numeric"></div>
+        <div><label class="f" for="nCVd">Micro-acción (opcional)</label><input type="text" id="nCVd" maxlength="200"></div>
+      </div>
+      <label class="f" for="nNotas">Notas (opcional)</label><textarea id="nNotas" maxlength="300"></textarea>
+      <div class="row"><button class="btn" id="nSave" type="button">Guardar día</button><span class="small muted" id="nMsg" aria-live="polite"></span></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <b>Serie temporal</b>
+        <select id="nVar" style="width:auto;max-width:100%" aria-label="Variable a representar">
+          <option value="act">Activación (0–10) · ↓ mejor</option>
+          <option value="cv">Conducta valiosa (media móvil 7 d) · ↑ mejor</option>
+          <option value="pr">Nº prácticas · ↑</option>
+          <option value="lat">Latencia estimada (s) · ↑ mejor</option>
+        </select>
+      </div>
+      <div id="nChart"></div>
+      <div id="nStats"></div>
+    </div>
+    <div class="card">
+      <b>Datos</b>
+      <div class="row">
+        <button class="btn soft" id="nCsv" type="button">Descargar CSV (Anexo E.2)</button>
+        <label class="small"><input type="checkbox" id="nExtra"> añadir columnas extra (fase_abab, latencia_estimada_seg)</label>
+      </div>
+      <div class="tbl-wrap" id="nTable"></div>
+      <button class="btn ghost" id="nClear" type="button">Borrar todos los registros</button>
+    </div>
+    <h3>Las hipótesis verificables</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>H</th><th>Hipótesis</th><th>Criterio de apoyo</th></tr>
+      <tr><td>H1</td><td>El AIS amplía la latencia más que el control activo (respiración + distracción).</td><td>AIS ↑ L vs. control en ≥ 70 % de ensayos</td></tr>
+      <tr><td>H2</td><td>4–8 semanas de AIS reducen la densidad basal.</td><td>Reducción ≥ 15 % en % Beta basal</td></tr>
+      <tr><td>H3</td><td>La práctica diaria aumenta la conducta valiosa en activación.</td><td>↑ proporción de 1 en semanas 4–8 vs. 1–2</td></tr>
+      <tr><td>H4</td><td>La latencia predice la conducta valiosa mejor que la intensidad emocional.</td><td>r ≥ 0.4 (correlación cruzada retardada)</td></tr>
+    </table></div>
+    <div class="note gold small">Umbral de efecto clínicamente relevante fijado antes de recoger datos: <b>d ≥ 0.5 o Tau-U ≥ 0.65</b>. Si los efectos quedan por debajo, la hipótesis queda debilitada. Eso es lo que hace al diseño falsable.</div>
+  </section>
+
+  <section class="sec" id="s-meta" data-label="Metamodelo" data-grp="Medir">
+    <span class="kick">Capítulo 14</span>
+    <h2>La TEC como metamodelo</h2>
+    <p>La tabla maestra traduce los constructos de cada orientación al lenguaje funcional de la TEC. No afirma que sean idénticos: afirma que son <b>funcionalmente solapados</b> y, por tanto, comparables con un mismo metro.</p>
+    <div class="seg" id="metaSeg"></div>
+    <div class="card" id="metaOut"></div>
+    <h3>Lo que la TEC afirma, y con qué fuerza</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>Afirmación</th><th>Tipo</th></tr>
+      <tr><td>La dirección de la atención modifica el estado neurofisiológico.</td><td><span class="tag f">Fuerte</span></td></tr>
+      <tr><td>La latencia atencional es un indicador del espacio de elección disponible.</td><td><span class="tag h">Hipótesis central</span></td></tr>
+      <tr><td>El entrenamiento atencional e interoceptivo se asocia a cambios en redes de interocepción y regulación.</td><td><span class="tag e">Convergente (moderada)</span></td></tr>
+      <tr><td>El AIS produce neuroplasticidad específica en esas redes.</td><td><span class="tag h">Hipótesis no demostrada</span></td></tr>
+      <tr><td>L/D/C capturan el cambio terapéutico de forma completa.</td><td><span class="tag d">Débil</span></td></tr>
+      <tr><td>El AIS tiene efectos diferenciales frente a otras regulaciones.</td><td><span class="tag d">Débil</span></td></tr>
+      <tr><td>El Co-AIS produce regulación sistémica emergente.</td><td><span class="tag d">Especulativa</span></td></tr>
+    </table></div>
+    <div class="note blue small">«No somos la causa, somos la forma responsable.» La TEC no se presenta como teoría definitiva, sino como un programa de investigación clínica abierto a contrastación, crítica y falsabilidad. El lenguaje cuántico del libro es analogía acotada, nunca mecanismo.</div>
+  </section>
+
+  <!-- ===================== ECOSISTEMA ===================== -->
+  <section class="sec" id="s-perfiles" data-label="Por situación" data-grp="APRENS">
+    <span class="kick">Capítulos 11.6, 15 y 16</span>
+    <h2>La teoría aplicada a cada situación</h2>
+    <p>Cómo se adapta el AIS según el perfil, y qué herramienta APRENS lo lleva a la práctica.</p>
+    <div id="perfilesList"></div>
+  </section>
+
+  <section class="sec" id="s-eco" data-label="Mapa APRENS" data-grp="APRENS">
+    <span class="kick">Ecosistema</span>
+    <h2>Mapa de herramientas APRENS por concepto TEC</h2>
+    <p>Todas las herramientas hablan el mismo idioma: misma secuencia, mismos parámetros y mismas consignas. Este mapa las ordena según la pieza de la teoría que entrenan.</p>
+    <div id="ecoList"></div>
+  </section>
+
+  <section class="sec" id="s-glosario" data-label="Glosario" data-grp="APRENS">
+    <span class="kick">Anexo F</span>
+    <h2>Glosario TEC</h2>
+    <input type="text" id="glQ" placeholder="Buscar término…" aria-label="Buscar en el glosario">
+    <div id="glList"></div>
+  </section>
+
+  <div class="safety">
+    <b>Uso responsable.</b> Este laboratorio es psicoeducativo y complementa, no sustituye, el acompañamiento profesional ni los tratamientos en curso. Los índices son orientativos, no diagnósticos ni validados. Si estás en riesgo o tienes pensamientos de hacerte daño, contacta con tu psicólogo/a o llama al <b>112</b> (emergencias) o al <b>024</b> (línea de atención a la conducta suicida, España). En psicosis activa, fase maníaca o riesgo autolítico elevado, el AIS no se introduce de forma rutinaria.<br>
+    <b>Privacidad.</b> Todo lo que registras se guarda solo en este dispositivo. Nada sale a servidores.
+  </div>
+  <p class="foot">Centre APRENS · Psicologia — Tòfol Villalonga Melis · TEC 2026</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(s,r){return (r||document).querySelector(s);};
+  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var esc = function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});};
+
+  /* ---------- Almacenamiento local (solo este dispositivo) ---------- */
+  var KEY = "aprens.labtec.";
+  var S = {
+    get:function(k,d){ try{ var v = localStorage.getItem(KEY+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+    set:function(k,v){ try{ localStorage.setItem(KEY+k, JSON.stringify(v)); }catch(e){} }
+  };
+  var today = function(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+
+  /* ---------- Tema ---------- */
+  (function(){
+    var t = S.get("theme", null);
+    if(t) document.documentElement.setAttribute("data-theme", t);
+    $("#themeBtn").onclick = function(){
+      var cur = document.documentElement.getAttribute("data-theme");
+      var dark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      var nx = dark ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nx); S.set("theme", nx);
+    };
+  })();
+
+  /* ---------- Herramientas APRENS (ids de js/registry.js) ---------- */
+  var TOOLS = {
+    cuestionario_tec:["📝","Cuestionario TEC"], estado_mono:["🐒","Estado del mono"], donde_esta_mono:["🔍","¿Dónde está el mono?"],
+    agenda_atencional:["🗓️","Agenda atencional"], ais_curiosidad:["🌱","AIS curiosidad"], bajar_alerta:["🫁","Bajar la alerta"],
+    respiro_ais:["💛","Respiro · dos luces"], brujula_valores:["🧭","Brújula de valores"], acompanar_sensacion:["🤝","Acompañar la sensación"],
+    ais_basicas:["🧰","Herramientas AIS básicas"], ais_amor:["🤍","AIS desde el amor"], ais_muscular:["💪","AIS muscular"],
+    herramienta_diaria:["🌿","Herramienta diaria"], protocolo_ais:["🎧","Protocolo AIS (audio)"], control_ira:["🔥","Control de ira"],
+    retorno_trabajo:["💼","Retorno al trabajo"], tracker_ais:["🧰","Tracker AIS"], tracker_tec:["📊","Tracker TEC"],
+    screening_tec:["🧪","Screening TEC/AIS"], evaluacion_trauma:["🧭","Evaluación de trauma"], mapa_atencion_interna:["🫀","Mapa interno"],
+    honestidad_emocional:["🤍","Honestidad emocional"], escalera_exposicion:["🪜","La escalera (exposición)"], exploradora_valiente:["🗺️","La exploradora valiente"],
+    ritual_calma:["🌙","Ritual diario"], rincon_calma:["🧸","Rincón de calma"], pedalea_desde_dentro:["🚵","Pedalea desde dentro"],
+    entre_punto_y_punto:["🎾","Entre punto y punto"], estoy_aqui_conmigo:["🤍","Estoy aquí conmigo"], toco_desde_dentro:["🚪","Toco desde dentro"],
+    cuento_familia:["🐨","La familia de Koa"], tiempo_limite:["⏱️","El tiempo límite"], peques_desbordamiento:["🌊","Cuando todo se hace demasiado"],
+    cuentos_nil:["📖","Los cuentos de Nil"], fondos_frases:["🖼️","Fondos de frases"], quien_conduce:["🧭","¿Quién conduce tu vida?"],
+    la_manada:["🐾","La manada"], modelo_atencional:["🧠","El control y la presencia"], historia_animada:["🎬","Historia del mono · animada"],
+    historia_manada:["🎬","La manada · animada"], historia_control:["🎬","Control y presencia · animada"], llave_de_paso:["🔧","La llave de paso"],
+    cuerpo_en_alerta:["🌿","Cuando el cuerpo sigue en alerta"], mapa_pareja:["💞","Mapa de Pareja"], dolor_cronico:["🩹","Dolor crónico"],
+    salidas_paso_a_paso:["🚶","Paso a paso · salidas"]
+  };
+  // Si el registro del hub está disponible (mismo origen), sus nombres mandan.
+  var hub = null;
+  try{ if(window.parent && window.parent !== window && window.parent.APRENS_TOOLS) hub = window.parent; }catch(e){ hub = null; }
+  if(hub){ hub.APRENS_TOOLS.forEach(function(t){ if(TOOLS[t.id]) TOOLS[t.id] = [t.emoji, t.nombre]; }); }
+
+  function toolChip(id){
+    var t = TOOLS[id]; if(!t) return "";
+    return '<a class="tl" href="../index.html#/tool/'+id+'" target="_top" data-tool="'+id+'"><span>'+t[0]+'</span>'+esc(t[1])+' <span class="ar">→</span></a>';
+  }
+  function toolsHTML(ids){ return ids.split(/\s+/).filter(Boolean).map(toolChip).join(""); }
+  function paintTools(root){ $$("[data-tools]", root).forEach(function(el){ el.innerHTML = toolsHTML(el.getAttribute("data-tools")); }); }
+  document.addEventListener("click", function(e){
+    var a = e.target.closest && e.target.closest("a[data-tool]");
+    if(!a) return;
+    if(hub){ e.preventDefault(); try{ hub.location.hash = "#/tool/" + a.getAttribute("data-tool"); }catch(err){ location.href = a.href; } }
+  });
+
+  /* ---------- Navegación por secciones ---------- */
+  var secs = $$("section.sec");
+  var nav = $("#nav"), lastGrp = "", hist = [];
+  secs.forEach(function(s){
+    var g = s.getAttribute("data-grp");
+    if(g !== lastGrp){ var sp = document.createElement("span"); sp.className="grp"; sp.textContent=g; nav.appendChild(sp); lastGrp=g; }
+    var b = document.createElement("button"); b.type="button"; b.textContent = s.getAttribute("data-label"); b.setAttribute("data-sec", s.id);
+    b.onclick = function(){ show(s.id, true); };
+    nav.appendChild(b);
+  });
+  function show(id, push){
+    var cur = $("section.sec.on");
+    if(cur && cur.id === id) return;
+    if(push && cur) hist.push(cur.id);
+    secs.forEach(function(s){ s.classList.toggle("on", s.id===id); });
+    $$("#nav button").forEach(function(b){ var on=b.getAttribute("data-sec")===id; b.classList.toggle("on", on); if(on && b.scrollIntoView) b.scrollIntoView({block:"nearest",inline:"center"}); });
+    S.set("sec", id);
+    var n = $(".nav"); if(n && window.scrollY > n.offsetTop) window.scrollTo(0, n.offsetTop);
+  }
+  document.addEventListener("click", function(e){
+    var g = e.target.closest && e.target.closest("[data-go]");
+    if(g){ e.preventDefault(); show(g.getAttribute("data-go"), true); }
+  });
+  // Gancho del botón «← Atrás» del hub APRENS: retrocede entre secciones.
+  window.APRENS_toolBack = function(){ if(hist.length){ show(hist.pop(), false); return true; } return false; };
+
+  function seg(el, cb){
+    $$("button", el).forEach(function(b){ b.addEventListener("click", function(){ $$("button", el).forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); cb(b); }); });
+  }
+
+  /* ---------- Lab 1 · Vector ---------- */
+  (function(){
+    var dir = $("#vDir"), q = "vig";
+    seg($("#vQual"), function(b){ q = b.getAttribute("data-q"); draw(); });
+    dir.addEventListener("input", draw);
+    function draw(){
+      var v = +dir.value, inward = v > 15, outward = v < -15;
+      $("#vDirLbl").textContent = outward ? "hacia fuera" : inward ? "hacia dentro" : "oscilando";
+      // Diagrama: cuerpo al centro, «amenazas» en los extremos.
+      var t = (v+100)/200; // 0 fuera … 1 dentro
+      var col = "var(--acc)";
+      var svg = '<circle cx="160" cy="105" r="46" fill="none" stroke="var(--line)" stroke-dasharray="2 4"/>'
+        + '<circle cx="160" cy="105" r="'+(8+t*14)+'" fill="'+col+'" opacity="'+(0.35+t*0.6)+'"/>'
+        + '<text x="160" y="175" text-anchor="middle" font-size="11" fill="var(--muted)">sensación presente</text>';
+      var pts = [[24,40,"juicio"],[296,40,"futuro"],[24,170,"amenaza"],[296,170,"pasado"]];
+      pts.forEach(function(p){
+        var x1=160, y1=105, x2=p[0], y2=p[1];
+        var sx = inward ? x2 : x1, sy = inward ? y2 : y1, ex = inward ? x1+(x2-x1)*0.32 : x2+(x1-x2)*0.12, ey = inward ? y1+(y2-y1)*0.32 : y2+(y1-y2)*0.12;
+        if(!inward && !outward){ ex = x1+(x2-x1)*0.6; ey = y1+(y2-y1)*0.6; sx=x1+(x2-x1)*0.35; sy=y1+(y2-y1)*0.35; }
+        svg += '<circle cx="'+x2+'" cy="'+y2+'" r="'+(outward?9:5)+'" fill="var(--warn)" opacity="'+(outward?0.9:0.35)+'"/>'
+          + '<text x="'+x2+'" y="'+(y2<100?y2-14:y2+22)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+p[2]+'</text>'
+          + '<line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" stroke="'+(inward?col:"var(--warn)")+'" stroke-width="2.4" marker-end="url(#'+(inward?'vah-a':'vah-w')+')" stroke-dasharray="'+(q==="vig"&&inward?"4 4":"none")+'"/>';
+      });
+      $("#vSvg").innerHTML = '<defs><marker id="vah-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--acc)"/></marker><marker id="vah-w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--warn)"/></marker></defs>' + svg;
+      var out;
+      if(outward) out = ['warn','Vector capturado por la amenaza','Repertorio disponible: <b>lucha, huida o bloqueo</b>. El cuerpo responde a lo representado como si fuera presente.','L ↓ · D ↑ · C ↓'];
+      else if(!inward) out = ['gold','Vector oscilante','La atención salta entre fuera y dentro. Hay momentos de espacio, pero el trazo se fragmenta.','L ≈ · D ↑ · C ↓'];
+      else if(q==="vig") out = ['warn','Hacia dentro, pero vigilante: hipervigilancia interoceptiva','Misma dirección, distinta función: escanear, comprobar, buscar alivio o certeza. La señal <b>gana</b> valor de amenaza.','L ↓ · D ↑ (vector hacia dentro)'];
+      else out = ['ok','Hacia dentro y receptivo: presencia (AIS)','Repertorio disponible: <b>observar y elegir</b>. La señal pierde valor de amenaza; se abre la pregunta «¿cuál es el siguiente paso con valor?».','L ↑ · D ↓ · C ↑'];
+      $("#vOut").innerHTML = '<div class="note '+out[0]+'"><b>'+out[1]+'</b><br>'+out[2]+'<br><span class="small">Predicción TEC: <b>'+out[3]+'</b></span></div>';
+    }
+    draw();
+  })();
+
+  /* ---------- Lab 2 · Cadena funcional ---------- */
+  (function(){
+    var HAB = [
+      ["Lenguaje / imagen mental","Pensar en lo temido","El cuerpo responde a lo representado como si fuera presente: «descontextualización fisiológica».",""],
+      ["Activación corporal","Señal interoceptiva","Presión en el pecho, nudo en la barriga, garganta cerrada. Es activación, no es peligro.",""],
+      ["Necesidad de control","Sobrepensamiento / rumiación","Buscar causas y soluciones da una sensación momentánea de control. «La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",""],
+      ["Evitación / compulsión","Interna o externa","Comprobar, distraerse, huir, discutir, consumir… Las dependencias externas son formas de buscar fuera la seguridad que no se sabe generar dentro.",""],
+      ["Alivio inmediato","Refuerzo negativo (R−)","Funciona a corto plazo. Por eso se repite: la evitación queda reforzada.",""],
+      ["Mantenimiento","L ↓ · D ↑ · generalización","La sensación queda marcada como amenaza: más sensibilidad, latencia más corta, más ruido, y se generaliza a sensaciones neutras.",""]
+    ];
+    var AIS = [
+      ["Lenguaje / imagen mental","El mismo disparador","El AIS no exige que deje de aparecer.",""],
+      ["Activación corporal","Señal interoceptiva","Aquí se interviene: en el punto exacto donde la sensación se convierte en discurso.",""],
+      ["① PARA · STOP","Interrumpir el automatismo","«Un momento.» Di STOP mentalmente. Aunque no sientas nada, la presencia ya está actuando.","ais"],
+      ["② SIENTE · anclaje S·R·S·A","Sentir · Respirar · Sostener · Acompañar","«¿Dónde lo noto?» Inhala hacia esa zona (el aire es el cebo). No la cambies: acompáñala 20–60 s.","ais"],
+      ["③ ACOMPAÑA · frase honesta","«No sé por qué, pero lo noto aquí»","Bloquea la explicación y da la cara por el cuerpo. Es extinción interoceptiva: sostener sin evitar.","ais"],
+      ["④ ACTÚA · micro-acción con valor","«¿Qué haría la persona que quiero ser?»","Pequeña, observable, realizable ahora y no orientada al alivio. Cierra el ciclo con conducta.","ais"],
+      ["Nuevo aprendizaje","L ↑ · D ↓ · C ↑","La sensación cambia de función. Extinguir no es borrar: puede volver, y por eso la práctica se mantiene.","ais"]
+    ];
+    var mode = "hab", sel = 0;
+    seg($("#chMode"), function(b){ mode = b.getAttribute("data-m"); sel = mode==="ais"?2:0; draw(); });
+    function draw(){
+      var L = mode==="ais" ? AIS : HAB;
+      $("#chain").innerHTML = L.map(function(l,i){
+        return (i?'<div class="arrow-down">↓</div>':'') + '<div class="link '+(l[3]||'')+(i===sel?' on':'')+'" data-i="'+i+'" role="button" tabindex="0"><span class="dot"></span><div><div class="lt">'+esc(l[0])+'</div><div class="ls">'+esc(l[1])+'</div></div></div>';
+      }).join("");
+      var l = L[sel];
+      $("#chainInfo").innerHTML = '<span class="kick">'+(mode==="ais"?"Ruta AIS":"Ruta habitual")+'</span><h3>'+esc(l[0])+'</h3><p>'+esc(l[2])+'</p>'
+        + (mode==="hab" && sel===4 ? '<div class="note acc small">Intervenir es <b>romper este eslabón</b>: sostener la sensación sin emitir la evitación y ofrecer una regulación que no dependa del alivio. <a href="#" id="toAis">Ver ruta AIS →</a></div>':'');
+      $$("#chain .link").forEach(function(n){
+        var go = function(){ sel = +n.getAttribute("data-i"); draw(); };
+        n.onclick = go; n.onkeydown = function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } };
+      });
+      var t = $("#toAis"); if(t) t.onclick = function(e){ e.preventDefault(); $$("#chMode button")[1].click(); };
+    }
+    draw();
+  })();
+
+  /* ---------- Lab 3 · Apego / contingencia ---------- */
+  (function(){
+    var R = {
+      ans:['warn','Patrón ansioso: atención contingente a la alarma','Si la atención solo acude cuando hay alarma, el cuerpo aprende a alarmarse para ser atendido. La salida <b>no</b> es retirar la atención (eso sería evitativo), sino atender <b>igual</b> en calma y en alarma: tres momentos fijos al día.'],
+      evi:['gold','Patrón evitativo: la señal no cuenta','Ignorar, suprimir o controlar enseña al cuerpo que su señal no importa. Empieza por <b>aparecer</b>: visitas breves y repetidas, sin pedirle nada a la sensación.'],
+      seg:['ok','Patrón seguro: presencia no contingente','Acudir también cuando no hace falta enseña que no hace falta demandar. La TEC predice que la <b>proporción</b> de práctica en calma frente a práctica en malestar anticipa la evolución mejor que la cantidad total.']
+    };
+    $$("#apegoQ .chip").forEach(function(c){ c.onclick = function(){
+      $$("#apegoQ .chip").forEach(function(x){x.classList.remove("on");}); c.classList.add("on");
+      var r = R[c.getAttribute("data-a")];
+      $("#apegoOut").innerHTML = '<div class="note '+r[0]+'"><b>'+r[1]+'</b><br>'+r[2]+'</div>';
+    };});
+  })();
+
+  /* ---------- Lab 4 · Sentir/pensar/interpretar + hipervigilancia ---------- */
+  (function(){
+    var F = [
+      ["Noto presión en el pecho.","s"],
+      ["Estoy estresado porque mañana tengo la reunión.","p"],
+      ["Esto significa que no voy a poder con ello.","i"],
+      ["Hay un nudo en la barriga, como apretado.","s"],
+      ["Seguro que piensan que soy un desastre.","i"],
+      ["Tengo que averiguar por qué me pasa esto.","p"],
+      ["Siento calor en la cara y la garganta cerrada.","s"],
+      ["Si me noto así es que algo va mal en mi cuerpo.","i"]
+    ];
+    var NAME = {s:"Sentir",p:"Pensar",i:"Interpretar"};
+    $("#sentirQuiz").innerHTML = F.map(function(f,i){
+      return '<div class="quiz-item" data-i="'+i+'"><div class="q">«'+esc(f[0])+'»</div><div class="row" style="margin:0">'
+        + ["s","p","i"].map(function(k){ return '<button type="button" class="chip" data-k="'+k+'">'+NAME[k]+'</button>'; }).join("")
+        + '</div><div class="fb" aria-live="polite"></div></div>';
+    }).join("");
+    $$("#sentirQuiz .quiz-item").forEach(function(it){
+      var f = F[+it.getAttribute("data-i")];
+      $$(".chip", it).forEach(function(c){ c.onclick = function(){
+        $$(".chip", it).forEach(function(x){x.classList.remove("on");}); c.classList.add("on");
+        var ok = c.getAttribute("data-k") === f[1];
+        it.querySelector(".fb").innerHTML = (ok?'<span class="ok-t">✓ </span>':'<span class="ko-t">Es «'+NAME[f[1]]+'». </span>')
+          + (f[1]==="s" ? "Nivel de sentir: aquí opera el AIS." : "Para volver al cuerpo: <b>«¿y dónde lo notas?»</b>");
+      };});
+    });
+
+    var H = [
+      ["¿Cuándo miras hacia dentro?","Sobre todo cuando algo me inquieta","En momentos fijos, también en calma","Contingencia"],
+      ["¿Cómo miras?","Escaneo buscando si algo va mal","Me detengo en una zona sin buscar nada","Actitud"],
+      ["¿Para qué?","Para comprobar, aliviarme o tener certeza","Para acompañar; si llega la calma, la recibo","Finalidad"],
+      ["¿Qué pasa con la sensación?","Me preocupa más, gana importancia","Pierde fuerza de amenaza aunque siga ahí","Resultado"]
+    ];
+    var ans = {};
+    $("#hiperQuiz").innerHTML = H.map(function(h,i){
+      return '<div class="quiz-item" data-i="'+i+'"><div class="q">'+esc(h[0])+' <span class="small muted">· '+h[3]+'</span></div><div class="row" style="margin:0"><button type="button" class="chip" data-v="h">'+esc(h[1])+'</button><button type="button" class="chip" data-v="a">'+esc(h[2])+'</button></div></div>';
+    }).join("") + '<div id="hiperOut" aria-live="polite"></div>';
+    $$("#hiperQuiz .quiz-item").forEach(function(it){
+      $$(".chip", it).forEach(function(c){ c.onclick = function(){
+        $$(".chip", it).forEach(function(x){x.classList.remove("on");}); c.classList.add("on");
+        ans[it.getAttribute("data-i")] = c.getAttribute("data-v"); res();
+      };});
+    });
+    function res(){
+      var k = Object.keys(ans); if(k.length < 4) return;
+      var h = k.filter(function(x){return ans[x]==="h";}).length;
+      var out = h===0 ? ['ok','Tu forma de mirar hacia dentro tiene las cuatro marcas del AIS.','Sigue con la práctica programada: es la que mantiene la cualidad.']
+        : ans[0]==="h" ? ['warn','Hay rasgos de «práctica convertida en chequeo».','El criterio decisivo es el primero: la contingencia. No aumentes la dosis; vuelve a la práctica programada y a la actitud receptiva. En dolor crónico o ansiedad por la salud el objetivo no es apartar la atención del cuerpo, sino cambiar cuándo y cómo acude.']
+        : ['gold','Mezcla de AIS y vigilancia.','Revisa los criterios marcados: la clave es acompañar sin buscar nada, también cuando no hace falta.'];
+      $("#hiperOut").innerHTML = '<div class="note '+out[0]+'"><b>'+out[1]+'</b><br>'+out[2]+'</div>';
+    }
+  })();
+
+  /* ---------- Práctica AIS guiada ---------- */
+  (function(){
+    var box = $("#aisBox"), st, timer = null, tick = null;
+    var ZONAS = ["Cuello / garganta","Pecho","Barriga","Hombros","Manos","Pies"];
+    function reset(){ st = {step:0, tipo:null, zona:null, int:5, dur:40, accion:""}; clear(); render(); }
+    function clear(){ if(timer){clearTimeout(timer);timer=null;} if(tick){clearInterval(tick);tick=null;} }
+    function stepper(n){ var s='<div class="stepper">'; for(var i=0;i<6;i++) s+='<i class="'+(i<=n?'on':'')+'"></i>'; return s+'</div>'; }
+    function render(){
+      clear();
+      var h = stepper(st.step);
+      if(st.step===0){
+        h += '<p class="big">¿Qué tipo de práctica es?</p><p class="center muted small">Practicar también cuando no lo necesitas es lo que enseña al cuerpo que no tiene que estar mal para merecer tu presencia.</p>'
+          + '<div class="row" style="justify-content:center"><button class="btn" data-t="prog" type="button">Programada (mañana, mediodía, noche)</button><button class="btn ghost" data-t="act" type="button">En un momento de activación</button></div>';
+        box.innerHTML = h;
+        $$("[data-t]", box).forEach(function(b){ b.onclick = function(){ st.tipo = b.getAttribute("data-t"); st.step=1; render(); }; });
+        return;
+      }
+      if(st.step===1){
+        h += '<p class="big">① PARA</p><p class="center">Detén lo que estás haciendo. Cierra los ojos si puedes, o baja la mirada.</p><p class="center quote" style="border:none">«Un momento.»</p><p class="center muted small" id="aisCount"></p>';
+        box.innerHTML = h;
+        var n = 5; $("#aisCount").textContent = n;
+        tick = setInterval(function(){ n--; var c=$("#aisCount"); if(c) c.textContent = n>0?n:""; if(n<=0){ clear(); st.step=2; render(); } }, 1000);
+        return;
+      }
+      if(st.step===2){
+        h += '<p class="big">② SIENTE</p><p class="center">¿Qué punto de tu cuerpo está más presente ahora? No lo cambies. Solo ubícalo.</p>'
+          + '<div class="row" style="justify-content:center">' + ZONAS.map(function(z){ return '<button type="button" class="chip'+(st.zona===z?' on':'')+'" data-z="'+z+'">'+z+'</button>'; }).join("") + '</div>'
+          + '<label class="f" for="aisInt">Intensidad (0–10): <span class="rv" id="aisIntV">'+st.int+'</span></label><input type="range" id="aisInt" min="0" max="10" value="'+st.int+'">'
+          + '<p class="small muted">«No noto nada» también vale: la presencia actúa igual. Si nada es claro, elige manos o pies.</p>'
+          + '<label class="f">Tiempo para acompañar</label><div class="seg" id="aisDur">'+[20,40,60].map(function(d){return '<button type="button" data-d="'+d+'" class="'+(st.dur===d?'on':'')+'">'+d+' s</button>';}).join("")+'</div>'
+          + '<div class="row" style="justify-content:center;margin-top:16px"><button class="btn" id="aisGo" type="button">Respirar hacia ahí →</button></div>';
+        box.innerHTML = h;
+        $$("[data-z]", box).forEach(function(b){ b.onclick = function(){ st.zona = b.getAttribute("data-z"); $$("[data-z]", box).forEach(function(x){x.classList.toggle("on", x===b);}); }; });
+        $("#aisInt").oninput = function(){ st.int = +this.value; $("#aisIntV").textContent = st.int; };
+        seg($("#aisDur"), function(b){ st.dur = +b.getAttribute("data-d"); });
+        $("#aisGo").onclick = function(){ if(!st.zona) st.zona = "Barriga"; st.step=3; render(); };
+        return;
+      }
+      if(st.step===3){
+        h += '<p class="big">Respira hacia '+esc(st.zona.toLowerCase())+'</p><p class="center small muted">Inhala 4 · ancla 2 · exhala 6 «como con una pajita». No busques relajarte: sigue el aire con tu atención. <b>El aire es el cebo.</b></p>'
+          + '<div class="breath"><div class="ring"></div><div class="ball" id="ball"></div><div class="lbl" id="bl">Inhala</div></div><p class="center small" id="bt"></p>'
+          + '<div class="row" style="justify-content:center"><button class="btn ghost" id="aisSkip" type="button">Seguir →</button></div>';
+        box.innerHTML = h;
+        var phases = [["Inhala",4000,1.9],["Ancla",2000,1.9],["Exhala",6000,1],["Pausa",1500,1]], pi = 0, left = st.dur;
+        var ball = $("#ball"), bl = $("#bl"), bt = $("#bt");
+        function ph(){ var p = phases[pi%4]; ball.style.transitionDuration = (p[1]/1000)+"s"; ball.style.transform = "scale("+p[2]+")"; bl.textContent = p[0]; timer = setTimeout(function(){ pi++; ph(); }, p[1]); }
+        ph();
+        var sub = ["Sostén. No lo cambies. Míralo.","Es activación legítima de tu cuerpo.","Solo acompáñalo."], si=0;
+        bt.textContent = left+" s · "+sub[0];
+        tick = setInterval(function(){ left--; if(left%7===0) si++; bt.textContent = Math.max(left,0)+" s · "+sub[si%3]; if(left<=0){ clear(); st.step=4; render(); } }, 1000);
+        $("#aisSkip").onclick = function(){ clear(); st.step=4; render(); };
+        return;
+      }
+      if(st.step===4){
+        h += '<p class="big">③ ACOMPAÑA</p><p class="center">Señala la zona con la mano y dite, con tono sereno:</p>'
+          + '<p class="quote center" style="border:none;font-size:22px">«No sé por qué, pero lo noto aquí, en '+esc(st.zona.toLowerCase())+'.»</p>'
+          + '<p class="center muted small">Está bien sentir esto. Tengo derecho a sentirme así. No hace falta explicarlo.</p>'
+          + '<div class="row" style="justify-content:center"><button class="btn" id="aisN" type="button">Lo he dicho →</button></div>';
+        box.innerHTML = h; $("#aisN").onclick = function(){ st.step=5; render(); };
+        return;
+      }
+      if(st.step===5){
+        h += '<p class="big">④ ACTÚA</p><p class="center">Desde este espacio que has creado, ¿cuál es el paso más pequeño que tiene sentido para ti ahora?</p>'
+          + '<p class="center muted small">«¿Qué haría la persona que quiero ser?» · pequeño · observable · realizable ahora · no para aliviarte.</p>'
+          + '<input type="text" id="aisAcc" maxlength="140" placeholder="Ej.: contestar a ese mensaje con calma, salir a caminar 5 minutos…" value="'+esc(st.accion)+'">'
+          + '<div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="aisFin" type="button">Terminar y guardar</button></div>';
+        box.innerHTML = h;
+        $("#aisFin").onclick = function(){
+          st.accion = $("#aisAcc").value.trim();
+          var log = S.get("practicas", []);
+          log.push({t:Date.now(), f:today(), tipo:st.tipo, zona:st.zona, int:st.int, dur:st.dur, acc:st.accion});
+          S.set("practicas", log.slice(-500));
+          st.step = 6; render(); stats();
+        };
+        return;
+      }
+      box.innerHTML = '<p class="big">Hecho.</p><div class="note ok center">El AIS no es una técnica para estar bien. Es una forma de estar contigo. Si aparece calma, la recibes. Si no aparece, la práctica sigue siendo válida.</div>'
+        + '<div class="row" style="justify-content:center"><button class="btn ghost" id="aisAgain" type="button">Otra práctica</button><button class="btn soft" type="button" data-go="s-mio">Medir mis L·D·C →</button></div>';
+      $("#aisAgain").onclick = reset;
+    }
+    function stats(){
+      var log = S.get("practicas", []);
+      if(!log.length){ $("#aisStats").innerHTML = '<p class="small muted">Aún no hay prácticas guardadas.</p>'; return; }
+      var wk = Date.now() - 7*864e5, w = log.filter(function(p){return p.t>=wk;});
+      var prog = w.filter(function(p){return p.tipo==="prog";}).length, act = w.length - prog;
+      var days = {}; w.forEach(function(p){ days[p.f]=(days[p.f]||0)+1; });
+      var pct = w.length ? Math.round(prog*100/w.length) : 0;
+      var h = '<div class="ldc"><div><b>'+w.length+'</b><span>prácticas (7 días)</span></div><div><b>'+prog+'</b><span>programadas</span></div><div><b>'+act+'</b><span>en activación</span></div></div>'
+        + '<div class="small">Proporción programada: <b>'+pct+' %</b></div><div class="meter"><i style="width:'+pct+'%"></i></div>';
+      if(w.length >= 3 && act > prog) h += '<div class="note warn small"><b>Señal de aviso:</b> estás practicando más cuando estás mal que en calma. No aumentes la práctica de apoyo: vuelve a la programada. Es la que enseña al cuerpo que no necesita estar mal para recibir tu atención.</div>';
+      else if(w.length && prog >= act) h += '<div class="note ok small">Buena señal: predomina la práctica programada (presencia no contingente).</div>';
+      var conAcc = w.filter(function(p){return p.acc;}).length;
+      h += '<p class="small muted">Días con práctica esta semana: '+Object.keys(days).length+' / 7 · prácticas cerradas con micro-acción: '+conAcc+'. Objetivo de referencia: tres momentos al día de 3–5 min.</p>';
+      $("#aisStats").innerHTML = h;
+    }
+    reset(); stats();
+  })();
+
+  /* ---------- Mis L·D·C ---------- */
+  (function(){
+    var cSec = null, t0 = 0, hold = $("#mHold");
+    function band(l){ return l==="" ? "" : l<5 ? "Capturado (&lt;5 s): el automatismo manda." : l<=15 ? "Pausa en desarrollo (5–15 s)." : l<=45 ? "Integración (&gt;15 s): hay espacio para elegir." : "Muy larga: ¿espacio o bloqueo? Coméntalo en sesión."; }
+    $("#mL").oninput = function(){ $("#mLb").innerHTML = band(this.value===""?"":+this.value); };
+    $("#mD").oninput = function(){ $("#mDv").textContent = this.value; };
+    function down(e){ e.preventDefault(); t0 = performance.now(); hold.classList.add("down"); hold.textContent = "Sigo aquí…"; }
+    function up(){ if(!t0) return; cSec = Math.round((performance.now()-t0)/100)/10; t0 = 0; hold.classList.remove("down"); hold.textContent = "Mantén pulsado"; $("#mCv").innerHTML = "Trazo sostenido: <b>"+cSec+" s</b>"; }
+    hold.addEventListener("pointerdown", down); hold.addEventListener("pointerup", up); hold.addEventListener("pointercancel", up); hold.addEventListener("pointerleave", up);
+    hold.addEventListener("keydown", function(e){ if((e.key===" "||e.key==="Enter") && !t0) down(e); });
+    hold.addEventListener("keyup", function(e){ if(e.key===" "||e.key==="Enter") up(); });
+    $("#mSave").onclick = function(){
+      var L = $("#mL").value === "" ? null : +$("#mL").value;
+      var arr = S.get("ldc", []);
+      arr.push({t:Date.now(), f:today(), L:L, D:+$("#mD").value, C:cSec});
+      S.set("ldc", arr.slice(-300));
+      $("#mMsg").textContent = "Guardado."; setTimeout(function(){ $("#mMsg").textContent=""; }, 2000);
+      cSec = null; $("#mCv").textContent = ""; draw();
+    };
+    function spark(vals, color, better, label, unit){
+      var pts = vals.map(function(v,i){return [i,v];}).filter(function(p){return p[1]!=null;});
+      if(pts.length < 1) return '<div class="small muted">'+label+': sin datos</div>';
+      var W=300,H=70,pad=6, mx = Math.max.apply(null, pts.map(function(p){return p[1];})), mn = Math.min.apply(null, pts.map(function(p){return p[1];}));
+      if(mx===mn){ mx+=1; mn=Math.max(0,mn-1); }
+      var n = Math.max(vals.length-1,1);
+      var xy = pts.map(function(p){ return [pad+(W-2*pad)*p[0]/n, H-pad-(H-2*pad)*(p[1]-mn)/(mx-mn)]; });
+      var d = xy.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+      var last = pts[pts.length-1][1];
+      return '<div style="margin:8px 0"><div class="small"><b>'+label+'</b> · último: <b>'+last+unit+'</b> <span class="muted">('+better+')</span></div>'
+        + '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de '+label+'"><path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2.2" stroke-linejoin="round"/>'
+        + xy.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="'+color+'"/>';}).join("") + '</svg></div>';
+    }
+    function draw(){
+      var a = S.get("ldc", []).slice(-30);
+      if(!a.length){ $("#mChart").innerHTML = '<p class="small muted">Guarda tu primera medida para ver la evolución.</p>'; return; }
+      $("#mChart").innerHTML = spark(a.map(function(x){return x.L;}), "var(--acc)", "subir = mejor", "Latencia", " s")
+        + spark(a.map(function(x){return x.D;}), "var(--warn)", "bajar = mejor", "Ruido interno", "/10")
+        + spark(a.map(function(x){return x.C;}), "var(--sage)", "subir = mejor", "Continuidad", " s")
+        + '<p class="small muted">'+a.length+' medidas. Mira la tendencia, no un día suelto.</p>';
+    }
+    draw();
+  })();
+
+  /* ---------- Hoja ICE + perfil ---------- */
+  (function(){
+    var dMode = "pct";
+    var PERF = [
+      {k:"AltaActivacion", n:"Alta activación reactiva", lec:"El vector atencional está capturado por la amenaza. Respuesta impulsiva automática.", pri:"Entrenar latencia primero: STOP + anclaje breve repetido.", tools:"bajar_alerta control_ira herramienta_diaria",
+        c:[function(L){return L<5;}, function(L,D){return D>60;}, function(L,D,C){return C<10;}]},
+      {k:"Evitacion", n:"Evitación sostenida", lec:"Una densidad baja puede indicar disociación o supresión activa, no regulación genuina.", pri:"Trabajar presencia antes que reducción. Afección interna segura.", tools:"ais_amor la_manada acompanar_sensacion",
+        c:[function(L,D){return D>=30 && D<=50;}, function(L,D,C){return C<10;}]},
+      {k:"Sobrecarga", n:"Sobrecarga crónica", lec:"Puede hacer pausa pero no sostenerla. La densidad no baja lo suficiente.", pri:"Entrenamiento de continuidad. Rituales de descarga entre sesiones.", tools:"ais_basicas protocolo_ais herramienta_diaria",
+        c:[function(L){return L>8;}, function(L,D){return D>55;}, function(L,D,C){return C>=10 && C<=25;}]},
+      {k:"Emergente", n:"Regulación emergente", lec:"El sistema puede transitar hacia la regulación con cierta autonomía. Buen pronóstico.", pri:"Consolidar con práctica diaria. Introducir conducta valiosa más exigente.", tools:"brujula_valores agenda_atencional escalera_exposicion",
+        c:[function(L){return L>10;}, function(L,D){return D<45;}, function(L,D,C){return C>20;}]},
+      {k:"Consolidado", n:"Regulación consolidada", lec:"El AIS opera de forma autónoma y eficiente. El cambio es sistémico.", pri:"Mantenimiento. Ampliar a contextos desafiantes. Co-AIS si es relevante.", tools:"honestidad_emocional mapa_pareja salidas_paso_a_paso",
+        c:[function(L){return L>15;}, function(L,D){return D<35;}, function(L,D,C){return C>35;}]}
+    ];
+    function form(id, ttl){
+      $(id).innerHTML = '<b>'+ttl+'</b>'
+        + '<label class="f">Latencia (s)</label><input type="number" step="0.1" min="0" data-f="L" inputmode="decimal">'
+        + '<label class="f"><span class="dlbl">Densidad (% Beta)</span></label><input type="number" step="0.1" min="0" max="100" data-f="D" inputmode="decimal">'
+        + '<label class="f">Continuidad (s)</label><input type="number" step="0.1" min="0" data-f="C" inputmode="decimal">'
+        + '<label class="f">VAS activación (0–10)</label><input type="number" step="1" min="0" max="10" data-f="V" inputmode="numeric">';
+    }
+    form("#icePre","Pretest"); form("#icePost","Postest");
+    seg($("#dMode"), function(b){ dMode = b.getAttribute("data-d"); $$(".dlbl").forEach(function(l){ l.textContent = dMode==="pct" ? "Densidad (% Beta)" : "Densidad · ruido (0–10)"; }); calc(); });
+    function read(id){ var o={}; $$("input", $(id)).forEach(function(i){ o[i.getAttribute("data-f")] = i.value===""?null:+i.value; }); return o; }
+    // Ruido 0–10 → % orientativo (0→20 %, 10→80 %): 3.3 ≈ 40 %, 6.7 ≈ 60 %.
+    function dPct(v){ return v==null ? null : dMode==="pct" ? v : 20 + v*6; }
+    function classify(o){
+      if(o.L==null || o.D==null || o.C==null) return null;
+      var D = dPct(o.D), best = null;
+      PERF.forEach(function(p, i){
+        var ok = p.c.filter(function(f){ return f(o.L, D, o.C); }).length, sc = ok/p.c.length;
+        if(!best || sc > best.sc) best = {p:p, sc:sc};
+      });
+      return best;
+    }
+    function profHTML(r, ttl){
+      if(!r) return '<div class="profile"><span class="muted small">'+ttl+': completa L, D y C.</span></div>';
+      var p = r.p;
+      return '<div class="profile"><span class="small muted">'+ttl+'</span><div class="pn">'+p.n+'</div>'
+        + '<div class="small">Coincidencia con los criterios B.2: <b>'+Math.round(r.sc*100)+' %</b>'+(r.sc<1?' · lectura aproximada':'')+'</div><div class="meter"><i style="width:'+Math.round(r.sc*100)+'%"></i></div>'
+        + '<p><b>Lectura:</b> '+p.lec+'</p><p><b>Prioridad:</b> '+p.pri+'</p><div class="tools">'+toolsHTML(p.tools)+'</div></div>';
+    }
+    function calc(){
+      var a = read("#icePre"), b = read("#icePost"), ra = classify(a), rb = classify(b), h = "";
+      h += '<div class="grid2">'+profHTML(ra,"Perfil pretest")+profHTML(rb,"Perfil postest")+'</div>';
+      function dl(k, up, u){
+        if(a[k]==null || b[k]==null) return "";
+        var d = Math.round((b[k]-a[k])*10)/10, good = up ? d>0 : d<0;
+        return '<div><b>'+(d>0?"+":"")+d+u+'</b><span>'+(d===0?"= sin cambio":good?"mejoría":"empeora")+'</span></div>';
+      }
+      var deltas = dl("L",true," s")+dl("D",false,dMode==="pct"?" %":"")+dl("C",true," s")+dl("V",false,"");
+      if(deltas) h += '<div class="card"><b>Δ post − pre</b><div class="ldc" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">'+deltas+'</div><p class="small muted">L, C: subir = mejorar · D, VAS: bajar = mejorar.</p></div>';
+      var al = [];
+      if(a.L!=null && b.L!=null && b.L < a.L) al.push("Delta negativo en latencia: el proceso puede estar activando sin proporcionar recursos de regulación suficientes.");
+      if(a.V!=null && b.V!=null && b.V > a.V && b.C!=null && b.C < 10) al.push("VAS post &gt; pre con continuidad baja: exposición interoceptiva sin capacidad de sostén. Reducir la intensidad de estimulación en la próxima sesión.");
+      if($("#iceBloque").value==="4" && a.L!=null && a.L < 3) al.push("Bloque 4 (ruptura) como más activante con latencia &lt; 3 s: posibles experiencias traumáticas no procesadas. Derivar a evaluación de trauma si persiste. "+toolChip("evaluacion_trauma"));
+      if($("#iceFen").value==="no") al.push("«No he notado nada»: posible disociación interoceptiva. Iniciar con anclajes propioceptivos periféricos (manos, pies) antes de viscerales. "+toolChip("cuerpo_en_alerta"));
+      [a,b].forEach(function(o,i){ if(o.L!=null && o.L>45 && o.D!=null && dPct(o.D)>55) al.push((i?"Post":"Pre")+": latencia &gt; 45 s con densidad alta: valorar inhibición, parálisis o evitación encubierta, no espacio."); });
+      if(al.length) h += '<div class="note warn"><b>Señales de alarma</b><ul style="margin:6px 0 0 18px">'+al.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></div>';
+      if(ra || rb) h += '<div class="row"><button class="btn soft" id="iceCopy" type="button">Copiar resumen para el informe</button><span class="small muted" id="iceMsg"></span></div>';
+      $("#iceOut").innerHTML = h;
+      var cp = $("#iceCopy");
+      if(cp) cp.onclick = function(){
+        var t = "Protocolo ICE · " + today() + "\n"
+          + "Pretest: L " + (a.L==null?"—":a.L+" s") + " · D " + (a.D==null?"—":a.D+(dMode==="pct"?" %":"/10")) + " · C " + (a.C==null?"—":a.C+" s") + " · VAS " + (a.V==null?"—":a.V) + (ra?" → "+ra.p.n:"") + "\n"
+          + "Postest: L " + (b.L==null?"—":b.L+" s") + " · D " + (b.D==null?"—":b.D+(dMode==="pct"?" %":"/10")) + " · C " + (b.C==null?"—":b.C+" s") + " · VAS " + (b.V==null?"—":b.V) + (rb?" → "+rb.p.n:"") + "\n"
+          + (al.length ? "Alarmas: " + al.map(function(x){return x.replace(/<[^>]+>/g,"").replace(/&gt;/g,">").replace(/&lt;/g,"<");}).join(" | ") + "\n" : "")
+          + "Valores orientativos (biomarcadores candidatos, pendientes de validación).";
+        var done = function(){ $("#iceMsg").textContent = "Copiado."; };
+        try{ navigator.clipboard.writeText(t).then(done, function(){ prompt("Copia el texto:", t); }); }catch(e){ prompt("Copia el texto:", t); }
+      };
+    }
+    $$("#icePre input, #icePost input").forEach(function(i){ i.addEventListener("input", calc); });
+    $("#iceBloque").onchange = calc; $("#iceFen").onchange = calc;
+    calc();
+  })();
+
+  /* ---------- Laboratorio N=1 ---------- */
+  (function(){
+    var cv = null, fh = null;
+    var cfg = S.get("n1cfg", {id:"P001", fase:"A1"});
+    $("#nId").value = cfg.id; $("#nFase").value = cfg.fase; $("#nFecha").value = today();
+    function saveCfg(){ cfg.id = ($("#nId").value.trim() || "P001").replace(/[;\n\r]/g,""); cfg.fase = $("#nFase").value; S.set("n1cfg", cfg); }
+    $("#nId").onchange = function(){ saveCfg(); draw(); }; $("#nFase").onchange = saveCfg;
+    seg($("#nCV"), function(b){ cv = +b.getAttribute("data-v"); });
+    seg($("#nFH"), function(b){ fh = +b.getAttribute("data-v"); });
+    $("#nAct").oninput = function(){ $("#nActV").textContent = this.value; };
+    $("#nVar").onchange = draw;
+    function rows(){ return S.get("n1", []).sort(function(a,b){ return a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0; }); }
+    $("#nSave").onclick = function(){
+      saveCfg();
+      if(cv===null){ $("#nMsg").textContent = "Marca 0 o 1 en conducta valiosa."; return; }
+      var f = $("#nFecha").value || today(), all = S.get("n1", []).filter(function(r){ return !(r.fecha===f && r.id===cfg.id); });
+      var np = +$("#nPract").value;
+      all.push({id:cfg.id, fecha:f, fase:cfg.fase, practico:np>0?1:0, npr:np, cv:cv, cvd:$("#nCVd").value.trim(), act:+$("#nAct").value, zona:$("#nZona").value, fh:fh==null?0:fh, notas:$("#nNotas").value.trim(), lat:$("#nLat").value===""?null:+$("#nLat").value});
+      S.set("n1", all);
+      $("#nMsg").textContent = "Día " + f + " guardado."; setTimeout(function(){ $("#nMsg").textContent=""; }, 2500);
+      draw();
+    };
+    function series(rs, v){
+      if(v==="cv") return rs.map(function(r,i){ var w = rs.slice(Math.max(0,i-6), i+1); return Math.round(w.reduce(function(s,x){return s+x.cv;},0)/w.length*100)/100; });
+      return rs.map(function(r){ return v==="act"?r.act : v==="pr"?r.npr : r.lat; });
+    }
+    // Tau (no solapamiento A vs B, sin corrección de tendencia): (pares B>A − pares B<A) / (nA·nB).
+    function tau(A, B, up){
+      var pos=0, neg=0; A.forEach(function(a){ B.forEach(function(b){ var d = up ? b-a : a-b; if(d>0) pos++; else if(d<0) neg++; }); });
+      var n = A.length*B.length; return n ? (pos-neg)/n : null;
+    }
+    function mean(a){ return a.length ? a.reduce(function(s,x){return s+x;},0)/a.length : null; }
+    function sd(a){ var m = mean(a); return a.length>1 ? Math.sqrt(a.reduce(function(s,x){return s+(x-m)*(x-m);},0)/(a.length-1)) : null; }
+    function draw(){
+      var rs = rows().filter(function(r){ return r.id === cfg.id; });
+      var v = $("#nVar").value, ys = series(rs, v), up = v!=="act";
+      if(!rs.length){ $("#nChart").innerHTML = '<p class="small muted">Sin registros para '+esc(cfg.id)+'.</p>'; $("#nStats").innerHTML=""; table([]); return; }
+      var W=600,H=220,pl=34,pr=10,pt=14,pb=30, vals = ys.filter(function(y){return y!=null;});
+      var mx = v==="act"?10 : v==="cv"?1 : Math.max(3, Math.max.apply(null, vals.length?vals:[1])), mn = 0;
+      var n = Math.max(rs.length-1,1), X = function(i){ return pl+(W-pl-pr)*(rs.length===1?0.5:i/n); }, Y = function(y){ return H-pb-(H-pt-pb)*(y-mn)/(mx-mn); };
+      var PH = {A1:"var(--bg2)",B1:"var(--acc-soft)",A2:"var(--bg2)",B2:"var(--acc-soft)"}, svg = "";
+      var start = 0;
+      for(var i=1;i<=rs.length;i++){
+        if(i===rs.length || rs[i].fase !== rs[start].fase){
+          var x0 = start===0 ? pl : (X(start-1)+X(start))/2, x1 = i===rs.length ? W-pr : (X(i-1)+X(i))/2;
+          svg += '<rect x="'+x0+'" y="'+pt+'" width="'+Math.max(x1-x0,2)+'" height="'+(H-pt-pb)+'" fill="'+PH[rs[start].fase]+'"/>'
+            + '<text x="'+((x0+x1)/2)+'" y="'+(pt+12)+'" text-anchor="middle" font-size="12" font-weight="700" fill="var(--muted)">'+rs[start].fase+'</text>';
+          if(start>0) svg += '<line x1="'+x0+'" y1="'+pt+'" x2="'+x0+'" y2="'+(H-pb)+'" stroke="var(--muted)" stroke-dasharray="4 3"/>';
+          start = i;
+        }
+      }
+      [0,0.5,1].forEach(function(f){ var y = mn+(mx-mn)*f; svg += '<text x="'+(pl-6)+'" y="'+(Y(y)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+(Math.round(y*10)/10)+'</text><line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(y)+'" y2="'+Y(y)+'" stroke="var(--line)"/>'; });
+      var d = "", first = true;
+      ys.forEach(function(y,i){ if(y==null){ first = true; return; } d += (first?"M":"L")+X(i).toFixed(1)+" "+Y(y).toFixed(1)+" "; first = false; });
+      svg += '<path d="'+d+'" fill="none" stroke="var(--acc)" stroke-width="2.2" stroke-linejoin="round"/>';
+      ys.forEach(function(y,i){ if(y!=null) svg += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(y).toFixed(1)+'" r="3.2" fill="var(--acc)"><title>'+rs[i].fecha+': '+y+'</title></circle>'; });
+      svg += '<text x="'+pl+'" y="'+(H-8)+'" font-size="11" fill="var(--muted)">'+rs[0].fecha+'</text><text x="'+(W-pr)+'" y="'+(H-8)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+rs[rs.length-1].fecha+'</text>';
+      $("#nChart").innerHTML = '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Serie temporal por fases ABAB">'+svg+'</svg>';
+      var by = {}; rs.forEach(function(r,i){ if(ys[i]!=null){ (by[r.fase]=by[r.fase]||[]).push(ys[i]); } });
+      var raw = {}; rs.forEach(function(r){ var y = v==="cv"?r.cv : v==="act"?r.act : v==="pr"?r.npr : r.lat; if(y!=null) (raw[r.fase]=raw[r.fase]||[]).push(y); });
+      var st = '<div class="tbl-wrap"><table><tr><th>Fase</th><th>n</th><th>Media</th><th>DT</th></tr>' + ["A1","B1","A2","B2"].filter(function(f){return raw[f];}).map(function(f){
+        var m = mean(raw[f]), s = sd(raw[f]); return '<tr><td>'+f+'</td><td>'+raw[f].length+'</td><td>'+m.toFixed(2)+'</td><td>'+(s==null?"—":s.toFixed(2))+'</td></tr>';
+      }).join("") + '</table></div>';
+      if(raw.A1 && raw.B1){
+        var t = tau(raw.A1, raw.B1, up), sp = sd(raw.A1.concat(raw.B1)), dd = sp ? ((mean(raw.B1)-mean(raw.A1))*(up?1:-1))/sp : null;
+        st += '<div class="note '+((t!=null&&t>=0.65)||(dd!=null&&dd>=0.5)?"ok":"gold")+' small"><b>A1 → B1</b> · Tau (no solapamiento, sin corrección de tendencia): <b>'+(t==null?"—":t.toFixed(2))+'</b> · d aproximada (DT conjunta): <b>'+(dd==null?"—":dd.toFixed(2))+'</b><br>Criterio TEC: d ≥ 0.5 o Tau-U ≥ 0.65 en la dirección de mejora. Con pocos datos es solo exploratorio; la inspección visual va siempre primero.'
+          + (raw.A2 ? '<br><b>Reversión A2:</b> media '+mean(raw.A2).toFixed(2)+' (si la variable empeora en A2 y vuelve a mejorar en B2, apoya la intervención como factor causal).' : '') + '</div>';
+      } else st += '<p class="small muted">Registra al menos una fase A1 y una B1 para calcular el tamaño del efecto.</p>';
+      $("#nStats").innerHTML = st;
+      table(rs);
+    }
+    function table(rs){
+      if(!rs.length){ $("#nTable").innerHTML = ""; return; }
+      $("#nTable").innerHTML = '<table><tr><th>Fecha</th><th>Fase</th><th>Prác.</th><th>CV</th><th>Act.</th><th>Zona</th><th>FH</th><th>L</th><th></th></tr>'
+        + rs.slice().reverse().map(function(r){ return '<tr><td>'+r.fecha+'</td><td>'+r.fase+'</td><td>'+r.npr+'</td><td>'+r.cv+'</td><td>'+r.act+'</td><td>'+esc(r.zona)+'</td><td>'+r.fh+'</td><td>'+(r.lat==null?"":r.lat)+'</td><td><button type="button" class="chip" data-del="'+r.fecha+'" aria-label="Borrar '+r.fecha+'">✕</button></td></tr>'; }).join("") + '</table>';
+      $$("[data-del]", $("#nTable")).forEach(function(b){ b.onclick = function(){
+        if(!confirm("¿Borrar el registro del " + b.getAttribute("data-del") + "?")) return;
+        S.set("n1", S.get("n1", []).filter(function(r){ return !(r.id===cfg.id && r.fecha===b.getAttribute("data-del")); })); draw();
+      };});
+    }
+    function csvCell(s){ s = String(s==null?"":s).replace(/[\r\n]+/g," "); return /[;"]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+    $("#nCsv").onclick = function(){
+      var rs = rows().filter(function(r){ return r.id === cfg.id; }), extra = $("#nExtra").checked;
+      if(!rs.length){ alert("No hay registros para exportar."); return; }
+      var head = ["id_paciente","fecha","practico_ais","n_practicas_dia","conducta_valiosa","descripcion_cv","nivel_activacion_dia","zona_activacion","frase_honesta","notas_paciente"];
+      if(extra) head = head.concat(["fase_abab","latencia_estimada_seg"]);
+      var lines = [head.join(";")].concat(rs.map(function(r){
+        var c = [r.id, r.fecha, r.practico, r.npr, r.cv, r.cvd, r.act, r.zona, r.fh, r.notas];
+        if(extra) c = c.concat([r.fase, r.lat==null?"":r.lat]);
+        return c.map(csvCell).join(";");
+      }));
+      var blob = new Blob(["﻿"+lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "TEC_registro_diario_"+cfg.id+"_"+today()+".csv";
+      document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    };
+    $("#nClear").onclick = function(){
+      if(!confirm("¿Borrar todos los registros de " + cfg.id + "? No se puede deshacer.")) return;
+      S.set("n1", S.get("n1", []).filter(function(r){ return r.id !== cfg.id; })); draw();
+    };
+    draw();
+  })();
+
+  /* ---------- Metamodelo ---------- */
+  (function(){
+    var C = ["Vector interno","Latencia ampliada","Densidad reducida","Continuidad","Afección interna segura","Conducta valiosa"];
+    var O = {
+      "TCC":["Distanciamiento cognitivo","Espacio para reestructurar","Menos rumiación","Adherencia al autorregistro","Autoeficacia percibida","Activación conductual"],
+      "ACT":["Defusión + presente","Flexibilidad psicológica","Menos fusión cognitiva","Contacto con el presente","Yo como contexto","Acción comprometida"],
+      "Humanista":["Presencia / focusing","Apertura experiencial","Menos interferencia","Presencia sostenida","Aceptación incondicional","Autorrealización"],
+      "Psicodinámica":["Observación del patrón","Capacidad de insight","Menos resistencia activa","Capacidad de elaboración","Base segura interna","Elaboración en conducta"]
+    };
+    var el = $("#metaSeg");
+    el.innerHTML = Object.keys(O).map(function(k,i){ return '<button type="button" data-o="'+k+'" class="'+(i?'':'on')+'">'+k+'</button>'; }).join("");
+    function draw(k){
+      $("#metaOut").innerHTML = '<div class="tbl-wrap" style="border:none;margin:0"><table><tr><th>TEC</th><th>'+k+'</th></tr>'
+        + C.map(function(c,i){ return '<tr><td><b>'+c+'</b></td><td>'+O[k][i]+'</td></tr>'; }).join("") + '</table></div>'
+        + '<p class="small muted">Integración sin eclecticismo: un clínico de cualquier orientación puede usar L·D·C como criterio de progreso sin abandonar su marco.</p>';
+    }
+    seg(el, function(b){ draw(b.getAttribute("data-o")); });
+    draw("TCC");
+  })();
+
+  /* ---------- Aplicación por situación ---------- */
+  (function(){
+    var P = [
+      ["Ansiedad generalizada · rumiación","El sobrepensamiento como vector perdido. STOP + anclaje 4–5 s + espacio-tiempo planificado (15 min/día; fuera de él: «lo dejaré para mi espacio de preocupaciones» + AIS).","«Valida estas sensaciones porque tienen sentido.»","bajar_alerta agenda_atencional modelo_atencional acompanar_sensacion"],
+      ["Trauma · cuerpo en alerta","Seguridad antes que latencia. Anclajes periféricos (manos, pies) antes que viscerales. Frase honesta graduada. «No he notado nada» puede ser disociación interoceptiva.","«¿Hay algún punto de tu cuerpo que esté tranquilo ahora mismo?»","cuerpo_en_alerta evaluacion_trauma"],
+      ["Dolor crónico","Integración sin supresión: no apartar la atención del cuerpo, sino cambiar cuándo y cómo acude. Anclaje con curiosidad.","«¿Qué acción valiosa pudiste hacer hoy a pesar del dolor?»","dolor_cronico ais_curiosidad ais_muscular"],
+      ["Baja laboral · retorno","La estructura diaria visible es un regulador atencional. Retorno = acción valiosa en presencia de síntomas, no ausencia de síntomas.","«La conducta valiosa no espera a la emoción correcta. La emoción correcta emerge de la conducta valiosa.»","retorno_trabajo agenda_atencional brujula_valores"],
+      ["Agorafobia · evitación social","Afección interna segura + frase honesta en contexto social; ritual de entrada antes de cada situación; escalera de micro-acciones «con el AIS activo, aunque no te encuentres bien».","Dos llaves en cada exposición: el QUÉ y el CÓMO.","salidas_paso_a_paso escalera_exposicion honestidad_emocional"],
+      ["TOC · ansiedad por la salud","Fin = actuar con valor mientras la sensación sigue. Vigilar que la práctica no se vuelva ritual o chequeo.","«No necesitas hacer el AIS para que desaparezca la sensación. Solo para acompañarla.»","acompanar_sensacion escalera_exposicion"],
+      ["Ira · impulsividad","Alta activación reactiva: entrenar latencia primero. El segundo de antes de contestar.","«Un momento.»","bajar_alerta control_ira"],
+      ["Pareja · vínculos (Co-AIS)","1 pausa vincular «noto que estoy activado/a» · 2 anclaje 5–10 s cada uno · 3 frase honesta · 4 micro-acción vincular (escuchar, acercarse, preguntar).","«No sé por qué, pero me siento… ¿puedes decírselo a alguien con quien tengas vínculo?»","mapa_pareja honestidad_emocional"],
+      ["Adolescencia · ruptura y soledad","Presencia interna y apego seguro con uno mismo: ¿deseo o alivio? Apego sano frente a dependencia.","«No necesito que estés bien para estar contigo.»","estoy_aqui_conmigo ais_amor"],
+      ["Familias · peques","El niño aprende a regularse porque el adulto se regula delante de él. Primero el AIS del adulto; la familia es entorno de co-regulación, no terapeuta.","«Te noto así… ¿quieres que estemos contigo o prefieres un rato a solas?»","rincon_calma ritual_calma exploradora_valiente tiempo_limite cuento_familia"],
+      ["TEA · desbordamiento","Acompañar el desbordamiento, no «parar rabietas»: capacidad interna, regulación del adulto primero, entrenar en calma.","Se lee en calma, no durante una crisis.","peques_desbordamiento cuentos_nil"],
+      ["Deporte de competición","AIS hacia el esfuerzo y el dolor; amor firme frente al látigo; continuidad del trazo entre punto y punto.","Desde la tarea, no desde el resultado.","pedalea_desde_dentro entre_punto_y_punto"],
+      ["Trabajo · burnout y oficios","Rituales de entrada antes de cada situación con carga; cerrar el día antes de entrar en casa; abrazo sentido.","Amenaza → reto.","toco_desde_dentro llave_de_paso herramienta_diaria"]
+    ];
+    $("#perfilesList").innerHTML = P.map(function(p,i){
+      return '<details class="acc"'+(i?'':' open')+'><summary><span class="n">'+(i+1)+'</span><span class="t">'+p[0]+'</span><span class="chev">›</span></summary><div class="body"><p>'+p[1]+'</p><p class="quote" style="font-size:16px">'+p[2]+'</p><div class="tools">'+toolsHTML(p[3])+'</div></div></details>';
+    }).join("") + '<div class="note warn small">Psicosis activa, fase maníaca o riesgo autolítico elevado: el AIS no se introduce de forma rutinaria. Es complementario y no sustituye tratamientos en curso.</div>';
+  })();
+
+  /* ---------- Mapa del ecosistema ---------- */
+  (function(){
+    var G = [
+      ["Entender el modelo","Las metáforas compartidas: el mono, el coche, la manada y el centro de gravedad (caps. 3–4).","quien_conduce historia_animada la_manada historia_manada modelo_atencional historia_control"],
+      ["Interocepción como conducta","Localizar y sostener la señal: cuello, pecho, barriga (cap. 5).","mapa_atencion_interna ais_curiosidad ais_muscular ais_basicas"],
+      ["Latencia · el STOP","Abrir el espacio entre activación y respuesta (cap. 6).","bajar_alerta control_ira herramienta_diaria"],
+      ["El aire como cebo · continuidad","Respiración 4·2·6 como vínculo interno, no como técnica de calma (caps. 9.4 y 11).","respiro_ais protocolo_ais herramienta_diaria"],
+      ["Afección interna segura","Presencia no contingente y autoestima como inclusión incondicional (cap. 9).","ais_amor estoy_aqui_conmigo acompanar_sensacion la_manada"],
+      ["Honestidad emocional","«No sé por qué, pero lo noto aquí» (cap. 9.6).","honestidad_emocional fondos_frases"],
+      ["Micro-acción con valor","Cerrar el ciclo con conducta: valores y estructura del día (cap. 11.4).","brujula_valores agenda_atencional"],
+      ["Aparecer → permanecer · exposición","Primero presencia disponible, después sostener (cap. 11.8).","escalera_exposicion salidas_paso_a_paso exploradora_valiente"],
+      ["Medir L·D·C · Protocolo ICE","Autoinforme, cribado y seguimiento (caps. 7, 12 y 13).","cuestionario_tec screening_tec tracker_tec tracker_ais estado_mono donde_esta_mono"],
+      ["Evaluación por cuadro clínico","Instrumentos de apoyo para la formulación (caps. 15–16).","evaluacion_trauma dolor_cronico mapa_pareja"],
+      ["Aplicaciones clínicas y contextos","Familia, escuela, deporte y trabajo (caps. 15–16).","cuerpo_en_alerta retorno_trabajo rincon_calma ritual_calma tiempo_limite cuento_familia peques_desbordamiento cuentos_nil pedalea_desde_dentro entre_punto_y_punto toco_desde_dentro llave_de_paso"]
+    ];
+    $("#ecoList").innerHTML = G.map(function(g){ return '<div class="eco-grp card"><h3>'+g[0]+'</h3><p>'+g[1]+'</p><div class="tools">'+toolsHTML(g[2])+'</div></div>'; }).join("");
+  })();
+
+  /* ---------- Glosario ---------- */
+  (function(){
+    var T = [
+      ["Afección interna segura","Relación aprendida entre la conciencia y el organismo en la que la atención se orienta hacia la sensación interna sin activar la respuesta de amenaza. No es un estado que se alcance, sino una condición que la práctica instala y mantiene. Condición necesaria para que la latencia pueda ampliarse."],
+      ["AIS · Atención Interna Sensorial","Conducta interna deliberada: dirigir el foco a señales interoceptivas concretas (pecho, estómago, cuello), sostenerlo (mínimo 4–5 s, óptimo 20–60 s), sin analizar ni modificar la sensación, desde curiosidad compasiva. Es conducta, no estado: se hace, no se espera."],
+      ["Algoritmo AIS","STOP (entrada) · S·R·S·A: Sentir, Respirar, Sostener, Acompañar (núcleo) · micro-acción con valor (salida). Con práctica se ejecuta en 60–90 s."],
+      ["Alarma con función de demanda","Activación reforzada por la atención que obtiene de la conciencia. Aparece cuando la atención interna solo acude ante el malestar. Se revierte con atención no contingente, no retirándola."],
+      ["Anclaje interoceptivo","Dirigir deliberadamente la atención a una señal corporal específica (barriga, pecho, manos) como punto de apoyo de la práctica."],
+      ["Co-AIS","Práctica coordinada del algoritmo por dos o más personas en relación (pareja, díada terapéutica, equipo)."],
+      ["Conducta valiosa (CV)","Acción observable, alineada con los valores, realizada desde latencia ampliada en lugar de desde el impulso. Criterio de resultado primario de la TEC; se registra 0/1 al día."],
+      ["Continuidad (C)","Tercer parámetro ICE: capacidad de sostener la atención sobre la señal interna sin fragmentación. ↑ mejor."],
+      ["Densidad (D)","Segundo parámetro ICE: ruido interno, microoscilaciones emocionales que compiten con la señal corporal. ↓ mejor."],
+      ["Efecto consciente","Modificación de la trayectoria conductual producida por la orientación voluntaria del vector atencional, dentro de los grados de libertad disponibles para el organismo."],
+      ["Extinción interoceptiva","Reducción gradual del valor de amenaza de una sensación mediante exposición sostenida con curiosidad compasiva, sin evitación ni modificación forzada. Extinguir no es borrar."],
+      ["Frase honesta","«No sé por qué, pero ahora noto una sensación aquí», señalando la zona. Precede a cualquier explicación; la conciencia da la cara por el cuerpo."],
+      ["Hipervigilancia interoceptiva","Atención al cuerpo contingente al síntoma, vigilante y orientada a detectar amenaza o a obtener alivio o certeza. Mismo objeto que el AIS, distinta función."],
+      ["Latencia atencional (L)","Primer parámetro ICE: segundos entre la activación interna y la primera respuesta observable. Principal indicador propuesto del espacio de elección. ↑ mejor."],
+      ["LNR","Latencia neurofisiológica de redirección: tiempo desde el inicio de la regulación AIS hasta un criterio de transición Beta→Alfa. Biomarcador candidato; menor = acceso más rápido."],
+      ["Metamodelo","Función de la TEC como marco común que hace comparables orientaciones distintas sin sustituirlas: el metro operacional compartido."],
+      ["Micro-acción con valor","Versión mínima de la conducta valiosa: pequeña, observable, alineada, realizable ahora y no orientada al alivio."],
+      ["Perfil ICE","Combinación L/D/C en un momento dado: alta activación reactiva, evitación sostenida, sobrecarga crónica, regulación emergente o consolidada."],
+      ["Precedencia sensorial","El reconocimiento de la sensación precede a la elaboración causal verbal, para que esta no funcione como conducta de regulación. Hipótesis contrastable."],
+      ["Protocolo ICE","Evaluación pre/post (19–22 min) que combina EEG frontal o observación, estimulación emocional estandarizada y regulación guiada AIS. Su validez debe establecerse empíricamente."],
+      ["Señal de seguridad interna","Función que adquiere la presencia consciente cuando predice de forma fiable la ausencia de consecuencia catastrófica ante la sensación interna."],
+      ["Vector atencional","Metáfora operativa de la dirección y la cualidad de la atención: hacia fuera (amenaza, juicio, futuro) o hacia dentro (sensación presente)."]
+    ];
+    function draw(){
+      var q = $("#glQ").value.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+      var f = T.filter(function(t){ return !q || (t[0]+" "+t[1]).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").indexOf(q) >= 0; });
+      $("#glList").innerHTML = f.length ? f.map(function(t){ return '<div class="gl-item"><b>'+t[0]+'</b><p class="small">'+t[1]+'</p></div>'; }).join("") : '<p class="muted small">Sin resultados.</p>';
+    }
+    $("#glQ").oninput = draw; draw();
+  })();
+
+  paintTools(document);
+  var start = S.get("sec", "s-inicio");
+  show($("#"+start) ? start : "s-inicio", false);
+})();
+</script>
+</body>
+</html>
