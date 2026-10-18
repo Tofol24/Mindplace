@@ -571,3 +571,27 @@ El cuerpo teórico completo vive en el libro, fuera de este repositorio;
 aquí se mantiene la **capa operativa** necesaria para la coherencia del
 producto. Si se afina algún punto, se actualiza este documento y, a partir
 de él, las apps.
+
+---
+
+## 16. Mi recorrido · protocolo cronológico (forma principal de uso)
+
+`app/tools-standalone/recorrido-tec.html` (id `recorrido_tec`) ordena todo el
+ecosistema en etapas, siguiendo §7.7 (aparecer → permanecer, orden no
+reversible) y el protocolo integrado del cap. 15.4. Es la entrada principal
+de la app y de Mi espacio APRENS; el resto de herramientas son caja de apoyo.
+
+| Etapa | Qué se entrena | Avanza cuando |
+|---|---|---|
+| 0 · Punto de partida | Autoevaluación ICE clínica (+ prueba de continuidad) y cuestionario | autoevaluación hecha |
+| 1 · Entender | Psicoeducación: historia, manada, control y presencia, 3 vídeos de teoría, Laboratorio (vector, cadena, pilares) | todas las piezas vistas |
+| 2 · Aparecer | Práctica programada 3×/día, no contingente | 10/14 días programada · calma ≥ malestar · los 3 indicadores del libro |
+| 3 · Permanecer | Sostener más allá del impulso; honestidad emocional | programada mantenida · ITI estable o al alza |
+| 4 · Elegir y actuar | Micro-acción con valor 0/1 | CV ≥ 4/7 |
+| 5 · Consolidar | Mantenimiento, vínculos, reevaluación cada 4 semanas | — |
+
+Cada día: mañana (práctica de la etapa) → un paso → STOP a mediodía (viñetas
+«para · respira · vuelve») → noche → cierre (ruido, práctica por malestar,
+CV desde la etapa 2, ITI desde la 3). El psicólogo fija la etapa con
+`#/tool/recorrido_tec/etapa-N`. **Al crear una herramienta o material
+psicoeducativo nuevo, decidir en qué etapa y en qué posición entra.**

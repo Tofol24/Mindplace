@@ -371,18 +371,31 @@
   // «Mi recorrido · paso a paso»: lo que toca hoy, leído del estado de la
   // herramienta (tools-standalone/recorrido-tec.html, mismo origen).
   function recorridoHoyHTML(){
-    const ETAPAS = ["Punto de partida","Entender","Aparecer","Permanecer","Elegir y actuar","Consolidar"];
+    const ETAPAS = [["Punto de partida","#6f665b"],["Entender","#8f5639"],["Aparecer","#2e7d5e"],["Permanecer","#3f6b74"],["Elegir y actuar","#a9781f"],["Consolidar","#7a4f8a"]];
     let st = null;
     try{ st = JSON.parse(localStorage.getItem("aprens.recorrido.v1")||"null"); }catch(e){ st = null; }
     const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
-    const hoy = st && st.dias ? (st.dias[d.toISOString().slice(0,10)] || {}) : {};
-    const hechos = (hoy.m?1:0)+(hoy.md?1:0)+(hoy.n?1:0)+(hoy.cerrado?1:0);
-    const estado = st
-      ? `Etapa ${st.etapa} · <b>${ETAPAS[st.etapa]||""}</b>. Hoy llevas ${hechos} de 4 momentos (mañana, mediodía, noche y cierre).`
-      : `Si no sabes por dónde empezar, empieza aquí: cada día, <b>qué hacer y en qué orden</b>, según la Teoría del Efecto Consciente. Entender → aparecer → permanecer → elegir → consolidar.`;
-    return `<a class="hs-act" href="#/tool/recorrido_tec" style="margin:4px 0 18px;border:2px solid var(--azul)">
-      <span class="se">🧭</span><span class="st">${st ? "Continuar mi recorrido" : "Mi recorrido · paso a paso"}<small>${estado}</small></span><span class="sarr">→</span></a>`;
+    const hoyF = d.toISOString().slice(0,10);
+    const etapa = st ? (st.etapa||0) : 0, col = ETAPAS[etapa][1];
+    const r = st && st.resumen && st.resumen.f === hoyF ? st.resumen : null;
+    const hoy = st && st.dias ? (st.dias[hoyF] || {}) : {};
+    const hechos = r ? r.hechos : (hoy.m?1:0)+(hoy.md?1:0)+(hoy.n?1:0)+(hoy.cerrado?1:0);
+    const total = r ? r.total : 5;
+    const marcas = ETAPAS.map((_,i)=>`<i class="${i<=etapa?"on":""}"></i>`).join("");
+    const cuerpo = st
+      ? `<div class="rh-k">Etapa ${etapa} de 5 · ${ETAPAS[etapa][0]}</div>
+         <div class="rh-t">Continuar mi recorrido</div>
+         <div class="rh-bar"><i style="width:${Math.round(hechos*100/total)}%"></i></div>
+         <div class="rh-d">Hoy: ${hechos} de ${total} hechos${r && r.paso ? ` · ${r.pasoHecho ? "paso de hoy hecho" : "tu paso de hoy"}: <b>${esc(r.paso)}</b>` : ""}</div>`
+      : `<div class="rh-k">La forma principal de usar tu espacio</div>
+         <div class="rh-t">Mi recorrido · paso a paso</div>
+         <div class="rh-d">Cada día, <b>qué hacer y en qué orden</b>, según la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. Con autoevaluación al empezar y cada 4 semanas.</div>`;
+    return `<a class="rec-hero" href="#/tool/recorrido_tec" style="--rh:${col}">
+      <span class="rh-ic">🧭</span><span class="rh-b">${cuerpo}<span class="rh-m">${marcas}</span></span>
+      <span class="rh-go">${st ? "Seguir" : "Empezar"} →</span></a>
+      <div class="rh-note">Las herramientas de abajo son tu <b>caja de apoyo</b>: el recorrido te irá llevando a cada una en su momento.</div>`;
   }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
   function porqueHTML(){
     return `
       <section class="porque" id="porque">
@@ -571,7 +584,8 @@
       if(sec) irASeccion(sec);
     });
     nav.appendChild(tit); nav.appendChild(chips);
-    const bienvenida = screen.querySelector(".hub-welcome");
+    // El índice va debajo del recorrido (lo principal) y de la bienvenida.
+    const bienvenida = screen.querySelector(".rh-note") || screen.querySelector(".hub-welcome");
     if(bienvenida) bienvenida.insertAdjacentElement("afterend", nav);
     else screen.insertAdjacentElement("afterbegin", nav);
   }
@@ -613,8 +627,8 @@
       <div class="hub-welcome">
         <img src="tools-standalone/assets/editorial/acompanar-la-sensacion.webp" alt="" loading="eager">
         <div class="hub-welcome-copy">
-          <div class="htitulo">Tus herramientas</div>
-          <div class="hsubt">Ordenadas por para qué sirven. Elige por dónde empezar hoy.</div>
+          <div class="htitulo">Tu espacio APRENS</div>
+          <div class="hsubt">Empieza por tu recorrido: te dice qué hacer cada día y en qué orden.</div>
         </div>
       </div>
       ${recorridoHoyHTML()}
