@@ -392,6 +392,9 @@
   .pq-full{margin-top:10px;}
   .pq-full p{font-size:13.5px;line-height:1.65;color:#3a4650;margin:0 0 10px;}
   .pq-full i{color:var(--azul);}
+  /* Laboratorio TEC: enlaces a la capa teórica (se abre en la app) */
+  .lab-lk{display:inline-flex;align-items:center;gap:7px;margin:10px 0 2px;text-decoration:none;background:#f8e4eb;border:1px solid #ebc3d1;color:#8c0f39;font-weight:700;font-size:13px;padding:9px 15px;border-radius:999px;}
+  .lab-lk:hover{border-color:#b3154a;}
 </style>
 </head>
 <body>
@@ -458,6 +461,7 @@
       <div class="sbridge">
         <p><b>Solo necesitaba saber que no iba solo.</b> Y ahí está la pregunta de fondo: <i>¿por qué respirar cambia algo?</i> Porque tu mono es un mamífero de manada, y respirar no es relajarte — es <b>volver a aparecer para él</b>.</p>
         <a class="sbridge-lk" href="https://aprens-app.netlify.app/#/tool/la_manada" target="_blank" rel="noopener">🐾 La manada · el porqué de la respiración y el AIS →</a>
+        <a class="lab-lk" href="https://aprens-app.netlify.app/#/tool/laboratorio_tec/s-afeccion" target="_blank" rel="noopener">🔬 La teoría detrás: la afección interna segura · Laboratorio TEC →</a>
       </div>
     </div>
   </details>
@@ -590,6 +594,7 @@ const TOOLS=[
   {nombre:"Tracker TEC",             url:"https://aprens-app.netlify.app/#/tool/tracker_tec",               ic:"📊", params:["L","C"],     desc:"Tu seguimiento de paradas y rutina diaria."},
   {nombre:"Brújula de valores",      url:"https://aprens-app.netlify.app/#/tool/brujula_valores",     ic:"🧭", params:["C"],         desc:"Mirar qué te importa y cómo de cerca estás por tu forma de estar."},
   {nombre:"Agenda atencional",       url:"https://aprens-app.netlify.app/#/tool/agenda_atencional",   ic:"🗓️", params:["L","D","C"], desc:"Organiza tu semana y dónde poner tu atención en cada momento."},
+  {nombre:"Mis L·D·C · Laboratorio TEC", url:"https://aprens-app.netlify.app/#/tool/laboratorio_tec/s-mio", ic:"🔬", params:[], revisar:true, desc:"Tres medidas rápidas (latencia, ruido interno y continuidad) para ver tu evolución en una gráfica. Orientativas, no diagnósticas."},
   {nombre:"Cuestionario de seguimiento", url:"https://aprens-app.netlify.app/#/tool/screening_tec",   ic:"📝", params:[],            revisar:true, desc:"El de tu código de 3 cifras: deja ver tu evolución (latencia, densidad, continuidad)."}
 ];
 
@@ -653,14 +658,16 @@ function render(){
     +'<div class="frase">«No es hacer más, es estar mejor: parar a tiempo, estar presente y seguir tu dirección.»</div>'
     +'</div>';
   // La teoría, en vídeo (3 vídeos breves con el psicólogo)
-  html+='<div class="vteo">'
+  html+='<div class="vteo" id="vteo">'
     +'<div class="vteo-lbl">🎬 La teoría, en vídeo</div>'
     +'<div class="vteo-sub">Tres vídeos breves con Tòfol Villalonga para entender lo esencial. Puedes verlos con calma.</div>'
     +'<div class="vteo-grid">'
     + vteoCard('video-tec.mp4','La Teoría del Efecto Consciente')
     + vteoCard('video-sobrepensamiento.mp4','El sobrepensamiento')
     + vteoCard('video-cerebro.mp4','Cómo funciona tu cerebro')
-    +'</div></div>';
+    +'</div>'
+    +'<a class="lab-lk" href="https://aprens-app.netlify.app/#/tool/laboratorio_tec" target="_blank" rel="noopener">🔬 Profundizar · Laboratorio TEC: entender, practicar y medir →</a>'
+    +'</div>';
   // Foco de la semana (si el enlace de la pauta trae ?foco=L|D|C)
   if(focoDoor){
     html+='<a class="foco-banner" href="#'+focoDoor.k+'" style="background:'+focoDoor.color+'">'
@@ -688,7 +695,8 @@ function render(){
     {href:'https://aprens-app.netlify.app/#/tool/ais_basicas', ext:true, ic:'🧰', tit:'Herramientas AIS · entrena cada día', txt:'Las 6 herramientas base y las 3 anclas (cuello, pecho, barriga). Tenlas siempre presentes: son lo que entrenas a diario para automatizar tu presencia interna.', col:'#565a41', bg:'#e7ecdc'},
     {href:'#historia',  ic:'📖', tit:'La historia', txt:'La metáfora del mono y el coche. Si es tu primera vez, empieza por aquí.', col:'var(--verde)', bg:'var(--verdeLt)'},
     {href:'https://aprens-app.netlify.app/#/tool/la_manada', ext:true, ic:'🐾', tit:'La manada · el porqué', txt:'Por qué respiras: tu mono es un mamífero de manada y respirar es volver a aparecer para él.', col:'#3f6b5e', bg:'#e3efe8'},
-    {href:'https://aprens-app.netlify.app/#/tool/modelo_atencional', ext:true, ic:'🧠', tit:'El control y la presencia', txt:'El mapa del malestar: por qué sobrepensar para recuperar el control lleva a la ansiedad y la depresión, y por dónde se sale con la conciencia.', col:'#8f4126', bg:'#f3e0d8'}
+    {href:'https://aprens-app.netlify.app/#/tool/modelo_atencional', ext:true, ic:'🧠', tit:'El control y la presencia', txt:'El mapa del malestar: por qué sobrepensar para recuperar el control lleva a la ansiedad y la depresión, y por dónde se sale con la conciencia.', col:'#8f4126', bg:'#f3e0d8'},
+    {href:'https://aprens-app.netlify.app/#/tool/laboratorio_tec', ext:true, ic:'🔬', tit:'Laboratorio TEC · la teoría por dentro', txt:'El libro de la Teoría del Efecto Consciente hecho laboratorio: entender el vector atencional, practicar el AIS paso a paso y medir tus L·D·C.', col:'#b3154a', bg:'#f8e4eb'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
   MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#a9781f', bg:'#f4e7cc'});
@@ -753,6 +761,7 @@ function render(){
       +'<span class="sec-badge" style="background:'+d.bg+';color:'+d.color+'">'+esc(d.sub)+'</span></div>'
       +(isFoco?'<div class="sec-foco">🎯 Tu foco de esta semana</div>':'')
       +'<div class="sec-obj">'+esc(d.obj)+'</div>'
+      +'<a class="lab-lk" href="https://aprens-app.netlify.app/#/tool/laboratorio_tec/'+({L:'s-cadena',D:'s-afeccion',C:'s-ais'})[d.k]+'" target="_blank" rel="noopener">🔬 Entender el porqué · Laboratorio TEC →</a>'
       +(main?'<div class="sec-reco" style="color:'+d.color+'">✨ Empieza por esta</div>'+toolHTML(main):'')
       +(destac.length?'<div class="sec-reco" style="color:'+d.color+'">🤍 También aquí</div>'+destac.map(toolHTML).join(''):'')
       +(rest.length?'<details class="masherr"><summary>Ver otras '+rest.length+' herramientas para «'+esc(d.tit.toLowerCase())+'»</summary><div class="masherr-list">'+rest.map(toolHTML).join('')+'</div></details>':'')
@@ -801,6 +810,8 @@ function render(){
   document.getElementById("appMain").innerHTML=html;
 }
 render();
+// Enlace directo a la historia (…#historia, p. ej. desde el Laboratorio TEC): abrir el desplegable.
+(function(){ function abrir(){ if(location.hash==="#historia"){ var d=document.getElementById("historia"); if(d){ d.open=true; d.scrollIntoView(); } } } abrir(); window.addEventListener("hashchange", abrir); })();
 </script>
 
 <!-- ════════════════ SCRIPT DEL DETECTIVE DEL MONO ════════════════ -->
