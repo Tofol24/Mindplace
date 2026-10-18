@@ -345,6 +345,10 @@
     </table></div>
     <h3>El aire como cebo</h3>
     <p>La respiración no calma por el oxígeno: calma porque <b>mueve la atención hacia dentro</b>. Si la atención va a «hacerlo bien» (técnica, profundidad), el mecanismo falla. «Tú eres su conciencia; para él eres invisible: por eso respiras.»</p>
+    <div class="card center">
+      <p class="small">Míralo: la luz <b style="color:#3FA6D8">azul</b> es el aire, que entra por la nariz y hace de cebo; la luz <b style="color:#C8902F">amarilla</b> es tu conciencia, que lo sigue hacia dentro, baja y <b>se queda</b> en el vientre aunque el aire vuelva a salir.</p>
+      <div id="ceboFig" style="max-width:280px;margin:6px auto 0"></div>
+    </div>
     <h3>La honestidad emocional</h3>
     <p>Decir «no sé por qué, pero siento esto aquí» (señalando, tono sereno) es la conciencia <b>dando la cara por el cuerpo</b>. La seguridad no depende de la respuesta del receptor. Gradación: a solas → terapeuta → vínculos de confianza creciente.</p>
     <div class="quote">«No practicas para sentir menos; practicas para que tu mono aprenda que, cuando tiene miedo, alguien se queda a su lado.»</div>
@@ -692,8 +696,15 @@
     b.onclick = function(){ show(s.id, true); };
     nav.appendChild(b);
   });
+  // Silueta de dos luces en «El aire como cebo» (componente compartido js/respiro-ais.js).
+  var cebo = null;
+  if(window.RespiroAIS && $("#ceboFig")){
+    try{ cebo = RespiroAIS.mount($("#ceboFig"), { lang:"es", figure:"organism", showControl:true, showZones:false,
+      rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 } }); }catch(e){ cebo = null; }
+  }
   function show(id, push){
     var cur = $("section.sec.on");
+    if(cebo && cur && cur.id === "s-afeccion" && id !== "s-afeccion"){ try{ cebo.stop(); }catch(e){} }
     if(cur && cur.id === id) return;
     if(push && cur) hist.push(cur.id);
     secs.forEach(function(s){ s.classList.toggle("on", s.id===id); });
