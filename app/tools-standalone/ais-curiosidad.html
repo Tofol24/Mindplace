@@ -441,6 +441,16 @@
     <div class="ancla-msg" id="anclaMsg"></div>
   </div>
 
+  <!-- A1 · ¿Por qué vienes ahora? (práctica programada vs. el cuerpo avisó) -->
+  <div class="card">
+    <h2><span class="ic">🕰️</span>¿Por qué vienes ahora?</h2>
+    <div class="opts" id="motivoOpts">
+      <button class="opt" onclick="setMotivo('verde',this)"><span class="em">🟢</span> Sin necesidad: es mi momento de práctica</button>
+      <button class="opt" onclick="setMotivo('rojo',this)"><span class="em">🔴</span> El cuerpo me ha avisado y vengo</button>
+    </div>
+    <p class="lead" id="motivoMsg" style="display:none;margin-top:10px"></p>
+  </div>
+
   <!-- B · Guía paso a paso -->
   <div class="card">
     <h2><span class="ic">👣</span>Paso a paso</h2>
@@ -475,10 +485,18 @@
     <div id="regBlocks"><!-- 4 preguntas no evaluativas generadas por JS --></div>
   </div>
 
+  <!-- 8b · ACOMPAÑA · frase honesta -->
+  <div class="card">
+    <h2><span class="ic">🤝</span>Acompaña</h2>
+    <p>Antes de seguir, dilo por dentro (o en voz baja), señalando la zona y sin explicar el origen:</p>
+    <div class="quote">“No sé por qué, pero lo noto aquí.”</div>
+    <p class="lead">Si no has notado nada, también vale: la presencia cuenta igual. Puedes dejar la atención unos segundos en las <b>manos</b> o en los <b>pies</b> (el contacto con el suelo) y volver desde ahí.</p>
+  </div>
+
   <!-- 9 · MICROACCIÓN CON VALOR -->
   <div class="card">
     <h2><span class="ic">➡️</span>Volver a conducir con dirección</h2>
-    <p>Después de explorar, ¿cuál es el siguiente gesto pequeño que tiene sentido?</p>
+    <p>Después de explorar, ¿cuál es el siguiente gesto pequeño que tiene sentido? <i>¿Qué haría la persona que quiero ser?</i> Pequeño, posible ahora y no para quitarte lo que sientes.</p>
     <div class="chips" id="microChips"></div>
     <input type="text" id="microOtra" placeholder="Otra acción que tenga sentido para ti…" style="display:none">
     <div class="quote" style="margin-top:14px">“El AIS no termina en explorar. Termina en volver a vivir con dirección.”</div>
@@ -529,7 +547,7 @@ var EJERCICIOS = [
   { id:'linterna', icon:'🔦', titulo:'La linterna interior', nivel:'neutro', dur:'1 min',
     contexto:'Cuando quieras empezar, o en cualquier pausa del día.',
     explica:'La práctica base. Enciendes una linterna hacia dentro y miras qué hay, como quien explora una habitación a oscuras con calma. No para encontrar algo: para mirar.',
-    pasos:['Di «STOP» por dentro y para un segundo.','Respira y lleva la atención al cuerpo.','Pregunta con curiosidad: «¿Qué hay aquí ahora?»','Mira lo que encuentres sin juzgarlo ni explicarlo.','Si casi no notas nada, también vale: eso es lo que hay hoy.'],
+    pasos:['Di «STOP» por dentro y para un segundo.','Respira y lleva la atención al cuerpo.','Pregunta con curiosidad: «¿Qué hay aquí ahora?»','Mira lo que encuentres sin juzgarlo ni explicarlo.','Si casi no notas nada, también vale: eso es lo que hay hoy. Puedes apoyarte en las manos o los pies y volver desde ahí.'],
     frase:'Enciendo la linterna, no para arreglar el coche, sino para ver qué hay.',
     reflexion:'¿Has podido mirar dentro como quien explora, sin buscar nada concreto?' },
 
@@ -659,7 +677,7 @@ function _aprensSaveAIS(){
     Aprens.save({ id:practica._sid, date:hoy(), ts:practica._sid, param:'densidad',
       ejercicio:exActual.titulo, nivel:exActual.nivel, ancla:practica.ancla||'',
       micro:microFinal(), cualidades:g('inCuerpo'), cuenta:g('inCuenta'), frase:g('inFrase'),
-      vecesHoy:dia.hechos.length, intencion:intencion||'' });
+      vecesHoy:dia.hechos.length, intencion:intencion||'', motivo:practica.motivo||'' });
     Aprens.mountBar();
   }catch(e){}
 }
@@ -714,7 +732,7 @@ function pintaMenu(){
 function abrirEjercicio(id){
   exActual = EJERCICIOS.filter(function(e){return e.id===id;})[0];
   if(!exActual) return;
-  practica = {ejid:id, reg:[null,null,null,null], micro:null, ancla:null};
+  practica = {ejid:id, reg:[null,null,null,null], micro:null, ancla:null, motivo:null};
   var n=NIVELES[exActual.nivel];
 
   // reset ancla visual
@@ -752,10 +770,25 @@ function abrirEjercicio(id){
   document.getElementById('inCuenta').value='';
   document.getElementById('resumenPrev').textContent='';
 
+  document.querySelectorAll('#motivoOpts .opt').forEach(function(x){x.classList.remove('sel');});
+  var mm=document.getElementById('motivoMsg'); if(mm){mm.textContent='';mm.style.display='none';}
+
   resetTimer();
   irPantalla('s-ejercicio');
 }
 
+/* ¿Por qué vienes ahora? · 🟢 práctica en calma (programada) / 🔴 el cuerpo avisó */
+function setMotivo(k,btn){
+  practica.motivo=k;
+  document.querySelectorAll('#motivoOpts .opt').forEach(function(x){x.classList.remove('sel');});
+  if(btn) btn.classList.add('sel');
+  var m=document.getElementById('motivoMsg');
+  m.textContent = k==='verde'
+    ? 'Venir sin necesidad es lo que más enseña a tu cuerpo: no hace falta alarmarse para que vengas.'
+    : 'Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma: así tu cuerpo no necesita alarmarse para que vengas.';
+  m.style.display='block';
+}
+function motivoTxt(){ return practica.motivo==='verde'?'🟢 sin necesidad (práctica en calma)':(practica.motivo==='rojo'?'🔴 el cuerpo me avisó':'—'); }
 function setReg(qi,oi,btn){
   var row=btn.parentNode;
   row.querySelectorAll('button').forEach(function(x){x.classList.remove('sel');});
@@ -875,6 +908,9 @@ function construirResumen(){
   L.push('');
   L.push('Frase que me ha ayudado:');
   L.push(document.getElementById('inFrase').value.trim()||'—');
+  L.push('');
+  L.push('Por qué vine:');
+  L.push(motivoTxt());
   L.push('');
   L.push('Microacción con valor:');
   L.push(microFinal());

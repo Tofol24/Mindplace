@@ -207,6 +207,7 @@
     <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>Per on començam</h2>
     <p>L’objectiu d’aquesta setmana <b>no és demostrar res ni controlar els companys</b>. És recuperar <b>presència</b>, fer la teva feina i reduir la vigilància constant cap als altres.</p>
     <p class="lead">Quan deixes de vigilar, el teu cos aprèn que no hi ha perill i pots tornar al present.</p>
+    <p>Tornar no vol dir no tenir símptomes: <b>tornar és fer passes amb valor amb els símptomes presents</b>. La conducta valuosa no espera l’emoció correcta; l’emoció correcta arriba fent-la.</p>
   </div>
 
   <!-- 2. No he de demostrar res -->
@@ -254,11 +255,12 @@
   <div class="card">
     <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg></span>Protocol STOP + AIS</h2>
     <p class="lead">Cinc passos per tornar a la presència quan apareix la incomoditat.</p>
+    <p>Fes-lo també <b>en calma</b>: abans d’entrar a la feina (ritual d’entrada) i en algun moment fix del dia, no només quan apareix l’alarma. Així el cos aprèn que no ha d’alarmar-se per ser atès.</p>
     <ol class="passos">
       <li><div><b>STOP mental.</b><small>Atura’t un instant abans de reaccionar.</small></div></li>
       <li><div><b>Respiració diafragmàtica lenta.</b><small>Inhala suau, exhala més llarg.</small></div></li>
-      <li><div><b>Atenció al pit, panxa o coll.</b><small>Localitza la sensació al cos, sense fugir-ne.</small></div></li>
-      <li><div><b>Frase interna:</b><small>“Això és desagradable, però no és una amenaça.”</small></div></li>
+      <li><div><b>Atenció al pit, panxa o coll.</b><small>Localitza la sensació al cos, sense fugir-ne ni canviar-la. Si no notes res, prova amb les mans o els peus.</small></div></li>
+      <li><div><b>Frase interna:</b><small>“No sé per què, però ho not aquí. Això és desagradable, però no és una amenaça.”</small></div></li>
       <li><div><b>Tornar a una acció concreta de feina.</b><small>Una tasca petita i present.</small></div></li>
     </ol>
     <div class="counter">
@@ -313,6 +315,14 @@
       </div>
     </div>
 
+    <div class="step">
+      <div class="lab">Avui he fet alguna passa amb valor, encara que hi hagués tensió?</div>
+      <div class="escala" id="esCv">
+        <button data-v="1" onclick="setCv(1)"><span class="em">✅</span><span class="tx">Sí</span></button>
+        <button data-v="0" onclick="setCv(0)"><span class="em">⬜</span><span class="tx">Avui no</span></button>
+      </div>
+      <p class="topnote" style="margin-top:8px">La tensió de dalt és orientativa: l’èxit d’avui és la passa amb valor, no que la tensió baixi.</p>
+    </div>
     <div class="daysum" id="daysum">
       <div class="tot">
         <div><b id="tFrases">0</b><span>frases<br>respectuoses</span></div>
@@ -360,7 +370,7 @@
   function avui(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
   function nouDia(){return {date:avui(),frases:{},salut:0,stop:0,ini:null,fin:null};}
   function sumaFrases(d){var t=0;for(var k in d.frases){t+=d.frases[k];}return t;}
-  function teActivitat(d){return sumaFrases(d)+(d.salut||0)+(d.stop||0)>0 || d.ini!=null || d.fin!=null;}
+  function teActivitat(d){return sumaFrases(d)+(d.salut||0)+(d.stop||0)>0 || d.ini!=null || d.fin!=null || d.cv!=null;}
 
   function carregaDia(){
     var d=null; try{ d=JSON.parse(localStorage.getItem(KEY_DIA)); }catch(e){}
@@ -375,7 +385,7 @@
     if(!teActivitat(d)) return;
     var h=carregaHist();
     if(h.length && h[0].date===d.date) return; // ja arxivat
-    h.unshift({date:d.date, frases:sumaFrases(d), salut:d.salut||0, stop:d.stop||0, ini:d.ini, fin:d.fin});
+    h.unshift({date:d.date, frases:sumaFrases(d), salut:d.salut||0, stop:d.stop||0, ini:d.ini, fin:d.fin, cv:(d.cv==null?null:d.cv)});
     if(h.length>30) h=h.slice(0,30);
     try{ localStorage.setItem(KEY_HIST,JSON.stringify(h)); }catch(e){}
   }
@@ -391,6 +401,7 @@
     desaDia(); pinta();
   }
   function setMood(tipus,v){ dia[tipus]=(dia[tipus]===v?null:v); desaDia(); pinta(); }
+  function setCv(v){ dia.cv=(dia.cv===v?null:v); desaDia(); pinta(); }
   function anarRegistre(){ document.getElementById('registre').scrollIntoView({behavior:'smooth',block:'start'}); }
 
   /* ---------- render ---------- */
@@ -419,6 +430,8 @@
       var cont=document.getElementById(t==='ini'?'esIni':'esFin');
       cont.querySelectorAll('button').forEach(function(b){ b.classList.toggle('sel', +b.getAttribute('data-v')===dia[t]); });
     });
+    var ecv=document.getElementById('esCv');
+    if(ecv) ecv.querySelectorAll('button').forEach(function(b){ b.classList.toggle('sel', dia.cv!=null && +b.getAttribute('data-v')===dia.cv); });
     // resum
     var tf=sumaFrases(dia);
     document.getElementById('tFrases').textContent=tf;
@@ -438,7 +451,7 @@
     var rows=h.map(function(d){
       var mood=(d.ini!=null||d.fin!=null)?(' · '+(d.ini!=null?EMO[d.ini]:'·')+'→'+(d.fin!=null?EMO[d.fin]:'·')):'';
       return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+
-        d.frases+' frases · '+d.salut+' salut. · '+d.stop+' STOP'+mood+'</span></div>';
+        d.frases+' frases · '+d.salut+' salut. · '+d.stop+' STOP'+mood+(d.cv===1?' · passa amb valor ✓':'')+'</span></div>';
     }).join('');
     el.innerHTML='<h3>Dies anteriors</h3>'+rows;
   }
@@ -454,7 +467,8 @@
       FRASES.forEach(function(f,i){var c=d.frases[String(i)]||0;if(c>0)L.push("   · «"+f+"» ×"+c);});
     }
     if(d.salut) L.push("Salutacions proactives: "+d.salut);
-    if(d.stop)  L.push("Vegades STOP i presencia: "+d.stop);
+    if(d.stop)  L.push("Vegades STOP i presència: "+d.stop);
+    if(d.cv!=null) L.push("Passa amb valor encara que hi hagués tensió (0/1): "+d.cv);
     return L.join("\n");
   }
 

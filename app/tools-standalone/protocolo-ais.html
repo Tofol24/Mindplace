@@ -130,8 +130,8 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
     <p>Este protocolo entrena tu capacidad de <b>dirigir y sostener la atención hacia la experiencia interna del cuerpo</b> de forma segura, no reactiva y no controladora — para que la conducta deje de estar gobernada por el impulso y el alivio inmediato.</p>
     <p>Anclamos el vector atencional hacia dentro por tres vías. Esta herramienta trabaja la <b>tercera, el canal auditivo</b>: una voz guía que sostiene tu atención sin que tengas que hacer nada.</p>
     <div class="canales">
-      <a class="canal lk" href="https://aprens-app.netlify.app/#/tool/herramienta_diaria" target="_blank" rel="noopener"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="go">Abrir herramienta →</span></a>
-      <a class="canal lk" href="https://aprens-app.netlify.app/#/tool/mapa_atencion_interna" target="_blank" rel="noopener"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="go">Abrir herramienta →</span></a>
+      <a class="canal lk" href="../index.html#/tool/herramienta_diaria" target="_top"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="go">Abrir herramienta →</span></a>
+      <a class="canal lk" href="../index.html#/tool/mapa_atencion_interna" target="_top"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="go">Abrir herramienta →</span></a>
       <div class="canal act"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="go" style="color:var(--oro)">Estás aquí</span></div>
     </div>
     <div class="frase">La atención no es control. Es presencia.</div>
@@ -162,6 +162,14 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
   <div class="card" id="audioCard">
     <div class="ctit">🎧 Audio guía</div>
     <div id="audioBox"></div>
+  </div>
+
+  <div class="card" id="cierreCard">
+    <div class="ctit">Al terminar el audio</div>
+    <div class="frase" style="margin-top:0">③ Acompaña: «No sé por qué, pero lo noto aquí.»</div>
+    <p style="font-size:13px;color:#444;line-height:1.55;margin:12px 0 8px">④ Actúa: <b>¿qué haría ahora la persona que quiero ser?</b> Un paso pequeño, posible ahora y no para quitarte lo que sientes.</p>
+    <input type="text" id="microIn" maxlength="140" oninput="setMicro(this.value)" placeholder="Ej.: volver a la tarea, llamar a alguien, salir a caminar…" style="width:100%;padding:11px 12px;border:1.6px solid #E3EAF3;border-radius:12px;font:inherit;font-size:14px">
+    <p style="font-size:12px;color:var(--gris);line-height:1.5;margin-top:10px">Si no has notado nada, también vale: la presencia cuenta igual. Puedes empezar por las manos o los pies y volver desde ahí. Practica a una hora fija, también los días en que estás bien: así tu cuerpo no necesita alarmarse para que vengas.</p>
   </div>
 
   <div class="card" id="mapaCard">
@@ -282,7 +290,7 @@ const FASES=[
  {n:5,tit:"AIS en contexto real",sub:"Del cuerpo a la conducta",dur:"Mantenimiento continuo",audio:"audio/fase5.m4a",
   obj:"Trasladar la AIS a los momentos de impulso real: uso del móvil, urgencia, evitación.",
   ejTit:"Uso en el día a día",
-  ej:["Pausa guiada breve (30–60 s).","Imagen rápida → atención dentro → soltar la urgencia.","Decidir desde la presencia, no desde el impulso."],
+  ej:["Pausa guiada breve (30–60 s).","Imagen rápida → atención dentro → quedarte con la urgencia sin obedecerla («No sé por qué, pero lo noto aquí»).","Decidir desde la presencia, no desde el impulso: «¿Qué haría la persona que quiero ser?»"],
   crit:"La atención interna se vuelve un recurso disponible en la vida real, no solo en la práctica.",
   msg:"Del cuerpo a la conducta: primero te acompañas, después eliges."}
 ];
@@ -330,6 +338,7 @@ function render(){
   document.getElementById("stComp").textContent = state.completed.length;
   document.getElementById("stRacha").textContent = calcRacha();
   if(state.start)document.getElementById("startDate").value=state.start;
+  const mi=document.getElementById("microIn"); if(mi&&document.activeElement!==mi) mi.value=microHoy();
   renderFases(rec);
   renderFase();
   renderMark();
@@ -342,6 +351,8 @@ function renderFases(rec){
     '<div class="fn">'+f.n+'</div><div class="fl2">Fase</div>'+
     '<div class="rectag">hoy</div></div>').join("");
 }
+function setMicro(v){state.micro={date:hoyISO(),txt:String(v||"").trim()};save();renderMsg(diasDesde(),faseRecomendada(diasDesde()));}
+function microHoy(){return (state.micro&&state.micro.date===hoyISO())?state.micro.txt:"";}
 function selFase(n){state.fase=n;state.manual=true;save();renderFases(faseRecomendada(diasDesde()));renderFase();renderMsg(diasDesde(),faseRecomendada(diasDesde()));}
 function renderFase(){
   const f=FASES[state.fase];
@@ -364,6 +375,7 @@ function renderFase(){
   }
   // mapa solo relevante en fases con imagen ancla (1,2,3); en 0/4/5 lo ocultamos
   document.getElementById("mapaCard").style.display=(f.n>=1&&f.n<=3)?"":"none";
+  document.getElementById("cierreCard").style.display=(f.n===0)?"none":"";
 }
 function renderMark(){
   const b=document.getElementById("markBtn");
@@ -408,6 +420,7 @@ function renderMsg(d,rec){
     const ult=state.completed[state.completed.length-1];
     L.push("Última práctica registrada: "+ult);
   }
+  if(microHoy())L.push("Micro-acción con valor hoy: "+microHoy());
   L.push("");
   L.push("Enviado desde la app de APRENS.");
   document.getElementById("msgBox").textContent=L.join("\n");

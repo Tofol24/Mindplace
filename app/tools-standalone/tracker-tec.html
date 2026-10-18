@@ -91,6 +91,8 @@ body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 
 .tec-name{font-size:.62rem;font-weight:700;opacity:.65;margin:2px 0 8px;line-height:1.25;}
 .tec-stars{display:flex;gap:3px;justify-content:center;}
 .tec-star{font-size:1.05rem;line-height:1;transition:color .25s;}
+.tec-panel{grid-template-columns:repeat(3,minmax(0,1fr));}.tec-col{min-width:0;}
+@media(max-width:420px){.tec-col{padding:12px 4px 10px;}.tec-stars{gap:1px;}.tec-star{font-size:.92rem;}.tec-name{overflow-wrap:anywhere;}}
 .tec-star.lit-L{color:var(--cL);}.tec-star.lit-D{color:var(--cD);}.tec-star.lit-C{color:var(--cC);}.tec-star.off{color:#E0E7EF;}
 .tec-score{font-size:.65rem;color:var(--gris);margin-top:5px;}
 /* Resumen */
@@ -183,13 +185,13 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <div class="bstep s3"><div class="bico">🤍</div><div class="blbl">PRESENCIA<br>él se siente atendido</div></div>
       <div class="bstep s4"><div class="bico">🎯</div><div class="blbl">ACTÚO<br>conducta asertiva</div></div>
     </div>
-    <div style="font-size:.74rem;color:var(--gris);line-height:1.55;">~600 sobrepensamientos al día. Objetivo: interceptar al menos <strong id="cfgGoal">60</strong>. Cada uno que termina en conducta asertiva desactiva el patrón.</div>
+    <div style="font-size:.74rem;color:var(--gris);line-height:1.55;">~600 sobrepensamientos al día. Objetivo: interceptar al menos <strong id="cfgGoal">60</strong>. Cada uno que termina en conducta asertiva va debilitando el patrón.</div>
   </div>
 
   <!-- ÍNDICE -->
   <div class="card">
     <div class="ctit">🧭 ¿Por dónde quieres entrar?</div>
-    <div class="idxsub">Cada herramienta entrena un parámetro: <span class="tb tb-L">L</span> Latencia (espacio antes de reaccionar) · <span class="tb tb-D">D</span> Densidad (presencia interna) · <span class="tb tb-C">C</span> Continuidad (sostener el patrón). Toca una para ir a ella.</div>
+    <div class="idxsub">Cada herramienta entrena un parámetro: <span class="tb tb-L">L</span> Latencia (espacio antes de reaccionar) · <span class="tb tb-D">D</span> Densidad (ruido interno: la práctica lo baja) · <span class="tb tb-C">C</span> Continuidad (sostener el patrón). Toca una para ir a ella.</div>
     <div class="idxgrid">
       <button class="idxb" onclick="irA('exParadas')"><span class="ib-ico">✋</span><span class="ib-body"><span class="ib-tit">Paradas de pensamiento</span><span class="ib-par"><span class="tb tb-L">L</span></span></span></button>
       <button class="idxb" onclick="irA('exRituales')"><span class="ib-ico">🚪</span><span class="ib-body"><span class="ib-tit">Rituales de entrada</span><span class="ib-par"><span class="tb tb-L">L</span></span></span></button>
@@ -277,7 +279,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
   <!-- RESPIRACIÓN — D -->
   <div class="card" id="exRespiraciones">
     <div class="ctit">⏱ Respiraciones cotidianas <span class="tb tb-D">D · Herr. 4</span></div>
-    <div class="qtrab"><span class="qp"><span class="tb tb-D">Densidad</span></span><span>Bajar la conciencia a la barriga cada 1–2 horas, sin necesidad: cada repetición suma presencia a lo largo del día.</span></div>
+    <div class="qtrab"><span class="qp"><span class="tb tb-D">Densidad</span></span><span>Bajar la conciencia a la barriga cada 1–2 horas, sin necesidad (también en calma): cada repetición suma presencia y baja el ruido interno.</span></div>
     <div style="font-size:.84rem;color:var(--gris);margin-bottom:3px;">Cada 1–2 horas: la conciencia baja a la barriga.</div>
     <div class="resp-grid" id="respGrid"></div>
     <div style="font-size:.74rem;color:var(--gris);" id="respLabel">0 / 8 respiraciones</div>
@@ -325,7 +327,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
         <div class="tec-score" id="scoreC">0/5</div>
       </div>
     </div>
-    <div style="font-size:.71rem;color:var(--gris);margin-top:8px;font-style:italic;">Se actualizan solas a medida que registras el día.</div>
+    <div style="font-size:.71rem;color:var(--gris);margin-top:8px;font-style:italic;">Se actualizan solas a medida que registras el día. Más estrellas = más práctica que entrena cada parámetro (L↑ · D: menos ruido · C↑). Son orientativas, no una nota.</div>
   </div>
 
   <!-- NOTA -->
@@ -484,7 +486,7 @@ function cambiarParada(d){paradas=Math.max(0,paradas+d);document.getElementById(
 function selReo(v){reoSel=v;['Si','Parcial','No'].forEach(x=>document.getElementById('reo'+x).classList.remove('sel'));document.getElementById('reo'+{si:'Si',parcial:'Parcial',no:'No'}[v]).classList.add('sel');if(v==='si'&&paradas>asertivas){asertivas++;document.getElementById('bfAsertivas').style.width=Math.min(100,asertivas/CFG.goalParadas*100)+'%';document.getElementById('bvAsertivas').textContent=asertivas;}updateTEC();}
 function cambiarRitual(d){rituales=Math.max(0,rituales+d);document.getElementById('ritualBig').textContent=rituales;updateTEC();}
 function selEstruct(v){estructSel=v;document.getElementById('estructSi').classList.toggle('sel',v==='si');document.getElementById('estructNo').classList.toggle('sel',v==='no');updateTEC();}
-function selBP(v){bpSel=v;document.getElementById('bpBarriga').classList.toggle('sel',v==='barriga');document.getElementById('bpPecho').classList.toggle('sel',v==='pecho');document.getElementById('bpHint').textContent=v==='barriga'?'✓ Fui yo a él — detección antes del umbral.':'⚠ El cuerpo ya pedía ayuda. La próxima, mano en barriga antes.';updateTEC();}
+function selBP(v){bpSel=v;document.getElementById('bpBarriga').classList.toggle('sel',v==='barriga');document.getElementById('bpPecho').classList.toggle('sel',v==='pecho');document.getElementById('bpHint').textContent=v==='barriga'?'✓ Fui yo a él — detección antes del umbral.':'El cuerpo ya avisaba: acompañarlo ahora también vale. Y suma visitas en calma, a horas fijas, para llegar antes del umbral.';updateTEC();}
 function addAbrazo(){abrazosN++;const c=document.getElementById('abrazos');const p=document.createElement('span');p.style.cssText='background:var(--cDlt);color:var(--cD);border-radius:20px;padding:5px 12px;font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;';p.innerHTML='🫂 Vínculo '+abrazosN+' <span style="cursor:pointer;opacity:.5;" onclick="this.parentElement.remove();abrazosN--;updateTEC();">✕</span>';c.appendChild(p);updateTEC();}
 function toggleRutina(id){document.getElementById(id).classList.toggle('done');const n=document.querySelectorAll('.rut-slot.done').length;document.getElementById('rutinaLbl').textContent=n+' / 3 momentos completados'+(n===3?' ✓':'');updateTEC();}
 
@@ -524,7 +526,7 @@ function prepararResumen() {
   const bp=bpSel==='barriga'?'🟢 Barriga (proactivo)':bpSel==='pecho'?'🔴 Pecho (reactivo)':'(sin marcar)';
   const reo=reoSel==='si'?'✓ Asertiva':reoSel==='parcial'?'≈ En parte':reoSel==='no'?'✗ En el bucle':'(sin marcar)';
   const estr=estructSel==='si'?'✓ Sí':estructSel==='no'?'✗ Me desvié':'(sin marcar)';
-  const ruts=['🌅','☀️','🌙'].map((e,i)=>(document.querySelectorAll('.rut-slot.done')[i]?'✓':'✗')+' '+['Mañana','Tarde','Noche'][i]).join('  ');
+  const ruts=['rutM','rutT','rutN'].map((id,i)=>(document.getElementById(id).classList.contains('done')?'✓':'✗')+' '+['Mañana','Tarde','Noche'][i]).join('  ');
   const hon=document.getElementById('honestidad').value.trim()||'(sin registrar)';
   const nota=document.getElementById('nota').value.trim()||'(sin nota)';
   const txt=`TRACKER TEC · APRENS\nFecha: ${fecha}\n\n━ LATENCIA (Herr.1+5)\nParadas: ${paradas}  Asertivas: ${asertivas}\nReorientación: ${reo}\nEntradas acompañadas: ${rituales}\nEstructura del día: ${estr}\n\n━ DENSIDAD (Herr.2+3+4)\nRespiraciones: ${respHechas}/8\nSeñal: ${bp}\nHonestidad emocional: ${hon}\nAbrazos sentidos: ${abrazosN}\n\n━ CONTINUIDAD (Herr.6)\nRutina: ${ruts}\n\n━ PARÁMETROS TEC\nL · Latencia:    ${starsStr(L)} (${L}/5)\nD · Densidad:    ${starsStr(D)} (${D}/5)\nC · Continuidad: ${starsStr(C)} (${C}/5)\n\n━ MOMENTO DEL DÍA\n${nota}\n\n— Tracker TEC APRENS`;

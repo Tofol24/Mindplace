@@ -129,6 +129,8 @@ input[type=text]:focus{border-color:var(--az);}
 .notif-badge{background:rgba(46,125,94,.1);border:1.5px solid var(--vd);border-radius:10px;padding:8px 12px;font-size:11.5px;color:var(--vd);margin-top:10px;display:flex;align-items:center;gap:7px;}
 .gmodal{display:none;position:fixed;inset:0;background:rgba(74,63,48,.96);z-index:210;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
 .gmodal.on{display:flex;}
+/* los overlays de práctica quedan por encima de la barra «Enviar al panel» (z-index 9999) */
+.rmodal,.gmodal{z-index:10001;}
 .gsense-ico{font-size:52px;margin-bottom:8px;}
 .gsense-tit{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
 .gsense-sub{font-size:14px;color:rgba(255,255,255,.8);margin-bottom:20px;}
@@ -248,7 +250,15 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
 <div class="rmodal" id="rmodal" role="dialog" aria-modal="true" aria-label="Respiración guiada">
   <div id="rbox" style="width:min(86vw,340px)"></div>
   <div class="rinfo" id="rinfo">Ronda 1 de 3</div>
-  <button class="rstop" onclick="stopR()">Detener</button>
+  <button class="rstop" id="rstopBtn" onclick="stopR()">Detener</button>
+  <div id="rclose" class="hidden" style="width:100%;max-width:340px;text-align:center;color:#fff">
+    <div style="font-family:var(--serif);font-size:20px;font-style:italic;line-height:1.4;margin-bottom:12px">&laquo;No s&eacute; por qu&eacute;, pero lo noto aqu&iacute;.&raquo;</div>
+    <div id="rcloseRojo" class="hidden" style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.5;margin-bottom:12px">Est&aacute; bien venir cuando el cuerpo avisa. Recuerda practicar tambi&eacute;n en calma: as&iacute; tu cuerpo no necesita alarmarse para que vengas.</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.5;margin-bottom:14px">Si no has notado nada, tambi&eacute;n vale: la presencia cuenta igual. Puedes empezar por las manos o los pies.</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:8px">Y ahora, &iquest;qu&eacute; har&iacute;a la persona que quiero ser?</div>
+    <input type="text" id="rMicro" maxlength="140" placeholder="Un paso peque&ntilde;o, posible ahora (opcional)" style="margin-bottom:14px">
+    <button class="gbtn gbtn-next" onclick="closeR()">Vuelvo &rarr;</button>
+  </div>
 </div>
 <div class="gmodal" id="gModal" role="dialog" aria-modal="true" aria-label="Grounding 5-4-3-2-1">
   <div id="gStepWrap" style="text-align:center;width:100%;max-width:340px;position:relative">
@@ -269,7 +279,8 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
       <input type="range" min="0" max="10" value="7" oninput="setSatG(this.value)" style="width:100%;accent-color:#fff;margin-bottom:8px">
       <div style="font-size:28px;font-weight:700;color:#fff" id="gSatLbl">7/10</div>
     </div>
-    <button class="gbtn gbtn-close" onclick="closeGrounding()">Guardar y cerrar</button>
+    <div style="font-size:14px;color:rgba(255,255,255,.9);line-height:1.5;margin-bottom:14px">Ahora vuelve a tu actividad: <b>&iquest;qu&eacute; har&iacute;a la persona que quiero ser?</b> No hace falta que el miedo haya bajado para dar el paso.</div>
+    <button class="gbtn gbtn-close" onclick="closeGrounding()">Guardar y volver</button>
   </div>
 </div>
 <div class="wrap">
@@ -294,19 +305,19 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--az);font-weight:700;margin-bottom:3px">Tu d&iacute;a de hoy</div>
     <div id="dataLabel" style="font-size:13px;color:var(--gr)"></div>
     <div class="frase">Donde dirijo mi atenci&oacute;n, ah&iacute; voy yo.</div>
-    <button class="doahora" onclick="startR('verd')" aria-label="Empezar la respiraci&oacute;n guiada ahora, ritmo 4-2-6-2">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6&middot;2</span></button>
+    <button class="doahora" onclick="startR('verd')" aria-label="Empezar la respiraci&oacute;n guiada ahora, ritmo 4-2-6">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6</span></button>
   </div>
   <div class="card">
     <div class="ch-tit">Tres v&iacute;as para anclar la atenci&oacute;n hacia dentro</div>
     <div class="ch-canales">
       <div class="ch-canal ch-act"><b>🫁 Respiraci&oacute;n</b><span>ancla r&iacute;tmica y temporal</span><span class="ch-go ch-here">Est&aacute;s aqu&iacute;</span></div>
-      <a class="ch-canal" href="https://aprens-app.netlify.app/#/tool/mapa_atencion_interna" target="_blank" rel="noopener"><b>🫀 Visualizaci&oacute;n</b><span>ancla visuo-espacial</span><span class="ch-go">Abrir &rarr;</span></a>
-      <a class="ch-canal" href="https://aprens-app.netlify.app/#/tool/protocolo_ais" target="_blank" rel="noopener"><b>🎧 Audio gu&iacute;a</b><span>ancla auditiva</span><span class="ch-go">Abrir &rarr;</span></a>
+      <a class="ch-canal" href="../index.html#/tool/mapa_atencion_interna" target="_top"><b>🫀 Visualizaci&oacute;n</b><span>ancla visuo-espacial</span><span class="ch-go">Abrir &rarr;</span></a>
+      <a class="ch-canal" href="../index.html#/tool/protocolo_ais" target="_top"><b>🎧 Audio gu&iacute;a</b><span>ancla auditiva</span><span class="ch-go">Abrir &rarr;</span></a>
     </div>
   </div>
   <div class="card">
     <div class="idxhead">&#129517; &iquest;Qu&eacute; quieres entrenar hoy?</div>
-    <div class="idxsub">Toca un ejercicio para ir a &eacute;l. Cada uno trabaja un par&aacute;metro: <span class="pbadge pL">L</span> Latencia (espacio antes de reaccionar) &middot; <span class="pbadge pD">D</span> Densidad (presencia interna) &middot; <span class="pbadge pC">C</span> Continuidad (sostener valores).</div>
+    <div class="idxsub">Toca un ejercicio para ir a &eacute;l. Cada uno trabaja un par&aacute;metro: <span class="pbadge pL">L</span> Latencia (espacio antes de reaccionar) &middot; <span class="pbadge pD">D</span> Densidad (ruido interno: cuanto menos, mejor) &middot; <span class="pbadge pC">C</span> Continuidad (sostener la atenci&oacute;n y tus valores en el tiempo).</div>
     <div class="idxgrid">
       <button class="idxb" onclick="irA('sec1')"><span class="ib-ico">&#127756;</span><span class="ib-body"><span class="ib-tit">Respiraci&oacute;n por curiosidad</span><span class="ib-par"><span class="pbadge pL">L</span><span class="pbadge pD">D</span></span></span></button>
       <button class="idxb" onclick="irA('sec2')"><span class="ib-ico">&#9995;</span><span class="ib-body"><span class="ib-tit">Parada de pensamiento</span><span class="ib-par"><span class="pbadge pL">L</span></span></span></button>
@@ -335,7 +346,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
       <div class="ci"><div id="cntVm" class="cbig" style="color:var(--ro)">0</div><div class="clbl">Rojos</div></div>
       <div id="cntTot" class="ci"><div class="cbig" style="color:var(--az)">0</div><div class="clbl">Total</div></div>
     </div>
-    <div class="frase">4-2-6-2 &middot; Inhala 4 &middot; Retiene 2 &middot; Exhala 6 &middot; Pausa 2</div>
+    <div class="frase">4-2-6 &middot; Inhala 4 &middot; Retiene 2 &middot; Exhala 6 &middot; Pausa breve. No es para relajarte: es para aparecer. Si llega la calma, es un efecto secundario.</div>
   </div>
   <div class="card" id="sec2">
     <div class="ctit"><span class="cnum">2</span> &#9995; Parada de pensamiento</div>
@@ -343,7 +354,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="desc">Cuando la cabeza se va sola: para, respira, siente con compasi&oacute;n y vuelve.</div>
     <div class="steps">
       <div class="si"><div class="sico">&#9995;</div><div class="stit">STOP</div><div class="ssub">Para el piloto</div></div>
-      <div class="si"><div class="sico">&#127756;</div><div class="stit">Respira</div><div class="ssub">4-2-6-2</div></div>
+      <div class="si"><div class="sico">&#127756;</div><div class="stit">Respira</div><div class="ssub">4-2-6</div></div>
       <div class="si"><div class="sico">&#129293;</div><div class="stit">Miro dentro</div><div class="ssub">Barriga/pecho</div></div>
       <div class="si"><div class="sico">&#129505;</div><div class="stit">Compas.</div><div class="ssub">Sin juzgar</div></div>
       <div class="si"><div class="sico">&#127919;</div><div class="stit">Vuelvo</div><div class="ssub">A la estructura</div></div>
@@ -360,7 +371,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
   <div class="card" id="sec3">
     <div class="ctit"><span class="cnum">3</span> &#129303; Abrazo sentido</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pD">Densidad</span></span><span>Llevar la atenci&oacute;n a la barriga antes de actuar: sostienes la sensaci&oacute;n interna y act&uacute;as desde el v&iacute;nculo, no desde el impulso.</span></div>
-    <div class="desc">Pon la atenci&oacute;n en la barriga. &iquest;Noto algo? Entonces abraza desde ah&iacute;.</div>
+    <div class="desc">Pon la atenci&oacute;n en la barriga. &iquest;Noto algo? Abraza desde ah&iacute;. Si no notas nada, tambi&eacute;n vale: nota tus manos o tus pies y abraza desde ah&iacute;.</div>
     <label class="flbl">&iquest;A qui&eacute;n?</label>
     <div class="sopts" id="optsAQui"><span class="sopt" onclick="selA(this,&apos;Hijo/a&apos;)">Hijo/a</span><span class="sopt" onclick="selA(this,&apos;Padre&apos;)">Padre</span><span class="sopt" onclick="selA(this,&apos;Madre&apos;)">Madre</span><span class="sopt" onclick="selA(this,&apos;Pareja&apos;)">Pareja</span><span class="sopt" onclick="selA(this,&apos;Hermano/a&apos;)">Hermano/a</span><span class="sopt" onclick="selA(this,&apos;Yo mismo/a&apos;)">Yo mismo/a</span></div>
     <label class="flbl">Sensaci&oacute;n en la barriga: <strong id="panxaLbl" style="color:var(--az)">5/10</strong></label>
@@ -481,7 +492,8 @@ vegades:"Veces",notes:"Notas",amb:"Con",
 panxaLabel:"Sensación en la barriga",noReg:"No registrado",
 vincle:"Vínculo",fraseText:"No sé por qué pero siento una sensación en {zona} que necesitaba compartir con {vincle}",
 copiat:"Copiado",copiar:"Copiar",
-repte:"Reto",activitat:"Actividad",contacte:"Contacto"
+repte:"Reto",activitat:"Actividad",contacte:"Contacto",
+microAcc:"Micro-acciones con valor"
 };
 
 // ─── localStorage helpers ───────────────────────────────────────────────────
@@ -807,6 +819,7 @@ function startR(tip){
     ? { inhale:3000, anchor:1000, exhale:6000, pause:1000 }
     : { inhale:4000, anchor:2000, exhale:6000, pause:1500 };
   var box=document.getElementById("rbox");
+  resetRModal();
   document.getElementById("rinfo").textContent="Ronda 1 de "+RONDES;
   document.getElementById("rmodal").classList.add("on");
   if(respiroDia){ respiroDia.destroy(); respiroDia=null; }
@@ -820,7 +833,7 @@ function startR(tip){
   });
 }
 function finishR(){
-  stopR();
+  if(respiroDia){ respiroDia.stop(); }
   if(rTip==="verd") D.r.vd++; else D.r.vm++;
   document.getElementById("cntVd").textContent=D.r.vd;
   document.getElementById("cntVm").textContent=D.r.vm;
@@ -828,8 +841,22 @@ function finishR(){
   if(D.r.vd>0) document.getElementById("btnVerd").classList.add("psel");
   if(D.r.vm>0) document.getElementById("btnVermell").classList.add("psel");
   saveToday(); updPend(); updEvo(); updResum();
+  // ③ Acompaña · ④ Actúa: la práctica no acaba en la calma, acaba en volver.
+  ["rbox","rinfo","rstopBtn"].forEach(function(id){ document.getElementById(id).style.display="none"; });
+  document.getElementById("rcloseRojo").classList.toggle("hidden", rTip==="verd");
+  document.getElementById("rMicro").value="";
+  document.getElementById("rclose").classList.remove("hidden");
 }
-function stopR(){ if(respiroDia){ respiroDia.stop(); } document.getElementById("rmodal").classList.remove("on"); }
+function closeR(){
+  var v=(document.getElementById("rMicro").value||"").trim();
+  if(v){ if(!D.r.acc) D.r.acc=[]; D.r.acc.push(v); saveToday(); updResum(); }
+  stopR();
+}
+function resetRModal(){
+  ["rbox","rinfo","rstopBtn"].forEach(function(id){ document.getElementById(id).style.display=""; });
+  document.getElementById("rclose").classList.add("hidden");
+}
+function stopR(){ if(respiroDia){ respiroDia.stop(); } document.getElementById("rmodal").classList.remove("on"); resetRModal(); }
 
 // ─── PWA / NOTIF ─────────────────────────────────────────────────────────────
 var pwaEv=null;
@@ -863,7 +890,7 @@ setInterval(function(){
 function updResum(){
   var data=new Date().toLocaleDateString(LANG,{weekday:"long",day:"numeric",month:"long"});
   var t="APRENS Psicologia \u2014 "+TXT.title+"\n"+data+"\n\n";
-  t+=TXT.s1label+"\n"+TXT.puntsVd+": "+D.r.vd+"\n"+TXT.puntsVm+": "+D.r.vm+"\n\n";
+  t+=TXT.s1label+"\n"+TXT.puntsVd+": "+D.r.vd+"\n"+TXT.puntsVm+": "+D.r.vm+"\n"+((D.r.acc&&D.r.acc.length)?TXT.microAcc+": "+D.r.acc.join(" · ")+"\n":"")+"\n";
   t+=TXT.s2label+"\n"+TXT.vegades+": "+D.p.n+"\n\n";
   t+=TXT.s3label+"\n"+(D.a.ok?TXT.amb+": "+D.a.aQui+"\n"+TXT.panxaLabel+": "+D.a.panxa+"/10\n":TXT.noReg+"\n")+"\n";
   t+=TXT.s4label+"\n"+(D.h.vincle?TXT.vincle+": "+D.h.vincle+"\n"+TXT.fraseText.replace("{zona}",D.h.zona).replace("{vincle}",D.h.vincle)+"\n":TXT.noReg+"\n")+"\n";
@@ -888,8 +915,26 @@ function copiar(btn){
   }
 }
 
+function pintaHoy(){
+  try{
+    document.getElementById("cntVd").textContent=D.r.vd||0;
+    document.getElementById("cntVm").textContent=D.r.vm||0;
+    document.getElementById("cntTot").querySelector(".cbig").textContent=(D.r.vd||0)+(D.r.vm||0);
+    if(D.r.vd>0) document.getElementById("btnVerd").classList.add("psel");
+    if(D.r.vm>0) document.getElementById("btnVermell").classList.add("psel");
+    document.getElementById("cntP").textContent=D.p.n||0;
+    document.getElementById("notesP").value=D.p.notes||"";
+    document.getElementById("notesH").value=D.h.notes||"";
+    document.getElementById("fZona").textContent=D.h.zona||"barriga";
+    document.getElementById("fVincle").textContent=D.h.vincle||"...";
+    if(D.h.vincle){ document.getElementById("badgeH").classList.remove("hidden"); document.getElementById("badgeHVincle").textContent=D.h.vincle; }
+    if(D.a.ok&&D.a.aQui){ var b=document.getElementById("badgeA"); b.classList.remove("hidden"); b.querySelector(".bok").textContent="\u2713 "+TXT.abradaOk+" "+D.a.aQui; }
+  }catch(e){}
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 loadToday();
+pintaHoy();
 updPend(); updEvo(); updResum(); renderContacts(); renderGrounding();
 
 </script>
@@ -926,6 +971,8 @@ Aprens.collect(function(){
     panxa:(D.a&&D.a.panxa),
     grounding:(D.grounding&&D.grounding.length)||0,
     vinculo:(D.h&&D.h.vincle)||"",
+    respiracion_calma:(D.r&&D.r.vd)||0, respiracion_aviso:(D.r&&D.r.vm)||0,
+    microacciones:(D.r&&D.r.acc)||[],
     notas:[D.p&&D.p.notes,D.a&&D.a.notes,D.h&&D.h.notes].filter(Boolean).join(" · ") };
 });
 if(window.Aprens) Aprens.mountBar();

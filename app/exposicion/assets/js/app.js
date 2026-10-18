@@ -271,6 +271,8 @@
       '<div class="sec-head"><span class="num">Exposición</span>' +
         '<h2>Ábrela con tus dos llaves</h2>' +
         '<p>Primero el QUÉ (qué haces hoy y el compromiso de quedarte). Durante la exposición, el CÓMO (cómo te acompañas). Al terminar, registra cómo fue.</p></div>' +
+      '<div class="contrato"><input type="checkbox" id="practicaCalma">' +
+        '<label for="practicaCalma"><b>Primero aparecer:</b> hoy (o estos días) ya he practicado por dentro <b>en calma</b>, no solo cuando aprieta. Si aún no, empieza por ahí: es lo que hace que no estés sola ahí fuera.</label></div>' +
 
       '<div class="exp-target"><div class="t">' + esc(p.titulo) + '</div>' +
         '<div class="v">' + chip("⏱", p.tiempo) + chip("👥", p.compania) + chip("📍", p.distancia) + chip("·", p.condicion) +
@@ -288,7 +290,7 @@
           '<input type="range" class="sud" min="0" max="10" value="7" id="sAntes" aria-label="Alarma al empezar">' +
           '<div class="ends"><span>Calma</span><span>Máxima</span></div></div>' +
         '<div class="contrato"><input type="checkbox" id="contrato">' +
-          '<label for="contrato"><b>Mi compromiso:</b> me quedo y no huyo mientras la alarma esté alta. La dejo bajar hacia un <b>5–6</b> antes de terminar. Si me voy por alivio, el miedo se refuerza.</label></div>' +
+          '<label for="contrato"><b>Mi compromiso:</b> me quedo el tiempo que me he propuesto y no me voy por alivio, aunque la alarma siga alta. No necesito que baje para que cuente: cuenta haber dado el paso acompañándome. Si me voy por alivio, el miedo se refuerza.</label></div>' +
       '</div>' +
 
       /* ---- LLAVE CÓMO ---- */
@@ -390,6 +392,9 @@
       tiempo_hoy: ($("#hTiempo").value || "").trim(), compania_hoy: ($("#hCompania").value || "").trim(),
       sud_antes: Number($("#sAntes").value), sud_pico: Number($("#sPico").value), sud_final: Number($("#sFinal").value),
       compromiso: !!$("#contrato").checked,
+      practica_calma: !!($("#practicaCalma") && $("#practicaCalma").checked),
+      // criterio de éxito (aditivo): paso hecho sin huir y sostenido con compañía interna (AIS activo)
+      paso_con_ais: expState.desenlace ? (expState.desenlace !== "hui" && expState.actitud === "compania") : null,
       apoyos: expState.apoyos.slice(),
       desenlace: expState.desenlace, actitud: expState.actitud,
       honestidad: ($("#hHonest").value || "").trim()
@@ -403,6 +408,8 @@
     L.push("Alarma: " + s.sud_antes + " → pico " + s.sud_pico + " → " + s.sud_final);
     if (s.desenlace) L.push("Desenlace: " + (DESENLACE_TXT[s.desenlace] || s.desenlace));
     if (s.actitud) L.push("Cómo lo sostuve: " + (ACTITUD_TXT[s.actitud] || s.actitud));
+    if (s.paso_con_ais != null) L.push("Paso dado con el AIS activo: " + (s.paso_con_ais ? "sí" : "no"));
+    L.push("Práctica en calma previa: " + (s.practica_calma ? "sí" : "no"));
     if (s.apoyos && s.apoyos.length) {
       var names = s.apoyos.map(function (a) { var x = APOYOS.filter(function (y) { return y.id === a; })[0]; return x ? x.t : a; });
       L.push("Me acompañé con: " + names.join(", "));
@@ -426,7 +433,7 @@
     renderLadder();
     // pequeño refuerzo si no hubo huida
     if (s.desenlace && s.desenlace !== "hui" && note) {
-      note.textContent += " Te quedaste: eso es exactamente el trabajo.";
+      note.textContent += " Te quedaste, haya bajado o no la alarma: eso es exactamente el trabajo.";
     }
   }
 

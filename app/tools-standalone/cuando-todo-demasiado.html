@@ -284,7 +284,7 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
       <div class="stepnum">Paso 2 · Noto</div>
       <div class="stepq">¿Dónde noto ahora mi propia tensión?</div>
       <div class="chips" id="pyBody"></div>
-      <p class="micro">Si te ayuda, una respiración lenta puede acompañar este momento. No es obligatoria: solo una posibilidad.</p>
+      <p class="micro">Si te ayuda, una respiración lenta puede acompañar este momento. No es obligatoria: solo una posibilidad. Si no notas nada concreto, apoya la atención en los pies en el suelo o en tus manos: con eso basta.</p>
       <button class="btn wide" onclick="pyNext(2)">Sigo</button>
     </div>
     <div class="step" data-step="2">
@@ -308,7 +308,7 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
       </div>
     </div>
   </div>
-  <div class="note">La respiración no es para hacer desaparecer una emoción. Es una manera de generar presencia.</div>
+  <div class="note">La respiración no es para hacer desaparecer una emoción. Es una manera de generar presencia. <b>Practica este «primero yo» también en momentos tranquilos del día</b>, no solo en la tormenta: así estará más a mano cuando haga falta. Tu hijo aprende a regularse viéndote regularte a ti.</div>
 </section>
 
 <!-- HERR 4 · QUE NECESITA -->
@@ -371,7 +371,7 @@ hr.soft{border:none;border-top:1px solid var(--line);margin:20px 0}
     <p class="micro" style="margin:10px 0 0">Respirar o notar el cuerpo son una <b>puerta para acompañar</b> la activación —si al niño le ayudan—, nunca una obligación para «quitar» la emoción.</p>
   </div>
   <div class="panel"><b>A · Respiración de presencia</b><p class="micro">1 a 3 respiraciones. Sin objetivo de «calmarse». Solo estar un momento con el cuerpo.</p></div>
-  <div class="panel"><b>B · AIS adaptado</b><p class="micro">«¿Dónde notas tu cuerpo?»</p><div class="chips" id="enBody"></div></div>
+  <div class="panel"><b>B · AIS adaptado</b><p class="micro">«¿Dónde notas tu cuerpo?»</p><div class="chips" id="enBody"></div><p class="micro" style="margin-top:8px">Si dice «no sé» o «nada», también vale: probad con los pies en el suelo o las manos apretando algo blandito. Después, volved a lo que estabais haciendo.</p></div>
   <div class="panel"><b>C · Reconocer niveles</b><p class="micro">Practicar a nombrar: «todavía puedo» · «empieza a costarme» · «necesito parar».</p></div>
   <div class="panel"><b>D · Pedir pausa</b><p class="micro">Un botón que puede usar sin explicar nada.</p><button class="btn sec wide" onclick="miniToast('Vale. Paramos. No hace falta explicar por qué.')">NECESITO UN DESCANSO</button></div>
   <div class="panel"><b>E · Pequeños cambios previsibles</b><p class="micro">«Hoy cambiaremos una cosa pequeña y practicaremos qué hacemos cuando algo no sale exactamente como esperábamos.»</p></div>
@@ -624,9 +624,9 @@ var qn=[['🤫','menos palabras','Habla lo justo. Frases de 3-4 palabras.'],['�
  c.appendChild(b);});})();
 
 /* ---------- QUE DIGO ---------- */
-var banks=[['Antes del desbordamiento',['Veo que esto está empezando a costarte.','No era como esperabas.','Podemos buscar otra manera.','Te aviso de lo que va a pasar después.']],
+var banks=[['Antes del desbordamiento',['Veo que esto está empezando a costarte.','Te noto así… ¿quieres que me quede contigo o prefieres un rato a solas?','No era como esperabas.','Podemos buscar otra manera.','Te aviso de lo que va a pasar después.']],
  ['Durante',['Estoy aquí.','No tienes que explicármelo ahora.','Vamos a hacer menos cosas.','No necesitas mirarme.','Te doy espacio.','Cuando puedas, seguimos.','Ahora no tenemos que resolverlo.','Voy a ayudarte a que esto sea más seguro.']],
- ['Después',['Ha sido muy intenso.','No necesitas sentirte culpable por haberte desbordado.','Cuando estés preparado podemos intentar entender qué lo hizo tan difícil.','¿Hay algo que podamos hacer diferente la próxima vez?']]];
+ ['Después',['Ha sido muy intenso.','No necesitas sentirte culpable por haberte desbordado.','Cuando estés preparado podemos intentar entender qué lo hizo tan difícil.','¿Hay algo que podamos hacer diferente la próxima vez?','Cuando te apetezca, volvemos a lo que estábamos haciendo. Sigo aquí.']]];
 (function(){var c=document.getElementById('phrBanks');banks.forEach(function(b){
  var h=document.createElement('div');h.className='kick';h.textContent=b[0];c.appendChild(h);
  b[1].forEach(function(p){var d=document.createElement('div');d.className='phr';d.textContent='«'+p+'»';c.appendChild(d);});});})();
@@ -772,10 +772,10 @@ var ninoReduc=[['⏸️','Pausa','Paramos. No hace falta nada más.'],['⏳','Ne
 (function(){var c=document.getElementById('ninoReduce');ninoReduc.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='84px';b.style.fontSize='18px';
  b.innerHTML='<span class="ic">'+n[0]+'</span><span>'+n[1]+'</span>';
  b.onclick=function(){miniToast(n[2]);};c.appendChild(b);});})();
-var ninoNec=[['🤫','silencio'],['🎧','menos ruido'],['↔️','espacio'],['🤝','que te quedes'],['🚪','salir'],['🚶','moverme'],['🥤','agua'],['⏳','tiempo'],['📋','saber qué viene'],['❓','no lo sé']];
-(function(){var c=document.getElementById('ninoNec');ninoNec.forEach(function(n){var b=document.createElement('button');b.className='big';
+var ninoNec=[['🤫','silencio'],['🎧','menos ruido'],['↔️','espacio'],['🤝','que te quedes'],['🚪','salir'],['🚶','moverme'],['🥤','agua'],['⏳','tiempo'],['📋','saber qué viene'],['❓','no lo sé'],['🧩','volver a lo que hacía','Vale. Volvemos poco a poco. Sigo cerca.']];
+(function(){var c=document.getElementById('ninoNec');ninoNec.forEach(function(n){var b=document.createElement('button');b.className='big';if(n[2])b.style.gridColumn='1 / -1';
  b.innerHTML='<span class="ic">'+n[0]+'</span><span style="font-size:15px">'+n[1]+'</span>';
- b.onclick=function(){miniToast('Vale. Vamos a hacer esto un poco más fácil.');};c.appendChild(b);});})();
+ b.onclick=function(){miniToast(n[2]||'Vale. Vamos a hacer esto un poco más fácil.');};c.appendChild(b);});})();
 var ninoBig=[['NECESITO UNA PAUSA'],['AHORA NO PUEDO HABLAR'],['QUÉDATE CERCA'],['QUIERO ESTAR SOLO UN MOMENTO'],['EXPLÍCAME QUÉ VA A PASAR'],['ESTO NO ERA LO QUE ESPERABA'],['ESTOY MUY ENFADADO'],['HAY DEMASIADO RUIDO / DEMASIADAS COSAS'],['NECESITO TIEMPO'],['NO LO SÉ']];
 (function(){var c=document.getElementById('ninoBig');ninoBig.forEach(function(n){var b=document.createElement('button');b.className='big';b.style.gridColumn='1 / -1';b.style.minHeight='70px';b.style.fontSize='17px';
  b.textContent=n[0];b.onclick=function(){miniToast('Recibido. Estoy aquí.');};c.appendChild(b);});})();

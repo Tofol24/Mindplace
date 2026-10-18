@@ -6,9 +6,6 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Respiro AIS · dos luces · APRENS</title>
 <meta name="description" content="Respiración de dos luces (aire y conciencia) sobre la silueta del cuerpo · APRENS (TEC · AIS).">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
 <style>
   :root{
     --fd:#f1e9db; --blanc:#FCFBF7; --az:#565a41; --azl:#e8ead9;
@@ -36,6 +33,8 @@
   .lang button{font-family:var(--sans);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gr);
     background:var(--blanc);border:1px solid var(--linia);border-radius:20px;padding:6px 14px;cursor:pointer;}
   .lang button.on{color:var(--blanc);background:var(--vd);border-color:var(--vd);font-weight:600;}
+  .note{font-size:.88rem;color:var(--gr);text-align:center;margin:10px 4px 0;}
+  .note.close{font-family:var(--serif);font-style:italic;color:var(--az);}
   footer{margin-top:22px;font-size:.78rem;color:var(--gr);text-align:center;opacity:.85;}
 </style>
 </head>
@@ -52,6 +51,8 @@
     </div>
 
     <div id="respiro"></div>
+    <p class="note" id="t-note">No es para relajarte: es para aparecer. Si llega la calma, es un efecto secundario. Si no notas nada en el vientre, deja la atención en las manos o en los pies.</p>
+    <p class="note close" id="t-close">Al terminar: «No sé por qué, pero lo noto aquí.» Y después, un paso pequeño: ¿qué haría ahora la persona que quiero ser?</p>
 
     <div class="lang">
       <button id="l-es" class="on" type="button">ES</button>
@@ -64,11 +65,16 @@
   <script>
     var T = {
       es:{ title:'Respiro · dos luces', lead:'El aire es el cebo; la conciencia lo sigue hacia dentro y se queda en el vientre.',
-           air:'Aire', mind:'Conciencia', foot:'Sin cuenta, sin analítica, sin conexión. Nada se guarda.' },
+           air:'Aire', mind:'Conciencia', foot:'Sin cuenta, sin analítica, sin conexión. Nada se guarda.',
+           note:'No es para relajarte: es para aparecer. Si llega la calma, es un efecto secundario. Si no notas nada en el vientre, deja la atención en las manos o en los pies.',
+           close:'Al terminar: «No sé por qué, pero lo noto aquí.» Y después, un paso pequeño: ¿qué haría ahora la persona que quiero ser?' },
       en:{ title:'Breath · two lights', lead:'The air is the bait; awareness follows it inward and stays in the belly.',
-           air:'Air', mind:'Awareness', foot:'No account, no analytics, no connection. Nothing is stored.' }
+           air:'Air', mind:'Awareness', foot:'No account, no analytics, no connection. Nothing is stored.',
+           note:'This is not about relaxing: it is about showing up. If calm comes, it is a side effect. If you notice nothing in the belly, rest your attention on your hands or feet.',
+           close:'When you finish: “I don’t know why, but I notice it here.” Then one small step: what would the person I want to be do now?' }
     };
-    var r = RespiroAIS.mount(document.getElementById('respiro'), { lang:'es', showControl:true, showZones:true });
+    var r = RespiroAIS.mount(document.getElementById('respiro'), { lang:'es', showControl:true, showZones:true,
+      rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 } });
     function setLang(l){
       document.documentElement.lang = l;
       document.getElementById('l-es').classList.toggle('on', l==='es');
@@ -79,6 +85,8 @@
       document.getElementById('t-air').textContent = t.air;
       document.getElementById('t-mind').textContent = t.mind;
       document.getElementById('t-foot').textContent = t.foot;
+      document.getElementById('t-note').textContent = t.note;
+      document.getElementById('t-close').textContent = t.close;
       r.setLang(l);
     }
     document.getElementById('l-es').addEventListener('click', function(){ setLang('es'); });

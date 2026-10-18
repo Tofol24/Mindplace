@@ -77,7 +77,7 @@
   const ICO_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
 
   function mount(app){
-    const sel = { situacion:'', contexto:'', escena:null, reg:null, micro:'', ts:0 };
+    const sel = { situacion:'', contexto:'', motivo:'', escena:null, reg:null, micro:'', ts:0 };
     let tDur=60, tLeft=60, tInt=null, tRunning=false;
 
     if(window.Aprens){ Aprens.config({ toolId:TOOL_ID, toolName:TOOL_NAME, toolVersion:1 }); Aprens.collect(()=> app._aprensRec || null); }
@@ -116,6 +116,12 @@
           <textarea id="em-sit" rows="2" placeholder="Ej.: discusión en casa, una notificación, no consigo dormir, estoy tranquilo/a tomando café…"></textarea>
           <h3>¿Dónde / con quién?</h3>
           <div class="chips" data-chips="ctx"></div>
+          <h3>¿Por qué vienes ahora?</h3>
+          <div class="chips">
+            <button class="chip" data-mot="verde">🟢 Sin necesidad, en calma</button>
+            <button class="chip" data-mot="rojo">🔴 El cuerpo me ha avisado</button>
+          </div>
+          <p class="lead" data-mot-txt style="margin-top:6px"></p>
           <button class="btn" data-go="mono">Continuar</button>
         </div>
       </section>
@@ -142,11 +148,12 @@
           <h2><span class="ic">🪑</span>Cómo llevarlo a tu lado</h2>
           <p class="lead">El AIS es la forma concreta de sentarte junto al mono. Cuatro pasos:</p>
           <ol class="pasos" data-fb="pasos"></ol>
+          <p class="lead">Al acompañar, señala la zona y dite, sin explicar el porqué: <b>«No sé por qué, pero lo noto aquí.»</b></p>
           <div class="quote frase-salvia" data-fb="mono"></div>
         </div>
         <div class="card">
           <h2><span class="ic">🫁</span>Respira hacia ahí · 60 seg</h2>
-          <p class="lead">Lleva la atención a donde lo notas (pecho, barriga, cuello) y respira hacia esa zona. No para cambiarla: para acompañarla.</p>
+          <p class="lead">Lleva la atención a donde lo notas (pecho, barriga, cuello) y respira hacia esa zona. No para cambiarla: para acompañarla. Si no notas nada, también vale: apoya la atención en las manos o en los pies.</p>
           <div class="timer-wrap">
             <div class="ring" data-ring><div class="rinner"><div style="text-align:center"><div class="rtime" data-rtime>1:00</div><div class="rlbl" data-rlbl>listo</div></div></div></div>
             <button class="btn small ghost" data-timer style="margin-top:16px">Empezar</button>
@@ -159,7 +166,7 @@
             <button data-reg-i="0">Sí</button><button data-reg-i="1">Un poco</button><button data-reg-i="2">Todavía no</button>
           </div>
           <h3>Una microacción con valor</h3>
-          <p class="lead">El paso más pequeño, concreto y posible ahora, en la dirección de quien quieres ser.</p>
+          <p class="lead">El paso más pequeño, concreto y posible ahora, en la dirección de quien quieres ser: <i>¿qué haría la persona que quiero ser?</i></p>
           <div class="chips" data-chips="micro"></div>
           <input type="text" data-micro-otra placeholder="…o escribe la tuya" style="margin-top:10px;display:none">
           <label class="fld" for="em-llevo">Lo que me llevo (opcional):</label>
@@ -197,6 +204,16 @@
       const on=b.classList.contains('sel');
       $$('[data-ctx]').forEach(x=>x.classList.remove('sel'));
       if(!on){ b.classList.add('sel'); sel.contexto=b.dataset.ctx; } else sel.contexto='';
+    });
+
+    // motivo (práctica en calma 🟢 / porque el cuerpo avisó 🔴)
+    $$('[data-mot]').forEach(b=>b.onclick=()=>{
+      const on=b.classList.contains('sel');
+      $$('[data-mot]').forEach(x=>x.classList.remove('sel'));
+      if(!on){ b.classList.add('sel'); sel.motivo=b.dataset.mot; } else sel.motivo='';
+      $('[data-mot-txt]').textContent = sel.motivo==='verde'
+        ? 'Así se entrena: el mono aprende que también lo visitas cuando todo está bien.'
+        : sel.motivo==='rojo' ? 'Está bien venir cuando el cuerpo avisa. Recuerda visitar al mono también en calma.' : '';
     });
 
     // escenas
@@ -268,6 +285,7 @@
       L.push('Situación ahora mismo:');
       L.push(($('#em-sit').value.trim()||sel.situacion||'—')+(sel.contexto?' · '+sel.contexto:''));
       L.push('');
+      if(sel.motivo) L.push('Por qué vine: '+(sel.motivo==='verde'?'🟢 sin necesidad (práctica en calma)':'🔴 el cuerpo me avisó'));
       L.push('Estado del mono: '+(e?e.tit:'—'));
       if(e){ L.push('('+e.sub+')'); L.push('Foco TEC: '+e.param); }
       L.push('');
@@ -285,7 +303,7 @@
         escena:e.id, estado:e.tit, modo:e.modo, param:e.param,
         reg:sel.reg, sentado:(sel.reg!=null?REG_TXT[sel.reg]:''),
         micro:microFinal(), llevo:$('#em-llevo').value.trim(),
-        situacion:$('#em-sit').value.trim()||sel.situacion, contexto:sel.contexto };
+        situacion:$('#em-sit').value.trim()||sel.situacion, contexto:sel.contexto, motivo:sel.motivo };
     }
     function persist(){
       const rec=buildRec(); if(!rec) return;
@@ -302,6 +320,8 @@
       if(hoyN===0) msg.textContent='Hoy todavía no has visitado al mono. Este momento ya cuenta.';
       else if(hoyN===1) msg.textContent='Hoy has vuelto a tu mono 1 vez. Volver ya es cuidarlo.';
       else msg.textContent='Hoy has vuelto a tu mono '+hoyN+' veces. Gracias por no dejarlo solo.';
+      const calmaN = h.filter(r=>r.date===hoy() && r.motivo==='verde').length;
+      if(hoyN>0) msg.textContent += calmaN ? ' 🟢 '+calmaN+' en calma.' : ' Prueba también a visitarlo cuando estés bien.';
       const ult=h.slice(-6).reverse();
       $('[data-hist]').innerHTML = ult.map(r=>{
         const e=escenaPorId(r.escena);

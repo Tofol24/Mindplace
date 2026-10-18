@@ -126,6 +126,7 @@ var D={
   herramientas:{},      // qué he practicado
   dia:{},               // checklist del día
   salida:'',            // texto de la salida de hoy
+  pasoAIS:null,         // 'si'|'parte'|'no': paso hecho con el AIS activo (criterio de éxito)
   logro:'',             // un logro
   nota:''               // nota para el psicólogo
 };
@@ -203,6 +204,7 @@ VIEWS.home=function(){
     <div class="ctit">Cada día, dos frentes</div>
     <p class="sm"><b>1) Por dentro</b> — aparecer y acompañar: respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto.</p>
     <p class="sm"><b>2) Por fuera</b> — recuperar terreno: un peldaño de tu escalera de salidas y, cuando toque, exposición en imaginación.</p>
+    <p class="sm mut">Primero <b>aparecer</b>, después <b>permanecer</b>: lo de dentro va antes y también <b>en calma</b>, a horas fijas, no solo cuando aprieta. Así, cuando subas un peldaño, ya sabrás estar contigo.</p>
     <p class="sm mut">No hace falta hacerlo todo. Tu psicóloga/o te dirá en qué poner el foco esta semana.</p>
   </div>
 
@@ -404,7 +406,8 @@ VIEWS.escalera=function(){
     : '<button class="btn bs full" style="margin-top:2px" onclick="addStep()">+ Añadir un peldaño</button>';
   return `
   <h2>Mi escalera de salidas</h2>
-  <p class="mut sm">Recuperar la calle <b>poco a poco</b>. No saltes peldaños: repite cada uno hasta que la ansiedad al hacerlo baje de forma clara, y entonces sube. El miedo baja <b>quedándote</b>, no evitando.</p>
+  <p class="mut sm">Recuperar la calle <b>poco a poco</b>. No saltes peldaños: repite cada uno hasta que puedas hacerlo <b>quedándote contigo</b> —acompañando la sensación, sin escapar— y entonces sube. No mides si el miedo baja, sino si te quedas: la calma, si llega, viene después.</p>
+  <div class="warn">Antes de exponerte: ¿practicas cada día <b>por dentro y en calma</b> (respiración curiosa, a horas fijas)? Si aún no, empieza por ahí unos días. Primero aparecer, después permanecer.</div>
   <div class="aviso">Esta escalera es <b>tuya</b>: edítala con el ✏️, cambia el orden con ↑↓ y añade o quita peldaños. Las sugerencias se ponen tocando, para no escribir tanto. Se guarda en este dispositivo.</div>
   ${steps}
   ${addBlock}
@@ -416,6 +419,9 @@ VIEWS.escalera=function(){
     <label class="f">Ansiedad ANTES de salir (0 nada – 10 máxima)</label><div class="suds" id="sA"></div>
     <label class="f">Ansiedad en el PICO (lo más alto durante)</label><div class="suds" id="sP"></div>
     <label class="f">Ansiedad DESPUÉS / al terminar</label><div class="suds" id="sD"></div>
+    <label class="f">¿Di el paso quedándome conmigo (acompañando la sensación, sin huir)?</label>
+    <div class="sel" id="selAIS"><span class="pill${D.pasoAIS==='si'?' on':''}" data-a="si">Sí</span><span class="pill${D.pasoAIS==='parte'?' on':''}" data-a="parte">En parte</span><span class="pill${D.pasoAIS==='no'?' on':''}" data-a="no">Hoy no</span></div>
+    <p class="sm mut" style="margin-top:6px">Esto es lo que cuenta: el paso hecho con el AIS activo, aunque la ansiedad no haya bajado.</p>
     <label class="f">¿Qué te ayudó a quedarte?</label>
     <textarea id="salidaTxt" placeholder="p. ej. respiración curiosa, recordar que hacer mi vida y que me vean es legítimo…">${escHtml(D.salida||'')}</textarea>
     <button class="btn bpg full" style="margin-top:12px" onclick="guardarSalida()">Guardar salida ✓</button>
@@ -427,6 +433,7 @@ bindAfter.escalera=function(){
   var sp=$('#selPel'); if(sp){ sp.innerHTML=esc.map(function(s,i){return '<span class="pill'+(D.peldano===i+1?' on':'')+'" data-pel="'+(i+1)+'">'+(i+1)+'</span>';}).join('');
     sp.onclick=function(e){var p=e.target.getAttribute('data-pel'); if(!p)return; D.peldano=+p; bindAfter.escalera();}; }
   sudsBind('#sA','sudsAntes'); sudsBind('#sP','sudsPico'); sudsBind('#sD','sudsDesp');
+  var sa=$('#selAIS'); if(sa){ sa.onclick=function(e){ var a=e.target.getAttribute('data-a'); if(!a)return; D.pasoAIS=(D.pasoAIS===a?null:a); [].forEach.call(sa.querySelectorAll('.pill'),function(p){p.classList.toggle('on',p.getAttribute('data-a')===D.pasoAIS);}); }; }
   // edición: nivel + chips de sugerencias
   var nv=$('#edNiv'); if(nv){ nv.onclick=function(e){var n=e.target.getAttribute('data-niv'); if(!n)return; [].forEach.call(nv.querySelectorAll('.nivp'),function(p){p.classList.toggle('on',p.getAttribute('data-niv')===n);});}; }
   var ef=$('#editForm'); if(ef){ ef.addEventListener('click',function(e){
@@ -465,8 +472,8 @@ VIEWS.imaginacion=function(){
     <div class="pasoline"><div class="pasonum">1</div><div>Siéntate cómoda. 3 respiraciones curiosas para aterrizar.</div></div>
     <div class="pasoline"><div class="pasonum">2</div><div>Trae la escena temida con detalle: el lugar, las caras, lo que se dice, lo que temes que piensen de ti. <b>Déjala estar</b>, no la apartes.</div></div>
     <div class="pasoline"><div class="pasonum">3</div><div>Observa cómo el cuerpo se activa. Localiza la sensación y <b>quédate con ella</b>, respirando, con una mano en el pecho si ayuda.</div></div>
-    <div class="pasoline"><div class="pasonum">4</div><div>No resuelves la escena ni te defiendes. Solo la sostienes mientras acompañas tu cuerpo, hasta que la ansiedad empiece a <b>bajar sola</b>.</div></div>
-    <div class="pasoline"><div class="pasonum">5</div><div>Repite la misma escena 2–3 veces en la sesión. Cada vuelta suele subir menos. Cierra volviendo a la respiración y al aquí.</div></div>
+    <div class="pasoline"><div class="pasonum">4</div><div>No resuelves la escena ni te defiendes. Solo la sostienes mientras acompañas tu cuerpo, el rato que te has propuesto. Si la ansiedad baja, bien; si no, también vale: lo que entrenas es <b>quedarte contigo</b>.</div></div>
+    <div class="pasoline"><div class="pasonum">5</div><div>Repite la misma escena 2–3 veces en la sesión (a menudo cada vuelta sube menos, pero no es lo que mides). Cierra volviendo a la respiración, al aquí y a un <b>paso pequeño</b> de tu día.</div></div>
     <div class="frase">No es revivir para sufrir: es enseñarle a tu cuerpo que puede estar con ese recuerdo sin que te arrastre.</div>
   </div>
   <div class="card">
@@ -519,9 +526,9 @@ VIEWS.registro=function(){
     <label class="f">¿Cuánto he rumiado hoy? (0 nada – 10 todo el rato)</label><div class="suds" id="rR"></div>
     <label class="f">¿Cómo ha estado mi ánimo? (0 muy bajo – 10 bien)</label><div class="suds" id="rM"></div>
     <label class="f">Un logro de hoy, por pequeño que sea</label>
-    <textarea id="rLogro" placeholder="p. ej. salí al portal; corté una rumiación; pedí un abrazo…">${D.logro||''}</textarea>
+    <textarea id="rLogro" placeholder="p. ej. salí al portal; corté una rumiación; pedí un abrazo…">${escHtml(D.logro||'')}</textarea>
     <label class="f">Algo que quiera contarle a mi psicólogo/a</label>
-    <textarea id="rNota" placeholder="cómo me siento, dudas, qué me costó…">${D.nota||''}</textarea>
+    <textarea id="rNota" placeholder="cómo me siento, dudas, qué me costó…">${escHtml(D.nota||'')}</textarea>
   </div>
   <div class="card">
     <div class="ctit">Enviar a tu psicólogo/a</div>
@@ -551,11 +558,12 @@ function prep(){
   L.push('APRENS · Registro del día');
   L.push('Fecha: '+D.fecha);
   L.push('');
-  if(D.peldano||D.sudsAntes!=null||D.salida){
+  if(D.peldano||D.sudsAntes!=null||D.salida||D.pasoAIS){
     L.push('— Salida (exposición en vivo) —');
     if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+esc.length);
     var s=[]; if(D.sudsAntes!=null)s.push('antes '+D.sudsAntes); if(D.sudsPico!=null)s.push('pico '+D.sudsPico); if(D.sudsDesp!=null)s.push('después '+D.sudsDesp);
     if(s.length) L.push('Ansiedad (0-10): '+s.join(' · '));
+    if(D.pasoAIS) L.push('Paso hecho quedándome conmigo (AIS activo): '+({si:'sí',parte:'en parte',no:'hoy no'}[D.pasoAIS]||D.pasoAIS));
     if(D.salida) L.push('Qué me ayudó: '+D.salida);
     L.push('');
   }

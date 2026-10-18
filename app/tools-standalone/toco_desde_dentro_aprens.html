@@ -217,7 +217,7 @@ var TOCAR_FASES=[{f:"Coge aire",d:4,s:1.16},{f:"·",d:1,s:1.16},{f:"Suelta",d:6,
 var TOCAR_VERB=["Estoy contigo, cuerpo. Esta puerta la tocamos juntos.","No te arrastro: vamos juntos.","Un reto, no una amenaza.","Llego presente, no en alerta."];
 var tIdx=-1, tCiclo=0, tT=null, tVerb=0;
 VIEWS.tocar=function(){
-  var h='<h1 class="view-t">Antes de tocar</h1><p class="view-s">Tres respiraciones cortas para entrar acompañado. Sin retener el aire.</p>';
+  var h='<h1 class="view-t">Antes de tocar</h1><p class="view-s">Tres respiraciones para entrar acompañado. Nota dónde se activa tu cuerpo (pecho, estómago, manos) y no intentes cambiarlo: solo vas con él.</p>';
   h+='<div class="ring-wrap"><div id="respiroBox"></div><div class="rverb" id="rverb">Estoy contigo, cuerpo. Vamos a esta puerta juntos.</div></div>';
   h+='<div class="btnrow"><button class="btn full reto" id="tocarBtn" onclick="tocarStart(this)">Empezar</button></div>';
   h+='<div id="tocarAfter" style="display:none"><div class="card"><h2>¿Cómo vas a esta puerta?</h2><div class="chips" id="tocarAcomp">'+
@@ -260,8 +260,8 @@ function tocarYa(){ var d=dia(); d.puertas++; save(); ev('puerta'); flash('Vas c
 /* ---------------- ME HAN DICHO QUE NO ---------------- */
 var noT=null;
 VIEWS.no=function(){
-  var h='<h1 class="view-t">Me han dicho que no</h1><p class="view-s">El «no» es a la oferta de hoy, no a ti. Vamos a soltar el pinchazo para que no se acumule en el cuerpo.</p>';
-  h+='<div class="card"><ol class="muted" style="padding-left:18px;line-height:2"><li><b>Nota</b> el pinchazo (pecho, estómago). No es peligro, es un «no».</li><li><b>Una exhalación</b> larga, soltando hombros y mandíbula.</li><li><b>Dítelo</b>: «un no me acerca al siguiente sí; no me define».</li><li><b>Siguiente puerta</b>, con tu cuerpo al lado.</li></ol>';
+  var h='<h1 class="view-t">Me han dicho que no</h1><p class="view-s">El «no» es a la oferta de hoy, no a ti. Vamos a acompañar el pinchazo un momento, sin pelearte con él, para que no se quede acumulado en el cuerpo.</p>';
+  h+='<div class="card"><ol class="muted" style="padding-left:18px;line-height:2"><li><b>Nota</b> el pinchazo (pecho, estómago). No es peligro, es un «no». No hace falta que se vaya.</li><li><b>Una exhalación</b> larga, soltando hombros y mandíbula.</li><li><b>Dítelo</b>: «un no me acerca al siguiente sí; no me define».</li><li><b>Siguiente puerta</b>, con tu cuerpo al lado.</li></ol>';
   h+='<div class="ring-wrap"><div id="respiroBoxNo"></div></div>';
   h+='<div class="btnrow"><button class="btn full slate" id="noBtn" onclick="noBreath(this)">Una exhalación larga</button></div>';
   h+='<div class="ok-flash" id="okflash"></div>';
@@ -287,7 +287,7 @@ function noReg(){ var d=dia(); d.noes++; save(); ev('no'); flash('Soltado. Vamos
 var ciT=null;
 VIEWS.cierre=function(){
   var h='<h1 class="view-t">Cierre antes de llegar a casa</h1><p class="view-s">Un minuto en la furgoneta, antes de entrar. Para que el cansancio y la tensión del día no entren contigo por la puerta.</p>';
-  h+='<div class="card"><h2><span class="e">🫁</span>1 · Tres respiraciones largas</h2><p class="lead">Suelta el aire despacio, afloja hombros y mandíbula.</p><div class="ring-wrap"><div id="respiroBoxCierre"></div></div><button class="btn full reto" id="ciBtn" onclick="cierreBreath(this)">Empezar</button></div>';
+  h+='<div class="card"><h2><span class="e">🫁</span>1 · Tres respiraciones largas</h2><p class="lead">Nota dónde llevas el día en el cuerpo (hombros, pecho, estómago) y suelta el aire despacio, sin forzar.</p><div class="ring-wrap"><div id="respiroBoxCierre"></div></div><button class="btn full reto" id="ciBtn" onclick="cierreBreath(this)">Empezar</button></div>';
   h+='<div class="card"><h2><span class="e">🚛</span>2 · Dejo el trabajo en la furgoneta</h2><p>Los «no», las cifras y las prisas se quedan aquí hasta mañana. No tienen por qué entrar en casa.</p></div>';
   h+='<div class="card"><h2><span class="e">🤍</span>3 · ¿Con qué quiero llegar?</h2><p class="lead">Una intención breve para los tuyos.</p><input type="text" id="ciIntencion" placeholder="Ej.: llego con paciencia y presencia para mi familia"><div class="ok-flash" id="okflash"></div><button class="btn full" style="margin-top:11px" onclick="cierreDone()">Cerrar el día</button></div>';
   h+='<div class="quote">Trabajas por los tuyos. Llegar con batería para ellos también es parte del trabajo.</div>';

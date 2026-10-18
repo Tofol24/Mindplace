@@ -260,7 +260,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <div class="ctit">Qué entrenas aquí</div>
       <div class="legend">
         <span class="badge bL">L</span> <b>Latencia</b> — el STOP y la parada de pensamiento crean un espacio antes de reaccionar.<br>
-        <span class="badge bD">D</span> <b>Densidad</b> — anclar la atención en cada actividad y la respiración curiosa cada hora multiplican los momentos de presencia.<br>
+        <span class="badge bD">D</span> <b>Densidad</b> — anclar la atención en cada actividad y la respiración curiosa cada hora bajan el ruido interno y hacen más nítida la señal del cuerpo.<br>
         <span class="badge bC">C</span> <b>Continuidad</b> — la brújula de valores sostiene tu atención orientada a lo que importa, día tras día.
       </div>
     </div>
@@ -300,6 +300,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
     <div class="hero">
       <h1>Herramientas AIS</h1>
       <p>Cada vez que uses una, súmala. No para sacar nota: para que veas, con los días, cuántas veces has elegido volver a ti en lugar de irte con el piloto automático.</p>
+      <p style="margin-top:8px;">Úsalas también <b>cuando estás bien</b>, a horas fijas (como la respiración curiosa de cada hora), no solo cuando aprieta: si la atención solo acude con la alarma, el cuerpo aprende a alarmarse para que lo atiendas.</p>
     </div>
 
     <div class="card">
@@ -313,6 +314,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
       <div class="breath">
         <div id="respiroBox"></div>
         <button class="btn bp bsm" id="breathBtn" onclick="iniciarResp()" style="margin-top:8px;">🌬️ Respira conmigo (4 rondas)</button>
+        <div class="frase" id="breathVuelve" style="display:none; text-align:left;">Y ahora, <b>vuelve</b>: ¿cuál es el siguiente paso pequeño con sentido? Retoma lo que estabas haciendo, con la sensación que haya.</div>
       </div>
       <p style="font-size:12px; color:var(--gris); line-height:1.6; margin-top:10px;">Respiración <b>curiosa</b>: en vez de respirar para calmarte, observa con curiosidad cómo entra y sale el aire, sin cambiar nada. Al terminar suma una a "Respiración curiosa".</p>
     </div>
@@ -1005,6 +1007,7 @@ function iniciarResp(){
   var btn=document.getElementById('breathBtn');
   btn.disabled=true; btn.style.opacity=.5;
   if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var vu=document.getElementById('breathVuelve'); if(vu) vu.style.display='none';
   var box=document.getElementById('respiroBox');
   if(!box||!window.RespiroAIS){ btn.disabled=false; btn.style.opacity=1; breathBusy=false; return; }
   activeRespiro=RespiroAIS.mount(box,{
@@ -1012,7 +1015,7 @@ function iniciarResp(){
     rhythm:{ inhale:4000, anchor:900, exhale:4000, pause:700 },
     labels:{ phase:{ inhale:'Inhala', anchor:'quédate', exhale:'Exhala', pause:'pausa' },
              hint:{ inhale:'observa cómo entra el aire', anchor:'sin cambiar nada', exhale:'observa cómo sale', pause:'sin cambiar nada' } },
-    onCycle:function(n){ if(n>=4){ activeRespiro.stop(); btn.disabled=false; btn.style.opacity=1; breathBusy=false; bump('respCuriosa',1); } }
+    onCycle:function(n){ if(n>=4){ activeRespiro.stop(); btn.disabled=false; btn.style.opacity=1; breathBusy=false; bump('respCuriosa',1); var vu=document.getElementById('breathVuelve'); if(vu) vu.style.display='block'; } }
   });
 }
 

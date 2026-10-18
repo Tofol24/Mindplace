@@ -1129,7 +1129,7 @@ function verbResp(){ return [
   t("No vas a cambiar la respiración. Solo vas a mirarla.","No canviaràs la respiració. Només la miraràs."),
   t("¿Por dónde entra el aire? ¿Frío, templado?","Per on entra l'aire? Fred, tebi?"),
   t("Lleva la atención a la barriga. ¿Sube? ¿Está dura? ¿Está quieta?","Porta l'atenció a la panxa. Puja? És dura? Està quieta?"),
-  t("Si no notas gran cosa, también vale. Eso es lo que hay hoy.","Si no notes gran cosa, també val. Això és el que hi ha avui."),
+  t("Si no notas gran cosa, también vale: nota las manos o los pies en el suelo y quédate ahí.","Si no notes gran cosa, també val: nota les mans o els peus a terra i queda-t'hi."),
   t("La curiosidad no busca respuestas. Busca contacto.","La curiositat no busca respostes. Busca contacte."),
   t("Cada vez que vuelves, estás entrenando. Aunque te hayas ido mil veces.","Cada cop que tornes, estàs entrenant. Encara que te n'hagis anat mil vegades.")
 ]; }
@@ -1171,7 +1171,7 @@ VIEWS.respira=function(){
 function respStart(n,btn){
   document.getElementById('r3').style.display='none'; document.getElementById('r6').style.display='none';
   breathRun({ciclos:n, verbs:verbResp(), finTxt:t("Barriga","Panxa"),
-    finVerb:t("Ya está. Quédate un segundo más antes de seguir.","Ja està. Queda-t'hi un segon més abans de continuar."),
+    finVerb:t("Ya está. Un segundo más ahí, y sigue con lo siguiente que toca.","Ja està. Un segon més aquí, i continua amb el següent que toca."),
     onEnd:function(){ var d=dia(); d.resp++; save(); ev('resp',{momento:'libre',ciclos:n});
       flash(t("Sumada. Hoy llevas "+d.resp+".","Sumada. Avui en portes "+d.resp+"."));
       setTimeout(function(){ if(VIEW==='respira') render(); },1400); }});
@@ -1370,7 +1370,7 @@ function pararResp(btn){ btn.disabled=true;
            t("Esto es un pico. Los picos bajan.","Això és un pic. Els pics baixen."),
            t("Estás haciendo lo más difícil: esperar.","Estàs fent el més difícil: esperar."),
            t("No estás solo. Hay gente a un botón.","No estàs sol. Hi ha gent a un botó.")],
-    finTxt:t("Aquí","Aquí"), finVerb:t("Has aguantado. Ahora llama a alguien.","Has aguantat. Ara truca a algú."),
+    finTxt:t("Aquí","Aquí"), finVerb:t("Te has quedado. Ahora llama a alguien.","T'hi has quedat. Ara truca a algú."),
     onEnd:function(){ if(btn) btn.disabled=false; ev('parar'); }}); }
 
 /* ================= COMUNES ================= */

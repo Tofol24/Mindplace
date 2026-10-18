@@ -378,7 +378,7 @@
       titulo: "Sentarme junto al mono", toolId: "sentarse_mono", toolName: "Sentarme junto al mono", done: "🧘 Te has sentado junto al mono",
       pasos: [
         { n: "1 · Para", h: "Respira y aterriza", p: "Tres respiraciones lentas. Inhala por la nariz unos segundos, suelta el aire despacio por la boca, como si saliera por una pajita. Sin prisa.", orb: true },
-        { n: "2 · Siente", h: "Mira hacia dentro", p: "Lleva la atención al pecho, la barriga o el cuello. ¿Dónde notas algo? No lo cambies: solo acompáñalo unos segundos. «No sé por qué, pero lo noto aquí.»" },
+        { n: "2 · Siente", h: "Mira hacia dentro", p: "Lleva la atención al pecho, la barriga o el cuello. ¿Dónde notas algo? No lo cambies: solo acompáñalo unos segundos. «No sé por qué, pero lo noto aquí.» Si no notas nada, apoya la atención en las manos o en los pies: también es la práctica." },
         { n: "3 · Acompaña", h: "Valida al mono", p: "Háblale con respeto, como a alguien que tiene miedo: «Está bien sentir esto. Tengo derecho a sentirme así. No estás solo.»" },
         { n: "4 · Actúa", h: "Una microacción con valor", p: "Desde aquí, tal como estés, elige el paso más pequeño que vaya en la dirección de quien quieres ser. Pequeño, concreto y posible ahora.", input: true }
       ]

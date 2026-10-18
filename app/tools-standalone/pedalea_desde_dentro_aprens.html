@@ -527,7 +527,7 @@ VIEWS.ais=function(){
   h+='<div id="aisTimerBox" style="text-align:center;margin:18px 0;display:none"><div style="font-family:var(--serif);font-size:44px;font-weight:700" id="aisClock">0:00</div><div class="muted" id="aisGuide">Observa el impulso de escapar. Respira sin forzar.</div></div>';
   h+='<button class="btn full" id="aisStart" onclick="aisStart()">Empezar la práctica</button>';
   h+='<div id="aisAfter" style="display:none;margin-top:16px"><div class="fld"><label>Después — amenaza percibida</label><div class="scale" data-k="amenaza_fin">'+scaleBtns()+'</div></div><div class="fld"><label>Después — disposición a continuar con algo valioso</label><div class="scale" data-k="dispo_fin">'+scaleBtns()+'</div></div><button class="btn amor full" onclick="aisSave()">Registrar la práctica</button></div>';
-  h+='<p class="muted" style="margin-top:14px">Éxito = haber estado presente y haber elegido el siguiente paso, aunque la sensación no baje.</p></div>';
+  h+='<p class="muted" style="margin-top:14px">Éxito = haber estado presente y haber elegido el siguiente paso, aunque la sensación no baje.</p><p class="muted">Practícalo también en días tranquilos o tras un entreno suave, no solo cuando duele: así '+esc(JOANET())+' aprende que apareces siempre, no solo en la alarma.</p></div>';
   h+=recientes(DB.ais,function(x){return x.dur+'s · amenaza '+(x.amenaza_ini!=null?x.amenaza_ini:'–')+'→'+(x.amenaza_fin!=null?x.amenaza_fin:'–');},'Aún no hay prácticas.');
   h+=footerHTML(); return h;
 };
@@ -535,7 +535,7 @@ function scaleBtns(){ var s=''; for(var i=0;i<=10;i++) s+='<button type="button"
 function pickScaleK(b){ var box=b.parentNode; box.querySelectorAll('.scaleb').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); box.dataset.val=b.dataset.v; }
 function getK(k){ var el=document.querySelector('[data-k="'+k+'"]'); return el&&el.dataset.val!=null?parseInt(el.dataset.val,10):null; }
 var aisT=null, aisLeft=0, aisDur=60;
-var AIS_GUIDE=["Observa el impulso de escapar o juzgar.","Respiración diafragmática, sin forzar.","Lleva la atención a piernas, abdomen, pecho o garganta.","Describe: presión, calor, quemazón, vibración, tensión…","«Esto es una sensación. No tengo que eliminarla para estar aquí.»","«Mi cuerpo sabe que estoy con él.»","Reorienta la atención hacia una acción elegida."];
+var AIS_GUIDE=["Observa el impulso de escapar o juzgar.","Respiración diafragmática, sin forzar.","Lleva la atención a piernas, abdomen, pecho o garganta. Si no notas nada, manos en el manillar o pies en los pedales.","Describe: presión, calor, quemazón, vibración, tensión…","«Esto es una sensación. No tengo que eliminarla para estar aquí.»","«Mi cuerpo sabe que estoy con él.»","Reorienta la atención hacia una acción elegida."];
 function aisStart(){
   var sel=document.querySelector('#aisDur .chip.sel'); aisDur=sel?parseInt(sel.dataset.v,10):60; aisLeft=aisDur;
   document.getElementById('aisTimerBox').style.display='block'; document.getElementById('aisStart').style.display='none';
@@ -545,12 +545,12 @@ function aisStart(){
 function tickAis(){ var clock=document.getElementById('aisClock'); if(!clock){ if(aisT){clearInterval(aisT);aisT=null;} return; }
   var m=Math.floor(aisLeft/60), s=aisLeft%60; clock.textContent=m+':'+p2(s);
   var g=document.getElementById('aisGuide'); if(g){ var idx=Math.min(AIS_GUIDE.length-1, Math.floor((aisDur-aisLeft)/Math.max(1,aisDur/AIS_GUIDE.length))); g.textContent=AIS_GUIDE[idx]; } }
-function aisEnd(){ var g=document.getElementById('aisGuide'), a=document.getElementById('aisAfter'); if(g) g.textContent='Práctica completada. ¿Cómo estás ahora?'; if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
+function aisEnd(){ var g=document.getElementById('aisGuide'), a=document.getElementById('aisAfter'); if(g) g.textContent='Práctica completada. Desde aquí, ¿cuál es el siguiente paso con valor?'; if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
 function aisSave(){
   var d={id:uid(),ts:Date.now(),date:hoy(),hora:nowHM(),dur:aisDur,amenaza_ini:getK('amenaza_ini'),soledad_ini:getK('soledad_ini'),amenaza_fin:getK('amenaza_fin'),dispo_fin:getK('dispo_fin')};
   DB.ais.push(d); addBadge('Presencia entrenada'); save();
   aprensSave({id:d.id,date:d.date,ts:d.ts,param:'densidad',modulo:'ais_dolor',duracion_seg:d.dur,amenaza_antes:d.amenaza_ini,amenaza_despues:d.amenaza_fin,disposicion:d.dispo_fin});
-  flash("Práctica registrada ✓"); render(); go('ais');
+  go('ais'); flash("Práctica registrada ✓ Ahora, ese siguiente paso.");
 }
 
 /* ---------------- DESPUÉS DE ENTRENAR ---------------- */

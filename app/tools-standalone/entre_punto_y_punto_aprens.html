@@ -479,7 +479,7 @@ var CONSIGNAS_EJEC=[
 var NIVELES=[
   { n:1, t:"Notar que hay un dentro", dur:60, meta:4,
     d:"60 segundos. Sentada, en calma. Solo comprobar que hay señal.",
-    guide:["Siéntate y deja el móvil apoyado.","Respira normal. No lo cambies.","Busca UNA zona donde notes algo: garganta, pecho o barriga.","Quédate ahí. No hace falta que sea intenso.","Si te vas, vuelve. Irse y volver es el ejercicio."] },
+    guide:["Siéntate y deja el móvil apoyado.","Respira normal. No lo cambies.","Busca UNA zona donde notes algo: garganta, pecho o barriga.","Quédate ahí. No hace falta que sea intenso. Si no notas nada, nota las manos o los pies en el suelo.","Si te vas, vuelve. Irse y volver es el ejercicio."] },
   { n:2, t:"Las tres anclas", dur:90, meta:4,
     d:"90 segundos. Recorrer garganta, pecho y barriga.",
     guide:["Garganta: ¿abierta, cerrada, con nudo, neutra?","Pecho: ¿ancho, apretado, rápido, quieto?","Barriga: ¿blanda, dura, con movimiento?","Vuelve a la que más habla y quédate.","Sin arreglar nada. Solo visitar."] },
@@ -488,7 +488,7 @@ var NIVELES=[
     guide:["Elige la zona que más nota.","¿Qué forma tiene? ¿Punto, banda, bola, capa?","¿Qué temperatura? ¿Se mueve o está quieta?","Di por dentro la palabra: presión, calor, vibración, peso.","Si aparece «esto está mal», cámbialo por una palabra descriptiva."] },
   { n:4, t:"Quedarse un poco más", dur:180, meta:5,
     d:"3 minutos. Tolerar sin resolver. Aquí empieza la habituación.",
-    guide:["Localiza la sensación y quédate.","Aparecerá el impulso de moverte o de mirar el móvil. Míralo pasar.","No compruebes si ha bajado. Comprobar la alimenta.","Nota que cambia sola, sin que tú hagas nada.","Éxito = haberte quedado, no que se vaya."] },
+    guide:["Localiza la sensación y quédate.","Aparecerá el impulso de moverte o de mirar el móvil. Míralo pasar.","No compruebes si ha bajado. Comprobar la alimenta.","Si cambia, que sea sola: tú no haces nada para cambiarla.","Éxito = haberte quedado, no que se vaya."] },
   { n:5, t:"Adentro con el cuerpo activo", dur:150, meta:5,
     d:"2-3 min justo después de esfuerzo (series, carrera, saltos). El puente hacia la competición.",
     guide:["Acabas de esforzarte. El corazón va rápido.","Eso NO es ansiedad: es tu cuerpo trabajando.","Nota el pecho, el pulso, la respiración corta.","Quédate con la activación sin interpretarla.","Este es el mismo cuerpo que notarás en un punto importante."] },
@@ -642,7 +642,7 @@ VIEWS.despues=function(){
     {k:'latencia',l:'Cuando te ibas, ¿cuánto tardabas en darte cuenta?',hint:'TEC · latencia',t:'options',opts:['Casi al instante, dentro del mismo punto','En el punto siguiente','Al acabar el juego','Al acabar el set o más tarde','No me he dado cuenta hasta ahora']},
     {k:'densidad',l:'¿Cuántas veces has vuelto a propósito?',hint:'TEC · densidad. Volver = usar el ritual, las cuerdas, la respiración, una frase',t:'chips1',opts:['Ninguna','1 o 2','3 a 5','6 a 10','Más de 10']},
     {k:'comovolvi',l:'¿Qué has usado para volver?',t:'chips',opts:['Bote de pelota','Cuerdas','Respiración','Toalla / cambio de lado','Una frase','Ritual completo','Nada, se pasó solo']},
-    {k:'continuidad',l:'Cuando volvías, ¿podías sostener el foco?',hint:'TEC · continuidad',t:'scale',ends:['Me iba enseguida','Aguantaba bien']},
+    {k:'continuidad',l:'Cuando volvías, ¿podías sostener el foco?',hint:'TEC · continuidad',t:'scale',ends:['Me iba enseguida','Lo sostenía bien']},
     {k:'bucle',l:'¿Te has quedado enganchada en algún pensamiento? ¿Cuál?',t:'textarea',ph:'Escríbelo tal cual sonaba en tu cabeza'},
     {k:'destacado',l:'Un momento en el que te fuiste y volviste',hint:'Este es el que más entrena. Cuéntalo aunque sea corto',t:'textarea',ph:'Ej.: 3-4, doble falta, me giré al fondo, respiré y saqué a la T'},
     {k:'bien',l:'Una cosa que has sostenido bien hoy',t:'textarea',ph:'Aunque el resultado no acompañara'},
@@ -837,6 +837,7 @@ function imPaso6(){
   ['Sí, con claridad','A medias','No, la imagen se me iba','No, necesitaba que bajara primero'].forEach(function(o){ h+='<button type="button" class="opt" data-v="'+o+'" onclick="pickOpt(this)">'+esc(o)+'</button>'; });
   h+='</div>';
   h+='<div class="fld"><label for="imNota">¿Qué te llevas de esta práctica?</label><textarea id="imNota" placeholder="Una frase basta"></textarea></div>';
+  h+='<p class="tiny" style="margin-bottom:10px">Al guardar, levántate y vuelve a una cosa concreta de tu día. La tensión puede venir contigo.</p>';
   h+='<button class="btn calma full" onclick="imSave()">Guardar la práctica</button>';
   h+='<div class="btnrow" style="margin-top:10px"><button class="btn ghost" onclick="imGo(5)">Atrás</button></div></div>';
   return h;
@@ -862,7 +863,7 @@ function imSave(){
     tension_final:d.t_fin,disposicion:d.disposicion,ejecucion_con_tension:d.ejecucion});
   var msg="Práctica guardada ✓ ";
   if(d.t_pico!=null&&d.t_fin!=null){
-    msg+= d.t_fin<d.t_pico ? "La tensión ha bajado de "+d.t_pico+" a "+d.t_fin+" sin que hicieras nada para quitarla: eso es habituación."
+    msg+= d.t_fin<d.t_pico ? "La tensión ha bajado de "+d.t_pico+" a "+d.t_fin+" sin que hicieras nada para quitarla. Bien, pero el éxito era quedarte, y eso ya lo has hecho."
         : "La tensión no ha bajado, y aun así te has quedado. Eso también entrena, y a veces entrena más.";
   }
   var mismas=DB.imag.filter(function(x){ return x.escena===d.escena; });
@@ -882,7 +883,7 @@ VIEWS.adentro=function(){
   if(AD.fase==='practica') return h+adPractica()+footerHTML();
   var nv=nivelActual();
   h+='<div class="card"><h2><span class="e">🪜</span>La escalera</h2>';
-  h+='<p class="lead">Cada nivel se abre cuando el anterior está rodado. No corras: lo que importa es la frecuencia, no llegar arriba.</p></div>';
+  h+='<p class="lead">Cada nivel se abre cuando el anterior está rodado. No corras: lo que importa es la frecuencia, no llegar arriba. Practica también los días tranquilos, no solo cuando hay tensión.</p></div>';
   NIVELES.forEach(function(L){
     var pr=practicasNivel(L.n), abierto=L.n<=nv, hecho=pr>=L.meta;
     h+='<button class="lvl'+(abierto?'':' lock')+(L.n===nv?' on':'')+(hecho?' done':'')+'" '+(abierto?'onclick="adAbrir('+L.n+')"':'disabled')+'>';
@@ -913,7 +914,7 @@ function adPractica(){
   return h;
 }
 function adStart(){ var L=NIVELES[AD.nivel-1]; startTimer(L.dur,L.guide,adFin); }
-function adFin(){ var g=document.getElementById('guide'); if(g) g.textContent='Práctica completada. ¿Cómo ha ido?'; var a=document.getElementById('adAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
+function adFin(){ var g=document.getElementById('guide'); if(g) g.textContent='Práctica completada. Anota lo que has notado y vuelve a lo siguiente que tengas que hacer.'; var a=document.getElementById('adAfter'); if(a){ a.style.display='block'; a.scrollIntoView({behavior:'smooth',block:'center'}); } }
 function adVolver(){ stopTimer(); AD={nivel:null,fase:'lista'}; render(); window.scrollTo(0,0); }
 function adSave(){
   var L=NIVELES[AD.nivel-1];
@@ -960,7 +961,7 @@ VIEWS.porque=function(){
   h+='<p>Cuántas veces vuelves a propósito a lo largo de la sesión. No importa que sean vueltas perfectas: importa que sean muchas.</p>';
   h+='<p class="lead">El ritual del saque, tocar las cuerdas, una respiración en el cambio de lado. Cada vuelta es una repetición de gimnasio para tu atención.</p></div>';
   h+='<div class="card"><h2><span class="e">📈</span>3 · Continuidad</h2>';
-  h+='<p>Cuánto aguantas el foco después de volver, y cuántos días sostienes la práctica. Es lo último que llega y lo que más cambia los partidos largos.</p></div>';
+  h+='<p>Cuánto sostienes el foco después de volver, y cuántos días mantienes la práctica. Es lo último que llega y lo que más cambia los partidos largos.</p></div>';
   h+='<div class="card"><h2><span class="e">🎬</span>Y la exposición en imaginación, ¿para qué?</h2>';
   h+='<p>Tu cuerpo aprende por experiencia, no por explicaciones. Si cada vez que aparece la tensión tú intentas quitarla, tu cuerpo concluye que la tensión es peligrosa y la vuelve a mandar más fuerte.</p>';
   h+='<p>Cuando en imaginación dejas que suba y <b>te quedas con ella acompañándola</b>, tu cuerpo aprende otra cosa: que se puede sostener. Y cuando además te ves <b>jugando bien con ella dentro</b>, aprende que tensión y buen tenis no son incompatibles.</p>';

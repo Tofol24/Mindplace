@@ -163,7 +163,7 @@ input[type=range]::-moz-range-thumb{border-color:var(--azul);}
 <script>
 let vista="intro", paso=0;
 let nivelIni=6, nivelFin=6;
-let ancla="", frase="", micro="", ayuda="", anclaZona="";
+let ancla="", frase="", micro="", ayuda="", anclaZona="", motivo="";
 const app=document.getElementById("app");
 
 const ZNOM={cuello:"Cuello (garganta y nuca)",pecho:"Pecho (corazón y pulmones)",barriga:"Barriga (estómago e intestinos)"};
@@ -221,11 +221,12 @@ const MAPA_SVG=`<div class="mapa-tit">🫀 O ancla la mirada dentro <span style=
 const PASOS=[
   {ico:"🛑", tit:"Para y mira", sub:"Abre bien los ojos. Mira despacio 3 cosas a tu alrededor.", tipo:"ok", btn:"Ya miro →"},
   {ico:"🫁", tit:"Respira y ancla", sub:"Respira con las dos luces. Toca dónde apoyarte ahora.", tipo:"ancla"},
-  {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Tócalo y dilo así: «No sé por qué, pero noto esto aquí». No hace falta explicar.", tipo:"emocion"},
-  {ico:"👣", tit:"Una acción pequeña", sub:"Elige algo concreto para volver a tu día.", tipo:"micro"}
+  {ico:"💬", tit:"Ponle nombre", sub:"¿Qué notas por dentro? Señala dónde lo notas y dilo así: «No sé por qué, pero noto esto aquí». No hace falta explicar.", tipo:"emocion"},
+  {ico:"👣", tit:"Una acción pequeña", sub:"Elige algo concreto para volver a tu día: ¿qué haría ahora la persona que quiero ser? Pequeño y no para quitarte lo que sientes.", tipo:"micro"}
 ];
 const ANCLAS=[["🐾","mi animal"],["💧","agua fresca"],["🤚","algo con textura"],["🦶","los pies en el suelo"],["☕","una bebida"],["🌬️","el aire"]];
-const EMOS=[["😨","miedo"],["😡","rabia"],["😟","nervios"],["😢","tristeza"],["😣","tensión"],["🌀","agobio"]];
+const EMOS=[["😨","miedo"],["😡","rabia"],["😟","nervios"],["😢","tristeza"],["😣","tensión"],["🌀","agobio"],["🤷","no noto nada"]];
+const NADA_TIP="No notar nada también vale: la presencia cuenta igual. Apoya la atención en las manos o en los pies (el contacto con el suelo, la temperatura de las palmas) y quédate ahí unos segundos.";
 const MICROS=[["💧","beber agua"],["🚶","caminar un poco"],["🚪","salir un momento"],["🧺","ordenar algo"],["💬","escribir a alguien"],["🐾","mis animales"]];
 
 function colorNivel(v){return v<=3?"var(--verde)":v<=6?"var(--naranja)":"var(--rojo)";}
@@ -261,8 +262,14 @@ function intro(){
     <div class="step">
       <div class="step-ico">🧭</div>
       <div class="step-tit">Cuando te notes en alerta</div>
-      <div class="step-sub">En 4 pasos muy cortos volvemos al aquí y ahora. No hay forma de hacerlo mal.</div>
+      <div class="step-sub">En 4 pasos muy cortos volvemos al aquí y ahora. No hay forma de hacerlo mal. No se trata de que baje: la calma, si llega, es un regalo, no el objetivo.</div>
     </div>
+    <div style="text-align:center;font-size:13px;color:var(--gris);margin-bottom:6px">¿Por qué vienes ahora? (opcional)</div>
+    <div class="opts" style="margin-bottom:10px">
+      <button class="opt mot ${motivo==='verde'?'sel':''}" onclick="setMotivo('verde')"><span class="em">🟢</span>Sin necesidad, practico en calma</button>
+      <button class="opt mot ${motivo==='rojo'?'sel':''}" onclick="setMotivo('rojo')"><span class="em">🔴</span>El cuerpo me ha avisado</button>
+    </div>
+    <div id="motTxt" style="text-align:center;font-size:13px;color:var(--gris);margin:0 0 14px">${motivo==='verde'?'Así se entrena: tu cuerpo aprende que tu atención también aparece cuando todo está bien.':motivo==='rojo'?'Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma.':''}</div>
     <div class="card">
       <div class="scale-em">${emojiNivel(nivelIni)}</div>
       <div class="scale-num" id="tv" style="color:${colorNivel(nivelIni)}">${nivelIni}</div>
@@ -272,6 +279,7 @@ function intro(){
     </div>
     <button class="btn big" onclick="empezar()">Empezar →</button>`;
 }
+function setMotivo(v){ motivo=(motivo===v?"":v); const nv=nivelIni; intro(); setIni(nv); }
 function setIni(v){nivelIni=+v;const t=document.getElementById("tv");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
 function empezar(){vista="paso";paso=0;render();scrollTo(0,0);}
 
@@ -290,6 +298,7 @@ function pasoView(){
       <button class="btn big green" onclick="next()">Siguiente →</button>`;
   } else if(s.tipo==="emocion"){
     cuerpo=`<div class="opts">${EMOS.map((o,i)=>opt('emocion',i,o)).join("")}</div>
+      <div class="breath-hint" id="nadaTip" style="display:${frase==='no noto nada'?'block':'none'};margin:-8px 0 16px;text-align:center">${NADA_TIP}</div>
       <button class="btn big green" onclick="next()">Siguiente →</button>`;
   } else if(s.tipo==="micro"){
     cuerpo=`<div class="opts">${MICROS.map((o,i)=>opt('micro',i,o)).join("")}</div>
@@ -321,6 +330,7 @@ function opt(grupo,i,o){return `<button class="opt" data-g="${grupo}" data-i="${
 function pick(grupo,i,val){
   if(grupo==='ancla')ancla=val; if(grupo==='emocion')frase=val; if(grupo==='micro')micro=val;
   marcarSel();
+  const nt=document.getElementById('nadaTip'); if(nt) nt.style.display=(frase==='no noto nada'?'block':'none');
 }
 function marcarSel(){
   document.querySelectorAll('.opt').forEach(b=>{
@@ -336,6 +346,7 @@ function resultado(){
     <div class="step" style="margin-bottom:6px">
       <div class="step-ico">🌤️</div>
       <div class="step-tit">¿Cómo estás ahora?</div>
+      <div class="step-sub">Solo para registrarlo: no tiene que haber bajado.</div>
     </div>
     <div class="card">
       <div class="scale-em">${emojiNivel(nivelFin)}</div>
@@ -350,7 +361,9 @@ function setFin(v){nivelFin=+v;const t=document.getElementById("tv2");if(!t)retu
 function verResumen(){
   const diff=nivelIni-nivelFin;
   const fecha=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
-  const L=["🧭 Bajar la alerta — APRENS","Fecha: "+fecha,"","Alerta antes: "+nivelIni+"/10","Alerta después: "+nivelFin+"/10"];
+  const L=["🧭 Bajar la alerta — APRENS","Fecha: "+fecha];
+  if(motivo)L.push("Por qué vine: "+(motivo==="verde"?"🟢 sin necesidad (práctica en calma)":"🔴 el cuerpo me avisó"));
+  L.push("","Alerta antes: "+nivelIni+"/10","Alerta después: "+nivelFin+"/10");
   if(ancla)L.push("","Me anclé en: "+ancla);
   if(anclaZona)L.push("Ancla visual (mirar dentro): "+ZNOM[anclaZona]);
   if(frase)L.push("Noté: "+frase);
@@ -359,7 +372,7 @@ function verResumen(){
   const msg=L.join("\n");
 
   window._aprensRec={ id:"ba"+Date.now(), date:new Date().toISOString().slice(0,10), ts:Date.now(),
-    antes:nivelIni, despues:nivelFin, baja:diff, ancla:ancla||"", anclaZona:anclaZona||"", frase:frase||"", micro:micro||"", ayuda:"" };
+    antes:nivelIni, despues:nivelFin, baja:diff, ancla:ancla||"", anclaZona:anclaZona||"", frase:frase||"", micro:micro||"", ayuda:"", motivo:motivo||"" };
   if(window.Aprens) Aprens.mountBar();
 
   // TEC: no se practica para que baje el número; la calma, si llega, es subproducto.
@@ -388,7 +401,7 @@ function verResumen(){
     <div class="frase">«Donde dirijo mi atención, ahí voy yo.»<br>Úsala también en momentos tranquilos: así la tienes lista cuando la necesites.</div>`;
   scrollTo(0,0);
 }
-function reiniciar(){vista="intro";paso=0;nivelFin=nivelIni;ancla=frase=micro=ayuda=anclaZona="";render();scrollTo(0,0);}
+function reiniciar(){vista="intro";paso=0;nivelFin=nivelIni;ancla=frase=micro=ayuda=anclaZona=motivo="";render();scrollTo(0,0);}
 
 function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
 function copiar(btn){
