@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Agenda atencional · APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#f3eee4;--card:#fbf8f1;--ink:#2b2620;--muted:#6f665b;--acc:#3f6b74;--line:#e1d9c9}
+  @media (prefers-color-scheme: dark){:root{--bg:#171513;--card:#24211d;--ink:#efe8dc;--muted:#b4a999;--acc:#86b6bf;--line:#3a352e}}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+  .c{max-width:460px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 20px;text-align:center}
+  h1{font-family:Georgia,serif;font-size:24px;margin:10px 0 8px}
+  p{margin:8px 0;color:var(--muted)}
+  a.b{display:block;margin:18px 0 6px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;padding:13px 16px;border-radius:26px}
+  button{background:none;border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:8px 14px;font:inherit;font-size:13.5px;cursor:pointer;margin-top:10px}
+  .s{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="c">
+  <div style="font-size:34px">🧭</div>
+  <h1>Agenda atencional se ha mudado</h1>
+  <p>Ahora vive dentro de la <b>app APRENS</b>, actualizada y junto a tu recorrido diario.</p>
+  <a class="b" id="go" href="https://aprens-app.netlify.app/#/tool/agenda_atencional">Abrir Agenda atencional en la app →</a>
+  <p class="s" id="cnt">Te llevamos en unos segundos…</p>
+  <div id="old" hidden>
+    <p class="s">En este navegador quedan registros de la versión anterior. Puedes descargarlos para enviárselos a tu psicólogo/a antes de seguir.</p>
+    <button type="button" id="dl">⬇ Descargar mis registros anteriores</button>
+  </div>
+</div>
+<script>
+(function(){
+  var URL_APP = "https://aprens-app.netlify.app/#/tool/agenda_atencional", datos = {}, n = 0;
+  try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); datos[k]=localStorage.getItem(k); n++; } }catch(e){}
+  if(n){
+    // Hay datos antiguos: no redirigimos solos, para que la persona pueda guardarlos.
+    document.getElementById("old").hidden = false;
+    document.getElementById("cnt").textContent = "";
+    document.getElementById("dl").onclick = function(){
+      var blob = new Blob([JSON.stringify({origen: location.host, fecha: new Date().toISOString(), datos: datos}, null, 2)], {type:"application/json"});
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "aprens-registros-" + location.host.split(".")[0] + ".json";
+      document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    };
+  } else {
+    setTimeout(function(){ location.replace(URL_APP); }, 2500);
+  }
+})();
+</script>
+</body>
+</html>
