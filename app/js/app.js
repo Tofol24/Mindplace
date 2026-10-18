@@ -17,7 +17,7 @@
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
     { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
-      ids:["quien_conduce","la_manada","modelo_atencional"] },
+      ids:["quien_conduce","la_manada","modelo_atencional","laboratorio_tec"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_basicas","ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
@@ -84,7 +84,7 @@
       kindle:"https://www.amazon.es/dp/B0DW8ZQY19", papel:"https://www.amazon.es/dp/B0DWFMRFZW" },
     { nombre:"Teoría del Efecto Consciente (TEC)", idioma:"Castellano", color:"#C23A3A",
       desc:"La atención como vector causal: un metamodelo para la psicología clínica.",
-      kindle:"https://www.amazon.es/dp/B0HJNZY46W", papel:"https://www.amazon.es/dp/B0HJWL6K65" }
+      kindle:"https://www.amazon.es/dp/B0HJNZY46W", papel:"https://www.amazon.es/dp/B0HJWL6K65", lab:"#/tool/laboratorio_tec" }
   ];
   function librosHTML(){
     const cards = LIBROS.map(l=>`<div class="hub-card libro-card" style="border-left-color:${l.color}">
@@ -95,6 +95,7 @@
       <span class="libro-btns">
         <a class="libro-btn" href="${l.kindle}" target="_blank" rel="noopener" aria-label="${l.nombre} · Kindle en Amazon">Kindle ↗</a>
         <a class="libro-btn alt" href="${l.papel}" target="_blank" rel="noopener" aria-label="${l.nombre} · tapa blanda en Amazon">Tapa blanda ↗</a>
+        ${l.lab?`<a class="libro-btn" href="${l.lab}" aria-label="${l.nombre} · laboratorio digital">🔬 Laboratorio digital</a>`:""}
       </span></div>`).join("");
     return `<div class="hub-sec" id="libros"><span class="hub-sec-e">📚</span><span class="hub-sec-t">Los libros de Tòfol Villalonga</span></div>
       <div class="hub-sec-d">Para profundizar en lo que trabajamos en consulta. Los enlaces abren Amazon fuera de la app.</div>
@@ -341,7 +342,8 @@
     }).join("");
     return `<div class="hub-sec"><span class="hub-sec-e">🎬</span><span class="hub-sec-t">La teoría, en vídeo</span></div>
       <div class="hub-sec-d">Tres vídeos breves con Tòfol Villalonga para entender lo esencial. Puedes verlos con calma.</div>
-      <div class="hub-grid">${cards}</div>`;
+      <div class="hub-grid">${cards}</div>
+      <a class="hs-act" href="#/tool/laboratorio_tec" style="margin-top:12px"><span class="se">🔬</span><span class="st">Profundizar en la teoría · Laboratorio TEC<small>El libro hecho laboratorio: entender, practicar y medir L·D·C</small></span><span class="sarr">→</span></a>`;
   }
 
   // «El recorrido»: las piezas narrativas del método (Fase 1 → Fase 2), en orden.
@@ -368,7 +370,7 @@
 
   function porqueHTML(){
     return `
-      <section class="porque">
+      <section class="porque" id="porque">
         <div class="pq-tit">¿Para qué sirven estos ejercicios?</div>
         <p class="pq-lead">No buscan que te entiendas mejor, sino que aprendas <b>una nueva relación contigo</b>. Con la <b>Atención Interna Sensorial (AIS)</b> entrenas algo sencillo y profundo: parar, y llevar tu atención a lo que siente tu cuerpo — no para quitarlo, ni calmarlo, ni siquiera entenderlo, sino <b>para estar con ello</b>.</p>
         <div class="pq-sello">«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»</div>
@@ -392,13 +394,13 @@
     const P = [
       { emoji:"🛑", tit:"Parar a tiempo", sub:"Latencia", col:"var(--azul)",
         obj:"Ganar un instante entre lo que sientes y lo que haces, para elegir en vez de reaccionar.",
-        main:"bajar_alerta", chips:["control_ira","estoy_aqui_conmigo"] },
+        main:"bajar_alerta", chips:["control_ira","estoy_aqui_conmigo"], lab:"s-cadena" },
       { emoji:"🌬️", tit:"Estar presente", sub:"Densidad", col:"var(--verde)",
         obj:"Aparecer por dentro y sostener lo que sientes, sin luchar contra ello.",
-        main:"herramienta_diaria", chips:["acompanar_sensacion","ais_basicas"] },
+        main:"herramienta_diaria", chips:["acompanar_sensacion","ais_basicas"], lab:"s-afeccion" },
       { emoji:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", col:"var(--oro)",
         obj:"Que tus acciones, día a día, vayan hacia lo que de verdad te importa.",
-        main:"brujula_valores", chips:["honestidad_emocional","agenda_atencional"] }
+        main:"brujula_valores", chips:["honestidad_emocional","agenda_atencional"], lab:"s-ais" }
     ];
     const cards = P.map(d=>{
       const main = byId[d.main];
@@ -413,6 +415,7 @@
         <p class="puerta-obj">${d.obj}</p>
         ${cta}
         ${chips?`<div class="puerta-chips">${chips}</div>`:""}
+        <a class="puerta-chip" href="#/tool/laboratorio_tec/${d.lab}" style="margin-top:8px;display:inline-flex">🔬 Entender el porqué · Laboratorio TEC</a>
       </div>`;
     }).join("");
     return `<section class="puertas">
@@ -458,6 +461,16 @@
     const base = txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
       .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
     return base ? "sec-"+base : "";
+  }
+  // Enlace profundo a un apartado del hub (#/sec/<id>), p. ej. desde el
+  // Laboratorio TEC o desde «Mi espacio APRENS». Los ids son los del índice.
+  function irAApartado(id){
+    setTimeout(()=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(el.tagName === "DETAILS") el.open = true;
+      irASeccion(el);
+    }, 80);
   }
   function irASeccion(sec){
     const head = document.querySelector(".header");
@@ -656,7 +669,7 @@
     }; }
   }
 
-  function renderTool(id){
+  function renderTool(id, sub){
     const tool = (window.APRENS_TOOLS||[]).find(t=>t.id===id);
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
@@ -675,7 +688,8 @@
       const f = document.createElement("iframe");
       f.className = "tool-frame";
       f.title = tool.nombre;
-      f.src = tool.iframe;
+      // Enlace profundo #/tool/<id>/<seccion>: la herramienta lo recibe como #seccion.
+      f.src = tool.iframe + (sub ? "#" + sub : "");
       screen.appendChild(f);
       return;
     }
@@ -697,8 +711,10 @@
     window.APRENS_toolBack = null;
     if(goingBack){ goingBack = false; }
     else if(trail[trail.length-1] !== h){ trail.push(h); }
-    const m = h.match(/^#\/tool\/([\w-]+)/);
-    if(m) renderTool(m[1]); else renderHub();
+    const m = h.match(/^#\/tool\/([\w-]+)(?:\/([\w-]+))?/);
+    const sec = h.match(/^#\/sec\/([\w-]+)/);
+    if(m) renderTool(m[1], m[2]);
+    else { renderHub(); if(sec) irAApartado(sec[1]); }
     backBtn.textContent = "← Atrás";
   }
 
