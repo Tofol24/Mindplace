@@ -118,6 +118,13 @@
   .ring .ri{width:126px;height:126px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;box-shadow:var(--ombra-s);padding:8px}
   .ring .rf{font-family:var(--serif);font-size:21px;color:var(--agua-d)}
   .ring .rs{font-size:12px;color:var(--suau);margin-top:2px}
+  /* Silueta de dos luces (componente compartido RespiroAIS) en lugar de la bola */
+  .llave-fig{width:100%;max-width:230px;margin:0 auto}
+  .llave-fig .ra-ui,.llave-fig .ra-count,.llave-fig .ra-legend,.llave-fig .ra-control{display:none!important}
+  .ring.pill{width:auto!important;height:auto!important;border-radius:22px;background:var(--card);box-shadow:var(--ombra-s);transform:none!important;padding:6px 16px;margin-top:8px}
+  .ring.pill .ri{width:auto;height:auto;background:none;box-shadow:none;display:flex;gap:10px;align-items:baseline;padding:0}
+  .ring.pill .rf{font-size:19px}
+  .fig-leg{font-size:12px;color:var(--suau);text-align:center;margin-top:6px}
   .rverb{font-family:var(--serif);font-style:italic;color:var(--agua-d);text-align:center;font-size:15.5px;margin:12px auto 2px;max-width:23em;min-height:3.4em;line-height:1.42;transition:opacity .4s}
 
   /* Manómetro */
@@ -225,6 +232,7 @@
 <nav class="nav" id="nav"></nav>
 
 <script src="assets/js/aprens-core.js"></script>
+<script src="../js/respiro-ais.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -307,7 +315,17 @@ function racha(){ var n=0; for(var i=0;i<400;i++){ var k=daysAgo(i); var d=DB.di
 
 /* ---------- navegación ---------- */
 var VIEW="furgo", timers=[];
-function clearTimers(){ timers.forEach(function(x){ clearInterval(x); clearTimeout(x); }); timers=[]; }
+function clearTimers(){ timers.forEach(function(x){ clearInterval(x); clearTimeout(x); }); timers=[]; figStop(); }
+/* Figura de la respiración: la silueta compartida (aire azul = cebo; atención amarilla
+   que baja y se queda en la barriga). Si el componente no carga, queda la bola de siempre. */
+var llaveFig=null;
+function figStop(){ if(llaveFig){ try{ llaveFig.destroy(); }catch(e){} llaveFig=null; } }
+function figMount(rhythm){
+  var box=document.getElementById('raFig'); if(!box||!window.RespiroAIS) return;
+  figStop();
+  llaveFig=RespiroAIS.mount(box,{ lang:'es', figure:'organism', showControl:false, showZones:false, autostart:!!rhythm,
+    rhythm: rhythm || {inhale:4000, anchor:1000, exhale:6000, pause:0} });
+}
 function navItems(){ return [
   {id:"furgo",  e:"🚐", l:t("Furgoneta","Furgoneta")},
   {id:"respira",e:"🫧", l:t("Respirar","Respirar")},
@@ -326,6 +344,7 @@ function render(){
   var n=nombre();
   document.getElementById('topTit').textContent=t("La llave de paso","La clau de pas");
   document.getElementById('topSub').textContent = n? (t("APRENS · para ","APRENS · per a ")+n) : 'APRENS · TEC–AIS';
+  if(document.getElementById('raFig') && !llaveFig) figMount(null);
   var st=document.getElementById('btStop');
   if(st){ st.textContent=t("🛟 Parar","🛟 Parar"); st.setAttribute('aria-label',t("Necesito parar","Necessito parar")); }
 }
@@ -360,6 +379,10 @@ function breathRun(opts){
   var fases=opts.fases||respFases(), ciclos=opts.ciclos||3, verbs=opts.verbs||[], onEnd=opts.onEnd;
   var i=-1, c=0, v=0;
   setVerb(verbs[0]);
+  // La silueta sigue el mismo ritmo que las fases (coger aire · quedarse · soltar).
+  var rIn=0, rAn=0, rEx=0;
+  fases.forEach(function(f){ if(f[0]==='·') rAn+=f[1]; else if(f[2]>=1) rIn+=f[1]; else rEx+=f[1]; });
+  figMount({inhale:rIn*1000, anchor:rAn*1000, exhale:rEx*1000, pause:0});
   function step(){
     i++;
     if(i>=fases.length){ i=0; c++; v++; setVerb(verbs[v%(verbs.length||1)]);
@@ -373,7 +396,7 @@ function breathRun(opts){
       r.textContent=(left>0?left:0)+'s'; if(left<=0){ clearInterval(iv); step(); } },1000);
     timers.push(iv);
   }
-  function fin(){ var ring=document.getElementById('ring');
+  function fin(){ if(llaveFig){ try{ llaveFig.stop(); }catch(e){} } var ring=document.getElementById('ring');
     if(ring){ ring.style.transitionDuration='.6s'; ring.style.transform='scale(1)'; }
     var rf=document.getElementById('rf'); if(rf) rf.textContent=opts.finTxt||t("Aquí","Aquí");
     var rs=document.getElementById('rs'); if(rs) rs.textContent='';
@@ -387,7 +410,10 @@ function breathRun(opts){
 }
 function ringHTML(inicial,verbo,size){
   var s=size?('width:'+size+'px;height:'+size+'px'):'';
-  return '<div class="ring-wrap"><div class="ring" id="ring" style="'+s+'"><div class="ri"><div>'+
+  var fig=!!window.RespiroAIS;
+  return '<div class="ring-wrap">'+(fig?'<div class="llave-fig" id="raFig"'+(size?' style="max-width:'+(size+40)+'px"':'')+'></div>'
+      +'<div class="fig-leg">'+t("🔵 el aire hace de cebo · 🟡 tu atención baja y se queda en la barriga","🔵 l'aire fa d'esquer · 🟡 la teva atenció baixa i es queda a la panxa")+'</div>':'')
+    +'<div class="ring'+(fig?' pill':'')+'" id="ring" style="'+(fig?'':s)+'"><div class="ri"><div>'+
     '<div class="rf" id="rf">'+esc(inicial||t("Prepárate","Prepara't"))+'</div><div class="rs" id="rs"></div></div></div></div>'+
     '<div class="rverb" id="rverb">'+esc(verbo||'')+'</div>'+
     (VOZ_OK?('<div style="text-align:center;margin-top:8px"><button type="button" class="link" id="vozBtn" onclick="toggleVoz()">'+vozLabel()+'</button></div>'):'')+
@@ -1117,8 +1143,8 @@ VIEWS.respira=function(){
      '</button><button class="btn ghost" id="r6" onclick="respStart(6,this)">'+t("6 respiraciones","6 respiracions")+'</button></div>';
   h+='<div class="ok-flash" id="okflash"></div>';
   h+='<div class="card" style="margin-top:16px"><h2><span class="e">🫃</span>'+t("Dónde va la atención","On va l'atenció")+'</h2><p>'+t(
-     'Mientras el círculo se abre y se cierra, tú <b>no cuidas el aire: cuidas dónde estás</b>. Y hoy estás en la barriga.',
-     "Mentre el cercle s'obre i es tanca, tu <b>no cuides l'aire: cuides on ets</b>. I avui ets a la panxa.")+'</p>'+
+     'Mientras el aire (la luz azul) entra y sale, tú <b>no cuidas el aire: cuidas dónde estás</b> (la luz amarilla). Y hoy estás en la barriga.',
+     "Mentre l'aire (la llum blava) entra i surt, tu <b>no cuides l'aire: cuides on ets</b> (la llum groga). I avui ets a la panxa.")+'</p>'+
      '<ol class="steps"><li>'+t("Nota la barriga <b>tal como está</b>, sin aflojarla a propósito.",
         "Nota la panxa <b>tal com està</b>, sense afluixar-la expressament.")+'</li>'+
      '<li>'+t("Cuando la cabeza se vaya (se irá), <b>no discutas</b>: vuelve a la barriga.",
