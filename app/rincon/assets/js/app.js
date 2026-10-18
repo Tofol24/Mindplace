@@ -60,6 +60,8 @@
         '<p><b>Primero tú.</b> Antes de jugar, respira una vez y nota dónde está tu cuerpo: tu peque aprende a estar con lo que siente viéndote a ti hacerlo, más que escuchando instrucciones.</p>' +
         '<p><b>Jugad también cuando todo va bien</b> (un ratito al día), no solo en mitad del enfado: así el rincón es un sitio para encontrarse, no un castigo ni un botón para «parar la rabieta».</p>' +
         '<p>No hace falta que se calme para que el juego haya servido. Si no quiere: «Te noto así… ¿quieres que esté contigo o prefieres un rato a solas?»</p>' +
+        '<p><b>El abrazo sentido, en vuestra manada.</b> Antes de abrazar a tu peque, respira y lleva la atención a tu barriga: así le enseñas que lo que siente, sea lo que sea, tiene sitio con vosotros.</p>' +
+        '<div data-vineta-abrazo></div>' +
       '</details>';
     $$(".gamecard", view).forEach(function (b) { b.addEventListener("click", function () { openGame(b.getAttribute("data-g")); }); });
     if (window.Aprens && Aprens.mountBar && !$("#aprensBar")) Aprens.mountBar();
