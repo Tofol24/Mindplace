@@ -215,12 +215,14 @@
   </div>
 
   <div class="card">
-    <div class="ch-tit">Tres vías para anclar la atención hacia dentro</div>
+    <div class="ch-tit">Cuatro vías para anclar la atención hacia dentro</div>
     <div class="ch-canales">
       <a class="ch-canal" href="../index.html#/tool/herramienta_diaria" target="_top"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="ch-go">Abrir →</span></a>
       <div class="ch-canal ch-act"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="ch-go ch-here">Estás aquí</span></div>
+      <a class="ch-canal" href="../index.html#/tool/ais_muscular" target="_top"><b>💪 Tensión muscular</b><span>ancla física · tensar y soltar</span><span class="ch-go">Abrir →</span></a>
       <a class="ch-canal" href="../index.html#/tool/protocolo_ais" target="_top"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="ch-go">Abrir →</span></a>
     </div>
+    <a class="ch-canal" href="../index.html#/tool/recorrido_tec" target="_top" style="margin-top:8px;display:block"><b>🧭 Mi recorrido · paso a paso</b><span>El mapa es un paso de la etapa «Aparecer»: tu recorrido te dice cuándo volver aquí y en qué orden.</span><span class="ch-go">Abrir →</span></a>
   </div>
 
   <footer>
@@ -313,9 +315,20 @@
     <p id="zIntro"></p>
   </div>
 
-  <!-- respiración + visualización -->
+  <!-- ① PARA (TEC · AIS en cuatro pasos: PARA · SIENTE · ACOMPAÑA · ACTÚA) -->
   <div class="card">
-    <h2><span class="ic">🌬️</span>Respira y mira la zona</h2>
+    <h2><span class="ic">✋</span>① Para</h2>
+    <p class="lead" style="margin-bottom:10px">Detén lo que estás haciendo un momento. «Un momento.» ¿Por qué vienes ahora?</p>
+    <div class="three" id="zMotivo">
+      <button onclick="setMotivo('verde',this)">🟢 Sin necesidad, por curiosidad</button>
+      <button onclick="setMotivo('rojo',this)">🔴 El cuerpo me ha avisado</button>
+    </div>
+    <p class="lead" id="zMotivoTxt" style="margin-top:8px"></p>
+  </div>
+
+  <!-- ② SIENTE: respiración + visualización -->
+  <div class="card">
+    <h2><span class="ic">🌬️</span>② Siente · respira y mira la zona</h2>
     <p class="lead">Deja que la atención descanse en esa parte del cuerpo mientras respiras. La imagen te marca el sitio; tú solo intenta notarlo.</p>
     <div class="breath-wrap">
       <div id="respiroBox"></div>
@@ -330,13 +343,27 @@
     <ol class="pasos" id="zPasos"></ol>
   </div>
 
-  <div class="quote frase-oro" id="zFrase" style="font-size:18px;text-align:center"></div>
+  <!-- ③ ACOMPAÑA: frase honesta -->
+  <div class="card">
+    <h2><span class="ic">🤍</span>③ Acompaña · la frase honesta</h2>
+    <p class="lead">Señala la zona con la mano y dite, con tono sereno, sin explicar el porqué:</p>
+    <div class="quote" id="zHonesta" style="font-size:18px;text-align:center"></div>
+    <div class="quote frase-oro" id="zFrase" style="font-size:16px;text-align:center"></div>
+  </div>
+
+  <!-- ④ ACTÚA: micro-acción con valor (cierra el ciclo) -->
+  <div class="card">
+    <h2><span class="ic">🎯</span>④ Actúa · vuelve con dirección</h2>
+    <p class="lead">Desde este espacio que has creado: ¿cuál es el paso más pequeño que tiene sentido para ti ahora? <i>¿Qué haría la persona que quiero ser?</i> Pequeño, posible ahora y no para quitarte lo que sientes.</p>
+    <input type="text" id="zAccion" maxlength="140" placeholder="Ej.: contestar ese mensaje con calma, salir a caminar 5 minutos…" style="width:100%;padding:11px 12px;border:1.6px solid var(--linia);border-radius:12px;font:inherit;background:var(--bg)">
+  </div>
 
   <!-- registro no evaluativo -->
   <div class="card">
     <h2><span class="ic">🪞</span>¿Qué has notado?</h2>
     <p class="lead">Sin buscar la respuesta «correcta». Marca lo que haya aparecido (o «nada», también vale).</p>
     <div class="chips" id="zChips"></div>
+    <p class="lead" id="zNadaTip" style="display:none;margin-top:8px">«Nada» también vale: la presencia actúa igual. Si te cuesta notar algo dentro, prueba antes con las <b>manos</b> o los <b>pies</b> (el contacto con el suelo, la temperatura de las palmas) y luego vuelve a la zona.</p>
 
     <div class="qblock" style="margin-top:18px">
       <div class="qtxt">¿Con qué intensidad?</div>
@@ -413,6 +440,8 @@
         <button onclick="setRecCurio('costo',this)">Me costó</button>
       </div>
     </div>
+    <label class="fld">Y ahora, ¿cuál es tu siguiente paso con valor?</label>
+    <input type="text" id="rAccion" maxlength="140" placeholder="Algo pequeño y posible ahora" style="width:100%;padding:11px 12px;border:1.6px solid var(--linia);border-radius:12px;font:inherit;background:var(--bg)">
     <label class="fld">Si quieres, una frase tuya (opcional)</label>
     <textarea id="rNota" rows="2" placeholder="Qué tal el viaje por dentro…"></textarea>
 
@@ -452,7 +481,7 @@ var ZONAS = {
       'Lleva la mirada (y luego el sentir) a tu garganta y a tu nuca.',
       '¿Hay aprieto, nudo, sequedad, calor, cosquilleo… o nada?',
       'Traga una vez, despacio, y nota todo el recorrido.',
-      'Afloja un milímetro la nuca, sin forzar nada.',
+      'Si algo se afloja solo, déjalo; si no, también está bien: no hace falta cambiarlo.',
       'Solo observa qué hay ahí ahora, sin cambiarlo.'
     ],
     frase:'No tengo que deshacer el nudo. Solo conocerlo.' },
@@ -527,6 +556,8 @@ function _mapaSaveZona(){
     cualidades: reg.cual.slice(),
     intensidad: reg.inten,
     curiosidad: reg.curio,
+    motivo: reg.motivo,
+    microAccion: (document.getElementById('zAccion').value||'').trim(),
     nota: n && n.value ? n.value.trim() : '',
     resumen: resumenZona()
   });
@@ -538,6 +569,7 @@ function _mapaSaveRecorrido(){
     recorrido:'cuello→pecho→barriga',
     zonaMasIntensa: rec.zona ? ZONAS[rec.zona].tit : null,
     curiosidad: rec.curio,
+    microAccion: (document.getElementById('rAccion').value||'').trim(),
     nota: n && n.value ? n.value.trim() : '',
     resumen: resumenRecorrido()
   });
@@ -547,6 +579,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return
 
 /* ════════════════════════ NAVEGACIÓN ════════════════════════ */
 function irPantalla(id){
+  if(id!=='s-zona' && brRun) pararBreath();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -581,7 +614,7 @@ function seleccionar(k){
 function abrirZona(k){
   zonaActual = k;
   var z = ZONAS[k];
-  reg = { cual:[], inten:null, curio:null };
+  reg = { cual:[], inten:null, curio:null, motivo:null };
 
   document.getElementById('zIcon').textContent = z.ic;
   document.getElementById('zTitulo').textContent = z.tit;
@@ -590,6 +623,11 @@ function abrirZona(k){
   document.getElementById('zIntro').textContent = z.intro;
   document.getElementById('zPasos').innerHTML = z.pasos.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
   document.getElementById('zFrase').textContent = '“'+z.frase+'”';
+  document.getElementById('zHonesta').textContent = '«No sé por qué, pero lo noto aquí, en '+({cuello:'el cuello',pecho:'el pecho',barriga:'la barriga'})[k]+'.»';
+  document.getElementById('zAccion').value = '';
+  document.getElementById('zMotivoTxt').textContent = '';
+  document.getElementById('zNadaTip').style.display = 'none';
+  document.querySelectorAll('#zMotivo button').forEach(function(b){b.classList.remove('sel');});
 
   // (La bola de respiración se sustituyó por la silueta compartida RespiroAIS;
   //  si quedara el orbe antiguo, se tiñe con el color de la zona.)
@@ -615,32 +653,41 @@ function toggleCual(btn,q){
   btn.classList.toggle('sel');
   var i=reg.cual.indexOf(q);
   if(i===-1){
-    if(q==='nada'){ reg.cual=['nada']; document.querySelectorAll('#zChips .chip').forEach(function(b){ if(b!==btn) b.classList.remove('sel'); }); }
+    if(q==='nada'){ document.getElementById('zNadaTip').style.display='block'; reg.cual=['nada']; document.querySelectorAll('#zChips .chip').forEach(function(b){ if(b!==btn) b.classList.remove('sel'); }); }
     else { reg.cual=reg.cual.filter(function(x){return x!=='nada';}); var nb=Array.prototype.find.call(document.querySelectorAll('#zChips .chip'),function(b){return b.textContent==='nada';}); if(nb) nb.classList.remove('sel'); reg.cual.push(q); }
   } else { reg.cual.splice(i,1); }
 }
+function setMotivo(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.motivo=v;
+  document.getElementById('zMotivoTxt').innerHTML = v==='verde'
+    ? 'Así se entrena: tu cuerpo aprende que tu atención también aparece cuando todo está bien.'
+    : 'Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma: así tu cuerpo no necesita alarmarse para que vengas.'; }
 function setInten(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.inten=v; }
 function setCurio(v,btn){ btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');}); btn.classList.add('sel'); reg.curio=v; }
 
 /* ════════════════════════ RESPIRACIÓN (orbe) ════════════════════════ */
 var brRun=false, activeRespiro=null;
 function toggleBreath(){ brRun?pararBreath():iniciarBreath(); }
+function montarFigura(run){
+  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS) return false;
+  // Silueta compartida, ritmo de referencia 4·2·6 (Protocolo ICE / resto de herramientas).
+  activeRespiro=RespiroAIS.mount(box,{
+    lang:'es', figure:'organism', showControl:false, autostart:!!run,
+    rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 },
+    labels:{ phase:{ inhale:'Inspira', anchor:'quédate', exhale:'Espira', pause:'pausa' },
+             hint:{ inhale:'deja la atención en la zona', anchor:'nota la zona', exhale:'suelta despacio', pause:'descansa un instante' } }
+  });
+  return true;
+}
 function iniciarBreath(){
   brRun=true;
   document.getElementById('btnBreath').textContent='Parar';
   var c=document.getElementById('brcap'); if(c) c.textContent='Respira a tu ritmo';
-  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
-  var box=document.getElementById('respiroBox'); if(!box||!window.RespiroAIS){ brRun=false; return; }
-  activeRespiro=RespiroAIS.mount(box,{
-    lang:'es', figure:'organism', showControl:false, autostart:true,
-    rhythm:{ inhale:4500, anchor:800, exhale:4500, pause:700 },
-    labels:{ phase:{ inhale:'Inspira', anchor:'quédate', exhale:'Espira', pause:'pausa' },
-             hint:{ inhale:'deja la atención en la zona', anchor:'nota la zona', exhale:'suelta despacio', pause:'descansa un instante' } }
-  });
+  if(!montarFigura(true)) brRun=false;
 }
 function pararBreath(){
   brRun=false;
-  if(activeRespiro){ activeRespiro.destroy(); activeRespiro=null; }
+  montarFigura(false);   // la silueta queda visible en reposo
   var b=document.getElementById('btnBreath'); if(b) b.textContent='Empezar a respirar';
   var c=document.getElementById('brcap'); if(c) c.textContent='Toca «Empezar» y respira a tu ritmo';
 }
@@ -669,9 +716,12 @@ function resumenZona(){
   L.push('MAPA DE ATENCIÓN INTERNA · APRENS · '+hoy());
   L.push('');
   L.push('Zona explorada: '+z.tit+' ('+z.sub+')');
+  if(reg.motivo) L.push('Por qué vine: '+(reg.motivo==='verde'?'🟢 sin necesidad (práctica en calma)':'🔴 el cuerpo me avisó'));
   L.push('Qué noté: '+(reg.cual.length?reg.cual.join(', '):'—'));
   L.push('Intensidad: '+(reg.inten?INTEN_TXT[reg.inten]:'—'));
   L.push('¿Curiosidad sin buscar el porqué?: '+(reg.curio?CURIO_TXT[reg.curio]:'—'));
+  var a=document.getElementById('zAccion').value.trim();
+  L.push('Micro-acción con valor: '+(a||'—'));
   var n=document.getElementById('zNota').value.trim();
   if(n){ L.push(''); L.push('Con mis palabras: '+n); }
   return L.join('\n');
@@ -692,7 +742,7 @@ function abrirRecorrido(){
       '<div class="quote frase-oro" style="font-size:15.5px">“'+z.frase+'”</div></div>';
   }).join('');
   document.querySelectorAll('#rZona button,#rCurio button').forEach(function(b){b.classList.remove('sel');});
-  document.getElementById('rNota').value='';
+  document.getElementById('rNota').value=''; document.getElementById('rAccion').value='';
   document.getElementById('msgBoxRec').textContent='';
   irPantalla('s-recorrido');
 }
@@ -705,6 +755,7 @@ function resumenRecorrido(){
   L.push('Recorrido completo: cuello → pecho → barriga');
   L.push('Donde noté más: '+(rec.zona?ZONAS[rec.zona].tit:'—'));
   L.push('¿Sostuve el recorrido con curiosidad?: '+(rec.curio?CURIO_TXT[rec.curio]:'—'));
+  L.push('Micro-acción con valor: '+((document.getElementById('rAccion').value||'').trim()||'—'));
   var n=document.getElementById('rNota').value.trim();
   if(n){ L.push(''); L.push('Con mis palabras: '+n); }
   return L.join('\n');
