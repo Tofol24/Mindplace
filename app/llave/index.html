@@ -216,6 +216,7 @@
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script src="../js/vineta-abrazo.js"></script>
+<script src="../js/vineta-honestidad.js"></script>
 </head>
 <body>
 <div class="top">
@@ -823,7 +824,8 @@ VIEWS.cierre=function(){
 
   h+='<div class="card"><h2><span class="e">💬</span>3 · '+t("Honestidad emocional","Honestedat emocional")+'</h2><p class="lead">'+t(
      'Decirle a tu pareja cómo estás. <b>No por qué estás así</b>: cómo estás. Son dos cosas distintas y solo una se puede decir con tono sereno.',
-     "Dir-li a la teva parella com estàs. <b>No per què estàs així</b>: com estàs. Són dues coses diferents i només una es pot dir amb to serè.")+'</p>';
+     "Dir-li a la teva parella com estàs. <b>No per què estàs així</b>: com estàs. Són dues coses diferents i només una es pot dir amb to serè.")+'</p>'+
+     '<div data-vineta-honestidad data-lang="'+LANG+'"></div>';
   h+='<label class="fld">'+t("¿Dónde lo notas?","On ho notes?")+'</label><div class="chips" id="cZona">'+
      HON_ZONAS.map(function(z){ return '<button type="button" class="chip" data-v="'+z[0]+'" onclick="honZona(this)">'+z[1]+' '+z[2][LANG][0]+'</button>'; }).join('')+'</div>';
   h+='<label class="fld">'+t("¿Cómo está eso? (textura, no motivo)","Com està això? (textura, no motiu)")+'</label><div class="chips" id="cText">'+

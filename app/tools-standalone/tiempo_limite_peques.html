@@ -98,6 +98,7 @@
 </style>
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-abrazo.js"></script>
+<script src="../js/vineta-honestidad.js"></script>
 </head>
 <body>
 
@@ -176,6 +177,7 @@ var T = {
         {t:"p", h:"Le pides algo y, pasado un rato, <b>no arranca</b>. <b>Antes de repetirlo, subir el tono o enfadarte</b> —eso son “cacahuetes para su mono”—, para y haz esto:"},
         {t:"list", items:["<b>Respira</b> y lleva la atención <b>hacia dentro</b>.","Nota la sensación que te ha aparecido (pecho o barriga) y <b>quédate ahí</b>."]},
         {t:"say", warm:true, who:"Con la mano donde lo notas, sintiéndolo de verdad", h:"“No sé por qué, pero ahora tengo una sensación aquí… ¿me das un abrazo?”"},
+        {t:"honestidad"},
         {t:"p", h:"Aunque por dentro te esté costando —porque su conducta te está enfadando—, sé capaz de <b>acercarte y abrazar</b>. Al hacerlo <b>te validas</b> y te das espacio delante de tu hija o hijo. Le dejas a tu cuerpo un mensaje claro: <i>“mi dolor nunca me va a alejar de ti”</i>."},
         {t:"note", e:"🫂", h:"Ese dolor puede ser incluso más intenso por su comportamiento. Compartirlo con el abrazo lo transforma: el dolor nos hace <b>cómplices</b>, no culpables."},
         {t:"p", h:"<b>Mientras abrazas</b>, mantén tu atención <b>donde notas la sensación</b>. Al terminar, con <b>tono sereno</b> y cerca de su oído, vuelve a pedirle la conducta:"},
@@ -293,6 +295,7 @@ var T = {
         {t:"p", h:"Li demanes una cosa i, passada una estona, <b>no engega</b>. <b>Abans de repetir-ho, apujar el to o enfadar-te</b> —això són “cacauets per al seu mono”—, atura’t i fes això:"},
         {t:"list", items:["<b>Respira</b> i porta l’atenció <b>cap endins</b>.","Nota la sensació que t’ha aparegut (pit o panxa) i <b>queda-t’hi</b>."]},
         {t:"say", warm:true, who:"Amb la mà on ho notes, sentint-ho de debò", h:"“No sé per què, però ara tinc una sensació aquí… em fas una abraçada?”"},
+        {t:"honestidad"},
         {t:"p", h:"Encara que per dins et costi —perquè la seva conducta t’està enfadant—, sigues capaç d’<b>acostar-te i abraçar</b>. En fer-ho <b>et valides</b> i et dones espai davant de la teva filla o fill. Li deixes al teu cos un missatge clar: <i>“el meu dolor mai no m’allunyarà de tu”</i>."},
         {t:"note", e:"🫂", h:"Aquest dolor pot ser fins i tot més intens pel seu comportament. Compartir-lo amb l’abraçada el transforma: el dolor ens fa <b>còmplices</b>, no culpables."},
         {t:"p", h:"<b>Mentre abraces</b>, mantén l’atenció <b>on notes la sensació</b>. En acabar, amb <b>to serè</b> i a prop de la seva orella, torna a demanar-li la conducta:"},
@@ -394,7 +397,8 @@ var LANG = "es";
 function esc(s){ return s; } // el contenido es de confianza (definido arriba)
 
 function blockHTML(b, warm){
-  if(b.t==="abrazo") return '<div data-vineta-abrazo></div>';   // viñeta compartida (js/vineta-abrazo.js)
+  if(b.t==="abrazo") return '<div data-vineta-abrazo></div>';
+  if(b.t==="honestidad") return '<div data-vineta-honestidad></div>';   // js/vineta-honestidad.js   // viñeta compartida (js/vineta-abrazo.js)
   if(b.t==="p") return '<p'+(b.lead?' class="lead"':'')+'>'+b.h+'</p>';
   if(b.t==="say") return '<div class="say'+(b.warm?' warm':'')+'">'+(b.who?'<span class="who">'+b.who+'</span>':'')+b.h+'</div>';
   if(b.t==="note") return '<div class="note"><span class="e">'+(b.e||"💡")+'</span><span>'+b.h+'</span></div>';

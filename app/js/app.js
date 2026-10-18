@@ -636,6 +636,7 @@
       ${aisNucleoHTML()}
       ${vinetaHTML()}
       ${abrazoHTML()}
+      ${honestidadHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
       ${cvHoyHTML()}
@@ -653,6 +654,7 @@
     montarNucleoAIS();
     montarVineta();
     montarAbrazo();
+    montarHonestidad();
   }
 
   // «Para · respira · vuelve»: la parada de pensamiento (TEC 11.2 §1) en tres
@@ -683,6 +685,26 @@
       ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
     </section>`;
   }
+  // «Honestidad emocional»: la frase honesta (TEC 8.6 y 9.6) en cinco viñetas —la
+  // campana del «¿por qué?», anclarse, «no sé por qué», compartir, atención amplia—.
+  function honestidadHTML(){
+    const byId = {}; (window.APRENS_TOOLS||[]).forEach(t=>{ byId[t.id]=t; });
+    const chips = ["honestidad_emocional","herramienta_diaria","tracker_tec"].map(id=>byId[id]).filter(Boolean)
+      .map(t=>`<a class="puerta-chip" href="#/tool/${t.id}">${t.emoji} ${t.nombre}</a>`).join("");
+    return `<section class="vineta-sec">
+      <div class="hub-sec"><span class="hub-sec-e">💬</span><span class="hub-sec-t">Honestidad emocional · no sé por qué, pero lo noto aquí</span></div>
+      <div class="hub-sec-d">La frase honesta, en cinco viñetas. <i>«No sé por qué, pero ahora noto una sensación aquí»</i>, con la mano señalando el lugar y un tono sereno: primero reconocer, después explicar.</div>
+      <div id="honestidadHub" style="margin-top:10px"></div>
+      ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
+    </section>`;
+  }
+  var hubHonestidad = null;
+  function pararHonestidad(){ if(hubHonestidad){ try{ hubHonestidad.destroy(); }catch(e){} hubHonestidad = null; } }
+  function montarHonestidad(){
+    pararHonestidad();
+    var box = document.getElementById("honestidadHub");
+    if(box && window.VinetaHonestidad){ hubHonestidad = VinetaHonestidad.mount(box, { lang:"es", titulo:"", pie:true }); }
+  }
   var hubAbrazo = null;
   function pararAbrazo(){ if(hubAbrazo){ try{ hubAbrazo.destroy(); }catch(e){} hubAbrazo = null; } }
   function montarAbrazo(){
@@ -702,7 +724,7 @@
 
   // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
   var hubRespiro = null;
-  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); }
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); pararHonestidad(); }
   function montarNucleoAIS(){
     pararNucleoAIS();
     var box = document.getElementById("aisNucleoBox");
