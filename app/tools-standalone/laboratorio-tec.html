@@ -186,6 +186,7 @@
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
 </style>
+<script src="../js/respiro-ais.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -853,10 +854,13 @@
 
   /* ---------- Práctica AIS guiada ---------- */
   (function(){
-    var box = $("#aisBox"), st, timer = null, tick = null;
+    var box = $("#aisBox"), st, timer = null, tick = null, respiro = null;
     var ZONAS = ["Cuello / garganta","Pecho","Barriga","Hombros","Manos","Pies"];
     function reset(){ st = {step:0, tipo:null, zona:null, int:5, dur:40, accion:""}; clear(); render(); }
-    function clear(){ if(timer){clearTimeout(timer);timer=null;} if(tick){clearInterval(tick);tick=null;} }
+    function clear(){
+      if(timer){clearTimeout(timer);timer=null;} if(tick){clearInterval(tick);tick=null;}
+      if(respiro){ try{ respiro.destroy(); }catch(e){} respiro = null; }
+    }
     function stepper(n){ var s='<div class="stepper">'; for(var i=0;i<6;i++) s+='<i class="'+(i<=n?'on':'')+'"></i>'; return s+'</div>'; }
     function render(){
       clear();
@@ -890,14 +894,22 @@
         return;
       }
       if(st.step===3){
-        h += '<p class="big">Respira hacia '+esc(st.zona.toLowerCase())+'</p><p class="center small muted">Inhala 4 · ancla 2 · exhala 6 «como con una pajita». No busques relajarte: sigue el aire con tu atención. <b>El aire es el cebo.</b></p>'
-          + '<div class="breath"><div class="ring"></div><div class="ball" id="ball"></div><div class="lbl" id="bl">Inhala</div></div><p class="center small" id="bt"></p>'
+        h += '<p class="big">Respira hacia '+esc(st.zona.toLowerCase())+'</p><p class="center small muted">Inhala 4 · ancla 2 · exhala 6 «como con una pajita». No busques relajarte: sigue el aire con tu atención.</p>'
+          + '<div id="aisFig" style="max-width:300px;margin:8px auto 0"></div>'
+          + '<p class="center small" id="bt"></p>'
           + '<div class="row" style="justify-content:center"><button class="btn ghost" id="aisSkip" type="button">Seguir →</button></div>';
         box.innerHTML = h;
-        var phases = [["Inhala",4000,1.9],["Ancla",2000,1.9],["Exhala",6000,1],["Pausa",1500,1]], pi = 0, left = st.dur;
-        var ball = $("#ball"), bl = $("#bl"), bt = $("#bt");
-        function ph(){ var p = phases[pi%4]; ball.style.transitionDuration = (p[1]/1000)+"s"; ball.style.transform = "scale("+p[2]+")"; bl.textContent = p[0]; timer = setTimeout(function(){ pi++; ph(); }, p[1]); }
-        ph();
+        var left = st.dur, bt = $("#bt");
+        // Silueta compartida de dos luces (js/respiro-ais.js), ritmo 4·2·6 del Protocolo ICE.
+        if(window.RespiroAIS){
+          respiro = RespiroAIS.mount($("#aisFig"), { lang:"es", figure:"organism", showControl:false, showZones:true, autostart:true,
+            rhythm:{ inhale:4000, anchor:2000, exhale:6000, pause:1500 } });
+        } else {
+          // Sin el componente (p. ej. archivo abierto suelto): bola de respiración simple.
+          $("#aisFig").innerHTML = '<div class="breath"><div class="ring"></div><div class="ball" id="ball"></div><div class="lbl" id="bl">Inhala</div></div>';
+          var phases = [["Inhala",4000,1.9],["Ancla",2000,1.9],["Exhala",6000,1],["Pausa",1500,1]], pi = 0, ball = $("#ball"), bl = $("#bl");
+          (function ph(){ var p = phases[pi%4]; ball.style.transitionDuration = (p[1]/1000)+"s"; ball.style.transform = "scale("+p[2]+")"; bl.textContent = p[0]; timer = setTimeout(function(){ pi++; ph(); }, p[1]); })();
+        }
         var sub = ["Sostén. No lo cambies. Míralo.","Es activación legítima de tu cuerpo.","Solo acompáñalo."], si=0;
         bt.textContent = left+" s · "+sub[0];
         tick = setInterval(function(){ left--; if(left%7===0) si++; bt.textContent = Math.max(left,0)+" s · "+sub[si%3]; if(left<=0){ clear(); st.step=4; render(); } }, 1000);
