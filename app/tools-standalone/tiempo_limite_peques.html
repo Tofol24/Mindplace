@@ -96,6 +96,8 @@
 .phero{margin:0 0 16px;border-radius:18px;overflow:hidden;box-shadow:0 12px 28px -14px rgba(74,63,48,.4)}
 .phero img{display:block;width:100%;height:210px;object-fit:cover;object-position:center 32%}
 </style>
+<script src="../js/respiro-ais.js"></script>
+<script src="../js/vineta-abrazo.js"></script>
 </head>
 <body>
 
@@ -211,7 +213,8 @@ var T = {
        blocks:[
         {t:"p", h:"Es normal que aparezcan rabia, gritos o incluso insultos cuando aplicas la consecuencia. El objetivo es que aprenda a <b>convivir con esa emoción</b> sin que tú se la calmes discutiendo, gritando o aflojando."},
         {t:"say", who:"Frase compasiva", h:"“Entiendo que estás enfadado. Entiendo que tienes mucho dolor dentro para decirme esto.”"},
-        {t:"p", h:"Cuando haya pasado, <b>vuelve a acercarte sin reproches</b>: un rato juntos, un juego, un abrazo sentido. La consecuencia se mantiene y el vínculo sigue disponible."}
+        {t:"p", h:"Cuando haya pasado, <b>vuelve a acercarte sin reproches</b>: un rato juntos, un juego, un abrazo sentido. La consecuencia se mantiene y el vínculo sigue disponible."},
+        {t:"abrazo"}
        ]},
       {n:"5", tit:"Límite ante el comportamiento irrespetuoso",
        blocks:[
@@ -327,7 +330,8 @@ var T = {
        blocks:[
         {t:"p", h:"És normal que apareguin ràbia, crits o fins i tot insults quan apliques la conseqüència. L’objectiu és que aprengui a <b>conviure amb aquesta emoció</b> sense que tu l’hi calmis discutint, cridant o afluixant."},
         {t:"say", who:"Frase compassiva", h:"“Entenc que estàs enfadat. Entenc que tens molt de dolor dins per dir-me això.”"},
-        {t:"p", h:"Quan hagi passat, <b>torna a acostar-te sense retrets</b>: una estona junts, un joc, una abraçada sentida. La conseqüència es manté i el vincle continua disponible."}
+        {t:"p", h:"Quan hagi passat, <b>torna a acostar-te sense retrets</b>: una estona junts, un joc, una abraçada sentida. La conseqüència es manté i el vincle continua disponible."},
+        {t:"abrazo"}
        ]},
       {n:"5", tit:"Límit davant el comportament irrespectuós",
        blocks:[
@@ -390,6 +394,7 @@ var LANG = "es";
 function esc(s){ return s; } // el contenido es de confianza (definido arriba)
 
 function blockHTML(b, warm){
+  if(b.t==="abrazo") return '<div data-vineta-abrazo></div>';   // viñeta compartida (js/vineta-abrazo.js)
   if(b.t==="p") return '<p'+(b.lead?' class="lead"':'')+'>'+b.h+'</p>';
   if(b.t==="say") return '<div class="say'+(b.warm?' warm':'')+'">'+(b.who?'<span class="who">'+b.who+'</span>':'')+b.h+'</div>';
   if(b.t==="note") return '<div class="note"><span class="e">'+(b.e||"💡")+'</span><span>'+b.h+'</span></div>';

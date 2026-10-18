@@ -635,6 +635,7 @@
       ${porqueHTML()}
       ${aisNucleoHTML()}
       ${vinetaHTML()}
+      ${abrazoHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
       ${cvHoyHTML()}
@@ -651,6 +652,7 @@
     montarIndice();
     montarNucleoAIS();
     montarVineta();
+    montarAbrazo();
   }
 
   // «Para · respira · vuelve»: la parada de pensamiento (TEC 11.2 §1) en tres
@@ -667,6 +669,27 @@
       ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
     </section>`;
   }
+  // «Abrazo sentido»: la herramienta nuclear 4 (TEC 9.5) en cuatro viñetas —respira,
+  // ánclate en la barriga, abraza a los tuyos, todo cabe en la manada—. Componente
+  // compartido (js/vineta-abrazo.js), el mismo que usan las herramientas standalone.
+  function abrazoHTML(){
+    const byId = {}; (window.APRENS_TOOLS||[]).forEach(t=>{ byId[t.id]=t; });
+    const chips = ["herramienta_diaria","tracker_tec","ais_basicas"].map(id=>byId[id]).filter(Boolean)
+      .map(t=>`<a class="puerta-chip" href="#/tool/${t.id}">${t.emoji} ${t.nombre}</a>`).join("");
+    return `<section class="vineta-sec">
+      <div class="hub-sec"><span class="hub-sec-e">🤍</span><span class="hub-sec-t">Abrazo sentido · respira, ánclate y abraza</span></div>
+      <div class="hub-sec-d">El abrazo sentido, en cuatro viñetas. <i>«Al llegar a casa o al reencontrarte con alguien querido: respira, identifica tu sensación interna durante unos segundos y desde ahí abraza con presencia. No es un abrazo automático.»</i></div>
+      <div id="abrazoHub" style="margin-top:10px"></div>
+      ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
+    </section>`;
+  }
+  var hubAbrazo = null;
+  function pararAbrazo(){ if(hubAbrazo){ try{ hubAbrazo.destroy(); }catch(e){} hubAbrazo = null; } }
+  function montarAbrazo(){
+    pararAbrazo();
+    var box = document.getElementById("abrazoHub");
+    if(box && window.VinetaAbrazo){ hubAbrazo = VinetaAbrazo.mount(box, { lang:"es", titulo:"", pie:true }); }
+  }
   var hubVineta = null;
   function pararVineta(){ if(hubVineta){ try{ hubVineta.destroy(); }catch(e){} hubVineta = null; } }
   function montarVineta(){
@@ -679,7 +702,7 @@
 
   // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
   var hubRespiro = null;
-  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); }
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); }
   function montarNucleoAIS(){
     pararNucleoAIS();
     var box = document.getElementById("aisNucleoBox");
