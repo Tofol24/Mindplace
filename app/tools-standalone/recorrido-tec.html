@@ -139,7 +139,14 @@
   .toast.on{opacity:1;}
   .safety{font-size:12.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
+  details.vin{margin-top:8px;}
+  details.vin summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;list-style:none;display:inline-flex;align-items:center;gap:6px;background:var(--acc-soft);border-radius:18px;padding:6px 12px;}
+  details.vin summary::-webkit-details-marker{display:none;}
+  details.vin[open] summary{margin-bottom:8px;}
+  .vinBox{--azul:#3f6b74;--azulLt:#dde7e7;--fondo:#f3eee4;}
 </style>
+<script src="../js/respiro-ais.js"></script>
+<script src="../js/vineta-atencion.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -272,7 +279,7 @@
     { n:"Etapa 1", t:"Entender", w:"Semana 1", col:"var(--e1)", min:5,
       d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
       frase:"«La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",
-      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", go:"sec:sec-para-respira-vuelve" },
+      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true },
       pasos:[
         ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce"],
         ["La manada: por qué respiras", "tool:la_manada"],
@@ -409,19 +416,22 @@
 
     var sp = siguientePaso(), items = [], tE = S.tareas[S.etapa] || {}, hoyP = -1;
     for(var k in tE){ if(tE[k]===HOY) hoyP = Math.max(hoyP, +k); }
-    items.push({k:"m", w:"☀️ Mañana", t:e.practica.t, d:e.practica.d, go:e.practica.go});
+    items.push({k:"m", w:"☀️ Mañana", t:e.practica.t, d:e.practica.d, go:e.practica.go, vin:e.practica.vin});
     // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
     if(hoyP >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(hoyP+1)+" de "+e.pasos.length, t:e.pasos[hoyP][0], hecho:true,
       d: sp >= 0 ? 'Hecho. Mañana te espera el siguiente. <button class="tl" type="button" id="adelantar">¿Te apetece adelantarlo? <span class="ar">→</span></button>' : 'Hecho. Era el último paso de esta etapa.'});
     else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length, t:e.pasos[sp][0], paso:e.pasos[sp]});
     else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
-    items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías."});
+    items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true});
     items.push({k:"n", w:"🌙 Tarde o noche", t: S.etapa===0 ? "Respira 1 minuto antes de dormir" : "Práctica programada (3–5 min)", d:"Al llegar a casa o antes de dormir. También si el día ha ido bien.", go:e.practica.go});
-    var done = 0;
+    var done = 0, vinAbierta = false;
     $("#hoyList").innerHTML = items.map(function(it){
       var ok = it.hecho || (it.k==="t" ? false : !!d[it.k]);
       if(ok) done++;
       var lk = it.paso ? pasoHTML(it.paso) : (it.go ? link(it.go, "Abrir") : "");
+      // Parada de pensamiento: las viñetas compartidas «para · respira · vuelve» (abiertas en la etapa 1).
+      var abrir = S.etapa===1 && !ok && !vinAbierta; if(it.vin && abrir) vinAbierta = true;
+      if(it.vin && window.VinetaAtencion) lk += '<details class="vin"'+(abrir ? ' open' : '')+'><summary>🎞️ Ver cómo se hace</summary><div class="vinBox"></div></details>';
       return '<li class="'+(ok?'done':'')+'"><button class="chk" type="button" data-k="'+it.k+'" '+(it.k==="t"&&sp>=0&&!it.hecho?'data-paso="'+sp+'"':'')+(it.hecho?' disabled':'')+' aria-label="Marcar como hecho: '+esc(it.t)+'" aria-pressed="'+ok+'">'+(ok?'✓':'')+'</button>'
         + '<div class="tb"><div class="tw">'+it.w+'</div><div class="tt">'+esc(it.t)+'</div>'+(it.d?'<div class="td">'+it.d+'</div>':'')+(lk?'<div>'+lk+'</div>':'')+'</div></li>';
     }).join("");
@@ -435,11 +445,24 @@
       else { d[k] = d[k] ? 0 : 1; }
       save(); renderAll();
     };});
+    montarVinetas();
     var ad = $("#adelantar"); if(ad) ad.onclick = function(){ show("v-plan", true); };
     renderCierre();
     $("#hoyFrase").innerHTML = e.frase;
   }
 
+  var vinetas = [];
+  function montarVinetas(){
+    vinetas.forEach(function(v){ try{ v.destroy(); }catch(e){} }); vinetas = [];
+    $$("#hoyList details.vin").forEach(function(det){
+      function mount(){
+        var box = det.querySelector(".vinBox");
+        if(!det.open || box.childNodes.length) return;
+        vinetas.push(VinetaAtencion.mount(box, { silueta:true, titulo:"", pie:true, rhythm:{inhale:4000, anchor:2000, exhale:6000, pause:1500} }));
+      }
+      det.addEventListener("toggle", mount); mount();
+    });
+  }
   function stepper(id, val){ return '<span class="step"><button type="button" data-st="'+id+'" data-d="-1" aria-label="Menos">−</button><span id="'+id+'">'+val+'</span><button type="button" data-st="'+id+'" data-d="1" aria-label="Más">+</button></span>'; }
   function renderCierre(){
     var d = dia(), e = S.etapa;
