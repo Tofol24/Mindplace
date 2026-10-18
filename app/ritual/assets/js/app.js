@@ -38,7 +38,7 @@
     "Gracias por respetar el momento.",
     "Un ratito de calma también cuenta.",
     "Hoy se ha escuchado un poco por dentro.",
-    "La calma se entrena, día a día.",
+    "Mirar hacia dentro se entrena, día a día.",
     "Habéis sostenido el momento con serenidad."
   ];
   function confeti() {
@@ -144,7 +144,7 @@
         st.classList.toggle("on", !was);
         done += was ? -1 : 1;
         var note = $("#gNote");
-        if (done >= GROUND.length && note) { note.textContent = "Los cinco sentidos, de vuelta al presente. Bien acompañado."; }
+        if (done >= GROUND.length && note) { note.textContent = "Los cinco sentidos, de vuelta al presente. Bien acompañado. Ahora, volved juntos a lo que estabais haciendo."; }
         else if (note) { note.textContent = done > 0 ? done + " de 5" : ""; }
       });
     });

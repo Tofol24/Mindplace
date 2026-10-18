@@ -200,6 +200,9 @@ let activIni=6, activFin=6;
 let grupoIdx=0, fase="idle";           // idle | tensa | suelta | listo
 let hechos=[false,false,false,false,false];
 let zonaMasTension="";
+let motivo="";          // 'verde' (práctica en calma, programada) | 'rojo' (el cuerpo avisó)
+let microAccion="";     // ④ Actúa: micro-acción con valor al cerrar
+function escH(t){return String(t==null?"":t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 let tTimer=null;
 const app=document.getElementById("app");
 
@@ -270,6 +273,15 @@ function intro(){
       puede pasar de <b>tensión a distensión</b>. Así le enseñas que el entorno no siempre es amenaza y evitas
       que la tensión se acumule (contracturas, cansancio).<br><br>
       Es <b>AIS a nivel muscular</b>: llevar la atención interna sensorial al <b>contraste</b>, con curiosidad.
+      No practicas para obligarte a estar relajado/a: si el cuerpo se suelta, es un efecto secundario. Lo que entrenas es <b>notar y quedarte</b>.
+    </div>
+    <div class="card">
+      <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin-bottom:10px">¿Por qué vienes ahora?</div>
+      <div class="opts">
+        <button class="opt ${motivo==='verde'?'sel':''}" onclick="setMotivo('verde')"><span class="em">🟢</span>Sin necesidad: es mi momento</button>
+        <button class="opt ${motivo==='rojo'?'sel':''}" onclick="setMotivo('rojo')"><span class="em">🔴</span>El cuerpo me ha avisado</button>
+      </div>
+      ${motivo?`<div style="text-align:center;font-size:12.5px;color:var(--gris);margin-top:6px">${motivo==='verde'?'Venir sin necesidad es lo que más enseña a tu cuerpo: no hace falta alarmarse para que vengas.':'Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma: así tu cuerpo no necesita alarmarse para que vengas.'}</div>`:''}
     </div>
     <div class="card">
       <div class="scale-em">${emojiNivel(activIni)}</div>
@@ -281,6 +293,7 @@ function intro(){
     <button class="btn big" onclick="empezar()">Empezar el recorrido →</button>
     <div style="text-align:center;margin-top:8px;font-size:12.5px;color:var(--gris)">Busca un sitio tranquilo. Siéntate o túmbate. ~5 min.</div>`;
 }
+function setMotivo(k){ motivo=(motivo===k?"":k); render(); }
 function setIni(v){activIni=+v;const t=document.getElementById("tv");if(!t)return;t.textContent=v;t.style.color=colorNivel(+v);const em=document.querySelector('.scale-em');if(em)em.textContent=emojiNivel(+v);}
 function empezar(){vista="recorrido";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];render();scrollTo(0,0);}
 
@@ -379,6 +392,13 @@ function cierre(){
       <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin-bottom:10px">¿Qué grupo llevaba más tensión? <span style="font-weight:400;color:var(--gris)">· opcional</span></div>
       <div class="opts">${opts}</div>
     </div>
+    <div class="card">
+      <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin-bottom:6px">Acompaña</div>
+      <div class="frase" style="margin-top:0">«No sé por qué, pero lo noto aquí.»</div>
+      <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin:14px 0 6px">Y ahora, vuelve: ¿qué haría la persona que quiero ser?</div>
+      <div style="text-align:center;font-size:12.5px;color:var(--gris);margin-bottom:8px">Un paso pequeño, posible ahora y no para quitarte lo que sientes.</div>
+      <input type="text" id="microM" maxlength="140" value="${escH(microAccion)}" oninput="microAccion=this.value" placeholder="Ej.: volver a la tarea, salir a caminar 5 minutos…" style="width:100%;padding:11px 12px;border:2px solid #E3EAF3;border-radius:12px;font:inherit;font-size:14px">
+    </div>
     <button class="btn big green" onclick="verResumen()">Ver cómo ha ido →</button>
     <div style="text-align:center;margin-top:8px"><button class="btn mini" onclick="vista='recorrido';render();scrollTo(0,0)">← Seguir el recorrido</button></div>`;
 }
@@ -397,12 +417,15 @@ function verResumen(){
     "Activación antes: "+activIni+"/10","Activación después: "+activFin+"/10",
     "Grupos trabajados: "+nHechos+"/5"+(listaHechos?" ("+listaHechos+")":"")];
   if(zonaNom)L.push("Más tensión en: "+zonaNom);
+  if(motivo)L.push("Por qué vine: "+(motivo==='verde'?'🟢 sin necesidad (práctica en calma)':'🔴 el cuerpo me avisó'));
+  if(microAccion.trim())L.push("Micro-acción con valor: "+microAccion.trim());
   L.push("","(Enviado desde mi práctica de tensión y distensión)");
   const msg=L.join("\n");
 
   window._aprensRec={ id:"aim"+Date.now(), date:new Date().toISOString().slice(0,10), ts:Date.now(),
     activacion_antes:activIni, activacion_despues:activFin, baja:diff,
-    grupos:nHechos, grupos_lista:listaHechos, zona_mas_tension:zonaMasTension||"" };
+    grupos:nHechos, grupos_lista:listaHechos, zona_mas_tension:zonaMasTension||"",
+    motivo:motivo||"", microaccion:microAccion.trim() };
   if(window.Aprens) Aprens.mountBar();
 
   // TEC: lo que se entrena es estar con la tensión sin pelearse con ella; el número es orientativo.
@@ -420,6 +443,7 @@ function verResumen(){
       <div style="font-size:12.5px;opacity:.85;margin-top:12px">${nHechos}/5 grupos · ${zonaNom?('más tensión: '+zonaNom):'recorrido muscular'}</div>
     </div>
     <p class="res-msg">${msgUp}</p>
+    <p class="res-msg" style="font-weight:600">${microAccion.trim()?'Ahora, a tu paso: «'+escH(microAccion.trim())+'».':'Ahora vuelve a lo que estabas haciendo, con presencia.'}</p>
     <div class="card">
       <div class="aviso"><b>⏱️ ¿Cuándo enviármelo?</b> Practícala a horas fijas (por ejemplo, mañana y noche) aunque estés bien. Y si la usas ante una situación que te activa, <b>mándamela en ese momento</b>: así vemos qué situaciones tensan tu cuerpo y cómo responde.</div>
       <div class="acc">
@@ -432,7 +456,7 @@ function verResumen(){
     <div class="frase">«No lucho con la tensión: la escucho y le enseño a soltar.»<br>Practícala también en calma: así tu cuerpo la tiene lista cuando el entorno aprieta.</div>`;
   scrollTo(0,0);
 }
-function reiniciar(){vista="intro";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];activFin=activIni;zonaMasTension="";render();scrollTo(0,0);}
+function reiniciar(){vista="intro";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];activFin=activIni;zonaMasTension="";microAccion="";motivo="";render();scrollTo(0,0);}
 
 function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
 function copiar(btn){

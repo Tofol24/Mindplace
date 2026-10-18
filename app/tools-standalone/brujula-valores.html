@@ -150,7 +150,10 @@ const MONO_MAP={}; MONO.forEach(m=>MONO_MAP[m.k]=m);
 let vista="intro", paso=0;
 // resp[areaId] = {imp:1-10, con:1-10, mono:''|'lado'|'delante'|'atras'|'conduce', valor:string, na:bool}
 let resp={};
-function resetResp(){ resp={}; AREAS.forEach(a=>resp[a.id]={imp:5,con:5,mono:'',valor:'',na:false}); }
+function resetResp(){ resp={}; AREAS.forEach(a=>resp[a.id]={imp:5,con:5,mono:'',valor:'',na:false}); pasoValor=''; }
+// Paso con valor al cerrar (aditivo: se añade al texto y al registro como paso_valor)
+let pasoValor='';
+function setPasoValor(v){ pasoValor=v; if(window._aprensRec) window._aprensRec.paso_valor=v; const b=document.getElementById('msgBox'); if(b&&vista==='resultado'){ const c=calcular(); b.textContent=generarTexto(c,nivelTotal(c.totDisc,c.nAreas)); } }
 resetResp();
 
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -236,7 +239,7 @@ function render(){
         <div class="ctit" style="color:var(--verde)">🧭 Qué entrenas aquí</div>
         <div style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#444;line-height:1.7">
           <span style="display:inline-flex;align-items:center;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:700;background:var(--verdeLt);color:var(--verde);flex-shrink:0">C · Continuidad</span>
-          <span>Esta brújula trabaja tu <strong>Continuidad</strong>: la coherencia entre lo que de verdad te importa y lo que haces. Ver esa distancia es el primer paso para sostener, semana a semana, una conducta fiel a tus valores.</span>
+          <span>Esta brújula mira tu <strong>conducta con valor</strong>: la coherencia entre lo que de verdad te importa y la forma en que estás en cada área. Sostenerla semana a semana se apoya en tu <strong>Continuidad</strong> (C↑): mantener la atención en lo que importa aunque haya malestar. Ver la distancia es el primer paso; el segundo es un paso pequeño.</span>
         </div>
       </div>
       <div class="card">
@@ -299,7 +302,7 @@ function render(){
       importancia:c.totImp, consistencia:c.totCon, areas:c.nAreas,
       cercania_media:cercMedia, C:cercMedia,
       mono_lado:md.lado, mono_delante:md.delante, mono_atras:md.atras, mono_conduce:md.conduce,
-      ramas_firmes:firmes,
+      ramas_firmes:firmes, paso_valor:pasoValor,
       focos:c.filas.filter(function(f){return !f.na&&f.disc>=6;}).map(function(f){return f.a.nom+" ("+f.disc+")";}).join("; ") };
     if(window.Aprens) Aprens.mountBar();
     const filas=c.filas.map(f=>{
@@ -347,12 +350,17 @@ function render(){
       <div class="card">
         <div class="ctit">Tu mapa por áreas</div>
         <table class="t"><tr><th style="text-align:left">Área</th><th>Importa</th><th>Cerca</th><th>Distancia</th></tr>${filas}</table>
-        <div style="font-size:11.5px;color:var(--gris);margin-top:12px;line-height:1.6">La <strong>distancia</strong> es cuánto la importancia supera a lo que has hecho esta semana. Cuanto mayor, más lejos están tus acciones de lo que valoras en esa área.</div>
+        <div style="font-size:11.5px;color:var(--gris);margin-top:12px;line-height:1.6">La <strong>distancia</strong> es cuánto la importancia supera a tu cercanía de esta semana (la forma en que has estado ahí). Cuanto mayor, más lejos está tu forma de estar de lo que valoras en esa área.</div>
       </div>
       <div class="card">
         <div class="ctit">Lectura</div>
         ${interp}
         <div style="font-size:11.5px;color:var(--gris);font-style:italic;margin-top:6px">Esta lectura es orientativa y no sustituye el trabajo con tu psicólogo/a. Es el punto de partida de la conversación, no una conclusión.</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--verde)">
+        <div class="ctit" style="color:var(--verde)">🎯 Y ahora, un paso</div>
+        <div style="font-size:13.5px;color:#444;line-height:1.7">Desde lo que acabas de ver: ¿cuál es el <strong>paso más pequeño</strong> que puedes dar hoy hacia ${ (focos[0]||c.filas.filter(f=>!f.na).sort((x,y)=>y.disc-x.disc)[0]) ? 'el área de <strong>'+esc((focos[0]||c.filas.filter(f=>!f.na).sort((x,y)=>y.disc-x.disc)[0]).a.nom)+'</strong>' : 'un área que te importe' }? <i>¿Qué haría la persona que quiero ser?</i> Pequeño, posible ahora y no para quitarte lo que sientes: la conducta valiosa no espera a la emoción correcta.</div>
+        <textarea class="valor-in" id="pasoValor" style="margin-top:10px" placeholder="p. ej. escribir hoy a mi hermana, aunque me dé apuro" oninput="setPasoValor(this.value)">${esc(pasoValor)}</textarea>
       </div>
       <div class="card">
         <div class="ctit">Enviar a tu psicólogo/a</div>
@@ -391,6 +399,7 @@ function generarTexto(c,nv){
   });
   const focos=c.filas.filter(f=>!f.na&&f.disc>=6).sort((x,y)=>y.disc-x.disc);
   if(focos.length){ t+="\nÁreas de mayor distancia: "+focos.map(f=>f.a.nom+" ("+f.disc+")").join(", ")+"\n"; }
+  if(pasoValor.trim()){ t+="\nMi siguiente paso con valor: «"+pasoValor.trim()+"»\n"; }
   t+="\n— Generado con la Brújula de Valores APRENS. Instrumento de apoyo, no sustituye la valoración clínica.";
   return t;
 }

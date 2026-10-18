@@ -154,7 +154,7 @@
           <p class="lead">El «mono» es tu parte emocional, tu niño/a interior. Lo que cambia no es la emoción, sino <b>cómo la tratas</b>:</p>
           <div class="gal" data-galeria></div>
           <button class="btn" data-go="s-escribir">Empezar</button>
-          <p class="aviso">No se guarda nada ni se envía a ningún sitio: todo ocurre en tu móvil.</p>
+          <p class="aviso">Nada se envía a ningún servidor: lo que guardes se queda en tu móvil.</p>
         </div>
       </section>
 
@@ -192,6 +192,7 @@
           <h3>Cómo llevarlo a tu lado · AIS en 4 pasos</h3>
           <p class="lead">El AIS es la forma concreta de sentarte junto al mono:</p>
           <ol class="pasos" data-res-pasos></ol>
+          <p class="lead">Al acompañar, señala la zona y dite, sin explicar el porqué: <b>«No sé por qué, pero lo noto aquí.»</b> Si no notas nada, también vale: apoya la atención en las manos o en los pies.</p>
         </div>
         <div class="card">
           <h3>Tu herramienta de esta vez</h3>
@@ -202,7 +203,7 @@
         </div>
         <div class="card">
           <h3>Y un paso pequeño con valor</h3>
-          <p class="lead">Algo mínimo, en tu dirección, mientras el mono va a tu lado:</p>
+          <p class="lead">Algo mínimo, en tu dirección, mientras el mono va a tu lado: <i>¿qué haría la persona que quiero ser?</i></p>
           <div class="chips" data-micro-chips></div>
         </div>
         <div class="card">
@@ -225,6 +226,7 @@
       <div class="dm-footer">
         <div><span class="logo">APRENS</span> · Psicología (TEC / AIS / ACT)</div>
         <div>Una herramienta de acompañamiento, no un diagnóstico.</div>
+        <div>Si sientes que puedes hacerte daño o hacer daño a alguien, contacta ya con tu psicólogo/a o con el 112.</div>
       </div>
     </div>`;
 

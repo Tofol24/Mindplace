@@ -126,11 +126,6 @@ section{position:relative;}
 /* ---------- Parada + respiración ---------- */
 .band-calma{background:linear-gradient(170deg,#E3E4F0,#EAE6F0);}
 .respira{text-align:center; max-width:620px; margin:0 auto;}
-.breath{width:150px; height:150px; border-radius:50%; margin:8px auto 20px; display:grid; place-items:center;
-  background:radial-gradient(circle at 40% 35%,#8ea0c4,#5b6ea0); color:#fff; box-shadow:0 14px 40px -14px rgba(65,79,130,.6); transition:transform .2s;}
-.breath.run{animation:breathe 11s ease-in-out infinite;}
-.breath-word{font-family:var(--serif); font-size:19px; letter-spacing:.02em;}
-@keyframes breathe{0%{transform:scale(.72);}18%{transform:scale(1.12);}42%{transform:scale(1.12);}64%{transform:scale(.72);}100%{transform:scale(.72);}}
 .pasos-resp{max-width:34ch; margin:22px auto 0; text-align:left; padding-left:20px; color:var(--noche-soft);}
 .pasos-resp li{margin-bottom:7px;}
 .pregunta{margin-top:26px; font-size:16px; color:var(--noche);}
@@ -170,7 +165,7 @@ section{position:relative;}
 .reveal.in{opacity:1; transform:none;}
 @media (prefers-reduced-motion:reduce){
   .reveal{opacity:1; transform:none; transition:none;}
-  .hero-sky .star,.breath.run{animation:none;}
+  .hero-sky .star{animation:none;}
   html{scroll-behavior:auto;}
 }
 

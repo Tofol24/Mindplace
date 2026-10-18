@@ -150,17 +150,19 @@ const I18N={
    nivells:[["😌","Tranquilo"],["🙂","Un poco"],["😐","Activado"],["😠","Muy activado"],["😡","Al límite"]],
    paso:{respira:{ico:"🫁",tit:"Para y respira",sub:"Respira con las dos luces antes de hacer nada."},
      que:{ico:"❓",tit:"¿Qué ha pasado?",sub:"Toca lo que más se acerque (opcional)."},
-     cos:{ico:"🫀",tit:"¿Dónde lo notas?",sub:"Toca las zonas del cuerpo (las que quieras)."},
-     canal:{ico:"🧭",tit:"Canalízalo",sub:"Elige un paso con valor para ahora, aunque la activación siga."}},
+     cos:{ico:"🫀",tit:"¿Dónde lo notas?",sub:"Toca las zonas del cuerpo (las que quieras). Señala la zona y dite, sin justificarte: «No sé por qué, pero lo noto aquí»."},
+     canal:{ico:"🧭",tit:"Canalízalo",sub:"Elige un paso con valor para ahora, aunque la activación siga. ¿Qué haría ahora la persona que quiero ser?"}},
    ques:[["💬","Me han dicho algo"],["📌","Una norma u orden"],["🏠","En casa"],["💼","En el trabajo"],["🚦","Una injusticia"],["❓","Otra cosa"]],
-   cosos:[["🧠","Cabeza / mandíbula"],["❤️","Pecho / corazón"],["🫃","Vientre"],["💪","Manos / brazos"],["🦵","Piernas"],["🔥","Calor general"]],
-   canals:[["🫁","Respirar hondo"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escribir o dibujar"],["🚶","Caminar o moverme"],["🔌","Desconectar un rato"],["💬","Hablar con alguien"]],
+   cosos:[["🧠","Cabeza / mandíbula"],["❤️","Pecho / corazón"],["🫃","Vientre"],["💪","Manos / brazos"],["🦵","Piernas"],["🔥","Calor general"],["🤷","No noto nada claro"]],
+   nadaLbl:"No noto nada claro",
+   nadaTip:"No notar nada también vale. Apoya la atención en las manos o en los pies (el contacto con el suelo, la temperatura de las palmas) y quédate ahí unos segundos.",
+   canals:[["🫁","Respirar hondo"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escribir o dibujar"],["🚶","Caminar o moverme"],["🔌","Desconectar un rato"],["💬","Hablar con alguien"],["↩️","Volver a lo que estaba haciendo"]],
    respPrep:"Prepárate", respHint:"Respira con las dos luces", respCountWord:"Respiración",
    fase:{in:"Toma aire",hold:"Retén",out:"Suelta",pause:"Pausa"},
    hint:{in:"Toma aire",hold:"retén",out:"suelta",pause:"pausa"},
    introTit:"¿Cómo estás de activado/a?", introSub:"Cuando notes que la rabia sube. Toca tu nivel ahora.",
    comencar:"Empezar →", pararJa:"🫁 Necesito parar ya",
-   jaMillor:"He elegido mi paso →", jaEstic:"Ya estoy →", gairebe:"Casi →", seguent:"Siguiente →", enrere:"← Atrás",
+   jaMillor:"Ya he parado →", jaEstic:"Ya estoy →", gairebe:"Casi →", seguent:"Siguiente →", enrere:"← Atrás",
    resTit:"¿Cómo estás ahora?", veure:"Ver cómo ha ido →",
    locale:"es",
    regTitle:"AUTORREGISTRO APRENS · ", nivInicial:"Nivel inicial: ", desenc:"Desencadenante: ",
@@ -169,6 +171,8 @@ const I18N={
    // TEC: no se practica para que baje el número; lo que se entrena es parar antes de actuar y elegir.
    baixat:(c)=>`Has parado antes de actuar y has elegido qué hacer con la rabia. <b>Eso es lo que entrenas</b> — baje o no el número.`,
    noBaixat:"Hoy el número no ha bajado, y la práctica vale igual: has parado y te has acompañado antes de actuar.",
+   cierre:"Antes de seguir: ¿qué haría ahora la persona que quiero ser? Elige un paso pequeño, aunque la rabia siga ahí.",
+   seguridad:"⚠️ Si sientes que puedes hacerte daño o hacer daño a alguien, aléjate de la situación y contacta ya con tu psicólogo/a o con el 112.",
    avisoWA:'<b>⏱️ ¿Cuándo enviármelo?</b> En cuanto acabes, <b>envíamelo en ese momento</b>. Úsala cuando te pase algo y, además, practica la pausa a horas fijas aunque estés bien: así está disponible cuando la rabia sube.',
    enviarWA:"📱 Enviar a mi psicólogo/a", copiar:"📋 Copiar", copiat:"✓ Copiado",
    apunt:'✍️ ¿Quieres apuntar qué ha pasado? <span style="font-weight:400">(opcional)</span>',
@@ -191,25 +195,29 @@ const I18N={
    nivells:[["😌","Tranquil"],["🙂","Una mica"],["😐","Activat"],["😠","Molt activat"],["😡","Al límit"]],
    paso:{respira:{ico:"🫁",tit:"Para i respira",sub:"Respira amb els dos llums abans de fer res."},
      que:{ico:"❓",tit:"Què ha passat?",sub:"Toca el que més s'acosti (opcional)."},
-     cos:{ico:"🫀",tit:"On ho notes?",sub:"Toca les zones del cos (les que vulguis)."},
-     canal:{ico:"🧭",tit:"Canalitza-ho",sub:"Tria una manera de baixar l'activació."}},
+     cos:{ico:"🫀",tit:"On ho notes?",sub:"Toca les zones del cos (les que vulguis). Assenyala la zona i digues-te, sense justificar-te: «No sé per què, però ho noto aquí»."},
+     canal:{ico:"🧭",tit:"Canalitza-ho",sub:"Tria un pas amb valor per ara, encara que l'activació continuï. Què faria ara la persona que vull ser?"}},
    ques:[["💬","M'han dit una cosa"],["📌","Una norma o ordre"],["🏠","A casa"],["💼","A la feina"],["🚦","Una injustícia"],["❓","Una altra cosa"]],
-   cosos:[["🧠","Cap / mandíbula"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"]],
-   canals:[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"]],
+   cosos:[["🧠","Cap / mandíbula"],["❤️","Pit / cor"],["🫃","Ventre"],["💪","Mans / braços"],["🦵","Cames"],["🔥","Calor general"],["🤷","No noto res clar"]],
+   nadaLbl:"No noto res clar",
+   nadaTip:"No notar res també val. Recolza l'atenció a les mans o als peus (el contacte amb el terra, la temperatura de les palmes) i queda-t'hi uns segons.",
+   canals:[["🫁","Respirar a fons"],["🌍","Grounding 5-4-3-2-1"],["✍️","Escriure o dibuixar"],["🚶","Caminar o moure'm"],["🔌","Desconnectar una estona"],["💬","Parlar amb algú"],["↩️","Tornar al que estava fent"]],
    respPrep:"Prepara't", respHint:"Respira amb els dos llums", respCountWord:"Respiració",
    fase:{in:"Agafa aire",hold:"Retén",out:"Deixa anar",pause:"Pausa"},
    hint:{in:"Agafa aire",hold:"retén",out:"deixa anar",pause:"pausa"},
    introTit:"Com estàs d'activat/da?", introSub:"Quan notis que la ràbia puja. Toca el teu nivell ara.",
    comencar:"Començar →", pararJa:"🫁 Necessito parar ja",
-   jaMillor:"Ja estic millor →", jaEstic:"Ja estic →", gairebe:"Gairebé →", seguent:"Següent →", enrere:"← Enrere",
+   jaMillor:"Ja he parat →", jaEstic:"Ja estic →", gairebe:"Gairebé →", seguent:"Següent →", enrere:"← Enrere",
    resTit:"Com estàs ara?", veure:"Veure com ha anat →",
    locale:"ca",
    regTitle:"AUTORREGISTRE APRENS · ", nivInicial:"Nivell inicial: ", desenc:"Desencadenant: ",
    sensCorp:"Sensació corporal: ", ancla:"Àncora visual (mirar dins): ", tecnica:"Tècnica: ",
    nivFinal:"Nivell final: ", signature:"— APRENS Psicologia · aprens.es",
-   baixat:(c)=>`Has baixat <b>${c} ${c===1?'punt':'punts'}</b> d'activació. Has regulat la ràbia abans d'actuar. 👏`,
-   noBaixat:"Avui no ha baixat en número, i també està bé: has parat i t'has acompanyat. Amb la pràctica, el cos respon abans.",
-   avisoWA:'<b>⏱️ Quan enviar-m\'ho?</b> Tan bon punt acabis, <b>envia-m\'ho en aquell moment</b>. Aquesta eina s\'usa quan et passa alguna cosa.',
+   baixat:(c)=>`Has parat abans d'actuar i has triat què fer amb la ràbia. <b>Això és el que entrenes</b>, baixi o no el número.`,
+   noBaixat:"Avui el número no ha baixat, i la pràctica val igual: has parat i t'has acompanyat abans d'actuar.",
+   cierre:"Abans de continuar: què faria ara la persona que vull ser? Tria un pas petit, encara que la ràbia hi sigui.",
+   seguridad:"⚠️ Si sents que et pots fer mal o fer mal a algú, allunya't de la situació i contacta ara amb el teu psicòleg/a o amb el 112.",
+   avisoWA:'<b>⏱️ Quan enviar-m\'ho?</b> Tan bon punt acabis, <b>envia-m\'ho en aquell moment</b>. Usa-la quan et passi alguna cosa i, a més, practica la pausa a hores fixes encara que estiguis bé: així està disponible quan la ràbia puja.',
    enviarWA:"📱 Enviar al meu psicòleg/a", copiar:"📋 Copiar", copiat:"✓ Copiat",
    apunt:'✍️ Vols apuntar què ha passat? <span style="font-weight:400">(opcional)</span>',
    reiniciar:"↺ Fer-ho un altre cop",
@@ -318,7 +326,8 @@ function intro(){ const t=T();
     </div>
     <div class="niv">${t.nivells.map((o,i)=>nivBtn(i,o,false)).join("")}</div>
     <button class="btn big" id="goBtn" onclick="empezar()" ${nivell?'':'disabled'}>${t.comencar}</button>
-    <div style="text-align:center"><button class="btn parar-ja" onclick="pararJa()">${t.pararJa}</button></div>`;
+    <div style="text-align:center"><button class="btn parar-ja" onclick="pararJa()">${t.pararJa}</button></div>
+    <p style="font-size:12.5px;line-height:1.45;color:var(--gris);text-align:center;margin:14px 6px 0">${t.seguridad}</p>`;
 }
 function nivBtn(i,o,fin){return `<div class="n ${((fin?nivellPost:nivell)===i+1)?'sel':''}" onclick="setNiv(${i+1},${fin})"><span class="em">${o[0]}</span><span class="t">${o[1]}</span></div>`;}
 function setNiv(v,fin){ if(fin)nivellPost=v; else nivell=v; render(); }
@@ -341,6 +350,7 @@ function pasoView(){ const t=T();
       <button class="btn big green" onclick="next()">${last?t.gairebe:t.seguent}</button>`;
   } else if(tipo==="cos"){
     cuerpo=`<div class="opts">${t.cosos.map((o,i)=>opt('cos',i,o)).join("")}</div>
+      <p id="nadaTip" style="display:${cos.indexOf(t.nadaLbl)>=0?'block':'none'};font-size:14px;line-height:1.5;color:var(--gris);text-align:center;margin:-8px 0 16px">${t.nadaTip}</p>
       <button class="btn big green" onclick="next()">${last?t.gairebe:t.seguent}</button>`;
   } else if(tipo==="canal"){
     cuerpo=`<div class="opts">${t.canals.map((o,i)=>opt('canal',i,o)).join("")}</div>
@@ -370,6 +380,7 @@ function pick(grupo,val){
   else if(grupo==="canal")canal=val;
   else if(grupo==="cos"){const k=cos.indexOf(val);if(k>=0)cos.splice(k,1);else cos.push(val);}
   marcarSel();
+  const nt=document.getElementById('nadaTip'); if(nt) nt.style.display=(cos.indexOf(T().nadaLbl)>=0?'block':'none');
 }
 function marcarSel(){
   document.querySelectorAll('.opt').forEach(b=>{
@@ -421,6 +432,7 @@ function verResultat(){ const t=T();
       <div><div class="res-lbl">${lang==='ca'?'Ara':'Ahora'}</div><div class="res-big">${nivellPost}</div></div>
     </div></div>
     <p class="res-msg">${txt}</p>
+    ${canal?'':'<p class="res-msg" style="font-weight:600">'+t.cierre+'</p>'}
     <div class="card">
       <div class="cad-aviso" style="background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#7a5510;text-align:left">${t.avisoWA}</div>
       <div class="acc">
@@ -431,7 +443,8 @@ function verResultat(){ const t=T();
       ${(plan.indexOf('que')<0 && !apuntFet) ? '<div style="text-align:center;margin-top:12px"><button class="btn mini" style="color:var(--azul)" onclick="startApunt()">'+t.apunt+'</button></div>' : ''}
       <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">${t.reiniciar}</button></div>
     </div>
-    <div class="frase">${t.fraseMain}<br>${t.fraseSub}</div>`;
+    <div class="frase">${t.fraseMain}<br>${t.fraseSub}</div>
+    <p style="font-size:12.5px;line-height:1.45;color:var(--gris);text-align:center;margin:14px 6px 0">${t.seguridad}</p>`;
   scrollTo(0,0);
 }
 function reiniciar(){ vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];canal="";anclaZona="";plan=["respira","que","cos","canal"];apuntMode=false;apuntFet=false;render();scrollTo(0,0); }

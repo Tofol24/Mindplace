@@ -68,6 +68,13 @@
             <button class="word" data-group="zona" data-val="Hombros" aria-pressed="false">Hombros</button>
             <button class="word" data-group="zona" data-val="Manos" aria-pressed="false">Manos</button>
             <button class="word" data-group="zona" data-val="Otra zona" aria-pressed="false">Otra zona</button>
+            <button class="word" data-group="zona" data-val="Nada claro" aria-pressed="false">Nada claro</button>
+          </div>
+          <p class="lead" id="nadaTip" style="display:none;font-size:15px;margin-top:10px">«Nada claro» también vale: la presencia cuenta igual. Apoya primero la atención en las <b>manos</b> o en los <b>pies</b> (el contacto con el suelo, la temperatura de las palmas) y quédate ahí unos segundos.</p>
+          <p style="margin-top:18px">¿Por qué vienes ahora?</p>
+          <div class="wordset" role="group" aria-label="¿Por qué vienes ahora?">
+            <button class="word" data-group="motivo" data-val="verde" aria-pressed="false">🟢 Sin necesidad, en calma</button>
+            <button class="word" data-group="motivo" data-val="rojo" aria-pressed="false">🔴 El cuerpo me ha avisado</button>
           </div>
           <div class="scale">
             <div class="scale-top"><span class="cap">Cuánto lo notas ahora</span><span class="n" id="intAntesN">5</span></div>
@@ -127,6 +134,7 @@
           <h2>Compártelo,<br>sin justificarlo</h2>
           <p class="saying">«No sé por qué… pero noto algo aquí, y quería compartirlo contigo.»</p>
           <p style="margin-top:22px">No necesitas entenderlo ni explicarlo. Basta con nombrar la sensación y abrir la puerta a alguien a quien quieres.</p>
+          <p style="margin-top:12px">Si todavía no te sale decírselo a alguien, empieza por decírtelo a ti, en voz baja, con la mano donde lo notas. Después, a tu psicólogo/a; más adelante, a las personas de confianza.</p>
           <div class="field">
             <label for="conQuien">¿Con quién?</label>
             <input type="text" id="conQuien" placeholder="mi pareja, mi madre, un amigo…">
@@ -154,7 +162,7 @@
         <div class="col-txt reveal">
           <span class="num">Cinco</span>
           <h2>Elige tu dirección</h2>
-          <p>La sensación puede seguir ahí. Y aun así, tú decides el siguiente paso hacia lo que te importa. Pequeño, concreto, posible ahora.</p>
+          <p>La sensación puede seguir ahí. Y aun así, tú decides el siguiente paso hacia lo que te importa. <em>¿Qué haría ahora la persona que quiero ser?</em> Pequeño, concreto, posible ahora, y no para quitarte lo que sientes.</p>
           <div class="field">
             <label for="pasoValor">Un paso en tu dirección</label>
             <input type="text" id="pasoValor" placeholder="llamar a…, salir a caminar, retomar…">
@@ -175,6 +183,7 @@
         <input type="range" min="0" max="10" value="5" id="intDespues" aria-label="Intensidad al terminar">
         <div class="ends"><span>Apenas</span><span>Mucho</span></div>
       </div>
+      <p class="lead reveal" style="max-width:52ch;font-size:15px">No practicas para sentir menos: el número puede subir, bajar o quedarse igual. Lo que cuenta es que has estado contigo y has elegido un paso.</p>
       <div class="codebox reveal">
         <label for="codigo">Tu código</label>
         <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false">

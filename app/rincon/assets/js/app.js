@@ -49,13 +49,18 @@
     stopTimer();
     view.innerHTML =
       '<div class="phero"><img src="assets/images/portada-rincon.webp" alt="" onerror="this.parentNode.remove()"></div>' +
-      '<div class="menu-h"><h1>Rincón de calma</h1><p>Elige un juego. Son cortos, para respirar y estar a gustito.</p></div>' +
+      '<div class="menu-h"><h1>Rincón de calma</h1><p>Elige un juego. Son cortos, para notar el cuerpo y estar contigo, sientas lo que sientas.</p></div>' +
       '<div class="games">' + GAMES.map(function (g) {
         return '<button class="gamecard ' + g.cls + '" data-g="' + g.id + '">' +
           '<span class="gc-emoji">' + g.emoji + '</span>' +
           '<span class="gc-body"><span class="gc-t">' + g.t + '</span><span class="gc-d">' + g.d + '</span></span>' +
           '<span class="gc-go">›</span></button>';
-      }).join("") + '</div>';
+      }).join("") + '</div>' +
+      '<details class="adult-note"><summary>Para el adulto que acompaña</summary>' +
+        '<p><b>Primero tú.</b> Antes de jugar, respira una vez y nota dónde está tu cuerpo: tu peque aprende a estar con lo que siente viéndote a ti hacerlo, más que escuchando instrucciones.</p>' +
+        '<p><b>Jugad también cuando todo va bien</b> (un ratito al día), no solo en mitad del enfado: así el rincón es un sitio para encontrarse, no un castigo ni un botón para «parar la rabieta».</p>' +
+        '<p>No hace falta que se calme para que el juego haya servido. Si no quiere: «Te noto así… ¿quieres que esté contigo o prefieres un rato a solas?»</p>' +
+      '</details>';
     $$(".gamecard", view).forEach(function (b) { b.addEventListener("click", function () { openGame(b.getAttribute("data-g")); }); });
     if (window.Aprens && Aprens.mountBar && !$("#aprensBar")) Aprens.mountBar();
   }
@@ -103,7 +108,7 @@
           count.textContent = Math.max(0, TOTAL - n) + " respiraciones";
           if (n >= TOTAL) {
             activeRespiro.stop(); count.textContent = "";
-            done.textContent = "Has respirado como una campeona. La lucecita se queda contigo. 🌟";
+            done.textContent = "Has respirado con la lucecita encendida. Se queda contigo… ¿a qué volvemos a jugar ahora? 🌟";
             confeti(); marcarPractica("respiracion"); start.textContent = "Otra vez";
           }
         }
@@ -156,7 +161,7 @@
         if (e >= 4800) { e = e % 4800; t0 = Date.now() - e; ciclos++; count.textContent = Math.max(0, TOTAL - ciclos) + " abrazos"; }
         if (ciclos >= TOTAL) {
           stopTimer(); heart.classList.remove("run"); heart.textContent = "💛"; word.textContent = "¡Qué abrazo! 🌟";
-          count.textContent = ""; done.textContent = "Te has cuidado con cariño."; confeti(); marcarPractica("abrazo"); return;
+          count.textContent = ""; done.textContent = "Te has cuidado con cariño. ¿Y si ahora le das un abrazo a alguien de casa, o volvemos a jugar?"; confeti(); marcarPractica("abrazo"); return;
         }
         var cur = FASES[0];
         for (var i = 0; i < FASES.length; i++) { if (e >= FASES[i].t) cur = FASES[i]; }
@@ -206,7 +211,11 @@
       var z = ZONA_TXT[sel.zona];
       if (!sel.qual) { res.innerHTML = "Lo notas en <b>" + z + "</b>. ¿Y qué es?"; return; }
       var q = QUALS.filter(function (x) { return x.id === sel.qual; })[0];
-      res.innerHTML = "¡Buen trabajo, detective! Lo notas en <b>" + z + "</b> y es como <b>" + q.t.replace(/[^\wáéíóúñ ]/gi, "").trim().toLowerCase() + "</b>. Le ponemos nombre y le hacemos sitio. 🌟";
+      if (sel.qual === "nada") {
+        res.innerHTML = "¡Buen trabajo, detective! En <b>" + z + "</b> casi no notas nada, y eso también vale. Prueba con las <b>manos</b> o los <b>pies</b>: ¿están calentitos, fríos, quietos? Luego volvemos a jugar. 🌟";
+      } else {
+        res.innerHTML = "¡Buen trabajo, detective! Lo notas en <b>" + z + "</b> y es como <b>" + q.t.replace(/[^\wáéíóúñ ]/gi, "").trim().toLowerCase() + "</b>. No hace falta que se vaya: le ponemos nombre y le hacemos sitio. Y ahora, ¿volvemos a jugar? 🌟";
+      }
       confeti(); marcarPractica("sensaciones");
     }
     $$(".zona", view).forEach(function (z) {

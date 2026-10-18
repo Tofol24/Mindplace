@@ -369,11 +369,11 @@
         '<div class="field"><label>Los acuerdos de la despedida</label><ul class="normas">' + NORMAS.map(function (n, i) { return '<li><span class="nn">' + (i + 1) + '</span>' + esc(n) + '</li>'; }).join("") + '</ul></div>' +
         '<div class="field"><label for="hPremio">Premio si lo logra</label><input type="text" id="hPremio" value="' + esc(m.premio) + '"></div>' +
         '<div class="field"><label>¿Cómo está ANTES de empezar?</label>' + caritasHTML("antes") + '</div>' +
-        '<p class="kp-hint" style="margin-top:16px"><b>Si protesta o llora:</b> validad sin ceder — «sé que cuesta; estarás bien y vuelvo pronto». Vuestra calma es su seguridad.</p>' +
+        '<p class="kp-hint" style="margin-top:16px"><b>Si protesta o llora:</b> validad sin ceder — «sé que cuesta; estarás bien y vuelvo pronto». Vuestra presencia, aunque también os cueste, es su seguridad.</p>' +
       '</div>' +
       '<div class="keypanel kp-como">' +
         '<div class="kp-head"><span class="k">🤍</span><h3>El CÓMO</h3></div><p class="kp-sub">Cómo nos acompañamos · AIS</p>' +
-        '<p class="kp-hint">Marcad lo que uséis. Tocad <b>Practicar ↗</b> para entrenar cada apoyo (el adulto es el modelo: si os calmáis vosotras, se calma ella).</p>' +
+        '<p class="kp-hint">Marcad lo que uséis. Tocad <b>Practicar ↗</b> para entrenar cada apoyo (el adulto es el modelo: si os reguláis delante de ella, ella aprende a regularse).</p>' +
         '<div class="apoyos">' +
           APOYOS.map(function (a) {
             return '<label class="apoyo" data-ap="' + a.id + '"><input type="checkbox"><span class="ico">' + a.ico + '</span>' +

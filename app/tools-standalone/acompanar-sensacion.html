@@ -173,7 +173,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><path d="M12 6v6l4 2"/></svg>
     Hacer una parada AIS
   </button>
-  <p class="topnote">Hazla varias veces al día, aunque sea 1 minuto.</p>
+  <p class="topnote">Hazla varias veces al día, aunque sea 1 minuto, y también cuando estás bien: así tu cuerpo no necesita alarmarse para que vengas.</p>
   <a class="manada-link" href="../index.html#/tool/la_manada" target="_top" style="display:flex;width:fit-content;align-items:center;gap:7px;margin:14px auto 0;padding:8px 14px;border-radius:999px;background:#efe7d8;border:1px solid var(--linia);color:#6b5a44;text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.3">🐾 ¿Por qué respiras? · La manada <span style="opacity:.55">→</span></a>
 </div>
 
@@ -193,7 +193,13 @@
     <div class="stepwrap">
       <!-- Paso 1: intensidad antes -->
       <div class="pstep show" id="ps0">
-        <div class="ptit">1 · ¿Cuánta intensidad notas ahora?</div>
+        <div class="ptit">1 · Para un momento. ¿Por qué vienes ahora? <span class="lead" style="display:inline;font-family:var(--sans);font-weight:400;font-size:13px">(opcional)</span></div>
+        <div class="escala" id="esMot">
+          <button data-v="verde" onclick="setMotivo('verde',this)"><span class="em">🟢</span><span class="tx">Sin necesidad, practico en calma</span></button>
+          <button data-v="rojo" onclick="setMotivo('rojo',this)"><span class="em">🔴</span><span class="tx">El cuerpo me ha avisado</span></button>
+        </div>
+        <p class="ptxt" id="motivoTxt" style="font-size:13.5px"></p>
+        <div class="ptit" style="margin-top:12px">¿Cuánta intensidad notas ahora?</div>
         <div class="escala" id="esIni">
           <button data-v="1" onclick="setIni(1,this)"><span class="em">🙂</span><span class="tx">Leve</span></button>
           <button data-v="2" onclick="setIni(2,this)"><span class="em">😐</span><span class="tx">Poca</span></button>
@@ -269,9 +275,12 @@
             </g>
           </svg>
         </div>
+        <button class="btn ghost" style="margin-top:8px;padding:9px 14px;font-size:14px" onclick="setAncla('nada')">No noto nada claro</button>
         <div class="ancla-msg" id="anclaMsg"></div>
         <p class="ptxt">Obsérvala sin intentar cambiarla. Ponle palabras sencillas:</p>
         <div class="verbal">“Ahora mismo noto presión en el pecho, angustia y ganas de vomitar.”</div>
+        <p class="ptxt">Señala la zona con la mano y dite, con tono sereno, sin explicar el porqué:</p>
+        <div class="verbal">“No sé por qué, pero lo noto aquí.”</div>
         <p class="ptxt">Y añade el acompañamiento:</p>
         <div class="verbal">“No me gusta esta sensación, pero puedo estar con ella unos instantes.”</div>
         <div class="btnrow">
@@ -284,7 +293,9 @@
       <div class="pstep" id="ps3">
         <div class="ptit">4 · Vuelve a lo que estabas haciendo</div>
         <p class="ptxt">Retoma tu actividad <b>aunque la sensación siga ahí</b>. No esperes a sentirte bien para continuar.</p>
-        <div class="ptit" style="margin-top:14px">¿Cuánta intensidad notas ahora?</div>
+        <p class="ptxt"><b>¿Qué haría ahora la persona que quiero ser?</b> Un paso pequeño, posible ahora y no para quitarte lo que sientes.</p>
+        <input type="text" id="accion" maxlength="140" placeholder="Ej.: contestar ese mensaje, seguir con la tarea, salir a caminar…" style="width:100%;padding:11px 12px;border:1.5px solid var(--linia);border-radius:12px;font:inherit;font-size:15px;background:var(--bg);color:var(--tinta)">
+        <div class="ptit" style="margin-top:14px">¿Cuánta intensidad notas ahora? <span class="lead" style="display:inline;font-family:var(--sans);font-weight:400;font-size:13px">(solo para registrarlo)</span></div>
         <div class="escala" id="esFin">
           <button data-v="1" onclick="setFin(1,this)"><span class="em">🙂</span><span class="tx">Leve</span></button>
           <button data-v="2" onclick="setFin(2,this)"><span class="em">😐</span><span class="tx">Poca</span></button>
@@ -353,13 +364,14 @@
   var EMO={1:"🙂",2:"😐",3:"😟",4:"😣",5:"😰"};
   var activeRespiro=null;
   var KEY_DIA="aprens_acompanar_dia", KEY_HIST="aprens_acompanar_hist";
-  var parada={ini:null,fin:null,zona:null};
+  var parada={ini:null,fin:null,zona:null,motivo:null};
 
   /* Ancla visual (mapa interno): localizar dónde se nota antes de acompañar */
   var ANCLA={
     cuello:{ tit:"Cuello", msg:"Lleva la atención al cuello, a la garganta y la nuca. Intenta SENTIR ahí lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." },
     pecho:{  tit:"Pecho",  msg:"Lleva la atención al pecho. Intenta SENTIR ahí la presión, el latido o lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." },
-    barriga:{tit:"Barriga",msg:"Lleva la atención a la barriga y el estómago. Intenta SENTIR ahí lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." }
+    barriga:{tit:"Barriga",msg:"Lleva la atención a la barriga y el estómago. Intenta SENTIR ahí lo que haya, sin cambiarlo. Esa es la sensación que vas a acompañar." },
+    nada:{   tit:"Nada claro (manos/pies)", msg:"No notar nada también vale: la presencia cuenta igual. Apoya la atención en las manos o en los pies (el contacto con el suelo, la temperatura de las palmas) y quédate ahí unos segundos." }
   };
   function setAncla(k){
     parada.zona=k;
@@ -390,7 +402,7 @@
     if(!tieneActividad(d))return;
     var h=cargaHist();
     if(h.length&&h[0].date===d.date)return;
-    h.unshift({date:d.date,n:d.paradas.length,ini:media(d.paradas,"ini"),fin:media(d.paradas,"fin")});
+    h.unshift({date:d.date,n:d.paradas.length,ini:media(d.paradas,"ini"),fin:media(d.paradas,"fin"),calma:d.paradas.filter(function(p){return p.motivo==='verde';}).length});
     if(h.length>30)h=h.slice(0,30);
     try{localStorage.setItem(KEY_HIST,JSON.stringify(h));}catch(e){}
   }
@@ -411,6 +423,14 @@
     btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
     btn.classList.add('sel');
     setTimeout(function(){ goStep(1); },220);
+  }
+  function setMotivo(v,btn){
+    parada.motivo=v;
+    btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    document.getElementById('motivoTxt').textContent = v==='verde'
+      ? "Así se entrena: tu cuerpo aprende que tu atención también aparece cuando todo está bien."
+      : "Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma.";
   }
   function setFin(v,btn){
     parada.fin=v;
@@ -459,12 +479,13 @@
     if(parada.fin==null){ alert("Marca cómo notas la intensidad ahora (paso 4)."); return; }
     if(parada.ini==null) parada.ini=parada.fin;
     pararResp();
-    dia.paradas.push({h:nowHM(),ini:parada.ini,fin:parada.fin,zona:parada.zona});
+    var acc=(document.getElementById('accion').value||'').trim();
+    dia.paradas.push({h:nowHM(),ini:parada.ini,fin:parada.fin,zona:parada.zona,motivo:parada.motivo,accion:acc});
     guardaDia();
-    if(window.Aprens){ try{ Aprens.save({ id:Date.now(), date:hoy(), ts:Date.now(), param:"densidad", intensidad_antes:parada.ini, intensidad_despues:parada.fin, diferencia:parada.ini-parada.fin, zona:parada.zona||"", paradas_hoy:dia.paradas.length }); Aprens.mountBar(); }catch(e){} }
+    if(window.Aprens){ try{ Aprens.save({ id:Date.now(), date:hoy(), ts:Date.now(), param:"densidad", intensidad_antes:parada.ini, intensidad_despues:parada.fin, diferencia:parada.ini-parada.fin, zona:parada.zona||"", motivo:parada.motivo||"", micro_accion:acc, paradas_hoy:dia.paradas.length }); Aprens.mountBar(); }catch(e){} }
     var dif=parada.ini-parada.fin;
     document.getElementById('balanc').innerHTML=EMO[parada.ini]+' <span style="opacity:.5">→</span> '+EMO[parada.fin]+
-      (dif>0?'  <b>−'+dif+'</b>':(dif<0?'  <b style="color:var(--calid-d)">+'+(-dif)+'</b>':'  <b>=</b>'));
+      (dif>0?'  <b>−'+dif+'</b>':(dif<0?'  <b>+'+(-dif)+'</b>':'  <b>=</b>'));
     var msg=document.getElementById('resMsg');
     if(dif>0) msg.textContent="Has estado con ella y has vuelto a tu día. Bajara o no, eso es lo que entrenas.";
     else if(dif===0) msg.textContent="Se ha mantenido y has podido estar con ella. Eso también es entrenar.";
@@ -474,7 +495,10 @@
     pinta();
   }
   function nuevaParada(){
-    parada={ini:null,fin:null,zona:null};
+    parada={ini:null,fin:null,zona:null,motivo:null};
+    document.getElementById('esMot').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
+    document.getElementById('motivoTxt').textContent='';
+    document.getElementById('accion').value='';
     document.getElementById('esIni').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
     document.getElementById('esFin').querySelectorAll('button').forEach(function(b){b.classList.remove('sel');});
     limpiaAncla();
@@ -490,7 +514,7 @@
     document.getElementById('tFin').textContent=ps.length?media(ps,"fin"):"–";
     var det=document.getElementById('detall');
     if(ps.length){
-      det.innerHTML=ps.map(function(p){return '· '+p.h+'  '+EMO[p.ini]+' → '+EMO[p.fin]+(p.zona&&ANCLA[p.zona]?('  <span style="opacity:.7">'+ANCLA[p.zona].tit+'</span>'):'');}).join('<br>');
+      det.innerHTML=ps.map(function(p){return '· '+p.h+(p.motivo?(' '+(p.motivo==='verde'?'🟢':'🔴')):'')+'  '+EMO[p.ini]+' → '+EMO[p.fin]+(p.zona&&ANCLA[p.zona]?('  <span style="opacity:.7">'+ANCLA[p.zona].tit+'</span>'):'');}).join('<br>');
     } else { det.innerHTML='<span class="none">Aún no has hecho ninguna parada hoy.</span>'; }
     pintaHist();
   }
@@ -499,7 +523,7 @@
     if(!h.length){ el.innerHTML=''; return; }
     el.innerHTML='<h3>Días anteriores</h3>'+h.map(function(d){
       return '<div class="row"><span class="dt">'+d.date+'</span><span class="ev">'+d.n+' paradas · media '+
-        (d.ini!=null?d.ini:'–')+' → '+(d.fin!=null?d.fin:'–')+'</span></div>';
+        (d.ini!=null?d.ini:'–')+' → '+(d.fin!=null?d.fin:'–')+(d.calma?(' · 🟢 '+d.calma+' en calma'):'')+'</span></div>';
     }).join('');
   }
 
@@ -510,7 +534,9 @@
     var mi=media(d.paradas,"ini"), mf=media(d.paradas,"fin");
     if(mi!=null) L.push("Nivel inicial (media): "+Math.round(mi)+"/5");
     if(mf!=null) L.push("Nivel final (media): "+Math.round(mf)+"/5");
-    d.paradas.forEach(function(p){ L.push("   · "+p.h+"  "+p.ini+"/5 → "+p.fin+"/5"+(p.zona&&ANCLA[p.zona]?(" · "+ANCLA[p.zona].tit):"")); });
+    var nV=d.paradas.filter(function(p){return p.motivo==='verde';}).length, nR=d.paradas.filter(function(p){return p.motivo==='rojo';}).length;
+    if(nV||nR) L.push("🟢 En calma (sin necesidad): "+nV+" · 🔴 Porque el cuerpo avisó: "+nR);
+    d.paradas.forEach(function(p){ L.push("   · "+p.h+(p.motivo?(" "+(p.motivo==='verde'?'🟢':'🔴')):"")+"  "+p.ini+"/5 → "+p.fin+"/5"+(p.zona&&ANCLA[p.zona]?(" · "+ANCLA[p.zona].tit):"")+(p.accion?(" · Micro-acción: "+p.accion):"")); });
     return L.join("\n");
   }
   function enviarDia(btn){

@@ -378,8 +378,8 @@ VIEWS.canales=function(){
      '</svg></div><div class="zmsg" id="zmsg"></div></div>';
   h+=footerHTML(); return h;
 };
-function zoneSvg(k,cx,cy,rx,ry,label){ return '<g class="zone" tabindex="0" role="button" aria-label="'+label+'" onclick="tocaZona(\''+k+'\')"><ellipse class="zb" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'"/><text class="zt" x="'+cx+'" y="'+(cy+3)+'" text-anchor="middle">'+label+'</text></g>'; }
-function tocaZona(k){ document.querySelectorAll('#app .zone').forEach(function(g){g.classList.remove('sel');}); var el=document.querySelector('[aria-label]'); var m=document.getElementById('zmsg'); m.textContent=ZONAS[k]; m.classList.add('show'); event.currentTarget.classList.add('sel'); }
+function zoneSvg(k,cx,cy,rx,ry,label){ return '<g class="zone" tabindex="0" role="button" aria-label="'+label+'" onclick="tocaZona(\''+k+'\',this)"><ellipse class="zb" cx="'+cx+'" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'"/><text class="zt" x="'+cx+'" y="'+(cy+3)+'" text-anchor="middle">'+label+'</text></g>'; }
+function tocaZona(k,el){ document.querySelectorAll('#app .zone').forEach(function(g){g.classList.remove('sel');}); var m=document.getElementById('zmsg'); m.textContent=ZONAS[k]; m.classList.add('show'); if(el) el.classList.add('sel'); }
 
 /* ---------------- CICLO ---------------- */
 VIEWS.ciclo=function(){
@@ -395,7 +395,7 @@ function step(t){ return '<div class="step">'+esc(t)+'</div>'; }
 function arr(){ return '<div class="arr">↓</div>'; }
 
 /* ---------------- STOP ---------------- */
-var STOP_SEQ=["Me he dado cuenta.","Ahora no necesito resolver nada.","Puedo esperar unos segundos antes de actuar.","Llevo mi atención hacia dentro.","Elijo: ¿qué paso pequeño, coherente conmigo, doy ahora?"];
+var STOP_SEQ=["Me he dado cuenta.","Ahora no necesito resolver nada.","Puedo esperar unos segundos antes de actuar.","Llevo mi atención hacia dentro: «No sé por qué, pero lo noto aquí».","Elijo: ¿qué paso pequeño, coherente conmigo, doy ahora?"];
 var stopIdx=-1, stopAuto=null;
 VIEWS.stop=function(){
   var h='<h1 class="view-t">Botón STOP</h1>';
@@ -431,7 +431,8 @@ VIEWS.respiro=function(){
   h+='<div class="btnrow"><button class="btn full" id="respBtn" onclick="respStart(this)">Empezar</button></div>';
   h+='<div id="respAfter" style="display:none"><div class="card"><h2>¿Dónde resulta más fácil dejar ahora tu atención?</h2><div class="chips" id="respZona">'+
      ['Garganta','Pecho','Estómago','Manos','Piernas','Pies','No noto nada claro'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="respPick(this)">'+z+'</button>';}).join('')+
-     '</div><div class="ok-flash" id="okflash"></div></div></div>';
+     '</div><p class="lead" id="respNada" style="display:none;margin-top:10px">Si te cuesta notar algo dentro, apoya primero la atención en las <b>manos</b> o en los <b>pies</b> (el contacto con el suelo, la temperatura de las palmas) y quédate ahí unos segundos.</p><div class="ok-flash" id="okflash"></div></div>'+
+     '<div class="nota">Señala la zona y dite: <i>«No sé por qué, pero lo noto aquí.»</i> Y ahora vuelve a lo que hacías con un paso pequeño: <b>¿qué haría la persona que quiero ser?</b></div></div>';
   h+=footerHTML(); return h;
 };
 function respStart(btn){
@@ -455,6 +456,7 @@ function respFin(){ if(respT)clearInterval(respT); var ring=document.getElementB
   logPractica('respiro');
 }
 function respPick(b){ document.getElementById('respZona').querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel');
+  var rn=document.getElementById('respNada'); if(rn) rn.style.display=(b.dataset.v==='No noto nada claro'?'block':'none');
   flash(b.dataset.v==='No noto nada claro' ? 'No notar nada también cuenta. Tu atención ha estado presente.' : 'Bien. Has dejado tu atención en: '+b.dataset.v+'.'); }
 
 /* ---------------- QUEDARME SIN EXIGIRME ---------------- */
@@ -478,7 +480,7 @@ function quedSalir(){ clearInterval(quedT); clearInterval(quedPhr); quedFin(true
 function quedFin(early){ var box=document.getElementById('quedTimer'); if(!box) return;
   box.innerHTML = early
     ? '<div class="phr" style="opacity:1">Parar también puede ser cuidarte. Has practicado hasta donde hoy era posible.</div><button class="btn" style="margin-top:14px" onclick="go(\'quedarme\')">Volver</button>'
-    : '<div class="clock">✓</div><div class="phr" style="opacity:1">Te has quedado contigo. Eso es la práctica.</div><button class="btn" style="margin-top:14px" onclick="go(\'quedarme\')">Otra vez</button>';
+    : '<div class="clock">✓</div><div class="phr" style="opacity:1">Te has quedado contigo. Eso es la práctica. Y ahora, vuelve a lo que hacías con un paso pequeño.</div><button class="btn" style="margin-top:14px" onclick="go(\'quedarme\')">Otra vez</button>';
   logPractica('quedarme');
 }
 
@@ -560,7 +562,7 @@ function clasiPick(c){
 
 /* ---------------- FRASES ---------------- */
 var FRASES=[
-  "Ahora no tengo que resolverlo.","Puedo sentir esto sin obedecerlo inmediatamente.","Estoy aquí contigo.","No necesito abandonarme para que alguien se quede.","Puedo desear compañía sin convertirme en urgencia.","Primero me acompaño; después decido.","No notar nada también es estar.","Lo que siento merece presencia, no una solución inmediata.","Puedo pedir apoyo sin entregar a otra persona el control de mi estabilidad.","Mi deseo y mis límites pueden existir al mismo tiempo.","Puedo estar sola ahora sin estar abandonada.","Respirar no borra lo que siento: me permite estar presente mientras lo siento."
+  "No sé por qué, pero lo noto aquí.","Ahora no tengo que resolverlo.","Puedo sentir esto sin obedecerlo inmediatamente.","Estoy aquí contigo.","No necesito abandonarme para que alguien se quede.","Puedo desear compañía sin convertirme en urgencia.","Primero me acompaño; después decido.","No notar nada también es estar.","Lo que siento merece presencia, no una solución inmediata.","Puedo pedir apoyo sin entregar a otra persona el control de mi estabilidad.","Mi deseo y mis límites pueden existir al mismo tiempo.","Puedo estar sola ahora sin estar abandonada.","Respirar no borra lo que siento: me permite estar presente mientras lo siento."
 ];
 VIEWS.frases=function(){
   var h='<h1 class="view-t">Frases para acompañarme</h1><p class="view-s">Tócalas para marcarlas como favoritas o copiarlas. Puedes crear la tuya.</p>';
@@ -612,7 +614,7 @@ VIEWS.registro=function(){
   h+='<div class="fld"><label>Zona corporal que elegí</label><div class="chips" data-k="r_zona">'+['Garganta','Pecho','Estómago','Manos','Piernas','Pies','No noté nada claro'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
   h+='<div class="fld"><label>Tiempo de presencia (aprox.)</label><div class="chips" data-k="r_tiempo">'+['Unos segundos','Medio minuto','1-2 minutos','Más'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
   h+='<div class="fld"><label>¿Pude esperar antes de actuar?</label><div class="chips" data-k="r_espera">'+['Sí','Un poco','No'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
-  h+='<div class="fld"><label>¿Qué elegí hacer después? (opcional)</label><input type="text" id="r_eleccion" placeholder="Tu siguiente acción"></div>';
+  h+='<div class="fld"><label>¿Qué elegí hacer después? (opcional)</label><input type="text" id="r_eleccion" placeholder="¿Qué haría la persona que quiero ser?"></div>';
   h+='<div class="fld"><label>La decisión fue…</label><div class="chips" data-k="r_da">'+['Más de deseo','Una mezcla','Más de alivio'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
   h+='<div class="fld"><label>¿Pedí apoyo de forma consciente?</label><div class="chips" data-k="r_apoyo">'+['Sí','No hizo falta','No'].map(function(z){return '<button type="button" class="chip" data-v="'+z+'" onclick="pickChipLab(this)">'+z+'</button>';}).join('')+'</div></div>';
   h+='<div class="fld"><label>Frase que utilicé (opcional)</label><input type="text" id="r_frase" placeholder="La frase que te acompañó"></div>';
@@ -666,7 +668,9 @@ VIEWS.resumen=function(){
   var h='<h1 class="view-t">Resumen semanal</h1><p class="view-s">Últimos 7 días. La urgencia no tiene que bajar: lo importante es la presencia.</p>';
   h+='<div class="card"><div class="stat3"><div><b>'+p7.length+'</b><span>prácticas</span></div><div><b>'+stops+'</b><span>veces STOP</span></div><div><b>'+espera+'</b><span>veces que esperé</span></div></div>';
   h+='<div class="stat3" style="margin-top:10px"><div><b>'+apoyo+'</b><span>apoyo consciente</span></div><div><b>'+r7.length+'</b><span>registros</span></div><div><b>'+(mi!=null&&mf!=null?(mi+'→'+mf):'–')+'</b><span>urgencia media</span></div></div>';
-  h+='<p class="muted" style="margin-top:12px">Zonas más usadas: <b>'+esc(zTop)+'</b></p></div>';
+  var calma7=p7.filter(function(x){return x.t==='rutina';}).length;
+  h+='<p class="muted" style="margin-top:12px">Zonas más usadas: <b>'+esc(zTop)+'</b></p>';
+  h+='<p class="muted" style="margin-top:6px">🟢 Prácticas en calma (rutina): <b>'+calma7+'</b> de '+p7.length+'. Practicar también cuando estás bien enseña a tu cuerpo que no hace falta alarmarse para que aparezcas.</p></div>';
   if(DB.frasesFav.length){ h+='<div class="card"><h2>Tus frases favoritas</h2>'+DB.frasesFav.slice(0,5).map(function(f){return '<div class="verb"><span class="vt">'+esc(f)+'</span></div>';}).join('')+'</div>'; }
   h+='<div class="quote" style="text-align:center">Tu avance no se mide por no necesitar a nadie, sino por estar cada vez más presente cuando eliges acercarte a alguien.</div>';
   h+='<div class="btnrow"><button class="btn sm" onclick="copiarResumen(this)">📋 Copiar resumen</button><button class="btn sm ghost" onclick="go(\'ajustes\')">Exportar / datos</button></div>';
@@ -676,6 +680,7 @@ function copiarResumen(btn){
   var r7=DB.registros.filter(function(x){return within7(x.date);}), p7=DB.practicas.filter(function(x){return within7(x.date);});
   var L=['ESTOY AQUÍ CONMIGO · resumen semana '+fechaLarga(daysAgo(6))+' → '+fechaLarga(hoy())];
   L.push('Prácticas: '+p7.length+' (STOP: '+p7.filter(function(x){return x.t==='stop';}).length+')');
+  L.push('Prácticas en calma (rutina): '+p7.filter(function(x){return x.t==='rutina';}).length);
   L.push('Registros: '+r7.length);
   L.push('Veces que pude esperar: '+r7.filter(function(x){return x.espera==='Sí';}).length);
   L.push('Apoyo consciente: '+r7.filter(function(x){return x.apoyo==='Sí';}).length);

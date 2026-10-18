@@ -362,6 +362,16 @@
     <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
   </div>
 
+  <!-- A1 · ¿Por qué vienes ahora? (práctica programada vs. el cuerpo avisó) -->
+  <div class="card">
+    <h2><span class="ic">🕰️</span>¿Por qué vienes ahora?</h2>
+    <div class="opts" id="motivoOpts">
+      <button class="opt" onclick="setMotivo('verde',this)"><span class="em">🟢</span> Sin necesidad: es mi momento de práctica</button>
+      <button class="opt" onclick="setMotivo('rojo',this)"><span class="em">🔴</span> El cuerpo me ha avisado y vengo</button>
+    </div>
+    <p class="lead" id="motivoMsg" style="display:none;margin-top:10px"></p>
+  </div>
+
   <!-- B · Guía paso a paso -->
   <div class="card">
     <h2><span class="ic">👣</span>Paso a paso</h2>
@@ -396,10 +406,18 @@
     <div id="regBlocks"><!-- 4 preguntas no evaluativas generadas por JS --></div>
   </div>
 
+  <!-- 8b · ACOMPAÑA · frase honesta -->
+  <div class="card">
+    <h2><span class="ic">🤝</span>Acompaña</h2>
+    <p>Antes de seguir, dilo por dentro (o en voz baja), señalando la zona y sin explicar el origen:</p>
+    <div class="quote">“No sé por qué, pero lo noto aquí.”</div>
+    <p class="lead">Si no has notado nada, también vale: la presencia cuenta igual. Puedes dejar la atención unos segundos en las <b>manos</b> o en los <b>pies</b> (el contacto con el suelo) y volver desde ahí.</p>
+  </div>
+
   <!-- 9 · MICROACCIÓN CON VALOR -->
   <div class="card">
     <h2><span class="ic">➡️</span>Volver a la vida con dirección</h2>
-    <p>Después de acompañarte, ¿cuál es el siguiente gesto pequeño que tiene sentido?</p>
+    <p>Después de acompañarte, ¿cuál es el siguiente gesto pequeño que tiene sentido? <i>¿Qué haría la persona que quiero ser?</i> Pequeño, posible ahora y no para quitarte lo que sientes.</p>
     <div class="chips" id="microChips"></div>
     <input type="text" id="microOtra" placeholder="Otra acción que tenga sentido para ti…" style="display:none">
     <div class="quote" style="margin-top:14px">“El AIS no termina en sentir. Termina en volver a vivir con dirección.”</div>
@@ -449,7 +467,7 @@ var EJERCICIOS = [
   { id:'semaforo', icon:'🚦', titulo:'Semáforo AIS', nivel:'neutro', dur:'30 seg – 1 min',
     contexto:'Cada vez que estés parado en un semáforo, una cola o una espera.',
     explica:'Conviertes las esperas del día en pequeñas puertas para volver a ti. No para distraerte ni para calmarte: solo para no abandonarte mientras esperas.',
-    pasos:['Suelta un poco los hombros.','Respira.','Lleva la atención al pecho, estómago o garganta.','Nota lo que haya durante unos segundos.','No busques calma.','Solo di internamente: «Estoy aquí.»'],
+    pasos:['Nota tus hombros tal como están, sin corregirlos.','Respira.','Lleva la atención al pecho, estómago o garganta.','Nota lo que haya durante unos segundos.','No busques calma.','Solo di internamente: «Estoy aquí.»'],
     frase:'No espero para desesperarme. Espero para volver a mí.',
     reflexion:'¿Has podido tratar la espera como un encuentro contigo, y no como tiempo perdido?' },
 
@@ -571,7 +589,7 @@ function archivaDia(d){
 }
 var dia = cargaDia();
 if(window.Aprens){ try{ Aprens.config({toolId:"ais_amor", toolName:"AIS desde el amor", toolVersion:1}); }catch(e){} }
-function _aprensSaveAmor(){ try{ if(!window.Aprens||!exActual) return; if(!practica._sid) practica._sid=Date.now(); var g=function(id){var el=document.getElementById(id);return el?el.value.trim():"";}; Aprens.save({ id:practica._sid, date:hoy(), ts:practica._sid, param:"densidad", ejercicio:exActual.titulo, nivel:exActual.nivel, micro:microFinal(), cualidades:g("inCuerpo"), cuenta:g("inCuenta"), frase:g("inFrase"), vecesHoy:dia.hechos.length, intencion:intencion||"" }); Aprens.mountBar(); }catch(e){} }
+function _aprensSaveAmor(){ try{ if(!window.Aprens||!exActual) return; if(!practica._sid) practica._sid=Date.now(); var g=function(id){var el=document.getElementById(id);return el?el.value.trim():"";}; Aprens.save({ id:practica._sid, date:hoy(), ts:practica._sid, param:"densidad", ejercicio:exActual.titulo, nivel:exActual.nivel, micro:microFinal(), cualidades:g("inCuerpo"), cuenta:g("inCuenta"), frase:g("inFrase"), vecesHoy:dia.hechos.length, intencion:intencion||"", motivo:practica.motivo||"" }); Aprens.mountBar(); }catch(e){} }
 
 /* ════════════════════════ NAVEGACIÓN ════════════════════════ */
 function irPantalla(id){
@@ -624,7 +642,7 @@ function pintaMenu(){
 function abrirEjercicio(id){
   exActual = EJERCICIOS.filter(function(e){return e.id===id;})[0];
   if(!exActual) return;
-  practica = {ejid:id, reg:[null,null,null,null], micro:null};
+  practica = {ejid:id, reg:[null,null,null,null], micro:null, motivo:null};
   var n=NIVELES[exActual.nivel];
 
   document.getElementById('exIcon').textContent=exActual.icon;
@@ -658,10 +676,25 @@ function abrirEjercicio(id){
   document.getElementById('inCuenta').value='';
   document.getElementById('resumenPrev').textContent='';
 
+  document.querySelectorAll('#motivoOpts .opt').forEach(function(x){x.classList.remove('sel');});
+  var mm=document.getElementById('motivoMsg'); if(mm){mm.textContent='';mm.style.display='none';}
+
   resetTimer();
   irPantalla('s-ejercicio');
 }
 
+/* ¿Por qué vienes ahora? · 🟢 práctica en calma (programada) / 🔴 el cuerpo avisó */
+function setMotivo(k,btn){
+  practica.motivo=k;
+  document.querySelectorAll('#motivoOpts .opt').forEach(function(x){x.classList.remove('sel');});
+  if(btn) btn.classList.add('sel');
+  var m=document.getElementById('motivoMsg');
+  m.textContent = k==='verde'
+    ? 'Venir sin necesidad es lo que más enseña a tu cuerpo: no hace falta alarmarse para que vengas.'
+    : 'Está bien venir cuando el cuerpo avisa. Recuerda practicar también en calma: así tu cuerpo no necesita alarmarse para que vengas.';
+  m.style.display='block';
+}
+function motivoTxt(){ return practica.motivo==='verde'?'🟢 sin necesidad (práctica en calma)':(practica.motivo==='rojo'?'🔴 el cuerpo me avisó':'—'); }
 function setReg(qi,oi,btn){
   var row=btn.parentNode;
   row.querySelectorAll('button').forEach(function(x){x.classList.remove('sel');});
@@ -770,6 +803,9 @@ function construirResumen(){
   L.push('');
   L.push('Frase que me ha ayudado:');
   L.push(document.getElementById('inFrase').value.trim()||'—');
+  L.push('');
+  L.push('Por qué vine:');
+  L.push(motivoTxt());
   L.push('');
   L.push('Microacción con valor:');
   L.push(microFinal());

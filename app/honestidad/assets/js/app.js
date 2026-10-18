@@ -31,14 +31,19 @@
   }
 
   /* ---- Selección de palabras (zona y cualidad, multi) ---- */
-  var sel = { zona: [], cualidad: [] };
+  var sel = { zona: [], cualidad: [], motivo: [] };
   $$(".word").forEach(function (b) {
     b.addEventListener("click", function () {
       var g = b.getAttribute("data-group"), v = b.getAttribute("data-val");
       var on = b.getAttribute("aria-pressed") === "true";
+      if (g === "motivo" && !on) {   // elección única: 🟢 en calma / 🔴 el cuerpo avisó
+        $$('.word[data-group="motivo"]').forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        sel.motivo.length = 0;
+      }
       b.setAttribute("aria-pressed", on ? "false" : "true");
       var arr = sel[g]; var i = arr.indexOf(v);
       if (on) { if (i >= 0) arr.splice(i, 1); } else if (i < 0) arr.push(v);
+      if (g === "zona") { var tip = $("#nadaTip"); if (tip) tip.style.display = sel.zona.indexOf("Nada claro") >= 0 ? "block" : "none"; }
     });
   });
 
@@ -60,11 +65,13 @@
       zona: sel.zona.slice(), cualidades: sel.cualidad.slice(),
       intensidad_antes: Number(val("intAntes") || $("#intAntes").value),
       intensidad_despues: Number(val("intDespues") || $("#intDespues").value),
-      con_quien: val("conQuien"), frase: val("queDices"), paso_valor: val("pasoValor")
+      con_quien: val("conQuien"), frase: val("queDices"), paso_valor: val("pasoValor"),
+      motivo: sel.motivo[0] || ""
     };
   }
   function resumen(r) {
     var L = ["Honestidad emocional — APRENS", "Fecha: " + r.date];
+    if (r.motivo) L.push("Por qué vine: " + (r.motivo === "verde" ? "🟢 sin necesidad (práctica en calma)" : "🔴 el cuerpo me avisó"));
     if (r.zona.length) L.push("Dónde lo noto: " + r.zona.join(", "));
     if (r.cualidades.length) L.push("Cómo es: " + r.cualidades.join(", "));
     L.push("Intensidad: " + r.intensidad_antes + " → " + r.intensidad_despues);
