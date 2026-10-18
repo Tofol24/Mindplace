@@ -111,6 +111,12 @@
   .zone:hover .organ{filter:drop-shadow(0 0 3px currentColor)}
   .zone.sel .organ{filter:drop-shadow(0 0 5px currentColor)}
   .zone.sel .zbadge{filter:drop-shadow(0 2px 5px rgba(0,0,0,.25))}
+  .mapa svg{max-width:300px}
+  .zone .zbg{fill-opacity:.12;stroke:currentColor;stroke-width:6;stroke-opacity:.55;stroke-dasharray:18 12}
+  .zone:hover .zbg{fill-opacity:.22}
+  .zone.sel .zbg{fill-opacity:.28;stroke-opacity:.9;stroke-dasharray:none}
+  .zone .luz{opacity:0;transition:opacity .4s}
+  .zone.sel .luz{opacity:1}
   .leyenda{text-align:center;font-size:12.5px;color:var(--suau);margin:2px 0 12px}
 
   /* ===== Tarjetas de zona (legend / botones) ===== */
@@ -211,9 +217,9 @@
   <div class="card">
     <div class="ch-tit">Tres vías para anclar la atención hacia dentro</div>
     <div class="ch-canales">
-      <a class="ch-canal" href="https://aprens-aisdiario.netlify.app" target="_blank" rel="noopener"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="ch-go">Abrir →</span></a>
+      <a class="ch-canal" href="../index.html#/tool/herramienta_diaria" target="_top"><b>🫁 Respiración</b><span>ancla rítmica y temporal</span><span class="ch-go">Abrir →</span></a>
       <div class="ch-canal ch-act"><b>🫀 Visualización</b><span>ancla visuo-espacial</span><span class="ch-go ch-here">Estás aquí</span></div>
-      <a class="ch-canal" href="https://aprens-protocoloais.netlify.app" target="_blank" rel="noopener"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="ch-go">Abrir →</span></a>
+      <a class="ch-canal" href="../index.html#/tool/protocolo_ais" target="_top"><b>🎧 Audio guía</b><span>ancla auditiva</span><span class="ch-go">Abrir →</span></a>
     </div>
   </div>
 
@@ -234,58 +240,34 @@
 
   <div class="card" style="padding-top:18px">
     <div class="mapa">
-      <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo con tres zonas: cuello, pecho y barriga">
+      <!-- La silueta compartida del espacio APRENS (la misma de «Respiro · dos luces»):
+           al tocar una zona se enciende ahí la luz amarilla de la atención. -->
+      <svg viewBox="-180 0 1204 1536" role="img" aria-label="Mapa del cuerpo con tres zonas: cuello, pecho y barriga">
         <defs>
-          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#eaeff3"/>
-            <stop offset="1" stop-color="#dbe4ea"/>
-          </linearGradient>
+          <clipPath id="figClip"><rect x="0" y="0" width="1024" height="1536" rx="70"/></clipPath>
+          <filter id="luzBlur" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="14"/></filter>
         </defs>
-
-        <!-- silueta (no interactiva) -->
-        <g fill="url(#bodyGrad)" stroke="#cdd7df" stroke-width="1.4">
-          <ellipse cx="110" cy="46" rx="29" ry="33"/>
-          <rect x="98" y="72" width="24" height="22" rx="8"/>
-          <path d="M60,110 C46,118 42,175 50,225 C52,236 64,234 64,222 C60,180 60,145 68,118 Z"/>
-          <path d="M160,110 C174,118 178,175 170,225 C168,236 156,234 156,222 C160,180 160,145 152,118 Z"/>
-          <path d="M62,106 C58,150 58,212 70,284 C76,304 144,304 150,284 C162,212 162,150 158,106 C150,96 70,96 62,106 Z"/>
-        </g>
-
-        <!-- zonas interactivas (órganos ilustrados) -->
+        <image href="../assets/respiro/organismo.webp" x="0" y="0" width="1024" height="1536" preserveAspectRatio="xMidYMid slice" clip-path="url(#figClip)"/>
         <g class="zone" data-zona="cuello" style="color:#6f9bc0" tabindex="0" role="button" aria-label="Cuello: garganta y vías" onclick="seleccionar('cuello')">
-          <ellipse class="zbg" cx="110" cy="86" rx="22" ry="16" fill="#6f9bc0"/>
-          <g class="organ" fill="#8fb0cb" stroke="#456d8c" stroke-width="1.4" stroke-linecap="round">
-            <ellipse cx="110" cy="80" rx="9" ry="7"/>
-            <path d="M104,84 h12 v30 a6,6 0 0 1 -12,0 Z"/>
-            <line x1="105" y1="92" x2="115" y2="92" stroke="#456d8c"/>
-            <line x1="105" y1="98" x2="115" y2="98" stroke="#456d8c"/>
-            <line x1="105" y1="104" x2="115" y2="104" stroke="#456d8c"/>
-          </g>
-          <line x1="40" y1="80" x2="88" y2="84" stroke="#6f9bc0" stroke-width="2" stroke-dasharray="3 3"/>
-          <g class="zbadge"><circle cx="26" cy="80" r="14" fill="#6f9bc0"/><text x="26" y="85" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text></g>
+          <ellipse class="zbg" cx="508" cy="430" rx="95" ry="75" fill="#6f9bc0"/>
+          <circle class="luz" cx="508" cy="430" r="34" fill="#E9B458" filter="url(#luzBlur)"/>
+          <circle class="luz" cx="508" cy="430" r="12" fill="#FFFBEF"/>
+          <line x1="-80" y1="430" x2="413" y2="430" stroke="#6f9bc0" stroke-width="6" stroke-dasharray="14 12"/>
+          <g class="zbadge"><circle cx="-110" cy="430" r="52" fill="#6f9bc0"/><text x="-110" y="450" text-anchor="middle" font-size="58" font-weight="700" fill="#fff">1</text></g>
         </g>
-
         <g class="zone" data-zona="pecho" style="color:#c4744b" tabindex="0" role="button" aria-label="Pecho: corazón y pulmones" onclick="seleccionar('pecho')">
-          <ellipse class="zbg" cx="110" cy="156" rx="46" ry="42" fill="#c4744b"/>
-          <g class="organ">
-            <path d="M104,124 C92,122 74,130 70,156 C66,180 74,200 92,200 C100,200 104,192 104,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
-            <path d="M116,124 C128,122 146,130 150,156 C154,180 146,200 128,200 C120,200 116,192 116,176 Z" fill="#e0a98c" stroke="#b06a45" stroke-width="1.4"/>
-            <path d="M110,152 C104,144 92,145 91,157 C90,168 100,178 110,188 C120,178 130,168 129,157 C128,145 116,144 110,152 Z" fill="#b3502c" stroke="#8f3c1e" stroke-width="1.4"/>
-            <path d="M110,150 C110,140 112,132 116,126" fill="none" stroke="#8f3c1e" stroke-width="1.6" stroke-linecap="round"/>
-          </g>
-          <line x1="40" y1="156" x2="66" y2="156" stroke="#c4744b" stroke-width="2" stroke-dasharray="3 3"/>
-          <g class="zbadge"><circle cx="26" cy="156" r="14" fill="#c4744b"/><text x="26" y="161" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text></g>
+          <ellipse class="zbg" cx="516" cy="680" rx="210" ry="165" fill="#c4744b"/>
+          <circle class="luz" cx="516" cy="680" r="34" fill="#E9B458" filter="url(#luzBlur)"/>
+          <circle class="luz" cx="516" cy="680" r="12" fill="#FFFBEF"/>
+          <line x1="-80" y1="680" x2="306" y2="680" stroke="#c4744b" stroke-width="6" stroke-dasharray="14 12"/>
+          <g class="zbadge"><circle cx="-110" cy="680" r="52" fill="#c4744b"/><text x="-110" y="700" text-anchor="middle" font-size="58" font-weight="700" fill="#fff">2</text></g>
         </g>
-
         <g class="zone" data-zona="barriga" style="color:#6f9f78" tabindex="0" role="button" aria-label="Barriga: estómago e intestinos" onclick="seleccionar('barriga')">
-          <ellipse class="zbg" cx="110" cy="236" rx="44" ry="40" fill="#6f9f78"/>
-          <g class="organ" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M88,228 C84,248 84,266 94,278 C106,290 126,290 134,278 C144,266 140,248 136,228" stroke="#4f7a5c" stroke-width="8"/>
-            <path d="M98,244 C90,244 90,254 98,254 L122,254 C130,254 130,264 122,264 L98,264 C90,264 90,274 98,274 L122,274" stroke="#7faf86" stroke-width="6"/>
-            <path d="M114,206 C128,204 137,216 131,228 C126,238 112,241 105,233 C99,225 103,212 114,206 Z" fill="#8fbf97" stroke="#4f7a5c" stroke-width="1.4"/>
-          </g>
-          <line x1="40" y1="236" x2="68" y2="236" stroke="#6f9f78" stroke-width="2" stroke-dasharray="3 3"/>
-          <g class="zbadge"><circle cx="26" cy="236" r="14" fill="#6f9f78"/><text x="26" y="241" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text></g>
+          <ellipse class="zbg" cx="505" cy="1035" rx="200" ry="170" fill="#6f9f78"/>
+          <circle class="luz" cx="505" cy="1035" r="34" fill="#E9B458" filter="url(#luzBlur)"/>
+          <circle class="luz" cx="505" cy="1035" r="12" fill="#FFFBEF"/>
+          <line x1="-80" y1="1035" x2="310" y2="1035" stroke="#6f9f78" stroke-width="6" stroke-dasharray="14 12"/>
+          <g class="zbadge"><circle cx="-110" cy="1035" r="52" fill="#6f9f78"/><text x="-110" y="1055" text-anchor="middle" font-size="58" font-weight="700" fill="#fff">3</text></g>
         </g>
       </svg>
     </div>
@@ -609,11 +591,11 @@ function abrirZona(k){
   document.getElementById('zPasos').innerHTML = z.pasos.map(function(p){return '<li>'+esc(p)+'</li>';}).join('');
   document.getElementById('zFrase').textContent = '“'+z.frase+'”';
 
-  // orbe de respiración con el color de la zona
+  // (La bola de respiración se sustituyó por la silueta compartida RespiroAIS;
+  //  si quedara el orbe antiguo, se tiñe con el color de la zona.)
   var br=document.getElementById('breath');
-  br.style.borderColor=z.col;
-  br.style.background='radial-gradient(circle at 50% 40%,'+z.bg+',#fff)';
-  document.getElementById('breathEmoji').textContent=z.ic;
+  if(br){ br.style.borderColor=z.col; br.style.background='radial-gradient(circle at 50% 40%,'+z.bg+',#fff)'; }
+  var be=document.getElementById('breathEmoji'); if(be) be.textContent=z.ic;
   pararBreath();
 
   // chips de cualidades
