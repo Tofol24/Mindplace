@@ -21,6 +21,24 @@
 (function (global) {
   'use strict';
 
+  /* Enlace «Entrénalo jugando» (Juegos AIS de exposición imaginada). Se resuelve
+     desde la ruta de este script para funcionar en cualquier página de la app; si
+     la página está dentro del hub (iframe), navega con el router del hub. */
+  var SELF_SRC_J = (document.currentScript && document.currentScript.src) || '';
+  function juegoLink(sub, label, cls) {
+    var root = SELF_SRC_J ? SELF_SRC_J.replace(/js\/vineta-[a-z]+\.js.*$/, '') : '../';
+    return '<br><a class="' + cls + '" style="display:inline-block;margin-top:8px;font-weight:700;color:inherit" href="' + root + '#/tool/juegos_exposicion/' + sub +
+      '" target="_top" data-aprens-juego="' + sub + '">' + label + '</a>';
+  }
+  if (!global.__aprensJuegoLinks) {
+    global.__aprensJuegoLinks = true;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-aprens-juego]');
+      if (!a) return;
+      try { var h = global.top; if (h && h.APRENS_TOOLS) { e.preventDefault(); h.location.hash = '#/tool/juegos_exposicion/' + a.getAttribute('data-aprens-juego'); } } catch (_) {}
+    });
+  }
+
   var CSS = [
     '.vh{display:block}',
     '.vh-t{font-weight:600;font-size:12px;color:var(--azul,#1B4F8C);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}',
@@ -156,6 +174,7 @@
       c3: 'Mientras <b>señalo mi barriga</b>, digo: <b>«No sé por qué…»</b>. Así cierro la puerta a justificar: el dolor <b>no queda atado a un porqué</b>.',
       c4: '<b>«…pero noto una sensación aquí y quería compartirlo.»</b> Con tono sereno. Es mi conciencia <b>dando la cara por mi cuerpo</b>: la seguridad no depende de cómo responda el otro.',
       c5: 'Sin la campana delante, <b>la atención se abre</b>: vuelvo a percibir con <b>amplitud</b> lo que pasa —el gesto, el café, la luz—, no solo lo que confirma mi relato.',
+      juego: '🎮 Entrénalo jugando: La campana →',
       pie: '<b>Primero reconocer, después explicar.</b> El «no sé por qué» no niega lo que sabes: suspende un momento la exigencia de explicarlo, para que la explicación llegue después como <b>información</b> y no como calmante. Si la causa es evidente: «Sé que lo ocurrido me ha afectado, pero antes quiero reconocer que noto esto aquí». Practícalo también en calma, y poco a poco: a solas → con tu psicólogo/a → con personas de confianza.',
       sum: 'Ver cómo se hace la honestidad emocional'
     },
@@ -169,6 +188,7 @@
       c3: 'Mentre <b>assenyalo la panxa</b>, dic: <b>«No sé per què…»</b>. Així tanco la porta a justificar: el dolor <b>no queda lligat a un perquè</b>.',
       c4: '<b>«…però noto una sensació aquí i volia compartir-ho.»</b> Amb to serè. És la meva consciència <b>donant la cara pel meu cos</b>: la seguretat no depèn de com respongui l\'altre.',
       c5: 'Sense la campana davant, <b>l\'atenció s\'obre</b>: torno a percebre amb <b>amplitud</b> el que passa —el gest, el cafè, la llum—, no només el que confirma el meu relat.',
+      juego: '🎮 Entrena-ho jugant: La campana →',
       pie: '<b>Primer reconèixer, després explicar.</b> El «no sé per què» no nega el que saps: suspèn un moment l\'exigència d\'explicar-ho, perquè l\'explicació arribi després com a <b>informació</b> i no com a calmant. Si la causa és evident: «Sé que el que ha passat m\'ha afectat, però abans vull reconèixer que noto això aquí». Practica-ho també en calma, i a poc a poc: tot sol → amb el teu psicòleg/a → amb persones de confiança.',
       sum: 'Veure com es fa l\'honestedat emocional'
     }
@@ -193,7 +213,7 @@
         panel(4, svg4(L), L.c4) +
         panel(5, svg5(L), L.c5) +
       '</div>' +
-      (opts.pie !== false ? '<div class="vh-pie">' + L.pie + '</div>' : '');
+      (opts.pie !== false ? '<div class="vh-pie">' + L.pie + (opts.juego !== false ? juegoLink('campana', L.juego, 'vh-juego') : '') + '</div>' : '');
 
     var sil = null;
     if (useSil) {

@@ -22,6 +22,24 @@
 (function (global) {
   'use strict';
 
+  /* Enlace «Entrénalo jugando» (Juegos AIS de exposición imaginada). Se resuelve
+     desde la ruta de este script para funcionar en cualquier página de la app; si
+     la página está dentro del hub (iframe), navega con el router del hub. */
+  var SELF_SRC_J = (document.currentScript && document.currentScript.src) || '';
+  function juegoLink(sub, label, cls) {
+    var root = SELF_SRC_J ? SELF_SRC_J.replace(/js\/vineta-[a-z]+\.js.*$/, '') : '../';
+    return '<br><a class="' + cls + '" style="display:inline-block;margin-top:8px;font-weight:700;color:inherit" href="' + root + '#/tool/juegos_exposicion/' + sub +
+      '" target="_top" data-aprens-juego="' + sub + '">' + label + '</a>';
+  }
+  if (!global.__aprensJuegoLinks) {
+    global.__aprensJuegoLinks = true;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-aprens-juego]');
+      if (!a) return;
+      try { var h = global.top; if (h && h.APRENS_TOOLS) { e.preventDefault(); h.location.hash = '#/tool/juegos_exposicion/' + a.getAttribute('data-aprens-juego'); } } catch (_) {}
+    });
+  }
+
   var CSS = [
     '.va{display:block}',
     '.va-t{font-weight:600;font-size:12px;color:var(--azul,#1B4F8C);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}',
@@ -124,7 +142,7 @@
         panel(2, svg2(), CAP2) +
         panel(3, useSil ? '<div class="va-sil3"><div class="va-silbox"></div>' + svg3b() + '</div>' : svg3(), CAP3) +
       '</div>' +
-      (opts.pie !== false ? '<div class="va-pie">' + PIE + cta + '</div>' : '');
+      (opts.pie !== false ? '<div class="va-pie">' + PIE + cta + (opts.juego !== false ? juegoLink('carrusel', '🎮 Entrénalo jugando: El carrusel →', 'va-juego') : '') + '</div>' : '');
 
     var sil = null;
     if (useSil) {

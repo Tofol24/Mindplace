@@ -21,6 +21,8 @@
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
       ids:["ais_basicas","ais_curiosidad","acompanar_sensacion","ais_amor","ais_muscular","mapa_atencion_interna","honestidad_emocional","protocolo_ais","herramienta_diaria"] },
+    { emoji:"🎮", label:"Juegos AIS · entrenar jugando", desc:"Interiorizar el AIS y la TEC de manera lúdica: primero aparecer (Sonar, Globo de quietud) y después permanecer con escenas imaginadas (la campana, el carrusel, llegar a casa, puertas).",
+      ids:["juegos_ais","juegos_exposicion"] },
     { emoji:"🔍", label:"Check-in rápido", desc:"¿Dónde está tu atención ahora mismo? Si ya lo sabes, regístralo y practica; si no, deja que el detective lo deduzca.",
       img:"tools-standalone/assets/editorial/mapa-interno.webp",
       ids:["estado_mono","donde_esta_mono"] },

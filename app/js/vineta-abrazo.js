@@ -23,6 +23,24 @@
 (function (global) {
   'use strict';
 
+  /* Enlace «Entrénalo jugando» (Juegos AIS de exposición imaginada). Se resuelve
+     desde la ruta de este script para funcionar en cualquier página de la app; si
+     la página está dentro del hub (iframe), navega con el router del hub. */
+  var SELF_SRC_J = (document.currentScript && document.currentScript.src) || '';
+  function juegoLink(sub, label, cls) {
+    var root = SELF_SRC_J ? SELF_SRC_J.replace(/js\/vineta-[a-z]+\.js.*$/, '') : '../';
+    return '<br><a class="' + cls + '" style="display:inline-block;margin-top:8px;font-weight:700;color:inherit" href="' + root + '#/tool/juegos_exposicion/' + sub +
+      '" target="_top" data-aprens-juego="' + sub + '">' + label + '</a>';
+  }
+  if (!global.__aprensJuegoLinks) {
+    global.__aprensJuegoLinks = true;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-aprens-juego]');
+      if (!a) return;
+      try { var h = global.top; if (h && h.APRENS_TOOLS) { e.preventDefault(); h.location.hash = '#/tool/juegos_exposicion/' + a.getAttribute('data-aprens-juego'); } } catch (_) {}
+    });
+  }
+
   var CSS = [
     '.vb{display:block}',
     '.vb-t{font-weight:600;font-size:12px;color:var(--azul,#1B4F8C);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}',
@@ -121,6 +139,7 @@
       c3: '<b>Entro y abrazo</b> a mi pareja o a mis hijos con la atención aún en la barriga. No es un abrazo automático: es un <b>abrazo sentido</b>.',
       c4: 'Lo que siento —por <b>doloroso o vulnerable</b> que sea— <b>tiene sitio en mi manada</b>. Nada de lo que siento es una amenaza: el dolor nos hace <b>cómplices</b>, no nos aleja.',
       nube: 'lo que duele',
+      juego: '🎮 Entrénalo jugando: Llegar a casa →',
       pie: 'El abrazo sentido <b>valida y da espacio</b>: le enseña a tu cuerpo que cualquier dolor, sea el que sea, tiene cabida en tu <b>manada segura</b>. Por eso deja de ser amenazante, y cambian tu forma de vivir el día a día y tu relación con los tuyos. Si quieres, acompáñalo con la frase honesta: «No sé por qué, pero hoy lo noto aquí».'
     },
     ca: {
@@ -130,6 +149,7 @@
       c3: '<b>Entro i abraço</b> la meva parella o els meus fills amb l\'atenció encara a la panxa. No és una abraçada automàtica: és una <b>abraçada sentida</b>.',
       c4: 'El que sento —per <b>dolorós o vulnerable</b> que sigui— <b>té lloc a la meva manada</b>. Res del que sento és una amenaça: el dolor ens fa <b>còmplices</b>, no ens allunya.',
       nube: 'el que fa mal',
+      juego: '🎮 Entrena-ho jugant: Arribar a casa →',
       pie: 'L\'abraçada sentida <b>valida i dona espai</b>: ensenya al teu cos que qualsevol dolor, sigui quin sigui, té cabuda a la teva <b>manada segura</b>. Per això deixa de ser amenaçant, i canvien la teva manera de viure el dia a dia i la teva relació amb els teus. Si vols, acompanya-la amb la frase honesta: «No sé per què, però avui ho noto aquí».'
     }
   };
@@ -152,7 +172,7 @@
         panel(3, svg3(), L.c3) +
         panel(4, svg4().replace('LBL', esc(L.nube)), L.c4) +
       '</div>' +
-      (opts.pie !== false ? '<div class="vb-pie">' + L.pie + '</div>' : '');
+      (opts.pie !== false ? '<div class="vb-pie">' + L.pie + (opts.juego !== false ? juegoLink('casa', L.juego, 'vb-juego') : '') + '</div>' : '');
 
     var sil = null;
     if (useSil) {

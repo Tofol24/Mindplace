@@ -137,8 +137,11 @@ function render(){
     if(x.vin && VIN[tipo] && VIN[tipo][0]) go='<button type="button" class="go" data-vin="'+i+'" data-tipo="'+tipo+'" style="border:none;cursor:pointer;font-family:inherit">'+esc(t.go)+'</button>'
       +'<a class="go alt" href="'+toolLink(x.tool)+'" target="_top">'+VIN[tipo][1]+'</a>'
       +'<div class="vinbox" id="vin'+i+'" hidden></div>';
+    // Cada herramienta, entrenada jugando (Juegos AIS · bloques 1 y 2), mismo orden en ES y CA.
+    var JG = ["juegos_exposicion/carrusel","juegos_exposicion/casa","juegos_exposicion/campana","juegos_ais/globo","juegos_exposicion/puertas","juegos_ais/sonar"][i];
+    var juego = JG ? '<a class="go alt" href="'+toolLink(JG)+'" target="_top" style="margin-left:6px">'+(LANG==='ca'?'🎮 Entrena-ho jugant →':'🎮 Entrénalo jugando →')+'</a>' : '';
     return '<div class="tool"><div class="tn"><span class="num">'+(i+1)+'</span><span class="tt">'+esc(x.tt)+'</span></div>'+
-      '<div class="when">'+esc(x.when)+'</div><div class="tx">'+x.tx+'</div>'+frase+go+'</div>';
+      '<div class="when">'+esc(x.when)+'</div><div class="tx">'+x.tx+'</div>'+frase+go+juego+'</div>';
   }).join('');
   document.getElementById('app').innerHTML=
     '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
