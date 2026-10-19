@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v174";
+const CACHE = "aprens-v175";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -19,6 +19,7 @@ const SHELL = [
   "./js/app.js",
   "./js/respiro-ais.js",
   "./js/vineta-atencion.js",
+  "./js/comprension.js",
   "./js/vineta-abrazo.js",
   "./js/vineta-honestidad.js",
   "./js/descarga-segura.js",

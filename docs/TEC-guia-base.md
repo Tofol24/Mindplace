@@ -595,3 +595,7 @@ Cada día: mañana (práctica de la etapa) → un paso → STOP a mediodía (vi�
 CV desde la etapa 2, ITI desde la 3). El psicólogo fija la etapa con
 `#/tool/recorrido_tec/etapa-N`. **Al crear una herramienta o material
 psicoeducativo nuevo, decidir en qué etapa y en qué posición entra.**
+
+### 16.1 «¿Lo he entendido?» — comprobación de la psicoeducación
+
+Tras cada vídeo y cada lectura clave del recorrido hay 5 preguntas (`app/js/comprension.js`): verdadero/falso sobre creencias habituales, situaciones cotidianas y elección de la idea correcta. Es formativa, no un instrumento de evaluación: cada respuesta trae su explicación, no hay nota de aprobado y al final se indica qué ideas repasar, la seguridad percibida (1–5) y un «explícalo con tus palabras» opcional. Todo pasa al resumen que el paciente envía a su psicólogo/a. Las preguntas de los vídeos salen de su transcripción; las de las lecturas, del texto de cada pieza. Si se cambia un vídeo o una lectura, revisar sus preguntas.
