@@ -143,6 +143,10 @@
   .safety{font-size:12.5px;color:var(--muted);margin-top:22px;border-top:1px solid var(--line);padding-top:12px;}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important;} }
   details.vid{margin-top:8px;}
+  details.cqd{margin-top:8px;}
+  details.cqd summary{cursor:pointer;font-weight:700;color:var(--ok);font-size:13.5px;list-style:none;display:inline-flex;gap:6px;align-items:center;background:var(--ok-soft);border-radius:18px;padding:7px 13px;}
+  details.cqd summary::-webkit-details-marker{display:none;}
+  details.cqd .cqr{background:var(--ok);color:#fff;border-radius:10px;padding:0 7px;font-size:12px;}
   details.vid summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;list-style:none;display:inline-flex;background:var(--acc-soft);border-radius:18px;padding:7px 13px;}
   details.vid summary::-webkit-details-marker{display:none;}
   details.vid video{display:block;width:100%;max-width:320px;aspect-ratio:9/16;object-fit:contain;background:#000;border-radius:14px;margin-top:8px;}
@@ -156,6 +160,7 @@
 </style>
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
+<script src="../js/comprension.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -198,7 +203,7 @@
     <div class="card" id="semana"></div>
     <div class="card">
       <b>Enviar a mi psicólogo/a</b>
-      <p class="small muted">Un resumen breve de tu recorrido (etapa, práctica, conducta valiosa y autoevaluación). Tú decides si lo envías.</p>
+      <p class="small muted">Un resumen breve de tu recorrido (etapa, práctica, conducta valiosa, autoevaluación y lo que has entendido de los vídeos y lecturas). Tú decides si lo envías.</p>
       <div class="row"><button class="btn" id="btnCopy" type="button">Copiar resumen</button><button class="btn ghost" id="btnShare" type="button">Compartir…</button></div>
       <pre id="resumen" class="small" style="white-space:pre-wrap;background:var(--bg2);border-radius:10px;padding:10px;margin-top:6px"></pre>
     </div>
@@ -478,7 +483,34 @@
     for(var i=0;i<e.pasos.length;i++){ if(!t[i]) return i; }
     return -1;
   }
-  function pasoHTML(p){ return specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join(""); }
+  function pasoHTML(p){ return specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join("") + quizHTML(p[1]); }
+
+  /* ---------- «¿Lo he entendido?»: 5 preguntas tras cada vídeo o lectura ---------- */
+  // Id de las preguntas de una pieza: vídeos por su nombre, lecturas del hub y secciones del laboratorio.
+  function quizId(spec){
+    var k = spec.split(":")[0], v = spec.split(":")[1]||"";
+    if(k==="video") return "v-"+v;
+    if(spec==="sec:porque") return "porque";
+    if(spec==="sec:sec-el-ais-en-un-vistazo") return "ais-vistazo";
+    if(v.indexOf("laboratorio_tec/s-")===0) return "lab-"+v.slice(18);
+    return v;
+  }
+  function quizHTML(spec){
+    var id = quizId(spec);
+    if(!window.Comprension || !Comprension.tiene(id)) return "";
+    var r = (S.quiz||{})[id];
+    return '<details class="cqd" data-quiz="'+esc(id)+'"><summary>✅ ¿Lo he entendido? · 5 preguntas'+(r ? ' <span class="cqr">'+r.ok+'/'+r.n+'</span>' : '')+'</summary><div class="cqBox"></div></details>';
+  }
+  document.addEventListener("toggle", function(ev){
+    var det = ev.target; if(!det.matches || !det.matches("details.cqd") || !det.open) return;
+    var box = det.querySelector(".cqBox"); if(box.childNodes.length) return;
+    var id = det.getAttribute("data-quiz");
+    Comprension.mount(box, { id:id, prev:(S.quiz||{})[id], onDone:function(r){
+      (S.quiz = S.quiz || {})[id] = r; save();
+      toast(r.rep.length ? "Guardado. Lo que queda por repasar lo verás también en tu resumen." : "Guardado. ¡Ideas claras!");
+      renderAll();
+    }});
+  }, true);
   var adelantarAbierto = false;
   function renderHoy(){
     stageHead();
@@ -684,6 +716,16 @@
   }
 
   /* ========================= MI SEMANA ========================= */
+  // Comprensión de la psicoeducación para el resumen al psicólogo/a.
+  function quizResumen(){
+    var q = S.quiz || {}, ids = Object.keys(q); if(!ids.length) return "";
+    return "Comprensión de la psicoeducación («¿Lo he entendido?»):\n" + ids.map(function(id){
+      var r = q[id];
+      return "· " + Comprension.titulo(id) + ": " + r.ok + "/" + r.n + (r.conf ? " · seguridad " + r.conf + "/5" : "")
+        + (r.rep.length ? " · repasar: " + r.rep.map(function(i){ return Comprension.idea(id, i); }).join("; ") : "")
+        + (r.txt ? "\n   Con mis palabras: «" + r.txt + "»" : "");
+    }).join("\n") + "\n";
+  }
   function renderSemana(){
     var m = metr(), u7 = ultimos(7), e = E[S.etapa];
     var dots = u7.map(function(f){ var d = S.dias[f]||{}, n=(d.m?1:0)+(d.md?1:0)+(d.n?1:0);
@@ -701,6 +743,7 @@
       + "Ruido interno medio (7 d): " + (m.ruido==null?"—":m.ruido+"/10") + "\n"
       + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días\n" : "")
       + (S.etapa>=3 ? "ITI (7 d): " + (m.itiAhora==null?"—":m.itiAhora+" %") + "\n" : "")
+      + quizResumen()
       + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.Cs!=null ? " · continuidad " + ev.Cs + " s" : "") + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
     $("#resumen").textContent = txt;
     $("#btnCopy").onclick = function(){ try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
