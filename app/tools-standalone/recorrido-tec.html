@@ -306,7 +306,8 @@
         ["Laboratorio: la cadena que mantiene el malestar", "tool:laboratorio_tec/s-cadena"],
         ["Vídeo: cómo funciona tu cerebro", "video:cerebro"],
         ["Laboratorio: los cuatro pilares y las tres puertas (latencia, densidad, continuidad)", "tool:laboratorio_tec/s-pilares", ["sec:sec-las-tres-puertas-por-donde-entrar"]],
-        ["El AIS en un vistazo y las herramientas AIS básicas", "sec:sec-el-ais-en-un-vistazo", ["tool:ais_basicas","pdf:eines-ais-basiques.pdf"]]
+        ["El AIS en un vistazo y las herramientas AIS básicas", "sec:sec-el-ais-en-un-vistazo", ["tool:ais_basicas","pdf:eines-ais-basiques.pdf"]],
+        ["Juego: el laboratorio de Pavlov · por qué el «¿por qué?» se vuelve una campana", "tool:juegos_exposicion/pavlov"]
       ],
       crit:[["auto","pasosHechos","He visto todas las piezas de la etapa"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
     },
@@ -325,7 +326,8 @@
         ["AIS desde la curiosidad", "tool:ais_curiosidad"],
         ["Laboratorio: sentir, pensar, interpretar · ¿AIS o hipervigilancia?", "tool:laboratorio_tec/s-sentir"],
         ["Protocolo AIS en audio (vía auditiva)", "tool:protocolo_ais"],
-        ["AIS muscular: tensar y soltar (vía física)", "tool:ais_muscular"]
+        ["AIS muscular: tensar y soltar (vía física)", "tool:ais_muscular"],
+        ["Juegos AIS: aparecer jugando (Sonar con ojos cerrados y Globo de quietud)", "tool:juegos_ais", ["tool:juegos_ais/sonar","tool:juegos_ais/globo"]]
       ],
       crit:[["auto","programada","He hecho práctica programada al menos 10 de los últimos 14 días"],["auto","proporcion","Practico más en calma que cuando estoy mal"],
             ["chk","c2a","Practico aunque no esté mal: ya no espero al malestar para hacerlo"],["chk","c2b","Puedo localizar una sensación en el cuerpo sin tener que explicar lo que me pasa"],["chk","c2c","Ya no me pregunto «¿para qué sirve si no me calma?»"]]
@@ -345,6 +347,8 @@
         ["Honestidad emocional: «no sé por qué, pero lo noto aquí»", "tool:honestidad_emocional"],
         ["Vídeo: «El yo que se construyó sin ti»", "video:yo"],
         ["Estoy aquí conmigo: quedarme sin exigirme", "tool:estoy_aqui_conmigo"],
+        ["Juego: La campana · honestidad emocional en una escena imaginada", "tool:juegos_exposicion/campana"],
+        ["Juego: El carrusel · parar la rumiación (para · respira · vuelve)", "tool:juegos_exposicion/carrusel"],
         ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion", ["tool:salidas_paso_a_paso"]]
       ],
       crit:[["auto","programada","Sigo con la práctica programada (10 de 14 días)"],["auto","iti","Mi tolerancia (ITI) sube o se mantiene alta"],
@@ -360,7 +364,8 @@
         ["Mi semana con foco y valores (revísala con lo aprendido)", "tool:agenda_atencional"],
         ["Vídeo: la ira, con Tòfol Villalonga", "video:ira"],
         ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta", ["tool:control_ira"]],
-        ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_basicas"],
+        ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_basicas", ["tool:juegos_exposicion/puertas"]],
+        ["Juego: Puertas · respiración curiosa al entrar y al salir de cada lugar", "tool:juegos_exposicion/puertas"],
         ["Laboratorio: la teoría aplicada a tu situación", "tool:laboratorio_tec/s-perfiles"],
         ["Laboratorio: mide tus L·D·C", "tool:laboratorio_tec/s-mio"]
       ],
@@ -375,6 +380,7 @@
         ["Reevaluación: cuestionario de seguimiento", "tool:screening_tec", ["tool:cuestionario_tec"]],
         ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
         ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional"],
+        ["Juego: Llegar a casa · abrazo sentido, cómplices del dolor (también en pareja o familia)", "tool:juegos_exposicion/casa"],
         ["Una frase que te acompañe, como fondo de pantalla", "tool:fondos_frases"],
         ["Tracker TEC: mi rutina de paradas", "tool:tracker_tec"],
         ["Laboratorio: el espacio APRENS completo y el glosario", "tool:laboratorio_tec/s-espacio", ["tool:laboratorio_tec/s-glosario"]],
@@ -394,6 +400,7 @@
     if(v.indexOf("laboratorio_tec")===0) return ["🔬","Laboratorio TEC"];
     if(/^(quien_conduce|la_manada|modelo_atencional|historia_|donde_esta_mono|estado_mono)/.test(v)) return ["📖","Psicoeducación"];
     if(/^(cuestionario_tec|screening_tec|tracker_)/.test(v)) return ["📏","Medida"];
+    if(/^juegos_/.test(v)) return ["🎮","Juego"];
     return ["🫁","Práctica"];
   }
   function nombreSpec(spec){
@@ -402,7 +409,8 @@
     if(k==="sec") return "Abrir en la app";
     var alt = {historia_animada:"Versión animada", historia_manada:"Versión animada", historia_control:"Versión animada", screening_tec:"Cuestionario de seguimiento",
       estado_mono:"Check-in con el cuento", respiro_ais:"Respiro · dos luces", ais_basicas:"Herramientas AIS básicas", control_ira:"Control de ira",
-      salidas_paso_a_paso:"Paso a paso · salidas", cuestionario_tec:"Cuestionario TEC", "laboratorio_tec/s-glosario":"Glosario"};
+      salidas_paso_a_paso:"Paso a paso · salidas", cuestionario_tec:"Cuestionario TEC", "laboratorio_tec/s-glosario":"Glosario",
+      "juegos_ais/sonar":"Sonar", "juegos_ais/globo":"Globo de quietud", "juegos_exposicion/puertas":"Juego: Puertas"};
     return alt[v] || "Abrir";
   }
   function videoHTML(name, open){

@@ -237,7 +237,10 @@ es:{
   fin_txt:m=>`Ahora deja el móvil y haz tu paso: ${m}.`,
   frase_adulto:"«Respirar no es relajarte: es aparecer.»",
   frase_peques:"«Cada vez que vuelves, tu cuerpo nota que estás con él.»",
-  inicio:"Volver al inicio"
+  inicio:"Volver al inicio",
+  expo_t:"Siguiente paso: permanecer",
+  expo_txt:"Cuando ya aparezcas con facilidad, los juegos de exposición imaginada te ayudan a quedarte con escenas que activan: la campana del «¿por qué?», el carrusel de la rumiación, llegar a casa con algo que duele y las puertas del día.",
+  expo_btn:"🛎️ Juegos de exposición imaginada"
 },
 ca:{
   eyebrow:"APRENS · AIS · Jocs", h1:"Jocs AIS",
@@ -314,7 +317,10 @@ ca:{
   fin_txt:m=>`Ara deixa el mòbil i fes el teu pas: ${m}.`,
   frase_adulto:"«Respirar no és relaxar-te: és aparèixer.»",
   frase_peques:"«Cada vegada que tornes, el teu cos nota que hi ets.»",
-  inicio:"Tornar a l'inici"
+  inicio:"Tornar a l'inici",
+  expo_t:"Següent pas: romandre",
+  expo_txt:"Quan ja aparesquis amb facilitat, els jocs d'exposició imaginada t'ajuden a quedar-te amb escenes que activen: la campana del «per què?», el cavallet de la rumiació, arribar a casa amb alguna cosa que fa mal i les portes del dia.",
+  expo_btn:"🛎️ Jocs d'exposició imaginada"
 }};
 
 /* ---------------- estado persistente ---------------- */
@@ -434,8 +440,11 @@ function hub(){
       <div class="jardin">${planta("m","🌱")}${planta("md","🌿")}${planta("n","🌸")}</div>
       <p class="muted" style="margin:0 0 6px">${t("jardin_txt")}</p>
       <p class="muted" style="margin:0;font-weight:700">${t("semana")(sem)}</p></div>
-    <div class="card"><h2>${t("como")}</h2><p class="muted" style="margin:0">${t("como_txt")}</p></div>`;
+    <div class="card"><h2>${t("como")}</h2><p class="muted" style="margin:0">${t("como_txt")}</p></div>
+    <div class="card"><h2>${t("expo_t")}</h2><p class="muted" style="margin:0 0 10px">${t("expo_txt")}</p>
+      <a class="btn big" style="text-decoration:none" href="juegos-exposicion.html" onclick="return irExpo()">${t("expo_btn")}</a></div>`;
 }
+function irExpo(){ try{ if(window.parent!==window && window.parent.APRENS_TOOLS){ window.parent.location.hash="#/tool/juegos_exposicion"; return false; } }catch(e){} return true; }
 
 /* ---------------- INTRO de cada juego ---------------- */
 const DURS = { sonar:{ adulto:[3,5,7], peques:[1.5,2,3] }, globo:{ adulto:[2,3,5], peques:[1,2,3] } };
@@ -737,6 +746,13 @@ document.addEventListener("visibilitychange", () => { if(document.visibilityStat
 
 document.documentElement.lang = st.lang;
 render();
+// Enlace profundo desde otras herramientas: #/tool/juegos_ais/<juego> llega aquí como #<juego>.
+function abrirDesdeHash(){
+  const h = (location.hash||"").replace(/^#\/?/,"");
+  if((h==="sonar" || h==="globo") && !(R && !R.fin)) abrir(h);
+}
+window.addEventListener("hashchange", abrirDesdeHash);
+abrirDesdeHash();
 </script>
 
 <!-- ===================== APRENS CORE (incrustado) ===================== -->

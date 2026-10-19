@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F4EFE6">
+<title>Juegos AIS · exposición imaginada · APRENS</title>
+<style>
+:root{--azul:#565a41;--azulLt:#e8ead9;--verde:#5c7d54;--naranja:#C2704F;--rojo:#b0432f;--gris:#6f665b;--oro:#a9781f;
+  --amarillo:#e8b93a;--aire:#6f9fc4;--noche:#1c1a22;--papel:#F4EFE6;--tinta:#2A2622;--linea:#e0d8c8;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:var(--papel);min-height:100vh;color:var(--tinta);margin:0;padding-bottom:env(safe-area-inset-bottom);overflow-x:hidden;}
+.wrap{max-width:540px;margin:0 auto;padding:18px 16px 90px;}
+button{font-family:var(--sans);}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;}
+.eyebrow{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);font-weight:600;}
+.langs{display:flex;gap:4px;flex:none;}
+.langs button{border:1.5px solid var(--linea);background:#fff;color:var(--gris);border-radius:20px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer;}
+.langs button.on{background:var(--azul);border-color:var(--azul);color:#fff;}
+h1{font-family:var(--serif);font-size:clamp(27px,7.6vw,36px);line-height:1.1;margin:6px 0 6px;color:var(--azul);}
+.tag{font-family:var(--serif);font-style:italic;font-size:17px;color:#4a4339;margin:0 0 16px;line-height:1.42;}
+h2{font-family:var(--serif);font-size:20px;color:var(--azul);margin:0 0 8px;}
+p{line-height:1.5;}
+.muted{color:var(--gris);font-size:14px;line-height:1.5;}
+.card{background:#fff;border:1px solid var(--linea);border-radius:18px;padding:16px;margin:0 0 14px;box-shadow:0 2px 10px rgba(74,63,48,.06);}
+.card.soft{background:#fbf8f1;}
+.seg{display:flex;background:#fff;border:1.5px solid var(--linea);border-radius:30px;padding:3px;margin:0 0 16px;}
+.seg button{flex:1;border:none;background:transparent;border-radius:26px;padding:10px;font-size:15px;font-weight:700;color:var(--gris);cursor:pointer;}
+.seg button.on{background:var(--azul);color:#fff;}
+.lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris);font-weight:700;margin:0 0 8px;}
+.juego{display:flex;gap:14px;align-items:flex-start;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;background:none;border:none;padding:0;}
+.juego .ico{flex:none;width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:29px;background:#f3ecdd;}
+.juego h3{font-family:var(--serif);font-size:19.5px;margin:0 0 3px;color:var(--azul);}
+.juego .fase{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--oro);font-weight:700;margin:0 0 4px;}
+.juego p{margin:0 0 4px;font-size:14.5px;line-height:1.45;color:#3f3a33;}
+.estado{font-size:13px;font-weight:700;color:var(--verde);}
+.estado.no{color:var(--gris);font-weight:600;}
+.btn{border:none;border-radius:40px;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none;}
+.big{width:100%;padding:17px;font-size:17.5px;background:var(--azul);color:#fff;box-shadow:0 6px 18px rgba(74,63,48,.26);margin-top:4px;}
+.big:disabled{opacity:.42;box-shadow:none;}
+.big:active{transform:scale(.97);}
+.big.sec{background:#fff;color:var(--azul);border:2px solid var(--azulLt);box-shadow:none;}
+.mini{background:transparent;color:var(--gris);font-size:14.5px;padding:10px 4px;font-weight:600;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+.chip{border:2px solid var(--linea);background:#fff;border-radius:24px;padding:9px 14px;font-size:14.5px;font-weight:600;color:#3a3630;cursor:pointer;text-align:left;}
+.chip.sel{border-color:var(--verde);background:#eef5ea;color:var(--verde);}
+.chip:disabled{opacity:.45;cursor:default;}
+.escala{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin:6px 0 4px;}
+.escala button{border:1.5px solid var(--linea);background:#fff;border-radius:8px;padding:9px 0;font-size:14px;font-weight:700;color:#4a4339;cursor:pointer;}
+.escala button.sel{background:var(--azul);border-color:var(--azul);color:#fff;}
+.escala3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 4px;}
+.escala3 button{border:2px solid var(--linea);background:#fff;border-radius:14px;padding:12px 4px;font-size:15px;font-weight:700;color:#4a4339;cursor:pointer;}
+.escala3 button.sel{border-color:var(--verde);background:#eef5ea;color:var(--verde);}
+.q{margin:0 0 16px;}
+.q>p{margin:0 0 2px;font-weight:600;font-size:15.5px;}
+input.txt,textarea.txt,select.txt{width:100%;border:2px solid var(--linea);border-radius:14px;padding:12px 14px;font-size:16px;font-family:var(--sans);margin:0 0 14px;background:#fff;}
+textarea.txt{min-height:120px;resize:vertical;}
+.frase{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--azul);text-align:center;margin:18px 6px;line-height:1.45;}
+.aviso{background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.5;color:#6f4f12;margin:0 0 14px;}
+.aviso.rojo{background:#fbecea;border-color:var(--rojo);color:#6e2419;}
+.aviso.ok{background:#eef5ea;border-color:var(--verde);color:#2f4a29;}
+.lista{list-style:none;margin:0 0 12px;padding:0;}
+.lista li{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #efe8da;}
+.lista li:last-child{border-bottom:none;}
+.nivel{flex:none;width:28px;height:28px;border-radius:50%;background:#f3ecdd;color:var(--oro);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13.5px;}
+.escenabtn{flex:1;text-align:left;background:none;border:none;font:inherit;color:inherit;cursor:pointer;padding:0;}
+.escenabtn b{display:block;font-size:15.5px;}
+.escenabtn span{font-size:13px;color:var(--gris);}
+.escenabtn.sel b{color:var(--verde);}
+.escenabtn:disabled{opacity:.45;cursor:default;}
+.pasos{margin:0 0 6px;padding-left:20px;}
+.pasos li{margin:0 0 7px;line-height:1.5;font-size:15px;}
+details.vin{margin:4px 0 12px;}
+details.vin>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--azul);list-style:none;}
+details.vin>summary::-webkit-details-marker{display:none;}
+details.vin>div{margin-top:10px;}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin:4px 0 12px;}
+.num{background:#f7f3ea;border-radius:14px;padding:12px 6px;text-align:center;}
+.num b{display:block;font-family:var(--serif);font-size:26px;color:var(--azul);line-height:1.1;}
+.num span{font-size:12px;color:var(--gris);font-weight:600;}
+.spark{width:100%;height:84px;display:block;margin:4px 0 6px;}
+.respiro-box{max-width:230px;margin:0 auto 6px;}
+.respiro-box .ra-ui,.respiro-box .ra-count,.respiro-box .ra-legend{display:none!important;}
+.zonas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 14px;}
+.zonas button{border:2px solid var(--linea);background:#fff;border-radius:14px;padding:12px 4px;font-size:14.5px;font-weight:700;color:#4a4339;cursor:pointer;}
+.zonas button.sel{border-color:var(--amarillo);background:#fbf1d6;color:#6b4e0e;}
+.flotar-parar{position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9000;border:none;border-radius:30px;background:#fff;color:var(--rojo);border:2px solid #efc9c2;font-weight:800;font-size:14px;padding:10px 15px;box-shadow:0 6px 18px rgba(0,0,0,.12);cursor:pointer;}
+
+/* ===== escenario a pantalla completa ===== */
+.stage{position:fixed;inset:0;z-index:10000;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;}
+.stage[hidden]{display:none;}
+.st-dark{background:linear-gradient(180deg,#24212b 0%,#2f2a36 60%,#3a3140 100%);color:#e9e2d4;}
+.st-top{position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:6;gap:10px;}
+.st-top .ttl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.65;font-weight:700;}
+.st-parar{border:none;border-radius:24px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer;background:rgba(255,255,255,.12);color:#f2c9bf;}
+.st-light .st-parar{background:#fff;color:var(--rojo);border:1.5px solid #efc9c2;}
+.st-txt{position:absolute;left:20px;right:20px;text-align:center;font-family:var(--serif);font-size:19px;line-height:1.42;z-index:5;margin:0;}
+.st-hold{position:absolute;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%);width:128px;height:128px;border-radius:50%;border:none;background:#fff;color:var(--azul);font-size:15px;font-weight:800;line-height:1.2;padding:10px;box-shadow:0 8px 26px rgba(0,0,0,.28);z-index:6;cursor:pointer;touch-action:none;}
+.st-hold.on{background:var(--amarillo);color:#2a2214;box-shadow:0 0 0 10px rgba(232,185,58,.25),0 8px 26px rgba(0,0,0,.28);}
+.st-hold.dos{width:112px;height:112px;}
+.st-hold.izq{left:28%;}
+.st-hold.der{left:72%;}
+.st-btn{border:none;border-radius:30px;padding:14px 22px;font-size:16px;font-weight:800;cursor:pointer;}
+
+/* escena imaginada */
+.esc-ico{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(232,185,58,.22) 0%,rgba(232,185,58,0) 70%);display:flex;align-items:center;justify-content:center;font-size:72px;}
+.esc-capas{position:absolute;left:22px;right:22px;top:46%;text-align:center;z-index:5;}
+.esc-capas p{font-family:var(--serif);font-size:20px;line-height:1.45;margin:0 0 12px;opacity:0;transform:translateY(6px);transition:opacity .9s,transform .9s;color:#efe7d8;}
+.esc-capas p.on{opacity:1;transform:none;}
+.esc-capas p.old{opacity:.45;font-size:16.5px;}
+.esc-pie{position:absolute;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:10px;z-index:6;}
+
+/* campana */
+.bell{position:absolute;left:50%;top:21%;transform:translateX(-50%) scale(var(--s,1));transform-origin:50% 10%;transition:transform .6s ease,filter .6s;z-index:3;}
+.bell svg{width:120px;height:120px;display:block;}
+.bell.ring{animation:ring .9s ease;}
+@keyframes ring{0%{rotate:0deg}15%{rotate:16deg}30%{rotate:-14deg}45%{rotate:10deg}60%{rotate:-7deg}75%{rotate:4deg}100%{rotate:0deg}}
+.bub{position:absolute;z-index:4;background:#fff;color:#3b3530;border-radius:18px;padding:9px 13px;font-size:14.5px;font-weight:600;max-width:62%;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;animation:sube 7.5s linear forwards;}
+.bub::before{content:"¿?";font-weight:900;color:var(--oro);margin-right:6px;}
+@keyframes sube{0%{opacity:0;transform:translateY(0)}10%{opacity:1}85%{opacity:.95}100%{opacity:0;transform:translateY(-46vh)}}
+.bub.pop{animation:pop .35s ease forwards;}
+@keyframes pop{to{opacity:0;transform:scale(1.25)}}
+.alivio{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(255,200,120,.45),rgba(255,200,120,0) 60%);opacity:0;pointer-events:none;z-index:2;transition:opacity .25s;}
+.alivio.on{opacity:1;}
+.peri{position:absolute;z-index:2;text-align:center;font-size:12.5px;color:#d9cfbd;opacity:0;transition:opacity 1.6s;}
+.peri span{display:block;font-size:34px;}
+.peri.on{opacity:.95;}
+.st-campana .st-txt{bottom:calc(170px + env(safe-area-inset-bottom));}
+
+/* carrusel */
+.st-carrusel{background:linear-gradient(180deg,#1f2733 0%,#283244 100%);color:#e6ecf2;}
+.car{position:absolute;left:50%;top:24%;width:210px;height:210px;margin-left:-105px;border-radius:50%;border:3px dashed rgba(232,185,58,.45);z-index:2;}
+.car .wag{position:absolute;left:50%;top:50%;width:28px;height:18px;margin:-9px 0 0 -14px;border-radius:6px;background:#3f4d63;border:2px solid #6f86a5;}
+.car.parado{border-color:rgba(255,255,255,.15);}
+.luz{position:absolute;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#ffe39a 0%,#e8b93a 50%,rgba(232,185,58,0) 72%);z-index:3;transition:left .8s,top .8s;}
+.car-frase{position:absolute;left:24px;right:24px;top:calc(24% + 228px);text-align:center;font-family:var(--serif);font-size:21px;line-height:1.4;min-height:60px;z-index:4;color:#f3f6fa;transition:opacity .4s;}
+.car-btns{position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:12px;z-index:6;}
+.stopbtn{width:132px;height:132px;border-radius:50%;border:none;background:#c4553f;color:#fff;font-size:26px;font-weight:900;letter-spacing:.06em;box-shadow:0 8px 26px rgba(0,0,0,.35);cursor:pointer;}
+.cajabtn{border:none;border-radius:24px;padding:10px 16px;background:rgba(255,255,255,.12);color:#e6ecf2;font-weight:700;font-size:14px;cursor:pointer;}
+.anclaprog{position:absolute;left:50%;top:22%;width:150px;height:150px;margin-left:-75px;z-index:3;}
+.orbe{position:absolute;left:50%;top:24%;width:130px;height:130px;margin-left:-65px;border-radius:50%;background:radial-gradient(circle,rgba(232,185,58,.6) 0%,rgba(232,185,58,.14) 55%,rgba(232,185,58,0) 72%);animation:resp 13.5s ease-in-out infinite;z-index:2;}
+@keyframes resp{0%{transform:scale(.72);}30%{transform:scale(1);}44%{transform:scale(1);}89%{transform:scale(.72);}100%{transform:scale(.72);}}
+
+/* llegar a casa */
+.st-casa{background:linear-gradient(180deg,#efe5d3 0%,#e6d7bd 62%,#cdb592 62.2%,#c4aa84 100%);color:var(--tinta);}
+.sala{position:absolute;left:0;right:0;top:12%;height:44%;z-index:2;}
+.puerta{position:absolute;left:5%;bottom:0;width:64px;height:120px;background:#8a6243;border-radius:6px 6px 0 0;box-shadow:inset -6px 0 0 #6f4c33;}
+.puerta::after{content:"";position:absolute;right:10px;top:58px;width:8px;height:8px;border-radius:50%;background:#e8c271;}
+.ventana{position:absolute;right:8%;top:6%;width:70px;height:56px;border:5px solid #fff;border-radius:6px;background:#bcd5e6;}
+.fig{position:absolute;bottom:0;font-size:44px;line-height:1;transition:left 1.2s ease,transform 1.2s ease,opacity 1.2s;text-align:center;}
+.fig small{display:block;font-size:11px;font-weight:700;color:#5d5246;margin-top:2px;}
+.yo{z-index:3;}
+.dolor{position:absolute;left:50%;top:44%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle,#ffd27f 0%,#f0a04a 55%,rgba(240,160,74,0) 75%);}
+.manadaluz{position:absolute;width:10px;height:10px;border-radius:50%;background:#ffe39a;box-shadow:0 0 10px #ffd65c;opacity:0;transition:opacity .8s;}
+.manadaluz.on{opacity:1;}
+.sombra{position:absolute;inset:0;background:#1b1612;opacity:0;pointer-events:none;transition:opacity 1.2s;z-index:4;}
+.st-casa .st-txt{top:calc(12% + 44% + 18px);font-size:18px;color:#3a3129;}
+.opciones{position:absolute;left:16px;right:16px;bottom:calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;z-index:6;}
+.opciones button{border:none;border-radius:16px;padding:13px 14px;font-size:15px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.82);color:#4b4037;text-align:left;}
+.opciones button.tec{background:var(--amarillo);color:#2a2214;}
+.burbuja{position:absolute;right:6%;top:2%;max-width:62%;background:#fff;border-radius:16px;padding:10px 12px;font-size:14px;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:5;}
+.barra{position:absolute;left:20%;right:20%;height:8px;border-radius:6px;background:rgba(0,0,0,.12);overflow:hidden;z-index:6;}
+.barra i{display:block;height:100%;width:0;background:var(--amarillo);transition:width .2s linear;}
+
+/* parar */
+.parar{position:fixed;inset:0;z-index:20000;background:rgba(244,239,230,.98);display:flex;align-items:center;justify-content:center;padding:24px;}
+.parar[hidden]{display:none;}
+.parar .card{max-width:440px;width:100%;}
+
+/* Pavlov */
+.lab svg.perro{width:100%;max-width:340px;display:block;margin:0 auto;}
+.meter{height:12px;border-radius:8px;background:#efe8da;overflow:hidden;margin:4px 0 10px;}
+.meter i{display:block;height:100%;background:var(--aire);transition:width .5s;}
+.meter.asoc i{background:var(--oro);}
+.gota{animation:gota 1s ease-in infinite;}
+@keyframes gota{0%{transform:translateY(0);opacity:1}100%{transform:translateY(16px);opacity:0}}
+.campanita{transform-origin:50% 0;}
+.campanita.ring{animation:ring .9s ease;}
+
+/* puertas */
+.puertas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px;}
+.pta{border:2px solid var(--linea);background:#fff;border-radius:16px;padding:12px 4px 10px;text-align:center;cursor:pointer;font:inherit;color:#4a4339;}
+.pta span{display:block;font-size:30px;line-height:1.2;}
+.pta small{font-size:12.5px;font-weight:700;}
+.pta.hecha{border-color:var(--amarillo);background:#fbf3dc;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="stage" id="stage" hidden></div>
+<div class="parar" id="parar" hidden></div>
+
+<script src="../js/respiro-ais.js"></script>
+<script src="../js/vineta-atencion.js"></script>
+<script src="../js/vineta-abrazo.js"></script>
+<script src="../js/vineta-honestidad.js"></script>
+<script>
+"use strict";
+/* ============================================================================
+   JUEGOS AIS · EXPOSICIÓN IMAGINADA · APRENS  ·  v1
+   Diseño: docs/JUEGOS-AIS-exposicion-imaginada.md (se rige por TEC-guia-base).
+   Cinco juegos sobre las viñetas de parada de pensamiento, abrazo sentido y
+   honestidad emocional:
+     · pavlov   — laboratorio de Pavlov (psicoeducación, siempre abierto)
+     · campana  — honestidad emocional: la campana del «¿por qué?»
+     · carrusel — parada de pensamiento ante la rumiación
+     · casa     — abrazo sentido: cómplices del dolor (con modo Co-AIS)
+     · puertas  — respiración curiosa en cada entrada y salida (siempre abierto)
+   Campana, carrusel y casa comparten el «ensayo de escena»: expectativa →
+   entrada (Respiro AIS) → escena imaginada por capas → pico → respuesta →
+   frase honesta → después → resultado (fuerza de la campana) → micro-acción.
+   Reglas: ninguna puntuación premia que la activación baje; primero aparecer
+   (bloque 1 o código del terapeuta), después permanecer; una sesión de
+   exposición al día (hasta 3 ensayos); «Necesito parar» siempre visible.
+   ============================================================================ */
+
+const KEY = "aprens_juegos_expo_v1";
+const KEY_B1 = "aprens_juegos_ais_v1";
+const MAX_ENSAYOS = 3;
+const CODIGOS = { "AIS-EXPO":["expo"], "AIS-DUELO":["expo","duelo"] };
+
+/* ---------------- textos de interfaz ---------------- */
+const ANCLAS = {
+  es:{ barriga:["Barriga","la barriga"], pecho:["Pecho","el pecho"], cuello:["Cuello","el cuello"], pies:["Pies y manos","los pies y las manos"] },
+  ca:{ barriga:["Panxa","la panxa"], pecho:["Pit","el pit"], cuello:["Coll","el coll"], pies:["Peus i mans","els peus i les mans"] }
+};
+const ZONAS = {
+  es:{ cabeza:"Cabeza", cuello:"Cuello / garganta", pecho:"Pecho", barriga:"Barriga", manos:"Manos / brazos", otra:"Otra zona" },
+  ca:{ cabeza:"Cap", cuello:"Coll / gola", pecho:"Pit", barriga:"Panxa", manos:"Mans / braços", otra:"Una altra zona" }
+};
+const T = {
+es:{
+  eyebrow:"APRENS · AIS · Exposición", h1:"Juegos de exposición imaginada",
+  tag:"La escena hace sonar la campana. Ganas cuando suena y te quedas en el cuerpo, en lugar de ir a por el «¿por qué?».",
+  quien:"¿Quién juega?", adulto:"Adulto", peques:"Peques",
+  como:"Cómo funciona",
+  como_txt:"Imaginas una situación que activa algo por dentro. No se trata de que baje: se trata de quedarte con ello, decirlo con honestidad y dar un paso con valor sin alejarte de los tuyos. Repetido, la campana pierde fuerza.",
+  g_pavlov:"El laboratorio de Pavlov", g_pavlov_f:"Para entender · sin activación",
+  g_pavlov_d:"Haz de experimentador: cómo una campana aprende a activar y cómo deja de hacerlo. Y cuál es tu campana.",
+  g_campana:"La campana", g_campana_f:"Honestidad emocional · Latencia",
+  g_campana_d:"Suena la campana y salen burbujas del «¿por qué?». Si no les das de comer y te quedas en el cuerpo, la campana pierde fuerza.",
+  g_carrusel:"El carrusel", g_carrusel_f:"Parada de pensamiento · Latencia",
+  g_carrusel_d:"Te subes un momento al carrusel de la rumiación y practicas bajarte: para, respira y vuelve.",
+  g_casa:"Llegar a casa", g_casa_f:"Abrazo sentido · Continuidad",
+  g_casa_d:"Llegas a casa con algo que duele. Los automatismos te alejan de los tuyos; el abrazo sentido os hace cómplices.",
+  g_puertas:"Puertas", g_puertas_f:"Respiración curiosa · entradas y salidas",
+  g_puertas_d:"Un ritual breve al entrar y al salir de cada lugar del día. Ensaya la puerta difícil de mañana o úsalo en el momento.",
+  abierto:"Abierto", bloqueado:"Se abre tras unos días de práctica",
+  sesion_hecha:"Por hoy ya está: una sesión de exposición al día es suficiente. Lo demás es vivir con ello.",
+  lock_t:"Primero aparecer, después permanecer",
+  lock_txt:"Antes de quedarte con escenas que duelen, conviene que tu cuerpo ya sepa que estás disponible. Practica unos días Sonar o Globo de quietud (al menos 6 partidas en 3 días distintos), o pide el código a tu psicólogo/a.",
+  ir_b1:"Ir a Juegos AIS", tengo_codigo:"Tengo un código",
+  codigo_t:"Código de tu psicólogo/a", codigo_ph:"Escribe el código", codigo_ok:"Código aceptado.", codigo_mal:"Ese código no es válido.", guardar_codigo:"Guardar código",
+  cribado_t:"Antes de empezar",
+  cribado_txt:"Estos juegos trabajan con escenas que activan. Para hacerlo con seguridad, responde con sinceridad. Si juega un peque, responde el adulto pensando en él o ella.",
+  cr1:"¿Ahora mismo te vienen recuerdos de algo traumático con mucha fuerza, sin buscarlos (imágenes que se repiten, pesadillas)?",
+  cr2:"¿Has perdido a alguien muy cercano en las últimas semanas?",
+  cr3:"¿Has tenido pensamientos de hacerte daño o de no querer vivir?",
+  cr4:"¿Te pasa a menudo que te desconectas, como si no estuvieras en tu cuerpo o te vieras desde fuera?",
+  si:"Sí", no:"No", continuar:"Continuar",
+  cr_riesgo:"Gracias por decirlo. Ahora mismo estos juegos no son lo que necesitas: habla de ello con tu psicólogo/a lo antes posible. Si piensas en hacerte daño, llama al 024 (atención a la conducta suicida, gratuito, 24 h) o al 112. No estás solo/a con esto.",
+  cr_espera:"Gracias por decirlo. En tu caso, estas escenas es mejor trabajarlas primero en consulta. Tu psicólogo/a puede darte un código para abrirlas cuando lo vea oportuno.",
+  cr_dis:"Usaremos como ancla los pies y las manos: son más fáciles de notar cuando cuesta conectar con el cuerpo.",
+  volver:"← Volver", empezar:"Empezar ensayo", seguir:"Seguir",
+  escena_t:"Elige la escena", escalon:n=>`Escalón ${n}`, recomendada:"Recomendada", bloq_esc:"Se abre al avanzar",
+  bloq_duelo:"Necesita el código de tu psicólogo/a",
+  ancla_t:"¿Dónde dejas la atención?", voz:"Narración con la voz del móvil",
+  vin_ver:"Ver la viñeta",
+  mis_vagones_t:"Tus frases del carrusel", mis_vagones_x:"Una por línea, como suenan dentro de tu cabeza (hasta 6). Se guardan solo en este móvil.",
+  figuras_t:"¿Quién te espera en casa?", co_t:"Jugar con alguien (Co-AIS)", co_x:"Dos personas, dos dedos: el juego solo avanza cuando los dos estáis dentro.",
+  // ensayo
+  ens_n:(n,m)=>`Ensayo ${n} de ${m}`,
+  exp_t:"Antes de la escena", exp_act:"¿Cuánto crees que te va a activar?", exp_act_x:"0 nada · 10 muchísimo",
+  exp_q:"¿Cuánto crees que podrás quedarte con ello sin irte?", exp_q_x:"0 nada · 10 todo el rato",
+  poco:"Poco", algo:"Algo", mucho:"Mucho",
+  entrada_t:"Primero, aparece",
+  entrada_txt:"Respira con la figura. El aire es el cebo: lleva la atención hacia {a}. No buscas relajarte, buscas estar.",
+  ya_aparezco:"Ya estoy aquí",
+  escena_pre:"Cierra un momento los ojos si quieres e imagínalo como si estuviera pasando ahora.",
+  quedate:"Quédate ahí un momento. Dónde estás, qué ves, qué oyes.",
+  siguiente:"Siguiente ›", lo_noto:"Seguir: ¿dónde lo notas?",
+  pico_t:"¿Dónde lo notas?", pico_act:"¿Cuánto, de 0 a 10?", no_noto:"No noto nada",
+  no_noto_x:"Está bien: no notar nada también es un dato. Sigue igual, con la atención en {a}.",
+  frase_t:"Frase honesta",
+  frase_txt:"Señala la zona con la mano y dila en voz alta si puedes, con tono sereno. Si no, dila por dentro.",
+  frase1:"«No sé por qué, pero noto una sensación aquí.»",
+  frase2:"«No sé por qué, pero noto esto aquí y quería compartirlo.»",
+  frase3:"«Sé que lo ocurrido me ha afectado, pero antes quiero reconocer que noto esto aquí.»",
+  dicha:"La he dicho en voz alta", pensada:"La he dicho por dentro",
+  post_t:"Después", post_act:"¿Cuánto lo notas ahora, de 0 a 10?",
+  comp_t:"¿Ha sido como esperabas?", comp_facil:"Más fácil", comp_igual:"Como esperaba", comp_dificil:"Más difícil",
+  res_t:"Lo que ha pasado",
+  esperabas:(e,p)=>`Esperabas ${e} de activación y ha sido ${p} en el momento más fuerte.`,
+  te_quedaste:s=>`Te has quedado ${s} s acompañando.`,
+  fuerza:"Fuerza de la campana", fuerza_car:"Fuerza del carrusel", fuerza_casa:"Distancia con los tuyos",
+  fuerza_x:"Ensayo a ensayo, en esta escena. Bajar es la campana perdiendo fuerza; no hace falta que la activación llegue a cero.",
+  baja:"La campana ha perdido fuerza respecto al ensayo anterior.",
+  sube:"Hoy la campana ha sonado más fuerte. Pasa: el aprendizaje no es una línea recta. Lo que cuenta es que has vuelto.",
+  primera:"Primer ensayo de esta escena: es tu punto de partida.",
+  al_post:"La activación ha subido y el rato de quedarte ha sido corto. Bajamos un escalón: es mejor quedarse con algo más pequeño que aguantar algo demasiado grande. Coméntalo en tu próxima sesión.",
+  al_nonoto:"Varias veces no has notado nada. A partir de ahora el ancla serán los pies y las manos.",
+  al_solo:"Recuerda la práctica en calma (Sonar o Globo de quietud): si solo practicas cuando hay malestar, el cuerpo aprende a alarmarse para que vengas.",
+  sube_escalon:n=>`Se ha abierto el escalón ${n}. Súbelo cuando te sientas preparado/a, no antes.`,
+  repetir:(n,m)=>`Repetir la escena (ensayo ${n} de ${m})`, cerrar:"Cerrar la sesión",
+  micro_t:"Y ahora, ¿cuál es el siguiente paso con valor?",
+  micro_s:"El juego acaba aquí. Lo importante viene ahora, fuera de la pantalla.",
+  micro_adulto:["Volver a lo que hacía, con presencia","Escribir o llamar a alguien que me importa","Salir a caminar diez minutos","Empezar una tarea pequeña"],
+  micro_peques:["Ir a jugar con calma","Dar un abrazo","Contar cómo estoy","Ayudar en casa"],
+  micro_casa_adulto:["Escuchar a alguien de casa sin mirar el móvil","Acercarme y preguntar cómo está","Dar un abrazo de verdad","Compartir lo que noto en la cena"],
+  micro_casa_peques:["Dar un abrazo de verdad","Contar cómo ha ido el día","Jugar con alguien de casa","Preguntar cómo están"],
+  micro_ph:"O escribe el tuyo…", guardar:"Guardar y dejar el móvil",
+  fin_t:"Guardado", fin_txt:m=>`Ahora deja el móvil y haz tu paso: ${m}.`,
+  frase_fin_adulto:"«No vengo a cambiarte. Vengo a estar contigo.»",
+  frase_fin_peques:"«Cada vez que vuelves, tu cuerpo nota que estás con él.»",
+  inicio:"Volver al inicio",
+  // parar
+  parar:"Necesito parar",
+  parar1:"Pies en el suelo. Aprieta las manos un momento y suéltalas. Mira alrededor y nombra tres cosas que ves.",
+  parar_ok:"Ya estoy aquí",
+  parar2:"Puedes parar cuando quieras. Volver también es entrenar.",
+  parar_fin:"Terminar por hoy", parar_seguir:"Seguir con el ensayo",
+  parar_ayuda:"Has necesitado parar varias veces esta semana. Coméntalo con tu psicólogo/a. Si en algún momento piensas en hacerte daño: 024 (atención a la conducta suicida, gratuito, 24 h) o 112.",
+  // campana
+  c_quedo:"Me quedo aquí",
+  c_txt0:"Mantén pulsado mientras te quedas en {a}. Las burbujas del «¿por qué?» van a tentarte.",
+  c_txt_hold:"Te quedas en {a}. La campana suena y no le das de comer.",
+  c_txt_suelta:"Cuando quieras, vuelve a {a}.",
+  c_alivio:"Alivia un momento… y la campana vuelve más fuerte.",
+  c_peri:["el café","la luz","un gesto"],
+  c_r_porques:"«¿Por qué?» tocados", c_r_sin:"Campanas sin darles de comer", c_r_sost:"Segundos acompañando",
+  c_msg_bien:"La campana ha sonado y no has ido a por el porqué. Así es como deja de ser una alarma.",
+  c_msg_mixto:"Has ido a por el porqué alguna vez y has vuelto. Eso también es el entrenamiento: notar la comida y no seguir dándola.",
+  // carrusel
+  r_txt_subir:"Súbete un momento: deja que los pensamientos te lleven. Cuando notes que ya estás dentro del bucle, di STOP.",
+  r_txt_largo:"¿Sigues dando vueltas? Puedes bajarte cuando quieras.",
+  r_stop:"STOP", r_caja:"📦 Lo dejo para mi espacio de preocupaciones",
+  r_para:"Para. Suelta el carrusel sin discutir con él.",
+  r_caja_ok:"Guardado para tu espacio de preocupaciones. Ahora, ancla.",
+  r_ancla:"Respira y ancla en {a} 5 segundos, aunque no sientas nada.",
+  r_ancla_btn:"Ancla",
+  r_vuelve:"¿A qué vuelves?",
+  r_vuelve_opts:["A lo que estaba haciendo","A mirar lo que tengo delante","A un paso pequeño"],
+  r_aqui:"Estás aquí.",
+  r_ronda:(n,m)=>`Vuelta ${n} de ${m}`,
+  r_r_lat:"Segundos hasta darte cuenta (media)", r_r_bajadas:"Bajadas del carrusel", r_r_caja:"Guardados para tu espacio",
+  r_msg:"El carrusel no se para porque los pensamientos desaparezcan, sino porque tú te bajas. Darte cuenta antes es lo que entrenas.",
+  // casa
+  h_puerta:"Antes de entrar, para delante de la puerta. Respira con curiosidad: ¿qué traes?",
+  h_q:["¿Dónde está exactamente?","¿Tiene bordes?","¿Cambia cuando la miras?"],
+  h_hold:"Respiro en {a}", h_hold_co:"Dentro",
+  h_entrar:"Entrar", h_dentro:"Ya estás dentro. ¿Qué haces?",
+  h_tent_adulto:["Poner cara de que no pasa nada","Encerrarme con el móvil","Soltarlo con un grito","Irme a la habitación"],
+  h_tent_peques:["Hacer como si nada","Encerrarme a jugar solo/a","Enfadarme con todos","Esconderme en mi cuarto"],
+  h_tec:"Acercarme con la atención en {a}",
+  h_aleja:"Alivia un momento… y os aleja.",
+  h_otro:"Puedes probar el otro camino cuando quieras.",
+  h_acerca:"Acércate sin soltar {a}. Si te vas, suelta; al volver, sigue.",
+  h_abrazo:"Abraza con presencia. No es un abrazo automático: el dolor os hace cómplices, no os aleja.",
+  h_mesa:"En la mesa, dilo con honestidad:",
+  h_respuesta:"«Entiendo que te sientas así. Gracias por compartirlo.»",
+  h_pausa_co:"Pausa vincular: cada uno dice en voz alta «Noto que estoy activado/a».", h_pausa_ok:"Lo hemos dicho",
+  h_r_tent:"Automatismos elegidos", h_r_cerca:"Cercanía final", h_r_abrazo:"Segundos de abrazo dentro",
+  h_msg:"El dolor no ha desaparecido, y no hacía falta: has llegado a los tuyos con él, sin dejar que os separara.",
+  yo:"Tú",
+  // puertas
+  p_t:"Tu mapa de puertas", p_x:"Toca una puerta para hacer el ritual. Se ilumina cuando la cruzas con presencia.",
+  p_hoy:n=>`Hoy has cruzado ${n} ${n===1?"puerta":"puertas"} con presencia.`,
+  p_ensayar:"Ensayar (imaginado)", p_ahora:"Estoy ahí ahora",
+  p_entrada:"Ritual de entrada", p_entrada_txt:"Delante de la puerta, respira tres veces con curiosidad. Lleva la atención a {a}.",
+  p_imagina:p=>`Imagina que estás delante de: ${p}. ¿Qué te espera dentro? ¿Quién está? ¿Qué vas a hacer?`,
+  p_campana:c=>`Y aquí también puede sonar tu campana: «${c}». Si suena, quédate en el cuerpo.`,
+  p_campana_btn:"Que suene aquí también",
+  p_entra:"Entra con presencia",
+  p_salida:"Ritual de salida", p_salida_txt:"Antes de salir: ¿qué te llevas de aquí?",
+  p_lleva:["Tensión","Cansancio","Enfado","Tristeza","Preocupación","Alegría","Nada en especial"],
+  p_dejar:"Lo noto… y lo dejo en la puerta",
+  p_hecho:"Puerta cruzada con presencia.",
+  p_rec_t:"Recordatorios en tus puertas reales",
+  p_rec_x:"Elige la hora de una puerta que cruzas cada día. Se abre tu calendario con un aviso diario «Tu minuto de presencia».",
+  p_rec_btn:"Añadir al calendario",
+  p_dia_t:"Al final del día", p_dia_x:"¿Qué puertas has cruzado hoy con presencia?", p_dia_btn:"Guardar el día",
+  p_lista_adulto:{casa:["🏠","Casa"],trabajo:["💼","Trabajo"],reunion:["👥","Reunión"],consulta:["🩺","Consulta"],hospital:["🏥","Hospital"],coche:["🚗","Coche"],cena:["🍽️","Cena familiar"],tienda:["🛒","Tienda"],dormitorio:["🛏️","Dormitorio"]},
+  p_lista_peques:{casa:["🏠","Casa"],cole:["🎒","Cole"],clase:["✏️","Clase"],patio:["⚽","Patio"],abuelos:["👵","Casa de los abuelos"],extra:["🎨","Extraescolar"],coche:["🚗","Coche"],cena:["🍽️","Cena"],dormitorio:["🛏️","Dormitorio"]},
+  // pavlov
+  pv_intro:"Hace más de cien años, Iván Pávlov observó algo curioso con sus perros. Vas a repetir su experimento.",
+  pv_f1:"1 · Antes de aprender", pv_f1x:"Prueba las dos cosas.",
+  pv_campana:"🔔 Campana", pv_comida:"🍖 Comida", pv_ambas:"🔔 + 🍖 Campana y comida", pv_sola:"🔔 Solo la campana",
+  pv_acomp:"🔔 Campana, sin comida y acompañado",
+  pv_r_campana0:"El perro mira, pero no saliva: la campana todavía no significa nada.",
+  pv_r_comida:"Con la comida saliva: eso es natural.",
+  pv_f2:"2 · Aprender", pv_f2x:"Haz sonar la campana justo antes de dar la comida, varias veces.",
+  pv_f3:"3 · La prueba", pv_f3x:"Ahora, solo la campana.",
+  pv_r_prueba:"Saliva sin comida. La campana ya anuncia la comida: se ha convertido en un estímulo condicionado.",
+  pv_f4:"4 · Desaprender", pv_f4x:"Haz sonar la campana sin comida. Y el perro no está solo: tu mano está a su lado.",
+  pv_r_ext:"La campana suena, no llega la comida y el perro está acompañado. Poco a poco vuelve a ser solo un sonido.",
+  pv_f5:"5 · Al día siguiente", pv_f5x:"Vuelve a hacer sonar la campana.",
+  pv_r_rec:"Vuelve un poco. No es volver a empezar: es como funciona el aprendizaje. Se practica otra vez y baja antes.",
+  pv_f6:"6 · En tu vida",
+  pv_f6x:"Contigo pasa algo parecido. La campana es lo que te activa. La comida es lo que alivia un momento y por eso se repite.",
+  pv_tu_campana:"¿Cuál es tu campana?", pv_tu_comida:"¿Y tu comida?",
+  pv_campanas:["Un «¿por qué?» que vuelve","Un mensaje sin respuesta","Una cara seria","Una presión en el pecho","Una fecha o un lugar","Un recuerdo"],
+  pv_comidas:["Buscar explicaciones","Mirar el móvil una y otra vez","Evitar la situación","Discutir","Preguntar para que me tranquilicen","Distraerme con una pantalla"],
+  pv_otro:"Otra…",
+  pv_resumen:(c,f)=>`Tu campana: ${c}. Tu comida: ${f}. Tu práctica: que la campana suene sin darle de comer, quedándote en el cuerpo y acompañado/a.`,
+  pv_saliva:"Saliva", pv_asoc:"Lo que el perro ha aprendido",
+  pv_siguiente:"Siguiente", pv_guardar:"Guardar mi campana", pv_ir:"Ir a La campana",
+  pv_curva:"Ensayos de extinción"
+},
+ca:{
+  eyebrow:"APRENS · AIS · Exposició", h1:"Jocs d'exposició imaginada",
+  tag:"L'escena fa sonar la campana. Guanyes quan sona i et quedes al cos, en lloc d'anar a cercar el «per què?».",
+  quien:"Qui juga?", adulto:"Adult", peques:"Petits",
+  como:"Com funciona",
+  como_txt:"Imagines una situació que activa alguna cosa per dins. No es tracta que baixi: es tracta de quedar-t'hi, dir-ho amb honestedat i fer un pas amb valor sense allunyar-te dels teus. Repetit, la campana perd força.",
+  g_pavlov:"El laboratori de Pàvlov", g_pavlov_f:"Per entendre · sense activació",
+  g_pavlov_d:"Fes d'experimentador: com una campana aprèn a activar i com deixa de fer-ho. I quina és la teva campana.",
+  g_campana:"La campana", g_campana_f:"Honestedat emocional · Latència",
+  g_campana_d:"Sona la campana i surten bombolles del «per què?». Si no les dones de menjar i et quedes al cos, la campana perd força.",
+  g_carrusel:"El cavallet", g_carrusel_f:"Aturada de pensament · Latència",
+  g_carrusel_d:"Puges un moment al cavallet de la rumiació i practiques baixar-ne: atura't, respira i torna.",
+  g_casa:"Arribar a casa", g_casa_f:"Abraçada sentida · Continuïtat",
+  g_casa_d:"Arribes a casa amb alguna cosa que fa mal. Els automatismes t'allunyen dels teus; l'abraçada sentida us fa còmplices.",
+  g_puertas:"Portes", g_puertas_f:"Respiració curiosa · entrades i sortides",
+  g_puertas_d:"Un ritual breu en entrar i en sortir de cada lloc del dia. Assaja la porta difícil de demà o fes-lo servir en el moment.",
+  abierto:"Obert", bloqueado:"S'obre després d'uns dies de pràctica",
+  sesion_hecha:"Per avui ja està: una sessió d'exposició al dia és suficient. La resta és viure-hi.",
+  lock_t:"Primer aparèixer, després romandre",
+  lock_txt:"Abans de quedar-te amb escenes que fan mal, convé que el teu cos ja sàpiga que hi ets. Practica uns dies Sonar o Globus de quietud (almenys 6 partides en 3 dies diferents), o demana el codi al teu psicòleg/a.",
+  ir_b1:"Anar a Jocs AIS", tengo_codigo:"Tinc un codi",
+  codigo_t:"Codi del teu psicòleg/a", codigo_ph:"Escriu el codi", codigo_ok:"Codi acceptat.", codigo_mal:"Aquest codi no és vàlid.", guardar_codigo:"Guardar el codi",
+  cribado_t:"Abans de començar",
+  cribado_txt:"Aquests jocs treballen amb escenes que activen. Per fer-ho amb seguretat, respon amb sinceritat. Si juga un petit, respon l'adult pensant en ell o ella.",
+  cr1:"Ara mateix et vénen records d'alguna cosa traumàtica amb molta força, sense cercar-los (imatges que es repeteixen, malsons)?",
+  cr2:"Has perdut algú molt proper les darreres setmanes?",
+  cr3:"Has tengut pensaments de fer-te mal o de no voler viure?",
+  cr4:"Et passa sovint que et desconnectes, com si no fossis al teu cos o et veiessis des de fora?",
+  si:"Sí", no:"No", continuar:"Continuar",
+  cr_riesgo:"Gràcies per dir-ho. Ara mateix aquests jocs no són el que necessites: parla-ho amb el teu psicòleg/a com més aviat millor. Si penses en fer-te mal, telefona al 024 (atenció a la conducta suïcida, gratuït, 24 h) o al 112. No estàs tot sol amb això.",
+  cr_espera:"Gràcies per dir-ho. En el teu cas, aquestes escenes és millor treballar-les primer a consulta. El teu psicòleg/a et pot donar un codi per obrir-les quan ho vegi oportú.",
+  cr_dis:"Farem servir com a àncora els peus i les mans: són més fàcils de notar quan costa connectar amb el cos.",
+  volver:"← Tornar", empezar:"Començar l'assaig", seguir:"Seguir",
+  escena_t:"Tria l'escena", escalon:n=>`Escaló ${n}`, recomendada:"Recomanada", bloq_esc:"S'obre en avançar",
+  bloq_duelo:"Necessita el codi del teu psicòleg/a",
+  ancla_t:"On deixes l'atenció?", voz:"Narració amb la veu del mòbil",
+  vin_ver:"Veure la vinyeta",
+  mis_vagones_t:"Les teves frases del cavallet", mis_vagones_x:"Una per línia, com sonen dins el teu cap (fins a 6). Només es guarden en aquest mòbil.",
+  figuras_t:"Qui t'espera a casa?", co_t:"Jugar amb algú (Co-AIS)", co_x:"Dues persones, dos dits: el joc només avança quan tots dos sou a dins.",
+  ens_n:(n,m)=>`Assaig ${n} de ${m}`,
+  exp_t:"Abans de l'escena", exp_act:"Quant creus que t'activarà?", exp_act_x:"0 gens · 10 moltíssim",
+  exp_q:"Quant creus que t'hi podràs quedar sense anar-te'n?", exp_q_x:"0 gens · 10 tota l'estona",
+  poco:"Poc", algo:"Una mica", mucho:"Molt",
+  entrada_t:"Primer, apareix",
+  entrada_txt:"Respira amb la figura. L'aire és l'esquer: porta l'atenció cap a {a}. No cerques relaxar-te, cerques ser-hi.",
+  ya_aparezco:"Ja som aquí",
+  escena_pre:"Tanca un moment els ulls si vols i imagina-ho com si passàs ara.",
+  quedate:"Queda't-hi un moment. On ets, què veus, què sents.",
+  siguiente:"Següent ›", lo_noto:"Seguir: on ho notes?",
+  pico_t:"On ho notes?", pico_act:"Quant, de 0 a 10?", no_noto:"No not res",
+  no_noto_x:"Està bé: no notar res també és una dada. Segueix igual, amb l'atenció a {a}.",
+  frase_t:"Frase honesta",
+  frase_txt:"Assenyala la zona amb la mà i digues-la en veu alta si pots, amb to serè. Si no, digues-la per dins.",
+  frase1:"«No sé per què, però not una sensació aquí.»",
+  frase2:"«No sé per què, però not això aquí i ho volia compartir.»",
+  frase3:"«Sé que el que ha passat m'ha afectat, però abans vull reconèixer que not això aquí.»",
+  dicha:"L'he dita en veu alta", pensada:"L'he dita per dins",
+  post_t:"Després", post_act:"Quant ho notes ara, de 0 a 10?",
+  comp_t:"Ha estat com esperaves?", comp_facil:"Més fàcil", comp_igual:"Com esperava", comp_dificil:"Més difícil",
+  res_t:"El que ha passat",
+  esperabas:(e,p)=>`Esperaves ${e} d'activació i ha estat ${p} en el moment més fort.`,
+  te_quedaste:s=>`T'hi has quedat ${s} s acompanyant.`,
+  fuerza:"Força de la campana", fuerza_car:"Força del cavallet", fuerza_casa:"Distància amb els teus",
+  fuerza_x:"Assaig rere assaig, en aquesta escena. Baixar és la campana perdent força; no cal que l'activació arribi a zero.",
+  baja:"La campana ha perdut força respecte de l'assaig anterior.",
+  sube:"Avui la campana ha sonat més forta. Passa: l'aprenentatge no és una línia recta. El que compta és que has tornat.",
+  primera:"Primer assaig d'aquesta escena: és el teu punt de partida.",
+  al_post:"L'activació ha pujat i l'estona de quedar-t'hi ha estat curta. Baixam un escaló: és millor quedar-se amb una cosa més petita que aguantar-ne una de massa grossa. Comenta-ho a la propera sessió.",
+  al_nonoto:"Diverses vegades no has notat res. A partir d'ara l'àncora seran els peus i les mans.",
+  al_solo:"Recorda la pràctica en calma (Sonar o Globus de quietud): si només practiques quan hi ha malestar, el cos aprèn a alarmar-se perquè hi vagis.",
+  sube_escalon:n=>`S'ha obert l'escaló ${n}. Puja-hi quan et sentis preparat/da, no abans.`,
+  repetir:(n,m)=>`Repetir l'escena (assaig ${n} de ${m})`, cerrar:"Tancar la sessió",
+  micro_t:"I ara, quin és el següent pas amb valor?",
+  micro_s:"El joc s'acaba aquí. L'important ve ara, fora de la pantalla.",
+  micro_adulto:["Tornar al que feia, amb presència","Escriure o telefonar a algú que m'importa","Sortir a caminar deu minuts","Començar una tasca petita"],
+  micro_peques:["Anar a jugar amb calma","Fer una abraçada","Contar com estic","Ajudar a casa"],
+  micro_casa_adulto:["Escoltar algú de casa sense mirar el mòbil","Acostar-me i demanar com està","Fer una abraçada de veres","Compartir el que not al sopar"],
+  micro_casa_peques:["Fer una abraçada de veres","Contar com ha anat el dia","Jugar amb algú de casa","Demanar com estan"],
+  micro_ph:"O escriu el teu…", guardar:"Guardar i deixar el mòbil",
+  fin_t:"Guardat", fin_txt:m=>`Ara deixa el mòbil i fes el teu pas: ${m}.`,
+  frase_fin_adulto:"«No vénc a canviar-te. Vénc a estar amb tu.»",
+  frase_fin_peques:"«Cada vegada que tornes, el teu cos nota que hi ets.»",
+  inicio:"Tornar a l'inici",
+  parar:"Necessit aturar-me",
+  parar1:"Peus a terra. Estreny les mans un moment i deixa-les anar. Mira al voltant i anomena tres coses que veus.",
+  parar_ok:"Ja som aquí",
+  parar2:"Pots aturar-te quan vulguis. Tornar també és entrenar.",
+  parar_fin:"Acabar per avui", parar_seguir:"Seguir amb l'assaig",
+  parar_ayuda:"Has necessitat aturar-te diverses vegades aquesta setmana. Comenta-ho amb el teu psicòleg/a. Si en algun moment penses en fer-te mal: 024 (atenció a la conducta suïcida, gratuït, 24 h) o 112.",
+  c_quedo:"Em quedo aquí",
+  c_txt0:"Mantén premut mentre et quedes a {a}. Les bombolles del «per què?» et temptaran.",
+  c_txt_hold:"Et quedes a {a}. La campana sona i no la dones de menjar.",
+  c_txt_suelta:"Quan vulguis, torna a {a}.",
+  c_alivio:"Alleuja un moment… i la campana torna més forta.",
+  c_peri:["el cafè","la llum","un gest"],
+  c_r_porques:"«Per què?» tocats", c_r_sin:"Campanes sense donar-los de menjar", c_r_sost:"Segons acompanyant",
+  c_msg_bien:"La campana ha sonat i no has anat a cercar el per què. Així és com deixa de ser una alarma.",
+  c_msg_mixto:"Alguna vegada has anat a cercar el per què i has tornat. Això també és l'entrenament: notar el menjar i no seguir donant-lo.",
+  r_txt_subir:"Puja un moment: deixa que els pensaments t'emportin. Quan notis que ja ets dins el bucle, digues STOP.",
+  r_txt_largo:"Encara fas voltes? Pots baixar quan vulguis.",
+  r_stop:"STOP", r_caja:"📦 Ho deix per al meu espai de preocupacions",
+  r_para:"Atura't. Deixa anar el cavallet sense discutir-hi.",
+  r_caja_ok:"Guardat per al teu espai de preocupacions. Ara, ancora't.",
+  r_ancla:"Respira i ancora't a {a} 5 segons, encara que no sentis res.",
+  r_ancla_btn:"Àncora",
+  r_vuelve:"A què tornes?",
+  r_vuelve_opts:["Al que estava fent","A mirar el que tenc davant","A un pas petit"],
+  r_aqui:"Ets aquí.",
+  r_ronda:(n,m)=>`Volta ${n} de ${m}`,
+  r_r_lat:"Segons fins adonar-te'n (mitjana)", r_r_bajadas:"Baixades del cavallet", r_r_caja:"Guardats per al teu espai",
+  r_msg:"El cavallet no s'atura perquè els pensaments desapareguin, sinó perquè tu en baixes. Adonar-te'n abans és el que entrenes.",
+  h_puerta:"Abans d'entrar, atura't davant la porta. Respira amb curiositat: què dus?",
+  h_q:["On és exactament?","Té vores?","Canvia quan la mires?"],
+  h_hold:"Respir a {a}", h_hold_co:"A dins",
+  h_entrar:"Entrar", h_dentro:"Ja ets a dins. Què fas?",
+  h_tent_adulto:["Fer cara que no passa res","Tancar-me amb el mòbil","Deixar-ho anar amb un crit","Anar-me'n a l'habitació"],
+  h_tent_peques:["Fer com si res","Tancar-me a jugar tot sol","Enfadar-me amb tothom","Amagar-me a la meva habitació"],
+  h_tec:"Acostar-me amb l'atenció a {a}",
+  h_aleja:"Alleuja un moment… i us allunya.",
+  h_otro:"Pots provar l'altre camí quan vulguis.",
+  h_acerca:"Acosta't sense deixar anar {a}. Si te'n vas, deixa anar; en tornar, segueix.",
+  h_abrazo:"Abraça amb presència. No és una abraçada automàtica: el dolor us fa còmplices, no us allunya.",
+  h_mesa:"A taula, digues-ho amb honestedat:",
+  h_respuesta:"«Entenc que et sentis així. Gràcies per compartir-ho.»",
+  h_pausa_co:"Pausa vincular: cadascú diu en veu alta «Not que estic activat/da».", h_pausa_ok:"Ho hem dit",
+  h_r_tent:"Automatismes triats", h_r_cerca:"Proximitat final", h_r_abrazo:"Segons d'abraçada a dins",
+  h_msg:"El dolor no ha desaparegut, i no feia falta: has arribat als teus amb ell, sense deixar que us separàs.",
+  yo:"Tu",
+  p_t:"El teu mapa de portes", p_x:"Toca una porta per fer el ritual. S'il·lumina quan la travesses amb presència.",
+  p_hoy:n=>`Avui has travessat ${n} ${n===1?"porta":"portes"} amb presència.`,
+  p_ensayar:"Assajar (imaginat)", p_ahora:"Hi som ara",
+  p_entrada:"Ritual d'entrada", p_entrada_txt:"Davant la porta, respira tres vegades amb curiositat. Porta l'atenció a {a}.",
+  p_imagina:p=>`Imagina que ets davant de: ${p}. Què t'espera a dins? Qui hi ha? Què faràs?`,
+  p_campana:c=>`I aquí també pot sonar la teva campana: «${c}». Si sona, queda't al cos.`,
+  p_campana_btn:"Que soni aquí també",
+  p_entra:"Entra amb presència",
+  p_salida:"Ritual de sortida", p_salida_txt:"Abans de sortir: què t'enduus d'aquí?",
+  p_lleva:["Tensió","Cansament","Enuig","Tristesa","Preocupació","Alegria","Res en especial"],
+  p_dejar:"Ho not… i ho deix a la porta",
+  p_hecho:"Porta travessada amb presència.",
+  p_rec_t:"Recordatoris a les teves portes reals",
+  p_rec_x:"Tria l'hora d'una porta que travesses cada dia. S'obre el teu calendari amb un avís diari «El teu minut de presència».",
+  p_rec_btn:"Afegir al calendari",
+  p_dia_t:"Al final del dia", p_dia_x:"Quines portes has travessat avui amb presència?", p_dia_btn:"Guardar el dia",
+  p_lista_adulto:{casa:["🏠","Casa"],trabajo:["💼","Feina"],reunion:["👥","Reunió"],consulta:["🩺","Consulta"],hospital:["🏥","Hospital"],coche:["🚗","Cotxe"],cena:["🍽️","Sopar familiar"],tienda:["🛒","Botiga"],dormitorio:["🛏️","Dormitori"]},
+  p_lista_peques:{casa:["🏠","Casa"],cole:["🎒","Escola"],clase:["✏️","Classe"],patio:["⚽","Pati"],abuelos:["👵","Ca els padrins"],extra:["🎨","Extraescolar"],coche:["🚗","Cotxe"],cena:["🍽️","Sopar"],dormitorio:["🛏️","Dormitori"]},
+  pv_intro:"Fa més de cent anys, Ivan Pàvlov va observar una cosa curiosa amb els seus cans. Repetiràs el seu experiment.",
+  pv_f1:"1 · Abans d'aprendre", pv_f1x:"Prova les dues coses.",
+  pv_campana:"🔔 Campana", pv_comida:"🍖 Menjar", pv_ambas:"🔔 + 🍖 Campana i menjar", pv_sola:"🔔 Només la campana",
+  pv_acomp:"🔔 Campana, sense menjar i acompanyat",
+  pv_r_campana0:"El ca mira, però no saliva: la campana encara no significa res.",
+  pv_r_comida:"Amb el menjar saliva: això és natural.",
+  pv_f2:"2 · Aprendre", pv_f2x:"Fes sonar la campana just abans de donar el menjar, diverses vegades.",
+  pv_f3:"3 · La prova", pv_f3x:"Ara, només la campana.",
+  pv_r_prueba:"Saliva sense menjar. La campana ja anuncia el menjar: s'ha convertit en un estímul condicionat.",
+  pv_f4:"4 · Desaprendre", pv_f4x:"Fes sonar la campana sense menjar. I el ca no està tot sol: la teva mà és al seu costat.",
+  pv_r_ext:"La campana sona, no arriba el menjar i el ca està acompanyat. A poc a poc torna a ser només un so.",
+  pv_f5:"5 · L'endemà", pv_f5x:"Torna a fer sonar la campana.",
+  pv_r_rec:"Torna una mica. No és tornar a començar: és com funciona l'aprenentatge. Es practica una altra vegada i baixa abans.",
+  pv_f6:"6 · A la teva vida",
+  pv_f6x:"Amb tu passa una cosa semblant. La campana és el que t'activa. El menjar és el que alleuja un moment i per això es repeteix.",
+  pv_tu_campana:"Quina és la teva campana?", pv_tu_comida:"I el teu menjar?",
+  pv_campanas:["Un «per què?» que torna","Un missatge sense resposta","Una cara seriosa","Una pressió al pit","Una data o un lloc","Un record"],
+  pv_comidas:["Cercar explicacions","Mirar el mòbil una vegada i una altra","Evitar la situació","Discutir","Demanar perquè em tranquil·litzin","Distreure'm amb una pantalla"],
+  pv_otro:"Una altra…",
+  pv_resumen:(c,f)=>`La teva campana: ${c}. El teu menjar: ${f}. La teva pràctica: que la campana soni sense donar-li de menjar, quedant-te al cos i acompanyat/da.`,
+  pv_saliva:"Saliva", pv_asoc:"El que el ca ha après",
+  pv_siguiente:"Següent", pv_guardar:"Guardar la meva campana", pv_ir:"Anar a La campana",
+  pv_curva:"Assajos d'extinció"
+}};
+
+/* ---------------- escenas (escalera por juego y perfil) ---------------- */
+const SC = [
+ // ---- La campana · adulto
+ {id:"c1",juego:"campana",perfil:"adulto",nivel:1,tema:"rechazo",ico:"📱",
+  es:{t:"El mensaje sin respuesta",capas:["Es media tarde. Estás en casa, con el móvil en la mano.","Has enviado un mensaje a alguien que te importa. Para ti era importante.","Ves que lo ha leído. Pasan diez minutos. Nada.","Pasa una hora. Vuelves a mirar. Sigue sin contestar."],x:["¿Estará enfadado conmigo?","¿Qué he dicho mal?","Seguro que tiene algo mejor que hacer","Siempre me pasa lo mismo","Tendría que haberlo escrito de otra manera"]},
+  ca:{t:"El missatge sense resposta",capas:["És mig horabaixa. Ets a casa, amb el mòbil a la mà.","Has enviat un missatge a algú que t'importa. Per a tu era important.","Veus que l'ha llegit. Passen deu minuts. Res.","Passa una hora. Tornes a mirar. Encara no ha contestat."],x:["Estarà enfadat amb mi?","Què he dit malament?","Segur que té una cosa millor a fer","Sempre em passa el mateix","L'hauria d'haver escrit d'una altra manera"]}},
+ {id:"c2",juego:"campana",perfil:"adulto",nivel:2,tema:"pareja",ico:"🍽️",
+  es:{t:"La cara seria",capas:["Llegas a casa al final del día.","Tu pareja está en la cocina. Te saluda sin mirarte.","Le preguntas qué tal y responde «bien», seco, sin levantar la vista.","Durante la cena casi no habla."],x:["¿Qué le he hecho?","Seguro que es por lo de ayer","Ya no le importo como antes","Tendría que haberlo visto venir","¿Por qué siempre tengo que adivinarlo yo?"]},
+  ca:{t:"La cara seriosa",capas:["Arribes a casa al final del dia.","La teva parella és a la cuina. Et saluda sense mirar-te.","Li demanes com està i respon «bé», sec, sense aixecar la vista.","Durant el sopar quasi no parla."],x:["Què li he fet?","Segur que és pel d'ahir","Ja no li import com abans","Ho hauria d'haver vist venir","Per què sempre ho he d'endevinar jo?"]}},
+ {id:"c3",juego:"campana",perfil:"adulto",nivel:3,tema:"trabajo",ico:"💼",
+  es:{t:"Delante de todos",capas:["Estás en una reunión de trabajo, con varios compañeros.","Presentas algo en lo que has puesto muchas horas.","Tu responsable te interrumpe: «Esto no es lo que pedí».","Hay un silencio. Notas las miradas."],x:["¿Por qué no lo entendí bien?","Ahora pensarán que no sirvo","Siempre me hace lo mismo","Tendría que haber preguntado antes","¿Qué dirán de mí?"]},
+  ca:{t:"Davant de tothom",capas:["Ets a una reunió de feina, amb diversos companys.","Presentes una cosa en què has posat moltes hores.","El teu responsable t'interromp: «Això no és el que vaig demanar».","Hi ha un silenci. Notes les mirades."],x:["Per què no ho vaig entendre bé?","Ara pensaran que no servesc","Sempre em fa el mateix","Ho hauria d'haver demanat abans","Què diran de mi?"]}},
+ {id:"c4",juego:"campana",perfil:"adulto",nivel:4,tema:"soledad",ico:"🛋️",
+  es:{t:"La cena sin ti",capas:["Es sábado por la noche. Estás en el sofá mirando el móvil.","Aparecen fotos de tus amigos cenando juntos.","Están todos. Se les ve riendo.","Nadie te había dicho nada."],x:["¿Por qué no me han avisado?","Seguro que no les caigo bien","Siempre me quedo fuera","¿Qué he hecho para que me aparten?","Es que no soy interesante"]},
+  ca:{t:"El sopar sense tu",capas:["És dissabte vespre. Ets al sofà mirant el mòbil.","Apareixen fotos dels teus amics sopant junts.","Hi són tots. Se'ls veu rient.","Ningú no t'havia dit res."],x:["Per què no m'han avisat?","Segur que no els caic bé","Sempre em qued a fora","Què he fet perquè m'apartin?","És que no som interessant"]}},
+ {id:"c5",juego:"campana",perfil:"adulto",nivel:5,tema:"culpa",ico:"🚪",
+  es:{t:"Lo que dijiste",capas:["Por la mañana discutiste con alguien muy cercano.","Dijiste algo que le dolió. Lo viste en su cara.","Se fue sin despedirse.","Ahora estás a solas con lo que pasó. No te ha vuelto a escribir."],x:["¿Por qué tuve que decir eso?","Soy un desastre con la gente","Lo he estropeado todo","¿Y si ya no quiere saber nada de mí?","Si me hubiera callado…"]},
+  ca:{t:"El que vas dir",capas:["Al matí vas discutir amb algú molt proper.","Vas dir una cosa que li va fer mal. Ho vas veure a la seva cara.","Se'n va anar sense acomiadar-se.","Ara estàs tot sol amb el que va passar. No t'ha tornat a escriure."],x:["Per què vaig haver de dir això?","Som un desastre amb la gent","Ho he espenyat tot","I si ja no vol saber res de mi?","Si m'hagués callat…"]}},
+ // ---- La campana · peques
+ {id:"cp1",juego:"campana",perfil:"peques",nivel:1,tema:"cole",ico:"⚽",
+  es:{t:"Nadie te pasa la pelota",capas:["Es la hora del patio.","Tus compañeros juegan a fútbol y tú también juegas.","Corres, levantas la mano… y nadie te pasa la pelota.","Pasa un rato y sigue igual."],x:["¿Por qué no me la pasan?","No me quieren en el equipo","Siempre me pasa a mí","¿Lo hago mal?"]},
+  ca:{t:"Ningú no et passa la pilota",capas:["És l'hora del pati.","Els teus companys juguen a futbol i tu també jugues.","Corres, aixeques la mà… i ningú no et passa la pilota.","Passa una estona i continua igual."],x:["Per què no me la passen?","No em volen a l'equip","Sempre em passa a mi","Ho faig malament?"]}},
+ {id:"cp2",juego:"campana",perfil:"peques",nivel:2,tema:"cole",ico:"✏️",
+  es:{t:"La profe te riñe",capas:["Estás en clase.","La profe pregunta y tú contestas.","Te dice delante de todos: «Así no, otra vez lo mismo».","Algunos compañeros se ríen."],x:["¿Por qué me riñe a mí?","Soy el que lo hace peor","Ahora se reirán siempre","¿Por qué no lo sé hacer bien?"]},
+  ca:{t:"La mestra et renya",capas:["Ets a classe.","La mestra demana i tu contestes.","Et diu davant de tothom: «Així no, una altra vegada el mateix».","Alguns companys riuen."],x:["Per què em renya a mi?","Som el que ho fa pitjor","Ara riuran sempre","Per què no ho sé fer bé?"]}},
+ {id:"cp3",juego:"campana",perfil:"peques",nivel:3,tema:"amistad",ico:"🧒",
+  es:{t:"Tu amigo juega con otro",capas:["Llegas al cole con ganas de ver a tu mejor amigo.","Lo ves en el patio jugando con otro niño.","Te acercas y casi no te mira.","Siguen jugando los dos."],x:["¿Ya no es mi amigo?","¿Qué le he hecho?","Prefiere al otro","Me voy a quedar solo"]},
+  ca:{t:"El teu amic juga amb un altre",capas:["Arribes a l'escola amb ganes de veure el teu millor amic.","El veus al pati jugant amb un altre nin.","T'hi acostes i quasi no et mira.","Continuen jugant tots dos."],x:["Ja no és el meu amic?","Què li he fet?","Prefereix l'altre","Em quedaré tot sol"]}},
+ // ---- El carrusel · adulto
+ {id:"r1",juego:"carrusel",perfil:"adulto",nivel:1,tema:"conversacion",ico:"🌙",
+  es:{t:"La conversación de ayer",capas:["Estás en la cama, a punto de dormir.","Te viene la conversación de ayer.","Una frase. Luego otra. La repasas.","Y empiezas a darle vueltas."],x:["¿Y si lo dije mal?","Tendría que haber contestado otra cosa","Ahora pensará que…","¿Por qué no me di cuenta antes?","Mañana tendría que arreglarlo","Seguro que se lo ha contado a alguien"]},
+  ca:{t:"La conversa d'ahir",capas:["Ets al llit, a punt de dormir.","Et ve la conversa d'ahir.","Una frase. Després una altra. La repasses.","I comences a donar-hi voltes."],x:["I si ho vaig dir malament?","Hauria d'haver contestat una altra cosa","Ara pensarà que…","Per què no me'n vaig adonar abans?","Demà ho hauria d'arreglar","Segur que ho ha contat a algú"]}},
+ {id:"r2",juego:"carrusel",perfil:"adulto",nivel:2,tema:"decision",ico:"🤔",
+  es:{t:"La decisión pendiente",capas:["Esta semana tienes que decidir algo importante.","Te pones a hacer otra cosa, pero vuelve.","¿Y si me equivoco?","Las opciones empiezan a dar vueltas."],x:["¿Y si me equivoco?","Si elijo esto, entonces…","Pero si elijo lo otro…","Ya tendría que tenerlo claro","¿Qué pensarán los demás?","¿Y si luego me arrepiento?"]},
+  ca:{t:"La decisió pendent",capas:["Aquesta setmana has de decidir una cosa important.","Et poses a fer una altra cosa, però torna.","I si m'equivoc?","Les opcions comencen a donar voltes."],x:["I si m'equivoc?","Si tri això, aleshores…","Però si tri l'altra…","Ja ho hauria de tenir clar","Què pensaran els altres?","I si després me'n penedesc?"]}},
+ {id:"r3",juego:"carrusel",perfil:"adulto",nivel:3,tema:"salud",ico:"🩺",
+  es:{t:"La preocupación por la salud",capas:["Notas una molestia en el cuerpo que antes no estaba.","Intentas seguir con lo tuyo.","Pero la atención vuelve una y otra vez a ese punto.","Y aparece la pregunta."],x:["¿Y si es algo grave?","Esto no es normal","Tendría que buscarlo en internet","¿Y si espero y es tarde?","A alguien le pasó lo mismo y…","¿Por qué no se va?"]},
+  ca:{t:"La preocupació per la salut",capas:["Notes una molèstia al cos que abans no hi era.","Intentes seguir amb les teves coses.","Però l'atenció torna una vegada i una altra a aquest punt.","I apareix la pregunta."],x:["I si és una cosa greu?","Això no és normal","Ho hauria de cercar a internet","I si esper i és tard?","A algú li va passar el mateix i…","Per què no se'n va?"]}},
+ {id:"r4",juego:"carrusel",perfil:"adulto",nivel:4,tema:"dinero",ico:"🧾",
+  es:{t:"La factura",capas:["Llega una factura más alta de lo que esperabas.","Haces cuentas.","No salen como querías.","Y la cabeza se va al mes que viene."],x:["¿Cómo voy a llegar a final de mes?","Tendría que haber ahorrado","¿Y si pasa algo más?","Siempre igual","No puedo con todo","¿Qué voy a hacer?"]},
+  ca:{t:"La factura",capas:["Arriba una factura més alta del que esperaves.","Fas comptes.","No surten com volies.","I el cap se'n va al mes que ve."],x:["Com arribaré a final de mes?","Hauria d'haver estalviat","I si passa una altra cosa?","Sempre igual","No puc amb tot","Què faré?"]}},
+ {id:"r5",juego:"carrusel",perfil:"adulto",nivel:5,tema:"propio",ico:"🎠",propio:true,
+  es:{t:"Tu tema",capas:["Busca un momento tranquilo.","Trae a la mente aquello que suele hacerte dar vueltas.","Deja que aparezca la primera frase.","Y la siguiente."],x:[]},
+  ca:{t:"El teu tema",capas:["Cerca un moment tranquil.","Porta a la ment allò que sol fer-te donar voltes.","Deixa que aparegui la primera frase.","I la següent."],x:[]}},
+ // ---- El carrusel · peques
+ {id:"rp1",juego:"carrusel",perfil:"peques",nivel:1,tema:"examen",ico:"📚",
+  es:{t:"El examen de mañana",capas:["Es de noche y mañana hay examen.","Estás en la cama.","Te acuerdas de una pregunta que no sabes.","Y empiezan las vueltas."],x:["¿Y si suspendo?","No me sé nada","¿Y si me quedo en blanco?","Se van a enfadar","Los demás lo saben todo"]},
+  ca:{t:"L'examen de demà",capas:["És vespre i demà hi ha examen.","Ets al llit.","Te'n recordes d'una pregunta que no saps.","I comencen les voltes."],x:["I si suspenc?","No sé res","I si em quedo en blanc?","S'enfadaran","Els altres ho saben tot"]}},
+ {id:"rp2",juego:"carrusel",perfil:"peques",nivel:2,tema:"amistad",ico:"💬",
+  es:{t:"Lo que dijo mi amigo",capas:["Hoy un amigo te ha dicho algo feo.","Ya estás en casa.","Pero la frase vuelve.","Una vez y otra."],x:["¿Por qué me dijo eso?","¿Está enfadado?","¿Y mañana qué?","Seguro que ya no quiere jugar"]},
+  ca:{t:"El que va dir el meu amic",capas:["Avui un amic t'ha dit una cosa lletja.","Ja ets a casa.","Però la frase torna.","Una vegada i una altra."],x:["Per què em va dir això?","Està enfadat?","I demà què?","Segur que ja no vol jugar"]}},
+ {id:"rp3",juego:"carrusel",perfil:"peques",nivel:3,tema:"miedo",ico:"🌑",
+  es:{t:"El ruido de la noche",capas:["Ya has apagado la luz.","Oyes un ruido en la casa.","Te tapas con la manta.","Y la cabeza empieza a imaginar."],x:["¿Qué ha sido eso?","¿Y si hay alguien?","No me voy a dormir nunca","¿Y si vuelve a sonar?"]},
+  ca:{t:"El renou de la nit",capas:["Ja has apagat el llum.","Sents un renou a la casa.","Et tapes amb la flassada.","I el cap comença a imaginar."],x:["Què ha estat això?","I si hi ha algú?","No m'adormiré mai","I si torna a sonar?"]}},
+ // ---- Llegar a casa · adulto
+ {id:"h1",juego:"casa",perfil:"adulto",nivel:1,tema:"trabajo",ico:"🏠",
+  es:{t:"Un mal día de trabajo",capas:["Ha sido un día difícil en el trabajo.","Algo salió mal y te lo llevas puesto.","Estás delante de la puerta de casa.","Dentro se oyen las voces de los tuyos."]},
+  ca:{t:"Un mal dia de feina",capas:["Ha estat un dia difícil a la feina.","Alguna cosa va sortir malament i te la dus posada.","Ets davant la porta de casa.","A dins se senten les veus dels teus."]}},
+ {id:"h2",juego:"casa",perfil:"adulto",nivel:2,tema:"conflicto",ico:"📞",
+  es:{t:"Una discusión antes de llegar",capas:["De camino a casa has discutido por teléfono.","Todavía notas el calor en la cara.","Llegas a la puerta.","Sabes que dentro te esperan para cenar."]},
+  ca:{t:"Una discussió abans d'arribar",capas:["De camí a casa has discutit per telèfon.","Encara notes la calor a la cara.","Arribes a la porta.","Saps que a dins t'esperen per sopar."]}},
+ {id:"h3",juego:"casa",perfil:"adulto",nivel:3,tema:"dolor",ico:"🩹",
+  es:{t:"Un día de mucho dolor",capas:["Hoy el cuerpo ha dolido más que otros días.","Has hecho lo que has podido.","Llegas a casa cansado de aguantar.","Al otro lado de la puerta están los tuyos."]},
+  ca:{t:"Un dia de molt de dolor",capas:["Avui el cos ha fet més mal que altres dies.","Has fet el que has pogut.","Arribes a casa cansat d'aguantar.","A l'altra banda de la porta hi ha els teus."]}},
+ {id:"h4",juego:"casa",perfil:"adulto",nivel:4,tema:"noticia",ico:"✉️",
+  es:{t:"Una mala noticia",capas:["Hoy te han dado una noticia que no esperabas.","Todavía no se lo has contado a nadie.","Estás delante de la puerta de casa.","Dentro, los tuyos no saben nada."]},
+  ca:{t:"Una mala notícia",capas:["Avui t'han donat una notícia que no esperaves.","Encara no ho has contat a ningú.","Ets davant la porta de casa.","A dins, els teus no en saben res."]}},
+ {id:"h5",juego:"casa",perfil:"adulto",nivel:5,tema:"duelo",ico:"🕯️",duelo:true,
+  es:{t:"Una ausencia",capas:["Llegas a casa.","Falta alguien que siempre estaba.","Abres la puerta y notas el hueco.","Los que quedan están dentro."]},
+  ca:{t:"Una absència",capas:["Arribes a casa.","Hi manca algú que sempre hi era.","Obres la porta i notes el buit.","Els que queden són a dins."]}},
+ // ---- Llegar a casa · peques
+ {id:"hp1",juego:"casa",perfil:"peques",nivel:1,tema:"cole",ico:"🎒",
+  es:{t:"Un mal día en el cole",capas:["Hoy en el cole ha pasado algo que te ha puesto triste.","Vuelves a casa con la mochila.","Estás delante de la puerta.","Dentro está tu familia."]},
+  ca:{t:"Un mal dia a l'escola",capas:["Avui a l'escola ha passat una cosa que t'ha posat trist.","Tornes a casa amb la motxilla.","Ets davant la porta.","A dins hi ha la teva família."]}},
+ {id:"hp2",juego:"casa",perfil:"peques",nivel:2,tema:"amistad",ico:"💔",
+  es:{t:"Una pelea con un amigo",capas:["Te has peleado con un amigo.","Te ha dicho que ya no quiere jugar contigo.","Llegas a casa con un nudo dentro.","Al otro lado de la puerta te esperan."]},
+  ca:{t:"Una baralla amb un amic",capas:["T'has barallat amb un amic.","T'ha dit que ja no vol jugar amb tu.","Arribes a casa amb un nus a dins.","A l'altra banda de la porta t'esperen."]}},
+ {id:"hp3",juego:"casa",perfil:"peques",nivel:3,tema:"despedida",ico:"👋",
+  es:{t:"Una despedida",capas:["Hoy se ha ido alguien a quien quieres mucho.","No sabes cuándo lo volverás a ver.","Llegas a casa.","Dentro está tu familia."]},
+  ca:{t:"Un comiat",capas:["Avui se n'ha anat algú que estimes molt.","No saps quan el tornaràs a veure.","Arribes a casa.","A dins hi ha la teva família."]}}
+];
+const FIGURAS = {
+  es:{pareja:["🧑","Pareja"],hijo:["👦","Hijo"],hija:["👧","Hija"],bebe:["👶","Bebé"],madre:["👩","Madre"],padre:["👨","Padre"],abuela:["👵","Abuela"],abuelo:["👴","Abuelo"],hermano:["🧒","Hermano/a"],amigo:["🙂","Amigo/a"],perro:["🐶","Perro"],gato:["🐱","Gato"]},
+  ca:{pareja:["🧑","Parella"],hijo:["👦","Fill"],hija:["👧","Filla"],bebe:["👶","Nadó"],madre:["👩","Mare"],padre:["👨","Pare"],abuela:["👵","Padrina"],abuelo:["👴","Padrí"],hermano:["🧒","Germà/na"],amigo:["🙂","Amic/ga"],perro:["🐶","Ca"],gato:["🐱","Moix"]}
+};
+
+/* ---------------- estado persistente ---------------- */
+let st = cargar();
+function cargar(){
+  try{ const r = JSON.parse(localStorage.getItem(KEY)||"null"); if(r && r.v===1) return r; }catch(e){}
+  return { v:1, lang:"es", perfil:"adulto", ancla:"barriga", voz:true, codigos:[], cribado:null,
+           nivel:{}, recomendado:{}, fuerzas:{}, sesiones:{}, paradas:[], noNoto:[], miCampana:null,
+           misVagones:[], figuras:["pareja","hijo"], co:false, puertas:{}, escena:{} };
+}
+function guardarSt(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+const pad = n => String(n).padStart(2,"0");
+function fechaLocal(d){ d=d||new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function haceDias(n){ const d=new Date(); d.setDate(d.getDate()-n); return fechaLocal(d); }
+
+/* ---------------- helpers ---------------- */
+const P = () => st.perfil==="peques";
+function t(k){ const L=T[st.lang]; const v=L[k+"_"+st.perfil]; return v!==undefined ? v : L[k]; }
+function aN(){ return ANCLAS[st.lang][st.ancla][1]; }
+function fa(s){ return String(s).replace(/\{a\}/g, aN()); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+const rnd = (a,b) => a + Math.random()*(b-a);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+function L(sc){ return sc[st.lang] || sc.es; }
+function escenas(j){ return SC.filter(s => s.juego===j && s.perfil===st.perfil).sort((a,b)=>a.nivel-b.nivel); }
+function nivelMax(j){ return (st.nivel[j+"_"+st.perfil]) || 1; }
+const tieneCod = c => st.codigos.some(k => (CODIGOS[k]||[]).includes(c));
+
+/* ---------------- puertas de acceso ---------------- */
+function bloque1Ok(){
+  try{
+    const j = JSON.parse(localStorage.getItem(KEY_B1)||"null");
+    if(!j || !Array.isArray(j.hist)) return false;
+    const dias = new Set(j.hist.map(h=>h.date));
+    return j.hist.length>=6 && dias.size>=3;
+  }catch(e){ return false; }
+}
+function practicaCalmaReciente(){
+  try{ const j = JSON.parse(localStorage.getItem(KEY_B1)||"null"); const d=haceDias(6);
+       return !!(j && j.hist && j.hist.some(h=>h.date>=d)); }catch(e){ return false; }
+}
+function cribadoVigente(){
+  const c = st.cribado; if(!c) return null;
+  const limite = c.riesgo ? 1 : 30;  // días
+  return c.fecha >= haceDias(limite-1) ? c : null;
+}
+// "ok" | "cribado" | "riesgo" | "espera" | "bloque1" | "hecha"
+function acceso(){
+  const c = cribadoVigente();
+  if(!c) return "cribado";
+  if(c.riesgo) return "riesgo";
+  if((c.trauma||c.duelo||c.disoc) && !tieneCod("expo")) return "espera";
+  if(!bloque1Ok() && !tieneCod("expo")) return "bloque1";
+  if(st.sesiones[fechaLocal()]) return "hecha";
+  return "ok";
+}
+
+/* ---------------- audio y voz ---------------- */
+let AC = null;
+function audioOn(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==="suspended") AC.resume(); }catch(e){ AC=null; } }
+function tono(f,dur,vol,delay,tipo){
+  if(!AC) return;
+  const t0=AC.currentTime+(delay||0), o=AC.createOscillator(), g=AC.createGain();
+  o.type=tipo||"sine"; o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+dur+0.05);
+}
+function vib(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+function sonCampana(fuerza){ const v=clamp(0.05+0.1*fuerza,0.04,0.28); tono(1318,1.8,v); tono(1975,1.2,v*0.45,0.01); tono(659,2.2,v*0.5,0.0); vib(40); }
+const sonVuelta = () => { tono(523,0.6,0.09); tono(784,0.9,0.07,0.18); vib(25); };
+let vozSel = null;
+function cargarVoz(){
+  if(!window.speechSynthesis) return;
+  const vs = speechSynthesis.getVoices()||[]; const re = st.lang==="ca" ? /^ca/i : /^es/i;
+  vozSel = vs.filter(v=>re.test(v.lang))[0] || null;
+}
+if(window.speechSynthesis){ cargarVoz(); speechSynthesis.onvoiceschanged = cargarVoz; }
+function callar(){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} }
+function hablar(txt, onEnd){
+  const espera = Math.max(4200, txt.length*75);
+  if(!st.voz || !window.speechSynthesis){ if(onEnd) return setTimeout(onEnd, espera); return; }
+  let hecho=false; const fin=()=>{ if(hecho) return; hecho=true; if(onEnd) setTimeout(onEnd, 1300); };
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = st.lang==="ca" ? "ca-ES" : "es-ES"; if(vozSel) u.voice = vozSel; u.rate = 0.88;
+    u.onend = fin; u.onerror = fin;
+    speechSynthesis.speak(u);
+    setTimeout(fin, Math.max(9000, txt.length*130));
+  }catch(e){ setTimeout(fin, espera); }
+}
+let wl=null;
+async function wakeOn(){ try{ if(navigator.wakeLock) wl = await navigator.wakeLock.request("screen"); }catch(e){} }
+function wakeOff(){ try{ if(wl) wl.release(); }catch(e){} wl=null; }
+
+/* ---------------- navegación ---------------- */
+const app = document.getElementById("app"), stage = document.getElementById("stage"), pararEl = document.getElementById("parar");
+let vista = "hub", juego = null, E = null, R = null, raf = null, timers = [], respiro = null;
+function later(fn, ms){ const id=setTimeout(fn, ms); timers.push(id); return id; }
+function limpiarTimers(){ timers.forEach(clearTimeout); timers=[]; if(raf) cancelAnimationFrame(raf); raf=null; }
+
+function setLang(l){ st.lang=l; guardarSt(); document.documentElement.lang=l; cargarVoz(); render(); }
+function setPerfil(p){ st.perfil=p; guardarSt(); render(); }
+function ir(v){ vista=v; render(); scrollTo(0,0); }
+function render(){
+  if(respiro){ try{ respiro.destroy(); }catch(e){} respiro = null; }
+  const bar = document.getElementById("aprensBar"); if(bar) bar.style.display = vista==="fin" ? "" : "none";
+  const fp = document.getElementById("flotParar");
+  if(fp) fp.style.display = (E && !E.cerrado && vista==="ens" && ["exp","pico","frase","post"].includes(E.paso)) ? "" : "none";
+  ({hub, cribado:vCribado, codigo:vCodigo, intro:vIntro, ens:vEnsayo, micro:vMicro, fin:vFin, pavlov:vPavlov, puertas:vPuertas})[vista]();
+}
+function cabecera(){
+  return `<div class="top"><span class="eyebrow">${t("eyebrow")}</span>
+    <span class="langs"><button class="${st.lang==="es"?"on":""}" onclick="setLang('es')">ES</button><button class="${st.lang==="ca"?"on":""}" onclick="setLang('ca')">CA</button></span></div>`;
+}
+function irJuegosAIS(){
+  try{ if(window.parent!==window){ window.parent.location.hash = "#/tool/juegos_ais"; return; } }catch(e){}
+  location.href = "juegos-ais.html";
+}
+
+/* ---------------- HUB ---------------- */
+const ICO = {pavlov:"🔔", campana:"🛎️", carrusel:"🎠", casa:"🏠", puertas:"🚪"};
+function hub(){
+  const ac = acceso();
+  const tarjeta = (g, abierto, extra) => `<div class="card"><button class="juego" onclick="abrir('${g}')">
+      <span class="ico">${ICO[g]}</span>
+      <span><div class="fase">${t("g_"+g+"_f")}</div><h3>${t("g_"+g)}</h3><p>${t("g_"+g+"_d")}</p>
+      <span class="estado ${abierto?"":"no"}">${extra || (abierto?t("abierto"):"🔒 "+t("bloqueado"))}</span></span></button></div>`;
+  const expoAbierto = ac==="ok";
+  let aviso = "";
+  if(ac==="bloque1") aviso = `<div class="card soft"><h2>${t("lock_t")}</h2><p class="muted">${t("lock_txt")}</p>
+      <button class="btn big sec" onclick="irJuegosAIS()">${t("ir_b1")}</button>
+      <button class="btn mini" style="width:100%" onclick="ir('codigo')">${t("tengo_codigo")}</button></div>`;
+  else if(ac==="hecha") aviso = `<div class="aviso ok">${t("sesion_hecha")}</div>`;
+  else if(ac==="riesgo") aviso = `<div class="aviso rojo">${t("cr_riesgo")}</div>`;
+  else if(ac==="espera") aviso = `<div class="aviso">${t("cr_espera")}</div><button class="btn mini" onclick="ir('codigo')">${t("tengo_codigo")}</button>`;
+  const est = g => ac==="hecha" ? t("sesion_hecha").split(":")[0] : null;
+  app.innerHTML = cabecera() + `
+    <h1>${t("h1")}</h1><p class="tag">${t("tag")}</p>
+    <div class="lbl">${t("quien")}</div>
+    <div class="seg"><button class="${!P()?"on":""}" onclick="setPerfil('adulto')">${t("adulto")}</button><button class="${P()?"on":""}" onclick="setPerfil('peques')">${t("peques")}</button></div>
+    ${aviso}
+    ${tarjeta("pavlov", true)}
+    ${tarjeta("campana", expoAbierto, est())}
+    ${tarjeta("carrusel", expoAbierto, est())}
+    ${tarjeta("casa", expoAbierto, est())}
+    ${tarjeta("puertas", true)}
+    <div class="card"><h2>${t("como")}</h2><p class="muted" style="margin:0">${t("como_txt")}</p></div>`;
+}
+function abrir(g){
+  juego = g;
+  if(g==="pavlov"){ pvReset(); return ir("pavlov"); }
+  if(g==="puertas"){ PT={modo:null}; return ir("puertas"); }
+  const ac = acceso();
+  if(ac==="cribado") return ir("cribado");
+  if(ac!=="ok"){ ir("hub"); return; }
+  ir("intro");
+}
+
+/* ---------------- cribado y código ---------------- */
+let CR = {};
+function vCribado(){
+  const q = k => `<div class="q"><p>${t(k)}</p><div class="escala3" style="grid-template-columns:1fr 1fr">
+      <button class="${CR[k]===true?"sel":""}" onclick="CR.${k}=true;render()">${t("si")}</button>
+      <button class="${CR[k]===false?"sel":""}" onclick="CR.${k}=false;render()">${t("no")}</button></div></div>`;
+  const listo = ["cr1","cr2","cr3","cr4"].every(k=>CR[k]!==undefined);
+  app.innerHTML = cabecera() + `<button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
+    <h1>${t("cribado_t")}</h1><p class="muted">${t("cribado_txt")}</p>
+    <div class="card">${q("cr1")}${q("cr2")}${q("cr3")}${q("cr4")}
+    <button class="btn big" ${listo?"":"disabled"} onclick="guardarCribado()">${t("continuar")}</button></div>`;
+}
+function guardarCribado(){
+  st.cribado = { fecha:fechaLocal(), trauma:!!CR.cr1, duelo:!!CR.cr2, riesgo:!!CR.cr3, disoc:!!CR.cr4 };
+  if(CR.cr4) st.ancla = "pies";
+  guardarSt();
+  if(window.Aprens) Aprens.save({ id:"cribado-"+st.cribado.fecha, date:st.cribado.fecha, ts:Date.now(), bloque:"exposicion", juego:"cribado",
+    trauma:st.cribado.trauma, duelo:st.cribado.duelo, riesgo:st.cribado.riesgo, disociacion:st.cribado.disoc });
+  CR = {};
+  const ac = acceso();
+  if(ac==="ok" && juego && juego!=="pavlov" && juego!=="puertas") return ir("intro");
+  if(st.cribado.disoc && ac==="ok"){ alert(t("cr_dis")); }
+  ir("hub");
+}
+let codMsg = "";
+function vCodigo(){
+  app.innerHTML = cabecera() + `<button class="btn mini" onclick="codMsg='';ir('hub')">${t("volver")}</button>
+    <h1>${t("codigo_t")}</h1>
+    <div class="card"><input class="txt" id="cod" placeholder="${t("codigo_ph")}" autocomplete="off" autocapitalize="characters">
+    ${codMsg?`<div class="aviso ${codMsg===t("codigo_ok")?"ok":""}">${codMsg}</div>`:""}
+    <button class="btn big" onclick="guardarCodigo()">${t("guardar_codigo")}</button></div>`;
+}
+function guardarCodigo(){
+  const c = (document.getElementById("cod").value||"").trim().toUpperCase();
+  if(CODIGOS[c]){ if(!st.codigos.includes(c)) st.codigos.push(c); guardarSt(); codMsg = t("codigo_ok"); }
+  else codMsg = t("codigo_mal");
+  render();
+}
+
+/* ---------------- INTRO de cada juego de ensayo ---------------- */
+function vinetaHTML(tipo){ tipo = tipo || juego; return `<details class="vin" ontoggle="if(this.open)montarVineta(this.querySelector('div'),'${tipo}')"><summary>▸ ${t("vin_ver")}</summary><div></div></details>`; }
+function montarVineta(box, tipo){
+  if(!box || box.dataset.ok) return; box.dataset.ok = "1";
+  const o = { lang:st.lang, silueta:true, titulo:"", pie:true, juego:false };
+  try{
+    if(tipo==="campana" && window.VinetaHonestidad) VinetaHonestidad.mount(box,o);
+    else if(tipo==="casa" && window.VinetaAbrazo) VinetaAbrazo.mount(box,o);
+    else if(window.VinetaAtencion) VinetaAtencion.mount(box,{ silueta:true, titulo:"", pie:true, juego:false, rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500} });
+  }catch(e){}
+}
+function escenaSel(){
+  const lista = escenas(juego), max = nivelMax(juego);
+  const k = juego+"_"+st.perfil; const rec = st.recomendado[k] || max;
+  let id = st.escena[k];
+  const ok = s => s.nivel<=max && (!s.duelo || tieneCod("duelo"));
+  if(!lista.some(s=>s.id===id && ok(s))) id = (lista.filter(ok).find(s=>s.nivel===rec) || lista.filter(ok).pop() || lista[0]).id;
+  return lista.find(s=>s.id===id);
+}
+function setEscena(id){ st.escena[juego+"_"+st.perfil]=id; guardarSt(); render(); }
+function setAncla(a){ st.ancla=a; guardarSt(); render(); }
+function vIntro(){
+  const sel = escenaSel(), max = nivelMax(juego), rec = st.recomendado[juego+"_"+st.perfil] || max;
+  const filas = escenas(juego).map(s=>{
+    const bloq = s.nivel>max, duelo = s.duelo && !tieneCod("duelo");
+    const nota = duelo ? t("bloq_duelo") : bloq ? t("bloq_esc") : (s.nivel===rec ? t("recomendada") : "");
+    const f = (st.fuerzas[s.id]||[]);
+    return `<li><span class="nivel">${s.nivel}</span><button class="escenabtn ${sel.id===s.id?"sel":""}" ${bloq||duelo?"disabled":""} onclick="setEscena('${s.id}')">
+      <b>${bloq||duelo?"🔒 ":""}${s.ico} ${esc(L(s).t)}</b><span>${t("escalon")(s.nivel)}${nota?" · "+nota:""}${f.length?" · "+f.length+"×":""}</span></button></li>`;
+  }).join("");
+  const anclas = Object.keys(ANCLAS.es).map(k=>`<button class="chip ${st.ancla===k?"sel":""}" onclick="setAncla('${k}')">${ANCLAS[st.lang][k][0]}</button>`).join("");
+  let extra = "";
+  if(juego==="carrusel" && sel.propio){
+    extra = `<div class="card"><h2>${t("mis_vagones_t")}</h2><p class="muted">${t("mis_vagones_x")}</p>
+      <textarea class="txt" id="misVag" oninput="guardarVagones(this.value)">${esc(st.misVagones.join("\n"))}</textarea></div>`;
+  }
+  if(juego==="casa"){
+    const F = FIGURAS[st.lang];
+    extra = `<div class="card"><h2>${t("figuras_t")}</h2><div class="chips">${Object.keys(F).map(k=>`<button class="chip ${st.figuras.includes(k)?"sel":""}" onclick="togFigura('${k}')">${F[k][0]} ${F[k][1]}</button>`).join("")}</div>
+      <label class="chip ${st.co?"sel":""}" style="display:block;cursor:pointer"><input type="checkbox" ${st.co?"checked":""} onchange="st.co=this.checked;guardarSt();render()" style="margin-right:8px">${t("co_t")}</label>
+      <p class="muted" style="margin:8px 0 0">${t("co_x")}</p></div>`;
+  }
+  const puede = !(juego==="carrusel" && sel.propio && st.misVagones.length<2) && !(juego==="casa" && !st.figuras.length);
+  app.innerHTML = cabecera() + `<button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
+    <h1>${ICO[juego]} ${t("g_"+juego)}</h1><p class="tag">${t("g_"+juego+"_d")}</p>
+    ${vinetaHTML()}
+    <div class="card"><h2>${t("escena_t")}</h2><ul class="lista">${filas}</ul></div>
+    ${extra}
+    <div class="lbl">${t("ancla_t")}</div><div class="chips">${anclas}</div>
+    <label class="chip ${st.voz?"sel":""}" style="display:block;cursor:pointer;margin:0 0 14px"><input type="checkbox" ${st.voz?"checked":""} onchange="st.voz=this.checked;guardarSt();render()" style="margin-right:8px">🔊 ${t("voz")}</label>
+    <button class="btn big" ${puede?"":"disabled"} onclick="nuevoEnsayo(1)">${t("empezar")}</button>`;
+}
+function guardarVagones(v){
+  st.misVagones = v.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,6); guardarSt();
+  const b = document.querySelector(".big"); if(b) b.disabled = st.misVagones.length<2;
+}
+function togFigura(k){
+  const i = st.figuras.indexOf(k);
+  if(i>=0) st.figuras.splice(i,1); else if(st.figuras.length<4) st.figuras.push(k);
+  guardarSt(); render();
+}
+
+/* ---------------- motor del ensayo ---------------- */
+function nuevoEnsayo(n, sesion){
+  audioOn(); wakeOn();
+  const sc = escenaSel();
+  E = { juego, sc, n, sesion: sesion || ("s"+Date.now()), paso:"exp", inicio:new Date(),
+        exp:{act:null,q:null}, pico:{zona:null,act:null,noNoto:false}, resp:null, frase:null, fraseModo:null,
+        post:null, comp:null, alarma:null, parcial:false, cerrado:false };
+  ir("ens");
+}
+function setE(path, v){ const [a,b]=path.split("."); if(b) E[a][b]=v; else E[a]=v; render(); }
+function escalaHTML(path, val){
+  if(P()) return `<div class="escala3">${[["poco",2],["algo",5],["mucho",8]].map(([k,v])=>`<button class="${val===v?"sel":""}" onclick="setE('${path}',${v})">${t(k)}</button>`).join("")}</div>`;
+  return `<div class="escala">${Array.from({length:11},(_,i)=>`<button class="${val===i?"sel":""}" onclick="setE('${path}',${i})">${i}</button>`).join("")}</div>`;
+}
+function irPaso(p){ E.paso=p; if(["entrada","escena","resp"].includes(p)===false) { stage.hidden=true; stage.innerHTML=""; document.body.style.overflow=""; } render(); scrollTo(0,0); }
+function vEnsayo(){
+  if(!E) return ir("hub");
+  const cab = cabecera() + `<p class="eyebrow" style="margin:6px 0 0">${t("g_"+E.juego)} · ${esc(L(E.sc).t)} · ${t("ens_n")(E.n, MAX_ENSAYOS)}</p>`;
+  const paso = E.paso;
+  if(paso==="exp"){
+    const ok = E.exp.act!=null && E.exp.q!=null;
+    app.innerHTML = cab + `<h1>${t("exp_t")}</h1>
+      <div class="card"><div class="q"><p>${t("exp_act")}</p>${escalaHTML("exp.act",E.exp.act)}${P()?"":`<span class="muted">${t("exp_act_x")}</span>`}</div>
+      <div class="q" style="margin:0"><p>${t("exp_q")}</p>${escalaHTML("exp.q",E.exp.q)}${P()?"":`<span class="muted">${t("exp_q_x")}</span>`}</div></div>
+      <button class="btn big" ${ok?"":"disabled"} onclick="irPaso('entrada')">${t("seguir")}</button>`;
+    return;
+  }
+  if(paso==="entrada") return pasoEntrada();
+  if(paso==="escena") return pasoEscena();
+  if(paso==="pico"){
+    const ok = E.pico.noNoto || (E.pico.zona && E.pico.act!=null);
+    const Z = ZONAS[st.lang];
+    app.innerHTML = cab + `<h1>${t("pico_t")}</h1>
+      <div class="card"><div class="zonas">${Object.keys(Z).map(k=>`<button class="${E.pico.zona===k?"sel":""}" onclick="E.pico.noNoto=false;setE('pico.zona','${k}')">${Z[k]}</button>`).join("")}</div>
+      <div class="q"><p>${t("pico_act")}</p>${escalaHTML("pico.act",E.pico.act)}</div>
+      <button class="btn mini" onclick="E.pico.zona=null;E.pico.act=null;setE('pico.noNoto',true)">${E.pico.noNoto?"✓ ":""}${t("no_noto")}</button>
+      ${E.pico.noNoto?`<div class="aviso">${esc(fa(t("no_noto_x")))}</div>`:""}</div>
+      <button class="btn big" ${ok?"":"disabled"} onclick="irPaso('resp')">${t("seguir")}</button>`;
+    return;
+  }
+  if(paso==="resp") return pasoRespuesta();
+  if(paso==="frase"){
+    const fr = ["frase1","frase2","frase3"];
+    const ok = E.frase && E.fraseModo;
+    app.innerHTML = cab + `<h1>${t("frase_t")}</h1>
+      <div class="card"><p class="muted" style="margin-top:0">${t("frase_txt")}</p>
+      <div class="chips" style="flex-direction:column">${fr.map(k=>`<button class="chip ${E.frase===k?"sel":""}" onclick="setE('frase','${k}')">${t(k)}</button>`).join("")}</div>
+      <div class="chips">${["dicha","pensada"].map(k=>`<button class="chip ${E.fraseModo===k?"sel":""}" onclick="setE('fraseModo','${k}')">${t(k)}</button>`).join("")}</div>
+      ${vinetaHTML("campana")}</div>
+      <button class="btn big" ${ok?"":"disabled"} onclick="irPaso('post')">${t("seguir")}</button>`;
+    return;
+  }
+  if(paso==="post"){
+    const ok = E.post!=null && E.comp;
+    app.innerHTML = cab + `<h1>${t("post_t")}</h1>
+      <div class="card"><div class="q"><p>${t("post_act")}</p>${escalaHTML("post",E.post)}</div>
+      <div class="q" style="margin:0"><p>${t("comp_t")}</p><div class="chips">${["facil","igual","dificil"].map(k=>`<button class="chip ${E.comp===k?"sel":""}" onclick="setE('comp','${k}')">${t("comp_"+k)}</button>`).join("")}</div></div></div>
+      <button class="btn big" ${ok?"":"disabled"} onclick="cerrarEnsayo()">${t("seguir")}</button>`;
+    return;
+  }
+  if(paso==="res") return pasoResultado();
+}
+
+/* ---- paso: entrada (Respiro AIS) ---- */
+function pasoEntrada(){
+  app.innerHTML = cabecera() + `<h1>${t("entrada_t")}</h1>
+    <div class="card"><div class="respiro-box" id="resp"></div>
+    <p style="text-align:center;margin:6px 0 12px">${esc(fa(t("entrada_txt")))}</p>
+    <button class="btn big" id="btnAp" disabled onclick="finEntrada()">${t("ya_aparezco")}</button></div>`;
+  const box = document.getElementById("resp");
+  try{ if(respiro) respiro.destroy(); }catch(e){}
+  respiro = null;
+  const habilita = () => { const b=document.getElementById("btnAp"); if(b) b.disabled=false; };
+  if(window.RespiroAIS){
+    try{ respiro = RespiroAIS.mount(box,{ lang:"es", figure:P()?"child":"organism", autostart:true, showControl:false, showZones:false, legend:false,
+         rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}, onCycle:habilita }); }catch(e){}
+  } else box.innerHTML = '<div class="orbe" style="position:relative;left:auto;top:auto;margin:20px auto"></div>';
+  later(habilita, 14000);
+}
+function finEntrada(){ try{ if(respiro) respiro.destroy(); }catch(e){} respiro=null; limpiarTimers(); irPaso("escena"); }
+
+/* ---- paso: escena imaginada por capas ---- */
+function pasoEscena(){
+  const sc = L(E.sc);
+  stage.className = "stage st-dark"; stage.hidden = false; document.body.style.overflow = "hidden";
+  stage.innerHTML = `<div class="st-top"><span class="ttl">${esc(sc.t)}</span><button class="st-parar" onclick="necesitoParar()">${t("parar")}</button></div>
+    <div class="esc-ico">${E.sc.ico}</div>
+    <div class="esc-capas" id="capas"><p class="on" style="font-style:italic;font-size:16.5px;opacity:.8">${esc(t("escena_pre"))}</p></div>
+    <div class="esc-pie" id="escPie"><button class="st-btn" style="background:rgba(255,255,255,.14);color:#efe7d8" onclick="sigCapa()">${t("siguiente")}</button></div>`;
+  E.capa = -1;
+  hablar(t("escena_pre"), sigCapa);
+}
+function sigCapa(){
+  if(!E || E.paso!=="escena" || E.pausa) return;
+  const capas = L(E.sc).capas; const box = document.getElementById("capas"); if(!box) return;
+  limpiarTimers();
+  E.capa++;
+  [...box.children].forEach(p=>p.classList.add("old"));
+  while(box.children.length>2) box.removeChild(box.firstChild);
+  if(E.capa < capas.length){
+    const p = document.createElement("p"); p.textContent = capas[E.capa]; box.appendChild(p);
+    requestAnimationFrame(()=>p.classList.add("on"));
+    const idc = E.capa;
+    hablar(capas[E.capa], ()=>{ if(E && E.capa===idc) sigCapa(); });
+  } else {
+    const p = document.createElement("p"); p.textContent = t("quedate"); p.style.fontStyle="italic"; box.appendChild(p);
+    requestAnimationFrame(()=>p.classList.add("on"));
+    hablar(t("quedate"));
+    document.getElementById("escPie").innerHTML = "";
+    later(()=>{ const pie=document.getElementById("escPie"); if(pie) pie.innerHTML = `<button class="st-btn" style="background:var(--amarillo);color:#2a2214" onclick="callar();irPaso('pico')">${t("lo_noto")}</button>`; }, 6000);
+  }
+}
+
+/* ---- paso: respuesta (mecánica de cada juego) ---- */
+function pasoRespuesta(){
+  stage.hidden = false; document.body.style.overflow = "hidden";
+  if(E.juego==="campana") campanaStart();
+  else if(E.juego==="carrusel") carruselStart();
+  else casaStart();
+}
+function finRespuesta(resp){
+  limpiarTimers(); callar();
+  E.resp = resp;
+  stage.hidden = true; stage.innerHTML = ""; document.body.style.overflow = "";
+  irPaso(E.juego==="casa" ? "post" : "frase");
+}
+// botones de mantener (uno o dos, para Co-AIS)
+function montarHold(btn, onChange){
+  btn.addEventListener("pointerdown", e=>{ e.preventDefault(); try{ btn.setPointerCapture(e.pointerId); }catch(_){} btn.classList.add("on"); onChange(true); });
+  const off = ()=>{ if(!btn.classList.contains("on")) return; btn.classList.remove("on"); onChange(false); };
+  ["pointerup","pointercancel","lostpointercapture"].forEach(ev=>btn.addEventListener(ev, off));
+  btn.addEventListener("contextmenu", e=>e.preventDefault());
+}
+
+/* ===== LA CAMPANA ===== */
+function campanaSVG(){
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><path d="M60 8a6 6 0 0 1 6 6v4c18 4 28 20 28 40v20l10 12H16l10-12V58c0-20 10-36 28-40v-4a6 6 0 0 1 6-6z" fill="#e8b93a" id="bellBody"/>
+    <path d="M40 40c-4 6-6 12-6 20" stroke="#fff" stroke-opacity=".5" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="102" r="9" fill="#b98a1c"/></svg>`;
+}
+function campanaStart(){
+  const sc = L(E.sc);
+  const porques = sc.x.slice();
+  if(st.miCampana && st.miCampana.comida) porques.push(st.miCampana.comida);
+  const dur = (P()?40:60)*1000;
+  R = { dur, el:0, last:performance.now(), hold:false, sost:0, rings:0, ringsSin:0, tapped:false, porques:0, lat:null,
+        tFirst:null, nextRing:1500, porquesTxt:porques, peri:0, pausa:false };
+  stage.className = "stage st-dark st-campana";
+  const per = t("c_peri");
+  stage.innerHTML = `<div class="st-top"><span class="ttl">${esc(sc.t)}</span><button class="st-parar" onclick="necesitoParar()">${t("parar")}</button></div>
+    <div class="alivio" id="alivio"></div>
+    <div class="bell" id="bell">${campanaSVG()}</div>
+    <div class="peri" id="peri0" style="left:8%;top:50%"><span>☕</span>${per[0]}</div>
+    <div class="peri" id="peri1" style="right:8%;top:44%"><span>🌤️</span>${per[1]}</div>
+    <div class="peri" id="peri2" style="left:42%;top:60%"><span>🙂</span>${per[2]}</div>
+    <div id="bubs"></div>
+    <p class="st-txt" id="ctxt">${esc(fa(t("c_txt0")))}</p>
+    <button class="st-hold" id="hold">${t("c_quedo")}<br><small style="font-weight:600">${ANCLAS[st.lang][st.ancla][0]}</small></button>`;
+  montarHold(document.getElementById("hold"), on=>{
+    R.hold = on;
+    document.getElementById("ctxt").textContent = fa(t(on ? "c_txt_hold" : "c_txt_suelta"));
+  });
+  raf = requestAnimationFrame(campanaFrame);
+}
+function campanaRing(){
+  R.rings++; if(R.rings>1 && !R.tapped) R.ringsSin++; R.tapped=false;
+  if(R.tFirst==null) R.tFirst = R.el;
+  const b = document.getElementById("bell"); b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring");
+  sonCampana(1 + R.porques*0.4 - Math.min(1, R.sost/40)*0.6);
+  const n = 1 + (Math.random()<0.6?1:0);
+  for(let i=0;i<n;i++) later(burbuja, i*900);
+  R.nextRing = R.el + Math.max(3200, rnd(6000,8000) - 900*R.porques);
+}
+function burbuja(){
+  if(!R || E.paso!=="resp") return;
+  const box = document.getElementById("bubs"); if(!box) return;
+  const d = document.createElement("div"); d.className = "bub";
+  d.textContent = R.porquesTxt[Math.floor(Math.random()*R.porquesTxt.length)];
+  R.lado = !R.lado;
+  if(R.lado){ d.style.left = rnd(3,14)+"%"; } else { d.style.right = rnd(3,14)+"%"; }
+  d.style.top = rnd(44,62)+"%";
+  d.addEventListener("pointerdown", e=>{
+    e.preventDefault(); e.stopPropagation();
+    if(R.pausa) return;
+    R.porques++; R.tapped = true; if(R.lat==null) R.lat = R.el - (R.tFirst||0);
+    d.classList.add("pop"); setTimeout(()=>d.remove(), 350);
+    const a = document.getElementById("alivio"); a.classList.add("on"); setTimeout(()=>a.classList.remove("on"), 600);
+    document.getElementById("ctxt").textContent = t("c_alivio");
+    R.nextRing = Math.min(R.nextRing, R.el + 2200);
+  });
+  d.addEventListener("animationend", ()=>d.remove());
+  box.appendChild(d);
+}
+function campanaFrame(now){
+  if(!R || E.paso!=="resp" || E.juego!=="campana") return;
+  const dt = Math.min(0.25,(now-R.last)/1000); R.last = now;
+  if(!R.pausa){
+    R.el += dt*1000;
+    if(R.hold) R.sost += dt;
+    if(R.el >= R.nextRing && R.el < R.dur - 2500) campanaRing();
+    const s = clamp(1 + 0.13*R.porques - 0.45*Math.min(1, R.sost/(R.dur/1000*0.7)), 0.5, 1.7);
+    const b = document.getElementById("bell");
+    b.style.setProperty("--s", s.toFixed(3));
+    b.style.filter = `saturate(${clamp(s,0.2,1.4)}) brightness(${clamp(0.6+0.4*s,0.6,1.2)})`;
+    const nPeri = R.sost>=26?3 : R.sost>=16?2 : R.sost>=8?1 : 0;
+    for(let i=0;i<3;i++){ const p=document.getElementById("peri"+i); if(p) p.classList.toggle("on", i<nPeri); }
+    if(R.el >= R.dur){
+      if(R.rings>0 && !R.tapped) R.ringsSin++;
+      const vent = R.dur/1000, lat = R.lat==null ? vent : R.lat/1000;
+      const fuerza = Math.round(100*( (1-lat/vent)*0.34 + Math.min(1,R.porques/4)*0.33 + (1-Math.min(1,R.sost/(vent*0.8)))*0.33 ));
+      return finRespuesta({ sosten_s:Math.round(R.sost), latencia_captura_s:R.lat==null?null:Math.round(R.lat/100)/10,
+        porques_tocados:R.porques, campanas:R.rings, campanas_sin_porque:R.ringsSin, fuerza });
+    }
+  }
+  raf = requestAnimationFrame(campanaFrame);
+}
+
+/* ===== EL CARRUSEL ===== */
+function carruselFrases(){
+  const sc = L(E.sc);
+  return (E.sc.propio ? st.misVagones : sc.x).filter(Boolean);
+}
+function carruselStart(){
+  R = { rondas:P()?2:3, ronda:1, fase:"subido", tRonda:0, lats:[], posp:0, sost:0, anclaOk:0, anclaT:0, hold:false,
+        idx:0, ang:0, vel:30, sigFrase:0, last:performance.now(), pausa:false, vueltas:[], avisoLargo:false };
+  stage.className = "stage st-carrusel";
+  const wags = Array.from({length:8},(_,i)=>`<div class="wag" style="transform:rotate(${i*45}deg) translateY(-105px)"></div>`).join("");
+  stage.innerHTML = `<div class="st-top"><span class="ttl" id="ronda"></span><button class="st-parar" onclick="necesitoParar()">${t("parar")}</button></div>
+    <div class="car" id="car">${wags}</div>
+    <div class="luz" id="luz"></div>
+    <div class="car-frase" id="cfrase"></div>
+    <p class="st-txt" id="rtxt" style="top:calc(14px + env(safe-area-inset-top) + 34px);font-size:15.5px;opacity:.85"></p>
+    <div class="car-btns" id="cbtns"></div>`;
+  carruselRonda();
+  raf = requestAnimationFrame(carruselFrame);
+}
+function carruselRonda(){
+  R.fase="subido"; R.tRonda=0; R.sigFrase=0; R.vel=30; R.avisoLargo=false;
+  document.getElementById("ronda").textContent = t("r_ronda")(R.ronda, R.rondas);
+  document.getElementById("rtxt").textContent = t("r_txt_subir");
+  document.getElementById("car").classList.remove("parado");
+  document.getElementById("cbtns").innerHTML = `<button class="stopbtn" onclick="carruselStop(false)">${t("r_stop")}</button><button class="cajabtn" onclick="carruselStop(true)">${t("r_caja")}</button>`;
+  luzA("car");
+}
+function luzA(donde){
+  const l = document.getElementById("luz"); if(!l) return;
+  if(donde==="car"){ l.style.left="calc(50% - 13px)"; l.style.top="calc(24% + 92px)"; }
+  else { l.style.left="calc(50% - 13px)"; l.style.top="calc(24% + 52px)"; }
+}
+function carruselFrame(now){
+  if(!R || E.paso!=="resp" || E.juego!=="carrusel") return;
+  const dt = Math.min(0.25,(now-R.last)/1000); R.last = now;
+  if(!R.pausa){
+    if(R.fase==="subido"){
+      R.tRonda += dt;
+      R.vel = Math.min(220, 30 + 9*R.tRonda);
+      R.ang = (R.ang + R.vel*dt) % 360;
+      document.getElementById("car").style.transform = `rotate(${R.ang}deg)`;
+      if(R.tRonda >= R.sigFrase){
+        const fr = carruselFrases(); const f = fr[R.idx % fr.length]; R.idx++;
+        const el = document.getElementById("cfrase"); el.style.opacity=0;
+        setTimeout(()=>{ el.textContent = f; el.style.opacity=1; }, 250);
+        if(st.voz) hablar(f);
+        R.sigFrase += Math.max(2.4, 3.6 - 0.04*R.tRonda);
+      }
+      if(R.tRonda>45 && !R.avisoLargo){ R.avisoLargo=true; document.getElementById("rtxt").textContent = t("r_txt_largo"); }
+      if(R.tRonda>75) carruselStop(false);
+    } else if(R.fase==="ancla" && R.hold){
+      R.sost += dt; R.anclaT += dt;
+      const pr = Math.min(1, R.anclaT/5);
+      const c = document.getElementById("aprog"); if(c) c.style.strokeDashoffset = (440*(1-pr)).toFixed(1);
+      if(pr>=1) carruselVuelve();
+    }
+  }
+  raf = requestAnimationFrame(carruselFrame);
+}
+function carruselStop(caja){
+  if(R.fase!=="subido") return;
+  callar();
+  R.lats.push(Math.round(R.tRonda*10)/10); if(caja) R.posp++;
+  R.fase = "ancla"; R.anclaT = 0;
+  document.getElementById("car").classList.add("parado");
+  document.getElementById("cfrase").textContent = "";
+  document.getElementById("rtxt").textContent = caja ? t("r_caja_ok") : t("r_para");
+  sonVuelta();
+  luzA("cuerpo");
+  document.getElementById("cbtns").innerHTML = "";
+  later(carruselAnclaUI, 1400);
+}
+function carruselAnclaUI(){
+    if(!R || R.fase!=="ancla" || document.getElementById("hold")) return;
+    document.getElementById("rtxt").textContent = fa(t("r_ancla"));
+    stage.insertAdjacentHTML("beforeend", `<div class="orbe" id="orbe"></div>
+      <svg class="anclaprog" id="aprogsvg" viewBox="0 0 150 150"><circle cx="75" cy="75" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6"/>
+      <circle id="aprog" cx="75" cy="75" r="70" fill="none" stroke="#e8b93a" stroke-width="6" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 75 75)"/></svg>`);
+    document.getElementById("cbtns").innerHTML = `<button class="st-hold" id="hold" style="position:relative;left:auto;bottom:auto;transform:none">${t("r_ancla_btn")}<br><small style="font-weight:600">${ANCLAS[st.lang][st.ancla][0]}</small></button>`;
+    montarHold(document.getElementById("hold"), on=>{ R.hold=on; });
+}
+function carruselVuelve(){
+  R.fase = "vuelve"; R.hold=false; R.anclaOk++;
+  sonVuelta();
+  ["orbe","aprogsvg"].forEach(id=>{ const e=document.getElementById(id); if(e) e.remove(); });
+  document.getElementById("rtxt").textContent = t("r_vuelve");
+  document.getElementById("cbtns").innerHTML = t("r_vuelve_opts").map((o,i)=>`<button class="cajabtn" style="background:rgba(255,255,255,.9);color:#283244;font-size:15.5px;padding:13px 18px" onclick="carruselPausa(${i})">${esc(o)}</button>`).join("");
+}
+function carruselPausa(i){
+  R.vueltas.push(t("r_vuelve_opts")[i]);
+  R.fase = "pausa";
+  document.getElementById("cbtns").innerHTML = "";
+  document.getElementById("rtxt").textContent = "";
+  document.getElementById("cfrase").textContent = t("r_aqui");
+  later(carruselSiguiente, P()?5000:rnd(7000,10000));
+}
+function carruselSiguiente(){
+    if(!R || R.fase!=="pausa") return;
+    if(R.ronda >= R.rondas){
+      const media = R.lats.reduce((a,b)=>a+b,0)/R.lats.length;
+      return finRespuesta({ sosten_s:Math.round(R.sost), latencias_s:R.lats, latencia_media_s:Math.round(media*10)/10,
+        bajadas:R.lats.length, pospuestos:R.posp, anclajes_completos:R.anclaOk, vuelve_a:R.vueltas,
+        fuerza:Math.round(100*Math.min(1, media/30)) });
+    }
+    R.ronda++; document.getElementById("cfrase").textContent=""; carruselRonda();
+}
+
+/* ===== LLEGAR A CASA ===== */
+function casaStart(){
+  const F = FIGURAS[st.lang];
+  R = { sub:"puerta", holdA:false, holdB:false, sost:0, tPuerta:0, q:0, tent:0, walk:0, hug:0, tentTxt:[],
+        last:performance.now(), pausa:false, co:!!st.co, frase:null, abrazoS:0 };
+  stage.className = "stage st-casa st-light";
+  const figs = st.figuras.map((k,i)=>`<div class="fig fam" data-i="${i}" style="left:${60+i*9}%">${F[k][0]}<small>${F[k][1]}</small></div>`).join("");
+  stage.innerHTML = `<div class="st-top"><span class="ttl" style="color:#5d5246">${esc(L(E.sc).t)}</span><button class="st-parar" onclick="necesitoParar()">${t("parar")}</button></div>
+    <div class="sala" id="sala"><div class="ventana"></div><div class="puerta"></div>
+      ${figs}
+      <div class="fig yo" id="yo" style="left:2%">🧍<small>${t("yo")}</small><div class="dolor" id="dolor"></div></div>
+      <div id="luces"></div>
+    </div>
+    <div class="sombra" id="sombra"></div>
+    <p class="st-txt" id="htxt"></p>
+    <div class="barra" id="barra" style="bottom:calc(178px + env(safe-area-inset-bottom));display:none"><i id="barraI"></i></div>
+    <div id="hctrl"></div>`;
+  casaPosiciones();
+  if(R.co) casaPausaCo(); else casaPuerta();
+  raf = requestAnimationFrame(casaFrame);
+}
+function casaPausaCo(){
+  R.sub = "pausaco";
+  document.getElementById("htxt").textContent = t("h_pausa_co");
+  document.getElementById("hctrl").innerHTML = `<div class="opciones"><button class="tec" onclick="casaPuerta()">${t("h_pausa_ok")}</button></div>`;
+}
+function casaHolds(label){
+  const c = document.getElementById("hctrl");
+  if(R.co){
+    c.innerHTML = `<button class="st-hold dos izq" id="hA">${t("yo")}<br><small>${t("h_hold_co")}</small></button><button class="st-hold dos der" id="hB">${t("h_hold_co")}<br><small>+1</small></button>`;
+    montarHold(document.getElementById("hA"), on=>{ R.holdA=on; });
+    montarHold(document.getElementById("hB"), on=>{ R.holdB=on; });
+  } else {
+    c.innerHTML = `<button class="st-hold" id="hA">${esc(label)}</button>`;
+    montarHold(document.getElementById("hA"), on=>{ R.holdA=on; });
+    R.holdB = true;
+  }
+}
+const casaDentro = () => R.holdA && (!R.co || R.holdB);
+function casaPuerta(){
+  R.sub = "puerta"; R.tPuerta = 0; R.q = 0;
+  document.getElementById("htxt").textContent = t("h_puerta");
+  casaHolds(fa(t("h_hold")));
+}
+function casaPosiciones(){
+  const lejos = Math.min(1, R.tent*0.28) * (1 - R.walk);
+  document.querySelectorAll(".fam").forEach((f,i)=>{
+    const base = 60 + i*9 - (R.sub==="abrazo"||R.sub==="mesa" ? 8 : 0);
+    f.style.left = Math.min(92, base + lejos*22) + "%";
+    f.style.transform = `scale(${1 - lejos*0.35})`;
+    f.style.opacity = String(1 - lejos*0.45);
+  });
+  const yo = document.getElementById("yo");
+  const x = R.sub==="puerta"||R.sub==="pausaco" ? 2 : 16 + R.walk*21;
+  yo.style.left = x + "%";
+  document.getElementById("sombra").style.opacity = String(Math.min(0.45, R.tent*0.12) * (1 - R.walk));
+}
+function casaFrame(now){
+  if(!R || E.paso!=="resp" || E.juego!=="casa") return;
+  const dt = Math.min(0.25,(now-R.last)/1000); R.last = now;
+  if(!R.pausa){
+    const dentro = casaDentro();
+    if(dentro) R.sost += dt;
+    if(R.sub==="puerta" && dentro){
+      R.tPuerta += dt;
+      const meta = P()?9:12, cada = meta/3;
+      const q = Math.min(3, Math.floor(R.tPuerta/cada)+1);
+      if(q!==R.q){ R.q=q; if(q<=3) document.getElementById("htxt").textContent = t("h_q")[q-1]; }
+      if(R.tPuerta>=meta) casaEntrar();
+    } else if(R.sub==="acercarse" && dentro){
+      R.walk = Math.min(1, R.walk + dt/(P()?7:10));
+      casaPosiciones();
+      if(R.walk>=1) casaAbrazo();
+    } else if(R.sub==="abrazo" && dentro){
+      R.hug += dt; R.abrazoS += dt;
+      const meta = P()?6:10;
+      document.getElementById("barraI").style.width = Math.min(100, 100*R.hug/meta)+"%";
+      const n = Math.min(st.figuras.length, Math.floor(R.hug/meta*st.figuras.length+0.0001));
+      document.querySelectorAll(".manadaluz").forEach((l,i)=>l.classList.toggle("on", i<n));
+      if(R.hug>=meta) casaMesa();
+    }
+  }
+  raf = requestAnimationFrame(casaFrame);
+}
+function casaEntrar(){
+  R.sub = "entrar"; R.holdA=false;
+  sonVuelta(); casaPosiciones();
+  casaOpciones();
+}
+function casaOpciones(){
+  document.getElementById("htxt").textContent = R.tent>=3 ? t("h_otro") : t("h_dentro");
+  const ten = t("h_tent");
+  document.getElementById("hctrl").innerHTML = `<div class="opciones">${ten.map((o,i)=>`<button onclick="casaTent(${i})">${esc(o)}</button>`).join("")}
+    <button class="tec" onclick="casaAcercarse()">${esc(fa(t("h_tec")))}</button></div>`;
+}
+function casaTent(i){
+  R.tent++; R.tentTxt.push(t("h_tent")[i]);
+  casaPosiciones();
+  document.getElementById("htxt").textContent = t("h_aleja");
+  document.getElementById("hctrl").innerHTML = "";
+  later(casaOpciones, 2600);
+}
+function casaAcercarse(){
+  R.sub = "acercarse";
+  document.getElementById("htxt").textContent = fa(t("h_acerca"));
+  casaHolds(fa(t("h_hold")));
+}
+function casaAbrazo(){
+  R.sub = "abrazo"; casaPosiciones();
+  sonVuelta();
+  document.getElementById("htxt").textContent = t("h_abrazo");
+  document.getElementById("barra").style.display = "";
+  // luces de la manada alrededor del dolor (dentro de mi figura)
+  document.getElementById("yo").insertAdjacentHTML("beforeend", st.figuras.map((_,i)=>{
+    const a = (i/st.figuras.length)*Math.PI*2 - Math.PI/2;
+    return `<div class="manadaluz" style="left:calc(50% + ${(Math.cos(a)*24-5).toFixed(1)}px);top:calc(44% + ${(Math.sin(a)*24).toFixed(1)}px)"></div>`;
+  }).join(""));
+}
+function casaMesa(){
+  R.sub = "mesa"; R.holdA=false;
+  sonVuelta();
+  document.getElementById("barra").style.display = "none";
+  document.getElementById("htxt").textContent = t("h_mesa");
+  const fr = ["frase1","frase2","frase3"];
+  document.getElementById("hctrl").innerHTML = `<div class="opciones">${fr.map(k=>`<button onclick="casaFrase('${k}')">${t(k)}</button>`).join("")}</div>`;
+}
+function casaFrase(k){
+  R.frase = k;
+  document.getElementById("hctrl").innerHTML = "";
+  if(!document.querySelector(".burbuja")) document.getElementById("sala").insertAdjacentHTML("beforeend", `<div class="burbuja">${t("h_respuesta")}</div>`);
+  document.getElementById("htxt").textContent = "";
+  if(st.voz) hablar(t("h_respuesta"));
+  later(()=>{
+    document.getElementById("hctrl").innerHTML = `<div class="opciones"><button class="tec" onclick="casaFin()">${t("seguir")}</button></div>`;
+  }, 2500);
+}
+function casaFin(){
+  const cerca = R.sub==="mesa" ? 1 : R.walk;
+  E.frase = R.frase; E.fraseModo = "dicha";
+  finRespuesta({ sosten_s:Math.round(R.sost), automatismos:R.tent, automatismos_txt:R.tentTxt, cercania_final:Math.round(cerca*100)/100,
+    abrazo_s:Math.round(R.abrazoS), co_ais:R.co, fuerza:Math.round(100*(0.5*Math.min(1,R.tent/3) + 0.5*(1-cerca))) });
+}
+
+/* ---- cierre del ensayo: alarmas, fuerza, escalera ---- */
+function cerrarEnsayo(){
+  const k = E.sc.id, rs = E.resp || {};
+  if(!st.fuerzas[k]) st.fuerzas[k] = [];
+  if(rs.fuerza!=null) st.fuerzas[k].push(rs.fuerza);
+  st.fuerzas[k] = st.fuerzas[k].slice(-30);
+  // alarmas (guía §12)
+  const alarmas = [];
+  const pico = E.pico.noNoto ? 0 : E.pico.act;
+  if(E.post!=null && pico!=null && E.post > pico && (rs.sosten_s||0) < 20) alarmas.push("post>pre");
+  st.noNoto.push(E.pico.noNoto?1:0); st.noNoto = st.noNoto.slice(-3);
+  if(st.noNoto.reduce((a,b)=>a+b,0)>=2 && st.ancla!=="pies"){ alarmas.push("no_noto"); st.ancla="pies"; }
+  if(!practicaCalmaReciente()) alarmas.push("solo_malestar");
+  E.alarmas = alarmas;
+  const kn = E.juego+"_"+st.perfil;
+  E.subeEscalon = null;
+  if(alarmas.includes("post>pre")) st.recomendado[kn] = Math.max(1, E.sc.nivel-1);
+  else {
+    const f = st.fuerzas[k], max = nivelMax(E.juego), sosMin = P()?15:30;
+    if(E.sc.nivel===max && f.length>=3 && f[f.length-1] < f[f.length-2] && f[f.length-2] < f[f.length-3] && (rs.sosten_s||0)>=sosMin && max<5 && escenas(E.juego).some(s=>s.nivel===max+1)){
+      st.nivel[kn] = max+1; E.subeEscalon = max+1;
+    }
+    if(st.recomendado[kn] && st.recomendado[kn] < E.sc.nivel) delete st.recomendado[kn];
+  }
+  E.recId = "ex"+Date.now();
+  guardarRegistro();
+  guardarSt();
+  irPaso("res");
+}
+function guardarRegistro(micro){
+  if(!window.Aprens || !E) return;
+  const rs = E.resp || {};
+  const viol = (E.exp.act!=null && E.pico.act!=null) ? E.exp.act - E.pico.act : null;
+  const rec = Object.assign({ id:E.recId, date:fechaLocal(E.inicio), ts:Date.now(), bloque:"exposicion", juego:E.juego,
+    escena_id:E.sc.id, escena:L(E.sc).t, tema:E.sc.tema, nivel:E.sc.nivel, perfil:st.perfil, ancla:st.ancla,
+    sesion:E.sesion, ensayo:E.n, exp_activacion:E.exp.act, exp_quedarme:E.exp.q,
+    act_pico:E.pico.noNoto?null:E.pico.act, zona:E.pico.zona, no_noto:E.pico.noNoto,
+    act_post:E.post, comparacion:E.comp, violacion_expectativa:viol,
+    frase_honesta:E.frase?T.es[E.frase]:null, frase_modo:E.fraseModo,
+    alarma:(E.alarmas&&E.alarmas.length)?E.alarmas.join(","):null, parcial:!!E.parcial,
+    tec:E.juego==="casa"?"C":"L" }, rs);
+  if(micro) rec.microaccion = micro;
+  Aprens.save(rec);
+}
+function sparkSVG(vals){
+  if(!vals.length) return "";
+  const w=300,h=84,pd=12, n=vals.length;
+  const x = i => n===1 ? w/2 : pd + i*(w-2*pd)/(n-1), y = v => h-pd - (v/100)*(h-2*pd);
+  const pts = vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="${vals.join(", ")}">
+    <line x1="${pd}" y1="${h-pd}" x2="${w-pd}" y2="${h-pd}" stroke="#e0d8c8"/>
+    ${n>1?`<polyline points="${pts}" fill="none" stroke="#a9781f" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`:""}
+    ${vals.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${i===n-1?5:3.5}" fill="${i===n-1?"#e8b93a":"#a9781f"}"/>`).join("")}
+    <text x="${x(n-1).toFixed(1)}" y="${(y(vals[n-1])-9).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#565a41">${vals[n-1]}</text></svg>`;
+}
+function pasoResultado(){
+  const rs = E.resp || {}, f = st.fuerzas[E.sc.id] || [];
+  let nums="", msg="";
+  if(E.juego==="campana"){
+    nums = `<div class="num"><b>${rs.campanas_sin_porque}/${rs.campanas}</b><span>${t("c_r_sin")}</span></div>
+            <div class="num"><b>${rs.porques_tocados}</b><span>${t("c_r_porques")}</span></div>
+            <div class="num"><b>${rs.sosten_s}</b><span>${t("c_r_sost")}</span></div>`;
+    msg = rs.porques_tocados===0 ? t("c_msg_bien") : t("c_msg_mixto");
+  } else if(E.juego==="carrusel"){
+    nums = `<div class="num"><b>${rs.latencia_media_s}</b><span>${t("r_r_lat")}</span></div>
+            <div class="num"><b>${rs.bajadas}</b><span>${t("r_r_bajadas")}</span></div>
+            <div class="num"><b>${rs.pospuestos}</b><span>${t("r_r_caja")}</span></div>`;
+    msg = t("r_msg");
+  } else {
+    nums = `<div class="num"><b>${rs.automatismos}</b><span>${t("h_r_tent")}</span></div>
+            <div class="num"><b>${Math.round(rs.cercania_final*100)}%</b><span>${t("h_r_cerca")}</span></div>
+            <div class="num"><b>${rs.abrazo_s}</b><span>${t("h_r_abrazo")}</span></div>`;
+    msg = t("h_msg");
+  }
+  const tend = f.length<2 ? t("primera") : (f[f.length-1] < f[f.length-2] ? t("baja") : t("sube"));
+  const lblF = E.juego==="carrusel" ? t("fuerza_car") : E.juego==="casa" ? t("fuerza_casa") : t("fuerza");
+  const pico = E.pico.noNoto ? "—" : E.pico.act;
+  const al = E.alarmas || [];
+  const avisos = [
+    al.includes("post>pre") ? `<div class="aviso rojo">${t("al_post")}</div>` : "",
+    al.includes("no_noto") ? `<div class="aviso">${t("al_nonoto")}</div>` : "",
+    al.includes("solo_malestar") ? `<div class="aviso">${t("al_solo")}</div>` : "",
+    E.subeEscalon ? `<div class="aviso ok">${t("sube_escalon")(E.subeEscalon)}</div>` : ""
+  ].join("");
+  const puedeRepetir = E.n < MAX_ENSAYOS && !al.includes("post>pre");
+  app.innerHTML = cabecera() + `<p class="eyebrow" style="margin:6px 0 0">${t("g_"+E.juego)} · ${esc(L(E.sc).t)} · ${t("ens_n")(E.n, MAX_ENSAYOS)}</p>
+    <h1>${t("res_t")}</h1>
+    <div class="card"><div class="nums">${nums}</div><p style="margin:0 0 8px">${esc(msg)}</p>
+      <p class="muted" style="margin:0">${esc(t("esperabas")(E.exp.act, pico))} ${esc(t("te_quedaste")(rs.sosten_s||0))}</p></div>
+    <div class="card"><h2>${lblF}</h2>${sparkSVG(f)}<p style="margin:0 0 6px;font-weight:600">${esc(tend)}</p><p class="muted" style="margin:0">${t("fuerza_x")}</p></div>
+    ${avisos}
+    ${puedeRepetir?`<button class="btn big sec" onclick="repetirEnsayo()">${t("repetir")(E.n+1, MAX_ENSAYOS)}</button>`:""}
+    <button class="btn big" onclick="cerrarSesion()">${t("cerrar")}</button>`;
+}
+function repetirEnsayo(){ const s=E.sesion, n=E.n+1; juego=E.juego; nuevoEnsayo(n, s); }
+function cerrarSesion(){
+  st.sesiones = Object.fromEntries(Object.entries(st.sesiones).filter(([d])=>d>=haceDias(30)));
+  st.sesiones[fechaLocal()] = E ? E.sesion : true; guardarSt();
+  if(E) E.cerrado = true;
+  micro = ""; microCb = null; ir("micro");
+}
+
+/* ---- micro-acción y fin ---- */
+let micro = "";
+function microOpts(){ return (E && E.juego==="casa") ? t("micro_casa") : t("micro"); }
+function vMicro(){
+  const chips = microOpts().map(m=>`<button class="chip ${micro===m?"sel":""}" onclick="micro=this.textContent;render()">${esc(m)}</button>`).join("");
+  app.innerHTML = cabecera() + `<h1>${t("micro_t")}</h1><p class="muted">${t("micro_s")}</p>
+    <div class="card"><div class="chips">${chips}</div>
+    <input class="txt" placeholder="${esc(t("micro_ph"))}" value="${microOpts().includes(micro)?"":esc(micro)}" oninput="micro=this.value;document.getElementById('bg').disabled=!micro.trim()">
+    <button class="btn big" id="bg" ${micro.trim()?"":"disabled"} onclick="guardarMicro()">${t("guardar")}</button></div>`;
+}
+let microCb = null;
+function guardarMicro(){
+  if(!micro.trim()) return;
+  if(microCb) microCb(micro.trim()); else if(E && E.recId) guardarRegistro(micro.trim());
+  microCb = null;
+  finMicro = micro.trim(); micro = "";
+  ir("fin");
+}
+let finMicro = "";
+function vFin(){
+  app.innerHTML = cabecera() + `<h1>${t("fin_t")}</h1>
+    <div class="card"><p style="margin:0;font-size:17px">${esc(t("fin_txt")(finMicro))}</p></div>
+    <p class="frase">${t("frase_fin")}</p>
+    <button class="btn big" onclick="E=null;ir('hub')">${t("inicio")}</button>`;
+  if(window.Aprens) Aprens.mountBar();
+  const bar = document.getElementById("aprensBar"); if(bar) bar.style.display = "";
+}
+
+/* ---- Necesito parar ---- */
+function necesitoParar(){
+  if(R) { R.pausa = true; R.hold=false; R.holdA=false; }
+  if(E) E.pausa = true;
+  limpiarTimersSoft();
+  callar();
+  pararEl.hidden = false;
+  pararEl.innerHTML = `<div class="card"><h2>${t("parar")}</h2><p style="font-size:17px">${t("parar1")}</p>
+    <button class="btn big" onclick="pararPaso2()">${t("parar_ok")}</button></div>`;
+}
+function limpiarTimersSoft(){ timers.forEach(clearTimeout); timers=[]; }
+function pararPaso2(){
+  const semana = st.paradas.filter(d=>d>=haceDias(6)).length;
+  pararEl.innerHTML = `<div class="card"><p style="font-size:17px;font-family:var(--serif)">${t("parar2")}</p>
+    ${semana>=1?`<div class="aviso rojo">${t("parar_ayuda")}</div>`:""}
+    <button class="btn big" onclick="pararFin()">${t("parar_fin")}</button>
+    <button class="btn big sec" onclick="pararSeguir()">${t("parar_seguir")}</button></div>`;
+}
+function pararSeguir(){
+  pararEl.hidden = true; pararEl.innerHTML = "";
+  if(E) E.pausa = false;
+  if(R){ R.pausa = false; R.last = performance.now(); }
+  if(E && E.paso==="escena") sigCapa();
+  if(E && E.juego==="casa" && R && R.sub==="entrar") casaOpciones();
+  if(E && E.juego==="carrusel" && R && R.fase==="pausa") carruselSiguiente();
+  if(E && E.juego==="carrusel" && R && R.fase==="ancla") carruselAnclaUI();
+  if(E && E.juego==="casa" && R && R.sub==="mesa" && R.frase) casaFrase(R.frase);
+}
+function pararFin(){
+  pararEl.hidden = true; pararEl.innerHTML = "";
+  st.paradas.push(fechaLocal()); st.paradas = st.paradas.filter(d=>d>=haceDias(30));
+  limpiarTimers(); callar();
+  stage.hidden = true; stage.innerHTML = ""; document.body.style.overflow = "";
+  if(E){
+    E.parcial = true; E.alarmas = ["parada"]; E.resp = E.resp || (R ? { sosten_s:Math.round(R.sost||0) } : {});
+    if(!E.recId) E.recId = "ex"+Date.now();
+    guardarRegistro();
+  }
+  R = null;
+  guardarSt();
+  cerrarSesion();
+}
+
+/* ================= LABORATORIO DE PAVLOV ================= */
+let PV = null;
+function pvReset(){ PV = { fase:0, saliva:0, asoc:0, prob:{campana:false,comida:false}, pares:0, prueba:false, ext:[], dia2:0, msg:"", campana:null, comida:null, otroC:"", otroF:"", recId:null, acomp:false }; }
+function perroSVG(){
+  const gotas = Math.round(PV.saliva*5);
+  const drops = Array.from({length:gotas},(_,i)=>`<circle class="gota" style="animation-delay:${i*0.18}s" cx="${118+(i%2)*6}" cy="${118+i*3}" r="3" fill="#6f9fc4"/>`).join("");
+  return `<svg class="perro" viewBox="0 0 340 190" aria-hidden="true">
+    <rect x="0" y="168" width="340" height="22" fill="#efe6d4"/>
+    <ellipse cx="150" cy="140" rx="58" ry="30" fill="#c9965e"/>
+    <rect x="104" y="150" width="12" height="24" rx="5" fill="#b9854f"/><rect x="128" y="152" width="12" height="22" rx="5" fill="#b9854f"/>
+    <rect x="166" y="152" width="12" height="22" rx="5" fill="#b9854f"/><rect x="186" y="150" width="12" height="24" rx="5" fill="#b9854f"/>
+    <path d="M205 128 q22 -18 18 -36" stroke="#c9965e" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <circle cx="112" cy="104" r="30" fill="#d4a46c"/>
+    <ellipse cx="92" cy="96" rx="11" ry="20" fill="#9c6b3c" transform="rotate(20 92 96)"/>
+    <circle cx="116" cy="98" r="4" fill="#2a2622"/>
+    <ellipse cx="94" cy="116" rx="12" ry="8" fill="#e2b885"/><circle cx="85" cy="113" r="4" fill="#2a2622"/>
+    <path d="M100 124 q8 6 16 0" stroke="#7a4a2a" stroke-width="2" fill="none"/>
+    ${drops}
+    <g transform="translate(250,30)"><path class="campanita ${PV._ring?"ring":""}" d="M20 0a4 4 0 0 1 4 4v2c11 3 17 12 17 25v12l6 7H-7l6-7V31C-1 18 5 9 16 6V4a4 4 0 0 1 4-4z" fill="#e8b93a"/></g>
+    ${PV._comida?`<g transform="translate(40,150)"><ellipse cx="18" cy="18" rx="24" ry="8" fill="#8a6243"/><text x="18" y="16" font-size="20" text-anchor="middle">🍖</text></g>`:""}
+    ${PV.acomp?`<text x="146" y="92" font-size="30">🤚</text>`:""}
+  </svg>`;
+}
+function pvAccion(tipo){
+  audioOn();
+  PV._ring = tipo!=="comida"; PV._comida = tipo==="comida" || tipo==="ambas";
+  if(PV._ring) sonCampana(0.8);
+  if(PV.fase===1){
+    if(tipo==="campana"){ PV.saliva=0; PV.prob.campana=true; PV.msg=t("pv_r_campana0"); }
+    else { PV.saliva=1; PV.prob.comida=true; PV.msg=t("pv_r_comida"); }
+  } else if(PV.fase===2){
+    PV.pares++; PV.asoc = Math.min(1, PV.pares*0.2); PV.saliva = 1; PV.msg = "";
+  } else if(PV.fase===3){
+    PV.saliva = PV.asoc; PV.prueba=true; PV.msg = t("pv_r_prueba");
+  } else if(PV.fase===4){
+    PV.acomp = true; PV.saliva = PV.asoc; PV.ext.push(Math.round(PV.saliva*100)); PV.asoc *= 0.68;
+    PV.msg = PV.ext.length>=4 ? t("pv_r_ext") : "";
+  } else if(PV.fase===5){
+    PV.acomp = true;
+    if(PV.dia2===0){ PV.asoc = 0.38; }
+    PV.saliva = PV.asoc; PV.ext.push(Math.round(PV.saliva*100)); PV.asoc *= 0.5; PV.dia2++;
+    PV.msg = t("pv_r_rec");
+  }
+  render();
+  setTimeout(()=>{ PV._ring=false; }, 900);
+}
+function pvPuedeSeguir(){
+  return PV.fase===0 || (PV.fase===1 && PV.prob.campana && PV.prob.comida) || (PV.fase===2 && PV.pares>=5) ||
+    (PV.fase===3 && PV.prueba) || (PV.fase===4 && PV.ext.length>=6) || (PV.fase===5 && PV.dia2>=3);
+}
+function pvSig(){ PV.fase++; PV.msg=""; PV._comida=false; if(PV.fase===5){ PV.ext.push(null); } if(PV.fase===4||PV.fase===5) PV.acomp=true; PV.saliva = 0; render(); scrollTo(0,0); }
+function curvaSVG(){
+  const vals = PV.ext; if(!vals.length) return "";
+  const w=300,h=90,pd=12,n=Math.max(vals.length,6);
+  const x=i=>pd+i*(w-2*pd)/(n-1), y=v=>h-pd-(v/100)*(h-2*pd);
+  let path="", segs=[]; vals.forEach((v,i)=>{ if(v==null){ segs.push(path); path=""; return; } path += (path?" L":"M")+x(i).toFixed(1)+","+y(v).toFixed(1); }); segs.push(path);
+  const corte = vals.indexOf(null);
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}"><line x1="${pd}" y1="${h-pd}" x2="${w-pd}" y2="${h-pd}" stroke="#e0d8c8"/>
+    ${corte>=0?`<line x1="${x(corte)}" y1="6" x2="${x(corte)}" y2="${h-pd}" stroke="#c8bfae" stroke-dasharray="4 4"/>`:""}
+    ${segs.filter(Boolean).map(p=>`<path d="${p}" fill="none" stroke="#6f9fc4" stroke-width="2.5"/>`).join("")}
+    ${vals.map((v,i)=>v==null?"":`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.5" fill="#6f9fc4"/>`).join("")}</svg>`;
+}
+function vPavlov(){
+  const f = PV.fase;
+  const tit = ["", t("pv_f1"), t("pv_f2"), t("pv_f3"), t("pv_f4"), t("pv_f5"), t("pv_f6")][f];
+  const sub = ["", t("pv_f1x"), t("pv_f2x"), t("pv_f3x"), t("pv_f4x"), t("pv_f5x"), t("pv_f6x")][f];
+  let acciones = "";
+  if(f===1) acciones = `<div class="chips"><button class="chip" onclick="pvAccion('campana')">${t("pv_campana")}</button><button class="chip" onclick="pvAccion('comida')">${t("pv_comida")}</button></div>`;
+  if(f===2) acciones = `<div class="chips"><button class="chip" onclick="pvAccion('ambas')">${t("pv_ambas")} · ${PV.pares}/5</button></div>`;
+  if(f===3) acciones = `<div class="chips"><button class="chip" onclick="pvAccion('sola')">${t("pv_sola")}</button></div>`;
+  if(f===4||f===5) acciones = `<div class="chips"><button class="chip" onclick="pvAccion('ext')">${f===4?t("pv_acomp"):t("pv_sola")}</button></div>`;
+  let cuerpo = "";
+  if(f===0){
+    cuerpo = `<div class="card lab">${perroSVG()}<p style="margin:10px 0 0">${t("pv_intro")}</p></div>`;
+  } else if(f<6){
+    cuerpo = `<div class="card lab"><h2>${tit}</h2><p class="muted" style="margin-top:0">${sub}</p>${perroSVG()}
+      <div class="lbl" style="margin-top:8px">${t("pv_saliva")}</div><div class="meter"><i style="width:${Math.round(PV.saliva*100)}%"></i></div>
+      ${f>=2?`<div class="lbl">${t("pv_asoc")}</div><div class="meter asoc"><i style="width:${Math.round(PV.asoc*100)}%"></i></div>`:""}
+      ${f>=4?`<div class="lbl">${t("pv_curva")}</div>${curvaSVG()}`:""}
+      ${acciones}${PV.msg?`<p style="margin:0;font-weight:600">${esc(PV.msg)}</p>`:""}</div>`;
+  } else {
+    const cs = t("pv_campanas"), cf = t("pv_comidas");
+    const chipsDe = (arr, campo) => arr.map(x=>`<button class="chip ${PV[campo]===x?"sel":""}" onclick="PV.${campo}=this.textContent;render()">${esc(x)}</button>`).join("");
+    const c = PV.campana, fo = PV.comida;
+    cuerpo = `<div class="card"><h2>${tit}</h2><p style="margin-top:0">${t("pv_f6x")}</p>
+      <div class="q"><p>${t("pv_tu_campana")}</p><div class="chips">${chipsDe(cs,"campana")}</div>
+        <input class="txt" placeholder="${t("pv_otro")}" value="${cs.includes(c)||!c?"":esc(c)}" onchange="PV.campana=this.value.trim()||null;render()"></div>
+      <div class="q"><p>${t("pv_tu_comida")}</p><div class="chips">${chipsDe(cf,"comida")}</div>
+        <input class="txt" placeholder="${t("pv_otro")}" value="${cf.includes(fo)||!fo?"":esc(fo)}" onchange="PV.comida=this.value.trim()||null;render()"></div>
+      ${c&&fo?`<div class="aviso ok">${esc(t("pv_resumen")(c,fo))}</div>`:""}
+      <button class="btn big" ${c&&fo?"":"disabled"} onclick="pvGuardar()">${t("pv_guardar")}</button></div>`;
+  }
+  app.innerHTML = cabecera() + `<button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
+    <h1>🔔 ${t("g_pavlov")}</h1>${cuerpo}
+    ${f<6?`<button class="btn big" ${pvPuedeSeguir()?"":"disabled"} onclick="pvSig()">${t("pv_siguiente")}</button>`:""}`;
+}
+function pvGuardar(){
+  st.miCampana = { campana:PV.campana, comida:PV.comida, fecha:fechaLocal() }; guardarSt();
+  PV.recId = "pv"+Date.now();
+  PV.rec = { id:PV.recId, date:fechaLocal(), ts:Date.now(), bloque:"exposicion", juego:"pavlov", perfil:st.perfil,
+    mi_campana:PV.campana, mi_comida:PV.comida, extincion:PV.ext.filter(v=>v!=null) };
+  if(window.Aprens) Aprens.save(PV.rec);
+  E = null; micro = ""; microCb = m => { if(window.Aprens) Aprens.save(Object.assign(PV.rec, { microaccion:m })); }; ir("micro");
+}
+
+/* ================= PUERTAS ================= */
+let PT = { modo:null };
+function listaPuertas(){ return t("p_lista"); }
+function puertasHoy(){ return st.puertas[fechaLocal()] || []; }
+function vPuertas(){
+  const lista = listaPuertas(), hoy = puertasHoy();
+  if(!PT.modo){
+    const grid = Object.keys(lista).map(k=>`<button class="pta ${hoy.includes(k)?"hecha":""}" onclick="PT={modo:'elegir',p:'${k}'};render()"><span>${lista[k][0]}</span><small>${esc(lista[k][1])}</small></button>`).join("");
+    const horas = []; for(let h=6;h<=23;h++) for(const m of [0,15,30,45]) horas.push(pad(h)+":"+pad(m));
+    const recHora = st.puertaHora || "08:00";
+    app.innerHTML = cabecera() + `<button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
+      <h1>🚪 ${t("g_puertas")}</h1><p class="tag">${t("g_puertas_d")}</p>
+      <div class="card"><h2>${t("p_t")}</h2><p class="muted" style="margin-top:0">${t("p_x")}</p>
+        <div class="puertas">${grid}</div><p style="margin:0;font-weight:700;color:var(--verde)">${t("p_hoy")(hoy.length)}</p></div>
+      <div class="card"><h2>${t("p_dia_t")}</h2><p class="muted" style="margin-top:0">${t("p_dia_x")}</p>
+        <div class="chips">${Object.keys(lista).map(k=>`<button class="chip ${hoy.includes(k)?"sel":""}" onclick="togPuertaDia('${k}')">${lista[k][0]} ${esc(lista[k][1])}</button>`).join("")}</div>
+        <button class="btn big sec" onclick="guardarDiaPuertas()">${t("p_dia_btn")}</button></div>
+      <div class="card"><h2>${t("p_rec_t")}</h2><p class="muted" style="margin-top:0">${t("p_rec_x")}</p>
+        <select class="txt" id="recHora" onchange="st.puertaHora=this.value;guardarSt();document.getElementById('recA').href='../assets/ics/'+this.value.replace(':','')+'.ics'">${horas.map(h=>`<option ${h===recHora?"selected":""}>${h}</option>`).join("")}</select>
+        <a class="btn big sec" id="recA" style="text-decoration:none" href="../assets/ics/${recHora.replace(":","")}.ics" ${/iP(ad|hone|od)/.test(navigator.userAgent)?"":'download="recordatorio-aprens.ics"'} target="_top">📅 ${t("p_rec_btn")}</a></div>`;
+    return;
+  }
+  const nom = lista[PT.p];
+  if(PT.modo==="elegir"){
+    app.innerHTML = cabecera() + `<button class="btn mini" onclick="PT={modo:null};render()">${t("volver")}</button>
+      <h1>${nom[0]} ${esc(nom[1])}</h1>
+      <button class="btn big" onclick="puertaRitual('imaginado')">${t("p_ensayar")}</button>
+      <button class="btn big sec" onclick="puertaRitual('real')">${t("p_ahora")}</button>`;
+    return;
+  }
+  if(PT.modo==="entrada"){
+    app.innerHTML = cabecera() + `<h1>${t("p_entrada")}</h1><p class="eyebrow">${nom[0]} ${esc(nom[1])}</p>
+      <div class="card"><div class="respiro-box" id="resp"></div>
+      <p style="text-align:center;margin:6px 0 4px">${esc(fa(t("p_entrada_txt")))}</p>
+      <p style="text-align:center;margin:0 0 12px;font-family:var(--serif);font-style:italic" id="curQ">${esc(t("h_q")[0])}</p>
+      ${PT.tipo==="imaginado"?`<div class="aviso">${esc(t("p_imagina")(nom[1]))}</div>`:""}
+      ${PT.tipo==="imaginado" && st.miCampana ? `<button class="btn mini" onclick="puertaCampana()">🔔 ${t("p_campana_btn")}</button><p class="muted" id="pcamp" hidden>${esc(t("p_campana")(st.miCampana.campana))}</p>`:""}
+      <button class="btn big" id="btnAp" disabled onclick="PT.modo='salida';limpiarTimers();try{respiro&&respiro.destroy()}catch(e){};render()">${t("p_entra")}</button></div>`;
+    const box = document.getElementById("resp"); let n = 0;
+    const hab = () => { const b=document.getElementById("btnAp"); if(b) b.disabled=false; };
+    if(window.RespiroAIS){ try{ respiro = RespiroAIS.mount(box,{ lang:"es", figure:P()?"child":"organism", autostart:true, showControl:false, showZones:false, legend:false,
+      rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}, onCycle:c=>{ n=c; const q=document.getElementById("curQ"); if(q && c<3) q.textContent=t("h_q")[c]; if(c>=3) hab(); } }); }catch(e){} }
+    later(hab, PT.tipo==="real" ? 20000 : 30000);
+    return;
+  }
+  if(PT.modo==="salida"){
+    const ll = t("p_lleva");
+    app.innerHTML = cabecera() + `<h1>${t("p_salida")}</h1><p class="eyebrow">${nom[0]} ${esc(nom[1])}</p>
+      <div class="card"><p style="margin-top:0">${t("p_salida_txt")}</p>
+      <div class="chips">${ll.map(x=>`<button class="chip ${PT.lleva===x?"sel":""}" onclick="PT.lleva=this.textContent;render()">${esc(x)}</button>`).join("")}</div>
+      <button class="st-hold" id="dejar" style="position:relative;left:auto;bottom:auto;transform:none;display:block;margin:6px auto 10px;background:#f3ecdd" ${PT.lleva?"":"disabled"}>${t("p_dejar")}</button>
+      <div class="barra" style="position:relative;left:auto;right:auto;margin:0 auto;width:60%"><i id="dejarI"></i></div></div>`;
+    const b = document.getElementById("dejar");
+    if(PT.lleva){
+      let tt=0, last=0, on=false;
+      montarHold(b, v=>{ on=v; last=performance.now(); });
+      const loop = now => { if(PT.modo!=="salida") return; if(on){ tt += (now-last)/1000; last=now; const i=document.getElementById("dejarI"); if(i) i.style.width=Math.min(100,tt/5*100)+"%"; if(tt>=5){ puertaHecha(); return; } } raf=requestAnimationFrame(loop); };
+      raf = requestAnimationFrame(loop);
+    }
+    return;
+  }
+  if(PT.modo==="hecha"){
+    app.innerHTML = cabecera() + `<h1>${nom[0]} ${t("p_hecho")}</h1>
+      <p class="frase">«Donde dirijo mi atención, ahí voy yo.»</p>
+      <button class="btn big" onclick="PT={modo:null};render()">${t("volver")}</button>`;
+  }
+}
+function puertaRitual(tipo){ audioOn(); PT.tipo=tipo; PT.modo="entrada"; render(); scrollTo(0,0); }
+function puertaCampana(){ sonCampana(0.9); const p=document.getElementById("pcamp"); if(p) p.hidden=false; PT.campana=true; }
+function puertaHecha(){
+  sonVuelta();
+  const d = fechaLocal(); const hoy = st.puertas[d] || [];
+  if(!hoy.includes(PT.p)) hoy.push(PT.p);
+  st.puertas[d] = hoy;
+  st.puertas = Object.fromEntries(Object.entries(st.puertas).filter(([k])=>k>=haceDias(60)));
+  guardarSt();
+  if(window.Aprens) Aprens.save({ id:"pt"+Date.now(), date:d, ts:Date.now(), bloque:"exposicion", juego:"puertas", perfil:st.perfil,
+    puerta:PT.p, modo:PT.tipo, campana_generalizacion:!!PT.campana, me_llevo:PT.lleva, ancla:st.ancla, tec:"L" });
+  PT.modo = "hecha"; render();
+}
+function togPuertaDia(k){ const d=fechaLocal(); const h=st.puertas[d]||[]; const i=h.indexOf(k); if(i>=0) h.splice(i,1); else h.push(k); st.puertas[d]=h; guardarSt(); render(); }
+function guardarDiaPuertas(){
+  const d=fechaLocal(), h=puertasHoy();
+  const rec = { id:"ptdia-"+d, date:d, ts:Date.now(), bloque:"exposicion", juego:"puertas_dia", perfil:st.perfil,
+    puertas_con_presencia:h, total:h.length, tec:"C" };
+  if(window.Aprens) Aprens.save(rec);
+  E=null; micro=""; microCb = m => { if(window.Aprens) Aprens.save(Object.assign(rec, { microaccion:m })); }; ir("micro");
+}
+
+/* ---- atrás del hub de la app ---- */
+window.APRENS_toolBack = function(){
+  if(!pararEl.hidden) return true;
+  if(vista==="ens" && E && ["entrada","escena","resp"].includes(E.paso)){ necesitoParar(); return true; }
+  if(vista==="puertas" && PT.modo){ PT={modo:null}; limpiarTimers(); render(); return true; }
+  if(["intro","cribado","codigo","pavlov","puertas"].includes(vista)){ ir("hub"); return true; }
+  return false;
+};
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible" && vista==="ens") wakeOn(); });
+
+document.documentElement.lang = st.lang;
+// Enlace profundo desde otras herramientas: #/tool/juegos_exposicion/<juego> llega aquí como #<juego>.
+function abrirDesdeHash(){
+  const h = (location.hash||"").replace(/^#\/?/,"");
+  if(["pavlov","campana","carrusel","casa","puertas"].includes(h) && !(E && !E.cerrado)) { vista="hub"; abrir(h); }
+}
+window.addEventListener("hashchange", abrirDesdeHash);
+document.body.insertAdjacentHTML("beforeend", `<button class="flotar-parar" id="flotParar" style="display:none" onclick="necesitoParar()"></button>`);
+const _r = render; render = function(){ const fp=document.getElementById("flotParar"); if(fp) fp.textContent = t("parar"); _r(); };
+render();
+abrirDesdeHash();
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function(g){"use strict";var DB_KEY="aprens_db",SCHEMA=1;var st={toolId:null,toolName:null,toolVersion:1};var collector=null;
+function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}return{schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+function bk(db,c){if(!db.tools[st.toolId]&&c){db.tools[st.toolId]={meta:{nombre:st.toolName,v:st.toolVersion},records:[]};}return db.tools[st.toolId];}
+var A={schema:SCHEMA,
+config:function(o){o=o||{};if(o.toolId)st.toolId=String(o.toolId);if(o.toolName)st.toolName=String(o.toolName);if(o.toolVersion)st.toolVersion=o.toolVersion;if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);if(st.toolId){var db=load();var b=bk(db,true);b.meta={nombre:st.toolName,v:st.toolVersion};persist(db);}return this;},
+setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+getPacienteCodigo:function(){return load().paciente.codigo||"";},
+save:function(r,opts){opts=opts||{};if(!st.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();var db=load();var b=bk(db,true);var i=-1;if(r.id!=null){i=b.records.findIndex(function(x){return x.id===r.id;});}else if(r.date&&!opts.append){i=b.records.findIndex(function(x){return x.date===r.date;});}if(i>=0)b.records[i]=r;else b.records.push(r);b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});persist(db);return r;},
+collect:function(fn){collector=fn;return this;},
+_flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)this.save(r);}catch(e){}}},
+buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
+copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+};g.Aprens=A;})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN juegos_exposicion ===================== -->
+<script>
+Aprens.config({ toolId:"juegos_exposicion", toolName:"Juegos AIS · exposición imaginada", toolVersion:1, pacienteCodigo:"" });
+</script>
+</body>
+</html>

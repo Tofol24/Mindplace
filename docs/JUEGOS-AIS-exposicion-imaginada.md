@@ -13,7 +13,27 @@
 > entrena a responderla desde la TEC en lugar de rumiar, evitar o alejarse de
 > los vínculos.
 >
-> Se rige por `docs/TEC-guia-base.md`. Estado: **propuesta** (2026-10-19).
+> Se rige por `docs/TEC-guia-base.md`. Estado: **implementado** (2026-10-19) en
+> `app/tools-standalone/juegos-exposicion.html` (`toolId: juegos_exposicion`).
+
+## Uso clínico rápido (para el terapeuta)
+
+- **Códigos** que se dan al paciente (pantalla «Tengo un código»):
+  - `AIS-EXPO` abre los juegos con escenas (campana, carrusel, casa) sin esperar
+    al criterio del bloque 1 y aunque el cribado marque recuerdos traumáticos
+    intrusivos, duelo reciente o desconexión. Úsalo solo si lo supervisas.
+  - `AIS-DUELO` incluye lo anterior y además la escena «Una ausencia» (duelo).
+  - El riesgo autolítico en el cribado **siempre** bloquea durante 24 h y muestra
+    024 y 112, con o sin código.
+- **Sin código**, las escenas se abren tras 6 partidas de Sonar/Globo en 3 días
+  distintos. Pavlov y Puertas están siempre abiertos.
+- **Enlaces profundos**: `#/tool/juegos_exposicion/<pavlov|campana|carrusel|casa|puertas>`
+  y `#/tool/juegos_ais/<sonar|globo>`.
+- **Dónde se enlaza**: grupo «Juegos AIS · entrenar jugando» del hub; «Mi
+  recorrido» (Pavlov en Entender, Sonar/Globo en Aparecer, Campana y Carrusel
+  en Permanecer, Puertas en Elegir y actuar, Llegar a casa en Consolidar);
+  «Entrénalo jugando» en cada una de las seis herramientas AIS básicas; y el pie
+  de las tres viñetas compartidas (opción `juego:false` para ocultarlo).
 
 ---
 
@@ -296,8 +316,8 @@ cero.
 
 ## 7. Datos para el panel
 
-Por ensayo, vía `Aprens.save` en `toolId: "juegos_ais"` (mismo bucket que el
-bloque 1) con `bloque: "exposicion"`:
+Por ensayo, vía `Aprens.save` en `toolId: "juegos_exposicion"` con
+`bloque: "exposicion"`:
 
 ```
 { date, juego, escena_id, tema, nivel, perfil,
