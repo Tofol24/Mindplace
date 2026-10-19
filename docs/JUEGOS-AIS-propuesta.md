@@ -7,7 +7,9 @@
 > Se rige por `docs/TEC-guia-base.md`; si algo de aquí choca con esa guía,
 > manda la guía.
 >
-> Estado: **propuesta** (2026-10-19). Nada de esto está implementado aún.
+> Estado: **propuesta** (2026-10-19). Implementado el prototipo del MVP 1
+> (motor común + Sonar + Globo de quietud) en `app/tools-standalone/juegos-ais.html`
+> (`toolId: juegos_ais`). El resto del catálogo sigue pendiente.
 
 ---
 

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F4EFE6">
+<title>Juegos AIS · APRENS</title>
+<style>
+:root{--azul:#565a41;--azulLt:#e8ead9;--verde:#5c7d54;--naranja:#C2704F;--gris:#6f665b;--oro:#a9781f;
+  --amarillo:#e8b93a;--aire:#6f9fc4;--noche:#11141b;--papel:#F4EFE6;--tinta:#2A2622;--linea:#e0d8c8;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:var(--papel);min-height:100vh;color:var(--tinta);margin:0;padding-bottom:env(safe-area-inset-bottom);overflow-x:hidden;}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px;}
+button{font-family:var(--sans);}
+
+/* cabecera */
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--oro);font-weight:600;}
+.langs{display:flex;gap:4px;}
+.langs button{border:1.5px solid var(--linea);background:#fff;color:var(--gris);border-radius:20px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer;}
+.langs button.on{background:var(--azul);border-color:var(--azul);color:#fff;}
+h1{font-family:var(--serif);font-size:clamp(28px,8vw,38px);line-height:1.08;margin:6px 0 6px;color:var(--azul);}
+.tag{font-family:var(--serif);font-style:italic;font-size:17px;color:#4a4339;margin:0 0 18px;line-height:1.4;}
+h2{font-family:var(--serif);font-size:21px;color:var(--azul);margin:0 0 8px;}
+.muted{color:var(--gris);font-size:14px;line-height:1.5;}
+
+/* tarjetas */
+.card{background:#fff;border:1px solid var(--linea);border-radius:18px;padding:16px;margin:0 0 14px;box-shadow:0 2px 10px rgba(74,63,48,.06);}
+.seg{display:flex;background:#fff;border:1.5px solid var(--linea);border-radius:30px;padding:3px;margin:0 0 16px;}
+.seg button{flex:1;border:none;background:transparent;border-radius:26px;padding:10px;font-size:15px;font-weight:700;color:var(--gris);cursor:pointer;}
+.seg button.on{background:var(--azul);color:#fff;}
+.lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris);font-weight:700;margin:0 0 8px;}
+
+/* jardín */
+.jardin{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px;text-align:center;}
+.planta{border-radius:14px;background:#f7f3ea;padding:10px 4px 8px;font-size:12.5px;color:var(--gris);font-weight:600;}
+.planta .pl{font-size:30px;line-height:1.2;display:block;filter:grayscale(1);opacity:.35;}
+.planta.on{background:#eef3e6;color:var(--verde);}
+.planta.on .pl{filter:none;opacity:1;}
+.planta.ahora{box-shadow:0 0 0 2px var(--amarillo) inset;}
+
+/* juegos */
+.juego{display:flex;gap:14px;align-items:flex-start;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;background:none;border:none;padding:0;}
+.juego .ico{flex:none;width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;}
+.juego .ico.sonar{background:var(--noche);}
+.juego .ico.globo{background:linear-gradient(180deg,#cfe0ee,#f6efd9);}
+.juego h3{font-family:var(--serif);font-size:20px;margin:0 0 3px;color:var(--azul);}
+.juego .fase{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--oro);font-weight:700;margin:0 0 5px;}
+.juego p{margin:0 0 6px;font-size:14.5px;line-height:1.45;color:#3f3a33;}
+.cupo{font-size:13px;font-weight:700;color:var(--verde);}
+.cupo.no{color:var(--gris);font-weight:600;}
+.juego[disabled]{opacity:.55;cursor:default;}
+
+/* botones */
+.btn{border:none;border-radius:40px;font-weight:700;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-appearance:none;}
+.big{width:100%;padding:18px;font-size:18px;background:var(--azul);color:#fff;box-shadow:0 6px 18px rgba(74,63,48,.28);}
+.big:disabled{opacity:.45;box-shadow:none;}
+.big:active{transform:scale(.97);}
+.mini{background:transparent;color:var(--gris);font-size:14.5px;padding:10px 4px;font-weight:600;}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;}
+.chip{border:2px solid var(--linea);background:#fff;border-radius:24px;padding:10px 15px;font-size:15px;font-weight:600;color:#3a3630;cursor:pointer;}
+.chip.sel{border-color:var(--verde);background:#eef5ea;color:var(--verde);}
+.pasos{margin:0 0 16px;padding-left:20px;}
+.pasos li{margin:0 0 8px;line-height:1.5;font-size:15px;}
+.ancla-row{display:flex;gap:14px;align-items:center;margin:0 0 16px;}
+.ancla-row svg{flex:none;width:74px;height:96px;}
+.ancla-row .chips{margin:0;flex-direction:column;align-items:stretch;flex:1;}
+
+/* resultados */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;margin:4px 0 12px;}
+.num{background:#f7f3ea;border-radius:14px;padding:12px 6px;text-align:center;}
+.num b{display:block;font-family:var(--serif);font-size:28px;color:var(--azul);line-height:1.1;}
+.num span{font-size:12px;color:var(--gris);font-weight:600;}
+.num.c b{color:var(--oro);}
+.escala{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin:6px 0 4px;}
+.escala button{border:1.5px solid var(--linea);background:#fff;border-radius:8px;padding:9px 0;font-size:14px;font-weight:700;color:#4a4339;cursor:pointer;}
+.escala button.sel{background:var(--azul);border-color:var(--azul);color:#fff;}
+.escala3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 4px;}
+.escala3 button{border:2px solid var(--linea);background:#fff;border-radius:14px;padding:12px 4px;font-size:15px;font-weight:700;color:#4a4339;cursor:pointer;}
+.escala3 button.sel{border-color:var(--verde);background:#eef5ea;color:var(--verde);}
+.q{margin:0 0 14px;}
+.q p{margin:0 0 2px;font-weight:600;font-size:15.5px;}
+input.txt{width:100%;border:2px solid var(--linea);border-radius:14px;padding:12px 14px;font-size:16px;font-family:var(--sans);margin:0 0 16px;background:#fff;}
+.frase{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--azul);text-align:center;margin:18px 6px;line-height:1.45;}
+.aviso{background:#fff5e9;border-left:4px solid #d99a3a;border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.45;color:#6f4f12;margin:0 0 14px;}
+
+/* ======== escenario de juego (pantalla completa) ======== */
+.stage{position:fixed;inset:0;z-index:10000;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;}
+.stage[hidden]{display:none;}
+.salir{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:5;width:40px;height:40px;border-radius:50%;border:none;font-size:18px;cursor:pointer;}
+.tiempo{position:absolute;top:calc(20px + env(safe-area-inset-top));left:18px;z-index:5;font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:.06em;}
+
+/* sonar */
+.sonar{background:var(--noche);color:#c9c3b6;}
+.sonar.peques{background:radial-gradient(ellipse at 50% 120%,#173049 0%,#0d1622 70%);}
+.sonar .salir{background:rgba(255,255,255,.08);color:#8d877b;}
+.sonar .tiempo{color:#5d594f;}
+.tap{position:absolute;inset:0;z-index:1;}
+.centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 28px;text-align:center;pointer-events:none;z-index:2;}
+.orbe{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(232,185,58,.55) 0%,rgba(232,185,58,.12) 55%,rgba(232,185,58,0) 72%);animation:resp 12.5s ease-in-out infinite;margin-bottom:26px;}
+@keyframes resp{0%{transform:scale(.72);}32%{transform:scale(1);}48%{transform:scale(1);}96%{transform:scale(.72);}100%{transform:scale(.72);}}
+.flash .orbe{background:radial-gradient(circle,rgba(232,185,58,.95) 0%,rgba(232,185,58,.25) 55%,rgba(232,185,58,0) 72%);}
+.stxt{font-family:var(--serif);font-size:21px;line-height:1.4;margin:0 0 10px;color:#ddd6c8;}
+.shint{font-size:14px;color:#77716a;margin:0;line-height:1.45;}
+.probe{position:absolute;inset:0;z-index:3;background:var(--noche);display:flex;flex-direction:column;justify-content:center;padding:24px 20px calc(24px + env(safe-area-inset-bottom));gap:12px;}
+.probe[hidden]{display:none;}
+.probe h2{color:#f0e8d8;text-align:center;font-size:24px;margin:0 0 10px;}
+.probe button{border:none;border-radius:20px;padding:22px 16px;font-size:19px;font-weight:700;cursor:pointer;}
+.pb-dentro{background:var(--amarillo);color:#2a2214;}
+.pb-pensando{background:#3a3f4d;color:#e9e4d8;}
+.pb-fuera{background:#2b3a46;color:#d8e6ef;}
+
+/* globo */
+.globo{background:linear-gradient(180deg,#9fbfd8 0%,#cfe0ee 45%,#f6efd9 100%);color:var(--tinta);}
+.globo.peques{background:linear-gradient(180deg,#8fc0e6 0%,#cde6f5 50%,#f7ecd0 100%);}
+.globo .salir{background:rgba(255,255,255,.6);color:var(--gris);}
+.globo .tiempo{color:#4a5560;}
+.nube{position:absolute;background:#fff;border-radius:40px;opacity:.75;}
+.nube::before,.nube::after{content:"";position:absolute;background:#fff;border-radius:50%;}
+.nube::before{width:46%;height:150%;left:14%;top:-60%;}
+.nube::after{width:36%;height:120%;right:16%;top:-40%;}
+.isla{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(42,38,34,.38);}
+.bal{position:absolute;left:50%;transform:translateX(-50%);transition:bottom .25s linear;width:96px;text-align:center;z-index:2;}
+.bal svg{width:96px;height:132px;display:block;margin:0 auto;}
+.bal .pas{font-size:28px;margin-top:-10px;display:block;}
+.bal.on svg .cuerpo{filter:drop-shadow(0 0 14px rgba(232,185,58,.85));}
+.hud{position:absolute;top:calc(64px + env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:14px;font-weight:700;color:#3e4a55;z-index:3;font-variant-numeric:tabular-nums;}
+.gtxt{position:absolute;left:20px;right:20px;bottom:calc(196px + env(safe-area-inset-bottom));text-align:center;font-family:var(--serif);font-size:18px;line-height:1.4;color:#2f3a44;z-index:3;margin:0;}
+.quiet{position:absolute;left:20px;right:20px;bottom:calc(172px + env(safe-area-inset-bottom));text-align:center;font-size:13.5px;color:#8a5a2a;font-weight:700;z-index:3;min-height:18px;}
+.hold{position:absolute;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);width:132px;height:132px;border-radius:50%;border:none;background:#fff;color:var(--azul);font-size:16px;font-weight:800;box-shadow:0 8px 26px rgba(40,50,60,.25);z-index:4;cursor:pointer;touch-action:none;}
+.hold.on{background:var(--amarillo);color:#2a2214;transform:translateX(-50%) scale(.95);box-shadow:0 0 0 10px rgba(232,185,58,.25),0 8px 26px rgba(40,50,60,.25);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="stage" id="stage" hidden></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   JUEGOS AIS · APRENS  ·  v1 (prototipo)
+   Motor común + dos juegos: Sonar (fase 3, sin imagen) y Globo de quietud
+   (fase 2, imagen ancla). Diseño en docs/JUEGOS-AIS-propuesta.md.
+   Reglas: se puntúa el gesto (ir dentro, darse cuenta, volver), nunca la calma;
+   distraerse no resta; techo de 3 partidas/día por juego; siempre se cierra
+   con micro-acción con valor. Sensores procesados en local, nada se graba.
+   ============================================================================ */
+
+const KEY = "aprens_juegos_ais_v1";
+const LIMITE_DIA = 3;
+const UMBRAL_QUIETUD = 0.35;   // m/s² de jitter suavizado del acelerómetro
+
+/* ---------------- textos (ES / CA) ---------------- */
+const ANCLAS = {
+  es:{ barriga:["Barriga","la barriga"], pecho:["Pecho","el pecho"], cuello:["Cuello","el cuello"] },
+  ca:{ barriga:["Panxa","la panxa"], pecho:["Pit","el pit"], cuello:["Coll","el coll"] }
+};
+const T = {
+es:{
+  eyebrow:"APRENS · AIS · Juegos", h1:"Juegos AIS",
+  tag:"Cada vez que te das cuenta de que te has ido y vuelves, sumas.",
+  quien:"¿Quién juega?", adulto:"Adulto", peques:"Peques",
+  jardin:"Tu jardín de hoy", fr_m:"Mañana", fr_md:"Mediodía", fr_n:"Tarde-noche",
+  jardin_txt:"Crece con las tres paradas del día, también cuando estás bien: así tu cuerpo no necesita alarmarse para que vengas.",
+  semana:n=>`Paradas en los últimos 7 días: ${n}`,
+  cupo:n=>`Hoy: ${n} de ${LIMITE_DIA}`,
+  agotado:"Por hoy ya está. El resto del día también es práctica.",
+  como:"Cómo se puntúa",
+  como_txt:"Aquí no se gana por estar tranquilo ni por no distraerse. Se gana llevando la atención hacia dentro, dándote cuenta cuando se va y volviendo. Distraerse no resta; volver suma.",
+  sonar_n_adulto:"Sonar", sonar_n_peques:"El submarino",
+  sonar_f:"Fase 3 · sin imagen · Continuidad",
+  sonar_d_adulto:"Ojos cerrados y atención en tu ancla. A ratos sonará un aviso suave: marca dónde estaba tu atención.",
+  sonar_d_peques:"Tu submarino baja hasta tu cuerpo. Cierra los ojos y quédate con él. Cuando suene el «ping», di dónde estaba.",
+  globo_n_adulto:"Globo de quietud", globo_n_peques:"El globo viajero",
+  globo_f:"Fase 2 · imagen ancla · Continuidad",
+  globo_d_adulto:"Mantén pulsado mientras sostienes la atención en tu ancla, con el cuerpo quieto. Si te vas, suelta; al volver, pulsa otra vez.",
+  globo_d_peques:"El globo sube mientras tu atención está dentro y tu cuerpo quieto. Si te vas, suelta el dedo; cuando vuelvas, ponlo otra vez.",
+  sonar_p_adulto:["Siéntate o túmbate cómodo. Sube un poco el volumen.",
+    "Cierra los ojos y lleva la atención a {a}. No hace falta notar nada especial: solo estar ahí.",
+    "Cuando suene el aviso, abre los ojos y marca dónde estaba tu atención. Decir «pensando» con honestidad también suma.",
+    "Si antes del aviso te das cuenta de que te has ido, toca la pantalla y vuelve."],
+  sonar_p_peques:["Ponte cómodo y pide a un adulto que esté cerca.",
+    "Cierra los ojos. Tu submarino baja hasta {a}.",
+    "Cuando oigas «ping», abre los ojos y toca dónde estaba tu submarino.",
+    "Si notas que el submarino se ha ido a pasear, toca la pantalla y tráelo de vuelta."],
+  globo_p_adulto:["Siéntate con el móvil en la mano, apoyado si puedes.",
+    "Lleva la atención a {a} y mantén pulsado el botón.",
+    "El globo sube mientras sostienes, con el cuerpo quieto. Puedes cerrar los ojos: oirás un tono suave cada 15 segundos de sostén.",
+    "Si notas que te has ido, suelta. El globo no cae: te espera. Al volver, pulsa otra vez y sumas una vuelta."],
+  globo_p_peques:["Siéntate y coge el móvil con las dos manos.",
+    "Pon la atención en {a} y deja el dedo apretado en el botón.",
+    "Mientras estás dentro y quieto, el globo sube.",
+    "Si te vas a pensar en otra cosa, suelta el dedo. El globo te espera. Cuando vuelvas, aprieta otra vez."],
+  sensor:"Si el móvil lo permite, usamos su sensor de movimiento para notar la quietud. No se graba nada.",
+  ancla_t:"¿Dónde dejas la atención?", dur_t:"¿Cuánto rato?", min:"min",
+  empezar:"Empezar", volver:"← Volver",
+  ojos_adulto:"Ojos cerrados. Atención en {a}.", ojos_peques:"Ojos cerrados. Tu submarino está en {a}.",
+  hint:"Si notas que te has ido, toca la pantalla y vuelve.",
+  probe_adulto:"¿Dónde estaba tu atención?", probe_peques:"¿Dónde estaba tu submarino?",
+  p_dentro:"Dentro, en {a}",
+  p_pensando_adulto:"Pensando", p_pensando_peques:"En la cabeza, pensando",
+  p_fuera_adulto:"Fuera (ruidos, cosas de alrededor)", p_fuera_peques:"Fuera, en los ruidos",
+  fb_dentro:"Sigue ahí, acompañando. Cierra los ojos.",
+  fb_vuelta:"Te has dado cuenta. Eso es entrenar. Vuelve a {a}.",
+  fb_toque:"Has vuelto. Esto suma.",
+  hold_lbl:"Estoy dentro",
+  hold_on:"Mantén pulsado mientras estés en {a}.",
+  hold_wait:"El globo te espera. Cuando vuelvas, pulsa otra vez.",
+  quietud:"Deja el cuerpo quieto un momento.",
+  h_dentro:"dentro", h_racha:"racha", h_vueltas:"vueltas",
+  confirmar_salir:"¿Paras aquí? Puedes parar cuando quieras: volver también es entrenar.",
+  res:"Tu partida", parcial:"Partida parada antes de tiempo.",
+  r_vueltas:"Vueltas", r_avisos:"Avisos «dentro»", r_seg:"Segundos dentro", r_racha:"Racha más larga",
+  msg_vueltas:n=>`Te has ido y has vuelto ${n} ${n===1?"vez":"veces"}. Cada vuelta es una repetición del gesto: eso es lo que entrenas.`,
+  msg_sost:"Has sostenido la atención dentro. Si otro día te vas más, darte cuenta y volver también suma.",
+  msg_nada:"Hoy ha costado aparecer, y la práctica vale igual: has parado y te has dado un rato.",
+  best7:s=>`Tu racha más larga en los últimos 7 días: ${s} s.`,
+  d_t:"Dos preguntas rápidas",
+  d_nit_adulto:"¿Con qué claridad notabas {a}?", d_nit_peques:"¿Notabas {a}?",
+  d_nit_x:"0 nada · 10 muy clara. Notar poco también es un dato, no un fallo.",
+  d_ruido_adulto:"¿Cuánto ruido interno (pensamientos) había?", d_ruido_peques:"¿Cuánto hablaba el mono en tu cabeza?",
+  d_ruido_x:"0 nada · 10 muchísimo.",
+  poco:"Poco", algo:"Algo", mucho:"Mucho",
+  micro_t:"Y ahora, ¿cuál es el siguiente paso con valor?",
+  micro_s:"El juego acaba aquí. Lo importante viene ahora, fuera de la pantalla.",
+  micro_adulto:["Volver a lo que hacía, con presencia","Beber agua y estirarme","Hablar con alguien de casa","Empezar una tarea pequeña"],
+  micro_peques:["Ir a jugar con calma","Dar un abrazo","Recoger una cosa","Contar cómo estoy"],
+  micro_ph:"O escribe el tuyo…",
+  guardar:"Guardar y dejar el móvil",
+  fin_t:"Guardado",
+  fin_txt:m=>`Ahora deja el móvil y haz tu paso: ${m}.`,
+  frase_adulto:"«Respirar no es relajarte: es aparecer.»",
+  frase_peques:"«Cada vez que vuelves, tu cuerpo nota que estás con él.»",
+  inicio:"Volver al inicio"
+},
+ca:{
+  eyebrow:"APRENS · AIS · Jocs", h1:"Jocs AIS",
+  tag:"Cada vegada que t'adones que te n'has anat i tornes, sumes.",
+  quien:"Qui juga?", adulto:"Adult", peques:"Petits",
+  jardin:"El teu jardí d'avui", fr_m:"Matí", fr_md:"Migdia", fr_n:"Horabaixa-vespre",
+  jardin_txt:"Creix amb les tres aturades del dia, també quan estàs bé: així el teu cos no necessita alarmar-se perquè hi vagis.",
+  semana:n=>`Aturades dels darrers 7 dies: ${n}`,
+  cupo:n=>`Avui: ${n} de ${LIMITE_DIA}`,
+  agotado:"Per avui ja està. La resta del dia també és pràctica.",
+  como:"Com es puntua",
+  como_txt:"Aquí no es guanya per estar tranquil ni per no distreure's. Es guanya portant l'atenció cap endins, adonant-te'n quan se'n va i tornant-hi. Distreure's no resta; tornar suma.",
+  sonar_n_adulto:"Sonar", sonar_n_peques:"El submarí",
+  sonar_f:"Fase 3 · sense imatge · Continuïtat",
+  sonar_d_adulto:"Ulls tancats i atenció a la teva àncora. De tant en tant sonarà un avís suau: marca on era la teva atenció.",
+  sonar_d_peques:"El teu submarí baixa fins al teu cos. Tanca els ulls i queda't amb ell. Quan soni el «ping», digues on era.",
+  globo_n_adulto:"Globus de quietud", globo_n_peques:"El globus viatger",
+  globo_f:"Fase 2 · imatge àncora · Continuïtat",
+  globo_d_adulto:"Mantén premut mentre sostens l'atenció a la teva àncora, amb el cos quiet. Si te'n vas, deixa anar; en tornar, prem una altra vegada.",
+  globo_d_peques:"El globus puja mentre la teva atenció és a dins i el teu cos està quiet. Si te'n vas, deixa anar el dit; quan tornis, posa'l una altra vegada.",
+  sonar_p_adulto:["Seu o ajeu-te còmodament. Puja una mica el volum.",
+    "Tanca els ulls i porta l'atenció a {a}. No cal notar res especial: només ser-hi.",
+    "Quan soni l'avís, obre els ulls i marca on era la teva atenció. Dir «pensant» amb honestedat també suma.",
+    "Si abans de l'avís t'adones que te n'has anat, toca la pantalla i torna-hi."],
+  sonar_p_peques:["Posa't còmode i demana a un adult que sigui a prop.",
+    "Tanca els ulls. El teu submarí baixa fins a {a}.",
+    "Quan sentis «ping», obre els ulls i toca on era el teu submarí.",
+    "Si notes que el submarí ha anat a passejar, toca la pantalla i torna'l a dur."],
+  globo_p_adulto:["Seu amb el mòbil a la mà, recolzat si pots.",
+    "Porta l'atenció a {a} i mantén premut el botó.",
+    "El globus puja mentre sostens, amb el cos quiet. Pots tancar els ulls: sentiràs un to suau cada 15 segons de sosteniment.",
+    "Si notes que te n'has anat, deixa anar. El globus no cau: t'espera. En tornar, prem una altra vegada i sumes una tornada."],
+  globo_p_peques:["Seu i agafa el mòbil amb les dues mans.",
+    "Posa l'atenció a {a} i deixa el dit premut al botó.",
+    "Mentre ets a dins i quiet, el globus puja.",
+    "Si te'n vas a pensar en una altra cosa, deixa anar el dit. El globus t'espera. Quan tornis, prem una altra vegada."],
+  sensor:"Si el mòbil ho permet, feim servir el seu sensor de moviment per notar la quietud. No es grava res.",
+  ancla_t:"On deixes l'atenció?", dur_t:"Quanta estona?", min:"min",
+  empezar:"Començar", volver:"← Tornar",
+  ojos_adulto:"Ulls tancats. Atenció a {a}.", ojos_peques:"Ulls tancats. El teu submarí és a {a}.",
+  hint:"Si notes que te n'has anat, toca la pantalla i torna-hi.",
+  probe_adulto:"On era la teva atenció?", probe_peques:"On era el teu submarí?",
+  p_dentro:"A dins, a {a}",
+  p_pensando_adulto:"Pensant", p_pensando_peques:"Al cap, pensant",
+  p_fuera_adulto:"A fora (renous, coses del voltant)", p_fuera_peques:"A fora, als renous",
+  fb_dentro:"Segueix-hi, acompanyant. Tanca els ulls.",
+  fb_vuelta:"T'has adonat. Això és entrenar. Torna a {a}.",
+  fb_toque:"Has tornat. Això suma.",
+  hold_lbl:"Som a dins",
+  hold_on:"Mantén premut mentre siguis a {a}.",
+  hold_wait:"El globus t'espera. Quan tornis, prem una altra vegada.",
+  quietud:"Deixa el cos quiet un moment.",
+  h_dentro:"a dins", h_racha:"ratxa", h_vueltas:"tornades",
+  confirmar_salir:"T'atures aquí? Pots aturar-te quan vulguis: tornar també és entrenar.",
+  res:"La teva partida", parcial:"Partida aturada abans d'hora.",
+  r_vueltas:"Tornades", r_avisos:"Avisos «a dins»", r_seg:"Segons a dins", r_racha:"Ratxa més llarga",
+  msg_vueltas:n=>`Te n'has anat i has tornat ${n} ${n===1?"vegada":"vegades"}. Cada tornada és una repetició del gest: això és el que entrenes.`,
+  msg_sost:"Has sostingut l'atenció a dins. Si un altre dia te'n vas més, adonar-te'n i tornar també suma.",
+  msg_nada:"Avui ha costat aparèixer, i la pràctica val igual: t'has aturat i t'has donat una estona.",
+  best7:s=>`La teva ratxa més llarga dels darrers 7 dies: ${s} s.`,
+  d_t:"Dues preguntes ràpides",
+  d_nit_adulto:"Amb quina claredat notaves {a}?", d_nit_peques:"Notaves {a}?",
+  d_nit_x:"0 gens · 10 molt clara. Notar poc també és una dada, no una errada.",
+  d_ruido_adulto:"Quant de renou intern (pensaments) hi havia?", d_ruido_peques:"Quant parlava el mono dins el teu cap?",
+  d_ruido_x:"0 gens · 10 moltíssim.",
+  poco:"Poc", algo:"Una mica", mucho:"Molt",
+  micro_t:"I ara, quin és el següent pas amb valor?",
+  micro_s:"El joc s'acaba aquí. L'important ve ara, fora de la pantalla.",
+  micro_adulto:["Tornar al que feia, amb presència","Beure aigua i estirar-me","Parlar amb algú de casa","Començar una tasca petita"],
+  micro_peques:["Anar a jugar amb calma","Fer una abraçada","Recollir una cosa","Contar com estic"],
+  micro_ph:"O escriu el teu…",
+  guardar:"Guardar i deixar el mòbil",
+  fin_t:"Guardat",
+  fin_txt:m=>`Ara deixa el mòbil i fes el teu pas: ${m}.`,
+  frase_adulto:"«Respirar no és relaxar-te: és aparèixer.»",
+  frase_peques:"«Cada vegada que tornes, el teu cos nota que hi ets.»",
+  inicio:"Tornar a l'inici"
+}};
+
+/* ---------------- estado persistente ---------------- */
+let st = cargar();
+function cargar(){
+  try{ const r = JSON.parse(localStorage.getItem(KEY)||"null"); if(r && r.dias) return r; }catch(e){}
+  return { lang:"es", perfil:"adulto", ancla:"barriga", dur:{}, dias:{}, hist:[] };
+}
+function guardarSt(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+
+const pad = n => String(n).padStart(2,"0");
+function fechaLocal(d){ d = d||new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function franja(d){ const h=(d||new Date()).getHours(); return h<12 ? "m" : h<17 ? "md" : "n"; }
+function dia(f){ f=f||fechaLocal(); if(!st.dias[f]) st.dias[f]={ sonar:0, globo:0, franjas:{m:0,md:0,n:0} }; return st.dias[f]; }
+function hace7(){ const d=new Date(); d.setDate(d.getDate()-6); return fechaLocal(d); }
+function podar(){
+  const lim = new Date(); lim.setDate(lim.getDate()-60); const l = fechaLocal(lim);
+  Object.keys(st.dias).forEach(k => { if(k<l) delete st.dias[k]; });
+  st.hist = st.hist.filter(h => h.date>=l).slice(-200);
+}
+
+/* ---------------- helpers de texto ---------------- */
+const P = () => st.perfil==="peques";
+function t(k){ const L=T[st.lang]; const v = L[k+"_"+st.perfil]; return v!==undefined ? v : L[k]; }
+function aN(){ return ANCLAS[st.lang][st.ancla][1]; }
+function fa(s){ return String(s).replace(/\{a\}/g, aN()); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+const nombreJuego = g => t(g+"_n");
+
+/* ---------------- audio, vibración, pantalla ---------------- */
+let AC = null;
+function audioOn(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==="suspended") AC.resume(); }catch(e){ AC=null; } }
+function tono(f, dur, vol, delay){
+  if(!AC) return;
+  const t0 = AC.currentTime + (delay||0);
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = "sine"; o.frequency.value = f;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0+0.08);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(AC.destination);
+  o.start(t0); o.stop(t0+dur+0.05);
+}
+function vib(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+const sonPing    = () => { tono(660,1.5,0.2); tono(990,1.2,0.05,0.03); vib([70]); };
+const sonVuelta  = () => { tono(523,0.6,0.1); tono(784,0.9,0.08,0.18); vib(30); };
+const sonSosten  = () => { tono(440,1.1,0.07); };
+
+let wl = null;
+async function wakeOn(){ try{ if(navigator.wakeLock) wl = await navigator.wakeLock.request("screen"); }catch(e){} }
+function wakeOff(){ try{ if(wl) wl.release(); }catch(e){} wl = null; }
+
+/* ---------------- sensor de quietud (acelerómetro) ---------------- */
+const MOV = { got:false, jit:0, p:null, quieto:true };
+function onMotion(e){
+  const a = e.accelerationIncludingGravity || e.acceleration;
+  if(!a || a.x==null) return;
+  MOV.got = true;
+  if(MOV.p){ const d = Math.abs(a.x-MOV.p.x)+Math.abs(a.y-MOV.p.y)+Math.abs(a.z-MOV.p.z); MOV.jit = MOV.jit*0.9 + d*0.1; }
+  MOV.p = { x:a.x, y:a.y, z:a.z };
+  MOV.quieto = MOV.jit < UMBRAL_QUIETUD;
+}
+// Debe llamarse dentro del gesto del usuario (iOS pide permiso así).
+function movStart(){
+  MOV.got=false; MOV.jit=0; MOV.p=null; MOV.quieto=true;
+  const engancha = () => window.addEventListener("devicemotion", onMotion);
+  try{
+    if(typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"){
+      DeviceMotionEvent.requestPermission().then(r => { if(r==="granted") engancha(); }).catch(()=>{});
+    } else engancha();
+  }catch(e){}
+}
+function movStop(){ window.removeEventListener("devicemotion", onMotion); }
+
+/* ---------------- navegación ---------------- */
+const app = document.getElementById("app");
+const stage = document.getElementById("stage");
+let vista = "hub", juego = null, R = null, post = null;
+
+function setLang(l){ st.lang=l; guardarSt(); document.documentElement.lang=l; render(); }
+function setPerfil(p){ st.perfil=p; guardarSt(); render(); }
+
+function render(){
+  const bar = document.getElementById("aprensBar"); if(bar) bar.style.display = vista==="fin" ? "" : "none";
+  if(vista==="hub") return hub();
+  if(vista==="intro") return intro();
+  if(vista==="post") return postView();
+  if(vista==="fin") return finView();
+}
+function ir(v){ vista=v; render(); scrollTo(0,0); }
+
+function cabecera(){
+  return `<div class="top"><span class="eyebrow">${t("eyebrow")}</span>
+    <span class="langs"><button class="${st.lang==="es"?"on":""}" onclick="setLang('es')">ES</button><button class="${st.lang==="ca"?"on":""}" onclick="setLang('ca')">CA</button></span></div>`;
+}
+
+/* ---------------- HUB ---------------- */
+function hub(){
+  const d = dia(), fr = franja();
+  const desde = hace7();
+  const sem = Object.keys(st.dias).filter(k=>k>=desde).reduce((s,k)=>{ const f=st.dias[k].franjas; return s+(f.m?1:0)+(f.md?1:0)+(f.n?1:0); },0);
+  const planta = (k,em) => `<div class="planta ${d.franjas[k]?"on":""} ${fr===k?"ahora":""}"><span class="pl">${em}</span>${t("fr_"+k)}</div>`;
+  const tarjeta = (g, ico) => {
+    const n = d[g], lleno = n>=LIMITE_DIA;
+    return `<div class="card"><button class="juego" ${lleno?"disabled":""} onclick="abrir('${g}')">
+      <span class="ico ${g}">${ico}</span>
+      <span><div class="fase">${t(g+"_f")}</div><h3>${nombreJuego(g)}</h3><p>${t(g+"_d")}</p>
+      <span class="cupo ${lleno?"no":""}">${lleno?t("agotado"):t("cupo")(n)}</span></span></button></div>`;
+  };
+  app.innerHTML = cabecera() + `
+    <h1>${t("h1")}</h1><p class="tag">${t("tag")}</p>
+    <div class="lbl">${t("quien")}</div>
+    <div class="seg"><button class="${!P()?"on":""}" onclick="setPerfil('adulto')">${t("adulto")}</button><button class="${P()?"on":""}" onclick="setPerfil('peques')">${t("peques")}</button></div>
+    ${tarjeta("sonar", P()?"🫧":"🎧")}
+    ${tarjeta("globo", "🎈")}
+    <div class="card"><h2>${t("jardin")}</h2>
+      <div class="jardin">${planta("m","🌱")}${planta("md","🌿")}${planta("n","🌸")}</div>
+      <p class="muted" style="margin:0 0 6px">${t("jardin_txt")}</p>
+      <p class="muted" style="margin:0;font-weight:700">${t("semana")(sem)}</p></div>
+    <div class="card"><h2>${t("como")}</h2><p class="muted" style="margin:0">${t("como_txt")}</p></div>`;
+}
+
+/* ---------------- INTRO de cada juego ---------------- */
+const DURS = { sonar:{ adulto:[3,5,7], peques:[1.5,2,3] }, globo:{ adulto:[2,3,5], peques:[1,2,3] } };
+function durSel(){ const lista=DURS[juego][st.perfil]; const k=juego+"_"+st.perfil; const v=st.dur[k]; return lista.includes(v)?v:lista[0]; }
+function abrir(g){ juego=g; ir("intro"); }
+function setAncla(a){ st.ancla=a; guardarSt(); render(); }
+function setDur(v){ st.dur[juego+"_"+st.perfil]=v; guardarSt(); render(); }
+
+function cuerpoSVG(){
+  const pt = {cuello:[50,40], pecho:[50,62], barriga:[50,88]};
+  const dots = Object.keys(pt).map(k=>{ const on=k===st.ancla; const [x,y]=pt[k];
+    return `<circle cx="${x}" cy="${y}" r="${on?9:5}" fill="${on?"#e8b93a":"#d8d0bf"}" ${on?'opacity=".95"':''}/>`; }).join("");
+  return `<svg viewBox="0 0 100 130" aria-hidden="true"><circle cx="50" cy="20" r="13" fill="#efe8da"/>
+    <rect x="44" y="31" width="12" height="10" rx="4" fill="#efe8da"/>
+    <rect x="28" y="40" width="44" height="64" rx="20" fill="#efe8da"/>
+    <rect x="34" y="98" width="13" height="30" rx="6" fill="#efe8da"/><rect x="53" y="98" width="13" height="30" rx="6" fill="#efe8da"/>${dots}</svg>`;
+}
+
+function intro(){
+  const pasos = t(juego+"_p").map(p=>`<li>${esc(fa(p))}</li>`).join("");
+  const anclas = ["cuello","pecho","barriga"].map(k=>`<button class="chip ${st.ancla===k?"sel":""}" onclick="setAncla('${k}')">${ANCLAS[st.lang][k][0]}</button>`).join("");
+  const dv = durSel();
+  const durs = DURS[juego][st.perfil].map(v=>`<button class="chip ${v===dv?"sel":""}" onclick="setDur(${v})">${String(v).replace(".",",")} ${t("min")}</button>`).join("");
+  app.innerHTML = cabecera() + `
+    <button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
+    <h1>${nombreJuego(juego)}</h1><p class="tag">${t(juego+"_f")}</p>
+    <div class="card"><ol class="pasos">${pasos}</ol>
+      ${juego==="globo"?`<p class="muted" style="margin:0">${t("sensor")}</p>`:""}</div>
+    <div class="lbl">${t("ancla_t")}</div>
+    <div class="ancla-row">${cuerpoSVG()}<div class="chips">${anclas}</div></div>
+    <div class="lbl">${t("dur_t")}</div>
+    <div class="chips">${durs}</div>
+    <button class="btn big" onclick="empezar()">${t("empezar")}</button>`;
+}
+
+/* ---------------- motor de partida ---------------- */
+let tick = null, raf = null;
+function empezar(){
+  if(dia()[juego] >= LIMITE_DIA){ ir("hub"); return; }
+  audioOn(); wakeOn();
+  if(juego==="globo") movStart();
+  const ahora = performance.now();
+  R = { juego, perfil:st.perfil, ancla:st.ancla, durMs:durSel()*60000, t0:ahora, fin:false,
+        vueltas:0, inicio:new Date() };
+  stage.hidden = false;
+  document.body.style.overflow = "hidden";
+  if(juego==="sonar") sonarStart(); else globoStart();
+}
+function mmss(ms){ const s=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s/60)+":"+pad(s%60); }
+function salir(){
+  if(!R || R.fin) return;
+  if(!confirm(t("confirmar_salir"))) return;
+  terminar(true);
+}
+function terminar(parcial){
+  if(!R || R.fin) return;
+  R.fin = true;
+  clearInterval(tick); tick=null;
+  if(raf) cancelAnimationFrame(raf); raf=null;
+  movStop(); wakeOff();
+  stage.hidden = true; stage.innerHTML = "";
+  document.body.style.overflow = "";
+  const jugado = performance.now() - R.t0;
+  if(parcial && jugado < 20000){ R=null; ir("hub"); return; }   // menos de 20 s: no cuenta
+  post = resumen(R, parcial, jugado);
+  const d = dia(); d[R.juego]++; d.franjas[franja(R.inicio)]++;
+  st.hist.push({ date:fechaLocal(R.inicio), juego:R.juego, racha:post.racha_max_s||0, vueltas:post.vueltas });
+  podar(); guardarSt();
+  ir("post");
+}
+function resumen(r, parcial, jugado){
+  const base = { juego:r.juego, perfil:r.perfil, ancla:r.ancla, duracion_s:Math.round(jugado/1000),
+    duracion_prevista_s:Math.round(r.durMs/1000), parcial:!!parcial, vueltas:r.vueltas, franja:franja(r.inicio),
+    fecha:fechaLocal(r.inicio), hora:pad(r.inicio.getHours())+":"+pad(r.inicio.getMinutes()) };
+  if(r.juego==="sonar"){
+    const a=r.avisos, resp=a.dentro+a.pensando+a.fuera;
+    return Object.assign(base, { fase:3, avisos:a, toques_vuelta:r.toques,
+      pct_dentro: resp ? Math.round(100*a.dentro/resp) : null });
+  }
+  return Object.assign(base, { fase:2, segundos_dentro:Math.round(r.dentro), racha_max_s:Math.round(r.rachaMax),
+    sensor_movimiento:r.sensor, quietud_pct: r.sensor && r.holdT>0 ? Math.round(100*r.quietT/r.holdT) : null });
+}
+
+/* ---------------- SONAR ---------------- */
+const rnd = (a,b) => a + Math.random()*(b-a);
+function sonarIntervalo(){ return (P()? rnd(12,25) : rnd(20,45))*1000; }
+function sonarStart(){
+  Object.assign(R, { avisos:{dentro:0,pensando:0,fuera:0,sin:0}, toques:0, probe:null, next:R.t0+(P()?rnd(10,16):rnd(18,30))*1000, ultToque:0, fbHasta:0 });
+  stage.className = "stage sonar" + (P()?" peques":"");
+  stage.innerHTML = `
+    <div class="tiempo" id="sgTime"></div>
+    <button class="salir" onclick="salir()" aria-label="Salir">✕</button>
+    <div class="tap" id="tap"></div>
+    <div class="centro" id="centro"><div class="orbe"></div>
+      <p class="stxt" id="stxt">${esc(fa(t("ojos")))}</p><p class="shint">${esc(t("hint"))}</p></div>
+    <div class="probe" id="probe" hidden>
+      <h2>${esc(t("probe"))}</h2>
+      <button class="pb-dentro" onclick="sonarResp('dentro')">${esc(fa(t("p_dentro")))}</button>
+      <button class="pb-pensando" onclick="sonarResp('pensando')">${esc(t("p_pensando"))}</button>
+      <button class="pb-fuera" onclick="sonarResp('fuera')">${esc(t("p_fuera"))}</button>
+    </div>`;
+  document.getElementById("tap").addEventListener("pointerdown", sonarToque);
+  tick = setInterval(sonarTick, 200);
+  sonarTick();
+}
+function sonarTxt(s, ms){
+  const el=document.getElementById("stxt"); if(!el) return;
+  el.textContent = s; R.fbHasta = ms ? performance.now()+ms : 0;
+}
+function sonarTick(){
+  const now = performance.now(), el = now - R.t0;
+  const tm = document.getElementById("sgTime"); if(tm) tm.textContent = mmss(R.durMs - el);
+  if(R.fbHasta && now > R.fbHasta) sonarTxt(fa(t("ojos")));
+  if(R.probe){
+    if(now - R.probe > 10000){ R.avisos.sin++; sonarCerrar(); }   // sin respuesta: no resta
+    return;
+  }
+  if(el >= R.durMs){ terminar(false); return; }
+  if(now >= R.next && el < R.durMs - 8000) sonarAbrir();
+}
+function sonarAbrir(){
+  R.probe = performance.now();
+  sonPing();
+  document.getElementById("probe").hidden = false;
+}
+function sonarCerrar(){
+  R.probe = null;
+  R.next = performance.now() + sonarIntervalo();
+  document.getElementById("probe").hidden = true;
+}
+function sonarResp(k){
+  if(!R || !R.probe) return;
+  R.avisos[k]++;
+  if(k==="dentro") sonarTxt(t("fb_dentro"), 4000);
+  else { R.vueltas++; sonVuelta(); sonarTxt(fa(t("fb_vuelta")), 5000); }
+  sonarCerrar();
+}
+function sonarToque(e){
+  e.preventDefault();
+  const now = performance.now();
+  if(R.probe || now - R.ultToque < 1500) return;
+  R.ultToque = now; R.toques++; R.vueltas++;
+  sonVuelta(); sonarTxt(t("fb_toque"), 3500);
+  const c = document.getElementById("centro"); c.classList.add("flash"); setTimeout(()=>c.classList.remove("flash"), 900);
+}
+
+/* ---------------- GLOBO DE QUIETUD ---------------- */
+function globoStart(){
+  Object.assign(R, { dentro:0, racha:0, rachaMax:0, hold:false, soltado:false, holdT:0, quietT:0,
+    sensor:false, sigTono:15, last:performance.now() });
+  const islas = P() ? ["🏝️","⛰️","☁️"] : [];
+  stage.className = "stage globo" + (P()?" peques":"");
+  stage.innerHTML = `
+    <div class="tiempo" id="sgTime"></div>
+    <button class="salir" onclick="salir()" aria-label="Salir">✕</button>
+    <div class="nube" style="width:110px;height:30px;top:22%;left:-20px"></div>
+    <div class="nube" style="width:150px;height:38px;top:40%;right:-30px"></div>
+    <div class="nube" style="width:90px;height:26px;top:12%;right:30%"></div>
+    ${islas.map((s,i)=>`<div class="isla" style="bottom:${44+i*16}%;margin-left:${i%2?-130:120}px;font-size:26px;opacity:.5">${s}</div>`).join("")}
+    <div class="hud" id="hud"></div>
+    <div class="bal" id="bal" style="bottom:22%">
+      <svg viewBox="0 0 96 132" aria-hidden="true">
+        <path class="cuerpo" d="M48 4C24 4 8 22 8 44c0 26 26 46 36 52h8c10-6 36-26 36-52C88 22 72 4 48 4z" fill="#e8b93a"/>
+        <path d="M30 22c-6 6-9 13-9 21" stroke="#fff" stroke-opacity=".55" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M44 96l-4 10h16l-4-10z" fill="#c99a22"/>
+        <path d="M48 106v18" stroke="#8a7a5a" stroke-width="1.5"/>
+        <rect x="38" y="118" width="20" height="12" rx="3" fill="#a07a4a"/>
+      </svg>
+      ${P()?'<span class="pas">🐢</span>':""}
+    </div>
+    <p class="gtxt" id="gtxt">${esc(fa(t("hold_on")))}</p>
+    <div class="quiet" id="quiet"></div>
+    <button class="hold" id="hold">${esc(t("hold_lbl"))}</button>`;
+  const h = document.getElementById("hold");
+  h.addEventListener("pointerdown", globoOn);
+  ["pointerup","pointercancel","pointerleave"].forEach(ev => h.addEventListener(ev, globoOff));
+  h.addEventListener("contextmenu", e => e.preventDefault());
+  raf = requestAnimationFrame(globoFrame);
+}
+function globoOn(e){
+  e.preventDefault();
+  if(!R || R.fin || R.hold) return;
+  try{ e.target.setPointerCapture(e.pointerId); }catch(_){}
+  if(R.soltado){ R.vueltas++; sonVuelta(); }
+  R.hold = true; R.racha = 0; R.sigTono = 15;
+  document.getElementById("hold").classList.add("on");
+  document.getElementById("bal").classList.add("on");
+  document.getElementById("gtxt").textContent = fa(t("hold_on"));
+}
+function globoOff(){
+  if(!R || !R.hold) return;
+  R.hold = false;
+  if(R.racha > 0.5) R.soltado = true;
+  R.racha = 0;
+  document.getElementById("hold").classList.remove("on");
+  document.getElementById("bal").classList.remove("on");
+  document.getElementById("gtxt").textContent = t("hold_wait");
+}
+function globoFrame(now){
+  if(!R || R.fin) return;
+  const dt = Math.min(0.25, (now - R.last)/1000); R.last = now;
+  const el = now - R.t0;
+  let moviendo = false;
+  if(R.hold){
+    R.holdT += dt;
+    if(MOV.got) R.sensor = true;
+    const quieto = !MOV.got || MOV.quieto;
+    if(quieto){
+      R.quietT += dt; R.dentro += dt; R.racha += dt;
+      if(R.racha > R.rachaMax) R.rachaMax = R.racha;
+      if(R.racha >= R.sigTono){ sonSosten(); R.sigTono += 15; }
+    } else moviendo = true;
+  }
+  // El globo sube con los segundos dentro y nunca baja: llega arriba con ~80 % del tiempo sostenido.
+  const frac = Math.min(1, R.dentro / (R.durMs/1000*0.8));
+  document.getElementById("bal").style.bottom = (22 + frac*48) + "%";
+  document.getElementById("hud").textContent =
+    `${Math.round(R.dentro)} s ${t("h_dentro")} · ${Math.round(R.racha)} s ${t("h_racha")} · ${R.vueltas} ${t("h_vueltas")}`;
+  document.getElementById("quiet").textContent = moviendo ? t("quietud") : "";
+  document.getElementById("sgTime").textContent = mmss(R.durMs - el);
+  if(el >= R.durMs){ terminar(false); return; }
+  raf = requestAnimationFrame(globoFrame);
+}
+
+/* ---------------- POST: tarjeta L·D·C + D + micro-acción ---------------- */
+let dNit = null, dRuido = null, micro = "";
+function mejorRacha7(){
+  const desde = hace7();
+  const prev = st.hist.slice(0,-1).filter(h => h.juego==="globo" && h.date>=desde).map(h=>h.racha);
+  return prev.length ? Math.max(...prev) : null;
+}
+function postView(){
+  const p = post;
+  let nums, msg;
+  if(p.juego==="sonar"){
+    const a=p.avisos, resp=a.dentro+a.pensando+a.fuera;
+    nums = `<div class="num c"><b>${p.vueltas}</b><span>${t("r_vueltas")}</span></div>
+            <div class="num"><b>${a.dentro}/${resp}</b><span>${t("r_avisos")}</span></div>`;
+    msg = p.vueltas>0 ? t("msg_vueltas")(p.vueltas) : a.dentro>0 ? t("msg_sost") : t("msg_nada");
+  } else {
+    nums = `<div class="num"><b>${p.segundos_dentro}</b><span>${t("r_seg")}</span></div>
+            <div class="num"><b>${p.racha_max_s} s</b><span>${t("r_racha")}</span></div>
+            <div class="num c"><b>${p.vueltas}</b><span>${t("r_vueltas")}</span></div>`;
+    msg = p.vueltas>0 ? t("msg_vueltas")(p.vueltas) : p.segundos_dentro>5 ? t("msg_sost") : t("msg_nada");
+    const b = mejorRacha7(); if(b!=null) msg += " " + t("best7")(Math.max(b, p.racha_max_s));
+  }
+  const escala = (cual, val) => P()
+    ? `<div class="escala3">${[["poco",2],["algo",5],["mucho",8]].map(([k,v])=>`<button class="${val===v?"sel":""}" onclick="setD('${cual}',${v})">${t(k)}</button>`).join("")}</div>`
+    : `<div class="escala">${Array.from({length:11},(_,i)=>`<button class="${val===i?"sel":""}" onclick="setD('${cual}',${i})">${i}</button>`).join("")}</div>`;
+  const chips = t("micro").map(m=>`<button class="chip ${micro===m?"sel":""}" onclick="setMicro(this.textContent)">${esc(m)}</button>`).join("");
+  app.innerHTML = cabecera() + `
+    <h1>${t("res")}</h1>
+    <p class="tag">${nombreJuego(p.juego)} · ${ANCLAS[st.lang][p.ancla][0]}</p>
+    ${p.parcial?`<div class="aviso">${t("parcial")}</div>`:""}
+    <div class="card"><div class="nums">${nums}</div><p style="margin:0;line-height:1.5">${esc(msg)}</p></div>
+    <div class="card"><h2>${t("d_t")}</h2>
+      <div class="q"><p>${esc(fa(t("d_nit")))}</p>${escala("nit", dNit)}${P()?"":`<span class="muted">${t("d_nit_x")}</span>`}</div>
+      <div class="q" style="margin:0"><p>${esc(t("d_ruido"))}</p>${escala("ruido", dRuido)}${P()?"":`<span class="muted">${t("d_ruido_x")}</span>`}</div></div>
+    <div class="card"><h2>${t("micro_t")}</h2><p class="muted" style="margin:0 0 10px">${t("micro_s")}</p>
+      <div class="chips">${chips}</div>
+      <input class="txt" id="microTxt" placeholder="${esc(t("micro_ph"))}" value="${t("micro").includes(micro)?"":esc(micro)}" oninput="setMicroTxt(this.value)">
+      <button class="btn big" id="btnGuardar" ${micro.trim()?"":"disabled"} onclick="guardarPartida()">${t("guardar")}</button></div>`;
+}
+function setD(cual, v){ if(cual==="nit") dNit=v; else dRuido=v; postView(); }
+function setMicro(m){ micro = m; postView(); }
+function setMicroTxt(v){
+  micro = v;
+  document.querySelectorAll(".chips .chip").forEach(c => c.classList.remove("sel"));
+  document.getElementById("btnGuardar").disabled = !v.trim();
+}
+function guardarPartida(){
+  if(!micro.trim()) return;
+  const p = post, ts = Date.now();
+  const rec = Object.assign({ id:"jg"+ts, date:p.fecha, ts, tec:"C" }, p,
+    { nitidez_0_10:dNit, ruido_0_10:dRuido, microaccion:micro.trim() });
+  delete rec.fecha;
+  if(window.Aprens) Aprens.save(rec);
+  post.microaccion = micro.trim();
+  dNit = dRuido = null; micro = "";
+  ir("fin");
+}
+function finView(){
+  app.innerHTML = cabecera() + `
+    <h1>${t("fin_t")}</h1>
+    <div class="card"><p style="margin:0;font-size:17px;line-height:1.5">${esc(t("fin_txt")(post.microaccion))}</p></div>
+    <p class="frase">${t("frase")}</p>
+    <button class="btn big" onclick="post=null;ir('hub')">${t("inicio")}</button>`;
+  if(window.Aprens) Aprens.mountBar();
+  const bar = document.getElementById("aprensBar"); if(bar) bar.style.display = "";
+}
+
+/* Botón «← Atrás» de la cabecera de la app: primero sale de la partida o retrocede de vista. */
+window.APRENS_toolBack = function(){
+  if(R && !R.fin){ salir(); return true; }
+  if(vista==="intro"){ ir("hub"); return true; }
+  return false;
+};
+document.addEventListener("visibilitychange", () => { if(document.visibilityState==="visible" && R && !R.fin) wakeOn(); });
+
+document.documentElement.lang = st.lang;
+render();
+</script>
+
+<!-- ===================== APRENS CORE (incrustado) ===================== -->
+<script>
+(function(g){"use strict";var DB_KEY="aprens_db",SCHEMA=1;var st={toolId:null,toolName:null,toolVersion:1};var collector=null;
+function load(){try{var r=localStorage.getItem(DB_KEY);if(r)return JSON.parse(r);}catch(e){}return{schema:SCHEMA,paciente:{codigo:""},tools:{}};}
+function persist(db){db.schema=SCHEMA;db.actualizado=new Date().toISOString();try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){}return db;}
+function bk(db,c){if(!db.tools[st.toolId]&&c){db.tools[st.toolId]={meta:{nombre:st.toolName,v:st.toolVersion},records:[]};}return db.tools[st.toolId];}
+var A={schema:SCHEMA,
+config:function(o){o=o||{};if(o.toolId)st.toolId=String(o.toolId);if(o.toolName)st.toolName=String(o.toolName);if(o.toolVersion)st.toolVersion=o.toolVersion;if(o.pacienteCodigo)this.setPacienteCodigo(o.pacienteCodigo);if(st.toolId){var db=load();var b=bk(db,true);b.meta={nombre:st.toolName,v:st.toolVersion};persist(db);}return this;},
+setPacienteCodigo:function(c){var db=load();if(c)db.paciente.codigo=String(c).trim();persist(db);return this;},
+getPacienteCodigo:function(){return load().paciente.codigo||"";},
+save:function(r,opts){opts=opts||{};if(!st.toolId)return null;r=r||{};if(r.ts==null)r.ts=Date.now();var db=load();var b=bk(db,true);var i=-1;if(r.id!=null){i=b.records.findIndex(function(x){return x.id===r.id;});}else if(r.date&&!opts.append){i=b.records.findIndex(function(x){return x.date===r.date;});}if(i>=0)b.records[i]=r;else b.records.push(r);b.records.sort(function(a,c){return String(a.date||a.ts).localeCompare(String(c.date||c.ts));});persist(db);return r;},
+collect:function(fn){collector=fn;return this;},
+_flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)this.save(r);}catch(e){}}},
+buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
+exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
+copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+};g.Aprens=A;})(window);
+</script>
+
+<!-- ===================== INTEGRACIÓN juegos_ais ===================== -->
+<script>
+Aprens.config({ toolId:"juegos_ais", toolName:"Juegos AIS", toolVersion:1, pacienteCodigo:"" });
+</script>
+</body>
+</html>
