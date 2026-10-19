@@ -79,6 +79,7 @@
   .tl{display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:6px 12px 6px 9px;font-size:13px;font-weight:600;min-height:36px;margin:6px 6px 0 0;}
   .tl:hover{border-color:var(--acc);}
   .tl .ar{color:var(--acc);font-weight:700;}
+  .adel{margin-top:10px;padding:10px 12px;border:1px dashed var(--acc);border-radius:12px;background:var(--bg2);}
   .progress{height:8px;border-radius:6px;background:var(--bg2);overflow:hidden;margin:6px 0;}
   .progress i{display:block;height:100%;background:var(--ok);transition:width .3s;}
 
@@ -478,6 +479,7 @@
     return -1;
   }
   function pasoHTML(p){ return specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join(""); }
+  var adelantarAbierto = false;
   function renderHoy(){
     stageHead();
     var e = E[S.etapa], d = dia(), m = metr(), av = "";
@@ -490,8 +492,16 @@
     for(var k in tE){ if(tE[k]===HOY) hoyP = Math.max(hoyP, +k); }
     items.push({k:"m", w:"☀️ Mañana", t:e.practica.t, d:e.practica.d, go:e.practica.go, vin:e.practica.vin});
     // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
-    if(hoyP >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(hoyP+1)+" de "+e.pasos.length, t:e.pasos[hoyP][0], hecho:true,
-      d: sp >= 0 ? 'Hecho. Mañana te espera el siguiente. <button class="tl" type="button" id="adelantar">¿Te apetece adelantarlo? <span class="ar">→</span></button>' : 'Hecho. Era el último paso de esta etapa.'});
+    // El paso hecho conserva sus enlaces (para volver a abrirlo) y el siguiente se puede adelantar aquí mismo.
+    if(hoyP >= 0){
+      var adel = "";
+      if(sp >= 0) adel = adelantarAbierto
+        ? '<div class="adel"><div class="tw">Adelantado · paso '+(sp+1)+' de '+e.pasos.length+' · '+tipo(e.pasos[sp][1])[1]+'</div><div class="tt">'+esc(e.pasos[sp][0])+'</div><div>'+pasoHTML(e.pasos[sp])
+          + '<button class="tl" type="button" id="adelHecho">✓ Marcar como hecho</button></div></div>'
+        : '<button class="tl" type="button" id="adelantar">¿Te apetece adelantar el siguiente? <span class="ar">↓</span></button>';
+      items.push({k:"t", w:"📚 Tu paso de hoy · "+(hoyP+1)+" de "+e.pasos.length, t:e.pasos[hoyP][0], hecho:true, paso:e.pasos[hoyP],
+        d: (sp >= 0 ? 'Hecho. Mañana te espera el siguiente; puedes volver a abrirlo cuando quieras.' : 'Hecho. Era el último paso de esta etapa.'), extra:adel});
+    }
     else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length+" · "+tipo(e.pasos[sp][1])[1], t:e.pasos[sp][0], paso:e.pasos[sp]});
     else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
     items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true});
@@ -505,7 +515,7 @@
       var abrir = S.etapa===1 && !ok && !vinAbierta; if(it.vin && abrir) vinAbierta = true;
       if(it.vin && window.VinetaAtencion) lk += '<details class="vin"'+(abrir ? ' open' : '')+'><summary>🎞️ Ver cómo se hace</summary><div class="vinBox"></div></details>';
       return '<li class="'+(ok?'done':'')+'"><button class="chk" type="button" data-k="'+it.k+'" '+(it.k==="t"&&sp>=0&&!it.hecho?'data-paso="'+sp+'"':'')+(it.hecho?' disabled':'')+' aria-label="Marcar como hecho: '+esc(it.t)+'" aria-pressed="'+ok+'">'+(ok?'✓':'')+'</button>'
-        + '<div class="tb"><div class="tw">'+it.w+'</div><div class="tt">'+esc(it.t)+'</div>'+(it.d?'<div class="td">'+it.d+'</div>':'')+(lk?'<div>'+lk+'</div>':'')+'</div></li>';
+        + '<div class="tb"><div class="tw">'+it.w+'</div><div class="tt">'+esc(it.t)+'</div>'+(it.d?'<div class="td">'+it.d+'</div>':'')+(lk?'<div>'+lk+'</div>':'')+(it.extra||'')+'</div></li>';
     }).join("");
     var cerr = d.cerrado ? 1 : 0, total = items.length + 1;
     done += cerr;
@@ -521,7 +531,8 @@
       save(); renderAll();
     };});
     montarVinetas();
-    var ad = $("#adelantar"); if(ad) ad.onclick = function(){ show("v-plan", true); };
+    var ad = $("#adelantar"); if(ad) ad.onclick = function(){ adelantarAbierto = true; renderHoy(); };
+    var ah = $("#adelHecho"); if(ah) ah.onclick = function(){ (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[sp] = HOY; adelantarAbierto = false; save(); toast("Paso adelantado hecho."); renderAll(); };
     renderCierre();
     $("#hoyFrase").innerHTML = e.frase;
   }
