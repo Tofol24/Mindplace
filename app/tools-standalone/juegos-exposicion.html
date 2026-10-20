@@ -129,7 +129,17 @@ details.vin>div{margin-top:10px;}
 .peri{position:absolute;z-index:2;text-align:center;font-size:12.5px;color:#d9cfbd;opacity:0;transition:opacity 1.6s;}
 .peri span{display:block;font-size:34px;}
 .peri.on{opacity:.95;}
-.st-campana .st-txt{bottom:calc(170px + env(safe-area-inset-bottom));}
+.st-campana .st-txt{bottom:calc(300px + env(safe-area-inset-bottom));}
+/* silueta con el ancla pulsable (La campana) */
+.sil{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));width:190px;height:266px;margin-left:-95px;z-index:6;}
+.sil svg{width:100%;height:100%;display:block;}
+.sil .zona{fill:rgba(255,255,255,.16);}
+.sil.on .cuerpo{fill:#4a4252;}
+.zbtn{position:absolute;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;border:3px solid #e8b93a;background:rgba(232,185,58,.28);
+  color:#fff3d6;font-size:11px;font-weight:800;line-height:1.12;cursor:pointer;touch-action:none;-webkit-touch-callout:none;animation:llama 2.2s ease-in-out infinite;padding:0;}
+.zbtn.on{background:#e8b93a;color:#2a2214;animation:none;box-shadow:0 0 0 7px rgba(232,185,58,.25),0 0 22px rgba(232,185,58,.7);}
+@keyframes llama{0%,100%{box-shadow:0 0 0 0 rgba(232,185,58,.45);}50%{box-shadow:0 0 0 12px rgba(232,185,58,0);}}
+.sil-lbl{position:absolute;left:-60px;right:-60px;bottom:-14px;text-align:center;font-size:12.5px;font-weight:700;color:#cfc4b2;}
 
 /* carrusel */
 .st-carrusel{background:linear-gradient(180deg,#1f2733 0%,#283244 100%);color:#e6ecf2;}
@@ -327,7 +337,8 @@ es:{
   parar_ayuda:"Has necesitado parar varias veces esta semana. Coméntalo con tu psicólogo/a. Si en algún momento piensas en hacerte daño: 024 (atención a la conducta suicida, gratuito, 24 h) o 112.",
   // campana
   c_quedo:"Me quedo aquí",
-  c_txt0:"Mantén pulsado mientras te quedas en {a}. Las burbujas del «¿por qué?» van a tentarte.",
+  c_dedo:"Deja el dedo en {a}",
+  c_txt0:"Deja el dedo sobre {a} de la silueta mientras te quedas ahí. Las burbujas del «¿por qué?» van a tentarte.",
   c_txt_hold:"Te quedas en {a}. La campana suena y no le das de comer.",
   c_txt_suelta:"Cuando quieras, vuelve a {a}.",
   c_alivio:"Alivia un momento… y la campana vuelve más fuerte.",
@@ -501,7 +512,8 @@ ca:{
   parar_fin:"Acabar per avui", parar_seguir:"Seguir amb l'assaig",
   parar_ayuda:"Has necessitat aturar-te diverses vegades aquesta setmana. Comenta-ho amb el teu psicòleg/a. Si en algun moment penses en fer-te mal: 024 (atenció a la conducta suïcida, gratuït, 24 h) o 112.",
   c_quedo:"Em quedo aquí",
-  c_txt0:"Mantén premut mentre et quedes a {a}. Les bombolles del «per què?» et temptaran.",
+  c_dedo:"Deixa el dit a {a}",
+  c_txt0:"Deixa el dit sobre {a} de la silueta mentre et quedes allà. Les bombolles del «per què?» et temptaran.",
   c_txt_hold:"Et quedes a {a}. La campana sona i no la dones de menjar.",
   c_txt_suelta:"Quan vulguis, torna a {a}.",
   c_alivio:"Alleuja un moment… i la campana torna més forta.",
@@ -1083,12 +1095,29 @@ function campanaStart(){
     <div class="peri" id="peri2" style="left:42%;top:60%"><span>🙂</span>${per[2]}</div>
     <div id="bubs"></div>
     <p class="st-txt" id="ctxt">${esc(fa(t("c_txt0")))}</p>
-    <button class="st-hold" id="hold">${t("c_quedo")}<br><small style="font-weight:600">${ANCLAS[st.lang][st.ancla][0]}</small></button>`;
+    ${siluetaAncla()}`;
   montarHold(document.getElementById("hold"), on=>{
     R.hold = on;
+    document.getElementById("sil").classList.toggle("on", on);
     document.getElementById("ctxt").textContent = fa(t(on ? "c_txt_hold" : "c_txt_suelta"));
   });
   raf = requestAnimationFrame(campanaFrame);
+}
+// Silueta con el círculo pulsable sobre la zona del ancla (cuello, pecho, barriga o mano).
+const ZONA_XY = { cuello:[50,24], pecho:[50,40], barriga:[50,58], pies:[18,62] };   // % del recuadro
+function siluetaAncla(){
+  const [x,y] = ZONA_XY[st.ancla] || ZONA_XY.barriga;
+  const marca = k => { const [zx,zy]=ZONA_XY[k]; return `<circle class="zona" cx="${zx}" cy="${zy*1.4}" r="5"/>`; };
+  return `<div class="sil" id="sil">
+    <svg viewBox="0 0 100 140" aria-hidden="true"><g class="cuerpo" fill="#3d3645">
+      <circle cx="50" cy="14" r="11"/><rect x="45" y="23" width="10" height="9" rx="3"/>
+      <rect x="29" y="31" width="42" height="56" rx="17"/>
+      <rect x="15" y="34" width="11" height="52" rx="5.5" transform="rotate(8 20 34)"/><rect x="74" y="34" width="11" height="52" rx="5.5" transform="rotate(-8 80 34)"/>
+      <rect x="35" y="83" width="12" height="52" rx="6"/><rect x="53" y="83" width="12" height="52" rx="6"/></g>
+      ${["cuello","pecho","barriga"].filter(k=>k!==st.ancla).map(marca).join("")}
+    </svg>
+    <button class="zbtn" id="hold" style="left:${x}%;top:${y}%" aria-label="${esc(t("c_quedo"))}">${t("c_quedo")}</button>
+    <div class="sil-lbl">${esc(fa(t("c_dedo")))}</div></div>`;
 }
 function campanaRing(){
   R.rings++; if(R.rings>1 && !R.tapped) R.ringsSin++; R.tapped=false;
