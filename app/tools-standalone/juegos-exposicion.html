@@ -131,7 +131,13 @@ details.vin>div{margin-top:10px;}
 .peri.on{opacity:.95;}
 .st-campana .st-txt{bottom:calc(300px + env(safe-area-inset-bottom));}
 /* silueta con el ancla pulsable (La campana) */
-.sil{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));width:190px;height:266px;margin-left:-95px;z-index:6;}
+.sil{position:absolute;left:var(--x,50%);bottom:calc(20px + env(safe-area-inset-bottom));height:var(--h,266px);width:calc(var(--h,266px)*0.714);aspect-ratio:100/140;transform:translateX(-50%);z-index:6;}
+.sil.claro .cuerpo{fill:#a88d6c;}
+.sil.claro.on .cuerpo{fill:#8f7556;}
+.sil.claro .zona{fill:rgba(255,255,255,.55);}
+.sil.claro .sil-lbl{color:#5d5246;}
+.sil.claro .zbtn{color:#4f3a0c;background:rgba(232,185,58,.45);}
+.sil.claro .zbtn.on{background:#e8b93a;color:#2a2214;}
 .sil svg{width:100%;height:100%;display:block;}
 .sil .zona{fill:rgba(255,255,255,.16);}
 .sil.on .cuerpo{fill:#4a4252;}
@@ -363,7 +369,7 @@ es:{
   // casa
   h_puerta:"Antes de entrar, para delante de la puerta. Respira con curiosidad: ¿qué traes?",
   h_q:["¿Dónde está exactamente?","¿Tiene bordes?","¿Cambia cuando la miras?"],
-  h_hold:"Respiro en {a}", h_hold_co:"Dentro",
+  h_hold:"Respiro en {a}", h_hold_corto:"Estoy aquí", h_hold_co:"Dentro", h_acomp:"Acompañante",
   h_entrar:"Entrar", h_dentro:"Ya estás dentro. ¿Qué haces?",
   h_tent_adulto:["Poner cara de que no pasa nada","Encerrarme con el móvil","Soltarlo con un grito","Irme a la habitación"],
   h_tent_peques:["Hacer como si nada","Encerrarme a jugar solo/a","Enfadarme con todos","Esconderme en mi cuarto"],
@@ -536,7 +542,7 @@ ca:{
   r_msg:"El cavallet no s'atura perquè els pensaments desapareguin, sinó perquè tu en baixes. Adonar-te'n abans és el que entrenes.",
   h_puerta:"Abans d'entrar, atura't davant la porta. Respira amb curiositat: què dus?",
   h_q:["On és exactament?","Té vores?","Canvia quan la mires?"],
-  h_hold:"Respir a {a}", h_hold_co:"A dins",
+  h_hold:"Respir a {a}", h_hold_corto:"Som aquí", h_hold_co:"A dins", h_acomp:"Acompanyant",
   h_entrar:"Entrar", h_dentro:"Ja ets a dins. Què fas?",
   h_tent_adulto:["Fer cara que no passa res","Tancar-me amb el mòbil","Deixar-ho anar amb un crit","Anar-me'n a l'habitació"],
   h_tent_peques:["Fer com si res","Tancar-me a jugar tot sol","Enfadar-me amb tothom","Amagar-me a la meva habitació"],
@@ -1105,10 +1111,13 @@ function campanaStart(){
 }
 // Silueta con el círculo pulsable sobre la zona del ancla (cuello, pecho, barriga o mano).
 const ZONA_XY = { cuello:[50,24], pecho:[50,40], barriga:[50,58], pies:[18,62] };   // % del recuadro
-function siluetaAncla(){
+// o: { id (botón), silId, btn (texto del círculo), claro (fondo claro), h (alto CSS), x (centro CSS) }
+function siluetaAncla(o){
+  o = o || {};
   const [x,y] = ZONA_XY[st.ancla] || ZONA_XY.barriga;
   const marca = k => { const [zx,zy]=ZONA_XY[k]; return `<circle class="zona" cx="${zx}" cy="${zy*1.4}" r="5"/>`; };
-  return `<div class="sil" id="sil">
+  const estilo = (o.h?`--h:${o.h};`:"") + (o.x?`--x:${o.x};`:"");
+  return `<div class="sil${o.claro?" claro":""}" id="${o.silId||"sil"}" style="${estilo}">
     <svg viewBox="0 0 100 140" aria-hidden="true"><g class="cuerpo" fill="#3d3645">
       <circle cx="50" cy="14" r="11"/><rect x="45" y="23" width="10" height="9" rx="3"/>
       <rect x="29" y="31" width="42" height="56" rx="17"/>
@@ -1116,7 +1125,7 @@ function siluetaAncla(){
       <rect x="35" y="83" width="12" height="52" rx="6"/><rect x="53" y="83" width="12" height="52" rx="6"/></g>
       ${["cuello","pecho","barriga"].filter(k=>k!==st.ancla).map(marca).join("")}
     </svg>
-    <button class="zbtn" id="hold" style="left:${x}%;top:${y}%" aria-label="${esc(t("c_quedo"))}">${t("c_quedo")}</button>
+    <button class="zbtn" id="${o.id||"hold"}" style="left:${x}%;top:${y}%" aria-label="${esc(o.btn||t("c_quedo"))}">${esc(o.btn||t("c_quedo"))}</button>
     <div class="sil-lbl">${esc(fa(t("c_dedo")))}</div></div>`;
 }
 function campanaRing(){
@@ -1250,13 +1259,14 @@ function carruselAnclaUI(){
     stage.insertAdjacentHTML("beforeend", `<div class="orbe" id="orbe"></div>
       <svg class="anclaprog" id="aprogsvg" viewBox="0 0 150 150"><circle cx="75" cy="75" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6"/>
       <circle id="aprog" cx="75" cy="75" r="70" fill="none" stroke="#e8b93a" stroke-width="6" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 75 75)"/></svg>`);
-    document.getElementById("cbtns").innerHTML = `<button class="st-hold" id="hold" style="position:relative;left:auto;bottom:auto;transform:none">${t("r_ancla_btn")}<br><small style="font-weight:600">${ANCLAS[st.lang][st.ancla][0]}</small></button>`;
-    montarHold(document.getElementById("hold"), on=>{ R.hold=on; });
+    document.getElementById("cbtns").innerHTML = "";
+    stage.insertAdjacentHTML("beforeend", siluetaAncla({ btn:t("r_ancla_btn"), h:"min(240px,33vh)" }));
+    montarHold(document.getElementById("hold"), on=>{ R.hold=on; document.getElementById("sil").classList.toggle("on", on); });
 }
 function carruselVuelve(){
   R.fase = "vuelve"; R.hold=false; R.anclaOk++;
   sonVuelta();
-  ["orbe","aprogsvg"].forEach(id=>{ const e=document.getElementById(id); if(e) e.remove(); });
+  ["orbe","aprogsvg","sil"].forEach(id=>{ const e=document.getElementById(id); if(e) e.remove(); });
   document.getElementById("rtxt").textContent = t("r_vuelve");
   document.getElementById("cbtns").innerHTML = t("r_vuelve_opts").map((o,i)=>`<button class="cajabtn" style="background:rgba(255,255,255,.9);color:#283244;font-size:15.5px;padding:13px 18px" onclick="carruselPausa(${i})">${esc(o)}</button>`).join("");
 }
@@ -1294,7 +1304,7 @@ function casaStart(){
     </div>
     <div class="sombra" id="sombra"></div>
     <p class="st-txt" id="htxt"></p>
-    <div class="barra" id="barra" style="bottom:calc(178px + env(safe-area-inset-bottom));display:none"><i id="barraI"></i></div>
+    <div class="barra" id="barra" style="top:calc(12% + 6px);display:none"><i id="barraI"></i></div>
     <div id="hctrl"></div>`;
   casaPosiciones();
   if(R.co) casaPausaCo(); else casaPuerta();
@@ -1305,23 +1315,24 @@ function casaPausaCo(){
   document.getElementById("htxt").textContent = t("h_pausa_co");
   document.getElementById("hctrl").innerHTML = `<div class="opciones"><button class="tec" onclick="casaPuerta()">${t("h_pausa_ok")}</button></div>`;
 }
-function casaHolds(label){
+function casaHolds(){
   const c = document.getElementById("hctrl");
+  // Tu dedo va sobre la zona del ancla en la silueta; en Co-AIS, el acompañante pulsa su botón.
+  const sil = o => siluetaAncla(Object.assign({ id:"hA", silId:"silCasa", claro:true, h:"min(200px,26vh)", btn:t("h_hold_corto") }, o));
   if(R.co){
-    c.innerHTML = `<button class="st-hold dos izq" id="hA">${t("yo")}<br><small>${t("h_hold_co")}</small></button><button class="st-hold dos der" id="hB">${t("h_hold_co")}<br><small>+1</small></button>`;
-    montarHold(document.getElementById("hA"), on=>{ R.holdA=on; });
+    c.innerHTML = sil({ x:"32%" }) + `<button class="st-hold dos der" id="hB">${t("h_acomp")}<br><small>${t("h_hold_co")}</small></button>`;
     montarHold(document.getElementById("hB"), on=>{ R.holdB=on; });
   } else {
-    c.innerHTML = `<button class="st-hold" id="hA">${esc(label)}</button>`;
-    montarHold(document.getElementById("hA"), on=>{ R.holdA=on; });
+    c.innerHTML = sil({});
     R.holdB = true;
   }
+  montarHold(document.getElementById("hA"), on=>{ R.holdA=on; document.getElementById("silCasa").classList.toggle("on", on); });
 }
 const casaDentro = () => R.holdA && (!R.co || R.holdB);
 function casaPuerta(){
   R.sub = "puerta"; R.tPuerta = 0; R.q = 0;
   document.getElementById("htxt").textContent = t("h_puerta");
-  casaHolds(fa(t("h_hold")));
+  casaHolds();
 }
 function casaPosiciones(){
   const lejos = Math.min(1, R.tent*0.28) * (1 - R.walk);
@@ -1384,7 +1395,7 @@ function casaTent(i){
 function casaAcercarse(){
   R.sub = "acercarse";
   document.getElementById("htxt").textContent = fa(t("h_acerca"));
-  casaHolds(fa(t("h_hold")));
+  casaHolds();
 }
 function casaAbrazo(){
   R.sub = "abrazo"; casaPosiciones();
