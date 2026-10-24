@@ -355,9 +355,9 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   1. El terapeuta la modela con una sensación propia real y pequeña.
   2. El niño/a se la dice **al peluche**.
   3. Se la dice **al terapeuta**.
-  4. En el cierre, se la dice **al adulto de casa**, que solo responde: «Gracias por contármelo. Estoy aquí.»
+  4. **Opcional:** si el niño/a quiere, en el cierre se la dice a un **adulto de casa que él/ella elija y con quien se sienta seguro/a**, que responde: «Gracias por contármelo. Estoy aquí.» Antes se pacta con el niño/a qué comparte y qué no; también puede terminar con el terapeuta o con el peluche.
 - **Consigna ancla:** «No tienes que explicarlo. Solo enseñar dónde está.»
-- **Cuidado:** nunca forzar el paso a iguales. En trauma, empezar por zonas tranquilas («¿hay algún sitio de tu cuerpo que esté tranquilo ahora?»).
+- **Cuidado:** nunca forzar el paso al adulto de casa ni a iguales; lo que se cuenta en sesión no se traslada a la familia sin el acuerdo del niño/a, salvo situación de riesgo (§10). En trauma, empezar por zonas tranquilas («¿hay algún sitio de tu cuerpo que esté tranquilo ahora?»).
 
 ### 12. La brújula y las misiones con valor
 **Etapa** 4 · **Parámetro** micro-acción con valor (0/1) · **Material** brújula dibujada con 4 direcciones (familia, amigos, escuela, yo mismo/a), hoja de misiones con pegatinas · **Duración** 15 min
@@ -511,7 +511,10 @@ señal nítida), como indica la guía.
 Lectura en sesión: se mira **el perfil**, no un número suelto, con los cinco
 perfiles de la guía §12 como lectura cualitativa. Si se usa el cuestionario TEC
 o el screening de aprens-app, el adulto ayuda a contestar y se indica en el
-registro.
+registro. El screening pide nombre, edad, motivo y contexto, y los incluye en
+el código y en los enlaces que genera: con menores, rellenarlo con **iniciales
+o un alias**, no enviar ese código o enlace por canales no seguros (WhatsApp,
+correo personal) y guardar el resultado solo en la **historia clínica**.
 
 ---
 
