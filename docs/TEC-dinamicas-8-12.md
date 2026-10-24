@@ -518,7 +518,12 @@ o el screening de aprens-app, el adulto ayuda a contestar y se indica en el
 registro. El screening pide nombre, edad, motivo y contexto, y los incluye en
 el código y en los enlaces que genera: con menores, rellenarlo con **iniciales
 o un alias**, no enviar ese código o enlace por canales no seguros (WhatsApp,
-correo personal) y guardar el resultado solo en la **historia clínica**.
+correo personal) y guardar el resultado en la **historia clínica**. En los
+campos libres (motivo, contexto, situación) no escribir datos que identifiquen
+al menor ni a terceros (colegio, nombres de compañeros o familiares). El
+screening guarda además una copia en el navegador del dispositivo: después de
+pasarlo a la historia, borrar el caso desde la lista de pacientes (icono de
+papelera) y no usarlo en dispositivos compartidos.
 
 ---
 
