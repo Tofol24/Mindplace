@@ -9,6 +9,9 @@
 > pantalla) con trabajo **presencial, corporal y con material sencillo**.
 >
 > Estado: **propuesta** (2026-10-24). Pendiente de pilotaje en consulta.
+> Versión de consulta en HTML: `app/tools-standalone/dinamicas-tec-8-12.html`
+> (enlazada desde el Panel del psicólogo). Si cambian las fichas de §6, se
+> actualiza también el bloque `FICHAS` de ese archivo.
 >
 > Centre APRENS · Psicologia — Tòfol Villalonga Melis, Col. B-01599.
 
@@ -100,9 +103,11 @@ infantil; lo que sigue sirve para situar las dinámicas, no para avalarlas.
   seguimiento; los propios autores advierten que el entusiasmo ha ido por
   delante de la evidencia (Dunning et al., 2019, [DOI](https://doi.org/10.1111/jcpp.12980);
   Dunning et al., 2022, [DOI](https://doi.org/10.1136/ebmental-2022-300464)).
-  Implicación para nosotros: **dosis breves, integradas en rutinas y con
-  objetivos conductuales**, que es lo que la TEC ya propone, y no vender
-  resultados.
+  Estos trabajos no evalúan el AIS ni ninguna pauta de dosificación concreta.
+  Las dosis breves integradas en rutinas que se proponen aquí (tres paradas de
+  un minuto, prácticas de 30 s a 2 min) son una **adaptación clínica de la
+  TEC, pendiente de pilotaje**, no una conclusión de esta literatura. Lo que sí
+  se desprende de ella es no prometer resultados.
 - La relación entre **interocepción y regulación emocional** en edad escolar
   aparece como plausible, y la **educación interoceptiva** parece mejorar la
   conciencia interoceptiva, aunque la base es todavía escasa (Grist, Yu y
@@ -122,7 +127,7 @@ Fuente bibliográfica consultada: PubMed.
 |---|---|---|
 | Vector atencional | **La linterna** | «Tu atención es una linterna. Puedes girarla hacia fuera o hacia dentro.» |
 | Organismo / parte animal | **El mono** (o el cachorro) | «Dentro de ti vive un monito. Tú no lo ves, pero él te nota cuando le haces caso.» |
-| Afección interna segura | **La manada** | «Los monos están tranquilos cuando saben que su manada está cerca.» |
+| Afección interna segura | **La manada** | «Los monos se sienten acompañados cuando saben que su manada está cerca.» |
 | Activación | **La alarma del coche / el detector de humo** | «Es activación, no es peligro. A veces la alarma suena sin fuego.» |
 | Latencia (L↑) | **El puente** entre lo que noto y lo que hago | «Hoy vamos a hacer el puente un poquito más largo.» |
 | Densidad (D↓) | **La radio con interferencias** | «¿Cuánto ruido tiene tu radio ahora?» |
@@ -176,18 +181,18 @@ Reglas de lenguaje con niños (además de la guía §9 y §13):
 
 ## 5. Bloque de sesiones (alineado con «Mi recorrido», guía §16)
 
-Orientativo: 10–12 sesiones semanales. El ritmo lo marca la consolidación, no el calendario.
+Orientativo: una sesión de evaluación (sesión 0) y 10 sesiones semanales de intervención; las sesiones 11–12 de consolidación son opcionales según el caso. El ritmo lo marca la consolidación, no el calendario.
 
 | Sesión | Etapa del recorrido | Objetivo | Dinámicas sugeridas |
 |---|---|---|---|
 | 0 | 0 · Punto de partida | Evaluación, vínculo, encuadre con familia | Entrevista, escalas infantiles §9, 13 (presentación del coche) |
 | 1 | 1 · Entender | La atención se mueve | 1 Linterna · 3 Mapa del cuerpo |
-| 2 | 1 · Entender | El mono y la manada; activación ≠ peligro | 2 Mono y manada · 6 La alarma |
+| 2 | 1 · Entender | El mono y la manada; activación ≠ peligro (sin inducir activación) | 2 Mono y manada · 6 La alarma |
 | 3 | 1 · Entender | Por qué huir mantiene el miedo | 5 Dominó del alivio · 4 Sentir, pensar o adivinar |
 | 4 | 2 · Aparecer | Visitar el cuerpo sin motivo | 7 El aire es el cebo · 15 Tres paradas del día |
 | 5 | 2 · Aparecer | Parar a tiempo | 8 Semáforo STOP · 10 Radio con interferencias |
 | 6 | 2 · Aparecer | Sostener un poco el trazo | 9 Hilo de la cometa |
-| 7 | 3 · Permanecer | Quedarse al lado cuando no gusta | 11 Dedo que señala · 16 Escalera de valentía (primer peldaño) |
+| 7 | 3 · Permanecer | Quedarse al lado cuando no gusta | 11 Dedo que señala · 6 variante «activación segura» (si procede) · 16 Escalera de valentía (primer peldaño) |
 | 8 | 3 · Permanecer | Acompañar con alguien | 14 Ritual de entrada y abrazo sentido (con familia) |
 | 9 | 4 · Elegir y actuar | Desde el cuerpo, un paso con valor | 12 Brújula y misiones · 16 (peldaños siguientes) |
 | 10 | 4 · Elegir y actuar | ¿Quién conduce? | 13 El coche |
@@ -206,20 +211,22 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   que ilumina se vuelve más grande.
 - **Desarrollo:**
   1. Con la luz baja, el niño/a ilumina objetos de la sala: «Lo que alumbras, lo ves más.»
-  2. El terapeuta pide que ilumine algo que dé un poco de miedo o que no le guste (una foto de una araña, una nota de un examen): «Cuanto más rato lo alumbras, más grande parece.»
+  2. Se ilumina durante un rato un objeto pequeño y neutro (una piedra, un clip): «Cuanto más rato lo alumbras, más sitio ocupa y menos ves lo demás.» En esta etapa no se usan estímulos temidos; la relación con lo que preocupa se nombra, no se provoca.
   3. Se apaga la linterna y se pone la mano en la barriga: «Ahora gira tu linterna hacia dentro. ¿Qué ilumina aquí?»
   4. Juego de giro: el terapeuta dice «fuera» o «dentro» y el niño/a mueve la linterna (y la atención).
 - **Consigna ancla:** «Tu atención es una linterna. Tú decides hacia dónde gira.»
-- **8–9 años:** se queda en el juego físico. **10–12:** se añade «cuando pienso
-  y pienso en lo que me preocupa, mi linterna está fuera».
+- **8–9 años:** se queda en el juego físico. **10–12:** se añade, solo como
+  idea, «cuando pienso y pienso en lo que me preocupa, mi linterna está fuera».
 - **Cuidado:** no pedir que «deje de pensar en lo que da miedo» (sería control);
   se pide **girar**, no apagar.
 
 ### 2. El mono y su manada
 **Etapa** 1 · **Parámetro** afección interna segura · **Material** peluche de mono (o el animal que elija), cojines · **Duración** 15 min
 
-- **Objetivo:** introducir la idea de que el cuerpo es un **mamífero de manada**
-  que se calma cuando nota compañía, no cuando le dan órdenes.
+- **Objetivo:** usar el mono como imagen para practicar **estar con lo que
+  sentimos, aunque no cambie**: el cuerpo como mamífero de manada que necesita
+  compañía, no órdenes. (La afección interna segura es una hipótesis de la TEC,
+  guía §6; al niño/a se le ofrece como imagen, no como mecanismo.)
 - **Desarrollo:**
   1. Historia corta: un monito se separa de su manada, se asusta y grita. ¿Qué
      le ayuda: que le digan «cállate» o que alguien se siente a su lado?
@@ -227,9 +234,13 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   3. Traslado: «Dentro de ti también hay un monito. Tú eres su manada. Él no te ve, por eso respiras: el aire le dice que estás.»
   4. Cierre: el niño/a elige un nombre para su mono (se usará en todo el bloque).
 - **Consigna ancla:** «No vengo a cambiarte. Vengo a estar contigo.» (dicho al mono).
+- **8–9 años:** historia contada con el peluche y gestos. **10–12:** se puede
+  hablar de los mamíferos de manada (lobos, elefantes) y de qué hace la manada
+  cuando uno tiene miedo: quedarse, no arreglarlo.
 - **Cuidado:** si hay historia de separación o pérdida, el relato del mono que
   se pierde puede activar; usar una versión suave (el mono «se despista») y
-  observar.
+  observar. No decir que el mono «se calma» cuando lo acompañamos: se queda
+  acompañado, sienta lo que sienta.
 
 ### 3. El mapa del cuerpo
 **Etapa** 1 · **Parámetro** D (identificación) · **Material** silueta grande en papel (o la silueta AIS de la app en tableta), rotuladores de colores, pegatinas · **Duración** 15 min
@@ -244,6 +255,8 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Enlace app:** la silueta + luces (`app/js/respiro-ais.js`) usa **amarillo
   para la atención** y **azul para el aire**; si se usa en papel, mantener los
   mismos colores para que signifiquen lo mismo.
+- **8–9 años:** banco de palabras con dibujos y solo dos situaciones.
+  **10–12:** se añaden más zonas y la escala de intensidad del termómetro.
 - **Cuidado:** «no noto nada» es una respuesta válida, no un fallo. Si se repite,
   pasar a anclajes de manos y pies (guía §10, disociación interoceptiva).
 
@@ -260,7 +273,9 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   así porque los demás se ríen» (pensar) · «Nadie querrá jugar conmigo»
   (adivinar) · «Me pican las manos» (sentir) · «Es culpa de mi hermano»
   (pensar)…
-- **10–12:** el niño/a escribe sus propias tarjetas con situaciones reales.
+- **8–9 años:** solo dos cajas al principio (cuerpo y cabeza); la bola de
+  cristal se añade cuando la diferencia está clara. **10–12:** el niño/a
+  escribe sus propias tarjetas con situaciones reales.
 - **Cuidado:** no se discute si el pensamiento es verdad o mentira; la TEC
   trabaja la dirección, no el contenido (regla 1).
 
@@ -271,16 +286,17 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   imagen o pensamiento → activación → pensar y pensar → huir o evitar → alivio
   → la próxima vez, más miedo.
 - **Desarrollo:**
-  1. Se monta una fila de fichas, cada una con un eslabón, usando un ejemplo del niño/a (no ir al colegio, no dormir solo, no hablar en clase).
+  0. **Antes del ejercicio**, el terapeuta ya ha valorado (con el niño/a, la familia y, si hace falta, la escuela) que la situación evitada **no es un peligro real**: acoso, maltrato, conflicto grave en casa o en el aula… Si hay indicios, no se usa como ejemplo y se pasa a protección (§10).
+  1. Se monta una fila de fichas, cada una con un eslabón, usando un ejemplo del niño/a ya valorado como seguro (no dormir solo, no hablar en clase, no ir a un cumpleaños).
   2. Se empuja la primera: cae todo. «Huir funcionó: te sentiste mejor un ratito.»
   3. Se vuelve a montar con una ficha **más grande** al principio: «Pero el mono aprende que aquello era peligroso, y la próxima alarma suena más fuerte.»
   4. Se busca dónde poner **la mano** para que no caiga todo: entre la activación y el huir. Ahí va PARA · SIENTE · ACOMPAÑA · ACTÚA.
 - **Consigna ancla:** «Huir no es malo. Te ayudó. Pero hace la ficha siguiente más grande.»
-- **Cuidado:** nunca presentar la evitación como un fallo del niño/a.
-  Antes de usar un ejemplo como «no ir al colegio», **comprobar que la
-  situación es segura**: si hay acoso, maltrato u otro daño real, alejarse y
-  pedir ayuda es lo adecuado, no una evitación que haya que exponer; se
-  explora con la familia y la escuela y se activa la protección que corresponda (§10).
+- **8–9 años:** tres fichas (noto · huyo · alivio) y una más grande.
+  **10–12:** la cadena completa con «pensar y pensar» como ficha propia.
+- **Cuidado:** nunca presentar la evitación como un fallo del niño/a. Y
+  diferenciar siempre: alejarse de un peligro real **es protegerse**, no
+  evitación; esa diferencia se le explica al niño/a con claridad.
 
 ### 6. La alarma: activación no es peligro
 **Etapa** 1 · **Parámetro** discriminación (L↑) · **Material** sonido de alarma o detector de humo (vídeo/audio), dibujo de un coche · **Duración** 10 min
@@ -289,10 +305,18 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Desarrollo:**
   1. Se escucha una alarma de coche: «¿Siempre que suena hay un ladrón?» Ejemplos: un gato, el viento, alguien que se apoya.
   2. Se enumeran «falsas alarmas» del cuerpo: el corazón rápido antes de un partido, la barriga antes de un viaje que hace ilusión.
-  3. Práctica: el niño/a salta 20 segundos en el sitio (activación segura), para, pone la mano en el pecho y dice: «Es activación, no es peligro.»
+  3. Se dibujan en el coche las alarmas del niño/a y se escribe al lado: «Es activación, no es peligro.»
 - **Consigna ancla:** «Tu cuerpo no te está atacando. Te está avisando.»
-- **Cuidado:** el salto se omite en pánico, problemas cardíacos o si el niño/a
-  se asusta del corazón rápido; consultar antes en ansiedad por la salud.
+- **8–9 años:** solo alarmas externas y dibujos. **10–12:** se añaden
+  ejemplos propios de «falsas alarmas» del cuerpo.
+- **Variante «activación segura» (solo etapa 3, permanecer):** cuando la
+  práctica programada está instalada, y con asentimiento del niño/a, saltar
+  20 s en el sitio, parar, mano en el pecho y acompañar la sensación: «Es
+  activación, no es peligro.» No se usa en etapa 1. Se omite en pánico,
+  problemas cardíacos o si el niño/a se asusta del corazón rápido; consultar
+  antes en ansiedad por la salud y TOC.
+- **Cuidado:** «no es peligro» se dice de las falsas alarmas; si la alarma
+  responde a algo real (§10), se escucha y se protege.
 
 ### 7. El aire es el cebo
 **Etapa** 2 · **Parámetro** D↓ · **Material** pajitas, un vaso con agua, una pluma o bolita de papel · **Duración** 10 min
@@ -302,7 +326,9 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   1. Juego exterior: soplar por la pajita en el agua haciendo burbujas lentas; mover la pluma por la mesa sin que se caiga.
   2. Traslado: inspirar por la nariz imaginando que el aire **baja hasta la barriga**, aguantar un poquito, y soltarlo despacio «como por la pajita».
   3. Mientras sale el aire, la linterna (atención) se queda en la barriga.
-  4. Ritmo de referencia del ecosistema **4 · 2 · 6**; en 8–9 años basta con «entra largo, para, sale más largo».
+  4. Ritmo de referencia del ecosistema **4 · 2 · 6**.
+- **8–9 años:** basta con «entra largo, para, sale más largo», sin contar.
+  **10–12:** se cuenta 4 · 2 · 6 con la silueta de la app como guía.
 - **Consigna ancla:** «Respirar no es relajarte: es aparecer. El aire es el cebo para que el mono sepa que estás.»
 - **Cuidado:** no corregir la técnica («así no, más profundo»): si la atención
   se va a «hacerlo bien», el mecanismo falla (guía §6). Evitar hiperventilar.
@@ -317,11 +343,17 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Objetivo:** automatizar la **parada** antes de la respuesta automática.
 - **Desarrollo:**
   1. **Rojo · PARA:** «Un momento.» Las manos quietas.
-  2. **Ámbar · SIENTE y ACOMPAÑA:** una respiración con la mano en la barriga, pecho o cuello, 5 segundos, «aunque no notes nada».
+  2. **Ámbar · SIENTE y ACOMPAÑA:** una respiración con la mano en la barriga, pecho o cuello, 5 segundos, «aunque no notes nada», y la frase honesta en voz baja o por dentro: «No sé por qué, pero lo noto aquí.» (Si no nota nada: «Estoy aquí contigo.»)
   3. **Verde · ACTÚA:** «¿Qué paso pequeño elijo ahora?»
   4. Juego de práctica: el terapeuta cuenta escenas (te quitan la pelota, te dicen que no a la tableta, te equivocas en un ejercicio) y el niño/a recorre el semáforo con el cuerpo.
 - **Consigna ancla:** la parada de pensamiento del autor, en versión corta: «STOP, respira, mira dentro 5 segundos y vuelve a lo que hacías.»
-- **10–12:** se puede cronometrar cuánto tiempo se queda en ámbar, pero solo como **dato de práctica** del ejercicio: es una espera pedida, y alargarla no demuestra más capacidad de elegir. La latencia (L) se registra únicamente en **episodios reales** con activación y respuesta identificables (§9).
+- **8–9 años:** semáforo físico y escenas muy concretas. **10–12:** después de
+  cada escena se pregunta «¿la pausa te dejó elegir?» y se anota qué eligió.
+  No se cronometra ni se plantea alargar el ámbar como reto: más segundos no
+  significan más latencia útil (una pausa larga puede ser bloqueo, guía §4).
+  Lo que se registra es si la pausa permitió **elegir y actuar**. La latencia
+  (L) se registra únicamente en **episodios reales** con activación y respuesta
+  identificables (§9).
 - **Cuidado:** el semáforo no es un castigo ni un «tiempo fuera»; nunca se usa
   como sanción por la familia.
 
@@ -332,9 +364,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Desarrollo:**
   1. El niño/a pone la atención en la barriga (ojos cerrados o mirando un punto). Cada vez que nota que la atención se ha ido, da un tirón suave al cordel y vuelve.
   2. Cada vuelta = una vuelta de lana en el ovillo («el hilo se hace más fuerte»).
-  3. Rondas de 30 s a 1 min. En la ronda se cuentan las vueltas para premiar el **darse cuenta y volver**, no cuánto tiempo sin distraerse.
-  4. Lectura clínica: el número de vueltas mide el **reconocimiento de la distracción**, no la continuidad. En una ronda igual, más vueltas pueden indicar una atención más fragmentada. La continuidad (C) se lee en la **duración de los tramos** entre vuelta y vuelta.
+  3. Rondas de 30 s a 1 min. Se registran **dos datos por separado**: las vueltas (darse cuenta y volver, que se reconocen) y, desde los 10 años, los segundos del trazo más largo (aproximación orientativa a C, como «segundos dentro» en los juegos AIS). Más vueltas no significa más continuidad: puede indicar más fragmentación.
 - **Consigna ancla:** «Distraerte no resta. Volver suma.»
+- **8–9 años:** solo vueltas de lana, sin cronómetro. **10–12:** vueltas y
+  segundos del trazo más largo, anotados aparte.
 - **Enlace app:** mecánica equivalente a **Sonar** de los juegos AIS
   (`app/tools-standalone/juegos-ais.html`), útil como práctica en casa.
 - **Cuidado:** en TDAH empezar con trazos de 3–5 s y muchas vueltas.
@@ -342,14 +375,17 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 ### 10. La radio con interferencias
 **Etapa** 2 · **Parámetro** D↓ · **Material** radio o audio con ruido blanco, una canción suave; termómetro de ruido 0–10 en cartulina · **Duración** 10 min
 
-- **Objetivo:** dar una imagen del **ruido interno** y de cómo la atención hacia dentro hace la señal más nítida.
+- **Objetivo:** dar una imagen del **ruido interno** y practicar que se puede
+  atender al cuerpo y actuar **con las interferencias presentes**.
 - **Desarrollo:**
-  1. Se escucha la canción con mucho ruido encima; se baja el ruido poco a poco.
-  2. «Cuando hay muchos pensamientos a la vez, tu radio tiene interferencias.» El niño/a puntúa su ruido de ahora.
-  3. Práctica corta (7 o 9) y nueva puntuación.
+  1. Se pone la canción con ruido encima y **se deja así**: «¿Puedes seguir la canción aunque haya ruido?» El niño/a marca el ritmo con la mano.
+  2. «Cuando hay muchos pensamientos a la vez, tu radio tiene interferencias. No hace falta quitarlas para encontrar tu canción.» El niño/a dice cuánto ruido nota ahora (dato de registro, no de resultado).
+  3. Práctica corta (7 o 9) con el ruido todavía sonando, y al final se elige una acción pequeña. Se registra el gesto (fue hacia dentro, volvió) y la acción, **no** una segunda puntuación de ruido.
 - **Consigna ancla:** «No hace falta apagar la radio. Solo sintonizar tu cuerpo.»
-- **Cuidado:** no presentar la bajada de ruido como el objetivo ni felicitar por
-  ella. Se registra y se observa; si sube, también está bien y se acompaña.
+- **8–9 años:** caras de 3 niveles y la canción preferida del niño/a.
+  **10–12:** termómetro 0–10 al llegar (§4), no antes y después.
+- **Cuidado:** no comparar el ruido antes y después de practicar ni felicitar
+  por la bajada: convierte la práctica en chequeo (guía §7.5).
 
 ### 11. El dedo que señala (frase honesta)
 **Etapa** 3 · **Parámetro** afección segura / honestidad emocional · **Material** el peluche del mono, tarjetas de situaciones · **Duración** 15 min
@@ -361,6 +397,8 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   3. Se la dice **al terapeuta**.
   4. **Opcional:** si el niño/a quiere, en el cierre se la dice a un **adulto de casa que él/ella elija y con quien se sienta seguro/a**, que responde: «Gracias por contármelo. Estoy aquí.» Antes se pacta con el niño/a qué comparte y qué no; también puede terminar con el terapeuta o con el peluche.
 - **Consigna ancla:** «No tienes que explicarlo. Solo enseñar dónde está.»
+- **8–9 años:** se puede decir con el peluche en la mano y señalar sobre la
+  silueta. **10–12:** se prueba también por escrito o en un mensaje al adulto.
 - **Cuidado:** nunca forzar el paso al adulto de casa ni a iguales; lo que se cuenta en sesión no se traslada a la familia sin el acuerdo del niño/a, salvo situación de riesgo (§10). En trauma, empezar por zonas tranquilas («¿hay algún sitio de tu cuerpo que esté tranquilo ahora?»).
 
 ### 12. La brújula y las misiones con valor
@@ -372,6 +410,8 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   2. Se eligen **misiones pequeñas, observables y para esta semana**: saludar a un compañero, preguntar una duda, quedarse 5 minutos más en la cama propia.
   3. Regla de oro: la misión se hace **aunque se note la activación**, con el mono acompañado.
   4. Registro 0/1 en casa: «¿Hoy hice mi misión aunque notara algo?»
+- **8–9 años:** dos direcciones (casa y amigos) y una sola misión por semana.
+  **10–12:** las cuatro direcciones y el niño/a propone sus misiones.
 - **Consigna ancla:** «¿Qué haría el chico o la chica que quieres ser?»
 - **Cuidado:** la misión no puede ser «estar tranquilo» ni «no enfadarme» (eso
   es un estado, no una acción). Revisar que no sean exigencias de los adultos
@@ -389,7 +429,9 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   El niño/a elige escenas reales y coloca al mono donde estaba y donde le
   gustaría que estuviera.
 - **Consigna ancla:** «No se trata de echar al mono del coche. Se trata de llevarlo a tu lado.»
-- **Enlace app:** PDF *¿Quién conduce tu vida?* del hub de inicio.
+- **8–9 años:** se juega con las figuras, sin explicar posiciones. **10–12:**
+  se añade «¿dónde estaba el mono esta semana?» con escenas propias.
+- **Enlace app:** PDF *¿Quién conduce tu vida?* del hub de inicio (material para adultos; con niños se usa la metáfora, no el PDF).
 
 ### 14. Ritual de entrada y abrazo sentido
 **Etapa** 2 (ritual) y 3 (abrazo, con familia) · **Parámetro** L↑ / D↓ · Co-AIS · **Material** ninguno · **Duración** 2–5 min
@@ -400,6 +442,8 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   2. **Abrazo sentido** (con el adulto en sesión): los dos respiran y notan su sensación unos segundos, y desde ahí se abrazan, «no un abrazo rápido».
 - **Consigna ancla:** «Primero me encuentro yo, después te encuentro a ti.»
 - **Enlace app:** juegos de exposición imaginada *Puertas* y *Llegar a casa*.
+- **8–9 años:** ritual con gesto fijo (mano en la barriga y tocar el marco de
+  la puerta). **10–12:** el niño/a diseña su propio ritual de entrada.
 - **Cuidado:** el abrazo es siempre opcional; respetar a los niños y niñas que
   no quieren contacto físico (alternativa: chocar las manos despacio, sentarse juntos).
 
@@ -409,7 +453,12 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Objetivo:** instalar la **práctica programada no contingente**, la condición de todo lo demás (regla 4).
 - **Desarrollo:** se pactan tres momentos fijos (al levantarse, después de
   comer, antes de dormir) en los que el niño/a, con el adulto, hace el
-  semáforo completo durante 1 minuto. **También cuando está bien.**
+  semáforo completo durante 1 minuto: para, siente con la frase honesta (o
+  «estoy aquí contigo») y acaba con una acción concreta, aunque sea pequeña
+  (seguir desayunando con atención, dar las buenas noches). **También cuando
+  está bien.**
+- **8–9 años:** el adulto guía y pega la pegatina con el niño/a. **10–12:** el
+  niño/a lleva su hoja y el adulto solo acompaña.
 - **Consigna ancla:** «Visitamos al mono cuando está tranquilo, para que no tenga que gritar para que vengamos.»
 - **Lectura clínica:** la proporción de paradas en calma frente a paradas en
   malestar es el dato que más interesa (guía §6). Si solo se practica cuando
@@ -424,8 +473,13 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   2. Cada peldaño puede subirse con los cuatro pasos (PARA · SIENTE · ACOMPAÑA · ACTÚA) o directamente con la acción; si el niño/a necesita «hacerlo bien» antes de actuar, se sube sin ellos.
   3. Se sube un peldaño cuando el niño/a puede **hacer la acción con el mono a su lado**, no cuando ya no nota nada.
 - **Consigna ancla:** «No tienes que dejar de sentirlo para subir. Sube con él.»
+- **8–9 años:** 4–5 peldaños con dibujos. **10–12:** 6–8 peldaños que el
+  niño/a escribe y puntúa.
 - **Enlace app:** *La exploradora valiente* (`app/exploradora/`, ansiedad de
-  separación) y *La escalera* (`app/exposicion/`) siguen la misma lógica.
+  separación) está pensada para la infancia y puede usarse en casa. *La
+  escalera* (`app/exposicion/`) está planteada para adultos con miedo a
+  conducir: sirve solo como referencia de lógica para el terapeuta y no se
+  da a niños sin una adaptación infantil previa.
 - **Cuidado:** si la activación al final es mayor que al principio y la
   continuidad es baja, bajar un peldaño (exposición sin sostén, guía §12).
   Esta regla **no se aplica al TOC** (ver abajo).
@@ -444,11 +498,11 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 
 | Perfil | Ajustes principales | Dinámicas prioritarias |
 |---|---|---|
-| **Ansiedad / miedos / separación** | Validar mucho; escalera muy graduada; la familia aprende a no rescatar | 2, 6, 7, 15, 16 |
+| **Ansiedad / miedos / separación** | Validar mucho; escalera muy graduada; la familia aprende a no rescatar de la activación, **después de descartar** que la evitación responda a un peligro real (acoso, conflicto) | 2, 6, 7, 15, 16 |
 | **TDAH / baja continuidad** | Trazos de 3–5 s, mucho movimiento, anclajes propioceptivos (pies en el suelo, manos apretando una pelota), sesiones con más cambios de actividad | 1, 8, 9, 14 |
 | **Rabietas / ira / conducta desafiante** | El semáforo como herramienta del niño/a, nunca como castigo; trabajar primero con el adulto su propia regulación | 6, 8, 12, 13 |
 | **Rumiación / preocupación** | Caja de preocupaciones: 10 min al día con el adulto; fuera de ese rato, «lo guardo para mi caja» + parada | 4, 8, 10 |
-| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación ni neutralización; el objetivo es actuar con la sensación presente; la escalera (16) se hace como exposición con prevención de respuesta, sin AIS obligatorio; evitar la dinámica 6 con salto | 4, 12, 16 |
+| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación ni neutralización; el objetivo es actuar con la sensación presente; la escalera (16) se hace como exposición con prevención de respuesta, sin AIS obligatorio; evitar la variante de salto de la dinámica 6 | 4, 12, 16 |
 | **Trauma / disociación** | Seguridad antes que latencia; anclajes periféricos (manos, pies) antes que barriga o pecho; ojos abiertos; frase honesta muy graduada | 3 (zonas tranquilas), 7, 14 |
 | **TEA** (propuesta, a validar caso a caso) | La literatura sobre interocepción en TEA es inconsistente; apoyos visuales, consignas literales, metáforas muy concretas o sustituidas por objetos; respetar perfil sensorial | 3, 7, 9, 15 |
 | **Dolor recurrente (cefaleas, dolor abdominal)** | Solo con dolor **ya evaluado por pediatría**; ante dolor nuevo, que cambia o con señales de alarma, derivar a valoración médica. No centrar la sesión en «¿cómo está tu dolor?» (se revisa por si cambia), y añadir «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
@@ -465,6 +519,12 @@ y el niño aprende a regularse viendo al adulto regularse.
   1. **Hacer las paradas con el niño/a**, no mandarlas: «paramos los dos».
   2. **Validación sin corrección**: «Te noto así… ¿quieres que estemos contigo o prefieres un rato a solas?»
   3. **Responder a la frase honesta** validando primero, sin prisa por buscar el porqué ni dar soluciones: «Gracias por contármelo. Estoy aquí.» Después, si el niño/a quiere, se le deja contar qué ha pasado y qué necesita. Acompañar una sensación no es lo mismo que investigar una situación: si aparece un problema real (acoso, daño, algo que requiere protección), se escucha, se ayuda y se informa al terapeuta.
+- **Acompañar no es dejar de proteger.** La respuesta de solo presencia es
+  para las sensaciones del día a día. Si el niño/a cuenta o muestra algo que
+  puede ser un peligro real (que le pegan o se burlan de él/ella, que alguien
+  le hace daño, que no quiere ir a un sitio concreto y no sabe decir por qué),
+  el adulto **escucha, pregunta con calma qué ha pasado y protege**, y lo
+  comenta con el terapeuta. En esos casos no se trabaja como evitación.
 - **Lo que no se hace:** usar el semáforo como castigo, premiar «estar tranquilo», pedir que se calme, comprobar constantemente «¿cómo estás?».
 - **Escuela (con consentimiento):** ritual de entrada en el aula, una parada
   relámpago de 3–5 s antes de los exámenes, y una palabra clave pactada con el
@@ -504,10 +564,9 @@ señal nítida), como indica la guía.
 |---|---|---|---|
 | Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 (0 = nada, 10 = muchísimo; bajar = mejorar) | D↓ |
 | Zona del cuerpo | Pegatina en la silueta | Pegatina + palabra sensorial | D |
-| Vueltas en «el hilo» | Número de vueltas (darse cuenta y volver) | Igual | Reconocimiento (no C) |
-| Tramos en «el hilo» | — | Segundos del tramo más largo entre vueltas | C |
-| Puente en episodios reales | «¿Paré antes de hacer?» sí/no | Igual + segundos estimados entre notar y actuar | L |
-| Tiempo en ámbar (ejercicio) | — | Segundos en ámbar durante el juego | Práctica (no L) |
+| Vueltas en «el hilo» | Número de vueltas | Número de vueltas (aparte) | Darse cuenta y volver |
+| Trazo más largo | — | Segundos del trazo más largo | C |
+| Puente en episodios reales | «¿Paré antes de hacer?» sí/no | Igual + «¿la pausa me dejó elegir?» y qué elegí | L |
 | Misión con valor | Pegatina 0/1 | 0/1 + qué hice | Micro-acción |
 | Tres paradas | Pegatinas sol/plato/luna | Igual + marcar si fue en calma o en malestar | Práctica programada |
 | Malestar con la práctica | «¿Algo te ha resultado incómodo?» (siempre) | Igual | Seguridad |
@@ -539,6 +598,13 @@ papelera) y no usarlo en dispositivos compartidos.
   («¿esto es normal?»), llanto que no cede con la presencia del adulto.
 - **Ojos cerrados y contacto físico**: siempre opcionales.
 - **Nada de hiperventilación** ni retenciones largas.
+- **Evitación con función protectora**: antes de trabajar una evitación
+  (dinámicas 5 y 16, pautas de no rescatar), valorar el entorno escolar y
+  familiar, la posibilidad de acoso y otros riesgos, y para qué le sirve al
+  niño/a esa evitación. Si responde a un peligro real, se protege, no se expone.
+- **Inducción de activación** (variante de salto, peldaños de la escalera):
+  solo desde la etapa 3, con la práctica programada instalada y asentimiento
+  del niño/a.
 - **Riesgo** (autolesiones, ideas de muerte, maltrato, psicosis): la dinámica se
   detiene, se activa el protocolo de protección y de derivación que corresponda.
   El AIS es complementario y no sustituye otros tratamientos en curso.

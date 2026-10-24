@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Índice APRENS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --fondo:#F4EFE6; --card:#FBF8F1; --tinta:#2A2622; --suau:#6f665b;
+    --oliva:#565a41; --oliva-d:#3f4430; --terra:#C2704F; --sage:#5c7d54;
+    --linia:#e5dcc9; --oro:#a7802f; --ok:#4f7a46; --okbg:#e3eedc; --no:#a0522d; --nobg:#f6e3d6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --fondo:#1d1b18; --card:#26231f; --tinta:#efe9de; --suau:#b3a99a; --oliva:#9aa37a; --oliva-d:#c9d0a8;
+      --linia:#3a362f; --oro:#d2ab5a; --ok:#9fcf92; --okbg:#2c3a28; --no:#e7a07d; --nobg:#3d2a20; --terra:#e29373; --sage:#9fc493;
+    }
+  }
+  :root[data-theme="dark"]{
+    --fondo:#1d1b18; --card:#26231f; --tinta:#efe9de; --suau:#b3a99a; --oliva:#9aa37a; --oliva-d:#c9d0a8;
+    --linia:#3a362f; --oro:#d2ab5a; --ok:#9fcf92; --okbg:#2c3a28; --no:#e7a07d; --nobg:#3d2a20; --terra:#e29373; --sage:#9fc493;
+  }
+  body{font-family:var(--sans);background:var(--fondo);color:var(--tinta);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .layout{display:grid;grid-template-columns:250px 1fr;max-width:1280px;margin:0 auto;min-height:100vh;}
+  @media (max-width:820px){ .layout{grid-template-columns:1fr;} .side{position:static !important;height:auto !important;border-right:0 !important;border-bottom:1px solid var(--linia);} .catlist{display:flex !important;flex-direction:row !important;flex-wrap:nowrap;overflow-x:auto;gap:6px;} .catlist button{flex:0 0 auto;width:auto !important;} .catlist .n{display:none;} }
+
+  .side{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--linia);padding:20px 14px;}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:16px;padding:0 6px;}
+  .logo{width:38px;height:38px;border-radius:11px;background:var(--oliva);color:var(--fondo);font-family:var(--serif);font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .brand b{font-family:var(--serif);font-size:17px;display:block;line-height:1.1;}
+  .brand span{font-size:12px;color:var(--suau);}
+  .catlist{display:flex;flex-direction:column;gap:2px;}
+  .catlist button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font-family:inherit;font-size:14px;color:var(--tinta);background:transparent;border:0;border-radius:10px;padding:8px 10px;cursor:pointer;min-height:38px;}
+  .catlist button:hover{background:var(--card);}
+  .catlist button.on{background:var(--oliva);color:var(--fondo);}
+  .catlist .e{width:22px;text-align:center;flex:0 0 auto;}
+  .catlist .l{flex:1;}
+  .catlist .n{font-size:12px;opacity:.7;}
+  .sidefoot{margin-top:18px;padding:0 8px;font-size:12px;color:var(--suau);}
+  .sidefoot button{font-family:inherit;font-size:12px;background:transparent;border:1px solid var(--linia);color:var(--suau);border-radius:14px;padding:4px 10px;cursor:pointer;margin-top:8px;}
+
+  main{padding:20px 22px 60px;min-width:0;}
+  .bar{position:sticky;top:0;z-index:5;background:var(--fondo);padding:4px 0 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .search{flex:1 1 320px;display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--linia);border-radius:14px;padding:0 12px;min-height:46px;}
+  .search input{flex:1;border:0;background:transparent;font-family:inherit;font-size:16px;color:var(--tinta);outline:none;min-width:0;}
+  .search:focus-within{border-color:var(--oliva);box-shadow:0 0 0 2px var(--oliva);}
+  .search kbd{font-size:11px;color:var(--suau);border:1px solid var(--linia);border-radius:6px;padding:1px 6px;}
+  .seg{display:flex;background:var(--card);border:1.5px solid var(--linia);border-radius:14px;padding:3px;}
+  .seg button{font-family:inherit;font-size:13px;font-weight:600;color:var(--suau);background:transparent;border:0;border-radius:10px;padding:7px 11px;cursor:pointer;}
+  .seg button.on{background:var(--oliva);color:var(--fondo);}
+
+  .recent{margin:4px 0 18px;}
+  .recent h3,.sec h2{font-family:var(--serif);}
+  .recent h3{font-size:14px;color:var(--suau);font-weight:600;margin-bottom:6px;}
+  .rchips{display:flex;flex-wrap:wrap;gap:6px;}
+  .rchip{font-size:13px;text-decoration:none;color:var(--tinta);background:var(--card);border:1px solid var(--linia);border-radius:16px;padding:5px 11px;}
+  .rchip:hover{border-color:var(--oliva);}
+
+  .sec{margin-bottom:26px;}
+  .sec h2{font-size:22px;color:var(--oliva-d);display:flex;align-items:center;gap:8px;}
+  .sec .d{font-size:13.5px;color:var(--suau);margin:2px 0 12px;max-width:760px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+  .card{background:var(--card);border:1px solid var(--linia);border-radius:16px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .card:hover{border-color:var(--oliva);}
+  .top{display:flex;gap:10px;align-items:flex-start;}
+  .em{font-size:24px;line-height:1;flex:0 0 auto;width:30px;text-align:center;}
+  .tt{flex:1;min-width:0;}
+  .nm{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.25;}
+  .nm a{color:inherit;text-decoration:none;}
+  .nm a:hover{text-decoration:underline;}
+  .star{background:transparent;border:0;font-size:19px;cursor:pointer;color:var(--linia);line-height:1;padding:2px;}
+  .star.on{color:var(--oro);}
+  .ds{font-size:13px;color:var(--suau);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .card.open .ds{-webkit-line-clamp:unset;}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}
+  .tag{font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;background:var(--fondo);color:var(--suau);border:1px solid var(--linia);}
+  .tag.ok{background:var(--okbg);color:var(--ok);border-color:transparent;}
+  .tag.no{background:var(--nobg);color:var(--no);border-color:transparent;}
+  .tag.pro{color:var(--terra);}
+  .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px;}
+  .btn{font-family:inherit;font-size:12.5px;font-weight:600;text-decoration:none;border-radius:16px;padding:6px 11px;cursor:pointer;border:1.5px solid var(--oliva);color:var(--oliva-d);background:transparent;display:inline-flex;align-items:center;gap:4px;}
+  .btn.pri{background:var(--oliva);color:var(--fondo);}
+  .btn.ghost{border-color:var(--linia);color:var(--suau);}
+  .sub{display:flex;flex-wrap:wrap;gap:4px;}
+  .sub a{font-size:12px;color:var(--oliva-d);}
+  .path{font-size:11px;color:var(--suau);font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all;}
+  .empty{color:var(--suau);padding:30px;text-align:center;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tinta);color:var(--fondo);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  mark{background:#f3dfa8;color:inherit;border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="brand"><div class="logo">ap</div><div><b>Índice APRENS</b><span>Todas tus herramientas</span></div></div>
+    <div class="catlist" id="cats"></div>
+    <div class="sidefoot" id="foot"></div>
+  </aside>
+  <main>
+    <div class="bar">
+      <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="Buscar: mono, trauma, peques, respirar, TDAH…" aria-label="Buscar" autocomplete="off"><kbd>/</kbd></label>
+      <div class="seg" id="pub" role="group" aria-label="Para quién">
+        <button data-v="todo" class="on">Todo</button><button data-v="paciente">Pacientes</button><button data-v="profesional">Profesional</button><button data-v="centro">Centro</button>
+      </div>
+    </div>
+    <div class="recent" id="recent"></div>
+    <div id="list"></div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var D = __DATOS__;
+
+var KEY = "aprens_indice_escritorio";
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+var st = load(); st.fav = st.fav || {}; st.rec = st.rec || []; st.cat = st.cat || "todas"; st.pub = st.pub || "todo";
+
+D.items.forEach(function(it, i){ it.k = it.path || it.rel || it.url || it.nombre || ("i"+i); });
+var $ = function(id){ return document.getElementById(id); };
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function norm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+function hl(s, q){
+  s = esc(s); if(!q) return s;
+  var i = norm(s).indexOf(q); if(i<0) return s;
+  return s.slice(0,i)+"<mark>"+s.slice(i,i+q.length)+"</mark>"+s.slice(i+q.length);
+}
+var PUB = {paciente:"Pacientes", profesional:"Profesional", centro:"Centro"};
+
+function estadoTag(it){
+  if(it.estado==="publicado") return '<span class="tag ok">Publicado</span>';
+  if(it.estado==="protegido") return '<span class="tag ok">Publicado · con contraseña</span>';
+  if(it.estado==="desconocido") return '<span class="tag">No se pudo comprobar</span>';
+  if(it.estado==="no-publicado") return '<span class="tag no">Sin publicar</span>';
+  if(it.estado==="sin-url") return '<span class="tag no">Sin dirección pública</span>';
+  if(it.estado==="offline") return '<span class="tag">'+(it.local?(it.url?'En tu Mac + página privada':'Solo en tu Mac'):(it.url?'Página privada':'Solo en tu ordenador'))+'</span>';
+  if(it.estado==="nativo") return '<span class="tag">App iOS</span>';
+  return "";
+}
+function abrirURL(it){ return it.local || (it.app && !it.antigua ? it.app : it.url); }
+
+function card(it, q){
+  var main = abrirURL(it), fav = !!st.fav[it.k];
+  var h = '<div class="card" data-k="'+esc(it.k)+'"><div class="top"><span class="em">'+esc(it.emoji)+'</span><div class="tt"><div class="nm">'+
+    (main ? '<a href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">'+hl(it.nombre,q)+'</a>' : hl(it.nombre,q))+
+    '</div></div><button class="star'+(fav?' on':'')+'" data-fav="1" title="'+(fav?'Quitar de favoritos':'Añadir a favoritos')+'" aria-label="Favorito" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button></div>';
+  h += '<div class="ds">'+hl(it.desc,q)+(it.nota?' '+esc(it.nota):'')+'</div>';
+  h += '<div class="tags">'+estadoTag(it)+'<span class="tag'+(it.pub==="profesional"?' pro':'')+'">'+(PUB[it.pub]||"")+'</span></div>';
+  if(it.sub && it.sub.length) h += '<div class="sub">'+it.sub.map(function(s){ return '<a href="'+esc(s.url)+'" target="_blank" rel="noopener" data-open="1">'+esc(s.n)+'</a>'; }).join(" · ")+'</div>';
+  h += '<div class="acts">';
+  if(main) h += '<a class="btn pri" href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">Abrir</a>';
+  if(it.app && it.url && !it.antigua && it.url!==it.app) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="El archivo suelto, fuera de la app">Archivo suelto</a>';
+  if(it.local && it.url) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="Copia en claude.ai, para el móvil">Página privada</a>';
+  if(main) h += '<button class="btn" data-copy="'+esc(main)+'">Copiar enlace</button>';
+  if(it.src) h += '<a class="btn ghost" href="'+esc(it.src)+'" target="_blank" rel="noopener">Código</a>';
+  h += '</div>';
+  if(it.path) h += '<div class="path">'+hl(it.path,q)+'</div>';
+  return h + '</div>';
+}
+
+function pasa(it, q){
+  if(st.pub!=="todo" && it.pub!==st.pub) return false;
+  if(!q) return true;
+  return norm(it.nombre+" "+it.desc+" "+(it.path||"")+" "+(it.url||"")+" "+(it.sub||[]).map(function(s){return s.n;}).join(" ")).indexOf(q)>=0;
+}
+
+function focoActual(){
+  var a = document.activeElement; if(!a || !a.closest) return null;
+  if(a.hasAttribute("data-cat")) return '[data-cat="'+a.getAttribute("data-cat")+'"]';
+  if(a.hasAttribute("data-fav")){ var c = a.closest("[data-k]"); return c ? '[data-k="'+c.getAttribute("data-k").replace(/"/g,'\\"')+'"] [data-fav]' : null; }
+  return null;
+}
+function render(){
+  var foco = focoActual();
+  var q = norm($("q").value.trim());
+  var counts = {}, total = 0;
+  D.items.forEach(function(it){ if(pasa(it,q)){ counts[it.cat]=(counts[it.cat]||0)+1; total++; if(st.fav[it.k]) counts.favoritos=(counts.favoritos||0)+1; } });
+  $("cats").innerHTML = '<button data-cat="todas" aria-pressed="'+(st.cat==="todas")+'" class="'+(st.cat==="todas"?'on':'')+'"><span class="e">📚</span><span class="l">Todo</span><span class="n">'+total+'</span></button>' +
+    D.cats.map(function(c){
+      return '<button data-cat="'+c.id+'" aria-pressed="'+(st.cat===c.id)+'" class="'+(st.cat===c.id?'on':'')+'"><span class="e">'+c.emoji+'</span><span class="l">'+esc(c.label)+'</span><span class="n">'+(counts[c.id]||0)+'</span></button>';
+    }).join("");
+  var html = "";
+  D.cats.forEach(function(c){
+    if(st.cat!=="todas" && st.cat!==c.id) return;
+    var its = D.items.filter(function(it){ return (c.id==="favoritos" ? st.fav[it.k] : it.cat===c.id) && pasa(it,q); });
+    if(!its.length) return;
+    if(st.cat==="todas" && c.id==="favoritos" && q) return; // en búsqueda no duplicar
+    html += '<section class="sec" id="s-'+c.id+'"><h2><span>'+c.emoji+'</span>'+esc(c.label)+'</h2><p class="d">'+esc(c.desc)+'</p><div class="grid">'+its.map(function(it){ return card(it,q); }).join("")+'</div></section>';
+  });
+  $("list").innerHTML = html || '<p class="empty">'+(st.cat==="favoritos" ? 'Aún no tienes favoritos. Marca la ☆ de cualquier tarjeta.' : 'No hay nada con esa búsqueda.')+'</p>';
+  pintaRecientes(q);
+  [].forEach.call(document.querySelectorAll("#pub button"), function(b){ var on = b.getAttribute("data-v")===st.pub; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+  if(foco){ var f = document.querySelector(foco); if(f) f.focus(); }
+  save();
+}
+function pintaRecientes(q){
+  var rec = st.rec.map(function(k){ return D.items.filter(function(it){ return it.k===k; })[0]; }).filter(function(it){ return it && pasa(it, q); });
+  $("recent").innerHTML = rec.length && !q ? '<h3>Abiertos hace poco</h3><div class="rchips">'+rec.map(function(it){
+    return '<a class="rchip" href="'+esc(abrirURL(it))+'" target="_blank" rel="noopener" data-k="'+esc(it.k)+'" data-open="1">'+esc(it.emoji)+' '+esc(it.nombre)+'</a>'; }).join("")+'</div>' : "";
+}
+
+function toast(t){ var e=$("toast"); e.textContent=t; e.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(function(){ e.classList.remove("show"); },1600); }
+function copiar(txt){
+  var ok=function(){ toast("Enlace copiado"); };
+  var mal=function(){ toast("No se ha podido copiar: haz clic derecho en «Abrir» y elige «Copiar enlace»."); };
+  var alt=function(){ if(fb(txt)) ok(); else mal(); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,alt); } else alt();
+}
+function fb(txt){ var t=document.createElement("textarea"); t.value=txt; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); var h=false; try{ h=document.execCommand("copy"); }catch(e){ h=false; } t.remove(); return h; }
+
+document.addEventListener("click", function(e){
+  var t = e.target.closest("button, a"); if(!t) return;
+  if(t.hasAttribute("data-cat")){ st.cat=t.getAttribute("data-cat"); render(); window.scrollTo(0,0); return; }
+  if(t.parentNode && t.parentNode.id==="pub"){ st.pub=t.getAttribute("data-v"); render(); return; }
+  var c = t.closest("[data-k]"), k = c && c.getAttribute("data-k");
+  if(t.hasAttribute("data-fav")){ if(st.fav[k]) delete st.fav[k]; else st.fav[k]=1; render(); return; }
+  if(t.hasAttribute("data-copy")){ copiar(t.getAttribute("data-copy")); return; }
+  if(t.hasAttribute("data-open") && k){ st.rec=[k].concat(st.rec.filter(function(x){ return x!==k; })).slice(0,8); save(); setTimeout(function(){ pintaRecientes(norm($("q").value.trim())); },300); }
+  if(t.id==="tema"){ var cur=document.documentElement.getAttribute("data-theme"); var nx = cur==="dark"?"light":(cur==="light"?"":"dark"); if(nx) document.documentElement.setAttribute("data-theme",nx); else document.documentElement.removeAttribute("data-theme"); st.tema=nx; save(); }
+});
+$("q").addEventListener("input", function(){ if(this.value && st.cat==="favoritos") st.cat="todas"; render(); });
+document.addEventListener("keydown", function(e){
+  if(e.key==="/" && document.activeElement!==$("q")){ e.preventDefault(); $("q").focus(); }
+  if(e.key==="Escape"){ $("q").value=""; render(); }
+});
+if(st.tema) document.documentElement.setAttribute("data-theme", st.tema);
+var nTool = D.items.filter(function(i){ return !i.antigua; }).length;
+$("foot").innerHTML = nTool+' herramientas y páginas · '+(D.items.length-nTool)+' webs antiguas<br>Generado el '+D.generado+' desde la rama <b>'+esc(D.rama)+'</b>'+(D.comprobado?'':' (sin comprobar publicación)')+'.<br>Para actualizarlo: <code>python3 scripts/indice-escritorio.py --comprobar</code><br><button id="tema" type="button">Claro / oscuro</button>';
+render();
+</script>
+</body>
+</html>
