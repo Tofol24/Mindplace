@@ -277,6 +277,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   4. Se busca dónde poner **la mano** para que no caiga todo: entre la activación y el huir. Ahí va PARA · SIENTE · ACOMPAÑA · ACTÚA.
 - **Consigna ancla:** «Huir no es malo. Te ayudó. Pero hace la ficha siguiente más grande.»
 - **Cuidado:** nunca presentar la evitación como un fallo del niño/a.
+  Antes de usar un ejemplo como «no ir al colegio», **comprobar que la
+  situación es segura**: si hay acoso, maltrato u otro daño real, alejarse y
+  pedir ayuda es lo adecuado, no una evitación que haya que exponer; se
+  explora con la familia y la escuela y se activa la protección que corresponda (§10).
 
 ### 6. La alarma: activación no es peligro
 **Etapa** 1 · **Parámetro** discriminación (L↑) · **Material** sonido de alarma o detector de humo (vídeo/audio), dibujo de un coche · **Duración** 10 min
@@ -447,7 +451,7 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 | **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación ni neutralización; el objetivo es actuar con la sensación presente; la escalera (16) se hace como exposición con prevención de respuesta, sin AIS obligatorio; evitar la dinámica 6 con salto | 4, 12, 16 |
 | **Trauma / disociación** | Seguridad antes que latencia; anclajes periféricos (manos, pies) antes que barriga o pecho; ojos abiertos; frase honesta muy graduada | 3 (zonas tranquilas), 7, 14 |
 | **TEA** (propuesta, a validar caso a caso) | La literatura sobre interocepción en TEA es inconsistente; apoyos visuales, consignas literales, metáforas muy concretas o sustituidas por objetos; respetar perfil sensorial | 3, 7, 9, 15 |
-| **Dolor recurrente (cefaleas, dolor abdominal)** | No preguntar «¿cómo está tu dolor?», sino «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
+| **Dolor recurrente (cefaleas, dolor abdominal)** | Solo con dolor **ya evaluado por pediatría**; ante dolor nuevo, que cambia o con señales de alarma, derivar a valoración médica. No centrar la sesión en «¿cómo está tu dolor?» (se revisa por si cambia), y añadir «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
 
 ---
 
