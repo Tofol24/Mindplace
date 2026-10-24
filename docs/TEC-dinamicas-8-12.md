@@ -302,6 +302,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Consigna ancla:** «Respirar no es relajarte: es aparecer. El aire es el cebo para que el mono sepa que estás.»
 - **Cuidado:** no corregir la técnica («así no, más profundo»): si la atención
   se va a «hacerlo bien», el mecanismo falla (guía §6). Evitar hiperventilar.
+- **Trauma / disociación:** ojos abiertos y la linterna en las **manos o los
+  pies** (notar los pies en el suelo, las manos en el vaso) en lugar de la
+  barriga; no aguantar el aire. Se pasa a la barriga solo cuando el niño/a lo
+  tolera y lo pide (§7).
 
 ### 8. El semáforo STOP
 **Etapa** 2 · **Parámetro** L↑ · **Material** tres círculos de cartulina (rojo, ámbar, verde) o un semáforo de juguete · **Duración** 10 min
@@ -487,10 +491,14 @@ y el niño aprende a regularse viendo al adulto regularse.
 
 Siempre **orientativo**, nunca diagnóstico (guía §13). Mismas direcciones que
 el resto del ecosistema: **subir = mejorar** en las escalas de capacidad.
+**Excepción:** el termómetro de ruido interno es una medida **bruta**
+(0 = nada de ruido, 10 = muchísimo ruido), así que en él **bajar = mejorar**.
+Si se pasa a una escala de capacidad 0–10, se invierte (10 = poco ruido,
+señal nítida), como indica la guía.
 
 | Dato | 8–9 años | 10–12 años | Parámetro |
 |---|---|---|---|
-| Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 | D |
+| Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 (0 = nada, 10 = muchísimo; bajar = mejorar) | D↓ |
 | Zona del cuerpo | Pegatina en la silueta | Pegatina + palabra sensorial | D |
 | Vueltas en «el hilo» | Número de vueltas (darse cuenta y volver) | Igual | Reconocimiento (no C) |
 | Tramos en «el hilo» | — | Segundos del tramo más largo entre vueltas | C |
