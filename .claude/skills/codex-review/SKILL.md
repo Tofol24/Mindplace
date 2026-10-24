@@ -17,9 +17,9 @@ Claude no da por terminado ningún trabajo sin que Codex lo haya revisado.
 5. Al usuario: resumen breve de qué encontró Codex, qué se ha corregido y qué se ha descartado (y por qué).
 
 ## Si no se puede ejecutar
-- Sin `OPENAI_API_KEY` (el script sale con código 2) o sin red para instalar `@openai/codex`:
+- Sin `CODEX_API_KEY` u `OPENAI_API_KEY` (el script sale con código 2), con una rama base inexistente (código 3) o sin red para instalar `@openai/codex`:
   dilo claramente al usuario y **no** des la revisión por hecha ni la simules.
-- La clave se añade como variable de entorno `OPENAI_API_KEY` en la configuración del entorno
+- La clave se añade como variable de entorno `CODEX_API_KEY` (o `OPENAI_API_KEY`) en la configuración del entorno
   (nunca pegada en el chat).
 
 ## Usarla en todos los proyectos
