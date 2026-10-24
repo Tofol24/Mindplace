@@ -9,6 +9,9 @@
 > pantalla) con trabajo **presencial, corporal y con material sencillo**.
 >
 > Estado: **propuesta** (2026-10-24). Pendiente de pilotaje en consulta.
+> Versión de consulta en HTML: `app/tools-standalone/dinamicas-tec-8-12.html`
+> (enlazada desde el Panel del psicólogo). Si cambian las fichas de §6, se
+> actualiza también el bloque `FICHAS` de ese archivo.
 >
 > Centre APRENS · Psicologia — Tòfol Villalonga Melis, Col. B-01599.
 
