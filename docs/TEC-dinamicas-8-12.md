@@ -313,7 +313,7 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   3. **Verde · ACTÚA:** «¿Qué paso pequeño elijo ahora?»
   4. Juego de práctica: el terapeuta cuenta escenas (te quitan la pelota, te dicen que no a la tableta, te equivocas en un ejercicio) y el niño/a recorre el semáforo con el cuerpo.
 - **Consigna ancla:** la parada de pensamiento del autor, en versión corta: «STOP, respira, mira dentro 5 segundos y vuelve a lo que hacías.»
-- **10–12:** se cronometra el «puente» (cuántos segundos aguanta en ámbar antes de responder) como dato de latencia orientativo.
+- **10–12:** se puede cronometrar cuánto tiempo se queda en ámbar, pero solo como **dato de práctica** del ejercicio: es una espera pedida, y alargarla no demuestra más capacidad de elegir. La latencia (L) se registra únicamente en **episodios reales** con activación y respuesta identificables (§9).
 - **Cuidado:** el semáforo no es un castigo ni un «tiempo fuera»; nunca se usa
   como sanción por la familia.
 
@@ -324,7 +324,8 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Desarrollo:**
   1. El niño/a pone la atención en la barriga (ojos cerrados o mirando un punto). Cada vez que nota que la atención se ha ido, da un tirón suave al cordel y vuelve.
   2. Cada vuelta = una vuelta de lana en el ovillo («el hilo se hace más fuerte»).
-  3. Rondas de 30 s a 1 min. Se cuenta cuántas vueltas, no cuánto tiempo sin distraerse.
+  3. Rondas de 30 s a 1 min. En la ronda se cuentan las vueltas para premiar el **darse cuenta y volver**, no cuánto tiempo sin distraerse.
+  4. Lectura clínica: el número de vueltas mide el **reconocimiento de la distracción**, no la continuidad. En una ronda igual, más vueltas pueden indicar una atención más fragmentada. La continuidad (C) se lee en la **duración de los tramos** entre vuelta y vuelta.
 - **Consigna ancla:** «Distraerte no resta. Volver suma.»
 - **Enlace app:** mecánica equivalente a **Sonar** de los juegos AIS
   (`app/tools-standalone/juegos-ais.html`), útil como práctica en casa.
@@ -409,16 +410,25 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 ### 16. La escalera de valentía
 **Etapa** 3–4 · **Parámetro** permanecer + micro-acción · **Material** escalera dibujada de 6–8 peldaños, figura del niño/a · **Duración** 15 min por peldaño planificado
 
-- **Objetivo:** exposición gradual a la situación temida **con el AIS activo**, siempre después de la fase de aparecer.
+- **Objetivo:** exposición gradual a la situación temida, siempre después de la fase de aparecer. El AIS **acompaña** la exposición, pero **no es un requisito** para subir el peldaño.
 - **Desarrollo:**
   1. Se construyen los peldaños con el niño/a, de lo más fácil a lo más difícil, puntuando cada uno con el termómetro.
-  2. Cada peldaño se sube con los cuatro pasos: PARA · SIENTE · ACOMPAÑA · ACTÚA.
+  2. Cada peldaño puede subirse con los cuatro pasos (PARA · SIENTE · ACOMPAÑA · ACTÚA) o directamente con la acción; si el niño/a necesita «hacerlo bien» antes de actuar, se sube sin ellos.
   3. Se sube un peldaño cuando el niño/a puede **hacer la acción con el mono a su lado**, no cuando ya no nota nada.
 - **Consigna ancla:** «No tienes que dejar de sentirlo para subir. Sube con él.»
 - **Enlace app:** *La exploradora valiente* (`app/exploradora/`, ansiedad de
   separación) y *La escalera* (`app/exposicion/`) siguen la misma lógica.
 - **Cuidado:** si la activación al final es mayor que al principio y la
   continuidad es baja, bajar un peldaño (exposición sin sostén, guía §12).
+  Esta regla **no se aplica al TOC** (ver abajo).
+- **TOC:** se trabaja como **exposición con prevención de respuesta** adaptada a la
+  edad (tratamiento de elección en TOC infantil, NICE CG31). Se expone **sin
+  AIS obligatorio** y sin bajar el peldaño solo porque suba la activación;
+  se pactan con el niño/a y la familia las respuestas que no se harán
+  (comprobar, preguntar, lavar, pedir que le aseguren) y se vigilan las
+  **neutralizaciones**, incluidas las que usen la propia práctica: respirar,
+  «acompañar al mono» o hacer el semáforo para que la sensación se vaya. Si
+  aparecen, se nombran y se retiran del peldaño.
 
 ---
 
@@ -430,7 +440,7 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 | **TDAH / baja continuidad** | Trazos de 3–5 s, mucho movimiento, anclajes propioceptivos (pies en el suelo, manos apretando una pelota), sesiones con más cambios de actividad | 1, 8, 9, 14 |
 | **Rabietas / ira / conducta desafiante** | El semáforo como herramienta del niño/a, nunca como castigo; trabajar primero con el adulto su propia regulación | 6, 8, 12, 13 |
 | **Rumiación / preocupación** | Caja de preocupaciones: 10 min al día con el adulto; fuera de ese rato, «lo guardo para mi caja» + parada | 4, 8, 10 |
-| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación; el objetivo es actuar con la sensación presente; evitar la dinámica 6 con salto | 4, 12, 16 |
+| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación ni neutralización; el objetivo es actuar con la sensación presente; la escalera (16) se hace como exposición con prevención de respuesta, sin AIS obligatorio; evitar la dinámica 6 con salto | 4, 12, 16 |
 | **Trauma / disociación** | Seguridad antes que latencia; anclajes periféricos (manos, pies) antes que barriga o pecho; ojos abiertos; frase honesta muy graduada | 3 (zonas tranquilas), 7, 14 |
 | **TEA** (propuesta, a validar caso a caso) | La literatura sobre interocepción en TEA es inconsistente; apoyos visuales, consignas literales, metáforas muy concretas o sustituidas por objetos; respetar perfil sensorial | 3, 7, 9, 15 |
 | **Dolor recurrente (cefaleas, dolor abdominal)** | No preguntar «¿cómo está tu dolor?», sino «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
@@ -446,7 +456,7 @@ y el niño aprende a regularse viendo al adulto regularse.
 - **Tres pautas para casa:**
   1. **Hacer las paradas con el niño/a**, no mandarlas: «paramos los dos».
   2. **Validación sin corrección**: «Te noto así… ¿quieres que estemos contigo o prefieres un rato a solas?»
-  3. **Responder a la frase honesta** sin preguntar por qué ni dar soluciones: «Gracias por contármelo. Estoy aquí.»
+  3. **Responder a la frase honesta** validando primero, sin prisa por buscar el porqué ni dar soluciones: «Gracias por contármelo. Estoy aquí.» Después, si el niño/a quiere, se le deja contar qué ha pasado y qué necesita. Acompañar una sensación no es lo mismo que investigar una situación: si aparece un problema real (acoso, daño, algo que requiere protección), se escucha, se ayuda y se informa al terapeuta.
 - **Lo que no se hace:** usar el semáforo como castigo, premiar «estar tranquilo», pedir que se calme, comprobar constantemente «¿cómo estás?».
 - **Escuela (con consentimiento):** ritual de entrada en el aula, una parada
   relámpago de 3–5 s antes de los exámenes, y una palabra clave pactada con el
@@ -461,8 +471,11 @@ y el niño aprende a regularse viendo al adulto regularse.
 > el veig de cada vegada més capaç d'aturar-se un moment abans de reaccionar.
 > Per a aquestes setmanes us demanaria que féssiu amb ell/ella les tres
 > aturades del dia, també quan tot va bé, i que quan us digui «no sé per què,
-> però ho not aquí» li respongueu només «gràcies per dir-m'ho, som aquí», sense
-> demanar-li per què ni donar-li solucions. Entenc que vosaltres també ho
+> però ho not aquí» primer li respongueu «gràcies per dir-m'ho, som aquí»,
+> sense pressa per trobar-hi una explicació ni una solució. Després, si ell/ella
+> vol, deixau-li explicar què ha passat i què necessita. Si el que conta és un
+> problema real, com que algú li fa mal o el molesta a l'escola, aleshores sí
+> que cal escoltar-lo bé, ajudar-lo i dir-m'ho. Entenc que vosaltres també ho
 > anireu observant amb el dia a dia, i m'agradarà que a la propera sessió ho
 > poguem compartir.
 >
@@ -479,8 +492,10 @@ el resto del ecosistema: **subir = mejorar** en las escalas de capacidad.
 |---|---|---|---|
 | Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 | D |
 | Zona del cuerpo | Pegatina en la silueta | Pegatina + palabra sensorial | D |
-| Vueltas en «el hilo» | Número de vueltas | Vueltas + segundos de trazo | C |
-| Puente (semáforo) | «¿Paré antes de hacer?» sí/no | Segundos estimados en ámbar | L |
+| Vueltas en «el hilo» | Número de vueltas (darse cuenta y volver) | Igual | Reconocimiento (no C) |
+| Tramos en «el hilo» | — | Segundos del tramo más largo entre vueltas | C |
+| Puente en episodios reales | «¿Paré antes de hacer?» sí/no | Igual + segundos estimados entre notar y actuar | L |
+| Tiempo en ámbar (ejercicio) | — | Segundos en ámbar durante el juego | Práctica (no L) |
 | Misión con valor | Pegatina 0/1 | 0/1 + qué hice | Micro-acción |
 | Tres paradas | Pegatinas sol/plato/luna | Igual + marcar si fue en calma o en malestar | Práctica programada |
 | Malestar con la práctica | «¿Algo te ha resultado incómodo?» (siempre) | Igual | Seguridad |
