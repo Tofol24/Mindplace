@@ -29,7 +29,7 @@ REPO = "https://github.com/tofol24/mindplace/blob/"
 SITIOS = {
     "inicio/": "https://aprens-inicio.netlify.app/",
     "agendas/": "https://aprens-agendas.netlify.app/",
-    "despatxos/": None,  # interna; su dirección no consta en el repositorio
+    "despatxos/": "https://despatxos.netlify.app/",  # interna
 }
 
 # Lo que no está en el hub del paciente o necesita otra etiqueta.
@@ -152,6 +152,8 @@ def publicado(url):
         with urllib.request.urlopen(req, timeout=15) as r:
             return r.status < 400
     except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            return "protegido"  # publicado, pero pide contraseña
         return e.code < 400
     except Exception:
         return None
@@ -214,7 +216,7 @@ def main():
                 it["estado"] = "nativo"
                 continue
             ok = publicado(it.get("url"))
-            it["estado"] = "publicado" if ok else ("sin-url" if not it.get("url") else "no-publicado")
+            it["estado"] = ("protegido" if ok == "protegido" else "publicado") if ok else ("sin-url" if not it.get("url") else "no-publicado")
     else:
         for it in items:
             it["estado"] = "nativo" if it.get("nativo") else ("sin-url" if not it.get("url") else "")

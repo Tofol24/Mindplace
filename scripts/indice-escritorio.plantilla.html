@@ -134,6 +134,7 @@ var PUB = {paciente:"Pacientes", profesional:"Profesional", centro:"Centro"};
 
 function estadoTag(it){
   if(it.estado==="publicado") return '<span class="tag ok">Publicado</span>';
+  if(it.estado==="protegido") return '<span class="tag ok">Publicado · con contraseña</span>';
   if(it.estado==="no-publicado") return '<span class="tag no">Sin publicar</span>';
   if(it.estado==="sin-url") return '<span class="tag no">Sin dirección pública</span>';
   if(it.estado==="nativo") return '<span class="tag">App iOS</span>';
