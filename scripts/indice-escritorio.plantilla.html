@@ -203,9 +203,11 @@ function render(){
 function toast(t){ var e=$("toast"); e.textContent=t; e.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(function(){ e.classList.remove("show"); },1600); }
 function copiar(txt){
   var ok=function(){ toast("Enlace copiado"); };
-  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,function(){ fb(txt); ok(); }); } else { fb(txt); ok(); }
+  var mal=function(){ toast("No se ha podido copiar: haz clic derecho en «Abrir» y elige «Copiar enlace»."); };
+  var alt=function(){ if(fb(txt)) ok(); else mal(); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,alt); } else alt();
 }
-function fb(txt){ var t=document.createElement("textarea"); t.value=txt; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); try{document.execCommand("copy");}catch(e){} t.remove(); }
+function fb(txt){ var t=document.createElement("textarea"); t.value=txt; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select(); var h=false; try{ h=document.execCommand("copy"); }catch(e){ h=false; } t.remove(); return h; }
 
 document.addEventListener("click", function(e){
   var t = e.target.closest("button, a"); if(!t) return;
