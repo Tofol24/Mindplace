@@ -121,7 +121,7 @@ function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
 var st = load(); st.fav = st.fav || {}; st.rec = st.rec || []; st.cat = st.cat || "todas"; st.pub = st.pub || "todo";
 
-D.items.forEach(function(it, i){ it.k = it.path || it.url || it.nombre || ("i"+i); });
+D.items.forEach(function(it, i){ it.k = it.path || it.rel || it.url || it.nombre || ("i"+i); });
 var $ = function(id){ return document.getElementById(id); };
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function norm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
@@ -147,7 +147,7 @@ function card(it, q){
   var main = abrirURL(it), fav = !!st.fav[it.k];
   var h = '<div class="card" data-k="'+esc(it.k)+'"><div class="top"><span class="em">'+esc(it.emoji)+'</span><div class="tt"><div class="nm">'+
     (main ? '<a href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">'+hl(it.nombre,q)+'</a>' : hl(it.nombre,q))+
-    '</div></div><button class="star'+(fav?' on':'')+'" data-fav="1" title="'+(fav?'Quitar de favoritos':'Añadir a favoritos')+'" aria-label="Favorito">'+(fav?'★':'☆')+'</button></div>';
+    '</div></div><button class="star'+(fav?' on':'')+'" data-fav="1" title="'+(fav?'Quitar de favoritos':'Añadir a favoritos')+'" aria-label="Favorito" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button></div>';
   h += '<div class="ds">'+hl(it.desc,q)+(it.nota?' '+esc(it.nota):'')+'</div>';
   h += '<div class="tags">'+estadoTag(it)+'<span class="tag'+(it.pub==="profesional"?' pro':'')+'">'+(PUB[it.pub]||"")+'</span></div>';
   if(it.sub && it.sub.length) h += '<div class="sub">'+it.sub.map(function(s){ return '<a href="'+esc(s.url)+'" target="_blank" rel="noopener" data-open="1">'+esc(s.n)+'</a>'; }).join(" · ")+'</div>';
@@ -168,13 +168,20 @@ function pasa(it, q){
   return norm(it.nombre+" "+it.desc+" "+(it.path||"")+" "+(it.url||"")+" "+(it.sub||[]).map(function(s){return s.n;}).join(" ")).indexOf(q)>=0;
 }
 
+function focoActual(){
+  var a = document.activeElement; if(!a || !a.closest) return null;
+  if(a.hasAttribute("data-cat")) return '[data-cat="'+a.getAttribute("data-cat")+'"]';
+  if(a.hasAttribute("data-fav")){ var c = a.closest("[data-k]"); return c ? '[data-k="'+c.getAttribute("data-k").replace(/"/g,'\\"')+'"] [data-fav]' : null; }
+  return null;
+}
 function render(){
+  var foco = focoActual();
   var q = norm($("q").value.trim());
   var counts = {}, total = 0;
   D.items.forEach(function(it){ if(pasa(it,q)){ counts[it.cat]=(counts[it.cat]||0)+1; total++; if(st.fav[it.k]) counts.favoritos=(counts.favoritos||0)+1; } });
-  $("cats").innerHTML = '<button data-cat="todas" class="'+(st.cat==="todas"?'on':'')+'"><span class="e">📚</span><span class="l">Todo</span><span class="n">'+total+'</span></button>' +
+  $("cats").innerHTML = '<button data-cat="todas" aria-pressed="'+(st.cat==="todas")+'" class="'+(st.cat==="todas"?'on':'')+'"><span class="e">📚</span><span class="l">Todo</span><span class="n">'+total+'</span></button>' +
     D.cats.map(function(c){
-      return '<button data-cat="'+c.id+'" class="'+(st.cat===c.id?'on':'')+'"><span class="e">'+c.emoji+'</span><span class="l">'+esc(c.label)+'</span><span class="n">'+(counts[c.id]||0)+'</span></button>';
+      return '<button data-cat="'+c.id+'" aria-pressed="'+(st.cat===c.id)+'" class="'+(st.cat===c.id?'on':'')+'"><span class="e">'+c.emoji+'</span><span class="l">'+esc(c.label)+'</span><span class="n">'+(counts[c.id]||0)+'</span></button>';
     }).join("");
   var html = "";
   D.cats.forEach(function(c){
@@ -188,7 +195,8 @@ function render(){
   var rec = st.rec.map(function(k){ return D.items.filter(function(it){ return it.k===k; })[0]; }).filter(Boolean);
   $("recent").innerHTML = rec.length && !q ? '<h3>Abiertos hace poco</h3><div class="rchips">'+rec.map(function(it){
     return '<a class="rchip" href="'+esc(abrirURL(it))+'" target="_blank" rel="noopener" data-k="'+esc(it.k)+'" data-open="1">'+esc(it.emoji)+' '+esc(it.nombre)+'</a>'; }).join("")+'</div>' : "";
-  [].forEach.call(document.querySelectorAll("#pub button"), function(b){ b.classList.toggle("on", b.getAttribute("data-v")===st.pub); });
+  [].forEach.call(document.querySelectorAll("#pub button"), function(b){ var on = b.getAttribute("data-v")===st.pub; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+  if(foco){ var f = document.querySelector(foco); if(f) f.focus(); }
   save();
 }
 

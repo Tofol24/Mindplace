@@ -223,7 +223,7 @@ def main():
     base = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--offline-base=")), "")
     localdir = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--local-dir=")), "")
     for o in OFFLINE:
-        it = dict(o); it["cat"] = "offline"; it["offline"] = True
+        it = dict(o); it.pop("local", None); it["cat"] = "offline"; it["offline"] = True
         it["url"] = (base or o["rel"]) if o["rel"] else None
         if base and o["rel"]:
             it["nota"] = "Se abre desde tu página privada de claude.ai, en «Fuera de Netlify»."
