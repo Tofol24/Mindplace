@@ -47,6 +47,7 @@
   .bar{position:sticky;top:0;z-index:5;background:var(--fondo);padding:4px 0 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
   .search{flex:1 1 320px;display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--linia);border-radius:14px;padding:0 12px;min-height:46px;}
   .search input{flex:1;border:0;background:transparent;font-family:inherit;font-size:16px;color:var(--tinta);outline:none;min-width:0;}
+  .search:focus-within{border-color:var(--oliva);box-shadow:0 0 0 2px var(--oliva);}
   .search kbd{font-size:11px;color:var(--suau);border:1px solid var(--linia);border-radius:6px;padding:1px 6px;}
   .seg{display:flex;background:var(--card);border:1.5px solid var(--linia);border-radius:14px;padding:3px;}
   .seg button{font-family:inherit;font-size:13px;font-weight:600;color:var(--suau);background:transparent;border:0;border-radius:10px;padding:7px 11px;cursor:pointer;}
@@ -199,7 +200,7 @@ function render(){
   save();
 }
 function pintaRecientes(q){
-  var rec = st.rec.map(function(k){ return D.items.filter(function(it){ return it.k===k; })[0]; }).filter(Boolean);
+  var rec = st.rec.map(function(k){ return D.items.filter(function(it){ return it.k===k; })[0]; }).filter(function(it){ return it && pasa(it, q); });
   $("recent").innerHTML = rec.length && !q ? '<h3>Abiertos hace poco</h3><div class="rchips">'+rec.map(function(it){
     return '<a class="rchip" href="'+esc(abrirURL(it))+'" target="_blank" rel="noopener" data-k="'+esc(it.k)+'" data-open="1">'+esc(it.emoji)+' '+esc(it.nombre)+'</a>'; }).join("")+'</div>' : "";
 }
