@@ -41,8 +41,8 @@ SITIOS = {
 OFFLINE = [
     dict(rel="offline/neuroestimulador.html", local="protocolo_idoneidad_neuroestimulador-2.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
          desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ…) previa a neuroestimulación, con señales a revisar y texto para el informe.", pub="profesional"),
-    dict(rel="offline/tdah-v5.html", local="APRENS_TDAH_v5_1_Dropbox.html", emoji="🧩", nombre="Orientador clínico TDAH con accesos",
-         desc="Versión con biblioteca de instrumentos y enlaces configurables a tus documentos (Dropbox/Drive) y a TEAcorrige.", pub="profesional"),
+    dict(rel="offline/tdah-v5.html", local="APRENS_TDAH_v5_1_Dropbox.html", emoji="🧩", nombre="Orientador clínico TDAH · v5.1",
+         desc="Versión con biblioteca de instrumentos, carpeta de documentación en Dropbox/Drive y enlaces a TEAcorrige.", pub="profesional"),
     dict(rel="offline/cami-cap-a-dins.html", local="cribratge_cami_cap_a_dins.html", emoji="⛰️", nombre="Camí cap a dins · cribratge previ",
          desc="Cribratge abans de l'experiència AIS · TEC a Santa Magdalena: bandera orientativa i resum per enviar a en Tòfol.", pub="paciente"),
     dict(rel=None, local="PAI_PROFESIONAL(17).html", emoji="📋", nombre="PAI Profesional · corrección e interpretación",
