@@ -137,11 +137,11 @@ function estadoTag(it){
   if(it.estado==="protegido") return '<span class="tag ok">Publicado · con contraseña</span>';
   if(it.estado==="no-publicado") return '<span class="tag no">Sin publicar</span>';
   if(it.estado==="sin-url") return '<span class="tag no">Sin dirección pública</span>';
-  if(it.estado==="offline") return '<span class="tag">'+(it.url?'Página privada':'Solo en tu ordenador')+'</span>';
+  if(it.estado==="offline") return '<span class="tag">'+(it.local?(it.url?'En tu Mac + página privada':'Solo en tu Mac'):(it.url?'Página privada':'Solo en tu ordenador'))+'</span>';
   if(it.estado==="nativo") return '<span class="tag">App iOS</span>';
   return "";
 }
-function abrirURL(it){ return it.app && !it.antigua ? it.app : it.url; }
+function abrirURL(it){ return it.local || (it.app && !it.antigua ? it.app : it.url); }
 
 function card(it, q){
   var main = abrirURL(it), fav = !!st.fav[it.k];
@@ -154,6 +154,7 @@ function card(it, q){
   h += '<div class="acts">';
   if(main) h += '<a class="btn pri" href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">Abrir</a>';
   if(it.app && it.url && !it.antigua && it.url!==it.app) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="El archivo suelto, fuera de la app">Archivo suelto</a>';
+  if(it.local && it.url) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="Copia en claude.ai, para el móvil">Página privada</a>';
   if(main) h += '<button class="btn" data-copy="'+esc(main)+'">Copiar enlace</button>';
   if(it.src) h += '<a class="btn ghost" href="'+esc(it.src)+'" target="_blank" rel="noopener">Código</a>';
   h += '</div>';

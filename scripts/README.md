@@ -43,8 +43,15 @@ privado y webs antiguas), con buscador, filtro por público, favoritos y
 «abiertos hace poco», y con botones para abrir, copiar el enlace o ver el código.
 
 ```sh
-python3 scripts/indice-escritorio.py --comprobar
+python3 scripts/indice-escritorio.py --comprobar \
+  --offline-base=https://claude.ai/artifact/3Yf4GS3km74CQLA4myBZgh \
+  "--local-dir=/Users/cristofolvillalonga/Documents/fuera de netlify"
 ```
+
+`--offline-base` y `--local-dir` solo afectan a la sección «Fuera de Netlify»
+(lista `OFFLINE` del script): la primera enlaza a la página privada de
+claude.ai y la segunda abre el archivo de la carpeta del Mac. Los enlaces
+`file://` solo funcionan desde el índice guardado en el propio Mac.
 
 Lee el registro (`app/js/registry.js`) y los grupos del hub (`app/js/app.js`),
 así que una herramienta nueva registrada aparece sola. Lo que vive fuera del hub

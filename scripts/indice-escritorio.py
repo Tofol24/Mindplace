@@ -17,7 +17,7 @@ Uso:
   python3 scripts/indice-escritorio.py              # genera el índice
   python3 scripts/indice-escritorio.py --comprobar  # además comprueba qué está publicado
 """
-import glob, html, json, os, re, subprocess, sys, urllib.request, urllib.error
+import glob, html, json, os, re, subprocess, sys, urllib.parse, urllib.request, urllib.error
 from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,16 +37,17 @@ SITIOS = {
 # Herramientas que no están en el repositorio ni en Netlify (viven en tu ordenador).
 # rel: ruta dentro de la página privada de claude.ai donde se alojan; None si no se sube.
 # Con --offline-base=URL (la página privada) las tarjetas llevan a esa página; sin él, a la ruta relativa.
+# Con --local-dir=RUTA (la carpeta del Mac) se añade «Abrir en el Mac» con el archivo local (local:).
 OFFLINE = [
-    dict(rel="offline/neuroestimulador.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
+    dict(rel="offline/neuroestimulador.html", local="protocolo_idoneidad_neuroestimulador-2.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
          desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ…) previa a neuroestimulación, con señales a revisar y texto para el informe.", pub="profesional"),
-    dict(rel="offline/tdah-v5.html", emoji="🧩", nombre="Orientador clínico TDAH · v5 con accesos",
+    dict(rel="offline/tdah-v5.html", local="APRENS_TDAH_v5_1_Dropbox.html", emoji="🧩", nombre="Orientador clínico TDAH con accesos",
          desc="Versión con biblioteca de instrumentos y enlaces configurables a tus documentos (Dropbox/Drive) y a TEAcorrige.", pub="profesional"),
-    dict(rel="offline/cami-cap-a-dins.html", emoji="⛰️", nombre="Camí cap a dins · cribratge previ",
+    dict(rel="offline/cami-cap-a-dins.html", local="cribratge_cami_cap_a_dins.html", emoji="⛰️", nombre="Camí cap a dins · cribratge previ",
          desc="Cribratge abans de l'experiència AIS · TEC a Santa Magdalena: bandera orientativa i resum per enviar a en Tòfol.", pub="paciente"),
-    dict(rel=None, emoji="📋", nombre="PAI Profesional · corrección e interpretación",
+    dict(rel=None, local="PAI_PROFESIONAL(17).html", emoji="📋", nombre="PAI Profesional · corrección e interpretación",
          desc="Corrección del PAI con baremos españoles, vaciado de protocolo en papel y hoja de tecleo para TEA.", pub="profesional",
-         nota="Solo en tu ordenador (PAI_PROFESIONAL17.html): contiene ítems y baremos protegidos, por eso no se sube a ningún sitio."),
+         nota="Solo en tu Mac: contiene ítems y baremos protegidos, por eso no se sube a ningún sitio."),
 ]
 
 EXTRA = {
@@ -222,11 +223,16 @@ def main():
             add(dict(cat="sinclasificar", emoji="📄", nombre=t, desc=d or p, pub="paciente", path=p))
     # 3b) herramientas fuera del repositorio
     base = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--offline-base=")), "")
+    localdir = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--local-dir=")), "")
     for o in OFFLINE:
         it = dict(o); it["cat"] = "offline"; it["offline"] = True
         it["url"] = (base or o["rel"]) if o["rel"] else None
         if base and o["rel"]:
             it["nota"] = "Se abre desde tu página privada de claude.ai, en «Fuera de Netlify»."
+        if localdir and o.get("local"):
+            it["local"] = "file://" + urllib.parse.quote(os.path.join(localdir, o["local"]))
+            if o["rel"]:
+                it["nota"] = "«Abrir» usa el archivo de tu carpeta del Mac; «Página privada», la copia de claude.ai para el móvil."
         items.append(it)
     # 4) webs antiguas
     tabla = leer("netlify-redirecciones/README.md")
