@@ -135,6 +135,7 @@ var PUB = {paciente:"Pacientes", profesional:"Profesional", centro:"Centro"};
 function estadoTag(it){
   if(it.estado==="publicado") return '<span class="tag ok">Publicado</span>';
   if(it.estado==="protegido") return '<span class="tag ok">Publicado · con contraseña</span>';
+  if(it.estado==="desconocido") return '<span class="tag">No se pudo comprobar</span>';
   if(it.estado==="no-publicado") return '<span class="tag no">Sin publicar</span>';
   if(it.estado==="sin-url") return '<span class="tag no">Sin dirección pública</span>';
   if(it.estado==="offline") return '<span class="tag">'+(it.local?(it.url?'En tu Mac + página privada':'Solo en tu Mac'):(it.url?'Página privada':'Solo en tu ordenador'))+'</span>';

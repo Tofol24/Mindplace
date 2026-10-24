@@ -192,7 +192,7 @@
 
   <section id="bloque">
     <h2>Bloque de sesiones</h2>
-    <p class="sub">Una sesión de evaluación (0) y 10 sesiones semanales de intervención; la 11–12 de consolidación es opcional. Alineado con las etapas de «Mi recorrido». Toca una dinámica para abrir su ficha, o la fila para ver solo las de esa sesión.</p>
+    <p class="sub">Una sesión de evaluación (0) y 10 sesiones semanales de intervención; la 11–12 de consolidación es opcional. Alineado con las etapas de «Mi recorrido». Toca una dinámica para abrir su ficha, o «Ver solo estas» para filtrar el catálogo por esa sesión.</p>
     <table class="tbl">
       <thead><tr><th>Sesión</th><th>Etapa</th><th>Objetivo</th><th>Dinámicas</th></tr></thead>
       <tbody id="tBloque"></tbody>
@@ -451,7 +451,7 @@ rows("tErrores", ERRORES.map(function(r){ return r.map(esc); }), ["Error","Por q
 rows("tPerfiles", PERFILES.map(function(p){ return [esc(p.n), p.a, p.d.map(chipDin).join("")]; }), ["Perfil","Ajustes","Dinámicas"]);
 $("tBloque").innerHTML = BLOQUE.map(function(b){
   var din = b[4].map(chipDin).join("") + (b[3] ? '<div class="dmeta">'+esc(b[3])+'</div>' : "");
-  return '<tr class="'+(b[4].length?'rowlink':'')+'" data-din="'+b[4].join(",")+'"><td data-l="Sesión">'+b[0]+'</td><td data-l="Etapa">'+ETAPAS[b[1]]+'</td><td data-l="Objetivo">'+esc(b[2])+'</td><td data-l="Dinámicas">'+din+'</td></tr>';
+  return '<tr class="'+(b[4].length?'rowlink':'')+'" data-din="'+b[4].join(",")+'"><td data-l="Sesión">'+b[0]+'</td><td data-l="Etapa">'+ETAPAS[b[1]]+'</td><td data-l="Objetivo">'+esc(b[2])+'</td><td data-l="Dinámicas">'+din+(b[4].length?' <button type="button" class="chip" data-sesion="'+b[4].join(",")+'">Ver solo estas</button>':'')+'</td></tr>';
 }).join("");
 
 /* ---------- filtros ---------- */
@@ -538,8 +538,8 @@ document.addEventListener("click", function(e){
   if(t.hasAttribute("data-go")){ irA(parseInt(t.getAttribute("data-go"),10)); e.stopPropagation(); return; }
   if(t.hasAttribute("data-perfil")){ st.perfil=t.getAttribute("data-perfil"); st.etapa="todas"; $("fBusca").value=""; soloDin=null; pintaFiltros(); aplica(); $("dinamicas").scrollIntoView(); return; }
   if(t.hasAttribute("data-print")){ imprimir(parseInt(t.getAttribute("data-print"),10)); return; }
-  if(t.matches("tr.rowlink")){
-    soloDin = t.getAttribute("data-din").split(",").map(Number); aplica();
+  if(t.matches("tr.rowlink") || t.hasAttribute("data-sesion")){
+    soloDin = (t.getAttribute("data-din") || t.getAttribute("data-sesion")).split(",").map(Number); aplica();
     soloDin.forEach(function(n){ $("din-"+n).open = false; });
     $("dinamicas").scrollIntoView(); return;
   }

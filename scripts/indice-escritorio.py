@@ -171,7 +171,7 @@ def publicado(url):
             return "protegido"  # publicado, pero pide contraseña
         return e.code < 400
     except Exception:
-        return None
+        return "desconocido"  # sin red, DNS o tiempo agotado: no se sabe
 
 
 def main():
@@ -247,7 +247,10 @@ def main():
                 it["estado"] = "nativo"
                 continue
             ok = publicado(it.get("url"))
-            it["estado"] = ("protegido" if ok == "protegido" else "publicado") if ok else ("sin-url" if not it.get("url") else "no-publicado")
+            if ok == "desconocido":
+                it["estado"] = "desconocido"
+            else:
+                it["estado"] = ("protegido" if ok == "protegido" else "publicado") if ok else ("sin-url" if not it.get("url") else "no-publicado")
     else:
         for it in items:
             it["estado"] = "offline" if it.get("offline") else "nativo" if it.get("nativo") else ("sin-url" if not it.get("url") else "")
@@ -268,7 +271,7 @@ def main():
             print("  sin clasificar:", i["path"])
     if comprobar:
         for i in items:
-            if i["estado"] in ("no-publicado", "sin-url"):
+            if i["estado"] in ("no-publicado", "sin-url", "desconocido"):
                 print(f"  {i['estado']}: {i.get('path') or i['url']}")
 
 
