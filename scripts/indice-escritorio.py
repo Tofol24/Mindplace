@@ -79,8 +79,6 @@ EXTRA = {
         desc="Presentación animada de la herramienta de cuerpo en alerta.", pub="paciente"),
     "app/tools-standalone/historia-alerta.html": dict(cat="otras", emoji="🎬", nombre="Por qué mi cuerpo sigue en alerta",
         desc="Historia animada que acompaña a «Cuando el cuerpo sigue en alerta».", pub="paciente"),
-    "app/tools-standalone/c-8fc7c69d856f.html": dict(cat="privado", emoji="🔒", nombre="Cuestionario privado (cifrado)",
-        desc="Material individual cifrado: solo se abre con su código de acceso. El código no está en ningún archivo.", pub="profesional"),
     "agendas/index.html": dict(cat="centro", emoji="📅", nombre="Agendas · reserva tu cita",
         desc="Reservas de cita con cada profesional (Cal.com).", pub="centro"),
     "despatxos/index.html": dict(cat="centro", emoji="🚪", nombre="Despatxos i comissions",
