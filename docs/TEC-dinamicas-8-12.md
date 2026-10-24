@@ -332,6 +332,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 - **Consigna ancla:** «Respirar no es relajarte: es aparecer. El aire es el cebo para que el mono sepa que estás.»
 - **Cuidado:** no corregir la técnica («así no, más profundo»): si la atención
   se va a «hacerlo bien», el mecanismo falla (guía §6). Evitar hiperventilar.
+- **Trauma / disociación:** ojos abiertos y la linterna en las **manos o los
+  pies** (notar los pies en el suelo, las manos en el vaso) en lugar de la
+  barriga; no aguantar el aire. Se pasa a la barriga solo cuando el niño/a lo
+  tolera y lo pide (§7).
 
 ### 8. El semáforo STOP
 **Etapa** 2 · **Parámetro** L↑ · **Material** tres círculos de cartulina (rojo, ámbar, verde) o un semáforo de juguete · **Duración** 10 min
@@ -347,7 +351,9 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   cada escena se pregunta «¿la pausa te dejó elegir?» y se anota qué eligió.
   No se cronometra ni se plantea alargar el ámbar como reto: más segundos no
   significan más latencia útil (una pausa larga puede ser bloqueo, guía §4).
-  Lo que se registra es si la pausa permitió **elegir y actuar**.
+  Lo que se registra es si la pausa permitió **elegir y actuar**. La latencia
+  (L) se registra únicamente en **episodios reales** con activación y respuesta
+  identificables (§9).
 - **Cuidado:** el semáforo no es un castigo ni un «tiempo fuera»; nunca se usa
   como sanción por la familia.
 
@@ -389,11 +395,11 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   1. El terapeuta la modela con una sensación propia real y pequeña.
   2. El niño/a se la dice **al peluche**.
   3. Se la dice **al terapeuta**.
-  4. En el cierre, se la dice **al adulto de casa**, que solo responde: «Gracias por contármelo. Estoy aquí.»
+  4. **Opcional:** si el niño/a quiere, en el cierre se la dice a un **adulto de casa que él/ella elija y con quien se sienta seguro/a**, que responde: «Gracias por contármelo. Estoy aquí.» Antes se pacta con el niño/a qué comparte y qué no; también puede terminar con el terapeuta o con el peluche.
 - **Consigna ancla:** «No tienes que explicarlo. Solo enseñar dónde está.»
 - **8–9 años:** se puede decir con el peluche en la mano y señalar sobre la
   silueta. **10–12:** se prueba también por escrito o en un mensaje al adulto.
-- **Cuidado:** nunca forzar el paso a iguales. En trauma, empezar por zonas tranquilas («¿hay algún sitio de tu cuerpo que esté tranquilo ahora?»).
+- **Cuidado:** nunca forzar el paso al adulto de casa ni a iguales; lo que se cuenta en sesión no se traslada a la familia sin el acuerdo del niño/a, salvo situación de riesgo (§10). En trauma, empezar por zonas tranquilas («¿hay algún sitio de tu cuerpo que esté tranquilo ahora?»).
 
 ### 12. La brújula y las misiones con valor
 **Etapa** 4 · **Parámetro** micro-acción con valor (0/1) · **Material** brújula dibujada con 4 direcciones (familia, amigos, escuela, yo mismo/a), hoja de misiones con pegatinas · **Duración** 15 min
@@ -461,10 +467,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 ### 16. La escalera de valentía
 **Etapa** 3–4 · **Parámetro** permanecer + micro-acción · **Material** escalera dibujada de 6–8 peldaños, figura del niño/a · **Duración** 15 min por peldaño planificado
 
-- **Objetivo:** exposición gradual a la situación temida **con el AIS activo**, siempre después de la fase de aparecer.
+- **Objetivo:** exposición gradual a la situación temida, siempre después de la fase de aparecer. El AIS **acompaña** la exposición, pero **no es un requisito** para subir el peldaño.
 - **Desarrollo:**
   1. Se construyen los peldaños con el niño/a, de lo más fácil a lo más difícil, puntuando cada uno con el termómetro.
-  2. Cada peldaño se sube con los cuatro pasos: PARA · SIENTE · ACOMPAÑA · ACTÚA.
+  2. Cada peldaño puede subirse con los cuatro pasos (PARA · SIENTE · ACOMPAÑA · ACTÚA) o directamente con la acción; si el niño/a necesita «hacerlo bien» antes de actuar, se sube sin ellos.
   3. Se sube un peldaño cuando el niño/a puede **hacer la acción con el mono a su lado**, no cuando ya no nota nada.
 - **Consigna ancla:** «No tienes que dejar de sentirlo para subir. Sube con él.»
 - **8–9 años:** 4–5 peldaños con dibujos. **10–12:** 6–8 peldaños que el
@@ -476,6 +482,15 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
   da a niños sin una adaptación infantil previa.
 - **Cuidado:** si la activación al final es mayor que al principio y la
   continuidad es baja, bajar un peldaño (exposición sin sostén, guía §12).
+  Esta regla **no se aplica al TOC** (ver abajo).
+- **TOC:** se trabaja como **exposición con prevención de respuesta** adaptada a la
+  edad (tratamiento de elección en TOC infantil, NICE CG31). Se expone **sin
+  AIS obligatorio** y sin bajar el peldaño solo porque suba la activación;
+  se pactan con el niño/a y la familia las respuestas que no se harán
+  (comprobar, preguntar, lavar, pedir que le aseguren) y se vigilan las
+  **neutralizaciones**, incluidas las que usen la propia práctica: respirar,
+  «acompañar al mono» o hacer el semáforo para que la sensación se vaya. Si
+  aparecen, se nombran y se retiran del peldaño.
 
 ---
 
@@ -487,10 +502,10 @@ Cada ficha: **etapa** · **parámetro principal** · **material** · **duración
 | **TDAH / baja continuidad** | Trazos de 3–5 s, mucho movimiento, anclajes propioceptivos (pies en el suelo, manos apretando una pelota), sesiones con más cambios de actividad | 1, 8, 9, 14 |
 | **Rabietas / ira / conducta desafiante** | El semáforo como herramienta del niño/a, nunca como castigo; trabajar primero con el adulto su propia regulación | 6, 8, 12, 13 |
 | **Rumiación / preocupación** | Caja de preocupaciones: 10 min al día con el adulto; fuera de ese rato, «lo guardo para mi caja» + parada | 4, 8, 10 |
-| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación; el objetivo es actuar con la sensación presente; evitar la variante de salto de la dinámica 6 | 4, 12, 16 |
+| **TOC / ansiedad por la salud** | Vigilar que la práctica no se vuelva ritual de comprobación ni neutralización; el objetivo es actuar con la sensación presente; la escalera (16) se hace como exposición con prevención de respuesta, sin AIS obligatorio; evitar la variante de salto de la dinámica 6 | 4, 12, 16 |
 | **Trauma / disociación** | Seguridad antes que latencia; anclajes periféricos (manos, pies) antes que barriga o pecho; ojos abiertos; frase honesta muy graduada | 3 (zonas tranquilas), 7, 14 |
 | **TEA** (propuesta, a validar caso a caso) | La literatura sobre interocepción en TEA es inconsistente; apoyos visuales, consignas literales, metáforas muy concretas o sustituidas por objetos; respetar perfil sensorial | 3, 7, 9, 15 |
-| **Dolor recurrente (cefaleas, dolor abdominal)** | No preguntar «¿cómo está tu dolor?», sino «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
+| **Dolor recurrente (cefaleas, dolor abdominal)** | Solo con dolor **ya evaluado por pediatría**; ante dolor nuevo, que cambia o con señales de alarma, derivar a valoración médica. No centrar la sesión en «¿cómo está tu dolor?» (se revisa por si cambia), y añadir «¿qué hiciste hoy que te importaba aunque doliera?»; anclaje con curiosidad (bordes, color, si cambia) | 3, 11, 12 |
 
 ---
 
@@ -503,7 +518,7 @@ y el niño aprende a regularse viendo al adulto regularse.
 - **Tres pautas para casa:**
   1. **Hacer las paradas con el niño/a**, no mandarlas: «paramos los dos».
   2. **Validación sin corrección**: «Te noto así… ¿quieres que estemos contigo o prefieres un rato a solas?»
-  3. **Responder a la frase honesta** sin preguntar por qué ni dar soluciones: «Gracias por contármelo. Estoy aquí.»
+  3. **Responder a la frase honesta** validando primero, sin prisa por buscar el porqué ni dar soluciones: «Gracias por contármelo. Estoy aquí.» Después, si el niño/a quiere, se le deja contar qué ha pasado y qué necesita. Acompañar una sensación no es lo mismo que investigar una situación: si aparece un problema real (acoso, daño, algo que requiere protección), se escucha, se ayuda y se informa al terapeuta.
 - **Acompañar no es dejar de proteger.** La respuesta de solo presencia es
   para las sensaciones del día a día. Si el niño/a cuenta o muestra algo que
   puede ser un peligro real (que le pegan o se burlan de él/ella, que alguien
@@ -524,8 +539,11 @@ y el niño aprende a regularse viendo al adulto regularse.
 > el veig de cada vegada més capaç d'aturar-se un moment abans de reaccionar.
 > Per a aquestes setmanes us demanaria que féssiu amb ell/ella les tres
 > aturades del dia, també quan tot va bé, i que quan us digui «no sé per què,
-> però ho not aquí» li respongueu només «gràcies per dir-m'ho, som aquí», sense
-> demanar-li per què ni donar-li solucions. Entenc que vosaltres també ho
+> però ho not aquí» primer li respongueu «gràcies per dir-m'ho, som aquí»,
+> sense pressa per trobar-hi una explicació ni una solució. Després, si ell/ella
+> vol, deixau-li explicar què ha passat i què necessita. Si el que conta és un
+> problema real, com que algú li fa mal o el molesta a l'escola, aleshores sí
+> que cal escoltar-lo bé, ajudar-lo i dir-m'ho. Entenc que vosaltres també ho
 > anireu observant amb el dia a dia, i m'agradarà que a la propera sessió ho
 > poguem compartir.
 >
@@ -537,14 +555,18 @@ y el niño aprende a regularse viendo al adulto regularse.
 
 Siempre **orientativo**, nunca diagnóstico (guía §13). Mismas direcciones que
 el resto del ecosistema: **subir = mejorar** en las escalas de capacidad.
+**Excepción:** el termómetro de ruido interno es una medida **bruta**
+(0 = nada de ruido, 10 = muchísimo ruido), así que en él **bajar = mejorar**.
+Si se pasa a una escala de capacidad 0–10, se invierte (10 = poco ruido,
+señal nítida), como indica la guía.
 
 | Dato | 8–9 años | 10–12 años | Parámetro |
 |---|---|---|---|
-| Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 | D |
+| Ruido interno | 3 caras (mucho · un poco · poco ruido) | Termómetro 0–10 (0 = nada, 10 = muchísimo; bajar = mejorar) | D↓ |
 | Zona del cuerpo | Pegatina en la silueta | Pegatina + palabra sensorial | D |
 | Vueltas en «el hilo» | Número de vueltas | Número de vueltas (aparte) | Darse cuenta y volver |
 | Trazo más largo | — | Segundos del trazo más largo | C |
-| Puente (semáforo) | «¿Paré antes de hacer?» sí/no | «¿La pausa me dejó elegir?» sí/no + qué elegí | L |
+| Puente en episodios reales | «¿Paré antes de hacer?» sí/no | Igual + «¿la pausa me dejó elegir?» y qué elegí | L |
 | Misión con valor | Pegatina 0/1 | 0/1 + qué hice | Micro-acción |
 | Tres paradas | Pegatinas sol/plato/luna | Igual + marcar si fue en calma o en malestar | Práctica programada |
 | Malestar con la práctica | «¿Algo te ha resultado incómodo?» (siempre) | Igual | Seguridad |
@@ -552,7 +574,15 @@ el resto del ecosistema: **subir = mejorar** en las escalas de capacidad.
 Lectura en sesión: se mira **el perfil**, no un número suelto, con los cinco
 perfiles de la guía §12 como lectura cualitativa. Si se usa el cuestionario TEC
 o el screening de aprens-app, el adulto ayuda a contestar y se indica en el
-registro.
+registro. El screening pide nombre, edad, motivo y contexto, y los incluye en
+el código y en los enlaces que genera: con menores, rellenarlo con **iniciales
+o un alias**, no enviar ese código o enlace por canales no seguros (WhatsApp,
+correo personal) y guardar el resultado en la **historia clínica**. En los
+campos libres (motivo, contexto, situación) no escribir datos que identifiquen
+al menor ni a terceros (colegio, nombres de compañeros o familiares). El
+screening guarda además una copia en el navegador del dispositivo: después de
+pasarlo a la historia, borrar el caso desde la lista de pacientes (icono de
+papelera) y no usarlo en dispositivos compartidos.
 
 ---
 
