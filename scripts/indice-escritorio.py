@@ -34,6 +34,21 @@ SITIOS = {
 
 # Lo que no está en el hub del paciente o necesita otra etiqueta.
 # cat: categoría · pub: "paciente" | "profesional" | "centro"
+# Herramientas que no están en el repositorio ni en Netlify (viven en tu ordenador).
+# rel: ruta dentro de la página privada de claude.ai donde se alojan; None si no se sube.
+# Con --offline-base=URL (la página privada) las tarjetas llevan a esa página; sin él, a la ruta relativa.
+OFFLINE = [
+    dict(rel="offline/neuroestimulador.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
+         desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ…) previa a neuroestimulación, con señales a revisar y texto para el informe.", pub="profesional"),
+    dict(rel="offline/tdah-v5.html", emoji="🧩", nombre="Orientador clínico TDAH · v5 con accesos",
+         desc="Versión con biblioteca de instrumentos y enlaces configurables a tus documentos (Dropbox/Drive) y a TEAcorrige.", pub="profesional"),
+    dict(rel="offline/cami-cap-a-dins.html", emoji="⛰️", nombre="Camí cap a dins · cribratge previ",
+         desc="Cribratge abans de l'experiència AIS · TEC a Santa Magdalena: bandera orientativa i resum per enviar a en Tòfol.", pub="paciente"),
+    dict(rel=None, emoji="📋", nombre="PAI Profesional · corrección e interpretación",
+         desc="Corrección del PAI con baremos españoles, vaciado de protocolo en papel y hoja de tecleo para TEA.", pub="profesional",
+         nota="Solo en tu ordenador (PAI_PROFESIONAL17.html): contiene ítems y baremos protegidos, por eso no se sube a ningún sitio."),
+]
+
 EXTRA = {
     "app/index.html": dict(cat="entradas", emoji="📱", nombre="App APRENS (hub del paciente)",
         desc="La app instalable: todas las herramientas con un único registro por paciente. Es el enlace que se da a los pacientes.", pub="paciente"),
@@ -82,6 +97,7 @@ CATS = [
     # aquí se insertan los grupos del hub (app.js) en su orden
     ("otras", "🧩", "Otras apps y piezas", "Apps aparte y piezas que no salen en el hub."),
     ("centro", "🏢", "Gestión del centro", "Herramientas internas de APRENS."),
+    ("offline", "💻", "Fuera de Netlify", "Herramientas que tienes en tu ordenador. Las que no contienen material protegido están alojadas en tu página privada de claude.ai."),
     ("privado", "🔒", "Material privado", "Enlaces individuales cifrados."),
     ("sinclasificar", "❓", "Sin clasificar", "HTML nuevos que todavía no tienen sitio en este índice."),
     ("antiguas", "🗄️", "Webs antiguas (redirecciones)", "Direcciones de Netlify anteriores a la app. Hoy muestran un aviso y llevan a la herramienta dentro de la app."),
@@ -204,6 +220,14 @@ def main():
         else:
             t, d = meta(p)
             add(dict(cat="sinclasificar", emoji="📄", nombre=t, desc=d or p, pub="paciente", path=p))
+    # 3b) herramientas fuera del repositorio
+    base = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--offline-base=")), "")
+    for o in OFFLINE:
+        it = dict(o); it["cat"] = "offline"; it["offline"] = True
+        it["url"] = (base or o["rel"]) if o["rel"] else None
+        if base and o["rel"]:
+            it["nota"] = "Se abre desde tu página privada de claude.ai, en «Fuera de Netlify»."
+        items.append(it)
     # 4) webs antiguas
     tabla = leer("netlify-redirecciones/README.md")
     for m in re.finditer(r"\| `([a-z0-9-]+\.netlify\.app)` \| `#/tool/([a-z_]+)` · ([^|]+)\|", tabla):
@@ -212,6 +236,9 @@ def main():
 
     if comprobar:
         for it in items:
+            if it.get("offline"):
+                it["estado"] = "offline"
+                continue
             if it.get("nativo"):
                 it["estado"] = "nativo"
                 continue
@@ -219,7 +246,7 @@ def main():
             it["estado"] = ("protegido" if ok == "protegido" else "publicado") if ok else ("sin-url" if not it.get("url") else "no-publicado")
     else:
         for it in items:
-            it["estado"] = "nativo" if it.get("nativo") else ("sin-url" if not it.get("url") else "")
+            it["estado"] = "offline" if it.get("offline") else "nativo" if it.get("nativo") else ("sin-url" if not it.get("url") else "")
 
     usados = {i["cat"] for i in items} | {"favoritos"}
     cats = [c for c in cats if c[0] in usados]

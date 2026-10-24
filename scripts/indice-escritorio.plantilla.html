@@ -121,7 +121,7 @@ function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
 var st = load(); st.fav = st.fav || {}; st.rec = st.rec || []; st.cat = st.cat || "todas"; st.pub = st.pub || "todo";
 
-D.items.forEach(function(it, i){ it.k = it.path || it.url || ("i"+i); });
+D.items.forEach(function(it, i){ it.k = it.path || it.url || it.nombre || ("i"+i); });
 var $ = function(id){ return document.getElementById(id); };
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function norm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
@@ -137,6 +137,7 @@ function estadoTag(it){
   if(it.estado==="protegido") return '<span class="tag ok">Publicado · con contraseña</span>';
   if(it.estado==="no-publicado") return '<span class="tag no">Sin publicar</span>';
   if(it.estado==="sin-url") return '<span class="tag no">Sin dirección pública</span>';
+  if(it.estado==="offline") return '<span class="tag">'+(it.url?'Página privada':'Solo en tu ordenador')+'</span>';
   if(it.estado==="nativo") return '<span class="tag">App iOS</span>';
   return "";
 }
