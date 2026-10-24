@@ -56,5 +56,5 @@ Si no encuentras nada relevante, dilo explícitamente."
   [ -n "$AVISO" ] && echo "> AVISO: $AVISO"
   echo
 } > "$REPORT"
-codex exec --sandbox read-only "$PROMPT" | tee -a "$REPORT"
+codex exec --sandbox read-only "$PROMPT" </dev/null | tee -a "$REPORT"
 echo "codex-review: informe guardado en $REPORT" >&2
