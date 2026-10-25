@@ -245,6 +245,7 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .fb-box.good{background:var(--ok-soft)} .fb-box.good h3{color:var(--ok)}
 .fb-box.miss{background:var(--warn-soft)} .fb-box.miss h3{color:var(--warn)}
 .fb-box.wrong{background:var(--bad-soft)} .fb-box.wrong h3{color:var(--bad)}
+.care{border:2px solid var(--accent);background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
 .weave{border-left:4px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:4px}
 details.better{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
 details.better summary{cursor:pointer;font-weight:700}
@@ -335,6 +336,14 @@ const PRESETS = [
   {nom:"Alemany", llengua:"de", c:3}, {nom:"Matemàtiques", llengua:"ca", c:5, tipus:"problemes"},
   {nom:"Física i Química", llengua:"ca", c:6, tipus:"problemes"}, {nom:"Filosofia", llengua:"ca", c:8},
 ];
+// A qui parlen les peticions a Claude: la filla (4t d'ESO) o, a la versió amb codis, qualsevol estudiant.
+// A la versió amb codis, cada estudiant tria el seu curs a Configuració.
+const CURSOS = ["1r d'ESO", "2n d'ESO", "3r d'ESO", "4t d'ESO", "1r de batxillerat", "2n de batxillerat"];
+const WHO = document.querySelector('meta[name="explica-proxy"]')
+  ? {get curs() { const c = ls("explica:curs"); return CURSOS.includes(c) ? c : "ESO o batxillerat"; },
+     get una() { return "un o una estudiant de " + this.curs; }, get duna() { return "d'un o una estudiant de " + this.curs; },
+     la: "l'estudiant", dela: "de l'estudiant", Ella: "L'estudiant"}
+  : {curs: "4t d'ESO", una: "una alumna de 4t d'ESO (15-16 anys)", duna: "d'una alumna de 4t d'ESO (15-16 anys)", la: "l'alumna", dela: "de l'alumna", Ella: "Ella"};
 const subjColor = (s) => `var(--s${(s?.c ?? 8)})`;
 // Guia i preguntes: en la llengua de l'assignatura si és ca/es; per a anglès i alemany,
 // explicacions en català i preguntes en la llengua estrangera.
@@ -594,12 +603,18 @@ function flushSoon() { for (const [k, fn] of dirty) { clearTimeout(draftTimers[k
    Dins de claude.ai: capacitat "sample" (el compte de qui la fa servir).
    Fora (fitxer obert al navegador): clau de l'API d'Anthropic.
    ============================================================ */
+// Versió per a pacients: la pàgina porta <meta name="explica-proxy"> i parla amb Claude a través
+// del servidor propi (que guarda la clau); aquí només cal el codi d'accés de cada alumne.
+const PROXY = document.querySelector('meta[name="explica-proxy"]')?.content || "";
+if (PROXY) document.querySelector(".brand .label").textContent = "Estudi d'ESO i batxillerat";
 const AI = {
   mode: "none", sample: null, imgMax: 5,
-  memKey: "",
+  memKey: "", memCodi: "",
+  get codi() { return this.memCodi || ls("explica:codi") || ""; },
   get apiKey() { return this.memKey || ls("explica:apikey") || ""; },
   get model() { return ls("explica:model") || "claude-sonnet-5-5"; },
   async init() {
+    if (PROXY) { this.mode = "proxy"; return; }
     if (window.claude?.use) {
       try {
         const s = await claude.use("sample");
@@ -613,7 +628,7 @@ const AI = {
     }
     this.mode = this.apiKey ? "api" : "none";
   },
-  ready() { return this.mode === "claude" || !!this.apiKey; },
+  ready() { return this.mode === "claude" || (this.mode === "proxy" ? !!this.codi : !!this.apiKey); },
   async json(prompt, opts = {}) {
     if (this.mode === "claude") {
       return this.sample.json(prompt, {modelTier: opts.tier || "default", signal: opts.signal, images: opts.images?.length ? opts.images : undefined, cache: false,
@@ -640,6 +655,7 @@ const AI = {
       content.push({type: "image", source: {type: "base64", media_type: type, data: await blobToB64(small)}});
     }
     content.push({type: "text", text: prompt});
+    if (this.mode === "proxy") return this.viaProxy(content, opts);
     let res;
     try {
       res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -659,6 +675,55 @@ const AI = {
       throw {code: "upstream_error", message: body?.error?.message || ("HTTP " + res.status)};
     }
     return arr(body.content).filter(c => c.type === "text").map(c => c.text).join("");
+  },
+  // Servidor propi: respon en streaming (SSE) perquè les correccions llargues no tallin per temps.
+  async viaProxy(content, opts) {
+    let res;
+    try {
+      res = await fetch(PROXY, {
+        method: "POST", signal: opts.signal,
+        headers: {"content-type": "application/json", "x-codi": this.codi},
+        body: JSON.stringify({tier: opts.tier || "default", max_tokens: 12000, messages: [{role: "user", content}]}),
+      });
+    } catch (e) {
+      if (e?.name === "AbortError") throw {code: "cancelled"};
+      throw {code: "upstream_error", message: "No hi ha connexió. Comprova internet."};
+    }
+    if (!res.ok) {
+      const b = await res.json().catch(() => ({}));
+      if (res.status === 401) { this.codiOk = false; renderConn(); }
+    throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || (b.error === "limit" ? "daily_limit" : b.error === "saldo" ? "no_credit" : res.status === 429 ? "rate_limited" : "upstream_error"),
+        message: b.message || ("HTTP " + res.status)};
+    }
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = "", text = "", stop = null;
+    try {
+      for (;;) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, {stream: true}).replace(/\r\n/g, "\n");
+        let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {
+          const ev = buf.slice(0, i); buf = buf.slice(i + 2);
+          const data = ev.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
+          if (!data) continue;
+          let j; try { j = JSON.parse(data); } catch { continue; }
+          if (j.type === "content_block_delta" && j.delta?.type === "text_delta") { text += j.delta.text; opts.onText?.(text.length); }
+          else if (j.type === "message_delta" && j.delta?.stop_reason) stop = j.delta.stop_reason;
+          else if (j.type === "message_stop") stop ||= "end_turn";
+          else if (j.type === "error") throw {code: j.error?.type === "overloaded_error" ? "rate_limited" : "upstream_error", message: j.error?.message};
+        }
+      }
+    } catch (e) {
+      if (e?.name === "AbortError") throw {code: "cancelled"};
+      throw e?.code ? e : {code: "upstream_error", message: "La connexió s'ha tallat. Torna-ho a provar."};
+    }
+    // Una resposta que no arriba al final (tall de connexió o massa llarga) no es dona per bona.
+    if (!stop) throw {code: "upstream_error", message: "La resposta s'ha tallat. Torna-ho a provar."};
+    if (stop === "max_tokens") throw {code: "prompt_too_large", message: "La resposta era massa llarga."};
+    if (!text.trim()) throw {code: "empty_completion"};
+    this.codiOk = true;
+    return text;
   },
 };
 function parseLoose(t) {
@@ -680,8 +745,11 @@ function aiErr(e) {
     image_rejected: "Aquesta imatge no s'ha pogut llegir (format o mida). Prova amb una altra captura.",
     images_unavailable: "En aquesta vista no es poden enviar imatges a Claude. Prova amb PDF o Word, o enganxa el text.",
     sampling_disabled: "Claude no està disponible per a aquest compte.",
-    no_ai: "Encara no hi ha connexió amb Claude. Obre Configuració per connectar-la.",
+    no_ai: PROXY ? "Primer posa el teu codi d'accés a Configuració." : "Encara no hi ha connexió amb Claude. Obre Configuració per connectar-la.",
     bad_key: "La clau de l'API no és vàlida. Revisa-la a Configuració.",
+    bad_code: "Aquest codi d'accés no és vàlid o ja no està actiu. Revisa'l a Configuració.",
+    daily_limit: "Avui ja has fet totes les peticions del dia, o el comptador no funciona. Demà podràs continuar; si passa des del primer moment, avisa qui t'ha donat el codi.",
+    no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
     empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
   })[c] || (e?.message ? "Error: " + e.message : "Alguna cosa ha fallat. Torna-ho a provar.");
 }
@@ -744,7 +812,7 @@ async function ocr(blobs, signal, onPage) {
     const group = blobs.slice(i, i + per);
     onPage?.(i + 1, blobs.length);
     const text = await AI.text(
-`Aquestes ${group.length} imatges són material d'estudi d'una alumna de 4t d'ESO (fotos o captures d'apunts, llibre de text, fitxes o diapositives), en ordre.
+`Aquestes ${group.length} imatges són material d'estudi ${WHO.duna} (fotos o captures d'apunts, llibre de text, fitxes o diapositives), en ordre.
 Transcriu fidelment tot el text que s'hi llegeix, imatge per imatge, començant cada una amb una línia "--- Pàgina ${i + 1}… ---" (numera-les a partir de ${i + 1}).
 - Respecta títols, llistes i l'ordre de lectura.
 - Si hi ha esquemes, mapes, taules o dibuixos amb rètols, descriu-los com a text estructurat (per exemple: "Esquema: A → B → C").
@@ -851,7 +919,7 @@ async function makeGuide(t) {
   const mat = materialText(t, 160000);
   if (!mat) { S.errors.guia = "Primer afegeix material a la pestanya Material."; render(); return; }
   const g = await work("guia", "Claude està ordenant el material: resum, mapa conceptual i conceptes clau.", (signal, onText) => AI.json(
-`Ets un professor/a expert que ajuda una alumna de 4t d'ESO (15-16 anys) a estudiar per a un examen.
+`Ets un professor/a expert que ajuda ${WHO.una} a estudiar per a un examen.
 Assignatura: ${s.nom}. Tema: ${t.titol}.
 A continuació hi ha tot el material d'estudi que ha aportat (apunts, llibre, fitxes; part pot venir de fotos o PDF transcrits i tenir errors o fragments repetits).
 
@@ -899,7 +967,7 @@ async function makeQuestions(t, L) {
   const altres = L === 4 ? temesOf(t.subjId).filter(o => o.id !== t.id && o.guia).map(o => `- ${o.titol}: ${arr(o.guia.conceptes).map(c => c.nom).join(", ")}`).join("\n") : "";
   const n = L === 4 ? 2 : 3;
   const r = await work("quiz", `Claude prepara ${n} preguntes de nivell ${L} (${LEVELS[L].nom}).`, (signal, onText) => AI.json(
-`Ets un professor/a que prepara una autoavaluació oral per a una alumna de 4t d'ESO. Ella respondrà parlant (o escrivint) i després rebrà una valoració.
+`Ets un professor/a que prepara una autoavaluació oral per a ${WHO.una}. ${WHO.Ella} respondrà parlant (o escrivint) i després rebrà una valoració.
 Assignatura: ${s.nom}. Tema: ${t.titol}.
 
 NIVELLS DE PROFUNDITAT
@@ -959,7 +1027,7 @@ async function evaluate(t, q) {
   const L = q.nivell || 0;
   const cmap = Object.fromEntries(arr(t.guia?.conceptes).map(c => [c.id, c]));
   const r = await work("ev_" + q.id, "Claude està llegint la teva resposta.", (signal, onText) => AI.json(
-`Avalues la resposta d'una alumna de 4t d'ESO (15-16 anys) en una autoavaluació d'estudi.
+`Avalues la resposta ${WHO.duna} en una autoavaluació d'estudi.
 Assignatura: ${s.nom}. Tema: ${t.titol}.
 ${L ? `Nivell de profunditat demanat: N${L} ${LEVELS[L].nom} (${LEVELS[L].llarg})` : "Tipus: explicació lliure de tot el tema. Valora sobretot quins conceptes cobreix, si els relaciona i què s'ha deixat."}
 Escala de profunditat: N1 recordar dades; N2 explicar amb paraules pròpies i el perquè; N3 relacionar conceptes; N4 visió de conjunt, aplicar i argumentar.
@@ -978,13 +1046,13 @@ ${materialText(t, 40000)}
 ${prev ? `
 Aquest és un nou intent (intent ${q.avals.length + 1}). En l'anterior li vas dir que faltava: ${arr(prev.falta).join("; ") || "-"}; errors: ${arr(prev.errors).join("; ") || "-"}. Valora també què ha millorat.` : ""}
 
-Resposta de l'alumna (${q.oral ? "dictada amb el micròfon i transcrita automàticament: ignora crosses com «eh», «doncs», «o sigui», repeticions, falta de puntuació i paraules mal transcrites que s'entenguin pel context" : "escrita"}):
+Resposta ${WHO.dela} (${q.oral ? "dictada amb el micròfon i transcrita automàticament: ignora crosses com «eh», «doncs», «o sigui», repeticions, falta de puntuació i paraules mal transcrites que s'entenguin pel context" : "escrita"}):
 """
 ${ans}
 """
 
 Com valorar:
-- Compara-la amb els criteris i amb el material. Sigues just i concret: cita o parafraseja el que ha dit ella.
+- Compara-la amb els criteris i amb el material. Sigues just i concret: cita o parafraseja el que ha dit.
 - nota de 0 a 10: 0-4 falten les idees bàsiques o hi ha errors importants; 5-6 la idea principal és correcta però incompleta o superficial; 7-8 correcta i ben explicada, amb la majoria de punts clau; 9-10 completa, precisa, amb vocabulari específic i les connexions que demana el nivell.
 - profunditat (1-4): el nivell que demostra de veritat la resposta, que pot ser diferent del demanat. Si li demanes relacionar i només dona definicions soltes, és 1 o 2.
 ${s.llengua !== "ca" && s.llengua !== "es" ? `- És una assignatura de llengua (${LANGS[s.llengua].nom}): si respon en aquesta llengua, assenyala també 1-3 errors de llengua importants dins "errors".` : ""}
@@ -992,9 +1060,10 @@ ${s.llengua !== "ca" && s.llengua !== "es" ? `- És una assignatura de llengua (
 - "com_integrar": explica on i com encaixar el que falta DINS de la seva pròpia explicació (per exemple: "Després de dir que…, afegeix que… perquè…").
 - "resposta_millorada": la seva resposta reescrita mantenint la seva manera de parlar, amb el que falta ja integrat. Breu.
 - Escriu tot el feedback en ${fbLang(s)}.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
 
 Respon només amb JSON:
-{"nota":7,"profunditat":2,"punts_forts":["…"],"falta":["idea o connexió que no ha dit"],"errors":["el que ha dit malament i la correcció"],"com_integrar":"…","resposta_millorada":"…","conceptes_ok":["c1"],"conceptes_febles":["c3"],"millora":"${prev ? "què ha millorat respecte de l'intent anterior" : ""}"}
+{"nota":7,"profunditat":2,"punts_forts":["…"],"falta":["idea o connexió que no ha dit"],"errors":["el que ha dit malament i la correcció"],"com_integrar":"…","resposta_millorada":"…","conceptes_ok":["c1"],"conceptes_febles":["c3"],"millora":"${prev ? "què ha millorat respecte de l'intent anterior" : ""}","benestar":""}
 "conceptes_ok": conceptes que ha explicat bé. "conceptes_febles": conceptes que tocava explicar i no ha dit o ha dit malament.`, {signal, onText}));
   if (!r) return;
   const nota = Math.max(0, Math.min(10, Math.round(Number(r.nota) || 0)));
@@ -1002,7 +1071,7 @@ Respon només amb JSON:
   const valid = (x) => arr(x).map(String).filter(id => cmap[id]);
   const av = {t: Date.now(), nota, profunditat: prof, punts_forts: arr(r.punts_forts).map(String), falta: arr(r.falta).map(String), errors: arr(r.errors).map(String),
     com_integrar: String(r.com_integrar || ""), resposta_millorada: String(r.resposta_millorada || ""), conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles),
-    millora: String(r.millora || ""), resposta: ans};
+    millora: String(r.millora || ""), benestar: str(r.benestar, 800), resposta: ans};
   if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.ronda?.items).includes(q)) return;
   q.avals.push(av); q.avals = q.avals.slice(-5);
   t.historial = [...arr(t.historial), {t: av.t, qid: q.id, nivell: L, nota, prof, ok: av.conceptes_ok, feble: av.conceptes_febles, pregunta: q.pregunta.slice(0, 220), intent: q.avals.length}];
@@ -1013,7 +1082,7 @@ async function makeReport(t) {
   if (!arr(t.historial).length) { S.errors.inf = "Encara no hi ha respostes avaluades. Fes primer alguna ronda de preguntes."; render(); return; }
   const st = conceptStatus(t), ls_ = levelScores(t), lp = levelScores(t, "ex"), es = errStats(t);
   const r = await work("inf", "Claude fa la valoració global del tema.", (signal, onText) => AI.json(
-`Fes una valoració global de com s'està preparant una alumna de 4t d'ESO el tema «${t.titol}» de ${s.nom}.
+`Fes una valoració global de com s'està preparant ${WHO.una} el tema «${t.titol}» de ${s.nom}.
 Nivells: N1 recordar, N2 comprendre, N3 relacionar, N4 integrar.
 Dies d'estudi amb autoavaluació: ${studyDays(t)}.
 Notes per nivell (0-10, de més antiga a més recent): ${[1,2,3,4].map(L => `N${L}: ${ls_[L].join(", ") || "cap"}`).join(" · ")}
@@ -1024,7 +1093,7 @@ ${arr(t.guia?.conceptes).map(c => `- ${c.nom}: ${ST_LABEL[st[c.id]]}`).join("\n"
 Historial de preguntes (data, nivell, nota, profunditat demostrada):
 ${arr(t.historial).slice(-50).map(h => `- ${today(h.t)} ${h.nivell ? lvlTag(h.mode, h.nivell) : "lliure"} ${h.nota}/10${h.mode === "ex" ? (h.errs?.length ? " errors: " + h.errs.join(", ") : "") : " (prof. " + h.prof + ")"}: ${h.pregunta}`).join("\n")}
 
-Escriu en ${fbLang(s)}, amb to proper i concret, adreçat a ella (de tu). Res d'elogis buits.${isProb(s) ? "\nA \"nivells\" inclou també els nivells P1-P4 dels exercicis que hagi treballat, i digues com evitar els errors més freqüents." : ""}
+Escriu en ${fbLang(s)}, amb to proper i concret, adreçat directament a ${WHO.la} (de tu). Res d'elogis buits.${isProb(s) ? "\nA \"nivells\" inclou també els nivells P1-P4 dels exercicis que hagi treballat, i digues com evitar els errors més freqüents." : ""}
 Respon només amb JSON:
 {"valoracio":"2-4 frases: fins a quin nivell de profunditat domina el tema ara mateix i per què",
  "nivells":[{"nivell":"N1","text":"una frase sobre aquest nivell"}],
@@ -1044,7 +1113,7 @@ Respon només amb JSON:
 const LEVELS_P = {
   1: {nom:"Aplicar",   curt:"Un pas: una fórmula o un procediment amb dades directes.", llarg:"Un sol pas: aplicar una fórmula o un procediment amb les dades que dona l'enunciat."},
   2: {nom:"Encadenar", curt:"Dos o tres passos: aïllar, canviar unitats, combinar.", llarg:"Dos o tres passos seguits: aïllar una incògnita, canviar unitats o combinar dues fórmules."},
-  3: {nom:"Plantejar", curt:"Problema amb context: tu tries el mètode.", llarg:"Problema amb context real on l'alumna ha de decidir quin mètode cal i plantejar-lo ella."},
+  3: {nom:"Plantejar", curt:"Problema amb context: tu tries el mètode.", llarg:"Problema amb context real on l'estudiant ha de decidir quin mètode cal i plantejar-lo ella."},
   4: {nom:"Raonar",    curt:"Combinar continguts, justificar i interpretar.", llarg:"Combinar continguts del tema (o d'altres temes), justificar el procediment i interpretar si el resultat té sentit."},
 };
 const ERR_TYPES = ["lectura de l'enunciat", "plantejament", "fórmula", "càlcul", "unitats", "signes", "arrodoniment", "interpretació"];
@@ -1082,7 +1151,7 @@ function exercisePrompt(t, s, extra) {
   const st = conceptStatus(t);
   const fets = arr(t.historial).filter(h => h.mode === "ex").slice(-30).map(h => "- " + h.pregunta).join("\n") || "(cap)";
   const errs = errStats(t).map(([k, v]) => `${k} (${v})`).join(", ") || "encara cap";
-  return `Ets un professor/a de ${s.nom} de 4t d'ESO que prepara exercicis de pràctica per a una alumna. Ella els resoldrà pas a pas (escrivint o amb una foto del paper) i després rebrà la correcció.
+  return `Ets un professor/a de ${s.nom} de ${WHO.curs} que prepara exercicis de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà pas a pas (escrivint o amb una foto del paper) i després rebrà la correcció.
 Tema: ${t.titol}.
 
 NIVELLS DE DIFICULTAT
@@ -1160,7 +1229,7 @@ async function evaluateExercise(t, q) {
   if (prev && prev.sig === sig) { S.errors["xe_" + q.id] = "Aquesta resolució ja està corregida. Arregla el que t'ha marcat i torna-la a enviar."; render(); return; }
   const cmap = Object.fromEntries(arr(t.guia?.conceptes).map(c => [c.id, c]));
   const r = await work("xe_" + q.id, "Claude està corregint la teva resolució pas a pas. Pot trigar una mica.", (signal, onText) => AI.json(
-`Corregeixes un exercici de ${s.nom} d'una alumna de 4t d'ESO (15-16 anys). Tema: ${t.titol}. Nivell P${q.nivell} (${LEVELS_P[q.nivell].nom}).
+`Corregeixes un exercici de ${s.nom} ${WHO.duna}. Tema: ${t.titol}. Nivell P${q.nivell} (${LEVELS_P[q.nivell].nom}).
 
 Enunciat:
 """
@@ -1177,7 +1246,7 @@ ${prev ? `
 És un nou intent (intent ${q.avals.length + 1}). A l'anterior li vas marcar: ${prev.errors.map(e => e.tipus + ": " + e.explicacio).join("; ") || "cap error"}. Digues també què ha arreglat.` : ""}
 ${q.pistesVistes ? `Ha fet servir ${q.pistesVistes} pista${q.pistesVistes > 1 ? "es" : ""} abans de resoldre'l.` : ""}
 
-Resolució de l'alumna${q.guiat ? " (mode guiat: ha omplert cada pas)" : ""}:
+Resolució ${WHO.dela}${q.guiat ? " (mode guiat: ha omplert cada pas)" : ""}:
 """
 ${ans || "(no ha escrit res: mira les fotos)"}
 """
@@ -1192,9 +1261,10 @@ Com corregir:
 - To proper, directe i respectuós; comença pel que ha fet bé. Res d'elogis buits; els errors són informació per millorar.
 - ${PLAIN_MATH}
 - Escriu en ${fbLang(s)}.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
 
 Respon només amb JSON:
-{"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"càlcul","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"resultat final correcte amb unitats","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[]}
+{"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"càlcul","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"resultat final correcte amb unitats","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[],"benestar":""}
 Només si la solució de referència té un error: "referencia_erronia": true i, a "solucio_corregida", els passos correctes amb la mateixa forma {"titol","explicacio","resultat"}.`,
     {signal, onText, tier: "complex", images: photos}));
   if (!r) return;
@@ -1204,7 +1274,7 @@ Només si la solució de referència té un error: "referencia_erronia": true i,
     passos: arr(r.passos).slice(0, 15).map(p => ({pas: str(p?.pas, 600), estat: states.includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
     errors: arr(r.errors).slice(0, 8).map(e => ({tipus: ERR_TYPES.includes(e?.tipus) ? e.tipus : (str(e?.tipus, 40) || "altres"), explicacio: str(e?.explicacio, 1000)})),
     punts_forts: strs(r.punts_forts, 600), com_continuar: str(r.com_continuar, 1500), resultat_correcte: str(r.resultat_correcte, 300),
-    conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles), millora: str(r.millora, 800), sig: sig.slice(0, 30000), all: allSnap.slice(0, 40000), resposta: ans.slice(0, 20000)};
+    conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles), millora: str(r.millora, 800), benestar: str(r.benestar, 800), sig: sig.slice(0, 30000), all: allSnap.slice(0, 40000), resposta: ans.slice(0, 20000)};
   if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.exRonda?.items).includes(q)) return;
   // Si Claude troba que la solució de referència era errònia, es substitueix per la corregida.
   const fixed = r.referencia_erronia === true ? cleanExercise({solucio: {passos: r.solucio_corregida, resultat: av.resultat_correcte}}, q.nivell).solucio : null;
@@ -1320,10 +1390,12 @@ function renderHome() {
   return `<div class="wrap">
     ${S.loaded && Store.kind === "mem" ? `<div class="banner" role="note"><p><strong>Ara mateix no es guarda res.</strong> ${lsAvailable() ? "Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració." : "Descarrega còpies des de Configuració."}</p>${lsAvailable() ? `<button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button>` : ""}</div>` : ""}
     ${S.loadError ? `<div class="banner" role="alert"><p><strong>No s'han pogut carregar les teves dades.</strong> No hi facis canvis fins que es carreguin, perquè no es perdi res.</p><button class="btn sm primary" data-act="retryLoad" type="button">Torna-ho a provar</button></div>` : ""}
+    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat per fer servir l'eina.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button></div>` : ""}
     <div class="hero">
       <span class="label">Com funciona</span>
       <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
       <p class="muted">Claude ordena el material en un resum i un mapa conceptual, et fa preguntes que comencen per les dades concretes i van baixant fins a relacionar-ho tot, i et diu què has explicat bé, què t'has deixat i com encaixar-ho. A Matemàtiques i Física i Química et posa exercicis, els resols pas a pas i et diu en quin pas t'has equivocat.</p>
+      <p class="muted small">Les respostes les genera una intel·ligència artificial (Claude) i es pot equivocar: si alguna cosa no et quadra, consulta el llibre o el professorat.</p>
     </div>
     <div class="steps">
       <div class="step"><span class="label">Pas 1 · Material</span><h3>Fotos, PDF o Word</h3><p class="muted small">Captures del llibre, fotos del quadern, apunts en PDF o .docx.</p></div>
@@ -1490,6 +1562,7 @@ function viewFeedback(q, a) {
     <div class="score"><span class="big" style="color:${tone}">${a.nota}<small>/10</small></span>
       <div><span class="label">Profunditat que demostres</span><div class="row" style="gap:6px;margin-top:4px">${[1,2,3,4].map(L => `<span class="chip" style="--dc:var(--d${L});${L <= a.profunditat ? "color:var(--ink);border-color:var(--d" + L + ")" : "opacity:.5"}"><i style="${L <= a.profunditat ? "" : "background:transparent"}"></i>N${L}</span>`).join("")}</div></div>
       ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
+${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
     ${a.millora ? `<p><strong>Què has millorat:</strong> ${esc(a.millora)}</p>` : ""}
     <div class="fb-grid">
       ${a.punts_forts.length ? `<div class="fb-box good"><h3>El que ja saps</h3>${list(a.punts_forts)}</div>` : ""}
@@ -1563,6 +1636,7 @@ function viewExFeedback(q, a) {
     <div class="score"><span class="big" style="color:${tone}">${a.nota}<small>/10</small></span>
       <span class="chip ${a.correcte ? "good" : "bad"}">${a.correcte ? "Resultat correcte" : "Resultat per revisar"}</span>
       ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
+${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
     ${a.millora ? `<p><strong>Què has arreglat:</strong> ${esc(a.millora)}</p>` : ""}
     ${a.transcripcio ? `<details class="better"><summary>El que Claude ha llegit a la teva foto</summary><p class="mathtxt">${esc(a.transcripcio)}</p></details>` : ""}
     ${a.passos.length ? `<ol class="pasos" aria-label="Correcció pas a pas">${a.passos.map(p => `<li class="pas ${p.estat}"><span class="ico" aria-hidden="true">${ICO[p.estat]}</span><div><p class="mathtxt"><strong>${esc(p.pas)}</strong> <span class="sr">(${LBL[p.estat]})</span>${p.estat !== "ok" ? ` <span class="chip">${LBL[p.estat]}</span>` : ""}</p>${p.comentari ? `<p class="muted small">${esc(p.comentari)}</p>` : ""}</div></li>`).join("")}</ol>` : ""}
@@ -1636,6 +1710,7 @@ function renderConn() {
   if (Store.failed) { el.innerHTML = `<span class="dot off"></span><span>No s'ha pogut guardar l'últim canvi</span>`; return; }
   el.innerHTML = m === "claude" ? `<span class="dot on"></span><span>Claude connectat · ${st}</span>`
     : m === "api" ? `<span class="dot on"></span><span>Claude (clau API) · ${st}</span>`
+    : m === "proxy" ? (!AI.codi ? `<span class="dot off"></span><span>Falta el codi d'accés</span>` : AI.codiOk ? `<span class="dot on"></span><span>Codi d'accés actiu · ${st}</span>` : `<span class="dot"></span><span>Codi desat (es comprovarà en fer servir Claude) · ${st}</span>`)
     : `<span class="dot off"></span><span>Claude sense connectar</span>`;
 }
 
@@ -1672,10 +1747,15 @@ function newTema(subjId) {
   }, "Crea el tema");
 }
 function settings() {
-  const inClaude = AI.mode === "claude";
+  const inClaude = AI.mode === "claude", proxy = AI.mode === "proxy";
   openDialog(`<h3>Configuració</h3>
-    <div class="field"><span class="label">Connexió amb Claude</span>
-      ${inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
+    <div class="field"><span class="label">${proxy ? "Codi d'accés" : "Connexió amb Claude"}</span>
+      ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu.</p>
+         <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
+         <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
+         <label class="label" for="cursIn">El teu curs</label>
+         <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
+      : inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
       : `<p class="small muted">Si obres aquest fitxer fora de claude.ai, cal una clau de l'API d'Anthropic (console.anthropic.com). Es guarda només en aquest navegador.</p>
          <input type="password" id="apiKey" placeholder="sk-ant-…" value="${esc(AI.apiKey)}" autocomplete="off" aria-label="Clau de l'API">
          <label class="small"><input type="checkbox" id="apiRemember" ${ls("explica:apikey") ? "checked" : ""}> Recorda-la en aquest navegador (no ho facis en un ordinador compartit)</label>
@@ -1689,7 +1769,9 @@ function settings() {
     ${S.subjects.length ? `<div class="field"><span class="label">Com s'estudia cada assignatura</span>${S.subjects.map(x => `<div class="row"><label for="st_${x.id}" style="flex:1 1 140px">${esc(x.nom)}</label><select id="st_${x.id}" data-subjtipus="${x.id}"><option value="teoria" ${x.tipus !== "problemes" ? "selected" : ""}>Teoria</option><option value="problemes" ${x.tipus === "problemes" ? "selected" : ""}>Problemes</option></select></div>`).join("")}</div>` : ""}
     <div class="field"><span class="label">Exemple</span><div class="row"><button class="btn sm" data-act="${S.exampleHidden ? "showExample" : "hideExample"}" type="button">${S.exampleHidden ? "Mostra" : "Amaga"} el tema d'exemple</button></div></div>
     <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Tanca</button>${inClaude ? "" : `<button class="btn primary" data-act="dlgOk" type="button">Desa</button>`}</div>`,
-    () => { const k = $("#apiKey").value.trim(); AI.memKey = k; ls("explica:apikey", k && $("#apiRemember").checked ? k : null); ls("explica:model", $("#apiModel").value); AI.mode = AI.apiKey ? "api" : "none"; closeDialog(); render(); toast(AI.apiKey ? "Clau desada" : "Clau esborrada"); });
+    () => {
+      if (proxy) { ls("explica:curs", $("#cursIn").value || null); const c = $("#codiIn").value.trim().toLowerCase(); AI.memCodi = c; AI.codiOk = false; ls("explica:codi", c && $("#codiRemember").checked ? c : null); closeDialog(); render(); toast(c ? "Codi desat" : "Codi esborrat"); return; }
+      const k = $("#apiKey").value.trim(); AI.memKey = k; ls("explica:apikey", k && $("#apiRemember").checked ? k : null); ls("explica:model", $("#apiModel").value); AI.mode = AI.apiKey ? "api" : "none"; closeDialog(); render(); toast(AI.apiKey ? "Clau desada" : "Clau esborrada"); });
 }
 async function exportAll() {
   const data = JSON.stringify({app: "explica-ho", v: 1, exportat: Date.now(), subjects: S.subjects, temes: S.temes, mats: S.mats});
@@ -1704,7 +1786,7 @@ const str = (x, n = 2000) => String(x ?? "").slice(0, n);
 const num = (x, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(x) || 0)));
 const strs = (x, n) => arr(x).map(v => str(v, n));
 function cleanAval(a) { return {t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), profunditat: num(a?.profunditat, 1, 4), punts_forts: strs(a?.punts_forts), falta: strs(a?.falta), errors: strs(a?.errors),
-  com_integrar: str(a?.com_integrar), resposta_millorada: str(a?.resposta_millorada, 6000), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60), millora: str(a?.millora), resposta: str(a?.resposta, 100000)}; }
+  com_integrar: str(a?.com_integrar), resposta_millorada: str(a?.resposta_millorada, 6000), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60), millora: str(a?.millora), benestar: str(a?.benestar, 800), resposta: str(a?.resposta, 100000)}; }
 function cleanTema(t) {
   const g = t.guia && typeof t.guia === "object" ? {generat: num(t.guia.generat, 0, 9e15), titol: str(t.guia.titol, 200),
     resum: arr(t.guia.resum).map(r => ({apartat: str(r?.apartat, 300), punts: strs(r?.punts)})),
@@ -1720,7 +1802,7 @@ function cleanTema(t) {
       passos: arr(a?.passos).map(p => ({pas: str(p?.pas, 600), estat: ["ok", "error", "arrossegat", "falta"].includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
       errors: arr(a?.errors).map(e => ({tipus: str(e?.tipus, 40), explicacio: str(e?.explicacio, 1000)})), punts_forts: strs(a?.punts_forts, 600),
       com_continuar: str(a?.com_continuar, 1500), resultat_correcte: str(a?.resultat_correcte, 300), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60),
-      millora: str(a?.millora, 800), sig: str(a?.sig, 30000), all: a?.all == null ? undefined : str(a.all, 40000), resposta: str(a?.resposta, 20000)}))}));
+      millora: str(a?.millora, 800), benestar: str(a?.benestar, 800), sig: str(a?.sig, 30000), all: a?.all == null ? undefined : str(a.all, 40000), resposta: str(a?.resposta, 20000)}))}));
   const items = arr(t.ronda?.items).filter(q => okId(q?.id)).map(q => ({id: q.id, nivell: num(q.nivell, 0, 4), tipus: str(q.tipus, 60), pregunta: str(q.pregunta), pista: str(q.pista), conceptes: strs(q.conceptes, 60), criteris: strs(q.criteris), resposta: str(q.resposta, 100000), oral: !!q.oral, avals: arr(q.avals).map(cleanAval)}));
   return {id: t.id, subjId: t.subjId, titol: str(t.titol, 200) || "Tema", creat: num(t.creat, 0, 9e15), mats: arr(t.mats).filter(okId), guia: g,
     ronda: items.length ? {nivell: num(t.ronda.nivell, 0, 4), items} : null,
@@ -1816,12 +1898,13 @@ document.addEventListener("click", (e) => {
     case "dlgClose": closeDialog(); break;
     case "dlgOk": $("#dlg")._submit?.(); break;
     case "export": exportAll(); break;
+    case "settings": settings(); break;
     case "useLocal": Store.kind = "local"; ls("explica:optLocal", "1"); saveEverything(); if ($("#dlg").open) closeDialog(); render(); toast("Es guardarà en aquest navegador"); break;
     case "retryLoad": boot(); break;
     case "wipe": confirmBox("Esborrar-ho tot d'aquest navegador?", "S'esborraran assignatures, temes, material, historial i la clau de l'API guardats aquí. Descarrega abans una còpia si la vols.", () => {
         try { Object.keys(localStorage).filter(k => k.startsWith("explica:")).forEach(k => localStorage.removeItem(k)); } catch {}
         Mic.stop(); Object.values(S.busy).forEach(x => x.ctl.abort()); S.pending.forEach(p => p.ctl.abort()); dirty.clear(); Store.q = {}; Store.pendingRetry = {}; S.paste = {};
-        AI.memKey = ""; if (AI.mode === "api") AI.mode = "none"; dropPhotos(Object.keys(S.photos)); S.subjects = []; S.temes = {}; S.mats = {}; S.view = {temaId: null, tab: "material"}; render(); toast("Dades esborrades"); }, "Esborra-ho tot"); break;
+        AI.memKey = ""; AI.memCodi = ""; if (AI.mode === "api") AI.mode = "none"; dropPhotos(Object.keys(S.photos)); S.subjects = []; S.temes = {}; S.mats = {}; S.view = {temaId: null, tab: "material"}; render(); toast("Dades esborrades"); }, "Esborra-ho tot"); break;
     case "import": $("#importIn").click(); break;
   }
 });
