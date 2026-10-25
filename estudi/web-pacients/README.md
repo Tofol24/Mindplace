@@ -37,7 +37,9 @@ crides a Claude amb la clau, que mai arriba al navegador.
 - La feina de cada estudiant (materials, guies, respostes, progrés) es guarda **només al seu
   navegador**. El servidor no desa cap contingut.
 - El servidor només compta quantes peticions fa cada codi cada dia (Netlify Blobs).
-- El material i les respostes **s'envien a Claude (Anthropic)** per processar-los. Cal explicar-ho a
+- El material i les respostes **s'envien a Claude (Anthropic)** per processar-los. Si l'estudiant fa servir
+  el botó «Parla», el navegador envia l'àudio al seu servei de reconeixement de veu (a Chrome, Google);
+  escriure o dictar amb el teclat del dispositiu són alternatives. Cal explicar-ho a
   la família i recollir-ne el consentiment (per sota dels 14 anys, el dels pares).
 - Cada petició gasta crèdit de l'espai de treball del pas 1. Al panell d'Anthropic, a «Coste y gasto»,
   es veu la despesa.

@@ -36,6 +36,7 @@
   color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
 button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
@@ -273,6 +274,12 @@ details.better p{margin-top:8px;white-space:pre-wrap}
 .empty{text-align:center;padding:30px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted)}
 
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
+dialog.wide{width:min(820px,calc(100vw - 32px))}
+/* càmera: el fons negre és el del visor, en els dos temes */
+.cam{position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/9;max-width:100%}
+.cam video,.cam canvas{width:100%;height:100%;object-fit:contain;display:block}
+.cam video.mirror{transform:scaleX(-1)}
+.cam-count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-size:5rem;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 dialog::backdrop{background:rgba(10,14,30,.45)}
 .dlg{padding:20px;display:flex;flex-direction:column;gap:14px}
 .field{display:flex;flex-direction:column;gap:6px}
@@ -1615,6 +1622,68 @@ ${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc
   </div>`;
 }
 
+/* Càmera del dispositiu per fotografiar el paper.
+   La foto que es captura no fa efecte mirall (el text surt llegible); la vista prèvia tampoc, i es pot
+   invertir només per comoditat. Dins claude.ai la càmera no està permesa: allà es puja la foto. */
+const Cam = {
+  stream: null, qid: null, mirror: false, rot: 0, shot: null, timer: null, session: 0,
+  supported() { return !!navigator.mediaDevices?.getUserMedia && !window.claude?.use; },
+  async open(qid) {
+    this.stop();
+    const my = ++this.session;   // cada obertura té el seu número: si es tanca abans d'arrencar, el flux es descarta
+    this.qid = qid; this.mirror = false; this.rot = 0; this.shot = null;
+    openDialog(`<h3>Fes una foto del paper</h3>
+      <p class="muted small">Posa el full davant la càmera amb bona llum, que ocupi gairebé tota la imatge. Amb «Captura en 3 s» tens temps d'aguantar-lo quiet.</p>
+      <div class="cam"><video id="camVideo" autoplay playsinline muted></video><canvas id="camShot" hidden></canvas><span id="camCount" class="cam-count" hidden></span></div>
+      <p id="camErr" class="err small" role="alert" hidden></p>
+      <div class="row" id="camLive"><button class="btn primary" id="camTimer" data-act="camTimer" type="button">Captura en 3 s</button><button class="btn" id="camNow" data-act="camNow" type="button">Captura ara</button><button class="btn ghost" id="camMirror" data-act="camMirror" type="button" aria-pressed="false">Vista en mirall</button><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Tanca</button></div>
+      <div class="row" id="camDone" hidden><button class="btn" id="camRotate" data-act="camRotate" type="button">Gira 90°</button><button class="btn" id="camRetake" data-act="camRetake" type="button">Fes-ne una altra</button><span class="spacer"></span><button class="btn primary" id="camUse" data-act="camUse" type="button">Afegeix la foto</button></div>`, null);
+    const d = $("#dlg"); d.classList.add("wide");
+    d.addEventListener("close", () => { if (this.session === my) this.session++; this.stop(); d.classList.remove("wide"); }, {once: true});
+    let stream = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({audio: false, video: {facingMode: {ideal: "environment"}, width: {ideal: 1920}, height: {ideal: 1080}}});
+      const v = $("#camVideo");
+      if (this.session !== my || !v) { stream.getTracks().forEach(t => t.stop()); return; }
+      this.stream = stream; v.srcObject = stream; await v.play().catch(() => {});
+    } catch (e) {
+      if (this.session !== my) { stream?.getTracks().forEach(t => t.stop()); return; }
+      const el = $("#camErr"); if (!el) return;
+      el.hidden = false;
+      el.textContent = e?.name === "NotAllowedError" ? "No hi ha permís per fer servir la càmera. Dona-li permís a la icona de la barra d'adreces, o puja una foto feta amb el mòbil."
+        : "No s'ha trobat cap càmera disponible. Puja una foto feta amb el mòbil.";
+      $("#camLive").querySelectorAll("[data-act=camTimer],[data-act=camNow],[data-act=camMirror]").forEach(b => b.disabled = true);
+    }
+  },
+  stop() { clearInterval(this.timer); this.timer = null; this.stream?.getTracks().forEach(t => t.stop()); this.stream = null; },
+  toggleMirror() { this.mirror = !this.mirror; const v = $("#camVideo"); v?.classList.toggle("mirror", this.mirror); $("#camMirror")?.setAttribute("aria-pressed", String(this.mirror)); },
+  countdown() {
+    if (this.timer) return;
+    let n = 3; const el = $("#camCount"); if (!el) return;
+    el.hidden = false; el.textContent = n;
+    this.timer = setInterval(() => { n--; if (n > 0) el.textContent = n; else { clearInterval(this.timer); this.timer = null; el.hidden = true; this.capture(); } }, 1000);
+  },
+  capture() {
+    clearInterval(this.timer); this.timer = null; const cnt = $("#camCount"); if (cnt) cnt.hidden = true;
+    const v = $("#camVideo"); if (!v?.videoWidth || this.shot) return;
+    const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext("2d").drawImage(v, 0, 0);
+    this.shot = c; this.rot = 0; this.draw();
+    $("#camVideo").hidden = true; $("#camShot").hidden = false; $("#camLive").hidden = true; $("#camDone").hidden = false; $("#camUse")?.focus();
+  },
+  draw() {
+    const src = this.shot, out = $("#camShot"); if (!src || !out) return;
+    const side = this.rot % 180 !== 0;
+    out.width = side ? src.height : src.width; out.height = side ? src.width : src.height;
+    const g = out.getContext("2d"); g.save(); g.translate(out.width / 2, out.height / 2); g.rotate(this.rot * Math.PI / 180); g.drawImage(src, -src.width / 2, -src.height / 2); g.restore();
+  },
+  rotate() { this.rot = (this.rot + 90) % 360; this.draw(); },
+  retake() { this.shot = null; $("#camVideo").hidden = false; $("#camShot").hidden = true; $("#camLive").hidden = false; $("#camDone").hidden = true; },
+  use() {
+    const out = $("#camShot"), qid = this.qid; if (!out || !this.shot) return;
+    out.toBlob(b => { if (b) { closeDialog(); addPhotos(qid, [b]); toast("Foto afegida"); } }, "image/jpeg", .9);
+  },
+};
 const exItem = (t, id) => arr(t?.exRonda?.items).find(x => x.id === id);
 function viewExercises(t, s) {
   if (!t.guia) return `<div class="panel empty"><h3>Primer cal la guia del tema</h3><p>Els exercicis surten de les fórmules i els mètodes del material.</p><button class="btn" data-act="tab" data-tab="material" type="button">Ves a Material</button></div>`;
@@ -1658,7 +1727,8 @@ function viewExercise(t, q, i) {
       <div class="syms" role="group" aria-label="Símbols per escriure">${pf.syms.map(c => `<button class="sym" data-act="sym" data-id="${q.id}" data-s="${esc(c)}" type="button" aria-label="Insereix ${esc(c)}">${esc(c)}</button>`).join("")}</div>
       ${photos.length ? `<p class="muted small">Les fotos no es guarden: fes corregir l'exercici abans de tancar. El que Claude hi llegeixi sí que queda guardat.</p><div class="thumbs">${photos.map((p, j) => `<div class="thumb"><img src="${esc(p.url)}" alt="Foto ${j + 1} de la resolució">${busy ? "" : `<button class="x" data-act="exPhotoDel" data-id="${q.id}" data-j="${j}" type="button" aria-label="Treu la foto ${j + 1}">×</button>`}</div>`).join("")}</div>` : ""}
       <div class="row">
-        ${canPhoto ? `<button id="xp_${q.id}" class="btn" data-act="exPhoto" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.cam} Foto del paper</button>` : ""}
+        ${canPhoto && Cam.supported() ? `<button id="xc_${q.id}" class="btn" data-act="camOpen" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.cam} Fes una foto</button>` : ""}
+        ${canPhoto ? `<button id="xp_${q.id}" class="btn" data-act="exPhoto" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.up} Puja una foto</button>` : ""}
         <span class="spacer"></span>
         <button id="xe_${q.id}" class="btn primary" data-act="exEval" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${last ? "Torna-la a corregir" : "Corregeix"}</button>
       </div>
@@ -1790,7 +1860,7 @@ function settings() {
   const inClaude = AI.mode === "claude", proxy = AI.mode === "proxy";
   openDialog(`<h3>Configuració</h3>
     <div class="field"><span class="label">${proxy ? "Codi d'accés" : "Connexió amb Claude"}</span>
-      ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu.</p>
+      ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu. Si fas servir el botó «Parla», el navegador envia l'àudio al seu propi servei de reconeixement de veu (a Chrome, de Google).</p>
          <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
          <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
          <label class="label" for="cursIn">El teu curs</label>
@@ -1922,6 +1992,13 @@ document.addEventListener("click", (e) => {
     case "exGuided": { const q = exItem(t, b.dataset.id); if (!q || S.busy["xe_" + q.id]) break; q.guiat = !q.guiat; saveTema(t); render(); document.getElementById(q.guiat ? `xs_${q.id}_0` : `xr_${q.id}`)?.focus(); break; }
     case "sym": { const q = exItem(t, b.dataset.id); if (q) insertSymbol(q, b.dataset.s); break; }
     case "exPhoto": S.photoTarget = b.dataset.id; $("#photoIn").click(); break;
+    case "camOpen": Cam.open(b.dataset.id); break;
+    case "camTimer": Cam.countdown(); break;
+    case "camNow": Cam.capture(); break;
+    case "camMirror": Cam.toggleMirror(); break;
+    case "camRotate": Cam.rotate(); break;
+    case "camRetake": Cam.retake(); break;
+    case "camUse": Cam.use(); break;
     case "exPhotoDel": { if (S.busy["xe_" + b.dataset.id]) break; const ps = S.photos[b.dataset.id]; const j = +b.dataset.j; if (ps?.[j]) { URL.revokeObjectURL(ps[j].url); ps.splice(j, 1); render(); } break; }
     case "exEval": { const q = exItem(t, b.dataset.id); if (q) evaluateExercise(t, q); break; }
     case "exSimilar": { const q = exItem(t, b.dataset.id); if (q) similarExercise(t, q); break; }
@@ -1975,15 +2052,17 @@ document.addEventListener("change", (e) => {
 $("#btnSettings").addEventListener("click", settings);
 document.addEventListener("focusin", (e) => { if (e.target.dataset?.exans || e.target.dataset?.exstep) S.lastExField = e.target.id; });
 document.addEventListener("mousedown", (e) => { if (e.target.closest?.(".sym")) e.preventDefault(); });  // el focus es queda a la caixa
-$("#photoIn").addEventListener("change", (e) => {
-  const id = S.photoTarget, fs = [...e.target.files].filter(f => (f.type || "").startsWith("image/")); e.target.value = "";
-  if (!id || !fs.length) return;
+function addPhotos(id, blobs) {
   const list = S.photos[id] ||= [];
   const max = AI.mode === "claude" ? Math.min(MAX_PHOTOS, AI.imgMax || 0) : MAX_PHOTOS;
-  for (const f of fs) { if (list.length >= max) { toast(`Com a màxim ${max} fotos per exercici`); break; } list.push({id: uid(), blob: f, url: URL.createObjectURL(f)}); }
+  for (const f of blobs) { if (list.length >= max) { toast(`Com a màxim ${max} fotos per exercici`); break; } list.push({id: uid(), blob: f, url: URL.createObjectURL(f)}); }
   render();
+}
+$("#photoIn").addEventListener("change", (e) => {
+  const id = S.photoTarget, fs = [...e.target.files].filter(f => (f.type || "").startsWith("image/")); e.target.value = "";
+  if (id && fs.length) addPhotos(id, fs);
 });
-window.addEventListener("pagehide", () => { Mic.stop(); flushSoon(); });
+window.addEventListener("pagehide", () => { Mic.stop(); Cam.stop(); flushSoon(); });
 document.addEventListener("visibilitychange", () => { if (document.hidden) { Mic.stop(); flushSoon(); } });
 $("#fileIn").addEventListener("change", (e) => { const fs = [...e.target.files]; e.target.value = ""; addFiles(fs); });
 $("#importIn").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) importAll(f); });
