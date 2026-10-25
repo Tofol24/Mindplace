@@ -196,7 +196,7 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .mathbox,.steps-in textarea{font-family:var(--f-mono);font-size:.98rem}
 .mathtxt{white-space:pre-wrap}
 .steps-in{display:flex;flex-direction:column;gap:10px}
-.steps-in textarea{min-height:60px}
+.steps-in textarea,.answer .steps-in textarea{min-height:48px}
 .syms{display:flex;flex-wrap:wrap;gap:4px}
 .sym{min-width:36px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-family:var(--f-mono);font-size:.95rem;cursor:pointer;color:var(--ink)}
 .sym:hover{border-color:var(--accent)}
@@ -339,8 +339,8 @@ const LEVELS = {
 const LANGS = { ca:{nom:"català", sr:"ca-ES"}, es:{nom:"castellà", sr:"es-ES"}, en:{nom:"anglès", sr:"en-GB"}, de:{nom:"alemany", sr:"de-DE"} };
 const PRESETS = [
   {nom:"Biologia", llengua:"ca", c:1}, {nom:"Història", llengua:"ca", c:2}, {nom:"Geografia", llengua:"ca", c:7},
-  {nom:"Català", llengua:"ca", c:4}, {nom:"Castellà", llengua:"es", c:6}, {nom:"Anglès", llengua:"en", c:5},
-  {nom:"Alemany", llengua:"de", c:3}, {nom:"Matemàtiques", llengua:"ca", c:5, tipus:"problemes"},
+  {nom:"Català", llengua:"ca", c:4, tipus:"llengua"}, {nom:"Castellà", llengua:"es", c:6, tipus:"llengua"}, {nom:"Anglès", llengua:"en", c:5, tipus:"llengua"},
+  {nom:"Alemany", llengua:"de", c:3, tipus:"llengua"}, {nom:"Matemàtiques", llengua:"ca", c:5, tipus:"problemes"},
   {nom:"Física i Química", llengua:"ca", c:6, tipus:"problemes"}, {nom:"Filosofia", llengua:"ca", c:8},
 ];
 // A qui parlen les peticions a Claude: la filla (4t d'ESO) o, a la versió amb codis, qualsevol estudiant.
@@ -595,7 +595,7 @@ const Store = {
 };
 const MAX_MAT = 150000;   // caràcters per material (límit d'un document)
 const MAX_HIST = 120;
-function saveConfig() { Store.put("config", {subjects: S.subjects}); }
+function saveConfig() { Store.put("config", {subjects: S.subjects, v: 2}); }
 function saveTema(t) { if (!t || t.exemple || S.temes[t.id] !== t) return; t.historial = arr(t.historial).slice(-MAX_HIST); Store.put("t_" + t.id, t); }
 function saveMat(m) { if (!m || ex.mats[m.id] || S.mats[m.id] !== m || !S.temes[m.temaId]) return; Store.put("m_" + m.id, m); }
 function saveEverything() { saveConfig(); Object.values(S.temes).forEach(saveTema); Object.values(S.mats).forEach(saveMat); }
@@ -952,7 +952,12 @@ Mides: 3-7 apartats amb 2-6 punts cadascun; 3-6 branques amb 2-5 fills cadascuna
  "formules":[{"nom":"…","expressio":"…","variables":"cada símbol, què vol dir i la unitat","quan":"quan s'ha de fer servir"}],
  "metodes":[{"nom":"tipus de problema o procediment","passos":["pas 1","pas 2"]}],
  "tipus_problemes":[{"id":"p1","nom":"…","descripcio":"…"}]
-Hi han de sortir totes les fórmules i els procediments del material (fins a 20 fórmules, 2-8 mètodes, 2-8 tipus de problemes). ${PLAIN_MATH}` : ""}`, {signal, onText}));
+Hi han de sortir totes les fórmules i els procediments del material (fins a 20 fórmules, 2-8 mètodes, 2-8 tipus de problemes). ${PLAIN_MATH}` : ""}${isLang(s) ? `
+
+És una assignatura de llengua. Afegeix també al mateix objecte JSON:
+ "regles":[{"nom":"nom de la regla o del fenomen","regla":"explicació clara i breu","exemples":["exemple"],"excepcions":"excepcions o casos especials, si n'hi ha"}],
+ "tipus_problemes":[{"id":"e1","nom":"tipus d'exercici que es pot fer amb aquest tema","descripcio":"…"}]
+Hi han de sortir totes les regles del material (fins a 15), amb 2-5 exemples cadascuna, i 2-6 tipus d'exercici. Els exemples, en ${qLang(s)}.` : ""}`, {signal, onText}));
   if (!g) return;
   if (!arr(g.resum).length || !arr(g.conceptes).length) { S.errors.guia = "La guia ha arribat incompleta. Torna-ho a provar."; render(); return; }
   // Els conceptes que ja existien conserven el seu id (i el seu progrés); els nous en reben un de nou.
@@ -1093,14 +1098,14 @@ async function makeReport(t) {
 Nivells: N1 recordar, N2 comprendre, N3 relacionar, N4 integrar.
 Dies d'estudi amb autoavaluació: ${studyDays(t)}.
 Notes per nivell (0-10, de més antiga a més recent): ${[1,2,3,4].map(L => `N${L}: ${ls_[L].join(", ") || "cap"}`).join(" · ")}
-${isProb(s) ? `Exercicis (P1 aplicar, P2 encadenar, P3 plantejar, P4 raonar): ${[1,2,3,4].map(L => `P${L}: ${lp[L].join(", ") || "cap"}`).join(" · ")}
+${hasEx(s) ? `Exercicis (${[1,2,3,4].map(L => exProf(s).tag + L + " " + exProf(s).levels[L].nom.toLowerCase()).join(", ")}): ${[1,2,3,4].map(L => `${exProf(s).tag}${L}: ${lp[L].join(", ") || "cap"}`).join(" · ")}
 Errors més freqüents als exercicis: ${es.map(([k, v]) => k + " (" + v + ")").join(", ") || "cap"}` : ""}
 Estat dels conceptes:
 ${arr(t.guia?.conceptes).map(c => `- ${c.nom}: ${ST_LABEL[st[c.id]]}`).join("\n")}
 Historial de preguntes (data, nivell, nota, profunditat demostrada):
-${arr(t.historial).slice(-50).map(h => `- ${today(h.t)} ${h.nivell ? lvlTag(h.mode, h.nivell) : "lliure"} ${h.nota}/10${h.mode === "ex" ? (h.errs?.length ? " errors: " + h.errs.join(", ") : "") : " (prof. " + h.prof + ")"}: ${h.pregunta}`).join("\n")}
+${arr(t.historial).slice(-50).map(h => `- ${today(h.t)} ${h.nivell ? lvlTag(h.mode, h.nivell, s) : "lliure"} ${h.nota}/10${h.mode === "ex" ? (h.errs?.length ? " errors: " + h.errs.join(", ") : "") : " (prof. " + h.prof + ")"}: ${h.pregunta}`).join("\n")}
 
-Escriu en ${fbLang(s)}, amb to proper i concret, adreçat directament a ${WHO.la} (de tu). Res d'elogis buits.${isProb(s) ? "\nA \"nivells\" inclou també els nivells P1-P4 dels exercicis que hagi treballat, i digues com evitar els errors més freqüents." : ""}
+Escriu en ${fbLang(s)}, amb to proper i concret, adreçat directament a ${WHO.la} (de tu). Res d'elogis buits.${hasEx(s) ? "\nA \"nivells\" inclou també els nivells " + exProf(s).tag + "1-" + exProf(s).tag + "4 dels exercicis que hagi treballat, i digues com evitar els errors més freqüents." : ""}
 Respon només amb JSON:
 {"valoracio":"2-4 frases: fins a quin nivell de profunditat domina el tema ara mateix i per què",
  "nivells":[{"nivell":"N1","text":"una frase sobre aquest nivell"}],
@@ -1126,9 +1131,28 @@ const LEVELS_P = {
 const ERR_TYPES = ["lectura de l'enunciat", "plantejament", "fórmula", "càlcul", "unitats", "signes", "arrodoniment", "interpretació"];
 const SYMS = ["²", "³", "√", "π", "·", "×", "÷", "±", "≈", "≠", "≤", "≥", "Δ", "°", "→", "½", "⁻¹", "₀", "₁", "₂", "α", "λ", "∞"];
 const PLAIN_MATH = "Escriu les fórmules i els càlculs en text pla amb símbols Unicode (x², √, ·, π, Δ, ≈, →, subíndexs com x₀) i les fraccions com (a)/(b). No facis servir LaTeX.";
+// Llengua (català, castellà, anglès, alemany…): teoria per explicar + exercicis d'aplicació.
+const LEVELS_L = {
+  1: {nom:"Reconèixer", curt:"Identificar i classificar exemples.", llarg:"Reconèixer el fenomen i classificar exemples (per exemple, dir si cada paraula té diftong o hiat)."},
+  2: {nom:"Aplicar",    curt:"Completar, transformar, aplicar la regla.", llarg:"Aplicar la regla: completar buits, transformar frases, accentuar, conjugar o triar la forma correcta."},
+  3: {nom:"Corregir",   curt:"Trobar errors i explicar la regla.", llarg:"Trobar i corregir errors en frases o en un text breu, i justificar cada correcció amb la regla."},
+  4: {nom:"Produir",    curt:"Escriure frases o un text aplicant-ho.", llarg:"Escriure frases o un text breu que facin servir la regla en un context real (o traduir, si és llengua estrangera)."},
+};
+const ERR_LANG = ["regla mal aplicada", "ortografia", "accentuació", "gramàtica", "concordança", "temps verbal", "vocabulari", "puntuació", "comprensió de l'enunciat"];
+const SYMS_LANG = {ca: ["à", "è", "é", "í", "ï", "ò", "ó", "ú", "ü", "ç", "l·l", "·", "'"], es: ["á", "é", "í", "ó", "ú", "ü", "ñ", "¿", "¡"], en: ["'", "’"], de: ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"]};
 const isProb = (s) => s?.tipus === "problemes";
-const levelsFor = (kind) => kind === "ex" ? LEVELS_P : LEVELS;
-const lvlTag = (kind, L) => (kind === "ex" ? "P" : "N") + L;
+const isLang = (s) => s?.tipus === "llengua";
+const hasEx = (s) => isProb(s) || isLang(s);
+// Tot el que canvia entre exercicis de problemes i de llengua.
+const exProf = (s) => isLang(s)
+  ? {tag: "L", levels: LEVELS_L, errs: ERR_LANG, syms: SYMS_LANG[s.llengua] || SYMS_LANG.ca, word: "exercicis de llengua",
+     guided: "Respon ítem per ítem", unguided: "Treu el mode per ítems", answerLabel: "La teva resposta (un ítem per línia)", placeholder: "1. …&#10;2. …&#10;3. …",
+     solution: "Mostra les respostes correctes", allOk: "Tot correcte", notOk: "Hi ha ítems per revisar"}
+  : {tag: "P", levels: LEVELS_P, errs: ERR_TYPES, syms: SYMS, word: "exercicis",
+     guided: "Guia'm pas a pas", unguided: "Treu el mode guiat", answerLabel: "La teva resolució (un pas per línia)", placeholder: "Dades: …&#10;Fórmula: …&#10;Càlcul: …&#10;Resultat: …",
+     solution: "Mostra la solució pas a pas", allOk: "Resultat correcte", notOk: "Resultat per revisar"};
+const levelsFor = (kind, s) => kind === "ex" ? exProf(s).levels : LEVELS;
+const lvlTag = (kind, L, s) => (kind === "ex" ? exProf(s).tag : "N") + L;
 const MAX_PHOTOS = 4;
 // Les fotos només viuen en memòria: en treure-les es revoca la seva URL.
 function dropPhotos(ids) { for (const id of ids) { for (const p of arr(S.photos[id])) URL.revokeObjectURL(p.url); delete S.photos[id]; } }
@@ -1147,29 +1171,27 @@ function guideTextP(t) {
   return guideText(t) +
     "\n\nFórmules:\n" + arr(g.formules).map(f => `${f.nom}: ${f.expressio}${f.variables ? " (" + f.variables + ")" : ""}${f.quan ? " — " + f.quan : ""}`).join("\n") +
     "\n\nMètodes:\n" + arr(g.metodes).map(m => `${m.nom}: ${arr(m.passos).join(" → ")}`).join("\n") +
-    "\n\nTipus de problemes:\n" + arr(g.tipus_problemes).map(p => `${p.id} ${p.nom}: ${p.descripcio}`).join("\n");
+    "\n\nRegles:\n" + arr(g.regles).map(r => `${r.nom}: ${r.regla}${arr(r.exemples).length ? " Exemples: " + arr(r.exemples).join(", ") : ""}${r.excepcions ? " Excepcions: " + r.excepcions : ""}`).join("\n") +
+    "\n\nTipus d'exercici o de problema:\n" + arr(g.tipus_problemes).map(p => `${p.id} ${p.nom}: ${p.descripcio}`).join("\n");
 }
 function cleanExercise(e, L) {
   return {id: uid(), nivell: L, tipus: str(e.tipus, 80), enunciat: str(e.enunciat, 4000), conceptes: strs(e.conceptes, 60), pistes: strs(e.pistes, 600).slice(0, 4),
-    solucio: {passos: arr(e.solucio?.passos).slice(0, 10).map(p => ({titol: str(p?.titol, 160), explicacio: str(p?.explicacio, 1500), resultat: str(p?.resultat, 300)})), resultat: str(e.solucio?.resultat, 300)},
+    solucio: {passos: arr(e.solucio?.passos).slice(0, 10).map(p => ({titol: str(p?.titol, 160), explicacio: str(p?.explicacio, 1500), resultat: str(p?.resultat, 1500)})), resultat: str(e.solucio?.resultat, 3000)},
     resposta: "", passosAlumna: [], guiat: false, pistesVistes: 0, avals: []};
 }
 function exercisePrompt(t, s, extra) {
-  const st = conceptStatus(t);
+  const st = conceptStatus(t), pf = exProf(s), lang = isLang(s);
   const fets = arr(t.historial).filter(h => h.mode === "ex").slice(-30).map(h => "- " + h.pregunta).join("\n") || "(cap)";
   const errs = errStats(t).map(([k, v]) => `${k} (${v})`).join(", ") || "encara cap";
-  return `Ets un professor/a de ${s.nom} de ${WHO.curs} que prepara exercicis de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà pas a pas (escrivint o amb una foto del paper) i després rebrà la correcció.
+  return `Ets un professor/a de ${s.nom} de ${WHO.curs} que prepara ${pf.word} de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà ${lang ? "ítem per ítem" : "pas a pas"} (escrivint o amb una foto del paper) i després rebrà la correcció.
 Tema: ${t.titol}.
 
 NIVELLS DE DIFICULTAT
-P1 Aplicar: ${LEVELS_P[1].llarg}
-P2 Encadenar: ${LEVELS_P[2].llarg}
-P3 Plantejar: ${LEVELS_P[3].llarg}
-P4 Raonar: ${LEVELS_P[4].llarg}
+${[1, 2, 3, 4].map(L => `${pf.tag}${L} ${pf.levels[L].nom}: ${pf.levels[L].llarg}`).join("\n")}
 
 ${extra}
 
-Teoria, fórmules i mètodes del tema:
+Teoria${lang ? " i regles" : ", fórmules i mètodes"} del tema:
 ${guideTextP(t)}
 
 Material (extracte; pot contenir exercicis del llibre o de classe):
@@ -1180,26 +1202,34 @@ Errors que ha fet més sovint: ${errs}.
 No repeteixis aquests exercicis ja fets:
 ${fets}
 
-Regles:
+${lang ? `Com han de ser:
+- Cada exercici té una instrucció clara i entre 4 i 8 ítems curts numerats dins l'enunciat (paraules, frases o un text breu). A ${pf.tag}4 pot ser una sola tasca d'escriptura.
+- Varia el tipus: classificar, completar buits, transformar, accentuar, triar la forma correcta, corregir errors, conjugar${["en", "de"].includes(s.llengua) ? ", traduir" : ""}, escriure.
+- A "solucio.passos" posa un pas per ítem: "titol" = "Ítem n: " i l'ítem tal com surt a l'enunciat (sense la resposta); "explicacio" = la regla que s'hi aplica; "resultat" = la resposta correcta. Si és una tasca d'escriptura, cada pas és un criteri que ha de complir el text, i "resultat" un exemple de resposta bona.
+- "resultat" de la solució: totes les respostes seguides, numerades.
+- Comprova cada resposta abans de donar-la; si n'hi ha més d'una de correcta, digues-ho a l'explicació.
+- Les pistes recorden la regla o donen una estratègia; cap no dona les respostes.
+- Escriu l'enunciat i els ítems en ${qLang(s)}; les explicacions i les pistes en ${fbLang(s)}.` : `Regles:
 - Dades senzilles i realistes, amb unitats (SI quan toqui), que es puguin fer amb una calculadora normal.
 - ${PLAIN_MATH}
 - Resol tu cada exercici pas a pas i comprova el resultat abans de donar-lo.
 - Els "titol" dels passos han de ser genèrics ("Escriu les dades", "Tria la fórmula", "Aïlla la incògnita"…) i no han de donar la resposta.
 - Les pistes van de més general a més concreta i cap no dona el resultat.
-- Escriu en ${fbLang(s)}.
+- Escriu en ${fbLang(s)}.`}
 
 Respon només amb JSON:
-{"exercicis":[{"enunciat":"…","tipus":"nom curt del tipus de problema","conceptes":["c1"],"pistes":["pista general","pista més concreta","el primer pas gairebé fet"],"solucio":{"passos":[{"titol":"…","explicacio":"…","resultat":"…"}],"resultat":"resultat final amb unitats"}}]}
-Entre 2 i 6 passos per exercici.`;
+{"exercicis":[{"enunciat":"…","tipus":"nom curt del tipus ${lang ? "d'exercici" : "de problema"}","conceptes":["c1"],"pistes":["pista general","pista més concreta","${lang ? "la regla aplicada a un exemple que no surt a l'exercici" : "el primer pas gairebé fet"}"],"solucio":{"passos":[{"titol":"…","explicacio":"…","resultat":"…"}],"resultat":"${lang ? "totes les respostes, numerades" : "resultat final amb unitats"}"}}]}
+${lang ? "Entre 4 i 8 passos (un per ítem) per exercici." : "Entre 2 i 6 passos per exercici."}`;
 }
 async function makeExercises(t, L) {
   const s = getSubj(t.subjId);
   if (!t.guia) { S.errors.exq = "Primer genera la guia del tema (pestanya Guia)."; render(); return; }
   const n = L >= 3 ? 2 : 3;
-  const extra = `Prepara ${n} exercicis de nivell P${L} (${LEVELS_P[L].nom}). ` + ((S.exOrigen[t.id] || "nous") === "material"
+  const pf = exProf(s);
+  const extra = `Prepara ${n} exercicis de nivell ${pf.tag}${L} (${pf.levels[L].nom}). ` + ((S.exOrigen[t.id] || "nous") === "material"
     ? "Agafa'ls dels exercicis que surten al material: copia l'enunciat tal com és (completa'l només si hi falta alguna dada) i tria els que encaixin amb el nivell. Si no n'hi ha prou, completa amb exercicis nous del mateix estil."
     : "Crea exercicis nous, del mateix estil que els del material però amb altres dades i contextos.");
-  const r = await work("exq", `Claude prepara ${n} exercicis de nivell P${L} i els resol per poder-te corregir.`, (signal, onText) => AI.json(exercisePrompt(t, s, extra), {signal, onText, tier: "complex"}));
+  const r = await work("exq", `Claude prepara ${n} exercicis de nivell ${pf.tag}${L} i els resol per poder-te corregir.`, (signal, onText) => AI.json(exercisePrompt(t, s, extra), {signal, onText, tier: "complex"}));
   if (!r) return;
   const items = arr(r.exercicis || r).filter(e => e && e.enunciat).map(e => cleanExercise(e, L));
   if (!items.length) { S.errors.exq = "No han arribat exercicis. Torna-ho a provar."; render(); return; }
@@ -1211,7 +1241,8 @@ async function makeExercises(t, L) {
 }
 async function similarExercise(t, q) {
   const s = getSubj(t.subjId), last = q.avals[q.avals.length - 1];
-  const extra = `Prepara 1 exercici de nivell P${q.nivell} (${LEVELS_P[q.nivell].nom}) semblant a aquest, del mateix tipus però amb altres dades i un altre context:
+  const pf = exProf(s);
+  const extra = `Prepara 1 exercici de nivell ${pf.tag}${q.nivell} (${pf.levels[q.nivell].nom}) semblant a aquest, del mateix tipus però amb altres ${isLang(s) ? "ítems" : "dades i un altre context"}:
 """
 ${q.enunciat}
 """
@@ -1235,15 +1266,16 @@ async function evaluateExercise(t, q) {
   const sig = exSignature(q), allSnap = exAll(q), prev = q.avals[q.avals.length - 1];
   if (prev && prev.sig === sig) { S.errors["xe_" + q.id] = "Aquesta resolució ja està corregida. Arregla el que t'ha marcat i torna-la a enviar."; render(); return; }
   const cmap = Object.fromEntries(arr(t.guia?.conceptes).map(c => [c.id, c]));
-  const r = await work("xe_" + q.id, "Claude està corregint la teva resolució pas a pas. Pot trigar una mica.", (signal, onText) => AI.json(
-`Corregeixes un exercici de ${s.nom} ${WHO.duna}. Tema: ${t.titol}. Nivell P${q.nivell} (${LEVELS_P[q.nivell].nom}).
+  const pf = exProf(s), lang = isLang(s);
+  const r = await work("xe_" + q.id, `Claude està corregint la teva resolució ${lang ? "ítem per ítem" : "pas a pas"}. Pot trigar una mica.`, (signal, onText) => AI.json(
+`Corregeixes un exercici de ${s.nom} ${WHO.duna}. Tema: ${t.titol}. Nivell ${pf.tag}${q.nivell} (${pf.levels[q.nivell].nom}).
 
 Enunciat:
 """
 ${q.enunciat}
 """
 
-Solució de referència (hi pot haver altres mètodes vàlids; si la referència té un error, fia't de les matemàtiques correctes i posa el resultat bo a "resultat_correcte"):
+${lang ? `Solució de referència (en ítems oberts hi pot haver més d'una resposta correcta; si la referència té un error, fia't de la norma de la llengua i posa les respostes bones a "resultat_correcte"):` : `Solució de referència (hi pot haver altres mètodes vàlids; si la referència té un error, fia't de les matemàtiques correctes i posa el resultat bo a "resultat_correcte"):`}
 ${q.solucio.passos.map((p, i) => `${i + 1}. ${p.titol}: ${p.explicacio}${p.resultat ? " → " + p.resultat : ""}`).join("\n")}
 Resultat: ${q.solucio.resultat}
 
@@ -1253,25 +1285,29 @@ ${prev ? `
 És un nou intent (intent ${q.avals.length + 1}). A l'anterior li vas marcar: ${prev.errors.map(e => e.tipus + ": " + e.explicacio).join("; ") || "cap error"}. Digues també què ha arreglat.` : ""}
 ${q.pistesVistes ? `Ha fet servir ${q.pistesVistes} pista${q.pistesVistes > 1 ? "es" : ""} abans de resoldre'l.` : ""}
 
-Resolució ${WHO.dela}${q.guiat ? " (mode guiat: ha omplert cada pas)" : ""}:
+${lang ? "Respostes" : "Resolució"} ${WHO.dela}${q.guiat ? (lang ? " (ha respost cada ítem per separat)" : " (mode guiat: ha omplert cada pas)") : ""}:
 """
 ${ans || "(no ha escrit res: mira les fotos)"}
 """
 ${photos.length ? `Les ${photos.length} imatges són fotos de la seva resolució feta a mà, en ordre. Llegeix-les amb cura i posa a "transcripcio" el que hi has llegit, línia per línia.` : ""}
 
 Com corregir:
-- Segueix la seva resolució pas a pas. Troba el PRIMER pas on s'equivoca i digues de quin tipus és l'error: ${ERR_TYPES.join(" | ")}.
+${lang ? `- Revisa ítem per ítem. A "passos" posa un element per ítem: què ha respost, "estat" ok, error o falta, i a "comentari" la regla que s'hi aplica (breu).
+- A "errors" agrupa els errors per tipus: ${pf.errs.join(" | ")}. Explica la regla que ha fallat amb un exemple.
+- Si és una tasca d'escriptura, valora si compleix cada criteri i corregeix només els errors importants.
+- "com_continuar": quina regla ha de repassar i com aplicar-la, perquè arregli els ítems pel seu compte. No li donis totes les respostes.
+- nota de 0 a 10: proporció d'ítems ben resolts, i a nivells alts també la justificació i la qualitat del que escriu.` : `- Segueix la seva resolució pas a pas. Troba el PRIMER pas on s'equivoca i digues de quin tipus és l'error: ${pf.errs.join(" | ")}.
 - Si un error arrossega els passos següents però el procediment posterior és correcte, marca'ls com "arrossegat" i valora el procediment.
 - Si no ha arribat al final, marca com "falta" els passos que falten.
-- "com_continuar": una indicació perquè arregli el primer error ella mateixa. No li donis la solució sencera.
-- nota de 0 a 10 com en un examen: el plantejament i el procediment compten més que el resultat; un resultat sense unitats o sense justificar resta una mica.
+- "com_continuar": una indicació perquè arregli el primer error pel seu compte. No li donis la solució sencera.
+- nota de 0 a 10 com en un examen: el plantejament i el procediment compten més que el resultat; un resultat sense unitats o sense justificar resta una mica.`}
 - To proper, directe i respectuós; comença pel que ha fet bé. Res d'elogis buits; els errors són informació per millorar.
-- ${PLAIN_MATH}
+- ${lang ? `Cita les paraules i frases en ${qLang(s)} tal com són.` : PLAIN_MATH}
 - Escriu en ${fbLang(s)}.
 - "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
 
 Respon només amb JSON:
-{"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"càlcul","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"resultat final correcte amb unitats","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[],"benestar":""}
+{"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"${pf.errs[lang ? 0 : 3]}","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"${lang ? "les respostes correctes, numerades" : "resultat final correcte amb unitats"}","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[],"benestar":""}
 Només si la solució de referència té un error: "referencia_erronia": true i, a "solucio_corregida", els passos correctes amb la mateixa forma {"titol","explicacio","resultat"}.`,
     {signal, onText, tier: "complex", images: photos}));
   if (!r) return;
@@ -1279,8 +1315,8 @@ Només si la solució de referència té un error: "referencia_erronia": true i,
   const states = ["ok", "error", "arrossegat", "falta"];
   const av = {t: Date.now(), nota: num(r.nota, 0, 10), correcte: r.correcte === true, transcripcio: str(r.transcripcio, 6000),
     passos: arr(r.passos).slice(0, 15).map(p => ({pas: str(p?.pas, 600), estat: states.includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
-    errors: arr(r.errors).slice(0, 8).map(e => ({tipus: ERR_TYPES.includes(e?.tipus) ? e.tipus : (str(e?.tipus, 40) || "altres"), explicacio: str(e?.explicacio, 1000)})),
-    punts_forts: strs(r.punts_forts, 600), com_continuar: str(r.com_continuar, 1500), resultat_correcte: str(r.resultat_correcte, 300),
+    errors: arr(r.errors).slice(0, 8).map(e => ({tipus: pf.errs.includes(e?.tipus) ? e.tipus : (str(e?.tipus, 40) || "altres"), explicacio: str(e?.explicacio, 1000)})),
+    punts_forts: strs(r.punts_forts, 600), com_continuar: str(r.com_continuar, 1500), resultat_correcte: str(r.resultat_correcte, 3000),
     conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles), millora: str(r.millora, 800), benestar: str(r.benestar, 800), sig: sig.slice(0, 30000), all: allSnap.slice(0, 40000), resposta: ans.slice(0, 20000)};
   if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.exRonda?.items).includes(q)) return;
   // Si Claude troba que la solució de referència era errònia, es substitueix per la corregida.
@@ -1412,7 +1448,7 @@ function renderHome() {
     </div>
     ${has ? "" : `<div class="panel">
       <h3>Comença triant les teves assignatures</h3>
-      <p class="muted small">Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis: els resols pas a pas i Claude et diu on t'has equivocat.</p>
+      <p class="muted small">Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis pas a pas; les llengües, amb teoria per explicar i exercicis per aplicar-la.</p>
       <div class="row">${PRESETS.map((p, i) => `<label class="chip" style="cursor:pointer;text-transform:none;font-family:var(--f-body);font-size:.92rem;letter-spacing:0;color:var(--ink);padding:6px 12px"><input type="checkbox" id="pre_${i}" ${i < 9 ? "checked" : ""}> ${esc(p.nom)}</label>`).join("")}</div>
       <div class="row"><button class="btn primary" data-act="addPresets" type="button">Afegeix aquestes assignatures</button></div>
     </div>`}
@@ -1424,13 +1460,15 @@ function renderTema(t) {
   const s = getSubj(t.subjId);
   const tab = S.view.tab;
   const nm = arr(t.mats).length, nq = arr(t.historial).length;
-  const tabs = isProb(s)
+  const tabs = isLang(s)
+    ? [["material", "Material", nm], ["guia", "Guia i regles", null], ["ex", "Exercicis", null], ["quiz", "Explica-ho", null], ["prog", "Progrés", nq]]
+    : isProb(s)
     ? [["material", "Material", nm], ["guia", "Guia i fórmules", null], ["ex", "Exercicis", null], ["quiz", "Teoria", null], ["prog", "Progrés", nq]]
     : [["material", "Material", nm], ["guia", "Guia i mapa", null], ["quiz", "Explica-ho", null], ["prog", "Progrés", nq]];
   let body = "";
   if (tab === "material") body = viewMaterial(t);
   else if (tab === "guia") body = viewGuide(t);
-  else if (tab === "ex" && isProb(s)) body = viewExercises(t, s);
+  else if (tab === "ex" && hasEx(s)) body = viewExercises(t, s);
   else if (tab === "quiz" || tab === "ex") body = viewQuiz(t, s);
   else body = viewProgress(t);
   return `<div class="wrap">
@@ -1482,6 +1520,8 @@ function viewGuide(t) {
       <div class="resum">${arr(g.resum).map(r => `<section><h3>${esc(r.apartat)}</h3><ul>${arr(r.punts).map(p => `<li>${esc(p)}</li>`).join("")}</ul></section>`).join("")}</div>
     </section>
     ${arr(g.formules).length ? `<section class="panel"><h3>Fórmules</h3><div class="formulas">${arr(g.formules).map(f => `<div class="formula"><span class="label">${esc(f.nom)}</span><div class="expr">${esc(f.expressio)}</div>${f.variables ? `<p class="small">${esc(f.variables)}</p>` : ""}${f.quan ? `<p class="muted small">${esc(f.quan)}</p>` : ""}</div>`).join("")}</div></section>` : ""}
+    ${arr(g.regles).length ? `<section class="panel"><h3>Regles</h3><div class="formulas">${arr(g.regles).map(r => `<div class="formula"><span class="label">${esc(r.nom)}</span><p>${esc(r.regla)}</p>${arr(r.exemples).length ? `<div class="row" style="gap:6px">${arr(r.exemples).map(x => `<span class="res">${esc(x)}</span>`).join("")}</div>` : ""}${r.excepcions ? `<p class="muted small"><strong>Excepcions:</strong> ${esc(r.excepcions)}</p>` : ""}</div>`).join("")}</div>
+      ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus d'exercici</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
     ${arr(g.metodes).length ? `<section class="panel"><h3>Mètodes pas a pas</h3><div class="resum">${arr(g.metodes).map(m => `<section><h3>${esc(m.nom)}</h3><ol>${arr(m.passos).map(x => `<li>${esc(x)}</li>`).join("")}</ol></section>`).join("")}</div>
       ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus de problemes</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
     <section class="panel"><h3>Mapa conceptual</h3>
@@ -1498,18 +1538,18 @@ function viewGuide(t) {
       <div class="legend"><span><i class="st"></i>no treballat</span><span><i class="st feble"></i>a reforçar</span><span><i class="st proces"></i>en procés</span><span><i class="st solid"></i>sòlid</span></div></div>
       <div class="concepts">${arr(g.conceptes).map(c => `<div class="concept"><span class="cn"><i class="st ${st[c.id] === "none" ? "" : st[c.id]}" aria-hidden="true"></i><span class="mk">${esc(c.nom)}</span><span class="sr">(${ST_LABEL[st[c.id]]})</span></span><p>${esc(c.definicio)}</p></div>`).join("")}</div>
     </section>
-    <div class="row">${isProb(getSubj(t.subjId)) ? `<button class="btn primary" data-act="tab" data-tab="ex" type="button">Fes exercicis</button><button class="btn" data-act="tab" data-tab="quiz" type="button">Preguntes de teoria</button>` : `<button class="btn primary" data-act="tab" data-tab="quiz" type="button">Comença a explicar-ho</button>`}
+    <div class="row">${hasEx(getSubj(t.subjId)) ? `<button class="btn primary" data-act="tab" data-tab="ex" type="button">Fes exercicis</button><button class="btn" data-act="tab" data-tab="quiz" type="button">${isLang(getSubj(t.subjId)) ? "Explica la teoria" : "Preguntes de teoria"}</button>` : `<button class="btn primary" data-act="tab" data-tab="quiz" type="button">Comença a explicar-ho</button>`}
       ${t.exemple ? "" : `<button class="btn ghost" data-act="guide" type="button" ${S.busy.guia ? "disabled" : ""}>Torna a fer la guia</button>`}</div>
     ${busyBox("guia")}`;
 }
 
 function depthPicker(t, sel, kind = "teoria") {
-  const st = levelScores(t, kind), rec = recommended(t, kind), LV = levelsFor(kind);
+  const subj = getSubj(t.subjId), st = levelScores(t, kind), rec = recommended(t, kind), LV = levelsFor(kind, subj);
   return `<div class="depth" role="group" aria-label="${kind === "ex" ? "Dificultat dels exercicis" : "Nivell de profunditat"}">${[1,2,3,4].map(L => {
     const a = levelAvg(st[L]);
     return `<button id="lvl_${kind}${sel === null ? "p" : "q"}${L}" class="lvl ${sel === L ? "sel" : ""}" style="--dc:var(--d${L})" aria-pressed="${sel === L}" data-act="level" data-kind="${kind}" data-l="${L}" type="button">
       ${rec === L ? '<span class="rec">recomanat</span>' : ""}
-      <span class="lv"><i></i>${lvlTag(kind, L)} ${LV[L].nom}</span>
+      <span class="lv"><i></i>${lvlTag(kind, L, subj)} ${LV[L].nom}</span>
       <span class="ld">${LV[L].curt}</span>
       <span class="meter" title="${a === null ? "sense respostes" : "mitjana " + a.toFixed(1)}"><b style="width:${a === null ? 0 : a * 10}%"></b></span>
       <span class="label">${st[L].length ? `${st[L].length} resp. · ${a.toFixed(1)}` : "sense respostes"}</span>
@@ -1589,40 +1629,40 @@ function viewExercises(t, s) {
   const sel = S.exLevelSel[t.id] ?? recommended(t, "ex"), origen = S.exOrigen[t.id] || "nous", r = t.exRonda;
   return `
     <section class="panel">
-      <div><h3>Tria la dificultat</h3><p class="muted small">De P1 a P4. Quan les últimes resolucions d'un nivell fan mitjana de 7, passes al següent.</p></div>
+      <div><h3>Tria la dificultat</h3><p class="muted small">De ${exProf(s).tag}1 a ${exProf(s).tag}4. Quan les últimes resolucions d'un nivell fan mitjana de 7, passes al següent.</p></div>
       ${depthPicker(t, sel, "ex")}
       <div class="row">
         <label class="label" for="exOrigen">Exercicis</label>
         <select id="exOrigen" data-exorigen="${t.id}"><option value="nous" ${origen === "nous" ? "selected" : ""}>nous, semblants als del llibre</option><option value="material" ${origen === "material" ? "selected" : ""}>del meu material</option></select>
         <span class="spacer"></span>
-        <button id="btnExAsk" class="btn primary" data-act="exAsk" type="button" ${S.busy.exq ? "disabled" : ""}>Fes-me exercicis de nivell P${sel}</button>
+        <button id="btnExAsk" class="btn primary" data-act="exAsk" type="button" ${S.busy.exq ? "disabled" : ""}>Fes-me exercicis de nivell ${exProf(s).tag}${sel}</button>
       </div>
       ${busyBox("exq")}
     </section>
     ${r ? arr(r.items).map((q, i) => viewExercise(t, q, i)).join("") : `<div class="empty"><p>Tria un nivell i prem «Fes-me exercicis». Resol-los aquí o en paper i fes-hi una foto.</p></div>`}`;
 }
-function solutionBlock(q, res) {
-  return `<details class="better"><summary>Mostra la solució pas a pas</summary>
+function solutionBlock(q, res, pf) {
+  return `<details class="better"><summary>${pf.solution}</summary>
     <ol class="sol">${arr(q.solucio.passos).map(p => `<li><strong>${esc(p.titol)}.</strong> ${esc(p.explicacio)}${p.resultat ? ` <span class="res">${esc(p.resultat)}</span>` : ""}</li>`).join("")}</ol>
     <p><strong>Resultat:</strong> <span class="res">${esc(res || q.solucio.resultat)}</span></p></details>`;
 }
 function viewExercise(t, q, i) {
   const last = q.avals[q.avals.length - 1], busy = !!S.busy["xe_" + q.id];
   const photos = arr(S.photos[q.id]), steps = arr(q.solucio.passos);
-  const canPhoto = AI.mode !== "claude" || AI.imgMax > 0;
+  const canPhoto = AI.mode !== "claude" || AI.imgMax > 0, pf = exProf(getSubj(t.subjId)), lang = pf.tag === "L";
   return `<article class="q" id="xa_${q.id}" style="--dc:var(--d${q.nivell})">
-    <div class="q-top"><span class="label">Exercici ${i + 1}</span><span class="chip"><i></i>P${q.nivell} ${LEVELS_P[q.nivell].nom}</span>${q.tipus ? `<span class="chip">${esc(q.tipus)}</span>` : ""}</div>
+    <div class="q-top"><span class="label">Exercici ${i + 1}</span><span class="chip"><i></i>${pf.tag}${q.nivell} ${pf.levels[q.nivell].nom}</span>${q.tipus ? `<span class="chip">${esc(q.tipus)}</span>` : ""}</div>
     <p class="enunciat">${esc(q.enunciat)}</p>
     ${q.pistesVistes ? `<div class="hints">${q.pistes.slice(0, q.pistesVistes).map((p, j) => `<p class="hint" id="hn_${q.id}_${j}" tabindex="-1"><strong>Pista ${j + 1}:</strong> ${esc(p)}</p>`).join("")}</div>` : ""}
     <div class="row">
       ${q.pistesVistes < q.pistes.length ? `<button id="xh_${q.id}" class="btn sm ghost" data-act="exHint" data-id="${q.id}" type="button">${q.pistesVistes ? "Una altra pista" : "Ajuda'm a començar"} <span class="muted">${q.pistesVistes}/${q.pistes.length}</span></button>` : ""}
-      ${steps.length ? `<button id="xg_${q.id}" class="btn sm ghost" data-act="exGuided" data-id="${q.id}" aria-pressed="${q.guiat}" type="button">${q.guiat ? "Treu el mode guiat" : "Guia'm pas a pas"}</button>` : ""}
+      ${steps.length ? `<button id="xg_${q.id}" class="btn sm ghost" data-act="exGuided" data-id="${q.id}" aria-pressed="${q.guiat}" type="button">${q.guiat ? pf.unguided : pf.guided}</button>` : ""}
     </div>
     <div class="answer">
       ${q.guiat
-        ? `<div class="steps-in">${steps.map((p, j) => `<div class="field"><label class="label" for="xs_${q.id}_${j}">Pas ${j + 1} · ${esc(p.titol)}</label><textarea id="xs_${q.id}_${j}" data-exstep="${q.id}:${j}" maxlength="4000" rows="2" ${busy ? "readonly" : ""}>${esc(q.passosAlumna?.[j] || "")}</textarea></div>`).join("")}</div>`
-        : `<label class="label" for="xr_${q.id}">La teva resolució (un pas per línia)</label><textarea id="xr_${q.id}" data-exans="${q.id}" maxlength="20000" class="mathbox" rows="7" ${busy ? "readonly" : ""} placeholder="Dades: …&#10;Fórmula: …&#10;Càlcul: …&#10;Resultat: …">${esc(q.resposta)}</textarea>`}
-      <div class="syms" role="group" aria-label="Símbols per escriure">${SYMS.map(c => `<button class="sym" data-act="sym" data-id="${q.id}" data-s="${esc(c)}" type="button" aria-label="Insereix ${esc(c)}">${esc(c)}</button>`).join("")}</div>
+        ? `<div class="steps-in">${steps.map((p, j) => `<div class="field"><label class="label" for="xs_${q.id}_${j}">${lang ? esc(p.titol) : `Pas ${j + 1} · ${esc(p.titol)}`}</label><textarea id="xs_${q.id}_${j}" data-exstep="${q.id}:${j}" maxlength="4000" rows="2" ${busy ? "readonly" : ""}>${esc(q.passosAlumna?.[j] || "")}</textarea></div>`).join("")}</div>`
+        : `<label class="label" for="xr_${q.id}">${pf.answerLabel}</label><textarea id="xr_${q.id}" data-exans="${q.id}" maxlength="20000" class="${lang ? "" : "mathbox"}" rows="7" ${busy ? "readonly" : ""} placeholder="${pf.placeholder}">${esc(q.resposta)}</textarea>`}
+      <div class="syms" role="group" aria-label="Símbols per escriure">${pf.syms.map(c => `<button class="sym" data-act="sym" data-id="${q.id}" data-s="${esc(c)}" type="button" aria-label="Insereix ${esc(c)}">${esc(c)}</button>`).join("")}</div>
       ${photos.length ? `<p class="muted small">Les fotos no es guarden: fes corregir l'exercici abans de tancar. El que Claude hi llegeixi sí que queda guardat.</p><div class="thumbs">${photos.map((p, j) => `<div class="thumb"><img src="${esc(p.url)}" alt="Foto ${j + 1} de la resolució">${busy ? "" : `<button class="x" data-act="exPhotoDel" data-id="${q.id}" data-j="${j}" type="button" aria-label="Treu la foto ${j + 1}">×</button>`}</div>`).join("")}</div>` : ""}
       <div class="row">
         ${canPhoto ? `<button id="xp_${q.id}" class="btn" data-act="exPhoto" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.cam} Foto del paper</button>` : ""}
@@ -1630,18 +1670,18 @@ function viewExercise(t, q, i) {
         <button id="xe_${q.id}" class="btn primary" data-act="exEval" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${last ? "Torna-la a corregir" : "Corregeix"}</button>
       </div>
       ${busyBox("xe_" + q.id)}
-      ${!last && q.pistesVistes >= q.pistes.length && q.pistes.length ? solutionBlock(q) : ""}
+      ${!last && q.pistesVistes >= q.pistes.length && q.pistes.length ? solutionBlock(q, "", pf) : ""}
     </div>
-    ${last ? viewExFeedback(q, last) : ""}
+    ${last ? viewExFeedback(q, last, pf) : ""}
   </article>`;
 }
-function viewExFeedback(q, a) {
+function viewExFeedback(q, a, pf) {
   const tone = a.nota >= 7 ? "var(--ok)" : a.nota >= 5 ? "var(--warn)" : "var(--bad)";
   const ICO = {ok: "✓", error: "✗", arrossegat: "→", falta: "…"};
   const LBL = {ok: "correcte", error: "error", arrossegat: "error arrossegat", falta: "falta"};
   return `<div class="fb">
     <div class="score"><span class="big" style="color:${tone}">${a.nota}<small>/10</small></span>
-      <span class="chip ${a.correcte ? "good" : "bad"}">${a.correcte ? "Resultat correcte" : "Resultat per revisar"}</span>
+      <span class="chip ${a.correcte ? "good" : "bad"}">${a.correcte ? pf.allOk : pf.notOk}</span>
       ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
 ${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
     ${a.millora ? `<p><strong>Què has arreglat:</strong> ${esc(a.millora)}</p>` : ""}
@@ -1652,7 +1692,7 @@ ${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc
       ${a.errors.length ? `<div class="fb-box wrong"><h3>On t'has equivocat</h3><ul>${a.errors.map(e => `<li><span class="chip">${esc(e.tipus)}</span> ${esc(e.explicacio)}</li>`).join("")}</ul></div>` : ""}
     </div>
     ${a.com_continuar && !a.correcte ? `<div class="weave"><span class="label">Com arreglar-ho</span><p>${esc(a.com_continuar)}</p></div>` : ""}
-    ${solutionBlock(q, a.resultat_correcte)}
+    ${solutionBlock(q, a.resultat_correcte, pf)}
     <div class="row"><button id="xsb_${q.id}" class="btn" data-act="exSimilar" data-id="${q.id}" type="button" ${S.busy["xs_" + q.id] ? "disabled" : ""}>Fes-me'n un de semblant</button>
       <span class="muted small">${a.correcte ? "Per fixar-ho, prova'n un altre sense pistes." : "Arregla'l i torna'l a corregir, o practica amb un de semblant."}</span></div>
     ${busyBox("xs_" + q.id)}
@@ -1663,13 +1703,13 @@ function viewProgress(t) {
   const h = arr(t.historial), ev = evidence(t);
   const st = conceptStatus(t);
   const counts = {none: 0, feble: 0, proces: 0, solid: 0}; Object.values(st).forEach(v => counts[v]++);
-  const rec = recommended(t), prob = isProb(getSubj(t.subjId)), recP = recommended(t, "ex"), es = errStats(t);
+  const subj = getSubj(t.subjId), rec = recommended(t), prob = hasEx(subj), pf = exProf(subj), recP = recommended(t, "ex"), es = errStats(t);
   const avg = ev.length ? (ev.reduce((a, x) => a + x.nota, 0) / ev.length).toFixed(1) : "–";
   const inf = t.informe;
   return `
     <div class="stats">
       <div class="stat"><span class="label">${prob ? "Teoria" : "Nivell on ets"}</span><b>N${rec}</b><span class="muted small">${LEVELS[rec].nom}</span></div>
-      ${prob ? `<div class="stat"><span class="label">Exercicis</span><b>P${recP}</b><span class="muted small">${LEVELS_P[recP].nom}</span></div>` : ""}
+      ${prob ? `<div class="stat"><span class="label">Exercicis</span><b>${pf.tag}${recP}</b><span class="muted small">${pf.levels[recP].nom}</span></div>` : ""}
       <div class="stat"><span class="label">Dies d'estudi</span><b>${studyDays(t)}</b><span class="muted small">amb preguntes</span></div>
       <div class="stat"><span class="label">Respostes</span><b>${ev.length}</b><span class="muted small">mitjana ${avg}${h.length > ev.length ? ` · ${h.length} intents` : ""}</span></div>
       <div class="stat"><span class="label">Conceptes sòlids</span><b>${counts.solid}<small class="muted" style="font-size:1rem"> / ${Object.keys(st).length}</small></b><span class="muted small">${counts.feble} a reforçar</span></div>
@@ -1687,7 +1727,7 @@ function viewProgress(t) {
       ${inf ? `<div class="report">
         <span class="label">${fmtDate(inf.t)}</span>
         <p>${esc(inf.valoracio)}</p>
-        ${inf.nivells.length ? `<ul>${inf.nivells.map(n => `<li><strong>${esc(/^[NP]/.test(String(n.nivell)) ? n.nivell : "N" + n.nivell)}:</strong> ${esc(n.text)}</li>`).join("")}</ul>` : ""}
+        ${inf.nivells.length ? `<ul>${inf.nivells.map(n => `<li><strong>${esc(/^[NPL]\d$/.test(String(n.nivell)) ? n.nivell : "N" + n.nivell)}:</strong> ${esc(n.text)}</li>`).join("")}</ul>` : ""}
         <div class="fb-grid">
           ${inf.domina.length ? `<div class="fb-box good"><h3>Ja ho domines</h3><ul>${inf.domina.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
           ${inf.reforcar.length ? `<div class="fb-box miss"><h3>Per reforçar</h3><ul>${inf.reforcar.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
@@ -1696,7 +1736,7 @@ function viewProgress(t) {
       </div>` : ""}
     </section>
     ${h.length ? `<section class="panel"><h3>Historial</h3><div class="tbl"><table class="hist"><thead><tr><th>Dia</th><th>Nivell</th><th>Pregunta</th><th>Nota</th></tr></thead><tbody>
-      ${h.slice().reverse().map(x => `<tr><td>${fmtDate(x.t)}</td><td><span class="chip" style="--dc:var(--d${x.nivell || 1})"><i></i>${x.nivell ? lvlTag(x.mode, x.nivell) : "lliure"}</span></td><td>${esc(x.pregunta)}</td><td class="n">${x.nota}/10</td></tr>`).join("")}
+      ${h.slice().reverse().map(x => `<tr><td>${fmtDate(x.t)}</td><td><span class="chip" style="--dc:var(--d${x.nivell || 1})"><i></i>${x.nivell ? lvlTag(x.mode, x.nivell, subj) : "lliure"}</span></td><td>${esc(x.pregunta)}</td><td class="n">${x.nota}/10</td></tr>`).join("")}
     </tbody></table></div></section>` : ""}`;
 }
 
@@ -1742,7 +1782,7 @@ function confirmBox(title, text, cb, okLabel = "Esborra") {
 function newSubject() {
   openDialog(`<h3>Nova assignatura</h3>
     <div class="field"><label class="label" for="dlgIn">Nom</label><input type="text" id="dlgIn" placeholder="Per exemple: Economia"></div>
-    <div class="field"><label class="label" for="dlgTipus">Com s'estudia</label><select id="dlgTipus"><option value="teoria">Teoria: explicar-ho i relacionar</option><option value="problemes">Problemes: exercicis pas a pas (mates, física, química…)</option></select></div>
+    <div class="field"><label class="label" for="dlgTipus">Com s'estudia</label><select id="dlgTipus"><option value="teoria">Teoria: explicar-ho i relacionar</option><option value="problemes">Problemes: exercicis pas a pas (mates, física, química…)</option><option value="llengua">Llengua: teoria i exercicis d'aplicació (català, castellà, anglès…)</option></select></div>
     <div class="field"><label class="label" for="dlgLang">Llengua de l'assignatura</label><select id="dlgLang">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}">${v.nom}</option>`).join("")}</select></div>
     <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Cancel·la</button><button class="btn primary" data-act="dlgOk" type="button">Afegeix</button></div>`,
     () => { const nom = $("#dlgIn").value.trim(); if (!nom) return; S.subjects.push({id: uid(), nom, llengua: $("#dlgLang").value, c: (S.subjects.length % 8) + 1, tipus: $("#dlgTipus").value}); saveConfig(); closeDialog(); render(); });
@@ -1773,7 +1813,7 @@ function settings() {
       <div class="row"><button class="btn sm" data-act="export" type="button">Descarrega còpia</button><button class="btn sm" data-act="import" type="button">Recupera una còpia</button></div></div>
     ${Store.kind === "mem" && lsAvailable() ? `<div class="field"><span class="label">Guardar aquí</span><p class="small muted">Ara mateix no es guarda res. Pots guardar-ho en aquest navegador (no ho facis en un ordinador compartit).</p><div class="row"><button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button></div></div>` : ""}
     ${Store.kind === "local" ? `<div class="field"><span class="label">Esborrar</span><div class="row"><button class="btn sm danger" data-act="wipe" type="button">Esborra totes les dades d'aquest navegador</button></div></div>` : ""}
-    ${S.subjects.length ? `<div class="field"><span class="label">Com s'estudia cada assignatura</span>${S.subjects.map(x => `<div class="row"><label for="st_${x.id}" style="flex:1 1 140px">${esc(x.nom)}</label><select id="st_${x.id}" data-subjtipus="${x.id}"><option value="teoria" ${x.tipus !== "problemes" ? "selected" : ""}>Teoria</option><option value="problemes" ${x.tipus === "problemes" ? "selected" : ""}>Problemes</option></select></div>`).join("")}</div>` : ""}
+    ${S.subjects.length ? `<div class="field"><span class="label">Com s'estudia cada assignatura</span>${S.subjects.map(x => `<div class="row"><label for="st_${x.id}" style="flex:1 1 140px">${esc(x.nom)}</label><select id="st_${x.id}" data-subjtipus="${x.id}"><option value="teoria" ${!hasEx(x) ? "selected" : ""}>Teoria</option><option value="problemes" ${isProb(x) ? "selected" : ""}>Problemes</option><option value="llengua" ${isLang(x) ? "selected" : ""}>Llengua</option></select></div>`).join("")}</div>` : ""}
     <div class="field"><span class="label">Exemple</span><div class="row"><button class="btn sm" data-act="${S.exampleHidden ? "showExample" : "hideExample"}" type="button">${S.exampleHidden ? "Mostra" : "Amaga"} el tema d'exemple</button></div></div>
     <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Tanca</button>${inClaude ? "" : `<button class="btn primary" data-act="dlgOk" type="button">Desa</button>`}</div>`,
     () => {
@@ -1800,6 +1840,7 @@ function cleanTema(t) {
     mapa: {centre: str(t.guia.mapa?.centre, 300), branques: arr(t.guia.mapa?.branques).map(b => ({nom: str(b?.nom, 300), idea: str(b?.idea), fills: arr(b?.fills).map(f => ({nom: str(f?.nom, 300), idea: str(f?.idea)}))}))},
     relacions: arr(t.guia.relacions).map(r => ({de: str(r?.de, 300), a: str(r?.a, 300), tipus: str(r?.tipus, 100), explicacio: str(r?.explicacio)})),
     conceptes: arr(t.guia.conceptes).filter(c => okId(c?.id)).map(c => ({id: c.id, nom: str(c.nom, 300), definicio: str(c.definicio)})),
+    regles: arr(t.guia.regles).map(r => ({nom: str(r?.nom, 200), regla: str(r?.regla, 1500), exemples: strs(r?.exemples, 300).slice(0, 8), excepcions: str(r?.excepcions, 800)})),
     formules: arr(t.guia.formules).map(f => ({nom: str(f?.nom, 200), expressio: str(f?.expressio, 300), variables: str(f?.variables, 600), quan: str(f?.quan, 600)})),
     metodes: arr(t.guia.metodes).map(m => ({nom: str(m?.nom, 200), passos: strs(m?.passos, 400)})),
     tipus_problemes: arr(t.guia.tipus_problemes).map(x => ({id: str(x?.id, 40), nom: str(x?.nom, 200), descripcio: str(x?.descripcio, 600)}))} : null;
@@ -1808,7 +1849,7 @@ function cleanTema(t) {
     avals: arr(q.avals).map(a => ({t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), correcte: a?.correcte === true, transcripcio: str(a?.transcripcio, 6000),
       passos: arr(a?.passos).map(p => ({pas: str(p?.pas, 600), estat: ["ok", "error", "arrossegat", "falta"].includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
       errors: arr(a?.errors).map(e => ({tipus: str(e?.tipus, 40), explicacio: str(e?.explicacio, 1000)})), punts_forts: strs(a?.punts_forts, 600),
-      com_continuar: str(a?.com_continuar, 1500), resultat_correcte: str(a?.resultat_correcte, 300), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60),
+      com_continuar: str(a?.com_continuar, 1500), resultat_correcte: str(a?.resultat_correcte, 3000), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60),
       millora: str(a?.millora, 800), benestar: str(a?.benestar, 800), sig: str(a?.sig, 30000), all: a?.all == null ? undefined : str(a.all, 40000), resposta: str(a?.resposta, 20000)}))}));
   const items = arr(t.ronda?.items).filter(q => okId(q?.id)).map(q => ({id: q.id, nivell: num(q.nivell, 0, 4), tipus: str(q.tipus, 60), pregunta: str(q.pregunta), pista: str(q.pista), conceptes: strs(q.conceptes, 60), criteris: strs(q.criteris), resposta: str(q.resposta, 100000), oral: !!q.oral, avals: arr(q.avals).map(cleanAval)}));
   return {id: t.id, subjId: t.subjId, titol: str(t.titol, 200) || "Tema", creat: num(t.creat, 0, 9e15), mats: arr(t.mats).filter(okId), guia: g,
@@ -1819,7 +1860,7 @@ function cleanTema(t) {
     informe: t.informe ? {t: num(t.informe.t, 0, 9e15), valoracio: str(t.informe.valoracio, 4000), nivells: arr(t.informe.nivells).map(n => ({nivell: str(n?.nivell, 4), text: str(n?.text)})), domina: strs(t.informe.domina), reforcar: strs(t.informe.reforcar), pla: strs(t.informe.pla)} : null};
 }
 function cleanBackup(d) {
-  const subjects = arr(d.subjects).filter(s => okId(s?.id)).map(s => ({id: s.id, nom: str(s.nom, 80) || "Assignatura", llengua: LANGS[s.llengua] ? s.llengua : "ca", c: num(s.c, 1, 8), tipus: s.tipus === "problemes" || s.tipus === "teoria" ? s.tipus : withTipus({nom: s.nom}).tipus}));
+  const subjects = arr(d.subjects).filter(s => okId(s?.id)).map(s => ({id: s.id, nom: str(s.nom, 80) || "Assignatura", llengua: LANGS[s.llengua] ? s.llengua : "ca", c: num(s.c, 1, 8), tipus: ["problemes", "teoria", "llengua"].includes(s.tipus) ? s.tipus : withTipus({nom: s.nom}).tipus}));
   const temes = {}, mats = {};
   for (const t of Object.values(d.temes || {})) if (okId(t?.id) && okId(t?.subjId) && !ex.temes[t.id]) temes[t.id] = cleanTema(t);
   for (const m of Object.values(d.mats || {})) if (okId(m?.id) && temes[m?.temaId]) mats[m.id] = {id: m.id, temaId: m.temaId, nom: str(m.nom, 200), tipus: str(m.tipus, 10), text: str(m.text, MAX_MAT), creat: num(m.creat, 0, 9e15)};
@@ -1936,7 +1977,7 @@ document.addEventListener("input", (e) => {
 document.addEventListener("change", (e) => {
   if (e.target.dataset.miclang) (S.micLang ??= {})[e.target.dataset.miclang] = e.target.value;
   if (e.target.dataset.exorigen) S.exOrigen[e.target.dataset.exorigen] = e.target.value;
-  if (e.target.dataset.subjtipus) { const x = S.subjects.find(y => y.id === e.target.dataset.subjtipus); if (x) { x.tipus = e.target.value; saveConfig(); if (S.view.tab === "ex" && !isProb(getSubj(getTema(S.view.temaId)?.subjId))) S.view.tab = "quiz"; render(); } }
+  if (e.target.dataset.subjtipus) { const x = S.subjects.find(y => y.id === e.target.dataset.subjtipus); if (x) { x.tipus = e.target.value; saveConfig(); if (S.view.tab === "ex" && !hasEx(getSubj(getTema(S.view.temaId)?.subjId))) S.view.tab = "quiz"; render(); } }
 });
 $("#btnSettings").addEventListener("click", settings);
 document.addEventListener("focusin", (e) => { if (e.target.dataset?.exans || e.target.dataset?.exstep) S.lastExField = e.target.id; });
@@ -1967,7 +2008,10 @@ document.addEventListener("paste", (e) => {
    Arrencada
    ============================================================ */
 // Les assignatures d'abans del mode de problemes no tenen "tipus": es dedueix pel nom.
-const withTipus = (s) => s.tipus ? s : {...s, tipus: /matem|f[ií]sica|qu[ií]mica/i.test(s.nom || "") ? "problemes" : "teoria"};
+const LANG_NAME = /catal|castell|angl|alemany|ingl[eé]s|english|franc[eè]s|llengua|lengua|deutsch/i;
+const withTipus = (s) => s.tipus ? s : {...s, tipus: /matem|f[ií]sica|qu[ií]mica/i.test(s.nom || "") ? "problemes" : LANG_NAME.test(s.nom || "") ? "llengua" : "teoria"};
+// Abans del tipus «llengua» (config v<2), les llengües s'havien creat com a «teoria»: es passen a «llengua».
+const upgradeV2 = (s) => s.tipus === "teoria" && LANG_NAME.test(s.nom || "") ? {...s, tipus: "llengua"} : s;
 let inited = null;
 async function boot() {
   S.loadError = false; render();
@@ -1975,12 +2019,14 @@ async function boot() {
   await inited;
   try {
     const subjects = [], temes = {}, mats = {};
+    let upgrade = false;
     for (const [k, v] of await Store.loadAll()) {
-      if (k === "config") subjects.push(...arr(v.subjects).map(withTipus));
+      if (k === "config") { upgrade = (v.v || 1) < 2; subjects.push(...arr(v.subjects).map(withTipus).map(x => upgrade ? upgradeV2(x) : x)); }
       else if (k.startsWith("t_")) temes[v.id] = v;
       else if (k.startsWith("m_")) mats[v.id] = v;
     }
     S.subjects = subjects; S.temes = temes; S.mats = mats; S.loaded = true;
+    if (upgrade && subjects.length) saveConfig();
   } catch { S.loadError = true; }
   render();
 }
