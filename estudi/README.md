@@ -6,6 +6,21 @@ i després fa preguntes en quatre nivells de profunditat (recordar, comprendre,
 relacionar, integrar). Es pot respondre parlant (micròfon) o escrivint, i Claude
 valora què se sap, què falta i com encaixar-ho a l'explicació.
 
+## Mode de problemes (Matemàtiques, Física i Química)
+
+Les assignatures de tipus «problemes» tenen una pestanya **Exercicis**:
+
+- Quatre nivells de dificultat: P1 Aplicar, P2 Encadenar, P3 Plantejar, P4 Raonar.
+- Exercicis nous (semblants als del llibre) o agafats del material que s'ha pujat.
+- Pistes progressives, mode guiat (un camp per a cada pas) i barra de símbols (², √, π, Δ…).
+- Es pot respondre escrivint o amb fotos del paper. Les fotos no es guarden: només el que Claude hi llegeix.
+- Correcció pas a pas: el primer pas on hi ha l'error, el tipus d'error (càlcul, unitats, signes,
+  plantejament…), com arreglar-ho, la solució completa i «Fes-me'n un de semblant».
+- El Progrés mostra la dificultat per nivells i els errors més freqüents.
+- La guia del tema afegeix fórmules (amb el significat de cada símbol) i mètodes pas a pas.
+
+El tipus de cada assignatura es pot canviar a Configuració.
+
 ## Fitxers
 
 - `explica-ho.html` — font de la pàgina publicada a claude.ai (Artifact). No porta
