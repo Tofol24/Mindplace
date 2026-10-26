@@ -46,40 +46,57 @@
       var u = new URL(location.href);
       if (!u.searchParams.has("uso")) return;
       var m = /^no-(\d{1,15})$/.exec(u.searchParams.get("uso") || "");
-      if (m && +m[1] <= Date.now()) { var d = decision(); if (!d || +m[1] > d.t) { guardarDecision("no", +m[1]); escribir("aprens_uso_pend", null); } }
+      if (m && +m[1] <= Date.now()) { var d = decision(); if (!d || +m[1] > d.t) { guardarDecision("no", +m[1]); escribir("aprens_uso_pend", null); escribir("aprens_uso_cola", null); } }
       u.searchParams.delete("uso");
       history.replaceState(history.state, "", u.pathname + u.search + u.hash);
     } catch (e) {}
   })();
 
   // Sin conexión, los eventos esperan en una cola del dispositivo (máx. 200) y
-  // se envían al recuperarla. Con conexión se usa sendBeacon (sobrevive al cierre).
+  // se envían al recuperarla, de 20 en 20 y con espera si el servidor pide
+  // calma (429). Con conexión se usa sendBeacon (sobrevive al cierre).
+  // Cada evento lleva la fecha del consentimiento con que se midió: si la
+  // persona lo retira, nada de lo anterior se vuelve a encolar ni a enviar.
   var COLA = "aprens_uso_cola";
-  function encolar(ev) { var c = leerJSON(COLA) || []; c.push(ev); escribir(COLA, JSON.stringify(c.slice(-200))); }
+  function marca() { var d = decision(); return d && d.v === "si" ? d.t : -1; }
+  function vigente(m) { return activo() && m === marca(); }
+  function encolar(evs, m) {
+    if (!vigente(m)) return;
+    var c = leerJSON(COLA) || [];
+    escribir(COLA, JSON.stringify(c.concat(evs.map(function (ev) { return { ev: ev, m: m }; })).slice(-200)));
+  }
+  function reintentable(r) { return r.status === 429 || r.status >= 500; }
   function enviar(ev) {
     if (!activo()) return;
-    if (navigator.onLine === false) { encolar(ev); return; }
+    var m = marca();
+    if (navigator.onLine === false) { encolar([ev], m); return; }
     try {
       var cuerpo = JSON.stringify(ev);
       if (navigator.sendBeacon && navigator.sendBeacon("/api/uso", cuerpo)) return;
-      fetch("/api/uso", { method: "POST", body: cuerpo, keepalive: true }).then(function (r) { if (!r.ok && r.status >= 500) encolar(ev); }, function () { encolar(ev); });
+      fetch("/api/uso", { method: "POST", body: cuerpo, keepalive: true }).then(function (r) { if (reintentable(r)) { encolar([ev], m); programarVaciado(); } }, function () { encolar([ev], m); });
     } catch (e) {}
   }
-  var vaciando = false;
+  var vaciando = false, espera = 60000, temporizador = null;
+  function programarVaciado() { if (!temporizador) temporizador = setTimeout(function () { temporizador = null; vaciarCola(); }, espera); }
   function vaciarCola() {
     if (vaciando || !activo() || navigator.onLine === false) return;
-    var c = leerJSON(COLA) || [];
+    var m = marca();
+    var c = (leerJSON(COLA) || []).filter(function (x) { return x && x.m === m; });
+    escribir(COLA, null);
     if (!c.length) return;
-    vaciando = true; escribir(COLA, null);
-    var resto = [];
-    var envios = c.map(function (ev) {
-      return fetch("/api/uso", { method: "POST", body: JSON.stringify(ev), keepalive: true })
-        .then(function (r) { if (!r.ok && r.status >= 500) resto.push(ev); }, function () { resto.push(ev); });
-    });
-    Promise.all(envios).then(function () {
-      if (resto.length) { var ahora = leerJSON(COLA) || []; escribir(COLA, JSON.stringify(resto.concat(ahora).slice(-200))); }
-      vaciando = false;
-    });
+    vaciando = true;
+    var lotes = [];
+    for (var i = 0; i < c.length; i += 20) lotes.push(c.slice(i, i + 20).map(function (x) { return x.ev; }));
+    (function siguiente(k) {
+      if (k >= lotes.length || !vigente(m)) { vaciando = false; espera = 60000; return; }
+      fetch("/api/uso", { method: "POST", body: JSON.stringify(lotes[k]), keepalive: true }).then(function (r) {
+        if (reintentable(r)) throw r;
+        setTimeout(function () { siguiente(k + 1); }, 1500);
+      }).catch(function () {
+        encolar([].concat.apply([], lotes.slice(k)), m);
+        vaciando = false; espera = Math.min(espera * 2, 30 * 60000); programarVaciado();
+      });
+    })(0);
   }
   window.addEventListener("online", vaciarCola);
 

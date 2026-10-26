@@ -132,7 +132,7 @@
         <button data-v="todo" class="on">Todo</button><button data-v="paciente">Pacientes</button><button data-v="profesional">Profesional</button><button data-v="centro">Centro</button>
       </div>
     </div>
-    <section class="uso" id="uso" aria-label="Uso de los pacientes"></section>
+    <section class="uso" id="uso" aria-label="Uso de los pacientes" aria-live="polite"></section>
     <div class="recent" id="recent"></div>
     <div id="list"></div>
   </main>
@@ -286,7 +286,10 @@ function focoUso(){
   if(a.hasAttribute("data-uso")) return '[data-uso="'+a.getAttribute("data-uso")+'"]';
   return null;
 }
-function restaurarFocoUso(sel){ if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
+function restaurarFocoUso(sel){
+  // Tras enviar la clave: al periodo elegido si ha ido bien, o de nuevo al campo si no.
+  if(uso.focoTras){ uso.focoTras = false; sel = uso.estado === "ok" ? '[data-usodias="'+uso.dias+'"]' : "#usoClave"; }
+  if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
 }
 function agregarUso(diasPedidos){
   var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
@@ -361,7 +364,7 @@ function pintarUso(){
   }
   $("uso").innerHTML = h;
   var f = $("usoForm");
-  if(f) f.onsubmit = function(e){ e.preventDefault(); var v = $("usoClave").value.trim(); if(v){ usoGuardar(v); cargarUso(); } };
+  if(f) f.onsubmit = function(e){ e.preventDefault(); var v = $("usoClave").value.trim(); if(v){ usoGuardar(v); uso.focoTras = true; cargarUso(); } };
 }
 function kpi(n, txt){ return '<div class="kpi"><b>'+n+'</b><span>'+esc(txt)+'</span></div>'; }
 $("uso").addEventListener("click", function(e){

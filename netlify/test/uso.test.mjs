@@ -27,6 +27,9 @@ assert.equal((await post("no json")).status, 400);
 assert.equal((await post({ e: "tiempo", t: "__proto__", b: "0-1" })).status, 400);
 assert.equal((await post({ e: "abrir", t: "constructor" })).status, 400);
 assert.equal((await uso(new Request("https://x/api/uso"))).status, 405);
+// lista (cola sin conexión): se guardan los válidos, como máximo 20
+assert.equal((await post([{ e: "abrir", t: "ais_curiosidad" }, { e: "abrir", t: "__proto__" }, { e: "abrir", t: "ais_curiosidad" }])).status, 204);
+assert.equal((await post([{ e: "nada" }])).status, 400);
 // un día pasado, a mano
 const { getStore } = await import("@netlify/blobs");
 const st = getStore("uso");
@@ -54,6 +57,7 @@ assert.equal(j2.dias["2026-01-05"].herramientas.ais_amor.abrir, 1);
 assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);
 assert.equal(Object.keys(j2.dias["2026-01-06"].herramientas).length, 0);
 assert.equal(j2.dias[hoy].herramientas.bajar_alerta.abrir, 2);
+assert.equal(j2.dias[hoy].herramientas.ais_curiosidad.abrir, 2);
 // dos consultas a la vez sobre un día cerrado: ni duplican ni pierden
 for (const r of ["a1", "a2", "a3"]) await st.set("ev/2026-02-10/abrir/ais_amor/-/" + r, "");
 const auth = { headers: { Authorization: "Bearer secreta" } };
