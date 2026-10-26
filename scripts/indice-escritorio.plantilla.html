@@ -92,6 +92,30 @@
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tinta);color:var(--fondo);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;}
   .toast.show{opacity:1;}
   mark{background:#f3dfa8;color:inherit;border-radius:3px;}
+
+  /* Uso de los pacientes (contador anónimo) */
+  .uso{background:var(--card);border:1px solid var(--linia);border-radius:16px;padding:14px 16px;margin:0 0 18px;}
+  .uso-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .uso-h h2{font-family:var(--serif);font-size:20px;color:var(--oliva-d);margin-right:auto;}
+  .uso-msg{font-size:13.5px;color:var(--suau);margin-top:8px;max-width:760px;}
+  .uso-msg code{font-size:12px;}
+  .uso-form{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+  .uso-form input{font:inherit;font-size:14px;border:1.5px solid var(--linia);border-radius:10px;padding:6px 10px;background:var(--fondo);color:var(--tinta);min-width:220px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px;}
+  .kpi{background:var(--fondo);border-radius:12px;padding:9px 11px;}
+  .kpi b{display:block;font-family:var(--serif);font-size:22px;color:var(--tinta);font-variant-numeric:tabular-nums;}
+  .kpi span{font-size:12px;color:var(--suau);}
+  .dias{display:flex;align-items:flex-end;gap:2px;height:46px;margin-top:12px;}
+  .dias i{flex:1;background:var(--sage);border-radius:2px 2px 0 0;min-height:1px;opacity:.85;}
+  .rank{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px;}
+  .rank th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--suau);padding:5px 6px;border-bottom:1px solid var(--linia);}
+  .rank td{padding:6px;border-bottom:1px solid var(--linia);font-variant-numeric:tabular-nums;vertical-align:middle;}
+  .rank td.n{white-space:nowrap;}
+  .rank .bar{display:inline-block;height:8px;border-radius:4px;background:var(--oliva);margin-right:6px;vertical-align:middle;}
+  .rank a{color:var(--tinta);text-decoration:none;}
+  .rank a:hover{text-decoration:underline;}
+  .tag.uso{background:var(--fondo);color:var(--oliva-d);}
+  @media (max-width:640px){ .rank th:nth-child(4),.rank td:nth-child(4){display:none;} }
 </style>
 </head>
 <body>
@@ -108,6 +132,7 @@
         <button data-v="todo" class="on">Todo</button><button data-v="paciente">Pacientes</button><button data-v="profesional">Profesional</button><button data-v="centro">Centro</button>
       </div>
     </div>
+    <section class="uso" id="uso" aria-label="Uso de los pacientes" aria-live="polite"></section>
     <div class="recent" id="recent"></div>
     <div id="list"></div>
   </main>
@@ -151,7 +176,8 @@ function card(it, q){
     (main ? '<a href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">'+hl(it.nombre,q)+'</a>' : hl(it.nombre,q))+
     '</div></div><button class="star'+(fav?' on':'')+'" data-fav="1" title="'+(fav?'Quitar de favoritos':'Añadir a favoritos')+'" aria-label="Favorito" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button></div>';
   h += '<div class="ds">'+hl(it.desc,q)+(it.nota?' '+esc(it.nota):'')+'</div>';
-  h += '<div class="tags">'+estadoTag(it)+'<span class="tag'+(it.pub==="profesional"?' pro':'')+'">'+(PUB[it.pub]||"")+'</span></div>';
+  var u = it.id && uso.porId[it.id];
+  h += '<div class="tags">'+estadoTag(it)+(u ? '<span class="tag uso" title="Últimos '+uso.dias+' días: aperturas y registros guardados">👁 '+u.abrir+' · ✓ '+u.registros+'</span>' : '')+'<span class="tag'+(it.pub==="profesional"?' pro':'')+'">'+(PUB[it.pub]||"")+'</span></div>';
   if(it.sub && it.sub.length) h += '<div class="sub">'+it.sub.map(function(s){ return '<a href="'+esc(s.url)+'" target="_blank" rel="noopener" data-open="1">'+esc(s.n)+'</a>'; }).join(" · ")+'</div>';
   h += '<div class="acts">';
   if(main) h += '<a class="btn pri" href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">Abrir</a>';
@@ -226,13 +252,132 @@ document.addEventListener("click", function(e){
 });
 $("q").addEventListener("input", function(){ if(this.value && st.cat==="favoritos") st.cat="todas"; render(); });
 document.addEventListener("keydown", function(e){
-  if(e.key==="/" && document.activeElement!==$("q")){ e.preventDefault(); $("q").focus(); }
+  var enCampo = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"") || (document.activeElement||{}).isContentEditable;
+  if(e.key==="/" && !enCampo){ e.preventDefault(); $("q").focus(); }
   if(e.key==="Escape"){ $("q").value=""; render(); }
 });
 if(st.tema) document.documentElement.setAttribute("data-theme", st.tema);
 var nTool = D.items.filter(function(i){ return !i.antigua; }).length;
 $("foot").innerHTML = nTool+' herramientas y páginas · '+(D.items.length-nTool)+' webs antiguas<br>Generado el '+D.generado+' desde la rama <b>'+esc(D.rama)+'</b>'+(D.comprobado?'':' (sin comprobar publicación)')+'.<br>Para actualizarlo: <code>python3 scripts/indice-escritorio.py --comprobar</code><br><button id="tema" type="button">Claro / oscuro</button>';
+/* ---------- uso de los pacientes (contador anónimo, /api/uso-resumen) ---------- */
+var USO_KEY = "aprens_indice_uso_clave";
+var uso = { dias: st.usoDias || 30, estado: "", datos: null, porId: {}, todas: false, pet: 0 };
+function usoClave(){ try{ return localStorage.getItem(USO_KEY) || ""; }catch(e){ return ""; } }
+function usoGuardar(v){ try{ if(v) localStorage.setItem(USO_KEY, v); else localStorage.removeItem(USO_KEY); }catch(e){} }
+var TRAMOS = ["0-1","1-3","3-10","10+"], TRAMO_TXT = {"0-1":"menos de 1 min","1-3":"1–3 min","3-10":"3–10 min","10+":"más de 10 min"};
+function enClaude(){ return /claude\.ai$|claudeusercontent\.com$/.test(location.hostname); }
+
+function cargarUso(){
+  if(enClaude()){ uso.estado = "solo-escritorio"; pintarUso(); return; }
+  var clave = usoClave();
+  if(!clave){ uso.estado = "sin-clave"; pintarUso(); return; }
+  var focoAntes = focoUso();   // antes de redibujar, para devolverlo al llegar la respuesta
+  uso.estado = "cargando"; pintarUso(); restaurarFocoUso(focoAntes);
+  // Solo vale la respuesta de la última petición (si se cambia de periodo deprisa).
+  var pet = ++uso.pet, dias = uso.dias;
+  fetch(D.usoApi + "?dias=" + dias, { headers: { Authorization: "Bearer " + clave } })
+    .then(function(r){ if(r.status === 401) throw "clave"; if(r.status === 503) throw "sin-config"; if(!r.ok) throw "error"; return r.json(); })
+    .then(function(j){ if(pet !== uso.pet) return; var foco = focoUso() || focoAntes; uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); restaurarFocoUso(foco); })
+    .catch(function(e){ if(pet !== uso.pet) return; var foco = focoUso() || focoAntes; uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); restaurarFocoUso(foco); });
+}
+// Conserva el foco del teclado dentro de «Uso» cuando llega la respuesta.
+function focoUso(){
+  var a = document.activeElement; if(!a || !$("uso").contains(a)) return null;
+  if(a.hasAttribute("data-usodias")) return '[data-usodias="'+a.getAttribute("data-usodias")+'"]';
+  if(a.hasAttribute("data-uso")) return '[data-uso="'+a.getAttribute("data-uso")+'"]';
+  return null;
+}
+function restaurarFocoUso(sel){
+  // Tras enviar la clave: al periodo elegido si ha ido bien, o de nuevo al campo si no.
+  if(uso.focoTras && uso.estado !== "cargando"){ uso.focoTras = false; sel = uso.estado === "ok" ? '[data-usodias="'+uso.dias+'"]' : "#usoClave"; }
+  if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
+}
+function agregarUso(diasPedidos){
+  var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
+  var dias = uso.datos.dias || {};
+  // Días de calendario contados desde el «hoy» del servidor (hora de Mallorca),
+  // sin depender de la zona ni de los cambios de hora del ordenador.
+  var h = String(uso.datos.hoy || "").split("-").map(Number), base = h.length === 3 ? Date.UTC(h[0], h[1]-1, h[2]) : Date.now();
+  for(var i = diasPedidos - 1; i >= 0; i--){
+    var k = new Date(base - i*86400000).toISOString().slice(0, 10);
+    var r = dias[k], ent = 0;
+    if(r){
+      ["app","inicio","dispositivos","nuevos","instalada"].forEach(function(x){ t[x] += r.entradas[x] || 0; });
+      ent = (r.entradas.app || 0) + (r.entradas.inicio || 0);
+      Object.keys(r.herramientas || {}).forEach(function(id){
+        var h = r.herramientas[id], p = por[id] || (por[id] = { abrir:0, registros:0, tiempo:{"0-1":0,"1-3":0,"3-10":0,"10+":0} });
+        p.abrir += h.abrir || 0; p.registros += h.registros || 0; t.abrir += h.abrir || 0; t.registros += h.registros || 0;
+        TRAMOS.forEach(function(b){ p.tiempo[b] += (h.tiempo || {})[b] || 0; });
+      });
+    }
+    serie.push({ dia: k, n: ent });
+  }
+  uso.totales = t; uso.porId = por; uso.serie = serie;
+}
+function nombreDe(id){ for(var i=0;i<D.items.length;i++) if(D.items[i].id === id) return D.items[i]; return null; }
+function ratoHabitual(tm){ var best = null; TRAMOS.forEach(function(b){ if(tm[b] && (!best || tm[b] > tm[best])) best = b; }); return best ? TRAMO_TXT[best] : "—"; }
+
+function pintarUso(){
+  var h = '<div class="uso-h"><h2>📈 Uso de los pacientes</h2>';
+  if(uso.estado !== "solo-escritorio" && uso.estado !== "sin-clave"){
+    h += '<div class="seg" role="group" aria-label="Periodo">' + [7,30,90,365].map(function(d){
+      return '<button type="button" data-usodias="'+d+'" aria-pressed="'+(d===uso.dias)+'" class="'+(d===uso.dias?'on':'')+'">'+(d===365?'1 año':d+' días')+'</button>'; }).join("") + '</div>' +
+      '<button type="button" class="btn ghost" data-uso="recargar">Actualizar</button><button type="button" class="btn ghost" data-uso="olvidar">Cambiar clave</button>';
+  }
+  h += '</div>';
+  var msg = {
+    "solo-escritorio": 'El uso solo se puede consultar desde el índice guardado en tu ordenador: esta página de claude.ai no puede conectarse con Netlify.',
+    "sin-clave": 'Para ver cuántas veces entran y qué herramientas usan, escribe aquí la clave de uso (la misma que pusiste en Netlify como <code>USO_CLAVE</code>). Se guarda solo en este navegador.',
+    "cargando": 'Cargando los recuentos…',
+    "clave": 'La clave no es correcta. Comprueba que coincide con <code>USO_CLAVE</code> en Netlify.',
+    "sin-config": 'Falta configurar la variable <code>USO_CLAVE</code> en Netlify (sitio aprens-app). Hasta entonces no se pueden leer los recuentos.',
+    "error": 'Netlify ha respondido con un error. Prueba de nuevo en un rato.',
+    "red": 'No se ha podido conectar con Netlify. Comprueba la conexión a internet.'
+  }[uso.estado];
+  if(msg) h += '<p class="uso-msg">'+msg+'</p>';
+  if(uso.estado === "sin-clave" || uso.estado === "clave"){
+    h += '<form class="uso-form" id="usoForm"><label class="sr" for="usoClave" style="position:absolute;left:-9999px">Clave de uso</label><input id="usoClave" type="password" autocomplete="off" placeholder="Clave de uso"><button class="btn pri" type="submit">Ver el uso</button></form>';
+  }
+  if(uso.estado === "ok"){
+    var t = uso.totales, max = Math.max.apply(null, uso.serie.map(function(x){ return x.n; }).concat([1]));
+    h += '<div class="kpis">' +
+      kpi(t.app + t.inicio, 'entradas (app '+t.app+' · Mi espacio '+t.inicio+')') +
+      kpi(t.dispositivos, 'primeras visitas del día') +
+      kpi(t.nuevos, 'primeras visitas de siempre') +
+      kpi(((t.app+t.inicio) ? Math.round(100*t.instalada/(t.app+t.inicio)) : 0) + '%', 'entradas desde la app instalada') +
+      kpi(t.abrir, 'herramientas abiertas') +
+      kpi(t.registros, 'registros guardados') + '</div>';
+    h += '<div class="dias" aria-hidden="true">' + uso.serie.map(function(x){
+      return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' entradas"></i>'; }).join("") + '</div>' +
+      '<details class="uso-msg"><summary>Entradas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Entradas</th></tr></thead><tbody>' +
+      uso.serie.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td></tr>'; }).join("") + '</tbody></table></details>';
+    var filas = Object.keys(uso.porId).map(function(id){ var p = uso.porId[id]; p.id = id; return p; })
+      .sort(function(a,b){ return b.abrir - a.abrir || b.registros - a.registros; });
+    var maxA = Math.max.apply(null, filas.map(function(f){ return f.abrir; }).concat([1]));
+    var vis = uso.todas ? filas : filas.slice(0, 10);
+    h += filas.length ? '<table class="rank"><thead><tr><th>Herramienta</th><th>Aperturas</th><th>Registros</th><th>Rato habitual</th></tr></thead><tbody>' + vis.map(function(f){
+        var it = nombreDe(f.id), nom = it ? esc(it.emoji)+' '+esc(it.nombre) : esc((D.etiquetas || {})[f.id] || f.id);
+        var link = it ? '<a href="'+esc(abrirURL(it))+'" target="_blank" rel="noopener" data-open="1" data-k="'+esc(it.k)+'">'+nom+'</a>' : nom;
+        return '<tr><td>'+link+'</td><td class="n"><span class="bar" style="width:'+Math.max(2,Math.round(90*f.abrir/maxA))+'px"></span>'+f.abrir+'</td><td class="n">'+f.registros+'</td><td>'+ratoHabitual(f.tiempo)+'</td></tr>';
+      }).join("") + '</tbody></table>' + (filas.length > 10 ? '<button type="button" class="btn ghost" data-uso="todas" style="margin-top:8px">'+(uso.todas?'Ver solo las 10 más usadas':'Ver las '+filas.length)+'</button>' : '')
+      : '<p class="uso-msg">Todavía no hay aperturas registradas en este periodo.</p>';
+    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Primeras visitas» se cuentan por navegador y por sitio: un mismo móvil que entra en la app y en Mi espacio suma dos, y no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
+  }
+  $("uso").innerHTML = h;
+  var f = $("usoForm");
+  if(f) f.onsubmit = function(e){ e.preventDefault(); var v = $("usoClave").value.trim(); if(v){ usoGuardar(v); uso.focoTras = true; cargarUso(); } };
+}
+function kpi(n, txt){ return '<div class="kpi"><b>'+n+'</b><span>'+esc(txt)+'</span></div>'; }
+$("uso").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  if(b.hasAttribute("data-usodias")){ uso.dias = +b.getAttribute("data-usodias"); st.usoDias = uso.dias; save(); cargarUso(); var nb = document.querySelector('[data-usodias="'+uso.dias+'"]'); if(nb) nb.focus(); }
+  else if(b.getAttribute("data-uso") === "recargar") cargarUso();
+  else if(b.getAttribute("data-uso") === "olvidar"){ uso.pet++; usoGuardar(""); uso.porId = {}; uso.datos = null; uso.estado = "sin-clave"; pintarUso(); render(); }
+  else if(b.getAttribute("data-uso") === "todas"){ uso.todas = !uso.todas; pintarUso(); }
+});
+
 render();
+cargarUso();
 </script>
 </body>
 </html>

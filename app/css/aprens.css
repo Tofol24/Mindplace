@@ -302,3 +302,19 @@ table.t td.r{text-align:center;font-weight:700}
 .rec-hero .rh-m i.on{background:#fff}
 .rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:var(--rh,#3f6b74);font-weight:700;font-size:15px;padding:10px 16px;border-radius:22px}
 .rh-note{font-size:12.5px;color:var(--gris);margin:4px 4px 16px;line-height:1.45}
+
+/* Aviso de privacidad · botón del contador anónimo de uso */
+.aviso-uso{display:inline-block;margin-top:6px;font-weight:600}
+.aviso-btn{margin-top:8px;margin-left:0;font:inherit;font-size:.9em;font-weight:600;background:transparent;color:var(--azul);border:1.5px solid var(--azul);border-radius:16px;padding:5px 12px;cursor:pointer}
+.aviso-btn:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+/* Aviso de la primera vez del contador anónimo (js/uso.js) */
+.uso-aviso{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--azulLt);border-top:2px solid var(--azul);
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  box-shadow:0 -6px 20px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;font-size:14px;line-height:1.45;
+  max-height:60vh;overflow-y:auto}
+.uso-aviso p{margin:0;max-width:640px}
+.uso-aviso-btns{display:flex;gap:8px;flex-wrap:wrap}
+.uso-aviso button{font:inherit;font-weight:700;border-radius:18px;padding:8px 14px;cursor:pointer;border:1.5px solid var(--azul);background:var(--azul);color:#fff}
+.uso-aviso button[data-uso="no"]{background:transparent;color:var(--azul)}
+.uso-aviso button:focus-visible{outline:2px solid var(--azul);outline-offset:2px}

@@ -1,3 +1,4 @@
 # Local Netlify folder
 .netlify
 .codex-review/
+node_modules/
