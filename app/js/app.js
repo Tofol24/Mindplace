@@ -163,6 +163,28 @@
   }
 
   // ============================================================
+  //  Aviso de privacidad + contador anónimo de uso (js/uso.js)
+  // ============================================================
+  function avisoPrivacidadHTML(){
+    const u = window.AprensUso;
+    const off = !u || u.desactivado();
+    return `<div class="aviso" id="avisoPriv" style="margin-top:18px">🔒 Lo que escribes y registras se queda solo en tu dispositivo.
+      Para saber qué herramientas os resultan más útiles, la app cuenta de manera anónima cuántas veces se abre cada una y cuánto rato se usa, sin saber quién eres ni qué escribes.
+      ${u ? `<br><span class="aviso-uso">${off ? "Ahora mismo no se cuentan tus visitas." : ""}</span>
+      <button type="button" class="aviso-btn" id="usoToggle">${off ? "Volver a contarlas" : "No contar mis visitas"}</button>` : ""}</div>`;
+  }
+  function wireAvisoPrivacidad(){
+    const b = document.getElementById("usoToggle");
+    if(!b) return;
+    b.onclick = function(){
+      AprensUso.desactivar(!AprensUso.desactivado());
+      const box = document.getElementById("avisoPriv");
+      if(box){ box.outerHTML = avisoPrivacidadHTML(); wireAvisoPrivacidad(); }
+      const nb = document.getElementById("usoToggle"); if(nb) nb.focus();
+    };
+  }
+
+  // ============================================================
   //  Continuidad AIS · racha de presencia + recordatorio (offline)
   //  Todo en localStorage; nada sale del dispositivo.
   // ============================================================
@@ -593,6 +615,7 @@
   }
 
   function renderHub(){
+    if(window.AprensUso) AprensUso.cerrar();
     removeExportBar();
     screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
@@ -649,7 +672,8 @@
       ${secciones}
       ${docsHTML()}
       ${librosHTML()}
-      <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
+      ${avisoPrivacidadHTML()}`;
+    wireAvisoPrivacidad();
     wireCont();
     wireCV();
     montarIndice();
@@ -751,6 +775,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();
     registrarPractica();
     removeExportBar();

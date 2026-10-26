@@ -53,6 +53,11 @@ python3 scripts/indice-escritorio.py --comprobar \
 claude.ai y la segunda abre el archivo de la carpeta del Mac. Los enlaces
 `file://` solo funcionan desde el índice guardado en el propio Mac.
 
+Arriba muestra «📈 Uso de los pacientes»: lee los recuentos anónimos de
+`/api/uso-resumen` con la clave `USO_CLAVE` (ver `app/DESPLIEGUE.md`, apartado D) y
+añade a cada tarjeta sus aperturas y registros del periodo. Solo funciona en el índice
+guardado en el ordenador, no en la página privada de claude.ai.
+
 Lee el registro (`app/js/registry.js`) y los grupos del hub (`app/js/app.js`),
 así que una herramienta nueva registrada aparece sola. Lo que vive fuera del hub
 se describe en el diccionario `EXTRA` del script; cualquier HTML sin describir

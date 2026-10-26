@@ -4,3 +4,10 @@
 [build]
   publish = "app"
   command = ""
+
+# Contador anónimo de uso: /api/uso (recibe eventos) y /api/uso-resumen
+# (los lee el índice de escritorio con la clave USO_CLAVE). Solo funciona en el
+# despliegue conectado a GitHub: con «drag & drop» de app/ no se publican.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

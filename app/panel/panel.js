@@ -679,6 +679,76 @@
     });
   }
 
+  /* Uso por herramienta, sumando los .json importados de todos los pacientes.
+     Es el uso real de quien te envía sus datos (complementa el contador
+     anónimo del índice de escritorio, que cuenta a todo el mundo sin saber quién). */
+  function usoGlobal(dias) {
+    var hoy = new Date(), desde = new Date(hoy.getTime() - (dias - 1) * 86400000).toISOString().slice(0, 10);
+    var tools = {}, pacientes = [];
+    PanelStore.patients().forEach(function (p) {
+      var ult = "", recientes = 0, diasAct = {};
+      Object.keys(p.tools).forEach(function (t) {
+        var recs = p.tools[t].records || [];
+        if (!recs.length) return;
+        var u = tools[t] || (tools[t] = { pacientes: 0, registros: 0, recientes: 0, pacRecientes: 0, ultimo: "" });
+        u.pacientes++; u.registros += recs.length;
+        var rec = 0;
+        recs.forEach(function (r) {
+          var d = recDate(r);
+          if (d > u.ultimo) u.ultimo = d;
+          if (d > ult) ult = d;
+          if (d >= desde) { rec++; diasAct[d] = 1; }
+        });
+        u.recientes += rec; if (rec) u.pacRecientes++;
+        recientes += rec;
+      });
+      pacientes.push({ codigo: p.codigo, ultimo: ult, recientes: recientes, dias: Object.keys(diasAct).length });
+    });
+    var lista = Object.keys(tools).map(function (t) { var u = tools[t]; u.id = t; return u; })
+      .sort(function (a, b) { return b.recientes - a.recientes || b.registros - a.registros; });
+    return { tools: lista, pacientes: pacientes.sort(function (a, b) { return (b.ultimo || "").localeCompare(a.ultimo || ""); }), desde: desde };
+  }
+  var usoDias = 30;
+  function renderUso() {
+    destroyCharts();
+    selected = null; renderList($("pfilter").value);
+    $("emptyDetail").style.display = "none";
+    var body = $("detailBody"); body.style.display = "block";
+    var g = usoGlobal(usoDias), max = Math.max.apply(null, g.tools.map(function (t) { return t.recientes; }).concat([1]));
+    var activos = g.pacientes.filter(function (p) { return p.recientes > 0; }).length;
+    body.innerHTML =
+      '<div class="d-head"><h2>Uso por herramienta</h2><span class="muted">Datos de los .json importados · desde ' + esc(g.desde) + '</span>' +
+        '<span class="uso-rango">' + [7, 30, 90, 365].map(function (d) {
+          return '<button class="btn' + (d === usoDias ? ' btn-primary' : '') + '" data-dias="' + d + '" aria-pressed="' + (d === usoDias) + '">' + (d === 365 ? '1 año' : d + ' días') + '</button>'; }).join("") + '</span></div>' +
+      '<div class="stat-row">' +
+        stat(PanelStore.patients().length, "pacientes importados") +
+        stat(activos, "con registros en el periodo") +
+        stat(g.tools.filter(function (t) { return t.recientes; }).length, "herramientas usadas en el periodo") +
+        stat(g.pacientes.reduce(function (s, p) { return s + p.recientes; }, 0), "registros en el periodo") +
+      '</div>' +
+      '<div class="card"><h3>Qué herramientas usan más</h3>' +
+        '<div class="sub">Registros en el periodo, cuántos pacientes las usan y última vez. Solo cuenta lo que guarda registros; para aperturas y tiempo de uso de todo el mundo, mira el índice de escritorio.</div>' +
+        (g.tools.length ? '<table class="uso-tabla"><thead><tr><th>Herramienta</th><th>Registros</th><th>Pacientes</th><th>Total</th><th>Último uso</th></tr></thead><tbody>' +
+          g.tools.map(function (t) {
+            return '<tr><td>' + esc(TOOL_LABEL[t.id] || t.id) + '</td>' +
+              '<td><span class="uso-bar" style="width:' + Math.max(2, Math.round(110 * t.recientes / max)) + 'px"></span>' + t.recientes + '</td>' +
+              '<td>' + t.pacRecientes + ' / ' + t.pacientes + '</td><td>' + t.registros + '</td><td>' + esc(t.ultimo || "—") + '</td></tr>';
+          }).join("") + '</tbody></table>' : '<div class="nodata">Aún no hay datos importados.</div>') +
+      '</div>' +
+      '<div class="card"><h3>Actividad por paciente</h3>' +
+        (g.pacientes.length ? '<table class="uso-tabla"><thead><tr><th>Código</th><th>Días activos</th><th>Registros</th><th>Última actividad</th></tr></thead><tbody>' +
+          g.pacientes.map(function (p) {
+            return '<tr><td><button class="linklike" data-code="' + esc(p.codigo) + '">' + esc(p.codigo) + '</button></td><td>' + p.dias + '</td><td>' + p.recientes + '</td><td>' + esc(p.ultimo || "—") + '</td></tr>';
+          }).join("") + '</tbody></table>' : '<div class="nodata">Aún no hay pacientes.</div>') +
+      '</div>';
+    Array.prototype.forEach.call(body.querySelectorAll("[data-dias]"), function (b) {
+      b.onclick = function () { usoDias = +b.getAttribute("data-dias"); renderUso(); var nb = body.querySelector('[data-dias="' + usoDias + '"]'); if (nb) nb.focus(); };
+    });
+    Array.prototype.forEach.call(body.querySelectorAll("[data-code]"), function (b) {
+      b.onclick = function () { selected = b.getAttribute("data-code"); renderList($("pfilter").value); renderDetail(); };
+    });
+  }
+
   function renderDetail() {
     destroyCharts();
     var p = selected && PanelStore.data.patients[selected];
@@ -941,6 +1011,7 @@
     $("btnImport2").addEventListener("click", openImport);
     $("impClose").addEventListener("click", closeImport);
     $("btnBackup").addEventListener("click", backup);
+    $("btnUso").addEventListener("click", renderUso);
     $("pfilter").addEventListener("input", function () { renderList(this.value); });
     $("fileInput").addEventListener("change", function () { if (this.files.length) importFiles(this.files); });
     $("pasteBtn").addEventListener("click", function () { var t = $("pasteBox").value.trim(); if (t) importText(t, "pegado"); });

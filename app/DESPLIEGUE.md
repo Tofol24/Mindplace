@@ -113,6 +113,30 @@ privacidad). Apúntalo en tu gestor de contraseñas.
 los archivos (no hay nube). Úsalo en tu equipo de consulta. Si quieres verlo desde varios
 dispositivos o sincronización automática, ese es el siguiente paso (adaptador en la nube UE).
 
+**«📈 Uso por herramienta»** (botón de la cabecera) suma los `.json` importados: qué
+herramientas usan más, cuántos pacientes las usan, días activos y última actividad de cada uno.
+
+---
+
+## D) Contador anónimo de uso (qué herramientas se usan más)
+
+La app y «Mi espacio» cuentan, sin saber quién es nadie, cuántas veces se entra, qué
+herramientas se abren, cuánto rato se usan y cuántos registros nuevos se guardan. No se
+envía el código de paciente, ni lo que se escribe, ni ningún identificador del móvil. Cada
+paciente puede desactivarlo en el aviso de privacidad del inicio («No contar mis visitas»).
+
+**Solo funciona con la opción 2 (repositorio conectado):** los recuentos los recogen dos
+funciones de Netlify (`/api/uso` y `/api/uso-resumen`) que no se publican con «drag & drop».
+
+**Configurarlo (una vez):**
+1. En Netlify, sitio **aprens-app** → *Site configuration → Environment variables* →
+   *Add a variable*: nombre **`USO_CLAVE`**, valor: una clave larga que solo sepas tú.
+2. Vuelve a desplegar (*Deploys → Trigger deploy*) para que la función la lea.
+3. Abre el **índice de escritorio** (`escritorio/APRENS-indice.html`) y escribe esa misma
+   clave en «📈 Uso de los pacientes». Se guarda solo en ese navegador.
+
+Tus propias visitas también cuentan: en tus dispositivos, pulsa «No contar mis visitas».
+
 ---
 
 *Para el detalle técnico (arquitectura, herramientas, offline/RGPD) mira

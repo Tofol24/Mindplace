@@ -475,7 +475,12 @@ estas. Lenguaje cuántico: solo como metáfora acotada, nunca como mecanismo.
 3. **Transparencia de datos.** La persona tiene acceso completo a sus datos;
    nada de perfilado comercial; el modelo no depende del *engagement*. En
    nuestro caso: datos en el dispositivo (localStorage), PWA offline, sin
-   servidores.
+   servidores para los datos clínicos. Lo único que sale es un **recuento
+   anónimo de uso** (se entra en la app, se abre una herramienta, rato de uso,
+   cuántos registros nuevos): sin código de paciente, sin contenido, sin
+   identificador de dispositivo, desactivable con «No contar mis visitas» y
+   alojado en el propio Netlify del centro (`netlify/lib/uso.mjs`). Sirve para
+   saber qué se usa, no para medir a nadie.
 4. **Integración clínica.** Informes exportables al terapeuta en formato ICE
    (L/D/C, 0/1 de conducta valiosa, práctica). Formato de referencia:
    plantillas CSV del Anexo E del libro (UTF-8, separador `;`).
@@ -525,7 +530,8 @@ periféricos).
   puedes hacer con ello». Nunca culpar a la persona de «pensar mal».
 - **Seguridad primero**: ante señales de riesgo, la herramienta cede el paso
   al contacto con el profesional.
-- **Privacidad**: los datos viven en el dispositivo; nada sale a servidores.
+- **Privacidad**: los datos viven en el dispositivo; a servidores solo sale el
+  recuento anónimo de uso descrito en §11, que la persona puede desactivar.
 
 ---
 

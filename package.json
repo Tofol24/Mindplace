@@ -1,0 +1,12 @@
+{
+  "name": "aprens-app-funciones",
+  "private": true,
+  "description": "Dependencias de las funciones de Netlify del sitio aprens-app (contador anónimo de uso).",
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "11.1.4"
+  },
+  "scripts": {
+    "test": "node --test \"netlify/test/*.test.mjs\""
+  }
+}
