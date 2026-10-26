@@ -271,13 +271,14 @@ function cargarUso(){
   if(enClaude()){ uso.estado = "solo-escritorio"; pintarUso(); return; }
   var clave = usoClave();
   if(!clave){ uso.estado = "sin-clave"; pintarUso(); return; }
-  uso.estado = "cargando"; pintarUso();
+  var focoAntes = focoUso();   // antes de redibujar, para devolverlo al llegar la respuesta
+  uso.estado = "cargando"; pintarUso(); restaurarFocoUso(focoAntes);
   // Solo vale la respuesta de la última petición (si se cambia de periodo deprisa).
   var pet = ++uso.pet, dias = uso.dias;
   fetch(D.usoApi + "?dias=" + dias, { headers: { Authorization: "Bearer " + clave } })
     .then(function(r){ if(r.status === 401) throw "clave"; if(r.status === 503) throw "sin-config"; if(!r.ok) throw "error"; return r.json(); })
-    .then(function(j){ if(pet !== uso.pet) return; var foco = focoUso(); uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); restaurarFocoUso(foco); })
-    .catch(function(e){ if(pet !== uso.pet) return; var foco = focoUso(); uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); restaurarFocoUso(foco); });
+    .then(function(j){ if(pet !== uso.pet) return; var foco = focoUso() || focoAntes; uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); restaurarFocoUso(foco); })
+    .catch(function(e){ if(pet !== uso.pet) return; var foco = focoUso() || focoAntes; uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); restaurarFocoUso(foco); });
 }
 // Conserva el foco del teclado dentro de «Uso» cuando llega la respuesta.
 function focoUso(){
@@ -288,7 +289,7 @@ function focoUso(){
 }
 function restaurarFocoUso(sel){
   // Tras enviar la clave: al periodo elegido si ha ido bien, o de nuevo al campo si no.
-  if(uso.focoTras){ uso.focoTras = false; sel = uso.estado === "ok" ? '[data-usodias="'+uso.dias+'"]' : "#usoClave"; }
+  if(uso.focoTras && uso.estado !== "cargando"){ uso.focoTras = false; sel = uso.estado === "ok" ? '[data-usodias="'+uso.dias+'"]' : "#usoClave"; }
   if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
 }
 function agregarUso(diasPedidos){

@@ -98,6 +98,8 @@
       var lote = cola.slice(0, 20);
       fetch("/api/uso", { method: "POST", body: JSON.stringify(lote.map(function (x) { return x.ev; })), keepalive: true }).then(function (r) {
         if (reintentable(r)) throw r;
+        // Si entretanto se retiró el consentimiento, esta cola ya no es suya: no se toca.
+        if (!vigente(m)) { vaciando = false; escribir(CERROJO, null); return; }
         // Se quitan los primeros: lo nuevo siempre se añade al final de la cola.
         var resto = (leerJSON(COLA) || []).filter(function (x) { return x && x.m === m; }).slice(lote.length);
         escribir(COLA, resto.length ? JSON.stringify(resto) : null);
