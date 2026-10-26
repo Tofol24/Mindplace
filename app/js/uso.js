@@ -165,16 +165,27 @@
         if (id) abrir(id);
       } else reanudar();
       ocultaDesde = null;
+      recuperarPendientes();   // visitas de otras pestañas o recargas abandonadas
     }
   });
   window.addEventListener("pagehide", pausar);
+
+  // La elección se cambia en una pestaña: las demás lo saben al momento.
+  // Al retirar el «sí» se descarta lo que se estaba midiendo (sin enviarlo);
+  // al darlo, se empieza a medir desde ahora.
+  window.addEventListener("storage", function (e) {
+    if (e.key !== DEC) return;
+    if (!activo()) { actual = null; quitarPendiente(); }
+    else if (!actual) { var t = herramientaEnPantalla(); if (t) abrir(t); }
+    document.dispatchEvent(new CustomEvent("aprens-uso"));
+  });
 
   function herramientaEnPantalla() { var m = /^#\/tool\/([\w-]+)/.exec(location.hash || ""); return m ? m[1] : null; }
 
   // Elección de la persona. Al decir que sí se cuenta la entrada actual.
   function decidir(si) {
     var antes = activo();
-    if (!si) { cerrar(); escribir(PEND, null); }
+    if (!si) { actual = null; escribir(PEND, null); }   // al retirar el «sí» no se envía lo que se medía
     guardarDecision(si ? "si" : "no");
     if (si && !antes && activo()) { entrada(); var t = herramientaEnPantalla(); if (t) abrir(t); }
     quitarAviso();

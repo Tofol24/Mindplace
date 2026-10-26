@@ -129,8 +129,10 @@ envía el código de paciente, ni lo que se escribe, ni ningún identificador de
 en el aviso de privacidad del inicio. La elección hecha en «Mi espacio» viaja a la app en los
 enlaces. Si alguna vez quieres que tus pacientes lo acepten, explícaselo en sesión.
 
-**Solo funciona con la opción 2 (repositorio conectado):** los recuentos los recogen dos
-funciones de Netlify (`/api/uso` y `/api/uso-resumen`) que no se publican con «drag & drop».
+**Solo funciona con la opción 2 (repositorio conectado):** los recuentos los recogen
+funciones de Netlify (`/api/uso`, `/api/uso-resumen` y una tarea nocturna) que no se publican
+con «drag & drop». Cada noche los eventos sueltos de los días cerrados se convierten en un
+recuento por día y se borran: no se conserva nada más que esos números.
 
 **Configurarlo (una vez):**
 1. En Netlify, sitio **aprens-app** → *Site configuration → Environment variables* →

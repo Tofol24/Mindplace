@@ -1,16 +1,10 @@
 // GET /api/uso-resumen?dias=90 · devuelve los recuentos por día.
 // Requiere la cabecera «Authorization: Bearer <USO_CLAVE>» (variable de entorno
-// de Netlify).
-//
-// Cada día cerrado (anterior a hoy) se resume una sola vez en dia/<día>, un
-// documento de tamaño fijo, y se borran sus eventos sueltos. El resumen se
-// escribe con «solo si no existe»: si dos consultas coinciden, gana la primera
-// y la otra lo lee; si un borrado falla, los eventos que quedan de un día ya
-// resumido se borran sin volver a contarlos (los eventos se fechan al llegar,
-// así que un día cerrado no recibe eventos nuevos). Solo se recorren los meses
-// del periodo pedido.
+// de Netlify). Solo recorre los meses del periodo pedido. Hoy y ayer se cuentan
+// en vivo; los días anteriores se cierran (ver cerrarDias en netlify/lib/uso.mjs).
+// La limpieza de fondo la hace cada noche netlify/functions/uso-diario.mjs.
 import { getStore } from "@netlify/blobs";
-import { diaDe, diaMadrid, resumir } from "../lib/uso.mjs";
+import { cerrarDias, diaMadrid, listar, primerDiaAbierto, resumir } from "../lib/uso.mjs";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,10 +18,6 @@ function json(cuerpo, status = 200) {
     status,
     headers: { ...CORS, "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
-}
-
-async function enTandas(lista, n, fn) {
-  for (let i = 0; i < lista.length; i += n) await Promise.all(lista.slice(i, i + n).map(fn));
 }
 
 /** Meses (AAAA-MM) entre dos días, ambos incluidos. */
@@ -53,38 +43,27 @@ export default async (req) => {
   const url = new URL(req.url);
   const dias = Math.min(Math.max(parseInt(url.searchParams.get("dias") || "90", 10) || 90, 1), 400);
   const hoy = diaMadrid();
+  const abierto = primerDiaAbierto();
   const desde = diaMadrid(new Date(Date.now() - (dias - 1) * 86400000));
-  const store = getStore("uso");
   const enRango = (d) => d >= desde && d <= hoy;
+  const store = getStore("uso");
 
-  // 1) Eventos sueltos y resúmenes de los meses del periodo.
   const sueltos = {}, resumidos = new Set();
-  await enTandas(meses(desde, hoy), 6, async (mes) => {
-    const [ev, dia] = await Promise.all([store.list({ prefix: "ev/" + mes }), store.list({ prefix: "dia/" + mes })]);
-    for (const { key } of ev.blobs) { const d = diaDe(key); if (d && enRango(d)) (sueltos[d] ||= []).push(key); }
-    for (const { key } of dia.blobs) { const d = key.slice(4); if (enRango(d)) resumidos.add(d); }
-  });
+  for (const mes of meses(desde, hoy)) {
+    const l = await listar(store, mes);
+    for (const [d, c] of Object.entries(l.sueltos)) if (enRango(d)) sueltos[d] = c;
+    for (const d of l.resumidos) if (enRango(d)) resumidos.add(d);
+  }
 
-  const resultado = {};
-  // 2) Hoy: en vivo.
-  if (sueltos[hoy]) resultado[hoy] = resumir(sueltos[hoy]);
-
-  // 3) Días cerrados con eventos sueltos: se resumen (una sola vez) y se borran.
-  const cerrados = Object.keys(sueltos).filter((d) => d < hoy);
-  await enTandas(cerrados, 5, async (d) => {
-    if (!resumidos.has(d)) {
-      const res = await store.setJSON("dia/" + d, resumir(sueltos[d]), { onlyIfNew: true });
-      resumidos.add(d);
-      if (res && res.modified) resultado[d] = resumir(sueltos[d]);
-    }
-    await enTandas(sueltos[d], 50, (k) => store.delete(k));
-  });
-
-  // 4) Días ya resumidos.
-  await enTandas([...resumidos].filter((d) => !resultado[d]), 20, async (d) => {
-    const doc = await store.get("dia/" + d, { type: "json" });
-    if (doc) resultado[d] = doc;
-  });
+  const resultado = await cerrarDias(store, sueltos, resumidos, abierto);
+  for (const [d, claves] of Object.entries(sueltos)) if (d >= abierto) resultado[d] = resumir(claves);
+  const porLeer = [...resumidos].filter((d) => !resultado[d]);
+  for (let i = 0; i < porLeer.length; i += 20) {
+    await Promise.all(porLeer.slice(i, i + 20).map(async (d) => {
+      const doc = await store.get("dia/" + d, { type: "json" });
+      if (doc) resultado[d] = doc;
+    }));
+  }
 
   return json({ generado: new Date().toISOString(), hoy, desde, dias: resultado });
 };

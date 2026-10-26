@@ -13,6 +13,7 @@ process.env.USO_CLAVE = "secreta";
 const root = new URL("../..", import.meta.url).pathname;
 const uso = (await import(root + "/netlify/functions/uso.mjs")).default;
 const res = (await import(root + "/netlify/functions/uso-resumen.mjs")).default;
+const diario = (await import(root + "/netlify/functions/uso-diario.mjs")).default;
 const lib = await import(root + "/netlify/lib/uso.mjs");
 const post = (o) => uso(new Request("https://x/api/uso", { method: "POST", body: typeof o === "string" ? o : JSON.stringify(o) }));
 assert.equal((await post({ e: "entrada", o: "app", p: 1, d: 1, nv: 0 })).status, 204);
@@ -60,6 +61,16 @@ const [c1, c2] = await Promise.all([res(new Request("https://x/api/uso-resumen?d
 for (const c of [c1, c2]) assert.equal((await c.json()).dias["2026-02-10"].herramientas.ais_amor.abrir, 3);
 const c3 = await (await res(new Request("https://x/api/uso-resumen?dias=400", auth))).json();
 assert.equal(c3.dias["2026-02-10"].herramientas.ais_amor.abrir, 3);
+// la tarea nocturna cierra días fuera de cualquier consulta (por ejemplo, de hace dos años)
+await st.set("ev/2024-03-01/abrir/ais_amor/-/v1", "");
+await diario();
+assert.equal((await st.list({ prefix: "ev/2024-03-01/" })).blobs.length, 0);
+assert.equal((await st.get("dia/2024-03-01", { type: "json" })).herramientas.ais_amor.abrir, 1);
+// ayer sigue abierto (margen de medianoche): sus eventos no se cierran todavía
+const ayer = lib.diaMadrid(new Date(Date.now() - 86400000));
+await st.set("ev/" + ayer + "/abrir/ais_amor/-/y1", "");
+await diario();
+assert.equal((await st.list({ prefix: "ev/" + ayer + "/" })).blobs.length, 1);
 // rango corto excluye el día antiguo
 const j3 = await (await res(new Request("https://x/api/uso-resumen?dias=7", { headers: { Authorization: "Bearer secreta" } }))).json();
 assert.ok(!j3.dias["2026-01-05"]);

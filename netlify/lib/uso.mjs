@@ -105,3 +105,48 @@ export function resumir(claves) {
   for (const c of claves) sumarClave(res, c);
   return res;
 }
+
+/* ---------- Consolidación (compartida por /api/uso-resumen y la tarea diaria) ----------
+   Un día se cierra cuando es anterior a AYER (margen de un día para eventos
+   que llegan justo a medianoche). Al cerrarlo se escribe dia/<día> «solo si no
+   existe» y se borran sus eventos sueltos; si ya existía, los restos se borran
+   sin volver a contarse (los eventos se fechan al llegar: un día cerrado no
+   recibe eventos nuevos). */
+
+/** Primer día que sigue «abierto» (ayer). */
+export function primerDiaAbierto(fecha = new Date()) {
+  return diaMadrid(new Date(fecha.getTime() - 86400000));
+}
+
+async function enTandas(lista, n, fn) {
+  for (let i = 0; i < lista.length; i += n) await Promise.all(lista.slice(i, i + n).map(fn));
+}
+
+/**
+ * Cierra los días anteriores a `abierto` que tengan eventos sueltos.
+ * `sueltos` = { día: [claves] }. `resumidos` = Set de días con dia/<día>.
+ * Devuelve { día: resumen } de los días que acaba de cerrar esta llamada.
+ */
+export async function cerrarDias(store, sueltos, resumidos, abierto) {
+  const nuevos = {};
+  const dias = Object.keys(sueltos).filter((d) => d < abierto);
+  await enTandas(dias, 5, async (d) => {
+    if (!resumidos.has(d)) {
+      const resumen = resumir(sueltos[d]);
+      const r = await store.setJSON("dia/" + d, resumen, { onlyIfNew: true });
+      resumidos.add(d);
+      if (r && r.modified) nuevos[d] = resumen;
+    }
+    await enTandas(sueltos[d], 50, (k) => store.delete(k));
+  });
+  return nuevos;
+}
+
+/** Lista eventos sueltos y días resumidos bajo un prefijo de fecha ("" = todos). */
+export async function listar(store, prefijoFecha = "") {
+  const [ev, dia] = await Promise.all([store.list({ prefix: "ev/" + prefijoFecha }), store.list({ prefix: "dia/" + prefijoFecha })]);
+  const sueltos = {}, resumidos = new Set();
+  for (const { key } of ev.blobs) { const d = diaDe(key); if (d) (sueltos[d] ||= []).push(key); }
+  for (const { key } of dia.blobs) resumidos.add(key.slice(4));
+  return { sueltos, resumidos };
+}
