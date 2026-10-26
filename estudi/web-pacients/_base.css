@@ -1,0 +1,35 @@
+/* Explica-ho · pàgines de subscripció. Mateixos colors i lletres que l'eina. */
+:root{--paper:#f5f7fb;--card:#fff;--ink:#18203a;--muted:#59627e;--line:#dde2ee;--soft:#eef1f8;--accent:#2c47c9;--accent-ink:#fff;--accent-soft:#e3e8fb;--marker:#ffe766;--ok:#1d7f55;--bad:#b83b34;--warn-soft:#fbefd9;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;--f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--paper:#0f121b;--card:#171b28;--ink:#e7eaf4;--muted:#9ba4be;--line:#2a3044;--soft:#1d2232;--accent:#8fa3ff;--accent-ink:#0f1430;--accent-soft:#232c52;--marker:#6b5d12;--ok:#5fcf9a;--bad:#f08a82;--warn-soft:#382a12;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--f-body)}
+main{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 56px max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.8rem,4.5vw,2.5rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.3rem}
+p{margin:0}
+a{color:var(--accent)}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.4rem;text-decoration:none;color:var(--ink)}
+.brand span{background:linear-gradient(transparent 58%,var(--marker) 58%)}
+.muted{color:var(--muted)} .small{font-size:.9rem}
+.label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.plan{border:2px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;background:var(--card)}
+.plan:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.plan input{accent-color:var(--accent)}
+.plan .preu{font-family:var(--f-display);font-weight:800;font-size:1.5rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:11px 18px;border-radius:999px;font:700 1rem var(--f-body);cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+input[type=email]{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:10px 12px;font:inherit}
+.check{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:5px;accent-color:var(--accent)}
+.err{color:var(--bad)}
+.code{font-family:var(--f-mono);font-size:clamp(1.8rem,6vw,2.6rem);letter-spacing:.12em;background:var(--soft);border:2px dashed var(--accent);border-radius:12px;padding:14px;text-align:center;user-select:all;word-break:break-all}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.draft{background:var(--warn-soft);border-radius:10px;padding:12px 14px}
+.doc h2{margin-top:10px} .doc p,.doc li{max-width:68ch}
+.doc ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}

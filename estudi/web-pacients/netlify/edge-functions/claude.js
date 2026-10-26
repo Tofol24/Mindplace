@@ -12,7 +12,11 @@
 //   EXPLICA_MODEL_COMPLEX  model per corregir exercicis (per defecte el mateix)
 //   EXPLICA_MODEL_QUICK    model per a tasques curtes (per defecte claude-haiku-5-5)
 //
-// No es desa ni es registra cap contingut: només un comptador de peticions per codi i dia.
+//   EXPLICA_PLANS, STRIPE_*  subscripcions de pagament (vegeu README.md): codis amb quota mensual
+//
+// No es desa ni es registra cap contingut: només comptadors de peticions per codi (dia i mes).
+
+import {env, json, store, count, toLimit, manualCodes, plans, subForCode, subActive} from "../lib/comu.js";
 
 const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
 Segueix exactament el format de resposta que demana cada petició.
@@ -23,22 +27,7 @@ Si el que escriu l'estudiant mostra malestar emocional greu o risc (autolesió, 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_BODY = 8_000_000;   // bytes de la petició (fins a unes quantes fotos)
 const MAX_TOKENS = 12000;
-
-const env = (k, d = "") => (globalThis.Netlify?.env.get(k) ?? d);
-const json = (status, body) => new Response(JSON.stringify(body), {status, headers: {"content-type": "application/json; charset=utf-8", "cache-control": "no-store"}});
-
-// Un límit ha de ser un enter complet; "0" vol dir sense límit. Un valor mal escrit no treu mai el límit:
-// es fa servir el límit per defecte.
 const DEFAULT_LIMIT = 60;
-const toLimit = (v, def) => /^\s*\d+\s*$/.test(v ?? "") ? parseInt(v, 10) : def;
-function parseCodis(raw, defLimit) {
-  const m = new Map();
-  for (const part of String(raw).split(/[,\n]/)) {
-    const [c, l] = part.trim().toLowerCase().split(":");
-    if (/^[a-z0-9_-]{4,40}$/.test(c || "")) m.set(c, toLimit(l, defLimit));
-  }
-  return m;
-}
 
 // Només es deixen passar missatges de text i imatges, amb la forma que fa servir l'eina.
 function cleanMessages(msgs) {
@@ -62,29 +51,12 @@ function cleanMessages(msgs) {
   return out[out.length - 1].role === "user" ? out : null;
 }
 
-// Comptador diari per codi (Netlify Blobs), amb escriptura condicional perquè dues peticions
-// simultànies no puguin llegir el mateix valor i passar totes dues.
-// Si el comptador no funciona, es denega (millor aturar que gastar sense límit). Per treballar sense
-// límit diari cal dir-ho explícitament amb EXPLICA_LIMIT_DIA=0 i sense límits als codis.
-async function allowToday(codi, limit) {
-  if (!limit) return true;
-  let store;
-  try {
-    const {getStore} = await import("@netlify/blobs");
-    store = getStore({name: "explica-us", consistency: "strong"});
-  } catch { return false; }
-  const key = codi + "/" + new Date().toISOString().slice(0, 10);
-  try {
-    for (let i = 0; i < 6; i++) {
-      const cur = await store.getWithMetadata(key, {type: "text"});
-      const n = cur ? parseInt(cur.data, 10) || 0 : 0;
-      if (n >= limit) return false;
-      const w = cur ? await store.set(key, String(n + 1), {onlyIfMatch: cur.etag}) : await store.set(key, "1", {onlyIfNew: true});
-      if (w?.modified) return true;
-      await new Promise(r => setTimeout(r, 30 + Math.random() * 120));
-    }
-  } catch {}
-  return false;
+// Comptadors (Netlify Blobs) amb escriptura condicional: dues peticions simultànies no poden passar
+// totes dues amb el mateix valor. Si el comptador no funciona, es denega (millor aturar que gastar
+// sense límit). Per treballar sense límit diari cal dir-ho explícitament amb EXPLICA_LIMIT_DIA=0.
+async function allow(key, limit) {
+  if (!limit) return {ok: true, used: 0};
+  try { return await count(await store("explica-us"), key, limit); } catch { return {ok: false, used: 0}; }
 }
 
 export default async (req) => {
@@ -92,9 +64,21 @@ export default async (req) => {
   const apiKey = env("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, {error: "config", message: "Falta configurar ANTHROPIC_API_KEY."});
 
-  const codis = parseCodis(env("EXPLICA_CODIS"), toLimit(env("EXPLICA_LIMIT_DIA"), DEFAULT_LIMIT));
+  const dayLimit = toLimit(env("EXPLICA_LIMIT_DIA"), DEFAULT_LIMIT);
+  const codis = manualCodes(dayLimit);
   const codi = (req.headers.get("x-codi") || "").trim().toLowerCase();
-  if (!codis.has(codi)) return json(401, {error: "codi"});
+  if (!/^[a-z0-9_-]{4,40}$/.test(codi)) return json(401, {error: "codi"});
+  // Codi donat a mà (pacients) o codi d'una subscripció de Stripe (quota mensual del seu pla).
+  let lim = codis.get(codi), monthLimit = 0;
+  if (lim === undefined) {
+    let sub = null;
+    try { sub = await subForCode(await store("explica-subs"), codi); } catch { return json(503, {error: "servei"}); }
+    if (!sub) return json(401, {error: "codi"});
+    if (!subActive(sub)) return json(402, {error: "subscripcio"});
+    lim = dayLimit;
+    monthLimit = plans().find(p => p.price === sub.price)?.quota ?? 0;
+    if (!monthLimit) return json(402, {error: "subscripcio"});
+  }
 
   if (Number(req.headers.get("content-length") || 0) > MAX_BODY) return json(413, {error: "mida"});
   let body;
@@ -106,8 +90,14 @@ export default async (req) => {
   const messages = cleanMessages(body?.messages);
   if (!messages) return json(400, {error: "format"});
 
-  const lim = codis.get(codi);
-  if (!(await allowToday(codi, lim))) return json(429, {error: "limit", limit: lim});
+  const today = new Date().toISOString().slice(0, 10);
+  if (!(await allow(codi + "/" + today, lim)).ok) return json(429, {error: "limit", limit: lim});
+  let restants = null;
+  if (monthLimit) {
+    const m = await allow(codi + "/mes/" + today.slice(0, 7), monthLimit);
+    if (!m.ok) return json(429, {error: "quota", quota: monthLimit});
+    restants = Math.max(0, monthLimit - m.used);
+  }
 
   const models = {
     default: env("EXPLICA_MODEL", "claude-sonnet-5-5"),
@@ -134,7 +124,8 @@ export default async (req) => {
     if (up.status === 413) return json(413, {error: "mida"});
     return json(502, {error: "claude", message: msg.slice(0, 300)});
   }
-  return new Response(up.body, {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store"}});
+  return new Response(up.body, {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
+    ...(restants === null ? {} : {"x-explica-restants": String(restants)})}});
 };
 
 export const config = {path: "/api/claude"};

@@ -627,8 +627,14 @@ const AI = {
   get codi() { return this.memCodi || ls("explica:codi") || ""; },
   get apiKey() { return this.memKey || ls("explica:apikey") || ""; },
   get model() { return ls("explica:model") || "claude-sonnet-5-5"; },
+  subs: false, restants: null,
   async init() {
-    if (PROXY) { this.mode = "proxy"; return; }
+    if (PROXY) {
+      this.mode = "proxy";
+      // Si el servidor té subscripcions obertes, s'ofereix l'enllaç per subscriure's i el portal de gestió.
+      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; render(); }).catch(() => {});
+      return;
+    }
     if (window.claude?.use) {
       try {
         const s = await claude.use("sample");
@@ -706,9 +712,11 @@ const AI = {
     if (!res.ok) {
       const b = await res.json().catch(() => ({}));
       if (res.status === 401) { this.codiOk = false; renderConn(); }
-    throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || (b.error === "limit" ? "daily_limit" : b.error === "saldo" ? "no_credit" : res.status === 429 ? "rate_limited" : "upstream_error"),
+      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
         message: b.message || ("HTTP " + res.status)};
     }
+    const rest = res.headers.get("x-explica-restants");
+    this.restants = rest === null ? null : parseInt(rest, 10);
     const reader = res.body.getReader(), dec = new TextDecoder();
     let buf = "", text = "", stop = null;
     try {
@@ -764,6 +772,8 @@ function aiErr(e) {
     bad_code: "Aquest codi d'accés no és vàlid o ja no està actiu. Revisa'l a Configuració.",
     daily_limit: "Avui ja has fet totes les peticions del dia, o el comptador no funciona. Demà podràs continuar; si passa des del primer moment, avisa qui t'ha donat el codi.",
     no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
+    month_quota: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.",
+    sub_inactive: "La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.",
     empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
   })[c] || (e?.message ? "Error: " + e.message : "Alguna cosa ha fallat. Torna-ho a provar.");
 }
@@ -1440,7 +1450,7 @@ function renderHome() {
   return `<div class="wrap">
     ${S.loaded && Store.kind === "mem" ? `<div class="banner" role="note"><p><strong>Ara mateix no es guarda res.</strong> ${lsAvailable() ? "Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració." : "Descarrega còpies des de Configuració."}</p>${lsAvailable() ? `<button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button>` : ""}</div>` : ""}
     ${S.loadError ? `<div class="banner" role="alert"><p><strong>No s'han pogut carregar les teves dades.</strong> No hi facis canvis fins que es carreguin, perquè no es perdi res.</p><button class="btn sm primary" data-act="retryLoad" type="button">Torna-ho a provar</button></div>` : ""}
-    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat per fer servir l'eina.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button></div>` : ""}
+    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat o el que vas rebre en subscriure't.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button>${AI.subs ? `<a class="btn sm" href="subscriu.html">No en tinc: subscriu-m'hi</a>` : ""}</div>` : ""}
     <div class="hero">
       <span class="label">Com funciona</span>
       <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
@@ -1827,7 +1837,7 @@ function renderConn() {
   if (Store.failed) { el.innerHTML = `<span class="dot off"></span><span>No s'ha pogut guardar l'últim canvi</span>`; return; }
   el.innerHTML = m === "claude" ? `<span class="dot on"></span><span>Claude connectat · ${st}</span>`
     : m === "api" ? `<span class="dot on"></span><span>Claude (clau API) · ${st}</span>`
-    : m === "proxy" ? (!AI.codi ? `<span class="dot off"></span><span>Falta el codi d'accés</span>` : AI.codiOk ? `<span class="dot on"></span><span>Codi d'accés actiu · ${st}</span>` : `<span class="dot"></span><span>Codi desat (es comprovarà en fer servir Claude) · ${st}</span>`)
+    : m === "proxy" ? (!AI.codi ? `<span class="dot off"></span><span>Falta el codi d'accés</span>` : AI.codiOk ? `<span class="dot on"></span><span>Codi d'accés actiu${AI.restants !== null ? ` · queden ${AI.restants} peticions aquest mes` : ""} · ${st}</span>` : `<span class="dot"></span><span>Codi desat (es comprovarà en fer servir Claude) · ${st}</span>`)
     : `<span class="dot off"></span><span>Claude sense connectar</span>`;
 }
 
@@ -1870,6 +1880,7 @@ function settings() {
       ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu. Si fas servir el botó «Parla», el navegador envia l'àudio al seu propi servei de reconeixement de veu (a Chrome, de Google).</p>
          <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
          <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
+         ${AI.subs ? `<div class="row">${AI.codi ? `<button class="btn sm" data-act="portal" type="button">Gestiona la subscripció</button>` : ""}<a class="btn sm ghost" href="subscriu.html">Subscripcions</a></div><p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
          <label class="label" for="cursIn">El teu curs</label>
          <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
       : inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
@@ -1889,6 +1900,16 @@ function settings() {
     () => {
       if (proxy) { ls("explica:curs", $("#cursIn").value || null); const c = $("#codiIn").value.trim().toLowerCase(); AI.memCodi = c; AI.codiOk = false; ls("explica:codi", c && $("#codiRemember").checked ? c : null); closeDialog(); render(); toast(c ? "Codi desat" : "Codi esborrat"); return; }
       const k = $("#apiKey").value.trim(); AI.memKey = k; ls("explica:apikey", k && $("#apiRemember").checked ? k : null); ls("explica:model", $("#apiModel").value); AI.mode = AI.apiKey ? "api" : "none"; closeDialog(); render(); toast(AI.apiKey ? "Clau desada" : "Clau esborrada"); });
+}
+// Portal de Stripe per canviar la targeta, veure factures o donar-se de baixa.
+async function openPortal(btn) {
+  const err = $("#portalErr"); btn.disabled = true;
+  try {
+    const r = await fetch(PROXY.replace(/claude$/, "portal"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi})});
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok || !b.url) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : "No s'ha pogut obrir la gestió de la subscripció. Torna-ho a provar.");
+    location.href = b.url;
+  } catch (e) { if (err) { err.textContent = e.message; err.hidden = false; } btn.disabled = false; }
 }
 async function exportAll() {
   const data = JSON.stringify({app: "explica-ho", v: 1, exportat: Date.now(), subjects: S.subjects, temes: S.temes, mats: S.mats});
@@ -2024,6 +2045,7 @@ document.addEventListener("click", (e) => {
     case "dlgOk": $("#dlg")._submit?.(); break;
     case "export": exportAll(); break;
     case "settings": settings(); break;
+    case "portal": openPortal(b); break;
     case "useLocal": Store.kind = "local"; ls("explica:optLocal", "1"); saveEverything(); if ($("#dlg").open) closeDialog(); render(); toast("Es guardarà en aquest navegador"); break;
     case "retryLoad": boot(); break;
     case "wipe": confirmBox("Esborrar-ho tot d'aquest navegador?", "S'esborraran assignatures, temes, material, historial i la clau de l'API guardats aquí. Descarrega abans una còpia si la vols.", () => {
