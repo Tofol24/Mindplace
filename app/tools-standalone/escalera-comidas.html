@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FFF6EA">
+<meta name="description" content="La escalera de las comidas · APRENS. Exposición gradual a alimentos nuevos para peques, con la familia: alimento y porción de más fácil a más difícil, refuerzo pactado y registro para el psicólogo/a.">
+<title>La escalera de las comidas · APRENS</title>
+<script src="../js/descarga-segura.js"></script>
+<style>
+:root{
+  --bg:#FFF6EA; --card:#fff; --ink:#3b2f2a; --soft:#7a6a60; --line:#efe1cf;
+  --sun:#F2B84B; --sun-d:#c98a12; --ok:#6fb383; --ok-d:#3f8a57; --sky:#dfe9f2; --sky-d:#a9bccd;
+  --rose:#e8846f; --plum:#8d6fb0; --warn:#d9822b;
+  --r:18px; --sh:0 6px 20px rgba(80,50,20,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:0 0 env(safe-area-inset-bottom)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header.top{padding:18px 0 6px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+h1{font-size:clamp(26px,6vw,38px);line-height:1.1;margin:4px 0 6px}
+.sub{color:var(--soft);margin:0 0 12px;max-width:60ch}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+nav.tabs button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+section.view{padding:16px 0 40px}
+section.view[hidden]{display:none}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin:14px 0}
+.card h2{margin:0 0 6px;font-size:21px}
+.card h3{margin:14px 0 6px;font-size:17px}
+.muted{color:var(--soft)}
+.small{font-size:14px}
+.btn{border:0;border-radius:14px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--sky);color:var(--ink)}
+.btn:focus-visible,nav.tabs button:focus-visible,.chip:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+.btn-big{font-size:20px;padding:16px 22px;border-radius:18px}
+.btn-sun{background:var(--sun);color:#3b2600}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--line)}
+.btn-link{background:none;border:0;color:var(--plum);text-decoration:underline;padding:6px;font:inherit;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun-d)}
+label.f{display:block;font-weight:600;margin:10px 0 4px}
+input[type=text],select,textarea{font:inherit;padding:10px 12px;border-radius:12px;border:1px solid #dccbb6;background:#fff;color:var(--ink);width:100%}
+textarea{min-height:70px}
+
+.vacia{padding:28px 16px;text-align:center;background:linear-gradient(#eaf4fb,#fffaf2);border-radius:var(--r);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* ── Reto de hoy ── */
+.reto{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.reto .big{font-size:64px;line-height:1}
+.reto h2{font-size:24px}
+.trato{background:#fff7e3;border:2px dashed var(--sun);border-radius:16px;padding:12px 14px;margin:12px 0;font-size:18px}
+.trato b{color:#7a4b00}
+.puntos{font-size:26px;letter-spacing:4px}
+.copas{font-size:28px;min-height:34px}
+.aviso{background:#fff1e6;border-left:5px solid var(--warn);border-radius:12px;padding:12px 14px;margin:12px 0}
+
+/* ── Preparar ── */
+.ali{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.ali:last-child{border-bottom:0}
+.ali .e{font-size:30px}
+.face{display:flex;gap:6px;flex-wrap:wrap}
+.face .chip{font-size:15px}
+.steps-list{list-style:none;margin:0;padding:0}
+.steps-list li{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.steps-list .bar{height:12px;border-radius:6px;background:var(--sun)}
+.ref{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.ref .t{flex:1}
+.tag{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--sky);white-space:nowrap}
+
+/* ── Pauta ── */
+.pauta details{background:#fff;border-radius:16px;box-shadow:var(--sh);margin:10px 0;padding:0 16px}
+.pauta summary{cursor:pointer;font-weight:700;padding:14px 0;font-size:17px}
+.pauta details[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+.pauta ul{padding-left:20px}
+.pauta li{margin:6px 0}
+.frase{background:#f4efe8;border-radius:10px;padding:8px 12px;margin:6px 0;font-style:italic}
+
+/* ── Historial ── */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+
+/* ── Purpurina y copa ── */
+.glitter{position:fixed;top:-20px;width:9px;height:14px;border-radius:2px;z-index:999;pointer-events:none;animation:caer linear forwards}
+@keyframes caer{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+.copa-ov{position:fixed;inset:0;z-index:998;display:flex;align-items:center;justify-content:center;background:rgba(40,25,10,.45)}
+.copa-ov[hidden]{display:none}
+.copa-card{background:#fff;border-radius:24px;padding:24px 22px;text-align:center;max-width:340px;margin:16px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.copa-card .cup{font-size:96px;line-height:1;animation:sube .9s cubic-bezier(.2,1.4,.4,1) both}
+.copa-card h2{margin:10px 0 4px;font-size:24px}
+@keyframes sube{from{transform:translateY(60px) scale(.2);opacity:0}to{transform:none;opacity:1}}
+.pop{animation:pop .6s ease}
+@keyframes pop{50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.glitter{display:none}.copa-card .cup,.pop{animation:none}}
+footer.foot{font-size:13px;color:var(--soft);padding:10px 0 30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">APRENS · Peques y familias</div>
+    <h1>🪜 La escalera de las comidas</h1>
+    <p class="sub">Probar comidas nuevas poco a poco: primero lo que menos cuesta y en porción pequeña, y escalón a escalón hasta la ración de siempre. Para hacerlo juntos, el peque y mamá o papá.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" id="t-escalera" aria-controls="v-escalera" aria-selected="true">🪜 Mi escalera</button>
+    <button role="tab" id="t-preparar" aria-controls="v-preparar" aria-selected="false" tabindex="-1">🍽️ Preparar (adultos)</button>
+    <button role="tab" id="t-pauta" aria-controls="v-pauta" aria-selected="false" tabindex="-1">🤝 Cómo acompañar</button>
+    <button role="tab" id="t-registro" aria-controls="v-registro" aria-selected="false" tabindex="-1">📨 Registro</button>
+  </nav>
+
+  <!-- ═══════════ MI ESCALERA (el peque, con mamá o papá) ═══════════ -->
+  <section class="view" id="v-escalera" role="tabpanel" aria-labelledby="t-escalera">
+    <div id="stairBox"></div>
+
+    <div id="retoBox"></div>
+
+    <div class="card">
+      <h2>Mis copas</h2>
+      <div class="copas" id="copas" aria-live="polite"></div>
+      <p class="muted small" id="copasTxt"></p>
+    </div>
+  </section>
+
+  <!-- ═══════════ PREPARAR (madre / padre) ═══════════ -->
+  <section class="view" id="v-preparar" role="tabpanel" aria-labelledby="t-preparar" hidden>
+    <div class="card">
+      <h2>1. Los alimentos</h2>
+      <p class="muted">Apuntad los alimentos nuevos que queréis trabajar y cuánto le cuestan hoy. La escalera se ordena sola: lo que menos cuesta y en porción pequeña va primero, para que los primeros escalones salgan bien.</p>
+      <div class="row small" id="presets" aria-label="Alimentos frecuentes"></div>
+      <label class="f" for="aliNombre">Alimento</label>
+      <div class="row">
+        <input type="text" id="aliEmoji" maxlength="4" style="width:70px;text-align:center;font-size:22px" aria-label="Dibujo (emoji)" value="🍽️">
+        <input type="text" id="aliNombre" placeholder="Por ejemplo: guisantes" style="flex:1;min-width:180px">
+      </div>
+      <label class="f" id="lblRech">¿Cuánto le cuesta?</label>
+      <div class="face" id="aliRech" role="group" aria-labelledby="lblRech"></div>
+      <label class="f" id="lblPorc">Porciones que vais a usar</label>
+      <div class="row" id="aliPorc" role="group" aria-labelledby="lblPorc"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-sun" id="btnAddAli">＋ Añadir a la escalera</button>
+        <span class="muted small" id="aliMsg" aria-live="polite"></span>
+      </div>
+      <div id="aliList" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>2. Así queda la escalera</h2>
+      <p class="muted small">Cada escalón combina un alimento y una porción. Cuanto más le cuesta el alimento y más grande la porción, más alto es el escalón. Si entre dos escalones hay un salto grande (⚠), conviene añadir uno intermedio: otra porción u otro alimento que cueste un poco menos.</p>
+      <ol class="steps-list" id="stepsList"></ol>
+      <label class="f" for="criterio">¿Cuántas veces tiene que conseguir un escalón para pasar al siguiente?</label>
+      <select id="criterio" style="max-width:260px">
+        <option value="2">2 veces</option>
+        <option value="3">3 veces (recomendado)</option>
+        <option value="4">4 veces</option>
+        <option value="5">5 veces</option>
+      </select>
+      <p class="muted small">Repetir el mismo escalón varias veces es lo que hace que el alimento deje de ser nuevo. Mejor subir despacio y seguros.</p>
+    </div>
+
+    <div class="card">
+      <h2>3. Lo que se gana</h2>
+      <p class="muted">Elegid antes de comer lo que se gana si consigue el reto, y decidlo claro: <b>«Si hoy comes esto, después tendrás…»</b>. Funciona mejor cuando llega justo después y siempre igual; por eso el postre suele ir muy bien. Marcad con ⭐ el que usaréis casi siempre.</p>
+      <div id="refList"></div>
+      <h3>Añadir otro</h3>
+      <div class="row">
+        <input type="text" id="refEmoji" maxlength="4" style="width:70px;text-align:center;font-size:22px" aria-label="Dibujo (emoji)" value="🎁">
+        <input type="text" id="refTexto" placeholder="Por ejemplo: elegir la música del coche" style="flex:1;min-width:180px">
+        <select id="refTipo" style="max-width:200px" aria-label="Tipo">
+          <option value="comida">Justo después de comer</option>
+          <option value="social">Con mamá o papá</option>
+          <option value="actividad">Una actividad</option>
+          <option value="objeto">Una cosa (pegatina…)</option>
+        </select>
+        <button class="btn" id="btnAddRef">＋ Añadir</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Empezar con un ejemplo</h2>
+      <p class="muted small">Carga tres alimentos de ejemplo para ver cómo funciona. Después podéis cambiarlos o borrarlos.</p>
+      <div class="row">
+        <button class="btn btn-ghost" id="btnEjemplo">Cargar ejemplo</button>
+        <button class="btn-link" id="btnBorrarTodo">Borrar toda la escalera</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CÓMO ACOMPAÑAR (pauta) ═══════════ -->
+  <section class="view pauta" id="v-pauta" role="tabpanel" aria-labelledby="t-pauta" hidden>
+    <div class="card">
+      <h2>Compasivos y firmes a la vez</h2>
+      <p>Cuando un peque rechaza una comida nueva, lo que suele haber detrás es alerta: el cuerpo vive lo nuevo como una amenaza. No se trata de convencerle ni de obligarle, sino de que la comida aparezca muchas veces, en dosis que pueda sostener, con vosotros al lado tranquilos y con un trato claro que no cambia en la mesa. Compasivos con lo que siente y firmes con lo que se ha pactado.</p>
+      <p class="muted small">Antes de sentaros, haced vosotros una respiración y notad cómo estáis. Si llegáis con prisa o enfadados, el peque lo nota y la comida se vuelve una pelea.</p>
+    </div>
+
+    <details open>
+      <summary>1. Antes de comer: el trato</summary>
+      <ul>
+        <li>Mirad juntos la escalera y el escalón de hoy. Decid el reto y lo que se gana <b>antes</b> de sentaros, no en mitad de la comida.</li>
+        <li>Servid el reto ya en el plato, con la porción del escalón, al lado de comida que ya acepta bien. No hace falta un plato aparte ni hablar mucho de ello.</li>
+        <li>Una sola frase, tranquila y clara:</li>
+      </ul>
+      <p class="frase">«Hoy el reto es una probadita de guisantes. Si te la comes, después tienes el postre.»</p>
+    </details>
+
+    <details>
+      <summary>2. Durante la comida: tranquilos y sin negociar</summary>
+      <ul>
+        <li><b>Validad lo que siente</b> sin cambiar el reto: <span class="frase">«Ya veo que te cuesta, es nuevo y es normal que dé un poco de cosa.»</span></li>
+        <li><b>No se negocia en la mesa.</b> Si pide hacerlo más pequeño o cambiarlo por otra cosa, se responde con calma: <span class="frase">«Hoy el reto es este. Tú decides si lo haces.»</span></li>
+        <li><b>Sin forzar</b>: no se mete comida en la boca, no se amenaza, no se castiga y no se añaden premios extra para convencer.</li>
+        <li><b>Vosotros también lo coméis</b> delante de él o ella, con naturalidad. Ver que a vosotros os sienta bien le ayuda más que cualquier explicación.</li>
+        <li>Si protesta o se enfada, <b>no entréis a discutir</b>: seguid comiendo y hablando de otras cosas. Lo que se atiende es lo que crece.</li>
+        <li>Si lo intenta (lo toca, lo huele, lo acerca), <b>decid lo que veis</b>: <span class="frase">«Te lo has acercado a la boca, eso es valiente.»</span></li>
+        <li>Poned un tiempo razonable, unos 20 o 30 minutos. Al acabar, se recoge sin sermones.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>3. Después: el refuerzo, justo después</summary>
+      <ul>
+        <li><b>Si lo consigue</b>, lo que se ha pactado llega enseguida y tal como se dijo. Abrid juntos «Mi escalera», pulsad «¡Lo he conseguido!» y disfrutad de la purpurina. Al llegar a las veces pactadas, sale la copa.</li>
+        <li>Nombrad el esfuerzo, no solo el resultado: <span class="frase">«Te costaba y lo has hecho igualmente.»</span></li>
+        <li><b>Si no lo consigue</b>, ese día no hay lo pactado, sin enfado y sin reproches: <span class="frase">«Hoy no ha salido. Mañana lo volvemos a intentar.»</span> No se compensa con otra cosa ni se da «un poquito igualmente».</li>
+        <li>Registrad también los días que no ha salido. Nos ayuda a ver si el escalón es demasiado alto.</li>
+        <li>El postre es el de cada día, no uno más grande ni especial. Lo que cambia es que hoy se gana con el reto.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>4. Otros refuerzos, además del postre</summary>
+      <ul>
+        <li><b>Con vosotros</b>: diez minutos de juego elegido por él o ella, chocar los cinco y contarlo a la familia, una foto de campeón para enviar a los abuelos…</li>
+        <li><b>Actividades</b>: elegir el cuento de la noche, el plan de la tarde, la música del coche…</li>
+        <li><b>Cosas pequeñas</b>: una pegatina, un punto para canjear al final de la escalera.</li>
+        <li>Lo importante es que sea algo que de verdad le motive, que llegue pronto y que no se pueda conseguir de otra manera ese día.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>5. Cuándo bajar o cambiar un escalón</summary>
+      <ul>
+        <li>Si un escalón <b>no sale dos veces seguidas</b>, probablemente es demasiado alto para ahora. Bajad la porción o añadid antes un alimento que cueste un poco menos. La herramienta os avisará.</li>
+        <li>El objetivo es que los primeros escalones salgan casi seguro. El éxito repetido es lo que da ganas de subir el siguiente.</li>
+        <li>Un día malo (cansancio, enfermedad, un cambio) no es un retroceso. Se vuelve al escalón al día siguiente.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>6. Cuándo comentarlo con vuestro psicólogo/a o pediatra</summary>
+      <ul>
+        <li>Si aparecen arcadas, vómitos o miedo a atragantarse.</li>
+        <li>Si pierde peso, se cansa mucho o come muy pocos alimentos en total.</li>
+        <li>Si la hora de comer genera mucha angustia en él o ella o en casa.</li>
+      </ul>
+      <p class="muted small">En estos casos no subáis escalones por vuestra cuenta: lo valoramos juntos antes de seguir.</p>
+    </details>
+  </section>
+
+  <!-- ═══════════ REGISTRO (para el psicólogo/a) ═══════════ -->
+  <section class="view" id="v-registro" role="tabpanel" aria-labelledby="t-registro" hidden>
+    <div class="card">
+      <h2>Lo que habéis ido haciendo</h2>
+      <p class="muted small">Cada vez que registráis un reto, conseguido o no, queda apuntado aquí. Con la barra de abajo podéis enviarlo a vuestro psicólogo/a para revisarlo juntos en sesión.</p>
+      <div id="resumen"></div>
+      <div style="overflow-x:auto"><table id="hist"></table></div>
+      <div class="row" style="margin-top:8px"><button class="btn-link" id="btnDeshacer">Deshacer el último registro</button></div>
+      <label class="f" for="codigo">Vuestro código (os lo da el psicólogo/a)</label>
+      <input type="text" id="codigo" placeholder="MARTI-01" autocomplete="off" spellcheck="false" style="max-width:220px">
+    </div>
+  </section>
+
+  <footer class="foot">
+    APRENS · TEC · AIS. Los datos se guardan <b>solo en este dispositivo</b> hasta que decidís enviarlos. Esta herramienta acompaña la pauta de vuestro psicólogo/a; no la sustituye ni diagnostica.
+  </footer>
+</div>
+
+<div class="copa-ov" id="copaOv" hidden role="dialog" aria-modal="true" aria-labelledby="copaTit">
+  <div class="copa-card">
+    <div class="cup" id="copaCup">🏆</div>
+    <h2 id="copaTit">¡Escalón conseguido!</h2>
+    <p id="copaTxt"></p>
+    <button class="btn btn-sun btn-big" id="copaOk">¡Genial!</button>
+  </div>
+</div>
+
+<script src="../js/aprens-core.js"></script>
+<script src="../js/escalera-lateral.js"></script>
+<script>
+(function () {
+  "use strict";
+  var TOOL = "escalera_comidas";
+  var $ = function (s) { return document.querySelector(s); };
+  if (window.Aprens) Aprens.config({ toolId: TOOL, toolName: "La escalera de las comidas", toolVersion: 1 });
+
+  var PORC = { 1: { c: "pequeña", d: "una probadita, del tamaño de una uva", p: "●○○" },
+               2: { c: "mediana", d: "unas cucharadas, media ración", p: "●●○" },
+               3: { c: "normal", d: "la ración de siempre", p: "●●●" } };
+  var RECH = { 1: ["🙂", "Casi no le cuesta"], 2: ["😐", "Le cuesta un poco"], 3: ["😕", "Le cuesta"],
+               4: ["😣", "Le cuesta mucho"], 5: ["😖", "Le cuesta muchísimo"] };
+  var TIPOS = { comida: "Justo después de comer", social: "Con mamá o papá", actividad: "Actividad", objeto: "Una cosa" };
+  var PRESETS = [["🫛", "Guisantes"], ["🥦", "Brócoli"], ["🥕", "Zanahoria"], ["🍅", "Tomate"], ["🥬", "Lechuga"],
+    ["🐟", "Pescado"], ["🥚", "Huevo"], ["🍗", "Pollo"], ["🫘", "Legumbres"], ["🍎", "Manzana"], ["🍐", "Pera"], ["🥒", "Calabacín"]];
+  var REF_DEF = [
+    { id: "r_postre", emoji: "🍮", texto: "El postre, justo después de comer", tipo: "comida" },
+    { id: "r_juego", emoji: "🎲", texto: "Diez minutos de juego con mamá o papá", tipo: "social" },
+    { id: "r_cinco", emoji: "🙌", texto: "Chocar los cinco y contarlo a la familia", tipo: "social" },
+    { id: "r_cuento", emoji: "📖", texto: "Elegir el cuento de la noche", tipo: "actividad" },
+    { id: "r_pegatina", emoji: "⭐", texto: "Una pegatina para la escalera", tipo: "objeto" }
+  ];
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function ymd(d) { d = d || new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  var _n = 0; function uid(p) { _n++; return p + Date.now().toString(36) + _n; }
+
+  /* ---------- datos (núcleo APRENS) ---------- */
+  function all() { return window.Aprens ? Aprens.history() : []; }
+  function save(r) { if (window.Aprens) Aprens.save(r); }
+  function removeRec(id) {
+    try {
+      var raw = localStorage.getItem("aprens_db"); if (!raw) return;
+      var d = JSON.parse(raw); var b = d.tools && d.tools[TOOL]; if (!b) return;
+      b.records = b.records.filter(function (r) { return r.id !== id; });
+      d.actualizado = new Date().toISOString();
+      localStorage.setItem("aprens_db", JSON.stringify(d));
+    } catch (e) {}
+  }
+  function cfg() {
+    var c = all().filter(function (r) { return r.kind === "config"; })[0];
+    if (!c) { c = { kind: "config", id: "config", criterio: 3, refuerzos: REF_DEF.slice(), principal: "r_postre" }; save(c); }
+    return c;
+  }
+  function alimentos() { return all().filter(function (r) { return r.kind === "alimento"; }).sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); }); }
+  function intentos() { return all().filter(function (r) { return r.kind === "intento"; }).sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); }); }
+
+  /* Escalones = alimento × porción. Dificultad 1–7 = cuánto cuesta (1–5) + tamaño (0–2). */
+  function escalones() {
+    var c = cfg(), its = intentos(), out = [];
+    alimentos().forEach(function (a) {
+      (a.porciones || [1, 2, 3]).forEach(function (p) {
+        var key = a.id + "_" + p;
+        var mios = its.filter(function (i) { return i.esc === key; });
+        var logros = mios.filter(function (i) { return i.logrado; }).length;
+        var seguidos = 0;
+        for (var k = mios.length - 1; k >= 0 && !mios[k].logrado; k--) seguidos++;
+        out.push({ key: key, ali: a, porcion: p, dif: a.rechazo + p - 1, logros: logros, fallos: seguidos, hecho: logros >= c.criterio });
+      });
+    });
+    out.sort(function (x, y) { return (x.dif - y.dif) || (x.ali.rechazo - y.ali.rechazo) || ((x.ali.ts || 0) - (y.ali.ts || 0)) || (x.porcion - y.porcion); });
+    return out;
+  }
+  function actual(st) { for (var i = 0; i < st.length; i++) if (!st[i].hecho) return i; return -1; }
+  function refPorId(id) { var c = cfg(); return (c.refuerzos || []).filter(function (r) { return r.id === id; })[0] || (c.refuerzos || [])[0]; }
+
+  /* ---------- pestañas ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function abrir(tab, foco) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    if (foco) tab.focus();
+    render();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { abrir(t); });
+    t.addEventListener("keydown", function (e) {
+      var j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+      if (j == null) return; e.preventDefault(); abrir(tabs[(j + tabs.length) % tabs.length], true);
+    });
+  });
+
+  /* ---------- escalera lateral (SVG) ---------- */
+  function dibujarEscalera(st) {
+    var c = cfg(), box = $("#stairBox");
+    if (!st.length) {
+      box.innerHTML = '<div class="vacia"><div style="font-size:54px">🪜</div><p><b>Todavía no hay escalones.</b><br><span class="muted">Mamá o papá: id a «Preparar» y añadid los alimentos.</span></p>' +
+        '<button class="btn btn-sun" id="irPreparar">Preparar la escalera</button></div>';
+      $("#irPreparar").onclick = function () { abrir(tabs[1], true); };
+      return;
+    }
+    EscaleraLateral.montar(box, st.map(function (e) {
+      var est = ""; for (var k = 0; k < c.criterio; k++) est += k < e.logros ? "★" : "☆";
+      return { alto: e.dif, hecho: e.hecho, emoji: e.ali.emoji || "🍽️", linea2: PORC[e.porcion].p, linea3: est,
+        etiqueta: e.ali.nombre + ", porción " + PORC[e.porcion].c + ", " + e.logros + " de " + c.criterio + " veces" };
+    }), { titulo: "La escalera de las comidas", leyenda: "●○○ porción · ★☆☆ veces conseguido" });
+  }
+
+  /* ---------- reto de hoy ---------- */
+  var refHoy = null;
+  function dibujarReto(st, cur) {
+    var c = cfg(), box = $("#retoBox");
+    if (!st.length) { box.innerHTML = ""; return; }
+    if (cur < 0) {
+      box.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:72px">🏆</div><h2>¡Has subido toda la escalera!</h2>' +
+        '<p class="muted">Mamá o papá: celebradlo y comentadlo con vuestro psicólogo/a. Podéis añadir alimentos nuevos en «Preparar».</p></div>';
+      return;
+    }
+    var e = st[cur];
+    if (!refHoy || !refPorId(refHoy)) refHoy = (refPorId(c.principal) || {}).id;
+    var ref = refPorId(refHoy) || { emoji: "🎁", texto: "lo que hayáis pactado" };
+    var dots = ""; for (var k = 0; k < c.criterio; k++) dots += k < e.logros ? "★" : "☆";
+    var h = '<div class="card"><div class="reto"><div class="big" aria-hidden="true">' + esc(e.ali.emoji || "🍽️") + "</div><div>" +
+      '<div class="muted small">Escalón ' + (cur + 1) + " de " + st.length + "</div>" +
+      "<h2>" + esc(e.ali.nombre) + " · porción " + PORC[e.porcion].c + "</h2>" +
+      '<div class="muted">' + PORC[e.porcion].d + "</div></div></div>" +
+      '<div class="trato" id="trato">Si hoy me como <b>' + esc(e.ali.nombre.toLowerCase()) + " (" + PORC[e.porcion].c + ")</b>, después tengo <b>" + esc(ref.emoji + " " + ref.texto.toLowerCase()) + "</b>.</div>" +
+      '<div class="muted small" id="lblRefHoy">Lo que se gana hoy:</div><div class="row" role="group" aria-labelledby="lblRefHoy" style="margin:6px 0 12px">' +
+      (c.refuerzos || []).map(function (r) { return '<button class="chip" data-ref="' + esc(r.id) + '" aria-pressed="' + (r.id === refHoy) + '">' + esc(r.emoji) + " " + esc(r.texto) + "</button>"; }).join("") + "</div>" +
+      '<div class="row" style="justify-content:space-between"><div><div class="muted small">Veces conseguido</div><div class="puntos" id="puntos" aria-label="' + e.logros + " de " + c.criterio + '">' + dots + "</div></div></div>" +
+      '<div class="row" style="margin-top:12px"><button class="btn btn-ok btn-big" id="btnLogro">🌟 ¡Lo he conseguido!</button>' +
+      '<button class="btn btn-ghost" id="btnNo">Hoy no ha salido</button></div>' +
+      '<p class="muted small" id="retoMsg" aria-live="polite"></p>';
+    if (e.fallos >= 2) {
+      h += '<div class="aviso"><b>Para mamá o papá:</b> este escalón no ha salido ' + e.fallos + ' veces seguidas. Probablemente ahora es demasiado alto. ' +
+        (e.porcion > 1 && (e.ali.porciones || []).indexOf(e.porcion - 1) < 0 ? "Probad a añadir la porción " + PORC[e.porcion - 1].c + " de este alimento." : "Probad a añadir antes un alimento que le cueste un poco menos.") +
+        ' <button class="btn-link" id="btnBajar">Ir a Preparar</button></div>';
+    }
+    h += "</div>";
+    box.innerHTML = h;
+    Array.prototype.forEach.call(box.querySelectorAll("[data-ref]"), function (b) {
+      b.onclick = function () { refHoy = b.getAttribute("data-ref"); dibujarReto(st, cur); var nb = box.querySelector('[data-ref="' + refHoy + '"]'); if (nb) nb.focus(); };
+    });
+    $("#btnLogro").onclick = function () { registrar(e, true, ref); };
+    $("#btnNo").onclick = function () { registrar(e, false, ref); };
+    if ($("#btnBajar")) $("#btnBajar").onclick = function () { abrir(tabs[1], true); };
+  }
+
+  function registrar(e, logrado, ref) {
+    var c = cfg();
+    var antes = e.logros;
+    var rec = { kind: "intento", id: uid("i_"), date: ymd(), ts: Date.now(), esc: e.key, alimento: e.ali.nombre,
+      porcion: PORC[e.porcion].c, dificultad: e.dif, logrado: !!logrado, refuerzo: logrado ? ref.texto : "" };
+    var veces = antes + (logrado ? 1 : 0);
+    rec.resumen = (logrado ? "✓ " : "○ ") + e.ali.nombre + " · porción " + PORC[e.porcion].c +
+      " (" + veces + "/" + c.criterio + ")" + (logrado ? " · refuerzo: " + ref.texto : " · hoy no ha salido");
+    save(rec);
+    var completado = logrado && veces >= c.criterio;
+    render();
+    var msg = $("#retoMsg");
+    if (logrado) {
+      purpurina(completado ? 140 : 70);
+      if (completado) {
+        var st = escalones(), cur = actual(st);
+        copa(cur < 0 ? "🏆" : "🏆", cur < 0 ? "¡Campeón o campeona de la escalera!" : "¡Escalón conseguido!",
+          cur < 0 ? "Has subido toda la escalera. ¡Qué valiente!" : "Has conseguido " + e.ali.nombre.toLowerCase() + " (" + PORC[e.porcion].c + ") " + c.criterio + " veces. ¡Subes al siguiente escalón!");
+      } else if (msg) {
+        msg.textContent = "¡Muy bien! Ya llevas " + veces + " de " + c.criterio + ". Ahora toca " + ref.texto.toLowerCase() + ".";
+        var p = $("#puntos"); if (p) p.classList.add("pop");
+        var b = $("#btnLogro"); if (b) b.focus();
+      }
+    } else if (msg) {
+      msg.textContent = "Apuntado. Hoy no ha salido, y no pasa nada: mañana lo volvemos a intentar.";
+      var bn = $("#btnNo"); if (bn) bn.focus();
+    }
+  }
+
+  /* ---------- purpurina y copa ---------- */
+  function purpurina(n) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var cols = ["#F2B84B", "#e8846f", "#6fb383", "#8d6fb0", "#5aa9e6", "#ffd84d", "#ff8fb1"];
+    for (var i = 0; i < n; i++) {
+      var g = document.createElement("div"); g.className = "glitter";
+      g.style.left = Math.random() * 100 + "vw";
+      g.style.background = cols[i % cols.length];
+      g.style.animationDuration = (1.6 + Math.random() * 1.8) + "s";
+      g.style.animationDelay = (Math.random() * .5) + "s";
+      if (i % 3 === 0) { g.style.width = "6px"; g.style.height = "6px"; g.style.borderRadius = "50%"; }
+      document.body.appendChild(g);
+      setTimeout(function (el) { return function () { el.remove(); }; }(g), 4200);
+    }
+  }
+  var copaVuelta = null;
+  function copa(icono, tit, txt) {
+    copaVuelta = document.activeElement;
+    $("#copaCup").textContent = icono; $("#copaTit").textContent = tit; $("#copaTxt").textContent = txt;
+    var ov = $("#copaOv"); ov.hidden = false;
+    var cup = $("#copaCup"); cup.style.animation = "none"; void cup.offsetWidth; cup.style.animation = "";
+    $("#copaOk").focus();
+  }
+  function cerrarCopa() {
+    $("#copaOv").hidden = true;
+    var b = $("#btnLogro") || (copaVuelta && document.body.contains(copaVuelta) ? copaVuelta : null) || tabs[0];
+    b.focus();
+  }
+  $("#copaOk").onclick = cerrarCopa;
+  $("#copaOv").addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); if (e.key === "Escape") cerrarCopa(); } });
+
+  function dibujarCopas(st) {
+    var n = st.filter(function (e) { return e.hecho; }).length;
+    $("#copas").textContent = n ? new Array(n + 1).join("🏆") : "";
+    $("#copasTxt").textContent = n ? (n === 1 ? "Ya tienes 1 copa: un escalón conseguido." : "Ya tienes " + n + " copas: " + n + " escalones conseguidos.")
+      : "Cada escalón que consigas te dará una copa.";
+  }
+
+  /* ---------- preparar ---------- */
+  var nuevoRech = 2, nuevasPorc = [1, 2, 3];
+  function dibujarPreparar() {
+    $("#presets").innerHTML = PRESETS.map(function (p) { return '<button class="chip" data-pre="' + esc(p[1]) + '" data-emo="' + p[0] + '">' + p[0] + " " + esc(p[1]) + "</button>"; }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-pre]"), function (b) {
+      b.onclick = function () { $("#aliNombre").value = b.getAttribute("data-pre"); $("#aliEmoji").value = b.getAttribute("data-emo"); $("#aliNombre").focus(); };
+    });
+    $("#aliRech").innerHTML = [1, 2, 3, 4, 5].map(function (k) { return '<button class="chip" data-rech="' + k + '" aria-pressed="' + (k === nuevoRech) + '">' + RECH[k][0] + " " + RECH[k][1] + "</button>"; }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rech]"), function (b) {
+      b.onclick = function () { nuevoRech = +b.getAttribute("data-rech"); dibujarPreparar(); var nb = document.querySelector('[data-rech="' + nuevoRech + '"]'); if (nb) nb.focus(); };
+    });
+    $("#aliPorc").innerHTML = [1, 2, 3].map(function (p) { return '<button class="chip" data-porc="' + p + '" aria-pressed="' + (nuevasPorc.indexOf(p) >= 0) + '">' + PORC[p].p + " " + PORC[p].c + "</button>"; }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-porc]"), function (b) {
+      b.onclick = function () {
+        var p = +b.getAttribute("data-porc"), i = nuevasPorc.indexOf(p);
+        if (i >= 0) { if (nuevasPorc.length > 1) nuevasPorc.splice(i, 1); } else nuevasPorc.push(p);
+        nuevasPorc.sort(); dibujarPreparar(); var nb = document.querySelector('[data-porc="' + p + '"]'); if (nb) nb.focus();
+      };
+    });
+
+    var al = alimentos();
+    $("#aliList").innerHTML = al.length ? al.map(function (a) {
+      return '<div class="ali"><span class="e" aria-hidden="true">' + esc(a.emoji) + "</span><div><b>" + esc(a.nombre) + "</b><br>" +
+        '<label class="small muted">Cuánto le cuesta: <select data-edit="' + esc(a.id) + '" style="width:auto;padding:4px 8px">' +
+        [1, 2, 3, 4, 5].map(function (k) { return '<option value="' + k + '"' + (k === a.rechazo ? " selected" : "") + ">" + RECH[k][0] + " " + RECH[k][1] + "</option>"; }).join("") +
+        '</select></label><div class="row small" style="margin-top:4px">' +
+        [1, 2, 3].map(function (p) { return '<button class="chip" data-ap="' + esc(a.id) + '" data-p="' + p + '" aria-pressed="' + ((a.porciones || []).indexOf(p) >= 0) + '">' + PORC[p].p + " " + PORC[p].c + "</button>"; }).join("") +
+        '</div></div><button class="btn-link" data-del="' + esc(a.id) + '" aria-label="Quitar ' + esc(a.nombre) + '">Quitar</button></div>';
+    }).join("") : '<p class="muted small">Todavía no habéis añadido alimentos.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll("[data-edit]"), function (s) {
+      s.onchange = function () { var a = buscarAli(s.getAttribute("data-edit")); if (!a) return; a.rechazo = +s.value; save(a); render(); var ns = document.querySelector('[data-edit="' + a.id + '"]'); if (ns) ns.focus(); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ap]"), function (b) {
+      b.onclick = function () {
+        var a = buscarAli(b.getAttribute("data-ap")); if (!a) return;
+        var p = +b.getAttribute("data-p"), ps = (a.porciones || []).slice(), i = ps.indexOf(p);
+        if (i >= 0) { if (ps.length > 1) ps.splice(i, 1); } else ps.push(p);
+        a.porciones = ps.sort(); save(a); render();
+        var nb = document.querySelector('[data-ap="' + a.id + '"][data-p="' + p + '"]'); if (nb) nb.focus();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-del]"), function (b) {
+      b.onclick = function () {
+        var a = buscarAli(b.getAttribute("data-del")); if (!a) return;
+        if (!confirm("¿Quitar «" + a.nombre + "» de la escalera? Los registros ya hechos se conservan.")) return;
+        removeRec(a.id); render(); $("#aliNombre").focus();
+      };
+    });
+
+    var st = escalones(), c = cfg();
+    $("#stepsList").innerHTML = st.length ? st.map(function (e, i) {
+      var salto = i > 0 && e.dif - st[i - 1].dif >= 2;
+      return "<li><span style=\"width:26px;text-align:right\" class=\"muted small\">" + (i + 1) + "</span>" +
+        '<span aria-hidden="true" style="font-size:22px">' + esc(e.ali.emoji) + "</span>" +
+        '<span style="flex:1">' + esc(e.ali.nombre) + " · " + PORC[e.porcion].c + (e.hecho ? " ✓" : "") +
+        (salto ? ' <span class="tag" style="background:#ffe2c7">⚠ salto grande</span>' : "") + "</span>" +
+        '<span class="bar" style="width:' + (e.dif * 14) + 'px" aria-label="altura ' + e.dif + ' de 7"></span></li>';
+    }).join("") : '<li class="muted small">Aparecerá en cuanto añadáis un alimento.</li>';
+    $("#criterio").value = String(c.criterio);
+
+    $("#refList").innerHTML = (c.refuerzos || []).map(function (r) {
+      var pri = r.id === c.principal;
+      return '<div class="ref"><span style="font-size:24px" aria-hidden="true">' + esc(r.emoji) + '</span><span class="t">' + esc(r.texto) +
+        ' <span class="tag">' + esc(TIPOS[r.tipo] || r.tipo) + "</span></span>" +
+        '<button class="chip" data-pri="' + esc(r.id) + '" aria-pressed="' + pri + '" aria-label="Usar casi siempre: ' + esc(r.texto) + '">' + (pri ? "⭐" : "☆") + "</button>" +
+        ((c.refuerzos.length > 1) ? '<button class="btn-link" data-rdel="' + esc(r.id) + '" aria-label="Quitar ' + esc(r.texto) + '">Quitar</button>' : "") + "</div>";
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-pri]"), function (b) {
+      b.onclick = function () { var c2 = cfg(); c2.principal = b.getAttribute("data-pri"); refHoy = c2.principal; save(c2); render(); var nb = document.querySelector('[data-pri="' + c2.principal + '"]'); if (nb) nb.focus(); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rdel]"), function (b) {
+      b.onclick = function () {
+        var c2 = cfg(), id = b.getAttribute("data-rdel");
+        c2.refuerzos = c2.refuerzos.filter(function (r) { return r.id !== id; });
+        if (c2.principal === id) c2.principal = c2.refuerzos[0].id;
+        if (refHoy === id) refHoy = null;
+        save(c2); render(); $("#refTexto").focus();
+      };
+    });
+  }
+  function buscarAli(id) { return alimentos().filter(function (a) { return a.id === id; })[0]; }
+
+  $("#btnAddAli").onclick = function () {
+    var nombre = $("#aliNombre").value.trim();
+    if (!nombre) { $("#aliMsg").textContent = "Escribid primero el nombre del alimento."; $("#aliNombre").focus(); return; }
+    var ya = alimentos().some(function (a) { return a.nombre.toLowerCase() === nombre.toLowerCase(); });
+    if (ya) { $("#aliMsg").textContent = "«" + nombre + "» ya está en la escalera."; $("#aliNombre").focus(); return; }
+    save({ kind: "alimento", id: uid("a_"), nombre: nombre, emoji: $("#aliEmoji").value.trim() || "🍽️", rechazo: nuevoRech, porciones: nuevasPorc.slice(), ts: Date.now() });
+    $("#aliNombre").value = ""; $("#aliEmoji").value = "🍽️";
+    $("#aliMsg").textContent = "Añadido: «" + nombre + "».";
+    render(); $("#aliNombre").focus();
+  };
+  $("#aliNombre").addEventListener("keydown", function (e) { if (e.key === "Enter") $("#btnAddAli").click(); });
+  $("#criterio").onchange = function () { var c = cfg(); c.criterio = +this.value; save(c); render(); };
+  $("#btnAddRef").onclick = function () {
+    var t = $("#refTexto").value.trim(); if (!t) { $("#refTexto").focus(); return; }
+    var c = cfg(); c.refuerzos = (c.refuerzos || []).concat([{ id: uid("r_"), emoji: $("#refEmoji").value.trim() || "🎁", texto: t, tipo: $("#refTipo").value }]);
+    save(c); $("#refTexto").value = ""; $("#refEmoji").value = "🎁"; render(); $("#refTexto").focus();
+  };
+  $("#btnEjemplo").onclick = function () {
+    if (alimentos().length && !confirm("Ya hay alimentos en la escalera. ¿Añadir también los de ejemplo?")) return;
+    var t = Date.now();
+    [["🍎", "Manzana", 1, [1, 2, 3]], ["🥕", "Zanahoria", 2, [1, 2, 3]], ["🫛", "Guisantes", 3, [1, 2, 3]]].forEach(function (x, i) {
+      if (alimentos().some(function (a) { return a.nombre.toLowerCase() === x[1].toLowerCase(); })) return;
+      save({ kind: "alimento", id: uid("a_"), emoji: x[0], nombre: x[1], rechazo: x[2], porciones: x[3], ts: t + i });
+    });
+    render(); $("#aliMsg").textContent = "Ejemplo cargado.";
+  };
+  $("#btnBorrarTodo").onclick = function () {
+    if (!confirm("¿Borrar todos los alimentos y registros de la escalera? Esto no se puede deshacer.")) return;
+    all().forEach(function (r) { if (r.kind === "alimento" || r.kind === "intento") removeRec(r.id); });
+    render(); $("#aliNombre").focus();
+  };
+
+  /* ---------- registro ---------- */
+  function dibujarRegistro() {
+    var its = intentos().slice().reverse(), st = escalones(), cur = actual(st);
+    var ok = its.filter(function (i) { return i.logrado; }).length;
+    var dias = {}; its.forEach(function (i) { dias[i.date] = 1; });
+    $("#resumen").innerHTML = '<p><b>' + its.length + "</b> registros en <b>" + Object.keys(dias).length + "</b> días · <b>" + ok + "</b> conseguidos · <b>" +
+      st.filter(function (e) { return e.hecho; }).length + "</b> de " + st.length + " escalones completados" +
+      (cur >= 0 && st.length ? " · ahora: " + esc(st[cur].ali.nombre) + " (" + PORC[st[cur].porcion].c + ")" : "") + ".</p>";
+    $("#hist").innerHTML = its.length ? "<thead><tr><th>Día</th><th>Reto</th><th>Resultado</th><th>Refuerzo</th></tr></thead><tbody>" +
+      its.map(function (i) {
+        return "<tr><td>" + esc(i.date) + "</td><td>" + esc(i.alimento) + " · " + esc(i.porcion) + "</td><td>" + (i.logrado ? "✓ Conseguido" : "○ No ha salido") + "</td><td>" + esc(i.refuerzo || "—") + "</td></tr>";
+      }).join("") + "</tbody>" : '<tbody><tr><td class="muted">Todavía no hay registros.</td></tr></tbody>';
+    $("#btnDeshacer").hidden = !its.length;
+  }
+  $("#btnDeshacer").onclick = function () {
+    var its = intentos(); if (!its.length) return;
+    var u = its[its.length - 1];
+    if (!confirm("¿Deshacer el último registro (" + u.date + ", " + u.alimento + ")?")) return;
+    removeRec(u.id); render(); $("#btnDeshacer").hidden ? $("#codigo").focus() : $("#btnDeshacer").focus();
+  };
+  var codIn = $("#codigo");
+  if (window.Aprens) { codIn.value = Aprens.getPacienteCodigo() || ""; codIn.addEventListener("change", function () { Aprens.setPacienteCodigo(codIn.value); }); }
+
+  /* Resumen legible para WhatsApp (sustituye al genérico del núcleo) */
+  if (window.Aprens) Aprens.resumenTexto = function () {
+    var st = escalones(), cur = actual(st), its = intentos(), c = cfg();
+    var l = ["APRENS · La escalera de las comidas", "Código: " + (Aprens.getPacienteCodigo() || "—"),
+      "Escalones: " + st.filter(function (e) { return e.hecho; }).length + " de " + st.length + " conseguidos (cada uno " + c.criterio + " veces)"];
+    if (cur >= 0 && st.length) l.push("Ahora: " + st[cur].ali.nombre + " · porción " + PORC[st[cur].porcion].c + " (" + st[cur].logros + "/" + c.criterio + ")");
+    l.push("Registros: " + its.length + " (" + its.filter(function (i) { return i.logrado; }).length + " conseguidos)", "", "Últimos:");
+    its.slice(-8).forEach(function (i) { l.push("· " + i.date + " " + (i.logrado ? "✓ " : "○ ") + i.alimento + " (" + i.porcion + ")" + (i.refuerzo ? " → " + i.refuerzo : "")); });
+    l.push("", "(Adjunta también el archivo .json para el panel)");
+    return l.join("\n");
+  };
+
+  /* ---------- render ---------- */
+  function render() {
+    var st = escalones(), cur = actual(st);
+    dibujarEscalera(st); dibujarReto(st, cur); dibujarCopas(st);
+    dibujarPreparar(); dibujarRegistro();
+  }
+  render();
+  if (window.Aprens && Aprens.mountBar) Aprens.mountBar();
+})();
+</script>
+</body>
+</html>

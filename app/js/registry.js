@@ -91,6 +91,10 @@ window.APRENS_TOOLS = [
     desc:"Juego infantil de exposición gradual para la ansiedad de separación (para madres y padres): escalera de misiones de valiente y dos llaves, el QUÉ y el CÓMO (co-regulación AIS).",
     migrada:true, iframe:"exploradora/index.html" },
 
+  { id:"escalera_comidas", emoji:"🍽️", nombre:"La escalera de las comidas",
+    desc:"Para peques y familias: probar alimentos nuevos poco a poco. Escalera visual de alimento × porción (de lo que menos cuesta en porción pequeña a la ración de siempre), trato claro con el postre u otro refuerzo, purpurina y copas al conseguirlo, pauta compasiva y firme para mamá o papá y registro para el psicólogo/a.",
+    migrada:true, iframe:"tools-standalone/escalera-comidas.html" },
+
   { id:"ritual_calma", emoji:"🌙", nombre:"Ritual diario · calma y atención",
     desc:"Pauta parental para regulación y rabietas: ritual diario de audios AIS, 3 normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1.",
     migrada:true, iframe:"ritual/index.html" },

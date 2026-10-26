@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v179";
+const CACHE = "aprens-v180";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -76,6 +76,8 @@ const SHELL = [
   "./tools-standalone/tiempo_limite_peques.html",
   "./tools-standalone/assets/editorial/tiempo-limite.webp",
   "./tools-standalone/cuando-todo-demasiado.html",
+  "./tools-standalone/escalera-comidas.html",
+  "./js/escalera-lateral.js",
   // Cuentos de Nil — app shell (HTML + CSS/JS + fuentes). Las imágenes NO,
   // van a la caché aparte "aprens-cuentos-v1" (bajo demanda).
   "./tools-standalone/cuentos/index.html",

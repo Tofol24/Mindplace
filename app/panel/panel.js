@@ -180,6 +180,7 @@
     pedalea_desde_dentro: "Pedalea desde dentro", cuento_familia: "La familia de Koa (cuento)",
     tiempo_limite: "El tiempo límite (peques)", fondos_frases: "Fondos de frases",
     escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
+    escalera_comidas: "La escalera de las comidas",
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
     agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
