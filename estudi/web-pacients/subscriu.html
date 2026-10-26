@@ -21,13 +21,13 @@
 
     <span class="label">2 · Correu per a les factures</span>
     <input type="email" id="email" autocomplete="email" placeholder="correu@exemple.com" aria-label="Correu per a les factures">
-    <p class="muted small">Opcional: si no el poses aquí, te'l demanarà Stripe. És el correu que caldrà per gestionar la subscripció, i a partir de la segona factura també hi sortirà el codi d'accés.</p>
+    <p class="muted small">Opcional: si no el poses aquí, te'l demanarà Stripe. És el correu on arribaran les factures<span id="mailNote"> i el codi d'accés, i des d'on es gestionarà la subscripció</span>.</p>
 
     <span class="label">3 · Consentiment</span>
     <label class="check"><input type="checkbox" id="ok"><span>Soc el pare, la mare o el tutor legal de l'estudiant (o l'estudiant és major d'edat). He llegit les <a href="condicions.html" target="_blank" rel="noopener">condicions d'ús</a> i la <a href="privacitat.html" target="_blank" rel="noopener">política de privacitat</a>, i entenc que el material i les respostes es processen amb una intel·ligència artificial (Claude, d'Anthropic) i que pot equivocar-se.</span></label>
 
     <p class="err" id="err" role="alert" hidden></p>
-    <div class="row"><button class="btn" id="go" type="submit" disabled>Continua al pagament</button><a class="btn ghost" href="/">Ja tinc un codi</a></div>
+    <div class="row"><button class="btn" id="go" type="submit" disabled>Continua al pagament</button><a class="btn ghost" href="/">Ja tinc un codi</a><a class="btn ghost" href="recupera.html">He perdut el codi</a></div>
     <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció.</p>
   </form>
 </main>
@@ -38,6 +38,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&
 const err = (m) => { $("#err").textContent = m; $("#err").hidden = !m; };
 const ready = () => { $("#go").disabled = !($("#ok").checked && document.querySelector("input[name=pla]:checked")); };
 fetch("/api/config").then(r => r.json()).then(c => {
+  if (!c.correu) $("#mailNote").textContent = ", i a partir de la segona factura també hi sortirà el codi d'accés";
   if (!c.subscripcions || !c.plans.length) { $("#plans").innerHTML = '<p>Ara mateix no hi ha subscripcions obertes.</p>'; return; }
   $("#plans").innerHTML = c.plans.map((p, i) => `<label class="plan"><span class="row"><input type="radio" name="pla" value="${esc(p.price)}" ${i === 0 ? "checked" : ""}><strong>${esc(p.nom)}</strong></span><span class="preu">${esc(p.preu)}</span><span class="muted small">Fins a ${p.quota} peticions al mes</span></label>`).join("");
   ready();

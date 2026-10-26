@@ -1,6 +1,6 @@
 // Explica-ho · avisos de Stripe: altes, canvis de pla, impagats i baixes de subscripcions.
 // Stripe signa cada avís; només s'accepten els que porten una signatura vàlida i recent.
-import {env, json, stripe, store, subInfo, saveSub, ensureCode, codeOnInvoices, plans} from "../lib/comu.js";
+import {env, json, stripe, store, subInfo, saveSub, ensureCode, codeOnInvoices, plans, mailCode} from "../lib/comu.js";
 
 // El compte de Stripe pot tenir altres productes: només es tracten les subscripcions d'Explica-ho.
 const ours = (sub) => sub?.metadata?.app === "explica-ho" || plans().some(p => p.price === subInfo(sub).price);
@@ -44,6 +44,8 @@ export default async (req) => {
       await saveSub(st, info);
       const code = await ensureCode(st, info.id);
       await codeOnInvoices(info.customer, code);
+      // Si el correu falla, es respon amb error perquè Stripe torni a enviar l'avís (el codi no es duplica).
+      if ((await mailCode(st, info.id, new URL(req.url).origin)) === "error") return json(500, {error: "correu"});
     } else if (["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"].includes(ev.type) && ours(obj)) {
       // Stripe no garanteix l'ordre dels avisos: no es fa cas de l'estat que porta l'avís, sinó del
       // que té ara la subscripció a Stripe. Així un avís antic no pot reactivar una baixa.

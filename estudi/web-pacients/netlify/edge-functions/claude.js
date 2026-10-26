@@ -6,7 +6,7 @@
 //
 // Variables d'entorn (Netlify → Site configuration → Environment variables):
 //   ANTHROPIC_API_KEY   clau de l'API (millor d'un espai de treball amb límit de despesa)
-//   EXPLICA_CODIS       codis separats per comes; opcionalment amb límit diari: "k7m2qp:40, r9tx4b"
+//   EXPLICA_CODIS       codis separats per comes; opcionalment amb límit diari: "k7m2qpx4:40, r9tx4bm8" (mínim 8 caràcters)
 //   EXPLICA_LIMIT_DIA   peticions per codi i dia si el codi no en porta (per defecte 60; 0 = sense límit)
 //   EXPLICA_MODEL       model per a la feina normal (per defecte claude-sonnet-5-5)
 //   EXPLICA_MODEL_COMPLEX  model per corregir exercicis (per defecte el mateix)
@@ -16,7 +16,7 @@
 //
 // No es desa ni es registra cap contingut: només comptadors de peticions per codi (dia i mes).
 
-import {env, json, store, count, uncount, toLimit, manualCodes, plans, subForCode, subActive} from "../lib/comu.js";
+import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint} from "../lib/comu.js";
 
 const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
 Segueix exactament el format de resposta que demana cada petició.
@@ -64,7 +64,14 @@ async function refund(keys) {
   try { const st = await store("explica-us"); for (const k of keys) await uncount(st, k); } catch {}
 }
 
-export default async (req) => {
+// Intents de codi incorrectes: màxim 20 al dia per connexió (per no poder provar codis a l'atzar).
+const MAX_FAILS = 20;
+async function failKey(req, context) {
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "?";
+  return "fail/" + await fingerprint("ip:" + ip) + "/" + new Date().toISOString().slice(0, 10);
+}
+
+export default async (req, context) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
   const apiKey = env("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, {error: "config", message: "Falta configurar ANTHROPIC_API_KEY."});
@@ -72,13 +79,19 @@ export default async (req) => {
   const dayLimit = toLimit(env("EXPLICA_LIMIT_DIA"), DEFAULT_LIMIT);
   const codis = manualCodes(dayLimit);
   const codi = (req.headers.get("x-codi") || "").trim().toLowerCase();
-  if (!/^[a-z0-9_-]{4,40}$/.test(codi)) return json(401, {error: "codi"});
+  // Si el magatzem no està disponible, no es compten els intents (la resta de límits ja deneguen per si sols).
+  let us = null, fk = null;
+  try { us = await store("explica-us"); fk = await failKey(req, context); } catch {}
+  if (us && (Number((await getJSON(us, fk).catch(() => null))?.n) || 0) >= MAX_FAILS) return json(429, {error: "intents"});
+  const badCode = async () => { if (us) await count(us, fk, MAX_FAILS + 1).catch(() => {}); return json(401, {error: "codi"}); };
+  if (!/^[a-z0-9_-]{4,40}$/.test(codi)) return badCode();
   // Codi donat a mà (pacients) o codi d'una subscripció de Stripe (quota mensual del seu pla).
   let lim = codis.get(codi), monthLimit = 0;
   if (lim === undefined) {
+    if (!env("STRIPE_SECRET_KEY")) return badCode();   // sense subscripcions, només valen els codis donats a mà
     let sub = null;
     try { sub = await subForCode(await store("explica-subs"), codi); } catch { return json(503, {error: "servei"}); }
-    if (!sub) return json(401, {error: "codi"});
+    if (!sub) return badCode();
     if (!subActive(sub)) return json(402, {error: "subscripcio"});
     lim = dayLimit;
     monthLimit = plans().find(p => p.price === sub.price)?.quota ?? 0;
@@ -133,20 +146,27 @@ export default async (req) => {
     if (up.status === 413) return json(413, {error: "mida"});
     return json(502, {error: "claude", message: msg.slice(0, 300)});
   }
-  // Es vigila el flux: si Claude envia un error o el flux s'acaba sense el final, es retorna la quota.
-  const dec = new TextDecoder();
-  let tail = "", sawStop = false, sawError = false;
-  const watch = new TransformStream({
-    transform(chunk, ctl) {
-      ctl.enqueue(chunk);
-      const txt = tail + dec.decode(chunk, {stream: true});
-      if (/"type":\s*"message_stop"/.test(txt)) sawStop = true;
-      if (/"type":\s*"error"/.test(txt)) sawError = true;
-      tail = txt.slice(-40);
+  // Es vigila el flux: si Claude envia un error, talla la resposta per llargària (l'eina la descarta)
+  // o el flux s'acaba sense el final, es retorna la quota.
+  const dec = new TextDecoder(), reader = up.body.getReader();
+  let tail = "", sawStop = false, sawError = false, truncated = false, settled = false;
+  const finish = async (ok) => { if (settled) return; settled = true; if (!ok) await refund(counted); };
+  const watched = new ReadableStream({
+    async pull(ctl) {
+      try {
+        const {value, done} = await reader.read();
+        if (done) { await finish(sawStop && !sawError && !truncated); ctl.close(); return; }
+        const txt = tail + dec.decode(value, {stream: true});
+        if (/"type":\s*"message_stop"/.test(txt)) sawStop = true;
+        if (/"type":\s*"error"/.test(txt)) sawError = true;
+        if (/"stop_reason":\s*"max_tokens"/.test(txt)) truncated = true;
+        tail = txt.slice(-40);
+        ctl.enqueue(value);
+      } catch (e) { await finish(false); ctl.error(e); }   // la connexió amb Claude s'ha tallat
     },
-    async flush() { if (sawError || !sawStop) await refund(counted); },
+    cancel(reason) { settled = true; return reader.cancel(reason); },   // l'estudiant ha aturat: Claude ja ha treballat
   });
-  return new Response(up.body.pipeThrough(watch), {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
+  return new Response(watched, {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
     ...(restants === null ? {} : {"x-explica-restants": String(restants)})}});
 };
 

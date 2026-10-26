@@ -627,12 +627,12 @@ const AI = {
   get codi() { return this.memCodi || ls("explica:codi") || ""; },
   get apiKey() { return this.memKey || ls("explica:apikey") || ""; },
   get model() { return ls("explica:model") || "claude-sonnet-5-5"; },
-  subs: false, gestio: false, restants: null,
+  subs: false, gestio: false, correu: false, portalLogin: "", restants: null,
   async init() {
     if (PROXY) {
       this.mode = "proxy";
       // Si el servidor té subscripcions obertes, s'ofereix l'enllaç per subscriure's i el portal de gestió.
-      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; this.gestio = !!c?.gestio; render(); }).catch(() => {});
+      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; this.gestio = !!c?.gestio; this.correu = !!c?.correu; this.portalLogin = String(c?.portalLogin || ""); render(); }).catch(() => {});
       return;
     }
     if (window.claude?.use) {
@@ -712,7 +712,7 @@ const AI = {
     if (!res.ok) {
       const b = await res.json().catch(() => ({}));
       if (res.status === 401) { this.codiOk = false; renderConn(); }
-      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
+      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
         message: b.message || ("HTTP " + res.status)};
     }
     const rest = res.headers.get("x-explica-restants");
@@ -772,6 +772,7 @@ function aiErr(e) {
     bad_code: "Aquest codi d'accés no és vàlid o ja no està actiu. Revisa'l a Configuració.",
     daily_limit: "Avui ja has fet totes les peticions del dia, o el comptador no funciona. Demà podràs continuar; si passa des del primer moment, avisa qui t'ha donat el codi.",
     no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
+    too_many_tries: "Hi ha hagut massa intents amb codis incorrectes des d'aquesta connexió. Torna-ho a provar demà, amb el codi ben escrit.",
     month_quota: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.",
     sub_inactive: "La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.",
     empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
@@ -1450,7 +1451,7 @@ function renderHome() {
   return `<div class="wrap">
     ${S.loaded && Store.kind === "mem" ? `<div class="banner" role="note"><p><strong>Ara mateix no es guarda res.</strong> ${lsAvailable() ? "Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració." : "Descarrega còpies des de Configuració."}</p>${lsAvailable() ? `<button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button>` : ""}</div>` : ""}
     ${S.loadError ? `<div class="banner" role="alert"><p><strong>No s'han pogut carregar les teves dades.</strong> No hi facis canvis fins que es carreguin, perquè no es perdi res.</p><button class="btn sm primary" data-act="retryLoad" type="button">Torna-ho a provar</button></div>` : ""}
-    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat o el que vas rebre en subscriure't.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button>${AI.subs ? `<a class="btn sm" href="subscriu.html">No en tinc: subscriu-m'hi</a>` : ""}</div>` : ""}
+    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat o el que vas rebre en subscriure't.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button>${AI.subs ? `<a class="btn sm" href="subscriu.html">No en tinc: subscriu-m'hi</a>` : ""}${AI.correu || AI.portalLogin ? `<a class="btn sm ghost" href="recupera.html">He perdut el codi</a>` : ""}</div>` : ""}
     <div class="hero">
       <span class="label">Com funciona</span>
       <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
@@ -1512,12 +1513,12 @@ function viewMaterial(t) {
     ${busyBox("mat")}
     ${S.pending.map(p => `<div class="pending" data-pend="${p.id}"><span class="spin"></span><span class="chip">${p.kind}</span><strong style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.nom)}</strong><span class="pm muted small" style="margin-left:auto">${esc(p.msg)}</span></div>`).join("")}
     <div class="mats">
-      ${mats.map(m => `<details class="mat" id="md_${m.id}"><summary><span class="kind">${esc(m.tipus)}</span><span class="nm">${esc(m.nom)}</span><span class="sz">${kchars(m.text.length)}</span></summary>
+      ${mats.map(m => `<details class="mat" id="md_${m.id}"><summary id="mds_${m.id}"><span class="kind">${esc(m.tipus)}</span><span class="nm">${esc(m.nom)}</span><span class="sz">${kchars(m.text.length)}</span></summary>
         <div class="body"><p class="muted small">Revisa el text llegit i corregeix el que calgui: és el que farà servir Claude.</p>
           <textarea id="mt_${m.id}" data-mat="${m.id}" rows="8" aria-label="Text del material ${esc(m.nom)}" ${t.exemple ? "readonly" : ""}>${esc(m.text)}</textarea>
           ${t.exemple ? "" : `<div class="row"><span class="spacer"></span><button class="btn sm ghost danger" data-act="delMat" data-id="${m.id}" type="button">Esborra aquest material</button></div>`}</div></details>`).join("")}
     </div>
-    ${t.exemple ? "" : `<details class="panel" ${pasteOf(t).text ? "open" : ""}><summary style="cursor:pointer;font-weight:700">Enganxa o escriu text</summary>
+    ${t.exemple ? "" : `<details class="panel" id="pasteBox" ${pasteOf(t).text ? "open" : ""}><summary id="pasteSum" style="cursor:pointer;font-weight:700">Enganxa o escriu text</summary>
       <label class="label" for="pasteText">Text</label><textarea id="pasteText" data-paste="text" rows="6" placeholder="Enganxa aquí apunts, un fragment del llibre o el que hagis copiat d'una web…">${esc(pasteOf(t).text)}</textarea>
       <div class="row"><label class="label" for="pasteName">Nom</label><input type="text" id="pasteName" data-paste="nom" value="${esc(pasteOf(t).nom)}" placeholder="Nom (opcional)" style="flex:1 1 200px"><button class="btn" data-act="addText" type="button">Afegeix el text</button></div></details>`}
     <div class="panel">
@@ -1634,7 +1635,7 @@ ${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc
       ${a.errors.length ? `<div class="fb-box wrong"><h3>Per corregir</h3>${list(a.errors)}</div>` : ""}
     </div>
     ${a.com_integrar ? `<div class="weave"><span class="label">Com encaixar-ho a la teva explicació</span><p>${esc(a.com_integrar)}</p></div>` : ""}
-    ${a.resposta_millorada ? `<details class="better"><summary>Mira la teva resposta amb el que faltava</summary><p>${esc(a.resposta_millorada)}</p></details>` : ""}
+    ${a.resposta_millorada ? `<details class="better" id="bt_${q.id}"><summary id="bts_${q.id}">Mira la teva resposta amb el que faltava</summary><p>${esc(a.resposta_millorada)}</p></details>` : ""}
     <p class="muted small">Prova de tornar-ho a explicar sense mirar la versió millorada: és quan més es fixa.</p>
   </div>`;
 }
@@ -1721,7 +1722,7 @@ function viewExercises(t, s) {
     ${r ? arr(r.items).map((q, i) => viewExercise(t, q, i)).join("") : `<div class="empty"><p>Tria un nivell i prem «Fes-me exercicis». Resol-los aquí o en paper i fes-hi una foto.</p></div>`}`;
 }
 function solutionBlock(q, res, pf) {
-  return `<details class="better"><summary>${pf.solution}</summary>
+  return `<details class="better" id="sol_${q.id}"><summary id="sols_${q.id}">${pf.solution}</summary>
     <ol class="sol">${arr(q.solucio.passos).map(p => `<li><strong>${esc(p.titol)}.</strong> ${esc(p.explicacio)}${p.resultat ? ` <span class="res">${esc(p.resultat)}</span>` : ""}</li>`).join("")}</ol>
     <p><strong>Resultat:</strong> <span class="res">${esc(res || q.solucio.resultat)}</span></p></details>`;
 }
@@ -1765,7 +1766,7 @@ function viewExFeedback(q, a, pf) {
       ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
 ${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
     ${a.millora ? `<p><strong>Què has arreglat:</strong> ${esc(a.millora)}</p>` : ""}
-    ${a.transcripcio ? `<details class="better"><summary>El que Claude ha llegit a la teva foto</summary><p class="mathtxt">${esc(a.transcripcio)}</p></details>` : ""}
+    ${a.transcripcio ? `<details class="better" id="tr_${q.id}"><summary id="trs_${q.id}">El que Claude ha llegit a la teva foto</summary><p class="mathtxt">${esc(a.transcripcio)}</p></details>` : ""}
     ${a.passos.length ? `<ol class="pasos" aria-label="Correcció pas a pas">${a.passos.map(p => `<li class="pas ${p.estat}"><span class="ico" aria-hidden="true">${ICO[p.estat]}</span><div><p class="mathtxt"><strong>${esc(p.pas)}</strong> <span class="sr">(${LBL[p.estat]})</span>${p.estat !== "ok" ? ` <span class="chip">${LBL[p.estat]}</span>` : ""}</p>${p.comentari ? `<p class="muted small">${esc(p.comentari)}</p>` : ""}</div></li>`).join("")}</ol>` : ""}
     <div class="fb-grid">
       ${a.punts_forts.length ? `<div class="fb-box good"><h3>El que has fet bé</h3><ul>${a.punts_forts.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
@@ -1881,8 +1882,11 @@ function settings() {
          <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
          <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
          ${AI.subs || AI.gestio ? `<span class="label">Subscripció</span>
-         ${AI.codi && AI.gestio ? `<p class="small muted">Per gestionar la subscripció (targeta, factures, baixa) cal el correu amb què es va pagar.</p>
-         <div class="row"><input type="email" id="portalEmail" placeholder="correu de qui paga" autocomplete="email" aria-label="Correu amb què es va pagar" style="flex:1 1 200px"><button class="btn sm" data-act="portal" type="button">Gestiona la subscripció</button></div>` : ""}
+         ${AI.codi && AI.gestio ? (AI.correu ? `<p class="small muted">Per canviar la targeta, veure les factures o donar-se de baixa, s'envia un enllaç al correu de qui paga.</p>
+         <div class="row"><button class="btn sm" data-act="portalLink" type="button">Envia l'enllaç per gestionar-la</button></div><p class="small" id="portalOk" role="status" hidden></p>`
+         : "") : ""}
+         ${!AI.correu && AI.portalLogin ? `<p class="small muted">Per canviar la targeta, veure les factures o donar-se de baixa (també si has perdut el codi), Stripe envia un codi al correu de qui paga.</p>
+         <div class="row"><a class="btn sm" href="${esc(AI.portalLogin)}" target="_blank" rel="noopener">Gestiona la subscripció</a></div>` : ""}
          ${AI.subs ? `<div class="row"><a class="btn sm ghost" href="subscriu.html">Plans i subscripció</a></div>` : ""}<p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
          <label class="label" for="cursIn">El teu curs</label>
          <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
@@ -1904,16 +1908,15 @@ function settings() {
       if (proxy) { ls("explica:curs", $("#cursIn").value || null); const c = $("#codiIn").value.trim().toLowerCase(); AI.memCodi = c; AI.codiOk = false; ls("explica:codi", c && $("#codiRemember").checked ? c : null); closeDialog(); render(); toast(c ? "Codi desat" : "Codi esborrat"); return; }
       const k = $("#apiKey").value.trim(); AI.memKey = k; ls("explica:apikey", k && $("#apiRemember").checked ? k : null); ls("explica:model", $("#apiModel").value); AI.mode = AI.apiKey ? "api" : "none"; closeDialog(); render(); toast(AI.apiKey ? "Clau desada" : "Clau esborrada"); });
 }
-// Portal de Stripe per canviar la targeta, veure factures o donar-se de baixa.
-async function openPortal(btn) {
-  const err = $("#portalErr"); btn.disabled = true;
+// Amb correu configurat: s'envia un enllaç d'un sol ús al correu de qui paga.
+async function portalLink(btn) {
+  const err = $("#portalErr"), ok = $("#portalOk"); btn.disabled = true;
+  if (err) err.hidden = true;
   try {
-    const email = ($("#portalEmail")?.value || "").trim();
-    if (!email) throw new Error("Escriu el correu amb què es va pagar la subscripció.");
-    const r = await fetch(PROXY.replace(/claude$/, "portal"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi, email})});
+    const r = await fetch(PROXY.replace(/claude$/, "portal-enllac"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi})});
     const b = await r.json().catch(() => ({}));
-    if (!r.ok || !b.url) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : r.status === 403 ? "Aquest correu no coincideix amb el de la subscripció." : "No s'ha pogut obrir la gestió de la subscripció. Torna-ho a provar.");
-    location.href = b.url;
+    if (!r.ok) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : r.status === 429 ? "Ja s'han enviat molts enllaços avui. Mira el correu o torna-ho a provar demà." : "No s'ha pogut enviar l'enllaç. Torna-ho a provar d'aquí a una estona.");
+    if (ok) { ok.textContent = `Fet: hem enviat l'enllaç a ${b.a}. Caduca d'aquí a 30 minuts.`; ok.hidden = false; }
   } catch (e) { if (err) { err.textContent = e.message; err.hidden = false; } btn.disabled = false; }
 }
 async function exportAll() {
@@ -2050,7 +2053,7 @@ document.addEventListener("click", (e) => {
     case "dlgOk": $("#dlg")._submit?.(); break;
     case "export": exportAll(); break;
     case "settings": settings(); break;
-    case "portal": openPortal(b); break;
+    case "portalLink": portalLink(b); break;
     case "useLocal": Store.kind = "local"; ls("explica:optLocal", "1"); saveEverything(); if ($("#dlg").open) closeDialog(); render(); toast("Es guardarà en aquest navegador"); break;
     case "retryLoad": boot(); break;
     case "wipe": confirmBox("Esborrar-ho tot d'aquest navegador?", "S'esborraran assignatures, temes, material, historial i la clau de l'API guardats aquí. Descarrega abans una còpia si la vols.", () => {

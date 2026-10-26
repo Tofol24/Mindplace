@@ -16,7 +16,8 @@
     <h1>Aquest és el teu codi d'accés</h1>
     <div class="code" id="code"></div>
     <div class="row"><button class="btn ghost" id="copy" type="button">Copia el codi</button><a class="btn" href="/">Obre Explica-ho</a></div>
-    <p>Ja l'hem desat en aquest navegador, així que pots començar directament. <strong>Guarda'l també en un lloc segur</strong>: el necessitaràs per fer servir l'eina en un altre ordinador o mòbil. A partir de la factura del segon mes també hi sortirà; si tanques aquesta pàgina sense guardar-lo, hi pots tornar des de l'historial del navegador.</p>
+    <p><span id="saved">Ja l'hem desat en aquest navegador, així que pots començar directament.</span> <strong>Guarda'l també en un lloc segur</strong>: el necessitaràs per fer servir l'eina en un altre ordinador o mòbil. A partir de la factura del segon mes també hi sortirà; si tanques aquesta pàgina sense guardar-lo, hi pots tornar des de l'historial del navegador.</p>
+    <p id="mail" hidden>També te l'hem enviat per correu, a l'adreça amb què has pagat. Si no et surt, mira la carpeta de correu brossa.</p>
     <p class="muted small" id="plan"></p>
   </div>
   <div id="fail" class="panel" hidden><h1>No hem pogut confirmar el pagament</h1><p id="failMsg"></p><div class="row"><button class="btn" id="retry" type="button">Torna-ho a provar</button><a class="btn ghost" href="subscriu.html">Torna a la subscripció</a></div></div>
@@ -33,7 +34,10 @@ async function load(tries = 0) {
     if (!r.ok || !b.codi) throw new Error(r.status === 409 ? "El pagament encara no consta com a fet. Espera un minut i torna-ho a provar." : "No s'ha pogut recuperar el codi d'aquest pagament. Torna-ho a provar d'aquí a una estona; si s'ha cobrat i continua fallant, escriu a l'adreça de contacte de les condicions d'ús.");
     $("#code").textContent = b.codi;
     $("#plan").textContent = b.pla ? `Pla ${b.pla}: fins a ${b.quota} peticions al mes.` : "";
-    try { localStorage.setItem("explica:codi", b.codi); } catch {}
+    let saved = false;
+    try { localStorage.setItem("explica:codi", b.codi); saved = localStorage.getItem("explica:codi") === b.codi; } catch {}
+    if (!saved) $("#saved").textContent = "Aquest navegador no ha deixat desar-lo: copia'l ara i escriu-lo a Explica-ho, a Configuració.";
+    $("#mail").hidden = !b.correu;
     $("#wait").hidden = true; $("#done").hidden = false;
   } catch (e) { $("#failMsg").textContent = e.message; $("#wait").hidden = true; $("#fail").hidden = false; }
 }

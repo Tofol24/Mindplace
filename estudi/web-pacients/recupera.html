@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>He perdut el codi d'Explica-ho</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="_base.css">
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <h1>He perdut el codi</h1>
+  <form id="f" class="panel" novalidate>
+    <p>Escriu el correu amb què es va pagar la subscripció i t'hi enviarem el codi d'accés i un enllaç per gestionar-la (factures, targeta, baixa).</p>
+    <input type="email" id="email" autocomplete="email" placeholder="correu@exemple.com" aria-label="Correu amb què es va pagar">
+    <p class="err" id="err" role="alert" hidden></p>
+    <p id="ok" role="status" hidden></p>
+    <div class="row"><button class="btn" id="go" type="submit">Envia'm el codi</button><a class="btn ghost" href="/">Torna a Explica-ho</a></div>
+    <p class="muted small">Si el codi te'l va donar directament el teu psicòleg o una altra persona, demana-li a ella.</p>
+    <p class="small muted" id="alt" hidden>També pots entrar directament al <a id="portalLogin2" href="#" target="_blank" rel="noopener">portal de Stripe</a> amb el correu amb què es va pagar.</p>
+    <p class="small" id="noMail" hidden>Ara mateix no es poden enviar codis per correu. El codi surt a les factures mensuals a partir de la segona; per gestionar o donar de baixa la subscripció, entra al <a id="portalLogin" href="#" target="_blank" rel="noopener">portal de Stripe</a> amb el correu amb què es va pagar.</p>
+  </form>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+fetch("/api/config").then(r => r.json()).then(c => {
+  if (!c.correu) { $("#go").disabled = true; if (c.portalLogin) { $("#portalLogin").href = c.portalLogin; $("#noMail").hidden = false; } }
+  else if (c.portalLogin) { $("#portalLogin2").href = c.portalLogin; $("#alt").hidden = false; }
+}).catch(() => {});
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("#err").hidden = true; $("#ok").hidden = true;
+  const email = $("#email").value.trim();
+  if (!email) { $("#err").textContent = "Escriu el correu."; $("#err").hidden = false; return; }
+  $("#go").disabled = true;
+  try {
+    const r = await fetch("/api/recupera", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({email})});
+    const b = await r.json().catch(() => ({}));
+    if (r.status === 429) throw new Error("Ja s'ha demanat moltes vegades avui. Torna-ho a provar demà.");
+    if (r.status === 400) throw new Error("Revisa el correu: no sembla vàlid.");
+    if (!r.ok) throw new Error("Ara mateix no es pot enviar. Torna-ho a provar d'aquí a una estona.");
+    $("#ok").textContent = b.missatge; $("#ok").hidden = false;
+  } catch (x) { $("#err").textContent = x.message; $("#err").hidden = false; }
+  finally { $("#go").disabled = false; }
+});
+</script>
+</body>
+</html>
