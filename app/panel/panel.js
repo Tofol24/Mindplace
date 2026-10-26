@@ -683,7 +683,8 @@
      Es el uso real de quien te envía sus datos (complementa el contador
      anónimo del índice de escritorio, que cuenta a todo el mundo sin saber quién). */
   function usoGlobal(dias) {
-    var hoy = new Date(), desde = new Date(hoy.getTime() - (dias - 1) * 86400000).toISOString().slice(0, 10);
+    var ymd = function (d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+    var hoyD = new Date(), hoy = ymd(hoyD), desde = ymd(new Date(hoyD.getTime() - (dias - 1) * 86400000));
     var tools = {}, pacientes = [];
     PanelStore.patients().forEach(function (p) {
       var ult = "", recientes = 0, diasAct = {};
@@ -695,6 +696,7 @@
         var rec = 0;
         recs.forEach(function (r) {
           var d = recDate(r);
+          if (d > hoy) return;   // fechas futuras (relojes mal puestos): no cuentan
           if (d > u.ultimo) u.ultimo = d;
           if (d > ult) ult = d;
           if (d >= desde) { rec++; diasAct[d] = 1; }

@@ -46,7 +46,7 @@
       var u = new URL(location.href);
       if (!u.searchParams.has("uso")) return;
       var m = /^no-(\d{1,15})$/.exec(u.searchParams.get("uso") || "");
-      if (m && +m[1] <= Date.now()) { var d = decision(); if (!d || +m[1] > d.t) guardarDecision("no", +m[1]); }
+      if (m && +m[1] <= Date.now()) { var d = decision(); if (!d || +m[1] > d.t) { guardarDecision("no", +m[1]); escribir("aprens_uso_pend", null); } }
       u.searchParams.delete("uso");
       history.replaceState(history.state, "", u.pathname + u.search + u.hash);
     } catch (e) {}
@@ -75,12 +75,14 @@
     escribir(LOCAL, dia);
   }
 
-  // Registros guardados en aprens_db, por herramienta.
+  // Firma de cada registro guardado en aprens_db, por herramienta. Solo se usa
+  // aquí para saber cuáles son nuevos; las firmas no salen del dispositivo.
+  function firma(r) { return r && typeof r === "object" ? [r.ts || "", r.date || r.fecha || "", r.id || ""].join("|") : String(r); }
   function contarRegistros() {
     var r = {};
     try {
       var db = JSON.parse(localStorage.getItem("aprens_db") || "{}");
-      Object.keys(db.tools || {}).forEach(function (id) { r[id] = ((db.tools[id] || {}).records || []).length; });
+      Object.keys(db.tools || {}).forEach(function (id) { r[id] = ((db.tools[id] || {}).records || []).map(firma); });
     } catch (e) {}
     return r;
   }
@@ -92,10 +94,6 @@
     cerrar();
     if (!activo() || !ID.test(String(id || ""))) return;
     actual = { id: id, inicio: Date.now(), acumulado: 0, visible: !document.hidden, registros: contarRegistros() };
-    // Si se han borrado registros desde la última vez, el libro baja ya.
-    var libro = leerJSON(LIBRO) || {}, cambio = false;
-    Object.keys(libro).forEach(function (k) { var n = actual.registros[k] || 0; if (libro[k] > n) { libro[k] = n; cambio = true; } });
-    if (cambio) escribir(LIBRO, JSON.stringify(libro));
     enviar({ e: "abrir", t: id });
   }
 
@@ -105,9 +103,9 @@
   }
 
   // Cierra la visita actual: rato (solo con la pantalla visible) y registros nuevos.
-  // El «libro» guarda cuántos registros había de cada herramienta la última vez
-  // que se contaron, para que dos pestañas abiertas no cuenten el mismo registro
-  // dos veces. Si se borran registros, el libro baja y los nuevos se cuentan.
+  // Un registro es nuevo si su firma no estaba al abrir la visita. El «libro»
+  // guarda las firmas ya contadas, para que dos pestañas abiertas no cuenten el
+  // mismo registro dos veces. Borrar registros no impide contar los nuevos.
   function cerrar() {
     if (!actual) return;
     var a = actual; actual = null;
@@ -118,9 +116,13 @@
     enviar({ e: "tiempo", t: a.id, b: tramo(ms) });
     var ahora = contarRegistros(), libro = leerJSON(LIBRO) || {};
     Object.keys(ahora).forEach(function (id) {
-      var base = Math.max(a.registros[id] || 0, libro[id] || 0), n = ahora[id] - base;
-      if (n > 0 && ID.test(id)) enviar({ e: "registro", t: id, n: n });
-      libro[id] = ahora[id];
+      if (a.registros[id] !== undefined && !Array.isArray(a.registros[id])) return;   // visita de una versión anterior
+      var vistas = {};
+      (Array.isArray(a.registros[id]) ? a.registros[id] : []).forEach(function (f) { vistas[f] = 1; });
+      (Array.isArray(libro[id]) ? libro[id] : []).forEach(function (f) { vistas[f] = 1; });
+      var nuevas = ahora[id].filter(function (f) { return !vistas[f]; });
+      if (nuevas.length && ID.test(id)) enviar({ e: "registro", t: id, n: nuevas.length });
+      if (nuevas.length) libro[id] = (Array.isArray(libro[id]) ? libro[id] : []).concat(nuevas).slice(-300);
     });
     escribir(LIBRO, JSON.stringify(libro));
   }
@@ -178,7 +180,7 @@
   // al darlo, se empieza a medir desde ahora.
   window.addEventListener("storage", function (e) {
     if (e.key !== DEC) return;
-    if (!activo()) { actual = null; quitarPendiente(); }
+    if (!activo()) { actual = null; escribir(PEND, null); }
     else if (!actual) { var t = herramientaEnPantalla(); if (t) abrir(t); }
     document.dispatchEvent(new CustomEvent("aprens-uso"));
   });

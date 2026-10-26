@@ -275,8 +275,17 @@ function cargarUso(){
   var pet = ++uso.pet, dias = uso.dias;
   fetch(D.usoApi + "?dias=" + dias, { headers: { Authorization: "Bearer " + clave } })
     .then(function(r){ if(r.status === 401) throw "clave"; if(r.status === 503) throw "sin-config"; if(!r.ok) throw "error"; return r.json(); })
-    .then(function(j){ if(pet !== uso.pet) return; uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); })
-    .catch(function(e){ if(pet !== uso.pet) return; uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); });
+    .then(function(j){ if(pet !== uso.pet) return; var foco = focoUso(); uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); restaurarFocoUso(foco); })
+    .catch(function(e){ if(pet !== uso.pet) return; var foco = focoUso(); uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); restaurarFocoUso(foco); });
+}
+// Conserva el foco del teclado dentro de «Uso» cuando llega la respuesta.
+function focoUso(){
+  var a = document.activeElement; if(!a || !$("uso").contains(a)) return null;
+  if(a.hasAttribute("data-usodias")) return '[data-usodias="'+a.getAttribute("data-usodias")+'"]';
+  if(a.hasAttribute("data-uso")) return '[data-uso="'+a.getAttribute("data-uso")+'"]';
+  return null;
+}
+function restaurarFocoUso(sel){ if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
 }
 function agregarUso(diasPedidos){
   var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
