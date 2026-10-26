@@ -78,25 +78,35 @@
   }
   var vaciando = false, espera = 60000, temporizador = null;
   function programarVaciado() { if (!temporizador) temporizador = setTimeout(function () { temporizador = null; vaciarCola(); }, espera); }
+  // La cola se vacía de 20 en 20 y cada paquete se quita del dispositivo solo
+  // cuando el servidor lo ha recibido: si la app se cierra a medias, lo que
+  // falta sigue guardado. Un cerrojo breve evita que dos pestañas la vacíen a la vez.
+  var CERROJO = "aprens_uso_cola_cerrojo";
   function vaciarCola() {
     if (vaciando || !activo() || navigator.onLine === false) return;
+    var cerrojo = +leer(CERROJO) || 0;
+    if (Date.now() - cerrojo < 30000) { programarVaciado(); return; }
     var m = marca();
     var c = (leerJSON(COLA) || []).filter(function (x) { return x && x.m === m; });
-    escribir(COLA, null);
+    escribir(COLA, c.length ? JSON.stringify(c) : null);   // fuera lo de consentimientos anteriores
     if (!c.length) return;
     vaciando = true;
-    var lotes = [];
-    for (var i = 0; i < c.length; i += 20) lotes.push(c.slice(i, i + 20).map(function (x) { return x.ev; }));
-    (function siguiente(k) {
-      if (k >= lotes.length || !vigente(m)) { vaciando = false; espera = 60000; return; }
-      fetch("/api/uso", { method: "POST", body: JSON.stringify(lotes[k]), keepalive: true }).then(function (r) {
+    (function siguiente() {
+      var cola = (leerJSON(COLA) || []).filter(function (x) { return x && x.m === m; });
+      if (!cola.length || !vigente(m)) { vaciando = false; espera = 60000; escribir(CERROJO, null); return; }
+      escribir(CERROJO, String(Date.now()));
+      var lote = cola.slice(0, 20);
+      fetch("/api/uso", { method: "POST", body: JSON.stringify(lote.map(function (x) { return x.ev; })), keepalive: true }).then(function (r) {
         if (reintentable(r)) throw r;
-        setTimeout(function () { siguiente(k + 1); }, 1500);
+        // Se quitan los primeros: lo nuevo siempre se añade al final de la cola.
+        var resto = (leerJSON(COLA) || []).filter(function (x) { return x && x.m === m; }).slice(lote.length);
+        escribir(COLA, resto.length ? JSON.stringify(resto) : null);
+        setTimeout(siguiente, 1500);
       }).catch(function () {
-        encolar([].concat.apply([], lotes.slice(k)), m);
-        vaciando = false; espera = Math.min(espera * 2, 30 * 60000); programarVaciado();
+        vaciando = false; escribir(CERROJO, null);
+        espera = Math.min(espera * 2, 30 * 60000); programarVaciado();
       });
-    })(0);
+    })();
   }
   window.addEventListener("online", vaciarCola);
 

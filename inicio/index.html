@@ -654,7 +654,8 @@ var USO=(function(){
     mostrarAviso(); marcarEnlaces();
     try{ new MutationObserver(function(){ marcarEnlaces(); }).observe(document.body, {childList:true, subtree:true}); }catch(e){}
   });
-  return { desactivado:function(){ return !activo(); }, desactivar:function(si){ decidir(!si); }, publicado:publicado };
+  return { desactivado:function(){ return !activo(); }, desactivar:function(si){ decidir(!si); }, publicado:publicado,
+    bloqueadoPorNavegador:function(){ return !!navigator.globalPrivacyControl; } };
 })();
 </script>
 <script>
@@ -905,7 +906,8 @@ function render(){
   // Footer
   html+='<div class="foot">🔒 Esta portada <b>no guarda nada</b> de lo que escribes. Cada herramienta se abre en una pestaña nueva y, si acaso, guarda sus datos solo en tu propio dispositivo.<br>Cuando una herramienta te lo proponga, podrás enviar tu registro a tu psicólogo/a.<br>'
     +'Si lo aceptas, se cuenta de manera anónima cuántas veces se entra en esta portada, sin saber quién eres. '
-    +'<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Contar mis visitas':'No contar mis visitas')+'</button> <span>(si dices que no, tampoco se contará en las herramientas que abras desde aquí)</span></div>';
+    +(USO.bloqueadoPorNavegador() ? '<span>Tu navegador pide no ser rastreado (GPC), así que no se cuenta nada.</span></div>'
+      : '<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Contar mis visitas':'No contar mis visitas')+'</button> <span>(si dices que no, tampoco se contará en las herramientas que abras desde aquí)</span></div>');
   document.getElementById("appMain").innerHTML=html;
   var ut=document.getElementById("usoToggle");
   if(ut) ut.onclick=function(){ USO.desactivar(!USO.desactivado()); };
