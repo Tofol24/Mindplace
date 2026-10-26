@@ -639,6 +639,14 @@ var USO=(function(){
     document.body.style.paddingBottom = b.offsetHeight + "px";
   }
   entrada();
+  // Si se cambia la elección en otra pestaña de Mi espacio, esta se pone al día.
+  function ponerAlDia(){
+    if(decision()){ var b=document.getElementById("usoAviso"); if(b){ b.remove(); document.body.style.paddingBottom=""; } }
+    marcarEnlaces();
+    var t=document.getElementById("usoToggle"); if(t) t.textContent = activo() ? "No contar mis visitas" : "Contar mis visitas";
+  }
+  window.addEventListener("storage", function(e){ if(e.key===DEC) ponerAlDia(); });
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) ponerAlDia(); });
   document.addEventListener("DOMContentLoaded", function(){
     mostrarAviso(); marcarEnlaces();
     try{ new MutationObserver(function(){ marcarEnlaces(); }).observe(document.body, {childList:true, subtree:true}); }catch(e){}

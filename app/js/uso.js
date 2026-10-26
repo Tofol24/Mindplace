@@ -111,6 +111,9 @@
   function cerrar() {
     if (!actual) return;
     var a = actual; actual = null;
+    enviarVisita(a);
+  }
+  function enviarVisita(a) {
     var ms = a.acumulado + (a.visible ? Date.now() - a.inicio : 0);
     enviar({ e: "tiempo", t: a.id, b: tramo(ms) });
     var ahora = contarRegistros(), libro = leerJSON(LIBRO) || {};
@@ -152,7 +155,7 @@
     var p = pendientes(), ahora = Date.now(), viejas = [];
     Object.keys(p).forEach(function (k) { if (k !== PESTANA && ahora - (p[k].t || 0) >= ABANDONO) { viejas.push(p[k].visita); delete p[k]; } });
     guardarPendientes(p);
-    viejas.forEach(function (v) { if (v && ID.test(String(v.id))) { actual = v; actual.visible = false; cerrar(); } });
+    viejas.forEach(function (v) { if (v && ID.test(String(v.id))) { v.visible = false; enviarVisita(v); } });
   }
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) { ocultaDesde = Date.now(); pausar(); }
