@@ -4,7 +4,7 @@
 // en vivo; los días anteriores se cierran (ver cerrarDias en netlify/lib/uso.mjs).
 // La limpieza de fondo la hace cada noche netlify/functions/uso-diario.mjs.
 import { getStore } from "@netlify/blobs";
-import { cerrarDias, diaMadrid, listar, primerDiaAbierto, resumir } from "../lib/uso.mjs";
+import { cerrarDias, diaMadrid, listar, primerDiaAbierto, restarDias, resumir } from "../lib/uso.mjs";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -44,7 +44,7 @@ export default async (req) => {
   const dias = Math.min(Math.max(parseInt(url.searchParams.get("dias") || "90", 10) || 90, 1), 400);
   const hoy = diaMadrid();
   const abierto = primerDiaAbierto();
-  const desde = diaMadrid(new Date(Date.now() - (dias - 1) * 86400000));
+  const desde = restarDias(hoy, dias - 1);
   const enRango = (d) => d >= desde && d <= hoy;
   const store = getStore("uso");
 

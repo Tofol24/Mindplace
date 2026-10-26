@@ -71,6 +71,9 @@ const ayer = lib.diaMadrid(new Date(Date.now() - 86400000));
 await st.set("ev/" + ayer + "/abrir/ais_amor/-/y1", "");
 await diario();
 assert.equal((await st.list({ prefix: "ev/" + ayer + "/" })).blobs.length, 1);
+// el cambio de hora no descuadra los días (29/03/2026, cambio de hora en España)
+assert.equal(lib.restarDias("2026-03-30", 1), "2026-03-29");
+assert.equal(lib.primerDiaAbierto(new Date("2026-03-29T22:30:00Z")), "2026-03-29");
 // rango corto excluye el día antiguo
 const j3 = await (await res(new Request("https://x/api/uso-resumen?dias=7", { headers: { Authorization: "Bearer secreta" } }))).json();
 assert.ok(!j3.dias["2026-01-05"]);

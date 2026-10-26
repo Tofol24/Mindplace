@@ -127,7 +127,8 @@
       (Array.isArray(a.registros[id]) ? a.registros[id] : []).forEach(function (f) { vistas[f] = 1; });
       (Array.isArray(libro[id]) ? libro[id] : []).forEach(function (f) { vistas[f] = 1; });
       var nuevas = ahora[id].filter(function (f) { return !vistas[f]; });
-      if (nuevas.length && ID.test(id)) enviar({ e: "registro", t: id, n: nuevas.length });
+      // El servidor acepta hasta 20 por evento: si hay más, se envían por tandas.
+      for (var k = 0; ID.test(id) && k < nuevas.length; k += 20) enviar({ e: "registro", t: id, n: Math.min(20, nuevas.length - k) });
       if (nuevas.length) libro[id] = (Array.isArray(libro[id]) ? libro[id] : []).concat(nuevas).slice(-300);
     });
     escribir(LIBRO, JSON.stringify(libro));
@@ -213,8 +214,11 @@
       '<div class="uso-aviso-btns"><button type="button" data-uso="si">Sí, contar</button><button type="button" data-uso="no">No, gracias</button></div>';
     b.addEventListener("click", function (e) { var t = e.target.closest("button[data-uso]"); if (t) decidir(t.getAttribute("data-uso") === "si"); });
     document.body.appendChild(b);
-    // Reserva su alto al final de la página para que no tape el contenido.
-    document.body.style.paddingBottom = b.offsetHeight + "px";
+    // Reserva su alto al final de la página para que no tape el contenido
+    // (también al girar el móvil o ampliar el texto).
+    var reservar = function () { if (document.getElementById("usoAviso")) document.body.style.paddingBottom = b.offsetHeight + "px"; };
+    reservar();
+    window.addEventListener("resize", reservar);
   }
 
   window.AprensUso = {

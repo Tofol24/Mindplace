@@ -636,7 +636,8 @@ var USO=(function(){
       +'<div class="uso-aviso-btns"><button type="button" data-uso="si">Sí, contar</button><button type="button" data-uso="no">No, gracias</button></div>';
     b.addEventListener("click", function(e){ var t=e.target.closest("button[data-uso]"); if(t) decidir(t.getAttribute("data-uso")==="si"); });
     document.body.appendChild(b);
-    document.body.style.paddingBottom = b.offsetHeight + "px";
+    var reservar=function(){ if(document.getElementById("usoAviso")) document.body.style.paddingBottom = b.offsetHeight + "px"; };
+    reservar(); window.addEventListener("resize", reservar);
   }
   entrada();
   // Si se cambia la elección en otra pestaña de Mi espacio, esta se pone al día.

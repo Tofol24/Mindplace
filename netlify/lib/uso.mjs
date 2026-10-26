@@ -113,9 +113,15 @@ export function resumir(claves) {
    sin volver a contarse (los eventos se fechan al llegar: un día cerrado no
    recibe eventos nuevos). */
 
-/** Primer día que sigue «abierto» (ayer). */
+/** Resta días de calendario a una fecha AAAA-MM-DD (sin depender del cambio de hora). */
+export function restarDias(dia, n) {
+  const [a, m, d] = dia.split("-").map(Number);
+  return new Date(Date.UTC(a, m - 1, d - n)).toISOString().slice(0, 10);
+}
+
+/** Primer día que sigue «abierto» (ayer, en Mallorca). */
 export function primerDiaAbierto(fecha = new Date()) {
-  return diaMadrid(new Date(fecha.getTime() - 86400000));
+  return restarDias(diaMadrid(fecha), 1);
 }
 
 async function enTandas(lista, n, fn) {

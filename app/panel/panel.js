@@ -684,7 +684,7 @@
      anónimo del índice de escritorio, que cuenta a todo el mundo sin saber quién). */
   function usoGlobal(dias) {
     var ymd = function (d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-    var hoyD = new Date(), hoy = ymd(hoyD), desde = ymd(new Date(hoyD.getTime() - (dias - 1) * 86400000));
+    var hoyD = new Date(), hoy = ymd(hoyD), d0 = new Date(hoyD.getFullYear(), hoyD.getMonth(), hoyD.getDate() - (dias - 1)), desde = ymd(d0);
     var tools = {}, pacientes = [];
     PanelStore.patients().forEach(function (p) {
       var ult = "", recientes = 0, diasAct = {};
