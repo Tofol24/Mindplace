@@ -16,12 +16,14 @@
   "use strict";
   var DEC = "aprens_uso_dec";        // {"v":"si"|"no","t":fecha} · la elección de la persona
   var LOCAL = "aprens_uso_local";    // fecha de la última entrada (para «primera del día»)
-  var PEND = "aprens_uso_pend";      // visita en pausa (app en segundo plano)
+  var PEND = "aprens_uso_pend";      // visitas en pausa por pestaña (app en segundo plano)
   var LIBRO = "aprens_uso_reg";      // registros ya contados por herramienta (evita duplicar entre pestañas)
   var host = location.hostname;
   // Solo cuenta en la web publicada: ni en local ni en las vistas previas de Netlify.
   var publicado = location.protocol === "https:" && host.indexOf("--") < 0 && !/^(localhost|127\.|0\.0\.0\.0)/.test(host);
   var ID = /^[a-z0-9_]{1,40}$/;
+  var PESTANA = Math.random().toString(36).slice(2, 10);   // solo para esta pestaña; no sale del dispositivo
+  var ABANDONO = 30 * 60000;          // una visita en pausa más de 30 min se da por terminada
 
   function leer(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function escribir(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -90,6 +92,10 @@
     cerrar();
     if (!activo() || !ID.test(String(id || ""))) return;
     actual = { id: id, inicio: Date.now(), acumulado: 0, visible: !document.hidden, registros: contarRegistros() };
+    // Si se han borrado registros desde la última vez, el libro baja ya.
+    var libro = leerJSON(LIBRO) || {}, cambio = false;
+    Object.keys(libro).forEach(function (k) { var n = actual.registros[k] || 0; if (libro[k] > n) { libro[k] = n; cambio = true; } });
+    if (cambio) escribir(LIBRO, JSON.stringify(libro));
     enviar({ e: "abrir", t: id });
   }
 
@@ -119,31 +125,43 @@
   // En segundo plano la visita se pausa: el rato visible se acumula y la visita
   // se guarda en el dispositivo. Si la persona vuelve, sigue la misma visita;
   // si la app se cierra sin más aviso, se envía en la siguiente entrada.
+  // Cada pestaña guarda su visita en pausa con su propia marca. Otra pestaña
+  // solo la cierra si lleva más de 30 min abandonada; si la dueña vuelve y ya
+  // no está, es que otra la cerró: sigue con una visita nueva sin repetir nada.
   var ocultaDesde = null;
+  function pendientes() { return leerJSON(PEND) || {}; }
+  function guardarPendientes(p) { escribir(PEND, Object.keys(p).length ? JSON.stringify(p) : null); }
+  function quitarPendiente() { var p = pendientes(); if (p[PESTANA]) { delete p[PESTANA]; guardarPendientes(p); return true; } return false; }
   function pausar() {
     if (!actual || !actual.visible) return;
     actual.acumulado += Date.now() - actual.inicio;
     actual.visible = false;
-    escribir(PEND, JSON.stringify(actual));
+    var p = pendientes(); p[PESTANA] = { visita: actual, t: Date.now() }; guardarPendientes(p);
   }
   function reanudar() {
     if (!actual || actual.visible) return;
+    if (!quitarPendiente()) {
+      // Otra pestaña ya la contó: se sigue con un tramo nuevo, sin otra apertura.
+      actual = { id: actual.id, inicio: Date.now(), acumulado: 0, visible: true, registros: contarRegistros() };
+      return;
+    }
     actual.inicio = Date.now(); actual.visible = true;
-    escribir(PEND, null);
   }
-  function recuperarPendiente() {
-    var p = leerJSON(PEND);
-    escribir(PEND, null);
-    if (!p || actual || !activo()) return;
-    actual = p; actual.visible = false; cerrar();
+  function recuperarPendientes() {
+    if (!activo()) return;
+    var p = pendientes(), ahora = Date.now(), viejas = [];
+    Object.keys(p).forEach(function (k) { if (k !== PESTANA && ahora - (p[k].t || 0) >= ABANDONO) { viejas.push(p[k].visita); delete p[k]; } });
+    guardarPendientes(p);
+    viejas.forEach(function (v) { if (v && ID.test(String(v.id))) { actual = v; actual.visible = false; cerrar(); } });
   }
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) { ocultaDesde = Date.now(); pausar(); }
     else {
-      if (ocultaDesde && Date.now() - ocultaDesde >= 30 * 60000) {
+      if (ocultaDesde && Date.now() - ocultaDesde >= ABANDONO) {
         // Vuelta tras un buen rato: cuenta como entrada y visita nuevas.
         var id = actual && actual.id;
-        cerrar(); escribir(PEND, null); entrada();
+        if (quitarPendiente()) cerrar(); else actual = null;   // si otra pestaña ya la cerró, no se repite
+        entrada();
         if (id) abrir(id);
       } else reanudar();
       ocultaDesde = null;
@@ -179,15 +197,16 @@
 
   window.AprensUso = {
     abrir: abrir,
-    cerrar: function () { cerrar(); escribir(PEND, null); },
+    cerrar: function () { quitarPendiente(); cerrar(); },
     activo: activo,
     publicado: publicado,
     decidido: function () { return !!decision(); },
     desactivado: function () { var d = decision(); return !d || d.v !== "si"; },
+    bloqueadoPorNavegador: function () { return !!navigator.globalPrivacyControl; },
     desactivar: function (si) { decidir(!si); }
   };
 
-  recuperarPendiente();
+  recuperarPendientes();
   entrada();
   if (document.body) mostrarAviso(); else document.addEventListener("DOMContentLoaded", mostrarAviso);
 })();

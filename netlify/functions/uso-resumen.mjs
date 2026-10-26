@@ -2,13 +2,14 @@
 // Requiere la cabecera «Authorization: Bearer <USO_CLAVE>» (variable de entorno
 // de Netlify).
 //
-// Compactación idempotente: los eventos de días ya cerrados se guardan como un
-// lote (lote/<día>/<huella>) que contiene la lista de sus claves, y después se
-// borran. Cada día se cuenta sobre la UNIÓN de claves de sus lotes y de los
-// eventos que queden: si un borrado falla o dos lecturas coinciden, una clave
-// repetida no se cuenta dos veces y ninguna se pierde.
+// Cada día cerrado (anterior a hoy) se resume una sola vez en dia/<día>, un
+// documento de tamaño fijo, y se borran sus eventos sueltos. El resumen se
+// escribe con «solo si no existe»: si dos consultas coinciden, gana la primera
+// y la otra lo lee; si un borrado falla, los eventos que quedan de un día ya
+// resumido se borran sin volver a contarlos (los eventos se fechan al llegar,
+// así que un día cerrado no recibe eventos nuevos). Solo se recorren los meses
+// del periodo pedido.
 import { getStore } from "@netlify/blobs";
-import { createHash } from "node:crypto";
 import { diaDe, diaMadrid, resumir } from "../lib/uso.mjs";
 
 const CORS = {
@@ -29,8 +30,16 @@ async function enTandas(lista, n, fn) {
   for (let i = 0; i < lista.length; i += n) await Promise.all(lista.slice(i, i + n).map(fn));
 }
 
-function huella(claves) {
-  return createHash("sha256").update(claves.slice().sort().join("\n")).digest("hex").slice(0, 20);
+/** Meses (AAAA-MM) entre dos días, ambos incluidos. */
+function meses(desde, hasta) {
+  const r = [];
+  let [a, m] = desde.split("-").map(Number);
+  const [a2, m2] = hasta.split("-").map(Number);
+  while (a < a2 || (a === a2 && m <= m2)) {
+    r.push(a + "-" + String(m).padStart(2, "0"));
+    if (++m > 12) { m = 1; a++; }
+  }
+  return r;
 }
 
 export default async (req) => {
@@ -46,36 +55,37 @@ export default async (req) => {
   const hoy = diaMadrid();
   const desde = diaMadrid(new Date(Date.now() - (dias - 1) * 86400000));
   const store = getStore("uso");
+  const enRango = (d) => d >= desde && d <= hoy;
 
-  // 1) Eventos sueltos agrupados por día.
-  const sueltos = {};
-  for (const { key } of (await store.list({ prefix: "ev/" })).blobs) {
-    const d = diaDe(key);
-    if (d) (sueltos[d] ||= []).push(key);
-  }
-
-  // 2) Días cerrados: se guardan como lote (clave determinista) y se borran los sueltos.
-  for (const [d, claves] of Object.entries(sueltos)) {
-    if (d >= hoy) continue;
-    await store.setJSON(`lote/${d}/${huella(claves)}`, { claves });
-    await enTandas(claves, 50, (k) => store.delete(k));
-  }
-
-  // 3) Recuento de cada día del rango sobre la unión de lotes + sueltos.
-  const porDia = {};
-  for (const [d, claves] of Object.entries(sueltos)) if (d >= desde && d <= hoy) (porDia[d] ||= new Set()) && claves.forEach((k) => porDia[d].add(k));
-  const lotes = (await store.list({ prefix: "lote/" })).blobs.map((b) => b.key).filter((k) => {
-    const d = k.split("/")[1];
-    return d >= desde && d <= hoy;
-  });
-  await enTandas(lotes, 20, async (k) => {
-    const doc = await store.get(k, { type: "json" });
-    const d = k.split("/")[1];
-    for (const c of doc?.claves || []) (porDia[d] ||= new Set()).add(c);
+  // 1) Eventos sueltos y resúmenes de los meses del periodo.
+  const sueltos = {}, resumidos = new Set();
+  await enTandas(meses(desde, hoy), 6, async (mes) => {
+    const [ev, dia] = await Promise.all([store.list({ prefix: "ev/" + mes }), store.list({ prefix: "dia/" + mes })]);
+    for (const { key } of ev.blobs) { const d = diaDe(key); if (d && enRango(d)) (sueltos[d] ||= []).push(key); }
+    for (const { key } of dia.blobs) { const d = key.slice(4); if (enRango(d)) resumidos.add(d); }
   });
 
   const resultado = {};
-  for (const [d, set] of Object.entries(porDia)) resultado[d] = resumir([...set]);
+  // 2) Hoy: en vivo.
+  if (sueltos[hoy]) resultado[hoy] = resumir(sueltos[hoy]);
+
+  // 3) Días cerrados con eventos sueltos: se resumen (una sola vez) y se borran.
+  const cerrados = Object.keys(sueltos).filter((d) => d < hoy);
+  await enTandas(cerrados, 5, async (d) => {
+    if (!resumidos.has(d)) {
+      const res = await store.setJSON("dia/" + d, resumir(sueltos[d]), { onlyIfNew: true });
+      resumidos.add(d);
+      if (res && res.modified) resultado[d] = resumir(sueltos[d]);
+    }
+    await enTandas(sueltos[d], 50, (k) => store.delete(k));
+  });
+
+  // 4) Días ya resumidos.
+  await enTandas([...resumidos].filter((d) => !resultado[d]), 20, async (d) => {
+    const doc = await store.get("dia/" + d, { type: "json" });
+    if (doc) resultado[d] = doc;
+  });
+
   return json({ generado: new Date().toISOString(), hoy, desde, dias: resultado });
 };
 

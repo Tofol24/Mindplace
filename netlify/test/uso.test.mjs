@@ -38,19 +38,28 @@ const j = await r.json();
 const hoy = lib.diaMadrid();
 assert.equal(j.dias[hoy].entradas.app, 1); assert.equal(j.dias[hoy].entradas.instalada, 1); assert.equal(j.dias[hoy].entradas.dispositivos, 1);
 assert.deepEqual(j.dias[hoy].herramientas.bajar_alerta, { abrir: 2, registros: 2, tiempo: { "0-1": 0, "1-3": 0, "3-10": 1, "10+": 0 } });
-// el día pasado se ha compactado: ya no hay claves ev/ de ese día y hay un lote
+// el día pasado se ha resumido en dia/ y ya no quedan eventos sueltos de ese día
 assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);
-assert.equal((await st.list({ prefix: "lote/2026-01-05/" })).blobs.length, 1);
+assert.ok(await st.get("dia/2026-01-05", { type: "json" }));
 assert.equal(j.dias["2026-01-05"].herramientas.ais_amor.abrir, 1);
 assert.equal(j.dias["2026-01-05"].herramientas.ais_amor.registros, 3);
-// borrado fallido: reaparece un evento ya incluido en el lote → no se cuenta dos veces
+// borrado fallido: reaparece un evento de un día ya resumido → se borra sin volver a contarlo
 await st.set("ev/2026-01-05/abrir/ais_amor/-/aa", "");
 // clave maliciosa guardada a mano: se ignora y no rompe el resumen
 await st.set("ev/2026-01-06/tiempo/__proto__/0-1/zz", "");
 // segunda lectura: no duplica
 const j2 = await (await res(new Request("https://x/api/uso-resumen?dias=400", { headers: { Authorization: "Bearer secreta" } }))).json();
 assert.equal(j2.dias["2026-01-05"].herramientas.ais_amor.abrir, 1);
+assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);
+assert.equal(Object.keys(j2.dias["2026-01-06"].herramientas).length, 0);
 assert.equal(j2.dias[hoy].herramientas.bajar_alerta.abrir, 2);
+// dos consultas a la vez sobre un día cerrado: ni duplican ni pierden
+for (const r of ["a1", "a2", "a3"]) await st.set("ev/2026-02-10/abrir/ais_amor/-/" + r, "");
+const auth = { headers: { Authorization: "Bearer secreta" } };
+const [c1, c2] = await Promise.all([res(new Request("https://x/api/uso-resumen?dias=400", auth)), res(new Request("https://x/api/uso-resumen?dias=400", auth))]);
+for (const c of [c1, c2]) assert.equal((await c.json()).dias["2026-02-10"].herramientas.ais_amor.abrir, 3);
+const c3 = await (await res(new Request("https://x/api/uso-resumen?dias=400", auth))).json();
+assert.equal(c3.dias["2026-02-10"].herramientas.ais_amor.abrir, 3);
 // rango corto excluye el día antiguo
 const j3 = await (await res(new Request("https://x/api/uso-resumen?dias=7", { headers: { Authorization: "Bearer secreta" } }))).json();
 assert.ok(!j3.dias["2026-01-05"]);
