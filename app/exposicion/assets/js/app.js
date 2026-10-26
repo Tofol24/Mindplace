@@ -186,7 +186,14 @@
   }
 
   function renderLadder() {
-    var ps = getPeldanos();
+    var ps = getPeldanos(), lat = $("#ladderLat");
+    if (lat && window.EscaleraLateral) {
+      EscaleraLateral.montar(lat, ps.map(function (p) {
+        var n = sesionesDe(p.id).length, d = Number(p.dificultad) || 0;
+        return { alto: Math.max(1, d), hecho: n > 0, linea2: d + "/10", linea3: n ? "✓ " + n : "",
+          etiqueta: p.titulo + ", dificultad " + d + " de 10" + (n ? ", " + n + (n === 1 ? " exposición" : " exposiciones") : "") };
+      }), { titulo: "Tu escalera", persona: "🚶", salto: 3, max: 11, leyenda: "✓ exposiciones registradas" });
+    }
     if (!ps.length) { ladder.innerHTML = '<p class="lead" style="color:var(--tinta-soft)">Tu escalera está vacía. Añade tu primer peldaño o restaura la escalera de ejemplo.</p>'; return; }
     ladder.innerHTML = ps.map(function (p, i) { return rungHTML(p, i + 1); }).join("");
     $$(".rung", ladder).forEach(function (row) {
