@@ -140,9 +140,13 @@ export async function cerrarDias(store, sueltos, resumidos, abierto) {
     if (!resumidos.has(d)) {
       const resumen = resumir(sueltos[d]);
       const r = await store.setJSON("dia/" + d, resumen, { onlyIfNew: true });
-      resumidos.add(d);
       if (r && r.modified) nuevos[d] = resumen;
     }
+    // Antes de borrar los eventos se comprueba que el resumen está guardado de
+    // verdad (lectura con consistencia fuerte). Si no, se dejan para otra vez.
+    const guardado = await store.get("dia/" + d, { type: "json", consistency: "strong" });
+    if (!guardado) { delete nuevos[d]; return; }
+    resumidos.add(d);
     await enTandas(sueltos[d], 50, (k) => store.delete(k));
   });
   return nuevos;

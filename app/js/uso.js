@@ -52,14 +52,36 @@
     } catch (e) {}
   })();
 
+  // Sin conexión, los eventos esperan en una cola del dispositivo (máx. 200) y
+  // se envían al recuperarla. Con conexión se usa sendBeacon (sobrevive al cierre).
+  var COLA = "aprens_uso_cola";
+  function encolar(ev) { var c = leerJSON(COLA) || []; c.push(ev); escribir(COLA, JSON.stringify(c.slice(-200))); }
   function enviar(ev) {
     if (!activo()) return;
+    if (navigator.onLine === false) { encolar(ev); return; }
     try {
       var cuerpo = JSON.stringify(ev);
       if (navigator.sendBeacon && navigator.sendBeacon("/api/uso", cuerpo)) return;
-      fetch("/api/uso", { method: "POST", body: cuerpo, keepalive: true }).catch(function () {});
+      fetch("/api/uso", { method: "POST", body: cuerpo, keepalive: true }).then(function (r) { if (!r.ok && r.status >= 500) encolar(ev); }, function () { encolar(ev); });
     } catch (e) {}
   }
+  var vaciando = false;
+  function vaciarCola() {
+    if (vaciando || !activo() || navigator.onLine === false) return;
+    var c = leerJSON(COLA) || [];
+    if (!c.length) return;
+    vaciando = true; escribir(COLA, null);
+    var resto = [];
+    var envios = c.map(function (ev) {
+      return fetch("/api/uso", { method: "POST", body: JSON.stringify(ev), keepalive: true })
+        .then(function (r) { if (!r.ok && r.status >= 500) resto.push(ev); }, function () { resto.push(ev); });
+    });
+    Promise.all(envios).then(function () {
+      if (resto.length) { var ahora = leerJSON(COLA) || []; escribir(COLA, JSON.stringify(resto.concat(ahora).slice(-200))); }
+      vaciando = false;
+    });
+  }
+  window.addEventListener("online", vaciarCola);
 
   function hoy() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
   function instalada() { try { return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch (e) { return false; } }
@@ -187,7 +209,7 @@
   // al darlo, se empieza a medir desde ahora.
   window.addEventListener("storage", function (e) {
     if (e.key !== DEC) return;
-    if (!activo()) { actual = null; escribir(PEND, null); }
+    if (!activo()) { actual = null; escribir(PEND, null); escribir(COLA, null); }
     else if (!actual) { var t = herramientaEnPantalla(); if (t) abrir(t); }
     document.dispatchEvent(new CustomEvent("aprens-uso"));
   });
@@ -197,11 +219,15 @@
   // Elección de la persona. Al decir que sí se cuenta la entrada actual.
   function decidir(si) {
     var antes = activo();
-    if (!si) { actual = null; escribir(PEND, null); }   // al retirar el «sí» no se envía lo que se medía
+    if (!si) { actual = null; escribir(PEND, null); escribir(COLA, null); }   // al retirar el «sí» no se envía lo que se medía
     guardarDecision(si ? "si" : "no");
     if (si && !antes && activo()) { entrada(); var t = herramientaEnPantalla(); if (t) abrir(t); }
+    var teniaFoco = document.activeElement && document.activeElement.closest && document.activeElement.closest("#usoAviso");
     quitarAviso();
     document.dispatchEvent(new CustomEvent("aprens-uso"));
+    // Quien respondió con el teclado no pierde su sitio: el foco va al control
+    // de privacidad del inicio o, si no está, al título de la cabecera.
+    if (teniaFoco) { var f = document.getElementById("usoToggle") || document.getElementById("htitle"); if (f) { if (!f.hasAttribute("tabindex") && f.tagName !== "BUTTON") f.setAttribute("tabindex", "-1"); f.focus(); } }
   }
 
   // Aviso de la primera vez: no se envía nada hasta que la persona elige.
@@ -233,6 +259,7 @@
   };
 
   recuperarPendientes();
+  vaciarCola();
   entrada();
   if (document.body) mostrarAviso(); else document.addEventListener("DOMContentLoaded", mostrarAviso);
 })();

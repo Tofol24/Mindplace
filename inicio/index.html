@@ -625,8 +625,10 @@ var USO=(function(){
     var antes=activo();
     escribir(DEC, JSON.stringify({v:si?"si":"no", t:Date.now()})); escribir("aprens_uso_off", null);
     if(si && !antes) entrada();
-    var b=document.getElementById("usoAviso"); if(b){ b.remove(); document.body.style.paddingBottom=""; }
+    var b=document.getElementById("usoAviso"), teniaFoco = b && b.contains(document.activeElement);
+    if(b){ b.remove(); document.body.style.paddingBottom=""; }
     marcarEnlaces();
+    if(teniaFoco){ var f=document.getElementById("usoToggle"); if(f) f.focus(); }
     var t=document.getElementById("usoToggle"); if(t) t.textContent = activo() ? "No contar mis visitas" : "Contar mis visitas";
   }
   function mostrarAviso(){
