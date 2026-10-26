@@ -75,9 +75,15 @@
     escribir(LOCAL, dia);
   }
 
-  // Firma de cada registro guardado en aprens_db, por herramienta. Solo se usa
-  // aquí para saber cuáles son nuevos; las firmas no salen del dispositivo.
-  function firma(r) { return r && typeof r === "object" ? [r.ts || "", r.date || r.fecha || "", r.id || ""].join("|") : String(r); }
+  // Identidad de cada registro guardado en aprens_db, la misma que usa el núcleo
+  // al guardar (id; si no, fecha; si no, ts): así actualizar un registro no
+  // cuenta como uno nuevo. Solo se usa aquí; no sale del dispositivo.
+  function firma(r) {
+    if (!r || typeof r !== "object") return String(r);
+    if (r.id != null && r.id !== "") return "id:" + r.id;
+    if (r.date || r.fecha) return "d:" + (r.date || r.fecha);
+    return "ts:" + (r.ts || "");
+  }
   function contarRegistros() {
     var r = {};
     try {

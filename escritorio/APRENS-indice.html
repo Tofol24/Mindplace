@@ -252,7 +252,8 @@ document.addEventListener("click", function(e){
 });
 $("q").addEventListener("input", function(){ if(this.value && st.cat==="favoritos") st.cat="todas"; render(); });
 document.addEventListener("keydown", function(e){
-  if(e.key==="/" && document.activeElement!==$("q")){ e.preventDefault(); $("q").focus(); }
+  var enCampo = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"") || (document.activeElement||{}).isContentEditable;
+  if(e.key==="/" && !enCampo){ e.preventDefault(); $("q").focus(); }
   if(e.key==="Escape"){ $("q").value=""; render(); }
 });
 if(st.tema) document.documentElement.setAttribute("data-theme", st.tema);
@@ -290,8 +291,11 @@ function restaurarFocoUso(sel){ if(sel){ var b = $("uso").querySelector(sel); if
 function agregarUso(diasPedidos){
   var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
   var dias = uso.datos.dias || {};
+  // Días de calendario contados desde el «hoy» del servidor (hora de Mallorca),
+  // sin depender de la zona ni de los cambios de hora del ordenador.
+  var h = String(uso.datos.hoy || "").split("-").map(Number), base = h.length === 3 ? Date.UTC(h[0], h[1]-1, h[2]) : Date.now();
   for(var i = diasPedidos - 1; i >= 0; i--){
-    var d = new Date(Date.now() - i*86400000), k = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    var k = new Date(base - i*86400000).toISOString().slice(0, 10);
     var r = dias[k], ent = 0;
     if(r){
       ["app","inicio","dispositivos","nuevos","instalada"].forEach(function(x){ t[x] += r.entradas[x] || 0; });
@@ -364,7 +368,7 @@ $("uso").addEventListener("click", function(e){
   var b = e.target.closest("button"); if(!b) return;
   if(b.hasAttribute("data-usodias")){ uso.dias = +b.getAttribute("data-usodias"); st.usoDias = uso.dias; save(); cargarUso(); var nb = document.querySelector('[data-usodias="'+uso.dias+'"]'); if(nb) nb.focus(); }
   else if(b.getAttribute("data-uso") === "recargar") cargarUso();
-  else if(b.getAttribute("data-uso") === "olvidar"){ usoGuardar(""); uso.porId = {}; uso.estado = "sin-clave"; pintarUso(); render(); }
+  else if(b.getAttribute("data-uso") === "olvidar"){ uso.pet++; usoGuardar(""); uso.porId = {}; uso.datos = null; uso.estado = "sin-clave"; pintarUso(); render(); }
   else if(b.getAttribute("data-uso") === "todas"){ uso.todas = !uso.todas; pintarUso(); }
 });
 
