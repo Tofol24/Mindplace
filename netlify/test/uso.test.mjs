@@ -23,6 +23,8 @@ assert.equal((await post({ e: "tiempo", t: "bajar_alerta", b: "3-10" })).status,
 assert.equal((await post({ e: "abrir", t: "../x" })).status, 400);
 assert.equal((await post({ e: "hack" })).status, 400);
 assert.equal((await post("no json")).status, 400);
+assert.equal((await post({ e: "tiempo", t: "__proto__", b: "0-1" })).status, 400);
+assert.equal((await post({ e: "abrir", t: "constructor" })).status, 400);
 assert.equal((await uso(new Request("https://x/api/uso"))).status, 405);
 // un día pasado, a mano
 const { getStore } = await import("@netlify/blobs");
@@ -36,11 +38,15 @@ const j = await r.json();
 const hoy = lib.diaMadrid();
 assert.equal(j.dias[hoy].entradas.app, 1); assert.equal(j.dias[hoy].entradas.instalada, 1); assert.equal(j.dias[hoy].entradas.dispositivos, 1);
 assert.deepEqual(j.dias[hoy].herramientas.bajar_alerta, { abrir: 2, registros: 2, tiempo: { "0-1": 0, "1-3": 0, "3-10": 1, "10+": 0 } });
-// el día pasado se ha compactado: ya no hay claves ev/ de ese día
-const left = (await st.list({ prefix: "ev/2026-01-05/" })).blobs.length;
-assert.equal(left, 0);
-const dia = await st.get("dia/2026-01-05", { type: "json" });
-assert.equal(dia.herramientas.ais_amor.abrir, 1); assert.equal(dia.herramientas.ais_amor.registros, 3);
+// el día pasado se ha compactado: ya no hay claves ev/ de ese día y hay un lote
+assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);
+assert.equal((await st.list({ prefix: "lote/2026-01-05/" })).blobs.length, 1);
+assert.equal(j.dias["2026-01-05"].herramientas.ais_amor.abrir, 1);
+assert.equal(j.dias["2026-01-05"].herramientas.ais_amor.registros, 3);
+// borrado fallido: reaparece un evento ya incluido en el lote → no se cuenta dos veces
+await st.set("ev/2026-01-05/abrir/ais_amor/-/aa", "");
+// clave maliciosa guardada a mano: se ignora y no rompe el resumen
+await st.set("ev/2026-01-06/tiempo/__proto__/0-1/zz", "");
 // segunda lectura: no duplica
 const j2 = await (await res(new Request("https://x/api/uso-resumen?dias=400", { headers: { Authorization: "Bearer secreta" } }))).json();
 assert.equal(j2.dias["2026-01-05"].herramientas.ais_amor.abrir, 1);

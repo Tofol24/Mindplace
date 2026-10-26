@@ -601,7 +601,14 @@ var USO=(function(){
     escribir(LOCAL,dia);
   }
   entrada();
-  return { desactivado:function(){ return leer(OFF)==="1"; }, desactivar:function(si){ escribir(OFF, si?"1":null); } };
+  // La app vive en otro sitio con su propia memoria: si aquí se cambia la
+  // preferencia, los enlaces a la app la llevan (?uso=off | ?uso=on).
+  document.addEventListener("click", function(ev){
+    var a = ev.target.closest && ev.target.closest('a[href^="https://aprens-app.netlify.app"]');
+    var pref = leer("aprens_uso_pref"); if(!a || !pref) return;
+    try{ var u = new URL(a.href); u.searchParams.set("uso", pref); a.href = u.toString(); }catch(e){}
+  }, true);
+  return { desactivado:function(){ return leer(OFF)==="1"; }, desactivar:function(si){ escribir(OFF, si?"1":null); escribir("aprens_uso_pref", si?"off":"on"); } };
 })();
 </script>
 <script>
@@ -851,8 +858,8 @@ function render(){
   }
   // Footer
   html+='<div class="foot">🔒 Esta portada <b>no guarda nada</b> de lo que escribes. Cada herramienta se abre en una pestaña nueva y, si acaso, guarda sus datos solo en tu propio dispositivo.<br>Cuando una herramienta te lo proponga, podrás enviar tu registro a tu psicólogo/a.<br>'
-    +'Para saber qué os resulta más útil, se cuenta de manera anónima cuántas veces se entra en esta portada, sin saber quién eres. '
-    +'<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Volver a contar mis visitas':'No contar mis visitas')+'</button></div>';
+    +'Para saber qué os resulta más útil, se cuenta de manera anónima cuántas veces se entra en esta portada y qué herramientas se abren, sin saber quién eres. '
+    +'<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Volver a contar mis visitas':'No contar mis visitas')+'</button> <span>(se aplica aquí y en las herramientas que abras desde esta portada)</span></div>';
   document.getElementById("appMain").innerHTML=html;
   var ut=document.getElementById("usoToggle");
   if(ut) ut.onclick=function(){ USO.desactivar(!USO.desactivado()); ut.textContent=USO.desactivado()?'Volver a contar mis visitas':'No contar mis visitas'; };

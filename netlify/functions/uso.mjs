@@ -18,4 +18,9 @@ export default async (req) => {
   return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": "*" } });
 };
 
-export const config = { path: "/api/uso" };
+// Límite de envíos por IP en el borde de Netlify (la IP no se guarda en ningún sitio):
+// frena scripts que intenten inflar los recuentos o llenar el almacén.
+export const config = {
+  path: "/api/uso",
+  rateLimit: { windowLimit: 60, windowSize: 60, aggregateBy: ["ip", "domain"] },
+};

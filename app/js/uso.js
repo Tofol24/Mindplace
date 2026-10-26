@@ -22,6 +22,18 @@
   function escribir(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
   function activo() { return publicado && leer(OFF) !== "1" && !navigator.globalPrivacyControl; }
 
+  // Mi espacio (otro sitio) pasa la preferencia en el enlace: ?uso=off | ?uso=on.
+  (function () {
+    try {
+      var u = new URL(location.href), v = u.searchParams.get("uso");
+      if (v === "off" || v === "on") {
+        escribir(OFF, v === "off" ? "1" : null);
+        u.searchParams.delete("uso");
+        history.replaceState(history.state, "", u.pathname + u.search + u.hash);
+      }
+    } catch (e) {}
+  })();
+
   function enviar(ev) {
     if (!activo()) return;
     try {
@@ -55,11 +67,12 @@
   }
 
   var actual = null;   // { id, inicio, acumulado, visible, registros }
+  var PEND = "aprens_uso_pend";   // visita en pausa (app en segundo plano)
 
   function abrir(id) {
     if (actual && actual.id === id) return;   // otra sección de la misma herramienta
     cerrar();
-    if (!/^[a-z0-9_]{1,40}$/.test(String(id || ""))) return;
+    if (!activo() || !/^[a-z0-9_]{1,40}$/.test(String(id || ""))) return;
     actual = { id: id, inicio: Date.now(), acumulado: 0, visible: !document.hidden, registros: contarRegistros() };
     enviar({ e: "abrir", t: id });
   }
@@ -82,32 +95,51 @@
     });
   }
 
-  var ocultaDesde = null, pausada = null;
+  // En segundo plano la visita se pausa: el rato visible se acumula y la visita
+  // se guarda en el dispositivo. Si la persona vuelve, sigue la misma visita;
+  // si la app se cierra sin más aviso, se envía en la siguiente entrada.
+  var ocultaDesde = null;
+  function pausar() {
+    if (!actual || !actual.visible || !activo()) return;
+    actual.acumulado += Date.now() - actual.inicio;
+    actual.visible = false;
+    escribir(PEND, JSON.stringify(actual));
+  }
+  function reanudar() {
+    if (!actual || actual.visible) return;
+    actual.inicio = Date.now(); actual.visible = true;
+    escribir(PEND, null);
+  }
+  function recuperarPendiente() {
+    var p = leer(PEND);
+    escribir(PEND, null);
+    if (!p || actual) return;
+    try { actual = JSON.parse(p); actual.visible = false; cerrar(); } catch (e) { actual = null; }
+  }
   document.addEventListener("visibilitychange", function () {
-    if (document.hidden) {
-      ocultaDesde = Date.now();
-      // La app puede cerrarse en segundo plano sin más aviso: se cierra la visita
-      // ahora y, si la persona vuelve, se retoma sin contar otra apertura.
-      if (actual) { pausada = actual.id; cerrar(); }
-    } else {
-      if (ocultaDesde && Date.now() - ocultaDesde >= 30 * 60000) entrada();
-      ocultaDesde = null;
-      if (pausada) {
-        actual = { id: pausada, inicio: Date.now(), acumulado: 0, visible: true, registros: contarRegistros() };
-        pausada = null;
+    if (document.hidden) { ocultaDesde = Date.now(); pausar(); }
+    else {
+      if (ocultaDesde && Date.now() - ocultaDesde >= 30 * 60000) {
+        // Vuelta tras un buen rato: cuenta como entrada y visita nuevas.
+        var id = actual && actual.id;
+        cerrar(); escribir(PEND, null); entrada();
+        if (id) abrir(id);
       }
+      else reanudar();
+      ocultaDesde = null;
     }
   });
-  window.addEventListener("pagehide", cerrar);
+  window.addEventListener("pagehide", function () { pausar(); });
 
   window.AprensUso = {
     abrir: abrir,
-    cerrar: function () { pausada = null; cerrar(); },
+    cerrar: function () { cerrar(); escribir(PEND, null); },
     activo: activo,
     publicado: publicado,
     desactivado: function () { return leer(OFF) === "1"; },
     desactivar: function (si) { escribir(OFF, si ? "1" : null); }
   };
 
+  recuperarPendiente();
   entrada();
 })();

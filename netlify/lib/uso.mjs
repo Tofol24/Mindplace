@@ -19,6 +19,9 @@ export const TIPOS = ["entrada", "abrir", "registro", "tiempo"];
 export const ORIGENES = ["app", "inicio"];
 export const TRAMOS = ["0-1", "1-3", "3-10", "10+"];
 const ID = /^[a-z0-9_]{1,40}$/;
+const RESERVADOS = new Set(["__proto__", "constructor", "prototype", "hasownproperty", "tostring", "valueof"]);
+/** Id de herramienta aceptable: letras, cifras y _, sin nombres internos de JavaScript. */
+export function idValido(t) { return typeof t === "string" && ID.test(t) && !RESERVADOS.has(t.toLowerCase()); }
 
 /** Día natural en Mallorca (YYYY-MM-DD). */
 export function diaMadrid(fecha = new Date()) {
@@ -42,7 +45,7 @@ export function claveEvento(ev, fecha = new Date()) {
     sujeto = ev.o;
     detalle = [ev.p, ev.d, ev.nv].map((x) => (x === 1 || x === true ? "1" : "0")).join("");
   } else {
-    if (typeof ev.t !== "string" || !ID.test(ev.t)) return null;
+    if (!idValido(ev.t)) return null;
     sujeto = ev.t;
     if (e === "abrir") detalle = "-";
     if (e === "registro") {
@@ -60,11 +63,12 @@ export function claveEvento(ev, fecha = new Date()) {
 
 /** Resumen vacío de un día. */
 export function diaVacio() {
-  return { entradas: { app: 0, inicio: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: {} };
+  return { entradas: { app: 0, inicio: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: Object.create(null) };
 }
 
 function herramienta(res, id) {
-  return (res.herramientas[id] ||= { abrir: 0, registros: 0, tiempo: { "0-1": 0, "1-3": 0, "3-10": 0, "10+": 0 } });
+  if (!Object.hasOwn(res.herramientas, id)) res.herramientas[id] = { abrir: 0, registros: 0, tiempo: { "0-1": 0, "1-3": 0, "3-10": 0, "10+": 0 } };
+  return res.herramientas[id];
 }
 
 /** Suma una clave de evento a un resumen de día. Devuelve false si no la entiende. */
@@ -80,7 +84,7 @@ export function sumarClave(res, clave) {
     if (detalle[2] === "1") res.entradas.nuevos += 1;
     return true;
   }
-  if (!ID.test(sujeto)) return false;
+  if (!idValido(sujeto)) return false;
   const h = herramienta(res, sujeto);
   if (e === "abrir") h.abrir += 1;
   else if (e === "registro") h.registros += Math.min(Number(detalle) || 0, 20);
@@ -89,27 +93,15 @@ export function sumarClave(res, clave) {
   return true;
 }
 
-/** Agrupa claves de eventos por día. */
-export function resumirClaves(claves) {
-  const dias = {};
-  for (const c of claves) {
-    const dia = c.split("/")[1];
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dia || "")) continue;
-    sumarClave((dias[dia] ||= diaVacio()), c);
-  }
-  return dias;
+/** Día de una clave de evento, o null. */
+export function diaDe(clave) {
+  const d = String(clave).split("/")[1];
+  return /^\d{4}-\d{2}-\d{2}$/.test(d || "") ? d : null;
 }
 
-/** Suma el resumen b sobre a (para días compactados en varias tandas). */
-export function fusionar(a, b) {
-  const r = structuredClone(a || diaVacio());
-  if (!b) return r;
-  for (const k of Object.keys(r.entradas)) r.entradas[k] += b.entradas?.[k] || 0;
-  for (const [id, h] of Object.entries(b.herramientas || {})) {
-    const t = herramienta(r, id);
-    t.abrir += h.abrir || 0;
-    t.registros += h.registros || 0;
-    for (const tr of TRAMOS) t.tiempo[tr] += h.tiempo?.[tr] || 0;
-  }
-  return r;
+/** Resumen de un conjunto de claves (se espera que sean todas del mismo día). */
+export function resumir(claves) {
+  const res = diaVacio();
+  for (const c of claves) sumarClave(res, c);
+  return res;
 }

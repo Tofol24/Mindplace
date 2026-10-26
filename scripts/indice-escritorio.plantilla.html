@@ -328,8 +328,10 @@ function pintarUso(){
       kpi(((t.app+t.inicio) ? Math.round(100*t.instalada/(t.app+t.inicio)) : 0) + '%', 'entradas desde la app instalada') +
       kpi(t.abrir, 'herramientas abiertas') +
       kpi(t.registros, 'registros guardados') + '</div>';
-    h += '<div class="dias" role="img" aria-label="Entradas por día en los últimos '+uso.dias+' días">' + uso.serie.map(function(x){
-      return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' entradas"></i>'; }).join("") + '</div>';
+    h += '<div class="dias" aria-hidden="true">' + uso.serie.map(function(x){
+      return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' entradas"></i>'; }).join("") + '</div>' +
+      '<details class="uso-msg"><summary>Entradas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Entradas</th></tr></thead><tbody>' +
+      uso.serie.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td></tr>'; }).join("") + '</tbody></table></details>';
     var filas = Object.keys(uso.porId).map(function(id){ var p = uso.porId[id]; p.id = id; return p; })
       .sort(function(a,b){ return b.abrir - a.abrir || b.registros - a.registros; });
     var maxA = Math.max.apply(null, filas.map(function(f){ return f.abrir; }).concat([1]));
