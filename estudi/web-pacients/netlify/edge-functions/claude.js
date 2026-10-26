@@ -16,7 +16,7 @@
 //
 // No es desa ni es registra cap contingut: només comptadors de peticions per codi (dia i mes).
 
-import {env, json, store, count, toLimit, manualCodes, plans, subForCode, subActive} from "../lib/comu.js";
+import {env, json, store, count, uncount, toLimit, manualCodes, plans, subForCode, subActive} from "../lib/comu.js";
 
 const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
 Segueix exactament el format de resposta que demana cada petició.
@@ -58,6 +58,11 @@ async function allow(key, limit) {
   if (!limit) return {ok: true, used: 0};
   try { return await count(await store("explica-us"), key, limit); } catch { return {ok: false, used: 0}; }
 }
+// Si la petició no arriba a Claude (o Claude falla), es retornen les peticions comptades.
+async function refund(keys) {
+  if (!keys.length) return;
+  try { const st = await store("explica-us"); for (const k of keys) await uncount(st, k); } catch {}
+}
 
 export default async (req) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
@@ -90,12 +95,15 @@ export default async (req) => {
   const messages = cleanMessages(body?.messages);
   if (!messages) return json(400, {error: "format"});
 
-  const today = new Date().toISOString().slice(0, 10);
-  if (!(await allow(codi + "/" + today, lim)).ok) return json(429, {error: "limit", limit: lim});
+  const today = new Date().toISOString().slice(0, 10), counted = [];
+  const dayKey = codi + "/" + today, monthKey = codi + "/mes/" + today.slice(0, 7);
+  if (!(await allow(dayKey, lim)).ok) return json(429, {error: "limit", limit: lim});
+  if (lim) counted.push(dayKey);
   let restants = null;
   if (monthLimit) {
-    const m = await allow(codi + "/mes/" + today.slice(0, 7), monthLimit);
-    if (!m.ok) return json(429, {error: "quota", quota: monthLimit});
+    const m = await allow(monthKey, monthLimit);
+    if (!m.ok) { await refund(counted); return json(429, {error: "quota", quota: monthLimit}); }
+    counted.push(monthKey);
     restants = Math.max(0, monthLimit - m.used);
   }
 
@@ -114,9 +122,10 @@ export default async (req) => {
       headers: {"content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01"},
       body: JSON.stringify({model, max_tokens, system: SYSTEM, messages, stream: true}),
     });
-  } catch { return json(502, {error: "xarxa"}); }
+  } catch { await refund(counted); return json(502, {error: "xarxa"}); }
 
   if (!up.ok) {
+    await refund(counted);
     const t = await up.text();
     let msg = ""; try { msg = JSON.parse(t)?.error?.message || ""; } catch {}
     if (/credit balance|billing/i.test(msg)) return json(402, {error: "saldo"});
@@ -124,7 +133,20 @@ export default async (req) => {
     if (up.status === 413) return json(413, {error: "mida"});
     return json(502, {error: "claude", message: msg.slice(0, 300)});
   }
-  return new Response(up.body, {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
+  // Es vigila el flux: si Claude envia un error o el flux s'acaba sense el final, es retorna la quota.
+  const dec = new TextDecoder();
+  let tail = "", sawStop = false, sawError = false;
+  const watch = new TransformStream({
+    transform(chunk, ctl) {
+      ctl.enqueue(chunk);
+      const txt = tail + dec.decode(chunk, {stream: true});
+      if (/"type":\s*"message_stop"/.test(txt)) sawStop = true;
+      if (/"type":\s*"error"/.test(txt)) sawError = true;
+      tail = txt.slice(-40);
+    },
+    async flush() { if (sawError || !sawStop) await refund(counted); },
+  });
+  return new Response(up.body.pipeThrough(watch), {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
     ...(restants === null ? {} : {"x-explica-restants": String(restants)})}});
 };
 

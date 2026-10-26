@@ -64,11 +64,15 @@ Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quot
    - Events: `checkout.session.completed`, `customer.subscription.created`,
      `customer.subscription.updated`, `customer.subscription.deleted`
    - Copia el *Signing secret* (`whsec_…`).
-4. **Variables d'entorn a Netlify** (i torna a desplegar):
+4. **Variables d'entorn a Netlify** (i torna a desplegar). Les subscripcions no s'obren fins que hi ha
+   totes aquestes, inclosa la confirmació que els textos legals ja no són esborranys:
    - `STRIPE_SECRET_KEY` = la clau secreta de Stripe (`sk_test_…` per provar, `sk_live_…` de debò). Marca-la com a secreta.
    - `STRIPE_WEBHOOK_SECRET` = el `whsec_…` del pas 3. Secreta.
    - `EXPLICA_PLANS` = els plans, separats per `;`, cadascun amb `nom|id del preu|peticions al mes|preu que es mostra`:
      `Bàsic|price_123|200|3 € al mes; Intensiu|price_456|600|7 € al mes`
+   - (sense `STRIPE_WEBHOOK_SECRET` les subscripcions tampoc s'obren: no s'assabentarien de baixes ni impagats)
+   - `EXPLICA_TEXTOS_LEGALS` = `revisats`, **només** quan `condicions.html` i `privacitat.html` estiguin
+     completes i revisades (per provar en mode de prova, posa-la temporalment).
 5. **Prova-ho**: obre `/subscriu.html`, paga amb la targeta de prova i comprova que surt el codi,
    que l'eina el fa servir i que «Gestiona la subscripció» obre el portal.
 6. **Abans d'obrir-ho de debò**: completa i fes revisar `condicions.html` i `privacitat.html` (ara són
@@ -76,10 +80,17 @@ Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quot
 
 **Com funciona per dins**
 - En pagar, Stripe torna a `/gracies.html`, que demana el codi a `/api/codi`. El codi es crea una sola
-  vegada per subscripció, es desa al navegador i s'afegeix a les factures (camp «Codi d'accés Explica-ho»).
-- Els avisos de Stripe mantenen al dia l'estat de cada subscripció. Un codi funciona mentre la
+  vegada per subscripció, es desa al navegador i s'afegeix a les factures a partir de la segona (camp «Codi d'accés Explica-ho»;
+  la primera ja s'ha creat quan es genera el codi). Si es vol una recuperació del codi per correu, caldria
+  un servei d'enviament de correus (no inclòs).
+- Els avisos de Stripe mantenen al dia l'estat de cada subscripció (sempre es consulta l'estat actual a Stripe,
+  perquè els avisos poden arribar desordenats). Un codi funciona mentre la
   subscripció està activa (amb 3 dies de marge si hi ha un pagament pendent).
-- Quota: peticions per mes natural segons el pla, més el límit diari (`EXPLICA_LIMIT_DIA`).
+- Quota: peticions per mes natural segons el pla, més el límit diari (`EXPLICA_LIMIT_DIA`). Si una petició
+  falla abans d'arribar a Claude o Claude respon amb error, no es descompta.
+- «Gestiona la subscripció» demana el correu amb què es va pagar: el codi sol no basta, perquè també el té l'estudiant.
+  És una barrera, no una verificació forta: algú que sàpiga el correu familiar hi podria entrar. Per verificar-ho
+  de debò caldria enviar un enllaç d'un sol ús al correu (necessita un servei d'enviament de correus).
 - Al servidor només es desa codi ↔ subscripció ↔ client de Stripe, l'estat i els comptadors. Cap nom ni correu.
 - Codis de descompte: la pàgina de pagament accepta els cupons que creïs a Stripe (Product catalog → Coupons).
 

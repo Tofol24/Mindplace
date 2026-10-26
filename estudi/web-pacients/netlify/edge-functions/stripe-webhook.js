@@ -45,7 +45,9 @@ export default async (req) => {
       const code = await ensureCode(st, info.id);
       await codeOnInvoices(info.customer, code);
     } else if (["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"].includes(ev.type) && ours(obj)) {
-      await saveSub(st, subInfo(obj));
+      // Stripe no garanteix l'ordre dels avisos: no es fa cas de l'estat que porta l'avís, sinó del
+      // que té ara la subscripció a Stripe. Així un avís antic no pot reactivar una baixa.
+      await saveSub(st, subInfo(await stripe("subscriptions/" + obj.id)));
     }
   } catch (e) {
     return json(500, {error: "intern"});   // Stripe ho tornarà a provar

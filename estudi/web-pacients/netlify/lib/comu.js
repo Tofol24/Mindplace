@@ -40,6 +40,11 @@ export async function count(st, key, limit) {
   return {ok, used};
 }
 
+// Desfà una suma (la petició no ha arribat a fer-se).
+export async function uncount(st, key) {
+  try { await updateJSON(st, key, (cur) => (Number(cur?.n) || 0) > 0 ? {n: cur.n - 1} : undefined); } catch {}
+}
+
 // Un límit ha de ser un enter complet; "0" vol dir sense límit. Un valor mal escrit fa servir el per defecte.
 export const toLimit = (v, def) => /^\s*\d+\s*$/.test(v ?? "") ? parseInt(v, 10) : def;
 
@@ -59,7 +64,9 @@ export function plans() {
     .filter(([nom, price, quota]) => nom && /^price_[A-Za-z0-9]+$/.test(price || "") && /^\d+$/.test(quota || ""))
     .map(([nom, price, quota, preu]) => ({nom, price, quota: parseInt(quota, 10), preu: preu || ""}));
 }
-export const subsEnabled = () => !!env("STRIPE_SECRET_KEY") && plans().length > 0;
+// Les subscripcions només s'obren quan s'ha confirmat que les condicions i la privacitat ja no són esborranys.
+// També cal el secret dels avisos: sense ells no s'assabentaria de baixes ni d'impagats.
+export const subsEnabled = () => !!env("STRIPE_SECRET_KEY") && !!env("STRIPE_WEBHOOK_SECRET") && plans().length > 0 && env("EXPLICA_TEXTOS_LEGALS") === "revisats";
 
 // Crida a l'API de Stripe sense biblioteques (formulari codificat, com demana Stripe).
 export async function stripe(path, {method = "GET", form} = {}) {

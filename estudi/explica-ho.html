@@ -620,12 +620,12 @@ const AI = {
   get codi() { return this.memCodi || ls("explica:codi") || ""; },
   get apiKey() { return this.memKey || ls("explica:apikey") || ""; },
   get model() { return ls("explica:model") || "claude-sonnet-5-5"; },
-  subs: false, restants: null,
+  subs: false, gestio: false, restants: null,
   async init() {
     if (PROXY) {
       this.mode = "proxy";
       // Si el servidor té subscripcions obertes, s'ofereix l'enllaç per subscriure's i el portal de gestió.
-      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; render(); }).catch(() => {});
+      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; this.gestio = !!c?.gestio; render(); }).catch(() => {});
       return;
     }
     if (window.claude?.use) {
@@ -1488,8 +1488,8 @@ function renderTema(t) {
         ${t.exemple ? "" : `<button class="btn sm ghost" data-act="renameTema" type="button">Canvia el nom</button><button class="btn sm ghost danger" data-act="delTema" type="button">Esborra</button>`}</div>
       <h2 id="temaTitle" tabindex="-1">${esc(t.titol)}</h2>
     </div>
-    <nav class="tabs" role="tablist">${tabs.map(([k, l, n]) => `<button id="tab_${k}" class="tab ${tab === k ? "sel" : ""}" role="tab" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" data-act="tab" data-tab="${k}" type="button">${l}${n ? `<span class="badge">${n}</span>` : ""}</button>`).join("")}</nav>
-    ${body}
+    <nav class="tabs" role="tablist">${tabs.map(([k, l, n]) => `<button id="tab_${k}" class="tab ${tab === k ? "sel" : ""}" role="tab" aria-controls="tabpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" data-act="tab" data-tab="${k}" type="button">${l}${n ? `<span class="badge">${n}</span>` : ""}</button>`).join("")}</nav>
+    <div id="tabpanel" role="tabpanel" aria-labelledby="tab_${tab}" class="wrap" style="max-width:none">${body}</div>
   </div>`;
 }
 
@@ -1873,7 +1873,10 @@ function settings() {
       ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu. Si fas servir el botó «Parla», el navegador envia l'àudio al seu propi servei de reconeixement de veu (a Chrome, de Google).</p>
          <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
          <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
-         ${AI.subs ? `<div class="row">${AI.codi ? `<button class="btn sm" data-act="portal" type="button">Gestiona la subscripció</button>` : ""}<a class="btn sm ghost" href="subscriu.html">Subscripcions</a></div><p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
+         ${AI.subs || AI.gestio ? `<span class="label">Subscripció</span>
+         ${AI.codi && AI.gestio ? `<p class="small muted">Per gestionar la subscripció (targeta, factures, baixa) cal el correu amb què es va pagar.</p>
+         <div class="row"><input type="email" id="portalEmail" placeholder="correu de qui paga" autocomplete="email" aria-label="Correu amb què es va pagar" style="flex:1 1 200px"><button class="btn sm" data-act="portal" type="button">Gestiona la subscripció</button></div>` : ""}
+         ${AI.subs ? `<div class="row"><a class="btn sm ghost" href="subscriu.html">Plans i subscripció</a></div>` : ""}<p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
          <label class="label" for="cursIn">El teu curs</label>
          <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
       : inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
@@ -1898,9 +1901,11 @@ function settings() {
 async function openPortal(btn) {
   const err = $("#portalErr"); btn.disabled = true;
   try {
-    const r = await fetch(PROXY.replace(/claude$/, "portal"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi})});
+    const email = ($("#portalEmail")?.value || "").trim();
+    if (!email) throw new Error("Escriu el correu amb què es va pagar la subscripció.");
+    const r = await fetch(PROXY.replace(/claude$/, "portal"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi, email})});
     const b = await r.json().catch(() => ({}));
-    if (!r.ok || !b.url) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : "No s'ha pogut obrir la gestió de la subscripció. Torna-ho a provar.");
+    if (!r.ok || !b.url) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : r.status === 403 ? "Aquest correu no coincideix amb el de la subscripció." : "No s'ha pogut obrir la gestió de la subscripció. Torna-ho a provar.");
     location.href = b.url;
   } catch (e) { if (err) { err.textContent = e.message; err.hidden = false; } btn.disabled = false; }
 }
@@ -1985,7 +1990,7 @@ document.addEventListener("click", (e) => {
   const act = b.dataset.act, t = getTema(S.view.temaId);
   if (!S.loaded && !["home", "open", "tab", "hint", "level", "dlgClose", "stop", "hideTip", "retryLoad", "export"].includes(act)) { toast("Un moment: s'estan carregant les dades…"); return; }
   switch (act) {
-    case "home": Mic.stop(); S.view = {temaId: null, tab: "material"}; render(); break;
+    case "home": Mic.stop(); S.view = {temaId: null, tab: "material"}; render(); $("#main h2")?.setAttribute("tabindex", "-1"); $("#main h2")?.focus({preventScroll: true}); break;
     case "open": { Mic.stop(); const nt = getTema(b.dataset.id); S.view = {temaId: b.dataset.id, tab: !nt?.guia ? "material" : isProb(getSubj(nt.subjId)) ? "ex" : "quiz"}; render(); window.scrollTo(0, 0); $("#temaTitle")?.focus({preventScroll: true}); break; }
     case "tab": Mic.stop(); S.view.tab = b.dataset.tab; render(); $("#tab_" + b.dataset.tab)?.focus(); break;
     case "newSubj": newSubject(); break;
