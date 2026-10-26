@@ -260,7 +260,7 @@ var nTool = D.items.filter(function(i){ return !i.antigua; }).length;
 $("foot").innerHTML = nTool+' herramientas y páginas · '+(D.items.length-nTool)+' webs antiguas<br>Generado el '+D.generado+' desde la rama <b>'+esc(D.rama)+'</b>'+(D.comprobado?'':' (sin comprobar publicación)')+'.<br>Para actualizarlo: <code>python3 scripts/indice-escritorio.py --comprobar</code><br><button id="tema" type="button">Claro / oscuro</button>';
 /* ---------- uso de los pacientes (contador anónimo, /api/uso-resumen) ---------- */
 var USO_KEY = "aprens_indice_uso_clave";
-var uso = { dias: st.usoDias || 30, estado: "", datos: null, porId: {}, todas: false };
+var uso = { dias: st.usoDias || 30, estado: "", datos: null, porId: {}, todas: false, pet: 0 };
 function usoClave(){ try{ return localStorage.getItem(USO_KEY) || ""; }catch(e){ return ""; } }
 function usoGuardar(v){ try{ if(v) localStorage.setItem(USO_KEY, v); else localStorage.removeItem(USO_KEY); }catch(e){} }
 var TRAMOS = ["0-1","1-3","3-10","10+"], TRAMO_TXT = {"0-1":"menos de 1 min","1-3":"1–3 min","3-10":"3–10 min","10+":"más de 10 min"};
@@ -271,15 +271,17 @@ function cargarUso(){
   var clave = usoClave();
   if(!clave){ uso.estado = "sin-clave"; pintarUso(); return; }
   uso.estado = "cargando"; pintarUso();
-  fetch(D.usoApi + "?dias=" + uso.dias, { headers: { Authorization: "Bearer " + clave } })
+  // Solo vale la respuesta de la última petición (si se cambia de periodo deprisa).
+  var pet = ++uso.pet, dias = uso.dias;
+  fetch(D.usoApi + "?dias=" + dias, { headers: { Authorization: "Bearer " + clave } })
     .then(function(r){ if(r.status === 401) throw "clave"; if(r.status === 503) throw "sin-config"; if(!r.ok) throw "error"; return r.json(); })
-    .then(function(j){ uso.datos = j; uso.estado = "ok"; agregarUso(); pintarUso(); render(); })
-    .catch(function(e){ uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); });
+    .then(function(j){ if(pet !== uso.pet) return; uso.datos = j; uso.estado = "ok"; agregarUso(dias); pintarUso(); render(); })
+    .catch(function(e){ if(pet !== uso.pet) return; uso.estado = typeof e === "string" ? e : "red"; uso.porId = {}; pintarUso(); render(); });
 }
-function agregarUso(){
+function agregarUso(diasPedidos){
   var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
   var dias = uso.datos.dias || {};
-  for(var i = uso.dias - 1; i >= 0; i--){
+  for(var i = diasPedidos - 1; i >= 0; i--){
     var d = new Date(Date.now() - i*86400000), k = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
     var r = dias[k], ent = 0;
     if(r){
@@ -342,7 +344,7 @@ function pintarUso(){
         return '<tr><td>'+link+'</td><td class="n"><span class="bar" style="width:'+Math.max(2,Math.round(90*f.abrir/maxA))+'px"></span>'+f.abrir+'</td><td class="n">'+f.registros+'</td><td>'+ratoHabitual(f.tiempo)+'</td></tr>';
       }).join("") + '</tbody></table>' + (filas.length > 10 ? '<button type="button" class="btn ghost" data-uso="todas" style="margin-top:8px">'+(uso.todas?'Ver solo las 10 más usadas':'Ver las '+filas.length)+'</button>' : '')
       : '<p class="uso-msg">Todavía no hay aperturas registradas en este periodo.</p>';
-    h += '<p class="uso-msg">Recuentos anónimos: no se sabe quién entra. «Días-dispositivo» suma, día a día, los móviles u ordenadores distintos que entraron; no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Tus propias visitas también cuentan: desactívalas en la app con «No contar mis visitas».</p>';
+    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Días-dispositivo» suma, día a día, los móviles u ordenadores distintos que entraron; no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
   }
   $("uso").innerHTML = h;
   var f = $("usoForm");

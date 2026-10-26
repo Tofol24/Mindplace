@@ -169,20 +169,23 @@
     const u = window.AprensUso;
     const off = !u || u.desactivado();
     return `<div class="aviso" id="avisoPriv" style="margin-top:18px">🔒 Lo que escribes y registras se queda solo en tu dispositivo.
-      Para saber qué herramientas os resultan más útiles, la app cuenta de manera anónima cuántas veces se abre cada una y cuánto rato se usa, sin saber quién eres ni qué escribes.
-      ${u ? `<br><span class="aviso-uso">${off ? "Ahora mismo no se cuentan tus visitas." : ""}</span>
-      <button type="button" class="aviso-btn" id="usoToggle">${off ? "Volver a contarlas" : "No contar mis visitas"}</button>` : ""}</div>`;
+      ${u && u.publicado ? `<br>Para saber qué herramientas os resultan más útiles, la app puede contar de manera anónima cuántas veces entras, qué herramientas abres y cuánto rato las usas, sin saber quién eres ni qué escribes.
+      <br><span class="aviso-uso">${off ? "Ahora no se cuentan tus visitas." : "Ahora se cuentan tus visitas de manera anónima."}</span>
+      <button type="button" class="aviso-btn" id="usoToggle">${off ? "Contar mis visitas" : "No contar mis visitas"}</button>` : ""}</div>`;
   }
   function wireAvisoPrivacidad(){
     const b = document.getElementById("usoToggle");
     if(!b) return;
     b.onclick = function(){
       AprensUso.desactivar(!AprensUso.desactivado());
-      const box = document.getElementById("avisoPriv");
-      if(box){ box.outerHTML = avisoPrivacidadHTML(); wireAvisoPrivacidad(); }
       const nb = document.getElementById("usoToggle"); if(nb) nb.focus();
     };
   }
+  // Si la persona elige en el aviso de la primera vez, se actualiza el del inicio.
+  document.addEventListener("aprens-uso", function(){
+    const box = document.getElementById("avisoPriv");
+    if(box){ box.outerHTML = avisoPrivacidadHTML(); wireAvisoPrivacidad(); }
+  });
 
   // ============================================================
   //  Continuidad AIS · racha de presencia + recordatorio (offline)

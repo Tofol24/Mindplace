@@ -120,10 +120,14 @@ herramientas usan más, cuántos pacientes las usan, días activos y última act
 
 ## D) Contador anónimo de uso (qué herramientas se usan más)
 
-La app y «Mi espacio» cuentan, sin saber quién es nadie, cuántas veces se entra, qué
+La app y «Mi espacio» pueden contar, sin saber quién es nadie, cuántas veces se entra, qué
 herramientas se abren, cuánto rato se usan y cuántos registros nuevos se guardan. No se
-envía el código de paciente, ni lo que se escribe, ni ningún identificador del móvil. Cada
-paciente puede desactivarlo en el aviso de privacidad del inicio («No contar mis visitas»).
+envía el código de paciente, ni lo que se escribe, ni ningún identificador del móvil.
+
+**Solo cuenta a quien lo acepta.** La primera vez aparece un aviso abajo: «Sí, contar» /
+«No, gracias». Hasta que la persona elige no se envía nada, y puede cambiarlo cuando quiera
+en el aviso de privacidad del inicio. La elección hecha en «Mi espacio» viaja a la app en los
+enlaces. Si alguna vez quieres que tus pacientes lo acepten, explícaselo en sesión.
 
 **Solo funciona con la opción 2 (repositorio conectado):** los recuentos los recogen dos
 funciones de Netlify (`/api/uso` y `/api/uso-resumen`) que no se publican con «drag & drop».
@@ -135,7 +139,7 @@ funciones de Netlify (`/api/uso` y `/api/uso-resumen`) que no se publican con «
 3. Abre el **índice de escritorio** (`escritorio/APRENS-indice.html`) y escribe esa misma
    clave en «📈 Uso de los pacientes». Se guarda solo en ese navegador.
 
-Tus propias visitas también cuentan: en tus dispositivos, pulsa «No contar mis visitas».
+En tus propios dispositivos elige «No, gracias» para que tus visitas no se mezclen.
 
 ---
 

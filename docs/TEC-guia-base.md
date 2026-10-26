@@ -478,9 +478,10 @@ estas. Lenguaje cuántico: solo como metáfora acotada, nunca como mecanismo.
    servidores para los datos clínicos. Lo único que sale es un **recuento
    anónimo de uso** (se entra en la app, se abre una herramienta, rato de uso,
    cuántos registros nuevos): sin código de paciente, sin contenido, sin
-   identificador de dispositivo, desactivable con «No contar mis visitas» y
-   alojado en el propio Netlify del centro (`netlify/lib/uso.mjs`). Sirve para
-   saber qué se usa, no para medir a nadie.
+   identificador de dispositivo. **No se envía nada hasta que la persona lo
+   acepta** en el aviso de la primera vez, puede retirarlo con «No contar mis
+   visitas» y se aloja en el propio Netlify del centro (`netlify/lib/uso.mjs`).
+   Sirve para saber qué se usa, no para medir a nadie.
 4. **Integración clínica.** Informes exportables al terapeuta en formato ICE
    (L/D/C, 0/1 de conducta valiosa, práctica). Formato de referencia:
    plantillas CSV del Anexo E del libro (UTF-8, separador `;`).
@@ -531,7 +532,7 @@ periféricos).
 - **Seguridad primero**: ante señales de riesgo, la herramienta cede el paso
   al contacto con el profesional.
 - **Privacidad**: los datos viven en el dispositivo; a servidores solo sale el
-  recuento anónimo de uso descrito en §11, que la persona puede desactivar.
+  recuento anónimo de uso descrito en §11, solo si la persona lo acepta.
 
 ---
 
