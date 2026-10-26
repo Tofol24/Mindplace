@@ -36,14 +36,15 @@
   function guardarDecision(v, t) { escribir(DEC, JSON.stringify({ v: v, t: t || Date.now() })); escribir("aprens_uso_off", null); }
   function activo() { var d = decision(); return publicado && !!d && d.v === "si" && !navigator.globalPrivacyControl; }
 
-  // Mi espacio (otro sitio) pasa su elección en el enlace: ?uso=si-<fecha> | ?uso=no-<fecha>.
-  // Solo se aplica si es más reciente que la que ya hay en la app.
+  // Mi espacio (otro sitio) pasa en el enlace un «no» con su fecha: ?uso=no-<fecha>.
+  // Un enlace nunca puede activar el contador (el «sí» se da aquí, en el aviso);
+  // un «no» solo se aplica si es más reciente que la elección de la app.
   (function () {
     try {
       var u = new URL(location.href);
       if (!u.searchParams.has("uso")) return;
-      var m = /^(si|no)-(\d{1,15})$/.exec(u.searchParams.get("uso") || "");
-      if (m) { var d = decision(); if (!d || +m[2] > d.t) guardarDecision(m[1], +m[2]); }
+      var m = /^no-(\d{1,15})$/.exec(u.searchParams.get("uso") || "");
+      if (m && +m[1] <= Date.now()) { var d = decision(); if (!d || +m[1] > d.t) guardarDecision("no", +m[1]); }
       u.searchParams.delete("uso");
       history.replaceState(history.state, "", u.pathname + u.search + u.hash);
     } catch (e) {}
@@ -98,8 +99,9 @@
   }
 
   // Cierra la visita actual: rato (solo con la pantalla visible) y registros nuevos.
-  // El «libro» guarda cuántos registros de cada herramienta se han contado ya,
-  // para que dos pestañas abiertas no cuenten el mismo registro dos veces.
+  // El «libro» guarda cuántos registros había de cada herramienta la última vez
+  // que se contaron, para que dos pestañas abiertas no cuenten el mismo registro
+  // dos veces. Si se borran registros, el libro baja y los nuevos se cuentan.
   function cerrar() {
     if (!actual) return;
     var a = actual; actual = null;
@@ -109,7 +111,7 @@
     Object.keys(ahora).forEach(function (id) {
       var base = Math.max(a.registros[id] || 0, libro[id] || 0), n = ahora[id] - base;
       if (n > 0 && ID.test(id)) enviar({ e: "registro", t: id, n: n });
-      libro[id] = Math.max(ahora[id], libro[id] || 0);
+      libro[id] = ahora[id];
     });
     escribir(LIBRO, JSON.stringify(libro));
   }
@@ -162,16 +164,17 @@
   }
 
   // Aviso de la primera vez: no se envía nada hasta que la persona elige.
-  function quitarAviso() { var b = document.getElementById("usoAviso"); if (b) b.remove(); }
+  function quitarAviso() { var b = document.getElementById("usoAviso"); if (b) { b.remove(); document.body.style.paddingBottom = ""; } }
   function mostrarAviso() {
     if (!publicado || decision() || navigator.globalPrivacyControl || document.getElementById("usoAviso")) return;
     var b = document.createElement("div");
     b.id = "usoAviso"; b.className = "uso-aviso"; b.setAttribute("role", "region"); b.setAttribute("aria-label", "Contador anónimo de uso");
-    b.innerHTML = '<p>Para saber qué herramientas os resultan más útiles, ¿nos dejas contar de manera anónima cuántas veces entras y qué herramientas abres? ' +
-      'No sabremos quién eres, y lo que escribes se queda en tu dispositivo.</p>' +
+    b.innerHTML = '<p>Para saber qué herramientas os resultan más útiles, ¿nos dejas contar de manera anónima cuántas veces entras, qué herramientas abres, cuánto rato las usas y cuántos registros guardas? Solo números: no sabremos quién eres, y lo que escribes se queda en tu dispositivo.</p>' +
       '<div class="uso-aviso-btns"><button type="button" data-uso="si">Sí, contar</button><button type="button" data-uso="no">No, gracias</button></div>';
     b.addEventListener("click", function (e) { var t = e.target.closest("button[data-uso]"); if (t) decidir(t.getAttribute("data-uso") === "si"); });
     document.body.appendChild(b);
+    // Reserva su alto al final de la página para que no tape el contenido.
+    document.body.style.paddingBottom = b.offsetHeight + "px";
   }
 
   window.AprensUso = {

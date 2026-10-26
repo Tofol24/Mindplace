@@ -99,7 +99,8 @@
   .foot{text-align:center;font-size:11.5px;color:var(--gris);line-height:1.7;padding:6px 8px 0;}
   .uso-aviso{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:2px solid currentColor;color:inherit;
     padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-    box-shadow:0 -6px 20px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;font-size:14px;line-height:1.45}
+    box-shadow:0 -6px 20px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;font-size:14px;line-height:1.45;
+    max-height:60vh;overflow-y:auto}
   .uso-aviso p{margin:0;max-width:640px}
   .uso-aviso-btns{display:flex;gap:8px;flex-wrap:wrap}
   .uso-aviso button{font:inherit;font-weight:700;border-radius:18px;padding:8px 14px;cursor:pointer;border:1.5px solid currentColor;background:transparent;color:inherit}
@@ -610,30 +611,32 @@ var USO=(function(){
     try{ if(!(navigator.sendBeacon && navigator.sendBeacon(API,cuerpo))) fetch(API,{method:"POST",body:cuerpo,keepalive:true,mode:"no-cors"}).catch(function(){}); }catch(e){}
     escribir(LOCAL,dia);
   }
-  // La app vive en otro sitio con su propia memoria: los enlaces a la app llevan
-  // la elección y su fecha (?uso=si-<fecha> | ?uso=no-<fecha>); la app solo la
-  // aplica si es más reciente que la suya. Se escribe en el propio enlace para
-  // que funcione también al abrirlo con el botón central o el menú contextual.
+  // La app vive en otro sitio con su propia memoria. Si aquí se ha dicho que no,
+  // los enlaces a la app llevan ese «no» con su fecha (?uso=no-<fecha>) y la app
+  // lo aplica si es más reciente que su elección. Un «sí» no viaja: la app lo
+  // pregunta ella misma. Se escribe en el propio enlace para que funcione
+  // también al abrirlo con el botón central o el menú contextual.
   function marcarEnlaces(raiz){
-    var d=decision(); if(!d) return;
+    var d=decision();
     var sel='a[href^="https://aprens-app.netlify.app"]', lista=(raiz||document).querySelectorAll(sel);
-    Array.prototype.forEach.call(lista, function(a){ try{ var u=new URL(a.href); u.searchParams.set("uso", d.v+"-"+d.t); a.href=u.toString(); }catch(e){} });
+    Array.prototype.forEach.call(lista, function(a){ try{ var u=new URL(a.href); if(d && d.v==="no") u.searchParams.set("uso", "no-"+d.t); else u.searchParams.delete("uso"); a.href=u.toString(); }catch(e){} });
   }
   function decidir(si){
     var antes=activo();
     escribir(DEC, JSON.stringify({v:si?"si":"no", t:Date.now()})); escribir("aprens_uso_off", null);
     if(si && !antes) entrada();
-    var b=document.getElementById("usoAviso"); if(b) b.remove();
+    var b=document.getElementById("usoAviso"); if(b){ b.remove(); document.body.style.paddingBottom=""; }
     marcarEnlaces();
     var t=document.getElementById("usoToggle"); if(t) t.textContent = activo() ? "No contar mis visitas" : "Contar mis visitas";
   }
   function mostrarAviso(){
     if(!publicado || decision() || navigator.globalPrivacyControl || document.getElementById("usoAviso")) return;
     var b=document.createElement("div"); b.id="usoAviso"; b.className="uso-aviso"; b.setAttribute("role","region"); b.setAttribute("aria-label","Contador anónimo de uso");
-    b.innerHTML='<p>Para saber qué os resulta más útil, ¿nos dejas contar de manera anónima cuántas veces entras aquí y en las herramientas? No sabremos quién eres, y lo que escribes se queda en tu dispositivo.</p>'
+    b.innerHTML='<p>Para saber qué os resulta más útil, ¿nos dejas contar de manera anónima cuántas veces entras en esta portada? Solo el número: no sabremos quién eres. Las herramientas te lo preguntarán aparte.</p>'
       +'<div class="uso-aviso-btns"><button type="button" data-uso="si">Sí, contar</button><button type="button" data-uso="no">No, gracias</button></div>';
     b.addEventListener("click", function(e){ var t=e.target.closest("button[data-uso]"); if(t) decidir(t.getAttribute("data-uso")==="si"); });
     document.body.appendChild(b);
+    document.body.style.paddingBottom = b.offsetHeight + "px";
   }
   entrada();
   document.addEventListener("DOMContentLoaded", function(){
@@ -890,8 +893,8 @@ function render(){
   }
   // Footer
   html+='<div class="foot">🔒 Esta portada <b>no guarda nada</b> de lo que escribes. Cada herramienta se abre en una pestaña nueva y, si acaso, guarda sus datos solo en tu propio dispositivo.<br>Cuando una herramienta te lo proponga, podrás enviar tu registro a tu psicólogo/a.<br>'
-    +'Si lo aceptas, se cuenta de manera anónima cuántas veces se entra en esta portada y qué herramientas se abren, sin saber quién eres. '
-    +'<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Contar mis visitas':'No contar mis visitas')+'</button> <span>(se aplica aquí y en las herramientas que abras desde esta portada)</span></div>';
+    +'Si lo aceptas, se cuenta de manera anónima cuántas veces se entra en esta portada, sin saber quién eres. '
+    +'<button type="button" class="foot-btn" id="usoToggle">'+(USO.desactivado()?'Contar mis visitas':'No contar mis visitas')+'</button> <span>(si dices que no, tampoco se contará en las herramientas que abras desde aquí)</span></div>';
   document.getElementById("appMain").innerHTML=html;
   var ut=document.getElementById("usoToggle");
   if(ut) ut.onclick=function(){ USO.desactivar(!USO.desactivado()); };

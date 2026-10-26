@@ -325,8 +325,8 @@ function pintarUso(){
     var t = uso.totales, max = Math.max.apply(null, uso.serie.map(function(x){ return x.n; }).concat([1]));
     h += '<div class="kpis">' +
       kpi(t.app + t.inicio, 'entradas (app '+t.app+' · Mi espacio '+t.inicio+')') +
-      kpi(t.dispositivos, 'días-dispositivo con uso') +
-      kpi(t.nuevos, 'dispositivos nuevos') +
+      kpi(t.dispositivos, 'primeras visitas del día') +
+      kpi(t.nuevos, 'primeras visitas de siempre') +
       kpi(((t.app+t.inicio) ? Math.round(100*t.instalada/(t.app+t.inicio)) : 0) + '%', 'entradas desde la app instalada') +
       kpi(t.abrir, 'herramientas abiertas') +
       kpi(t.registros, 'registros guardados') + '</div>';
@@ -344,7 +344,7 @@ function pintarUso(){
         return '<tr><td>'+link+'</td><td class="n"><span class="bar" style="width:'+Math.max(2,Math.round(90*f.abrir/maxA))+'px"></span>'+f.abrir+'</td><td class="n">'+f.registros+'</td><td>'+ratoHabitual(f.tiempo)+'</td></tr>';
       }).join("") + '</tbody></table>' + (filas.length > 10 ? '<button type="button" class="btn ghost" data-uso="todas" style="margin-top:8px">'+(uso.todas?'Ver solo las 10 más usadas':'Ver las '+filas.length)+'</button>' : '')
       : '<p class="uso-msg">Todavía no hay aperturas registradas en este periodo.</p>';
-    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Días-dispositivo» suma, día a día, los móviles u ordenadores distintos que entraron; no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
+    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Primeras visitas» se cuentan por navegador y por sitio: un mismo móvil que entra en la app y en Mi espacio suma dos, y no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
   }
   $("uso").innerHTML = h;
   var f = $("usoForm");
