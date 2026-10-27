@@ -95,6 +95,12 @@ Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quot
 - «Gestiona la subscripció» sempre passa per una verificació del correu de qui paga: un enllaç d'un sol ús
   (Resend) o el codi que envia Stripe a la seva pàgina d'accés. El codi d'accés sol no hi dona entrada.
 - Al servidor només es desa codi ↔ subscripció ↔ client de Stripe, l'estat i els comptadors. Cap nom ni correu.
+- **Neteja diària** (`netlify/functions/neteja.mjs`, funció programada de Netlify): esborra els comptadors
+  d'altres dies i mesos, els enllaços caducats i, 12 mesos després de la baixa, el registre de la subscripció,
+  el codi i l'empremta del correu. És el que promet `privacitat.html`; si es canvia un termini, cal canviar-lo als dos llocs.
+- **Consentiment**: la pàgina de subscripció demana acceptar condicions i privacitat i, a part, que el servei
+  comenci de seguida dins el termini de desistiment (amb descompte proporcional si es desisteix). Queda a les
+  metadades de la sessió de Stripe (`consentiment`, `inici_immediat`).
 - Codis de descompte: la pàgina de pagament accepta els cupons que creïs a Stripe (Product catalog → Coupons).
 
 ## Correus amb Resend (opcional)

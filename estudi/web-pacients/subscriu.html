@@ -25,10 +25,11 @@
 
     <span class="label">3 · Consentiment</span>
     <label class="check"><input type="checkbox" id="ok"><span>Soc el pare, la mare o el tutor legal de l'estudiant (o l'estudiant és major d'edat). He llegit les <a href="condicions.html" target="_blank" rel="noopener">condicions d'ús</a> i la <a href="privacitat.html" target="_blank" rel="noopener">política de privacitat</a>, i entenc que el material i les respostes es processen amb una intel·ligència artificial (Claude, d'Anthropic) i que pot equivocar-se.</span></label>
+    <label class="check"><input type="checkbox" id="inici"><span>Demano que el servei comenci de seguida, abans que acabi el termini de desistiment de 14 dies. Entenc que, si desistesc dins aquest termini, es descomptarà la part proporcional del servei ja prestat.</span></label>
 
     <p class="err" id="err" role="alert" hidden></p>
     <div class="row"><button class="btn" id="go" type="submit" disabled>Continua al pagament</button><a class="btn ghost" href="/">Ja tinc un codi</a><a class="btn ghost" href="recupera.html">He perdut el codi</a></div>
-    <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció.</p>
+    <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció. Per desistir dins els 14 dies, escriu-nos (ho explicam a les <a href="condicions.html#desistiment" target="_blank" rel="noopener">condicions</a>).</p>
   </form>
 </main>
 <script>
@@ -36,7 +37,7 @@
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const err = (m) => { $("#err").textContent = m; $("#err").hidden = !m; };
-const ready = () => { $("#go").disabled = !($("#ok").checked && document.querySelector("input[name=pla]:checked")); };
+const ready = () => { $("#go").disabled = !($("#ok").checked && $("#inici").checked && document.querySelector("input[name=pla]:checked")); };
 fetch("/api/config").then(r => r.json()).then(c => {
   if (!c.correu) $("#mailNote").textContent = ", i a partir de la segona factura també hi sortirà el codi d'accés";
   if (!c.subscripcions || !c.plans.length) { $("#plans").innerHTML = '<p>Ara mateix no hi ha subscripcions obertes.</p>'; return; }
@@ -47,10 +48,10 @@ document.addEventListener("change", ready);
 $("#f").addEventListener("submit", async (e) => {
   e.preventDefault(); err("");
   const pla = document.querySelector("input[name=pla]:checked")?.value;
-  if (!pla || !$("#ok").checked) return;
+  if (!pla || !$("#ok").checked || !$("#inici").checked) return;
   $("#go").disabled = true; $("#go").textContent = "Obrint el pagament…";
   try {
-    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true})});
+    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true})});
     const b = await r.json().catch(() => ({}));
     if (!r.ok || !b.url) throw new Error(b.error === "email" ? "Revisa el correu: no sembla vàlid." : "No s'ha pogut obrir el pagament. Torna-ho a provar.");
     location.href = b.url;

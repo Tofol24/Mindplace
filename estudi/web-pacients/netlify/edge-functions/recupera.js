@@ -37,7 +37,7 @@ export default async (req, context) => {
         for (const s of subs) {
           const info = subInfo(s);
           if (!(s.metadata?.app === "explica-ho" || prices.includes(info.price))) continue;
-          await saveSub(st, info);
+          await saveSub(st, info);   // no recrea subscripcions acabades fa més de 12 mesos
           if (!entry.customers.includes(c.id)) entry.customers.push(c.id);   // un enllaç de gestió per client, sigui quin sigui l'estat
           if (subActive((await getJSON(st, "sub/" + info.id)) || info)) entry.codes.push(await ensureCode(st, info.id));
         }

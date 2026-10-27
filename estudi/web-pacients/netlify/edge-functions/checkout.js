@@ -8,7 +8,7 @@ export default async (req) => {
   try { body = await req.json(); } catch { return json(400, {error: "format"}); }
   const plan = plans().find(p => p.price === body?.pla);
   if (!plan) return json(400, {error: "pla"});
-  if (body?.acceptat !== true) return json(400, {error: "consentiment"});
+  if (body?.acceptat !== true || body?.inici !== true) return json(400, {error: "consentiment"});
   const email = String(body?.email || "").trim();
   if (email && !/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(email)) return json(400, {error: "email"});
 
@@ -21,7 +21,9 @@ export default async (req) => {
     allow_promotion_codes: "true",
     locale: "auto",
     "metadata[app]": "explica-ho", "subscription_data[metadata][app]": "explica-ho",
-    "metadata[consentiment]": "acceptat " + new Date().toISOString(),
+    // Constància del consentiment: condicions i privacitat, i inici immediat del servei dins el termini de desistiment.
+    "metadata[consentiment]": "condicions+privacitat " + new Date().toISOString(),
+    "metadata[inici_immediat]": "sol·licitat; desistiment amb descompte proporcional",
   };
   if (email) form.customer_email = email;
   try {

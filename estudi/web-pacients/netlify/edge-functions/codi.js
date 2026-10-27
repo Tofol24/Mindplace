@@ -14,7 +14,7 @@ export default async (req) => {
     const sub = typeof s.subscription === "string" ? await stripe("subscriptions/" + s.subscription) : s.subscription;
     const info = subInfo(sub);
     const st = await store("explica-subs");
-    await saveSub(st, info);
+    if (!(await saveSub(st, info))) return json(410, {error: "caducada"});   // acabada fa més de 12 mesos
     const code = await ensureCode(st, info.id);
     try { await codeOnInvoices(info.customer, code); } catch {}
     let mail = "no";

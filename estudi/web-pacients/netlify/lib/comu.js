@@ -98,6 +98,7 @@ export function subInfo(sub) {
   return {
     id: sub.id, customer: typeof sub.customer === "string" ? sub.customer : sub.customer?.id,
     status: sub.status, price: it?.price?.id || "", periodEnd: Number(sub.current_period_end ?? it?.current_period_end ?? 0),
+    endedAt: Number(sub.ended_at || 0) * 1000,   // quan va acabar, segons Stripe (0 si continua)
   };
 }
 // Activa, de prova, o amb un pagament pendent: 3 dies de marge comptats des del primer impagament.
@@ -108,25 +109,33 @@ export function subActive(rec, now = Date.now() / 1000) {
   return false;
 }
 
+export const ENDED = ["canceled", "incomplete_expired"];
+export const KEEP_ENDED_MS = 365 * 86400 * 1000;
 // Desa l'estat d'una subscripció (manté el codi si ja en tenia).
 export async function saveSub(st, info) {
   return updateJSON(st, "sub/" + info.id, (cur) => {
     const pastDueSince = info.status === "past_due" ? (cur?.pastDueSince || Math.floor(Date.now() / 1000)) : 0;
-    return {...(cur || {}), ...info, pastDueSince, updated: Date.now()};
+    // Data de la baixa (d'aquí compten els 12 mesos de conservació): la de Stripe, i no es mou un cop desada.
+    const endedAt = ENDED.includes(info.status) ? (cur?.endedAt || info.endedAt || Date.now()) : 0;
+    // Una subscripció acabada fa més de 12 mesos no es torna a crear (ja s'havia esborrat o ja toca esborrar-la).
+    if (!cur && endedAt && Date.now() - endedAt > KEEP_ENDED_MS) return undefined;
+    return {...(cur || {}), ...info, pastDueSince, endedAt, updated: Date.now()};
   });
 }
 // Dona un codi a la subscripció una sola vegada, encara que dues peticions arribin alhora.
 export async function ensureCode(st, subId) {
-  const existing = (await getJSON(st, "sub/" + subId))?.code;
-  if (existing) return existing;
+  const sub0 = await getJSON(st, "sub/" + subId);
+  if (!sub0) throw new Error("Subscripció desconeguda.");   // no es creen codis per a subscripcions sense registre
+  if (sub0.code) return sub0.code;
   for (let i = 0; i < 5; i++) {
     const code = newCode();
     const w = await st.set("code/" + code, JSON.stringify({sub: subId}), {onlyIfNew: true});
     if (!w?.modified) continue;   // codi repetit (molt improbable): un altre
-    const rec = await updateJSON(st, "sub/" + subId, (cur) => cur?.code ? undefined : {...(cur || {id: subId}), code});
+    const rec = await updateJSON(st, "sub/" + subId, (cur) => !cur || cur.code ? undefined : {...cur, code});
     if (rec?.code === code) return code;
-    await st.delete("code/" + code);   // una altra petició ja n'havia posat un
-    return rec?.code;
+    await st.delete("code/" + code);   // una altra petició ja n'havia posat un (o el registre ja no hi és)
+    if (!rec?.code) throw new Error("Subscripció desconeguda.");
+    return rec.code;
   }
   throw new Error("No s'ha pogut crear el codi.");
 }
@@ -224,6 +233,77 @@ export async function cleanup(st, prefix, isOld) {
     const {blobs} = await st.list({prefix});
     for (const b of blobs.slice(0, 1000)) if (await isOld(b.key)) await st.delete(b.key);
   } catch {}
+}
+
+// Neteja diària (com a molt una vegada al dia, la primera petició que arriba): el que promet la política de privacitat.
+// - Comptadors i registres d'un dia (peticions, intents, enllaços demanats): s'esborren a partir de l'endemà.
+// - Comptadors mensuals: s'esborren quan acaba el mes.
+// - Enllaços de gestió caducats.
+// - Subscripcions acabades fa més de 12 mesos: el registre i el codi; i les empremtes de correu que ja no porten enlloc.
+export async function purge(now = Date.now()) {
+  const day = new Date(now).toISOString().slice(0, 10), month = day.slice(0, 7), mark = "purga/" + day;
+  const us = await store("explica-us");
+  // Reserva: una sola neteja alhora. Si una s'atura a mitges, passats 15 minuts una altra la pot reprendre.
+  // `cursor`: fins on s'han revisat les subscripcions (es continua des d'allà si no s'havia acabat).
+  let mine = false, cursor = "";
+  await updateJSON(us, mark, (cur) => {
+    mine = false;
+    if (cur?.done || (cur?.start && now - cur.start < 15 * 60 * 1000)) return undefined;
+    mine = true; cursor = cur?.cursor || ""; return {start: now, cursor};
+  });
+  if (!mine) return false;
+  // Pressupost de temps (les funcions tenen un límit): si no s'acaba, es desa fins on ha arribat i la pròxima continua.
+  const t0 = Date.now(), late = () => { if (Date.now() - t0 > 20_000) throw new Error("temps"); };
+  try {
+    const {blobs: ub} = await us.list();
+    for (const {key} of ub) {
+      const d = key.match(/\/(\d{4}-\d{2}-\d{2})$/), m = key.match(/\/mes\/(\d{4}-\d{2})$/);
+      if ((d && d[1] < day) || (m && m[1] < month)) { late(); await us.delete(key); }
+    }
+    const st = await store("explica-subs");
+    const {blobs: sb} = await st.list();
+    for (const key of sb.map(b => b.key).filter(k => k.startsWith("tok/"))) {
+      late();
+      if (((await getJSON(st, key))?.exp || 0) < now) await st.delete(key);
+    }
+    for (const key of sb.map(b => b.key).filter(k => k.startsWith("sub/") && k > cursor).sort()) {
+      late();
+      const rec = await getJSON(st, key);
+      const ended = rec && (rec.endedAt || (ENDED.includes(rec.status) ? Number(rec.updated) || now : 0));
+      if (ended && now - ended > KEEP_ENDED_MS) {
+        // Primer s'apunta el client com a pendent (persistent): si la neteja s'atura, la pròxima el reprèn.
+        if (rec.customer) await updateJSON(us, "pendents", (cur) => arr(cur?.c).includes(rec.customer) ? undefined : {c: [...arr(cur?.c), rec.customer]});
+        if (rec.code) await st.delete("code/" + rec.code);
+        await st.delete(key);
+      }
+      cursor = key;
+    }
+    // Empremtes de correu: només es treuen els clients pendents que, segons Stripe, ja no tenen cap altra
+    // subscripció d'Explica-ho que s'hagi de conservar.
+    // D'un en un, i es treu de la llista de pendents en acabar cadascun: així el progrés no es perd.
+    const mails = sb.map(b => b.key).filter(k => k.startsWith("mail/"));
+    for (const c of arr((await getJSON(us, "pendents"))?.c)) {
+      late();
+      const subs = (await stripe("subscriptions?status=all&limit=100&customer=" + encodeURIComponent(c))).data || [];
+      const keep = subs.some(x => { const i = subInfo(x); return (x.metadata?.app === "explica-ho" || plans().some(p => p.price === i.price)) && !(ENDED.includes(i.status) && now - (i.endedAt || now) > KEEP_ENDED_MS); });
+      if (!keep) for (const key of mails) {
+        const r = await updateJSON(st, key, (cur) => arr(cur?.c).includes(c) ? {c: arr(cur.c).filter(x => x !== c)} : undefined);
+        if (r && !arr(r.c).length && !arr((await getJSON(st, key))?.c).length) await st.delete(key);
+      }
+      await updateJSON(us, "pendents", (cur) => arr(cur?.c).includes(c) ? {c: arr(cur.c).filter(x => x !== c)} : undefined);
+    }
+    await us.set(mark, JSON.stringify({start: now, cursor, done: Date.now()}));
+    return true;
+  } catch (e) {
+    // S'allibera la reserva i es desa fins on s'ha arribat: la pròxima vegada continua des d'aquí.
+    await us.set(mark, JSON.stringify({cursor})).catch(() => {});
+    throw e;
+  }
+}
+// Llança la neteja sense fer esperar la resposta.
+export function purgeLater(context) {
+  const job = purge().catch(() => {});
+  if (typeof context?.waitUntil === "function") context.waitUntil(job);
 }
 
 // Empremta (HMAC) per comptar intents sense desar el correu ni l'adreça de connexió en clar.

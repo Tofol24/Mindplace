@@ -16,7 +16,7 @@
 //
 // No es desa ni es registra cap contingut: només comptadors de peticions per codi (dia i mes).
 
-import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint} from "../lib/comu.js";
+import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint, purgeLater} from "../lib/comu.js";
 
 const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
 Segueix exactament el format de resposta que demana cada petició.
@@ -75,6 +75,7 @@ export default async (req, context) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
   const apiKey = env("ANTHROPIC_API_KEY");
   if (!apiKey) return json(500, {error: "config", message: "Falta configurar ANTHROPIC_API_KEY."});
+  purgeLater(context);
 
   const dayLimit = toLimit(env("EXPLICA_LIMIT_DIA"), DEFAULT_LIMIT);
   const codis = manualCodes(dayLimit);

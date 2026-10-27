@@ -1,6 +1,6 @@
 // Explica-ho · avisos de Stripe: altes, canvis de pla, impagats i baixes de subscripcions.
 // Stripe signa cada avís; només s'accepten els que porten una signatura vàlida i recent.
-import {env, json, stripe, store, subInfo, saveSub, ensureCode, codeOnInvoices, plans, mailCode} from "../lib/comu.js";
+import {env, json, stripe, store, subInfo, saveSub, ensureCode, codeOnInvoices, plans, mailCode, purgeLater} from "../lib/comu.js";
 
 // El compte de Stripe pot tenir altres productes: només es tracten les subscripcions d'Explica-ho.
 const ours = (sub) => sub?.metadata?.app === "explica-ho" || plans().some(p => p.price === subInfo(sub).price);
@@ -28,20 +28,21 @@ export async function verify(payload, header, secret, now = Date.now() / 1000) {
   return v1.some(v => sameHex(v, expected));
 }
 
-export default async (req) => {
+export default async (req, context) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
   const secret = env("STRIPE_WEBHOOK_SECRET");
   if (!secret) return json(500, {error: "config"});
   const payload = await req.text();
   if (!(await verify(payload, req.headers.get("stripe-signature"), secret))) return json(400, {error: "signatura"});
   let ev; try { ev = JSON.parse(payload); } catch { return json(400, {error: "format"}); }
+  purgeLater(context);
   const obj = ev?.data?.object || {};
   try {
     const st = await store("explica-subs");
     if (ev.type === "checkout.session.completed" && obj.mode === "subscription" && obj.subscription && obj.metadata?.app === "explica-ho") {
       const sub = await stripe("subscriptions/" + (typeof obj.subscription === "string" ? obj.subscription : obj.subscription.id));
       const info = subInfo(sub);
-      await saveSub(st, info);
+      if (!(await saveSub(st, info))) return json(200, {ok: true});   // acabada fa més de 12 mesos: no es recrea
       const code = await ensureCode(st, info.id);
       await codeOnInvoices(info.customer, code);
       // Si el correu falla, es respon amb error perquè Stripe torni a enviar l'avís (el codi no es duplica).
