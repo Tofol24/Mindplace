@@ -18,7 +18,7 @@ const T = {
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
-    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo", autor: "Ver todos los libros en Amazon →",
+    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
   },
 };
 const CAT = {mitjans: "Als mitjans", llibre: "Llibres", novetat: "Novetats", article: "Articles"};
@@ -77,8 +77,8 @@ function pinta() {
       ${links.length ? `<p class="enllacos">${links.join("")}</p>` : ""}</div></article>`;
   }).join("");
 
-  $("#autor").hidden = !ll.length || !safeUrl(L.autor);
-  if (safeUrl(L.autor)) $("#l-autor").href = safeUrl(L.autor);
+  $("#autor").hidden = !ll.length || !(safeUrl(L.autor) || safeUrl(L.serie));
+  for (const k of ["autor", "serie"]) { $("#l-" + k).hidden = !safeUrl(L[k]); if (safeUrl(L[k])) $("#l-" + k).href = safeUrl(L[k]); }
 
   const fo = (data.fotos || []).filter(f => safeUrl(f.src));
   $("#s-fotos").hidden = !fo.length;
