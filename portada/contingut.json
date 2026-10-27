@@ -13,6 +13,18 @@
   },
   "novetats": [
     {
+      "data": "2026-09-15",
+      "tipus": "mitjans",
+      "mitja": "Última Hora",
+      "titol": "Pantallas y comprensión lectora: «Se puede aprobar un examen de Historia viendo vídeos y películas»",
+      "idioma_titol": "es",
+      "text": {
+        "ca": "Entrevista d'Elena Ballestero sobre les pantalles a l'escola i la comprensió lectora: cal regular la tecnologia perquè no es regeixi per criteris de consum.",
+        "es": "Entrevista de Elena Ballestero sobre las pantallas en la escuela y la comprensión lectora: hay que regular la tecnología para que no se rija por criterios de consumo."
+      },
+      "enllac": "https://www.ultimahora.es/noticias/local/2026/09/15/2708535/pantallas-comprension-lectora-puede-aprobar-examen-historia-viendo-videos-peliculas.html"
+    },
+    {
       "data": "2025",
       "tipus": "novetat",
       "titol": {
