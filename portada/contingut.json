@@ -1,12 +1,105 @@
 {
-  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren.",
+  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista).",
   "enllacos": {
     "app": "https://aprens-app.netlify.app/",
     "consulta": "https://aprens.es/",
     "cita": "https://www.doctoralia.es/perfil/tofol-villalonga-melis",
     "explica": "https://explica.aprens.net/"
   },
-  "novetats": [],
+  "novetats": [
+    {
+      "data": "2025",
+      "tipus": "novetat",
+      "titol": {
+        "ca": "Premi Joan Calafat 2025",
+        "es": "Premio Joan Calafat 2025"
+      },
+      "text": {
+        "ca": "El jurat dels premis Joan Calafat ha triat Tòfol Villalonga professional de la Psicologia 2025.",
+        "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."
+      },
+      "imatge": "img/novetats/premi-joan-calafat-2025.jpg",
+      "enllac": "https://aprens.es/articulo.php?id=12"
+    },
+    {
+      "data": "2025-07-05",
+      "tipus": "mitjans",
+      "mitja": "Diario de Mallorca",
+      "titol": "«El ‘coaching’ pot motivar, però no substitueix un procés terapèutic»",
+      "text": {
+        "ca": "Entrevista de Silis Campins arran de la publicació de «Lidera la teva mon(e)a»: el seu recorregut, la psicologia i aprendre a viure amb consciència.",
+        "es": "Entrevista de Silis Campins a raíz de la publicación de «Lidera la teva mon(e)a»: su recorrido, la psicología y aprender a vivir con conciencia."
+      },
+      "imatge": "img/novetats/entrevista-diario-de-mallorca-2025.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/noticia%20-%20Tofol%20Villalonga%2C%20psicoleg%20i%20autor%20de%20Lidera%20la%20teva%20mon%28e%29a.pdf",
+      "idioma_titol": "ca"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Guia de maneig emocional per a pares",
+        "es": "Guía de manejo emocional para padres"
+      },
+      "text": {
+        "ca": "Per què ens convé, com a pares, ser conscients de les nostres emocions per acompanyar el dia a dia dels fills.",
+        "es": "Por qué nos conviene, como padres, ser conscientes de nuestras emociones para acompañar el día a día de los hijos."
+      },
+      "imatge": "img/novetats/guia-maneig-emocional-pares.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-XERRADA%20PARES%20MANEIG%20EMOCIONALII.ppt"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Guia per a pares de fills adolescents",
+        "es": "Guía para padres de hijos adolescentes"
+      },
+      "text": {
+        "ca": "El paper dels pares davant la conducta dels fills adolescents i el maneig emocional de tots dos.",
+        "es": "El papel de los padres ante la conducta de los hijos adolescentes y el manejo emocional de ambos."
+      },
+      "imatge": "img/novetats/guia-pares-fills-adolescents.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-GUIA-PER-A-PARES-DE-FILLS-ADOLESCENTS.pdf"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "El paper dels pares dins l'esport de base",
+        "es": "El papel de los padres en el deporte base"
+      },
+      "text": {
+        "ca": "Unes pautes que ajuden els fills a jugar millor i d'una manera més sana.",
+        "es": "Unas pautas que ayudan a los hijos a jugar mejor y de una manera más sana."
+      },
+      "imatge": "img/novetats/pares-esport-de-base.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-PAPER-DELS-PARES-A-LESPORT-BASE.pdf"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Atenció i maneig emocional a l'esport",
+        "es": "Atención y manejo emocional en el deporte"
+      },
+      "text": {
+        "ca": "Com s'entrena l'atenció dins l'esport i com es relaciona amb el maneig emocional.",
+        "es": "Cómo se entrena la atención en el deporte y cómo se relaciona con el manejo emocional."
+      },
+      "imatge": "img/novetats/atencio-maneig-emocional-esport.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-Atencio-i-maneig-emocional-a-lesport.pdf"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Com funciona el nostre cos?",
+        "es": "¿Cómo funciona nuestro cuerpo?"
+      },
+      "text": {
+        "ca": "Un esquema per veure com aprèn el cos i com l'educam a atendre el que és important de cada situació.",
+        "es": "Un esquema para ver cómo aprende el cuerpo y cómo lo educamos a atender lo importante de cada situación."
+      },
+      "imatge": "img/novetats/com-funciona-el-cos.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-manual-del-funcionamento-del-cuerpo.pdf"
+    }
+  ],
   "llibres": [
     {
       "titol": {

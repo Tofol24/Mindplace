@@ -30,7 +30,13 @@ document.querySelectorAll("[data-t]").forEach(el => { ca[el.dataset.t] = el.text
 const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació", comprar: "On comprar-lo"}[k] ?? CAT[k] ?? k);
 // Un text del contingut pot ser "text" o {"ca": ..., "es": ...}
 const tx = (v) => v && typeof v === "object" ? (v[lang] || v.ca || v.es || "") : (v || "");
-const dataLlarga = (d) => { const x = new Date(d + "T12:00:00"); return isNaN(x) ? "" : x.toLocaleDateString(lang === "es" ? "es-ES" : "ca-ES", {day: "numeric", month: "long", year: "numeric"}); };
+// Data completa (2025-07-05), només mes (2025-07) o només any (2025).
+const dataLlarga = (d) => {
+  const s = String(d || ""), loc = lang === "es" ? "es-ES" : "ca-ES";
+  if (/^\d{4}$/.test(s)) return s;
+  if (/^\d{4}-\d{2}$/.test(s)) { const x = new Date(s + "-15T12:00:00"); return isNaN(x) ? "" : x.toLocaleDateString(loc, {month: "long", year: "numeric"}); }
+  const x = new Date(s + "T12:00:00"); return isNaN(x) ? "" : x.toLocaleDateString(loc, {day: "numeric", month: "long", year: "numeric"});
+};
 
 function pinta() {
   document.documentElement.lang = lang;
@@ -50,7 +56,7 @@ function pinta() {
     const link = safeUrl(n.enllac), img = safeUrl(n.imatge);
     return `<article class="nov">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<div class="cos">
       <span class="meta">${esc([CAT[n.tipus] ? t(n.tipus) : "", tx(n.mitja), dataLlarga(n.data)].filter(Boolean).join(" · "))}</span>
-      <h3>${esc(tx(n.titol))}</h3>${tx(n.text) ? `<p>${esc(tx(n.text))}</p>` : ""}
+      <h3${/^(ca|es)$/.test(n.idioma_titol || "") ? ` lang="${n.idioma_titol}"` : ""}>${esc(tx(n.titol))}</h3>${tx(n.text) ? `<p>${esc(tx(n.text))}</p>` : ""}
       ${link ? `<a href="${esc(link)}" rel="noopener">${esc(t("llegir"))} →</a>` : ""}</div></article>`;
   }).join("");
 
