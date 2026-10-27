@@ -30,6 +30,7 @@
         <li>una empremta xifrada (no reversible) del correu de qui paga, per poder-li tornar a enviar el codi si el perd;</li>
         <li>comptadors d'intents fallits i de sol·licituds de recuperació, identificats per una empremta xifrada del correu o de l'adreça IP, per evitar abusos;</li>
         <li>els enllaços d'un sol ús per gestionar la subscripció, que caduquen als 30 minuts.</li>
+        <li>estadístiques d'ús per dia: nombre de peticions, tokens i cost, i quantes peticions ha fet cada codi d'accés (identificat només per les tres primeres lletres i una empremta xifrada, no pel codi sencer). No inclouen cap contingut.</li>
       </ul>
     </li>
     <li><strong>El pagament</strong>: Stripe rep el correu, el nom i les dades de pagament de qui paga. Explica-ho no veu mai les dades de la targeta.</li>
@@ -42,7 +43,7 @@
   <ul>
     <li>Prestar el servei d'estudi i gestionar la subscripció, el cobrament i l'enviament del codi: execució del contracte (art. 6.1.b del RGPD).</li>
     <li>Conservar les factures: obligació legal fiscal i mercantil (art. 6.1.c del RGPD).</li>
-    <li>Limitar peticions i intents per evitar abusos i protegir el servei: interès legítim (art. 6.1.f del RGPD).</li>
+    <li>Limitar peticions i intents per evitar abusos i protegir el servei, i conèixer el cost del servei per poder-lo mantenir: interès legítim (art. 6.1.f del RGPD).</li>
   </ul>
   <p>No es prenen decisions automatitzades amb efectes jurídics. Les correccions de la IA són orientacions d'estudi.</p>
 
@@ -62,6 +63,7 @@
   <ul>
     <li>La feina guardada al navegador: fins que la persona usuària l'esborra (Configuració → Esborra totes les dades d'aquest navegador) o esborra les dades del navegador.</li>
     <li>Comptadors diaris i d'intents: s'esborren a partir de l'endemà. Comptadors mensuals: quan acaba el mes.</li>
+    <li>Estadístiques d'ús per dia: el mes en curs i els 12 anteriors.</li>
     <li>Enllaços de gestió: caduquen als 30 minuts i s'esborren en la neteja diària.</li>
     <li>Codi i referència de la subscripció: mentre la subscripció estigui activa i fins a 12 mesos després de la baixa, per poder atendre consultes i reclamacions. Després s'esborren, juntament amb l'empremta del correu.</li>
     <li>Factures i dades de pagament (a Stripe): el temps que exigeixen les normes fiscals i mercantils.</li>

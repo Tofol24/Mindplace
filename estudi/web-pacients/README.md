@@ -98,6 +98,9 @@ Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quot
 - **Neteja diària** (`netlify/functions/neteja.mjs`, funció programada de Netlify): esborra els comptadors
   d'altres dies i mesos, els enllaços caducats i, 12 mesos després de la baixa, el registre de la subscripció,
   el codi i l'empremta del correu. És el que promet `privacitat.html`; si es canvia un termini, cal canviar-lo als dos llocs.
+- **Estadístiques** (`/estadistiques.html`): peticions, tokens i cost de Claude per dia i per codi, a partir del que
+  Claude informa a cada resposta. Cal la variable secreta `EXPLICA_ADMIN` (una contrasenya de 16 caràcters o més);
+  sense ella, la pàgina no mostra res. Es conserven 13 mesos. Els preus per model són a `netlify/lib/comu.js` (PRICES).
 - **Consentiment**: la pàgina de subscripció demana acceptar condicions i privacitat i, a part, que el servei
   comenci de seguida dins el termini de desistiment (amb descompte proporcional si es desisteix). Queda a les
   metadades de la sessió de Stripe (`consentiment`, `inici_immediat`).

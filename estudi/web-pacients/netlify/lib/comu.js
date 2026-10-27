@@ -235,6 +235,33 @@ export async function cleanup(st, prefix, isOld) {
   } catch {}
 }
 
+// ---------------------------------------------------------------------------
+// Estadístiques d'ús: per dia, peticions, tokens i cost (segons el que diu Claude a cada resposta) i peticions per
+// codi. Cap contingut. Es conserven 13 mesos naturals. Es consulten a /estadistiques.html amb la clau EXPLICA_ADMIN.
+// Preus en dòlars per milió de tokens [entrada, sortida]. Si Anthropic els canvia, cal actualitzar-los aquí.
+const PRICES = {"claude-sonnet-5-5": [2, 10], "claude-sonnet-5": [2, 10], "claude-haiku-5-5": [0.1, 0.5], "claude-opus-5-5": [4, 20]};
+export const KEEP_STATS_MONTHS = 13;
+export function costUSD(model, inTok, outTok) {
+  const p = PRICES[model];
+  return p ? (inTok * p[0] + outTok * p[1]) / 1e6 : null;
+}
+// A les estadístiques no es guarda el codi (és una credencial): només les 3 primeres lletres, perquè el titular
+// el reconegui, i una empremta curta que distingeix codis que comencin igual.
+export async function statsId(code) { return String(code).slice(0, 3) + "…" + (await fingerprint("stats:" + code)).slice(0, 4); }
+export async function recordUsage({code, model, inTok = 0, outTok = 0, ok = true, partial = false}) {
+  const day = new Date().toISOString().slice(0, 10), id = await statsId(code);
+  const cost = costUSD(model, inTok, outTok);
+  await updateJSON(await store("explica-us"), "estad/" + day, (cur) => {
+    const d = {n: 0, ok: 0, in: 0, out: 0, cost: 0, sensePreu: 0, parcials: 0, codis: {}, models: {}, ...(cur || {})};
+    d.n += 1; if (ok) d.ok += 1; if (partial) d.parcials = (d.parcials || 0) + 1;
+    d.in += inTok; d.out += outTok;
+    if (cost === null) d.sensePreu += 1; else d.cost = Math.round((d.cost + cost) * 1e6) / 1e6;
+    d.codis = {...d.codis, [id]: (d.codis[id] || 0) + 1};
+    d.models = {...d.models, [model]: (d.models[model] || 0) + 1};
+    return d;
+  });
+}
+
 // Neteja diària (com a molt una vegada al dia, la primera petició que arriba): el que promet la política de privacitat.
 // - Comptadors i registres d'un dia (peticions, intents, enllaços demanats): s'esborren a partir de l'endemà.
 // - Comptadors mensuals: s'esborren quan acaba el mes.
@@ -256,7 +283,11 @@ export async function purge(now = Date.now()) {
   const t0 = Date.now(), late = () => { if (Date.now() - t0 > 20_000) throw new Error("temps"); };
   try {
     const {blobs: ub} = await us.list();
+    // 13 mesos naturals: el mes en curs i els 12 anteriors (es compta per mesos sencers, sense desbordaments de dies).
+    const nd = new Date(now), cm = nd.getUTCFullYear() * 12 + nd.getUTCMonth() - (KEEP_STATS_MONTHS - 1);
+    const statsCut = `${Math.floor(cm / 12)}-${String(cm % 12 + 1).padStart(2, "0")}-01`;
     for (const {key} of ub) {
+      if (key.startsWith("estad/")) { if (key.slice(6) < statsCut) { late(); await us.delete(key); } continue; }
       const d = key.match(/\/(\d{4}-\d{2}-\d{2})$/), m = key.match(/\/mes\/(\d{4}-\d{2})$/);
       if ((d && d[1] < day) || (m && m[1] < month)) { late(); await us.delete(key); }
     }

@@ -16,7 +16,7 @@
 //
 // No es desa ni es registra cap contingut: només comptadors de peticions per codi (dia i mes).
 
-import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint, purgeLater} from "../lib/comu.js";
+import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint, purgeLater, recordUsage} from "../lib/comu.js";
 
 const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
 Segueix exactament el format de resposta que demana cada petició.
@@ -147,25 +147,37 @@ export default async (req, context) => {
     if (up.status === 413) return json(413, {error: "mida"});
     return json(502, {error: "claude", message: msg.slice(0, 300)});
   }
-  // Es vigila el flux: si Claude envia un error, talla la resposta per llargària (l'eina la descarta)
-  // o el flux s'acaba sense el final, es retorna la quota.
+  // Es vigila el flux, esdeveniment a esdeveniment: si Claude envia un error, talla la resposta per llargària
+  // (l'eina la descarta) o el flux s'acaba sense el final, es retorna la quota. De passada s'apunten els tokens
+  // que Claude diu que ha fet servir, per a les estadístiques de cost.
   const dec = new TextDecoder(), reader = up.body.getReader();
-  let tail = "", sawStop = false, sawError = false, truncated = false, settled = false;
-  const finish = async (ok) => { if (settled) return; settled = true; if (!ok) await refund(counted); };
+  let buf = "", sawStop = false, sawError = false, truncated = false, settled = false, inTok = 0, outTok = 0, gotOut = false;
+  const onEvent = (line) => {
+    if (!line.startsWith("data:")) return;
+    let ev; try { ev = JSON.parse(line.slice(5)); } catch { return; }
+    if (ev.type === "message_start") { const u = ev.message?.usage || {}; inTok = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0); outTok = u.output_tokens || 0; }
+    else if (ev.type === "message_delta") { if (ev.usage?.output_tokens) { outTok = ev.usage.output_tokens; gotOut = true; } if (ev.delta?.stop_reason === "max_tokens") truncated = true; }
+    else if (ev.type === "message_stop") sawStop = true;
+    else if (ev.type === "error") sawError = true;
+  };
+  // Si la resposta s'ha tallat abans que Claude digui els tokens de sortida, el cost apuntat és parcial.
+  const stats = (ok) => recordUsage({code: codi, model, inTok, outTok, ok, partial: !gotOut}).catch(() => {});
+  const finish = async (ok) => { if (settled) return; settled = true; if (!ok) await refund(counted); await stats(ok); };
   const watched = new ReadableStream({
     async pull(ctl) {
       try {
         const {value, done} = await reader.read();
-        if (done) { await finish(sawStop && !sawError && !truncated); ctl.close(); return; }
-        const txt = tail + dec.decode(value, {stream: true});
-        if (/"type":\s*"message_stop"/.test(txt)) sawStop = true;
-        if (/"type":\s*"error"/.test(txt)) sawError = true;
-        if (/"stop_reason":\s*"max_tokens"/.test(txt)) truncated = true;
-        tail = txt.slice(-40);
+        if (done) { if (buf) onEvent(buf.trim()); await finish(sawStop && !sawError && !truncated); ctl.close(); return; }
+        buf += dec.decode(value, {stream: true});
+        const lines = buf.split("\n"); buf = lines.pop();
+        for (const l of lines) onEvent(l.trim());
         ctl.enqueue(value);
       } catch (e) { await finish(false); ctl.error(e); }   // la connexió amb Claude s'ha tallat
     },
-    cancel(reason) { settled = true; return reader.cancel(reason); },   // l'estudiant ha aturat: Claude ja ha treballat
+    cancel(reason) {   // l'estudiant ha aturat: Claude ja ha treballat (no es retorna la quota, però es compta el cost)
+      if (!settled) { settled = true; const job = stats(false); if (typeof context?.waitUntil === "function") context.waitUntil(job); }
+      return reader.cancel(reason);
+    },
   });
   return new Response(watched, {headers: {"content-type": "text/event-stream; charset=utf-8", "cache-control": "no-store",
     ...(restants === null ? {} : {"x-explica-restants": String(restants)})}});
