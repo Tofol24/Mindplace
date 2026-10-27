@@ -53,6 +53,36 @@
     },
     {
       "tipus": "article",
+      "descarrega": true,
+      "titol": {
+        "ca": "Consciència: com funciona el control perdut",
+        "es": "Conciencia: cómo funciona el control perdido"
+      },
+      "text": {
+        "ca": "Un mapa per entendre com el dolor, les creences i la fletxa atencional ens porten al sobrepensament o a l'evitació, i com la consciència ens torna al present.",
+        "es": "Un mapa para entender cómo el dolor, las creencias y la flecha atencional nos llevan al sobrepensamiento o a la evitación, y cómo la conciencia nos devuelve al presente."
+      },
+      "imatge": "img/novetats/consciencia.jpg",
+      "enllac": "descarregues/APRENS-consciencia.pdf",
+      "idioma_doc": "ca"
+    },
+    {
+      "tipus": "article",
+      "descarrega": true,
+      "titol": {
+        "ca": "Eines bàsiques d'Atenció Interna Sensorial",
+        "es": "Herramientas básicas de Atención Interna Sensorial"
+      },
+      "text": {
+        "ca": "Sis pràctiques per donar-te presència i acompanyament: aturada de pensament, l'abraçada sentida, honestedat emocional, respiració, rituals d'entrada i rutina diària.",
+        "es": "Seis prácticas para darte presencia y acompañamiento: parada de pensamiento, el abrazo sentido, honestidad emocional, respiración, rituales de entrada y rutina diaria."
+      },
+      "imatge": "img/novetats/eines-ais-basiques.jpg",
+      "enllac": "descarregues/APRENS-eines-ais-basiques.pdf",
+      "idioma_doc": "es"
+    },
+    {
+      "tipus": "article",
       "titol": {
         "ca": "Guia de maneig emocional per a pares",
         "es": "Guía de manejo emocional para padres"
@@ -102,19 +132,6 @@
       },
       "imatge": "img/novetats/atencio-maneig-emocional-esport.jpg",
       "enllac": "https://aprens.es/image/articulos/descargas/APRENS-Atencio-i-maneig-emocional-a-lesport.pdf"
-    },
-    {
-      "tipus": "article",
-      "titol": {
-        "ca": "Com funciona el nostre cos?",
-        "es": "¿Cómo funciona nuestro cuerpo?"
-      },
-      "text": {
-        "ca": "Un esquema per veure com aprèn el cos i com l'educam a atendre el que és important de cada situació.",
-        "es": "Un esquema para ver cómo aprende el cuerpo y cómo lo educamos a atender lo importante de cada situación."
-      },
-      "imatge": "img/novetats/com-funciona-el-cos.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-manual-del-funcionamento-del-cuerpo.pdf"
     }
   ],
   "llibres": [

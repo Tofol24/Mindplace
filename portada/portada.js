@@ -18,7 +18,7 @@ const T = {
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
-    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
+    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", descarrega: "Descarga el PDF", en_ca: "(en catalán)", en_es: "(en castellano)", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
   },
 };
 const CAT = {mitjans: "Als mitjans", llibre: "Llibres", novetat: "Novetats", article: "Articles"};
@@ -28,7 +28,7 @@ try { const s = localStorage.getItem("aprens:idioma"); lang = s === "es" || s ==
 const ca = {};
 document.querySelectorAll("[data-t]").forEach(el => { ca[el.dataset.t] = el.textContent; });
 document.querySelectorAll("[data-alt]").forEach(el => { ca[el.dataset.alt] = el.alt; });
-const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació", comprar: "On comprar-lo"}[k] ?? CAT[k] ?? k);
+const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació", descarrega: "Descarrega el PDF", en_ca: "(en català)", en_es: "(en castellà)", comprar: "On comprar-lo"}[k] ?? CAT[k] ?? k);
 // Un text del contingut pot ser "text" o {"ca": ..., "es": ...}
 const tx = (v) => v && typeof v === "object" ? (v[lang] || v.ca || v.es || "") : (v || "");
 // Data completa (2025-07-05), només mes (2025-07) o només any (2025).
@@ -66,7 +66,7 @@ function pinta() {
     return `<article class="nov">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<div class="cos">
       <span class="meta">${esc([CAT[n.tipus] ? t(n.tipus) : "", tx(n.mitja), dataLlarga(n.data)].filter(Boolean).join(" · "))}</span>
       <h3${/^(ca|es)$/.test(n.idioma_titol || "") ? ` lang="${n.idioma_titol}"` : ""}>${esc(tx(n.titol))}</h3>${tx(n.text) ? `<p>${esc(tx(n.text))}</p>` : ""}
-      ${link ? `<a href="${esc(link)}" rel="noopener">${esc(t("llegir"))} →</a>` : ""}</div></article>`;
+      ${link ? `<a href="${esc(link)}" rel="noopener"${n.descarrega ? " download" : ""}${/^(ca|es)$/.test(n.idioma_doc || "") ? ` hreflang="${n.idioma_doc}"` : ""}>${esc(t(n.descarrega ? "descarrega" : "llegir"))}${/^(ca|es)$/.test(n.idioma_doc || "") ? " " + esc(t("en_" + n.idioma_doc)) : ""} →</a>` : ""}</div></article>`;
   }).join("");
 
   const ll = (data.llibres || []).filter(b => tx(b.titol));
