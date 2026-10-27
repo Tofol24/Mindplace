@@ -1,0 +1,11 @@
+# APRENS · portada de aprens.net (lloc Netlify independent, p. ex. "aprens-portada")
+# Estàtic, sense compilació. Al panell de Netlify:
+#   Add new site → Import an existing project → GitHub → Tofol24/Mindplace
+#     · Base directory:    portada      ← IMPRESCINDIBLE (llegeix AQUEST toml)
+#     · Publish directory: portada
+#     · Build command:     (buit)
+# El contingut (novetats, llibres, fotos i enllaços) és a contingut.json.
+[build]
+  base = "portada"
+  publish = "."
+  command = ""

@@ -1,0 +1,12 @@
+{
+  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren.",
+  "enllacos": {
+    "app": "https://aprens-app.netlify.app/",
+    "consulta": "https://aprens.es/",
+    "cita": "",
+    "explica": "https://explica.aprens.net/"
+  },
+  "novetats": [],
+  "llibres": [],
+  "fotos": []
+}
