@@ -47,7 +47,7 @@ function pinta() {
   for (const k of ["app", "consulta", "explica"]) if (safeUrl(L[k])) $("#l-" + k).href = safeUrl(L[k]);
   if (safeUrl(L.cita)) $("#l-cita").href = safeUrl(L.cita);
   // Xarxes: només enllaços (res incrustat, perquè la portada no carregui res de fora).
-  const xs = [["instagram", "Instagram"], ["facebook", "Facebook"]].filter(([k]) => safeUrl(L[k]));
+  const xs = [["instagram", "Instagram"], ["facebook", "Facebook (Tòfol)"], ["facebook_aprens", "Facebook (APRENS)"]].filter(([k]) => safeUrl(L[k]));
   $("#xarxes").hidden = !xs.length;
   $("#xarxes").innerHTML = xs.map(([k, n]) => `<a href="${esc(safeUrl(L[k]))}" rel="noopener noreferrer">${n}</a>`).join(" · ");
 
