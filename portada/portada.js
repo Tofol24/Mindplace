@@ -49,7 +49,7 @@ function pinta() {
   // Xarxes: només enllaços (res incrustat, perquè la portada no carregui res de fora).
   const xs = [["instagram", "Instagram"], ["facebook", "Facebook"]].filter(([k]) => safeUrl(L[k]));
   $("#xarxes").hidden = !xs.length;
-  $("#xarxes").innerHTML = xs.map(([k, n]) => `<a href="${esc(safeUrl(L[k]))}" rel="noopener">${n}</a>`).join(" · ");
+  $("#xarxes").innerHTML = xs.map(([k, n]) => `<a href="${esc(safeUrl(L[k]))}" rel="noopener noreferrer">${n}</a>`).join(" · ");
 
   const nov = (data.novetats || []).filter(n => tx(n.titol)).sort((a, b) => String(b.data || "").localeCompare(String(a.data || "")));
   $("#s-novetats").hidden = !nov.length;
