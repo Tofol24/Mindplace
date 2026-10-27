@@ -184,15 +184,18 @@
     {
       "tipus": "article",
       "titol": {
-        "ca": "Guia de maneig emocional per a pares",
-        "es": "Guía de manejo emocional para padres"
+        "ca": "Maneig emocional per a pares i mares",
+        "es": "Manejo emocional para padres y madres"
       },
       "text": {
-        "ca": "Per què ens convé, com a pares, ser conscients de les nostres emocions per acompanyar el dia a dia dels fills.",
-        "es": "Por qué nos conviene, como padres, ser conscientes de nuestras emociones para acompañar el día a día de los hijos."
+        "ca": "La xerrada, revisada i en PDF: per què ens costa tant acompanyar les emocions dels fills i com fer-ho des de la calma, conseqüents amb el que volem ensenyar i compassius amb el que costa aprendre.",
+        "es": "La charla, revisada y en PDF: por qué nos cuesta tanto acompañar las emociones de los hijos y cómo hacerlo desde la calma, consecuentes con lo que queremos enseñar y compasivos con lo que cuesta aprender."
       },
-      "imatge": "img/novetats/guia-maneig-emocional-pares.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-XERRADA%20PARES%20MANEIG%20EMOCIONALII.ppt"
+      "imatge": "img/novetats/manejo-emocional-padres.jpg",
+      "enllac": "descarregues/APRENS-manejo-emocional-padres.pdf",
+      "descarrega": true,
+      "idioma_doc": "es",
+      "destacat": true
     },
     {
       "tipus": "article",
