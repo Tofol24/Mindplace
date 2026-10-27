@@ -18,7 +18,7 @@ const T = {
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
-    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más",
+    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo",
   },
 };
 const CAT = {mitjans: "Als mitjans", llibre: "Llibres", novetat: "Novetats", article: "Articles"};
@@ -27,7 +27,7 @@ let lang = "ca", data = null, filtre = "";
 try { const s = localStorage.getItem("aprens:idioma"); lang = s === "es" || s === "ca" ? s : (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "ca"; } catch {}
 const ca = {};
 document.querySelectorAll("[data-t]").forEach(el => { ca[el.dataset.t] = el.textContent; });
-const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació"}[k] ?? CAT[k] ?? k);
+const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació", comprar: "On comprar-lo"}[k] ?? CAT[k] ?? k);
 // Un text del contingut pot ser "text" o {"ca": ..., "es": ...}
 const tx = (v) => v && typeof v === "object" ? (v[lang] || v.ca || v.es || "") : (v || "");
 const dataLlarga = (d) => { const x = new Date(d + "T12:00:00"); return isNaN(x) ? "" : x.toLocaleDateString(lang === "es" ? "es-ES" : "ca-ES", {day: "numeric", month: "long", year: "numeric"}); };
@@ -61,7 +61,7 @@ function pinta() {
     return `<article class="llibre">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<div class="cos">
       ${b.estat ? `<span class="estat">${esc(t(b.estat))}</span>` : ""}<h3>${esc(tx(b.titol))}</h3>
       ${tx(b.subtitol) ? `<p class="suau">${esc(tx(b.subtitol))}</p>` : ""}${tx(b.text) ? `<p>${esc(tx(b.text))}</p>` : ""}
-      ${link ? `<a href="${esc(link)}" rel="noopener">${esc(t("llegir"))} →</a>` : ""}</div></article>`;
+      ${link ? `<a href="${esc(link)}" rel="noopener">${esc(t("comprar"))} →</a>` : ""}</div></article>`;
   }).join("");
 
   const fo = (data.fotos || []).filter(f => safeUrl(f.src));

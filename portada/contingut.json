@@ -7,6 +7,21 @@
     "explica": "https://explica.aprens.net/"
   },
   "novetats": [],
-  "llibres": [],
+  "llibres": [
+    {
+      "titol": "Lidera tu mon(e)a",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro» · Kindle i tapa tova",
+        "es": "Colección «Crece, cría y trasciende desde dentro» · Kindle y tapa blanda"
+      },
+      "text": {
+        "ca": "Estratègies pràctiques per reduir el sobrepensament, liderar l'atenció i millorar les relacions.",
+        "es": "Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-lidera-tu-monea.jpg",
+      "enllac": "https://www.amazon.es/dp/B0DW919TSR"
+    }
+  ],
   "fotos": []
 }
