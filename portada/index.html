@@ -19,8 +19,11 @@
 
 <main>
   <section class="hero">
-    <h1 data-t="h1">Un lloc on trobar les eines, la consulta i les novetats d'APRENS</h1>
-    <p data-t="intro">APRENS és el gabinet de psicologia de Tòfol Villalonga a Inca. Des d'aquí pots entrar a les eines que feim servir a teràpia, demanar cita o conèixer la consulta, i seguir el que anam publicant.</p>
+    <div class="hero-text">
+      <h1 data-t="h1">Un lloc on trobar les eines, la consulta i les novetats d'APRENS</h1>
+      <p data-t="intro">APRENS és el gabinet de psicologia de Tòfol Villalonga a Inca. Des d'aquí pots entrar a les eines que feim servir a teràpia, demanar cita o conèixer la consulta, i seguir el que anam publicant.</p>
+    </div>
+    <img class="retrat" src="img/tofol-despatx.jpg" width="638" height="1000" alt="Tòfol Villalonga al despatx d'APRENS, a Inca" data-alt="retratAlt">
   </section>
 
   <section aria-labelledby="t-entrades">
@@ -47,7 +50,14 @@
         <span data-t="expD">Una eina per organitzar els apunts, repassar amb preguntes i corregir exercicis.</span>
       </a>
     </div>
-    <p class="extra" id="appstore" hidden><span data-t="appstore">Apps per a iPhone a l'App Store:</span> <span id="l-apps"></span></p>
+    <div class="apps" id="appstore" hidden>
+      <img src="img/app-ais-sessio.jpg" width="360" height="510" alt="Il·lustració de l'app: una silueta amb tres punts on portar l'atenció. 1, coll: connecta amb la gola i el clatell. 2, pit: sent el cor i els pulmons. 3, panxa: percep l'estómac i els budells." data-alt="appAlt" loading="lazy">
+      <div>
+        <h3 data-t="appsT">Apps per a iPhone</h3>
+        <p data-t="appsD">Sessions guiades d'Atenció Interna Sensorial (AIS): portar l'atenció al coll, al pit i a la panxa per baixar l'alerta i estar amb un mateix.</p>
+        <p class="enllacos" id="l-apps"></p>
+      </div>
+    </div>
   </section>
 
   <section id="s-novetats" aria-labelledby="t-novetats" hidden>

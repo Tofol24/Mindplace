@@ -14,7 +14,7 @@ const T = {
     appEt: "Para pacientes", appT: "App APRENS", appD: "Las herramientas de terapia (AIS, TEC, registros y prácticas) en tu móvil. Lo que apuntas se queda en tu dispositivo.",
     citaEt: "Consulta", citaT: "Pedir cita", citaD: "Elige día y hora en Doctoralia, para una primera visita o una sesión.",
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
-    expEt: "Estudio", appstore: "Apps para iPhone en la App Store:", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
+    expEt: "Estudio", appsT: "Apps para iPhone", appsD: "Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.", retratAlt: "Tòfol Villalonga en el despacho de APRENS, en Inca", appAlt: "Ilustración de la app: una silueta con tres puntos donde llevar la atención. 1, cuello: conecta con tu garganta y nuca. 2, pecho: siente tu corazón y pulmones. 3, barriga: percibe tu estómago e intestinos.", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
@@ -27,6 +27,7 @@ let lang = "ca", data = null, filtre = "";
 try { const s = localStorage.getItem("aprens:idioma"); lang = s === "es" || s === "ca" ? s : (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "ca"; } catch {}
 const ca = {};
 document.querySelectorAll("[data-t]").forEach(el => { ca[el.dataset.t] = el.textContent; });
+document.querySelectorAll("[data-alt]").forEach(el => { ca[el.dataset.alt] = el.alt; });
 const t = (k) => (lang === "es" ? T.es[k] : ca[k]) ?? ({tot: "Tot", disponible: "Disponible", properament: "Properament", llegir: "Més informació", comprar: "On comprar-lo"}[k] ?? CAT[k] ?? k);
 // Un text del contingut pot ser "text" o {"ca": ..., "es": ...}
 const tx = (v) => v && typeof v === "object" ? (v[lang] || v.ca || v.es || "") : (v || "");
@@ -41,6 +42,7 @@ const dataLlarga = (d) => {
 function pinta() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  document.querySelectorAll("[data-alt]").forEach(el => { el.alt = t(el.dataset.alt); });
   document.querySelectorAll(".idioma button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   if (!data) return;
   const L = data.enllacos || {};
@@ -48,7 +50,7 @@ function pinta() {
   if (safeUrl(L.cita)) $("#l-cita").href = safeUrl(L.cita);
   const apps = (data.apps || []).filter(a => a.nom && safeUrl(a.url));
   $("#appstore").hidden = !apps.length;
-  $("#l-apps").innerHTML = apps.map(a => `<a href="${esc(safeUrl(a.url))}" rel="noopener noreferrer">${esc(tx(a.nom))} →</a>`).join(" · ");
+  $("#l-apps").innerHTML = apps.map(a => `<a href="${esc(safeUrl(a.url))}" rel="noopener noreferrer">${esc(tx(a.nom))} →</a>`).join("");
   // Xarxes: només enllaços (res incrustat, perquè la portada no carregui res de fora).
   const xs = [["instagram", "Instagram"], ["facebook", "Facebook (Tòfol)"], ["facebook_aprens", "Facebook (APRENS)"]].filter(([k]) => safeUrl(L[k]));
   $("#xarxes").hidden = !xs.length;
