@@ -85,8 +85,8 @@ Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quot
 **Com funciona per dins**
 - En pagar, Stripe torna a `/gracies.html`, que demana el codi a `/api/codi`. El codi es crea una sola
   vegada per subscripció, es desa al navegador i s'afegeix a les factures a partir de la segona (camp «Codi d'accés Explica-ho»;
-  la primera ja s'ha creat quan es genera el codi). Si es vol una recuperació del codi per correu, caldria
-  un servei d'enviament de correus (no inclòs).
+  la primera ja s'ha creat quan es genera el codi). Amb Resend, també
+  s'envia per correu (vegeu més avall).
 - Els avisos de Stripe mantenen al dia l'estat de cada subscripció (sempre es consulta l'estat actual a Stripe,
   perquè els avisos poden arribar desordenats). Un codi funciona mentre la
   subscripció està activa (amb 3 dies de marge si hi ha un pagament pendent).
@@ -105,7 +105,7 @@ Amb Resend configurat:
   envien els codis. La resposta és sempre la mateixa (no revela qui està subscrit). Màxim 3 intents al
   dia per correu i 10 per connexió.
 - **«Gestiona la subscripció»** envia un **enllaç d'un sol ús** (30 minuts) al correu de qui paga, que obre
-  el portal de Stripe. Ja no cal escriure el correu, i només hi pot entrar qui té accés a aquell correu
+  el portal de Stripe. Ja no cal escriure el correu, i només hi pot entrar qui té accés a aquell correu.
   En obrir l'enllaç surt una pàgina amb un botó: l'enllaç només es gasta en prémer-lo (els programes de
   correu que previsualitzen enllaços no el gasten), i si Stripe falla en aquell moment es pot tornar a provar.
   Màxim 5 enllaços al dia per codi.
