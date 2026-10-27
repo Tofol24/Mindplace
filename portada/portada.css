@@ -68,3 +68,4 @@ footer{max-width:1080px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-
 .doc p,.doc li{max-width:68ch}
 .es-only{display:none}
 html[lang=es] .es-only{display:block} html[lang=es] .ca-only{display:none}
+.llibre .enllacos{display:flex;gap:14px;flex-wrap:wrap}

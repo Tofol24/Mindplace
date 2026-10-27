@@ -9,18 +9,81 @@
   "novetats": [],
   "llibres": [
     {
-      "titol": "Lidera tu mon(e)a",
+      "titol": {
+        "ca": "Lidera la teva mon(e)a",
+        "es": "Lidera tu mon(e)a"
+      },
       "subtitol": {
-        "ca": "Col·lecció «Crece, cría y trasciende desde dentro» · Kindle i tapa tova",
-        "es": "Colección «Crece, cría y trasciende desde dentro» · Kindle y tapa blanda"
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
       },
       "text": {
-        "ca": "Estratègies pràctiques per reduir el sobrepensament, liderar l'atenció i millorar les relacions.",
+        "ca": "Estratègies pràctiques per reduir el sobrepensament, liderar la teva atenció i millorar les teves relacions.",
         "es": "Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones."
       },
       "estat": "disponible",
-      "portada": "img/llibre-lidera-tu-monea.jpg",
-      "enllac": "https://www.amazon.es/dp/B0DW919TSR"
+      "portada": {
+        "ca": "img/llibre-lidera-la-teva-monea.jpg",
+        "es": "img/llibre-lidera-tu-monea.jpg"
+      },
+      "enllacos": [
+        {
+          "text": {
+            "ca": "En català",
+            "es": "En catalán"
+          },
+          "url": "https://www.amazon.es/dp/B0DWFMRFZW"
+        },
+        {
+          "text": {
+            "ca": "En castellà",
+            "es": "En castellano"
+          },
+          "url": "https://www.amazon.es/dp/B0DW919TSR"
+        }
+      ]
+    },
+    {
+      "titol": "Cría desde dentro",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "Criança conscient des de l'amor.",
+        "es": "Crianza consciente desde el amor."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-cria-desde-dentro.jpg",
+      "enllac": "https://www.amazon.es/dp/B0FD9NS3PJ"
+    },
+    {
+      "titol": "Trasciende desde dentro",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "La consciència que accepta, transforma i transcendeix.",
+        "es": "La conciencia que acepta, transforma y trasciende."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-trasciende-desde-dentro.jpg",
+      "enllac": "https://www.amazon.es/dp/B0FD9NSFZW"
+    },
+    {
+      "titol": "Teoría del Efecto Consciente (TEC)",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "L'atenció com a vector causal: un metamodel per a la psicologia clínica.",
+        "es": "La atención como vector causal: un metamodelo para la psicología clínica."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-teoria-efecto-consciente.jpg",
+      "enllac": "https://www.amazon.es/dp/B0HJNZY46W"
     }
   ],
   "fotos": []

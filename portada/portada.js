@@ -57,11 +57,14 @@ function pinta() {
   const ll = (data.llibres || []).filter(b => tx(b.titol));
   $("#s-llibres").hidden = !ll.length;
   $("#llibres").innerHTML = ll.map(b => {
-    const link = safeUrl(b.enllac), img = safeUrl(b.portada);
+    const img = safeUrl(tx(b.portada));
+    // Un sol enllaç («On comprar-lo») o diversos (p. ex. una edició per idioma).
+    const links = (b.enllacos || []).filter(e => safeUrl(e.url)).map(e => `<a href="${esc(safeUrl(e.url))}" rel="noopener">${esc(tx(e.text))} →</a>`);
+    if (!links.length && safeUrl(b.enllac)) links.push(`<a href="${esc(safeUrl(b.enllac))}" rel="noopener">${esc(t("comprar"))} →</a>`);
     return `<article class="llibre">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<div class="cos">
       ${b.estat ? `<span class="estat">${esc(t(b.estat))}</span>` : ""}<h3>${esc(tx(b.titol))}</h3>
       ${tx(b.subtitol) ? `<p class="suau">${esc(tx(b.subtitol))}</p>` : ""}${tx(b.text) ? `<p>${esc(tx(b.text))}</p>` : ""}
-      ${link ? `<a href="${esc(link)}" rel="noopener">${esc(t("comprar"))} →</a>` : ""}</div></article>`;
+      ${links.length ? `<p class="enllacos">${links.join("")}</p>` : ""}</div></article>`;
   }).join("");
 
   const fo = (data.fotos || []).filter(f => safeUrl(f.src));
