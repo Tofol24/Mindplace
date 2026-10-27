@@ -18,7 +18,7 @@ const T = {
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
-    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo",
+    disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", comprar: "Dónde comprarlo", autor: "Ver todos los libros en Amazon →",
   },
 };
 const CAT = {mitjans: "Als mitjans", llibre: "Llibres", novetat: "Novetats", article: "Articles"};
@@ -76,6 +76,9 @@ function pinta() {
       ${tx(b.subtitol) ? `<p class="suau">${esc(tx(b.subtitol))}</p>` : ""}${tx(b.text) ? `<p>${esc(tx(b.text))}</p>` : ""}
       ${links.length ? `<p class="enllacos">${links.join("")}</p>` : ""}</div></article>`;
   }).join("");
+
+  $("#autor").hidden = !ll.length || !safeUrl(L.autor);
+  if (safeUrl(L.autor)) $("#l-autor").href = safeUrl(L.autor);
 
   const fo = (data.fotos || []).filter(f => safeUrl(f.src));
   $("#s-fotos").hidden = !fo.length;
