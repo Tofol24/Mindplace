@@ -14,7 +14,7 @@ const T = {
     appEt: "Para pacientes", appT: "App APRENS", appD: "Las herramientas de terapia (AIS, TEC, registros y prácticas) en tu móvil. Lo que apuntas se queda en tu dispositivo.",
     citaEt: "Consulta", citaT: "Pedir cita", citaD: "Elige día y hora en Doctoralia, para una primera visita o una sesión.",
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
-    expEt: "Estudio", appstore: "La app AIS APRENS también está en la App Store, para iPhone →", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
+    expEt: "Estudio", appstore: "Apps para iPhone en la App Store:", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos",
@@ -46,8 +46,9 @@ function pinta() {
   const L = data.enllacos || {};
   for (const k of ["app", "consulta", "explica"]) if (safeUrl(L[k])) $("#l-" + k).href = safeUrl(L[k]);
   if (safeUrl(L.cita)) $("#l-cita").href = safeUrl(L.cita);
-  $("#appstore").hidden = !safeUrl(L.appstore);
-  if (safeUrl(L.appstore)) $("#l-appstore").href = safeUrl(L.appstore);
+  const apps = (data.apps || []).filter(a => a.nom && safeUrl(a.url));
+  $("#appstore").hidden = !apps.length;
+  $("#l-apps").innerHTML = apps.map(a => `<a href="${esc(safeUrl(a.url))}" rel="noopener noreferrer">${esc(tx(a.nom))} →</a>`).join(" · ");
   // Xarxes: només enllaços (res incrustat, perquè la portada no carregui res de fora).
   const xs = [["instagram", "Instagram"], ["facebook", "Facebook (Tòfol)"], ["facebook_aprens", "Facebook (APRENS)"]].filter(([k]) => safeUrl(L[k]));
   $("#xarxes").hidden = !xs.length;
