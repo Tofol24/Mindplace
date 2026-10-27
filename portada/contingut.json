@@ -102,11 +102,13 @@
         "es": "Guía para padres de hijos adolescentes"
       },
       "text": {
-        "ca": "El paper dels pares davant la conducta dels fills adolescents i el maneig emocional de tots dos.",
-        "es": "El papel de los padres ante la conducta de los hijos adolescentes y el manejo emocional de ambos."
+        "ca": "Per què el fill no canvia encara que ho entengui, i com acompanyar-lo: conseqüents amb el que volem ensenyar i compassius amb el que costa aprendre.",
+        "es": "Por qué el hijo no cambia aunque lo entienda, y cómo acompañarlo: consecuentes con lo que queremos enseñar y compasivos con lo que cuesta aprender."
       },
       "imatge": "img/novetats/guia-pares-fills-adolescents.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-GUIA-PER-A-PARES-DE-FILLS-ADOLESCENTS.pdf"
+      "enllac": "descarregues/APRENS-guia-pares-fills-adolescents.pdf",
+      "descarrega": true,
+      "idioma_doc": "ca"
     },
     {
       "tipus": "article",
