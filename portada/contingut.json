@@ -9,7 +9,8 @@
     "facebook": "https://www.facebook.com/tofol.villalonga",
     "autor": "https://www.amazon.es/stores/T%C3%B2fol-Villalonga/author/B0DWLHLD2V",
     "serie": "https://www.amazon.es/dp/B0FDR8B1JP",
-    "facebook_aprens": "https://www.facebook.com/aprens70/"
+    "facebook_aprens": "https://www.facebook.com/aprens70/",
+    "laboratori": "https://aprens-app.netlify.app/#/tool/laboratorio_tec"
   },
   "novetats": [
     {
@@ -23,7 +24,8 @@
         "es": "Entrevista de Elena Ballestero sobre las pantallas en la escuela y la comprensión lectora: hay que regular la tecnología para que no se rija por criterios de consumo."
       },
       "enllac": "https://www.ultimahora.es/noticias/local/2026/09/15/2708535/pantallas-comprension-lectora-puede-aprobar-examen-historia-viendo-videos-peliculas.html",
-      "imatge": "img/novetats/tofol-despatx.jpg"
+      "imatge": "img/novetats/tofol-video.jpg",
+      "destacat": true
     },
     {
       "data": "2025",
@@ -37,7 +39,8 @@
         "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."
       },
       "imatge": "img/novetats/premi-joan-calafat-2025.jpg",
-      "enllac": "https://aprens.es/articulo.php?id=12"
+      "enllac": "https://aprens.es/articulo.php?id=12",
+      "destacat": true
     },
     {
       "data": "2025-07-05",
@@ -51,6 +54,102 @@
       "imatge": "img/novetats/entrevista-diario-de-mallorca-2025.jpg",
       "enllac": "https://aprens.es/image/articulos/descargas/noticia%20-%20Tofol%20Villalonga%2C%20psicoleg%20i%20autor%20de%20Lidera%20la%20teva%20mon%28e%29a.pdf",
       "idioma_titol": "ca"
+    },
+    {
+      "tipus": "esport",
+      "descarrega": true,
+      "idioma_doc": "ca",
+      "destacat": true,
+      "titol": {
+        "ca": "La piràmide del rendiment",
+        "es": "La pirámide del rendimiento"
+      },
+      "text": {
+        "ca": "On s'enfoca el cos de l'esportista durant la competició: orientació a la mestria o a l'ego, i com això marca el control, la regulació de l'errada, la motivació i el rendiment.",
+        "es": "Dónde se enfoca el cuerpo del deportista durante la competición: orientación a la maestría o al ego, y cómo eso marca el control, la regulación del error, la motivación y el rendimiento."
+      },
+      "imatge": "img/novetats/piramide-rendiment.jpg",
+      "enllac": "descarregues/APRENS-piramide-rendiment.pdf"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "La història del mono, animada",
+        "es": "La historia del mono, animada"
+      },
+      "text": {
+        "ca": "Un conte d'un minut sobre qui condueix la teva vida i com aprendre a dur el volant acompanyant el teu mono.",
+        "es": "Un cuento de un minuto sobre quién conduce tu vida y cómo aprender a llevar el volante acompañando a tu mono."
+      },
+      "imatge": "img/eines/historia-mono.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-animada.html",
+      "destacat": true
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "La manada, animada",
+        "es": "La manada, animada"
+      },
+      "text": {
+        "ca": "Per què respiram: el teu mono és un mamífer de manada, i l'AIS és la manera de no deixar-lo tot sol.",
+        "es": "Por qué respiramos: tu mono es un mamífero de manada, y el AIS es la manera de no dejarlo solo."
+      },
+      "imatge": "img/eines/manada.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-manada.html"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "Jocs AIS",
+        "es": "Juegos AIS"
+      },
+      "text": {
+        "ca": "Jocs curts per entrenar l'atenció cap endins, per a adults i per als més petits.",
+        "es": "Juegos cortos para entrenar la atención hacia dentro, para adultos y para los peques."
+      },
+      "imatge": "img/eines/juegos-ais.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/juegos-ais.html",
+      "destacat": true
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "Racó de calma",
+        "es": "Rincón de calma"
+      },
+      "text": {
+        "ca": "Jocs visuals i curts perquè els infants practiquin estar amb el que senten.",
+        "es": "Juegos visuales y cortos para que los niños practiquen estar con lo que sienten."
+      },
+      "imatge": "img/eines/rincon.jpg",
+      "enllac": "https://aprens-app.netlify.app/rincon/"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "L'escala: exposició pas a pas",
+        "es": "La escalera: exposición paso a paso"
+      },
+      "text": {
+        "ca": "Un esglaó cada vegada, no per aguantar la por sinó per fer el pas acompanyant-te per dins.",
+        "es": "Un peldaño cada vez, no para aguantar el miedo sino para dar el paso acompañándote por dentro."
+      },
+      "imatge": "img/eines/escalera.jpg",
+      "enllac": "https://aprens-app.netlify.app/exposicion/"
+    },
+    {
+      "tipus": "esport",
+      "titol": {
+        "ca": "Pedala des de dins",
+        "es": "Pedalea desde dentro"
+      },
+      "text": {
+        "ca": "Ciclisme de competició des de la tasca i l'amor per la bici, no des del fuet.",
+        "es": "Ciclismo de competición desde la tarea y el amor a la bici, no desde el látigo."
+      },
+      "imatge": "img/eines/pedalea.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/pedalea_desde_dentro_aprens.html"
     },
     {
       "tipus": "article",
@@ -108,7 +207,8 @@
       "imatge": "img/novetats/guia-pares-fills-adolescents.jpg",
       "enllac": "descarregues/APRENS-guia-pares-fills-adolescents.pdf",
       "descarrega": true,
-      "idioma_doc": "ca"
+      "idioma_doc": "ca",
+      "destacat": true
     },
     {
       "tipus": "article",
@@ -147,7 +247,8 @@
         "es": "Entrevista de Elena Ballestero sobre AIS APRENS, la app para prevenir conductas evitativas y compulsivas y usar el móvil para entrenar la atención."
       },
       "enllac": "https://www.ultimahora.es/noticias/local/2026/02/27/2578357/movil-puede-usarse-para-entrenar-atencion-combatir-uso-endemoniado-redes-sociales.html",
-      "imatge": "img/novetats/tofol-despatx.jpg"
+      "imatge": "img/novetats/ais-aprens-app.jpg",
+      "destacat": true
     }
   ],
   "llibres": [
@@ -175,16 +276,19 @@
             "ca": "En català",
             "es": "En catalán"
           },
-          "url": "https://www.amazon.es/dp/B0DWFMRFZW"
+          "url": "https://www.amazon.es/dp/B0DWFMRFZW",
+          "idioma": "ca"
         },
         {
           "text": {
             "ca": "En castellà",
             "es": "En castellano"
           },
-          "url": "https://www.amazon.es/dp/B0DW919TSR"
+          "url": "https://www.amazon.es/dp/B0DW919TSR",
+          "idioma": "es"
         }
-      ]
+      ],
+      "destacat": true
     },
     {
       "titol": "Cría desde dentro",
@@ -226,7 +330,8 @@
       },
       "estat": "disponible",
       "portada": "img/llibre-teoria-efecto-consciente.jpg",
-      "enllac": "https://www.amazon.es/dp/B0HJNZY46W"
+      "enllac": "https://www.amazon.es/dp/B0HJNZY46W",
+      "destacat": true
     }
   ],
   "fotos": [],
@@ -238,6 +343,33 @@
     {
       "nom": "AIS MINDPLACE",
       "url": "https://apps.apple.com/es/app/ais-mindplace/id6759057064"
+    }
+  ],
+  "videos": [
+    {
+      "titol": "La Teoría del Efecto Consciente",
+      "src": "https://aprens-app.netlify.app/assets/video/video-tec.mp4",
+      "poster": "img/videos/tec.jpg"
+    },
+    {
+      "titol": "El sobrepensamiento",
+      "src": "https://aprens-app.netlify.app/assets/video/video-sobrepensamiento.mp4",
+      "poster": "img/videos/sobrepensamiento.jpg"
+    },
+    {
+      "titol": "Cómo funciona tu cerebro",
+      "src": "https://aprens-app.netlify.app/assets/video/video-cerebro.mp4",
+      "poster": "img/videos/cerebro.jpg"
+    },
+    {
+      "titol": "Respirar es aparecer",
+      "src": "https://aprens-app.netlify.app/assets/video/video-respirar.mp4",
+      "poster": "img/videos/respirar.jpg"
+    },
+    {
+      "titol": "Sentir conscientemente",
+      "src": "https://aprens-app.netlify.app/assets/video/video-sentir.mp4",
+      "poster": "img/videos/sentir.jpg"
     }
   ]
 }

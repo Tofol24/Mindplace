@@ -49,6 +49,11 @@
         <strong>Explica-ho</strong>
         <span data-t="expD">Una eina per organitzar els apunts, repassar amb preguntes i corregir exercicis.</span>
       </a>
+      <a class="porta lab" id="l-laboratori" href="https://aprens-app.netlify.app/#/tool/laboratorio_tec">
+        <span class="etiqueta" data-t="labEt">Per a psicòlegs</span>
+        <strong data-t="labT">Laboratori TEC</strong>
+        <span data-t="labD">La Teoria de l'Efecte Conscient feta laboratori: entendre el model, practicar l'AIS i mesurar-ne el canvi.</span>
+      </a>
     </div>
     <div class="apps" id="appstore" hidden>
       <img src="img/app-ais-sessio.jpg" width="360" height="510" alt="Il·lustració de l'app: una silueta amb tres punts on portar l'atenció. 1, coll: connecta amb la gola i el clatell. 2, pit: sent el cor i els pulmons. 3, panxa: percep l'estómac i els budells." data-alt="appAlt" loading="lazy">
@@ -60,10 +65,27 @@
     </div>
   </section>
 
+  <section id="s-destacats" class="destacats" aria-roledescription="carrusel" aria-labelledby="t-destacats" hidden>
+    <h2 id="t-destacats" class="sr" data-t="destacats">Destacats</h2>
+    <div class="pantalles" id="pantalles" aria-live="off"></div>
+    <div class="control">
+      <button type="button" id="c-ant" aria-label="Anterior" data-aria="ant">‹</button>
+      <div class="punts" id="punts" role="group" aria-label="Pantalles" data-aria="pantallesN"></div>
+      <button type="button" id="c-seg" aria-label="Següent" data-aria="seg">›</button>
+      <button type="button" id="c-pausa" class="pausa" aria-pressed="false" data-t="pausa">Atura</button>
+    </div>
+  </section>
+
   <section id="s-novetats" aria-labelledby="t-novetats" hidden>
     <h2 id="t-novetats" data-t="novetats">Novetats i aparicions</h2>
     <div class="filtres" id="filtres" role="group" aria-label="Filtra"></div>
     <div class="llista" id="novetats"></div>
+  </section>
+
+  <section id="s-videos" aria-labelledby="t-videos" hidden>
+    <h2 id="t-videos" data-t="videos">Vídeos</h2>
+    <p class="suau" data-t="videosD">Explicacions curtes, en castellà, sobre l'atenció, el cos i la Teoria de l'Efecte Conscient.</p>
+    <div class="videos" id="videos"></div>
   </section>
 
   <section id="s-llibres" aria-labelledby="t-llibres" hidden>
