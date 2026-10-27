@@ -12,7 +12,7 @@ const T = {
     intro: "APRENS es el gabinete de psicología de Tòfol Villalonga en Inca. Desde aquí puedes entrar en las herramientas que usamos en terapia, pedir cita o conocer la consulta, y seguir lo que vamos publicando.",
     entrades: "Entradas",
     appEt: "Para pacientes", appT: "App APRENS", appD: "Las herramientas de terapia (AIS, TEC, registros y prácticas) en tu móvil. Lo que apuntas se queda en tu dispositivo.",
-    citaEt: "Consulta", citaT: "Pedir cita", citaD: "Reserva una primera visita o una sesión.",
+    citaEt: "Consulta", citaT: "Pedir cita", citaD: "Elige día y hora en Doctoralia, para una primera visita o una sesión.",
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
     expEt: "Estudio", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
