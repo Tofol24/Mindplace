@@ -239,7 +239,10 @@ async function sincronizar({ manual = false } = {}) {
       .sort((a, b) => a.numero.localeCompare(b.numero));
     if (!lista.length) { if (manual) aviso("No hay nada pendiente de enviar."); return; }
     pintarEstado();
-    for (const alb of lista) {
+    for (const { id } of lista) {
+      // Se relee justo antes de enviarlo: mientras la ronda envía otros, este pudo reabrirse para corregirlo.
+      const alb = await db.obtener("albaranes", id);
+      if (!alb || !(alb.estado === "pendiente" || (manual && alb.estado === "error"))) continue;
       if (alb.estado === "error") alb.estado = "pendiente";
       const r = await enviarUno(alb);
       if (r === "ok") enviados++;
@@ -423,13 +426,15 @@ async function vistaEditor(alb) {
   const inputNombre = h("input", {
     value: c.nombre, autocomplete: "off", placeholder: "Nombre o empresa",
     oninput: (e) => { c.nombre = e.target.value; c.holdedId = ""; pintarChip(); cambiado(); buscarClientes(e.target.value); },
-    onblur: () => setTimeout(() => sugerencias.replaceChildren(), 250),
+    // Solo se cierran si el foco sale del nombre y de las sugerencias (así funcionan con teclado).
+    onblur: (e) => { if (!sugerencias.contains(e.relatedTarget)) setTimeout(() => sugerencias.replaceChildren(), 250); },
   });
   camposCliente.nombre = inputNombre;
   const campoCliente = (clave, etiqueta, attrs = {}) => {
     const el = entrada(c, clave, attrs);
-    // Otro NIF es otro cliente: deja de valer la ficha de Holded elegida.
-    if (clave === "nif") el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
+    // Otro NIF, email o teléfono puede ser otra persona (sobre todo sin NIF): deja de valer
+    // la ficha de Holded elegida y el servidor vuelve a buscarla con los datos nuevos.
+    if (["nif", "email", "telefono"].includes(clave)) el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
     camposCliente[clave] = el;
     return campo(etiqueta, el);
   };
