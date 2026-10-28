@@ -127,23 +127,95 @@ export async function pedirPersistencia() {
   try { return await navigator.storage?.persist?.(); } catch { return false; }
 }
 
-/** Suma (o resta) unidades al stock de varios artículos en una sola transacción. */
-export function moverStock(movimientos) {
-  const lista = movimientos.filter((m) => m.articuloId && m.cantidad);
-  if (!lista.length) return Promise.resolve();
+/** Suma los movimientos de un mismo artículo: dos líneas del mismo grifo son una sola resta. */
+function agrupar(movimientos) {
+  const porId = new Map();
+  for (const m of movimientos) {
+    if (!m.articuloId || !m.cantidad) continue;
+    porId.set(m.articuloId, (porId.get(m.articuloId) || 0) + Number(m.cantidad));
+  }
+  return porId;
+}
+
+const r4 = (n) => Math.round(n * 10000) / 10000;
+
+// Cada artículo se lee y se escribe una sola vez dentro de la transacción, así no se pisan.
+function aplicarMovimientos(store, movimientos, ahora) {
+  for (const [id, delta] of agrupar(movimientos)) {
+    const r = store.get(id);
+    r.onsuccess = () => {
+      if (r.result) store.put({ ...r.result, stock: r4((Number(r.result.stock) || 0) + delta), actualizado: ahora });
+    };
+  }
+}
+
+function transaccion(stores, fn) {
   return conReintento((db) => new Promise((ok, ko) => {
-    const t = db.transaction("articulos", "readwrite");
-    const s = t.objectStore("articulos");
-    for (const m of lista) {
-      const r = s.get(m.articuloId);
-      r.onsuccess = () => {
-        if (!r.result) return;
-        const stock = Math.round(((Number(r.result.stock) || 0) + m.cantidad) * 10000) / 10000;
-        s.put({ ...r.result, stock, actualizado: new Date().toISOString() });
-      };
-    }
-    t.oncomplete = () => ok();
+    const t = db.transaction(stores, "readwrite");
+    const resultado = { hecho: false };
+    fn(t, resultado);
+    t.oncomplete = () => ok(resultado.hecho);
     t.onerror = () => ko(t.error);
     t.onabort = () => ko(t.error);
   }));
+}
+
+/** Suma (o resta) unidades al stock de varios artículos en una sola transacción. */
+export function moverStock(movimientos) {
+  return transaccion(["articulos"], (t, res) => {
+    aplicarMovimientos(t.objectStore("articulos"), movimientos, new Date().toISOString());
+    res.hecho = true;
+  });
+}
+
+/**
+ * Guarda el albarán y mueve el stock a la vez (o nada). Con `siEstado`, solo si el
+ * albarán guardado sigue en ese estado: así no se firma ni se descuenta dos veces.
+ */
+export function guardarAlbaranYStock(alb, movimientos, siEstado) {
+  return transaccion(["albaranes", "articulos"], (t, res) => {
+    const albaranes = t.objectStore("albaranes");
+    const r = albaranes.get(alb.id);
+    r.onsuccess = () => {
+      if (siEstado && r.result && r.result.estado !== siEstado) return;
+      albaranes.put(alb);
+      aplicarMovimientos(t.objectStore("articulos"), movimientos, new Date().toISOString());
+      res.hecho = true;
+    };
+  });
+}
+
+/**
+ * Registra una compra en el catálogo en una sola transacción: crea los artículos
+ * nuevos, actualiza coste y stock de los existentes y marca la compra como
+ * registrada. Si la compra ya no está «revisar» (registrada en otra ventana), no hace nada.
+ */
+export function registrarCompra(compra, nuevos, cambios) {
+  return transaccion(["compras", "articulos"], (t, res) => {
+    const compras = t.objectStore("compras");
+    const articulos = t.objectStore("articulos");
+    const r = compras.get(compra.id);
+    r.onsuccess = () => {
+      if (!r.result || r.result.estado !== "revisar") return;
+      const ahora = new Date().toISOString();
+      for (const a of nuevos) articulos.put({ ...a, actualizado: ahora });
+      for (const [id, c] of cambios) {
+        const g = articulos.get(id);
+        g.onsuccess = () => {
+          if (!g.result) return;
+          articulos.put({
+            ...g.result,
+            // El coste es el de la última compra: es lo que costará reponerlo.
+            coste: c.coste || g.result.coste,
+            ref: g.result.ref || c.ref || "",
+            proveedor: c.proveedor || g.result.proveedor || "",
+            stock: r4((Number(g.result.stock) || 0) + c.cantidad),
+            actualizado: ahora,
+          });
+        };
+      }
+      compras.put(compra);
+      res.hecho = true;
+    };
+  });
 }

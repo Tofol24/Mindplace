@@ -156,35 +156,46 @@ async function registrar(c) {
   const lineas = c.lineas.filter((l) => l.descripcion.trim());
   if (!lineas.length) { aviso("La compra no tiene líneas.", "error"); return false; }
   if (lineas.some((l) => !(Number(l.cantidad) > 0) || costeNeto(l) < 0)) { aviso("Revisa las cantidades y los precios.", "error"); return false; }
-  const ahora = new Date().toISOString();
+  // Plan: a qué artículo va cada línea (existente o nuevo). Dos líneas del mismo artículo se suman.
+  const catalogo = await db.todos("articulos");
+  const nuevos = [];
+  const cambios = new Map();
   for (const l of lineas) {
     if (!l.alStock) continue;
-    const catalogo = await db.todos("articulos");
-    const art = (l.articuloId && catalogo.find((a) => a.id === l.articuloId)) || buscarArticulo(catalogo, { ref: l.referencia, nombre: l.descripcion });
     const coste = costeNeto(l);
-    if (art) {
-      await db.guardar("articulos", {
-        ...art,
-        // El coste es el de la última compra: es lo que costará reponerlo.
-        coste: coste || art.coste,
-        ref: art.ref || l.referencia || "",
-        proveedor: c.proveedor || art.proveedor || "",
-        stock: r4((Number(art.stock) || 0) + Number(l.cantidad)),
-        actualizado: ahora,
-      });
-      l.articuloId = art.id;
+    const existente = (l.articuloId && catalogo.find((a) => a.id === l.articuloId)) || buscarArticulo(catalogo, { ref: l.referencia, nombre: l.descripcion });
+    if (existente) {
+      const cambio = cambios.get(existente.id) || { cantidad: 0, coste: 0, ref: l.referencia, proveedor: c.proveedor };
+      cambio.cantidad = r4(cambio.cantidad + Number(l.cantidad));
+      cambio.coste = coste || cambio.coste;
+      cambios.set(existente.id, cambio);
+      l.articuloId = existente.id;
+      continue;
+    }
+    const yaNuevo = buscarArticulo(nuevos, { ref: l.referencia, nombre: l.descripcion });
+    if (yaNuevo) {
+      yaNuevo.stock = r4(yaNuevo.stock + Number(l.cantidad));
+      yaNuevo.coste = coste || yaNuevo.coste;
+      l.articuloId = yaNuevo.id;
     } else {
-      const nuevo = { id: uuid(), nombre: l.descripcion.trim(), ref: l.referencia || "", proveedor: c.proveedor || "", unidad: "ud", coste, margen: null, precio: null, stock: r4(l.cantidad), actualizado: ahora };
-      await db.guardar("articulos", nuevo);
+      const nuevo = { id: uuid(), nombre: l.descripcion.trim(), ref: l.referencia || "", proveedor: c.proveedor || "", unidad: "ud", coste, margen: null, precio: null, stock: r4(l.cantidad) };
+      nuevos.push(nuevo);
       l.articuloId = nuevo.id;
     }
   }
-  c.lineas = lineas;
-  c.estado = "registrada";
-  c.registradaEn = ahora;
-  c.error = "";
-  await db.guardar("compras", c);
-  return true;
+  // Lo que se registra son los importes revisados (líneas); los del documento se guardan aparte.
+  const t = totalesCompra({ ...c, lineas, base: null, cuotaIva: null, total: null }).calculado;
+  const registrada = {
+    ...c,
+    lineas,
+    documento: c.documento || { base: c.base, cuotaIva: c.cuotaIva, total: c.total },
+    base: t.base, cuotaIva: t.cuotaIva, total: t.total,
+    estado: "registrada",
+    registradaEn: new Date().toISOString(),
+    error: "",
+  };
+  // Si ya se registró en otra ventana, no se vuelve a sumar nada.
+  return (await db.registrarCompra(registrada, nuevos, cambios)) ? "ok" : "ya";
 }
 
 // ---------------------------------------------------------------------------
@@ -390,7 +401,11 @@ async function vistaRevisar(ctx, c, volver, verFoto, borrar) {
       clearTimeout(timer);
       registrarBtn.disabled = true;
       try {
-        if (await registrar(c)) { aviso("Compra registrada: coste y stock actualizados ✓"); ir(`/compra/${c.id}`); }
+        const r = await registrar(c);
+        if (r) {
+          aviso(r === "ok" ? "Compra registrada: coste y stock actualizados ✓" : "Esta compra ya estaba registrada.", r === "ok" ? "ok" : "info");
+          ir(`/compra/${c.id}`);
+        }
       } finally {
         registrarBtn.disabled = false;
       }

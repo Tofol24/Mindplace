@@ -96,7 +96,24 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
     "aria-label": "Dictado del albarán",
   });
   const estado = h("p", { class: "ayuda", role: "status" });
-  if (alb.dictadoPendiente) estado.textContent = "Hay un dictado guardado: se aplicará en cuanto haya cobertura.";
+  // Dictado guardado sin cobertura: con el borrador abierto, se aplica con este botón.
+  const pendiente = alb.dictadoPendiente && h("div", { class: "pendiente-dictado" },
+    h("p", {}, `Dictado guardado sin cobertura: «${alb.dictadoPendiente.slice(0, 160)}${alb.dictadoPendiente.length > 160 ? "…" : ""}»`),
+    h("button", {
+      type: "button", class: "btn secundario",
+      onclick: async (e) => {
+        if (!navigator.onLine || !ctx.ajustes().claveApp) { estado.textContent = "Aún no hay cobertura. Se puede aplicar en cuanto vuelva."; return; }
+        e.target.disabled = true;
+        estado.textContent = "Rellenando el albarán…";
+        const r = await interpretar(ctx, alb.dictadoPendiente);
+        e.target.disabled = false;
+        if (!r.ok) { estado.textContent = r.pasajero ? "No se ha podido ahora; vuelve a intentarlo en un momento." : r.error; return; }
+        await aplicarDictado(alb, r.datos, ctx.ajustes());
+        delete alb.dictadoPendiente;
+        await guardar();
+        alAplicar();
+      },
+    }, "Aplicar el dictado guardado"));
 
   let rec = null;
   let base = "";
@@ -171,6 +188,7 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
 
   return h("section", { class: "tarjeta dictado" },
     h("h3", {}, "Dictar el albarán"),
+    pendiente,
     texto,
     h("div", { class: "botones-linea" }, micro, rellenar),
     estado);

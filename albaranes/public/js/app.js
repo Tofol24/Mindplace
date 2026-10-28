@@ -694,9 +694,10 @@ function vistaFirma(alb) {
       alb.estado = "pendiente";
       alb.error = "";
       alb.stockDescontado = true;
-      await guardarAlbaran(alb);
-      // El material del catálogo sale del stock al firmar.
-      await db.moverStock(alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })));
+      alb.actualizado = new Date().toISOString();
+      // Firma y salida del material del stock, a la vez: o las dos cosas o ninguna.
+      const firmado = await db.guardarAlbaranYStock(alb, alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })), "borrador");
+      if (!firmado) { ir(`/albaran/${alb.id}`); return; }
       await recordarCliente(alb.cliente);
       ir(`/albaran/${alb.id}`);
       sincronizar();
@@ -750,12 +751,11 @@ function vistaDetalle(alb) {
             alb.estado = "borrador";
             alb.firma = "";
             alb.firmadoEn = "";
-            // Se devuelve el material al stock: se volverá a descontar al firmar de nuevo.
-            if (alb.stockDescontado) {
-              await db.moverStock(alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })));
-              alb.stockDescontado = false;
-            }
-            await guardarAlbaran(alb);
+            // Se devuelve el material al stock (a la vez que se reabre): se descontará al firmar de nuevo.
+            const devolver = alb.stockDescontado ? alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })) : [];
+            alb.stockDescontado = false;
+            alb.actualizado = new Date().toISOString();
+            if (!(await db.guardarAlbaranYStock(alb, devolver, "error"))) { ir(`/albaran/${alb.id}`); return; }
             ir(`/editar/${alb.id}`);
           },
         }, "Corregir"),
