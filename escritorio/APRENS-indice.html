@@ -392,7 +392,9 @@ function bloquePortada(){
   if(!p.visites && !nClics) return h + '<p class="uso-msg">Todavía no hay visitas registradas en la portada en este periodo.</p>';
   h += '<div class="kpis">' + kpi(p.visites, 'visitas a la portada') + kpi(nClics, 'clics en enlaces') + '</div>';
   h += '<div class="dias" aria-hidden="true">' + uso.seriePt.map(function(x){
-    return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' visitas"></i>'; }).join("") + '</div>';
+    return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' visitas"></i>'; }).join("") + '</div>' +
+    '<details class="uso-msg"><summary>Visitas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Visitas</th></tr></thead><tbody>' +
+    uso.seriePt.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td></tr>'; }).join("") + '</tbody></table></details>';
   h += tablaPt(p.fonts, FONT_TXT, 'De dónde llegan') + tablaPt(p.clics, DESTI_TXT, 'Dónde entran');
   h += '<p class="uso-msg">Cuenta todas las visitas, sin aviso previo, porque no guarda nada en el dispositivo ni nada que identifique a la persona: no se pueden unir visitas ni saber si son personas distintas. Si recargan la página, cuenta otra vez. Para saber cuántas llegan por un QR o un correo, añade <code>?font=qr</code> o <code>?font=correu</code> al final del enlace.</p>';
   return h;
