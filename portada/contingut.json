@@ -215,17 +215,19 @@
       "destacat": true
     },
     {
-      "tipus": "article",
+      "tipus": "esport",
       "titol": {
-        "ca": "El paper dels pares dins l'esport de base",
-        "es": "El papel de los padres en el deporte base"
+        "ca": "Els pares també juguen: el paper dels pares dins l'esport de base",
+        "es": "Los padres también juegan: el papel de los padres en el deporte base"
       },
       "text": {
-        "ca": "Unes pautes que ajuden els fills a jugar millor i d'una manera més sana.",
-        "es": "Unas pautas que ayudan a los hijos a jugar mejor y de una manera más sana."
+        "ca": "Guia revisada en PDF: com acompanyar els fills a l'esport sense afegir-los pressió, als partits, als mals moments, quan juguen poc o destaquen molt, i com compaginar-ho amb els estudis.",
+        "es": "Guía revisada en PDF: cómo acompañar a los hijos en el deporte sin añadirles presión, en los partidos, en los malos momentos, cuando juegan poco o destacan mucho, y cómo compaginarlo con los estudios."
       },
       "imatge": "img/novetats/pares-esport-de-base.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-PAPER-DELS-PARES-A-LESPORT-BASE.pdf"
+      "enllac": "descarregues/APRENS-paper-pares-esport-base.pdf",
+      "descarrega": true,
+      "idioma_doc": "ca"
     },
     {
       "tipus": "article",
