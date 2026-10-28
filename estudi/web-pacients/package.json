@@ -1,0 +1,9 @@
+{
+  "name": "explica-ho-pacients",
+  "private": true,
+  "description": "Explica-ho amb codis d'accés: pàgina estàtica i intermediari amb Claude (Netlify Edge Function).",
+  "dependencies": {
+    "@netlify/blobs": "11.1.4"
+  },
+  "type": "module"
+}

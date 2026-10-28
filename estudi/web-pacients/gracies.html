@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Codi d'accés d'Explica-ho</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="_base.css">
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <div id="wait" class="panel" role="status"><h1>Comprovant el pagament…</h1><p class="muted">Només són uns segons.</p></div>
+  <div id="done" class="panel" hidden>
+    <h1>Aquest és el teu codi d'accés</h1>
+    <div class="code" id="code"></div>
+    <div class="row"><button class="btn ghost" id="copy" type="button">Copia el codi</button><a class="btn" href="/">Obre Explica-ho</a></div>
+    <p><span id="saved">Ja l'hem desat en aquest navegador, així que pots començar directament.</span> <strong>Guarda'l també en un lloc segur</strong>: el necessitaràs per fer servir l'eina en un altre ordinador o mòbil. A partir de la factura del segon mes també hi sortirà; si tanques aquesta pàgina sense guardar-lo, hi pots tornar des de l'historial del navegador.</p>
+    <p id="mail" hidden>També te l'hem enviat per correu, a l'adreça amb què has pagat. Si no et surt, mira la carpeta de correu brossa.</p>
+    <p class="muted small" id="plan"></p>
+  </div>
+  <div id="fail" class="panel" hidden><h1>No hem pogut confirmar el pagament</h1><p id="failMsg"></p><div class="row"><button class="btn" id="retry" type="button">Torna-ho a provar</button><a class="btn ghost" href="subscriu.html">Torna a la subscripció</a></div></div>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const sid = new URLSearchParams(location.search).get("session_id") || "";
+async function load(tries = 0) {
+  try {
+    const r = await fetch("/api/codi?session_id=" + encodeURIComponent(sid));
+    const b = await r.json().catch(() => ({}));
+    if (r.status === 409 && tries < 6) { setTimeout(() => load(tries + 1), 2000); return; }
+    if (!r.ok || !b.codi) throw new Error(r.status === 409 ? "El pagament encara no consta com a fet. Espera un minut i torna-ho a provar." : "No s'ha pogut recuperar el codi d'aquest pagament. Torna-ho a provar d'aquí a una estona; si s'ha cobrat i continua fallant, escriu a l'adreça de contacte de les condicions d'ús.");
+    $("#code").textContent = b.codi;
+    $("#plan").textContent = b.pla ? `Pla ${b.pla}: fins a ${b.quota} peticions al mes.` : "";
+    let saved = false;
+    try { localStorage.setItem("explica:codi", b.codi); saved = localStorage.getItem("explica:codi") === b.codi; } catch {}
+    if (!saved) $("#saved").textContent = "Aquest navegador no ha deixat desar-lo: copia'l ara i escriu-lo a Explica-ho, a Configuració.";
+    $("#mail").hidden = !b.correu;
+    $("#wait").hidden = true; $("#done").hidden = false;
+  } catch (e) { $("#failMsg").textContent = e.message; $("#wait").hidden = true; $("#fail").hidden = false; }
+}
+$("#copy").addEventListener("click", () => {
+  navigator.clipboard?.writeText($("#code").textContent).then(() => { $("#copy").textContent = "Copiat"; }, () => {
+    const r = document.createRange(); r.selectNodeContents($("#code")); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+  });
+});
+$("#retry").addEventListener("click", () => { $("#fail").hidden = true; $("#wait").hidden = false; load(); });
+if (sid) load(); else { $("#failMsg").textContent = "Falta la referència del pagament."; $("#wait").hidden = true; $("#fail").hidden = false; }
+</script>
+</body>
+</html>

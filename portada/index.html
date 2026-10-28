@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>APRENS · Tòfol Villalonga</title>
+<meta name="description" content="APRENS, gabinet de psicologia de Tòfol Villalonga a Inca: les eines que acompanyen la teràpia, la consulta, cites i novetats.">
+<link rel="icon" href="img/logo.png">
+<link rel="stylesheet" href="portada.css">
+</head>
+<body>
+<header class="top">
+  <a class="marca" href="/"><img src="img/logo.png" alt="" width="64" height="66"><span><b>APRENS</b><small data-t="sub">Psicologia · Tòfol Villalonga</small></span></a>
+  <div class="idioma" role="group" aria-label="Idioma / Idioma">
+    <button type="button" data-lang="ca" aria-pressed="true">CA</button>
+    <button type="button" data-lang="es" aria-pressed="false">ES</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-text">
+      <h1 data-t="h1">Un lloc on trobar les eines, la consulta i les novetats d'APRENS</h1>
+      <p data-t="intro">APRENS és el gabinet de psicologia de Tòfol Villalonga a Inca. Des d'aquí pots entrar a les eines que feim servir a teràpia, demanar cita o conèixer la consulta, i seguir el que anam publicant.</p>
+    </div>
+    <img class="retrat" src="img/tofol-aprens.jpg" width="750" height="1000" alt="Tòfol Villalonga a l'entrada d'APRENS, a Inca, al costat del cartell dels serveis del centre" data-alt="retratAlt">
+  </section>
+
+  <section aria-labelledby="t-entrades">
+    <h2 id="t-entrades" class="sr" data-t="entrades">Entrades</h2>
+    <div class="portes">
+      <a class="porta app" id="l-app" href="https://aprens-app.netlify.app/">
+        <span class="etiqueta" data-t="appEt">Per a pacients</span>
+        <strong data-t="appT">App APRENS</strong>
+        <span data-t="appD">Les eines de teràpia (AIS, TEC, registres i pràctiques) al teu mòbil. El que hi apuntes es queda al teu dispositiu.</span>
+      </a>
+      <a class="porta cita" id="l-cita" href="https://www.doctoralia.es/perfil/tofol-villalonga-melis" rel="noopener">
+        <span class="etiqueta" data-t="citaEt">Consulta</span>
+        <strong data-t="citaT">Demanar cita</strong>
+        <span data-t="citaD">Tria dia i hora a Doctoralia, per a una primera visita o una sessió.</span>
+      </a>
+      <a class="porta consulta" id="l-consulta" href="https://aprens.es/">
+        <span class="etiqueta" data-t="consEt">Gabinet</span>
+        <strong data-t="consT">La consulta: aprens.es</strong>
+        <span data-t="consD">Teràpies, equip, serveis i contacte del gabinet d'Inca.</span>
+      </a>
+      <a class="porta explica" id="l-explica" href="https://explica.aprens.net/">
+        <span class="etiqueta" data-t="expEt">Estudi</span>
+        <strong>Explica-ho</strong>
+        <span data-t="expD">Una eina per organitzar els apunts, repassar amb preguntes i corregir exercicis.</span>
+      </a>
+      <a class="porta lab" id="l-laboratori" href="https://aprens-app.netlify.app/#/tool/laboratorio_tec">
+        <span class="etiqueta" data-t="labEt">Per a psicòlegs</span>
+        <strong data-t="labT">Laboratori TEC</strong>
+        <span data-t="labD">La Teoria de l'Efecte Conscient feta laboratori: entendre el model, practicar l'AIS i mesurar-ne el canvi.</span>
+      </a>
+    </div>
+    <div class="apps" id="appstore" hidden>
+      <img src="img/app-ais-sessio.jpg" width="360" height="510" alt="Il·lustració de l'app: una silueta amb tres punts on portar l'atenció. 1, coll: connecta amb la gola i el clatell. 2, pit: sent el cor i els pulmons. 3, panxa: percep l'estómac i els budells." data-alt="appAlt" loading="lazy">
+      <div>
+        <h3 data-t="appsT">Apps per a iPhone</h3>
+        <p data-t="appsD">Sessions guiades d'Atenció Interna Sensorial (AIS): portar l'atenció al coll, al pit i a la panxa per baixar l'alerta i estar amb un mateix.</p>
+        <p class="enllacos" id="l-apps"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-destacats" class="destacats" aria-roledescription="carrusel" aria-labelledby="t-destacats" hidden>
+    <h2 id="t-destacats" class="sr" data-t="destacats">Destacats</h2>
+    <div class="pantalles" id="pantalles" aria-live="off"></div>
+    <div class="control">
+      <button type="button" id="c-ant" aria-label="Anterior" data-aria="ant">‹</button>
+      <div class="punts" id="punts" role="group" aria-label="Pantalles" data-aria="pantallesN"></div>
+      <button type="button" id="c-seg" aria-label="Següent" data-aria="seg">›</button>
+      <button type="button" id="c-pausa" class="pausa" aria-pressed="false" data-t="pausa">Atura</button>
+    </div>
+  </section>
+
+  <section id="s-novetats" aria-labelledby="t-novetats" hidden>
+    <h2 id="t-novetats" data-t="novetats">Novetats i aparicions</h2>
+    <div class="filtres" id="filtres" role="group" aria-label="Filtra"></div>
+    <div class="llista" id="novetats"></div>
+  </section>
+
+  <section id="s-videos" aria-labelledby="t-videos" hidden>
+    <h2 id="t-videos" data-t="videos">Vídeos</h2>
+    <p class="suau" data-t="videosD">Explicacions curtes, en castellà, sobre l'atenció, el cos i la Teoria de l'Efecte Conscient.</p>
+    <div class="videos" id="videos"></div>
+  </section>
+
+  <section id="s-llibres" aria-labelledby="t-llibres" hidden>
+    <h2 id="t-llibres" data-t="llibres">Llibres</h2>
+    <div class="llibres" id="llibres"></div>
+    <p class="autor" id="autor" hidden><a id="l-serie" href="#" rel="noopener noreferrer" data-t="serie">La col·lecció completa «Crece, cría y trasciende desde dentro» →</a> <a id="l-autor" href="#" rel="noopener noreferrer" data-t="autor">Tots els llibres de l'autor a Amazon →</a></p>
+  </section>
+
+  <section id="s-fotos" aria-labelledby="t-fotos" hidden>
+    <h2 id="t-fotos" data-t="fotos">El despatx i el dia a dia</h2>
+    <div class="fotos" id="fotos"></div>
+  </section>
+
+  <section class="contacte" aria-labelledby="t-contacte">
+    <h2 id="t-contacte" data-t="contacte">Contacte</h2>
+    <div class="dades">
+      <p><a href="tel:+34636937661">636 93 76 61</a> · <a href="https://wa.me/34636937661">WhatsApp</a> · <a href="mailto:info@aprens.es">info@aprens.es</a></p>
+      <p>C/ Mare de Déu de l'Esperança, 70, 2n · 07300 Inca (Mallorca)</p>
+      <p class="suau" data-t="horari">Horari: de 9 a 21 h</p>
+      <p id="xarxes" hidden></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><a href="avis-legal.html" data-t="avis">Avís legal i privacitat</a> · <span data-t="galetes">Aquesta web no fa servir galetes ni analítica.</span></p>
+  <p class="suau">© APRENS · Cristóbal Villalonga Melis</p>
+</footer>
+<script src="portada.js"></script>
+</body>
+</html>

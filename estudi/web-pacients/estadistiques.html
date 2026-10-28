@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Estadístiques d'Explica-ho</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="_base.css">
+<style>
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .stat b{display:block;font-family:var(--f-display);font-size:1.5rem}
+  .wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:.92rem}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child,td.codis{text-align:left}
+  td.codis{white-space:normal;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+  input[type=password],select{border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:10px 12px;font:inherit}
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <h1>Estadístiques d'ús</h1>
+  <p class="muted">Peticions, tokens i cost de Claude per dia, segons el que Claude informa a cada resposta. El cost és en dòlars, a preu de llista (sense IVA). No es guarda cap contingut.</p>
+
+  <form id="f" class="panel row">
+    <input type="password" id="k" autocomplete="current-password" placeholder="Clau d'administració" aria-label="Clau d'administració">
+    <select id="dies" aria-label="Període"><option value="7">7 dies</option><option value="31" selected>31 dies</option><option value="92">3 mesos</option><option value="400">13 mesos</option></select>
+    <button class="btn" type="submit">Mostra</button>
+  </form>
+  <p class="err" id="err" role="alert" hidden></p>
+  <p class="muted small" id="status" role="status"></p>
+  <div id="out" hidden>
+    <div class="stats" id="sum"></div>
+    <div class="wrap"><table><thead><tr><th>Dia</th><th>Peticions</th><th>Tokens entrada</th><th>Tokens sortida</th><th>Cost</th><th>Per petició</th><th>Per codi (3 primeres lletres)</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="muted small">«Per petició» divideix el cost entre totes les peticions del dia, també les que han fallat o s'han aturat (Claude les cobra igualment). L'asterisc marca els dies amb cost incomplet: algun model sense preu conegut o respostes aturades abans d'acabar.</p>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const usd = (x) => (x || 0).toLocaleString("ca-ES", {style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 3});
+const num = (x) => (x || 0).toLocaleString("ca-ES");
+try { $("#k").value = sessionStorage.getItem("explica:admin") || ""; } catch {}
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault(); $("#err").hidden = true;
+  const k = $("#k").value.trim();
+  try {
+    const r = await fetch("/api/estadistiques?dies=" + $("#dies").value, {headers: {"x-explica-admin": k}});
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(r.status === 401 ? "La clau no és correcta." : r.status === 429 ? "Massa intents. Torna-ho a provar demà." : r.status === 404 ? "Les estadístiques no estan activades (falta EXPLICA_ADMIN a Netlify)." : "No s'han pogut carregar.");
+    try { sessionStorage.setItem("explica:admin", k); } catch {}
+    show(b.dies || []);
+  } catch (x) { $("#err").textContent = x.message; $("#err").hidden = false; }
+});
+function show(days) {
+  const t = days.reduce((a, d) => ({n: a.n + (d.n || 0), cost: a.cost + (d.cost || 0), in: a.in + (d.in || 0), out: a.out + (d.out || 0), np: a.np + (d.sensePreu || 0), part: a.part + (d.parcials || 0)}), {n: 0, cost: 0, in: 0, out: 0, np: 0, part: 0});
+  const active = days.filter(d => d.n).length, codes = new Set(days.flatMap(d => Object.keys(d.codis || {})));
+  const per = t.n ? t.cost / t.n : 0;
+  $("#sum").innerHTML = [
+    ["Peticions", num(t.n)], ["Cost total", usd(t.cost)], ["Cost per petició", usd(per)],
+    ["Cost mitjà per dia amb ús", usd(active ? t.cost / active : 0)], ["Peticions per dia amb ús", active ? (t.n / active).toFixed(1) : "0"],
+    ["Codis diferents", num(codes.size)], ["80 peticions costarien", usd(per * 80)], ["110 peticions costarien", usd(per * 110)],
+  ].map(([l, v]) => `<div class="stat"><span class="muted small">${l}</span><b>${v}</b></div>`).join("")
+    + (t.np || t.part ? `<p class="err small" style="grid-column:1/-1">Dades incompletes: ${t.np ? t.np + " peticions d'un model sense preu conegut (no sumen cost)" : ""}${t.np && t.part ? "; " : ""}${t.part ? t.part + " peticions aturades abans de saber els tokens de sortida (cost parcial)" : ""}. El cost real pot ser més alt.</p>` : "");
+  $("#rows").innerHTML = days.length ? days.map(d => `<tr><td>${esc(d.dia)}</td><td>${num(d.n)}</td><td>${num(d.in)}</td><td>${num(d.out)}</td><td>${usd(d.cost)}${d.sensePreu || d.parcials ? "*" : ""}</td><td>${d.n ? usd(d.cost / d.n) : "–"}</td><td class="codis">${Object.entries(d.codis || {}).sort((a, b) => b[1] - a[1]).map(([c, n]) => esc(c) + ": " + n).join(" · ")}</td></tr>`).join("") : '<tr><td colspan="7">Encara no hi ha dades en aquest període.</td></tr>';
+  $("#out").hidden = false;
+  $("#status").textContent = `Carregats ${days.length} dies amb dades: ${t.n} peticions, ${usd(t.cost)}.`;
+}
+</script>
+</body>
+</html>

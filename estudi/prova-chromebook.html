@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prova d'Explica-ho</title>
+<style>
+  :root{--bg:#f5f7fb;--card:#fff;--ink:#18203a;--muted:#59627e;--line:#dde2ee;--ok:#1d7f55;--ok-soft:#dcf1e7;--bad:#b83b34;--bad-soft:#f8e1df;--warn:#a96b10;--warn-soft:#fbefd9;--accent:#2c47c9}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 16px 48px;display:flex;flex-direction:column;gap:14px}
+  h1{margin:0;font-size:1.7rem}
+  p{margin:0}
+  .muted{color:var(--muted)}
+  .row{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+  .ico{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;color:#fff;background:var(--muted)}
+  .ok .ico{background:var(--ok)} .bad .ico{background:var(--bad)} .warn .ico{background:var(--warn)}
+  .row div{min-width:0}
+  .row strong{display:block}
+  .summary{border-radius:10px;padding:14px;font-weight:600}
+  .summary.ok{background:var(--ok-soft)} .summary.bad{background:var(--bad-soft)} .summary.warn{background:var(--warn-soft)}
+  button{font:inherit;font-weight:700;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:999px;padding:8px 16px;cursor:pointer;margin-top:8px}
+  #nojs{background:var(--bad-soft);border-radius:10px;padding:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Prova d'Explica-ho</h1>
+  <p class="muted">Aquest fitxer comprova si l'ordinador pot fer funcionar Explica-ho. No envia res del que estudies ni cap dada personal: només comprova si pot connectar amb Claude (Anthropic) i amb el servidor dels lectors de PDF (jsDelivr), que reben, com qualsevol web, l'adreça de connexió. Si proves el micròfon, el navegador envia l'àudio al seu servei de reconeixement de veu (a Chrome, de Google); aquesta prova és opcional. Quan acabi, fes una captura de pantalla i envia-la.</p>
+  <div id="nojs"><strong>Si aquest missatge no desapareix en uns segons, aquest ordinador no deixa executar fitxers com aquest.</strong> Explica-ho no hi funcionarà obert des d'un fitxer.</div>
+  <div id="summary" class="summary warn" hidden>Comprovant…</div>
+  <div id="list"></div>
+</main>
+<script>
+"use strict";
+document.getElementById("nojs").remove();
+const list = document.getElementById("list"), summary = document.getElementById("summary");
+summary.hidden = false;
+const results = {};
+function row(id, title) {
+  const el = document.createElement("div");
+  el.className = "row"; el.id = id;
+  el.innerHTML = '<span class="ico">…</span><div><strong></strong><p class="muted">Comprovant…</p></div>';
+  el.querySelector("strong").textContent = title;
+  list.append(el); return el;
+}
+function set(el, state, text) {
+  el.className = "row " + state;
+  el.querySelector(".ico").textContent = state === "ok" ? "✓" : state === "bad" ? "✗" : "!";
+  el.querySelector("p").textContent = text;
+  results[el.id] = state; updateSummary();
+}
+function updateSummary() {
+  const need = ["js", "store", "claude"];
+  if (need.some(k => !results[k])) return;
+  if (need.some(k => results[k] === "bad")) {
+    summary.className = "summary bad";
+    summary.textContent = "Explica-ho no funcionarà en aquest ordinador obert des d'un fitxer. Mira quina línia surt en vermell.";
+  } else if (results.lib === "bad") {
+    summary.className = "summary warn";
+    summary.textContent = "Explica-ho funcionarà, però no podrà llegir PDF ni Word. Haurà de pujar fotos, captures o text enganxat.";
+  } else {
+    summary.className = "summary ok";
+    summary.textContent = "Explica-ho hauria de funcionar en aquest ordinador.";
+  }
+}
+
+// 1. JavaScript
+set(row("js", "Executar el fitxer"), "ok", "El fitxer s'obre i funciona.");
+
+// 2. Guardar dades (i si es conserven d'un dia per l'altre)
+(() => {
+  const el = row("store", "Guardar la feina en aquest ordinador");
+  try {
+    const prev = localStorage.getItem("explica:prova");
+    localStorage.setItem("explica:prova", String(Date.now()));
+    if (prev) {
+      const d = new Date(+prev).toLocaleString("ca-ES");
+      set(el, "ok", "Funciona i es conserva: l'última vegada que vas obrir aquesta prova va ser el " + d + ".");
+    } else {
+      set(el, "ok", "Funciona. Torna a obrir aquest fitxer demà (o després de tancar la sessió del Chromebook): si et diu quan el vas obrir, la feina es conserva. Si torna a sortir aquest missatge, el Chromebook ho esborra en tancar la sessió.");
+    }
+  } catch {
+    set(el, "bad", "Aquest ordinador no deixa guardar res. Caldria descarregar una còpia cada vegada.");
+  }
+})();
+
+// 3. Connexió amb Claude (api.anthropic.com). Una clau falsa ha de tornar "no autoritzat" (401): vol dir que s'hi arriba.
+(async () => {
+  const el = row("claude", "Connectar amb Claude");
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"content-type": "application/json", "x-api-key": "prova", "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
+      body: JSON.stringify({model: "claude-haiku-5-5", max_tokens: 1, messages: [{role: "user", content: "hola"}]}),
+    });
+    if (r.status === 401 || r.status === 403 && (await r.text()).includes("authentication")) set(el, "ok", "S'hi pot connectar.");
+    else if (r.status >= 200 && r.status < 500) set(el, "ok", "S'hi pot connectar (resposta " + r.status + ").");
+    else set(el, "warn", "Hi arriba, però ha respost amb un error (" + r.status + "). Torna-ho a provar més tard.");
+  } catch {
+    set(el, "bad", "La xarxa de l'institut (o el Chromebook) bloqueja api.anthropic.com. Sense això, Claude no pot ordenar el material ni corregir.");
+  }
+})();
+
+// 4. Lector de PDF i Word (es descarrega de cdn.jsdelivr.net)
+(() => {
+  const el = row("lib", "Llegir PDF i Word");
+  const s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js";
+  s.onload = () => set(el, "ok", "Funciona.");
+  s.onerror = () => set(el, "bad", "Està bloquejat (cdn.jsdelivr.net). Podrà fer servir fotos, captures o text enganxat, però no PDF ni Word.");
+  document.head.append(s);
+})();
+
+// 5. Micròfon (dictat)
+(() => {
+  const el = row("mic", "Parlar pel micròfon");
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { set(el, "warn", "Aquest navegador no té dictat per veu. Haurà d'escriure les respostes."); return; }
+  el.className = "row";
+  el.querySelector(".ico").textContent = "?";
+  el.querySelector("p").innerHTML = "";
+  const p = el.querySelector("p");
+  p.textContent = "Prem el botó i digues una frase en veu alta.";
+  const b = document.createElement("button"); b.type = "button"; b.textContent = "Prova el micròfon";
+  el.querySelector("div").append(b);
+  b.onclick = () => {
+    const rec = new SR(); rec.lang = "ca-ES"; rec.interimResults = false;
+    b.disabled = true; p.textContent = "Escoltant… digues una frase.";
+    let heard = false;
+    rec.onresult = (e) => { heard = true; set(el, "ok", "Funciona. Ha entès: «" + e.results[0][0].transcript + "»"); b.remove(); };
+    rec.onerror = (e) => {
+      b.disabled = false;
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") set(el, "warn", "El micròfon està bloquejat o no s'ha donat permís. Haurà d'escriure o dictar amb el teclat.");
+      else if (e.error === "network") set(el, "warn", "El dictat no pot connectar amb el servei de veu (sovint bloquejat a l'institut). Haurà d'escriure.");
+      else if (e.error === "no-speech") p.textContent = "No ha sentit res. Torna-ho a provar parlant més a prop.";
+      else set(el, "warn", "No ha funcionat (" + e.error + "). Haurà d'escriure.");
+    };
+    rec.onend = () => { if (!heard && !el.classList.contains("warn")) b.disabled = false; };
+    try { rec.start(); } catch { set(el, "warn", "No s'ha pogut engegar el micròfon."); }
+  };
+})();
+</script>
+</body>
+</html>

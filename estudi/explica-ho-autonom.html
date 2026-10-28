@@ -1,0 +1,2147 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Explica-ho</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: taula d'estudi. Columna esquerra = assignatures i temes; dreta = el tema obert, amb pestanyes
+   Material · Guia · Autoavaluació · Progrés. La profunditat (N1→N4) es pinta com una escala de blaus. */
+:root{
+  --paper:#f5f7fb; --card:#ffffff; --ink:#18203a; --muted:#59627e; --line:#dde2ee; --soft:#eef1f8;
+  --accent:#2c47c9; --accent-ink:#ffffff; --accent-soft:#e3e8fb;
+  --marker:#ffe766; --marker-ink:#2f2800;
+  --d1:#bcd9f2; --d2:#7cb2e0; --d3:#3b7fc0; --d4:#163f78;
+  --ok:#1d7f55; --ok-soft:#dcf1e7; --warn:#a96b10; --warn-soft:#fbefd9; --bad:#b83b34; --bad-soft:#f8e1df;
+  --s1:#2f9e6b; --s2:#c2543d; --s3:#7a52c7; --s4:#d08a12; --s5:#2b7bbf; --s6:#c23f86; --s7:#5c7d1e; --s8:#5b6478;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f121b; --card:#171b28; --ink:#e7eaf4; --muted:#9ba4be; --line:#2a3044; --soft:#1d2232;
+  --accent:#8fa3ff; --accent-ink:#0f1430; --accent-soft:#232c52;
+  --marker:#6b5d12; --marker-ink:#fff6c2;
+  --d1:#27405e; --d2:#2f6aa3; --d3:#5299dc; --d4:#a9d3ff;
+  --ok:#5fcf9a; --ok-soft:#173528; --warn:#e7b153; --warn-soft:#382a12; --bad:#f08a82; --bad-soft:#3a1c1b;
+  --s1:#5fcf9a; --s2:#f08a72; --s3:#b39af0; --s4:#efbd55; --s5:#6fb4f0; --s6:#f08cc0; --s7:#a8cc5a; --s8:#a0a8bd;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f121b; --card:#171b28; --ink:#e7eaf4; --muted:#9ba4be; --line:#2a3044; --soft:#1d2232;
+  --accent:#8fa3ff; --accent-ink:#0f1430; --accent-soft:#232c52;
+  --marker:#6b5d12; --marker-ink:#fff6c2;
+  --d1:#27405e; --d2:#2f6aa3; --d3:#5299dc; --d4:#a9d3ff;
+  --ok:#5fcf9a; --ok-soft:#173528; --warn:#e7b153; --warn-soft:#382a12; --bad:#f08a82; --bad-soft:#3a1c1b;
+  --s1:#5fcf9a; --s2:#f08a72; --s3:#b39af0; --s4:#efbd55; --s5:#6fb4f0; --s6:#f08cc0; --s7:#a8cc5a; --s8:#a0a8bd;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.small{font-size:.88rem}
+
+/* barra superior */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  border-bottom:1px solid var(--line);background:var(--card)}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
+.brand h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+.brand h1 span{background:linear-gradient(transparent 58%,var(--marker) 58%);padding:0 .1em;color:inherit}
+.conn{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.dot.on{background:var(--ok)} .dot.off{background:var(--warn)}
+
+/* botons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);
+  padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:.95rem;line-height:1.2;text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);border-color:var(--line)}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.sm{padding:6px 11px;font-size:.85rem}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* estructura */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);gap:0;min-height:calc(100vh - 70px)}
+.side{border-right:1px solid var(--line);padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;display:flex;flex-direction:column;gap:18px;background:var(--card)}
+main{min-width:0;padding-block:22px 60px;padding-left:max(16px,2.5vw);padding-right:max(16px,env(safe-area-inset-right,0px),2.5vw)}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+.subj{display:flex;flex-direction:column;gap:2px}
+.subj-head{display:flex;align-items:center;gap:8px;font-weight:700;padding:4px 0}
+.subj-head .sw{width:10px;height:10px;border-radius:3px;background:var(--c,var(--s8));flex:none}
+.subj-head .n{margin-left:auto;font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.tema-link{display:block;width:100%;text-align:left;border:0;background:transparent;padding:6px 10px 6px 18px;border-radius:8px;cursor:pointer;color:var(--ink);font-size:.95rem}
+.tema-link:hover{background:var(--soft)}
+.tema-link.sel{background:var(--accent-soft);font-weight:700}
+.tema-link .ex{font-family:var(--f-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-left:6px}
+.side-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  .side{border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .side-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+  .side-actions{flex-direction:row;flex-wrap:wrap;margin-top:0}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px))}
+  .side.in-tema{padding-block:10px}
+  .side.in-tema .side-list,.side.in-tema .side-actions{display:none}
+}
+
+/* capçalera de tema i pestanyes */
+.tema-head{display:flex;flex-direction:column;gap:6px}
+.tema-head .crumb{display:flex;gap:8px;align-items:center}
+.tema-head .crumb .sw{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.tema-head h2{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:800;letter-spacing:-.02em}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tab{border:0;background:transparent;padding:10px 14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.sel{color:var(--ink);border-bottom-color:var(--accent)}
+.tab .badge{font-family:var(--f-mono);font-size:.7rem;background:var(--soft);border-radius:999px;padding:1px 7px;margin-left:6px;color:var(--muted)}
+
+.banner{border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;background:var(--soft);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner p{flex:1 1 260px;min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+
+/* material */
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:26px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;background:var(--card);transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:34px;height:34px;color:var(--accent)}
+.drop strong{font-family:var(--f-display);font-size:1.15rem}
+.mats{display:flex;flex-direction:column;gap:8px}
+.mat{border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+.mat summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none}
+.mat summary::-webkit-details-marker{display:none}
+.mat .kind{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--muted);flex:none}
+.mat .nm{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.mat .sz{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);flex:none}
+.mat .body{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px}
+textarea{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:10px 12px;resize:vertical;min-height:110px;line-height:1.5}
+input[type=text],input[type=password],select{border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 10px;min-width:0}
+.pending{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+.err{color:var(--bad)}
+
+.spin{width:16px;height:16px;border:2.5px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.working{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r);background:var(--accent-soft)}
+.working p{flex:1;min-width:0}
+
+/* guia */
+.mk{background:linear-gradient(transparent 56%,var(--marker) 56%);color:inherit;padding:0 .08em}
+.resum{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.resum section{border-top:3px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.resum ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.map{display:flex;flex-direction:column;align-items:center;gap:0;overflow-x:auto;padding-bottom:4px}
+.map-centre{font-family:var(--f-display);font-weight:800;font-size:1.25rem;background:var(--ink);color:var(--paper);padding:10px 20px;border-radius:999px;text-align:center;max-width:100%}
+.map-stem{width:2px;height:18px;background:var(--line)}
+.map-branches{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;width:100%;border-top:2px solid var(--line);padding-top:18px;position:relative}
+.branch{position:relative;border:1px solid var(--line);border-radius:var(--r);padding:12px;background:var(--card);display:flex;flex-direction:column;gap:6px;min-width:0}
+.branch::before{content:"";position:absolute;top:-19px;left:50%;width:2px;height:18px;background:var(--line)}
+.branch-name{font-family:var(--f-display);font-weight:700;font-size:1.05rem;display:flex;gap:8px;align-items:center}
+.branch-name::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--b);flex:none}
+.branch-idea{font-size:.9rem;color:var(--muted)}
+.kids{list-style:none;margin:2px 0 0;padding:0 0 0 12px;border-left:2px solid var(--b);display:flex;flex-direction:column;gap:6px}
+.kids li{font-size:.92rem}
+.kids b{display:block}
+.kids span{color:var(--muted);font-size:.86rem}
+.rels{display:flex;flex-direction:column;gap:10px}
+.rel{display:flex;flex-direction:column;gap:3px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.rel:last-child{border-bottom:0;padding-bottom:0}
+.rel-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:700}
+.node{border:1px solid var(--line);border-radius:6px;padding:1px 8px;background:var(--soft)}
+.arrow{font-family:var(--f-mono);font-size:.78rem;color:var(--accent);font-weight:500}
+.concepts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.concept{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.concept .cn{font-weight:700;display:flex;align-items:center;gap:8px}
+.concept p{font-size:.9rem;color:var(--muted)}
+.st{width:10px;height:10px;border-radius:50%;flex:none;border:2px solid var(--line);background:transparent}
+.st.feble{background:var(--bad);border-color:var(--bad)}
+.st.proces{background:var(--warn);border-color:var(--warn)}
+.st.solid{background:var(--ok);border-color:var(--ok)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+
+/* profunditat */
+.depth{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lvl{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
+.lvl:hover{border-color:var(--accent)}
+.lvl.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.lvl .lv{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:800;font-size:1.05rem}
+.lvl .lv i{width:14px;height:14px;border-radius:4px;background:var(--dc);flex:none}
+.lvl .ld{font-size:.8rem;color:var(--muted);line-height:1.35}
+.meter{height:6px;border-radius:99px;background:var(--soft);overflow:hidden}
+.meter b{display:block;height:100%;background:var(--dc);border-radius:99px}
+/* exercicis */
+.enunciat{white-space:pre-wrap;font-size:1.1rem;line-height:1.5;font-weight:700;font-family:var(--f-display)}
+.hints{display:flex;flex-direction:column;gap:6px}
+.mathbox,.steps-in textarea{font-family:var(--f-mono);font-size:.98rem}
+.mathtxt{white-space:pre-wrap}
+.steps-in{display:flex;flex-direction:column;gap:10px}
+.steps-in textarea,.answer .steps-in textarea{min-height:48px}
+.syms{display:flex;flex-wrap:wrap;gap:4px}
+.sym{min-width:36px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-family:var(--f-mono);font-size:.95rem;cursor:pointer;color:var(--ink)}
+.sym:hover{border-color:var(--accent)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{position:relative;width:96px;height:96px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--soft)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .x{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:var(--ink);color:var(--paper);cursor:pointer;font-weight:700;line-height:1}
+.chip.good{color:var(--ok);border-color:var(--ok)} .chip.bad{color:var(--bad);border-color:var(--bad)}
+.pasos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.pas{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);min-width:0}
+.pas:last-child{border-bottom:0}
+.pas>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.pas .ico{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;font-size:.85rem;color:var(--paper);background:var(--ok)}
+.pas.error .ico{background:var(--bad)} .pas.arrossegat .ico{background:var(--warn)}
+.pas.falta .ico{background:transparent;color:var(--muted);border:2px dashed var(--line)}
+.sol{margin:8px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;white-space:pre-wrap}
+.res{font-family:var(--f-mono);background:var(--soft);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.formulas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.formula{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.formula .expr{font-family:var(--f-mono);font-size:1.2rem;background:var(--soft);padding:8px 10px;border-radius:8px;overflow-x:auto;white-space:nowrap}
+.resum ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 28px;gap:10px;align-items:center;font-size:.92rem}
+.bar .track{height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar .track b{display:block;height:100%;background:var(--bad);border-radius:99px}
+.bar .n{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.lvl .rec{position:absolute;top:-9px;right:8px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;background:var(--marker);color:var(--marker-ink);padding:1px 6px;border-radius:4px}
+@media (max-width:640px){.depth{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* preguntes */
+.q{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.q-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.chip i{width:9px;height:9px;border-radius:3px;background:var(--dc)}
+.q-text{font-family:var(--f-display);font-size:1.22rem;font-weight:700;line-height:1.3}
+.hint{font-size:.92rem;background:var(--soft);border-radius:8px;padding:8px 12px}
+.answer{display:flex;flex-direction:column;gap:8px}
+.answer textarea{min-height:130px;font-size:1rem;background:var(--paper)}
+.mic{position:relative}
+.mic.recording{background:var(--bad);border-color:var(--bad);color:#fff}
+.mic.recording::after{content:"";position:absolute;inset:-4px;border-radius:999px;border:2px solid var(--bad);animation:pulse 1.4s ease-out infinite}
+@keyframes pulse{from{opacity:.8;transform:scale(1)}to{opacity:0;transform:scale(1.18)}}
+.interim{font-style:italic;color:var(--muted);font-size:.95rem;min-height:1.4em}
+.tip{font-size:.88rem;border-left:3px solid var(--warn);background:var(--warn-soft);padding:8px 12px;border-radius:0 8px 8px 0}
+
+.fb{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.score{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.score .big{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.score .big small{font-size:1rem;color:var(--muted);font-weight:500}
+.fb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.fb-box{border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.fb-box ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.fb-box.good{background:var(--ok-soft)} .fb-box.good h3{color:var(--ok)}
+.fb-box.miss{background:var(--warn-soft)} .fb-box.miss h3{color:var(--warn)}
+.fb-box.wrong{background:var(--bad-soft)} .fb-box.wrong h3{color:var(--bad)}
+.care{border:2px solid var(--accent);background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.weave{border-left:4px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:4px}
+details.better{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
+details.better summary{cursor:pointer;font-weight:700}
+details.better p{margin-top:8px;white-space:pre-wrap}
+.attempts{display:flex;gap:6px;flex-wrap:wrap}
+
+/* progrés */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{border:1px solid var(--line);border-radius:var(--r);padding:12px;background:var(--card)}
+.stat b{display:block;font-family:var(--f-display);font-size:1.7rem;font-variant-numeric:tabular-nums}
+.hist{width:100%;border-collapse:collapse;font-size:.92rem}
+.hist th{text-align:left;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line)}
+.hist td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.hist td.n{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.tbl{overflow-x:auto}
+.report{display:flex;flex-direction:column;gap:12px}
+.report ol,.report ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+
+/* inici */
+.hero{display:flex;flex-direction:column;gap:10px;max-width:68ch}
+.hero h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-.02em}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.step{border-top:3px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.step .label{color:var(--accent)}
+.empty{text-align:center;padding:30px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted)}
+
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
+dialog.wide{width:min(820px,calc(100vw - 32px))}
+/* càmera: el fons negre és el del visor, en els dos temes */
+.cam{position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/9;max-width:100%}
+.cam video,.cam canvas{width:100%;height:100%;object-fit:contain;display:block}
+.cam video.mirror{transform:scaleX(-1)}
+.cam-count{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-size:5rem;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(10,14,30,.45)}
+.dlg{padding:20px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field input,.field select{width:100%}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-weight:700;z-index:50;max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="brand"><h1><span>Explica</span>-ho</h1><span class="label">Estudi de 4t d'ESO</span></div>
+  <span class="conn" id="conn"><span class="dot"></span><span>Connectant…</span></span>
+  <button class="btn sm" id="btnSettings" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    Configuració</button>
+</header>
+<div class="shell">
+  <aside class="side" id="side"></aside>
+  <main id="main"></main>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle"><div class="dlg" id="dlgBody"></div></dialog>
+<input type="file" id="fileIn" multiple accept="image/*,.pdf,.docx,.txt,.md" hidden>
+<input type="file" id="importIn" accept=".json,application/json" hidden>
+<input type="file" id="photoIn" accept="image/*" multiple hidden>
+
+<script>
+"use strict";
+/* ============================================================
+   Utilitats
+   ============================================================ */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const today = (t = Date.now()) => { const d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+const fmtDate = (t) => new Date(t).toLocaleDateString("ca-ES", {day:"numeric", month:"short"});
+const kchars = (n) => n >= 1000 ? (n/1000).toFixed(n >= 10000 ? 0 : 1) + "k car." : n + " car.";
+const arr = (x) => Array.isArray(x) ? x : [];
+function lsAvailable() { try { localStorage.setItem("explica:probe", "1"); localStorage.removeItem("explica:probe"); return true; } catch { return false; } }
+function ls(k, v) {
+  try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { return null; }
+}
+let toastT;
+function toast(msg) {
+  let el = $(".toast"); if (!el) { el = document.createElement("div"); el.className = "toast"; el.setAttribute("role","status"); document.body.append(el); }
+  el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 3200);
+}
+
+/* ============================================================
+   Nivells, assignatures, llengües
+   ============================================================ */
+const LEVELS = {
+  1: {nom:"Recordar",   curt:"Dades, definicions i fets concrets.", llarg:"Recordar dades, definicions, noms, dates i fets concrets del material."},
+  2: {nom:"Comprendre", curt:"Explicar-ho amb les teves paraules i el perquè.", llarg:"Explicar amb les pròpies paraules, dir el perquè de les coses i posar exemples."},
+  3: {nom:"Relacionar", curt:"Connectar idees: causes, comparacions, processos.", llarg:"Connectar dos o més conceptes del tema: causa i efecte, comparar semblances i diferències, ordenar un procés pas a pas."},
+  4: {nom:"Integrar",   curt:"Visió de conjunt, aplicar i lligar amb altres temes.", llarg:"Visió de conjunt del tema, aplicar-lo a una situació nova, argumentar una opinió amb dades i relacionar-lo amb altres temes de la mateixa assignatura."},
+};
+const LANGS = { ca:{nom:"català", sr:"ca-ES"}, es:{nom:"castellà", sr:"es-ES"}, en:{nom:"anglès", sr:"en-GB"}, de:{nom:"alemany", sr:"de-DE"} };
+const PRESETS = [
+  {nom:"Biologia", llengua:"ca", c:1}, {nom:"Història", llengua:"ca", c:2}, {nom:"Geografia", llengua:"ca", c:7},
+  {nom:"Català", llengua:"ca", c:4, tipus:"llengua"}, {nom:"Castellà", llengua:"es", c:6, tipus:"llengua"}, {nom:"Anglès", llengua:"en", c:5, tipus:"llengua"},
+  {nom:"Alemany", llengua:"de", c:3, tipus:"llengua"}, {nom:"Matemàtiques", llengua:"ca", c:5, tipus:"problemes"},
+  {nom:"Física i Química", llengua:"ca", c:6, tipus:"problemes"}, {nom:"Filosofia", llengua:"ca", c:8},
+];
+// A qui parlen les peticions a Claude: la filla (4t d'ESO) o, a la versió amb codis, qualsevol estudiant.
+// A la versió amb codis, cada estudiant tria el seu curs a Configuració.
+const CURSOS = ["1r d'ESO", "2n d'ESO", "3r d'ESO", "4t d'ESO", "1r de batxillerat", "2n de batxillerat"];
+const WHO = document.querySelector('meta[name="explica-proxy"]')
+  ? {get curs() { const c = ls("explica:curs"); return CURSOS.includes(c) ? c : "ESO o batxillerat"; },
+     get una() { return "un o una estudiant de " + this.curs; }, get duna() { return "d'un o una estudiant de " + this.curs; },
+     la: "l'estudiant", dela: "de l'estudiant", Ella: "L'estudiant"}
+  : {curs: "4t d'ESO", una: "una alumna de 4t d'ESO (15-16 anys)", duna: "d'una alumna de 4t d'ESO (15-16 anys)", la: "l'alumna", dela: "de l'alumna", Ella: "Ella"};
+const subjColor = (s) => `var(--s${(s?.c ?? 8)})`;
+// Guia i preguntes: en la llengua de l'assignatura si és ca/es; per a anglès i alemany,
+// explicacions en català i preguntes en la llengua estrangera.
+const guideLang = (s) => (s.llengua === "en" || s.llengua === "de") ? `català, però amb els exemples, el vocabulari i les regles en ${LANGS[s.llengua].nom}` : LANGS[s.llengua]?.nom || "català";
+const qLang = (s) => LANGS[s.llengua]?.nom || "català";
+const fbLang = (s) => s.llengua === "es" ? "castellà" : "català";
+
+/* ============================================================
+   Exemple (no es guarda): Biologia · La cèl·lula
+   ============================================================ */
+const EX_SUBJ = {id:"ex-bio", nom:"Exemple · Biologia", llengua:"ca", c:1, exemple:true};
+function exampleTema() {
+  const d = Date.now(), day = 864e5;
+  return {
+    id:"exemple", subjId:"ex-bio", titol:"La cèl·lula", exemple:true, creat:d - 3*day, mats:["exm1"],
+    guia:{
+      generat:d - 3*day,
+      resum:[
+        {apartat:"Teoria cel·lular", punts:["Tots els éssers vius estan formats per una o més cèl·lules.","La cèl·lula és la unitat estructural i funcional dels éssers vius.","Tota cèl·lula prové d'una altra cèl·lula preexistent."]},
+        {apartat:"Tipus de cèl·lules", punts:["Procariotes: sense nucli; l'ADN és lliure al citoplasma (bacteris).","Eucariotes: ADN dins un nucli amb embolcall i orgànuls amb membrana (animals, plantes, fongs)."]},
+        {apartat:"Orgànuls principals", punts:["Membrana plasmàtica: separa la cèl·lula de l'exterior i controla què entra i què surt.","Mitocondris: fan la respiració cel·lular i obtenen energia (ATP).","Cloroplasts: fan la fotosíntesi (només en cèl·lules vegetals).","Ribosomes: fabriquen proteïnes seguint les instruccions de l'ADN."]},
+        {apartat:"Animal i vegetal", punts:["La vegetal té paret cel·lular de cel·lulosa, cloroplasts i un vacúol gran.","L'animal no té paret ni cloroplasts i té vacúols petits."]},
+      ],
+      mapa:{centre:"La cèl·lula", branques:[
+        {nom:"Teoria cel·lular", idea:"Tres principis que ho expliquen tot", fills:[{nom:"Unitat estructural",idea:"tot ésser viu és fet de cèl·lules"},{nom:"Unitat funcional",idea:"les funcions vitals passen a la cèl·lula"},{nom:"Origen",idea:"tota cèl·lula ve d'una altra"}]},
+        {nom:"Tipus", idea:"Segons si tenen nucli", fills:[{nom:"Procariota",idea:"sense nucli, ADN al citoplasma"},{nom:"Eucariota",idea:"nucli i orgànuls amb membrana"}]},
+        {nom:"Orgànuls", idea:"Cada un, una feina", fills:[{nom:"Mitocondri",idea:"energia (respiració)"},{nom:"Cloroplast",idea:"fotosíntesi"},{nom:"Ribosoma",idea:"proteïnes"},{nom:"Nucli",idea:"guarda l'ADN"}]},
+        {nom:"Animal vs vegetal", idea:"Diferències clau", fills:[{nom:"Paret cel·lular",idea:"només vegetal"},{nom:"Vacúol",idea:"gran a la vegetal"}]},
+      ]},
+      relacions:[
+        {de:"Cloroplast", a:"Mitocondri", tipus:"complementen", explicacio:"La fotosíntesi produeix la glucosa i l'oxigen que el mitocondri fa servir per obtenir energia."},
+        {de:"Nucli (ADN)", a:"Ribosoma", tipus:"dona instruccions", explicacio:"L'ADN porta la informació que els ribosomes fan servir per fabricar proteïnes."},
+        {de:"Procariota", a:"Mitocondri", tipus:"origen", explicacio:"La teoria endosimbiòtica diu que els mitocondris provenen de bacteris antics."},
+        {de:"Teoria cel·lular", a:"Tipus de cèl·lules", tipus:"s'aplica a", explicacio:"Els principis valen tant per a procariotes com per a eucariotes."},
+      ],
+      conceptes:[
+        {id:"c1",nom:"Teoria cel·lular",definicio:"Conjunt de tres principis sobre la cèl·lula com a unitat de la vida."},
+        {id:"c2",nom:"Cèl·lula procariota",definicio:"Cèl·lula sense nucli, amb l'ADN lliure al citoplasma."},
+        {id:"c3",nom:"Cèl·lula eucariota",definicio:"Cèl·lula amb nucli i orgànuls envoltats de membrana."},
+        {id:"c4",nom:"Membrana plasmàtica",definicio:"Capa que envolta la cèl·lula i regula l'intercanvi de substàncies."},
+        {id:"c5",nom:"Nucli i ADN",definicio:"El nucli guarda l'ADN, que conté la informació genètica."},
+        {id:"c6",nom:"Mitocondri",definicio:"Orgànul de la respiració cel·lular, on s'obté l'energia."},
+        {id:"c7",nom:"Cloroplast",definicio:"Orgànul de les cèl·lules vegetals on es fa la fotosíntesi."},
+        {id:"c8",nom:"Ribosoma",definicio:"Estructura que fabrica proteïnes."},
+        {id:"c9",nom:"Paret cel·lular",definicio:"Coberta rígida de cel·lulosa de les cèl·lules vegetals."},
+      ],
+    },
+    ronda:{nivell:3, items:[{
+      id:"exq1", nivell:3, tipus:"relacionar", conceptes:["c6","c7"],
+      pregunta:"Per què diem que els cloroplasts i els mitocondris es complementen? Explica què fa cadascun i què es passen l'un a l'altre.",
+      pista:"Pensa en què produeix la fotosíntesi i què necessita la respiració cel·lular.",
+      criteris:["Cloroplast: fotosíntesi, fabrica glucosa i allibera oxigen","Mitocondri: respiració cel·lular, obté energia de la glucosa","El que produeix un és el que necessita l'altre"],
+      resposta:"doncs el cloroplast fa la fotosíntesi que és quan la planta agafa la llum del sol i fa aliment i el mitocondri és el que dona energia a la cèl·lula, o sigui que un fa el menjar i l'altre el crema",
+      oral:true,
+      avals:[{t:d - day, nota:6, profunditat:2,
+        punts_forts:["Saps què fa cada orgànul: fotosíntesi al cloroplast i energia al mitocondri.","La idea «un fa el menjar i l'altre el crema» és una bona manera de resumir la relació."],
+        falta:["Dir que l'«aliment» és glucosa.","L'oxigen: el cloroplast l'allibera i el mitocondri el necessita.","Anomenar el procés del mitocondri: respiració cel·lular."],
+        errors:[],
+        com_integrar:"Quan dius que el cloroplast «fa aliment», concreta: fabrica glucosa i allibera oxigen. Després, quan parles del mitocondri, afegeix que fa la respiració cel·lular i que fa servir aquesta glucosa i aquest oxigen. Així la teva frase final («un fa el menjar i l'altre el crema») queda demostrada.",
+        resposta_millorada:"El cloroplast fa la fotosíntesi: amb la llum del sol fabrica glucosa i allibera oxigen. El mitocondri fa la respiració cel·lular: agafa la glucosa i l'oxigen i n'obté energia. Per això es complementen: el que produeix l'un és just el que necessita l'altre. Un fa el menjar i l'altre el crema.",
+        conceptes_ok:["c6","c7"], conceptes_febles:[], millora:"",
+        resposta:"doncs el cloroplast fa la fotosíntesi que és quan la planta agafa la llum del sol i fa aliment i el mitocondri és el que dona energia a la cèl·lula, o sigui que un fa el menjar i l'altre el crema"}]
+    }]},
+    historial:[
+      {t:d-3*day, nivell:1, nota:8, prof:1, ok:["c1","c2"], feble:[], pregunta:"Quins són els tres principis de la teoria cel·lular?"},
+      {t:d-3*day, nivell:1, nota:7, prof:1, ok:["c8"], feble:["c4"], pregunta:"Quina funció té la membrana plasmàtica?"},
+      {t:d-2*day, nivell:2, nota:8, prof:2, ok:["c2","c3"], feble:[], pregunta:"Explica amb les teves paraules la diferència entre procariota i eucariota."},
+      {t:d-2*day, nivell:2, nota:7, prof:2, ok:["c9","c7"], feble:[], pregunta:"Per què una cèl·lula vegetal pot mantenir la forma i una animal no?"},
+      {t:d-day,   nivell:3, nota:6, prof:2, ok:["c6","c7"], feble:[], pregunta:"Per què diem que els cloroplasts i els mitocondris es complementen?"},
+    ],
+    informe:null,
+  };
+}
+const EX_MAT = {id:"exm1", temaId:"exemple", nom:"Apunts tema 2 (foto del quadern)", tipus:"IMG", creat:Date.now(),
+  text:"TEMA 2. LA CÈL·LULA\nTeoria cel·lular: 1) tots els éssers vius estan formats per cèl·lules 2) la cèl·lula és la unitat funcional 3) tota cèl·lula prové d'una altra.\nProcariotes: no tenen nucli, l'ADN està al citoplasma. Ex: bacteris.\nEucariotes: tenen nucli i orgànuls amb membrana.\nOrgànuls: membrana plasmàtica (controla entrada i sortida), mitocondris (respiració cel·lular → energia/ATP), cloroplasts (fotosíntesi, només vegetals), ribosomes (fabriquen proteïnes), nucli (ADN).\nCèl·lula vegetal: paret de cel·lulosa, cloroplasts, vacúol gran. Animal: sense paret ni cloroplasts, vacúols petits.\nTeoria endosimbiòtica: mitocondris i cloroplasts provenen de bacteris que van quedar dins d'una altra cèl·lula."};
+
+/* ============================================================
+   Estat
+   ============================================================ */
+const EX_SUBJ2 = {id:"ex-fq", nom:"Exemple · Física i Química", llengua:"ca", c:6, tipus:"problemes", exemple:true};
+function exampleFQ() {
+  const d = Date.now(), day = 864e5;
+  const resp = "v = 72 km/h, x = 3 km\nt = x / v = 3 / 72 = 0,0417\nt = 0,0417 · 60 = 2,5 min\nt = 2,5 · 60 = 150 s";
+  return {
+    id:"exemple-fq", subjId:"ex-fq", titol:"Moviment rectilini uniforme", exemple:true, creat:d - 2*day, mats:["exm2"],
+    guia:{
+      generat:d - 2*day,
+      resum:[
+        {apartat:"Què és el MRU", punts:["Moviment en línia recta amb velocitat constant.","En temps iguals, el mòbil recorre distàncies iguals."]},
+        {apartat:"Equacions", punts:["v = Δx / Δt","x = x₀ + v·t","A la gràfica x–t surt una recta: el pendent és la velocitat."]},
+        {apartat:"Unitats", punts:["Al SI: posició en m, temps en s, velocitat en m/s.","De km/h a m/s es divideix entre 3,6."]},
+      ],
+      mapa:{centre:"MRU", branques:[
+        {nom:"Magnituds", idea:"Què es mesura", fills:[{nom:"Posició (x)",idea:"en metres"},{nom:"Temps (t)",idea:"en segons"},{nom:"Velocitat (v)",idea:"m/s, constant"}]},
+        {nom:"Equacions", idea:"Com es calcula", fills:[{nom:"v = Δx / Δt",idea:"velocitat"},{nom:"x = x₀ + v·t",idea:"on és el mòbil"}]},
+        {nom:"Gràfiques", idea:"Com es dibuixa", fills:[{nom:"x–t",idea:"recta inclinada"},{nom:"v–t",idea:"recta horitzontal"}]},
+      ]},
+      relacions:[{de:"Velocitat", a:"Gràfica x–t", tipus:"és el pendent de", explicacio:"Com més ràpid va el mòbil, més inclinada és la recta."}],
+      conceptes:[
+        {id:"c1",nom:"Velocitat",definicio:"Desplaçament per unitat de temps; al MRU és constant."},
+        {id:"c2",nom:"Posició i desplaçament",definicio:"On és el mòbil i quant ha canviat la posició."},
+        {id:"c3",nom:"Equació del MRU",definicio:"x = x₀ + v·t"},
+        {id:"c4",nom:"Canvi d'unitats",definicio:"Passar les dades al SI abans de calcular."},
+        {id:"c5",nom:"Gràfica x–t",definicio:"Recta el pendent de la qual és la velocitat."},
+      ],
+      formules:[
+        {nom:"Velocitat", expressio:"v = Δx / Δt", variables:"v: velocitat (m/s) · Δx: desplaçament (m) · Δt: temps (s)", quan:"Quan coneixes la distància recorreguda i el temps."},
+        {nom:"Equació de posició", expressio:"x = x₀ + v·t", variables:"x₀: posició inicial (m) · t: temps (s)", quan:"Per saber on és el mòbil en un instant o quan arriba a un punt."},
+        {nom:"De km/h a m/s", expressio:"v (m/s) = v (km/h) ÷ 3,6", variables:"", quan:"Abans de calcular, si les dades no estan al SI."},
+      ],
+      metodes:[{nom:"Resoldre un problema de MRU", passos:["Escriu les dades amb les unitats","Passa-les al SI","Tria la fórmula","Aïlla la incògnita","Substitueix i calcula","Escriu el resultat amb unitats i mira si té sentit"]}],
+      tipus_problemes:[{id:"p1",nom:"Calcular v, x o t",descripcio:"Un sol mòbil amb velocitat constant."},{id:"p2",nom:"Trobada de dos mòbils",descripcio:"S'igualen les posicions dels dos mòbils."}],
+    },
+    ronda:null,
+    exRonda:{nivell:2, items:[{
+      id:"exfq1", nivell:2, tipus:"Calcular v, x o t", conceptes:["c1","c4"],
+      enunciat:"Un tren surt de Palma a 72 km/h i manté la velocitat constant. Quant de temps tarda a recórrer 3 km? Dona el resultat en segons i en minuts.",
+      pistes:["Abans de calcular, mira si totes les dades estan en les mateixes unitats.","Passa 72 km/h a m/s i 3 km a metres.","Δt = Δx / v, amb Δx = 3000 m."],
+      solucio:{passos:[
+        {titol:"Escriu les dades",explicacio:"v = 72 km/h; Δx = 3 km",resultat:""},
+        {titol:"Passa-les al SI",explicacio:"72 ÷ 3,6 = 20 m/s; 3 km = 3000 m",resultat:"v = 20 m/s; Δx = 3000 m"},
+        {titol:"Tria la fórmula i aïlla la incògnita",explicacio:"v = Δx / Δt → Δt = Δx / v",resultat:""},
+        {titol:"Substitueix i calcula",explicacio:"Δt = 3000 / 20",resultat:"Δt = 150 s"},
+        {titol:"Passa a minuts",explicacio:"150 ÷ 60",resultat:"2,5 min"}], resultat:"150 s = 2,5 minuts"},
+      resposta:resp, passosAlumna:[], guiat:false, pistesVistes:1,
+      avals:[{t:d - day, nota:8, correcte:true, transcripcio:"",
+        passos:[
+          {pas:"Dades: v = 72 km/h, x = 3 km", estat:"ok", comentari:"Dades ben identificades."},
+          {pas:"t = 3 / 72 = 0,0417", estat:"error", comentari:"El càlcul és bo, però no hi poses la unitat: són 0,0417 hores."},
+          {pas:"0,0417 · 60 = 2,5 min", estat:"ok", comentari:"Bon pas d'hores a minuts."},
+          {pas:"2,5 · 60 = 150 s", estat:"ok", comentari:""}],
+        errors:[{tipus:"unitats", explicacio:"Escrius 0,0417 sense unitat. Són hores, i si no ho dius no se sap què has calculat."}],
+        punts_forts:["Has vist que les unitats havien de coincidir i has treballat en km i hores: és un camí vàlid.","Has passat bé d'hores a minuts i de minuts a segons."],
+        com_continuar:"Escriu sempre la unitat al costat de cada resultat parcial: t = 0,0417 h.", resultat_correcte:"150 s = 2,5 minuts",
+        conceptes_ok:["c1","c4"], conceptes_febles:[], millora:"", sig:"exemple", all:resp + "|", resposta:resp}]
+    }]},
+    historial:[
+      {t:d-2*day, nivell:1, nota:8, prof:1, ok:["c1"], feble:[], pregunta:"Què vol dir que un moviment és uniforme?"},
+      {t:d-2*day, qid:"h1", mode:"ex", nivell:1, nota:9, prof:1, ok:["c1"], feble:[], errs:[], pregunta:"Un ciclista recorre 600 m en 2 minuts. Quina és la seva velocitat en m/s?"},
+      {t:d-2*day, qid:"h2", mode:"ex", nivell:1, nota:7, prof:1, ok:["c3"], feble:["c4"], errs:["unitats"], pregunta:"Un cotxe va a 90 km/h. Quina distància recorre en 20 minuts?"},
+      {t:d-day, qid:"h3", mode:"ex", nivell:2, nota:5, prof:2, ok:[], feble:["c3"], errs:["plantejament","càlcul"], pregunta:"Un autobús és a 2 km de l'escola i s'hi acosta a 36 km/h. On és al cap d'1 minut?"},
+      {t:d-day, qid:"exfq1", mode:"ex", nivell:2, nota:8, prof:2, ok:["c1","c4"], feble:[], errs:["unitats"], pregunta:"Un tren surt de Palma a 72 km/h i manté la velocitat constant. Quant de temps tarda a recórrer 3 km?"},
+    ],
+    informe:null,
+  };
+}
+const EX_MAT2 = {id:"exm2", temaId:"exemple-fq", nom:"Llibre pàg. 110-112 (PDF)", tipus:"PDF", creat:Date.now(),
+  text:"--- Pàgina 1 ---\nMOVIMENT RECTILINI UNIFORME (MRU)\nUn mòbil fa un MRU quan es desplaça en línia recta amb velocitat constant.\nv = Δx / Δt    x = x₀ + v·t\nUnitats SI: m, s, m/s. 1 km/h = 1/3,6 m/s.\nLa gràfica posició-temps és una recta; el pendent és la velocitat.\n--- Pàgina 3 ---\nACTIVITATS\n1. Un cotxe va a 90 km/h. Quina distància recorre en 20 minuts?\n2. Un tren va a 72 km/h. Quant tarda a fer 3 km?\n3. Dos cotxes surten alhora de dues ciutats separades 150 km i van l'un cap a l'altre a 80 km/h i 70 km/h. On i quan es troben?"};
+const S = {
+  subjects: [], temes: {}, mats: {},
+  view: {temaId: null, tab: "material"},
+  busy: {},           // clau → {msg, ctl}
+  pending: [],        // materials processant-se
+  errors: {},         // clau → text d'error visible
+  showHint: {},
+  micTip: false,
+  exampleHidden: ls("explica:hideExample") === "1",
+  loaded: false,
+  paste: {},           // tema → esborrany de text enganxat {text, nom}
+  photos: {},          // exercici → fotos de la resolució (només en memòria)
+  exOrigen: {},        // tema → "nous" | "material"
+  lastExField: null,
+};
+const EX_SUBJS = [EX_SUBJ, EX_SUBJ2];
+const ex = {temes: {"exemple": exampleTema(), "exemple-fq": exampleFQ()}, mats: {exm1: EX_MAT, exm2: EX_MAT2}};
+function allSubjects() { return S.exampleHidden ? S.subjects : [...S.subjects, ...EX_SUBJS]; }
+function getTema(id) { return ex.temes[id] || S.temes[id]; }
+function getMat(id) { return ex.mats[id] || S.mats[id]; }
+function getSubj(id) { return EX_SUBJS.find(s => s.id === id) || S.subjects.find(s => s.id === id) || {id, nom: "Assignatura", llengua: "ca", c: 8}; }
+function temesOf(subjId) { return Object.values(S.temes).filter(t => t.subjId === subjId).sort((a,b) => a.creat - b.creat); }
+
+/* ============================================================
+   Emmagatzematge: base de dades privada de claude.ai si n'hi ha;
+   si no, aquest navegador (localStorage).
+   ============================================================ */
+const Store = {
+  kind: "mem", db: null, uid: null, q: {}, running: {}, failed: false, pendingRetry: {},
+  async init() {
+    if (window.claude?.use) {
+      try {
+        const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+        if (db && user) {
+          const id = await user.id().catch(() => null);
+          const canW = await user.can("data.write").catch(() => null);
+          if (id && canW !== false) { this.db = db; this.uid = id; this.kind = "db"; return; }
+        }
+      } catch {}
+    }
+    // Fitxer obert al propi ordinador: es guarda al navegador. Dins claude.ai sense espai al compte: només si s'ha triat.
+    const framed = !!window.claude?.use;
+    this.kind = lsAvailable() && (!framed || ls("explica:optLocal") === "1") ? "local" : "mem";
+  },
+  async loadAll() {
+    const out = [];
+    if (this.kind === "db") {
+      const snap = await this.db.collection("data/users/" + this.uid).limit(1000).get();
+      for (const d of snap.docs) if (d.exists) out.push([d.id, JSON.parse(JSON.stringify(d.data()))]);
+      if (snap.size >= 1000) toast("Tens molt de material guardat: potser no surt tot. Esborra temes antics.");
+    } else if (this.kind === "local") {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith("explica:doc:")) { try { out.push([k.slice(12), JSON.parse(localStorage.getItem(k))]); } catch {} }
+        }
+      } catch {}
+    }
+    return out;
+  },
+  // Una escriptura a la vegada per document; si n'arriben més, només es guarda l'última.
+  put(key, val) { this.q[key] = {val}; this.retry(key); this.flush(key); },
+  retry(except) { for (const [k, job] of Object.entries(this.pendingRetry)) { delete this.pendingRetry[k]; if (k !== except && !this.q[k]) { this.q[k] = job; this.flush(k); } } },
+  del(key) { this.q[key] = {del: true}; delete this.pendingRetry[key]; this.flush(key); },
+  async flush(key) {
+    if (this.running[key]) return;
+    this.running[key] = true;
+    try {
+      while (this.q[key]) {
+        const job = this.q[key]; delete this.q[key];
+        try { await this.write(key, job); delete this.pendingRetry[key]; const f = Object.keys(this.pendingRetry).length > 0; if (this.failed !== f) { this.failed = f; renderConn(); } }
+        catch (e) {
+          if (this.kind === "db" && ["invalid_argument", "revoked", "not_granted"].includes(e?.code) && JSON.stringify(job.val || {}).length < 250000) {
+            // Aquest compte no pot escriure al seu espai: no copiem res al navegador sense que ho demani.
+            this.kind = "mem"; this.q = {}; renderConn(); toast("No es pot guardar al compte. Obre Configuració per descarregar una còpia o guardar en aquest navegador.");
+          } else {
+            // Es conserva el canvi (si no n'ha arribat un de més nou) per tornar-ho a provar al següent desament.
+            if (!this.q[key]) this.pendingRetry[key] = job;
+            this.failed = true; renderConn();
+            toast(e?.code === "quota_exceeded" || e?.name === "QuotaExceededError" ? "No queda espai per guardar. Esborra material que ja no facis servir." : "No s'ha pogut guardar. Es tornarà a provar amb el següent canvi.");
+          }
+        }
+      }
+    } finally { this.running[key] = false; }
+  },
+  async write(key, job) {
+    if (this.kind === "db") {
+      const ref = this.db.collection("data/users/" + this.uid).doc(key);
+      if (job.del) await ref.delete(); else await ref.set(job.val);
+    } else if (this.kind === "local") {
+      if (job.del) localStorage.removeItem("explica:doc:" + key); else localStorage.setItem("explica:doc:" + key, JSON.stringify(job.val));
+    }
+  },
+};
+const MAX_MAT = 150000;   // caràcters per material (límit d'un document)
+const MAX_HIST = 120;
+function saveConfig() { Store.put("config", {subjects: S.subjects, v: 2}); }
+function saveTema(t) { if (!t || t.exemple || S.temes[t.id] !== t) return; t.historial = arr(t.historial).slice(-MAX_HIST); Store.put("t_" + t.id, t); }
+function saveMat(m) { if (!m || ex.mats[m.id] || S.mats[m.id] !== m || !S.temes[m.temaId]) return; Store.put("m_" + m.id, m); }
+function saveEverything() { saveConfig(); Object.values(S.temes).forEach(saveTema); Object.values(S.mats).forEach(saveMat); }
+const draftTimers = {}, dirty = new Map();
+function saveSoon(key, fn) { clearTimeout(draftTimers[key]); dirty.set(key, fn); draftTimers[key] = setTimeout(() => { dirty.delete(key); fn(); }, 1200); }
+function saveTemaSoon(t) { saveSoon(t.id, () => saveTema(t)); }
+function cancelSoon(key) { clearTimeout(draftTimers[key]); dirty.delete(key); }
+function flushSoon() { for (const [k, fn] of dirty) { clearTimeout(draftTimers[k]); fn(); } dirty.clear(); }
+
+/* ============================================================
+   Connexió amb Claude
+   Dins de claude.ai: capacitat "sample" (el compte de qui la fa servir).
+   Fora (fitxer obert al navegador): clau de l'API d'Anthropic.
+   ============================================================ */
+// Versió per a pacients: la pàgina porta <meta name="explica-proxy"> i parla amb Claude a través
+// del servidor propi (que guarda la clau); aquí només cal el codi d'accés de cada alumne.
+const PROXY = document.querySelector('meta[name="explica-proxy"]')?.content || "";
+if (PROXY) document.querySelector(".brand .label").textContent = "Estudi d'ESO i batxillerat";
+const AI = {
+  mode: "none", sample: null, imgMax: 5,
+  memKey: "", memCodi: "",
+  get codi() { return this.memCodi || ls("explica:codi") || ""; },
+  get apiKey() { return this.memKey || ls("explica:apikey") || ""; },
+  get model() { return ls("explica:model") || "claude-sonnet-5-5"; },
+  subs: false, gestio: false, correu: false, portalLogin: "", restants: null,
+  async init() {
+    if (PROXY) {
+      this.mode = "proxy";
+      // Si el servidor té subscripcions obertes, s'ofereix l'enllaç per subscriure's i el portal de gestió.
+      fetch(PROXY.replace(/claude$/, "config")).then(r => r.ok ? r.json() : null).then(c => { this.subs = !!c?.subscripcions; this.gestio = !!c?.gestio; this.correu = !!c?.correu; this.portalLogin = String(c?.portalLogin || ""); render(); }).catch(() => {});
+      return;
+    }
+    if (window.claude?.use) {
+      try {
+        const s = await claude.use("sample");
+        if (s) {
+          this.sample = s; this.mode = "claude";
+          const lim = await s.limits().catch(() => null);
+          this.imgMax = lim?.images?.maxCount || 0;
+          return;
+        }
+      } catch {}
+    }
+    this.mode = this.apiKey ? "api" : "none";
+  },
+  ready() { return this.mode === "claude" || (this.mode === "proxy" ? !!this.codi : !!this.apiKey); },
+  async json(prompt, opts = {}) {
+    if (this.mode === "claude") {
+      return this.sample.json(prompt, {modelTier: opts.tier || "default", signal: opts.signal, images: opts.images?.length ? opts.images : undefined, cache: false,
+        onText: opts.onText ? ({text}) => opts.onText(text.length) : undefined});
+    }
+    if (!this.ready()) throw {code: "no_ai"};
+    const text = await this.api(prompt, opts);
+    return parseLoose(text);
+  },
+  async text(prompt, opts = {}) {
+    if (this.mode === "claude") {
+      const r = await this.sample(prompt, {modelTier: opts.tier || "default", signal: opts.signal, images: opts.images?.length ? opts.images : undefined, cache: false});
+      return r.text;
+    }
+    if (!this.ready()) throw {code: "no_ai"};
+    return this.api(prompt, opts);
+  },
+  async api(prompt, opts) {
+    const content = [];
+    for (const b of opts.images || []) {
+      const small = await shrinkImage(b, 1600);
+      const type = ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(small.type) ? small.type : null;
+      if (!type) throw {code: "image_rejected"};
+      content.push({type: "image", source: {type: "base64", media_type: type, data: await blobToB64(small)}});
+    }
+    content.push({type: "text", text: prompt});
+    if (this.mode === "proxy") return this.viaProxy(content, opts);
+    let res;
+    try {
+      res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST", signal: opts.signal,
+        headers: {"content-type": "application/json", "x-api-key": this.apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
+        body: JSON.stringify({model: this.model, max_tokens: 12000, messages: [{role: "user", content}]}),
+      });
+    } catch (e) {
+      if (e?.name === "AbortError") throw {code: "cancelled"};
+      throw {code: "upstream_error", message: "No hi ha connexió amb Claude. Comprova internet."};
+    }
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401) throw {code: "bad_key"};
+      if (res.status === 429) throw {code: "rate_limited"};
+      if (res.status === 413) throw {code: "prompt_too_large"};
+      throw {code: "upstream_error", message: body?.error?.message || ("HTTP " + res.status)};
+    }
+    return arr(body.content).filter(c => c.type === "text").map(c => c.text).join("");
+  },
+  // Servidor propi: respon en streaming (SSE) perquè les correccions llargues no tallin per temps.
+  async viaProxy(content, opts) {
+    let res;
+    try {
+      res = await fetch(PROXY, {
+        method: "POST", signal: opts.signal,
+        headers: {"content-type": "application/json", "x-codi": this.codi},
+        body: JSON.stringify({tier: opts.tier || "default", max_tokens: 12000, messages: [{role: "user", content}]}),
+      });
+    } catch (e) {
+      if (e?.name === "AbortError") throw {code: "cancelled"};
+      throw {code: "upstream_error", message: "No hi ha connexió. Comprova internet."};
+    }
+    if (!res.ok) {
+      const b = await res.json().catch(() => ({}));
+      if (res.status === 401) { this.codiOk = false; renderConn(); }
+      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
+        message: b.message || ("HTTP " + res.status)};
+    }
+    const rest = res.headers.get("x-explica-restants");
+    this.restants = rest === null ? null : parseInt(rest, 10);
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = "", text = "", stop = null;
+    try {
+      for (;;) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, {stream: true}).replace(/\r\n/g, "\n");
+        let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {
+          const ev = buf.slice(0, i); buf = buf.slice(i + 2);
+          const data = ev.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
+          if (!data) continue;
+          let j; try { j = JSON.parse(data); } catch { continue; }
+          if (j.type === "content_block_delta" && j.delta?.type === "text_delta") { text += j.delta.text; opts.onText?.(text.length); }
+          else if (j.type === "message_delta" && j.delta?.stop_reason) stop = j.delta.stop_reason;
+          else if (j.type === "message_stop") stop ||= "end_turn";
+          else if (j.type === "error") throw {code: j.error?.type === "overloaded_error" ? "rate_limited" : "upstream_error", message: j.error?.message};
+        }
+      }
+    } catch (e) {
+      if (e?.name === "AbortError") throw {code: "cancelled"};
+      throw e?.code ? e : {code: "upstream_error", message: "La connexió s'ha tallat. Torna-ho a provar."};
+    }
+    // Una resposta que no arriba al final (tall de connexió o massa llarga) no es dona per bona.
+    if (!stop) throw {code: "upstream_error", message: "La resposta s'ha tallat. Torna-ho a provar."};
+    if (stop === "max_tokens") throw {code: "prompt_too_large", message: "La resposta era massa llarga."};
+    if (!text.trim()) throw {code: "empty_completion"};
+    this.codiOk = true;
+    return text;
+  },
+};
+function parseLoose(t) {
+  try { return JSON.parse(t); } catch {}
+  const m = t.match(/```(?:json)?\s*([\s\S]*?)```/); if (m) { try { return JSON.parse(m[1]); } catch {} }
+  const a = [t.indexOf("{"), t.indexOf("[")].filter(i => i >= 0); const b = Math.max(t.lastIndexOf("}"), t.lastIndexOf("]"));
+  if (a.length && b > Math.min(...a)) { try { return JSON.parse(t.slice(Math.min(...a), b + 1)); } catch {} }
+  throw {code: "invalid_json"};
+}
+function aiErr(e) {
+  const c = e?.code;
+  return ({
+    not_granted: "No has permès que aquesta pàgina faci servir Claude. Pots activar-ho al menú de permisos de la pàgina.",
+    rate_limited: "Massa peticions seguides o has arribat al límit d'ús de Claude. Espera una estona i torna-ho a provar.",
+    session_expired: "Has de tornar a iniciar sessió a claude.ai.",
+    prompt_too_large: "El material és massa llarg per enviar-lo de cop. Divideix-lo en dos temes o esborra material repetit.",
+    invalid_json: "La resposta no ha arribat completa. Torna-ho a provar.",
+    refused: "Claude no ha respost aquesta petició. Revisa el material o reformula-ho.",
+    image_rejected: "Aquesta imatge no s'ha pogut llegir (format o mida). Prova amb una altra captura.",
+    images_unavailable: "En aquesta vista no es poden enviar imatges a Claude. Prova amb PDF o Word, o enganxa el text.",
+    sampling_disabled: "Claude no està disponible per a aquest compte.",
+    no_ai: PROXY ? "Primer posa el teu codi d'accés a Configuració." : "Encara no hi ha connexió amb Claude. Obre Configuració per connectar-la.",
+    bad_key: "La clau de l'API no és vàlida. Revisa-la a Configuració.",
+    bad_code: "Aquest codi d'accés no és vàlid o ja no està actiu. Revisa'l a Configuració.",
+    daily_limit: "Avui ja has fet totes les peticions del dia, o el comptador no funciona. Demà podràs continuar; si passa des del primer moment, avisa qui t'ha donat el codi.",
+    no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
+    too_many_tries: "Hi ha hagut massa intents amb codis incorrectes des d'aquesta connexió. Torna-ho a provar demà, amb el codi ben escrit.",
+    month_quota: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.",
+    sub_inactive: "La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.",
+    empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
+  })[c] || (e?.message ? "Error: " + e.message : "Alguna cosa ha fallat. Torna-ho a provar.");
+}
+async function blobToB64(b) { const buf = new Uint8Array(await b.arrayBuffer()); let s = ""; for (let i = 0; i < buf.length; i += 32768) s += String.fromCharCode.apply(null, buf.subarray(i, i + 32768)); return btoa(s); }
+async function shrinkImage(blob, max) {
+  try {
+    const bmp = await createImageBitmap(blob);
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(bmp, 0, 0, c.width, c.height);
+    return await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+  } catch { return blob; }
+}
+
+/* Feina llarga amb indicador i botó d'aturar */
+async function work(key, msg, fn) {
+  const ctl = new AbortController(), back = document.activeElement?.id;
+  S.busy[key] = {msg, ctl, n: 0}; delete S.errors[key]; render();
+  try { return await fn(ctl.signal, (n) => { const b = S.busy[key]; if (b) { b.n = n; const el = document.querySelector(`[data-busy="${key}"] .prog`); if (el) el.textContent = "Escrivint… " + kchars(n); } }); }
+  catch (e) { if (e?.code !== "cancelled") S.errors[key] = aiErr(e); return null; }
+  finally { delete S.busy[key]; render(); if (back && document.activeElement === document.body) document.getElementById(back)?.focus({preventScroll: true}); }
+}
+function busyBox(key) {
+  const b = S.busy[key];
+  if (!b) return S.errors[key] ? `<p class="err small" role="alert">${esc(S.errors[key])}</p>` : "";
+  return `<div class="working" data-busy="${key}" role="status"><span class="spin"></span><p>${esc(b.msg)} <span class="prog muted small">${b.n ? "Escrivint… " + kchars(b.n) : "Pensant…"}</span></p><button class="btn sm ghost" data-act="stop" data-key="${key}" type="button">Atura</button></div>`;
+}
+
+/* ============================================================
+   Lectura de materials: imatges, PDF, Word, text
+   ============================================================ */
+const libs = {};
+function loadScript(src) {
+  return libs[src] ||= new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => { delete libs[src]; rej(new Error("No s'ha pogut carregar el lector de fitxers. Comprova la connexió.")); }; document.head.append(s); });
+}
+async function getPdfjs() {
+  // El "worker" es carrega com a script normal: pdf.js el fa servir dins la mateixa pàgina.
+  await loadScript("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js");
+  await loadScript("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js");
+  const lib = window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+  return lib;
+}
+async function getMammoth() { await loadScript("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"); return window.mammoth; }
+
+function kindOf(f) {
+  const n = (f.name || "").toLowerCase();
+  if ((f.type || "").startsWith("image/") || /\.(png|jpe?g|webp|gif|heic)$/.test(n)) return "IMG";
+  if (n.endsWith(".pdf") || f.type === "application/pdf") return "PDF";
+  if (n.endsWith(".docx")) return "WORD";
+  if (n.endsWith(".doc")) return "DOC";
+  if (n.endsWith(".pptx") || n.endsWith(".ppt")) return "PPT";
+  if (/\.(txt|md)$/.test(n) || (f.type || "").startsWith("text/")) return "TEXT";
+  return "?";
+}
+async function ocr(blobs, signal, onPage) {
+  if (AI.mode === "claude" && !AI.imgMax) throw {code: "images_unavailable"};
+  const per = AI.mode === "claude" ? Math.max(1, Math.min(AI.imgMax, 5)) : 5;
+  const out = [];
+  for (let i = 0; i < blobs.length; i += per) {
+    const group = blobs.slice(i, i + per);
+    onPage?.(i + 1, blobs.length);
+    const text = await AI.text(
+`Aquestes ${group.length} imatges són material d'estudi ${WHO.duna} (fotos o captures d'apunts, llibre de text, fitxes o diapositives), en ordre.
+Transcriu fidelment tot el text que s'hi llegeix, imatge per imatge, començant cada una amb una línia "--- Pàgina ${i + 1}… ---" (numera-les a partir de ${i + 1}).
+- Respecta títols, llistes i l'ordre de lectura.
+- Si hi ha esquemes, mapes, taules o dibuixos amb rètols, descriu-los com a text estructurat (per exemple: "Esquema: A → B → C").
+- Si hi ha text manuscrit, transcriu-lo tal com és; marca amb [?] el que no es llegeixi bé.
+- No afegeixis comentaris ni explicacions teves. Respon només amb la transcripció.`, {images: group, signal});
+    out.push(text.trim());
+  }
+  return out.join("\n\n");
+}
+async function extract(f, signal, status) {
+  const k = kindOf(f);
+  if (k === "IMG") { status("Llegint la imatge amb Claude…"); return {kind: k, text: await ocr([f], signal)}; }
+  if (k === "TEXT") return {kind: k, text: await f.text()};
+  if (k === "WORD") { status("Llegint el Word…"); const m = await getMammoth(); const r = await m.extractRawText({arrayBuffer: await f.arrayBuffer()}); return {kind: k, text: r.value.trim()}; }
+  if (k === "DOC") throw new Error("Els .doc antics no es poden llegir. Obre'l amb Word i desa'l com a .docx o PDF.");
+  if (k === "PPT") throw new Error("Les presentacions no es poden llegir directament. Exporta-la a PDF i puja el PDF.");
+  if (k === "PDF") {
+    status("Llegint el PDF…");
+    const lib = await getPdfjs();
+    const pdf = await lib.getDocument({data: new Uint8Array(await f.arrayBuffer()), isEvalSupported: false}).promise;
+    const pages = [];
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const pg = await pdf.getPage(p); const tc = await pg.getTextContent();
+      let line = "", txt = "", lastY = null;
+      for (const it of tc.items) { const y = it.transform?.[5]; if (lastY !== null && Math.abs(y - lastY) > 4) { txt += line.trim() + "\n"; line = ""; } line += it.str + (it.hasEOL ? "\n" : " "); lastY = y; }
+      txt += line; pages.push(txt.replace(/[ \t]+\n/g, "\n").trim());
+    }
+    // Les pàgines sense text (escanejades o fotos) es converteixen en imatge i les llegeix Claude, una per una.
+    const scan = pages.map((t, i) => t.replace(/\s/g, "").length < 40 ? i : -1).filter(i => i >= 0);
+    const MAXOCR = 15, todo = scan.slice(0, MAXOCR);
+    for (let j = 0; j < todo.length; j++) {
+      const i = todo[j];
+      status(`Pàgina escanejada ${i + 1}: llegint-la amb Claude (${j + 1} de ${todo.length})…`);
+      const pg = await pdf.getPage(i + 1); const vp0 = pg.getViewport({scale: 1}); const vp = pg.getViewport({scale: Math.min(2.2, 1500 / vp0.width)});
+      const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+      await pg.render({canvasContext: c.getContext("2d"), viewport: vp}).promise;
+      const img = await new Promise(r => c.toBlob(r, "image/jpeg", .85));
+      pages[i] = (await ocr([img], signal)).replace(/^--- Pàgina[^\n]*\n?/, "");
+    }
+    const skipped = scan.slice(MAXOCR).map(i => i + 1);
+    return {kind: k, text: (skipped.length ? `[No s'han llegit ${skipped.length} pàgines escanejades: ${skipped.join(", ")}. Puja-les com a fotos si les necessites.]\n\n` : "") +
+      pages.map((t, i) => `--- Pàgina ${i + 1} ---\n${t}`).join("\n\n")};
+  }
+  throw new Error("Aquest tipus de fitxer no es pot llegir. Fes servir fotos, PDF, Word (.docx) o text.");
+}
+async function addFiles(files) {
+  const t = getTema(S.view.temaId); if (!t || t.exemple) return;
+  for (const f of files) {
+    if (S.temes[t.id] !== t) break;
+    const p = {id: uid(), nom: f.name || "Captura enganxada", kind: kindOf(f), msg: "Preparant…", ctl: new AbortController()};
+    S.pending.push(p); render();
+    try {
+      const r = await extract(f, p.ctl.signal, (msg) => { p.msg = msg; const el = document.querySelector(`[data-pend="${p.id}"] .pm`); if (el) el.textContent = msg; });
+      if (!r.text || !r.text.trim()) throw new Error("No s'hi ha trobat text.");
+      if (S.temes[t.id] !== t) continue;
+      const m = {id: uid(), temaId: t.id, nom: p.nom, tipus: r.kind, text: r.text.slice(0, MAX_MAT), creat: Date.now()};
+      S.mats[m.id] = m; t.mats = [...arr(t.mats), m.id]; saveMat(m); saveTema(t);
+      if (r.text.length > MAX_MAT) toast("Material molt llarg: s'ha guardat només el principi");
+    } catch (e) {
+      if (e?.code !== "cancelled") S.errors["mat"] = `«${p.nom}»: ` + (e?.code ? aiErr(e) : (e?.message || "no s'ha pogut llegir."));
+    } finally { S.pending = S.pending.filter(x => x !== p); render(); }
+  }
+}
+
+/* ============================================================
+   Progrés: nivells i conceptes
+   ============================================================ */
+// Cada pregunta compta una sola vegada: el seu últim intent.
+function evidence(t) { const seen = new Set(), out = []; for (const h of arr(t.historial).slice().reverse()) { if (h.qid) { if (seen.has(h.qid)) continue; seen.add(h.qid); } out.push(h); } return out.reverse(); }
+// kind: "teoria" (preguntes per explicar) o "ex" (exercicis); cada un té la seva escala.
+function levelScores(t, kind = "teoria") { const st = {1: [], 2: [], 3: [], 4: []}; for (const h of evidence(t)) if (st[h.nivell] && (h.mode === "ex") === (kind === "ex")) st[h.nivell].push(h.nota); return st; }
+function levelAvg(list) { const l = list.slice(-3); return l.length ? l.reduce((a, b) => a + b, 0) / l.length : null; }
+// Es passa de nivell quan les 2-3 últimes respostes d'aquell nivell fan mitjana de 7 o més.
+function recommended(t, kind = "teoria") { const st = levelScores(t, kind); for (let L = 1; L <= 4; L++) { const l = st[L].slice(-3); const a = levelAvg(l); if (!(l.length >= 2 && a >= 7)) return L; } return 4; }
+function conceptStatus(t) {
+  const m = {};
+  for (const c of arr(t.guia?.conceptes)) m[c.id] = {ok: 0, feb: 0, last: null};
+  for (const h of evidence(t)) {
+    for (const id of arr(h.ok)) if (m[id]) { m[id].ok++; m[id].last = "ok"; }
+    for (const id of arr(h.feble)) if (m[id]) { m[id].feb++; m[id].last = "feb"; }
+  }
+  const out = {};
+  for (const [id, v] of Object.entries(m)) out[id] = !v.last ? "none" : v.last === "feb" ? "feble" : v.ok >= 2 ? "solid" : "proces";
+  return out;
+}
+const ST_LABEL = {none: "encara no treballat", feble: "a reforçar", proces: "en procés", solid: "sòlid"};
+function studyDays(t) { return new Set(arr(t.historial).map(h => today(h.t))).size; }
+
+/* ============================================================
+   Peticions a Claude: guia, preguntes, avaluació, informe
+   ============================================================ */
+function materialText(t, max) {
+  let s = ""; for (const id of arr(t.mats)) { const m = getMat(id); if (m) s += `\n\n### ${m.nom}\n${m.text}`; }
+  s = s.trim(); return s.length > max ? s.slice(0, max) + "\n[...material retallat...]" : s;
+}
+function guideText(t) {
+  const g = t.guia; if (!g) return "";
+  return arr(g.resum).map(r => `${r.apartat}:\n- ${arr(r.punts).join("\n- ")}`).join("\n") +
+    "\n\nConceptes clau:\n" + arr(g.conceptes).map(c => `${c.id} ${c.nom}: ${c.definicio}`).join("\n") +
+    "\n\nRelacions:\n" + arr(g.relacions).map(r => `${r.de} → (${r.tipus}) → ${r.a}: ${r.explicacio}`).join("\n");
+}
+async function makeGuide(t) {
+  const s = getSubj(t.subjId);
+  const mat = materialText(t, 160000);
+  if (!mat) { S.errors.guia = "Primer afegeix material a la pestanya Material."; render(); return; }
+  const g = await work("guia", "Claude està ordenant el material: resum, mapa conceptual i conceptes clau.", (signal, onText) => AI.json(
+`Ets un professor/a expert que ajuda ${WHO.una} a estudiar per a un examen.
+Assignatura: ${s.nom}. Tema: ${t.titol}.
+A continuació hi ha tot el material d'estudi que ha aportat (apunts, llibre, fitxes; part pot venir de fotos o PDF transcrits i tenir errors o fragments repetits).
+
+<material>
+${mat}
+</material>
+
+Organitza aquest material per estudiar-lo:
+- Basa't NOMÉS en el material. No hi afegeixis continguts nous (sí que pots aclarir un terme perquè s'entengui).
+- Ordena les idees amb lògica: de general a concret, o cronològicament si és història o literatura.
+- Frases curtes i clares, amb el vocabulari específic de l'assignatura.
+- Escriu en ${guideLang(s)}.
+
+Respon només amb un objecte JSON amb aquesta forma exacta:
+{"titol":"títol curt del tema",
+ "resum":[{"apartat":"nom de l'apartat","punts":["idea clau"]}],
+ "mapa":{"centre":"idea central","branques":[{"nom":"branca","idea":"de què va, en poques paraules","fills":[{"nom":"subconcepte","idea":"explicació breu"}]}]},
+ "relacions":[{"de":"concepte A","a":"concepte B","tipus":"causa / conseqüència / part de / contrast / exemple de / precedeix…","explicacio":"una frase que expliqui la relació"}],
+ "conceptes":[{"id":"c1","nom":"concepte clau","definicio":"definició breu"}]}
+Mides: 3-7 apartats amb 2-6 punts cadascun; 3-6 branques amb 2-5 fills cadascuna; 4-10 relacions entre idees de branques diferents; 8-20 conceptes clau (els que podria preguntar un examen), amb id c1, c2, c3…${isProb(s) ? `
+
+És una assignatura de problemes. Afegeix també al mateix objecte JSON:
+ "formules":[{"nom":"…","expressio":"…","variables":"cada símbol, què vol dir i la unitat","quan":"quan s'ha de fer servir"}],
+ "metodes":[{"nom":"tipus de problema o procediment","passos":["pas 1","pas 2"]}],
+ "tipus_problemes":[{"id":"p1","nom":"…","descripcio":"…"}]
+Hi han de sortir totes les fórmules i els procediments del material (fins a 20 fórmules, 2-8 mètodes, 2-8 tipus de problemes). ${PLAIN_MATH}` : ""}${isLang(s) ? `
+
+És una assignatura de llengua. Afegeix també al mateix objecte JSON:
+ "regles":[{"nom":"nom de la regla o del fenomen","regla":"explicació clara i breu","exemples":["exemple"],"excepcions":"excepcions o casos especials, si n'hi ha"}],
+ "tipus_problemes":[{"id":"e1","nom":"tipus d'exercici que es pot fer amb aquest tema","descripcio":"…"}]
+Hi han de sortir totes les regles del material (fins a 15), amb 2-5 exemples cadascuna, i 2-6 tipus d'exercici. Els exemples, en ${qLang(s)}.` : ""}`, {signal, onText}));
+  if (!g) return;
+  if (!arr(g.resum).length || !arr(g.conceptes).length) { S.errors.guia = "La guia ha arribat incompleta. Torna-ho a provar."; render(); return; }
+  // Els conceptes que ja existien conserven el seu id (i el seu progrés); els nous en reben un de nou.
+  const norm = (x) => String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  const old = new Map(arr(t.guia?.conceptes).map(c => [norm(c.nom), c.id]));
+  const stamp = Date.now().toString(36), used = new Set();
+  g.conceptes = arr(g.conceptes).map((c, i) => { let id = old.size ? old.get(norm(c.nom)) : (okId(c.id) ? c.id : null); if (!id || used.has(id)) id = "k" + stamp + "_" + i; used.add(id); return {id, nom: String(c.nom || ""), definicio: String(c.definicio || "")}; });
+  if (S.temes[t.id] !== t) return;
+  // Les rondes es buiden només si no hi ha feina sense corregir (pot haver-n'hi d'escrita mentre s'esperava).
+  if (![t.ronda, t.exRonda].some(r => arr(r?.items).some(unsaved))) { t.ronda = null; t.exRonda = null; }
+  g.generat = Date.now();
+  t.guia = g; saveTema(t); if (S.view.temaId === t.id) S.view.tab = "guia"; render();
+}
+async function makeQuestions(t, L) {
+  const s = getSubj(t.subjId);
+  if (!t.guia) { S.errors.quiz = "Primer genera la guia del tema (pestanya Guia)."; render(); return; }
+  const st = conceptStatus(t);
+  const fetes = arr(t.historial).slice(-40).map(h => "- " + h.pregunta).join("\n") || "(cap)";
+  const altres = L === 4 ? temesOf(t.subjId).filter(o => o.id !== t.id && o.guia).map(o => `- ${o.titol}: ${arr(o.guia.conceptes).map(c => c.nom).join(", ")}`).join("\n") : "";
+  const n = L === 4 ? 2 : 3;
+  const r = await work("quiz", `Claude prepara ${n} preguntes de nivell ${L} (${LEVELS[L].nom}).`, (signal, onText) => AI.json(
+`Ets un professor/a que prepara una autoavaluació oral per a ${WHO.una}. ${WHO.Ella} respondrà parlant (o escrivint) i després rebrà una valoració.
+Assignatura: ${s.nom}. Tema: ${t.titol}.
+
+NIVELLS DE PROFUNDITAT
+N1 Recordar: ${LEVELS[1].llarg}
+N2 Comprendre: ${LEVELS[2].llarg}
+N3 Relacionar: ${LEVELS[3].llarg}
+N4 Integrar: ${LEVELS[4].llarg}
+
+Fes ${n} preguntes de nivell N${L} (${LEVELS[L].nom}).
+
+Guia del tema:
+${guideText(t)}
+
+Material original (extracte):
+${materialText(t, 50000)}
+
+Estat de cada concepte segons les respostes anteriors:
+${arr(t.guia.conceptes).map(c => `${c.id} ${c.nom}: ${ST_LABEL[st[c.id]] || "encara no treballat"}`).join("\n")}
+Prioritza els conceptes "a reforçar" i els "encara no treballats". ${L >= 3 ? "Cada pregunta ha d'obligar a connectar com a mínim dos conceptes." : ""}
+${altres ? "\nAltres temes de la mateixa assignatura que ja ha estudiat (fes que almenys una pregunta hi connecti):\n" + altres + "\n" : ""}
+No repeteixis ni reformulis aquestes preguntes ja fetes:
+${fetes}
+
+Condicions:
+- Que es puguin respondre en veu alta en ${L === 1 ? "menys d'un minut" : "1-3 minuts"}.
+- Basades en el material; varia el tipus de pregunta.
+- Escriu les preguntes i les pistes en ${qLang(s)}.
+
+Respon només amb JSON:
+{"preguntes":[{"pregunta":"…","tipus":"definir | explicar | exemple | relacionar | comparar | procés | aplicar | argumentar | integrar","conceptes":["c1","c3"],"pista":"una pista curta que orienti sense donar la resposta","criteris":["punt concret que hauria de sortir en una bona resposta"]}]}
+"criteris": 2-6 punts concrets i verificables, extrets del material.`, {signal, onText}));
+  if (!r) return;
+  const items = arr(r.preguntes || r).filter(q => q && q.pregunta).map(q => ({
+    id: uid(), nivell: L, tipus: String(q.tipus || ""), pregunta: String(q.pregunta), pista: String(q.pista || ""),
+    conceptes: arr(q.conceptes).map(String), criteris: arr(q.criteris).map(String), resposta: "", oral: false, avals: []}));
+  if (!items.length) { S.errors.quiz = "No han arribat preguntes. Torna-ho a provar."; render(); return; }
+  t.ronda = {nivell: L, items: [...arr(t.ronda?.items).filter(unsaved), ...items]}; saveTema(t); render();
+}
+const evaluating = (t) => arr(t?.ronda?.items).some(q => S.busy["ev_" + q.id]);
+function freeExplain(t) {
+  const s = getSubj(t.subjId);
+  if (!t.guia) { S.errors.quiz = "Primer genera la guia del tema (pestanya Guia)."; render(); return; }
+  const txt = {es: `Explica todo lo que sabes del tema «${t.titol}» como si se lo contaras a un compañero que no ha ido a clase. Intenta relacionar las ideas entre ellas.`,
+               en: `Explain everything you know about «${t.titol}» as if you were telling a classmate who missed the lessons. Try to connect the ideas.`,
+               de: `Erkläre alles, was du über «${t.titol}» weißt, als würdest du es einem Mitschüler erzählen, der nicht im Unterricht war. Verbinde die Ideen miteinander.`}[s.llengua]
+            || `Explica tot el que saps del tema «${t.titol}» com si li ho expliquessis a un company que no ha vingut a classe. Intenta relacionar les idees entre elles.`;
+  const item = {id: uid(), nivell: 0, tipus: "explicació lliure", pregunta: txt, pista: "Comença per la idea central i ves obrint branques: " + arr(t.guia.mapa?.branques).map(b => b.nom).join(", ") + ".",
+    conceptes: arr(t.guia.conceptes).map(c => c.id), criteris: arr(t.guia.conceptes).map(c => c.nom + ": " + c.definicio), resposta: "", oral: false, avals: []};
+  t.ronda = {nivell: 0, items: [item]}; saveTema(t); render();
+}
+async function evaluate(t, q) {
+  const s = getSubj(t.subjId);
+  const ans = (q.resposta || "").trim();
+  if (ans.length < 3) { S.errors["ev_" + q.id] = "Primer respon la pregunta (escrivint o amb el micròfon)."; render(); return; }
+  const prev = q.avals[q.avals.length - 1];
+  if (prev && String(prev.resposta || "").trim() === ans) { S.errors["ev_" + q.id] = "Aquesta resposta ja està avaluada. Millora-la amb el que t'has deixat i torna-la a enviar."; render(); return; }
+  const L = q.nivell || 0;
+  const cmap = Object.fromEntries(arr(t.guia?.conceptes).map(c => [c.id, c]));
+  const r = await work("ev_" + q.id, "Claude està llegint la teva resposta.", (signal, onText) => AI.json(
+`Avalues la resposta ${WHO.duna} en una autoavaluació d'estudi.
+Assignatura: ${s.nom}. Tema: ${t.titol}.
+${L ? `Nivell de profunditat demanat: N${L} ${LEVELS[L].nom} (${LEVELS[L].llarg})` : "Tipus: explicació lliure de tot el tema. Valora sobretot quins conceptes cobreix, si els relaciona i què s'ha deixat."}
+Escala de profunditat: N1 recordar dades; N2 explicar amb paraules pròpies i el perquè; N3 relacionar conceptes; N4 visió de conjunt, aplicar i argumentar.
+
+Pregunta: ${q.pregunta}
+
+Criteris d'una bona resposta:
+${q.criteris.map(c => "- " + c).join("\n")}
+
+Conceptes del tema (fes servir aquests id):
+${arr(t.guia?.conceptes).map(c => `${c.id} ${c.nom}: ${c.definicio}`).join("\n")}
+${q.conceptes.length && L ? "Conceptes que treballa la pregunta: " + q.conceptes.map(id => cmap[id]?.nom || id).join(", ") : ""}
+
+Material de referència (extracte):
+${materialText(t, 40000)}
+${prev ? `
+Aquest és un nou intent (intent ${q.avals.length + 1}). En l'anterior li vas dir que faltava: ${arr(prev.falta).join("; ") || "-"}; errors: ${arr(prev.errors).join("; ") || "-"}. Valora també què ha millorat.` : ""}
+
+Resposta ${WHO.dela} (${q.oral ? "dictada amb el micròfon i transcrita automàticament: ignora crosses com «eh», «doncs», «o sigui», repeticions, falta de puntuació i paraules mal transcrites que s'entenguin pel context" : "escrita"}):
+"""
+${ans}
+"""
+
+Com valorar:
+- Compara-la amb els criteris i amb el material. Sigues just i concret: cita o parafraseja el que ha dit.
+- nota de 0 a 10: 0-4 falten les idees bàsiques o hi ha errors importants; 5-6 la idea principal és correcta però incompleta o superficial; 7-8 correcta i ben explicada, amb la majoria de punts clau; 9-10 completa, precisa, amb vocabulari específic i les connexions que demana el nivell.
+- profunditat (1-4): el nivell que demostra de veritat la resposta, que pot ser diferent del demanat. Si li demanes relacionar i només dona definicions soltes, és 1 o 2.
+${s.llengua !== "ca" && s.llengua !== "es" ? `- És una assignatura de llengua (${LANGS[s.llengua].nom}): si respon en aquesta llengua, assenyala també 1-3 errors de llengua importants dins "errors".` : ""}
+- To: proper, directe i respectuós, com un bon professor amb una adolescent. Comença pel que ha fet bé i digues per què està bé. Res d'elogis buits. Els errors es presenten com a informació per millorar, mai com a judici.
+- "com_integrar": explica on i com encaixar el que falta DINS de la seva pròpia explicació (per exemple: "Després de dir que…, afegeix que… perquè…").
+- "resposta_millorada": la seva resposta reescrita mantenint la seva manera de parlar, amb el que falta ja integrat. Breu.
+- Escriu tot el feedback en ${fbLang(s)}.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
+
+Respon només amb JSON:
+{"nota":7,"profunditat":2,"punts_forts":["…"],"falta":["idea o connexió que no ha dit"],"errors":["el que ha dit malament i la correcció"],"com_integrar":"…","resposta_millorada":"…","conceptes_ok":["c1"],"conceptes_febles":["c3"],"millora":"${prev ? "què ha millorat respecte de l'intent anterior" : ""}","benestar":""}
+"conceptes_ok": conceptes que ha explicat bé. "conceptes_febles": conceptes que tocava explicar i no ha dit o ha dit malament.`, {signal, onText}));
+  if (!r) return;
+  const nota = Math.max(0, Math.min(10, Math.round(Number(r.nota) || 0)));
+  const prof = Math.max(1, Math.min(4, Math.round(Number(r.profunditat) || 1)));
+  const valid = (x) => arr(x).map(String).filter(id => cmap[id]);
+  const av = {t: Date.now(), nota, profunditat: prof, punts_forts: arr(r.punts_forts).map(String), falta: arr(r.falta).map(String), errors: arr(r.errors).map(String),
+    com_integrar: String(r.com_integrar || ""), resposta_millorada: String(r.resposta_millorada || ""), conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles),
+    millora: String(r.millora || ""), benestar: str(r.benestar, 800), resposta: ans};
+  if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.ronda?.items).includes(q)) return;
+  q.avals.push(av); q.avals = q.avals.slice(-5);
+  t.historial = [...arr(t.historial), {t: av.t, qid: q.id, nivell: L, nota, prof, ok: av.conceptes_ok, feble: av.conceptes_febles, pregunta: q.pregunta.slice(0, 220), intent: q.avals.length}];
+  saveTema(t); render();
+}
+async function makeReport(t) {
+  const s = getSubj(t.subjId);
+  if (!arr(t.historial).length) { S.errors.inf = "Encara no hi ha respostes avaluades. Fes primer alguna ronda de preguntes."; render(); return; }
+  const st = conceptStatus(t), ls_ = levelScores(t), lp = levelScores(t, "ex"), es = errStats(t);
+  const r = await work("inf", "Claude fa la valoració global del tema.", (signal, onText) => AI.json(
+`Fes una valoració global de com s'està preparant ${WHO.una} el tema «${t.titol}» de ${s.nom}.
+Nivells: N1 recordar, N2 comprendre, N3 relacionar, N4 integrar.
+Dies d'estudi amb autoavaluació: ${studyDays(t)}.
+Notes per nivell (0-10, de més antiga a més recent): ${[1,2,3,4].map(L => `N${L}: ${ls_[L].join(", ") || "cap"}`).join(" · ")}
+${hasEx(s) ? `Exercicis (${[1,2,3,4].map(L => exProf(s).tag + L + " " + exProf(s).levels[L].nom.toLowerCase()).join(", ")}): ${[1,2,3,4].map(L => `${exProf(s).tag}${L}: ${lp[L].join(", ") || "cap"}`).join(" · ")}
+Errors més freqüents als exercicis: ${es.map(([k, v]) => k + " (" + v + ")").join(", ") || "cap"}` : ""}
+Estat dels conceptes:
+${arr(t.guia?.conceptes).map(c => `- ${c.nom}: ${ST_LABEL[st[c.id]]}`).join("\n")}
+Historial de preguntes (data, nivell, nota, profunditat demostrada):
+${arr(t.historial).slice(-50).map(h => `- ${today(h.t)} ${h.nivell ? lvlTag(h.mode, h.nivell, s) : "lliure"} ${h.nota}/10${h.mode === "ex" ? (h.errs?.length ? " errors: " + h.errs.join(", ") : "") : " (prof. " + h.prof + ")"}: ${h.pregunta}`).join("\n")}
+
+Escriu en ${fbLang(s)}, amb to proper i concret, adreçat directament a ${WHO.la} (de tu). Res d'elogis buits.${hasEx(s) ? "\nA \"nivells\" inclou també els nivells " + exProf(s).tag + "1-" + exProf(s).tag + "4 dels exercicis que hagi treballat, i digues com evitar els errors més freqüents." : ""}
+Respon només amb JSON:
+{"valoracio":"2-4 frases: fins a quin nivell de profunditat domina el tema ara mateix i per què",
+ "nivells":[{"nivell":"N1","text":"una frase sobre aquest nivell"}],
+ "domina":["concepte o habilitat que ja té sòlid"],
+ "reforcar":["què ha de reforçar, concret"],
+ "pla":["pas concret per a la propera sessió d'estudi (3 passos)"]}`, {signal, onText}));
+  if (!r) return;
+  t.informe = {t: Date.now(), valoracio: String(r.valoracio || ""), nivells: arr(r.nivells), domina: arr(r.domina).map(String), reforcar: arr(r.reforcar).map(String), pla: arr(r.pla).map(String)};
+  saveTema(t); render();
+}
+
+/* ============================================================
+   Problemes: Matemàtiques, Física i Química
+   Exercicis amb solució de referència, pistes, mode guiat,
+   foto del paper i correcció pas a pas.
+   ============================================================ */
+const LEVELS_P = {
+  1: {nom:"Aplicar",   curt:"Un pas: una fórmula o un procediment amb dades directes.", llarg:"Un sol pas: aplicar una fórmula o un procediment amb les dades que dona l'enunciat."},
+  2: {nom:"Encadenar", curt:"Dos o tres passos: aïllar, canviar unitats, combinar.", llarg:"Dos o tres passos seguits: aïllar una incògnita, canviar unitats o combinar dues fórmules."},
+  3: {nom:"Plantejar", curt:"Problema amb context: tu tries el mètode.", llarg:"Problema amb context real on l'estudiant ha de decidir quin mètode cal i plantejar-lo ella."},
+  4: {nom:"Raonar",    curt:"Combinar continguts, justificar i interpretar.", llarg:"Combinar continguts del tema (o d'altres temes), justificar el procediment i interpretar si el resultat té sentit."},
+};
+const ERR_TYPES = ["lectura de l'enunciat", "plantejament", "fórmula", "càlcul", "unitats", "signes", "arrodoniment", "interpretació"];
+const SYMS = ["²", "³", "√", "π", "·", "×", "÷", "±", "≈", "≠", "≤", "≥", "Δ", "°", "→", "½", "⁻¹", "₀", "₁", "₂", "α", "λ", "∞"];
+const PLAIN_MATH = "Escriu les fórmules i els càlculs en text pla amb símbols Unicode (x², √, ·, π, Δ, ≈, →, subíndexs com x₀) i les fraccions com (a)/(b). No facis servir LaTeX.";
+// Llengua (català, castellà, anglès, alemany…): teoria per explicar + exercicis d'aplicació.
+const LEVELS_L = {
+  1: {nom:"Reconèixer", curt:"Identificar i classificar exemples.", llarg:"Reconèixer el fenomen i classificar exemples (per exemple, dir si cada paraula té diftong o hiat)."},
+  2: {nom:"Aplicar",    curt:"Completar, transformar, aplicar la regla.", llarg:"Aplicar la regla: completar buits, transformar frases, accentuar, conjugar o triar la forma correcta."},
+  3: {nom:"Corregir",   curt:"Trobar errors i explicar la regla.", llarg:"Trobar i corregir errors en frases o en un text breu, i justificar cada correcció amb la regla."},
+  4: {nom:"Produir",    curt:"Escriure frases o un text aplicant-ho.", llarg:"Escriure frases o un text breu que facin servir la regla en un context real (o traduir, si és llengua estrangera)."},
+};
+const ERR_LANG = ["regla mal aplicada", "ortografia", "accentuació", "gramàtica", "concordança", "temps verbal", "vocabulari", "puntuació", "comprensió de l'enunciat"];
+const SYMS_LANG = {ca: ["à", "è", "é", "í", "ï", "ò", "ó", "ú", "ü", "ç", "l·l", "·", "'"], es: ["á", "é", "í", "ó", "ú", "ü", "ñ", "¿", "¡"], en: ["'", "’"], de: ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"]};
+const isProb = (s) => s?.tipus === "problemes";
+const isLang = (s) => s?.tipus === "llengua";
+const hasEx = (s) => isProb(s) || isLang(s);
+// Tot el que canvia entre exercicis de problemes i de llengua.
+const exProf = (s) => isLang(s)
+  ? {tag: "L", levels: LEVELS_L, errs: ERR_LANG, syms: SYMS_LANG[s.llengua] || SYMS_LANG.ca, word: "exercicis de llengua",
+     guided: "Respon ítem per ítem", unguided: "Treu el mode per ítems", answerLabel: "La teva resposta (un ítem per línia)", placeholder: "1. …&#10;2. …&#10;3. …",
+     solution: "Mostra les respostes correctes", allOk: "Tot correcte", notOk: "Hi ha ítems per revisar"}
+  : {tag: "P", levels: LEVELS_P, errs: ERR_TYPES, syms: SYMS, word: "exercicis",
+     guided: "Guia'm pas a pas", unguided: "Treu el mode guiat", answerLabel: "La teva resolució (un pas per línia)", placeholder: "Dades: …&#10;Fórmula: …&#10;Càlcul: …&#10;Resultat: …",
+     solution: "Mostra la solució pas a pas", allOk: "Resultat correcte", notOk: "Resultat per revisar"};
+const levelsFor = (kind, s) => kind === "ex" ? exProf(s).levels : LEVELS;
+const lvlTag = (kind, L, s) => (kind === "ex" ? exProf(s).tag : "N") + L;
+const MAX_PHOTOS = 4;
+// Les fotos només viuen en memòria: en treure-les es revoca la seva URL.
+function dropPhotos(ids) { for (const id of ids) { for (const p of arr(S.photos[id])) URL.revokeObjectURL(p.url); delete S.photos[id]; } }
+
+function exAnswerText(q) {
+  if (q.guiat) return arr(q.solucio?.passos).map((p, i) => `Pas ${i + 1} (${p.titol}): ${String(q.passosAlumna?.[i] || "").trim() || "(buit)"}`).join("\n");
+  return String(q.resposta || "").trim();
+}
+// Tot el que ha escrit, en qualsevol dels dos modes, més les fotos.
+function exAll(q) { return [String(q.resposta || "").trim(), ...arr(q.passosAlumna).map(x => String(x || "").trim())].filter(Boolean).join("\n") + "|" + arr(S.photos[q.id]).map(p => p.id).join(","); }
+function exSignature(q) { return exAnswerText(q) + "|" + arr(S.photos[q.id]).map(p => p.id).join(","); }
+const exEvaluating = (t) => arr(t?.exRonda?.items).some(q => S.busy["xe_" + q.id]);
+function errStats(t) { const c = {}; for (const h of evidence(t)) if (h.mode === "ex") for (const e of arr(h.errs)) c[e] = (c[e] || 0) + 1; return Object.entries(c).sort((a, b) => b[1] - a[1]); }
+function guideTextP(t) {
+  const g = t.guia; if (!g) return "";
+  return guideText(t) +
+    "\n\nFórmules:\n" + arr(g.formules).map(f => `${f.nom}: ${f.expressio}${f.variables ? " (" + f.variables + ")" : ""}${f.quan ? " — " + f.quan : ""}`).join("\n") +
+    "\n\nMètodes:\n" + arr(g.metodes).map(m => `${m.nom}: ${arr(m.passos).join(" → ")}`).join("\n") +
+    "\n\nRegles:\n" + arr(g.regles).map(r => `${r.nom}: ${r.regla}${arr(r.exemples).length ? " Exemples: " + arr(r.exemples).join(", ") : ""}${r.excepcions ? " Excepcions: " + r.excepcions : ""}`).join("\n") +
+    "\n\nTipus d'exercici o de problema:\n" + arr(g.tipus_problemes).map(p => `${p.id} ${p.nom}: ${p.descripcio}`).join("\n");
+}
+function cleanExercise(e, L) {
+  return {id: uid(), nivell: L, tipus: str(e.tipus, 80), enunciat: str(e.enunciat, 4000), conceptes: strs(e.conceptes, 60), pistes: strs(e.pistes, 600).slice(0, 4),
+    solucio: {passos: arr(e.solucio?.passos).slice(0, 10).map(p => ({titol: str(p?.titol, 160), explicacio: str(p?.explicacio, 1500), resultat: str(p?.resultat, 1500)})), resultat: str(e.solucio?.resultat, 3000)},
+    resposta: "", passosAlumna: [], guiat: false, pistesVistes: 0, avals: []};
+}
+function exercisePrompt(t, s, extra) {
+  const st = conceptStatus(t), pf = exProf(s), lang = isLang(s);
+  const fets = arr(t.historial).filter(h => h.mode === "ex").slice(-30).map(h => "- " + h.pregunta).join("\n") || "(cap)";
+  const errs = errStats(t).map(([k, v]) => `${k} (${v})`).join(", ") || "encara cap";
+  return `Ets un professor/a de ${s.nom} de ${WHO.curs} que prepara ${pf.word} de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà ${lang ? "ítem per ítem" : "pas a pas"} (escrivint o amb una foto del paper) i després rebrà la correcció.
+Tema: ${t.titol}.
+
+NIVELLS DE DIFICULTAT
+${[1, 2, 3, 4].map(L => `${pf.tag}${L} ${pf.levels[L].nom}: ${pf.levels[L].llarg}`).join("\n")}
+
+${extra}
+
+Teoria${lang ? " i regles" : ", fórmules i mètodes"} del tema:
+${guideTextP(t)}
+
+Material (extracte; pot contenir exercicis del llibre o de classe):
+${materialText(t, 40000)}
+
+Conceptes a reforçar: ${arr(t.guia?.conceptes).filter(c => st[c.id] === "feble").map(c => c.nom).join(", ") || "cap"}.
+Errors que ha fet més sovint: ${errs}.
+No repeteixis aquests exercicis ja fets:
+${fets}
+
+${lang ? `Com han de ser:
+- Cada exercici té una instrucció clara i entre 4 i 8 ítems curts numerats dins l'enunciat (paraules, frases o un text breu). A ${pf.tag}4 pot ser una sola tasca d'escriptura.
+- Varia el tipus: classificar, completar buits, transformar, accentuar, triar la forma correcta, corregir errors, conjugar${["en", "de"].includes(s.llengua) ? ", traduir" : ""}, escriure.
+- A "solucio.passos" posa un pas per ítem: "titol" = "Ítem n: " i l'ítem tal com surt a l'enunciat (sense la resposta); "explicacio" = la regla que s'hi aplica; "resultat" = la resposta correcta. Si és una tasca d'escriptura, cada pas és un criteri que ha de complir el text, i "resultat" un exemple de resposta bona.
+- "resultat" de la solució: totes les respostes seguides, numerades.
+- Comprova cada resposta abans de donar-la; si n'hi ha més d'una de correcta, digues-ho a l'explicació.
+- Les pistes recorden la regla o donen una estratègia; cap no dona les respostes.
+- Escriu l'enunciat i els ítems en ${qLang(s)}; les explicacions i les pistes en ${fbLang(s)}.` : `Regles:
+- Dades senzilles i realistes, amb unitats (SI quan toqui), que es puguin fer amb una calculadora normal.
+- ${PLAIN_MATH}
+- Resol tu cada exercici pas a pas i comprova el resultat abans de donar-lo.
+- Els "titol" dels passos han de ser genèrics ("Escriu les dades", "Tria la fórmula", "Aïlla la incògnita"…) i no han de donar la resposta.
+- Les pistes van de més general a més concreta i cap no dona el resultat.
+- Escriu en ${fbLang(s)}.`}
+
+Respon només amb JSON:
+{"exercicis":[{"enunciat":"…","tipus":"nom curt del tipus ${lang ? "d'exercici" : "de problema"}","conceptes":["c1"],"pistes":["pista general","pista més concreta","${lang ? "la regla aplicada a un exemple que no surt a l'exercici" : "el primer pas gairebé fet"}"],"solucio":{"passos":[{"titol":"…","explicacio":"…","resultat":"…"}],"resultat":"${lang ? "totes les respostes, numerades" : "resultat final amb unitats"}"}}]}
+${lang ? "Entre 4 i 8 passos (un per ítem) per exercici." : "Entre 2 i 6 passos per exercici."}`;
+}
+async function makeExercises(t, L) {
+  const s = getSubj(t.subjId);
+  if (!t.guia) { S.errors.exq = "Primer genera la guia del tema (pestanya Guia)."; render(); return; }
+  const n = L >= 3 ? 2 : 3;
+  const pf = exProf(s);
+  const extra = `Prepara ${n} exercicis de nivell ${pf.tag}${L} (${pf.levels[L].nom}). ` + ((S.exOrigen[t.id] || "nous") === "material"
+    ? "Agafa'ls dels exercicis que surten al material: copia l'enunciat tal com és (completa'l només si hi falta alguna dada) i tria els que encaixin amb el nivell. Si no n'hi ha prou, completa amb exercicis nous del mateix estil."
+    : "Crea exercicis nous, del mateix estil que els del material però amb altres dades i contextos.");
+  const r = await work("exq", `Claude prepara ${n} exercicis de nivell ${pf.tag}${L} i els resol per poder-te corregir.`, (signal, onText) => AI.json(exercisePrompt(t, s, extra), {signal, onText, tier: "complex"}));
+  if (!r) return;
+  const items = arr(r.exercicis || r).filter(e => e && e.enunciat).map(e => cleanExercise(e, L));
+  if (!items.length) { S.errors.exq = "No han arribat exercicis. Torna-ho a provar."; render(); return; }
+  if (S.temes[t.id] !== t && !t.exemple) return;
+  // El que s'hagi escrit mentre s'esperava i encara no s'ha corregit es conserva al davant.
+  const kept = arr(t.exRonda?.items).filter(unsaved);
+  dropPhotos(arr(t.exRonda?.items).filter(q => !kept.includes(q)).map(q => q.id));
+  t.exRonda = {nivell: L, items: [...kept, ...items]}; saveTema(t); render();
+}
+async function similarExercise(t, q) {
+  const s = getSubj(t.subjId), last = q.avals[q.avals.length - 1];
+  const pf = exProf(s);
+  const extra = `Prepara 1 exercici de nivell ${pf.tag}${q.nivell} (${pf.levels[q.nivell].nom}) semblant a aquest, del mateix tipus però amb altres ${isLang(s) ? "ítems" : "dades i un altre context"}:
+"""
+${q.enunciat}
+"""
+${last && last.errors.length ? "Fes que l'obligui a practicar just el que li ha fallat: " + last.errors.map(e => e.tipus + " (" + e.explicacio + ")").join("; ") : ""}`;
+  const r = await work("xs_" + q.id, "Claude prepara un exercici semblant.", (signal, onText) => AI.json(exercisePrompt(t, s, extra), {signal, onText, tier: "complex"}));
+  if (!r) return;
+  const e = arr(r.exercicis || r).find(x => x && x.enunciat);
+  if (!e) { S.errors["xs_" + q.id] = "No ha arribat l'exercici. Torna-ho a provar."; render(); return; }
+  if ((S.temes[t.id] !== t && !t.exemple) || !t.exRonda) return;
+  const items = t.exRonda.items, i = items.indexOf(q), nq = cleanExercise(e, q.nivell);
+  items.splice(i < 0 ? items.length : i + 1, 0, nq);
+  saveTema(t); render();
+  document.getElementById("xa_" + nq.id)?.scrollIntoView({block: "start", behavior: "smooth"});
+}
+async function evaluateExercise(t, q) {
+  const s = getSubj(t.subjId);
+  const ans = exAnswerText(q), photos = arr(S.photos[q.id]).map(p => p.blob);
+  const filled = q.guiat ? arr(q.passosAlumna).some(x => String(x || "").trim()) : ans.length >= 2;
+  if (!filled && !photos.length) { S.errors["xe_" + q.id] = "Primer escriu la resolució o afegeix una foto del paper."; render(); return; }
+  if (photos.length && AI.mode === "claude" && !AI.imgMax) { S.errors["xe_" + q.id] = aiErr({code: "images_unavailable"}); render(); return; }
+  const sig = exSignature(q), allSnap = exAll(q), prev = q.avals[q.avals.length - 1];
+  if (prev && prev.sig === sig) { S.errors["xe_" + q.id] = "Aquesta resolució ja està corregida. Arregla el que t'ha marcat i torna-la a enviar."; render(); return; }
+  const cmap = Object.fromEntries(arr(t.guia?.conceptes).map(c => [c.id, c]));
+  const pf = exProf(s), lang = isLang(s);
+  const r = await work("xe_" + q.id, `Claude està corregint la teva resolució ${lang ? "ítem per ítem" : "pas a pas"}. Pot trigar una mica.`, (signal, onText) => AI.json(
+`Corregeixes un exercici de ${s.nom} ${WHO.duna}. Tema: ${t.titol}. Nivell ${pf.tag}${q.nivell} (${pf.levels[q.nivell].nom}).
+
+Enunciat:
+"""
+${q.enunciat}
+"""
+
+${lang ? `Solució de referència (en ítems oberts hi pot haver més d'una resposta correcta; si la referència té un error, fia't de la norma de la llengua i posa les respostes bones a "resultat_correcte"):` : `Solució de referència (hi pot haver altres mètodes vàlids; si la referència té un error, fia't de les matemàtiques correctes i posa el resultat bo a "resultat_correcte"):`}
+${q.solucio.passos.map((p, i) => `${i + 1}. ${p.titol}: ${p.explicacio}${p.resultat ? " → " + p.resultat : ""}`).join("\n")}
+Resultat: ${q.solucio.resultat}
+
+Conceptes del tema (fes servir aquests id):
+${arr(t.guia?.conceptes).map(c => `${c.id} ${c.nom}`).join("\n")}
+${prev ? `
+És un nou intent (intent ${q.avals.length + 1}). A l'anterior li vas marcar: ${prev.errors.map(e => e.tipus + ": " + e.explicacio).join("; ") || "cap error"}. Digues també què ha arreglat.` : ""}
+${q.pistesVistes ? `Ha fet servir ${q.pistesVistes} pista${q.pistesVistes > 1 ? "es" : ""} abans de resoldre'l.` : ""}
+
+${lang ? "Respostes" : "Resolució"} ${WHO.dela}${q.guiat ? (lang ? " (ha respost cada ítem per separat)" : " (mode guiat: ha omplert cada pas)") : ""}:
+"""
+${ans || "(no ha escrit res: mira les fotos)"}
+"""
+${photos.length ? `Les ${photos.length} imatges són fotos de la seva resolució feta a mà, en ordre. Llegeix-les amb cura i posa a "transcripcio" el que hi has llegit, línia per línia.` : ""}
+
+Com corregir:
+${lang ? `- Revisa ítem per ítem. A "passos" posa un element per ítem: què ha respost, "estat" ok, error o falta, i a "comentari" la regla que s'hi aplica (breu).
+- A "errors" agrupa els errors per tipus: ${pf.errs.join(" | ")}. Explica la regla que ha fallat amb un exemple.
+- Si és una tasca d'escriptura, valora si compleix cada criteri i corregeix només els errors importants.
+- "com_continuar": quina regla ha de repassar i com aplicar-la, perquè arregli els ítems pel seu compte. No li donis totes les respostes.
+- nota de 0 a 10: proporció d'ítems ben resolts, i a nivells alts també la justificació i la qualitat del que escriu.` : `- Segueix la seva resolució pas a pas. Troba el PRIMER pas on s'equivoca i digues de quin tipus és l'error: ${pf.errs.join(" | ")}.
+- Si un error arrossega els passos següents però el procediment posterior és correcte, marca'ls com "arrossegat" i valora el procediment.
+- Si no ha arribat al final, marca com "falta" els passos que falten.
+- "com_continuar": una indicació perquè arregli el primer error pel seu compte. No li donis la solució sencera.
+- nota de 0 a 10 com en un examen: el plantejament i el procediment compten més que el resultat; un resultat sense unitats o sense justificar resta una mica.`}
+- To proper, directe i respectuós; comença pel que ha fet bé. Res d'elogis buits; els errors són informació per millorar.
+- ${lang ? `Cita les paraules i frases en ${qLang(s)} tal com són.` : PLAIN_MATH}
+- Escriu en ${fbLang(s)}.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
+
+Respon només amb JSON:
+{"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"${pf.errs[lang ? 0 : 3]}","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"${lang ? "les respostes correctes, numerades" : "resultat final correcte amb unitats"}","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[],"benestar":""}
+Només si la solució de referència té un error: "referencia_erronia": true i, a "solucio_corregida", els passos correctes amb la mateixa forma {"titol","explicacio","resultat"}.`,
+    {signal, onText, tier: "complex", images: photos}));
+  if (!r) return;
+  const valid = (x) => arr(x).map(String).filter(id => cmap[id]);
+  const states = ["ok", "error", "arrossegat", "falta"];
+  const av = {t: Date.now(), nota: num(r.nota, 0, 10), correcte: r.correcte === true, transcripcio: str(r.transcripcio, 6000),
+    passos: arr(r.passos).slice(0, 15).map(p => ({pas: str(p?.pas, 600), estat: states.includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
+    errors: arr(r.errors).slice(0, 8).map(e => ({tipus: pf.errs.includes(e?.tipus) ? e.tipus : (str(e?.tipus, 40) || "altres"), explicacio: str(e?.explicacio, 1000)})),
+    punts_forts: strs(r.punts_forts, 600), com_continuar: str(r.com_continuar, 1500), resultat_correcte: str(r.resultat_correcte, 3000),
+    conceptes_ok: valid(r.conceptes_ok), conceptes_febles: valid(r.conceptes_febles), millora: str(r.millora, 800), benestar: str(r.benestar, 800), sig: sig.slice(0, 30000), all: allSnap.slice(0, 40000), resposta: ans.slice(0, 20000)};
+  if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.exRonda?.items).includes(q)) return;
+  // Si Claude troba que la solució de referència era errònia, es substitueix per la corregida.
+  const fixed = r.referencia_erronia === true ? cleanExercise({solucio: {passos: r.solucio_corregida, resultat: av.resultat_correcte}}, q.nivell).solucio : null;
+  if (fixed?.passos.length) {
+    // Els passos guiats anaven lligats a la referència antiga: es conserven com a text lliure.
+    if (q.guiat) { q.resposta = exAnswerText(q); q.guiat = false; q.passosAlumna = []; }
+    q.solucio = fixed; av.sig = exSignature(q).slice(0, 30000); if (allSnap === exAll(q)) av.all = exAll(q).slice(0, 40000);
+  }
+  q.avals.push(av); q.avals = q.avals.slice(-5);  // es guarden els 5 últims intents
+  t.historial = [...arr(t.historial), {t: av.t, qid: q.id, mode: "ex", nivell: q.nivell, nota: av.nota, prof: q.nivell, ok: av.conceptes_ok, feble: av.conceptes_febles,
+    pregunta: q.enunciat.slice(0, 220), intent: q.avals.length, errs: [...new Set(av.errors.map(e => e.tipus))], pistes: q.pistesVistes}];
+  saveTema(t); render();
+}
+function insertSymbol(q, ch) {
+  const ids = q.guiat ? arr(q.solucio.passos).map((_, j) => `xs_${q.id}_${j}`) : [`xr_${q.id}`];
+  const el = document.getElementById(ids.includes(S.lastExField) ? S.lastExField : ids[0]);
+  if (!el || el.readOnly) return;
+  const a = el.selectionStart ?? el.value.length, b = el.selectionEnd ?? a;
+  el.value = el.value.slice(0, a) + ch + el.value.slice(b);
+  el.focus(); el.setSelectionRange(a + ch.length, a + ch.length);
+  el.dispatchEvent(new Event("input", {bubbles: true}));
+}
+
+/* ============================================================
+   Micròfon (reconeixement de veu del navegador)
+   ============================================================ */
+const Mic = {
+  rec: null, qid: null, base: "", finals: "", want: false, t0: 0, timer: null,
+  supported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); },
+  start(qid, lang) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { S.micTip = true; render(); return; }
+    this.stop(); clearInterval(this.timer);
+    const ta = document.getElementById("ans_" + qid);
+    this.tema = getTema(S.view.temaId); this.qid = qid; this.base = ta ? ta.value.replace(/\s*$/, "") : ""; this.finals = ""; this.want = true; this.t0 = Date.now();
+    const android = /android/i.test(navigator.userAgent);
+    const rec = new SR(); rec.lang = lang; rec.interimResults = true; rec.continuous = !android; rec.maxAlternatives = 1;
+    this.rec = rec;
+    rec.onresult = (e) => {
+      if (this.rec !== rec) return;
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) this.finals += (this.finals ? " " : "") + r[0].transcript.trim(); else interim += r[0].transcript;
+      }
+      this.sync(interim);
+    };
+    rec.onerror = (e) => {
+      if (this.rec !== rec) return;
+      if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") { this.want = false; S.micTip = true; render(); }
+      else if (e.error === "network" || e.error === "language-not-supported") { this.want = false; toast(e.error === "network" ? "El dictat necessita connexió. Escriu la resposta o torna-ho a provar." : "El navegador no reconeix aquesta llengua. Tria'n una altra o escriu."); }
+    };
+    rec.onend = () => { if (this.rec !== rec) return; if (this.want) { try { rec.start(); } catch { this.want = false; this.end(); } } else this.end(); };
+    try { rec.start(); } catch { S.micTip = true; this.want = false; this.rec = null; this.qid = null; render(); return; }
+    this.timer = setInterval(() => { const el = document.querySelector(`[data-mic="${qid}"] .mt`); if (el) { const s = Math.floor((Date.now() - this.t0) / 1000); el.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); } }, 500);
+    render();
+  },
+  sync(interim) {
+    const t = this.tema; const q = t?.ronda?.items.find(x => x.id === this.qid); if (!q) return;
+    q.resposta = (this.base ? this.base + " " : "") + this.finals; q.oral = true;
+    const ta = document.getElementById("ans_" + this.qid); if (ta) ta.value = q.resposta;
+    const im = document.getElementById("int_" + this.qid); if (im) im.textContent = interim;
+    saveTemaSoon(t);
+  },
+  stop() { if (!this.rec) return; this.want = false; try { this.rec.stop(); } catch { this.end(); } },
+  // Atura i espera que arribin els últims resultats (o 2,5 s com a màxim).
+  stopAndWait() {
+    if (!this.rec) return Promise.resolve();
+    const p = new Promise(res => { this.waiters.push(res); setTimeout(res, 2500); });
+    this.stop(); return p;
+  },
+  waiters: [],
+  end() {
+    clearInterval(this.timer); this.timer = null; this.rec = null;
+    const im = document.getElementById("int_" + this.qid); if (im) im.textContent = "";
+    this.qid = null; render();
+    this.waiters.splice(0).forEach(f => f());
+  },
+};
+
+/* ============================================================
+   Vistes
+   ============================================================ */
+const ICON = {
+  mic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>`,
+  stop: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`,
+  up: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>`,
+  cam: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>`,
+};
+
+function renderSide() {
+  const subs = allSubjects();
+  const list = subs.map(s => {
+    const ts = s.exemple ? Object.values(ex.temes).filter(x => x.subjId === s.id) : temesOf(s.id);
+    return `<div class="subj" style="--c:${subjColor(s)}">
+      <div class="subj-head"><span class="sw"></span>${esc(s.nom)}<span class="n">${ts.length}</span></div>
+      ${ts.map(t => `<button id="tl_${t.id}" class="tema-link ${S.view.temaId === t.id ? "sel" : ""}" data-act="open" data-id="${t.id}" type="button">${esc(t.titol)}${t.exemple ? '<span class="ex">exemple</span>' : ""}</button>`).join("")}
+      ${s.exemple ? "" : `<button class="tema-link muted" data-act="newTema" data-subj="${s.id}" type="button">+ Nou tema</button>`}
+    </div>`;
+  }).join("");
+  $("#side").classList.toggle("in-tema", !!S.view.temaId);
+  $("#side").innerHTML = `
+    <button class="btn ghost sm" data-act="home" type="button" style="align-self:flex-start">← Inici</button>
+    <div class="side-list">${list || '<p class="muted small">Encara no hi ha assignatures.</p>'}</div>
+    <div class="side-actions">
+      <button class="btn sm" data-act="newSubj" type="button">${ICON.plus} Assignatura</button>
+    </div>`;
+}
+
+function renderHome() {
+  const has = S.subjects.length > 0 || !S.loaded;
+  return `<div class="wrap">
+    ${S.loaded && Store.kind === "mem" ? `<div class="banner" role="note"><p><strong>Ara mateix no es guarda res.</strong> ${lsAvailable() ? "Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració." : "Descarrega còpies des de Configuració."}</p>${lsAvailable() ? `<button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button>` : ""}</div>` : ""}
+    ${S.loadError ? `<div class="banner" role="alert"><p><strong>No s'han pogut carregar les teves dades.</strong> No hi facis canvis fins que es carreguin, perquè no es perdi res.</p><button class="btn sm primary" data-act="retryLoad" type="button">Torna-ho a provar</button></div>` : ""}
+    ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat o el que vas rebre en subscriure't.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button>${AI.subs ? `<a class="btn sm" href="subscriu.html">No en tinc: subscriu-m'hi</a>` : ""}${AI.correu || AI.portalLogin ? `<a class="btn sm ghost" href="recupera.html">He perdut el codi</a>` : ""}</div>` : ""}
+    <div class="hero">
+      <span class="label">Com funciona</span>
+      <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
+      <p class="muted">Claude ordena el material en un resum i un mapa conceptual, et fa preguntes que comencen per les dades concretes i van baixant fins a relacionar-ho tot, i et diu què has explicat bé, què t'has deixat i com encaixar-ho. A Matemàtiques i Física i Química et posa exercicis, els resols pas a pas i et diu en quin pas t'has equivocat.</p>
+      <p class="muted small">Les respostes les genera una intel·ligència artificial (Claude) i es pot equivocar: si alguna cosa no et quadra, consulta el llibre o el professorat.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="label">Pas 1 · Material</span><h3>Fotos, PDF o Word</h3><p class="muted small">Captures del llibre, fotos del quadern, apunts en PDF o .docx.</p></div>
+      <div class="step"><span class="label">Pas 2 · Guia</span><h3>Resum i mapa</h3><p class="muted small">Les idees ordenades, els conceptes clau i com es relacionen.</p></div>
+      <div class="step"><span class="label">Pas 3 · Explica-ho</span><h3>Preguntes en 4 nivells</h3><p class="muted small">Respon parlant pel micròfon o escrivint. Claude ho avalua.</p></div>
+      <div class="step"><span class="label">Pas 4 · Progrés</span><h3>Fins on t'ho saps</h3><p class="muted small">Quins conceptes tens sòlids i quin nivell de profunditat domines.</p></div>
+    </div>
+    ${has ? "" : `<div class="panel">
+      <h3>Comença triant les teves assignatures</h3>
+      <p class="muted small">Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis pas a pas; les llengües, amb teoria per explicar i exercicis per aplicar-la.</p>
+      <div class="row">${PRESETS.map((p, i) => `<label class="chip" style="cursor:pointer;text-transform:none;font-family:var(--f-body);font-size:.92rem;letter-spacing:0;color:var(--ink);padding:6px 12px"><input type="checkbox" id="pre_${i}" ${i < 9 ? "checked" : ""}> ${esc(p.nom)}</label>`).join("")}</div>
+      <div class="row"><button class="btn primary" data-act="addPresets" type="button">Afegeix aquestes assignatures</button></div>
+    </div>`}
+    ${S.exampleHidden ? "" : `<div class="banner"><p><strong>Mira els exemples:</strong> «La cèl·lula», de Biologia (preguntes per explicar), i «Moviment rectilini uniforme», de Física i Química (exercicis). No es guarden.</p><button class="btn sm" data-act="open" data-id="exemple" type="button">Biologia</button><button class="btn sm" data-act="open" data-id="exemple-fq" type="button">Física i Química</button><button class="btn sm ghost" data-act="hideExample" type="button">Amaga'l</button></div>`}
+  </div>`;
+}
+
+function renderTema(t) {
+  const s = getSubj(t.subjId);
+  const tab = S.view.tab;
+  const nm = arr(t.mats).length, nq = arr(t.historial).length;
+  const tabs = isLang(s)
+    ? [["material", "Material", nm], ["guia", "Guia i regles", null], ["ex", "Exercicis", null], ["quiz", "Explica-ho", null], ["prog", "Progrés", nq]]
+    : isProb(s)
+    ? [["material", "Material", nm], ["guia", "Guia i fórmules", null], ["ex", "Exercicis", null], ["quiz", "Teoria", null], ["prog", "Progrés", nq]]
+    : [["material", "Material", nm], ["guia", "Guia i mapa", null], ["quiz", "Explica-ho", null], ["prog", "Progrés", nq]];
+  let body = "";
+  if (tab === "material") body = viewMaterial(t);
+  else if (tab === "guia") body = viewGuide(t);
+  else if (tab === "ex" && hasEx(s)) body = viewExercises(t, s);
+  else if (tab === "quiz" || tab === "ex") body = viewQuiz(t, s);
+  else body = viewProgress(t);
+  return `<div class="wrap">
+    ${t.exemple ? `<div class="banner"><p>Això és un <strong>exemple</strong>. Pots provar-ho tot, però no es guarda. Crea el teu primer tema des d'una assignatura.</p></div>` : ""}
+    <div class="tema-head" style="--c:${subjColor(s)}">
+      <div class="crumb"><span class="sw"></span><span class="label">${esc(s?.nom)}</span><span class="spacer"></span>
+        ${t.exemple ? "" : `<button class="btn sm ghost" data-act="renameTema" type="button">Canvia el nom</button><button class="btn sm ghost danger" data-act="delTema" type="button">Esborra</button>`}</div>
+      <h2 id="temaTitle" tabindex="-1">${esc(t.titol)}</h2>
+    </div>
+    <nav class="tabs" role="tablist">${tabs.map(([k, l, n]) => `<button id="tab_${k}" class="tab ${tab === k ? "sel" : ""}" role="tab" aria-controls="tabpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" data-act="tab" data-tab="${k}" type="button">${l}${n ? `<span class="badge">${n}</span>` : ""}</button>`).join("")}</nav>
+    <div id="tabpanel" role="tabpanel" aria-labelledby="tab_${tab}" class="wrap" style="max-width:none">${body}</div>
+  </div>`;
+}
+
+const pasteOf = (t) => S.paste[t.id] ||= {text: "", nom: ""};
+function viewMaterial(t) {
+  const mats = arr(t.mats).map(getMat).filter(Boolean);
+  const total = mats.reduce((a, m) => a + m.text.length, 0);
+  return `
+    ${t.exemple ? "" : `<div class="drop" id="drop" data-act="pick" role="button" tabindex="0">
+      ${ICON.up}<strong>Afegeix material d'estudi</strong>
+      <span class="muted small">Arrossega-hi fitxers, toca per triar-los o enganxa una captura (Ctrl+V). Fotos, captures, PDF, Word (.docx) o text.</span>
+    </div>`}
+    ${busyBox("mat")}
+    ${S.pending.map(p => `<div class="pending" data-pend="${p.id}"><span class="spin"></span><span class="chip">${p.kind}</span><strong style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.nom)}</strong><span class="pm muted small" style="margin-left:auto">${esc(p.msg)}</span></div>`).join("")}
+    <div class="mats">
+      ${mats.map(m => `<details class="mat" id="md_${m.id}"><summary id="mds_${m.id}"><span class="kind">${esc(m.tipus)}</span><span class="nm">${esc(m.nom)}</span><span class="sz">${kchars(m.text.length)}</span></summary>
+        <div class="body"><p class="muted small">Revisa el text llegit i corregeix el que calgui: és el que farà servir Claude.</p>
+          <textarea id="mt_${m.id}" data-mat="${m.id}" rows="8" aria-label="Text del material ${esc(m.nom)}" ${t.exemple ? "readonly" : ""}>${esc(m.text)}</textarea>
+          ${t.exemple ? "" : `<div class="row"><span class="spacer"></span><button class="btn sm ghost danger" data-act="delMat" data-id="${m.id}" type="button">Esborra aquest material</button></div>`}</div></details>`).join("")}
+    </div>
+    ${t.exemple ? "" : `<details class="panel" id="pasteBox" ${pasteOf(t).text ? "open" : ""}><summary id="pasteSum" style="cursor:pointer;font-weight:700">Enganxa o escriu text</summary>
+      <label class="label" for="pasteText">Text</label><textarea id="pasteText" data-paste="text" rows="6" placeholder="Enganxa aquí apunts, un fragment del llibre o el que hagis copiat d'una web…">${esc(pasteOf(t).text)}</textarea>
+      <div class="row"><label class="label" for="pasteName">Nom</label><input type="text" id="pasteName" data-paste="nom" value="${esc(pasteOf(t).nom)}" placeholder="Nom (opcional)" style="flex:1 1 200px"><button class="btn" data-act="addText" type="button">Afegeix el text</button></div></details>`}
+    <div class="panel">
+      <div class="row"><div style="flex:1 1 260px;min-width:0"><h3>Organitza el tema</h3><p class="muted small">${mats.length ? `${mats.length} material${mats.length > 1 ? "s" : ""}, ${kchars(total)}. ` : ""}Claude en farà el resum ordenat, el mapa conceptual i la llista de conceptes clau.</p></div>
+      <button id="btnGuide" class="btn primary" data-act="guide" type="button" ${mats.length && !S.busy.guia && !t.exemple ? "" : "disabled"}>${t.guia ? "Torna a fer la guia" : "Fes la guia"}</button></div>
+      ${busyBox("guia")}
+    </div>`;
+}
+
+function viewGuide(t) {
+  const g = t.guia;
+  if (!g) return `<div class="panel empty"><h3>Encara no hi ha guia</h3><p>Afegeix material i prem «Fes la guia».</p><button class="btn" data-act="tab" data-tab="material" type="button">Ves a Material</button>${busyBox("guia")}</div>`;
+  const st = conceptStatus(t);
+  const colors = ["var(--s1)","var(--s5)","var(--s3)","var(--s4)","var(--s2)","var(--s6)"];
+  return `
+    <section class="panel"><div class="row"><h3>Resum ordenat</h3><span class="spacer"></span><span class="label">Fet el ${fmtDate(g.generat)}</span></div>
+      <div class="resum">${arr(g.resum).map(r => `<section><h3>${esc(r.apartat)}</h3><ul>${arr(r.punts).map(p => `<li>${esc(p)}</li>`).join("")}</ul></section>`).join("")}</div>
+    </section>
+    ${arr(g.formules).length ? `<section class="panel"><h3>Fórmules</h3><div class="formulas">${arr(g.formules).map(f => `<div class="formula"><span class="label">${esc(f.nom)}</span><div class="expr">${esc(f.expressio)}</div>${f.variables ? `<p class="small">${esc(f.variables)}</p>` : ""}${f.quan ? `<p class="muted small">${esc(f.quan)}</p>` : ""}</div>`).join("")}</div></section>` : ""}
+    ${arr(g.regles).length ? `<section class="panel"><h3>Regles</h3><div class="formulas">${arr(g.regles).map(r => `<div class="formula"><span class="label">${esc(r.nom)}</span><p>${esc(r.regla)}</p>${arr(r.exemples).length ? `<div class="row" style="gap:6px">${arr(r.exemples).map(x => `<span class="res">${esc(x)}</span>`).join("")}</div>` : ""}${r.excepcions ? `<p class="muted small"><strong>Excepcions:</strong> ${esc(r.excepcions)}</p>` : ""}</div>`).join("")}</div>
+      ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus d'exercici</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
+    ${arr(g.metodes).length ? `<section class="panel"><h3>Mètodes pas a pas</h3><div class="resum">${arr(g.metodes).map(m => `<section><h3>${esc(m.nom)}</h3><ol>${arr(m.passos).map(x => `<li>${esc(x)}</li>`).join("")}</ol></section>`).join("")}</div>
+      ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus de problemes</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
+    <section class="panel"><h3>Mapa conceptual</h3>
+      <div class="map">
+        <div class="map-centre">${esc(g.mapa?.centre || t.titol)}</div><div class="map-stem"></div>
+        <div class="map-branches">${arr(g.mapa?.branques).map((b, i) => `<div class="branch" style="--b:${colors[i % colors.length]}">
+          <div class="branch-name">${esc(b.nom)}</div>${b.idea ? `<p class="branch-idea">${esc(b.idea)}</p>` : ""}
+          <ul class="kids">${arr(b.fills).map(f => `<li><b>${esc(f.nom)}</b>${f.idea ? `<span>${esc(f.idea)}</span>` : ""}</li>`).join("")}</ul></div>`).join("")}</div>
+      </div>
+    </section>
+    ${arr(g.relacions).length ? `<section class="panel"><h3>Com es relacionen les idees</h3><p class="muted small">Aquestes connexions són les que et preguntaran als nivells 3 i 4.</p>
+      <div class="rels">${arr(g.relacions).map(r => `<div class="rel"><div class="rel-line"><span class="node">${esc(r.de)}</span><span class="arrow">— ${esc(r.tipus)} →</span><span class="node">${esc(r.a)}</span></div><p class="muted small">${esc(r.explicacio)}</p></div>`).join("")}</div></section>` : ""}
+    <section class="panel"><div class="row"><h3>Conceptes clau</h3><span class="spacer"></span>
+      <div class="legend"><span><i class="st"></i>no treballat</span><span><i class="st feble"></i>a reforçar</span><span><i class="st proces"></i>en procés</span><span><i class="st solid"></i>sòlid</span></div></div>
+      <div class="concepts">${arr(g.conceptes).map(c => `<div class="concept"><span class="cn"><i class="st ${st[c.id] === "none" ? "" : st[c.id]}" aria-hidden="true"></i><span class="mk">${esc(c.nom)}</span><span class="sr">(${ST_LABEL[st[c.id]]})</span></span><p>${esc(c.definicio)}</p></div>`).join("")}</div>
+    </section>
+    <div class="row">${hasEx(getSubj(t.subjId)) ? `<button class="btn primary" data-act="tab" data-tab="ex" type="button">Fes exercicis</button><button class="btn" data-act="tab" data-tab="quiz" type="button">${isLang(getSubj(t.subjId)) ? "Explica la teoria" : "Preguntes de teoria"}</button>` : `<button class="btn primary" data-act="tab" data-tab="quiz" type="button">Comença a explicar-ho</button>`}
+      ${t.exemple ? "" : `<button class="btn ghost" data-act="guide" type="button" ${S.busy.guia ? "disabled" : ""}>Torna a fer la guia</button>`}</div>
+    ${busyBox("guia")}`;
+}
+
+function depthPicker(t, sel, kind = "teoria") {
+  const subj = getSubj(t.subjId), st = levelScores(t, kind), rec = recommended(t, kind), LV = levelsFor(kind, subj);
+  return `<div class="depth" role="group" aria-label="${kind === "ex" ? "Dificultat dels exercicis" : "Nivell de profunditat"}">${[1,2,3,4].map(L => {
+    const a = levelAvg(st[L]);
+    return `<button id="lvl_${kind}${sel === null ? "p" : "q"}${L}" class="lvl ${sel === L ? "sel" : ""}" style="--dc:var(--d${L})" aria-pressed="${sel === L}" data-act="level" data-kind="${kind}" data-l="${L}" type="button">
+      ${rec === L ? '<span class="rec">recomanat</span>' : ""}
+      <span class="lv"><i></i>${lvlTag(kind, L, subj)} ${LV[L].nom}</span>
+      <span class="ld">${LV[L].curt}</span>
+      <span class="meter" title="${a === null ? "sense respostes" : "mitjana " + a.toFixed(1)}"><b style="width:${a === null ? 0 : a * 10}%"></b></span>
+      <span class="label">${st[L].length ? `${st[L].length} resp. · ${a.toFixed(1)}` : "sense respostes"}</span>
+    </button>`; }).join("")}</div>`;
+}
+
+function viewQuiz(t, s) {
+  if (!t.guia) return `<div class="panel empty"><h3>Primer cal la guia del tema</h3><p>Les preguntes surten del material ordenat.</p><button class="btn" data-act="tab" data-tab="material" type="button">Ves a Material</button></div>`;
+  S.levelSel ??= {};
+  const sel = S.levelSel[t.id] ?? recommended(t);
+  const r = t.ronda;
+  return `
+    <section class="panel">
+      <div class="row"><div style="flex:1 1 260px;min-width:0"><h3>Tria la profunditat</h3><p class="muted small">Comença per dalt i ves baixant. Quan les últimes respostes d'un nivell fan mitjana de 7, passes al següent.</p></div></div>
+      ${depthPicker(t, sel)}
+      <div class="row">
+        <button id="btnAsk" class="btn primary" data-act="ask" type="button" ${S.busy.quiz ? "disabled" : ""}>Fes-me preguntes de nivell ${sel}</button>
+        <button id="btnFree" class="btn" data-act="free" type="button" ${S.busy.quiz ? "disabled" : ""}>Explica tot el tema</button>
+      </div>
+      ${busyBox("quiz")}
+    </section>
+    ${S.micTip ? micTip() : ""}
+    ${Mic.supported() ? `<p class="muted small">El botó «Parla» fa servir el reconeixement de veu del navegador: a Chrome l'àudio es processa als servidors de Google i a Safari als d'Apple. Si no ho vols, escriu la resposta o dicta amb el teclat.</p>` : ""}
+    ${r ? arr(r.items).map((q, i) => viewQuestion(t, s, q, i)).join("") : `<div class="empty"><p>Tria un nivell i prem «Fes-me preguntes», o prova d'explicar tot el tema de cop.</p></div>`}`;
+}
+function micTip() {
+  return `<div class="tip" role="note"><strong>El micròfon d'aquesta pàgina no està disponible aquí.</strong> Pots dictar igualment amb el teclat: al mòbil, toca el micròfon del teclat; a Windows, prem <b>Windows + H</b>; al Mac, prem dues vegades la tecla <b>Fn</b> (o <b>Control</b>). El text apareixerà a la caixa de resposta. <button class="btn sm ghost" data-act="hideTip" type="button">Entesos</button></div>`;
+}
+function viewQuestion(t, s, q, i) {
+  const last = q.avals[q.avals.length - 1];
+  const rec = Mic.qid === q.id;
+  const lang = S.micLang?.[q.id] || LANGS[s.llengua]?.sr || "ca-ES";
+  const dc = q.nivell ? `var(--d${q.nivell})` : "var(--accent)";
+  return `<article class="q" style="--dc:${dc}">
+    <div class="q-top"><span class="label">Pregunta ${i + 1}</span><span class="chip"><i></i>${q.nivell ? "N" + q.nivell + " " + LEVELS[q.nivell].nom : "Explicació lliure"}</span>${q.tipus && q.nivell ? `<span class="chip">${esc(q.tipus)}</span>` : ""}</div>
+    <p class="q-text">${esc(q.pregunta)}</p>
+    ${q.pista ? (S.showHint[q.id] ? `<p class="hint" id="hint_${q.id}" tabindex="-1"><strong>Pista:</strong> ${esc(q.pista)}</p>` : `<button class="btn sm ghost" data-act="hint" data-id="${q.id}" type="button" style="align-self:flex-start">Vull una pista</button>`) : ""}
+    <div class="answer">
+      <label class="label" for="ans_${q.id}">${last ? "La teva resposta (pots millorar-la i tornar-la a enviar)" : "La teva resposta"}</label>
+      <textarea id="ans_${q.id}" data-ans="${q.id}" maxlength="20000" ${S.busy["ev_" + q.id] ? "readonly" : ""} rows="5" placeholder="Prem el micròfon i explica-ho en veu alta, o escriu aquí.">${esc(q.resposta)}</textarea>
+      <p class="interim" id="int_${q.id}" aria-live="polite"></p>
+      <div class="row" data-mic="${q.id}">
+        <button id="mic_${q.id}" class="btn mic ${rec ? "recording" : ""}" data-act="mic" data-id="${q.id}" type="button" aria-pressed="${rec}">${rec ? ICON.stop + " Atura <span class=\"mt\">0:00</span>" : ICON.mic + " Parla"}</button>
+        <select id="ml_${q.id}" data-miclang="${q.id}" aria-label="Llengua del micròfon">${Object.entries(LANGS).map(([k, v]) => `<option value="${v.sr}" ${v.sr === lang ? "selected" : ""}>${v.nom}</option>`).join("")}</select>
+        <span class="spacer"></span>
+        <button id="ev_${q.id}" class="btn primary" data-act="eval" data-id="${q.id}" type="button" ${S.busy["ev_" + q.id] ? "disabled" : ""}>${last ? "Torna-ho a avaluar" : "Avalua la resposta"}</button>
+      </div>
+      ${busyBox("ev_" + q.id)}
+    </div>
+    ${last ? viewFeedback(q, last) : ""}
+  </article>`;
+}
+function viewFeedback(q, a) {
+  const tone = a.nota >= 7 ? "var(--ok)" : a.nota >= 5 ? "var(--warn)" : "var(--bad)";
+  const list = (xs) => `<ul>${xs.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  return `<div class="fb">
+    <div class="score"><span class="big" style="color:${tone}">${a.nota}<small>/10</small></span>
+      <div><span class="label">Profunditat que demostres</span><div class="row" style="gap:6px;margin-top:4px">${[1,2,3,4].map(L => `<span class="chip" style="--dc:var(--d${L});${L <= a.profunditat ? "color:var(--ink);border-color:var(--d" + L + ")" : "opacity:.5"}"><i style="${L <= a.profunditat ? "" : "background:transparent"}"></i>N${L}</span>`).join("")}</div></div>
+      ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
+${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
+    ${a.millora ? `<p><strong>Què has millorat:</strong> ${esc(a.millora)}</p>` : ""}
+    <div class="fb-grid">
+      ${a.punts_forts.length ? `<div class="fb-box good"><h3>El que ja saps</h3>${list(a.punts_forts)}</div>` : ""}
+      ${a.falta.length ? `<div class="fb-box miss"><h3>El que t'has deixat</h3>${list(a.falta)}</div>` : ""}
+      ${a.errors.length ? `<div class="fb-box wrong"><h3>Per corregir</h3>${list(a.errors)}</div>` : ""}
+    </div>
+    ${a.com_integrar ? `<div class="weave"><span class="label">Com encaixar-ho a la teva explicació</span><p>${esc(a.com_integrar)}</p></div>` : ""}
+    ${a.resposta_millorada ? `<details class="better" id="bt_${q.id}"><summary id="bts_${q.id}">Mira la teva resposta amb el que faltava</summary><p>${esc(a.resposta_millorada)}</p></details>` : ""}
+    <p class="muted small">Prova de tornar-ho a explicar sense mirar la versió millorada: és quan més es fixa.</p>
+  </div>`;
+}
+
+/* Càmera del dispositiu per fotografiar el paper.
+   La foto que es captura no fa efecte mirall (el text surt llegible); la vista prèvia tampoc, i es pot
+   invertir només per comoditat. Dins claude.ai la càmera no està permesa: allà es puja la foto. */
+const Cam = {
+  stream: null, qid: null, mirror: false, rot: 0, shot: null, timer: null, session: 0,
+  supported() { return !!navigator.mediaDevices?.getUserMedia && !window.claude?.use; },
+  async open(qid) {
+    this.stop();
+    const my = ++this.session;   // cada obertura té el seu número: si es tanca abans d'arrencar, el flux es descarta
+    this.qid = qid; this.mirror = false; this.rot = 0; this.shot = null;
+    openDialog(`<h3>Fes una foto del paper</h3>
+      <p class="muted small">Posa el full davant la càmera amb bona llum, que ocupi gairebé tota la imatge. Amb «Captura en 3 s» tens temps d'aguantar-lo quiet.</p>
+      <div class="cam"><video id="camVideo" autoplay playsinline muted></video><canvas id="camShot" hidden></canvas><span id="camCount" class="cam-count" hidden></span></div>
+      <p id="camErr" class="err small" role="alert" hidden></p>
+      <div class="row" id="camLive"><button class="btn primary" id="camTimer" data-act="camTimer" type="button">Captura en 3 s</button><button class="btn" id="camNow" data-act="camNow" type="button">Captura ara</button><button class="btn ghost" id="camMirror" data-act="camMirror" type="button" aria-pressed="false">Vista en mirall</button><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Tanca</button></div>
+      <div class="row" id="camDone" hidden><button class="btn" id="camRotate" data-act="camRotate" type="button">Gira 90°</button><button class="btn" id="camRetake" data-act="camRetake" type="button">Fes-ne una altra</button><span class="spacer"></span><button class="btn primary" id="camUse" data-act="camUse" type="button">Afegeix la foto</button></div>`, null);
+    const d = $("#dlg"); d.classList.add("wide");
+    d.addEventListener("close", () => { if (this.session === my) this.session++; this.stop(); d.classList.remove("wide"); }, {once: true});
+    let stream = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({audio: false, video: {facingMode: {ideal: "environment"}, width: {ideal: 1920}, height: {ideal: 1080}}});
+      const v = $("#camVideo");
+      if (this.session !== my || !v) { stream.getTracks().forEach(t => t.stop()); return; }
+      this.stream = stream; v.srcObject = stream; await v.play().catch(() => {});
+    } catch (e) {
+      if (this.session !== my) { stream?.getTracks().forEach(t => t.stop()); return; }
+      const el = $("#camErr"); if (!el) return;
+      el.hidden = false;
+      el.textContent = e?.name === "NotAllowedError" ? "No hi ha permís per fer servir la càmera. Dona-li permís a la icona de la barra d'adreces, o puja una foto feta amb el mòbil."
+        : "No s'ha trobat cap càmera disponible. Puja una foto feta amb el mòbil.";
+      $("#camLive").querySelectorAll("[data-act=camTimer],[data-act=camNow],[data-act=camMirror]").forEach(b => b.disabled = true);
+    }
+  },
+  stop() { clearInterval(this.timer); this.timer = null; this.stream?.getTracks().forEach(t => t.stop()); this.stream = null; },
+  toggleMirror() { this.mirror = !this.mirror; const v = $("#camVideo"); v?.classList.toggle("mirror", this.mirror); $("#camMirror")?.setAttribute("aria-pressed", String(this.mirror)); },
+  countdown() {
+    if (this.timer) return;
+    let n = 3; const el = $("#camCount"); if (!el) return;
+    el.hidden = false; el.textContent = n;
+    this.timer = setInterval(() => { n--; if (n > 0) el.textContent = n; else { clearInterval(this.timer); this.timer = null; el.hidden = true; this.capture(); } }, 1000);
+  },
+  capture() {
+    clearInterval(this.timer); this.timer = null; const cnt = $("#camCount"); if (cnt) cnt.hidden = true;
+    const v = $("#camVideo"); if (!v?.videoWidth || this.shot) return;
+    const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext("2d").drawImage(v, 0, 0);
+    this.shot = c; this.rot = 0; this.draw();
+    $("#camVideo").hidden = true; $("#camShot").hidden = false; $("#camLive").hidden = true; $("#camDone").hidden = false; $("#camUse")?.focus();
+  },
+  draw() {
+    const src = this.shot, out = $("#camShot"); if (!src || !out) return;
+    const side = this.rot % 180 !== 0;
+    out.width = side ? src.height : src.width; out.height = side ? src.width : src.height;
+    const g = out.getContext("2d"); g.save(); g.translate(out.width / 2, out.height / 2); g.rotate(this.rot * Math.PI / 180); g.drawImage(src, -src.width / 2, -src.height / 2); g.restore();
+  },
+  rotate() { this.rot = (this.rot + 90) % 360; this.draw(); },
+  retake() { this.shot = null; $("#camVideo").hidden = false; $("#camShot").hidden = true; $("#camLive").hidden = false; $("#camDone").hidden = true; },
+  use() {
+    const out = $("#camShot"), qid = this.qid; if (!out || !this.shot) return;
+    out.toBlob(b => { if (b) { closeDialog(); addPhotos(qid, [b]); toast("Foto afegida"); } }, "image/jpeg", .9);
+  },
+};
+const exItem = (t, id) => arr(t?.exRonda?.items).find(x => x.id === id);
+function viewExercises(t, s) {
+  if (!t.guia) return `<div class="panel empty"><h3>Primer cal la guia del tema</h3><p>Els exercicis surten de les fórmules i els mètodes del material.</p><button class="btn" data-act="tab" data-tab="material" type="button">Ves a Material</button></div>`;
+  S.exLevelSel ??= {};
+  const sel = S.exLevelSel[t.id] ?? recommended(t, "ex"), origen = S.exOrigen[t.id] || "nous", r = t.exRonda;
+  return `
+    <section class="panel">
+      <div><h3>Tria la dificultat</h3><p class="muted small">De ${exProf(s).tag}1 a ${exProf(s).tag}4. Quan les últimes resolucions d'un nivell fan mitjana de 7, passes al següent.</p></div>
+      ${depthPicker(t, sel, "ex")}
+      <div class="row">
+        <label class="label" for="exOrigen">Exercicis</label>
+        <select id="exOrigen" data-exorigen="${t.id}"><option value="nous" ${origen === "nous" ? "selected" : ""}>nous, semblants als del llibre</option><option value="material" ${origen === "material" ? "selected" : ""}>del meu material</option></select>
+        <span class="spacer"></span>
+        <button id="btnExAsk" class="btn primary" data-act="exAsk" type="button" ${S.busy.exq ? "disabled" : ""}>Fes-me exercicis de nivell ${exProf(s).tag}${sel}</button>
+      </div>
+      ${busyBox("exq")}
+    </section>
+    ${r ? arr(r.items).map((q, i) => viewExercise(t, q, i)).join("") : `<div class="empty"><p>Tria un nivell i prem «Fes-me exercicis». Resol-los aquí o en paper i fes-hi una foto.</p></div>`}`;
+}
+function solutionBlock(q, res, pf) {
+  return `<details class="better" id="sol_${q.id}"><summary id="sols_${q.id}">${pf.solution}</summary>
+    <ol class="sol">${arr(q.solucio.passos).map(p => `<li><strong>${esc(p.titol)}.</strong> ${esc(p.explicacio)}${p.resultat ? ` <span class="res">${esc(p.resultat)}</span>` : ""}</li>`).join("")}</ol>
+    <p><strong>Resultat:</strong> <span class="res">${esc(res || q.solucio.resultat)}</span></p></details>`;
+}
+function viewExercise(t, q, i) {
+  const last = q.avals[q.avals.length - 1], busy = !!S.busy["xe_" + q.id];
+  const photos = arr(S.photos[q.id]), steps = arr(q.solucio.passos);
+  const canPhoto = AI.mode !== "claude" || AI.imgMax > 0, pf = exProf(getSubj(t.subjId)), lang = pf.tag === "L";
+  return `<article class="q" id="xa_${q.id}" style="--dc:var(--d${q.nivell})">
+    <div class="q-top"><span class="label">Exercici ${i + 1}</span><span class="chip"><i></i>${pf.tag}${q.nivell} ${pf.levels[q.nivell].nom}</span>${q.tipus ? `<span class="chip">${esc(q.tipus)}</span>` : ""}</div>
+    <p class="enunciat">${esc(q.enunciat)}</p>
+    ${q.pistesVistes ? `<div class="hints">${q.pistes.slice(0, q.pistesVistes).map((p, j) => `<p class="hint" id="hn_${q.id}_${j}" tabindex="-1"><strong>Pista ${j + 1}:</strong> ${esc(p)}</p>`).join("")}</div>` : ""}
+    <div class="row">
+      ${q.pistesVistes < q.pistes.length ? `<button id="xh_${q.id}" class="btn sm ghost" data-act="exHint" data-id="${q.id}" type="button">${q.pistesVistes ? "Una altra pista" : "Ajuda'm a començar"} <span class="muted">${q.pistesVistes}/${q.pistes.length}</span></button>` : ""}
+      ${steps.length ? `<button id="xg_${q.id}" class="btn sm ghost" data-act="exGuided" data-id="${q.id}" aria-pressed="${q.guiat}" type="button">${q.guiat ? pf.unguided : pf.guided}</button>` : ""}
+    </div>
+    <div class="answer">
+      ${q.guiat
+        ? `<div class="steps-in">${steps.map((p, j) => `<div class="field"><label class="label" for="xs_${q.id}_${j}">${lang ? esc(p.titol) : `Pas ${j + 1} · ${esc(p.titol)}`}</label><textarea id="xs_${q.id}_${j}" data-exstep="${q.id}:${j}" maxlength="4000" rows="2" ${busy ? "readonly" : ""}>${esc(q.passosAlumna?.[j] || "")}</textarea></div>`).join("")}</div>`
+        : `<label class="label" for="xr_${q.id}">${pf.answerLabel}</label><textarea id="xr_${q.id}" data-exans="${q.id}" maxlength="20000" class="${lang ? "" : "mathbox"}" rows="7" ${busy ? "readonly" : ""} placeholder="${pf.placeholder}">${esc(q.resposta)}</textarea>`}
+      <div class="syms" role="group" aria-label="Símbols per escriure">${pf.syms.map(c => `<button class="sym" data-act="sym" data-id="${q.id}" data-s="${esc(c)}" type="button" aria-label="Insereix ${esc(c)}">${esc(c)}</button>`).join("")}</div>
+      ${photos.length ? `<p class="muted small">Les fotos no es guarden: fes corregir l'exercici abans de tancar. El que Claude hi llegeixi sí que queda guardat.</p><div class="thumbs">${photos.map((p, j) => `<div class="thumb"><img src="${esc(p.url)}" alt="Foto ${j + 1} de la resolució">${busy ? "" : `<button class="x" data-act="exPhotoDel" data-id="${q.id}" data-j="${j}" type="button" aria-label="Treu la foto ${j + 1}">×</button>`}</div>`).join("")}</div>` : ""}
+      <div class="row">
+        ${canPhoto && Cam.supported() ? `<button id="xc_${q.id}" class="btn" data-act="camOpen" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.cam} Fes una foto</button>` : ""}
+        ${canPhoto ? `<button id="xp_${q.id}" class="btn" data-act="exPhoto" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${ICON.up} Puja una foto</button>` : ""}
+        <span class="spacer"></span>
+        <button id="xe_${q.id}" class="btn primary" data-act="exEval" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>${last ? "Torna-la a corregir" : "Corregeix"}</button>
+      </div>
+      ${busyBox("xe_" + q.id)}
+      ${!last && q.pistesVistes >= q.pistes.length && q.pistes.length ? solutionBlock(q, "", pf) : ""}
+    </div>
+    ${last ? viewExFeedback(q, last, pf) : ""}
+  </article>`;
+}
+function viewExFeedback(q, a, pf) {
+  const tone = a.nota >= 7 ? "var(--ok)" : a.nota >= 5 ? "var(--warn)" : "var(--bad)";
+  const ICO = {ok: "✓", error: "✗", arrossegat: "→", falta: "…"};
+  const LBL = {ok: "correcte", error: "error", arrossegat: "error arrossegat", falta: "falta"};
+  return `<div class="fb">
+    <div class="score"><span class="big" style="color:${tone}">${a.nota}<small>/10</small></span>
+      <span class="chip ${a.correcte ? "good" : "bad"}">${a.correcte ? pf.allOk : pf.notOk}</span>
+      ${q.avals.length > 1 ? `<div class="attempts"><span class="label">Intents:</span>${q.avals.map(v => `<span class="chip">${v.nota}</span>`).join("")}</div>` : ""}</div>
+${a.benestar ? `<div class="care" role="note"><strong>Un moment</strong><p>${esc(a.benestar)}</p></div>` : ""}
+    ${a.millora ? `<p><strong>Què has arreglat:</strong> ${esc(a.millora)}</p>` : ""}
+    ${a.transcripcio ? `<details class="better" id="tr_${q.id}"><summary id="trs_${q.id}">El que Claude ha llegit a la teva foto</summary><p class="mathtxt">${esc(a.transcripcio)}</p></details>` : ""}
+    ${a.passos.length ? `<ol class="pasos" aria-label="Correcció pas a pas">${a.passos.map(p => `<li class="pas ${p.estat}"><span class="ico" aria-hidden="true">${ICO[p.estat]}</span><div><p class="mathtxt"><strong>${esc(p.pas)}</strong> <span class="sr">(${LBL[p.estat]})</span>${p.estat !== "ok" ? ` <span class="chip">${LBL[p.estat]}</span>` : ""}</p>${p.comentari ? `<p class="muted small">${esc(p.comentari)}</p>` : ""}</div></li>`).join("")}</ol>` : ""}
+    <div class="fb-grid">
+      ${a.punts_forts.length ? `<div class="fb-box good"><h3>El que has fet bé</h3><ul>${a.punts_forts.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+      ${a.errors.length ? `<div class="fb-box wrong"><h3>On t'has equivocat</h3><ul>${a.errors.map(e => `<li><span class="chip">${esc(e.tipus)}</span> ${esc(e.explicacio)}</li>`).join("")}</ul></div>` : ""}
+    </div>
+    ${a.com_continuar && !a.correcte ? `<div class="weave"><span class="label">Com arreglar-ho</span><p>${esc(a.com_continuar)}</p></div>` : ""}
+    ${solutionBlock(q, a.resultat_correcte, pf)}
+    <div class="row"><button id="xsb_${q.id}" class="btn" data-act="exSimilar" data-id="${q.id}" type="button" ${S.busy["xs_" + q.id] ? "disabled" : ""}>Fes-me'n un de semblant</button>
+      <span class="muted small">${a.correcte ? "Per fixar-ho, prova'n un altre sense pistes." : "Arregla'l i torna'l a corregir, o practica amb un de semblant."}</span></div>
+    ${busyBox("xs_" + q.id)}
+  </div>`;
+}
+
+function viewProgress(t) {
+  const h = arr(t.historial), ev = evidence(t);
+  const st = conceptStatus(t);
+  const counts = {none: 0, feble: 0, proces: 0, solid: 0}; Object.values(st).forEach(v => counts[v]++);
+  const subj = getSubj(t.subjId), rec = recommended(t), prob = hasEx(subj), pf = exProf(subj), recP = recommended(t, "ex"), es = errStats(t);
+  const avg = ev.length ? (ev.reduce((a, x) => a + x.nota, 0) / ev.length).toFixed(1) : "–";
+  const inf = t.informe;
+  return `
+    <div class="stats">
+      <div class="stat"><span class="label">${prob ? "Teoria" : "Nivell on ets"}</span><b>N${rec}</b><span class="muted small">${LEVELS[rec].nom}</span></div>
+      ${prob ? `<div class="stat"><span class="label">Exercicis</span><b>${pf.tag}${recP}</b><span class="muted small">${pf.levels[recP].nom}</span></div>` : ""}
+      <div class="stat"><span class="label">Dies d'estudi</span><b>${studyDays(t)}</b><span class="muted small">amb preguntes</span></div>
+      <div class="stat"><span class="label">Respostes</span><b>${ev.length}</b><span class="muted small">mitjana ${avg}${h.length > ev.length ? ` · ${h.length} intents` : ""}</span></div>
+      <div class="stat"><span class="label">Conceptes sòlids</span><b>${counts.solid}<small class="muted" style="font-size:1rem"> / ${Object.keys(st).length}</small></b><span class="muted small">${counts.feble} a reforçar</span></div>
+    </div>
+    ${prob ? `<section class="panel"><h3>Exercicis per dificultat</h3>${depthPicker(t, null, "ex")}</section>` : ""}
+    ${prob && es.length ? `<section class="panel"><h3>On t'equivoques més</h3><p class="muted small">Tipus d'error en els exercicis (compta l'últim intent de cada un).</p>
+      <div class="bars">${es.map(([k, v]) => `<div class="bar"><span>${esc(k)}</span><span class="track"><b style="width:${Math.round(v / es[0][1] * 100)}%"></b></span><span class="n">${v}</span></div>`).join("")}</div></section>` : ""}
+    <section class="panel"><h3>${prob ? "Teoria per nivells" : "Profunditat per nivells"}</h3>${depthPicker(t, null)}</section>
+    ${t.guia ? `<section class="panel"><h3>Mapa de domini dels conceptes</h3>
+      <div class="concepts">${arr(t.guia.conceptes).map(c => `<div class="concept"><span class="cn"><i class="st ${st[c.id] === "none" ? "" : st[c.id]}"></i>${esc(c.nom)}</span><p>${ST_LABEL[st[c.id]]}</p></div>`).join("")}</div></section>` : ""}
+    <section class="panel">
+      <div class="row"><div style="flex:1 1 260px;min-width:0"><h3>Valoració global</h3><p class="muted small">Claude mira tot l'historial i et diu fins a quin nivell domines el tema i què fer a la propera sessió.</p></div>
+        <button id="btnReport" class="btn primary" data-act="report" type="button" ${S.busy.inf ? "disabled" : ""}>${inf ? "Actualitza la valoració" : "Fes la valoració"}</button></div>
+      ${busyBox("inf")}
+      ${inf ? `<div class="report">
+        <span class="label">${fmtDate(inf.t)}</span>
+        <p>${esc(inf.valoracio)}</p>
+        ${inf.nivells.length ? `<ul>${inf.nivells.map(n => `<li><strong>${esc(/^[NPL]\d$/.test(String(n.nivell)) ? n.nivell : "N" + n.nivell)}:</strong> ${esc(n.text)}</li>`).join("")}</ul>` : ""}
+        <div class="fb-grid">
+          ${inf.domina.length ? `<div class="fb-box good"><h3>Ja ho domines</h3><ul>${inf.domina.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+          ${inf.reforcar.length ? `<div class="fb-box miss"><h3>Per reforçar</h3><ul>${inf.reforcar.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        </div>
+        ${inf.pla.length ? `<div class="weave"><span class="label">Propera sessió</span><ol>${inf.pla.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>` : ""}
+      </div>` : ""}
+    </section>
+    ${h.length ? `<section class="panel"><h3>Historial</h3><div class="tbl"><table class="hist"><thead><tr><th>Dia</th><th>Nivell</th><th>Pregunta</th><th>Nota</th></tr></thead><tbody>
+      ${h.slice().reverse().map(x => `<tr><td>${fmtDate(x.t)}</td><td><span class="chip" style="--dc:var(--d${x.nivell || 1})"><i></i>${x.nivell ? lvlTag(x.mode, x.nivell, subj) : "lliure"}</span></td><td>${esc(x.pregunta)}</td><td class="n">${x.nota}/10</td></tr>`).join("")}
+    </tbody></table></div></section>` : ""}`;
+}
+
+function render() {
+  // Es conserva el focus i el cursor de la caixa on s'escriu.
+  const a = document.activeElement, aid = a?.id, ss = a?.selectionStart, se = a?.selectionEnd;
+  const open = [...document.querySelectorAll("#main details[id][open]")].map(d => d.id);
+  renderSide();
+  const t = S.view.temaId && getTema(S.view.temaId);
+  $("#main").innerHTML = t ? renderTema(t) : renderHome();
+  for (const id of open) { const d = document.getElementById(id); if (d) d.open = true; }
+  if (aid) { const el = document.getElementById(aid); if (el && el !== a) { el.focus(); try { if (ss != null) el.setSelectionRange(ss, se); } catch {} } }
+  renderConn();
+}
+function renderConn() {
+  const m = AI.mode, el = $("#conn");
+  const st = Store.kind === "db" ? "es guarda al teu compte" : Store.kind === "local" ? "es guarda en aquest navegador" : "no es guarda";
+  if (Store.failed) { el.innerHTML = `<span class="dot off"></span><span>No s'ha pogut guardar l'últim canvi</span>`; return; }
+  el.innerHTML = m === "claude" ? `<span class="dot on"></span><span>Claude connectat · ${st}</span>`
+    : m === "api" ? `<span class="dot on"></span><span>Claude (clau API) · ${st}</span>`
+    : m === "proxy" ? (!AI.codi ? `<span class="dot off"></span><span>Falta el codi d'accés</span>` : AI.codiOk ? `<span class="dot on"></span><span>Codi d'accés actiu${AI.restants !== null ? ` · queden ${AI.restants} peticions aquest mes` : ""} · ${st}</span>` : `<span class="dot"></span><span>Codi desat (es comprovarà en fer servir Claude) · ${st}</span>`)
+    : `<span class="dot off"></span><span>Claude sense connectar</span>`;
+}
+
+/* ============================================================
+   Diàlegs (sense alert/confirm: no funcionen dins la pàgina)
+   ============================================================ */
+function openDialog(html, onSubmit) {
+  const d = $("#dlg"); $("#dlgBody").innerHTML = html; d.querySelector("h3")?.setAttribute("id", "dlgTitle");
+  d._submit = onSubmit; d.showModal();
+  const f = d.querySelector("input,select,textarea"); f?.focus();
+}
+function closeDialog() { $("#dlg").close(); }
+function askText(title, label, value, cb, okLabel = "Desa") {
+  openDialog(`<h3>${esc(title)}</h3><div class="field"><label class="label" for="dlgIn">${esc(label)}</label><input type="text" id="dlgIn" value="${esc(value)}"></div>
+    <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Cancel·la</button><button class="btn primary" data-act="dlgOk" type="button">${esc(okLabel)}</button></div>`,
+    () => { const v = $("#dlgIn").value.trim(); if (v) { cb(v); closeDialog(); } });
+}
+function confirmBox(title, text, cb, okLabel = "Esborra") {
+  openDialog(`<h3>${esc(title)}</h3><p class="muted">${esc(text)}</p><div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Cancel·la</button><button class="btn primary" data-act="dlgOk" type="button" style="background:var(--bad);border-color:var(--bad);color:#fff">${esc(okLabel)}</button></div>`,
+    () => { cb(); closeDialog(); });
+}
+function newSubject() {
+  openDialog(`<h3>Nova assignatura</h3>
+    <div class="field"><label class="label" for="dlgIn">Nom</label><input type="text" id="dlgIn" placeholder="Per exemple: Economia"></div>
+    <div class="field"><label class="label" for="dlgTipus">Com s'estudia</label><select id="dlgTipus"><option value="teoria">Teoria: explicar-ho i relacionar</option><option value="problemes">Problemes: exercicis pas a pas (mates, física, química…)</option><option value="llengua">Llengua: teoria i exercicis d'aplicació (català, castellà, anglès…)</option></select></div>
+    <div class="field"><label class="label" for="dlgLang">Llengua de l'assignatura</label><select id="dlgLang">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}">${v.nom}</option>`).join("")}</select></div>
+    <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Cancel·la</button><button class="btn primary" data-act="dlgOk" type="button">Afegeix</button></div>`,
+    () => { const nom = $("#dlgIn").value.trim(); if (!nom) return; S.subjects.push({id: uid(), nom, llengua: $("#dlgLang").value, c: (S.subjects.length % 8) + 1, tipus: $("#dlgTipus").value}); saveConfig(); closeDialog(); render(); });
+}
+function newTema(subjId) {
+  askText("Nou tema", "Nom del tema (per exemple: Tema 3. La Revolució Francesa)", "", (titol) => {
+    const t = {id: uid(), subjId, titol, creat: Date.now(), mats: [], guia: null, ronda: null, historial: [], informe: null};
+    S.temes[t.id] = t; saveTema(t); S.view = {temaId: t.id, tab: "material"}; render();
+  }, "Crea el tema");
+}
+function settings() {
+  const inClaude = AI.mode === "claude", proxy = AI.mode === "proxy";
+  openDialog(`<h3>Configuració</h3>
+    <div class="field"><span class="label">${proxy ? "Codi d'accés" : "Connexió amb Claude"}</span>
+      ${proxy ? `<p class="small muted">Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu. Si fas servir el botó «Parla», el navegador envia l'àudio al seu propi servei de reconeixement de veu (a Chrome, de Google).</p>
+         <input type="text" id="codiIn" value="${esc(AI.codi)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Codi d'accés">
+         <label class="small"><input type="checkbox" id="codiRemember" ${ls("explica:codi") || !AI.codi ? "checked" : ""}> Recorda'l en aquest dispositiu</label>
+         ${AI.subs || AI.gestio ? `<span class="label">Subscripció</span>
+         ${AI.codi && AI.gestio ? (AI.correu ? `<p class="small muted">Per canviar la targeta, veure les factures o donar-se de baixa, s'envia un enllaç al correu de qui paga.</p>
+         <div class="row"><button class="btn sm" data-act="portalLink" type="button">Envia l'enllaç per gestionar-la</button></div><p class="small" id="portalOk" role="status" hidden></p>`
+         : "") : ""}
+         ${!AI.correu && AI.portalLogin ? `<p class="small muted">Per canviar la targeta, veure les factures o donar-se de baixa (també si has perdut el codi), Stripe envia un codi al correu de qui paga.</p>
+         <div class="row"><a class="btn sm" href="${esc(AI.portalLogin)}" target="_blank" rel="noopener">Gestiona la subscripció</a></div>` : ""}
+         ${AI.subs ? `<div class="row"><a class="btn sm ghost" href="subscriu.html">Plans i subscripció</a></div>` : ""}<p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
+         <label class="label" for="cursIn">El teu curs</label>
+         <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
+      : inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
+      : `<p class="small muted">Si obres aquest fitxer fora de claude.ai, cal una clau de l'API d'Anthropic (console.anthropic.com). Es guarda només en aquest navegador.</p>
+         <input type="password" id="apiKey" placeholder="sk-ant-…" value="${esc(AI.apiKey)}" autocomplete="off" aria-label="Clau de l'API">
+         <label class="small"><input type="checkbox" id="apiRemember" ${ls("explica:apikey") ? "checked" : ""}> Recorda-la en aquest navegador (no ho facis en un ordinador compartit)</label>
+         <label class="label" for="apiModel">Model</label>
+         <select id="apiModel">${[["claude-sonnet-5-5","Sonnet 5.5 (recomanat)"],["claude-opus-5-5","Opus 5.5 (més precís, més car)"],["claude-haiku-5-5","Haiku 5.5 (més ràpid i barat)"]].map(([v, l]) => `<option value="${v}" ${AI.model === v ? "selected" : ""}>${l}</option>`).join("")}</select>`}
+    </div>
+    <div class="field"><span class="label">On es guarda</span><p class="small">${Store.kind === "db" ? "Al teu compte de claude.ai (privat: només ho veus tu)." : Store.kind === "local" ? "En aquest navegador. Si esborres les dades del navegador es perd: fes còpies de seguretat." : "Enlloc: aquest navegador no deixa guardar. Fes còpies de seguretat."}</p>
+      <div class="row"><button class="btn sm" data-act="export" type="button">Descarrega còpia</button><button class="btn sm" data-act="import" type="button">Recupera una còpia</button></div></div>
+    ${Store.kind === "mem" && lsAvailable() ? `<div class="field"><span class="label">Guardar aquí</span><p class="small muted">Ara mateix no es guarda res. Pots guardar-ho en aquest navegador (no ho facis en un ordinador compartit).</p><div class="row"><button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button></div></div>` : ""}
+    ${Store.kind === "local" ? `<div class="field"><span class="label">Esborrar</span><div class="row"><button class="btn sm danger" data-act="wipe" type="button">Esborra totes les dades d'aquest navegador</button></div></div>` : ""}
+    ${S.subjects.length ? `<div class="field"><span class="label">Com s'estudia cada assignatura</span>${S.subjects.map(x => `<div class="row"><label for="st_${x.id}" style="flex:1 1 140px">${esc(x.nom)}</label><select id="st_${x.id}" data-subjtipus="${x.id}"><option value="teoria" ${!hasEx(x) ? "selected" : ""}>Teoria</option><option value="problemes" ${isProb(x) ? "selected" : ""}>Problemes</option><option value="llengua" ${isLang(x) ? "selected" : ""}>Llengua</option></select></div>`).join("")}</div>` : ""}
+    <div class="field"><span class="label">Exemple</span><div class="row"><button class="btn sm" data-act="${S.exampleHidden ? "showExample" : "hideExample"}" type="button">${S.exampleHidden ? "Mostra" : "Amaga"} el tema d'exemple</button></div></div>
+    <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Tanca</button>${inClaude ? "" : `<button class="btn primary" data-act="dlgOk" type="button">Desa</button>`}</div>`,
+    () => {
+      if (proxy) { ls("explica:curs", $("#cursIn").value || null); const c = $("#codiIn").value.trim().toLowerCase(); AI.memCodi = c; AI.codiOk = false; ls("explica:codi", c && $("#codiRemember").checked ? c : null); closeDialog(); render(); toast(c ? "Codi desat" : "Codi esborrat"); return; }
+      const k = $("#apiKey").value.trim(); AI.memKey = k; ls("explica:apikey", k && $("#apiRemember").checked ? k : null); ls("explica:model", $("#apiModel").value); AI.mode = AI.apiKey ? "api" : "none"; closeDialog(); render(); toast(AI.apiKey ? "Clau desada" : "Clau esborrada"); });
+}
+// Amb correu configurat: s'envia un enllaç d'un sol ús al correu de qui paga.
+async function portalLink(btn) {
+  const err = $("#portalErr"), ok = $("#portalOk"); btn.disabled = true;
+  if (err) err.hidden = true;
+  try {
+    const r = await fetch(PROXY.replace(/claude$/, "portal-enllac"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi})});
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : r.status === 429 ? "Ja s'han enviat molts enllaços avui. Mira el correu o torna-ho a provar demà." : "No s'ha pogut enviar l'enllaç. Torna-ho a provar d'aquí a una estona.");
+    if (ok) { ok.textContent = `Fet: hem enviat l'enllaç a ${b.a}. Caduca d'aquí a 30 minuts.`; ok.hidden = false; }
+  } catch (e) { if (err) { err.textContent = e.message; err.hidden = false; } btn.disabled = false; }
+}
+async function exportAll() {
+  const data = JSON.stringify({app: "explica-ho", v: 1, exportat: Date.now(), subjects: S.subjects, temes: S.temes, mats: S.mats});
+  const name = `explica-ho-copia-${today()}.json`;
+  const dl = window.claude?.use ? await claude.use("downloads").catch(() => null) : null;
+  if (dl) { try { await dl.save({filename: name, data: new Blob([data], {type: "application/json"})}); } catch (e) { if (e?.code !== "declined") toast("No s'ha pogut descarregar la còpia"); } return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"})); a.download = name; document.body.append(a); a.click(); a.remove();
+}
+// Una còpia ve d'un fitxer: es reconstrueix camp a camp, amb id segurs i tipus forçats.
+const okId = (x) => typeof x === "string" && /^[A-Za-z0-9_-]{1,60}$/.test(x);
+const str = (x, n = 2000) => String(x ?? "").slice(0, n);
+const num = (x, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(x) || 0)));
+const strs = (x, n) => arr(x).map(v => str(v, n));
+function cleanAval(a) { return {t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), profunditat: num(a?.profunditat, 1, 4), punts_forts: strs(a?.punts_forts), falta: strs(a?.falta), errors: strs(a?.errors),
+  com_integrar: str(a?.com_integrar), resposta_millorada: str(a?.resposta_millorada, 6000), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60), millora: str(a?.millora), benestar: str(a?.benestar, 800), resposta: str(a?.resposta, 100000)}; }
+function cleanTema(t) {
+  const g = t.guia && typeof t.guia === "object" ? {generat: num(t.guia.generat, 0, 9e15), titol: str(t.guia.titol, 200),
+    resum: arr(t.guia.resum).map(r => ({apartat: str(r?.apartat, 300), punts: strs(r?.punts)})),
+    mapa: {centre: str(t.guia.mapa?.centre, 300), branques: arr(t.guia.mapa?.branques).map(b => ({nom: str(b?.nom, 300), idea: str(b?.idea), fills: arr(b?.fills).map(f => ({nom: str(f?.nom, 300), idea: str(f?.idea)}))}))},
+    relacions: arr(t.guia.relacions).map(r => ({de: str(r?.de, 300), a: str(r?.a, 300), tipus: str(r?.tipus, 100), explicacio: str(r?.explicacio)})),
+    conceptes: arr(t.guia.conceptes).filter(c => okId(c?.id)).map(c => ({id: c.id, nom: str(c.nom, 300), definicio: str(c.definicio)})),
+    regles: arr(t.guia.regles).map(r => ({nom: str(r?.nom, 200), regla: str(r?.regla, 1500), exemples: strs(r?.exemples, 300).slice(0, 8), excepcions: str(r?.excepcions, 800)})),
+    formules: arr(t.guia.formules).map(f => ({nom: str(f?.nom, 200), expressio: str(f?.expressio, 300), variables: str(f?.variables, 600), quan: str(f?.quan, 600)})),
+    metodes: arr(t.guia.metodes).map(m => ({nom: str(m?.nom, 200), passos: strs(m?.passos, 400)})),
+    tipus_problemes: arr(t.guia.tipus_problemes).map(x => ({id: str(x?.id, 40), nom: str(x?.nom, 200), descripcio: str(x?.descripcio, 600)}))} : null;
+  const exItems = arr(t.exRonda?.items).filter(q => okId(q?.id)).map(q => ({...cleanExercise(q, num(q.nivell, 1, 4)), id: q.id,
+    resposta: str(q.resposta, 20000), passosAlumna: strs(q.passosAlumna, 4000), guiat: !!q.guiat, pistesVistes: num(q.pistesVistes, 0, 4),
+    avals: arr(q.avals).map(a => ({t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), correcte: a?.correcte === true, transcripcio: str(a?.transcripcio, 6000),
+      passos: arr(a?.passos).map(p => ({pas: str(p?.pas, 600), estat: ["ok", "error", "arrossegat", "falta"].includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
+      errors: arr(a?.errors).map(e => ({tipus: str(e?.tipus, 40), explicacio: str(e?.explicacio, 1000)})), punts_forts: strs(a?.punts_forts, 600),
+      com_continuar: str(a?.com_continuar, 1500), resultat_correcte: str(a?.resultat_correcte, 3000), conceptes_ok: strs(a?.conceptes_ok, 60), conceptes_febles: strs(a?.conceptes_febles, 60),
+      millora: str(a?.millora, 800), benestar: str(a?.benestar, 800), sig: str(a?.sig, 30000), all: a?.all == null ? undefined : str(a.all, 40000), resposta: str(a?.resposta, 20000)}))}));
+  const items = arr(t.ronda?.items).filter(q => okId(q?.id)).map(q => ({id: q.id, nivell: num(q.nivell, 0, 4), tipus: str(q.tipus, 60), pregunta: str(q.pregunta), pista: str(q.pista), conceptes: strs(q.conceptes, 60), criteris: strs(q.criteris), resposta: str(q.resposta, 100000), oral: !!q.oral, avals: arr(q.avals).map(cleanAval)}));
+  return {id: t.id, subjId: t.subjId, titol: str(t.titol, 200) || "Tema", creat: num(t.creat, 0, 9e15), mats: arr(t.mats).filter(okId), guia: g,
+    ronda: items.length ? {nivell: num(t.ronda.nivell, 0, 4), items} : null,
+    exRonda: exItems.length ? {nivell: num(t.exRonda.nivell, 1, 4), items: exItems} : null,
+    historial: arr(t.historial).map(h => ({t: num(h?.t, 0, 9e15), qid: okId(h?.qid) ? h.qid : undefined, nivell: num(h?.nivell, 0, 4), nota: num(h?.nota, 0, 10), prof: num(h?.prof, 1, 4), ok: strs(h?.ok, 60), feble: strs(h?.feble, 60), pregunta: str(h?.pregunta, 300), intent: num(h?.intent, 1, 99),
+      mode: h?.mode === "ex" ? "ex" : undefined, errs: strs(h?.errs, 40), pistes: num(h?.pistes, 0, 4)})),
+    informe: t.informe ? {t: num(t.informe.t, 0, 9e15), valoracio: str(t.informe.valoracio, 4000), nivells: arr(t.informe.nivells).map(n => ({nivell: str(n?.nivell, 4), text: str(n?.text)})), domina: strs(t.informe.domina), reforcar: strs(t.informe.reforcar), pla: strs(t.informe.pla)} : null};
+}
+function cleanBackup(d) {
+  const subjects = arr(d.subjects).filter(s => okId(s?.id)).map(s => ({id: s.id, nom: str(s.nom, 80) || "Assignatura", llengua: LANGS[s.llengua] ? s.llengua : "ca", c: num(s.c, 1, 8), tipus: ["problemes", "teoria", "llengua"].includes(s.tipus) ? s.tipus : withTipus({nom: s.nom}).tipus}));
+  const temes = {}, mats = {};
+  for (const t of Object.values(d.temes || {})) if (okId(t?.id) && okId(t?.subjId) && !ex.temes[t.id]) temes[t.id] = cleanTema(t);
+  for (const m of Object.values(d.mats || {})) if (okId(m?.id) && temes[m?.temaId]) mats[m.id] = {id: m.id, temaId: m.temaId, nom: str(m.nom, 200), tipus: str(m.tipus, 10), text: str(m.text, MAX_MAT), creat: num(m.creat, 0, 9e15)};
+  return {subjects, temes, mats};
+}
+async function importAll(file) {
+  try {
+    const d = JSON.parse(await file.text());
+    if (d.app !== "explica-ho") throw 0;
+    const c = cleanBackup(d);
+    // El que ja existeix aquí no es toca: només s'afegeix el que falta.
+    for (const s of c.subjects) if (!S.subjects.some(x => x.id === s.id)) S.subjects.push(s);
+    let nous = 0, iguals = 0;
+    for (const t of Object.values(c.temes)) { if (S.temes[t.id]) { iguals++; continue; } S.temes[t.id] = t; nous++; for (const id of t.mats) if (c.mats[id] && !S.mats[id]) S.mats[id] = c.mats[id]; }
+    saveEverything(); closeDialog(); render();
+    toast(`${nous} tema${nous === 1 ? "" : "s"} recuperat${nous === 1 ? "" : "s"}` + (iguals ? `; ${iguals} ja hi eren i no s'han tocat` : ""));
+  } catch { toast("Aquest fitxer no és una còpia d'Explica-ho"); }
+}
+
+// Abans de substituir una ronda amb feina sense corregir, es demana confirmació.
+// Compta com a feina pendent tot el que ha canviat des de l'última correcció (o no s'ha corregit mai).
+function unsaved(q) {
+  const last = q.avals[q.avals.length - 1];
+  if (q.solucio) { const all = exAll(q); return all !== "|" && (!last || (last.all ?? last.sig) !== all); }
+  const ans = String(q.resposta || "").trim(); return !!ans && (!last || String(last.resposta || "").trim() !== ans);
+}
+function keepWork(rondes, go) {
+  const busy = [rondes].flat().some(r => arr(r?.items).some(unsaved));
+  if (!busy) return go();
+  confirmBox("Continuar?", "Tens respostes (o canvis) que encara no has fet corregir i es perdran.", go, "Continua igualment");
+}
+
+/* ============================================================
+   Esdeveniments
+   ============================================================ */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act, t = getTema(S.view.temaId);
+  if (!S.loaded && !["home", "open", "tab", "hint", "level", "dlgClose", "stop", "hideTip", "retryLoad", "export"].includes(act)) { toast("Un moment: s'estan carregant les dades…"); return; }
+  switch (act) {
+    case "home": Mic.stop(); S.view = {temaId: null, tab: "material"}; render(); $("#main h2")?.setAttribute("tabindex", "-1"); $("#main h2")?.focus({preventScroll: true}); break;
+    case "open": { Mic.stop(); const nt = getTema(b.dataset.id); S.view = {temaId: b.dataset.id, tab: !nt?.guia ? "material" : isProb(getSubj(nt.subjId)) ? "ex" : "quiz"}; render(); window.scrollTo(0, 0); $("#temaTitle")?.focus({preventScroll: true}); break; }
+    case "tab": Mic.stop(); S.view.tab = b.dataset.tab; render(); $("#tab_" + b.dataset.tab)?.focus(); break;
+    case "newSubj": newSubject(); break;
+    case "newTema": newTema(b.dataset.subj); break;
+    case "addPresets": PRESETS.forEach((p, i) => { if ($("#pre_" + i)?.checked && !S.subjects.some(s => s.nom === p.nom)) S.subjects.push({id: uid(), nom: p.nom, llengua: p.llengua, c: p.c, tipus: p.tipus || "teoria"}); }); saveConfig(); render(); break;
+    case "hideExample": Mic.stop(); S.exampleHidden = true; ls("explica:hideExample", "1"); if (ex.temes[S.view.temaId]) S.view.temaId = null; if ($("#dlg").open) closeDialog(); render(); break;
+    case "showExample": S.exampleHidden = false; ls("explica:hideExample", null); closeDialog(); render(); break;
+    case "renameTema": askText("Canvia el nom", "Nom del tema", t.titol, (v) => { t.titol = v; saveTema(t); render(); }); break;
+    case "delTema": confirmBox("Esborrar el tema?", `S'esborraran «${t.titol}», el seu material i tot l'historial. No es pot desfer.`, () => {
+        Mic.stop(); Object.values(S.busy).forEach(x => x.ctl.abort()); S.pending.forEach(p => p.ctl.abort()); cancelSoon(t.id); dropPhotos(arr(t.exRonda?.items).map(q => q.id));
+        for (const id of arr(t.mats)) { cancelSoon("m" + id); delete S.mats[id]; Store.del("m_" + id); }
+        delete S.temes[t.id]; Store.del("t_" + t.id); S.view = {temaId: null, tab: "material"}; render(); }); break;
+    case "pick": $("#fileIn").click(); break;
+    case "delMat": confirmBox("Esborrar aquest material?", "La guia ja feta no canvia fins que la tornis a fer.", () => {
+        const id = b.dataset.id; cancelSoon("m" + id); delete S.mats[id]; Store.del("m_" + id); t.mats = arr(t.mats).filter(x => x !== id); saveTema(t); render(); }); break;
+    case "addText": {
+      const txt = $("#pasteText").value.trim(); if (!txt) return;
+      const m = {id: uid(), temaId: t.id, nom: $("#pasteName").value.trim() || "Text enganxat", tipus: "TEXT", text: txt.slice(0, MAX_MAT), creat: Date.now()};
+      S.mats[m.id] = m; t.mats = [...arr(t.mats), m.id]; saveMat(m); saveTema(t); delete S.paste[t.id]; render(); break; }
+    case "guide": if (!t.exemple) keepWork([t.ronda, t.exRonda], () => makeGuide(t)); break;
+    case "stop": S.busy[b.dataset.key]?.ctl.abort(); break;
+    case "level": if (b.dataset.kind === "ex") { S.view.tab = "ex"; (S.exLevelSel ??= {})[t.id] = +b.dataset.l; } else { S.view.tab = "quiz"; (S.levelSel ??= {})[t.id] = +b.dataset.l; } render(); break;
+    case "exAsk": if (exEvaluating(t)) { toast("Espera que acabi la correcció."); break; } keepWork(t.exRonda, () => makeExercises(t, S.exLevelSel?.[t.id] ?? recommended(t, "ex"))); break;
+    case "exHint": { const q = exItem(t, b.dataset.id); if (!q) break; q.pistesVistes = Math.min(q.pistes.length, q.pistesVistes + 1); saveTema(t); render(); document.getElementById(`hn_${q.id}_${q.pistesVistes - 1}`)?.focus(); break; }
+    case "exGuided": { const q = exItem(t, b.dataset.id); if (!q || S.busy["xe_" + q.id]) break; q.guiat = !q.guiat; saveTema(t); render(); document.getElementById(q.guiat ? `xs_${q.id}_0` : `xr_${q.id}`)?.focus(); break; }
+    case "sym": { const q = exItem(t, b.dataset.id); if (q) insertSymbol(q, b.dataset.s); break; }
+    case "exPhoto": S.photoTarget = b.dataset.id; $("#photoIn").click(); break;
+    case "camOpen": Cam.open(b.dataset.id); break;
+    case "camTimer": Cam.countdown(); break;
+    case "camNow": Cam.capture(); break;
+    case "camMirror": Cam.toggleMirror(); break;
+    case "camRotate": Cam.rotate(); break;
+    case "camRetake": Cam.retake(); break;
+    case "camUse": Cam.use(); break;
+    case "exPhotoDel": { if (S.busy["xe_" + b.dataset.id]) break; const ps = S.photos[b.dataset.id]; const j = +b.dataset.j; if (ps?.[j]) { URL.revokeObjectURL(ps[j].url); ps.splice(j, 1); render(); } break; }
+    case "exEval": { const q = exItem(t, b.dataset.id); if (q) evaluateExercise(t, q); break; }
+    case "exSimilar": { const q = exItem(t, b.dataset.id); if (q) similarExercise(t, q); break; }
+    case "ask": if (evaluating(t)) { toast("Espera que acabi la valoració de la resposta."); break; } Mic.stop(); keepWork(t.ronda, () => makeQuestions(t, (S.levelSel?.[t.id]) ?? recommended(t))); break;
+    case "free": if (evaluating(t)) { toast("Espera que acabi la valoració de la resposta."); break; } Mic.stop(); keepWork(t.ronda, () => freeExplain(t)); break;
+    case "hint": S.showHint[b.dataset.id] = true; render(); $("#hint_" + b.dataset.id)?.focus(); break;
+    case "mic": {
+      const id = b.dataset.id;
+      if (Mic.qid === id) { Mic.stop(); break; }
+      const lang = $("#ml_" + id)?.value || "ca-ES";
+      Mic.stopAndWait().then(() => Mic.start(id, lang)); break; }
+    case "hideTip": S.micTip = false; render(); break;
+    case "eval": { const q = t.ronda?.items.find(x => x.id === b.dataset.id); if (q) Mic.stopAndWait().then(() => evaluate(t, q)); break; }
+    case "report": makeReport(t); break;
+    case "dlgClose": closeDialog(); break;
+    case "dlgOk": $("#dlg")._submit?.(); break;
+    case "export": exportAll(); break;
+    case "settings": settings(); break;
+    case "portalLink": portalLink(b); break;
+    case "useLocal": Store.kind = "local"; ls("explica:optLocal", "1"); saveEverything(); if ($("#dlg").open) closeDialog(); render(); toast("Es guardarà en aquest navegador"); break;
+    case "retryLoad": boot(); break;
+    case "wipe": confirmBox("Esborrar-ho tot d'aquest navegador?", "S'esborraran assignatures, temes, material, historial i la clau de l'API guardats aquí. Descarrega abans una còpia si la vols.", () => {
+        try { Object.keys(localStorage).filter(k => k.startsWith("explica:")).forEach(k => localStorage.removeItem(k)); } catch {}
+        Mic.stop(); Object.values(S.busy).forEach(x => x.ctl.abort()); S.pending.forEach(p => p.ctl.abort()); dirty.clear(); Store.q = {}; Store.pendingRetry = {}; S.paste = {};
+        AI.memKey = ""; AI.memCodi = ""; if (AI.mode === "api") AI.mode = "none"; dropPhotos(Object.keys(S.photos)); S.subjects = []; S.temes = {}; S.mats = {}; S.view = {temaId: null, tab: "material"}; render(); toast("Dades esborrades"); }, "Esborra-ho tot"); break;
+    case "import": $("#importIn").click(); break;
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.target.classList?.contains("tab") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+    const tabs = [...document.querySelectorAll(".tab")], i = tabs.indexOf(e.target);
+    tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]?.click(); e.preventDefault();
+  }
+  if (e.key === "Enter" && e.target.id === "dlgIn") { e.preventDefault(); $("#dlg")._submit?.(); }
+  if ((e.key === "Enter" || e.key === " ") && e.target.id === "drop") { e.preventDefault(); $("#fileIn").click(); }
+});
+document.addEventListener("input", (e) => {
+  const el = e.target, t = getTema(S.view.temaId); if (!t) return;
+  if (el.dataset.paste) pasteOf(t)[el.dataset.paste] = el.value;
+  if (el.dataset.ans) { const q = t.ronda?.items.find(x => x.id === el.dataset.ans); if (q) { q.resposta = el.value;
+      if (Mic.qid === q.id) { Mic.base = el.value.replace(/\s*$/, ""); Mic.finals = ""; } /* el dictat continua des del text corregit */ if (Mic.qid !== q.id && !el.value.trim()) q.oral = false; saveTemaSoon(t); } }
+  if (el.dataset.exans) { const q = exItem(t, el.dataset.exans); if (q) { q.resposta = el.value; saveTemaSoon(t); } }
+  if (el.dataset.exstep) { const [qid, j] = el.dataset.exstep.split(":"); const q = exItem(t, qid);
+    if (q) { const n = arr(q.solucio.passos).length; q.passosAlumna = Array.from({length: n}, (_, i) => String(q.passosAlumna?.[i] ?? "")); q.passosAlumna[+j] = el.value; saveTemaSoon(t); } }
+  if (el.dataset.mat && !t.exemple) { const m = S.mats[el.dataset.mat]; if (m) { m.text = el.value.slice(0, MAX_MAT); saveSoon("m" + m.id, () => saveMat(m)); } }
+});
+document.addEventListener("change", (e) => {
+  if (e.target.dataset.miclang) (S.micLang ??= {})[e.target.dataset.miclang] = e.target.value;
+  if (e.target.dataset.exorigen) S.exOrigen[e.target.dataset.exorigen] = e.target.value;
+  if (e.target.dataset.subjtipus) { const x = S.subjects.find(y => y.id === e.target.dataset.subjtipus); if (x) { x.tipus = e.target.value; saveConfig(); if (S.view.tab === "ex" && !hasEx(getSubj(getTema(S.view.temaId)?.subjId))) S.view.tab = "quiz"; render(); } }
+});
+$("#btnSettings").addEventListener("click", settings);
+document.addEventListener("focusin", (e) => { if (e.target.dataset?.exans || e.target.dataset?.exstep) S.lastExField = e.target.id; });
+document.addEventListener("mousedown", (e) => { if (e.target.closest?.(".sym")) e.preventDefault(); });  // el focus es queda a la caixa
+function addPhotos(id, blobs) {
+  const list = S.photos[id] ||= [];
+  const max = AI.mode === "claude" ? Math.min(MAX_PHOTOS, AI.imgMax || 0) : MAX_PHOTOS;
+  for (const f of blobs) { if (list.length >= max) { toast(`Com a màxim ${max} fotos per exercici`); break; } list.push({id: uid(), blob: f, url: URL.createObjectURL(f)}); }
+  render();
+}
+$("#photoIn").addEventListener("change", (e) => {
+  const id = S.photoTarget, fs = [...e.target.files].filter(f => (f.type || "").startsWith("image/")); e.target.value = "";
+  if (id && fs.length) addPhotos(id, fs);
+});
+window.addEventListener("pagehide", () => { Mic.stop(); Cam.stop(); flushSoon(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { Mic.stop(); flushSoon(); } });
+$("#fileIn").addEventListener("change", (e) => { const fs = [...e.target.files]; e.target.value = ""; addFiles(fs); });
+$("#importIn").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) importAll(f); });
+document.addEventListener("dragover", (e) => { const d = e.target.closest?.("#drop"); if (d) { e.preventDefault(); d.classList.add("over"); } });
+document.addEventListener("dragleave", (e) => { const d = e.target.closest?.("#drop"); if (d) d.classList.remove("over"); });
+document.addEventListener("drop", (e) => { const d = e.target.closest?.("#drop"); if (!d) return; e.preventDefault(); d.classList.remove("over"); addFiles([...e.dataTransfer.files]); });
+document.addEventListener("paste", (e) => {
+  if (S.view.tab !== "material" || !S.view.temaId || ex.temes[S.view.temaId]) return;
+  if (e.target.closest?.("textarea,input")) return;
+  const imgs = [...(e.clipboardData?.items || [])].filter(i => i.type.startsWith("image/")).map(i => i.getAsFile()).filter(Boolean);
+  if (imgs.length) { e.preventDefault(); addFiles(imgs.map((f, i) => new File([f], `Captura ${new Date().toLocaleTimeString("ca-ES")}${imgs.length > 1 ? " " + (i + 1) : ""}.png`, {type: f.type}))); }
+});
+
+/* ============================================================
+   Arrencada
+   ============================================================ */
+// Les assignatures d'abans del mode de problemes no tenen "tipus": es dedueix pel nom.
+const LANG_NAME = /catal|castell|angl|alemany|ingl[eé]s|english|franc[eè]s|llengua|lengua|deutsch/i;
+const withTipus = (s) => s.tipus ? s : {...s, tipus: /matem|f[ií]sica|qu[ií]mica/i.test(s.nom || "") ? "problemes" : LANG_NAME.test(s.nom || "") ? "llengua" : "teoria"};
+// Abans del tipus «llengua» (config v<2), les llengües s'havien creat com a «teoria»: es passen a «llengua».
+const upgradeV2 = (s) => s.tipus === "teoria" && LANG_NAME.test(s.nom || "") ? {...s, tipus: "llengua"} : s;
+let inited = null;
+async function boot() {
+  S.loadError = false; render();
+  inited ||= Promise.all([AI.init(), Store.init()]);
+  await inited;
+  try {
+    const subjects = [], temes = {}, mats = {};
+    let upgrade = false;
+    for (const [k, v] of await Store.loadAll()) {
+      if (k === "config") { upgrade = (v.v || 1) < 2; subjects.push(...arr(v.subjects).map(withTipus).map(x => upgrade ? upgradeV2(x) : x)); }
+      else if (k.startsWith("t_")) temes[v.id] = v;
+      else if (k.startsWith("m_")) mats[v.id] = v;
+    }
+    S.subjects = subjects; S.temes = temes; S.mats = mats; S.loaded = true;
+    if (upgrade && subjects.length) saveConfig();
+  } catch { S.loadError = true; }
+  render();
+}
+render();
+boot();
+</script>
+
+</body>
+</html>

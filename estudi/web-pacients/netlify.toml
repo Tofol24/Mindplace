@@ -1,0 +1,12 @@
+# Explica-ho · versió amb codis d'accés (lloc Netlify independent, p. ex. "explica-ho")
+# Estàtic, sense compilació, amb una edge function que fa d'intermediari amb Claude.
+#
+# Per desplegar-lo des d'aquest repositori, al panell de Netlify:
+#   Add new site → Import an existing project → GitHub → Tofol24/Mindplace
+#     · Base directory:    estudi/web-pacients   ← IMPRESCINDIBLE (llegeix AQUEST toml)
+#     · Publish directory: estudi/web-pacients
+#     · Build command:     (buit)
+# Després, a Environment variables: ANTHROPIC_API_KEY i EXPLICA_CODIS (vegeu README.md).
+[build]
+  publish = "."
+  command = ""

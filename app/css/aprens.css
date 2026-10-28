@@ -44,6 +44,13 @@ body{
 .hsub{font-size:10px;opacity:.7;margin-top:1px}
 .hback{margin-left:auto;background:rgba(43,38,32,.07);border:0;color:var(--tinta);border-radius:20px;
   padding:7px 14px;font-size:13px;font-family:var(--sans);cursor:pointer;font-weight:600}
+/* Enlace de vuelta a la portada aprens.net */
+.hweb{margin-left:auto;color:var(--azul);font-size:13px;font-family:var(--sans);font-weight:600;text-decoration:none;
+  border:1px solid var(--linea);border-radius:20px;padding:6px 12px;white-space:nowrap}
+.hweb:hover{background:rgba(43,38,32,.05)}
+.hweb ~ .hback{margin-left:0;white-space:nowrap}
+/* En móvil, dentro de una herramienta manda «Atrás»: el enlace a la portada se oculta. */
+@media (max-width:480px){.en-tool .hweb{display:none}.en-tool .hweb ~ .hback{margin-left:auto}}
 
 /* ---- Contenedor ---- */
 .wrap{max-width:680px;margin:0 auto;padding:22px 16px}

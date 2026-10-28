@@ -1,0 +1,378 @@
+{
+  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista).",
+  "enllacos": {
+    "app": "https://aprens-app.netlify.app/",
+    "consulta": "https://aprens.es/",
+    "cita": "https://www.doctoralia.es/perfil/tofol-villalonga-melis",
+    "explica": "https://explica.aprens.net/",
+    "instagram": "https://www.instagram.com/tofol49/",
+    "facebook": "https://www.facebook.com/tofol.villalonga",
+    "autor": "https://www.amazon.es/stores/T%C3%B2fol-Villalonga/author/B0DWLHLD2V",
+    "serie": "https://www.amazon.es/dp/B0FDR8B1JP",
+    "facebook_aprens": "https://www.facebook.com/aprens70/",
+    "laboratori": "https://aprens-app.netlify.app/#/tool/laboratorio_tec"
+  },
+  "novetats": [
+    {
+      "data": "2026-09-15",
+      "tipus": "mitjans",
+      "mitja": "Última Hora",
+      "titol": "Pantallas y comprensión lectora: «Se puede aprobar un examen de Historia viendo vídeos y películas»",
+      "idioma_titol": "es",
+      "text": {
+        "ca": "Entrevista d'Elena Ballestero sobre les pantalles a l'escola i la comprensió lectora: cal regular la tecnologia perquè no es regeixi per criteris de consum.",
+        "es": "Entrevista de Elena Ballestero sobre las pantallas en la escuela y la comprensión lectora: hay que regular la tecnología para que no se rija por criterios de consumo."
+      },
+      "enllac": "https://www.ultimahora.es/noticias/local/2026/09/15/2708535/pantallas-comprension-lectora-puede-aprobar-examen-historia-viendo-videos-peliculas.html",
+      "imatge": "img/novetats/tofol-ib3.jpg",
+      "destacat": true
+    },
+    {
+      "data": "2025",
+      "tipus": "novetat",
+      "titol": {
+        "ca": "Premi Joan Calafat 2025",
+        "es": "Premio Joan Calafat 2025"
+      },
+      "text": {
+        "ca": "El jurat dels premis Joan Calafat ha triat Tòfol Villalonga professional de la Psicologia 2025.",
+        "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."
+      },
+      "imatge": "img/novetats/premi-joan-calafat-2025.jpg",
+      "enllac": "https://aprens.es/articulo.php?id=12",
+      "destacat": true
+    },
+    {
+      "data": "2025-07-05",
+      "tipus": "mitjans",
+      "mitja": "Diario de Mallorca",
+      "titol": "«El ‘coaching’ pot motivar, però no substitueix un procés terapèutic»",
+      "text": {
+        "ca": "Entrevista de Silis Campins arran de la publicació de «Lidera la teva mon(e)a»: el seu recorregut, la psicologia i aprendre a viure amb consciència.",
+        "es": "Entrevista de Silis Campins a raíz de la publicación de «Lidera la teva mon(e)a»: su recorrido, la psicología y aprender a vivir con conciencia."
+      },
+      "imatge": "img/novetats/entrevista-diario-de-mallorca-2025.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/noticia%20-%20Tofol%20Villalonga%2C%20psicoleg%20i%20autor%20de%20Lidera%20la%20teva%20mon%28e%29a.pdf",
+      "idioma_titol": "ca"
+    },
+    {
+      "tipus": "esport",
+      "descarrega": true,
+      "idioma_doc": "ca",
+      "destacat": true,
+      "titol": {
+        "ca": "La piràmide del rendiment",
+        "es": "La pirámide del rendimiento"
+      },
+      "text": {
+        "ca": "On s'enfoca el cos de l'esportista durant la competició: orientació a la mestria o a l'ego, i com això marca el control, la regulació de l'errada, la motivació i el rendiment.",
+        "es": "Dónde se enfoca el cuerpo del deportista durante la competición: orientación a la maestría o al ego, y cómo eso marca el control, la regulación del error, la motivación y el rendimiento."
+      },
+      "imatge": "img/novetats/piramide-rendiment.jpg",
+      "enllac": "descarregues/APRENS-piramide-rendiment.pdf"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "La història del mono, animada",
+        "es": "La historia del mono, animada"
+      },
+      "text": {
+        "ca": "Un conte d'un minut sobre qui condueix la teva vida i com aprendre a dur el volant acompanyant el teu mono.",
+        "es": "Un cuento de un minuto sobre quién conduce tu vida y cómo aprender a llevar el volante acompañando a tu mono."
+      },
+      "imatge": "img/eines/historia-mono.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-animada.html",
+      "destacat": true
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "La manada, animada",
+        "es": "La manada, animada"
+      },
+      "text": {
+        "ca": "Per què respiram: el teu mono és un mamífer de manada, i l'AIS és la manera de no deixar-lo tot sol.",
+        "es": "Por qué respiramos: tu mono es un mamífero de manada, y el AIS es la manera de no dejarlo solo."
+      },
+      "imatge": "img/eines/manada.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-manada.html"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "Jocs AIS",
+        "es": "Juegos AIS"
+      },
+      "text": {
+        "ca": "Jocs curts per entrenar l'atenció cap endins, per a adults i per als més petits.",
+        "es": "Juegos cortos para entrenar la atención hacia dentro, para adultos y para los peques."
+      },
+      "imatge": "img/eines/juegos-ais.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/juegos-ais.html",
+      "destacat": true
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "Racó de calma",
+        "es": "Rincón de calma"
+      },
+      "text": {
+        "ca": "Jocs visuals i curts perquè els infants practiquin estar amb el que senten.",
+        "es": "Juegos visuales y cortos para que los niños practiquen estar con lo que sienten."
+      },
+      "imatge": "img/eines/rincon.jpg",
+      "enllac": "https://aprens-app.netlify.app/rincon/"
+    },
+    {
+      "tipus": "eina",
+      "titol": {
+        "ca": "L'escala: exposició pas a pas",
+        "es": "La escalera: exposición paso a paso"
+      },
+      "text": {
+        "ca": "Un esglaó cada vegada, no per aguantar la por sinó per fer el pas acompanyant-te per dins.",
+        "es": "Un peldaño cada vez, no para aguantar el miedo sino para dar el paso acompañándote por dentro."
+      },
+      "imatge": "img/eines/escalera.jpg",
+      "enllac": "https://aprens-app.netlify.app/exposicion/"
+    },
+    {
+      "tipus": "esport",
+      "titol": {
+        "ca": "Pedala des de dins",
+        "es": "Pedalea desde dentro"
+      },
+      "text": {
+        "ca": "Ciclisme de competició des de la tasca i l'amor per la bici, no des del fuet.",
+        "es": "Ciclismo de competición desde la tarea y el amor a la bici, no desde el látigo."
+      },
+      "imatge": "img/eines/pedalea.jpg",
+      "enllac": "https://aprens-app.netlify.app/tools-standalone/pedalea_desde_dentro_aprens.html"
+    },
+    {
+      "tipus": "article",
+      "descarrega": true,
+      "titol": {
+        "ca": "Consciència: com funciona el control perdut",
+        "es": "Conciencia: cómo funciona el control perdido"
+      },
+      "text": {
+        "ca": "Un mapa per entendre com el dolor, les creences i la fletxa atencional ens porten al sobrepensament o a l'evitació, i com la consciència ens torna al present.",
+        "es": "Un mapa para entender cómo el dolor, las creencias y la flecha atencional nos llevan al sobrepensamiento o a la evitación, y cómo la conciencia nos devuelve al presente."
+      },
+      "imatge": "img/novetats/consciencia.jpg",
+      "enllac": "descarregues/APRENS-consciencia.pdf",
+      "idioma_doc": "ca"
+    },
+    {
+      "tipus": "article",
+      "descarrega": true,
+      "titol": {
+        "ca": "Eines bàsiques d'Atenció Interna Sensorial",
+        "es": "Herramientas básicas de Atención Interna Sensorial"
+      },
+      "text": {
+        "ca": "Sis pràctiques per donar-te presència i acompanyament: aturada de pensament, l'abraçada sentida, honestedat emocional, respiració, rituals d'entrada i rutina diària.",
+        "es": "Seis prácticas para darte presencia y acompañamiento: parada de pensamiento, el abrazo sentido, honestidad emocional, respiración, rituales de entrada y rutina diaria."
+      },
+      "imatge": "img/novetats/eines-ais-basiques.jpg",
+      "enllac": "descarregues/APRENS-eines-ais-basiques.pdf",
+      "idioma_doc": "es"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Maneig emocional per a pares i mares",
+        "es": "Manejo emocional para padres y madres"
+      },
+      "text": {
+        "ca": "La xerrada, revisada i en PDF: per què ens costa tant acompanyar les emocions dels fills i com fer-ho des de la calma, conseqüents amb el que volem ensenyar i compassius amb el que costa aprendre.",
+        "es": "La charla, revisada y en PDF: por qué nos cuesta tanto acompañar las emociones de los hijos y cómo hacerlo desde la calma, consecuentes con lo que queremos enseñar y compasivos con lo que cuesta aprender."
+      },
+      "imatge": "img/novetats/manejo-emocional-padres.jpg",
+      "enllac": "descarregues/APRENS-manejo-emocional-padres.pdf",
+      "descarrega": true,
+      "idioma_doc": "es",
+      "destacat": true
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Guia per a pares de fills adolescents",
+        "es": "Guía para padres de hijos adolescentes"
+      },
+      "text": {
+        "ca": "Per què el fill no canvia encara que ho entengui, i com acompanyar-lo: conseqüents amb el que volem ensenyar i compassius amb el que costa aprendre.",
+        "es": "Por qué el hijo no cambia aunque lo entienda, y cómo acompañarlo: consecuentes con lo que queremos enseñar y compasivos con lo que cuesta aprender."
+      },
+      "imatge": "img/novetats/guia-pares-fills-adolescents.jpg",
+      "enllac": "descarregues/APRENS-guia-pares-fills-adolescents.pdf",
+      "descarrega": true,
+      "idioma_doc": "ca",
+      "destacat": true
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "El paper dels pares dins l'esport de base",
+        "es": "El papel de los padres en el deporte base"
+      },
+      "text": {
+        "ca": "Unes pautes que ajuden els fills a jugar millor i d'una manera més sana.",
+        "es": "Unas pautas que ayudan a los hijos a jugar mejor y de una manera más sana."
+      },
+      "imatge": "img/novetats/pares-esport-de-base.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-PAPER-DELS-PARES-A-LESPORT-BASE.pdf"
+    },
+    {
+      "tipus": "article",
+      "titol": {
+        "ca": "Atenció i maneig emocional a l'esport",
+        "es": "Atención y manejo emocional en el deporte"
+      },
+      "text": {
+        "ca": "Com s'entrena l'atenció dins l'esport i com es relaciona amb el maneig emocional.",
+        "es": "Cómo se entrena la atención en el deporte y cómo se relaciona con el manejo emocional."
+      },
+      "imatge": "img/novetats/atencio-maneig-emocional-esport.jpg",
+      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-Atencio-i-maneig-emocional-a-lesport.pdf"
+    },
+    {
+      "data": "2026-02-27",
+      "tipus": "mitjans",
+      "mitja": "Última Hora",
+      "titol": "Una nueva app para combatir la adicción del móvil: «Si prohíbes un medio, lo conviertes en un deseo»",
+      "idioma_titol": "es",
+      "text": {
+        "ca": "Entrevista d'Elena Ballestero sobre AIS APRENS, l'app per prevenir conductes evitatives i compulsives i fer servir el mòbil per entrenar l'atenció.",
+        "es": "Entrevista de Elena Ballestero sobre AIS APRENS, la app para prevenir conductas evitativas y compulsivas y usar el móvil para entrenar la atención."
+      },
+      "enllac": "https://www.ultimahora.es/noticias/local/2026/02/27/2578357/movil-puede-usarse-para-entrenar-atencion-combatir-uso-endemoniado-redes-sociales.html",
+      "imatge": "img/novetats/ais-aprens-app.jpg",
+      "destacat": true
+    }
+  ],
+  "llibres": [
+    {
+      "titol": {
+        "ca": "Lidera la teva mon(e)a",
+        "es": "Lidera tu mon(e)a"
+      },
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "Estratègies pràctiques per reduir el sobrepensament, liderar la teva atenció i millorar les teves relacions.",
+        "es": "Estrategias prácticas para reducir el sobrepensamiento, liderar tu atención y mejorar tus relaciones."
+      },
+      "estat": "disponible",
+      "portada": {
+        "ca": "img/llibre-lidera-la-teva-monea.jpg",
+        "es": "img/llibre-lidera-tu-monea.jpg"
+      },
+      "enllacos": [
+        {
+          "text": {
+            "ca": "En català",
+            "es": "En catalán"
+          },
+          "url": "https://www.amazon.es/dp/B0DWFMRFZW",
+          "idioma": "ca"
+        },
+        {
+          "text": {
+            "ca": "En castellà",
+            "es": "En castellano"
+          },
+          "url": "https://www.amazon.es/dp/B0DW919TSR",
+          "idioma": "es"
+        }
+      ],
+      "destacat": true
+    },
+    {
+      "titol": "Cría desde dentro",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "Criança conscient des de l'amor.",
+        "es": "Crianza consciente desde el amor."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-cria-desde-dentro.jpg",
+      "enllac": "https://www.amazon.es/dp/B0FD9NS3PJ"
+    },
+    {
+      "titol": "Trasciende desde dentro",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "La consciència que accepta, transforma i transcendeix.",
+        "es": "La conciencia que acepta, transforma y trasciende."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-trasciende-desde-dentro.jpg",
+      "enllac": "https://www.amazon.es/dp/B0FD9NSFZW"
+    },
+    {
+      "titol": "Teoría del Efecto Consciente (TEC)",
+      "subtitol": {
+        "ca": "Col·lecció «Crece, cría y trasciende desde dentro»",
+        "es": "Colección «Crece, cría y trasciende desde dentro»"
+      },
+      "text": {
+        "ca": "L'atenció com a vector causal: un metamodel per a la psicologia clínica.",
+        "es": "La atención como vector causal: un metamodelo para la psicología clínica."
+      },
+      "estat": "disponible",
+      "portada": "img/llibre-teoria-efecto-consciente.jpg",
+      "enllac": "https://www.amazon.es/dp/B0HJNZY46W",
+      "destacat": true
+    }
+  ],
+  "fotos": [],
+  "apps": [
+    {
+      "nom": "AIS APRENS",
+      "url": "https://apps.apple.com/es/app/ais-aprens/id6757331269"
+    },
+    {
+      "nom": "AIS MINDPLACE",
+      "url": "https://apps.apple.com/es/app/ais-mindplace/id6759057064"
+    }
+  ],
+  "videos": [
+    {
+      "titol": "La Teoría del Efecto Consciente",
+      "src": "https://aprens-app.netlify.app/assets/video/video-tec.mp4",
+      "poster": "img/videos/tec.jpg"
+    },
+    {
+      "titol": "El sobrepensamiento",
+      "src": "https://aprens-app.netlify.app/assets/video/video-sobrepensamiento.mp4",
+      "poster": "img/videos/sobrepensamiento.jpg"
+    },
+    {
+      "titol": "Cómo funciona tu cerebro",
+      "src": "https://aprens-app.netlify.app/assets/video/video-cerebro.mp4",
+      "poster": "img/videos/cerebro.jpg"
+    },
+    {
+      "titol": "Respirar es aparecer",
+      "src": "https://aprens-app.netlify.app/assets/video/video-respirar.mp4",
+      "poster": "img/videos/respirar.jpg"
+    },
+    {
+      "titol": "Sentir conscientemente",
+      "src": "https://aprens-app.netlify.app/assets/video/video-sentir.mp4",
+      "poster": "img/videos/sentir.jpg"
+    }
+  ]
+}

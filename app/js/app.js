@@ -623,6 +623,7 @@
     removeExportBar();
     screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
+    document.body.classList.remove("en-tool");
     titleEl.textContent = "APRENS";
     const tools = window.APRENS_TOOLS || [];
     const byId = {}; tools.forEach(t=>{ byId[t.id]=t; });
@@ -784,6 +785,7 @@
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
+    document.body.classList.add("en-tool");
     titleEl.textContent = tool.nombre;
     screen.innerHTML = "";
     screen._aprensRec = null;

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Subscripció a Explica-ho</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="_base.css">
+</head>
+<body>
+<main>
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <h1>Subscripció a Explica-ho</h1>
+  <p>Explica-ho ajuda a estudiar de manera activa: ordena el material del curs en un resum i un mapa conceptual, fa preguntes que van de les dades concretes fins a relacionar les idees, i corregeix exercicis de matemàtiques, ciències i llengua pas a pas. La subscripció dona un codi d'accés personal per fer-la servir des del navegador de qualsevol ordinador o mòbil.</p>
+
+  <form id="f" class="panel" novalidate>
+    <span class="label">1 · Tria el pla</span>
+    <div class="plans" id="plans"><p class="muted">Carregant els plans…</p></div>
+    <p class="muted small">Cada guia, ronda de preguntes, correcció o pàgina llegida d'una foto compta com una petició. Les peticions es renoven cada mes.</p>
+
+    <span class="label">2 · Correu per a les factures</span>
+    <input type="email" id="email" autocomplete="email" placeholder="correu@exemple.com" aria-label="Correu per a les factures">
+    <p class="muted small">Opcional: si no el poses aquí, te'l demanarà Stripe. És el correu on arribaran les factures<span id="mailNote"> i el codi d'accés, i des d'on es gestionarà la subscripció</span>.</p>
+
+    <span class="label">3 · Consentiment</span>
+    <label class="check"><input type="checkbox" id="ok"><span>Soc el pare, la mare o el tutor legal de l'estudiant (o l'estudiant és major d'edat). He llegit les <a href="condicions.html" target="_blank" rel="noopener">condicions d'ús</a> i la <a href="privacitat.html" target="_blank" rel="noopener">política de privacitat</a>, i entenc que el material i les respostes es processen amb una intel·ligència artificial (Claude, d'Anthropic) i que pot equivocar-se.</span></label>
+    <label class="check"><input type="checkbox" id="inici"><span>Demano que el servei comenci de seguida, abans que acabi el termini de desistiment de 14 dies. Entenc que, si desistesc dins aquest termini, es descomptarà la part proporcional del servei ja prestat.</span></label>
+
+    <p class="err" id="err" role="alert" hidden></p>
+    <div class="row"><button class="btn" id="go" type="submit" disabled>Continua al pagament</button><a class="btn ghost" href="/">Ja tinc un codi</a><a class="btn ghost" href="recupera.html">He perdut el codi</a></div>
+    <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció. Per desistir dins els 14 dies, escriu-nos (ho explicam a les <a href="condicions.html#desistiment" target="_blank" rel="noopener">condicions</a>).</p>
+  </form>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const err = (m) => { $("#err").textContent = m; $("#err").hidden = !m; };
+const ready = () => { $("#go").disabled = !($("#ok").checked && $("#inici").checked && document.querySelector("input[name=pla]:checked")); };
+fetch("/api/config").then(r => r.json()).then(c => {
+  if (!c.correu) $("#mailNote").textContent = ", i a partir de la segona factura també hi sortirà el codi d'accés";
+  if (!c.subscripcions || !c.plans.length) { $("#plans").innerHTML = '<p>Ara mateix no hi ha subscripcions obertes.</p>'; return; }
+  $("#plans").innerHTML = c.plans.map((p, i) => `<label class="plan"><span class="row"><input type="radio" name="pla" value="${esc(p.price)}" ${i === 0 ? "checked" : ""}><strong>${esc(p.nom)}</strong></span><span class="preu">${esc(p.preu)}</span><span class="muted small">Fins a ${p.quota} peticions al mes</span></label>`).join("");
+  ready();
+}).catch(() => { $("#plans").innerHTML = '<p class="err">No s\'han pogut carregar els plans. Torna-ho a provar d\'aquí a una estona.</p>'; });
+document.addEventListener("change", ready);
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault(); err("");
+  const pla = document.querySelector("input[name=pla]:checked")?.value;
+  if (!pla || !$("#ok").checked || !$("#inici").checked) return;
+  $("#go").disabled = true; $("#go").textContent = "Obrint el pagament…";
+  try {
+    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true})});
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok || !b.url) throw new Error(b.error === "email" ? "Revisa el correu: no sembla vàlid." : "No s'ha pogut obrir el pagament. Torna-ho a provar.");
+    location.href = b.url;
+  } catch (x) { err(x.message); $("#go").disabled = false; $("#go").textContent = "Continua al pagament"; }
+});
+</script>
+</body>
+</html>

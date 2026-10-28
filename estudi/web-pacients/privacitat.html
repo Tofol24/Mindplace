@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Privacitat d'Explica-ho</title>
+<link rel="stylesheet" href="_base.css">
+</head>
+<body>
+<main class="doc">
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <h1>Política de privacitat</h1>
+  <p class="muted">Darrera actualització: 27 d'octubre de 2026</p>
+
+  <h2>Responsable</h2>
+  <p>Cristóbal Villalonga Melis, NIF 78210217M, C/ Mare de Déu de l'Esperança, 70, 2n, 07300 Inca (Illes Balears). Correu de contacte per a qualsevol qüestió de privacitat: <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>.</p>
+
+  <h2>Com funciona, en poques paraules</h2>
+  <p>Explica-ho està pensat per guardar el mínim possible. La feina de l'estudiant es queda al seu dispositiu; el servidor només guarda el que fa falta per saber si un codi d'accés és vàlid i quantes peticions li queden. No es guarden noms ni correus en clar, no hi ha galetes de seguiment ni analítica, i les dades no es fan servir per a publicitat.</p>
+
+  <h2>Quines dades es tracten</h2>
+  <ul>
+    <li><strong>La feina de l'estudiant</strong> (material, guies, respostes i progrés) es guarda només al navegador del dispositiu, a l'emmagatzematge local. El servidor d'Explica-ho no la desa.</li>
+    <li><strong>El material i les respostes</strong>, quan es demana una guia, una pregunta o una correcció, s'envien a Anthropic (Claude) per processar-los, passant pel servidor d'Explica-ho, que no en guarda còpia. Anthropic no fa servir aquestes dades per entrenar els seus models i només les conserva el temps limitat que fixen les seves condicions comercials.</li>
+    <li><strong>Al servidor</strong> es guarda:
+      <ul>
+        <li>el codi d'accés i la referència de la subscripció i del client a Stripe, amb l'estat de la subscripció i el pla;</li>
+        <li>comptadors de peticions per codi, per dia i per mes;</li>
+        <li>una empremta xifrada (no reversible) del correu de qui paga, per poder-li tornar a enviar el codi si el perd;</li>
+        <li>comptadors d'intents fallits i de sol·licituds de recuperació, identificats per una empremta xifrada del correu o de l'adreça IP, per evitar abusos;</li>
+        <li>els enllaços d'un sol ús per gestionar la subscripció, que caduquen als 30 minuts.</li>
+        <li>estadístiques d'ús per dia: nombre de peticions, tokens i cost, i quantes peticions ha fet cada codi d'accés (identificat només per les tres primeres lletres i una empremta xifrada, no pel codi sencer). No inclouen cap contingut.</li>
+      </ul>
+    </li>
+    <li><strong>El pagament</strong>: Stripe rep el correu, el nom i les dades de pagament de qui paga. Explica-ho no veu mai les dades de la targeta.</li>
+    <li><strong>Els correus</strong> (el codi d'accés i els enllaços per gestionar la subscripció) s'envien amb Resend, que rep l'adreça de destinació i el contingut del missatge.</li>
+    <li><strong>L'adreça IP</strong> de connexió la rep el servei d'allotjament (Netlify), com en qualsevol pàgina web, per poder-la servir i protegir; també la rep Stripe durant el pagament, que es fa a la seva pàgina. Anthropic i Resend no la reben: les crides a aquests serveis les fa el servidor d'Explica-ho. En obrir la pàgina, el navegador també es connecta a Google Fonts (tipus de lletra) i a jsDelivr (els lectors de PDF i Word), que reben l'adreça IP com qualsevol servidor web.</li>
+    <li><strong>El dictat per veu</strong> («Parla») el fa el navegador: a Chrome, l'àudio es processa als servidors de Google. És opcional; es pot escriure o dictar amb el teclat del dispositiu.</li>
+  </ul>
+
+  <h2>Per a què i amb quina base</h2>
+  <ul>
+    <li>Prestar el servei d'estudi i gestionar la subscripció, el cobrament i l'enviament del codi: execució del contracte (art. 6.1.b del RGPD).</li>
+    <li>Conservar les factures: obligació legal fiscal i mercantil (art. 6.1.c del RGPD).</li>
+    <li>Limitar peticions i intents per evitar abusos i protegir el servei, i conèixer el cost del servei per poder-lo mantenir: interès legítim (art. 6.1.f del RGPD).</li>
+  </ul>
+  <p>No es prenen decisions automatitzades amb efectes jurídics. Les correccions de la IA són orientacions d'estudi.</p>
+
+  <h2>Menors d'edat</h2>
+  <p>La subscripció la contracta sempre una persona major d'edat. Per sota dels 14 anys, el tractament de les dades de l'estudiant requereix el consentiment del pare, la mare o el tutor legal, que el dona en contractar. Recomanam que el material d'estudi no inclogui dades personals ni informació de salut.</p>
+
+  <h2>Qui hi té accés (encarregats del tractament)</h2>
+  <ul>
+    <li><strong>Anthropic, PBC</strong> (EUA): processament amb intel·ligència artificial.</li>
+    <li><strong>Netlify, Inc.</strong> (EUA): allotjament de la web i del servidor.</li>
+    <li><strong>Resend</strong> (EUA, amb enviament des de la regió europea d'Irlanda): enviament de correus.</li>
+    <li><strong>Stripe Payments Europe, Ltd.</strong> (Irlanda): pagaments. Per a algunes finalitats pròpies, com la prevenció del frau o les obligacions legals, Stripe actua com a responsable independent i aplica la seva pròpia política de privacitat.</li>
+  </ul>
+  <p>Quan les dades es tracten fora de l'Espai Econòmic Europeu, la transferència es fa amb les garanties que preveu el RGPD: el Marc de Privacitat de Dades UE-EUA, en el cas de les empreses certificades, o les clàusules contractuals tipus aprovades per la Comissió Europea.</p>
+
+  <h2>Quant de temps</h2>
+  <ul>
+    <li>La feina guardada al navegador: fins que la persona usuària l'esborra (Configuració → Esborra totes les dades d'aquest navegador) o esborra les dades del navegador.</li>
+    <li>Comptadors diaris i d'intents: s'esborren a partir de l'endemà. Comptadors mensuals: quan acaba el mes.</li>
+    <li>Estadístiques d'ús per dia: el mes en curs i els 12 anteriors.</li>
+    <li>Enllaços de gestió: caduquen als 30 minuts i s'esborren en la neteja diària.</li>
+    <li>Codi i referència de la subscripció: mentre la subscripció estigui activa i fins a 12 mesos després de la baixa, per poder atendre consultes i reclamacions. Després s'esborren, juntament amb l'empremta del correu.</li>
+    <li>Factures i dades de pagament (a Stripe): el temps que exigeixen les normes fiscals i mercantils.</li>
+  </ul>
+
+  <h2>Drets</h2>
+  <p>Pots exercir els drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat escrivint a <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>. Si consideres que no s'han respectat els teus drets, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (<a href="https://www.aepd.es" rel="noopener">aepd.es</a>).</p>
+
+  <p class="muted small">Vegeu també les <a href="condicions.html">condicions d'ús</a>.</p>
+</main>
+</body>
+</html>
