@@ -93,5 +93,6 @@ albaranes/
     └── sw.js             guarda la app para abrirla sin cobertura
 ```
 
-Al cambiar cualquier fichero de `public/`, sube `VERSION` en `public/sw.js`
-para que los móviles reciban la versión nueva.
+Los móviles reciben las versiones nuevas solos: la app se abre con la versión
+guardada y descarga la nueva para la siguiente vez. Si añades o quitas ficheros
+de `public/`, actualiza la lista y sube `VERSION` en `public/sw.js`.

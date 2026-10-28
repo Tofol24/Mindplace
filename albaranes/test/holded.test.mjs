@@ -50,6 +50,8 @@ test("validarAlbaran acepta un albarán correcto y limpia espacios", () => {
 test("validarAlbaran rechaza datos malos", () => {
   assert.throws(() => validarAlbaran({ ...base(), numero: "M 1/2" }), ErrorHolded);
   assert.throws(() => validarAlbaran({ ...base(), fecha: "28/10/2026" }), ErrorHolded);
+  assert.throws(() => validarAlbaran({ ...base(), fecha: "2026-02-31" }), /Fecha/);
+  assert.throws(() => validarAlbaran({ ...base(), fecha: "" }), /Fecha/);
   assert.throws(() => validarAlbaran({ ...base(), lineas: [] }), ErrorHolded);
   assert.throws(() => validarAlbaran({ ...base(), lineas: [{ concepto: "x", cantidad: 1, precio: 1, iva: 7 }] }), /IVA no permitido/);
   assert.throws(() => validarAlbaran({ ...base(), cliente: { nombre: " " } }), /nombre del cliente/);
@@ -119,6 +121,9 @@ test("si se cortó al crear el albarán, lo busca en Holded antes de crear otro"
   const h2 = holdedFalso({ listarAlbaranes: async () => [{ id: "f".repeat(24), document_number: "M-2026-0001" }] });
   const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: a });
   assert.equal(r.albaranId, "f".repeat(24));
+  const busqueda = h2.llamadas.find((l) => l[0] === "listarAlbaranes")[1];
+  assert.equal(busqueda.start_date, "2026-10-27");
+  assert.equal(busqueda.end_date, "2026-10-29");
   assert.ok(!h2.llamadas.some((l) => l[0] === "crearAlbaran"));
   assert.equal(alm.m.get(a.id).creando, undefined);
 });
@@ -140,4 +145,15 @@ test("crearClienteHolded: cabecera Bearer, URL v2 y errores clasificados", async
   await assert.rejects(h401.buscarContactos("x"), (e) => e.reintentar === false && /no es válida/.test(e.message));
   const hRed = crearClienteHolded({ apiKey: "k", fetch: async () => { throw new TypeError("fetch failed"); } });
   await assert.rejects(hRed.buscarContactos("x"), (e) => e.reintentar === true);
+});
+
+test("albarán corregido con otro cliente: se busca de nuevo el contacto", async () => {
+  const alm = almacenMemoria();
+  const a = validarAlbaran(base());
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("rechazado", { status: 422 }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: a }));
+  const corregido = validarAlbaran({ ...base(), cliente: { nombre: "Juan Gómez" } });
+  const h2 = holdedFalso({ crearContacto: async () => "d".repeat(24) });
+  const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: corregido });
+  assert.equal(r.contactId, "d".repeat(24));
 });

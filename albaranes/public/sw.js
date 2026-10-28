@@ -1,9 +1,10 @@
 /* Albaranes · service worker: guarda la app en el móvil para abrirla sin cobertura.
-   Al cambiar cualquier fichero de la app, sube VERSION para que se actualice. */
-const VERSION = "albaranes-v1";
+   Se sirve siempre lo guardado (abre al instante, con o sin señal) y, si hay red,
+   se descarga a la vez la versión nueva para la próxima vez que se abra.
+   Subir VERSION solo hace falta al añadir o quitar ficheros de la lista. */
+const VERSION = "albaranes-v2";
 const FICHEROS = [
   "/",
-  "/index.html",
   "/css/estilos.css",
   "/js/app.js",
   "/js/db.js",
@@ -18,7 +19,11 @@ const FICHEROS = [
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FICHEROS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(VERSION)
+      .then((c) => c.addAll(FICHEROS.map((u) => new Request(u, { cache: "reload" }))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener("activate", (e) => {
@@ -33,9 +38,20 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   // La API siempre va a la red (el envío a Holded ya tiene su propia cola).
   if (e.request.method !== "GET" || url.origin !== location.origin || url.pathname.startsWith("/api/")) return;
-  // Navegaciones: la app es una sola página.
-  const peticion = e.request.mode === "navigate" ? "/index.html" : e.request;
-  e.respondWith(
-    caches.match(peticion, { ignoreSearch: true }).then((r) => r || fetch(e.request)),
-  );
+  // Navegaciones: la app es una sola página, guardada como "/" (sin redirecciones).
+  const clave = e.request.mode === "navigate" ? "/" : url.pathname;
+  e.respondWith(caches.open(VERSION).then(async (cache) => {
+    const guardada = await cache.match(clave);
+    const red = fetch(clave, { cache: "no-cache" })
+      .then((r) => {
+        if (r.ok && !r.redirected && r.type === "basic") cache.put(clave, r.clone());
+        return r;
+      })
+      .catch(() => null);
+    if (guardada) {
+      e.waitUntil(red);
+      return guardada;
+    }
+    return (await red) || new Response("Sin conexión", { status: 503, statusText: "Sin conexión" });
+  }));
 });

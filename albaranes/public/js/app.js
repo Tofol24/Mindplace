@@ -14,7 +14,7 @@
 
 import * as db from "./db.js";
 import {
-  IVAS, fechaCorta, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
+  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
 } from "./calculos.js";
 import { generarPDF, nombrePDF } from "./pdf.js";
 
@@ -64,7 +64,9 @@ function aviso(msg, tipo = "ok") {
 }
 
 const num = (s) => {
-  const n = Number(String(s ?? "").replace(/\s/g, "").replace(",", "."));
+  let t = String(s ?? "").replace(/\s/g, "");
+  if (t.includes(",")) t = t.replace(/\./g, "").replace(",", "."); // 1.234,50 → 1234.50
+  const n = Number(t);
   return Number.isFinite(n) ? n : 0;
 };
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`);
@@ -111,6 +113,15 @@ function nuevoAlbaran() {
 async function guardarAlbaran(alb) {
   alb.actualizado = new Date().toISOString();
   await db.guardar("albaranes", alb);
+}
+
+/** Guardado automático del borrador: si falla, se avisa (no se pierde en silencio). */
+async function autoguardar(alb) {
+  try {
+    await guardarAlbaran(alb);
+  } catch {
+    aviso("⚠ No se ha podido guardar el borrador. No cierres la app y vuelve a intentarlo.", "error");
+  }
 }
 
 /** Recuerda al cliente en el móvil para autocompletarlo la próxima vez. */
@@ -161,7 +172,7 @@ async function llamarAPI(ruta, { method = "GET", body } = {}) {
 
 /** Envía un albarán. Devuelve "ok", "pasajero" (probar más tarde) o "rechazado". */
 async function enviarUno(alb) {
-  const pdf = await blobABase64(generarPDF(alb, ajustes.negocio));
+  const pdf = await blobABase64(generarPDF(alb, negocioDe(alb)));
   const cuerpo = {
     id: alb.id, numero: alb.numero, fecha: alb.fecha, cliente: alb.cliente, direccionObra: alb.direccionObra,
     trabajo: alb.trabajo, observaciones: alb.observaciones, firmante: alb.firmante,
@@ -188,12 +199,17 @@ async function enviarUno(alb) {
     return "ok";
   }
   const msg = r.datos.error || `Error ${r.status}`;
-  // Sin respuesta de la función (p. ej. 404 de una red cautiva) o fallo pasajero: se reintenta.
-  const pasajero = r.datos.reintentar === true || (!r.datos.error && r.status !== 401);
-  alb.error = pasajero ? `${msg}. Se reintentará.` : msg;
-  if (!pasajero) alb.estado = "error";
+  // Solo se marca «Revisar» si el problema es de este albarán. Si es de la conexión
+  // (clave, permisos, Holded caído, red cautiva…) sigue en cola y se para la ronda.
+  if (r.datos.delAlbaran) {
+    alb.estado = "error";
+    alb.error = msg;
+    await guardarAlbaran(alb);
+    return "rechazado";
+  }
+  alb.error = r.datos.reintentar === false ? msg : `${msg}. Se reintentará.`;
   await guardarAlbaran(alb);
-  return pasajero ? "pasajero" : "rechazado";
+  return r.datos.reintentar === false ? "conexion" : "pasajero";
 }
 
 /** Envía los pendientes. `manual` también reintenta los que dieron error. */
@@ -201,26 +217,30 @@ async function sincronizar({ manual = false } = {}) {
   if (enviando) return;
   if (!navigator.onLine) { if (manual) aviso("No hay cobertura. Se enviará cuando vuelva la señal.", "info"); pintarEstado(); return; }
   if (!ajustes.claveApp) { if (manual) aviso("Primero configura la conexión con Holded en Ajustes.", "error"); pintarEstado(); return; }
-  const lista = (await db.todos("albaranes"))
-    .filter((a) => a.estado === "pendiente" || (manual && a.estado === "error"))
-    .sort((a, b) => a.numero.localeCompare(b.numero));
-  if (!lista.length) { if (manual) aviso("No hay nada pendiente de enviar."); pintarEstado(); return; }
+  // El cerrojo se pone antes de cualquier espera: dos rondas a la vez enviarían el mismo albarán.
   enviando = true;
-  pintarEstado();
   let enviados = 0;
-  let parar = false;
+  let parada = "";
   try {
+    const lista = (await db.todos("albaranes"))
+      .filter((a) => a.estado === "pendiente" || (manual && a.estado === "error"))
+      .sort((a, b) => a.numero.localeCompare(b.numero));
+    if (!lista.length) { if (manual) aviso("No hay nada pendiente de enviar."); return; }
+    pintarEstado();
     for (const alb of lista) {
       if (alb.estado === "error") alb.estado = "pendiente";
       const r = await enviarUno(alb);
       if (r === "ok") enviados++;
-      if (r === "pasajero") { parar = true; break; }
+      if (r === "pasajero" || r === "conexion") { parada = r === "conexion" ? alb.error : "pasajero"; break; }
     }
+  } catch {
+    parada = "pasajero";
   } finally {
     enviando = false;
   }
   if (enviados) aviso(enviados === 1 ? "Albarán enviado a Holded ✓" : `${enviados} albaranes enviados a Holded ✓`);
-  else if (manual && parar) aviso("No se ha podido enviar ahora. Se reintentará solo.", "info");
+  else if (parada && parada !== "pasajero") aviso(`Holded: ${parada}`, "error");
+  else if (manual && parada) aviso("No se ha podido enviar ahora. Se reintentará solo.", "info");
   pintarEstado();
   refrescarSiProcede();
 }
@@ -255,8 +275,11 @@ function mensajeCliente(alb) {
   return `Hola${nombre ? ` ${nombre}` : ""}, te envío el albarán ${alb.numero} del trabajo realizado el ${fechaCorta(alb.fecha)}. Total: ${formatoEuros(totales(alb.lineas).total)}. Gracias.${ajustes.negocio.nombre ? `\n${ajustes.negocio.nombre}` : ""}`;
 }
 
+// Los datos del negocio se congelan al firmar: el PDF del cliente y el de Holded son el mismo.
+const negocioDe = (alb) => alb.negocio || ajustes.negocio;
+
 function ficheroPDF(alb) {
-  return new File([generarPDF(alb, ajustes.negocio)], nombrePDF(alb), { type: "application/pdf" });
+  return new File([generarPDF(alb, negocioDe(alb))], nombrePDF(alb), { type: "application/pdf" });
 }
 
 async function compartirPDF(alb) {
@@ -274,6 +297,12 @@ async function compartirPDF(alb) {
 }
 
 function descargar(fichero) {
+  // En el iPhone, con la app instalada, abrir un archivo deja atrapado en un visor sin salida:
+  // allí se usa el menú de compartir (que también permite verlo y guardarlo en Archivos).
+  if (navigator.standalone && navigator.canShare?.({ files: [fichero] })) {
+    navigator.share({ files: [fichero] }).catch(() => {});
+    return;
+  }
   const url = URL.createObjectURL(fichero);
   const a = h("a", { href: url, download: fichero.name, target: "_blank", rel: "noopener" });
   document.body.append(a);
@@ -296,6 +325,12 @@ async function vistaLista() {
       h("strong", {}, "Primer paso: tus datos"),
       h("p", {}, "Revisa tus datos (falta el NIF para el PDF) y conecta Holded con la clave de la app."),
       h("button", { class: "btn secundario", onclick: () => ir("/ajustes") }, "Ir a Ajustes")));
+  }
+  const instalada = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+  if (!instalada) {
+    avisos.push(h("div", { class: "tarjeta aviso-tarjeta" },
+      h("strong", {}, "Instálala en la pantalla de inicio"),
+      h("p", {}, "Usada desde el navegador, el iPhone puede borrar los albaranes guardados si pasan unos días sin abrirla. iPhone: Compartir → «Añadir a pantalla de inicio». Android: menú ⋮ → «Instalar app».")));
   }
   return [
     ...avisos,
@@ -320,7 +355,7 @@ async function vistaEditor(alb) {
   let guardarTimer;
   const cambiado = () => {
     clearTimeout(guardarTimer);
-    guardarTimer = setTimeout(() => guardarAlbaran(alb), 400);
+    guardarTimer = setTimeout(() => autoguardar(alb), 400);
     pintarTotales();
   };
   const entrada = (obj, clave, attrs = {}) => h("input", {
@@ -451,6 +486,15 @@ async function vistaEditor(alb) {
     if (alb.lineas.some((l) => !l.concepto.trim())) fallos.push("el concepto de todas las líneas");
     if (alb.lineas.some((l) => !(l.cantidad > 0))) fallos.push("una cantidad mayor que cero en cada línea");
     if (c.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email.trim())) fallos.push("un email del cliente válido");
+    if (!fechaValida(alb.fecha)) fallos.push("una fecha válida");
+    if (alb.lineas.some((l) => !(l.precio >= 0) || l.precio > 1e7)) fallos.push("precios correctos (sin negativos)");
+    if (alb.lineas.some((l) => l.cantidad > 1e6)) fallos.push("cantidades razonables");
+    // Mismos límites que el servidor: lo que se firma aquí, Holded lo acepta.
+    const largos = [[c.nombre, 200, "nombre"], [c.nif, 30, "NIF"], [c.telefono, 40, "teléfono"], [c.email, 200, "email"],
+      [c.direccion, 300, "dirección"], [c.poblacion, 120, "población"], [c.cp, 12, "C. P."], [alb.direccionObra, 300, "dirección de la obra"],
+      [alb.trabajo, 4000, "trabajo realizado"], [alb.observaciones, 2000, "observaciones"], ...alb.lineas.map((l) => [l.concepto, 300, "concepto"])]
+      .filter(([v, max]) => String(v || "").trim().length > max).map(([, , n]) => n);
+    if (largos.length) { error.textContent = `Demasiado largo: ${[...new Set(largos)].join(", ")}.`; return; }
     if (fallos.length) { error.textContent = `Falta ${fallos.join(", ")}.`; return; }
     clearTimeout(guardarTimer);
     await guardarAlbaran(alb);
@@ -460,8 +504,8 @@ async function vistaEditor(alb) {
   const inputObra = entrada(alb, "direccionObra", { placeholder: "Calle, número, piso…" });
   return [
     h("div", { class: "cab-vista" },
-      h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await guardarAlbaran(alb); ir("/"); } }, "‹ Albaranes"),
-      h("h2", {}, "Nuevo albarán")),
+      h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await autoguardar(alb); ir("/"); } }, "‹ Albaranes"),
+      h("h2", {}, alb.numero ? `Corregir ${alb.numero}` : "Nuevo albarán")),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Cliente"),
       h("div", { class: "campo-busqueda" }, campo("Nombre", inputNombre), sugerencias),
@@ -505,7 +549,8 @@ async function vistaEditor(alb) {
     error,
     h("div", { class: "acciones" },
       h("button", { class: "btn principal grande", onclick: irAFirma }, "Siguiente: firma del cliente ›"),
-      h("button", {
+      // Un albarán ya numerado no se borra: el número quedaría como hueco en la serie.
+      !alb.numero && h("button", {
         class: "btn peligro",
         onclick: async () => { if (confirm("¿Borrar este borrador?")) { clearTimeout(guardarTimer); await db.borrar("albaranes", alb.id); ir("/"); } },
       }, "Borrar borrador")),
@@ -571,6 +616,12 @@ function vistaFirma(alb) {
   canvas.addEventListener("pointerup", fin);
   canvas.addEventListener("pointercancel", fin);
   requestAnimationFrame(preparar);
+  // Al girar el móvil cambia el tamaño: si aún no hay firma, se ajusta el lienzo.
+  const alGirar = () => {
+    if (!canvas.isConnected) { window.removeEventListener("resize", alGirar); return; }
+    if (!hayTrazo) preparar();
+  };
+  window.addEventListener("resize", alGirar);
 
   const firmante = h("input", { value: alb.firmante || alb.cliente.nombre, placeholder: "Nombre de quien firma" });
   const error = h("p", { class: "error-form", role: "alert" });
@@ -586,8 +637,11 @@ function vistaFirma(alb) {
       alb.firma = firmaReducida(canvas);
       alb.firmante = firmante.value.trim();
       alb.firmadoEn = new Date().toISOString();
-      alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
+      // Al corregir un albarán rechazado se mantiene su número.
+      if (!alb.numero) alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
+      alb.negocio = { ...ajustes.negocio };
       alb.estado = "pendiente";
+      alb.error = "";
       await guardarAlbaran(alb);
       await recordarCliente(alb.cliente);
       ir(`/albaran/${alb.id}`);
@@ -632,7 +686,19 @@ function vistaDetalle(alb) {
     error: h("div", { class: "tarjeta estado-alb error" },
       h("strong", {}, "Holded no lo ha aceptado"),
       h("p", {}, alb.error),
-      h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo")),
+      h("div", { class: "botones-linea" },
+        h("button", {
+          class: "btn secundario",
+          onclick: async () => {
+            if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
+            alb.estado = "borrador";
+            alb.firma = "";
+            alb.firmadoEn = "";
+            await guardarAlbaran(alb);
+            ir(`/editar/${alb.id}`);
+          },
+        }, "Corregir"),
+        h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo"))),
     enviado: h("div", { class: "tarjeta estado-alb ok" },
       h("strong", {}, "Ya está en Holded ✓"),
       h("p", {}, `Enviado el ${new Date(alb.holded?.enviadoEn || alb.actualizado).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}. En Holded, ve a Ventas → Albaranes para convertirlo en factura.`)),
@@ -682,11 +748,11 @@ function vistaDetalle(alb) {
 // --- Ajustes --------------------------------------------------------------
 
 async function vistaAjustes() {
-  const n = ajustes.negocio;
+  // Se edita una copia: si sales sin guardar, los PDF no usan datos a medio escribir.
+  const n = { ...ajustes.negocio };
   const ent = (obj, clave, attrs = {}) => h("input", { value: obj[clave] ?? "", ...attrs, oninput: (e) => { obj[clave] = e.target.value; } });
   const anio = hoyISO().slice(0, 4);
-  const contador = await db.leerKV("contador", null);
-  const siguiente = contador && contador.anio === anio ? contador.n : 1;
+  const siguiente = await db.proximoDelAnio(anio);
   const inputPrefijo = h("input", { value: ajustes.prefijo, maxlength: 8, autocapitalize: "characters" });
   const inputSiguiente = h("input", { value: String(siguiente), inputmode: "numeric" });
   const inputHora = h("input", { value: String(ajustes.precioHora).replace(".", ","), inputmode: "decimal" });
@@ -711,8 +777,9 @@ async function vistaAjustes() {
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.claveApp = inputClave.value.trim();
     for (const k of Object.keys(n)) n[k] = String(n[k] || "").trim();
+    ajustes.negocio = n;
     await guardarAjustes();
-    if (sig !== siguiente) await db.escribirKV("contador", { anio, n: sig });
+    if (sig !== siguiente) await db.fijarProximoDelAnio(anio, sig);
     pintarEstado();
     return true;
   };
@@ -735,6 +802,33 @@ async function vistaAjustes() {
     const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes") };
     descargar(new File([JSON.stringify(datos, null, 1)], `copia-albaranes-${hoyISO()}.json`, { type: "application/json" }));
   };
+
+  // Restaurar: añade lo que falte y deja la versión más reciente de cada albarán.
+  // Los contadores de numeración nunca bajan, para no repetir números.
+  const restaurar = async (fichero) => {
+    let datos;
+    try { datos = JSON.parse(await fichero.text()); } catch { aviso("El archivo no es una copia válida.", "error"); return; }
+    if (datos?.app !== "albaranes-obra" || !Array.isArray(datos.albaranes)) { aviso("El archivo no es una copia de esta app.", "error"); return; }
+    if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`)) return;
+    let nuevos = 0;
+    for (const a of datos.albaranes) {
+      if (!a || typeof a.id !== "string" || !Array.isArray(a.lineas) || !a.cliente) continue;
+      const actual = await db.obtener("albaranes", a.id);
+      if (!actual || String(a.actualizado) > String(actual.actualizado)) { await db.guardar("albaranes", a); nuevos++; }
+      const m = /^[A-Z0-9]+-(\d{4})-(\d+)$/.exec(a.numero || "");
+      if (m && (await db.proximoDelAnio(m[1])) <= Number(m[2])) await db.fijarProximoDelAnio(m[1], Number(m[2]) + 1);
+    }
+    for (const c of Array.isArray(datos.clientes) ? datos.clientes : []) {
+      if (c && typeof c.id === "string" && c.nombre && !(await db.obtener("clientes", c.id))) await db.guardar("clientes", c);
+    }
+    if (datos.ajustes?.negocio && !ajustes.negocio.nif) {
+      ajustes = { ...ajustes, ...datos.ajustes, claveApp: ajustes.claveApp, negocio: { ...ajustes.negocio, ...datos.ajustes.negocio } };
+      await guardarAjustes();
+    }
+    aviso(`Copia restaurada: ${nuevos} albaranes ✓`);
+    ir("/");
+  };
+  const inputCopia = h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: (e) => { const f = e.target.files?.[0]; if (f) restaurar(f); } });
 
   return [
     h("div", { class: "cab-vista" },
@@ -761,7 +855,10 @@ async function vistaAjustes() {
     h("section", { class: "tarjeta" },
       h("h3", {}, "Copia de seguridad"),
       h("p", { class: "ayuda" }, "Los albaranes se guardan en este móvil. Descarga una copia de vez en cuando."),
-      h("button", { class: "btn secundario", onclick: copia }, "Descargar copia (JSON)")),
+      h("div", { class: "botones-linea" },
+        h("button", { class: "btn secundario", onclick: copia }, "Descargar copia"),
+        h("button", { class: "btn secundario", onclick: () => inputCopia.click() }, "Restaurar copia")),
+      inputCopia),
     h("div", { class: "acciones" }, h("button", { class: "btn principal grande", onclick: async () => { if (await guardar()) { aviso("Ajustes guardados ✓"); ir("/"); } } }, "Guardar")),
   ];
 }

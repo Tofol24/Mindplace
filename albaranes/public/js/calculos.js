@@ -36,6 +36,18 @@ export function fechaCorta(iso) {
   const [a, m, d] = iso.split("-");
   return `${d}/${m}/${a}`;
 }
+/** YYYY-MM-DD que existe de verdad (el selector de fecha de iOS puede dejarla vacía). */
+export function fechaValida(f) {
+  if (typeof f !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(f)) return false;
+  const [a, m, d] = f.split("-").map(Number);
+  const x = new Date(a, m - 1, d);
+  return x.getFullYear() === a && x.getMonth() === m - 1 && x.getDate() === d;
+}
+
+export function fechaCortaSegura(iso) {
+  return fechaValida(iso) ? fechaCorta(iso) : "Sin fecha";
+}
+
 export function hoyISO() {
   const h = new Date();
   return `${h.getFullYear()}-${String(h.getMonth() + 1).padStart(2, "0")}-${String(h.getDate()).padStart(2, "0")}`;

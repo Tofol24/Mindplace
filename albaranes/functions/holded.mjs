@@ -19,10 +19,13 @@ function claveCorrecta(recibida, esperada) {
   return !!recibida && !!esperada && timingSafeEqual(huella(recibida), huella(esperada));
 }
 
+// Al móvil le importa una cosa: si el problema es de ESTE albarán (hay que corregirlo:
+// 400/422) o de la conexión (claves, permisos, Holded caído: el albarán sigue en cola).
 function fallo(e) {
   if (e instanceof ErrorHolded) {
-    const status = e.status === 400 ? 400 : e.reintentar ? 503 : 502;
-    return json({ error: e.message, reintentar: e.reintentar }, status);
+    const delAlbaran = e.status === 400 || e.status === 422;
+    const status = delAlbaran ? 422 : e.reintentar ? 503 : 502;
+    return json({ error: e.message, reintentar: e.reintentar, delAlbaran }, status);
   }
   console.error(e);
   return json({ error: "Error inesperado en el servidor", reintentar: true }, 500);
@@ -32,12 +35,11 @@ export default async (req) => {
   const ruta = new URL(req.url).pathname.replace(/\/+$/, "");
   const apiKey = process.env.HOLDED_API_KEY;
   const claveApp = process.env.APP_CLAVE;
-  if (!apiKey || !claveApp) {
-    return json({ error: "Falta configurar HOLDED_API_KEY y APP_CLAVE en Netlify", reintentar: false }, 500);
-  }
+  // Primero la clave: sin ella no se dice nada de cómo está configurado el servidor.
   if (!claveCorrecta(req.headers.get("x-clave-app"), claveApp)) {
     return json({ error: "La clave de la app no es correcta", reintentar: false }, 401);
   }
+  if (!apiKey) return json({ error: "Falta configurar HOLDED_API_KEY en Netlify", reintentar: false }, 500);
   const holded = crearClienteHolded({ apiKey });
 
   try {
@@ -55,11 +57,12 @@ export default async (req) => {
 
     if (ruta === "/api/holded/enviar" && req.method === "POST") {
       const cuerpo = await req.text();
-      if (cuerpo.length > MAX_PDF_BASE64 + 200_000) return json({ error: "El albarán es demasiado grande", reintentar: false }, 413);
+      if (cuerpo.length > MAX_PDF_BASE64 + 200_000) return json({ error: "El albarán es demasiado grande", reintentar: false, delAlbaran: true }, 413);
       let datos;
-      try { datos = JSON.parse(cuerpo); } catch { return json({ error: "Datos no válidos", reintentar: false }, 400); }
+      try { datos = JSON.parse(cuerpo); } catch { return json({ error: "Datos no válidos", reintentar: false, delAlbaran: true }, 422); }
       const albaran = validarAlbaran(datos);
-      const store = getStore("albaranes-holded");
+      // Consistencia fuerte: un reintento inmediato debe ver el progreso del intento anterior.
+      const store = getStore({ name: "albaranes-holded", consistency: "strong" });
       const almacen = {
         leer: (id) => store.get(`alb/${id}`, { type: "json" }),
         guardar: (id, estado) => store.setJSON(`alb/${id}`, estado),

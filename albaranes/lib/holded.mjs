@@ -37,7 +37,8 @@ const MENSAJES = {
 };
 
 /** Cliente mínimo de la API de Holded. `fetch` se inyecta para poder probarlo. */
-export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs = 20000 }) {
+// Netlify corta la función a los 10 s; el progreso guardado permite seguir en el reintento.
+export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs = 8000 }) {
   async function llamar(metodo, ruta, { json, form, query } = {}) {
     const url = new URL(BASE + ruta);
     for (const [k, v] of Object.entries(query || {})) if (v != null && v !== "") url.searchParams.set(k, String(v));
@@ -98,6 +99,19 @@ const NUMERO = /^[A-Za-z0-9-]{1,30}$/;
 const FECHA = /^\d{4}-\d{2}-\d{2}$/;
 export const MAX_PDF_BASE64 = 4_000_000; // ~3 MB de PDF (el cuerpo de la función tiene límite de 6 MB)
 
+/** YYYY-MM-DD que existe de verdad (rechaza 2026-02-31). */
+export function fechaValida(f) {
+  if (typeof f !== "string" || !FECHA.test(f)) return false;
+  const [a, m, d] = f.split("-").map(Number);
+  const x = new Date(Date.UTC(a, m - 1, d));
+  return x.getUTCFullYear() === a && x.getUTCMonth() === m - 1 && x.getUTCDate() === d;
+}
+
+function diaMas(f, n) {
+  const [a, m, d] = f.split("-").map(Number);
+  return new Date(Date.UTC(a, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
 function texto(v, max, campo, { obligatorio = false } = {}) {
   if (v == null || v === "") {
     if (obligatorio) throw new ErrorHolded(`Falta ${campo}`, { status: 400 });
@@ -121,7 +135,7 @@ export function validarAlbaran(b) {
   if (!b || typeof b !== "object") throw new ErrorHolded("Albarán vacío", { status: 400 });
   if (typeof b.id !== "string" || !ID.test(b.id)) throw new ErrorHolded("Id de albarán no válido", { status: 400 });
   if (typeof b.numero !== "string" || !NUMERO.test(b.numero)) throw new ErrorHolded("Número de albarán no válido", { status: 400 });
-  if (typeof b.fecha !== "string" || !FECHA.test(b.fecha) || Number.isNaN(Date.parse(b.fecha))) throw new ErrorHolded("Fecha no válida", { status: 400 });
+  if (!fechaValida(b.fecha)) throw new ErrorHolded("Fecha no válida", { status: 400 });
   const c = b.cliente || {};
   const cliente = {
     holdedId: typeof c.holdedId === "string" && /^[a-f0-9]{24}$/i.test(c.holdedId) ? c.holdedId : "",
@@ -232,6 +246,10 @@ export async function enviarAlbaran({ holded, almacen, albaran: a }) {
   const estado = (await almacen.leer(a.id)) || {};
   const guardar = () => almacen.guardar(a.id, estado);
 
+  // Si el albarán se corrigió con otro cliente antes de llegar a crearse, se vuelve a buscar.
+  const quien = `${normalizarNombre(a.cliente.nombre)}|${normalizarNif(a.cliente.nif)}|${a.cliente.holdedId}`;
+  if (estado.contactId && !estado.albaranId && estado.quien !== quien) delete estado.contactId;
+
   if (!estado.contactId) {
     if (a.cliente.holdedId) {
       estado.contactId = a.cliente.holdedId;
@@ -240,14 +258,16 @@ export async function enviarAlbaran({ holded, almacen, albaran: a }) {
       const encontrado = elegirContacto(candidatos, a.cliente);
       estado.contactId = encontrado ? encontrado.id : await holded.crearContacto(contactoParaHolded(a.cliente));
     }
+    estado.quien = quien;
     await guardar();
   }
 
   if (!estado.albaranId) {
     if (estado.creando) {
       // Un intento anterior se cortó justo al crear: puede que Holded sí lo creara.
-      const delDia = await holded.listarAlbaranes({ contact_id: estado.contactId, start_date: a.fecha, end_date: a.fecha, limit: 200 });
-      const ya = delDia.find((w) => w.document_number === a.numero);
+      // ±1 día por si Holded guarda la fecha en UTC (medianoche en Madrid es el día anterior en UTC).
+      const cercanos = await holded.listarAlbaranes({ contact_id: estado.contactId, start_date: diaMas(a.fecha, -1), end_date: diaMas(a.fecha, 1), limit: 200 });
+      const ya = cercanos.find((w) => (w.document_number || w.number) === a.numero);
       if (ya) estado.albaranId = ya.id;
     }
     if (!estado.albaranId) {

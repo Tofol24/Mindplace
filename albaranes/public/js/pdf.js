@@ -1,7 +1,7 @@
 /* Albaranes · PDF del albarán firmado (jsPDF, guardado en vendor/ para que
    funcione sin conexión). Devuelve un Blob listo para compartir o adjuntar. */
 
-import { fechaCorta, formatoCantidad, formatoEuros, importeLinea, totales } from "./calculos.js";
+import { fechaCortaSegura as fechaCorta, formatoCantidad, formatoEuros, importeLinea, totales } from "./calculos.js";
 
 const A4 = { w: 210, h: 297 };
 const M = 15; // margen
@@ -112,6 +112,8 @@ export function generarPDF(alb, negocio) {
     const lineasConcepto = doc.splitTextToSize(l.concepto, cols[0].w - 4);
     const alto = lineasConcepto.length * 4.4 + 2;
     if (y + alto > A4.h - M - 8) { doc.addPage(); y = M + 4; cabeceraTabla(); }
+    doc.setFont("helvetica", "normal"); // la cabecera deja la letra en negrita
+    doc.setFontSize(9.5);
     const valores = [null, formatoCantidad(l.cantidad), formatoEuros(l.precio), `${l.iva}%`, formatoEuros(importeLinea(l))];
     doc.setTextColor(...TINTA);
     lineasConcepto.forEach((s, i) => doc.text(s, M + 2, y + i * 4.4));

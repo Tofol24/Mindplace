@@ -19,15 +19,31 @@ function abrir() {
       db.createObjectStore("clientes", { keyPath: "id" });
       db.createObjectStore("kv", { keyPath: "k" });
     };
-    r.onsuccess = () => ok(r.result);
+    r.onsuccess = () => {
+      const db = r.result;
+      // iOS puede cerrar la base de datos con la app en segundo plano: se reabre en la próxima operación.
+      db.onclose = () => { conexion = null; };
+      db.onversionchange = () => { db.close(); conexion = null; };
+      ok(db);
+    };
     r.onerror = () => { conexion = null; ko(r.error); };
   });
   return conexion;
 }
 
-async function tx(store, modo, fn) {
-  const db = await abrir();
-  return new Promise((ok, ko) => {
+/** Ejecuta una operación; si la conexión estaba cerrada, la reabre y lo intenta una vez más. */
+async function conReintento(fn) {
+  try {
+    return await fn(await abrir());
+  } catch (e) {
+    if (e?.name !== "InvalidStateError" && e?.name !== "UnknownError") throw e;
+    conexion = null;
+    return fn(await abrir());
+  }
+}
+
+function tx(store, modo, fn) {
+  return conReintento((db) => new Promise((ok, ko) => {
     const t = db.transaction(store, modo);
     let resultado;
     const req = fn(t.objectStore(store));
@@ -35,7 +51,7 @@ async function tx(store, modo, fn) {
     t.oncomplete = () => ok(resultado);
     t.onerror = () => ko(t.error);
     t.onabort = () => ko(t.error);
-  });
+  }));
 }
 
 export const todos = (store) => tx(store, "readonly", (s) => s.getAll());
@@ -49,27 +65,33 @@ export async function leerKV(k, porDefecto = null) {
 }
 export const escribirKV = (k, v) => guardar("kv", { k, v });
 
+/** Próximo número del año (cada año tiene su propio contador). */
+export async function proximoDelAnio(anio) {
+  return (await leerKV(`contador-${anio}`, 1)) || 1;
+}
+export const fijarProximoDelAnio = (anio, n) => escribirKV(`contador-${anio}`, n);
+
 /**
  * Reserva el siguiente número de albarán en una sola transacción
- * (dos albaranes nunca reciben el mismo número). Se reinicia cada año.
+ * (dos albaranes nunca reciben el mismo número). Cada año lleva su contador,
+ * así que un albarán con fecha del año pasado no reinicia el del año actual.
  */
-export async function siguienteNumero(prefijo, anio) {
-  const db = await abrir();
-  return new Promise((ok, ko) => {
+export function siguienteNumero(prefijo, anio) {
+  return conReintento((db) => new Promise((ok, ko) => {
     const t = db.transaction("kv", "readwrite");
     const s = t.objectStore("kv");
+    const clave = `contador-${anio}`;
     let numero;
-    const r = s.get("contador");
+    const r = s.get(clave);
     r.onsuccess = () => {
-      const c = r.result?.v;
-      const n = c && c.anio === anio ? c.n : 1;
+      const n = r.result?.v || 1;
       numero = `${prefijo}-${anio}-${String(n).padStart(4, "0")}`;
-      s.put({ k: "contador", v: { anio, n: n + 1 } });
+      s.put({ k: clave, v: n + 1 });
     };
     t.oncomplete = () => ok(numero);
     t.onerror = () => ko(t.error);
     t.onabort = () => ko(t.error);
-  });
+  }));
 }
 
 /** Pide al navegador que no borre los datos aunque falte espacio. */
