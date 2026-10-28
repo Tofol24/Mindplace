@@ -30,6 +30,7 @@ function holdedFalso(over = {}) {
     buscarContactos: async (n) => { llamadas.push(["buscar", n]); return []; },
     crearContacto: async (c) => { llamadas.push(["crearContacto", c]); return "c".repeat(24); },
     listarAlbaranes: async (q) => { llamadas.push(["listar", q]); return []; },
+    obtenerAlbaran: async (id) => { llamadas.push(["obtener", id]); return { id, notes: "Creado desde la app de albaranes (ref. alb-1234-abcd)" }; },
     crearAlbaran: async (a) => { llamadas.push(["crearAlbaran", a]); return "w".repeat(24); },
     adjuntar: async (id, bytes, nombre) => { llamadas.push(["adjuntar", id, nombre, bytes.length]); return { id: "x" }; },
     ...over,
@@ -236,4 +237,17 @@ test("si Holded rechaza el PDF de un albarán ya creado, el error lo indica (no 
     enviarAlbaran({ holded: h, almacen: almacenMemoria(), albaran: validarAlbaran(base()) }),
     (e) => e.yaEnHolded === true && e.status === 422,
   );
+});
+
+test("recuperación tras un corte: no adjunta a otro albarán con el mismo número", async () => {
+  const alm = almacenMemoria();
+  const a = validarAlbaran(base());
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("timeout", { reintentar: true }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: a }));
+  const h2 = holdedFalso({
+    listarAlbaranes: async () => [{ id: "9".repeat(24), document_number: "M-2026-0001" }],
+    obtenerAlbaran: async (id) => ({ id, notes: "Creado desde la app de albaranes (ref. otro-albaran-viejo)" }),
+  });
+  await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: a }), /ya hay otro albarán/);
+  assert.ok(!h2.llamadas.some((l) => l[0] === "adjuntar" || l[0] === "crearAlbaran"));
 });

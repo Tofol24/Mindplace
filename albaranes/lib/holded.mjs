@@ -87,6 +87,9 @@ export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs
       }
       return items;
     },
+    obtenerAlbaran(id) {
+      return llamar("GET", `/waybills/${encodeURIComponent(id)}`);
+    },
     async crearAlbaran(a) {
       const r = await llamar("POST", "/waybills", { json: a });
       if (!r?.id) throw new ErrorHolded("Holded no ha devuelto el id del albarán creado", { reintentar: true });
@@ -335,7 +338,18 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       // ±1 día por si Holded guarda la fecha en UTC (medianoche en Madrid es el día anterior en UTC).
       const cercanos = await holded.listarAlbaranes({ contact_id: estado.contactId, start_date: diaMas(a.fecha, -1), end_date: diaMas(a.fecha, 1), limit: 200 });
       const ya = cercanos.find((w) => (w.document_number || w.number) === a.numero);
-      if (ya) estado.albaranId = ya.id;
+      if (ya) {
+        // El número solo no basta (p. ej. tras reinstalar la app y reiniciar el contador):
+        // se comprueba la referencia que la app deja en las notas antes de adjuntarle nada.
+        const detalle = await holded.obtenerAlbaran(ya.id);
+        if (typeof detalle?.notes === "string" && !detalle.notes.includes(`ref. ${a.id}`)) {
+          throw new ErrorHolded(
+            `En Holded ya hay otro albarán con el número ${a.numero}. Cambia el próximo número en Ajustes y haz este albarán de nuevo.`,
+            { status: 422 },
+          );
+        }
+        estado.albaranId = ya.id;
+      }
     }
     if (!estado.albaranId) {
       estado.creando = true;
