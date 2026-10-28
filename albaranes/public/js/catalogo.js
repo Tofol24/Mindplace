@@ -99,8 +99,12 @@ export async function vistaArticulo(ctx, id) {
   const guardar = async () => {
     if (!nombre.value.trim()) { aviso("Falta el nombre del artículo.", "error"); return; }
     if (num(coste.value) < 0 || (precio.value.trim() && num(precio.value) < 0)) { aviso("Los precios no pueden ser negativos.", "error"); return; }
+    // El stock pudo cambiar mientras el formulario estaba abierto (otra ventana): se aplica
+    // solo el cambio que Pere ha hecho a mano, sobre el stock actual.
+    const actual = existente ? await db.obtener("articulos", a.id) : null;
+    const stockNuevo = actual ? (Number(actual.stock) || 0) + (num(stock.value) - (Number(existente.stock) || 0)) : num(stock.value);
     await db.guardar("articulos", {
-      ...a,
+      ...(actual || a),
       nombre: nombre.value.trim().slice(0, 200),
       ref: ref.value.trim().slice(0, 60),
       proveedor: proveedor.value.trim().slice(0, 200),
@@ -108,7 +112,7 @@ export async function vistaArticulo(ctx, id) {
       coste: redondear(num(coste.value)),
       margen: margen.value.trim() ? num(margen.value) : null,
       precio: precio.value.trim() ? redondear(num(precio.value)) : null,
-      stock: num(stock.value),
+      stock: Math.round(stockNuevo * 10000) / 10000,
       actualizado: new Date().toISOString(),
     });
     aviso("Artículo guardado ✓");

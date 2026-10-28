@@ -137,7 +137,18 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
           ? "El móvil no deja usar el micrófono aquí. Usa el micrófono del teclado."
           : e.error === "network" ? "Sin cobertura no se puede transcribir aquí: usa el micrófono del teclado." : "";
       };
-      rec.onend = () => { rec = null; micro.textContent = "🎤 Hablar"; micro.classList.remove("grabando"); };
+      // El micrófono se apaga al salir de la pantalla o al dejar la app en segundo plano.
+      const apagar = () => rec?.abort();
+      const alOcultar = () => { if (document.visibilityState === "hidden") apagar(); };
+      window.addEventListener("hashchange", apagar, { once: true });
+      document.addEventListener("visibilitychange", alOcultar);
+      rec.onend = () => {
+        rec = null;
+        window.removeEventListener("hashchange", apagar);
+        document.removeEventListener("visibilitychange", alOcultar);
+        micro.textContent = "🎤 Hablar";
+        micro.classList.remove("grabando");
+      };
       try {
         rec.start();
         micro.textContent = "⏹ Parar";

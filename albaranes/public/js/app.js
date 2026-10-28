@@ -210,7 +210,8 @@ async function sincronizar({ manual = false } = {}) {
       // Se relee justo antes de enviarlo: mientras la ronda envía otros, este pudo reabrirse para corregirlo.
       const alb = await db.obtener("albaranes", id);
       if (!alb || !(alb.estado === "pendiente" || (manual && alb.estado === "error"))) continue;
-      if (alb.estado === "error") alb.estado = "pendiente";
+      // Se guarda «pendiente» antes de enviar: mientras se envía, «Corregir» ya no puede reabrirlo.
+      if (alb.estado === "error") { alb.estado = "pendiente"; await guardarAlbaran(alb); }
       const r = await enviarUno(alb);
       if (r === "ok") enviados++;
       if (r === "pasajero" || r === "conexion") { parada = r === "conexion" ? alb.error : "pasajero"; break; }

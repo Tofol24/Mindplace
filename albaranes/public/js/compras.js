@@ -11,7 +11,7 @@
 */
 
 import * as db from "./db.js";
-import { fechaCortaSegura as fechaCorta, formatoCantidad, formatoEuros, hoyISO, redondear } from "./calculos.js";
+import { fechaCortaSegura as fechaCorta, fechaValida, formatoCantidad, formatoEuros, hoyISO, redondear } from "./calculos.js";
 import { articulosOrdenados, buscarArticulo } from "./catalogo.js";
 import { aviso, campo, h, ir, num, uuid } from "./ui.js";
 
@@ -155,7 +155,11 @@ export async function leerComprasPendientes(ctx) {
 async function registrar(c) {
   const lineas = c.lineas.filter((l) => l.descripcion.trim());
   if (!lineas.length) { aviso("La compra no tiene líneas.", "error"); return false; }
-  if (lineas.some((l) => !(Number(l.cantidad) > 0) || costeNeto(l) < 0)) { aviso("Revisa las cantidades y los precios.", "error"); return false; }
+  if (lineas.some((l) => !(Number(l.cantidad) > 0))) { aviso("Revisa las cantidades.", "error"); return false; }
+  // Un precio que no se ha leído no es 0: hay que escribirlo antes de registrar.
+  if (lineas.some((l) => l.precioUnitario == null || !(Number(l.precioUnitario) >= 0))) { aviso("Falta el precio de algún artículo.", "error"); return false; }
+  if (lineas.some((l) => !(Number(l.descuento || 0) >= 0 && Number(l.descuento || 0) <= 100) || !(Number(l.iva || 0) >= 0 && Number(l.iva || 0) <= 100))) { aviso("Revisa los descuentos y el IVA (entre 0 y 100).", "error"); return false; }
+  if (!fechaValida(c.fecha)) { aviso("Falta la fecha del documento.", "error"); return false; }
   // Plan: a qué artículo va cada línea (existente o nuevo). Dos líneas del mismo artículo se suman.
   const catalogo = await db.todos("articulos");
   const nuevos = [];
@@ -356,7 +360,8 @@ async function vistaRevisar(ctx, c, volver, verFoto, borrar) {
   const ent = (obj, k, attrs = {}) => h("input", { value: obj[k] ?? "", ...attrs, oninput: (e) => { obj[k] = e.target.value; cambiado(); } });
   const entNum = (obj, k, attrs = {}) => h("input", {
     inputmode: "decimal", value: obj[k] == null ? "" : String(obj[k]).replace(".", ","), ...attrs,
-    oninput: (e) => { obj[k] = num(e.target.value); cambiado(); },
+    // Vacío es «sin dato» (no 0): así un precio sin leer no se registra como gratis.
+    oninput: (e) => { obj[k] = e.target.value.trim() ? num(e.target.value) : null; cambiado(); },
   });
 
   const contTotales = h("div", { class: "totales" });
