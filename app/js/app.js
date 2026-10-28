@@ -36,7 +36,7 @@
     { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
       ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
-      ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","ritual_calma","rincon_calma"] },
+      ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","escalera_comidas","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
       ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
@@ -161,6 +161,32 @@
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
       <span class="hub-tag">Abrir →</span></a>`;
   }
+
+  // ============================================================
+  //  Aviso de privacidad + contador anónimo de uso (js/uso.js)
+  // ============================================================
+  function avisoPrivacidadHTML(){
+    const u = window.AprensUso;
+    const off = !u || u.desactivado();
+    return `<div class="aviso" id="avisoPriv" style="margin-top:18px">🔒 Lo que escribes y registras se queda solo en tu dispositivo.
+      ${u && u.publicado ? `<br>Para saber qué herramientas os resultan más útiles, la app puede contar de manera anónima cuántas veces entras, qué herramientas abres, cuánto rato las usas y cuántos registros guardas. Solo números: no sabe quién eres ni lo que escribes.
+      ${u.bloqueadoPorNavegador() ? `<br><span class="aviso-uso">Tu navegador pide no ser rastreado (GPC), así que no se cuenta nada.</span>` :
+      `<br><span class="aviso-uso">${off ? "Ahora no se cuentan tus visitas." : "Ahora se cuentan tus visitas de manera anónima."}</span>
+      <button type="button" class="aviso-btn" id="usoToggle">${off ? "Contar mis visitas" : "No contar mis visitas"}</button>`}` : ""}</div>`;
+  }
+  function wireAvisoPrivacidad(){
+    const b = document.getElementById("usoToggle");
+    if(!b) return;
+    b.onclick = function(){
+      AprensUso.desactivar(!AprensUso.desactivado());
+      const nb = document.getElementById("usoToggle"); if(nb) nb.focus();
+    };
+  }
+  // Si la persona elige en el aviso de la primera vez, se actualiza el del inicio.
+  document.addEventListener("aprens-uso", function(){
+    const box = document.getElementById("avisoPriv");
+    if(box){ box.outerHTML = avisoPrivacidadHTML(); wireAvisoPrivacidad(); }
+  });
 
   // ============================================================
   //  Continuidad AIS · racha de presencia + recordatorio (offline)
@@ -593,6 +619,7 @@
   }
 
   function renderHub(){
+    if(window.AprensUso) AprensUso.cerrar();
     removeExportBar();
     screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
@@ -650,7 +677,8 @@
       ${secciones}
       ${docsHTML()}
       ${librosHTML()}
-      <div class="aviso" style="margin-top:18px">🔒 Todo se guarda solo en tu dispositivo. Nada se envía sin que tú lo decidas.</div>`;
+      ${avisoPrivacidadHTML()}`;
+    wireAvisoPrivacidad();
     wireCont();
     wireCV();
     montarIndice();
@@ -752,6 +780,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();
     registrarPractica();
     removeExportBar();

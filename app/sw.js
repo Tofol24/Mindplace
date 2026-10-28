@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v179";
+const CACHE = "aprens-v181";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -16,6 +16,7 @@ const SHELL = [
   "./css/tools/donde-esta-mono.css",
   "./js/aprens-core.js",
   "./js/registry.js",
+  "./js/uso.js",
   "./js/app.js",
   "./js/respiro-ais.js",
   "./js/vineta-atencion.js",
@@ -75,6 +76,8 @@ const SHELL = [
   "./tools-standalone/tiempo_limite_peques.html",
   "./tools-standalone/assets/editorial/tiempo-limite.webp",
   "./tools-standalone/cuando-todo-demasiado.html",
+  "./tools-standalone/escalera-comidas.html",
+  "./js/escalera-lateral.js",
   // Cuentos de Nil — app shell (HTML + CSS/JS + fuentes). Las imágenes NO,
   // van a la caché aparte "aprens-cuentos-v1" (bajo demanda).
   "./tools-standalone/cuentos/index.html",
@@ -221,6 +224,8 @@ self.addEventListener("fetch", e => {
   // Así se cargan al abrir un cuento y quedan disponibles offline, sin
   // reinstalarse con cada actualización global de la app.
   const url = new URL(req.url);
+  // Funciones de Netlify (contador de uso): nunca desde caché.
+  if (url.pathname.indexOf("/api/") === 0) return;
   if (url.pathname.indexOf("/cuentos/img/") !== -1) {
     e.respondWith(
       caches.open(CUENTOS).then(c =>

@@ -130,6 +130,13 @@ def registro():
     return out
 
 
+def etiquetas_panel():
+    """Nombres que usa el panel para ids de registro que no están en el hub (p. ej. seguimiento_tec)."""
+    s = leer("app/panel/panel.js")
+    blk = s.split("var TOOL_LABEL = {", 1)[1].split("};", 1)[0]
+    return {k: js_str(v) for k, v in re.findall(r'([a-z0-9_]+):\s*"((?:[^"\\]|\\.)*)"', blk)}
+
+
 def grupos():
     s = leer("app/js/app.js")
     blk = s.split("const GRUPOS = [")[1].split("];")[0]
@@ -196,7 +203,7 @@ def main():
     for r in reg.values():
         cat = "profesional" if r["id"] in REG_A_PROFESIONAL else grupo_de.get(r["id"], "otras")
         pub = "profesional" if r["id"] in REG_A_PROFESIONAL else "paciente"
-        it = dict(cat=cat, emoji=r["emoji"], nombre=r["nombre"], desc=r["desc"], pub=pub,
+        it = dict(cat=cat, emoji=r["emoji"], nombre=r["nombre"], desc=r["desc"], pub=pub, id=r["id"],
                   path=r["path"], app=APP_URL + "#/tool/" + r["id"])
         if r["path"] is None:
             it["url"] = APP_URL + "#/tool/" + r["id"]
@@ -257,7 +264,7 @@ def main():
 
     usados = {i["cat"] for i in items} | {"favoritos"}
     cats = [c for c in cats if c[0] in usados]
-    datos = dict(generado=date.today().isoformat(), rama=rama, comprobado=comprobar,
+    datos = dict(generado=date.today().isoformat(), rama=rama, comprobado=comprobar, usoApi=APP_URL + "api/uso-resumen", etiquetas=etiquetas_panel(),
                  cats=[dict(id=c[0], emoji=c[1], label=c[2], desc=c[3]) for c in cats], items=items)
     plantilla = leer("scripts/indice-escritorio.plantilla.html")
     js = json.dumps(datos, ensure_ascii=False).replace("</", "<\\/")

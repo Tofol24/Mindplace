@@ -269,8 +269,17 @@
   }
 
   function renderLadder() {
+    var lat = $("#ladderLat"), ms = escSel ? getMisionesDe(escSel) : [];
+    if (lat && window.EscaleraLateral) {
+      var esc0 = getEscaleras().filter(function (e) { return e.id === escSel; })[0] || {};
+      EscaleraLateral.montar(lat, ms.map(function (m) {
+        var n = rondasDe(m.id).length, ok = misionLograda(m.id);
+        return { alto: Number(m.dificultad) || 1, hecho: ok, emoji: ok ? "⭐" : (esc0.emoji || "🗺️"),
+          linea2: new Array((Number(m.dificultad) || 1) + 1).join("★"), linea3: n ? n + (n === 1 ? " intento" : " intentos") : "",
+          etiqueta: m.titulo + ", valentía " + m.dificultad + " de 5" };
+      }), { titulo: "Escalera " + (esc0.nombre || ""), persona: "🧒", salto: 2, max: 6 });
+    }
     if (!escSel) { ladder.innerHTML = '<p class="lead">Crea tu primera escalera o restaura el ejemplo.</p>'; return; }
-    var ms = getMisionesDe(escSel);
     if (!ms.length) { ladder.innerHTML = '<p class="lead">Esta escalera no tiene misiones aún. Añade la primera.</p>'; return; }
     ladder.innerHTML = ms.map(function (m, i) { return rungHTML(m, i + 1); }).join("");
     $$(".rung", ladder).forEach(function (row) {
