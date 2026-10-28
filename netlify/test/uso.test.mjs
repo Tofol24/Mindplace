@@ -27,6 +27,15 @@ assert.equal((await post("no json")).status, 400);
 assert.equal((await post({ e: "tiempo", t: "__proto__", b: "0-1" })).status, 400);
 assert.equal((await post({ e: "abrir", t: "constructor" })).status, 400);
 assert.equal((await uso(new Request("https://x/api/uso"))).status, 405);
+// portada aprens.net: visitas por origen y clics por destino (solo valores de la lista)
+assert.equal((await post({ e: "visita", t: "instagram" })).status, 204);
+assert.equal((await post({ e: "clic", t: "cita" })).status, 204);
+assert.equal((await post({ e: "visita", t: "evil.com" })).status, 400);
+assert.equal((await post({ e: "clic", t: "__proto__" })).status, 400);
+{
+  const rp = lib.resumir(["ev/2026-01-06/visita/instagram/-/a", "ev/2026-01-06/visita/directe/-/b", "ev/2026-01-06/clic/cita/-/c", "ev/2026-01-06/clic/nada/-/d"]);
+  assert.equal(rp.portada.visites, 2); assert.equal(rp.portada.fonts.instagram, 1); assert.equal(rp.portada.clics.cita, 1); assert.equal(rp.portada.clics.nada, undefined);
+}
 // lista (cola sin conexión): se guardan los válidos, como máximo 20
 assert.equal((await post([{ e: "abrir", t: "ais_curiosidad" }, { e: "abrir", t: "__proto__" }, { e: "abrir", t: "ais_curiosidad" }])).status, 204);
 assert.equal((await post([{ e: "nada" }])).status, 400);

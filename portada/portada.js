@@ -17,7 +17,7 @@ const T = {
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
     expEt: "Estudio", appsT: "Apps para iPhone", appsD: "Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.", retratAlt: "Tòfol Villalonga en la entrada de APRENS, en Inca, junto al cartel de los servicios del centro", appAlt: "Ilustración de la app: una silueta con tres puntos donde llevar la atención. 1, cuello: conecta con tu garganta y nuca. 2, pecho: siente tu corazón y pulmones. 3, barriga: percibe tu estómago e intestinos.", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
-    horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
+    horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies. Solo contamos las visitas, de forma anónima.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos", eina: "Herramientas para probar", esport: "Psicología del deporte", provar: "Pruébala", destacats: "Destacados", pausa: "Pausa", repren: "Reanudar", ant: "Anterior", seg: "Siguiente", pantallesN: "Pantallas", pantallaN: "Pantalla", videos: "Vídeos", videosD: "Explicaciones cortas sobre la atención, el cuerpo y la Teoría del Efecto Consciente.", labEt: "Para psicólogos", labT: "Laboratorio TEC", labD: "La Teoría del Efecto Consciente hecha laboratorio: entender el modelo, practicar el AIS y medir el cambio.",
     disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", descarrega: "Descarga el PDF", en_ca: "(en catalán)", en_es: "(en castellano)", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
   },
@@ -203,4 +203,54 @@ fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { dat
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
   });
   dlg.addEventListener("close", () => { if (gr) { gr.destroy(); gr = null; } ajusta(); obre.focus(); });
+})();
+
+// Recompte anònim de visites i clics (es veu a l'índex de l'escriptori, amb l'ús de l'App APRENS).
+// No es guarda res al dispositiu ni s'envia res que identifiqui la persona: només
+// «una visita que ve d'Instagram» o «un clic a Demanar cita», que el servidor suma per dia.
+// Només a la web publicada i mai si el navegador demana no ser seguit (Global Privacy Control).
+(function () {
+  const API = "https://aprens-app.netlify.app/api/uso";
+  if (!/^(www\.)?aprens\.net$/.test(location.hostname) || navigator.globalPrivacyControl) return;
+  const envia = (ev) => { try { navigator.sendBeacon(API, JSON.stringify(ev)); } catch {} };
+  const font = () => {
+    const p = new URLSearchParams(location.search).get("font");
+    if (p === "qr" || p === "correu" || p === "whatsapp") return p;
+    let h = "";
+    try { h = document.referrer ? new URL(document.referrer).hostname.replace(/^www\.|^m\.|^l\./, "") : ""; } catch {}
+    if (!h) return "directe";
+    if (/(^|\.)aprens\.net$/.test(h) && !/^(app|explica)\./.test(h)) return null;   // navegació dins la portada
+    if (/(^|\.)(google|bing|duckduckgo|ecosia|yahoo|qwant|startpage|brave)\./.test(h + ".")) return "cercador";
+    if (/instagram\.com$/.test(h)) return "instagram";
+    if (/(facebook\.com|fb\.com|fb\.me)$/.test(h)) return "facebook";
+    if (/whatsapp\.(com|net)$|^wa\.me$/.test(h)) return "whatsapp";
+    if (/(^|\.)aprens\.es$/.test(h)) return "aprens_es";
+    if (/^aprens-app\.netlify\.app$|^app\.aprens\.net$/.test(h)) return "app_aprens";
+    if (/^explica\.aprens\.net$/.test(h)) return "explica";
+    if (/doctoralia\./.test(h)) return "doctoralia";
+    return "altres";
+  };
+  const f = font();
+  if (f) envia({e: "visita", t: f});
+  const PORTES = {"l-app": "app", "l-cita": "cita", "l-consulta": "consulta", "l-explica": "explica", "l-laboratori": "laboratori", "l-ais": "ais_app", "l-serie": "llibre", "l-autor": "llibre"};
+  const desti = (el) => {
+    if (el.id === "ais-obre") return "ais";
+    const a = el.closest("a"); if (!a) return null;
+    if (PORTES[a.id]) return PORTES[a.id];
+    const href = a.getAttribute("href") || "";
+    if (href.startsWith("tel:")) return "telefon";
+    if (href.startsWith("mailto:")) return "correu";
+    if (/wa\.me/.test(href)) return "whatsapp";
+    if (/avis-legal/.test(href)) return "avis";
+    if (a.closest("#l-apps")) return "appstore";
+    if (a.closest("#xarxes")) return /instagram/.test(href) ? "instagram" : "facebook";
+    if (a.closest("#pantalles")) return "destacat";
+    if (a.closest("#llibres")) return "llibre";
+    if (a.closest("#novetats")) return a.hasAttribute("download") ? "descarrega" : "novetat";
+    return null;
+  };
+  document.addEventListener("click", (e) => { const el = e.target.closest("a, #ais-obre"); const d = el && desti(el); if (d) envia({e: "clic", t: d}); }, true);
+  // Un vídeo compta una vegada per visita, la primera vegada que es posa en marxa.
+  let video = false;
+  document.addEventListener("play", (e) => { if (!video && e.target.closest?.("#videos")) { video = true; envia({e: "clic", t: "video"}); } }, true);
 })();
