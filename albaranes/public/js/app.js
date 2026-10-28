@@ -797,6 +797,12 @@ async function vistaAjustes() {
     if (!/^[A-Z0-9]{1,8}$/.test(prefijo)) { aviso("El prefijo solo puede tener letras y números (máximo 8).", "error"); return false; }
     const sig = parseInt(inputSiguiente.value, 10);
     if (!(sig >= 1 && sig < 100000)) { aviso("El próximo número no es válido.", "error"); return false; }
+    // Nunca por debajo de un número ya usado con este prefijo y año: Holded rechazaría el repetido.
+    const usados = (await db.todos("albaranes"))
+      .map((a) => new RegExp(`^${prefijo}-${anio}-(\\d+)$`).exec(a.numero || ""))
+      .filter(Boolean).map((m) => Number(m[1]));
+    const maximo = usados.length ? Math.max(...usados) : 0;
+    if (sig <= maximo) { aviso(`El próximo número debe ser mayor que ${maximo}: ese ya está usado.`, "error"); return false; }
     ajustes.prefijo = prefijo;
     ajustes.precioHora = redondear(num(inputHora.value));
     ajustes.precioDesplazamiento = redondear(num(inputDesp.value));
