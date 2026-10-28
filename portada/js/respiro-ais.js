@@ -507,11 +507,12 @@
       }
 
       /* pastilla de fase */
-      if (s.phase !== lastPhase || s.n !== lastN){
+      if (s.phase !== lastPhase){
         var t = str();
-        phLbl.textContent = t.phase[s.phase]; phNum.textContent = s.n; phHint.textContent = t.hint[s.phase];
-        lastPhase = s.phase; lastN = s.n;
+        phLbl.textContent = t.phase[s.phase]; phHint.textContent = t.hint[s.phase];
+        lastPhase = s.phase;
       }
+      if (s.n !== lastN){ phNum.textContent = s.n; lastN = s.n; }
       /* recuento de ciclos */
       if (s.cycle !== cycles){ cycles = s.cycle; renderCount(); if (typeof opts.onCycle === 'function') opts.onCycle(cycles); }
     }
