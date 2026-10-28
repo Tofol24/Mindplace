@@ -118,7 +118,7 @@ async function leer(ctx, id) {
         fecha: d.fecha || actual.fecha, base: d.base, cuotaIva: d.cuotaIva, total: d.total,
         lineas: d.lineas.map((l) => ({
           ...l,
-          articuloId: buscarArticulo(catalogo, { ref: l.referencia, nombre: l.descripcion })?.id || null,
+          articuloId: buscarArticulo(catalogo, { ref: l.referencia, nombre: l.descripcion, proveedor: d.proveedor })?.id || null,
           alStock: true,
         })),
       });
@@ -163,7 +163,8 @@ async function registrar(c) {
   for (const l of lineas) {
     if (!l.alStock) continue;
     const coste = costeNeto(l);
-    const existente = (l.articuloId && catalogo.find((a) => a.id === l.articuloId)) || buscarArticulo(catalogo, { ref: l.referencia, nombre: l.descripcion });
+    // Lo que Pere ha elegido en «En el catálogo» manda: sin artículo elegido, es un artículo nuevo.
+    const existente = l.articuloId && catalogo.find((a) => a.id === l.articuloId);
     if (existente) {
       const cambio = cambios.get(existente.id) || { cantidad: 0, coste: 0, ref: l.referencia, proveedor: c.proveedor };
       cambio.cantidad = r4(cambio.cantidad + Number(l.cantidad));
@@ -212,6 +213,8 @@ function dataUrlABytes(dataUrl) {
 
 const cifraCsv = (n) => (n == null ? "" : String(redondear(n)).replace(".", ","));
 const celda = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+// Un texto leído de una foto que empiece por = + - @ se abriría como fórmula en Excel: se neutraliza.
+const celdaTexto = (v) => celda(/^[=+\-@\t\r]/.test(String(v ?? "")) ? `'${v}` : v);
 const nombreSeguro = (s) => String(s || "proveedor").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "proveedor";
 
 async function exportarMes(ctx, mes) {
@@ -224,7 +227,10 @@ async function exportarMes(ctx, mes) {
   for (const c of compras) {
     const t = totalesCompra(c);
     const foto = `${c.fecha || "sin-fecha"}-${nombreSeguro(c.proveedor)}-${c.id.slice(0, 6)}.jpg`;
-    filas.push([fechaCorta(c.fecha), TIPOS[c.tipo] || "", c.proveedor, c.nifProveedor, c.numero, cifraCsv(t.base), cifraCsv(t.cuotaIva), cifraCsv(t.total), foto].map(celda).join(";"));
+    filas.push([
+      celda(fechaCorta(c.fecha)), celda(TIPOS[c.tipo] || ""), celdaTexto(c.proveedor), celdaTexto(c.nifProveedor), celdaTexto(c.numero),
+      celda(cifraCsv(t.base)), celda(cifraCsv(t.cuotaIva)), celda(cifraCsv(t.total)), celda(foto),
+    ].join(";"));
     ficheros.push(new File([dataUrlABytes(c.foto)], foto, { type: "image/jpeg" }));
   }
   // El BOM hace que Excel abra bien las tildes.
@@ -284,8 +290,8 @@ export async function vistaCompra(ctx, id) {
     onclick: async () => {
       const registrada = c.estado === "registrada";
       if (!confirm(registrada ? "¿Borrar esta compra? Se restarán sus unidades del stock." : "¿Borrar esta compra?")) return;
-      if (registrada) await db.moverStock(c.lineas.filter((l) => l.alStock).map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })));
-      await db.borrar("compras", c.id);
+      ctx.cancelarGuardado?.();
+      await db.borrarCompra(c.id);
       ir("/compras");
     },
   }, "Borrar compra");
@@ -342,9 +348,11 @@ async function vistaRevisar(ctx, c, volver, verFoto, borrar) {
   let timer;
   const cambiado = () => {
     clearTimeout(timer);
-    timer = setTimeout(() => db.guardar("compras", c), 400);
+    timer = setTimeout(() => db.guardarCompraEnRevision(c), 400);
     pintarTotales();
   };
+  // Al borrar la compra no debe quedar un guardado pendiente que la vuelva a crear.
+  ctx.cancelarGuardado = () => clearTimeout(timer);
   const ent = (obj, k, attrs = {}) => h("input", { value: obj[k] ?? "", ...attrs, oninput: (e) => { obj[k] = e.target.value; cambiado(); } });
   const entNum = (obj, k, attrs = {}) => h("input", {
     inputmode: "decimal", value: obj[k] == null ? "" : String(obj[k]).replace(".", ","), ...attrs,

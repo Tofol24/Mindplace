@@ -18,11 +18,15 @@ export function precioVenta(art, margenGeneral) {
   return redondear((Number(art.coste) || 0) * (1 + margenDe(art, margenGeneral) / 100));
 }
 
-/** Busca un artículo por referencia del proveedor o, si no, por nombre exacto (sin tildes). */
-export function buscarArticulo(lista, { ref, nombre }) {
+/**
+ * Busca un artículo por referencia o, si no, por nombre exacto (sin tildes).
+ * La referencia es del proveedor: con proveedores distintos, la misma referencia no es el mismo artículo.
+ */
+export function buscarArticulo(lista, { ref, nombre, proveedor }) {
   const r = normal(ref);
+  const p = normal(proveedor);
   if (r) {
-    const porRef = lista.find((a) => normal(a.ref) === r);
+    const porRef = lista.find((a) => normal(a.ref) === r && (!p || !normal(a.proveedor) || normal(a.proveedor) === p));
     if (porRef) return porRef;
   }
   const n = normal(nombre);

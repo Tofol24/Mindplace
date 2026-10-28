@@ -185,6 +185,38 @@ export function guardarAlbaranYStock(alb, movimientos, siEstado) {
   });
 }
 
+/** Guarda una compra en revisión solo si sigue existiendo y «revisar» (no la resucita ni la desregistra). */
+export function guardarCompraEnRevision(compra) {
+  return transaccion(["compras"], (t, res) => {
+    const s = t.objectStore("compras");
+    const r = s.get(compra.id);
+    r.onsuccess = () => {
+      if (!r.result || r.result.estado !== "revisar") return;
+      s.put(compra);
+      res.hecho = true;
+    };
+  });
+}
+
+/** Borra una compra; si estaba registrada, resta sus unidades del stock en la misma transacción. */
+export function borrarCompra(id) {
+  return transaccion(["compras", "articulos"], (t, res) => {
+    const s = t.objectStore("compras");
+    const r = s.get(id);
+    r.onsuccess = () => {
+      const c = r.result;
+      if (!c) return;
+      if (c.estado === "registrada") {
+        aplicarMovimientos(t.objectStore("articulos"),
+          c.lineas.filter((l) => l.alStock !== false).map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })),
+          new Date().toISOString());
+      }
+      s.delete(id);
+      res.hecho = true;
+    };
+  });
+}
+
 /**
  * Registra una compra en el catálogo en una sola transacción: crea los artículos
  * nuevos, actualiza coste y stock de los existentes y marca la compra como

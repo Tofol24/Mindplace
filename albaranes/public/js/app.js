@@ -880,7 +880,9 @@ async function vistaAjustes() {
     let datos;
     try { datos = JSON.parse(await fichero.text()); } catch { aviso("El archivo no es una copia válida.", "error"); return; }
     if (datos?.app !== "albaranes-obra" || !Array.isArray(datos.albaranes)) { aviso("El archivo no es una copia de esta app.", "error"); return; }
-    if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`)) return;
+    const hayCatalogo = (await db.todos("articulos")).length > 0;
+    if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`
+      + (hayCatalogo ? "\n\nOjo: este móvil ya tiene catálogo. Sus artículos no se tocan, así que el stock puede no cuadrar con las compras de la copia. Lo ideal es restaurar en un móvil vacío." : ""))) return;
     let nuevos = 0;
     for (const a of datos.albaranes) {
       if (!a || typeof a.id !== "string" || !Array.isArray(a.lineas) || !a.cliente) continue;
