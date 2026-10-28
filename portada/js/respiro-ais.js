@@ -1,6 +1,7 @@
 /* Còpia per a la portada aprens.net de app/js/respiro-ais.js, amb dos canvis per la CSP
    estricta (sense estils en línia): el CSS es carrega des de respiro-ais.css i els
-   estils puntuals es posen per JS. Si canvia l'original, cal tornar a copiar-lo. */
+   estils puntuals es posen per JS. A més, el compte de segons no s'anuncia al lector de
+   pantalla i la pastilla es buida en aturar-se. Si canvia l'original, cal tornar a copiar-lo. */
 /* ============================================================
    APRENS · Respiro AIS — componente de respiración de dos luces
    ------------------------------------------------------------
@@ -390,7 +391,7 @@
           '<g class="ra-dot" data-el="dot"><circle r="' + rr(44) + '" fill="url(#raDot)"/><circle r="' + rr(9) + '" fill="#FFF6DF"/></g>' +
         '</svg>' +
       '</div>' +
-      '<div class="ra-ui"><div class="ra-pill" aria-live="polite"><span class="pl"></span><span class="pn"></span><span class="ph"></span></div></div>' +
+      '<div class="ra-ui"><div class="ra-pill" aria-live="polite"><span class="pl"></span><span class="pn" aria-hidden="true"></span><span class="ph"></span></div></div>' +
       (showLegend ? '<div class="ra-legend"><span><i class="ra-lg-air"></i><span class="ra-lg-air-t"></span></span><span><i class="ra-lg-mind"></i><span class="ra-lg-mind-t"></span></span></div>' : '') +
       (showControl ? '<button class="ra-control" type="button"></button>' : '') +
       '<div class="ra-count" aria-live="polite"></div>';
@@ -440,6 +441,7 @@
       dotEl.style.opacity = 0; airEl.style.opacity = 0; anchorEl.style.opacity = 0;
       trailSoft.setAttribute('d', ''); trailCore.setAttribute('d', '');
       if (useZones) ['z1','z2','z3'].forEach(function(z){ zoneEls[z].glow.style.opacity = 0; zoneEls[z].grp.classList.remove('on'); });
+      phLbl.textContent = ''; phNum.textContent = ''; phHint.textContent = '';
       container.classList.remove('ra-running'); container.removeAttribute('data-phase'); lastPhase = null; lastN = null;
     }
 

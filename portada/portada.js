@@ -196,6 +196,11 @@ fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { dat
     dlg.showModal();
   });
   $("#ais-tanca").addEventListener("click", () => dlg.close());
-  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  // Tanca només en clicar fora del quadre (el fons), no dins el seu marge.
+  dlg.addEventListener("click", (e) => {
+    if (e.target !== dlg) return;
+    const r = dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
+  });
   dlg.addEventListener("close", () => { if (gr) { gr.destroy(); gr = null; } ajusta(); obre.focus(); });
 })();
