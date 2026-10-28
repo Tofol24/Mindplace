@@ -1,0 +1,143 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  ErrorHolded, albaranParaHolded, contactoParaHolded, crearClienteHolded, elegirContacto, enviarAlbaran, validarAlbaran,
+} from "../lib/holded.mjs";
+
+const base = () => ({
+  id: "alb-1234-abcd",
+  numero: "M-2026-0001",
+  fecha: "2026-10-28",
+  cliente: { nombre: "María Pérez", nif: "12345678Z", telefono: "600111222", email: "maria@example.com", direccion: "C/ Mar 1" },
+  direccionObra: "C/ Mar 1, bajo",
+  trabajo: "Cambio de grifo",
+  lineas: [
+    { concepto: "Grifo monomando", cantidad: 1, precio: 45.5, iva: 21 },
+    { concepto: "Mano de obra", cantidad: 1.5, precio: 35, iva: 21 },
+  ],
+  pdf: Buffer.from("%PDF-1.4 prueba").toString("base64"),
+});
+
+function almacenMemoria() {
+  const m = new Map();
+  return { m, leer: async (id) => (m.has(id) ? structuredClone(m.get(id)) : null), guardar: async (id, e) => { m.set(id, structuredClone(e)); } };
+}
+
+function holdedFalso(over = {}) {
+  const llamadas = [];
+  const h = {
+    llamadas,
+    buscarContactos: async (n) => { llamadas.push(["buscar", n]); return []; },
+    crearContacto: async (c) => { llamadas.push(["crearContacto", c]); return "c".repeat(24); },
+    listarAlbaranes: async (q) => { llamadas.push(["listar", q]); return []; },
+    crearAlbaran: async (a) => { llamadas.push(["crearAlbaran", a]); return "w".repeat(24); },
+    adjuntar: async (id, bytes, nombre) => { llamadas.push(["adjuntar", id, nombre, bytes.length]); return { id: "x" }; },
+    ...over,
+  };
+  for (const k of Object.keys(over)) {
+    const f = over[k];
+    h[k] = async (...a) => { llamadas.push([k, ...a]); return f(...a); };
+  }
+  return h;
+}
+
+test("validarAlbaran acepta un albarán correcto y limpia espacios", () => {
+  const a = validarAlbaran({ ...base(), trabajo: "  Cambio de grifo  " });
+  assert.equal(a.trabajo, "Cambio de grifo");
+  assert.equal(a.lineas.length, 2);
+});
+
+test("validarAlbaran rechaza datos malos", () => {
+  assert.throws(() => validarAlbaran({ ...base(), numero: "M 1/2" }), ErrorHolded);
+  assert.throws(() => validarAlbaran({ ...base(), fecha: "28/10/2026" }), ErrorHolded);
+  assert.throws(() => validarAlbaran({ ...base(), lineas: [] }), ErrorHolded);
+  assert.throws(() => validarAlbaran({ ...base(), lineas: [{ concepto: "x", cantidad: 1, precio: 1, iva: 7 }] }), /IVA no permitido/);
+  assert.throws(() => validarAlbaran({ ...base(), cliente: { nombre: " " } }), /nombre del cliente/);
+  assert.throws(() => validarAlbaran({ ...base(), pdf: "no es base64!!" }), /PDF/);
+  assert.throws(() => validarAlbaran({ ...base(), cliente: { nombre: "A", email: "malo" } }), /email/);
+});
+
+test("elegirContacto: por NIF, por nombre, y no confunde a dos personas con el mismo nombre", () => {
+  const c = [
+    { id: "1", name: "Maria Perez", code: "99999999R" },
+    { id: "2", name: "María  Pérez", code: "" },
+    { id: "3", name: "Juan", code: "12345678-z" },
+  ];
+  assert.equal(elegirContacto(c, { nombre: "Otro", nif: "12345678Z" }).id, "3");
+  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "11111111H" }).id, "2");
+  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "" }).id, "1");
+  assert.equal(elegirContacto([c[0]], { nombre: "María Pérez", nif: "11111111H" }), null);
+});
+
+test("contactoParaHolded distingue empresa (CIF) de persona", () => {
+  assert.equal(contactoParaHolded({ nombre: "Fontanería SL", nif: "B12345678" }).is_person, false);
+  assert.equal(contactoParaHolded({ nombre: "Ana", nif: "12345678Z" }).is_person, true);
+  assert.equal(contactoParaHolded({ nombre: "Ana", nif: "" }).is_person, true);
+});
+
+test("albaranParaHolded usa el número propio y la clave de IVA de Holded", () => {
+  const w = albaranParaHolded(validarAlbaran(base()), "c".repeat(24));
+  assert.equal(w.number, "M-2026-0001");
+  assert.deepEqual(w.items[0], { name: "Grifo monomando", units: 1, price: 45.5, taxes: ["s_iva_21"] });
+  assert.match(w.description, /Dirección de la obra/);
+});
+
+test("enviarAlbaran crea cliente, albarán y adjunta el PDF", async () => {
+  const h = holdedFalso();
+  const alm = almacenMemoria();
+  const r = await enviarAlbaran({ holded: h, almacen: alm, albaran: validarAlbaran(base()) });
+  assert.deepEqual(r, { contactId: "c".repeat(24), albaranId: "w".repeat(24), adjunto: true });
+  assert.deepEqual(h.llamadas.map((l) => l[0]), ["buscar", "crearContacto", "crearAlbaran", "adjuntar"]);
+});
+
+test("enviarAlbaran usa el cliente de Holded si ya existe", async () => {
+  const h = holdedFalso({ buscarContactos: async () => [{ id: "e".repeat(24), name: "Maria Perez", code: "12345678Z" }] });
+  const r = await enviarAlbaran({ holded: h, almacen: almacenMemoria(), albaran: validarAlbaran(base()) });
+  assert.equal(r.contactId, "e".repeat(24));
+  assert.ok(!h.llamadas.some((l) => l[0] === "crearContacto"));
+});
+
+test("reintento tras un corte: no duplica el albarán ni el adjunto", async () => {
+  const alm = almacenMemoria();
+  const a = validarAlbaran(base());
+  let veces = 0;
+  const h1 = holdedFalso({ adjuntar: async () => { veces++; throw new ErrorHolded("sin red", { reintentar: true }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: a }), /sin red/);
+  assert.equal(veces, 1);
+  const h2 = holdedFalso();
+  const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: a });
+  assert.equal(r.adjunto, true);
+  assert.deepEqual(h2.llamadas.map((l) => l[0]), ["adjuntar"]);
+});
+
+test("si se cortó al crear el albarán, lo busca en Holded antes de crear otro", async () => {
+  const alm = almacenMemoria();
+  const a = validarAlbaran(base());
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("timeout", { reintentar: true }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: a }));
+  assert.equal(alm.m.get(a.id).creando, true);
+  const h2 = holdedFalso({ listarAlbaranes: async () => [{ id: "f".repeat(24), document_number: "M-2026-0001" }] });
+  const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: a });
+  assert.equal(r.albaranId, "f".repeat(24));
+  assert.ok(!h2.llamadas.some((l) => l[0] === "crearAlbaran"));
+  assert.equal(alm.m.get(a.id).creando, undefined);
+});
+
+test("crearClienteHolded: cabecera Bearer, URL v2 y errores clasificados", async () => {
+  const vistas = [];
+  const fetchFalso = async (url, op) => {
+    vistas.push([String(url), op]);
+    if (String(url).includes("/waybills")) return new Response(JSON.stringify({ detail: "límite" }), { status: 429 });
+    return new Response(JSON.stringify({ items: [{ id: "1" }] }), { status: 200 });
+  };
+  const h = crearClienteHolded({ apiKey: "k", fetch: fetchFalso });
+  const items = await h.buscarContactos("Ana", 5);
+  assert.equal(items.length, 1);
+  assert.equal(vistas[0][0], "https://api.holded.com/api/v2/contacts/search?name=Ana&limit=5");
+  assert.equal(vistas[0][1].headers.Authorization, "Bearer k");
+  await assert.rejects(h.crearAlbaran({}), (e) => e.reintentar === true && e.status === 429 && /límite/.test(e.message));
+  const h401 = crearClienteHolded({ apiKey: "k", fetch: async () => new Response("", { status: 401 }) });
+  await assert.rejects(h401.buscarContactos("x"), (e) => e.reintentar === false && /no es válida/.test(e.message));
+  const hRed = crearClienteHolded({ apiKey: "k", fetch: async () => { throw new TypeError("fetch failed"); } });
+  await assert.rejects(hRed.buscarContactos("x"), (e) => e.reintentar === true);
+});

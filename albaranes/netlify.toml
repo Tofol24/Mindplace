@@ -1,0 +1,11 @@
+# Albaranes de obra · configuración de Netlify
+# En Netlify, este sitio se crea con «Base directory» = albaranes
+# (el resto del repositorio no se publica aquí). No hay build: ficheros estáticos.
+[build]
+  publish = "public"
+  command = ""
+
+# Puente con Holded: /api/holded/*. Necesita las variables HOLDED_API_KEY y APP_CLAVE.
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"

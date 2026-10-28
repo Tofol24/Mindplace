@@ -1,0 +1,12 @@
+{
+  "name": "albaranes-obra",
+  "private": true,
+  "description": "App de albaranes de obra (PWA sin conexión) con envío a Holded.",
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "11.1.4"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
