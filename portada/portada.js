@@ -171,8 +171,16 @@ fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { dat
   const quiet = matchMedia("(prefers-reduced-motion: reduce)");
   const ritme = {inhale: 4000, anchor: 2000, exhale: 6000, pause: 1500};
   const petita = RespiroAIS.mount(mini, {lang: "es", figure: "organism", showControl: false, showZones: false, legend: false, rhythm: ritme});
-  let visible = false, gr = null;
-  const ajusta = () => { if (visible && !quiet.matches && !dlg.open) petita.start(); else petita.stop(); };
+  let visible = false, gr = null, aturada = false;
+  const pausa = $("#ais-pausa");
+  const ajusta = () => {
+    if (visible && !quiet.matches && !dlg.open && !aturada) { if (!petita.isRunning()) petita.start(); } else petita.stop();
+    pausa.hidden = quiet.matches;
+    pausa.textContent = t(aturada ? "repren" : "pausa");
+    pausa.setAttribute("aria-pressed", String(aturada));
+  };
+  pausa.addEventListener("click", () => { aturada = !aturada; ajusta(); });
+  document.querySelectorAll(".idioma button").forEach(b => b.addEventListener("click", () => setTimeout(ajusta)));
   new IntersectionObserver(es => { visible = es.some(e => e.isIntersecting); ajusta(); }).observe(mini);
   quiet.addEventListener?.("change", ajusta);
   const textos = () => lang === "es" ? undefined : {

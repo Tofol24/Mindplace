@@ -144,3 +144,10 @@ html[lang=es] .es-only{display:block} html[lang=es] .ca-only{display:none}
 .ais-mes summary{cursor:pointer;font-weight:700;color:var(--blau)}
 .ais-mes p{margin-top:8px;font-size:.96rem}
 .ais-app{display:inline-block;margin-top:16px;background:var(--blau);color:var(--on-blau);text-decoration:none;font-weight:700;border-radius:999px;padding:10px 18px}
+.ais-lateral{display:flex;flex-direction:column;gap:6px;align-items:center}
+.ais-lateral .ais-obre{width:100%}
+.ais-pausa{font:600 .82rem var(--f-body);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;min-height:32px;cursor:pointer;align-self:flex-end}
+@media (min-width:1340px){.ais-pausa{align-self:center}}
+/* Contrast dels textos del component sobre la targeta (clar i fosc) */
+.ais-dialeg .respiro-ais{--ra-muted:var(--muted)}
+.ais-dialeg .ra-count b{color:var(--taronja)}
