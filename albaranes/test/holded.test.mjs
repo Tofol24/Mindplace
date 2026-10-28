@@ -134,6 +134,18 @@ test("si se cortó al crear el albarán, lo busca en Holded antes de crear otro"
   assert.equal(alm.m.get(a.id).creando, undefined);
 });
 
+test("listarAlbaranes recorre las páginas del cursor", async () => {
+  const vistas = [];
+  const fetchFalso = async (url) => {
+    vistas.push(url.searchParams.get("cursor"));
+    const r = url.searchParams.get("cursor") ? { items: [{ id: "2" }], has_more: false } : { items: [{ id: "1" }], has_more: true, cursor: "c2" };
+    return new Response(JSON.stringify(r), { status: 200 });
+  };
+  const items = await crearClienteHolded({ apiKey: "k", fetch: fetchFalso }).listarAlbaranes({ limit: 200 });
+  assert.deepEqual(items.map((w) => w.id), ["1", "2"]);
+  assert.deepEqual(vistas, [null, "c2"]);
+});
+
 test("crearClienteHolded: cabecera Bearer, URL v2 y errores clasificados", async () => {
   const vistas = [];
   const fetchFalso = async (url, op) => {

@@ -119,9 +119,16 @@ async function guardarAlbaran(alb) {
 /** Guardado automático del borrador: si falla, se avisa (no se pierde en silencio). */
 async function autoguardar(alb) {
   try {
-    await guardarAlbaran(alb);
+    alb.actualizado = new Date().toISOString();
+    if (!(await db.guardarBorrador(alb))) {
+      aviso("Este albarán ya se ha firmado en otra ventana: no se han guardado estos cambios.", "error");
+      ir(`/albaran/${alb.id}`);
+      return false;
+    }
+    return true;
   } catch {
     aviso("⚠ No se ha podido guardar el borrador. No cierres la app y vuelve a intentarlo.", "error");
+    return false;
   }
 }
 
@@ -505,7 +512,7 @@ async function vistaEditor(alb) {
     if (largos.length) { error.textContent = `Demasiado largo: ${[...new Set(largos)].join(", ")}.`; return; }
     if (fallos.length) { error.textContent = `Falta ${fallos.join(", ")}.`; return; }
     clearTimeout(guardarTimer);
-    await guardarAlbaran(alb);
+    if (!(await autoguardar(alb))) return;
     ir(`/firmar/${alb.id}`);
   };
 
@@ -646,6 +653,9 @@ function vistaFirma(alb) {
       alb.firma = firmaReducida(canvas);
       alb.firmante = firmante.value.trim();
       alb.firmadoEn = new Date().toISOString();
+      // Si ya se firmó en otra ventana, no se vuelve a numerar ni a firmar.
+      const actual = await db.obtener("albaranes", alb.id);
+      if (actual && actual.estado !== "borrador") { ir(`/albaran/${alb.id}`); return; }
       // Al corregir un albarán rechazado se mantiene su número.
       if (!alb.numero) alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
       alb.negocio = { ...ajustes.negocio };

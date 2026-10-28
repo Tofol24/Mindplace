@@ -53,7 +53,12 @@ duplican albaranes** en Holded.
 4. Despliega. Te dará una dirección tipo `https://albaranes-xxxx.netlify.app`.
 
 La clave de Holded **nunca está en el móvil**: la guarda Netlify. Si pierdes el
-móvil, cambia `APP_CLAVE` en Netlify y nadie más podrá enviar nada.
+móvil, cambia `APP_CLAVE` en Netlify y nadie más podrá enviar nada a Holded.
+
+Ojo: eso no borra lo que hay guardado en el propio móvil (albaranes, clientes,
+direcciones y firmas). Esos datos los protege el bloqueo del teléfono: ten
+siempre código o huella activados y, si lo pierdes, bórralo a distancia
+(«Buscar mi iPhone» o «Encontrar mi dispositivo» en Android).
 
 ### 3. Instalarla en el móvil
 - **iPhone (Safari):** abre la dirección → botón Compartir → **Añadir a pantalla de inicio**.

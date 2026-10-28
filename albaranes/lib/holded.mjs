@@ -75,9 +75,17 @@ export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs
       if (!r?.id) throw new ErrorHolded("Holded no ha devuelto el id del cliente creado", { reintentar: true });
       return r.id;
     },
+    /** Sigue el cursor (hasta 5 páginas: la función de Netlify no da para más). */
     async listarAlbaranes(query) {
-      const r = await llamar("GET", "/waybills", { query });
-      return Array.isArray(r?.items) ? r.items : [];
+      const items = [];
+      let cursor;
+      for (let pagina = 0; pagina < 5; pagina++) {
+        const r = await llamar("GET", "/waybills", { query: { ...query, cursor } });
+        if (Array.isArray(r?.items)) items.push(...r.items);
+        if (!r?.has_more || !r.cursor) break;
+        cursor = r.cursor;
+      }
+      return items;
     },
     async crearAlbaran(a) {
       const r = await llamar("POST", "/waybills", { json: a });

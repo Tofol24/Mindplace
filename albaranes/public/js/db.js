@@ -59,6 +59,25 @@ export const obtener = (store, id) => tx(store, "readonly", (s) => s.get(id));
 export const guardar = (store, obj) => tx(store, "readwrite", (s) => s.put(obj));
 export const borrar = (store, id) => tx(store, "readwrite", (s) => s.delete(id));
 
+/**
+ * Guarda un borrador solo si sigue siendo borrador. Una pantalla de edición abierta en
+ * otra pestaña no puede pisar un albarán que ya se firmó. Devuelve false si no lo ha guardado.
+ */
+export function guardarBorrador(obj) {
+  return conReintento((db) => new Promise((ok, ko) => {
+    const t = db.transaction("albaranes", "readwrite");
+    const s = t.objectStore("albaranes");
+    let guardado = false;
+    const r = s.get(obj.id);
+    r.onsuccess = () => {
+      if (!r.result || r.result.estado === "borrador") { s.put(obj); guardado = true; }
+    };
+    t.oncomplete = () => ok(guardado);
+    t.onerror = () => ko(t.error);
+    t.onabort = () => ko(t.error);
+  }));
+}
+
 export async function leerKV(k, porDefecto = null) {
   const r = await obtener("kv", k);
   return r ? r.v : porDefecto;
