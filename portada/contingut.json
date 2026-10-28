@@ -1,5 +1,5 @@
 {
-  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista).",
+  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista). «ordre» (número, per defecte 0) avança o endarrereix una notícia a la llista i al carrusel: com més baix, més amunt.",
   "enllacos": {
     "app": "https://aprens-app.netlify.app/",
     "consulta": "https://aprens.es/",
@@ -34,6 +34,7 @@
         "ca": "Premi Joan Calafat 2025",
         "es": "Premio Joan Calafat 2025"
       },
+      "ordre": -1,
       "text": {
         "ca": "El jurat dels premis Joan Calafat ha triat Tòfol Villalonga professional de la Psicologia 2025.",
         "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."

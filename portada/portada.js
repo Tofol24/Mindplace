@@ -58,7 +58,9 @@ function pinta() {
   $("#xarxes").hidden = !xs.length;
   $("#xarxes").innerHTML = xs.map(([k, n]) => `<a href="${esc(safeUrl(L[k]))}" rel="noopener noreferrer">${n}</a>`).join(" · ");
 
-  const nov = (data.novetats || []).filter(n => tx(n.titol)).sort((a, b) => String(b.data || "").localeCompare(String(a.data || "")));
+  // Ordre: primer «ordre» (més baix, abans; per defecte 0), després la data més recent.
+  const ord = n => Number.isFinite(n.ordre) ? n.ordre : 0;
+  const nov = (data.novetats || []).filter(n => tx(n.titol)).sort((a, b) => ord(a) - ord(b) || String(b.data || "").localeCompare(String(a.data || "")));
   $("#s-novetats").hidden = !nov.length;
   const cats = [...new Set(nov.map(n => n.tipus).filter(c => CAT[c]))];
   $("#filtres").hidden = cats.length < 2;
