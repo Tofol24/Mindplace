@@ -14,9 +14,13 @@
 
 import * as db from "./db.js";
 import {
-  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
+  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoCantidad, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
 } from "./calculos.js";
 import { generarPDF, nombrePDF } from "./pdf.js";
+import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./ui.js";
+import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from "./catalogo.js";
+import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
+import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
 
 const AJUSTES_DEF = {
   negocio: { nombre: "Pere Plomer Bennassar", nif: "", direccion: "", telefono: "", email: "pere.plomer@gmail.com" },
@@ -24,60 +28,14 @@ const AJUSTES_DEF = {
   precioHora: 35,
   precioDesplazamiento: 20,
   ivaDefecto: 21,
+  margen: 30,
   claveApp: "",
 };
 let ajustes = structuredClone(AJUSTES_DEF);
 
 const vista = document.getElementById("vista");
 const barraEstado = document.getElementById("estado");
-
-// ---------------------------------------------------------------------------
-// Utilidades de interfaz
-// ---------------------------------------------------------------------------
-
-/** Crea un elemento. Los textos se ponen siempre como texto (nunca como HTML). */
-function h(tag, attrs = {}, ...hijos) {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs || {})) {
-    if (v == null || v === false) continue;
-    if (k === "class") el.className = v;
-    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
-    else if (k === "value") el.value = v;
-    else if (v === true) el.setAttribute(k, "");
-    else el.setAttribute(k, v);
-  }
-  for (const c of hijos.flat()) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
-  return el;
-}
-
-function campo(etiqueta, input, ayuda) {
-  return h("label", { class: "campo" }, h("span", { class: "etq" }, etiqueta), input, ayuda && h("small", {}, ayuda));
-}
-
-let avisoTimer;
-function aviso(msg, tipo = "ok") {
-  const el = document.getElementById("aviso");
-  el.textContent = msg;
-  el.className = `toast visible ${tipo}`;
-  clearTimeout(avisoTimer);
-  avisoTimer = setTimeout(() => { el.className = "toast"; }, 3800);
-}
-
-const num = (s) => {
-  let t = String(s ?? "").replace(/\s/g, "");
-  if (t.includes(",")) t = t.replace(/\./g, "").replace(",", "."); // 1.234,50 → 1234.50
-  const n = Number(t);
-  return Number.isFinite(n) ? n : 0;
-};
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`);
-const normal = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
-const normalNif = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-const normalTel = (s) => String(s || "").replace(/\D/g, "").slice(-9);
-
-function ir(ruta) {
-  if (location.hash === `#${ruta}`) render();
-  else location.hash = ruta;
-}
+const pestanas = document.getElementById("pestanas");
 
 // ---------------------------------------------------------------------------
 // Datos
@@ -114,6 +72,15 @@ function nuevoAlbaran() {
 async function guardarAlbaran(alb) {
   alb.actualizado = new Date().toISOString();
   await db.guardar("albaranes", alb);
+}
+
+/** Coste, venta y ganancia del material del catálogo de un albarán (null si no tiene). */
+function margenAlbaran(alb) {
+  const conCoste = alb.lineas.filter((l) => l.articuloId && l.coste != null);
+  if (!conCoste.length) return null;
+  const coste = redondear(conCoste.reduce((s, l) => s + l.coste * (Number(l.cantidad) || 0), 0));
+  const venta = redondear(conCoste.reduce((s, l) => s + importeLinea(l), 0));
+  return { coste, venta, ganancia: redondear(venta - coste) };
 }
 
 /** Guardado automático del borrador: si falla, se avisa (no se pierde en silencio). */
@@ -281,6 +248,31 @@ function refrescarSiProcede() {
   if (r === "/" || r.startsWith("/albaran/")) render();
 }
 
+/** Lo que necesitan las pantallas de compras, catálogo y dictado. */
+const ctx = {
+  ajustes: () => ajustes,
+  llamarAPI: (...a) => llamarAPI(...a),
+  descargar: (f) => descargar(f),
+  // Repinta solo si se está viendo esa pantalla (o su lista).
+  refrescar: (ruta) => {
+    const r = location.hash.slice(1) || "/";
+    if (r === ruta || (ruta.startsWith("/compra/") && r === "/compras")) render();
+  },
+};
+
+/** Lecturas con IA que quedaron pendientes sin cobertura (fotos de compras y dictados). */
+let iaEnMarcha = false;
+async function tareasIA() {
+  if (iaEnMarcha) return;
+  iaEnMarcha = true;
+  try {
+    await leerComprasPendientes(ctx);
+    await aplicarDictadosPendientes(ctx);
+  } catch { /* se reintenta en la próxima ronda */ } finally {
+    iaEnMarcha = false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Compartir el PDF
 // ---------------------------------------------------------------------------
@@ -445,30 +437,60 @@ async function vistaEditor(alb) {
   const contTotales = h("div", { class: "totales" });
   function pintarTotales() {
     const t = totales(alb.lineas);
+    const m = margenAlbaran(alb);
     contTotales.replaceChildren(
       h("div", {}, h("span", {}, "Base"), h("span", {}, formatoEuros(t.base))),
       ...t.desglose.map((d) => h("div", {}, h("span", {}, `IVA ${d.iva}%`), h("span", {}, formatoEuros(d.cuota)))),
       h("div", { class: "total" }, h("span", {}, "Total"), h("span", {}, formatoEuros(t.total))),
+      !m ? "" : h("p", { class: "margen-interno" }, `Solo lo ves tú: material a coste ${formatoEuros(m.coste)} · lo vendes a ${formatoEuros(m.venta)} · ganas ${formatoEuros(m.ganancia)} en material`),
     );
   }
+  // Sugerencias de concepto: primero el catálogo, luego lo usado en otros albaranes.
+  const catalogo = await articulosOrdenados();
+  const porNombre = new Map(catalogo.map((a) => [normal(a.nombre), a]));
   const conceptosConocidos = new Map();
-  for (const a of await db.todos("albaranes")) for (const l of a.lineas) if (l.concepto) conceptosConocidos.set(l.concepto, l.precio);
-  const datalist = h("datalist", { id: "conceptos" }, [...conceptosConocidos.keys()].slice(0, 200).map((k) => h("option", { value: k })));
+  for (const a of await db.todos("albaranes")) for (const l of a.lineas) if (l.concepto && !l.articuloId) conceptosConocidos.set(l.concepto, l.precio);
+  const datalist = h("datalist", { id: "conceptos" },
+    catalogo.slice(0, 400).map((a) => h("option", { value: a.nombre }, `${formatoEuros(precioVenta(a, ajustes.margen))} · stock ${formatoCantidad(a.stock || 0)}`)),
+    [...conceptosConocidos.keys()].filter((k) => !porNombre.has(normal(k))).slice(0, 200).map((k) => h("option", { value: k })));
 
   function pintarLineas() {
     contLineas.replaceChildren(...alb.lineas.map((l, i) => {
       const importe = h("strong", { class: "importe" }, formatoEuros(importeLinea(l)));
       const precio = h("input", {
         inputmode: "decimal", value: l.precio ? String(l.precio).replace(".", ",") : "", placeholder: "0,00",
-        oninput: (e) => { l.precio = redondear(num(e.target.value)); importe.textContent = formatoEuros(importeLinea(l)); cambiado(); },
+        oninput: (e) => { l.precio = redondear(num(e.target.value)); importe.textContent = formatoEuros(importeLinea(l)); pintarInfo(); cambiado(); },
       });
+      // Datos del artículo del catálogo (solo para Pere: stock, coste y lo que gana).
+      const info = h("small", { class: "info-articulo" });
+      function pintarInfo() {
+        const art = l.articuloId && catalogo.find((a) => a.id === l.articuloId);
+        if (!art) { info.textContent = ""; return; }
+        const coste = l.coste ?? art.coste;
+        const margen = coste > 0 ? Math.round(((l.precio - coste) / coste) * 100) : null;
+        info.textContent = `Catálogo · stock ${formatoCantidad(art.stock || 0)} · coste ${formatoEuros(coste)}${margen != null ? ` · margen ${margen}%` : ""}`;
+      }
+      pintarInfo();
       return h("div", { class: "linea" },
         h("div", { class: "linea-cab" },
           h("input", {
             class: "concepto", value: l.concepto, list: "conceptos", placeholder: "Concepto (p. ej. Grifo monomando)",
             oninput: (e) => {
               l.concepto = e.target.value;
-              if (!l.precio && conceptosConocidos.has(l.concepto)) {
+              const art = porNombre.get(normal(l.concepto));
+              if (art) {
+                // Artículo del catálogo: su precio de venta (coste + margen) y su coste, para el margen.
+                l.articuloId = art.id;
+                l.coste = art.coste;
+                l.precio = precioVenta(art, ajustes.margen);
+                precio.value = String(l.precio).replace(".", ",");
+                importe.textContent = formatoEuros(importeLinea(l));
+              } else if (l.articuloId) {
+                delete l.articuloId;
+                delete l.coste;
+              }
+              pintarInfo();
+              if (!art && !l.precio && conceptosConocidos.has(l.concepto)) {
                 l.precio = conceptosConocidos.get(l.concepto);
                 precio.value = String(l.precio).replace(".", ",");
                 importe.textContent = formatoEuros(importeLinea(l));
@@ -485,7 +507,8 @@ async function vistaEditor(alb) {
           campo("Precio €", precio),
           campo("IVA", h("select", { onchange: (e) => { l.iva = Number(e.target.value); cambiado(); } },
             IVAS.map((v) => h("option", { value: v, selected: v === l.iva }, `${v}%`)))),
-          importe));
+          importe),
+        info);
     }));
   }
   const anadir = (l) => {
@@ -526,6 +549,10 @@ async function vistaEditor(alb) {
     h("div", { class: "cab-vista" },
       h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await autoguardar(alb); ir("/"); } }, "‹ Albaranes"),
       h("h2", {}, alb.numero ? `Corregir ${alb.numero}` : "Nuevo albarán")),
+    panelDictado(ctx, alb, {
+      guardar: async () => { clearTimeout(guardarTimer); await autoguardar(alb); },
+      alAplicar: () => ir(`/editar/${alb.id}`),
+    }),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Cliente"),
       h("div", { class: "campo-busqueda" }, campo("Nombre", inputNombre), sugerencias),
@@ -666,7 +693,10 @@ function vistaFirma(alb) {
       alb.negocio = { ...ajustes.negocio };
       alb.estado = "pendiente";
       alb.error = "";
+      alb.stockDescontado = true;
       await guardarAlbaran(alb);
+      // El material del catálogo sale del stock al firmar.
+      await db.moverStock(alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })));
       await recordarCliente(alb.cliente);
       ir(`/albaran/${alb.id}`);
       sincronizar();
@@ -720,6 +750,11 @@ function vistaDetalle(alb) {
             alb.estado = "borrador";
             alb.firma = "";
             alb.firmadoEn = "";
+            // Se devuelve el material al stock: se volverá a descontar al firmar de nuevo.
+            if (alb.stockDescontado) {
+              await db.moverStock(alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })));
+              alb.stockDescontado = false;
+            }
             await guardarAlbaran(alb);
             ir(`/editar/${alb.id}`);
           },
@@ -727,7 +762,7 @@ function vistaDetalle(alb) {
         h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo"))),
     enviado: h("div", { class: "tarjeta estado-alb ok" },
       h("strong", {}, "Ya está en Holded ✓"),
-      h("p", {}, `Enviado el ${new Date(alb.holded?.enviadoEn || alb.actualizado).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}. En Holded, ve a Ventas → Albaranes para convertirlo en factura.`)),
+      h("p", {}, `Enviado el ${new Date(alb.holded?.enviadoEn || alb.actualizado).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}. En Holded, ve a Inventario → Albaranes para convertirlo en factura.`)),
   }[alb.estado];
 
   return [
@@ -783,6 +818,7 @@ async function vistaAjustes() {
   const inputSiguiente = h("input", { value: String(siguiente), inputmode: "numeric" });
   const inputHora = h("input", { value: String(ajustes.precioHora).replace(".", ","), inputmode: "decimal" });
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
+  const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
   const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, `${v}%`)));
   const inputClave = h("input", { value: ajustes.claveApp, type: "password", autocomplete: "off" });
   const resultadoPrueba = h("p", { class: "ayuda" });
@@ -806,6 +842,9 @@ async function vistaAjustes() {
     ajustes.prefijo = prefijo;
     ajustes.precioHora = redondear(num(inputHora.value));
     ajustes.precioDesplazamiento = redondear(num(inputDesp.value));
+    const margen = num(inputMargen.value);
+    if (!(margen >= 0 && margen <= 1000)) { aviso("El margen no es válido.", "error"); return false; }
+    ajustes.margen = margen;
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.claveApp = inputClave.value.trim();
     for (const k of Object.keys(n)) n[k] = String(n[k] || "").trim();
@@ -831,7 +870,7 @@ async function vistaAjustes() {
   };
 
   const copia = async () => {
-    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes") };
+    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes"), articulos: await db.todos("articulos"), compras: await db.todos("compras") };
     descargar(new File([JSON.stringify(datos, null, 1)], `copia-albaranes-${hoyISO()}.json`, { type: "application/json" }));
   };
 
@@ -852,6 +891,13 @@ async function vistaAjustes() {
     }
     for (const c of Array.isArray(datos.clientes) ? datos.clientes : []) {
       if (c && typeof c.id === "string" && c.nombre && !(await db.obtener("clientes", c.id))) await db.guardar("clientes", c);
+    }
+    // Catálogo y compras: se añaden los que falten (lo que ya hay en este móvil no se toca).
+    for (const a of Array.isArray(datos.articulos) ? datos.articulos : []) {
+      if (a && typeof a.id === "string" && a.nombre && !(await db.obtener("articulos", a.id))) await db.guardar("articulos", a);
+    }
+    for (const c of Array.isArray(datos.compras) ? datos.compras : []) {
+      if (c && typeof c.id === "string" && typeof c.foto === "string" && c.foto.startsWith("data:image/") && Array.isArray(c.lineas) && !(await db.obtener("compras", c.id))) await db.guardar("compras", c);
     }
     if (datos.ajustes?.negocio && !ajustes.negocio.nif) {
       ajustes = { ...ajustes, ...datos.ajustes, claveApp: ajustes.claveApp, negocio: { ...ajustes.negocio, ...datos.ajustes.negocio } };
@@ -878,6 +924,7 @@ async function vistaAjustes() {
       ejemplo,
       h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números. Si usas la app en más de un móvil, pon un prefijo distinto en cada uno."),
       h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
+      campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."),
       campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos.")),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Conexión con Holded"),
@@ -906,16 +953,25 @@ async function render() {
   const [, seccion, id] = ruta.split("/");
   let contenido;
   if (seccion === "ajustes") contenido = await vistaAjustes();
+  else if (seccion === "compras") contenido = await vistaCompras(ctx);
+  else if (seccion === "compra") contenido = await vistaCompra(ctx, id);
+  else if (seccion === "catalogo") contenido = await vistaCatalogo(ctx);
+  else if (seccion === "articulo") contenido = await vistaArticulo(ctx, id);
   else if (["editar", "firmar", "albaran"].includes(seccion)) {
     const alb = await db.obtener("albaranes", id);
     if (!alb) { ir("/"); return; }
     contenido = seccion === "editar" ? await vistaEditor(alb) : seccion === "firmar" ? vistaFirma(alb) : vistaDetalle(alb);
   } else contenido = await vistaLista();
   if (yo !== renderId) return; // otra navegación más reciente ya está pintando
-  vista.replaceChildren(...contenido);
+  // Las pantallas pueden dejar huecos (cond && elemento): no se pintan.
+  vista.replaceChildren(...contenido.filter((x) => x != null && x !== false && x !== ""));
   // Mientras firma el cliente (con el móvil en sus manos) no hay acceso a Ajustes ni al envío.
   document.getElementById("btn-ajustes").hidden = seccion === "ajustes" || seccion === "firmar";
   barraEstado.hidden = seccion === "firmar";
+  // Pestañas solo en las tres listas principales.
+  const pestana = { "": "/", compras: "/compras", catalogo: "/catalogo" }[seccion ?? ""];
+  pestanas.hidden = !pestana;
+  for (const b of pestanas.querySelectorAll("button")) b.setAttribute("aria-current", b.dataset.ruta === pestana ? "page" : "false");
   // Al repintar la misma pantalla (p. ej. tras un envío) no se pierde la posición.
   if (vista.dataset.ruta !== ruta) window.scrollTo(0, 0);
   vista.dataset.ruta = ruta;
@@ -927,13 +983,15 @@ async function iniciar() {
   document.getElementById("btn-ajustes").addEventListener("click", () => ir("/ajustes"));
   barraEstado.addEventListener("click", () => sincronizar({ manual: true }));
   window.addEventListener("hashchange", render);
-  window.addEventListener("online", () => { pintarEstado(); sincronizar(); });
+  for (const b of pestanas.querySelectorAll("button")) b.addEventListener("click", () => ir(b.dataset.ruta));
+  window.addEventListener("online", () => { pintarEstado(); sincronizar(); tareasIA(); });
   window.addEventListener("offline", pintarEstado);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") sincronizar(); });
-  setInterval(() => sincronizar(), 60000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { sincronizar(); tareasIA(); } });
+  setInterval(() => { sincronizar(); tareasIA(); }, 60000);
   await render();
   pintarEstado();
   sincronizar();
+  tareasIA();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
 }
 

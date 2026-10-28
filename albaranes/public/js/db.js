@@ -3,6 +3,8 @@
    Almacenes:
      albaranes  · cada albarán (borrador, pendiente de enviar, enviado…)
      clientes   · clientes usados, para autocompletar sin conexión
+     articulos  · catálogo: precio de coste, margen, precio de venta y stock
+     compras    · albaranes y facturas de proveedor (con su foto, para el asesor)
      kv         · ajustes y contador de numeración
 */
 
@@ -12,12 +14,19 @@ let conexion;
 function abrir() {
   if (conexion) return conexion;
   conexion = new Promise((ok, ko) => {
-    const r = indexedDB.open(NOMBRE, 1);
-    r.onupgradeneeded = () => {
+    const r = indexedDB.open(NOMBRE, 2);
+    r.onupgradeneeded = (e) => {
       const db = r.result;
-      db.createObjectStore("albaranes", { keyPath: "id" });
-      db.createObjectStore("clientes", { keyPath: "id" });
-      db.createObjectStore("kv", { keyPath: "k" });
+      if (e.oldVersion < 1) {
+        db.createObjectStore("albaranes", { keyPath: "id" });
+        db.createObjectStore("clientes", { keyPath: "id" });
+        db.createObjectStore("kv", { keyPath: "k" });
+      }
+      if (e.oldVersion < 2) {
+        // Versión 2: catálogo de artículos (coste, margen, stock) y compras a proveedores.
+        db.createObjectStore("articulos", { keyPath: "id" });
+        db.createObjectStore("compras", { keyPath: "id" });
+      }
     };
     r.onsuccess = () => {
       const db = r.result;
@@ -116,4 +125,25 @@ export function siguienteNumero(prefijo, anio) {
 /** Pide al navegador que no borre los datos aunque falte espacio. */
 export async function pedirPersistencia() {
   try { return await navigator.storage?.persist?.(); } catch { return false; }
+}
+
+/** Suma (o resta) unidades al stock de varios artículos en una sola transacción. */
+export function moverStock(movimientos) {
+  const lista = movimientos.filter((m) => m.articuloId && m.cantidad);
+  if (!lista.length) return Promise.resolve();
+  return conReintento((db) => new Promise((ok, ko) => {
+    const t = db.transaction("articulos", "readwrite");
+    const s = t.objectStore("articulos");
+    for (const m of lista) {
+      const r = s.get(m.articuloId);
+      r.onsuccess = () => {
+        if (!r.result) return;
+        const stock = Math.round(((Number(r.result.stock) || 0) + m.cantidad) * 10000) / 10000;
+        s.put({ ...r.result, stock, actualizado: new Date().toISOString() });
+      };
+    }
+    t.oncomplete = () => ok();
+    t.onerror = () => ko(t.error);
+    t.onabort = () => ko(t.error);
+  }));
 }

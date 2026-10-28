@@ -208,4 +208,27 @@ small.ayuda { display: block; font-size: 13px; }
 .toast.error { background: var(--error); }
 .toast.info { background: var(--acento); }
 
+.pestanas {
+  display: flex; gap: 6px; padding: 8px 16px; background: var(--fondo); border-bottom: 1px solid var(--borde);
+  max-width: 640px; margin: 0 auto;
+}
+.pestanas button {
+  flex: 1; min-height: 44px; border: 1px solid var(--borde); border-radius: 999px; background: #fff;
+  font: inherit; font-size: 15px; font-weight: 600; color: var(--suave); cursor: pointer;
+}
+.pestanas button[aria-current="page"] { background: var(--acento); border-color: var(--acento); color: #fff; }
+
+.dictado { background: var(--acento-claro); border-color: #bae6fd; }
+.dictado textarea { background: #fff; }
+.btn-micro.grabando { background: var(--error); border-color: var(--error); color: #fff; }
+.info-articulo { display: block; color: var(--suave); font-size: 13px; margin-top: 6px; }
+.margen-interno, .resumen-precio {
+  margin: 10px 0 0; padding: 8px 10px; border-radius: 8px;
+  background: var(--ok-claro); color: var(--ok); font-size: 14px; font-weight: 600;
+}
+.foto-compra { display: block; width: 100%; border: 1px solid var(--borde); border-radius: var(--radio); margin-bottom: 14px; }
+.casilla { display: flex; align-items: center; gap: 8px; font-size: 15px; margin-top: 4px; }
+.casilla input { width: 22px; height: 22px; min-height: 0; }
+input[type="search"] { margin-bottom: 8px; }
+
 [hidden] { display: none !important; }
