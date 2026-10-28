@@ -25,7 +25,7 @@ function fallo(e) {
   if (e instanceof ErrorHolded) {
     const delAlbaran = e.status === 400 || e.status === 422;
     const status = delAlbaran ? 422 : e.reintentar ? 503 : 502;
-    return json({ error: e.message, reintentar: e.reintentar, delAlbaran }, status);
+    return json({ error: e.message, reintentar: e.reintentar, delAlbaran, yaEnHolded: !!e.yaEnHolded }, status);
   }
   console.error(e);
   return json({ error: "Error inesperado en el servidor", reintentar: true }, 500);

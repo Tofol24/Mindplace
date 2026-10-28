@@ -207,3 +207,21 @@ test("si se cortó al crear el albarán, no se aceptan datos cambiados en el rei
   await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: validarAlbaran(otro) }), /ya está creado en Holded/);
   assert.equal(h2.llamadas.length, 0);
 });
+
+test("corregir el teléfono o el email de un cliente sin NIF vuelve a buscar su ficha", async () => {
+  const alm = almacenMemoria();
+  const sinNif = (telefono) => validarAlbaran({ ...base(), cliente: { nombre: "Ana Gil", telefono } });
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("rechazado", { status: 422 }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: sinNif("600000001") }));
+  const h2 = holdedFalso({ crearContacto: async () => "b".repeat(24) });
+  const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: sinNif("600000002") });
+  assert.equal(r.contactId, "b".repeat(24));
+});
+
+test("si Holded rechaza el PDF de un albarán ya creado, el error lo indica (no se ofrece corregir)", async () => {
+  const h = holdedFalso({ adjuntar: async () => { throw new ErrorHolded("PDF no válido", { status: 422 }); } });
+  await assert.rejects(
+    enviarAlbaran({ holded: h, almacen: almacenMemoria(), albaran: validarAlbaran(base()) }),
+    (e) => e.yaEnHolded === true && e.status === 422,
+  );
+});

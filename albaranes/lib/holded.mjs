@@ -20,10 +20,12 @@ export const IMPUESTOS = { 21: "s_iva_21", 10: "s_iva_10" };
 
 export class ErrorHolded extends Error {
   /** reintentar: true si es un fallo pasajero (red, 429, 5xx) y vale la pena volver a probar. */
-  constructor(mensaje, { status = 0, reintentar = false } = {}) {
+  /** yaEnHolded: el albarán ya existe en Holded; corregirlo desde la app no tiene sentido. */
+  constructor(mensaje, { status = 0, reintentar = false, yaEnHolded = false } = {}) {
     super(mensaje);
     this.status = status;
     this.reintentar = reintentar;
+    this.yaEnHolded = yaEnHolded;
   }
 }
 
@@ -297,12 +299,14 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
     throw new ErrorHolded(
       "Este albarán ya está creado en Holded con los datos anteriores y no se puede cambiar desde la app. "
       + "Corrígelo directamente en Holded o haz uno nuevo.",
-      { status: 422 },
+      { status: 422, yaEnHolded: !!estado.albaranId },
     );
   }
 
   // Si el albarán se corrigió con otro cliente antes de llegar a crearse, se vuelve a buscar.
-  const quien = `${normalizarNombre(a.cliente.nombre)}|${normalizarNif(a.cliente.nif)}|${a.cliente.holdedId}`;
+  // Email y teléfono también cuentan: sin NIF, son lo que distingue a dos clientes con el mismo nombre.
+  const quien = [normalizarNombre(a.cliente.nombre), normalizarNif(a.cliente.nif), a.cliente.holdedId,
+    String(a.cliente.email || "").trim().toLowerCase(), String(a.cliente.telefono || "").replace(/\D/g, "")].join("|");
   if (estado.contactId && !estado.albaranId && estado.quien !== quien) delete estado.contactId;
 
   if (!estado.contactId) {
@@ -355,6 +359,7 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       if (e instanceof ErrorHolded && !e.reintentar) {
         e.message = `El albarán ya está en Holded, pero no ha aceptado el PDF firmado (${e.message}). `
           + "Vuelve a intentarlo sin cambiar los datos, o adjunta el PDF a mano en Holded.";
+        e.yaEnHolded = true;
       }
       throw e;
     }

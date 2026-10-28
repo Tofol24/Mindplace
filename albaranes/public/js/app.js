@@ -208,6 +208,7 @@ async function enviarUno(alb) {
   if (r.datos.delAlbaran) {
     alb.estado = "error";
     alb.error = msg;
+    alb.yaEnHolded = !!r.datos.yaEnHolded;
     await guardarAlbaran(alb);
     return "rechazado";
   }
@@ -490,7 +491,8 @@ async function vistaEditor(alb) {
     if (!c.nombre.trim()) fallos.push("el nombre del cliente");
     if (!alb.lineas.length) fallos.push("al menos una línea");
     if (alb.lineas.some((l) => !l.concepto.trim())) fallos.push("el concepto de todas las líneas");
-    if (alb.lineas.some((l) => !(l.cantidad > 0))) fallos.push("una cantidad mayor que cero en cada línea");
+    if (alb.lineas.some((l) => !(l.cantidad >= 0.0001))) fallos.push("una cantidad mayor que cero en cada línea");
+    if (alb.lineas.length > 100) fallos.push("como máximo 100 líneas");
     if (c.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email.trim())) fallos.push("un email del cliente válido");
     if (!fechaValida(alb.fecha)) fallos.push("una fecha válida");
     if (alb.lineas.some((l) => !(l.precio >= 0) || l.precio > 1e7)) fallos.push("precios correctos (sin negativos)");
@@ -694,7 +696,9 @@ function vistaDetalle(alb) {
       h("strong", {}, "Holded no lo ha aceptado"),
       h("p", {}, alb.error),
       h("div", { class: "botones-linea" },
-        h("button", {
+        // Si el albarán ya existe en Holded (p. ej. solo falló el PDF), corregirlo aquí lo dejaría
+        // sin poder enviarse y perdería la firma: se reintenta tal cual o se arregla en Holded.
+        !alb.yaEnHolded && h("button", {
           class: "btn secundario",
           onclick: async () => {
             if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
@@ -888,7 +892,9 @@ async function render() {
   } else contenido = await vistaLista();
   if (yo !== renderId) return; // otra navegación más reciente ya está pintando
   vista.replaceChildren(...contenido);
-  document.getElementById("btn-ajustes").hidden = seccion === "ajustes";
+  // Mientras firma el cliente (con el móvil en sus manos) no hay acceso a Ajustes ni al envío.
+  document.getElementById("btn-ajustes").hidden = seccion === "ajustes" || seccion === "firmar";
+  barraEstado.hidden = seccion === "firmar";
   // Al repintar la misma pantalla (p. ej. tras un envío) no se pierde la posición.
   if (vista.dataset.ruta !== ruta) window.scrollTo(0, 0);
   vista.dataset.ruta = ruta;
