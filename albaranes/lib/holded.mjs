@@ -192,17 +192,35 @@ export function normalizarNif(s) {
   return String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
-/** Elige, entre los contactos de Holded, el que corresponde al cliente (o null). */
+function normalizarTelefono(s) {
+  return String(s || "").replace(/\D/g, "").slice(-9);
+}
+
+/** Algún dato de contacto (email o teléfono) coincide: no basta con el nombre. */
+function corroborado(c, cliente) {
+  const email = String(cliente.email || "").trim().toLowerCase();
+  const tel = normalizarTelefono(cliente.telefono);
+  return (!!email && String(c.email || "").trim().toLowerCase() === email)
+    || (tel.length === 9 && [c.mobile, c.phone].some((t) => normalizarTelefono(t) === tel));
+}
+
+/**
+ * Elige, entre los contactos de Holded, el que corresponde al cliente (o null → se crea uno nuevo).
+ * Dos personas pueden llamarse igual: el nombre solo no basta. Vale el NIF, o un único contacto
+ * con el mismo nombre, sin otro NIF, y con el mismo email o teléfono. Ante la duda, contacto nuevo
+ * (un duplicado se fusiona en Holded; un albarán en la ficha de otra persona expone sus datos).
+ */
 export function elegirContacto(candidatos, cliente) {
   const nombre = normalizarNombre(cliente.nombre);
   const nif = normalizarNif(cliente.nif);
   if (nif) {
-    const porNif = candidatos.find((c) => normalizarNif(c.code) === nif);
-    if (porNif) return porNif;
-    // Mismo nombre pero sin NIF en Holded: es el mismo cliente. Con otro NIF, es otra persona.
-    return candidatos.find((c) => normalizarNombre(c.name) === nombre && !normalizarNif(c.code)) || null;
+    const porNif = candidatos.filter((c) => normalizarNif(c.code) === nif);
+    if (porNif.length === 1) return porNif[0];
+    if (porNif.length > 1) return null;
   }
-  return candidatos.find((c) => normalizarNombre(c.name) === nombre) || null;
+  const mismos = candidatos.filter((c) => normalizarNombre(c.name) === nombre && !normalizarNif(c.code));
+  const conDatos = mismos.filter((c) => corroborado(c, cliente));
+  return conDatos.length === 1 ? conDatos[0] : null;
 }
 
 export function contactoParaHolded(cliente) {
@@ -237,14 +255,51 @@ export function albaranParaHolded(a, contactId) {
   };
 }
 
+/** Lo que define el albarán en Holded (sin PDF ni firma): si cambia tras crearlo, ya no cuadra. */
+export function huellaAlbaran(a) {
+  const c = a.cliente;
+  return JSON.stringify([
+    a.numero, a.fecha, a.direccionObra, a.trabajo, a.observaciones,
+    normalizarNombre(c.nombre), normalizarNif(c.nif), c.holdedId,
+    a.lineas.map((l) => [l.concepto, l.cantidad, l.precio, l.iva]),
+  ]);
+}
+
 /**
  * Envía un albarán validado a Holded.
- * `almacen` guarda el progreso: { leer(id) → estado|null, guardar(id, estado) }.
+ * `almacen` guarda el progreso: { leer(id) → estado|null, guardar(id, estado) } y, opcionalmente,
+ * bloquear(id) → función para soltar | null si otro envío del mismo albarán está en marcha.
  * Devuelve { contactId, albaranId, adjunto }.
  */
 export async function enviarAlbaran({ holded, almacen, albaran: a }) {
+  // Dos envíos a la vez (dos móviles, pestañas o un reintento) leerían el mismo estado
+  // y crearían dos albaranes: solo uno puede trabajar con cada id.
+  const soltar = almacen.bloquear ? await almacen.bloquear(a.id) : null;
+  if (almacen.bloquear && !soltar) {
+    throw new ErrorHolded("Este albarán se está enviando ahora mismo; se reintentará", { status: 409, reintentar: true });
+  }
+  try {
+    return await enviarSinBloqueo({ holded, almacen, albaran: a });
+  } finally {
+    if (soltar) await soltar().catch(() => {});
+  }
+}
+
+async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
   const estado = (await almacen.leer(a.id)) || {};
   const guardar = () => almacen.guardar(a.id, estado);
+  const huella = huellaAlbaran(a);
+
+  // Ya creado en Holded: no se puede cambiar desde aquí. Adjuntar un PDF corregido al
+  // documento antiguo dejaría en Holded un albarán que no coincide con lo firmado.
+  // También si un intento anterior se cortó al crearlo: puede existir con los datos de entonces.
+  if ((estado.albaranId || estado.creando) && estado.huella && estado.huella !== huella) {
+    throw new ErrorHolded(
+      "Este albarán ya está creado en Holded con los datos anteriores y no se puede cambiar desde la app. "
+      + "Corrígelo directamente en Holded o haz uno nuevo.",
+      { status: 422 },
+    );
+  }
 
   // Si el albarán se corrigió con otro cliente antes de llegar a crearse, se vuelve a buscar.
   const quien = `${normalizarNombre(a.cliente.nombre)}|${normalizarNif(a.cliente.nif)}|${a.cliente.holdedId}`;
@@ -272,16 +327,37 @@ export async function enviarAlbaran({ holded, almacen, albaran: a }) {
     }
     if (!estado.albaranId) {
       estado.creando = true;
+      estado.huella = huella;
       await guardar();
-      estado.albaranId = await holded.crearAlbaran(albaranParaHolded(a, estado.contactId));
+      try {
+        estado.albaranId = await holded.crearAlbaran(albaranParaHolded(a, estado.contactId));
+      } catch (e) {
+        // Rechazo claro (4xx): no se ha creado nada y el albarán se puede corregir.
+        // Si no (red, 5xx), queda la duda y el reintento lo buscará antes de crear otro.
+        if (e instanceof ErrorHolded && e.status >= 400 && e.status < 500 && !e.reintentar) {
+          delete estado.creando;
+          delete estado.huella;
+          await guardar();
+        }
+        throw e;
+      }
     }
     delete estado.creando;
+    estado.huella = huella;
     await guardar();
   }
 
   if (!estado.adjunto && a.pdf) {
     const bytes = Buffer.from(a.pdf, "base64");
-    await holded.adjuntar(estado.albaranId, bytes, `Albaran-${a.numero}-firmado.pdf`);
+    try {
+      await holded.adjuntar(estado.albaranId, bytes, `Albaran-${a.numero}-firmado.pdf`);
+    } catch (e) {
+      if (e instanceof ErrorHolded && !e.reintentar) {
+        e.message = `El albarán ya está en Holded, pero no ha aceptado el PDF firmado (${e.message}). `
+          + "Vuelve a intentarlo sin cambiar los datos, o adjunta el PDF a mano en Holded.";
+      }
+      throw e;
+    }
     estado.adjunto = true;
     await guardar();
   }

@@ -23,7 +23,9 @@ envía a Holded en cuanto vuelve la señal.
 
 En Holded el albarán aparece en **Ventas → Albaranes**, con el mismo número,
 las líneas, el IVA y el **PDF firmado adjunto**. Si el cliente no existía en
-Holded, se crea solo (se busca antes por NIF o nombre para no duplicarlo).
+Holded, se crea solo. Para no duplicarlo se busca antes por NIF, o por nombre
+junto con el mismo email o teléfono (el nombre solo no basta: dos personas pueden
+llamarse igual). Lo más seguro es elegir el cliente de las sugerencias al escribir.
 
 Si un envío se corta a medias, el reintento continúa donde se quedó: **no se
 duplican albaranes** en Holded.
@@ -60,7 +62,9 @@ móvil, cambia `APP_CLAVE` en Netlify y nadie más podrá enviar nada.
 ### 4. Primeros ajustes en la app (⚙︎)
 - Datos de tu negocio (salen en el PDF).
 - **Prefijo** de numeración (por defecto `M`). Usa uno que no tengan tus series
-  de Holded, para que no choquen los números.
+  de Holded, para que no choquen los números. Cada móvil lleva su propia
+  numeración: si usas la app en más de uno, pon un prefijo distinto en cada uno
+  (por ejemplo `M` y `M2`).
 - Precio de la hora, del desplazamiento e IVA por defecto.
 - **Clave de la app** (la `APP_CLAVE`) → **Guardar y probar conexión**.
 

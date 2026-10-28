@@ -72,6 +72,7 @@ const num = (s) => {
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`);
 const normal = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
 const normalNif = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const normalTel = (s) => String(s || "").replace(/\D/g, "").slice(-9);
 
 function ir(ruta) {
   if (location.hash === `#${ruta}`) render();
@@ -128,9 +129,12 @@ async function autoguardar(alb) {
 async function recordarCliente(c) {
   if (!c.nombre) return;
   const lista = await db.todos("clientes");
+  // Igual que en el servidor: el nombre solo no identifica a nadie (puede haber homónimos).
+  const mismoContacto = (x) => (!!c.email && normal(x.email) === normal(c.email))
+    || (normalTel(c.telefono).length === 9 && normalTel(x.telefono) === normalTel(c.telefono));
   const existente = lista.find((x) => (c.holdedId && x.holdedId === c.holdedId)
     || (c.nif && normalNif(x.nif) === normalNif(c.nif))
-    || (!c.nif && !x.nif && normal(x.nombre) === normal(c.nombre)));
+    || (!c.nif && !x.nif && normal(x.nombre) === normal(c.nombre) && mismoContacto(x)));
   const datos = { ...(existente || { id: uuid() }), ...c, usado: new Date().toISOString() };
   if (existente?.holdedId && !c.holdedId) datos.holdedId = existente.holdedId;
   await db.guardar("clientes", datos);
@@ -416,6 +420,8 @@ async function vistaEditor(alb) {
   camposCliente.nombre = inputNombre;
   const campoCliente = (clave, etiqueta, attrs = {}) => {
     const el = entrada(c, clave, attrs);
+    // Otro NIF es otro cliente: deja de valer la ficha de Holded elegida.
+    if (clave === "nif") el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
     camposCliente[clave] = el;
     return campo(etiqueta, el);
   };
@@ -623,7 +629,8 @@ function vistaFirma(alb) {
   };
   window.addEventListener("resize", alGirar);
 
-  const firmante = h("input", { value: alb.firmante || alb.cliente.nombre, placeholder: "Nombre de quien firma" });
+  // Holded admite hasta 120 caracteres para quien firma.
+  const firmante = h("input", { value: (alb.firmante || alb.cliente.nombre).slice(0, 120), maxlength: "120", placeholder: "Nombre de quien firma" });
   const error = h("p", { class: "error-form", role: "alert" });
   const t = totales(alb.lineas);
   let terminando = false;
@@ -844,7 +851,7 @@ async function vistaAjustes() {
       h("h3", {}, "Numeración y precios"),
       h("div", { class: "rejilla" }, campo("Prefijo", inputPrefijo), campo("Próximo número", inputSiguiente)),
       ejemplo,
-      h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números."),
+      h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números. Si usas la app en más de un móvil, pon un prefijo distinto en cada uno."),
       h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
       campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos.")),
     h("section", { class: "tarjeta" },

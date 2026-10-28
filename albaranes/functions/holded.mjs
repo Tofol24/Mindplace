@@ -66,6 +66,22 @@ export default async (req) => {
       const almacen = {
         leer: (id) => store.get(`alb/${id}`, { type: "json" }),
         guardar: (id, estado) => store.setJSON(`alb/${id}`, estado),
+        // Cerrojo atómico (onlyIfNew / onlyIfMatch). Si una función murió sin soltarlo,
+        // caduca a los 60 s: ninguna invocación dura tanto.
+        bloquear: async (id) => {
+          const clave = `cerrojo/${id}`;
+          const ahora = Date.now();
+          let r = await store.setJSON(clave, { desde: ahora }, { onlyIfNew: true });
+          if (!r.modified) {
+            const actual = await store.getWithMetadata(clave, { type: "json" });
+            if (actual && ahora - Number(actual.data?.desde || 0) < 60_000) return null;
+            r = actual
+              ? await store.setJSON(clave, { desde: ahora }, { onlyIfMatch: actual.etag })
+              : await store.setJSON(clave, { desde: ahora }, { onlyIfNew: true });
+            if (!r.modified) return null;
+          }
+          return () => store.delete(clave);
+        },
       };
       const r = await enviarAlbaran({ holded, almacen, albaran });
       return json({ ok: true, ...r });

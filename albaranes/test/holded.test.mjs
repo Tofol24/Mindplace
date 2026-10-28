@@ -59,16 +59,22 @@ test("validarAlbaran rechaza datos malos", () => {
   assert.throws(() => validarAlbaran({ ...base(), cliente: { nombre: "A", email: "malo" } }), /email/);
 });
 
-test("elegirContacto: por NIF, por nombre, y no confunde a dos personas con el mismo nombre", () => {
+test("elegirContacto: por NIF, o por nombre solo si coincide email o teléfono", () => {
   const c = [
-    { id: "1", name: "Maria Perez", code: "99999999R" },
-    { id: "2", name: "María  Pérez", code: "" },
+    { id: "1", name: "Maria Perez", code: "99999999R", email: "otra@example.com" },
+    { id: "2", name: "María  Pérez", code: "", mobile: "+34 600 111 222" },
     { id: "3", name: "Juan", code: "12345678-z" },
   ];
   assert.equal(elegirContacto(c, { nombre: "Otro", nif: "12345678Z" }).id, "3");
-  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "11111111H" }).id, "2");
-  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "" }).id, "1");
-  assert.equal(elegirContacto([c[0]], { nombre: "María Pérez", nif: "11111111H" }), null);
+  // Mismo nombre, sin NIF en Holded y mismo teléfono: es el mismo cliente.
+  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "11111111H", telefono: "600111222" }).id, "2");
+  // Solo el nombre no basta: dos personas pueden llamarse igual.
+  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "" }), null);
+  assert.equal(elegirContacto(c, { nombre: "maria perez", nif: "11111111H" }), null);
+  // Un contacto con otro NIF nunca es el mismo, aunque coincida el email.
+  assert.equal(elegirContacto([c[0]], { nombre: "María Pérez", nif: "11111111H", email: "otra@example.com" }), null);
+  // Dos homónimos con el mismo teléfono: ante la duda, contacto nuevo.
+  assert.equal(elegirContacto([c[1], { ...c[1], id: "4" }], { nombre: "María Pérez", telefono: "600111222" }), null);
 });
 
 test("contactoParaHolded distingue empresa (CIF) de persona", () => {
@@ -156,4 +162,48 @@ test("albarán corregido con otro cliente: se busca de nuevo el contacto", async
   const h2 = holdedFalso({ crearContacto: async () => "d".repeat(24) });
   const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: corregido });
   assert.equal(r.contactId, "d".repeat(24));
+});
+
+test("dos envíos simultáneos del mismo albarán solo crean uno", async () => {
+  const alm = almacenMemoria();
+  const cerrojos = new Set();
+  alm.bloquear = async (id) => {
+    if (cerrojos.has(id)) return null;
+    cerrojos.add(id);
+    return async () => { cerrojos.delete(id); };
+  };
+  const h = holdedFalso({ crearAlbaran: async () => { await new Promise((r) => setTimeout(r, 20)); return "w".repeat(24); } });
+  const a = validarAlbaran(base());
+  const r = await Promise.allSettled([enviarAlbaran({ holded: h, almacen: alm, albaran: a }), enviarAlbaran({ holded: h, almacen: alm, albaran: a })]);
+  assert.equal(h.llamadas.filter((l) => l[0] === "crearAlbaran").length, 1);
+  assert.equal(r.filter((x) => x.status === "fulfilled").length, 1);
+  assert.ok(r.some((x) => x.status === "rejected" && x.reason.reintentar === true && x.reason.status === 409));
+  assert.equal(cerrojos.size, 0);
+});
+
+test("si Holded rechaza el PDF, no se acepta un albarán corregido sobre el documento ya creado", async () => {
+  const alm = almacenMemoria();
+  const h1 = holdedFalso({ adjuntar: async () => { throw new ErrorHolded("rechazado", { status: 422 }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: validarAlbaran(base()) }), /no ha aceptado el PDF/);
+  // Con otro cliente: el albarán creado no cuadraría con lo firmado.
+  const h2 = holdedFalso();
+  const corregido = validarAlbaran({ ...base(), cliente: { nombre: "Juan Gómez" } });
+  await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: corregido }), (e) => e.status === 422 && /ya está creado en Holded/.test(e.message));
+  assert.ok(!h2.llamadas.some((l) => l[0] === "adjuntar"));
+  // Con los mismos datos (otra firma u otro firmante) sí se adjunta.
+  const h3 = holdedFalso();
+  const r = await enviarAlbaran({ holded: h3, almacen: alm, albaran: validarAlbaran({ ...base(), firmante: "Pep" }) });
+  assert.equal(r.adjunto, true);
+  assert.deepEqual(h3.llamadas.map((l) => l[0]), ["adjuntar"]);
+});
+
+test("si se cortó al crear el albarán, no se aceptan datos cambiados en el reintento", async () => {
+  const alm = almacenMemoria();
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("sin red", { reintentar: true }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: validarAlbaran(base()) }), /sin red/);
+  const otro = base();
+  otro.lineas[0].precio = 99;
+  const h2 = holdedFalso({ listarAlbaranes: async () => [{ id: "w".repeat(24), number: "M-2026-0001" }] });
+  await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: validarAlbaran(otro) }), /ya está creado en Holded/);
+  assert.equal(h2.llamadas.length, 0);
 });
