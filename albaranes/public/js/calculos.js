@@ -5,7 +5,8 @@ export const IVAS = [21, 10];
 export const redondear = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 
 const euros = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
-const cifra = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 2 });
+// Hasta 4 decimales, como admite el servidor: el PDF no puede mostrar «0» con importe.
+const cifra = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 4 });
 export const formatoEuros = (n) => euros.format(n || 0);
 export const formatoCantidad = (n) => cifra.format(n || 0);
 
