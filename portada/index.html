@@ -7,6 +7,7 @@
 <meta name="description" content="APRENS, gabinet de psicologia de Tòfol Villalonga a Inca: les eines que acompanyen la teràpia, la consulta, cites i novetats.">
 <link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="portada.css">
+<link rel="stylesheet" href="respiro-ais.css">
 </head>
 <body>
 <header class="top">
@@ -65,6 +66,52 @@
     </div>
   </section>
 
+  <aside class="ais-lateral" aria-labelledby="t-ais">
+    <button type="button" class="ais-obre" id="ais-obre" aria-haspopup="dialog" aria-controls="ais-dialeg">
+      <span class="ais-mini" id="ais-mini" aria-hidden="true"></span>
+      <span class="ais-txt"><b id="t-ais" data-t="aisT">L'AIS, en un cop d'ull</b><small data-t="aisS">El gest de la TEC: l'aire baixa i l'atenció s'hi queda.</small><span class="ais-veure" data-t="aisV">Mira-ho →</span></span>
+    </button>
+  </aside>
+
+  <dialog class="ais-dialeg" id="ais-dialeg" aria-labelledby="ais-dt">
+    <div class="ais-cap">
+      <h2 id="ais-dt" data-t="aisT">L'AIS, en un cop d'ull</h2>
+      <button type="button" class="ais-tanca" id="ais-tanca" aria-label="Tanca" data-aria="tanca">×</button>
+    </div>
+    <div class="ca-only">
+      <p class="ais-lead">Totes les eines de l'espai APRENS entrenen un mateix gest: dur <b>la teva atenció conscient</b> a allò que sent el cos, i quedar-t'hi. Ho pots veure, i provar, aquí.</p>
+    </div>
+    <div class="es-only" lang="es">
+      <p class="ais-lead">Todas las herramientas del espacio APRENS entrenan un mismo gesto: llevar <b>tu atención consciente</b> a lo que siente el cuerpo, y quedarte. Puedes verlo, y probarlo, aquí.</p>
+    </div>
+    <div class="ais-gran" id="ais-gran"></div>
+    <div class="ca-only">
+      <ol class="ais-passes">
+        <li class="groga"><b>La teva atenció conscient</b> (llum groga) neix a dalt, al cap, que és on solem viure: pensant i donant-hi voltes.</li>
+        <li class="blava"><b>L'aire</b> (llum blava) entra pel nas i fa d'<b>esquer</b>: dona a la teva atenció una cosa senzilla per seguir cap endins.</li>
+        <li class="groga">Així la teva atenció <b>baixa fins a la panxa</b> i <b>s'hi queda</b>, donant presència, encara que l'aire torni a sortir.</li>
+      </ol>
+      <p class="ais-sello">Aparèixer per al cos, romandre-hi, i des d'una actitud en què el cos se senti estimat.</p>
+      <details class="ais-mes"><summary>Què entrenam amb totes les eines</summary>
+        <p>L'objectiu de cada exercici és que aquest <b>gest atencional</b> es torni teu, gairebé automàtic: que la teva consciència, que tendeix a quedar-se a dalt, al cap, aprengui el camí de <b>baixar i donar presència allà baix</b>, a la panxa, on el cos sent.</p>
+        <p>No es tracta de pensar el cos, ni de calmar-lo, ni d'arreglar-lo. Es tracta d'<b>estar</b> amb el que hi ha, des d'una actitud amable, perquè el cos comprovi, una vegada i una altra, que no l'abandones. Aquest vector de la teva atenció, repetit, és la <b>nova relació amb tu mateix</b>.</p>
+      </details>
+    </div>
+    <div class="es-only" lang="es">
+      <ol class="ais-passes">
+        <li class="groga"><b>Tu atención consciente</b> (luz amarilla) nace arriba, en la cabeza, que es donde solemos vivir: pensando, dándole vueltas.</li>
+        <li class="blava"><b>El aire</b> (luz azul) entra por la nariz y hace de <b>cebo</b>: le da a tu atención algo sencillo a lo que seguir hacia dentro.</li>
+        <li class="groga">Así tu atención <b>baja hasta la barriga</b> y <b>se queda</b> ahí, dando presencia, aunque el aire vuelva a salir.</li>
+      </ol>
+      <p class="ais-sello">Aparecer para el cuerpo, permanecer, y desde una actitud en la que el cuerpo se sienta querido.</p>
+      <details class="ais-mes"><summary>Qué entrenamos con todas las herramientas</summary>
+        <p>El objetivo de cada ejercicio es que este <b>gesto atencional</b> se vuelva tuyo, casi automático: que tu conciencia, que tiende a quedarse arriba, en la cabeza, aprenda el camino de <b>bajar y dar presencia allá abajo</b>, en las tripas, donde el cuerpo siente.</p>
+        <p>No se trata de pensar el cuerpo, ni de calmarlo, ni de arreglarlo. Se trata de <b>estar</b> con lo que hay, desde una actitud amable, para que el cuerpo compruebe, una y otra vez, que no lo abandonas. Ese vector de tu atención, repetido, es la <b>nueva relación contigo</b>.</p>
+      </details>
+    </div>
+    <a class="ais-app" id="l-ais" href="https://aprens-app.netlify.app/#/sec/sec-el-ais-en-un-vistazo" data-t="aisApp">Practica-ho a l'App APRENS →</a>
+  </dialog>
+
   <section id="s-destacats" class="destacats" aria-roledescription="carrusel" aria-labelledby="t-destacats" hidden>
     <h2 id="t-destacats" class="sr" data-t="destacats">Destacats</h2>
     <div class="pantalles" id="pantalles" aria-live="off"></div>
@@ -114,6 +161,7 @@
   <p><a href="avis-legal.html" data-t="avis">Avís legal i privacitat</a> · <span data-t="galetes">Aquesta web no fa servir galetes ni analítica.</span></p>
   <p class="suau">© APRENS · Cristóbal Villalonga Melis</p>
 </footer>
+<script src="js/respiro-ais.js"></script>
 <script src="portada.js"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ const T = {
     entrades: "Entradas",
     appEt: "Para pacientes", appT: "App APRENS", appD: "Las herramientas de terapia (AIS, TEC, registros y prácticas) en tu móvil. Lo que apuntas se queda en tu dispositivo.",
     citaEt: "Consulta", citaT: "Pedir cita", citaD: "Elige día y hora en Doctoralia, para una primera visita o una sesión.",
+    aisT: "El AIS, en un vistazo", aisS: "El gesto de la TEC: el aire baja y la atención se queda.", aisV: "Míralo →", aisApp: "Practícalo en la App APRENS →", tanca: "Cerrar",
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
     expEt: "Estudio", appsT: "Apps para iPhone", appsD: "Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.", retratAlt: "Tòfol Villalonga en la entrada de APRENS, en Inca, junto al cartel de los servicios del centro", appAlt: "Ilustración de la app: una silueta con tres puntos donde llevar la atención. 1, cuello: conecta con tu garganta y nuca. 2, pecho: siente tu corazón y pulmones. 3, barriga: percibe tu estómago e intestinos.", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
@@ -160,3 +161,33 @@ document.addEventListener("click", (e) => {
 });
 pinta();
 fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { data = d; pinta(); }).catch(() => {});
+
+// L'AIS, en un cop d'ull: la silueta de l'app APRENS (aire blau, atenció groga) en petit
+// a un costat; en clicar-hi s'obre gran amb l'explicació. Es mou sola només si es veu
+// i si la persona no ha demanat menys moviment.
+(function () {
+  const obre = $("#ais-obre"), dlg = $("#ais-dialeg"), mini = $("#ais-mini"), gran = $("#ais-gran");
+  if (!obre || !dlg || !window.RespiroAIS || typeof dlg.showModal !== "function") { const a = $(".ais-lateral"); if (a) a.hidden = true; return; }
+  const quiet = matchMedia("(prefers-reduced-motion: reduce)");
+  const ritme = {inhale: 4000, anchor: 2000, exhale: 6000, pause: 1500};
+  const petita = RespiroAIS.mount(mini, {lang: "es", figure: "organism", showControl: false, showZones: false, legend: false, rhythm: ritme});
+  let visible = false, gr = null;
+  const ajusta = () => { if (visible && !quiet.matches && !dlg.open) petita.start(); else petita.stop(); };
+  new IntersectionObserver(es => { visible = es.some(e => e.isIntersecting); ajusta(); }).observe(mini);
+  quiet.addEventListener?.("change", ajusta);
+  const textos = () => lang === "es" ? undefined : {
+    phase: {inhale: "Inspira", anchor: "Queda't", exhale: "Expira", pause: "Pausa"},
+    hint: {inhale: "l'aire entra i l'atenció baixa", anchor: "la consciència es queda a la panxa", exhale: "l'aire puja i surt; la consciència roman", pause: "respira natural"},
+    legend: {air: "l'aire · entra pel nas", mind: "la teva atenció conscient · des del cap"},
+    start: "Comença", stop: "Atura", one: "respiració", many: "respiracions"
+  };
+  obre.addEventListener("click", () => {
+    petita.stop();
+    if (gr) gr.destroy();
+    gr = RespiroAIS.mount(gran, {lang: "es", labels: textos(), figure: "organism", showControl: true, showZones: false, rhythm: ritme});
+    dlg.showModal();
+  });
+  $("#ais-tanca").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener("close", () => { if (gr) { gr.destroy(); gr = null; } ajusta(); obre.focus(); });
+})();
