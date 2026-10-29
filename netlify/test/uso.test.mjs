@@ -18,8 +18,6 @@ const lib = await import(root + "/netlify/lib/uso.mjs");
 const post = (o) => uso(new Request("https://x/api/uso", { method: "POST", body: typeof o === "string" ? o : JSON.stringify(o) }));
 assert.equal((await post({ e: "entrada", o: "app", p: 1, d: 1, nv: 0 })).status, 204);
 assert.equal((await post({ e: "abrir", t: "bajar_alerta" })).status, 204);
-// visita a aprens.net: sin datos del dispositivo aunque los mande
-assert.equal((await post({ e: "entrada", o: "portada", p: 1, d: 1, nv: 1 })).status, 204);
 assert.equal((await post({ e: "abrir", t: "bajar_alerta" })).status, 204);
 assert.equal((await post({ e: "registro", t: "bajar_alerta", n: 2 })).status, 204);
 assert.equal((await post({ e: "tiempo", t: "bajar_alerta", b: "3-10" })).status, 204);
@@ -29,6 +27,15 @@ assert.equal((await post("no json")).status, 400);
 assert.equal((await post({ e: "tiempo", t: "__proto__", b: "0-1" })).status, 400);
 assert.equal((await post({ e: "abrir", t: "constructor" })).status, 400);
 assert.equal((await uso(new Request("https://x/api/uso"))).status, 405);
+// portada aprens.net: visitas por origen y clics por destino (solo valores de la lista)
+assert.equal((await post({ e: "visita", t: "instagram" })).status, 204);
+assert.equal((await post({ e: "clic", t: "cita" })).status, 204);
+assert.equal((await post({ e: "visita", t: "evil.com" })).status, 400);
+assert.equal((await post({ e: "clic", t: "__proto__" })).status, 400);
+{
+  const rp = lib.resumir(["ev/2026-01-06/visita/instagram/-/a", "ev/2026-01-06/visita/directe/-/b", "ev/2026-01-06/clic/cita/-/c", "ev/2026-01-06/clic/nada/-/d"]);
+  assert.equal(rp.portada.visites, 2); assert.equal(rp.portada.fonts.instagram, 1); assert.equal(rp.portada.clics.cita, 1); assert.equal(rp.portada.clics.nada, undefined);
+}
 // lista (cola sin conexión): se guardan los válidos, como máximo 20
 assert.equal((await post([{ e: "abrir", t: "ais_curiosidad" }, { e: "abrir", t: "__proto__" }, { e: "abrir", t: "ais_curiosidad" }])).status, 204);
 assert.equal((await post([{ e: "nada" }])).status, 400);
@@ -43,7 +50,6 @@ assert.equal(r.status, 200);
 const j = await r.json();
 const hoy = lib.diaMadrid();
 assert.equal(j.dias[hoy].entradas.app, 1); assert.equal(j.dias[hoy].entradas.instalada, 1); assert.equal(j.dias[hoy].entradas.dispositivos, 1);
-assert.equal(j.dias[hoy].entradas.portada, 1); assert.equal(j.dias[hoy].entradas.nuevos, 0);
 assert.deepEqual(j.dias[hoy].herramientas.bajar_alerta, { abrir: 2, registros: 2, tiempo: { "0-1": 0, "1-3": 0, "3-10": 1, "10+": 0 } });
 // el día pasado se ha resumido en dia/ y ya no quedan eventos sueltos de ese día
 assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);

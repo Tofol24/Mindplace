@@ -1,0 +1,44 @@
+/* Còpia del CSS de app/js/respiro-ais.js (la CSP de la portada no admet estils injectats). */
+.respiro-ais{--ra-air:#3FA6D8;--ra-air-hi:#EAF6FF;--ra-mind:#E9B458;--ra-mind-hi:#FFFBEF;  --ra-ink:#33474d;--ra-muted:#7c8a88;--ra-serif:"Fraunces","Newsreader",Georgia,serif;  --ra-mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;  --ra-pill-bg:rgba(252,251,247,.9);--ra-pill-bd:rgba(16,58,68,.14);--ra-pill-ink:#1B5A68;  display:flex;flex-direction:column;align-items:center;}
+.respiro-ais *{box-sizing:border-box;}
+.ra-stage{position:relative;width:min(100%,calc(56vh*820/1240));aspect-ratio:820/1240;  margin:6px auto;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+@supports (height:1svh){.ra-stage{width:min(100%,calc(56svh*820/1240));}
+}
+.ra-stage>*{position:absolute;inset:0;width:100%;height:100%;}
+.ra-halo{inset:auto;left:50%;top:56%;width:92%;height:auto;aspect-ratio:1;border-radius:50%;  background:radial-gradient(circle,rgba(46,124,138,.16) 0%,rgba(199,179,147,.09) 46%,rgba(199,179,147,0) 70%);  transform:translate(-50%,-50%) scale(.86);opacity:.35;will-change:transform,opacity;pointer-events:none;}
+.ra-layer{overflow:visible;pointer-events:none;}
+.ra-figure{opacity:.96;}
+.respiro-ais.ra-dark .ra-stage{background:radial-gradient(120% 90% at 50% 42%,#141c28 0%,#0a0e16 66%,#05070c 100%);border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.28),inset 0 0 70px rgba(0,0,0,.55);overflow:hidden;}
+.respiro-ais.ra-dark .ra-figure{opacity:1;}
+.ra-zone-glow{opacity:0;}
+.ra-zone-label text{font-family:var(--ra-mono);font-size:23px;letter-spacing:3px;fill:var(--ra-muted);font-weight:600;}
+.ra-zone-label line{stroke:var(--ra-muted);stroke-opacity:.4;stroke-width:2;}
+.ra-zone-label{opacity:.5;transition:opacity .35s ease;}
+.ra-zone.on .ra-zone-label{opacity:1;}
+.ra-zone.on .ra-zone-label text{fill:var(--ra-mind);}
+.ra-trail-soft{fill:none;stroke:var(--ra-mind);stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.ra-trail-core{fill:none;stroke:var(--ra-mind-hi);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.ra-dot,.ra-anchor,.ra-air{opacity:0;}
+.ra-ui{position:relative;min-height:34px;display:flex;justify-content:center;margin-top:6px;pointer-events:none;}
+.ra-pill{display:flex;align-items:baseline;gap:9px;background:var(--ra-pill-bg);border:1px solid var(--ra-pill-bd);  border-radius:24px;padding:6px 15px 7px;color:var(--ra-pill-ink);opacity:0;transition:opacity .3s ease;  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.respiro-ais.ra-running .ra-pill{opacity:1;}
+.ra-pill .pl{font-family:var(--ra-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.ra-pill .pn{font-family:var(--ra-serif);font-size:22px;line-height:1;min-width:.7em;text-align:center;}
+.ra-pill .ph{font-family:var(--ra-serif);font-style:italic;font-size:.82rem;opacity:.75;}
+.ra-control{margin-top:10px;font-family:var(--ra-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;  font-weight:600;color:#fff;background:var(--ra-pill-ink);border:none;border-radius:24px;padding:11px 22px;  min-height:44px;cursor:pointer;}
+.ra-control:focus-visible{outline:3px solid var(--ra-mind);outline-offset:2px;}
+.ra-count{margin-top:8px;min-height:16px;font-family:var(--ra-mono);font-size:11px;letter-spacing:.12em;  text-transform:uppercase;color:var(--ra-muted);text-align:center;}
+.ra-count b{font-family:var(--ra-serif);font-size:15px;color:var(--ra-mind);margin-right:4px;letter-spacing:0;}
+.ra-legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:9px;font-family:var(--ra-mono);font-size:10px;letter-spacing:.05em;color:var(--ra-muted);}
+.ra-legend span{display:inline-flex;align-items:center;gap:6px;}
+.ra-legend i{width:11px;height:11px;border-radius:50%;flex:none;}
+.ra-legend .ra-lg-air{background:radial-gradient(circle at 40% 40%,#EAF6FF,#3FA6D8);}
+.ra-legend .ra-lg-mind{background:radial-gradient(circle at 40% 40%,#FFFBEF,#E9B458);}
+.ra-flame{transform-box:fill-box;transform-origin:center bottom;}
+.respiro-ais[data-phase="exhale"] .ra-flame{animation:raFlicker .5s ease-in-out infinite;}
+@keyframes raFlicker{0%,100%{transform:rotate(-8deg) scaleY(.88);}
+50%{transform:rotate(9deg) scaleY(1.1);}
+}
+@media (prefers-reduced-motion:reduce){.ra-trail-soft,.ra-trail-core{display:none;}
+.respiro-ais[data-phase="exhale"] .ra-flame{animation:none;}
+}

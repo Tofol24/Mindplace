@@ -143,12 +143,13 @@ recuento por día y se borran: no se conserva nada más que esos números.
 
 En tus propios dispositivos elige «No, gracias» para que tus visitas no se mezclen.
 
-**Visitas a aprens.net (portada pública).** La portada suma 1 al recuento del día cada vez
-que se carga, sin aviso: no guarda nada en el navegador ni envía ningún identificador, y no
-cuenta si el navegador pide no ser rastreado (Global Privacy Control). Solo cuenta en
-`aprens.net` y `www.aprens.net`, no en las vistas previas. Incluye recargas y a cualquier
-visitante, y tus propias visitas también: no hay forma de excluirlas sin guardar algo en el
-navegador. En el índice sale aparte, como «visitas a aprens.net».
+**Visitas y clics de aprens.net (portada pública).** La portada envía a este mismo `/api/uso`
+una visita por carga, con su origen (directa, buscador, Instagram…), y los clics en sus
+enlaces (pedir cita, la app, descargas…). Sin aviso: no guarda nada en el navegador ni envía
+identificadores, y no cuenta nada si el navegador pide no ser rastreado (Global Privacy
+Control). La portada y aprens-app son sitios distintos: si la portada envía un tipo de evento
+nuevo, aprens-app tiene que estar publicado con la misma versión de `netlify/lib/uso.mjs`,
+o el servidor lo rechaza y no se cuenta.
 
 ---
 
