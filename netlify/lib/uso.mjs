@@ -7,16 +7,17 @@
    la persona. Las claves de días pasados se resumen en dia/<día> y se borran.
 
    Tipos de evento:
-     entrada   · se abre la app o Mi espacio   (origen: app | inicio)
+     entrada   · se abre la app, Mi espacio o aprens.net (origen: app | inicio | portada)
                  detalle = 3 cifras: instalada como app (1/0), primera entrada
-                 del día en ese dispositivo (1/0), primera vez (1/0)
+                 del día en ese dispositivo (1/0), primera vez (1/0).
+                 La portada no guarda nada en el navegador: su detalle es siempre 000.
      abrir     · se abre una herramienta        (detalle: -)
      registro  · se guardan registros nuevos    (detalle: cuántos, 1–20)
      tiempo    · rato con la herramienta        (detalle: tramo de minutos)
 */
 
 export const TIPOS = ["entrada", "abrir", "registro", "tiempo"];
-export const ORIGENES = ["app", "inicio"];
+export const ORIGENES = ["app", "inicio", "portada"];
 export const TRAMOS = ["0-1", "1-3", "3-10", "10+"];
 const ID = /^[a-z0-9_]{1,40}$/;
 const RESERVADOS = new Set(["__proto__", "constructor", "prototype", "hasownproperty", "tostring", "valueof"]);
@@ -43,7 +44,7 @@ export function claveEvento(ev, fecha = new Date()) {
   if (e === "entrada") {
     if (!ORIGENES.includes(ev.o)) return null;
     sujeto = ev.o;
-    detalle = [ev.p, ev.d, ev.nv].map((x) => (x === 1 || x === true ? "1" : "0")).join("");
+    detalle = sujeto === "portada" ? "000" : [ev.p, ev.d, ev.nv].map((x) => (x === 1 || x === true ? "1" : "0")).join("");
   } else {
     if (!idValido(ev.t)) return null;
     sujeto = ev.t;
@@ -63,7 +64,7 @@ export function claveEvento(ev, fecha = new Date()) {
 
 /** Resumen vacío de un día. */
 export function diaVacio() {
-  return { entradas: { app: 0, inicio: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: Object.create(null) };
+  return { entradas: { app: 0, inicio: 0, portada: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: Object.create(null) };
 }
 
 function herramienta(res, id) {
