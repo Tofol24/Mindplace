@@ -7,17 +7,23 @@
    la persona. Las claves de días pasados se resumen en dia/<día> y se borran.
 
    Tipos de evento:
-     entrada   · se abre la app, Mi espacio o aprens.net (origen: app | inicio | portada)
+     entrada   · se abre la app o Mi espacio   (origen: app | inicio)
                  detalle = 3 cifras: instalada como app (1/0), primera entrada
-                 del día en ese dispositivo (1/0), primera vez (1/0).
-                 La portada no guarda nada en el navegador: su detalle es siempre 000.
+                 del día en ese dispositivo (1/0), primera vez (1/0)
      abrir     · se abre una herramienta        (detalle: -)
      registro  · se guardan registros nuevos    (detalle: cuántos, 1–20)
      tiempo    · rato con la herramienta        (detalle: tramo de minutos)
+     visita    · se abre la portada aprens.net  (sujeto: de dónde llega, ver FONTS)
+     clic      · se pulsa un enlace de la portada (sujeto: a dónde, ver DESTINS)
+   La portada no guarda nada en el dispositivo: cada visita y cada clic son
+   recuentos sueltos, sin forma de unirlos a una persona ni entre sí.
 */
 
-export const TIPOS = ["entrada", "abrir", "registro", "tiempo"];
-export const ORIGENES = ["app", "inicio", "portada"];
+export const TIPOS = ["entrada", "abrir", "registro", "tiempo", "visita", "clic"];
+export const FONTS = ["directe", "cercador", "instagram", "facebook", "whatsapp", "aprens_es", "app_aprens", "explica", "doctoralia", "qr", "correu", "altres"];
+export const DESTINS = ["app", "cita", "consulta", "explica", "laboratori", "appstore", "novetat", "descarrega", "destacat", "llibre", "video",
+  "instagram", "facebook", "telefon", "whatsapp", "correu", "ais", "ais_app", "avis"];
+export const ORIGENES = ["app", "inicio"];
 export const TRAMOS = ["0-1", "1-3", "3-10", "10+"];
 const ID = /^[a-z0-9_]{1,40}$/;
 const RESERVADOS = new Set(["__proto__", "constructor", "prototype", "hasownproperty", "tostring", "valueof"]);
@@ -41,10 +47,14 @@ export function claveEvento(ev, fecha = new Date()) {
   const e = ev.e;
   if (!TIPOS.includes(e)) return null;
   let sujeto, detalle;
-  if (e === "entrada") {
+  if (e === "visita" || e === "clic") {
+    if (!(e === "visita" ? FONTS : DESTINS).includes(ev.t)) return null;
+    sujeto = ev.t;
+    detalle = "-";
+  } else if (e === "entrada") {
     if (!ORIGENES.includes(ev.o)) return null;
     sujeto = ev.o;
-    detalle = sujeto === "portada" ? "000" : [ev.p, ev.d, ev.nv].map((x) => (x === 1 || x === true ? "1" : "0")).join("");
+    detalle = [ev.p, ev.d, ev.nv].map((x) => (x === 1 || x === true ? "1" : "0")).join("");
   } else {
     if (!idValido(ev.t)) return null;
     sujeto = ev.t;
@@ -64,7 +74,8 @@ export function claveEvento(ev, fecha = new Date()) {
 
 /** Resumen vacío de un día. */
 export function diaVacio() {
-  return { entradas: { app: 0, inicio: 0, portada: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: Object.create(null) };
+  return { entradas: { app: 0, inicio: 0, instalada: 0, dispositivos: 0, nuevos: 0 }, herramientas: Object.create(null),
+    portada: { visites: 0, fonts: Object.create(null), clics: Object.create(null) } };
 }
 
 function herramienta(res, id) {
@@ -77,6 +88,13 @@ export function sumarClave(res, clave) {
   const p = clave.split("/");
   if (p.length !== 6 || p[0] !== "ev") return false;
   const [, , e, sujeto, detalle] = p;
+  if (e === "visita" || e === "clic") {
+    if (!(e === "visita" ? FONTS : DESTINS).includes(sujeto)) return false;
+    const m = e === "visita" ? res.portada.fonts : res.portada.clics;
+    m[sujeto] = (m[sujeto] || 0) + 1;
+    if (e === "visita") res.portada.visites += 1;
+    return true;
+  }
   if (e === "entrada") {
     if (!ORIGENES.includes(sujeto)) return false;
     res.entradas[sujeto] += 1;
