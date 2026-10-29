@@ -181,6 +181,13 @@
       if (!obj || typeof obj !== "object") throw new Error("no-json");
       var envs;
       // Las equivalencias de códigos de una copia del panel se aplican antes de fusionar.
+      if (obj.type === "aprens-panel-backup" && obj.plantillas && typeof obj.plantillas === "object") {
+        var pls = this.data.plantillas || (this.data.plantillas = {});
+        Object.keys(obj.plantillas).forEach(function (k) {
+          var src = obj.plantillas[k] || {}, dst = pls[k] || (pls[k] = {});
+          ["es", "ca"].forEach(function (l) { if (typeof src[l] === "string" && !dst[l]) dst[l] = src[l]; });
+        });
+      }
       if (obj.type === "aprens-panel-backup" && obj.alias && typeof obj.alias === "object") {
         var al = this.data.alias || (this.data.alias = {});
         Object.keys(obj.alias).forEach(function (k) {
@@ -1337,6 +1344,48 @@
     });
   }
 
+  /* ───────── Mensajes para pacientes (plantillas en plantillas.js) ─────────
+     Tus cambios se guardan en el panel (cifrados) en data.plantillas[clave][idioma]. */
+  var msgLang = "es";
+  try { msgLang = localStorage.getItem("aprens_panel_msg_lang") || "es"; } catch (e) {}
+  function plantillaTexto(clave, lang) {
+    var mias = (PanelStore.data.plantillas || {})[clave] || {};
+    var base = (window.APRENS_PLANTILLAS || {})[clave] || {};
+    return mias[lang] || base[lang] || "";
+  }
+  function pintarMsg() {
+    var clave = $("msgSel").value;
+    $("msgTa").value = plantillaTexto(clave, msgLang);
+    ["es", "ca"].forEach(function (l) {
+      var b = $(l === "es" ? "msgEs" : "msgCa");
+      b.className = "btn" + (l === msgLang ? " btn-primary" : ""); b.setAttribute("aria-pressed", l === msgLang);
+    });
+    var mia = ((PanelStore.data.plantillas || {})[clave] || {})[msgLang];
+    $("msgOriginal").style.display = mia ? "inline" : "none";
+    $("msgInfo").textContent = mia ? "Texto con tus cambios guardados." : "";
+  }
+  function openMsg() {
+    var pl = window.APRENS_PLANTILLAS || {};
+    $("msgSel").innerHTML = Object.keys(pl).map(function (k) { return '<option value="' + esc(k) + '">' + esc(pl[k].nombre || k) + '</option>'; }).join("");
+    pintarMsg();
+    $("msgModal").style.display = "flex"; $("app").inert = true;
+    setTimeout(function () { $("msgTa").focus(); }, 50);
+  }
+  function closeMsg() { $("msgModal").style.display = "none"; $("app").inert = false; }
+  function setMsgLang(l) { msgLang = l; try { localStorage.setItem("aprens_panel_msg_lang", l); } catch (e) {} pintarMsg(); }
+  async function guardarMsg(texto) {
+    var clave = $("msgSel").value, lang = msgLang;
+    try {
+      await PanelStore.exclusivo(function () {
+        var pl = PanelStore.data.plantillas || (PanelStore.data.plantillas = {});
+        var m = pl[clave] || (pl[clave] = {});
+        if (texto == null) delete m[lang]; else m[lang] = texto;
+        return true;
+      });
+    } catch (e) { toast("⚠️ No se pudo guardar"); return; }
+    pintarMsg(); toast(texto == null ? "Texto original recuperado" : "✔ Cambios guardados");
+  }
+
   /* ───────── Unir fichas (código mal escrito: AMC48 → TMC48) ───────── */
   var unirOrigen = null;
   function openUnir(codigo) {
@@ -1438,7 +1487,7 @@
 
   /* ───────────────────────── Copia de seguridad ─────────────────────────── */
   function backup() {
-    var blob = new Blob([JSON.stringify({ type: "aprens-panel-backup", exportado: new Date().toISOString(), patients: PanelStore.data.patients, alias: PanelStore.data.alias || {} }, null, 2)], { type: "application/json" });
+    var blob = new Blob([JSON.stringify({ type: "aprens-panel-backup", exportado: new Date().toISOString(), patients: PanelStore.data.patients, alias: PanelStore.data.alias || {}, plantillas: PanelStore.data.plantillas || {} }, null, 2)], { type: "application/json" });
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
     a.download = "aprens_panel_backup_" + new Date().toISOString().slice(0, 10) + ".json";
     document.body.appendChild(a); a.click(); a.remove();
@@ -1472,6 +1521,22 @@
     $("impClose").addEventListener("click", closeImport);
     $("btnBackup").addEventListener("click", backup);
     $("btnUso").addEventListener("click", renderUso);
+    $("btnMsg").addEventListener("click", openMsg);
+    $("msgClose").addEventListener("click", closeMsg);
+    $("msgModal").addEventListener("click", function (e) { if (e.target === $("msgModal")) closeMsg(); });
+    $("msgSel").addEventListener("change", pintarMsg);
+    $("msgEs").addEventListener("click", function () { setMsgLang("es"); });
+    $("msgCa").addEventListener("click", function () { setMsgLang("ca"); });
+    $("msgWa").addEventListener("click", function () { this.href = "https://wa.me/?text=" + encodeURIComponent($("msgTa").value); });
+    $("msgGuardar").addEventListener("click", function () { guardarMsg($("msgTa").value); });
+    $("msgOriginal").addEventListener("click", function () { guardarMsg(null); });
+    $("msgCopy").addEventListener("click", function () {
+      var ta = $("msgTa"), b = this; ta.select();
+      (navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(ta.value) : Promise.reject())
+        .catch(function () { try { document.execCommand("copy"); } catch (e) {} })
+        .then(function () { b.textContent = "✓ Copiado"; setTimeout(function () { b.textContent = "📋 Copiar"; }, 1800); });
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("msgModal").style.display === "flex") closeMsg(); });
     $("pfilter").addEventListener("input", function () { renderList(this.value); });
     $("pfPend").addEventListener("change", function () { renderList($("pfilter").value); });
     $("pegarTxt").addEventListener("input", previewPegar);
@@ -1535,7 +1600,7 @@
 
   /* Al bloquear: cerrar y vaciar todo lo que muestre datos clínicos. */
   function bloquearPantallas() {
-    closePauta(); closePegar(); closeUnir(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
+    closePauta(); closePegar(); closeUnir(); closeMsg(); $("msgTa").value = ""; closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
     if ($("asignarModal").style.display !== "none") $("asigSaltar").click();
     destroyCharts(); $("detailBody").innerHTML = ""; selected = null; showLock();
   }

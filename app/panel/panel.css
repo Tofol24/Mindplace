@@ -227,3 +227,7 @@ button{font-family:inherit}
 .pegar-prev ul{margin:4px 0 0;padding-left:18px}
 details.txt summary{cursor:pointer}
 details.txt pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;background:#f6f9fc;border-radius:8px;padding:8px 10px;margin:6px 0 0}
+.msg-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:4px 0 8px}
+.msg-bar select{flex:1;min-width:200px}
+.msg-idioma{display:flex;gap:6px}
+.msg-foot{flex-wrap:wrap}
