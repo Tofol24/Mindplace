@@ -66,6 +66,7 @@
       this._key = key;
       this.data = v.data ? await decryptObj(key, v.data) : { patients: {} };
       if (!this.data.patients) this.data.patients = {};
+      Object.keys(this.data.patients).forEach(function (k) { migrarD(this.data.patients[k]); }, this);
       return true;
     },
 
@@ -79,6 +80,7 @@
       var d; try { d = await decryptObj(key, v.data); } catch (e) { throw new Error("boveda-cambiada"); }
       if (this._key !== key) return;                        // se bloqueó mientras tanto
       this.data = d; if (!this.data.patients) this.data.patients = {};
+      Object.keys(this.data.patients).forEach(function (k) { migrarD(this.data.patients[k]); }, this);
     },
     /* Releer → cambiar → guardar en exclusiva entre pestañas (Web Locks si existe). */
     exclusivo: function (fn) {
@@ -113,13 +115,18 @@
         if (src.meta) dest.meta = src.meta;
         recs.forEach(function (r) {
           if (!r) return;
+          if (toolId === "screening_seg") {                       // nunca entra la D antigua
+            r = migrarRecD(Object.assign({}, r));
+            if (r.D == null) delete r.D;                           // sin S5 no se pisa la D que ya hay
+            if (r.activacion == null) delete r.activacion;         // ni la activación conocida
+          }
           var i = -1;
           if (r.id != null) {
             i = dest.records.findIndex(function (x) { return x.id === r.id; });
             // El mismo registro pudo llegar antes sin id (backup del Screening): misma fecha.
-            if (i < 0 && (r.date || r.fecha)) { var dd = r.date || r.fecha; i = dest.records.findIndex(function (x) { return x.id == null && (x.date || x.fecha) === dd && mismoContenido(x, r); }); }
+            if (i < 0 && (r.date || r.fecha)) { var dd = r.date || r.fecha; i = dest.records.findIndex(function (x) { return x.id == null && (x.date || x.fecha) === dd && mismoContenido(x, r, toolId); }); }
           }
-          else if (r.date || r.fecha) { var d = r.date || r.fecha; i = dest.records.findIndex(function (x) { return (x.date || x.fecha) === d && (x.id == null || mismoContenido(x, r)); }); }
+          else if (r.date || r.fecha) { var d = r.date || r.fecha; i = dest.records.findIndex(function (x) { return (x.date || x.fecha) === d && (x.id == null || mismoContenido(x, r, toolId)); }); }
           if (i >= 0) {
             var merged = Object.assign({}, dest.records[i], r);
             if (JSON.stringify(merged) !== JSON.stringify(dest.records[i])) changed++;
@@ -129,6 +136,7 @@
         dest.records.sort(function (a, c) { return String(recDate(a) || a.ts).localeCompare(String(recDate(c) || c.ts)); });
       });
       p.updated = env.exportado || new Date(0).toISOString();
+      migrarD(p);   // copias de paneles anteriores traen la D antigua
       var est = env.estado || {};
       // Solo es «nuevo» si llega algo distinto (reabrir el mismo enlace no lo reactiva).
       if (est.recibido && (added || changed) && (!p.recibido || est.recibido > p.recibido)) p.recibido = est.recibido;
@@ -187,7 +195,8 @@
       var seg = (p.seguimientos || []).map(function (s) {
         var sc = s.score || {};
         var rec = { date: s.fecha || "", perfil: s.perfil || null,
-          L: numOrNull(sc.latencia), D: numOrNull(sc.activacion), C: numOrNull(sc.continuidad),
+          L: numOrNull(sc.latencia), D: densidadSeg(s.resp, sc), C: numOrNull(sc.continuidad), dS5: true,
+          activacion: numOrNull(sc.activacion),
           indice: numOrNull(sc.indice), score: s.score || null, resp: s.resp || null, cuali: s.cuali || null };
         return sinVacios(rec);
       });
@@ -208,16 +217,44 @@
     }).filter(function (env) { return env.tools && Object.keys(env.tools).length; });
   }
   function numOrNull(v) { return v == null || v === "" ? null : Number(v); }
+  /* D del seguimiento = densidad emocional (S5, 0–10, alto = mejor), como la D del
+     screening inicial. Antes se guardaba la activación (S1) como D. */
+  function densidadSeg(resp, sc) {
+    if (sc && sc.densidad != null) return numOrNull(sc.densidad);
+    var v = resp && resp.S5;
+    if (v != null && v !== "") return Math.round((4 - Number(v)) * 2.5 * 10) / 10;
+    // score.S5 ya viene invertido (0–4, alto = mejor) en exportaciones que no traen resp.
+    var w = sc && numOrNull(sc.S5);
+    return w != null && w >= 0 && w <= 4 ? Math.round(w * 2.5 * 10) / 10 : null;
+  }
+  /* Migra seguimientos guardados con la D antigua (S1): la activación pasa a su
+     campo y la D se recalcula desde S5; sin respuestas no se puede: D queda vacía
+     para no mezclar dos medidas en la misma línea. Idempotente (marca dS5). */
+  function migrarD(p) {
+    var b = p && p.tools && p.tools.screening_seg; if (!b) return;
+    (b.records || []).forEach(migrarRecD);
+  }
+  function migrarRecD(r) {
+    if (!r) return r;
+    if (r.dS5) { if (r.D == null) { var dd = densidadSeg(r.resp, r.score); if (dd != null) r.D = dd; } return r; }
+    if (r.activacion == null) r.activacion = numOrNull(r.score && r.score.activacion != null ? r.score.activacion : r.D);
+    r.D = densidadSeg(r.resp, r.score);
+    r.dS5 = true;
+    return r;
+  }
   function sinVacios(o) { Object.keys(o).forEach(function (k) { if (o[k] == null) delete o[k]; }); return o; }
   // ¿Es el mismo registro? (para casar uno sin id con el que llega por enlace)
-  function mismoContenido(x, r) {
+  function mismoContenido(x, r, toolId) {
     if (x.resp && r.resp) return JSON.stringify(x.resp) === JSON.stringify(r.resp);
     // Ante la duda se conservan los dos: perfil/patrón/código distintos = registros distintos.
     var mismos = ["patron", "perfil", "codigo", "cuali"].every(function (k) { return x[k] == null || r[k] == null || String(x[k]) === String(r[k]); });
-    return mismos && ["L", "D", "C", "indice"].every(function (k) {
-      var a = numOrNull(x[k]), b = numOrNull(r[k]);
-      return a == null || b == null ? a === b : Math.abs(a - b) < 0.05;
-    });
+    var igual = function (k) { var a = numOrNull(x[k]), b = numOrNull(r[k]); return a == null || b == null ? a === b : Math.abs(a - b) < 0.05; };
+    var ambos = function (k) { return numOrNull(x[k]) != null && numOrNull(r[k]) != null; };
+    if (!mismos || !["L", "C", "indice"].every(igual)) return false;
+    if (ambos("D")) return igual("D") && (ambos("activacion") ? igual("activacion") : true);
+    // Solo seguimientos migrados (sin S5, D vacía): basta si coincide la activación conservada.
+    if (toolId === "screening_seg") return igual("activacion");   // también si falta en los dos
+    return igual("D");
   }
 
   /* Código AICE-TEC / AICE-SEG → sobre aprens-export, puntuado con el MISMO motor
@@ -244,7 +281,8 @@
       if (!s) return null;
       var sc = scoreSeg(s.resp);
       tools.screening_seg = { meta: { nombre: "Screening · seguimiento", v: 2 }, records: [{
-        id: id, date: s.fecha || "", perfil: s.perfil, L: sc.latencia, D: sc.activacion, C: sc.continuidad, indice: sc.indice,
+        id: id, date: s.fecha || "", perfil: s.perfil, L: sc.latencia, D: sc.densidad, C: sc.continuidad, indice: sc.indice,
+        activacion: sc.activacion, dS5: true,
         score: sc, resp: s.resp, cuali: s.cuali, consent: s.consent }] };
       codigo = s.paciente; tipo = "seguimiento";
     }
@@ -274,7 +312,7 @@
     // Tras una reevaluación, solo cuentan los seguimientos de la etapa actual.
     if (last && recDate(last)) seg = seg.filter(function (r) { return String(recDate(r)) >= String(recDate(last)); });
     var segs = seg.map(function (r) {
-      return { score: r.score || { indice: num(r.indice), latencia: num(r.L), activacion: num(r.D), continuidad: num(r.C) }, resp: r.resp || {} };
+      return { score: r.score || { indice: num(r.indice), latencia: num(r.L), activacion: num(r.activacion), continuidad: num(r.C) }, resp: r.resp || {} };
     });
     var me = moduloEvolucion(segs, a, (last && last.fase0 && last.fase0.contexto) || "");
     return { mod: me.mod, motivo: me.motivo, code3: code3, nSeg: seg.length,
@@ -332,7 +370,8 @@
     var out = [];
     Object.keys(p.tools).forEach(function (t) {
       (p.tools[t].records || []).forEach(function (r) {
-        if (num(r.L) != null && num(r.D) != null && num(r.C) != null)
+        // D puede faltar (seguimientos antiguos sin S5): se dibuja con hueco, sin perder L y C.
+        if (num(r.L) != null && num(r.C) != null)
           out.push({ date: recDate(r), L: num(r.L), D: num(r.D), C: num(r.C), total: num(r.total) });
       });
     });
@@ -420,9 +459,12 @@
     if (!s.length) return null;
     var first = s[0], last = s[s.length - 1];
     function axis(k) {
-      var a = first[k], b = last[k];
-      var d = (a != null && b != null) ? round1(b - a) : null;
-      return { first: a, last: b, delta: d, dir: d == null ? "—" : (d < -0.05 ? "baja" : d > 0.05 ? "sube" : "estable") };
+      // Inicial = primer valor disponible del eje; actual = el del registro más reciente
+      // (si le falta, «—»: no se presenta un dato antiguo como actual). Δ solo con dos mediciones.
+      var i0 = -1; for (var i = 0; i < s.length; i++) if (s[i][k] != null) { i0 = i; break; }
+      var a = i0 >= 0 ? s[i0][k] : null, b = last[k];
+      var d = (a != null && b != null && i0 < s.length - 1) ? round1(b - a) : null;
+      return { first: a, last: b, delta: d, desde: (i0 > 0 ? s[i0].date : null), dir: d == null ? "—" : (d < -0.05 ? "baja" : d > 0.05 ? "sube" : "estable") };
     }
     var seg = ((p.tools.screening_seg && p.tools.screening_seg.records) || [])
       .filter(function (r) { return num(r.indice) != null; })
@@ -636,7 +678,7 @@
     function axisRow(label, ax) {
       var arrow = ax.delta == null ? "" : (ax.delta < -0.05 ? "↓" : ax.delta > 0.05 ? "↑" : "→");
       var cls = ax.delta == null ? "" : (ax.delta > 0.05 ? "good" : ax.delta < -0.05 ? "bad" : "flat");
-      return '<tr><th>' + esc(label) + '</th><td>' + fmt(ax.first) + '</td><td>' + fmt(ax.last) +
+      return '<tr><th>' + esc(label) + '</th><td>' + fmt(ax.first) + (ax.desde ? ' <small>(desde ' + esc(ax.desde) + ')</small>' : '') + '</td><td>' + fmt(ax.last) +
         '</td><td class="' + cls + '">' + arrow + " " + fmtDelta(ax.delta) + '</td></tr>';
     }
     var screeningHTML = sr
@@ -736,7 +778,7 @@
     if (sr) {
       ["L", "D", "C"].forEach(function (k, i) {
         var name = ["Latencia", "Densidad", "Continuidad"][i], ax = sr[k];
-        L.push("   - " + name + ": " + fmt(ax.first) + " → " + fmt(ax.last) + " (" + fmtDelta(ax.delta) + ")");
+        L.push("   - " + name + ": " + fmt(ax.first) + (ax.desde ? " (desde " + ax.desde + ")" : "") + " → " + fmt(ax.last) + " (" + fmtDelta(ax.delta) + ")");
       });
       if (sr.indice) L.push("   - Índice seguimiento: " + fmt(sr.indice.first) + " → " + fmt(sr.indice.last) + "/10 (" + fmtDelta(sr.indice.delta) + ")");
       if (sr.patron) L.push("   - Patrón dominante: " + sr.patron);
