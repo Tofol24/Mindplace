@@ -209,6 +209,8 @@ function scoreSeg(resp){
   // Indicadores clave separados (0-10):
   const n=(v)=>v===undefined?null:Math.round(v*2.5*10)/10;
   o.activacion = resp.S1===undefined?null:Math.round((4-resp.S1)*2.5*10)/10;
+  // Densidad emocional (S5), invertida como la D del screening inicial: alto = mejor.
+  o.densidad = resp.S5===undefined?null:Math.round((4-resp.S5)*2.5*10)/10;
   o.latencia = n(resp.S4);
   o.continuidad = n(resp.S6);
   o.valores = n(resp.S7);
