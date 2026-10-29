@@ -23,5 +23,20 @@ window.APRENS_PLANTILLAS = {
 "Les teves respostes es guarden només al teu mòbil i únicament m'arriben quan tu decideixes enviar-me-les.\n\n" +
 "Qualsevol dubte me'l pots comentar per aquí.\n\n" +
 "Tòfol Villalonga"
+  },
+  seguimiento: {
+    nombre: "Seguimiento semanal · registro del Screening",
+    es:
+"Hola, te recuerdo el registro de seguimiento de esta semana. Son unos 2-3 minutos y me ayuda a ver cómo vas y a ajustar lo que estamos trabajando:\n" +
+"https://aprens-app.netlify.app/#/tool/screening_tec\n\n" +
+"Entra como paciente, elige «Ya tengo mi código de seguimiento» y escribe el código de 3 cifras que te di (si no lo tienes a mano, pídemelo por aquí). Responde pensando en cómo has estado estos últimos días y, al terminar, pulsa WhatsApp y envíame el mensaje tal cual sale.\n\n" +
+"Con tu registro revisaré tu evolución y te diré qué conviene priorizar esta semana.\n\n" +
+"Tòfol Villalonga",
+    ca:
+"Hola, et record el registre de seguiment d'aquesta setmana. Són uns 2-3 minuts i m'ajuda a veure com vas i a ajustar el que estam treballant:\n" +
+"https://aprens-app.netlify.app/#/tool/screening_tec\n\n" +
+"Entra com a pacient, tria «Ya tengo mi código de seguimiento» i escriu el codi de 3 xifres que et vaig donar (si no el tens a mà, demana-me'l per aquí). Respon pensant en com has estat aquests darrers dies i, en acabar, pitja WhatsApp i envia'm el missatge tal com surt.\n\n" +
+"Amb el teu registre revisaré la teva evolució i et diré què convé prioritzar aquesta setmana.\n\n" +
+"Tòfol Villalonga"
   }
 };
