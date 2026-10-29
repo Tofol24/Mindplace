@@ -292,10 +292,10 @@
       pasos:[
         ["¿Para qué sirven estos ejercicios? (el porqué, en 2 minutos)", "sec:porque"],
         ["Mi autoevaluación inicial, con la prueba de continuidad", "eval"],
-        ["Cuestionario TEC (o el de seguimiento, si tu psicólogo/a te dio un código)", "tool:cuestionario_tec", ["tool:screening_tec"]],
+        ["Screening TEC/AIS: la autoevaluación inicial (o el registro de seguimiento, si tu psicólogo/a ya te dio tu código de 3 cifras)", "tool:screening_tec"],
         ["¿Dónde está tu mono hoy? El detective te orienta", "tool:donde_esta_mono", ["tool:estado_mono"]]
       ],
-      crit:[["auto","evalHecha","He hecho mi autoevaluación inicial"],["chk","c0a","He hecho el cuestionario TEC o el de seguimiento"],["chk","c0b","He leído cómo funciona el recorrido (pestaña «Recorrido»)"]]
+      crit:[["auto","evalHecha","He hecho mi autoevaluación inicial"],["chk","c0a","He hecho el Screening (inicial o de seguimiento)"],["chk","c0b","He leído cómo funciona el recorrido (pestaña «Recorrido»)"]]
     },
     { n:"Etapa 1", t:"Entender", w:"Semanas 1–2", col:"var(--e1)", min:7,
       d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
@@ -383,7 +383,7 @@
       frase:"«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»",
       practica:{ t:"Práctica programada (mantenimiento)", d:"Tres momentos breves al día. Breve y frecuente vale más que largo y ocasional.", go:"tool:herramienta_diaria" },
       pasos:[
-        ["Reevaluación: cuestionario de seguimiento", "tool:screening_tec", ["tool:cuestionario_tec"]],
+        ["Reevaluación: registro de seguimiento del Screening", "tool:screening_tec"],
         ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
         ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional"],
         ["Juego: Llegar a casa · abrazo sentido, cómplices del dolor (también en pareja o familia)", "tool:juegos_exposicion/casa"],
@@ -671,7 +671,7 @@
       + '<button class="hold" id="evHold" type="button">Mantén pulsado</button><p class="small" id="evHoldV"></p>';
     h += '<label class="f">¿Has tenido momentos en los que hayas pensado en hacerte daño?</label><div class="seg" id="evRisk"><button type="button" data-v="0">No</button><button type="button" data-v="1">Sí</button></div><div id="evRiskMsg"></div>';
     h += '<div class="row"><button class="btn" id="evSave" type="button">Guardar mi autoevaluación</button></div>';
-    h += '<p class="small muted">Para el seguimiento completo con gráficas, haz también el '+link("tool:screening_tec","cuestionario de seguimiento")+' o el '+link("tool:cuestionario_tec","Cuestionario TEC")+'.</p>';
+    h += '<p class="small muted">Para el seguimiento completo con gráficas, haz también el '+link("tool:screening_tec","registro de seguimiento del Screening")+'.</p>';
     $("#evalForm").innerHTML = h;
     ITEMS.forEach(function(it){ $("#ev"+it[0]).oninput = function(){ $("#ev"+it[0]+"V").textContent = this.value; }; });
     var risk = null, cSeg = null, t0 = 0, hold = $("#evHold");

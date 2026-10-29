@@ -39,7 +39,7 @@
       ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","escalera_comidas","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
-      ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
+      ids:["screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
     { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada, de un minuto cada una. Son las mismas de «Empieza por aquí», en vídeo, para verlas con calma o compartirlas.",
       ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
@@ -643,7 +643,7 @@
         <div class="hub-sec-d">${g.desc}</div>
         <div class="hub-grid">${cards}</div>`;
     });
-    const otras = tools.filter(t=>!usados[t.id]);
+    const otras = tools.filter(t=>!usados[t.id] && !t.oculta);
     if(otras.length){
       secciones += `<div class="hub-sec"><span class="hub-sec-e">🧩</span><span class="hub-sec-t">Otras</span></div>
         <div class="hub-grid">${otras.map(hubCard).join("")}</div>`;
