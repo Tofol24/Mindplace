@@ -447,7 +447,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
     <div class="ctit" style="color:#7a5a1a;">🔁 Herr. 6 · Rutina de presència interna</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pC">Continuïtat</span></span><span>Repetir la pràctica en moments fixos del dia: la constància és el que manté el patró viu en el temps.</span></div>
     <div style="font-size:12px;color:var(--gris);margin-bottom:11px;line-height:1.5;">Tres moments fixos: parada + respiració cap a la panxa + reorientació conscient.</div>
-    <div id="rutinaGuided" style="display:none" class="guided-ov" style="background:var(--oro);">
+    <div id="rutinaGuided" style="display:none" class="guided-ov">
       <div class="guided-big" id="rutinaTitle">Moment de matí</div>
       <div class="guided-desc">Para un moment.<br>Porta l'atenció a la panxa — una respiració.<br>Pregunta't: <em>"On ho noto ara mateix?"</em> (si no notes res, prova amb les mans o els peus)<br><br>No cal canviar-ho ni que estiguis bé. Després, <strong>reorienta't</strong>: torna al que estaves fent amb un petit pas amb valor.</div>
       <button class="btn" style="background:#fff;color:var(--azul);padding:9px 20px;font-size:13px;" onclick="confirmarRutina()">He fet la parada ✓</button>
@@ -638,7 +638,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-
 <div class="card">
   <div class="ctit">Enviar al teu psicòleg</div>
   <div class="aviso">No guarda res a la sessió. Copia el text o obre'l al WhatsApp.</div>
-  <div class="cbox" id="msgBox"></div>
+  <div class="cbox" id="msgBox" tabindex="0" role="region" aria-label="Mensaje para enviar"></div>
   <div class="cad-aviso" style="background:#eef4fb;border-left:4px solid #2d6da3;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#234a66;text-align:left"><b>🌙 Quan enviar-m'ho?</b> No cal cada cop: ajunta el del dia i envia'm <b>un únic resum al final del dia</b>.</div>
   <div class="acc">
     <a class="btn bwa" href="#" onclick="obrirWA(event)">📱 WhatsApp</a>

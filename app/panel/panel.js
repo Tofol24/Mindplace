@@ -182,7 +182,6 @@
     escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
     escalera_comidas: "La escalera de las comidas",
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
-    agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
     microaccion_valor: "Micro-acción con valor (0/1)"
   };

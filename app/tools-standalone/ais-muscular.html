@@ -256,7 +256,7 @@ function render(){
   if(vista==="intro")     return intro();
   if(vista==="recorrido") return recorrido();
   if(vista==="cierre")    return cierre();
-  if(vista==="resumen")   return resumen();
+  if(vista==="resumen")   return verResumen();
 }
 
 /* ---------- intro ---------- */
@@ -288,7 +288,7 @@ function intro(){
       <div class="scale-em">${emojiNivel(activIni)}</div>
       <div class="scale-num" id="tv" style="color:${colorNivel(activIni)}">${activIni}</div>
       <div style="text-align:center;font-size:13px;color:var(--gris);margin-bottom:2px">¿Cuánta activación/tensión notas ahora en el cuerpo?</div>
-      <input type="range" min="0" max="10" value="${activIni}" oninput="setIni(this.value)">
+      <input type="range" min="0" max="10" value="${activIni}" oninput="setIni(this.value)" aria-label="Activación o tensión ahora, de 0 (suelto) a 10 (muy tenso)">
       <div class="ends"><span>0 · suelto</span><span>10 · muy tenso</span></div>
     </div>
     <button class="btn big" onclick="empezar()">Empezar el recorrido →</button>
@@ -386,7 +386,7 @@ function cierre(){
     <div class="card">
       <div class="scale-em">${emojiNivel(activFin)}</div>
       <div class="scale-num" id="tv2" style="color:${colorNivel(activFin)}">${activFin}</div>
-      <input type="range" min="0" max="10" value="${activFin}" oninput="setFin(this.value)">
+      <input type="range" min="0" max="10" value="${activFin}" oninput="setFin(this.value)" aria-label="Activación o tensión al terminar, de 0 (suelto) a 10 (muy tenso)">
       <div class="ends"><span>0 · suelto</span><span>10 · muy tenso</span></div>
     </div>
     <div class="card">
@@ -398,7 +398,7 @@ function cierre(){
       <div class="frase" style="margin-top:0">«No sé por qué, pero lo noto aquí.»</div>
       <div style="text-align:center;font-size:14px;font-weight:600;color:var(--azul);margin:14px 0 6px">Y ahora, vuelve: ¿qué haría la persona que quiero ser?</div>
       <div style="text-align:center;font-size:12.5px;color:var(--gris);margin-bottom:8px">Un paso pequeño, posible ahora y no para quitarte lo que sientes.</div>
-      <input type="text" id="microM" maxlength="140" value="${escH(microAccion)}" oninput="microAccion=this.value" placeholder="Ej.: volver a la tarea, salir a caminar 5 minutos…" style="width:100%;padding:11px 12px;border:2px solid #E3EAF3;border-radius:12px;font:inherit;font-size:14px">
+      <input type="text" id="microM" aria-label="Tu micro-acción con valor" maxlength="140" value="${escH(microAccion)}" oninput="microAccion=this.value" placeholder="Ej.: volver a la tarea, salir a caminar 5 minutos…" style="width:100%;padding:11px 12px;border:2px solid #E3EAF3;border-radius:12px;font:inherit;font-size:14px">
     </div>
     <button class="btn big green" onclick="verResumen()">Ver cómo ha ido →</button>
     <div style="text-align:center;margin-top:8px"><button class="btn mini" onclick="vista='recorrido';render();scrollTo(0,0)">← Seguir el recorrido</button></div>`;
@@ -451,7 +451,7 @@ function verResumen(){
         <a class="btn bwa" href="#" onclick="abrirWA(event)">📱 Enviar a mi psicólogo/a</a>
         <button class="btn bcopy" onclick="copiar(this)">📋 Copiar</button>
       </div>
-      <div id="msgBox" class="cbox">${msg.replace(/</g,'&lt;')}</div>
+      <div id="msgBox" class="cbox" tabindex="0" role="region" aria-label="Mensaje para enviar">${msg.replace(/</g,'&lt;')}</div>
       <div style="text-align:center;margin-top:12px"><button class="btn mini" onclick="reiniciar()">↺ Hacerla otra vez</button></div>
     </div>
     <div class="frase">«No lucho con la tensión: la escucho y le enseño a soltar.»<br>Practícala también en calma: así tu cuerpo la tiene lista cuando el entorno aprieta.</div>`;
@@ -491,7 +491,7 @@ _flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)t
 buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
 exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
 copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
-mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" aria-label="Código paciente" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
 };g.Aprens=A;})(window);
 </script>
 
