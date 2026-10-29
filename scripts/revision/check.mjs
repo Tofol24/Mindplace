@@ -138,13 +138,102 @@ async function revisarHTML(lista) {
 // 2. JavaScript (ESLint)
 // ---------------------------------------------------------------------------
 
+// Globales que reciben las páginas de los otros scripts que cargan (<script src>):
+// lo que esos scripts declaran en su nivel superior o cuelgan de window/self/global.
+// Así una función definida en app/js/x.js no sale como «no definida» en la página.
+let espree;
+const cacheGlobales = new Map();
+function globalesDe(codigo) {
+  let ast;
+  for (const sourceType of ["script", "module"]) {
+    try { ast = espree.parse(codigo, { ecmaVersion: "latest", sourceType }); break; } catch { /* siguiente */ }
+  }
+  if (!ast) return [];
+  const nombres = new Set();
+  for (const n of ast.body) {
+    if ((n.type === "FunctionDeclaration" || n.type === "ClassDeclaration") && n.id) nombres.add(n.id.name);
+    if (n.type === "VariableDeclaration") for (const d of n.declarations) if (d.id.type === "Identifier") nombres.add(d.id.name);
+  }
+  // (function (g) { g.x = … })(window): los parámetros de una función autoejecutada
+  // del nivel superior también son el objeto global.
+  const alias = new Set(["window", "self", "globalThis", "global", "root"]);
+  for (const n of ast.body) {
+    let e = n.type === "ExpressionStatement" ? n.expression : null;
+    if (e?.type === "UnaryExpression") e = e.argument;
+    if (e?.type === "CallExpression" && /Function/.test(e.callee.type)) {
+      for (const p of e.callee.params) if (p.type === "Identifier") alias.add(p.name);
+    }
+  }
+  const visitar = (n) => {
+    if (!n || typeof n.type !== "string") return;
+    if (n.type === "AssignmentExpression" && n.left.type === "MemberExpression" && !n.left.computed
+      && n.left.object.type === "Identifier" && alias.has(n.left.object.name)) {
+      nombres.add(n.left.property.name);
+    }
+    for (const k in n) {
+      if (k === "parent") continue;
+      const v = n[k];
+      if (Array.isArray(v)) v.forEach(visitar); else if (v && typeof v === "object") visitar(v);
+    }
+  };
+  visitar(ast);
+  return [...nombres];
+}
+function globalesDeFichero(rel) {
+  if (!cacheGlobales.has(rel)) {
+    let g = [];
+    try { g = globalesDe(readFileSync(path.join(RAIZ, rel), "utf8")); } catch { /* no existe */ }
+    cacheGlobales.set(rel, g);
+  }
+  return cacheGlobales.get(rel);
+}
+// Scripts locales que carga una página, como rutas relativas a la raíz del repositorio.
+function scriptsDePagina(f, html) {
+  const fuera = [];
+  for (const m of html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']?([^"'\s>]+)/gi)) {
+    const src = m[1].split(/[?#]/)[0];
+    if (/^(https?:)?\/\//i.test(src) || /^data:/i.test(src)) continue;
+    const abs = src.startsWith("/") ? path.join(RAIZ, raizPublicada(f), src) : path.join(RAIZ, path.dirname(f), src);
+    fuera.push(path.relative(RAIZ, abs).split(path.sep).join("/"));
+  }
+  return fuera;
+}
+let paginasCache;
+function paginasQueCargan(js) {
+  if (!paginasCache) {
+    paginasCache = lineas(git("ls-files", "*.html", "*.htm")).filter(relevante).map((p) => {
+      const html = readFileSync(path.join(RAIZ, p), "utf8");
+      return { p, html, scripts: scriptsDePagina(p, html) };
+    });
+  }
+  return paginasCache.filter((x) => x.scripts.includes(js));
+}
+function globalesRecibidas(f, texto) {
+  const g = new Set();
+  if (/\.html?$/.test(f)) {
+    for (const s of scriptsDePagina(f, texto)) globalesDeFichero(s).forEach((n) => g.add(n));
+  } else if (/\.js$/.test(f)) {
+    // Un .js comparte ámbito con lo demás que cargan las páginas que lo usan.
+    for (const { html, scripts } of paginasQueCargan(f)) {
+      for (const s of scripts) if (s !== f) globalesDeFichero(s).forEach((n) => g.add(n));
+      globalesDe(scriptsDeHTML(html)).forEach((n) => g.add(n));
+    }
+    globalesDe(texto).forEach((n) => g.delete(n)); // lo suyo no es «recibido»
+  }
+  return [...g].filter((n) => /^[A-Za-z_$][\w$]*$/.test(n));
+}
+
 async function revisarJS(lista) {
   const { ESLint } = await import("eslint");
+  espree = await import("espree");
   const eslint = new ESLint({ cwd: RAIZ, overrideConfigFile: path.join(AQUI, "eslint.config.mjs"), errorOnUnmatchedPattern: false });
   for (const f of lista) {
     const texto = readFileSync(path.join(RAIZ, f), "utf8");
-    const codigo = /\.html?$/.test(f) ? scriptsDeHTML(texto) : texto;
+    let codigo = /\.html?$/.test(f) ? scriptsDeHTML(texto) : texto;
     if (!codigo.trim()) continue;
+    // Al final, para no mover los números de línea.
+    const recibidas = /\.mjs$/.test(f) ? [] : globalesRecibidas(f, texto);
+    if (recibidas.length) codigo += `\n/* global ${recibidas.join(", ")} */\n`;
     const modulo = /\.html?$/.test(f) && /<script\b[^>]*\btype\s*=\s*["']?module/i.test(texto);
     const [r] = await eslint.lintText(codigo, { filePath: path.join(RAIZ, modulo ? f.replace(/\.html?$/, ".modulo.html") : f) });
     for (const m of r?.messages || []) {

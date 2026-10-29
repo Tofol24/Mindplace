@@ -382,7 +382,7 @@
     screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC",
     screening_seg: "Screening · seguimiento", tracker_tec: "Tracker TEC",
     control_ira: "Control de ira", retorno_trabajo: "Retorno al trabajo", tracker_ais: "Tracker AIS",
-    autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
+    autorregistro: "Autorregistro",
     donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Herramienta diaria", protocolo_ais: "Protocolo AIS (audio)",
     compromiso_semanal: "Compromiso semanal",
     // Herramientas nuevas (para que el panel muestre el nombre, no el id)
