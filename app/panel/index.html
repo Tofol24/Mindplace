@@ -18,6 +18,7 @@
     <div class="lock-logo">ap</div>
     <h1>APRENS · Panel</h1>
     <p class="lock-sub" id="lockSub">Panel del psicólogo</p>
+    <p class="lock-pending" id="lockPending" style="display:none"></p>
 
     <!-- crear código (primera vez) -->
     <form id="formCrear" class="lock-form" style="display:none" autocomplete="off">
@@ -58,6 +59,7 @@
         <span>Pacientes</span><span id="pcount" class="pill">0</span>
       </div>
       <input id="pfilter" class="pfilter" placeholder="Filtrar por código…">
+      <label class="pf-pend"><input type="checkbox" id="pfPend"> Solo pendientes de respuesta <span id="pendCount" class="pill pill-pend" style="display:none">0</span></label>
       <ul id="patientList" class="patient-list"></ul>
       <p class="plist-empty" id="listEmpty">Aún no hay pacientes.<br>Importa un archivo <b>.json</b> que te haya enviado un paciente.</p>
     </aside>
@@ -79,15 +81,46 @@
   <div class="modal-card">
     <button class="modal-x" id="impClose">✕</button>
     <h2>Importar datos de paciente</h2>
-    <p class="muted">Sube uno o varios <b>.json</b> (los que te envían al pulsar «Archivo .json» o «WhatsApp»), o pega el contenido.</p>
+    <p class="muted">Sube uno o varios <b>.json</b> (los que te envían al pulsar «Archivo .json» o «WhatsApp»), o pega el contenido.
+      También puedes pegar <b>uno o varios mensajes del Screening</b> (enlaces o textos AICE-TEC / AICE-SEG) tal cual llegan por WhatsApp.</p>
     <label class="drop" id="drop">
       <input id="fileInput" type="file" accept=".json,application/json" multiple hidden>
       <span>📎 Elegir archivos <b>.json</b> o arrastrarlos aquí</span>
     </label>
-    <textarea id="pasteBox" class="paste" placeholder="…o pega aquí el JSON exportado"></textarea>
+    <textarea id="pasteBox" class="paste" placeholder="…o pega aquí el JSON exportado o los mensajes del Screening"></textarea>
     <div class="modal-foot">
       <button class="btn" id="pasteBtn">Importar lo pegado</button>
       <span id="impMsg" class="imp-msg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL ASIGNAR PACIENTE (registro sin código) ═══════════════ -->
+<div id="asignarModal" class="modal" style="display:none">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="asigTit">
+    <h2 id="asigTit">¿De qué paciente es este registro?</h2>
+    <p class="muted" id="asigInfo"></p>
+    <input id="asigCodigo" aria-label="Código del paciente" class="pfilter asig-input" list="asigLista" placeholder="Código del paciente (ej: DFG22)" autocapitalize="characters" autocomplete="off">
+    <datalist id="asigLista"></datalist>
+    <div class="modal-foot">
+      <button class="btn btn-primary" id="asigOk">Guardar en su ficha</button>
+      <button class="btn" id="asigSaltar">Descartar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL PAUTA (mensaje al paciente) ═══════════════ -->
+<div id="pautaModal" class="modal" style="display:none">
+  <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="pautaTit">
+    <button class="modal-x" id="pautaClose" aria-label="Cerrar">✕</button>
+    <h2 id="pautaTit">Mensaje de pauta</h2>
+    <p class="muted">Redactado como mensaje tuyo. Revísalo, ajústalo si quieres y envíalo.</p>
+    <label class="pauta-cod" id="pautaCodWrap"><input type="checkbox" id="pautaCod"> <span id="pautaCodTxt"></span></label>
+    <textarea id="pautaTa" class="paste pauta-ta" aria-label="Texto del mensaje de pauta"></textarea>
+    <div class="modal-foot">
+      <a class="btn btn-wa" id="pautaWa" href="#" target="_blank" rel="noopener">📱 Abrir en WhatsApp</a>
+      <button class="btn" id="pautaCopy">📋 Copiar</button>
+      <button class="btn btn-primary" id="pautaHecho">✓ Enviado: marcar como respondido</button>
     </div>
   </div>
 </div>
@@ -110,6 +143,7 @@
 <div id="toast" class="toast" style="display:none"></div>
 
 <script src="../vendor/chart.umd.min.js"></script>
+<script src="../js/tec-screening.js"></script>
 <script src="panel.js"></script>
 <script>
 if ("serviceWorker" in navigator) {

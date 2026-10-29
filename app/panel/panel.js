@@ -69,6 +69,26 @@
       return true;
     },
 
+    /* Relee la bóveda (otra pestaña del panel puede haber guardado mientras tanto). */
+    reload: async function () {
+      var v = this._readVault(), key = this._key;
+      if (!key) return;
+      // Otra pestaña ha borrado o recreado el panel: esta clave ya no vale, no se escribe.
+      if (!v) throw new Error("boveda-cambiada");
+      if (!v.data) return;
+      var d; try { d = await decryptObj(key, v.data); } catch (e) { throw new Error("boveda-cambiada"); }
+      if (this._key !== key) return;                        // se bloqueó mientras tanto
+      this.data = d; if (!this.data.patients) this.data.patients = {};
+    },
+    /* Releer → cambiar → guardar en exclusiva entre pestañas (Web Locks si existe). */
+    exclusivo: function (fn) {
+      var self = this;
+      var run = async function () {
+        try { await self.reload(); }
+        catch (e) { if (e.message === "boveda-cambiada") { self.lock(); if (window.APRENS_PANEL_onLock) window.APRENS_PANEL_onLock(); } throw e; } if (!self._key) return null; var r = fn(); if (self._key) await self._persist(); return r; };
+      return (navigator.locks && navigator.locks.request) ? navigator.locks.request("aprens-panel-boveda", run) : run();
+    },
+
     _persist: async function () {
       var v = this._readVault() || {};
       var data = await encryptObj(this._key, this.data);
@@ -82,8 +102,11 @@
     mergeEnvelope: function (env) {
       if (!env || (env.type && env.type !== "aprens-export") || !env.tools) throw new Error("no-envelope");
       var codigo = (env.paciente && env.paciente.codigo || "").trim() || "SIN-CÓDIGO";
+      // dfg22 y DFG22 son la misma ficha, venga del .json o del enlace.
+      var mismo = Object.keys(this.data.patients).filter(function (k) { return k.toUpperCase() === codigo.toUpperCase(); })[0];
+      if (mismo) codigo = mismo;
       var p = this.data.patients[codigo] || (this.data.patients[codigo] = { codigo: codigo, tools: {}, updated: null });
-      var added = 0, updated = 0;
+      var added = 0, updated = 0, changed = 0;
       Object.keys(env.tools).forEach(function (toolId) {
         var src = env.tools[toolId] || {}; var recs = src.records || [];
         var dest = p.tools[toolId] || (p.tools[toolId] = { meta: src.meta || {}, records: [] });
@@ -91,13 +114,25 @@
         recs.forEach(function (r) {
           if (!r) return;
           var i = -1;
-          if (r.id != null) i = dest.records.findIndex(function (x) { return x.id === r.id; });
-          else if (r.date || r.fecha) { var d = r.date || r.fecha; i = dest.records.findIndex(function (x) { return (x.date || x.fecha) === d; }); }
-          if (i >= 0) { dest.records[i] = r; updated++; } else { dest.records.push(r); added++; }
+          if (r.id != null) {
+            i = dest.records.findIndex(function (x) { return x.id === r.id; });
+            // El mismo registro pudo llegar antes sin id (backup del Screening): misma fecha.
+            if (i < 0 && (r.date || r.fecha)) { var dd = r.date || r.fecha; i = dest.records.findIndex(function (x) { return x.id == null && (x.date || x.fecha) === dd && mismoContenido(x, r); }); }
+          }
+          else if (r.date || r.fecha) { var d = r.date || r.fecha; i = dest.records.findIndex(function (x) { return (x.date || x.fecha) === d && (x.id == null || mismoContenido(x, r)); }); }
+          if (i >= 0) {
+            var merged = Object.assign({}, dest.records[i], r);
+            if (JSON.stringify(merged) !== JSON.stringify(dest.records[i])) changed++;
+            dest.records[i] = merged; updated++;
+          } else { dest.records.push(r); added++; }
         });
         dest.records.sort(function (a, c) { return String(recDate(a) || a.ts).localeCompare(String(recDate(c) || c.ts)); });
       });
       p.updated = env.exportado || new Date(0).toISOString();
+      var est = env.estado || {};
+      // Solo es «nuevo» si llega algo distinto (reabrir el mismo enlace no lo reactiva).
+      if (est.recibido && (added || changed) && (!p.recibido || est.recibido > p.recibido)) p.recibido = est.recibido;
+      if (est.pautaEnviada && (!p.pautaEnviada || est.pautaEnviada > p.pautaEnviada)) p.pautaEnviada = est.pautaEnviada;
       return { codigo: codigo, added: added, updated: updated };
     },
 
@@ -109,7 +144,7 @@
     importAny: function (obj) {
       if (!obj || typeof obj !== "object") throw new Error("no-json");
       var envs;
-      if (obj.type === "aprens-export" && obj.tools) envs = [obj];
+      if (obj.type === "aprens-export" && obj.tools) envs = [Object.assign({}, obj, { estado: { recibido: new Date().toISOString() } })];
       else if ((obj.app === "APRENS_TEC" || obj.app === "APRENS_TEC_INVESTIGACION") && obj.datos) envs = tecBackupToEnvelopes(obj.datos);
       else if (obj.type === "aprens-panel-backup" && obj.patients) envs = patientMapToEnvelopes(obj.patients);
       else if (obj.pacientes && typeof obj.pacientes === "object") envs = patientMapToEnvelopes(obj.pacientes); // backup del panel anterior
@@ -119,6 +154,15 @@
       var self = this;
       envs.forEach(function (env) { var r = self.mergeEnvelope(env); codigos[r.codigo] = 1; added += r.added; updated += r.updated; });
       return { codigos: Object.keys(codigos), added: added, updated: updated };
+    },
+
+    /* Registros del Screening que llegan por enlace (#r=…) o pegados de WhatsApp.
+       pac: código del paciente si el registro no lo trae (versiones antiguas). */
+    importCodigo: function (code, pac) {
+      var env = codigoToEnvelope(code, pac);
+      if (!env) throw new Error("codigo-invalido");
+      var r = this.mergeEnvelope(env);
+      return { codigo: r.codigo, added: r.added, updated: r.updated, tipo: env._tipo };
     },
 
     save: function () { return this._persist(); },
@@ -134,15 +178,18 @@
       var p = datos[codigo] || {};
       var scr = (p.screenings || []).map(function (s) {
         var ice = (s.analisis && s.analisis.ice) || {};
-        return { date: s.fecha || "", codigo: s.codigo || null,
+        // Solo los campos presentes: así no se borra lo que ya llegó por enlace.
+        return sinVacios({ date: s.fecha || "", codigo: s.codigo || null,
           L: numOrNull(ice.L), D: numOrNull(ice.D), C: numOrNull(ice.C),
-          patron: (s.analisis && s.analisis.dominante) || null };
+          patron: (s.analisis && s.analisis.dominante) || null,
+          analisis: s.analisis || null, fase0: s.fase0 || null });
       });
       var seg = (p.seguimientos || []).map(function (s) {
         var sc = s.score || {};
-        return { date: s.fecha || "", perfil: s.perfil || null,
+        var rec = { date: s.fecha || "", perfil: s.perfil || null,
           L: numOrNull(sc.latencia), D: numOrNull(sc.activacion), C: numOrNull(sc.continuidad),
-          indice: numOrNull(sc.indice) };
+          indice: numOrNull(sc.indice), score: s.score || null, resp: s.resp || null, cuali: s.cuali || null };
+        return sinVacios(rec);
       });
       var tools = {};
       if (scr.length) tools.screening_tec = { meta: { nombre: "Screening TEC (inicial)", v: 2 }, records: scr };
@@ -156,10 +203,85 @@
     return Object.keys(map).map(function (codigo) {
       var p = map[codigo] || {};
       return { type: "aprens-export", paciente: { codigo: p.codigo || codigo },
-        exportado: p.updated || p.importado || new Date(0).toISOString(), tools: p.tools || {} };
+        exportado: p.updated || p.importado || new Date(0).toISOString(), tools: p.tools || {},
+        estado: { recibido: p.recibido || null, pautaEnviada: p.pautaEnviada || null } };
     }).filter(function (env) { return env.tools && Object.keys(env.tools).length; });
   }
   function numOrNull(v) { return v == null || v === "" ? null : Number(v); }
+  function sinVacios(o) { Object.keys(o).forEach(function (k) { if (o[k] == null) delete o[k]; }); return o; }
+  // ¿Es el mismo registro? (para casar uno sin id con el que llega por enlace)
+  function mismoContenido(x, r) {
+    if (x.resp && r.resp) return JSON.stringify(x.resp) === JSON.stringify(r.resp);
+    // Ante la duda se conservan los dos: perfil/patrón/código distintos = registros distintos.
+    var mismos = ["patron", "perfil", "codigo", "cuali"].every(function (k) { return x[k] == null || r[k] == null || String(x[k]) === String(r[k]); });
+    return mismos && ["L", "D", "C", "indice"].every(function (k) {
+      var a = numOrNull(x[k]), b = numOrNull(r[k]);
+      return a == null || b == null ? a === b : Math.abs(a - b) < 0.05;
+    });
+  }
+
+  /* Código AICE-TEC / AICE-SEG → sobre aprens-export, puntuado con el MISMO motor
+     que el Screening (../js/tec-screening.js). Mismos tool ids y campos L/D/C que
+     tecBackupToEnvelopes, más las respuestas crudas para poder recalcular. */
+  function pacienteDeCodigo(code) {
+    var p = parseCodigo(code) || parseCodigoSeg(code);
+    return p ? p.paciente : "";
+  }
+  // Id estable por registro: reabrir el mismo enlace no duplica, y dos registros
+  // distintos del mismo día no se pisan.
+  function idCodigo(code) { var h = 5381; for (var i = 0; i < code.length; i++) h = ((h << 5) + h + code.charCodeAt(i)) | 0; return "aice-" + (h >>> 0).toString(36) + "-" + code.length; }
+  function codigoToEnvelope(code, pac) {
+    var tools = {}, codigo, tipo, t = parseCodigo(code), id = idCodigo(code);
+    if (t) {
+      var a = analizar(t.resp);
+      if (!a.dominante) return null;
+      tools.screening_tec = { meta: { nombre: "Screening TEC (inicial)", v: 2 }, records: [{
+        id: id, date: t.fecha || "", codigo: codificar(a), L: a.ice.L, D: a.ice.D, C: a.ice.C, patron: a.dominante,
+        fase0: t.fase0, consent: t.consent, resp: t.resp }] };
+      codigo = t.paciente; tipo = "screening inicial";
+    } else {
+      var s = parseCodigoSeg(code);
+      if (!s) return null;
+      var sc = scoreSeg(s.resp);
+      tools.screening_seg = { meta: { nombre: "Screening · seguimiento", v: 2 }, records: [{
+        id: id, date: s.fecha || "", perfil: s.perfil, L: sc.latencia, D: sc.activacion, C: sc.continuidad, indice: sc.indice,
+        score: sc, resp: s.resp, cuali: s.cuali, consent: s.consent }] };
+      codigo = s.paciente; tipo = "seguimiento";
+    }
+    codigo = normCodigoPac(pac || codigo);
+    if (!codigo) return null;
+    var now = new Date().toISOString();
+    return { type: "aprens-export", paciente: { codigo: codigo }, exportado: now, tools: tools, estado: { recibido: now }, _tipo: tipo };
+  }
+
+  /* Pauta de la semana: misma regla clínica que el Screening (moduloEvolucion).
+     La base es el último screening inicial; si no hay respuestas, el perfil de 3 cifras. */
+  function pautaInfo(p) {
+    var tec = ((p.tools.screening_tec && p.tools.screening_tec.records) || []).slice();
+    var seg = ((p.tools.screening_seg && p.tools.screening_seg.records) || []).slice()
+      .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
+    if (!tec.length && !seg.length) return null;
+    tec.sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
+    var last = tec[tec.length - 1], a = null, code3 = null;
+    if (last && last.resp) { a = analizar(last.resp); code3 = codificar(a); }
+    else if (last && last.analisis && last.analisis.dominante) { a = last.analisis; code3 = codificar(a); }
+    else {
+      code3 = (last && last.codigo) || (seg.length && seg[seg.length - 1].perfil) || null;
+      var dec = code3 && decodificar(String(code3));
+      if (dec) a = { dominante: dec.patron, iceAlt: dec.ice, alivioDig: dec.alivio };
+    }
+    if (!a || !a.dominante) return null;
+    // Tras una reevaluación, solo cuentan los seguimientos de la etapa actual.
+    if (last && recDate(last)) seg = seg.filter(function (r) { return String(recDate(r)) >= String(recDate(last)); });
+    var segs = seg.map(function (r) {
+      return { score: r.score || { indice: num(r.indice), latencia: num(r.L), activacion: num(r.D), continuidad: num(r.C) }, resp: r.resp || {} };
+    });
+    var me = moduloEvolucion(segs, a, (last && last.fase0 && last.fase0.contexto) || "");
+    return { mod: me.mod, motivo: me.motivo, code3: code3, nSeg: seg.length,
+      cualis: seg.filter(function (r) { return r.cuali; }).slice(-3).reverse() };
+  }
+  // pautaEnviada = hasta qué registro recibido está respondido el paciente.
+  function esPendiente(p) { return !!p.recibido && (!p.pautaEnviada || p.recibido > p.pautaEnviada); }
 
   /* ───────────────────────── Modelo / métricas ─────────────────────────── */
   var TOOL_LABEL = {
@@ -264,7 +386,7 @@
       case "ais_curiosidad": case "ais_amor": return r.ejercicio ? (r.ejercicio + (r.micro ? " · " + r.micro : "")) : (r.texto ? firstLine(r.texto) : "—");
       case "mapa_atencion_interna": return (r.tipo === "recorrido" ? "Recorrido completo" : (r.zona || "Zona")) + cualTxt(r.cualidades);
       case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (pick(r.patron, r.perfil) ? " · " + pick(r.patron, r.perfil) : "") + (pick(r.codigo3, r.codigo) ? " · cód " + pick(r.codigo3, r.codigo) : "");
-      case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : ""));
+      case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : "")) + (r.cuali ? " · «" + firstLine(r.cuali) + "»" : "");
       case "microaccion_valor": return num(r.cv) === 1 ? "✔ 1 · " + (r.descripcion ? firstLine(r.descripcion) : "micro-acción hecha") : "○ 0 · hoy no";
       default: return r.texto ? firstLine(r.texto) : "—";
     }
@@ -665,6 +787,9 @@
 
   function renderList(filter) {
     var ps = PanelStore.patients().sort(function (a, b) { return a.codigo.localeCompare(b.codigo); });
+    var nPend = ps.filter(esPendiente).length;
+    $("pendCount").textContent = nPend; $("pendCount").style.display = nPend ? "inline-block" : "none";
+    if ($("pfPend").checked) ps = ps.filter(esPendiente);
     if (filter) ps = ps.filter(function (p) { return p.codigo.toLowerCase().indexOf(filter.toLowerCase()) >= 0; });
     $("pcount").textContent = PanelStore.patients().length;
     $("listEmpty").style.display = PanelStore.patients().length ? "none" : "block";
@@ -672,7 +797,7 @@
     ul.innerHTML = ps.map(function (p) {
       var rng = dateRange(p);
       return '<li class="patient-item' + (selected === p.codigo ? " sel" : "") + '" data-code="' + esc(p.codigo) + '">' +
-        '<div class="pi-code">' + esc(p.codigo) + '</div>' +
+        '<div class="pi-code">' + esc(p.codigo) + (esPendiente(p) ? '<span class="pi-pend">nuevo</span>' : '') + '</div>' +
         '<div class="pi-meta">' + totalRecords(p) + ' registros' + (rng ? ' · ' + rng.to : '') + '</div></li>';
     }).join("");
     Array.prototype.forEach.call(ul.querySelectorAll(".patient-item"), function (li) {
@@ -766,6 +891,7 @@
     body.innerHTML =
       '<div class="d-head"><h2>' + esc(p.codigo) + '</h2>' +
         '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span>' +
+        (esPendiente(p) ? '<span class="d-pend">● Pendiente de respuesta</span><button id="btnAtendido" class="btn">✓ Marcar como respondido</button>' : '') +
         '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button>' +
         '<button id="btnCsvDia" class="btn d-csv" title="Registro diario del paciente · formato TEC Anexo E.2 (UTF-8, separador ;)">⬇ CSV diario</button>' +
         '<button id="btnCsvLdc" class="btn d-csv" title="Evolución L/D/C e índice de seguimiento (0–10)">⬇ CSV L/D/C</button></div>' +
@@ -776,6 +902,7 @@
         stat(al ? (al.antes + "→" + al.despues) : "—", "alerta media (antes→después)") +
         stat(cvr ? cvr.ones + "/" + cvr.n : "—", "micro-acción con valor (días 1 / registrados)") +
       '</div>' +
+      pautaCard(p) +
       '<div class="grid2">' +
         '<div class="card"><h3>Evolución L / D / C</h3>' +
           '<div class="sub">Cuestionario TEC: latencia, densidad y continuidad (0–10).</div>' +
@@ -815,6 +942,8 @@
 
     drawLCC(p);
     drawAlerta(p);
+    var bp = $("btnPauta"); if (bp) bp.onclick = function () { openPauta(p); };
+    var ba = $("btnAtendido"); if (ba) ba.onclick = function () { marcarAtendido(p); };
     var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
     var today = new Date().toISOString().slice(0, 10);
     var bd = $("btnCsvDia"); if (bd) bd.onclick = function () { downloadCSV("aprens_" + p.codigo + "_diario_" + today + ".csv", csvDiarioRows(p)); toast("CSV diario descargado (Anexo E.2)"); };
@@ -947,15 +1076,160 @@
     function ds(label, data, color) { return { label: label, data: data, borderColor: color, backgroundColor: color, tension: .3, pointRadius: 3, borderWidth: 2 }; }
   }
 
+  /* ───────────────────────── Pauta al paciente ─────────────────────────── */
+  function pautaCard(p) {
+    var pi = pautaInfo(p);
+    if (!pi) return "";
+    var m = MODULOS[pi.mod];
+    return '<div class="card card-pauta"><h3>🎯 Pauta de esta semana · módulo ' + pi.mod + '</h3>' +
+      '<div class="mod">' + esc(m.nombre) + '</div>' +
+      '<div class="sub" style="margin:0">' + esc(m.prof) + '</div>' +
+      '<div class="motivo">📌 <b>Por qué ahora:</b> ' + esc(pi.motivo) + '</div>' +
+      (pi.code3 ? '<div class="codes">Perfil <b>AICE-' + esc(pi.code3) + pi.mod + '</b> · código de seguimiento para el paciente: <b>' + esc(pi.code3) + '</b></div>' : '') +
+      (pi.cualis.length ? '<div class="sub" style="margin:0 0 4px">Lo que ha escrito en sus últimos registros:</div>' +
+        pi.cualis.map(function (r) { return '<div class="cuali"><b>' + esc(recDate(r)) + ':</b> ' + esc(r.cuali) + '</div>'; }).join("") : '') +
+      '<div class="acc" style="margin-top:10px"><button id="btnPauta" class="btn btn-primary">📲 Preparar mensaje de pauta</button></div>' +
+      '<div class="sub" style="margin:10px 0 0;font-style:italic">La pauta sugerida no sustituye el criterio clínico.</div></div>';
+  }
+  var pautaPac = null;
+  function pautaTexto() {
+    var pi = pautaInfo(pautaPac);
+    return mensajePauta(pi.mod, "", $("pautaCod").checked ? pi.code3 : "");
+  }
+  function openPauta(p) {
+    pautaPac = p;
+    var pi = pautaInfo(p);
+    $("pautaCodWrap").style.display = pi.code3 ? "flex" : "none";
+    $("pautaCodTxt").textContent = "Incluir su código de seguimiento (" + (pi.code3 || "") + ")";
+    $("pautaCod").checked = !!pi.code3 && !pi.nSeg;   // primera pauta: aún no lo conoce
+    $("pautaTa").value = pautaTexto();
+    $("pautaModal").style.display = "flex"; $("app").inert = true;
+    pautaVolver = document.activeElement;
+    $("pautaTa").focus();
+  }
+  var pautaVolver = null;
+  function closePauta() {
+    var abierto = $("pautaModal").style.display === "flex";
+    $("pautaModal").style.display = "none"; $("pautaTa").value = ""; pautaPac = null; $("app").inert = false;
+    if (abierto && pautaVolver && document.body.contains(pautaVolver)) pautaVolver.focus();
+  }
+  /* p es la ficha tal como la estabas viendo: se marca como respondido hasta su
+     último registro recibido; lo que llegue después (otra pestaña) sigue pendiente. */
+  async function marcarAtendido(p) {
+    var codigo = p.codigo, hasta = p.recibido || new Date().toISOString();
+    try {
+      await PanelStore.exclusivo(function () {
+        var q = PanelStore.data.patients[codigo];
+        if (q && (!q.pautaEnviada || hasta > q.pautaEnviada)) q.pautaEnviada = hasta;
+      });
+    } catch (e) { if (PanelStore._key) toast("⚠️ No se pudo guardar"); return; }
+    if (!PanelStore._key) return;
+    renderList($("pfilter").value); renderDetail();
+  }
+
+  /* ───────── Llegada por enlace (#r=…) o mensajes pegados ─────────
+     El registro viaja en el fragmento de la URL: no pasa por ningún servidor.
+     Se guarda en memoria hasta que el psicólogo abre el panel con su código. */
+  var pendientes = [];
+  function tomarHash() {
+    var cs = extraerCodigos(location.hash);
+    if (!cs.length) return;   // el #r= se queda en la URL hasta guardarlo: recargar no lo pierde
+    cs.forEach(function (c) { if (pendientes.indexOf(c) < 0) pendientes.push(c); });
+    if (PanelStore._key) procesarPendientes(); else avisoLock();
+  }
+  function avisoLock() {
+    var n = pendientes.length, el = $("lockPending");
+    el.style.display = n ? "block" : "none";
+    el.textContent = n ? "📥 Tienes " + (n === 1 ? "1 registro nuevo" : n + " registros nuevos") + " del Screening. Entra con tu código y se guardará" + (n === 1 ? "" : "n") + " en su ficha." : "";
+  }
+  var procesando = false, sinGuardar = [];   // sinGuardar: [código, paciente] que fallaron al guardar
+  async function procesarPendientes() {
+    if (procesando || !PanelStore._key) return [];   // los nuevos se suman a la cola en curso
+    procesando = true;
+    var hechos = [], listos = sinGuardar.splice(0), malos = 0, fallo = false;
+    try {
+      while (pendientes.length) {
+        var c = pendientes[0];
+        var pac = (parseCodigo(c) || parseCodigoSeg(c)) ? pacienteDeCodigo(c) : null;
+        if (pac === null) { malos++; pendientes.shift(); continue; }
+        if (!pac) pac = await pedirPaciente(c);
+        pendientes.shift();
+        if (pac) listos.push([c, pac]);
+      }
+      if (listos.length) {
+        try {
+          var ok = await PanelStore.exclusivo(function () {
+            listos.forEach(function (x) { try { hechos.push(PanelStore.importCodigo(x[0], x[1])); } catch (e) { malos++; } });
+            return true;
+          });
+          // Bloqueado a mitad (no se guardó): se conservan para la próxima entrada.
+          if (ok !== true) { hechos = []; sinGuardar = listos; fallo = true; return []; }
+        } catch (e) {
+          // No se pudo guardar (p. ej. almacenamiento lleno): vuelven a la cola para reintentar.
+          hechos = []; sinGuardar = listos; fallo = true;   // se reintenta en la próxima entrada o importación
+          // Se devuelven a la URL: recargar la pestaña vuelve a intentarlo sin perder nada.
+          try { history.replaceState(null, "", location.pathname + location.search + "#" + listos.map(function (x) { return "r=" + encodeURIComponent(x[0]); }).join("&")); } catch (e2) {}
+          toast("⚠️ No se pudo guardar. No cierres esta pestaña: libera espacio y recárgala para reintentar.");
+          return [];
+        }
+        if (!PanelStore._key) hechos = [];
+      }
+    } finally {
+      procesando = false;
+      if (!fallo && !pendientes.length && /[#&]r=/.test(location.hash)) {
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      }
+      // Enlaces que llegaron mientras se guardaba: se procesan ahora.
+      if (!fallo && pendientes.length && PanelStore._key) setTimeout(procesarPendientes, 0);
+    }
+    avisoLock();
+    if (malos) toast(malos === 1 ? "Un registro no se pudo leer (¿enlace incompleto?)" : malos + " registros no se pudieron leer");
+    if (!hechos.length) return hechos;
+    selected = hechos[hechos.length - 1].codigo;
+    renderList($("pfilter").value); renderDetail();
+    toast(hechos.length === 1
+      ? "✔ " + hechos[0].codigo + ": " + hechos[0].tipo + (hechos[0].added ? " guardado" : " (ya estaba, actualizado)")
+      : "✔ " + hechos.length + " registros guardados");
+    return hechos;
+  }
+  /* Registros antiguos (sin código de paciente): se pregunta a quién asignarlo. */
+  function pedirPaciente(code) {
+    return new Promise(function (resolve) {
+      var t = parseCodigo(code), s = !t && parseCodigoSeg(code);
+      var f = (t && t.fase0) || {};
+      $("asigInfo").textContent = t
+        ? "Screening inicial del " + (t.fecha || "—") + (f.nombre ? " · nombre: " + f.nombre : "") + (f.edad ? " · " + f.edad + " años" : "") + "."
+        : "Seguimiento del " + ((s && s.fecha) || "—") + (s && s.perfil ? " · perfil " + s.perfil : "") + ".";
+      $("asigLista").innerHTML = PanelStore.patients().map(function (p) { return '<option value="' + esc(p.codigo) + '">'; }).join("");
+      $("asigCodigo").value = "";
+      $("asignarModal").style.display = "flex"; $("app").inert = true;
+      setTimeout(function () { $("asigCodigo").focus(); }, 50);
+      var volver = document.activeElement;
+      function fin(v) { $("asignarModal").style.display = "none"; $("app").inert = false;
+        var f = (volver && document.body.contains(volver) && volver.offsetParent) ? volver : $("btnImport"); if (f && f.offsetParent) f.focus(); $("asigOk").onclick = $("asigSaltar").onclick = $("asigCodigo").onkeydown = null; resolve(v); }
+      $("asigOk").onclick = function () { var v = normCodigoPac($("asigCodigo").value); if (v) fin(v); else $("asigCodigo").focus(); };
+      $("asigSaltar").onclick = function () { fin(""); };
+      $("asigCodigo").onkeydown = function (e) { if (e.key === "Enter") $("asigOk").onclick(); };
+    });
+  }
+
   /* ───────────────────────── Importar ─────────────────────────── */
   function openImport() { $("importModal").style.display = "flex"; $("impMsg").textContent = ""; }
   function closeImport() { $("importModal").style.display = "none"; }
 
   async function importText(txt, label) {
+    var esJson = false; try { JSON.parse(txt); esJson = true; } catch (e) {}
+    var cs = esJson ? [] : extraerCodigos(txt);
+    if (cs.length) {
+      closeImport();
+      cs.forEach(function (c) { if (pendientes.indexOf(c) < 0) pendientes.push(c); });
+      var hechos = await procesarPendientes();
+      return hechos.length > 0;
+    }
     var obj; try { obj = JSON.parse(txt); } catch (e) { setImp("No es un JSON válido" + (label ? " (" + label + ")" : ""), false); return false; }
     try {
-      var res = PanelStore.importAny(obj);
-      await PanelStore.save();
+      var res = await PanelStore.exclusivo(function () { return PanelStore.importAny(obj); });
+      if (!res) return false;
       selected = res.codigos[0] || selected;
       renderList($("pfilter").value); renderDetail();
       var who = res.codigos.length === 1 ? res.codigos[0] : res.codigos.length + " pacientes";
@@ -995,13 +1269,13 @@
       var a = $("cNew").value, b = $("cNew2").value;
       if (a.length < 4) { alert("Usa al menos 4 caracteres."); return; }
       if (a !== b) { alert("Los códigos no coinciden."); return; }
-      await PanelStore.create(a); showApp();
+      await PanelStore.create(a); showApp(); procesarPendientes();
     });
     $("formEntrar").addEventListener("submit", async function (e) {
       e.preventDefault();
       $("lockErr").textContent = "";
       var ok = await PanelStore.unlock($("cPass").value);
-      if (ok) { $("cPass").value = ""; showApp(); }
+      if (ok) { $("cPass").value = ""; showApp(); procesarPendientes(); }
       else $("lockErr").textContent = "Código incorrecto.";
     });
     $("btnReset").addEventListener("click", function () {
@@ -1009,13 +1283,45 @@
         PanelStore.reset(); showLock();
       }
     });
-    $("btnLock").addEventListener("click", function () { PanelStore.lock(); selected = null; showLock(); });
+    $("btnLock").addEventListener("click", function () { PanelStore.lock(); bloquearPantallas(); });
     $("btnImport").addEventListener("click", openImport);
     $("btnImport2").addEventListener("click", openImport);
     $("impClose").addEventListener("click", closeImport);
     $("btnBackup").addEventListener("click", backup);
     $("btnUso").addEventListener("click", renderUso);
     $("pfilter").addEventListener("input", function () { renderList(this.value); });
+    $("pfPend").addEventListener("change", function () { renderList($("pfilter").value); });
+    $("pautaClose").addEventListener("click", closePauta);
+    $("pautaModal").addEventListener("click", function (e) { if (e.target === $("pautaModal")) closePauta(); });
+    // Añade o quita solo la línea del código: respeta lo que ya hayas editado.
+    $("pautaCod").addEventListener("change", function () {
+      var ta = $("pautaTa"), pi = pautaPac && pautaInfo(pautaPac); if (!pi || !pi.code3) return;
+      var t = ta.value.replace(/🔢 Para tus registros de seguimiento[^\n]*\n*/, "");
+      if (this.checked) {
+        var i = t.indexOf("No hace falta que salga perfecto");
+        t = i >= 0 ? t.slice(0, i) + lineaCodSeg(pi.code3) + t.slice(i) : t.replace(/\s*$/, "\n\n") + lineaCodSeg(pi.code3).trim();
+      }
+      ta.value = t;
+    });
+    $("pautaWa").addEventListener("click", function () {
+      this.href = "https://wa.me/?text=" + encodeURIComponent($("pautaTa").value);
+    });
+    $("pautaHecho").addEventListener("click", function () {
+      var p = pautaPac; closePauta(); if (p) marcarAtendido(p);
+    });
+    $("pautaCopy").addEventListener("click", function () {
+      var ta = $("pautaTa"), b = this; ta.select();
+      (navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(ta.value) : Promise.reject())
+        .catch(function () { try { document.execCommand("copy"); } catch (e) {} })
+        .then(function () { b.textContent = "✓ Copiado"; setTimeout(function () { b.textContent = "📋 Copiar"; }, 1800); });
+    });
+    window.addEventListener("hashchange", tomarHash);
+    window.addEventListener("storage", function (e) {
+      if (!PanelStore._key || procesando) return;
+      var conPauta = $("pautaModal").style.display === "flex";   // no se repinta con la pauta abierta
+      PanelStore.reload().then(function () { if (PanelStore._key && !conPauta) { renderList($("pfilter").value); renderDetail(); } })
+        .catch(function () { PanelStore.lock(); window.APRENS_PANEL_onLock(); });
+    });
     $("fileInput").addEventListener("change", function () { if (this.files.length) importFiles(this.files); });
     $("pasteBtn").addEventListener("click", function () { var t = $("pasteBox").value.trim(); if (t) importText(t, "pegado"); });
 
@@ -1031,9 +1337,17 @@
     $("infCopy").addEventListener("click", copyInforme);
     $("informeOverlay").addEventListener("click", function (e) { if (e.target === $("informeOverlay")) closeInforme(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("informeOverlay").style.display === "flex") closeInforme(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("pautaModal").style.display === "flex") closePauta(); });
   }
 
-  document.addEventListener("DOMContentLoaded", function () { wire(); showLock(); });
+  /* Al bloquear: cerrar y vaciar todo lo que muestre datos clínicos. */
+  function bloquearPantallas() {
+    closePauta(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
+    if ($("asignarModal").style.display !== "none") $("asigSaltar").click();
+    destroyCharts(); $("detailBody").innerHTML = ""; selected = null; showLock();
+  }
+  window.APRENS_PANEL_onLock = function () { bloquearPantallas(); toast("El panel ha cambiado en otra pestaña: vuelve a entrar."); };
+  document.addEventListener("DOMContentLoaded", function () { wire(); showLock(); tomarHash(); });
   window.APRENS_PANEL = { PanelStore: PanelStore, openInforme: openInforme,
     _metrics: { monoDist: monoDist, lccSeries: lccSeries, recentActivity: recentActivity },
     _report: { screeningReport: screeningReport, adherenceReport: adherenceReport, outcomesReport: outcomesReport, buildInforme: buildInforme } }; // para pruebas
