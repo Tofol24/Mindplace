@@ -32,21 +32,30 @@ export const IMPUESTOS_DEFECTO = { iva: { 21: "s_iva_21", 10: "s_iva_10", 0: nul
  * IVA de venta al 21 %, 10 % y exento, y retención de IRPF de venta al 7 % y 15 %.
  */
 export function resolverImpuestos(lista) {
+  // Holded deja crear impuestos con clave propia (p. ej. «exento_sanitario»): se identifican
+  // por nombre, ámbito y grupo, no solo por el prefijo «s_iva» / «s_ret».
   const activos = (Array.isArray(lista) ? lista : [])
     .filter((t) => t && typeof t.key === "string" && t.status !== false)
-    .map((t) => ({ key: t.key, nombre: `${t.name || ""} ${t.key} ${t.type || ""} ${t.group || ""}`.toLowerCase(), pct: Math.abs(Number(t.amount)) }));
-  const ventas = activos.filter((t) => t.key.startsWith("s_"));
-  const iva = ventas.filter((t) => /^s_iva/.test(t.key));
-  const ret = ventas.filter((t) => /^s_ret/.test(t.key) || /retenci|irpf|withhold/.test(t.nombre));
+    .map((t) => ({
+      key: t.key,
+      texto: [t.name, t.key, t.type, t.group, t.scope].filter(Boolean).join(" ").toLowerCase(),
+      ambito: [t.scope, t.group].filter(Boolean).join(" ").toLowerCase(),
+      pct: Math.abs(Number(t.amount)),
+    }));
+  const deCompra = (t) => /^p_/.test(t.key) || /purchase|compra|gasto|expense/.test(t.ambito);
+  const esRetencion = (t) => /^s?_?ret/.test(t.key) || /retenci|irpf|withhold/.test(t.texto);
+  const ventas = activos.filter((t) => !deCompra(t));
+  const ret = ventas.filter(esRetencion);
+  const iva = ventas.filter((t) => !esRetencion(t) && (/^s_iva/.test(t.key) || /\biva\b|vat|exent|exempt/.test(t.texto)));
   const conPct = (l, pct) => l.filter((t) => t.pct === pct);
   const preferida = (l, clave) => (l.find((t) => t.key === clave) || l[0])?.key || null;
-  const exentos = conPct(iva, 0);
   return {
     iva: {
       21: preferida(conPct(iva, 21), "s_iva_21") || IMPUESTOS_DEFECTO.iva[21],
       10: preferida(conPct(iva, 10), "s_iva_10") || IMPUESTOS_DEFECTO.iva[10],
-      // Entre los de 0 %, el que se llama «exento»: no es lo mismo que un 0 % de exportación.
-      0: (exentos.find((t) => /exent|exempt/.test(t.nombre)) || exentos[0])?.key || null,
+      // Solo un impuesto que se llame «exento»: un 0 % cualquiera puede ser el de exportación
+      // o el intracomunitario, y el PDF diría «exento» con otro impuesto en Holded.
+      0: preferida(conPct(iva, 0).filter((t) => /exent|exempt/.test(t.texto)), "s_iva_exento"),
     },
     retencion: {
       7: preferida(conPct(ret, 7), "s_ret_7"),

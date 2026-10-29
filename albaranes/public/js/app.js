@@ -424,10 +424,18 @@ async function vistaEditor(alb) {
     if (!alb.retencionManual) {
       const r = recordada != null ? Number(recordada) || 0 : esEmpresa(c.nif) ? ajustes.retencionEmpresas || 0 : 0;
       alb.retencion = RETENCIONES.includes(r) ? r : 0;
+      alb.retencionPara = normalNif(c.nif); // para qué NIF se propuso
       selRet.value = String(alb.retencion);
     }
     mostrarRet();
   };
+  // Si el cliente ha cambiado sin pasar por aquí (p. ej. lo ha rellenado un dictado),
+  // se vuelve a proponer: con la del cliente recordado con ese NIF, o la de Ajustes si es CIF.
+  if (!alb.retencionManual && (alb.retencionPara ?? null) !== normalNif(c.nif)) {
+    const nif = normalNif(c.nif);
+    const recordado = nif ? (await db.todos("clientes")).find((x) => normalNif(x.nif) === nif) : null;
+    proponerRetencion(recordado?.retencion);
+  }
   mostrarRet();
   const camposCliente = {};
   const rellenarCliente = (x) => {

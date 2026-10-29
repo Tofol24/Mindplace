@@ -283,6 +283,16 @@ test("resolverImpuestos: elige IVA exento y retención de venta de la lista de l
   const r = resolverImpuestos(lista);
   assert.deepEqual(r.iva, { 21: "s_iva_21", 10: "s_iva_10", 0: "s_iva_exento" });
   assert.deepEqual(r.retencion, { 7: null, 15: "s_ret_15" }); // la del 7 % está desactivada
+  // Solo un 0 % que se llame «exento»: el de exportación no vale.
+  assert.equal(resolverImpuestos([{ key: "s_iva_0", name: "IVA 0% exportación", amount: "0" }]).iva[0], null);
+  // Claves propias de la cuenta, identificadas por nombre y ámbito; las de compra, fuera.
+  const propios = resolverImpuestos([
+    { key: "p_exento", name: "Exento compras", amount: "0", scope: "purchases" },
+    { key: "exento_sanitario", name: "Exento sanitario", amount: "0", scope: "sales", group: "iva" },
+    { key: "irpf15", name: "Retención IRPF 15%", amount: "-15", scope: "sales" },
+  ]);
+  assert.equal(propios.iva[0], "exento_sanitario");
+  assert.equal(propios.retencion[15], "irpf15");
   // Una cuenta sin exento ni retenciones: no se inventan claves.
   assert.deepEqual(resolverImpuestos([{ key: "s_iva_21", amount: "21" }]).retencion, { 7: null, 15: null });
   assert.equal(resolverImpuestos([{ key: "s_iva_21", amount: "21" }]).iva[0], null);
