@@ -20,10 +20,12 @@ export const IMPUESTOS = { 21: "s_iva_21", 10: "s_iva_10" };
 
 export class ErrorHolded extends Error {
   /** reintentar: true si es un fallo pasajero (red, 429, 5xx) y vale la pena volver a probar. */
-  constructor(mensaje, { status = 0, reintentar = false } = {}) {
+  /** yaEnHolded: el albarán ya existe en Holded; corregirlo desde la app no tiene sentido. */
+  constructor(mensaje, { status = 0, reintentar = false, yaEnHolded = false } = {}) {
     super(mensaje);
     this.status = status;
     this.reintentar = reintentar;
+    this.yaEnHolded = yaEnHolded;
   }
 }
 
@@ -73,9 +75,20 @@ export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs
       if (!r?.id) throw new ErrorHolded("Holded no ha devuelto el id del cliente creado", { reintentar: true });
       return r.id;
     },
+    /** Sigue el cursor (hasta 5 páginas: la función de Netlify no da para más). */
     async listarAlbaranes(query) {
-      const r = await llamar("GET", "/waybills", { query });
-      return Array.isArray(r?.items) ? r.items : [];
+      const items = [];
+      let cursor;
+      for (let pagina = 0; pagina < 5; pagina++) {
+        const r = await llamar("GET", "/waybills", { query: { ...query, cursor } });
+        if (Array.isArray(r?.items)) items.push(...r.items);
+        if (!r?.has_more || !r.cursor) break;
+        cursor = r.cursor;
+      }
+      return items;
+    },
+    obtenerAlbaran(id) {
+      return llamar("GET", `/waybills/${encodeURIComponent(id)}`);
     },
     async crearAlbaran(a) {
       const r = await llamar("POST", "/waybills", { json: a });
@@ -297,12 +310,14 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
     throw new ErrorHolded(
       "Este albarán ya está creado en Holded con los datos anteriores y no se puede cambiar desde la app. "
       + "Corrígelo directamente en Holded o haz uno nuevo.",
-      { status: 422 },
+      { status: 422, yaEnHolded: !!estado.albaranId },
     );
   }
 
   // Si el albarán se corrigió con otro cliente antes de llegar a crearse, se vuelve a buscar.
-  const quien = `${normalizarNombre(a.cliente.nombre)}|${normalizarNif(a.cliente.nif)}|${a.cliente.holdedId}`;
+  // Email y teléfono también cuentan: sin NIF, son lo que distingue a dos clientes con el mismo nombre.
+  const quien = [normalizarNombre(a.cliente.nombre), normalizarNif(a.cliente.nif), a.cliente.holdedId,
+    String(a.cliente.email || "").trim().toLowerCase(), String(a.cliente.telefono || "").replace(/\D/g, "")].join("|");
   if (estado.contactId && !estado.albaranId && estado.quien !== quien) delete estado.contactId;
 
   if (!estado.contactId) {
@@ -323,7 +338,18 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       // ±1 día por si Holded guarda la fecha en UTC (medianoche en Madrid es el día anterior en UTC).
       const cercanos = await holded.listarAlbaranes({ contact_id: estado.contactId, start_date: diaMas(a.fecha, -1), end_date: diaMas(a.fecha, 1), limit: 200 });
       const ya = cercanos.find((w) => (w.document_number || w.number) === a.numero);
-      if (ya) estado.albaranId = ya.id;
+      if (ya) {
+        // El número solo no basta (p. ej. tras reinstalar la app y reiniciar el contador):
+        // se comprueba la referencia que la app deja en las notas antes de adjuntarle nada.
+        const detalle = await holded.obtenerAlbaran(ya.id);
+        if (typeof detalle?.notes === "string" && !detalle.notes.includes(`ref. ${a.id}`)) {
+          throw new ErrorHolded(
+            `En Holded ya hay otro albarán con el número ${a.numero}. Cambia el próximo número en Ajustes y haz este albarán de nuevo.`,
+            { status: 422 },
+          );
+        }
+        estado.albaranId = ya.id;
+      }
     }
     if (!estado.albaranId) {
       estado.creando = true;
@@ -355,6 +381,7 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       if (e instanceof ErrorHolded && !e.reintentar) {
         e.message = `El albarán ya está en Holded, pero no ha aceptado el PDF firmado (${e.message}). `
           + "Vuelve a intentarlo sin cambiar los datos, o adjunta el PDF a mano en Holded.";
+        e.yaEnHolded = true;
       }
       throw e;
     }

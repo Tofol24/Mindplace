@@ -172,7 +172,13 @@ export function generarPDF(alb, negocio) {
   }
   const xf = M + 86;
   let yf = y + 5;
-  if (alb.firmante) { texto(alb.firmante, xf, yf, { size: 10, bold: true }); yf += 5; }
+  if (alb.firmante) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...TINTA);
+    for (const s of doc.splitTextToSize(alb.firmante, A4.w - M - xf)) { doc.text(s, xf, yf); yf += 4.6; }
+    yf += 0.4;
+  }
   if (alb.firmadoEn) {
     texto(`Firmado el ${new Date(alb.firmadoEn).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}`, xf, yf, { size: 9, color: GRIS });
     yf += 5;

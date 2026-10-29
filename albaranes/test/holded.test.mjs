@@ -30,6 +30,7 @@ function holdedFalso(over = {}) {
     buscarContactos: async (n) => { llamadas.push(["buscar", n]); return []; },
     crearContacto: async (c) => { llamadas.push(["crearContacto", c]); return "c".repeat(24); },
     listarAlbaranes: async (q) => { llamadas.push(["listar", q]); return []; },
+    obtenerAlbaran: async (id) => { llamadas.push(["obtener", id]); return { id, notes: "Creado desde la app de albaranes (ref. alb-1234-abcd)" }; },
     crearAlbaran: async (a) => { llamadas.push(["crearAlbaran", a]); return "w".repeat(24); },
     adjuntar: async (id, bytes, nombre) => { llamadas.push(["adjuntar", id, nombre, bytes.length]); return { id: "x" }; },
     ...over,
@@ -134,6 +135,18 @@ test("si se cortó al crear el albarán, lo busca en Holded antes de crear otro"
   assert.equal(alm.m.get(a.id).creando, undefined);
 });
 
+test("listarAlbaranes recorre las páginas del cursor", async () => {
+  const vistas = [];
+  const fetchFalso = async (url) => {
+    vistas.push(url.searchParams.get("cursor"));
+    const r = url.searchParams.get("cursor") ? { items: [{ id: "2" }], has_more: false } : { items: [{ id: "1" }], has_more: true, cursor: "c2" };
+    return new Response(JSON.stringify(r), { status: 200 });
+  };
+  const items = await crearClienteHolded({ apiKey: "k", fetch: fetchFalso }).listarAlbaranes({ limit: 200 });
+  assert.deepEqual(items.map((w) => w.id), ["1", "2"]);
+  assert.deepEqual(vistas, [null, "c2"]);
+});
+
 test("crearClienteHolded: cabecera Bearer, URL v2 y errores clasificados", async () => {
   const vistas = [];
   const fetchFalso = async (url, op) => {
@@ -206,4 +219,35 @@ test("si se cortó al crear el albarán, no se aceptan datos cambiados en el rei
   const h2 = holdedFalso({ listarAlbaranes: async () => [{ id: "w".repeat(24), number: "M-2026-0001" }] });
   await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: validarAlbaran(otro) }), /ya está creado en Holded/);
   assert.equal(h2.llamadas.length, 0);
+});
+
+test("corregir el teléfono o el email de un cliente sin NIF vuelve a buscar su ficha", async () => {
+  const alm = almacenMemoria();
+  const sinNif = (telefono) => validarAlbaran({ ...base(), cliente: { nombre: "Ana Gil", telefono } });
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("rechazado", { status: 422 }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: sinNif("600000001") }));
+  const h2 = holdedFalso({ crearContacto: async () => "b".repeat(24) });
+  const r = await enviarAlbaran({ holded: h2, almacen: alm, albaran: sinNif("600000002") });
+  assert.equal(r.contactId, "b".repeat(24));
+});
+
+test("si Holded rechaza el PDF de un albarán ya creado, el error lo indica (no se ofrece corregir)", async () => {
+  const h = holdedFalso({ adjuntar: async () => { throw new ErrorHolded("PDF no válido", { status: 422 }); } });
+  await assert.rejects(
+    enviarAlbaran({ holded: h, almacen: almacenMemoria(), albaran: validarAlbaran(base()) }),
+    (e) => e.yaEnHolded === true && e.status === 422,
+  );
+});
+
+test("recuperación tras un corte: no adjunta a otro albarán con el mismo número", async () => {
+  const alm = almacenMemoria();
+  const a = validarAlbaran(base());
+  const h1 = holdedFalso({ crearAlbaran: async () => { throw new ErrorHolded("timeout", { reintentar: true }); } });
+  await assert.rejects(enviarAlbaran({ holded: h1, almacen: alm, albaran: a }));
+  const h2 = holdedFalso({
+    listarAlbaranes: async () => [{ id: "9".repeat(24), document_number: "M-2026-0001" }],
+    obtenerAlbaran: async (id) => ({ id, notes: "Creado desde la app de albaranes (ref. otro-albaran-viejo)" }),
+  });
+  await assert.rejects(enviarAlbaran({ holded: h2, almacen: alm, albaran: a }), /ya hay otro albarán/);
+  assert.ok(!h2.llamadas.some((l) => l[0] === "adjuntar" || l[0] === "crearAlbaran"));
 });

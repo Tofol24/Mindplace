@@ -14,9 +14,13 @@
 
 import * as db from "./db.js";
 import {
-  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
+  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoCantidad, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
 } from "./calculos.js";
 import { generarPDF, nombrePDF } from "./pdf.js";
+import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./ui.js";
+import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from "./catalogo.js";
+import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
+import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
 
 const AJUSTES_DEF = {
   negocio: { nombre: "Pere Plomer Bennassar", nif: "", direccion: "", telefono: "", email: "pere.plomer@gmail.com" },
@@ -24,60 +28,14 @@ const AJUSTES_DEF = {
   precioHora: 35,
   precioDesplazamiento: 20,
   ivaDefecto: 21,
+  margen: 30,
   claveApp: "",
 };
 let ajustes = structuredClone(AJUSTES_DEF);
 
 const vista = document.getElementById("vista");
 const barraEstado = document.getElementById("estado");
-
-// ---------------------------------------------------------------------------
-// Utilidades de interfaz
-// ---------------------------------------------------------------------------
-
-/** Crea un elemento. Los textos se ponen siempre como texto (nunca como HTML). */
-function h(tag, attrs = {}, ...hijos) {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs || {})) {
-    if (v == null || v === false) continue;
-    if (k === "class") el.className = v;
-    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
-    else if (k === "value") el.value = v;
-    else if (v === true) el.setAttribute(k, "");
-    else el.setAttribute(k, v);
-  }
-  for (const c of hijos.flat()) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
-  return el;
-}
-
-function campo(etiqueta, input, ayuda) {
-  return h("label", { class: "campo" }, h("span", { class: "etq" }, etiqueta), input, ayuda && h("small", {}, ayuda));
-}
-
-let avisoTimer;
-function aviso(msg, tipo = "ok") {
-  const el = document.getElementById("aviso");
-  el.textContent = msg;
-  el.className = `toast visible ${tipo}`;
-  clearTimeout(avisoTimer);
-  avisoTimer = setTimeout(() => { el.className = "toast"; }, 3800);
-}
-
-const num = (s) => {
-  let t = String(s ?? "").replace(/\s/g, "");
-  if (t.includes(",")) t = t.replace(/\./g, "").replace(",", "."); // 1.234,50 → 1234.50
-  const n = Number(t);
-  return Number.isFinite(n) ? n : 0;
-};
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`);
-const normal = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
-const normalNif = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-const normalTel = (s) => String(s || "").replace(/\D/g, "").slice(-9);
-
-function ir(ruta) {
-  if (location.hash === `#${ruta}`) render();
-  else location.hash = ruta;
-}
+const pestanas = document.getElementById("pestanas");
 
 // ---------------------------------------------------------------------------
 // Datos
@@ -116,12 +74,28 @@ async function guardarAlbaran(alb) {
   await db.guardar("albaranes", alb);
 }
 
+/** Coste, venta y ganancia del material del catálogo de un albarán (null si no tiene). */
+function margenAlbaran(alb) {
+  const conCoste = alb.lineas.filter((l) => l.articuloId && l.coste != null);
+  if (!conCoste.length) return null;
+  const coste = redondear(conCoste.reduce((s, l) => s + l.coste * (Number(l.cantidad) || 0), 0));
+  const venta = redondear(conCoste.reduce((s, l) => s + importeLinea(l), 0));
+  return { coste, venta, ganancia: redondear(venta - coste) };
+}
+
 /** Guardado automático del borrador: si falla, se avisa (no se pierde en silencio). */
 async function autoguardar(alb) {
   try {
-    await guardarAlbaran(alb);
+    alb.actualizado = new Date().toISOString();
+    if (!(await db.guardarBorrador(alb))) {
+      aviso("Este albarán ya se ha firmado en otra ventana: no se han guardado estos cambios.", "error");
+      ir(`/albaran/${alb.id}`);
+      return false;
+    }
+    return true;
   } catch {
     aviso("⚠ No se ha podido guardar el borrador. No cierres la app y vuelve a intentarlo.", "error");
+    return false;
   }
 }
 
@@ -208,6 +182,7 @@ async function enviarUno(alb) {
   if (r.datos.delAlbaran) {
     alb.estado = "error";
     alb.error = msg;
+    alb.yaEnHolded = !!r.datos.yaEnHolded;
     await guardarAlbaran(alb);
     return "rechazado";
   }
@@ -231,8 +206,12 @@ async function sincronizar({ manual = false } = {}) {
       .sort((a, b) => a.numero.localeCompare(b.numero));
     if (!lista.length) { if (manual) aviso("No hay nada pendiente de enviar."); return; }
     pintarEstado();
-    for (const alb of lista) {
-      if (alb.estado === "error") alb.estado = "pendiente";
+    for (const { id } of lista) {
+      // Se relee justo antes de enviarlo: mientras la ronda envía otros, este pudo reabrirse para corregirlo.
+      const alb = await db.obtener("albaranes", id);
+      if (!alb || !(alb.estado === "pendiente" || (manual && alb.estado === "error"))) continue;
+      // Se guarda «pendiente» antes de enviar: mientras se envía, «Corregir» ya no puede reabrirlo.
+      if (alb.estado === "error") { alb.estado = "pendiente"; await guardarAlbaran(alb); }
       const r = await enviarUno(alb);
       if (r === "ok") enviados++;
       if (r === "pasajero" || r === "conexion") { parada = r === "conexion" ? alb.error : "pasajero"; break; }
@@ -268,6 +247,31 @@ async function pintarEstado() {
 function refrescarSiProcede() {
   const r = location.hash.slice(1) || "/";
   if (r === "/" || r.startsWith("/albaran/")) render();
+}
+
+/** Lo que necesitan las pantallas de compras, catálogo y dictado. */
+const ctx = {
+  ajustes: () => ajustes,
+  llamarAPI: (...a) => llamarAPI(...a),
+  descargar: (f) => descargar(f),
+  // Repinta solo si se está viendo esa pantalla (o su lista).
+  refrescar: (ruta) => {
+    const r = location.hash.slice(1) || "/";
+    if (r === ruta || (ruta.startsWith("/compra/") && r === "/compras")) render();
+  },
+};
+
+/** Lecturas con IA que quedaron pendientes sin cobertura (fotos de compras y dictados). */
+let iaEnMarcha = false;
+async function tareasIA() {
+  if (iaEnMarcha) return;
+  iaEnMarcha = true;
+  try {
+    await leerComprasPendientes(ctx);
+    await aplicarDictadosPendientes(ctx);
+  } catch { /* se reintenta en la próxima ronda */ } finally {
+    iaEnMarcha = false;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -415,13 +419,15 @@ async function vistaEditor(alb) {
   const inputNombre = h("input", {
     value: c.nombre, autocomplete: "off", placeholder: "Nombre o empresa",
     oninput: (e) => { c.nombre = e.target.value; c.holdedId = ""; pintarChip(); cambiado(); buscarClientes(e.target.value); },
-    onblur: () => setTimeout(() => sugerencias.replaceChildren(), 250),
+    // Solo se cierran si el foco sale del nombre y de las sugerencias (así funcionan con teclado).
+    onblur: (e) => { if (!sugerencias.contains(e.relatedTarget)) setTimeout(() => sugerencias.replaceChildren(), 250); },
   });
   camposCliente.nombre = inputNombre;
   const campoCliente = (clave, etiqueta, attrs = {}) => {
     const el = entrada(c, clave, attrs);
-    // Otro NIF es otro cliente: deja de valer la ficha de Holded elegida.
-    if (clave === "nif") el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
+    // Otro NIF, email o teléfono puede ser otra persona (sobre todo sin NIF): deja de valer
+    // la ficha de Holded elegida y el servidor vuelve a buscarla con los datos nuevos.
+    if (["nif", "email", "telefono"].includes(clave)) el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
     camposCliente[clave] = el;
     return campo(etiqueta, el);
   };
@@ -432,30 +438,60 @@ async function vistaEditor(alb) {
   const contTotales = h("div", { class: "totales" });
   function pintarTotales() {
     const t = totales(alb.lineas);
+    const m = margenAlbaran(alb);
     contTotales.replaceChildren(
       h("div", {}, h("span", {}, "Base"), h("span", {}, formatoEuros(t.base))),
       ...t.desglose.map((d) => h("div", {}, h("span", {}, `IVA ${d.iva}%`), h("span", {}, formatoEuros(d.cuota)))),
       h("div", { class: "total" }, h("span", {}, "Total"), h("span", {}, formatoEuros(t.total))),
+      !m ? "" : h("p", { class: "margen-interno" }, `Solo lo ves tú: material a coste ${formatoEuros(m.coste)} · lo vendes a ${formatoEuros(m.venta)} · ganas ${formatoEuros(m.ganancia)} en material`),
     );
   }
+  // Sugerencias de concepto: primero el catálogo, luego lo usado en otros albaranes.
+  const catalogo = await articulosOrdenados();
+  const porNombre = new Map(catalogo.map((a) => [normal(a.nombre), a]));
   const conceptosConocidos = new Map();
-  for (const a of await db.todos("albaranes")) for (const l of a.lineas) if (l.concepto) conceptosConocidos.set(l.concepto, l.precio);
-  const datalist = h("datalist", { id: "conceptos" }, [...conceptosConocidos.keys()].slice(0, 200).map((k) => h("option", { value: k })));
+  for (const a of await db.todos("albaranes")) for (const l of a.lineas) if (l.concepto && !l.articuloId) conceptosConocidos.set(l.concepto, l.precio);
+  const datalist = h("datalist", { id: "conceptos" },
+    catalogo.slice(0, 400).map((a) => h("option", { value: a.nombre }, `${formatoEuros(precioVenta(a, ajustes.margen))} · stock ${formatoCantidad(a.stock || 0)}`)),
+    [...conceptosConocidos.keys()].filter((k) => !porNombre.has(normal(k))).slice(0, 200).map((k) => h("option", { value: k })));
 
   function pintarLineas() {
     contLineas.replaceChildren(...alb.lineas.map((l, i) => {
       const importe = h("strong", { class: "importe" }, formatoEuros(importeLinea(l)));
       const precio = h("input", {
         inputmode: "decimal", value: l.precio ? String(l.precio).replace(".", ",") : "", placeholder: "0,00",
-        oninput: (e) => { l.precio = redondear(num(e.target.value)); importe.textContent = formatoEuros(importeLinea(l)); cambiado(); },
+        oninput: (e) => { l.precio = redondear(num(e.target.value)); importe.textContent = formatoEuros(importeLinea(l)); pintarInfo(); cambiado(); },
       });
+      // Datos del artículo del catálogo (solo para Pere: stock, coste y lo que gana).
+      const info = h("small", { class: "info-articulo" });
+      function pintarInfo() {
+        const art = l.articuloId && catalogo.find((a) => a.id === l.articuloId);
+        if (!art) { info.textContent = ""; return; }
+        const coste = l.coste ?? art.coste;
+        const margen = coste > 0 ? Math.round(((l.precio - coste) / coste) * 100) : null;
+        info.textContent = `Catálogo · stock ${formatoCantidad(art.stock || 0)} · coste ${formatoEuros(coste)}${margen != null ? ` · margen ${margen}%` : ""}`;
+      }
+      pintarInfo();
       return h("div", { class: "linea" },
         h("div", { class: "linea-cab" },
           h("input", {
             class: "concepto", value: l.concepto, list: "conceptos", placeholder: "Concepto (p. ej. Grifo monomando)",
             oninput: (e) => {
               l.concepto = e.target.value;
-              if (!l.precio && conceptosConocidos.has(l.concepto)) {
+              const art = porNombre.get(normal(l.concepto));
+              if (art) {
+                // Artículo del catálogo: su precio de venta (coste + margen) y su coste, para el margen.
+                l.articuloId = art.id;
+                l.coste = art.coste;
+                l.precio = precioVenta(art, ajustes.margen);
+                precio.value = String(l.precio).replace(".", ",");
+                importe.textContent = formatoEuros(importeLinea(l));
+              } else if (l.articuloId) {
+                delete l.articuloId;
+                delete l.coste;
+              }
+              pintarInfo();
+              if (!art && !l.precio && conceptosConocidos.has(l.concepto)) {
                 l.precio = conceptosConocidos.get(l.concepto);
                 precio.value = String(l.precio).replace(".", ",");
                 importe.textContent = formatoEuros(importeLinea(l));
@@ -472,7 +508,8 @@ async function vistaEditor(alb) {
           campo("Precio €", precio),
           campo("IVA", h("select", { onchange: (e) => { l.iva = Number(e.target.value); cambiado(); } },
             IVAS.map((v) => h("option", { value: v, selected: v === l.iva }, `${v}%`)))),
-          importe));
+          importe),
+        info);
     }));
   }
   const anadir = (l) => {
@@ -490,7 +527,8 @@ async function vistaEditor(alb) {
     if (!c.nombre.trim()) fallos.push("el nombre del cliente");
     if (!alb.lineas.length) fallos.push("al menos una línea");
     if (alb.lineas.some((l) => !l.concepto.trim())) fallos.push("el concepto de todas las líneas");
-    if (alb.lineas.some((l) => !(l.cantidad > 0))) fallos.push("una cantidad mayor que cero en cada línea");
+    if (alb.lineas.some((l) => !(l.cantidad >= 0.0001))) fallos.push("una cantidad mayor que cero en cada línea");
+    if (alb.lineas.length > 100) fallos.push("como máximo 100 líneas");
     if (c.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email.trim())) fallos.push("un email del cliente válido");
     if (!fechaValida(alb.fecha)) fallos.push("una fecha válida");
     if (alb.lineas.some((l) => !(l.precio >= 0) || l.precio > 1e7)) fallos.push("precios correctos (sin negativos)");
@@ -503,7 +541,7 @@ async function vistaEditor(alb) {
     if (largos.length) { error.textContent = `Demasiado largo: ${[...new Set(largos)].join(", ")}.`; return; }
     if (fallos.length) { error.textContent = `Falta ${fallos.join(", ")}.`; return; }
     clearTimeout(guardarTimer);
-    await guardarAlbaran(alb);
+    if (!(await autoguardar(alb))) return;
     ir(`/firmar/${alb.id}`);
   };
 
@@ -512,6 +550,10 @@ async function vistaEditor(alb) {
     h("div", { class: "cab-vista" },
       h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await autoguardar(alb); ir("/"); } }, "‹ Albaranes"),
       h("h2", {}, alb.numero ? `Corregir ${alb.numero}` : "Nuevo albarán")),
+    panelDictado(ctx, alb, {
+      guardar: async () => { clearTimeout(guardarTimer); await autoguardar(alb); },
+      alAplicar: () => ir(`/editar/${alb.id}`),
+    }),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Cliente"),
       h("div", { class: "campo-busqueda" }, campo("Nombre", inputNombre), sugerencias),
@@ -644,12 +686,19 @@ function vistaFirma(alb) {
       alb.firma = firmaReducida(canvas);
       alb.firmante = firmante.value.trim();
       alb.firmadoEn = new Date().toISOString();
+      // Si ya se firmó en otra ventana, no se vuelve a numerar ni a firmar.
+      const actual = await db.obtener("albaranes", alb.id);
+      if (actual && actual.estado !== "borrador") { ir(`/albaran/${alb.id}`); return; }
       // Al corregir un albarán rechazado se mantiene su número.
       if (!alb.numero) alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
       alb.negocio = { ...ajustes.negocio };
       alb.estado = "pendiente";
       alb.error = "";
-      await guardarAlbaran(alb);
+      alb.stockDescontado = true;
+      alb.actualizado = new Date().toISOString();
+      // Firma y salida del material del stock, a la vez: o las dos cosas o ninguna.
+      const firmado = await db.guardarAlbaranYStock(alb, alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })), "borrador");
+      if (!firmado) { ir(`/albaran/${alb.id}`); return; }
       await recordarCliente(alb.cliente);
       ir(`/albaran/${alb.id}`);
       sincronizar();
@@ -694,21 +743,27 @@ function vistaDetalle(alb) {
       h("strong", {}, "Holded no lo ha aceptado"),
       h("p", {}, alb.error),
       h("div", { class: "botones-linea" },
-        h("button", {
+        // Si el albarán ya existe en Holded (p. ej. solo falló el PDF), corregirlo aquí lo dejaría
+        // sin poder enviarse y perdería la firma: se reintenta tal cual o se arregla en Holded.
+        !alb.yaEnHolded && h("button", {
           class: "btn secundario",
           onclick: async () => {
             if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
             alb.estado = "borrador";
             alb.firma = "";
             alb.firmadoEn = "";
-            await guardarAlbaran(alb);
+            // Se devuelve el material al stock (a la vez que se reabre): se descontará al firmar de nuevo.
+            const devolver = alb.stockDescontado ? alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })) : [];
+            alb.stockDescontado = false;
+            alb.actualizado = new Date().toISOString();
+            if (!(await db.guardarAlbaranYStock(alb, devolver, "error"))) { ir(`/albaran/${alb.id}`); return; }
             ir(`/editar/${alb.id}`);
           },
         }, "Corregir"),
         h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo"))),
     enviado: h("div", { class: "tarjeta estado-alb ok" },
       h("strong", {}, "Ya está en Holded ✓"),
-      h("p", {}, `Enviado el ${new Date(alb.holded?.enviadoEn || alb.actualizado).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}. En Holded, ve a Ventas → Albaranes para convertirlo en factura.`)),
+      h("p", {}, `Enviado el ${new Date(alb.holded?.enviadoEn || alb.actualizado).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}. En Holded, ve a Inventario → Albaranes para convertirlo en factura.`)),
   }[alb.estado];
 
   return [
@@ -764,6 +819,7 @@ async function vistaAjustes() {
   const inputSiguiente = h("input", { value: String(siguiente), inputmode: "numeric" });
   const inputHora = h("input", { value: String(ajustes.precioHora).replace(".", ","), inputmode: "decimal" });
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
+  const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
   const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, `${v}%`)));
   const inputClave = h("input", { value: ajustes.claveApp, type: "password", autocomplete: "off" });
   const resultadoPrueba = h("p", { class: "ayuda" });
@@ -778,9 +834,18 @@ async function vistaAjustes() {
     if (!/^[A-Z0-9]{1,8}$/.test(prefijo)) { aviso("El prefijo solo puede tener letras y números (máximo 8).", "error"); return false; }
     const sig = parseInt(inputSiguiente.value, 10);
     if (!(sig >= 1 && sig < 100000)) { aviso("El próximo número no es válido.", "error"); return false; }
+    // Nunca por debajo de un número ya usado con este prefijo y año: Holded rechazaría el repetido.
+    const usados = (await db.todos("albaranes"))
+      .map((a) => new RegExp(`^${prefijo}-${anio}-(\\d+)$`).exec(a.numero || ""))
+      .filter(Boolean).map((m) => Number(m[1]));
+    const maximo = usados.length ? Math.max(...usados) : 0;
+    if (sig <= maximo) { aviso(`El próximo número debe ser mayor que ${maximo}: ese ya está usado.`, "error"); return false; }
     ajustes.prefijo = prefijo;
     ajustes.precioHora = redondear(num(inputHora.value));
     ajustes.precioDesplazamiento = redondear(num(inputDesp.value));
+    const margen = num(inputMargen.value);
+    if (!(margen >= 0 && margen <= 1000)) { aviso("El margen no es válido.", "error"); return false; }
+    ajustes.margen = margen;
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.claveApp = inputClave.value.trim();
     for (const k of Object.keys(n)) n[k] = String(n[k] || "").trim();
@@ -806,7 +871,7 @@ async function vistaAjustes() {
   };
 
   const copia = async () => {
-    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes") };
+    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes"), articulos: await db.todos("articulos"), compras: await db.todos("compras") };
     descargar(new File([JSON.stringify(datos, null, 1)], `copia-albaranes-${hoyISO()}.json`, { type: "application/json" }));
   };
 
@@ -816,7 +881,9 @@ async function vistaAjustes() {
     let datos;
     try { datos = JSON.parse(await fichero.text()); } catch { aviso("El archivo no es una copia válida.", "error"); return; }
     if (datos?.app !== "albaranes-obra" || !Array.isArray(datos.albaranes)) { aviso("El archivo no es una copia de esta app.", "error"); return; }
-    if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`)) return;
+    const hayCatalogo = (await db.todos("articulos")).length > 0;
+    if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`
+      + (hayCatalogo ? "\n\nOjo: este móvil ya tiene catálogo. Sus artículos no se tocan, así que el stock puede no cuadrar con las compras de la copia. Lo ideal es restaurar en un móvil vacío." : ""))) return;
     let nuevos = 0;
     for (const a of datos.albaranes) {
       if (!a || typeof a.id !== "string" || !Array.isArray(a.lineas) || !a.cliente) continue;
@@ -827,6 +894,13 @@ async function vistaAjustes() {
     }
     for (const c of Array.isArray(datos.clientes) ? datos.clientes : []) {
       if (c && typeof c.id === "string" && c.nombre && !(await db.obtener("clientes", c.id))) await db.guardar("clientes", c);
+    }
+    // Catálogo y compras: se añaden los que falten (lo que ya hay en este móvil no se toca).
+    for (const a of Array.isArray(datos.articulos) ? datos.articulos : []) {
+      if (a && typeof a.id === "string" && a.nombre && !(await db.obtener("articulos", a.id))) await db.guardar("articulos", a);
+    }
+    for (const c of Array.isArray(datos.compras) ? datos.compras : []) {
+      if (c && typeof c.id === "string" && typeof c.foto === "string" && c.foto.startsWith("data:image/") && Array.isArray(c.lineas) && !(await db.obtener("compras", c.id))) await db.guardar("compras", c);
     }
     if (datos.ajustes?.negocio && !ajustes.negocio.nif) {
       ajustes = { ...ajustes, ...datos.ajustes, claveApp: ajustes.claveApp, negocio: { ...ajustes.negocio, ...datos.ajustes.negocio } };
@@ -853,6 +927,7 @@ async function vistaAjustes() {
       ejemplo,
       h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números. Si usas la app en más de un móvil, pon un prefijo distinto en cada uno."),
       h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
+      campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."),
       campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos.")),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Conexión con Holded"),
@@ -881,14 +956,25 @@ async function render() {
   const [, seccion, id] = ruta.split("/");
   let contenido;
   if (seccion === "ajustes") contenido = await vistaAjustes();
+  else if (seccion === "compras") contenido = await vistaCompras(ctx);
+  else if (seccion === "compra") contenido = await vistaCompra(ctx, id);
+  else if (seccion === "catalogo") contenido = await vistaCatalogo(ctx);
+  else if (seccion === "articulo") contenido = await vistaArticulo(ctx, id);
   else if (["editar", "firmar", "albaran"].includes(seccion)) {
     const alb = await db.obtener("albaranes", id);
     if (!alb) { ir("/"); return; }
     contenido = seccion === "editar" ? await vistaEditor(alb) : seccion === "firmar" ? vistaFirma(alb) : vistaDetalle(alb);
   } else contenido = await vistaLista();
   if (yo !== renderId) return; // otra navegación más reciente ya está pintando
-  vista.replaceChildren(...contenido);
-  document.getElementById("btn-ajustes").hidden = seccion === "ajustes";
+  // Las pantallas pueden dejar huecos (cond && elemento): no se pintan.
+  vista.replaceChildren(...contenido.filter((x) => x != null && x !== false && x !== ""));
+  // Mientras firma el cliente (con el móvil en sus manos) no hay acceso a Ajustes ni al envío.
+  document.getElementById("btn-ajustes").hidden = seccion === "ajustes" || seccion === "firmar";
+  barraEstado.hidden = seccion === "firmar";
+  // Pestañas solo en las tres listas principales.
+  const pestana = { "": "/", compras: "/compras", catalogo: "/catalogo" }[seccion ?? ""];
+  pestanas.hidden = !pestana;
+  for (const b of pestanas.querySelectorAll("button")) b.setAttribute("aria-current", b.dataset.ruta === pestana ? "page" : "false");
   // Al repintar la misma pantalla (p. ej. tras un envío) no se pierde la posición.
   if (vista.dataset.ruta !== ruta) window.scrollTo(0, 0);
   vista.dataset.ruta = ruta;
@@ -900,13 +986,15 @@ async function iniciar() {
   document.getElementById("btn-ajustes").addEventListener("click", () => ir("/ajustes"));
   barraEstado.addEventListener("click", () => sincronizar({ manual: true }));
   window.addEventListener("hashchange", render);
-  window.addEventListener("online", () => { pintarEstado(); sincronizar(); });
+  for (const b of pestanas.querySelectorAll("button")) b.addEventListener("click", () => ir(b.dataset.ruta));
+  window.addEventListener("online", () => { pintarEstado(); sincronizar(); tareasIA(); });
   window.addEventListener("offline", pintarEstado);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") sincronizar(); });
-  setInterval(() => sincronizar(), 60000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { sincronizar(); tareasIA(); } });
+  setInterval(() => { sincronizar(); tareasIA(); }, 60000);
   await render();
   pintarEstado();
   sincronizar();
+  tareasIA();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
 }
 

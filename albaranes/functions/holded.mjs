@@ -5,19 +5,11 @@
 //
 // La clave de Holded nunca llega al móvil: vive en la variable HOLDED_API_KEY
 // de Netlify. El móvil se identifica con la clave de la app (APP_CLAVE).
-import { createHash, timingSafeEqual } from "node:crypto";
 import { getStore } from "@netlify/blobs";
+import { claveCorrecta, json } from "../lib/http.mjs";
 import {
   ErrorHolded, MAX_PDF_BASE64, contactoParaMovil, crearClienteHolded, enviarAlbaran, validarAlbaran,
 } from "../lib/holded.mjs";
-
-const json = (datos, status = 200) =>
-  new Response(JSON.stringify(datos), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
-
-const huella = (s) => createHash("sha256").update(String(s)).digest();
-function claveCorrecta(recibida, esperada) {
-  return !!recibida && !!esperada && timingSafeEqual(huella(recibida), huella(esperada));
-}
 
 // Al móvil le importa una cosa: si el problema es de ESTE albarán (hay que corregirlo:
 // 400/422) o de la conexión (claves, permisos, Holded caído: el albarán sigue en cola).
@@ -25,7 +17,7 @@ function fallo(e) {
   if (e instanceof ErrorHolded) {
     const delAlbaran = e.status === 400 || e.status === 422;
     const status = delAlbaran ? 422 : e.reintentar ? 503 : 502;
-    return json({ error: e.message, reintentar: e.reintentar, delAlbaran }, status);
+    return json({ error: e.message, reintentar: e.reintentar, delAlbaran, yaEnHolded: !!e.yaEnHolded }, status);
   }
   console.error(e);
   return json({ error: "Error inesperado en el servidor", reintentar: true }, 500);
@@ -34,9 +26,8 @@ function fallo(e) {
 export default async (req) => {
   const ruta = new URL(req.url).pathname.replace(/\/+$/, "");
   const apiKey = process.env.HOLDED_API_KEY;
-  const claveApp = process.env.APP_CLAVE;
   // Primero la clave: sin ella no se dice nada de cómo está configurado el servidor.
-  if (!claveCorrecta(req.headers.get("x-clave-app"), claveApp)) {
+  if (!claveCorrecta(req)) {
     return json({ error: "La clave de la app no es correcta", reintentar: false }, 401);
   }
   if (!apiKey) return json({ error: "Falta configurar HOLDED_API_KEY en Netlify", reintentar: false }, 500);
