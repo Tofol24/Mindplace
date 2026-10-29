@@ -16,7 +16,7 @@ const T = {
     consEt: "Gabinete", consT: "La consulta: aprens.es", consD: "Terapias, equipo, servicios y contacto del gabinete de Inca.",
     expEt: "Estudio", appsT: "Apps para iPhone", appsD: "Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.", retratAlt: "Tòfol Villalonga en la entrada de APRENS, en Inca, junto al cartel de los servicios del centro", appAlt: "Ilustración de la app: una silueta con tres puntos donde llevar la atención. 1, cuello: conecta con tu garganta y nuca. 2, pecho: siente tu corazón y pulmones. 3, barriga: percibe tu estómago e intestinos.", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
-    horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies ni analítica.",
+    horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies; solo cuenta las visitas, de manera anónima.",
     tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos", eina: "Herramientas para probar", esport: "Psicología del deporte", provar: "Pruébala", destacats: "Destacados", pausa: "Pausa", repren: "Reanudar", ant: "Anterior", seg: "Siguiente", pantallesN: "Pantallas", pantallaN: "Pantalla", videos: "Vídeos", videosD: "Explicaciones cortas sobre la atención, el cuerpo y la Teoría del Efecto Consciente.", labEt: "Para psicólogos", labT: "Laboratorio TEC", labD: "La Teoría del Efecto Consciente hecha laboratorio: entender el modelo, practicar el AIS y medir el cambio.",
     disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", descarrega: "Descarga el PDF", en_ca: "(en catalán)", en_es: "(en castellano)", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
   },
@@ -158,3 +158,12 @@ document.addEventListener("click", (e) => {
 });
 pinta();
 fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { data = d; pinta(); }).catch(() => {});
+
+// Comptador anònim de visites: cada càrrega de la portada publicada suma 1 al
+// recompte del dia (funció /api/uso d'aprens-app, vegeu netlify/lib/uso.mjs).
+// No es guarda res al navegador ni s'envia cap identificador; si el navegador
+// demana no ser rastrejat (Global Privacy Control), no es compta.
+if (/^(www\.)?aprens\.net$/.test(location.hostname) && !navigator.globalPrivacyControl) {
+  const API = "https://aprens-app.netlify.app/api/uso", cos = JSON.stringify({e: "entrada", o: "portada"});
+  try { if (!(navigator.sendBeacon && navigator.sendBeacon(API, cos))) fetch(API, {method: "POST", body: cos, keepalive: true, mode: "no-cors"}).catch(() => {}); } catch {}
+}

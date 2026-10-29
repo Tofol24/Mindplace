@@ -293,24 +293,24 @@ function restaurarFocoUso(sel){
   if(sel){ var b = $("uso").querySelector(sel); if(b) b.focus(); }
 }
 function agregarUso(diasPedidos){
-  var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
+  var t = { app:0, inicio:0, portada:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
   var dias = uso.datos.dias || {};
   // Días de calendario contados desde el «hoy» del servidor (hora de Mallorca),
   // sin depender de la zona ni de los cambios de hora del ordenador.
   var h = String(uso.datos.hoy || "").split("-").map(Number), base = h.length === 3 ? Date.UTC(h[0], h[1]-1, h[2]) : Date.now();
   for(var i = diasPedidos - 1; i >= 0; i--){
     var k = new Date(base - i*86400000).toISOString().slice(0, 10);
-    var r = dias[k], ent = 0;
+    var r = dias[k], ent = 0, web = 0;
     if(r){
-      ["app","inicio","dispositivos","nuevos","instalada"].forEach(function(x){ t[x] += r.entradas[x] || 0; });
-      ent = (r.entradas.app || 0) + (r.entradas.inicio || 0);
+      ["app","inicio","portada","dispositivos","nuevos","instalada"].forEach(function(x){ t[x] += r.entradas[x] || 0; });
+      ent = (r.entradas.app || 0) + (r.entradas.inicio || 0); web = r.entradas.portada || 0;
       Object.keys(r.herramientas || {}).forEach(function(id){
         var h = r.herramientas[id], p = por[id] || (por[id] = { abrir:0, registros:0, tiempo:{"0-1":0,"1-3":0,"3-10":0,"10+":0} });
         p.abrir += h.abrir || 0; p.registros += h.registros || 0; t.abrir += h.abrir || 0; t.registros += h.registros || 0;
         TRAMOS.forEach(function(b){ p.tiempo[b] += (h.tiempo || {})[b] || 0; });
       });
     }
-    serie.push({ dia: k, n: ent });
+    serie.push({ dia: k, n: ent, web: web });
   }
   uso.totales = t; uso.porId = por; uso.serie = serie;
 }
@@ -342,6 +342,7 @@ function pintarUso(){
     var t = uso.totales, max = Math.max.apply(null, uso.serie.map(function(x){ return x.n; }).concat([1]));
     h += '<div class="kpis">' +
       kpi(t.app + t.inicio, 'entradas (app '+t.app+' · Mi espacio '+t.inicio+')') +
+      kpi(t.portada, 'visitas a aprens.net') +
       kpi(t.dispositivos, 'primeras visitas del día') +
       kpi(t.nuevos, 'primeras visitas de siempre') +
       kpi(((t.app+t.inicio) ? Math.round(100*t.instalada/(t.app+t.inicio)) : 0) + '%', 'entradas desde la app instalada') +
@@ -349,8 +350,8 @@ function pintarUso(){
       kpi(t.registros, 'registros guardados') + '</div>';
     h += '<div class="dias" aria-hidden="true">' + uso.serie.map(function(x){
       return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' entradas"></i>'; }).join("") + '</div>' +
-      '<details class="uso-msg"><summary>Entradas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Entradas</th></tr></thead><tbody>' +
-      uso.serie.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td></tr>'; }).join("") + '</tbody></table></details>';
+      '<details class="uso-msg"><summary>Entradas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Entradas</th><th>aprens.net</th></tr></thead><tbody>' +
+      uso.serie.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td><td class="n">'+x.web+'</td></tr>'; }).join("") + '</tbody></table></details>';
     var filas = Object.keys(uso.porId).map(function(id){ var p = uso.porId[id]; p.id = id; return p; })
       .sort(function(a,b){ return b.abrir - a.abrir || b.registros - a.registros; });
     var maxA = Math.max.apply(null, filas.map(function(f){ return f.abrir; }).concat([1]));
@@ -361,7 +362,7 @@ function pintarUso(){
         return '<tr><td>'+link+'</td><td class="n"><span class="bar" style="width:'+Math.max(2,Math.round(90*f.abrir/maxA))+'px"></span>'+f.abrir+'</td><td class="n">'+f.registros+'</td><td>'+ratoHabitual(f.tiempo)+'</td></tr>';
       }).join("") + '</tbody></table>' + (filas.length > 10 ? '<button type="button" class="btn ghost" data-uso="todas" style="margin-top:8px">'+(uso.todas?'Ver solo las 10 más usadas':'Ver las '+filas.length)+'</button>' : '')
       : '<p class="uso-msg">Todavía no hay aperturas registradas en este periodo.</p>';
-    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Primeras visitas» se cuentan por navegador y por sitio: un mismo móvil que entra en la app y en Mi espacio suma dos, y no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
+    h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Primeras visitas» se cuentan por navegador y por sitio: un mismo móvil que entra en la app y en Mi espacio suma dos, y no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. «Visitas a aprens.net» cuenta cada carga de la portada pública, sin aviso ni nada guardado en el navegador: incluye recargas y a cualquier visitante (no solo pacientes) y no entra en «entradas» ni en el gráfico. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
   }
   $("uso").innerHTML = h;
   var f = $("usoForm");
