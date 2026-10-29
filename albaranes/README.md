@@ -79,7 +79,10 @@ duplican albaranes** en Holded.
 ### 1. Clave de la API en Holded
 1. En Holded: **Configuración → API** (o *Desarrolladores*) → **Generar nueva clave**.
 2. Permisos que necesita: **contactos** (leer y escribir) y **albaranes / envíos**
-   (`inventory:shipments`, leer y escribir).
+   (`inventory:shipments`, leer y escribir). Si usas IVA exento o retención de
+   IRPF, también **leer impuestos**: la app busca en tu cuenta qué impuesto es
+   «exento» y cuál la retención del 15 % (Configuración → Impuestos de Holded;
+   tienen que estar activos).
 3. Copia la clave (solo se ve una vez).
 
 > La API de Holded tiene un límite de llamadas al mes según el plan (el plan
@@ -116,7 +119,11 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
   de Holded, para que no choquen los números. Cada móvil lleva su propia
   numeración: si usas la app en más de uno, pon un prefijo distinto en cada uno
   (por ejemplo `M` y `M2`).
-- Precio de la hora, del desplazamiento e IVA por defecto.
+- Precio de la hora, del desplazamiento e IVA por defecto (21 %, 10 % o
+  **exento**, p. ej. servicios sanitarios), y el texto de la exención que sale
+  en el PDF.
+- **Retención de IRPF** que te aplican las empresas (p. ej. 15 %). Se propone
+  sola en los albaranes a clientes con CIF y se puede cambiar en cada albarán.
 - **Clave de la app** (la `APP_CLAVE`) → **Guardar y probar conexión**.
 
 ---
@@ -124,7 +131,9 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
 ## Comprobaciones recomendadas antes de usarla con clientes
 
 - Con la prueba gratuita de Holded, haz un albarán de prueba y mira que en
-  Holded salgan bien el **IVA** (21% y 10%) y el número.
+  Holded salgan bien el **IVA** (21 %, 10 % o exento), la **retención** si la
+  usas y el número. «Guardar y probar conexión» avisa si en tu Holded no hay un
+  IVA exento o la retención que tienes en Ajustes.
 - Pon el móvil en **modo avión**, haz un albarán, quita el modo avión y abre la
   app: debe enviarse solo.
 - Descarga de vez en cuando una **copia de seguridad** (Ajustes): los albaranes

@@ -1,6 +1,13 @@
 /* Albaranes · cálculos de importes y formatos (compartidos por la app y el PDF). */
 
-export const IVAS = [21, 10];
+// 0 = exento (p. ej. servicios sanitarios, art. 20.Uno.3 de la Ley del IVA).
+export const IVAS = [21, 10, 0];
+export const etiquetaIva = (v) => (Number(v) === 0 ? "Exento" : `${v}%`);
+
+// Retención de IRPF que aplica el cliente (empresas, mutuas…) sobre la base.
+export const RETENCIONES = [0, 7, 15];
+/** Un CIF de empresa o entidad empieza por estas letras; DNI y NIE son personas. */
+export const esEmpresa = (nif) => /^[ABCDEFGHJNPQRSUVW]\d/.test(String(nif || "").toUpperCase().replace(/[^A-Z0-9]/g, ""));
 
 export const redondear = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 
@@ -14,8 +21,8 @@ export function importeLinea(l) {
   return redondear((Number(l.cantidad) || 0) * (Number(l.precio) || 0));
 }
 
-/** Base, cuota por tipo de IVA y total. */
-export function totales(lineas) {
+/** Base, cuota por tipo de IVA, retención de IRPF y total (lo que se cobra). */
+export function totales(lineas, retencion = 0) {
   const porIva = new Map();
   for (const l of lineas) {
     const iva = Number(l.iva) || 0;
@@ -26,7 +33,9 @@ export function totales(lineas) {
     .map(([iva, base]) => ({ iva, base, cuota: redondear((base * iva) / 100) }));
   const base = redondear(desglose.reduce((s, d) => s + d.base, 0));
   const cuota = redondear(desglose.reduce((s, d) => s + d.cuota, 0));
-  return { desglose, base, cuota, total: redondear(base + cuota) };
+  const ret = Number(retencion) || 0;
+  const cuotaRetencion = redondear((base * ret) / 100);
+  return { desglose, base, cuota, retencion: ret, cuotaRetencion, total: redondear(base + cuota - cuotaRetencion) };
 }
 
 export function fechaLarga(iso) {

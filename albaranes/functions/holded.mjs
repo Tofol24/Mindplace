@@ -1,5 +1,5 @@
 // /api/holded/* · puente entre el móvil y Holded (ver lib/holded.mjs).
-//   GET  /api/holded/estado         comprueba la clave de la app y la de Holded
+//   GET  /api/holded/estado         comprueba las claves y qué impuestos especiales hay en Holded
 //   GET  /api/holded/clientes?q=    busca clientes en Holded para autocompletar
 //   POST /api/holded/enviar         crea el albarán (y el cliente si hace falta)
 //
@@ -36,7 +36,13 @@ export default async (req) => {
   try {
     if (ruta === "/api/holded/estado" && req.method === "GET") {
       await holded.buscarContactos("a", 1);
-      return json({ ok: true });
+      // Qué impuestos especiales hay disponibles, para avisar antes del primer envío.
+      let impuestos = null;
+      try {
+        const i = await holded.impuestos();
+        impuestos = { leidos: !i.sinLista, exento: !!i.iva[0], retencion: { 7: !!i.retencion[7], 15: !!i.retencion[15] } };
+      } catch { /* la conexión va bien; los impuestos ya se comprobarán al enviar */ }
+      return json({ ok: true, impuestos });
     }
 
     if (ruta === "/api/holded/clientes" && req.method === "GET") {

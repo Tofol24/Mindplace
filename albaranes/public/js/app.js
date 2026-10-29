@@ -14,7 +14,8 @@
 
 import * as db from "./db.js";
 import {
-  IVAS, fechaCortaSegura as fechaCorta, fechaValida, formatoCantidad, formatoEuros, hoyISO, importeLinea, redondear, telefonoWhatsApp, totales,
+  IVAS, RETENCIONES, esEmpresa, etiquetaIva, fechaCortaSegura as fechaCorta, fechaValida, formatoCantidad, formatoEuros, hoyISO, importeLinea,
+  redondear, telefonoWhatsApp, totales,
 } from "./calculos.js";
 import { generarPDF, nombrePDF } from "./pdf.js";
 import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./ui.js";
@@ -23,11 +24,17 @@ import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
 import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
 
 const AJUSTES_DEF = {
-  negocio: { nombre: "Pere Plomer Bennassar", nif: "", direccion: "", telefono: "", email: "pere.plomer@gmail.com" },
+  negocio: {
+    nombre: "Pere Plomer Bennassar", nif: "", direccion: "", telefono: "", email: "pere.plomer@gmail.com",
+    // Sale en el PDF si alguna línea va exenta de IVA.
+    textoExencion: "Operación exenta de IVA.",
+  },
   prefijo: "M",
   precioHora: 35,
   precioDesplazamiento: 20,
   ivaDefecto: 21,
+  // Retención de IRPF que te aplican las empresas y entidades (CIF) a las que facturas; 0 = ninguna.
+  retencionEmpresas: 0,
   margen: 30,
   claveApp: "",
 };
@@ -58,6 +65,7 @@ function nuevoAlbaran() {
     direccionObra: "",
     trabajo: "",
     lineas: [],
+    retencion: 0,
     observaciones: "",
     firma: "",
     firmante: "",
@@ -107,8 +115,8 @@ async function autoguardar(alb) {
   }
 }
 
-/** Recuerda al cliente en el móvil para autocompletarlo la próxima vez. */
-async function recordarCliente(c) {
+/** Recuerda al cliente (y la retención que aplica) en el móvil para autocompletarlo la próxima vez. */
+async function recordarCliente(c, retencion) {
   if (!c.nombre) return;
   const lista = await db.todos("clientes");
   // Igual que en el servidor: el nombre solo no identifica a nadie (puede haber homónimos).
@@ -119,6 +127,7 @@ async function recordarCliente(c) {
     || (!c.nif && !x.nif && normal(x.nombre) === normal(c.nombre) && mismoContacto(x)));
   const datos = { ...(existente || { id: uuid() }), ...c, usado: new Date().toISOString() };
   if (existente?.holdedId && !c.holdedId) datos.holdedId = existente.holdedId;
+  if (retencion != null) datos.retencion = Number(retencion) || 0;
   await db.guardar("clientes", datos);
 }
 
@@ -163,6 +172,7 @@ async function enviarUno(alb) {
     id: alb.id, numero: alb.numero, fecha: alb.fecha, cliente: alb.cliente, direccionObra: alb.direccionObra,
     trabajo: alb.trabajo, observaciones: alb.observaciones, firmante: alb.firmante,
     lineas: alb.lineas.map((l) => ({ concepto: l.concepto, cantidad: l.cantidad, precio: l.precio, iva: l.iva })),
+    retencion: alb.retencion || 0,
     pdf,
   };
   let r;
@@ -179,7 +189,7 @@ async function enviarUno(alb) {
     alb.holded = { contactId: r.datos.contactId, albaranId: r.datos.albaranId, adjunto: r.datos.adjunto, enviadoEn: new Date().toISOString() };
     if (!alb.cliente.holdedId) {
       alb.cliente.holdedId = r.datos.contactId;
-      await recordarCliente(alb.cliente);
+      await recordarCliente(alb.cliente, alb.retencion);
     }
     await guardarAlbaran(alb);
     return "ok";
@@ -288,7 +298,7 @@ async function tareasIA() {
 
 function mensajeCliente(alb) {
   const nombre = alb.cliente.nombre.split(" ")[0] || "";
-  return `Hola${nombre ? ` ${nombre}` : ""}, te envío el albarán ${alb.numero} del trabajo realizado el ${fechaCorta(alb.fecha)}. Total: ${formatoEuros(totales(alb.lineas).total)}. Gracias.${ajustes.negocio.nombre ? `\n${ajustes.negocio.nombre}` : ""}`;
+  return `Hola${nombre ? ` ${nombre}` : ""}, te envío el albarán ${alb.numero} del trabajo realizado el ${fechaCorta(alb.fecha)}. Total: ${formatoEuros(totales(alb.lineas, alb.retencion).total)}. Gracias.${ajustes.negocio.nombre ? `\n${ajustes.negocio.nombre}` : ""}`;
 }
 
 // Los datos del negocio se congelan al firmar: el PDF del cliente y el de Holded son el mismo.
@@ -331,6 +341,17 @@ function descargar(fichero) {
 // Vistas
 // ---------------------------------------------------------------------------
 
+/** Filas de base, IVA, retención y total (editor y detalle). El IVA exento no suma: no se pinta. */
+function filasTotales(t) {
+  return [
+    h("div", {}, h("span", {}, "Base"), h("span", {}, formatoEuros(t.base))),
+    ...t.desglose.filter((d) => d.iva > 0).map((d) => h("div", {}, h("span", {}, `IVA ${d.iva}%`), h("span", {}, formatoEuros(d.cuota)))),
+    ...(t.desglose.some((d) => d.iva === 0) ? [h("div", {}, h("span", {}, "IVA exento"), h("span", {}, formatoEuros(0)))] : []),
+    ...(t.cuotaRetencion ? [h("div", {}, h("span", {}, `Retención IRPF ${t.retencion}%`), h("span", {}, `−${formatoEuros(t.cuotaRetencion)}`))] : []),
+    h("div", { class: "total" }, h("span", {}, t.cuotaRetencion ? "Total a cobrar" : "Total"), h("span", {}, formatoEuros(t.total))),
+  ];
+}
+
 const ETIQUETA_ESTADO = { borrador: "Borrador", pendiente: "Por enviar", error: "Revisar", enviado: "En Holded ✓" };
 
 async function vistaLista() {
@@ -365,7 +386,7 @@ async function vistaLista() {
             h("span", { class: `chip ${a.estado}` }, ETIQUETA_ESTADO[a.estado])),
           h("div", { class: "fila-sec" },
             h("span", {}, `${a.numero || "Sin número"} · ${fechaCorta(a.fecha)}`),
-            h("span", {}, formatoEuros(totales(a.lineas).total)))))))
+            h("span", {}, formatoEuros(totales(a.lineas, a.retencion).total)))))))
       : h("p", { class: "vacio" }, "Todavía no hay albaranes. Pulsa «Nuevo albarán» cuando estés con un cliente."),
   ];
 }
@@ -392,12 +413,29 @@ async function vistaEditor(alb) {
   const pintarChip = () => {
     chipHolded.replaceChildren(c.holdedId ? h("span", { class: "chip enviado" }, "Cliente de Holded") : "");
   };
+  // Retención de IRPF: la aplican empresas y entidades (CIF) y se propone sola según el cliente
+  // (la que se usó con él la última vez, o la de Ajustes si tiene CIF), salvo que se cambie a mano.
+  const selRet = h("select", {
+    onchange: (e) => { alb.retencion = Number(e.target.value); alb.retencionManual = true; cambiado(); },
+  }, RETENCIONES.map((v) => h("option", { value: v, selected: v === (alb.retencion || 0) }, v ? `${v} %` : "Sin retención")));
+  const contRet = h("div", {}, campo("Retención de IRPF", selRet, "Empresas y mutuas suelen retener el 15 %. A particulares, sin retención."));
+  const mostrarRet = () => { contRet.hidden = !(ajustes.retencionEmpresas || alb.retencion); };
+  const proponerRetencion = (recordada) => {
+    if (!alb.retencionManual) {
+      const r = recordada != null ? Number(recordada) || 0 : esEmpresa(c.nif) ? ajustes.retencionEmpresas || 0 : 0;
+      alb.retencion = RETENCIONES.includes(r) ? r : 0;
+      selRet.value = String(alb.retencion);
+    }
+    mostrarRet();
+  };
+  mostrarRet();
   const camposCliente = {};
   const rellenarCliente = (x) => {
     for (const k of Object.keys(c)) c[k] = x[k] || "";
     for (const [k, el] of Object.entries(camposCliente)) el.value = c[k];
     sugerencias.replaceChildren();
     pintarChip();
+    proponerRetencion(x.retencion);
     cambiado();
   };
   let buscarTimer;
@@ -442,6 +480,7 @@ async function vistaEditor(alb) {
     // Otro NIF, email o teléfono puede ser otra persona (sobre todo sin NIF): deja de valer
     // la ficha de Holded elegida y el servidor vuelve a buscarla con los datos nuevos.
     if (["nif", "email", "telefono"].includes(clave)) el.addEventListener("input", () => { c.holdedId = ""; pintarChip(); });
+    if (clave === "nif") el.addEventListener("input", () => { proponerRetencion(); pintarTotales(); });
     camposCliente[clave] = el;
     return campo(etiqueta, el);
   };
@@ -451,12 +490,10 @@ async function vistaEditor(alb) {
   const contLineas = h("div", { class: "lineas" });
   const contTotales = h("div", { class: "totales" });
   function pintarTotales() {
-    const t = totales(alb.lineas);
+    const t = totales(alb.lineas, alb.retencion);
     const m = margenAlbaran(alb);
     contTotales.replaceChildren(
-      h("div", {}, h("span", {}, "Base"), h("span", {}, formatoEuros(t.base))),
-      ...t.desglose.map((d) => h("div", {}, h("span", {}, `IVA ${d.iva}%`), h("span", {}, formatoEuros(d.cuota)))),
-      h("div", { class: "total" }, h("span", {}, "Total"), h("span", {}, formatoEuros(t.total))),
+      ...filasTotales(t),
       !m ? "" : h("p", { class: "margen-interno" }, `Solo lo ves tú: material a coste ${formatoEuros(m.coste)} · lo vendes a ${formatoEuros(m.venta)} · ganas ${formatoEuros(m.ganancia)} en material`),
     );
   }
@@ -521,7 +558,7 @@ async function vistaEditor(alb) {
           })),
           campo("Precio €", precio),
           campo("IVA", h("select", { onchange: (e) => { l.iva = Number(e.target.value); cambiado(); } },
-            IVAS.map((v) => h("option", { value: v, selected: v === l.iva }, `${v}%`)))),
+            IVAS.map((v) => h("option", { value: v, selected: v === l.iva }, etiquetaIva(v))))),
           importe),
         info);
     }));
@@ -579,7 +616,8 @@ async function vistaEditor(alb) {
         h("summary", {}, "NIF y dirección del cliente"),
         campoCliente("nif", "NIF / CIF", { autocapitalize: "characters" }),
         campoCliente("direccion", "Dirección"),
-        h("div", { class: "rejilla" }, campoCliente("cp", "C. P.", { inputmode: "numeric" }), campoCliente("poblacion", "Población")))),
+        h("div", { class: "rejilla" }, campoCliente("cp", "C. P.", { inputmode: "numeric" }), campoCliente("poblacion", "Población"))),
+      contRet),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Trabajo"),
       h("div", { class: "rejilla" },
@@ -688,7 +726,7 @@ function vistaFirma(alb) {
   // Holded admite hasta 120 caracteres para quien firma.
   const firmante = h("input", { value: (alb.firmante || alb.cliente.nombre).slice(0, 120), maxlength: "120", placeholder: "Nombre de quien firma" });
   const error = h("p", { class: "error-form", role: "alert" });
-  const t = totales(alb.lineas);
+  const t = totales(alb.lineas, alb.retencion);
   let terminando = false;
 
   const terminar = async () => {
@@ -713,7 +751,7 @@ function vistaFirma(alb) {
       // Firma y salida del material del stock, a la vez: o las dos cosas o ninguna.
       const firmado = await db.guardarAlbaranYStock(alb, alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: -Number(l.cantidad) })), "borrador");
       if (!firmado) { ir(`/albaran/${alb.id}`); return; }
-      await recordarCliente(alb.cliente);
+      await recordarCliente(alb.cliente, alb.retencion);
       ir(`/albaran/${alb.id}`);
       sincronizar();
     } catch {
@@ -744,7 +782,7 @@ function vistaFirma(alb) {
 
 function vistaDetalle(alb) {
   if (alb.estado === "borrador") { ir(`/editar/${alb.id}`); return []; }
-  const t = totales(alb.lineas);
+  const t = totales(alb.lineas, alb.retencion);
   const c = alb.cliente;
   const tel = telefonoWhatsApp(c.telefono);
 
@@ -800,10 +838,7 @@ function vistaDetalle(alb) {
       h("ul", { class: "lineas-lectura" }, alb.lineas.map((l) => h("li", {},
         h("span", {}, `${l.concepto} × ${String(l.cantidad).replace(".", ",")}`),
         h("span", {}, formatoEuros(importeLinea(l)))))),
-      h("div", { class: "totales" },
-        h("div", {}, h("span", {}, "Base"), h("span", {}, formatoEuros(t.base))),
-        ...t.desglose.map((d) => h("div", {}, h("span", {}, `IVA ${d.iva}%`), h("span", {}, formatoEuros(d.cuota)))),
-        h("div", { class: "total" }, h("span", {}, "Total"), h("span", {}, formatoEuros(t.total)))),
+      h("div", { class: "totales" }, ...filasTotales(t)),
       alb.firma && h("img", { class: "firma-mini", src: alb.firma, alt: `Firma de ${alb.firmante || c.nombre}` })),
     h("div", { class: "acciones" },
       h("button", {
@@ -823,6 +858,16 @@ function vistaDetalle(alb) {
 
 // --- Ajustes --------------------------------------------------------------
 
+/** Tras probar la conexión: avisa si falta en Holded el IVA exento o la retención que se usan aquí. */
+function avisoImpuestos(i) {
+  if (!i) return "";
+  const falta = [];
+  if (ajustes.ivaDefecto === 0 && !i.exento) falta.push("un IVA «exento»");
+  if (ajustes.retencionEmpresas && !i.retencion?.[ajustes.retencionEmpresas]) falta.push(`la retención de IRPF del ${ajustes.retencionEmpresas} %`);
+  if (!falta.length) return "";
+  return ` Ojo: no encuentro en tu Holded ${falta.join(" ni ")}${i.leidos ? "" : " (o la clave de la API no puede leer los impuestos)"}. Actívalo en Holded (Configuración → Impuestos) antes de enviar.`;
+}
+
 async function vistaAjustes() {
   // Se edita una copia: si sales sin guardar, los PDF no usan datos a medio escribir.
   const n = { ...ajustes.negocio };
@@ -834,7 +879,8 @@ async function vistaAjustes() {
   const inputHora = h("input", { value: String(ajustes.precioHora).replace(".", ","), inputmode: "decimal" });
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
   const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
-  const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, `${v}%`)));
+  const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, etiquetaIva(v))));
+  const selRet = h("select", {}, RETENCIONES.map((v) => h("option", { value: v, selected: v === (ajustes.retencionEmpresas || 0) }, v ? `${v} %` : "Ninguna")));
   const inputClave = h("input", { value: ajustes.claveApp, type: "password", autocomplete: "off" });
   const resultadoPrueba = h("p", { class: "ayuda" });
   const ejemplo = h("small", {});
@@ -861,6 +907,7 @@ async function vistaAjustes() {
     if (!(margen >= 0 && margen <= 1000)) { aviso("El margen no es válido.", "error"); return false; }
     ajustes.margen = margen;
     ajustes.ivaDefecto = Number(selIva.value);
+    ajustes.retencionEmpresas = Number(selRet.value);
     ajustes.claveApp = inputClave.value.trim();
     for (const k of Object.keys(n)) n[k] = String(n[k] || "").trim();
     ajustes.negocio = n;
@@ -877,7 +924,7 @@ async function vistaAjustes() {
     resultadoPrueba.textContent = "Comprobando…";
     try {
       const r = await llamarAPI("/api/holded/estado");
-      resultadoPrueba.textContent = r.ok ? "✓ Conectado con Holded." : `✗ ${r.datos.error || `Error ${r.status}`}`;
+      resultadoPrueba.textContent = r.ok ? `✓ Conectado con Holded.${avisoImpuestos(r.datos.impuestos)}` : `✗ ${r.datos.error || `Error ${r.status}`}`;
       if (r.ok) sincronizar();
     } catch {
       resultadoPrueba.textContent = "✗ No se ha podido conectar.";
@@ -942,7 +989,9 @@ async function vistaAjustes() {
       h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números. Si usas la app en más de un móvil, pon un prefijo distinto en cada uno."),
       h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
       campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."),
-      campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos.")),
+      campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos. Exento: p. ej. servicios sanitarios (psicología, fisioterapia…)."),
+      campo("Texto si va exento de IVA (sale en el PDF)", ent(n, "textoExencion", { placeholder: "Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992)." })),
+      campo("Retención de IRPF que te aplican las empresas", selRet, "Se propone sola en los albaranes a clientes con CIF (empresas, mutuas…). Ninguna si no te retienen.")),
     h("section", { class: "tarjeta" },
       h("h3", {}, "Conexión con Holded"),
       campo("Clave de la app", inputClave, "La misma que pusiste en Netlify como APP_CLAVE."),

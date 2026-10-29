@@ -6,6 +6,7 @@
      GET  /api/v2/waybills                comprueba si el albarán ya llegó
      POST /api/v2/waybills                crea el albarán
      POST /api/v2/waybills/{id}/attachments  adjunta el PDF firmado
+     GET  /api/v2/taxes                   impuestos de la cuenta (IVA exento, retención)
 
    El envío es idempotente: cada albarán lleva un id local y el progreso
    (cliente, albarán creado, PDF adjunto) se guarda en un almacén. Si el móvil
@@ -15,8 +16,44 @@
 
 export const BASE = "https://api.holded.com/api/v2";
 
-/** IVA permitido en la app → clave de impuesto de Holded. */
-export const IMPUESTOS = { 21: "s_iva_21", 10: "s_iva_10" };
+/** IVA y retenciones que admite la app (0 = exento). */
+export const IVAS = [21, 10, 0];
+export const RETENCIONES = [0, 7, 15];
+
+/**
+ * Claves de impuesto de Holded si no se puede leer la lista de la cuenta. Las de exento y
+ * retención no se suponen: varían según la cuenta, y con una clave equivocada Holded
+ * aplicaría el impuesto por defecto del contacto (un 21 % donde no toca).
+ */
+export const IMPUESTOS_DEFECTO = { iva: { 21: "s_iva_21", 10: "s_iva_10", 0: null }, retencion: { 7: null, 15: null } };
+
+/**
+ * De la lista de impuestos de la cuenta (GET /taxes), las claves que usa la app:
+ * IVA de venta al 21 %, 10 % y exento, y retención de IRPF de venta al 7 % y 15 %.
+ */
+export function resolverImpuestos(lista) {
+  const activos = (Array.isArray(lista) ? lista : [])
+    .filter((t) => t && typeof t.key === "string" && t.status !== false)
+    .map((t) => ({ key: t.key, nombre: `${t.name || ""} ${t.key} ${t.type || ""} ${t.group || ""}`.toLowerCase(), pct: Math.abs(Number(t.amount)) }));
+  const ventas = activos.filter((t) => t.key.startsWith("s_"));
+  const iva = ventas.filter((t) => /^s_iva/.test(t.key));
+  const ret = ventas.filter((t) => /^s_ret/.test(t.key) || /retenci|irpf|withhold/.test(t.nombre));
+  const conPct = (l, pct) => l.filter((t) => t.pct === pct);
+  const preferida = (l, clave) => (l.find((t) => t.key === clave) || l[0])?.key || null;
+  const exentos = conPct(iva, 0);
+  return {
+    iva: {
+      21: preferida(conPct(iva, 21), "s_iva_21") || IMPUESTOS_DEFECTO.iva[21],
+      10: preferida(conPct(iva, 10), "s_iva_10") || IMPUESTOS_DEFECTO.iva[10],
+      // Entre los de 0 %, el que se llama «exento»: no es lo mismo que un 0 % de exportación.
+      0: (exentos.find((t) => /exent|exempt/.test(t.nombre)) || exentos[0])?.key || null,
+    },
+    retencion: {
+      7: preferida(conPct(ret, 7), "s_ret_7"),
+      15: preferida(conPct(ret, 15), "s_ret_15"),
+    },
+  };
+}
 
 export class ErrorHolded extends Error {
   /** reintentar: true si es un fallo pasajero (red, 429, 5xx) y vale la pena volver a probar. */
@@ -37,6 +74,10 @@ const MENSAJES = {
   422: "Holded no acepta algún dato del albarán",
   429: "Holded está limitando las peticiones; se reintentará más tarde",
 };
+
+// Impuestos de la cuenta: cambian muy poco, así que se recuerdan unos minutos entre envíos.
+let cacheImpuestos = null;
+export const olvidarImpuestos = () => { cacheImpuestos = null; };
 
 /** Cliente mínimo de la API de Holded. `fetch` se inyecta para poder probarlo. */
 // Netlify corta la función a los 10 s; el progreso guardado permite seguir en el reintento.
@@ -94,6 +135,20 @@ export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs
       const r = await llamar("POST", "/waybills", { json: a });
       if (!r?.id) throw new ErrorHolded("Holded no ha devuelto el id del albarán creado", { reintentar: true });
       return r.id;
+    },
+    /** Claves de impuesto de la cuenta. Si Holded no deja leerlas, las de por defecto. */
+    async impuestos() {
+      if (cacheImpuestos?.apiKey === apiKey && Date.now() - cacheImpuestos.en < 10 * 60_000) return cacheImpuestos.valor;
+      let valor;
+      try {
+        const r = await llamar("GET", "/taxes");
+        valor = resolverImpuestos(Array.isArray(r) ? r : r?.items);
+      } catch (e) {
+        if (e instanceof ErrorHolded && (e.reintentar || e.status === 401)) throw e;
+        valor = { ...IMPUESTOS_DEFECTO, sinLista: true }; // p. ej. la clave no tiene permiso para leer impuestos
+      }
+      cacheImpuestos = { apiKey, en: Date.now(), valor };
+      return valor;
     },
     async adjuntar(albaranId, bytes, nombreFichero) {
       const form = new FormData();
@@ -165,7 +220,7 @@ export function validarAlbaran(b) {
   if (b.lineas.length > 100) throw new ErrorHolded("Demasiadas líneas", { status: 400 });
   const lineas = b.lineas.map((l, i) => {
     const iva = numero(l?.iva, { min: 0, max: 100, campo: `El IVA de la línea ${i + 1}` });
-    if (!IMPUESTOS[iva]) throw new ErrorHolded(`IVA no permitido en la línea ${i + 1}`, { status: 400 });
+    if (!IVAS.includes(iva)) throw new ErrorHolded(`IVA no permitido en la línea ${i + 1}`, { status: 400 });
     return {
       concepto: texto(l?.concepto, 300, `el concepto de la línea ${i + 1}`, { obligatorio: true }),
       cantidad: numero(l?.cantidad, { min: 0.0001, max: 1e6, campo: `La cantidad de la línea ${i + 1}` }),
@@ -173,6 +228,8 @@ export function validarAlbaran(b) {
       iva,
     };
   });
+  const retencion = b.retencion == null || b.retencion === "" ? 0 : numero(b.retencion, { min: 0, max: 100, campo: "La retención de IRPF" });
+  if (!RETENCIONES.includes(retencion)) throw new ErrorHolded("Retención de IRPF no permitida", { status: 400 });
   let pdf = null;
   if (b.pdf != null) {
     if (typeof b.pdf !== "string" || b.pdf.length > MAX_PDF_BASE64 || !/^[A-Za-z0-9+/]+=*$/.test(b.pdf)) {
@@ -190,6 +247,7 @@ export function validarAlbaran(b) {
     observaciones: texto(b.observaciones, 2000, "las observaciones"),
     firmante: texto(b.firmante, 120, "el nombre de quien firma"),
     lineas,
+    retencion,
     pdf,
   };
 }
@@ -248,7 +306,30 @@ export function contactoParaHolded(cliente) {
   return c;
 }
 
-export function albaranParaHolded(a, contactId) {
+/** Claves de impuesto de cada línea: su IVA y, si el cliente retiene, la retención de IRPF. */
+export function impuestosDeLinea(l, retencion, impuestos) {
+  const permiso = impuestos.sinLista ? " (Si ya existe, puede que la clave de la API de Holded no tenga permiso para leer los impuestos.)" : "";
+  const iva = impuestos.iva[l.iva];
+  if (!iva) {
+    throw new ErrorHolded(
+      l.iva === 0
+        ? `No encuentro en tu Holded un impuesto de IVA exento activo. Revísalo en Holded (Configuración → Impuestos) y vuelve a enviar.${permiso}`
+        : `No encuentro en tu Holded el IVA del ${l.iva} %.${permiso}`,
+      { status: 502 },
+    );
+  }
+  if (!retencion) return [iva];
+  const ret = impuestos.retencion[retencion];
+  if (!ret) {
+    throw new ErrorHolded(
+      `No encuentro en tu Holded la retención de IRPF del ${retencion} %. Actívala en Holded (Configuración → Impuestos) y vuelve a enviar.${permiso}`,
+      { status: 502 },
+    );
+  }
+  return [iva, ret];
+}
+
+export function albaranParaHolded(a, contactId, impuestos = IMPUESTOS_DEFECTO) {
   const partes = [];
   if (a.trabajo) partes.push(a.trabajo);
   if (a.direccionObra) partes.push(`Dirección de la obra: ${a.direccionObra}`);
@@ -264,7 +345,7 @@ export function albaranParaHolded(a, contactId) {
     language: "es",
     is_valued: true,
     tags: ["app-albaranes"],
-    items: a.lineas.map((l) => ({ name: l.concepto, units: l.cantidad, price: l.precio, taxes: [IMPUESTOS[l.iva]] })),
+    items: a.lineas.map((l) => ({ name: l.concepto, units: l.cantidad, price: l.precio, taxes: impuestosDeLinea(l, a.retencion || 0, impuestos) })),
   };
 }
 
@@ -275,6 +356,8 @@ export function huellaAlbaran(a) {
     a.numero, a.fecha, a.direccionObra, a.trabajo, a.observaciones,
     normalizarNombre(c.nombre), normalizarNif(c.nif), c.holdedId,
     a.lineas.map((l) => [l.concepto, l.cantidad, l.precio, l.iva]),
+    // Al final y solo si la hay: así la huella de los albaranes de antes no cambia.
+    ...(a.retencion ? [a.retencion] : []),
   ]);
 }
 
@@ -352,11 +435,13 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       }
     }
     if (!estado.albaranId) {
+      // Antes de marcar «creando»: si falta un impuesto en Holded no se ha intentado nada.
+      const datos = albaranParaHolded(a, estado.contactId, await holded.impuestos());
       estado.creando = true;
       estado.huella = huella;
       await guardar();
       try {
-        estado.albaranId = await holded.crearAlbaran(albaranParaHolded(a, estado.contactId));
+        estado.albaranId = await holded.crearAlbaran(datos);
       } catch (e) {
         // Rechazo claro (4xx): no se ha creado nada y el albarán se puede corregir.
         // Si no (red, 5xx), queda la duda y el reintento lo buscará antes de crear otro.

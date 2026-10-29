@@ -1,7 +1,7 @@
 /* Albaranes · PDF del albarán firmado (jsPDF, guardado en vendor/ para que
    funcione sin conexión). Devuelve un Blob listo para compartir o adjuntar. */
 
-import { fechaCortaSegura as fechaCorta, formatoCantidad, formatoEuros, importeLinea, totales } from "./calculos.js";
+import { etiquetaIva, fechaCortaSegura as fechaCorta, formatoCantidad, formatoEuros, importeLinea, totales } from "./calculos.js";
 
 const A4 = { w: 210, h: 297 };
 const M = 15; // margen
@@ -114,7 +114,7 @@ export function generarPDF(alb, negocio) {
     if (y + alto > A4.h - M - 8) { doc.addPage(); y = M + 4; cabeceraTabla(); }
     doc.setFont("helvetica", "normal"); // la cabecera deja la letra en negrita
     doc.setFontSize(9.5);
-    const valores = [null, formatoCantidad(l.cantidad), formatoEuros(l.precio), `${l.iva}%`, formatoEuros(importeLinea(l))];
+    const valores = [null, formatoCantidad(l.cantidad), formatoEuros(l.precio), etiquetaIva(l.iva), formatoEuros(importeLinea(l))];
     doc.setTextColor(...TINTA);
     lineasConcepto.forEach((s, i) => doc.text(s, M + 2, y + i * 4.4));
     let x = M;
@@ -128,7 +128,7 @@ export function generarPDF(alb, negocio) {
   y += 2;
 
   // --- Totales ---
-  const t = totales(alb.lineas);
+  const t = totales(alb.lineas, alb.retencion);
   const filaTotal = (etq, valor, { bold = false, size = 10 } = {}) => {
     sitio(7);
     texto(etq, A4.w - M - 40, y, { size, bold, align: "right" });
@@ -136,12 +136,21 @@ export function generarPDF(alb, negocio) {
     y += size > 10 ? 7 : 5.5;
   };
   filaTotal("Base imponible", formatoEuros(t.base));
-  for (const d of t.desglose) filaTotal(`IVA ${d.iva}% (sobre ${formatoEuros(d.base)})`, formatoEuros(d.cuota));
+  for (const d of t.desglose) {
+    filaTotal(d.iva ? `IVA ${d.iva}% (sobre ${formatoEuros(d.base)})` : `IVA exento (sobre ${formatoEuros(d.base)})`, formatoEuros(d.cuota));
+  }
+  if (t.cuotaRetencion) filaTotal(`Retención IRPF ${t.retencion}%`, `-${formatoEuros(t.cuotaRetencion)}`);
   doc.setDrawColor(...ACENTO);
   doc.line(A4.w - M - 90, y - 3.5, A4.w - M, y - 3.5);
   y += 1.5;
-  filaTotal("TOTAL", formatoEuros(t.total), { bold: true, size: 12 });
+  filaTotal(t.cuotaRetencion ? "TOTAL A COBRAR" : "TOTAL", formatoEuros(t.total), { bold: true, size: 12 });
   y += 3;
+  // Exento de IVA: la mención que lo justifica (la escribe el profesional en Ajustes).
+  if (t.desglose.some((d) => d.iva === 0)) {
+    sitio(8);
+    parrafo(negocio.textoExencion || "Operación exenta de IVA.", M, A4.w - 2 * M, { size: 8.5, color: GRIS });
+    y += 2;
+  }
 
   // --- Observaciones ---
   if (alb.observaciones) {
