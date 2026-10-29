@@ -18,7 +18,7 @@
 */
 /* global window, document -- (dentro de pagina.evaluate, que corre en el navegador) */
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -203,17 +203,21 @@ function revisarPrivacidad(lista) {
       }
     }
 
-    // Material clínico individual: solo cifrado y sin indexar (ver scripts/README.md).
-    const cifrado = f.match(/^app\/(tools-standalone\/c-[^/]+\.html)$/);
-    if (cifrado) {
-      if (!/var SALT="[^"]+", IV="[^"]+", DATA="[^"]+"/.test(texto)) {
-        anotar(f, 1, "error", "privacidad/cifrado", "Un archivo c-*.html debe salir de scripts/cifrar-html.mjs: este no parece cifrado y el repositorio es público.");
-      }
-      const ruta = `/${cifrado[1]}`;
-      const bloque = cabeceras.split(/\n(?=\S)/).find((b) => b.split("\n")[0].trim() === ruta);
-      if (!bloque || !/X-Robots-Tag:\s*noindex/i.test(bloque)) {
-        anotar(f, 1, "error", "privacidad/cifrado", `Falta «${ruta}» con «X-Robots-Tag: noindex» en app/_headers.`);
-      }
+  }
+
+  // Material clínico individual: siempre todos, no solo los cambiados (quitar su línea de
+  // app/_headers también es una regresión aunque el HTML no cambie). Ver scripts/README.md.
+  const dir = path.join(RAIZ, "app/tools-standalone");
+  const clinicos = existsSync(dir) ? readdirSync(dir).filter((n) => /^c-.+\.html$/.test(n)).map((n) => `app/tools-standalone/${n}`) : [];
+  for (const f of clinicos) {
+    const texto = readFileSync(path.join(RAIZ, f), "utf8");
+    if (!/var SALT="[^"]+", IV="[^"]+", DATA="[^"]+"/.test(texto)) {
+      anotar(f, 1, "error", "privacidad/cifrado", "Un archivo c-*.html debe salir de scripts/cifrar-html.mjs: este no parece cifrado y el repositorio es público.");
+    }
+    const ruta = `/${f.slice("app/".length)}`;
+    const bloque = cabeceras.split(/\n(?=\S)/).find((b) => b.split("\n")[0].trim() === ruta);
+    if (!bloque || !/X-Robots-Tag:\s*noindex/i.test(bloque)) {
+      anotar(f, 1, "error", "privacidad/cifrado", `Falta «${ruta}» con «X-Robots-Tag: noindex» en app/_headers.`);
     }
   }
 }
@@ -267,16 +271,20 @@ async function revisarNavegador(lista) {
   });
   await new Promise((r) => servidor.listen(0, "127.0.0.1", r));
   const puerto = servidor.address().port;
-  const navegador = await pw.chromium.launch();
+  // Nada sale a internet: Chromium no resuelve ningún nombre salvo el servidor local
+  // (cubre también WebSockets y lo que no pase por page.route), y sin proxy.
+  const navegador = await pw.chromium.launch({ args: ["--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1", "--no-proxy-server"] });
+  const origen = `http://127.0.0.1:${puerto}/`;
   try {
     for (const f of htmls) {
       const raizRel = raizPublicada(f);
       raiz = path.join(RAIZ, raizRel);
       const url = `http://127.0.0.1:${puerto}/${path.relative(raiz, path.join(RAIZ, f)).split(path.sep).join("/")}`;
       const ctx = await navegador.newContext({ serviceWorkers: "block" });
+      // Solo el origen exacto del servidor local, en todo el contexto (también ventanas nuevas).
+      await ctx.route((u) => !u.href.startsWith(origen) && !/^(data|blob|about):/.test(u.protocol), (ruta) => ruta.abort());
+      await ctx.routeWebSocket(/.*/, (ws) => ws.close());
       const pagina = await ctx.newPage();
-      // Nada sale a internet: la prueba no depende de la red ni filtra nada.
-      await pagina.route(/^https?:\/\/(?!127\.0\.0\.1)/, (ruta) => ruta.abort());
       const errores = [];
       pagina.on("pageerror", (e) => errores.push(String(e.message || e).split("\n")[0]));
       try {
