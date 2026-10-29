@@ -69,6 +69,14 @@ function nuevoAlbaran() {
   };
 }
 
+/** Borrador sin nada escrito (p. ej. se pulsó «Nuevo albarán» y se volvió atrás): se puede descartar. */
+function borradorVacio(a) {
+  const c = a.cliente || {};
+  return a.estado === "borrador" && !a.numero && !a.firma && !a.dictadoPendiente && !(a.lineas || []).length
+    && ![a.trabajo, a.direccionObra, a.observaciones, c.holdedId, c.nombre, c.nif, c.telefono, c.email, c.direccion, c.cp, c.poblacion]
+      .some((v) => String(v || "").trim());
+}
+
 async function guardarAlbaran(alb) {
   alb.actualizado = new Date().toISOString();
   await db.guardar("albaranes", alb);
@@ -326,12 +334,18 @@ function descargar(fichero) {
 const ETIQUETA_ESTADO = { borrador: "Borrador", pendiente: "Por enviar", error: "Revisar", enviado: "En Holded ✓" };
 
 async function vistaLista() {
-  const lista = (await db.todos("albaranes")).sort((a, b) => b.actualizado.localeCompare(a.actualizado));
+  let lista = await db.todos("albaranes");
+  // Los borradores vacíos no se enseñan como «Sin cliente · 0,00 €»: se descartan.
+  // (No se pierde nada: si otra ventana lo está rellenando, su guardado lo vuelve a crear.)
+  const vacios = lista.filter(borradorVacio);
+  for (const a of vacios) { try { await db.borrar("albaranes", a.id); } catch { /* se intentará la próxima vez */ } }
+  lista = lista.filter((a) => !vacios.includes(a)).sort((a, b) => b.actualizado.localeCompare(a.actualizado));
   const avisos = [];
-  if (!ajustes.negocio.nif || !ajustes.claveApp) {
+  const falta = [!ajustes.negocio.nif && "pon tu NIF (sale en el PDF)", !ajustes.claveApp && "conecta Holded con la clave de la app"].filter(Boolean);
+  if (falta.length) {
     avisos.push(h("div", { class: "tarjeta aviso-tarjeta" },
       h("strong", {}, "Primer paso: tus datos"),
-      h("p", {}, "Revisa tus datos (falta el NIF para el PDF) y conecta Holded con la clave de la app."),
+      h("p", {}, `En Ajustes, ${falta.join(" y ")}.`),
       h("button", { class: "btn secundario", onclick: () => ir("/ajustes") }, "Ir a Ajustes")));
   }
   const instalada = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
