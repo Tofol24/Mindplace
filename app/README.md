@@ -141,6 +141,13 @@ consola donde tú reúnes la evolución de cada paciente a partir de los `.json`
   panel (sí viaja, como cualquier mensaje, por WhatsApp/email, igual que el texto de antes). Los mensajes
   antiguos (sin código de paciente) o varios mensajes a la vez se pueden **pegar** en «Importar»; si falta
   el código, el panel pregunta a qué paciente asignarlo.
+- **Mensajes de cualquier herramienta**: todas las herramientas que envían por WhatsApp añaden al
+  final un **enlace de un toque** `…/panel/#t=<texto comprimido lz-string>&p=<código>` (`js/enlace-panel.js`
+  + `vendor/lz-string.min.js`; sin enlace en la versión de bienestar). En la ficha, **«📋 Pegar registro»**
+  (como en el panel anterior) acepta uno o varios mensajes, también copiados de WhatsApp Web
+  (`[hora, fecha] Nombre: …`): `js/registro-texto.js` reconoce herramienta, fecha y datos (alerta
+  antes/después, posición del mono, L/D/C…) y guarda el texto íntegro (desplegable en «Actividad»). El
+  mismo mensaje por enlace o pegado tiene el mismo id: no se duplica.
 - **Pauta desde el panel**: tarjeta «Pauta de esta semana» (misma regla `moduloEvolucion` que el
   Screening), código de seguimiento de 3 cifras, últimas reflexiones del paciente y botón de WhatsApp con
   el mensaje editable. **Pendientes de respuesta**: un paciente con registros nuevos posteriores a la última

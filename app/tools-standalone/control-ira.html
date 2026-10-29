@@ -449,7 +449,7 @@ function verResultat(){ const t=T();
 }
 function reiniciar(){ vista="intro";paso=0;nivell=0;nivellPost=0;que="";cos=[];canal="";anclaZona="";plan=["respira","que","cos","canal"];apuntMode=false;apuntFet=false;render();scrollTo(0,0); }
 
-function obrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function obrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t)),"_blank");}
 function copiar(btn){
   const t=document.getElementById("msgBox").textContent;
   const done=()=>{btn.textContent=T().copiat;setTimeout(()=>btn.textContent=T().copiar,2000);};
@@ -483,5 +483,7 @@ window.APRENS_toolBack=function(){ if(vista==="paso"){ prev(); return true; } re
 applyLang();
 render();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

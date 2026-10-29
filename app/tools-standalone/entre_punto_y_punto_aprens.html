@@ -1233,12 +1233,14 @@ function copiar(txt,btn){
   function fb(){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){} document.body.removeChild(ta); }
   if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok).catch(fb); } else { fb(); }
 }
-function enviarWA(txt){ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); }
+function enviarWA(txt){ window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(txt)),'_blank'); }
 function toggleTheme(){ DB.settings.dark=!DB.settings.dark; applyTheme(); save(); }
 function applyTheme(){ document.documentElement.setAttribute('data-theme',DB.settings.dark?'dark':'light'); var b=document.getElementById('themeBtn'); if(b) b.textContent=DB.settings.dark?'☀️':'🌙'; }
 
 /* ---------------- init ---------------- */
 imReset(); adReset(); applyTheme(); render();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

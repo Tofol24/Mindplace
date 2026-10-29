@@ -1241,7 +1241,7 @@ function mostrarTab(tab){
 function irA(id){var el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.transition='box-shadow .3s';el.style.boxShadow='0 0 0 3px var(--oro)';setTimeout(function(){el.style.boxShadow='';},900);}}
 
 // === SEND ===
-function obrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('msgBox').innerText),'_blank');}
+function obrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(document.getElementById('msgBox').innerText)),'_blank');}
 function copiar(btn){
   const t=document.getElementById('msgBox').innerText;
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copiat';setTimeout(()=>btn.textContent='📋 Copiar',2200);});}
@@ -1314,5 +1314,7 @@ function aprensExport(){
   Aprens.exportJSON();
 }
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

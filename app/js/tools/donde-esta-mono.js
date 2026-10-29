@@ -374,7 +374,7 @@
     $('[data-act="reiniciar"]').onclick=reiniciar;
     $$('[data-send]').forEach(b=>b.onclick=()=>{
       persist(); var txt=construirResumen();
-      if(b.dataset.send==='wa') window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+      if(b.dataset.send==='wa') window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(txt)),'_blank');
       else copiarTexto(txt,b);
       if(window.Aprens) Aprens.mountBar();
     });
