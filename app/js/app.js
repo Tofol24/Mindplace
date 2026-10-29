@@ -580,10 +580,10 @@
         w.appendChild(im); b.appendChild(w);
       }
       // En el botón cabe el nombre corto (lo de antes del «·»); el título
-      // completo queda en el apartado y en la etiqueta accesible del botón.
+      // completo queda en el apartado y como descripción del botón (title).
+      const corto = nombre.split(" · ")[0];
       const n = document.createElement("span");
-      n.className = "idx-n"; n.textContent = nombre.split(" · ")[0];
-      b.setAttribute("aria-label", "Ir a " + nombre);
+      n.className = "idx-n"; n.textContent = corto;
       b.title = nombre;
       b.appendChild(n);
 
@@ -598,9 +598,12 @@
         const c = document.createElement("span");
         c.className = "idx-c";
         c.textContent = String(cuantas);
-        c.setAttribute("aria-label", cuantas===1 ? "1 ficha" : cuantas+" fichas");
+        b.append(" "); // separa nombre y número en el texto leído (no cambia nada en el flex)
         b.appendChild(c);
       }
+      // El nombre accesible empieza por lo que se ve («Superar miedos 12»): así
+      // también funciona quien maneja el móvil con la voz diciendo lo que lee.
+      b.setAttribute("aria-label", corto + (cuantas ? ", " + (cuantas===1 ? "1 ficha" : cuantas+" fichas") : ""));
       chips.appendChild(b);
     });
     if(!chips.children.length) return;
@@ -829,7 +832,7 @@
   function goHome(){ if((location.hash||"#/") !== "#/") location.hash = "#/"; }
   // El logo/título lleva siempre al inicio.
   const brand = document.querySelector(".header .hlogo");
-  if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","Inicio"); brand.onclick = goHome; }
+  if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","ap · Inicio"); brand.onclick = goHome; }
   const brandTitle = document.getElementById("htitle");
   if(brandTitle){ brandTitle.style.cursor = "pointer"; brandTitle.onclick = goHome; }
 

@@ -36,7 +36,7 @@
   var ls=document.getElementById("langsel");
   [["es","ES"],["ca","CA"]].forEach(function(o){
     var b=document.createElement("button"); b.type="button"; b.textContent=o[1];
-    if(o[0]===LANG)b.className="on"; b.setAttribute("aria-label",o[0]==="es"?"Español":"Català");
+    if(o[0]===LANG)b.className="on"; b.setAttribute("aria-label",o[0]==="es"?"ES · Español":"CA · Català");
     b.onclick=function(){ if(o[0]!==LANG)setLang(o[0]); };
     ls.appendChild(b);
   });

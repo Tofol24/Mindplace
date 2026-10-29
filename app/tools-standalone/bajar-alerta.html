@@ -275,7 +275,7 @@ function intro(){
       <div class="scale-em">${emojiNivel(nivelIni)}</div>
       <div class="scale-num" id="tv" style="color:${colorNivel(nivelIni)}">${nivelIni}</div>
       <div style="text-align:center;font-size:13px;color:var(--gris);margin-bottom:4px">¿Cuánta alerta ahora?</div>
-      <input type="range" min="0" max="10" value="${nivelIni}" oninput="setIni(this.value)">
+      <input type="range" min="0" max="10" value="${nivelIni}" oninput="setIni(this.value)" aria-label="Alerta ahora, de 0 a 10">
       <div class="ends"><span>0 · en calma</span><span>10 · al máximo</span></div>
     </div>
     <button class="btn big" onclick="empezar()">Empezar →</button>`;
@@ -352,7 +352,7 @@ function resultado(){
     <div class="card">
       <div class="scale-em">${emojiNivel(nivelFin)}</div>
       <div class="scale-num" id="tv2" style="color:${colorNivel(nivelFin)}">${nivelFin}</div>
-      <input type="range" min="0" max="10" value="${nivelFin}" oninput="setFin(this.value)">
+      <input type="range" min="0" max="10" value="${nivelFin}" oninput="setFin(this.value)" aria-label="Alerta al terminar, de 0 a 10">
       <div class="ends"><span>0 · en calma</span><span>10 · al máximo</span></div>
     </div>
     <button class="btn big green" onclick="verResumen()">Ver cómo ha ido →</button>`;

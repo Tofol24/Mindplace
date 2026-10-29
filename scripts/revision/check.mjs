@@ -6,6 +6,7 @@
      npm run check -- --todo        todo el repositorio
      npm run check -- ruta.html …   solo esos archivos
      opciones: --base <rama>  --sin-navegador  --avisos (muestra también los avisos en --todo)
+               --detalle (accesibilidad: lista todos los elementos afectados)
 
    Qué mira:
      html        HTML mal formado y fallos de accesibilidad estáticos (html-validate)
@@ -37,6 +38,7 @@ const opcion = (n) => args.includes(n);
 const valor = (n, def) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : def; };
 const TODO = opcion("--todo");
 const SIN_NAVEGADOR = opcion("--sin-navegador");
+const DETALLE = opcion("--detalle"); // accesibilidad: todos los elementos afectados, no solo el primero
 const BASE = valor("--base", "main");
 const explicitos = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--base");
 
@@ -291,14 +293,20 @@ async function revisarNavegador(lista) {
         await pagina.goto(url, { waitUntil: "load", timeout: 15000 });
         await pagina.waitForTimeout(400);
         await pagina.addScriptTag({ content: axe });
-        const r = await pagina.evaluate(async () => {
-          const res = await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }, resultTypes: ["violations"] });
-          return res.violations.map((v) => ({ id: v.id, impacto: v.impact, ayuda: v.help, n: v.nodes.length, donde: v.nodes[0]?.target?.join(" ") }));
-        });
+        // Un fragmento sin <html> (p. ej. la fuente de un artefacto de claude.ai) recibe
+        // <html lang> y <title> de la plataforma al publicarse: eso no se le pide.
+        const fragmento = !/<html[\s>]/i.test(readFileSync(path.join(RAIZ, f), "utf8"));
+        const r = await pagina.evaluate(async (fragmento) => {
+          const reglas = fragmento ? { "html-has-lang": { enabled: false }, "document-title": { enabled: false } } : {};
+          const res = await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }, rules: reglas, resultTypes: ["violations"] });
+          return res.violations.map((v) => ({ id: v.id, impacto: v.impact, ayuda: v.help, n: v.nodes.length, donde: v.nodes[0]?.target?.join(" "),
+            nodos: v.nodes.map((x) => `${x.target.join(" ")}  →  ${x.html.replace(/\s+/g, " ").slice(0, 160)}`) }));
+        }, fragmento);
         for (const v of r) {
           // Bloquea lo que impide usar la página; el contraste y lo menor quedan como aviso.
           const grave = (v.impacto === "critical" || v.impacto === "serious") && v.id !== "color-contrast";
-          anotar(f, 0, grave ? "error" : "aviso", `a11y/${v.id}`, `${v.ayuda} (${v.n} elemento${v.n > 1 ? "s" : ""}; p. ej. ${v.donde})`);
+          const detalle = DETALLE ? v.nodos.map((x) => `\n          ${x}`).join("") : "";
+          anotar(f, 0, grave ? "error" : "aviso", `a11y/${v.id}`, `${v.ayuda} (${v.n} elemento${v.n > 1 ? "s" : ""}; p. ej. ${v.donde})${detalle}`);
         }
       } catch (e) {
         // Una página sin comprobar no puede dar el visto bueno.

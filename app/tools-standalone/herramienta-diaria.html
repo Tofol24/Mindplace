@@ -308,7 +308,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--az);font-weight:700;margin-bottom:3px">Tu d&iacute;a de hoy</div>
     <div id="dataLabel" style="font-size:13px;color:var(--gr)"></div>
     <div class="frase">Donde dirijo mi atenci&oacute;n, ah&iacute; voy yo.</div>
-    <button class="doahora" onclick="startR('verd')" aria-label="Empezar la respiraci&oacute;n guiada ahora, ritmo 4-2-6">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6</span></button>
+    <button class="doahora" onclick="startR('verd')" aria-label="Respirar ahora, 4·2·6: respiraci&oacute;n guiada">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6</span></button>
   </div>
   <div class="card">
     <div class="ch-tit">Tres v&iacute;as para anclar la atenci&oacute;n hacia dentro</div>
@@ -368,7 +368,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
       <button class="cntbtn" onclick="chgP(1)" aria-label="Sumar una">+</button>
     </div>
     <div class="brow"><button class="btn bp" onclick="startR(&apos;verd&apos;)">&#127756; Respira ahora</button></div>
-    <div style="margin-top:12px"><label class="flbl">Notes</label>
+    <div style="margin-top:12px"><label class="flbl" for="notesP">Notes</label>
     <textarea id="notesP" oninput="D.p.notes=this.value;saveToday()"></textarea></div>
   </div>
   <div class="card" id="sec3">
@@ -378,8 +378,8 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div data-vineta-abrazo></div>
     <label class="flbl">&iquest;A qui&eacute;n?</label>
     <div class="sopts" id="optsAQui"><span class="sopt" onclick="selA(this,&apos;Hijo/a&apos;)">Hijo/a</span><span class="sopt" onclick="selA(this,&apos;Padre&apos;)">Padre</span><span class="sopt" onclick="selA(this,&apos;Madre&apos;)">Madre</span><span class="sopt" onclick="selA(this,&apos;Pareja&apos;)">Pareja</span><span class="sopt" onclick="selA(this,&apos;Hermano/a&apos;)">Hermano/a</span><span class="sopt" onclick="selA(this,&apos;Yo mismo/a&apos;)">Yo mismo/a</span></div>
-    <label class="flbl">Sensaci&oacute;n en la barriga: <strong id="panxaLbl" style="color:var(--az)">5/10</strong></label>
-    <input type="range" min="0" max="10" value="5" oninput="D.a.panxa=parseInt(this.value);document.getElementById(&apos;panxaLbl&apos;).textContent=this.value+&apos;/10&apos;;saveToday()">
+    <label class="flbl" for="panxaSlider">Sensaci&oacute;n en la barriga: <strong id="panxaLbl" style="color:var(--az)">5/10</strong></label>
+    <input type="range" id="panxaSlider" min="0" max="10" value="5" oninput="D.a.panxa=parseInt(this.value);document.getElementById(&apos;panxaLbl&apos;).textContent=this.value+&apos;/10&apos;;saveToday()">
     <div id="badgeA" class="hidden"><span class="bok">&#10003; ...</span></div>
   </div>
   <div class="card" id="sec4">
@@ -394,7 +394,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="sopts" id="optsVincle"><span class="sopt" onclick="selH(this,&apos;Hijo/a&apos;,&apos;vincle&apos;)">Hijo/a</span><span class="sopt" onclick="selH(this,&apos;Padre&apos;,&apos;vincle&apos;)">Padre</span><span class="sopt" onclick="selH(this,&apos;Madre&apos;,&apos;vincle&apos;)">Madre</span><span class="sopt" onclick="selH(this,&apos;Pareja&apos;,&apos;vincle&apos;)">Pareja</span><span class="sopt" onclick="selH(this,&apos;Hermano/a&apos;,&apos;vincle&apos;)">Hermano/a</span><span class="sopt" onclick="selH(this,&apos;Amigo/a cercano/a&apos;,&apos;vincle&apos;)">Amigo/a cercano/a</span></div>
     <label class="flbl">Zona corporal:</label>
     <div class="sopts" id="optsZona"><span class="sopt so" onclick="selH(this,&apos;barriga&apos;,&apos;zona&apos;)">barriga</span><span class="sopt" onclick="selH(this,&apos;pecho&apos;,&apos;zona&apos;)">pecho</span><span class="sopt" onclick="selH(this,&apos;garganta&apos;,&apos;zona&apos;)">garganta</span><span class="sopt" onclick="selH(this,&apos;cabeza&apos;,&apos;zona&apos;)">cabeza</span></div>
-    <div style="margin-top:12px"><label class="flbl">Notes</label>
+    <div style="margin-top:12px"><label class="flbl" for="notesH">Notes</label>
     <textarea id="notesH" oninput="D.h.notes=this.value;saveToday()"></textarea></div>
     <div id="badgeH" class="hidden"><span class="bok">&#10003; Honestidad registrada con <span id="badgeHVincle"></span></span></div>
   </div>
@@ -408,11 +408,11 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
       <label class="flbl">Nom</label>
       <input type="text" id="cpNom" placeholder="Nombre (p.ej. salir a caminar, llamar a mam&aacute;...)" style="margin-bottom:10px">
       <div class="cfg2">
-        <div><label class="flbl">Tipus</label><select id="cpTipus"><option value="contacte">Contacto</option><option value="activitat">Actividad</option><option value="repte">Reto</option></select></div>
-        <div><label class="flbl">Hora (opcional)</label><input type="time" id="cpHora"></div>
+        <div><label class="flbl" for="cpTipus">Tipus</label><select id="cpTipus"><option value="contacte">Contacto</option><option value="activitat">Actividad</option><option value="repte">Reto</option></select></div>
+        <div><label class="flbl" for="cpHora">Hora (opcional)</label><input type="time" id="cpHora"></div>
         <div class="cfg-full"><label class="flbl">D&iacute;as de la semana</label>
         <div class="dies-row" id="diesChips"><span class="dchip" data-dia="Lunes" onclick="togDia(this)">Lu</span><span class="dchip" data-dia="Martes" onclick="togDia(this)">Ma</span><span class="dchip" data-dia="Miércoles" onclick="togDia(this)">Mi</span><span class="dchip" data-dia="Jueves" onclick="togDia(this)">Ju</span><span class="dchip" data-dia="Viernes" onclick="togDia(this)">Vi</span><span class="dchip" data-dia="Sábado" onclick="togDia(this)">Sá</span><span class="dchip" data-dia="Domingo" onclick="togDia(this)">Do</span></div></div>
-        <div class="cfg-full"><label class="flbl">Tipus contacte</label><select id="cpTipusC"><option value="">Tipo...</option><option value="Presencial">Presencial</option><option value="WhatsApp">WhatsApp</option><option value="Llamada">Llamada</option></select></div>
+        <div class="cfg-full"><label class="flbl" for="cpTipusC">Tipus contacte</label><select id="cpTipusC"><option value="">Tipo...</option><option value="Presencial">Presencial</option><option value="WhatsApp">WhatsApp</option><option value="Llamada">Llamada</option></select></div>
       </div>
       <div class="brow"><button class="btn bvd-main" onclick="addContact()">+ Añadir</button></div>
     </div>
@@ -424,7 +424,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="desc">Para cuando te enfrentas a una actividad que te genera miedo o sobrepensamiento. Puedes hacerlo mientras caminas.</div>
     <label class="flbl">Actividad o situaci&oacute;n</label>
     <input type="text" id="gActivitat" placeholder="p.ej. salir de casa, coger el transporte..." style="margin-bottom:12px">
-    <label class="flbl">Nivel de miedo/sobrepensamiento (0-10): <strong id="porLbl" style="color:var(--ro)">5/10</strong></label>
+    <label class="flbl" for="gPorSlider">Nivel de miedo/sobrepensamiento (0-10): <strong id="porLbl" style="color:var(--ro)">5/10</strong></label>
     <input type="range" min="0" max="10" value="5" id="gPorSlider" oninput="document.getElementById(&apos;porLbl&apos;).textContent=this.value+&apos;/10&apos;" style="margin-bottom:14px">
     <div class="brow"><button class="btn bp" onclick="startGrounding()">&#129505; Iniciar Grounding 5-4-3-2-1</button></div>
     <div style="margin-top:14px" id="groundingLog"><div style="font-size:13px;color:var(--gr);text-align:center;padding:8px 0">Ninguna sesi&oacute;n de grounding hoy.</div></div>
@@ -454,7 +454,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
   <div class="card" id="sec8">
     <div class="ctit"><span class="cnum">8</span> &#128228; Enviar al psic&oacute;logo</div>
     <div class="aviso">No guarda nada. Copia el texto o &aacute;brelo en WhatsApp.</div>
-    <div class="cbox" id="msgBox"></div>
+    <div class="cbox" id="msgBox" tabindex="0" role="region" aria-label="Mensaje para enviar"></div>
     <div class="cad-aviso" style="background:#f3ece0;border-left:4px solid #a9781f;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#6b5a3a;text-align:left"><b>&#127769; &iquest;Cu&aacute;ndo enviármelo?</b> No hace falta cada vez: junta lo del d&iacute;a y mándame <b>un &uacute;nico resumen al final del d&iacute;a</b>.</div>
     <div class="acc">
       <a class="btn bwa" href="#" id="btnWA">&#128241; WhatsApp</a>

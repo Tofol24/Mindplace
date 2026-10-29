@@ -569,7 +569,7 @@ VIEWS.home=function(){
 
   h+='<div class="card"><h2><span class="e">🧭</span>Mi dirección</h2>';
   h+='<p class="lead">Para qué compito, más allá del resultado. Puedes cambiarlo cuando quieras.</p>';
-  h+='<textarea id="dirInput" rows="3">'+esc(DB.settings.direccion||'')+'</textarea>';
+  h+='<textarea id="dirInput" rows="3" aria-label="Mi dirección: para qué compito">'+esc(DB.settings.direccion||'')+'</textarea>';
   h+='<div class="ok-flash" id="okflash"></div>';
   h+='<button class="btn ghost full" style="margin-top:10px" onclick="guardaDireccion()">Guardar mi dirección</button></div>';
 

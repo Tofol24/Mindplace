@@ -70,7 +70,9 @@ window.initReader=function(id){
   var bar=document.getElementById("bar"), count=document.getElementById("count"), prevBtn=document.getElementById("prevBtn");
   // rótulos e idioma según la selección (ES/CA)
   try{document.documentElement.lang=LANG; document.title=B.title;
-      var homeA=bar.querySelector(".home"); if(homeA)homeA.textContent=UI.home; prevBtn.textContent=UI.back;}catch(e){}
+      var homeA=bar.querySelector(".home"); if(homeA){homeA.textContent=UI.home;
+        // El nombre accesible empieza por lo que se ve (control por voz).
+        homeA.setAttribute("aria-label",UI.home.replace(/^\W+/,"")+(LANG==="ca"?": tornar a l'índex dels contes":": volver al índice de los cuentos"));} prevBtn.textContent=UI.back;}catch(e){}
   var idx=0; try{var sv2=parseInt(localStorage.getItem(POS),10); if(sv2>=0&&sv2<els.length)idx=sv2;}catch(e){}
   try{if(localStorage.getItem(CALM)==="1")stage.classList.add("calm");}catch(e){}
   function updateChrome(){
