@@ -60,7 +60,7 @@
   .tema-sub span{font-size:16px;}
   .tema-sub:first-of-type{margin-top:4px;}
   .pdf-row{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 10px;padding-left:4px;}
-  .pdf-chip{display:inline-flex;align-items:center;gap:5px;background:#eef4ec;border:1px solid #d3e2cf;color:#4a7a50;border-radius:20px;padding:7px 13px;font-size:12.5px;font-weight:700;text-decoration:none;}
+  .pdf-chip{display:inline-flex;align-items:center;gap:5px;background:#eef4ec;border:1px solid #d3e2cf;color:#49784f;border-radius:20px;padding:7px 13px;font-size:12.5px;font-weight:700;text-decoration:none;}
   .pdf-chip:active{transform:scale(.97);}
   .masherr{margin-top:4px;}
   .masherr>summary{list-style:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--gris);padding:11px 14px;border:1.6px dashed var(--linia,#dfe5ec);border-radius:14px;background:#fafbfc;display:flex;align-items:center;gap:8px;}
@@ -137,8 +137,8 @@
 
   /* ════════════ DETECTIVE DEL MONO (embebido, estilos con ámbito #detective) ════════════ */
   #detective{
-    --card:#ffffff; --tinta:#41382f; --suau:#857a6e;
-    --terra:#b87a5e; --terra-d:#8f5639; --terra-bg:#f3e7e0;
+    --card:#ffffff; --tinta:#41382f; --suau:#7d7267;
+    --terra:#a56549; --terra-d:#8f5639; --terra-bg:#f3e7e0;
     --linia:#e7e1d8;
     --ombra:0 8px 26px rgba(90,70,55,.12); --ombra-s:0 2px 12px rgba(90,70,55,.08);
     --rd:18px;
@@ -202,7 +202,7 @@
   #detective .wa textarea{min-height:150px;font-size:13px;background:#fff}
   #detective .row2{display:flex;gap:10px}
   #detective .row2 .btn{margin-top:10px}
-  #detective .btn.wabtn{background:#25d366;box-shadow:0 6px 18px rgba(37,211,102,.3)}
+  #detective .btn.wabtn{background:#178540;box-shadow:0 6px 18px rgba(37,211,102,.3)}
   #detective .btn.copybtn{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
   #detective .aviso{font-size:12.5px;color:var(--suau);margin-top:10px;text-align:center}
   #detective .aviso a{color:var(--terra-d);font-weight:600}
@@ -252,10 +252,10 @@
      ══════════════════════════════════════════════════════════════════════ */
   :root{
     --tinta:#2c2620; --tinta-soft:#584f45; --paper:#f5efe4; --arena:#eadfca;
-    --linea:#ddd0b8; --dorado:#a9781f;
+    --linea:#ddd0b8; --dorado:#805b17;
     --azul:#3d6076;  --azulLt:#dbe4ea;   /* Latencia · azul pizarra cálido */
     --verde:#516e46; --verdeLt:#e0e8d6;  /* Densidad · salvia */
-    --oro:#9e7529;   --oroLt:#efe3c9;    /* Continuidad · oro */
+    --oro:#805f21;   --oroLt:#efe3c9;    /* Continuidad · oro */
     --gris:#6f665b;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -383,11 +383,11 @@
   /* La teoría, en vídeo (portada) */
   .vteo{background:#fff;border:1px solid #E7DECB;border-radius:16px;border-top:4px solid #1B4F8C;padding:20px 18px;margin-bottom:18px;box-shadow:0 4px 24px rgba(27,79,140,.06);}
   .vteo-lbl{font-family:var(--serif);font-size:19px;font-weight:700;color:#1B4F8C;}
-  .vteo-sub{font-size:13.5px;color:#6a7a86;line-height:1.5;margin:5px 0 4px;}
+  .vteo-sub{font-size:13.5px;color:#687783;line-height:1.5;margin:5px 0 4px;}
   .vteo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px;}
   .vteo-card{margin:0;text-align:center;}
   .vteo-card video{width:100%;aspect-ratio:9/16;object-fit:contain;display:block;background:#000;border-radius:14px;box-shadow:0 8px 26px rgba(27,79,140,.14);}
-  .vteo-cap{text-align:center;font-size:12px;color:#6a7a86;margin:6px 0 0;line-height:1.3;}
+  .vteo-cap{text-align:center;font-size:12px;color:#687783;margin:6px 0 0;line-height:1.3;}
   /* ¿Para qué sirven estos ejercicios? (motivo y objetivo) */
   .porque{background:linear-gradient(180deg,#fff,#FBF7EE);border:1px solid #E7DECB;border-top:4px solid var(--oro);border-radius:18px;padding:20px 20px;margin-bottom:18px;box-shadow:0 4px 24px rgba(27,79,140,.07);}
   .pq-tit{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--azul);margin-bottom:8px;}
@@ -797,10 +797,10 @@ function render(){
     {href:'https://aprens-app.netlify.app/#/tool/laboratorio_tec', ext:true, ic:'🔬', tit:'Laboratorio TEC · la teoría por dentro', txt:'El libro de la Teoría del Efecto Consciente hecho laboratorio: entender el vector atencional, practicar el AIS paso a paso y medir tus L·D·C.', col:'#b3154a', bg:'#f8e4eb'}
   ];
   DOORS.forEach(d=>MENU.push({href:'#'+d.k, ic:d.ic, tit:d.tit, txt:MTXT[d.k], col:d.color, bg:d.bg, sub:d.sub, k:d.k}));
-  MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#a9781f', bg:'#f4e7cc'});
-  MENU.push({href:'#material', ic:'📄', tit:'Material de apoyo', txt:'Dos documentos base, útiles para todas las herramientas (PDF).', col:'#5f8a63', bg:'#e7f0e4'});
-  if(TOOLS.some(t=>t.tema)) MENU.push({href:'#temas', ic:'🎯', tit:'Por temas · situaciones', txt:'¿Buscas algo para una situación concreta? Trabajo, deporte, superar miedos o parar impulsos.', col:'#b0733a', bg:'#f4e6cc'});
-  if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#a86a8e', bg:'#f3e4ec'});
+  MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#805b17', bg:'#f4e7cc'});
+  MENU.push({href:'#material', ic:'📄', tit:'Material de apoyo', txt:'Dos documentos base, útiles para todas las herramientas (PDF).', col:'#4f7353', bg:'#e7f0e4'});
+  if(TOOLS.some(t=>t.tema)) MENU.push({href:'#temas', ic:'🎯', tit:'Por temas · situaciones', txt:'¿Buscas algo para una situación concreta? Trabajo, deporte, superar miedos o parar impulsos.', col:'#936031', bg:'#f4e6cc'});
+  if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#905477', bg:'#f3e4ec'});
   MENU.push({href:'#revisar', ic:'📝', tit:'Revisar mi progreso', txt:'Mira cómo evolucionas con tus cuestionarios. Esto se mide, no se entrena.', col:'var(--gris)', bg:'#EAEEF3', rev:true});
   html+='<div class="menu-lbl">¿Por dónde quieres ir hoy?</div><div class="menu">';
   MENU.forEach(m=>{
@@ -840,8 +840,8 @@ function render(){
   }
   // Material de apoyo (documentos transversales · PDF)
   if(MATERIAL.length){
-    html+='<div class="sec" id="material" style="border-top-color:#5f8a63">'
-      +'<div class="sec-head"><span class="sec-ic">📄</span><span class="sec-tit" style="color:#5f8a63">Material de apoyo</span></div>'
+    html+='<div class="sec" id="material" style="border-top-color:#4f7353">'
+      +'<div class="sec-head"><span class="sec-ic">📄</span><span class="sec-tit" style="color:#4f7353">Material de apoyo</span></div>'
       +'<div class="sec-obj">Dos documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.</div>'
       + MATERIAL.map(function(m){return '<a class="tool" href="'+m.u+'" target="_blank" rel="noopener"><span class="tic">'+m.ic+'</span><span class="tbody"><span class="tn">'+esc(m.n)+'</span><span class="td">'+esc(m.d)+'</span></span><span class="arr">↓</span></a>';}).join('')
       +'</div>';
@@ -868,14 +868,14 @@ function render(){
   // Por temas · situaciones concretas (eje temático, además de las puertas L/D/C)
   const TEMAS=[
     {k:"trabajo",  ic:"💼", tit:"Trabajo",         col:"#4a6070"},
-    {k:"deporte",  ic:"🚵", tit:"Deporte",         col:"#5e8f6f"},
-    {k:"miedos",   ic:"🪜", tit:"Superar miedos",  col:"#9c6a1b"},
-    {k:"impulsos", ic:"🧯", tit:"Parar impulsos",  col:"#b25a53"}
+    {k:"deporte",  ic:"🚵", tit:"Deporte",         col:"#4c735a"},
+    {k:"miedos",   ic:"🪜", tit:"Superar miedos",  col:"#8f6119"},
+    {k:"impulsos", ic:"🧯", tit:"Parar impulsos",  col:"#a8524b"}
   ];
   const temasActivos=TEMAS.filter(g=>TOOLS.some(t=>t.tema===g.k));
   if(temasActivos.length){
-    html+='<div class="sec" id="temas" style="border-top-color:#b0733a">'
-      +'<div class="sec-head"><span class="sec-ic">🎯</span><span class="sec-tit" style="color:#b0733a">Por temas · situaciones</span></div>'
+    html+='<div class="sec" id="temas" style="border-top-color:#936031">'
+      +'<div class="sec-head"><span class="sec-ic">🎯</span><span class="sec-tit" style="color:#936031">Por temas · situaciones</span></div>'
       +'<div class="sec-obj">Si buscas algo para una situación concreta. (Las mismas herramientas también aparecen arriba, según qué entrenan.)</div>';
     temasActivos.forEach(g=>{
       const ts=TOOLS.filter(t=>t.tema===g.k);
@@ -886,9 +886,9 @@ function render(){
   // Peques · familias (herramientas infantiles agrupadas aparte)
   const peq=TOOLS.filter(t=>t.peques);
   if(peq.length){
-    html+='<div class="sec" id="peques" style="border-top-color:#a86a8e">'
-      +'<div class="sec-head"><span class="sec-ic">🧸</span><span class="sec-tit" style="color:#a86a8e">Peques · familias</span>'
-      +'<span class="sec-badge" style="background:#f3e4ec;color:#a86a8e">Infantil</span></div>'
+    html+='<div class="sec" id="peques" style="border-top-color:#905477">'
+      +'<div class="sec-head"><span class="sec-ic">🧸</span><span class="sec-tit" style="color:#905477">Peques · familias</span>'
+      +'<span class="sec-badge" style="background:#f3e4ec;color:#905477">Infantil</span></div>'
       +'<div class="sec-obj">Herramientas para niñas y niños, pensadas para hacer <b>con madre y padre</b>: exposición a la separación, ritual de calma y juegos para practicar.</div>'
       + peq.map(toolHTML).join('')
       +'</div>';

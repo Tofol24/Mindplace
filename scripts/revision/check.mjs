@@ -300,7 +300,12 @@ async function revisarNavegador(lista) {
           const reglas = fragmento ? { "html-has-lang": { enabled: false }, "document-title": { enabled: false } } : {};
           const res = await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] }, rules: reglas, resultTypes: ["violations"] });
           return res.violations.map((v) => ({ id: v.id, impacto: v.impact, ayuda: v.help, n: v.nodes.length, donde: v.nodes[0]?.target?.join(" "),
-            nodos: v.nodes.map((x) => `${x.target.join(" ")}  →  ${x.html.replace(/\s+/g, " ").slice(0, 160)}`) }));
+            nodos: v.nodes.map((x) => {
+              // Contraste: colores reales y cuánto falta, para corregir en el origen (variables CSS).
+              const d = v.id === "color-contrast" ? x.any?.[0]?.data : null;
+              const c = d ? `  [${d.fgColor} sobre ${d.bgColor}: ${d.contrastRatio}:1, pide ${d.expectedContrastRatio}; ${d.fontSize} ${d.fontWeight}]` : "";
+              return `${x.target.join(" ")}${c}  →  ${x.html.replace(/\s+/g, " ").slice(0, 160)}`;
+            }) }));
         }, fragmento);
         for (const v of r) {
           // Bloquea lo que impide usar la página; el contraste y lo menor quedan como aviso.

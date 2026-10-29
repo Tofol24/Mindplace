@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="APRENS">
 <title>Herramienta diaria - APRENS</title>
 <style>
-:root{--az:#565a41;--azl:#e8ead9;--vd:#5c7d54;--vdl:#e0ead6;--or:#C2704F;--ro:#b0432f;--gr:#6f665b;--fd:#f1e9db;--au:#a9781f;
+:root{--az:#565a41;--azl:#e8ead9;--vd:#506c49;--vdl:#e0ead6;--or:#a7593a;--ro:#b0432f;--gr:#6f665b;--fd:#f1e9db;--au:#8f661a;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -39,7 +39,7 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;p
 .btn{border:none;border-radius:30px;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:7px;-webkit-appearance:none;text-decoration:none;}
 .bp{background:var(--az);color:#fff;padding:11px 22px;font-size:14px;}
 .bvd-main{background:var(--vd);color:#fff;padding:11px 22px;font-size:14px;}
-.bwa{background:#25D366;color:#fff;padding:11px 18px;font-size:14px;}
+.bwa{background:#178540;color:#fff;padding:11px 18px;font-size:14px;}
 .bcp{background:#fff;color:var(--gr);border:2px solid #E0E7EF;padding:10px 16px;font-size:14px;}
 .brow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
 .punt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
@@ -174,7 +174,7 @@ svg.sparkline{width:100%;overflow:visible;}
 .pbadge{display:inline-flex;align-items:center;border-radius:9px;padding:2px 7px;font-size:9.5px;font-weight:700;letter-spacing:.2px;line-height:1.3;}
 .pL{background:#DCEFE5;color:#1f6b4e;}
 .pD{background:#DCE7F6;color:#1B4F8C;}
-.pC{background:#FBE6D4;color:#B5601F;}
+.pC{background:#FBE6D4;color:#9f541b;}
 .qtrab{display:flex;align-items:flex-start;gap:8px;background:#FAFBFC;border:1px solid #E8EFF7;border-radius:10px;padding:9px 11px;margin-bottom:12px;font-size:12px;color:#444;line-height:1.5;}
 .qtrab .qp{display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;}
 @media(max-width:380px){.idxgrid{grid-template-columns:1fr;}}
@@ -190,7 +190,7 @@ svg.sparkline{width:100%;overflow:visible;}
 @media(hover:hover){.ch-canal:not(.ch-act):hover{border-color:#565a41;box-shadow:0 4px 14px rgba(74,63,48,.14);transform:translateY(-1px);}}
 
 /* ══ NUEVO ESTILO EDITORIAL (migración) · amanecer periwinkle ══ */
-:root{--az:#565a41;--azl:#e8ead9;--au:#a9781f;--gr:#6f665b;}
+:root{--az:#565a41;--azl:#e8ead9;--au:#8f661a;--gr:#6f665b;}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#2b2a30;background:linear-gradient(170deg,#EBEEF6 0%,#F4EEE1 100%);-webkit-font-smoothing:antialiased;}
 ::selection{background:#6a7bb0;color:#fff;}
 .hdr{background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0)),#EBEEF6;color:#2b2a30;box-shadow:0 1px 0 #E1D9C9;backdrop-filter:saturate(120%) blur(3px);}
@@ -455,7 +455,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="ctit"><span class="cnum">8</span> &#128228; Enviar al psic&oacute;logo</div>
     <div class="aviso">No guarda nada. Copia el texto o &aacute;brelo en WhatsApp.</div>
     <div class="cbox" id="msgBox" tabindex="0" role="region" aria-label="Mensaje para enviar"></div>
-    <div class="cad-aviso" style="background:#f3ece0;border-left:4px solid #a9781f;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#6b5a3a;text-align:left"><b>&#127769; &iquest;Cu&aacute;ndo enviármelo?</b> No hace falta cada vez: junta lo del d&iacute;a y mándame <b>un &uacute;nico resumen al final del d&iacute;a</b>.</div>
+    <div class="cad-aviso" style="background:#f3ece0;border-left:4px solid #8f661a;border-radius:10px;padding:11px 13px;margin:0 0 13px;font-size:13.5px;line-height:1.45;color:#6b5a3a;text-align:left"><b>&#127769; &iquest;Cu&aacute;ndo enviármelo?</b> No hace falta cada vez: junta lo del d&iacute;a y mándame <b>un &uacute;nico resumen al final del d&iacute;a</b>.</div>
     <div class="acc">
       <a class="btn bwa" href="#" id="btnWA">&#128241; WhatsApp</a>
       <button class="btn bcp" onclick="copiar(this)">&#128203; Copiar</button>
@@ -960,7 +960,7 @@ _flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)t
 buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
 exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
 copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
-mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2a75c5")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
 };g.Aprens=A;})(window);
 </script>
 

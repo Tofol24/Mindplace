@@ -5,7 +5,7 @@ function pad(n){return (n<10?"0":"")+n;}
 
 /* ventana de capacidad (SVG) — misma gramática que la herramienta 🌊 */
 function ventana(state,size){
-  var C={verde:{light:'#6F8F83',rows:1,perRow:1,frame:'#4a4a42',mut:0},amarillo:{light:'#C6A66B',rows:1,perRow:3,frame:'#4a4a42',mut:0},naranja:{light:'#CE8A56',rows:2,perRow:3,frame:'#464038',mut:.05},rojo:{light:'#B85C52',rows:3,perRow:4,frame:'#3a332f',mut:.16},azul:{light:'#7895A8',rows:1,perRow:3,frame:'#45474a',mut:.10,door:true}}[state];
+  var C={verde:{light:'#5f7b71',rows:1,perRow:1,frame:'#4a4a42',mut:0},amarillo:{light:'#C6A66B',rows:1,perRow:3,frame:'#4a4a42',mut:0},naranja:{light:'#CE8A56',rows:2,perRow:3,frame:'#464038',mut:.05},rojo:{light:'#B85C52',rows:3,perRow:4,frame:'#3a332f',mut:.16},azul:{light:'#7895A8',rows:1,perRow:3,frame:'#45474a',mut:.10,door:true}}[state];
   var uid=(ventana._n=(ventana._n||0)+1),gid="g"+state+uid,cid="c"+state+uid;
   var inX=20,inW=160,floor=172,top=34;
   var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C.light+'" stop-opacity="0.95"/><stop offset="1" stop-color="'+C.light+'" stop-opacity="0.30"/></linearGradient><clipPath id="'+cid+'"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" rx="8"/></clipPath></defs><rect x="8" y="8" width="184" height="184" rx="18" fill="#efe9dc" stroke="'+C.frame+'" stroke-width="6"/><g clip-path="url(#'+cid+')"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" fill="url(#'+gid+')"/>';

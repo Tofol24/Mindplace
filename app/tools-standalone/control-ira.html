@@ -72,7 +72,7 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .res-msg{font-size:15px;line-height:1.5;text-align:center;color:#33384a;margin:0 0 18px;}
 .card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 20px rgba(74,63,48,.08);margin-bottom:16px;}
 .acc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.bwa{background:#25D366;color:#fff;padding:15px 22px;font-size:16px;}
+.bwa{background:#178540;color:#fff;padding:15px 22px;font-size:16px;}
 .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:13px 20px;font-size:15px;}
 .cbox{display:none;}
 .frase{font-style:italic;color:var(--azul);font-size:14px;background:var(--azulLt);border-radius:0 12px 12px 0;border-left:4px solid var(--oro);padding:13px 15px;line-height:1.6;margin-top:18px;text-align:center;}
@@ -96,11 +96,11 @@ body{font-family:var(--sans);background:#F4EFE6;min-height:100vh;color:#2A2622;m
 .langtog button{border:0;background:none;padding:6px 12px;cursor:pointer;color:#6f675c;}
 
 /* ══ NUEVO ESTILO EDITORIAL (migración) · identidad propia ══ */
-:root{--azul:#b0663a;--azulLt:#ecd8ca;--oro:#a7802f;--gris:#6f675c;}
+:root{--azul:#935531;--azulLt:#ecd8ca;--oro:#a7802f;--gris:#6f675c;}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#2b2a30;background:linear-gradient(170deg,#F4E9E0 0%,#F4EEE1 100%);-webkit-font-smoothing:antialiased;}
-::selection{background:#b0663a;color:#fff;}
+::selection{background:#935531;color:#fff;}
 .header{background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0)),#F4E9E0;color:#2b2a30;box-shadow:0 1px 0 #E1D9C9;backdrop-filter:saturate(120%) blur(3px);}
-.hlogo{background:#b0663a;color:#fff;font-family:var(--serif);}
+.hlogo{background:#935531;color:#fff;font-family:var(--serif);}
 .htitle{color:#2b2a30;font-family:var(--serif);}
 .hsub{color:#6f675c;opacity:1;}
 .card{border:1px solid #E7DECB;box-shadow:0 12px 30px -24px rgba(43,40,35,.4);}
@@ -467,7 +467,7 @@ function applyLang(){ const t=T();
   document.getElementById('videoCap').textContent=t.videoCap;
   document.querySelectorAll('#langToggle button').forEach(b=>{
     const on=b.dataset.lang===lang;
-    b.style.color=on?'#b0663a':'#6f675c'; b.style.background=on?'#f3e2d6':'none';
+    b.style.color=on?'#935531':'#6f675c'; b.style.background=on?'#f3e2d6':'none';
   });
 }
 function setLang(l){ if(l===lang || !I18N[l])return; lang=l;

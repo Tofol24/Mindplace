@@ -256,8 +256,8 @@
 
       bar.innerHTML =
         codHtml +
-        '<button id="aprensWA" style="' + btn("#25D366") + '">📱 WhatsApp</button>' +
-        '<button id="aprensFile" style="' + btn("#2d7dd2") + '">⬇ Archivo .json</button>' +
+        '<button id="aprensWA" style="' + btn("#178540") + '">📱 WhatsApp</button>' +
+        '<button id="aprensFile" style="' + btn("#2a75c5") + '">⬇ Archivo .json</button>' +
         '<button id="aprensCopy" style="' + btn("#5a6b7b") + '">⧉ Copiar</button>';
       document.body.appendChild(bar);
 

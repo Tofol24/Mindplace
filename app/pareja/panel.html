@@ -26,7 +26,7 @@
 <style>
 :root{
   --bg:#EEF0EC; --card:#fff; --ink:#232C2A; --muted:#69706A; --line:#DFE1DA; --line2:#eceee8;
-  --sage:#5F8377; --sage-d:#496a5e; --ocre:#B99450; --coral:#C57C4B; --rojo:#B0554C; --azul:#6E90A6;
+  --sage:#5a7c70; --sage-d:#496a5e; --ocre:#B99450; --coral:#C57C4B; --rojo:#B0554C; --azul:#6E90A6;
   --focus:#2f6f60; --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 30px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box}
@@ -95,7 +95,7 @@ textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 input[type=file]{font:inherit;font-size:13px}
 /* Devolución para la pareja (documento pensado para compartir con ambos) */
 .creport{line-height:1.6}
-.creport .chead{background:linear-gradient(135deg,#5F8377,#496a5e);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:8px}
+.creport .chead{background:linear-gradient(135deg,#5a7c70,#496a5e);color:#fff;border-radius:16px;padding:26px 24px;margin-bottom:8px}
 .creport .chead .ck{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;font-weight:700}
 .creport .chead h2{color:#fff;font-size:26px;margin:6px 0 4px;text-wrap:balance}
 .creport .chead p{margin:0;opacity:.96}
@@ -879,9 +879,9 @@ function chartFor(key,label){
     +'<span class="small muted">— A (línea continua) · - - B (discontinua)</span></div>'
     +'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de '+esc(label)+'">'
     +grid
-    +'<path d="'+path("a")+'" fill="none" stroke="#5F8377" stroke-width="2"/>'
+    +'<path d="'+path("a")+'" fill="none" stroke="#5a7c70" stroke-width="2"/>'
     +'<path d="'+path("b")+'" fill="none" stroke="#6E90A6" stroke-width="2" stroke-dasharray="5 4"/>'
-    +dots("a","#5F8377")+dots("b","#6E90A6")+'</svg></div>';
+    +dots("a","#5a7c70")+dots("b","#6E90A6")+'</svg></div>';
 }
 
 /* ==========================================================================

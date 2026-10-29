@@ -1,9 +1,9 @@
 /* APRENS · Panel del psicólogo — estilos (offline, sin fuentes externas) */
 :root{
-  --navy:#0f2a3f; --blue:#1B4F8C; --blue2:#2d7dd2;
+  --navy:#0f2a3f; --blue:#1B4F8C; --blue2:#2a75c5;
   --ink:#1c2b36; --muted:#5c6b78; --line:#e2e8ef; --bg:#eef3f8; --card:#fff;
   --conduce:#c0584e; --delante:#d98a3d; --maletero:#8d6fb0; --lado:#5f9070;
-  --L:#2d7dd2; --D:#3a9e8c; --C:#5f9070;
+  --L:#2a75c5; --D:#3a9e8c; --C:#5f9070;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -25,7 +25,7 @@ button{font-family:inherit}
 .lock-form button[type=submit]{padding:12px;border:0;border-radius:11px;background:var(--blue);
   color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:2px}
 .lock-hint{font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.45}
-.lock-warn{font-size:12px;color:#9a6a00;background:#fff6e5;padding:8px 10px;border-radius:9px;margin:4px 0 0;line-height:1.4}
+.lock-warn{font-size:12px;color:#956600;background:#fff6e5;padding:8px 10px;border-radius:9px;margin:4px 0 0;line-height:1.4}
 .lock-err{color:#c0392b;font-size:13px;min-height:16px;margin:2px 0 0}
 .linklike{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:4px}
 

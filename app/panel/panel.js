@@ -839,7 +839,7 @@
           data: {
             labels: s.map(function (x) { return x.date; }),
             datasets: [
-              { label: "Latencia", data: s.map(function (x) { return x.L; }), borderColor: "#2d7dd2", backgroundColor: "#2d7dd2", tension: .3, pointRadius: 3, borderWidth: 2 },
+              { label: "Latencia", data: s.map(function (x) { return x.L; }), borderColor: "#2a75c5", backgroundColor: "#2a75c5", tension: .3, pointRadius: 3, borderWidth: 2 },
               { label: "Densidad", data: s.map(function (x) { return x.D; }), borderColor: "#3a9e8c", backgroundColor: "#3a9e8c", tension: .3, pointRadius: 3, borderWidth: 2 },
               { label: "Continuidad", data: s.map(function (x) { return x.C; }), borderColor: "#5f9070", backgroundColor: "#5f9070", tension: .3, pointRadius: 3, borderWidth: 2 }
             ]
@@ -932,7 +932,7 @@
       data: {
         labels: s.map(function (x) { return x.date; }),
         datasets: [
-          ds("Latencia", s.map(function (x) { return x.L; }), "#2d7dd2"),
+          ds("Latencia", s.map(function (x) { return x.L; }), "#2a75c5"),
           ds("Densidad", s.map(function (x) { return x.D; }), "#3a9e8c"),
           ds("Continuidad", s.map(function (x) { return x.C; }), "#5f9070")
         ]

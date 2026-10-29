@@ -399,7 +399,7 @@
   // «Mi recorrido · paso a paso»: lo que toca hoy, leído del estado de la
   // herramienta (tools-standalone/recorrido-tec.html, mismo origen).
   function recorridoHoyHTML(){
-    const ETAPAS = [["Punto de partida","#6f665b"],["Entender","#8f5639"],["Aparecer","#2e7d5e"],["Permanecer","#3f6b74"],["Elegir y actuar","#a9781f"],["Consolidar","#7a4f8a"]];
+    const ETAPAS = [["Punto de partida","#6f665b"],["Entender","#8f5639"],["Aparecer","#2d795b"],["Permanecer","#3f6b74"],["Elegir y actuar","#8d641a"],["Consolidar","#7a4f8a"]];
     let st = null;
     try{ st = JSON.parse(localStorage.getItem("aprens.recorrido.v1")||"null"); }catch(e){ st = null; }
     const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
