@@ -8,13 +8,13 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   :root{
-    --azul:#566a70;--azulLt:#dde3e5;--verde:#5c7d54;--verdeLt:#e0ead6;
+    --azul:#53666c;--azulLt:#dde3e5;--verde:#5c7d54;--verdeLt:#e0ead6;
     --naranja:#C2704F;--rojo:#b0432f;--gris:#6f675c;--oro:#a7802f;--lila:#8a5a72;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   body{font-family:var(--sans);background:linear-gradient(170deg,#EDF0F0 0%,#F4EEE1 100%);color:#2b2a30;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
-  ::selection{background:#566a70;color:#fff;}
+  ::selection{background:#53666c;color:#fff;}
   .wrap{max-width:880px;margin:0 auto;padding:26px 18px 80px;}
   .phero{position:relative;min-height:36vh;max-height:380px;display:flex;align-items:flex-end;overflow:hidden;background:linear-gradient(150deg,#8a6a52 0%,#6a5445 45%,#5f6350 100%);}
   .phero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;z-index:0;}
@@ -30,7 +30,7 @@
   .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 22px;font-size:13px;}
   .bs:hover{background:var(--azulLt);}
   .bsm{padding:9px 17px;font-size:13px;}
-  .bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+  .bwa{background:#178540;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
   .bcopy{background:#fff;color:var(--gris);border:2px solid #E7DECB;padding:12px 20px;font-size:14px;}
   .btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
 
@@ -209,7 +209,7 @@ const PCL=[
 const CLUSTER={
  B:{n:"B · Intrusión",     min:1, ids:[0,1,2,3,4],              col:"#8a5a72"},
  C:{n:"C · Evitación",     min:1, ids:[5,6],                    col:"#C2704F"},
- D:{n:"D · Cognición y ánimo", min:2, ids:[7,8,9,10,11,12,13],  col:"#566a70"},
+ D:{n:"D · Cognición y ánimo", min:2, ids:[7,8,9,10,11,12,13],  col:"#53666c"},
  E:{n:"E · Activación",    min:2, ids:[14,15,16,17,18,19],      col:"#5c7d54"}
 };
 
@@ -831,7 +831,7 @@ function vProfInforme(){
     <div class="hsubt">Administración del <strong>${esc(s.fecha)}</strong> · ${esc(s.edad||"—")} años · ${({M:"mujer",H:"hombre",X:"otro"})[s.sexo]||"sexo no indicado"} · ${r.pclResp}/20 ítems contestados</div>
   </div>
 
-  <div class="verdict" style="background:${r.diag?"#b0432f":r.total>=31?"#C2704F":"#566a70"}">
+  <div class="verdict" style="background:${r.diag?"#b0432f":r.total>=31?"#C2704F":"#53666c"}">
     <div class="vt">${r.diag?"Cribado POSITIVO para TEPT":"No cumple todos los criterios de TEPT"}</div>
     <div class="vs">${r.diag
       ?"Se cumplen los criterios A-G del DSM-5 en el cribado. Confirmar en entrevista clínica."

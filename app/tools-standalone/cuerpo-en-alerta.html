@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#7d9b86">
+<meta name="theme-color" content="#5e7a66">
 <meta name="description" content="Herramienta de acompañamiento terapéutico tras experiencias traumáticas. Centre APRENS · TEC / AIS.">
 <title>Cuando el cuerpo sigue en alerta · APRENS</title>
 <!-- Sin recursos de terceros: se usan fuentes del sistema (coherente con la CSP del sitio). -->
@@ -16,15 +16,15 @@
     --card:#fffdf9;
     --tinta:#2f3330;      /* carbón */
     --tinta-2:#4a524d;
-    --suau:#6e746c;       /* texto secundario */
-    --salvia:#7d9b86;
+    --suau:#686d66;       /* texto secundario */
+    --salvia:#5e7a66;
     --salvia-d:#516b5a;
     --salvia-suau:#e7eee8;
-    --azul:#6b8299;       /* azul grisáceo */
+    --azul:#61778c;       /* azul grisáceo */
     --azul-d:#465b6d;
     --azul-suau:#e7edf1;
-    --terra:#c08268;      /* terracota suave */
-    --terra-d:#9c5f45;
+    --terra:#a76346;      /* terracota suave */
+    --terra-d:#915940;
     --terra-suau:#f4e6de;
     --linia:#e3dccd;
     --linia-2:#d8cfbd;
@@ -2530,7 +2530,7 @@
     var el=$(sel); el.setAttribute('aria-checked',on?'true':'false');
     el.addEventListener('click',function(){ var n=el.getAttribute('aria-checked')!=='true'; el.setAttribute('aria-checked',n?'true':'false'); cb(n); });
   }
-  function applyTheme(){ document.documentElement.setAttribute('data-theme', S.ui.theme); $('meta[name=theme-color]').setAttribute('content', S.ui.theme==='dark'?'#23272a':'#7d9b86'); }
+  function applyTheme(){ document.documentElement.setAttribute('data-theme', S.ui.theme); $('meta[name=theme-color]').setAttribute('content', S.ui.theme==='dark'?'#23272a':'#5e7a66'); }
   function applyMotion(){ document.documentElement.setAttribute('data-reduce', S.ui.motion?'1':'0'); }
 
   /* ---------- Confirmación ---------- */

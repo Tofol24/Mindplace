@@ -1,6 +1,6 @@
 /* APRENS · portada de aprens.net. Colors i lletra dels títols, els d'aprens.es. */
 @font-face{font-family:"Economica";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/economica-700.woff2) format("woff2")}
-:root{--on-blau:#fff;--paper:#f4f6f9;--card:#fff;--ink:#22303f;--muted:#5d6b7c;--line:#dfe4ec;--blau:#406eb3;--blau-soft:#e6eef9;--verd:#3d7a1a;--verd-soft:#ebf5e3;--taronja:#a3500d;--taronja-soft:#fbefe2;--lila:#6d5aa8;--lila-soft:#efecf8;--vermell:#a3284f;--vermell-soft:#f8e6ec;
+:root{--on-blau:#fff;--paper:#f4f6f9;--card:#fff;--ink:#22303f;--muted:#5d6b7c;--line:#dfe4ec;--blau:#3d69ab;--blau-soft:#e6eef9;--verd:#3d7a1a;--verd-soft:#ebf5e3;--taronja:#a3500d;--taronja-soft:#fbefe2;--lila:#6d5aa8;--lila-soft:#efecf8;--vermell:#a3284f;--vermell-soft:#f8e6ec;
   --f-tit:"Economica","Avenir Next Condensed","Arial Narrow",sans-serif;--f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 @media (prefers-color-scheme:dark){:root{--on-blau:#0d1724;--paper:#11161d;--card:#19202a;--ink:#e6ebf2;--muted:#9aa7b8;--line:#2a3442;--blau:#86aee8;--blau-soft:#1d2a3d;--verd:#8fcf63;--verd-soft:#1d2b17;--taronja:#f0a35e;--taronja-soft:#33241a;--lila:#b3a4ea;--lila-soft:#272238;--vermell:#ef8fae;--vermell-soft:#361d27;color-scheme:dark}}
 *{box-sizing:border-box}[hidden]{display:none!important}

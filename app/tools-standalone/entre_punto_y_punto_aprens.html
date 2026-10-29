@@ -8,7 +8,7 @@
 <title>Entre punto y punto · APRENS</title>
 <style>
   :root{
-    --bg:#f3f0e7; --bg2:#ece7da; --card:#fffdf8; --tinta:#292620; --suau:#726a5c;
+    --bg:#f3f0e7; --bg2:#ece7da; --card:#fffdf8; --tinta:#292620; --suau:#6e6659;
     --pista:#3d6659; --pista-d:#2b4a3f; --pista-lt:#e0ece6;
     --tierra:#c1714c; --tierra-d:#985534; --tierra-lt:#f7e6db;
     --pelota:#b98f18; --pelota-lt:#f6edcf;
@@ -569,7 +569,7 @@ VIEWS.home=function(){
 
   h+='<div class="card"><h2><span class="e">🧭</span>Mi dirección</h2>';
   h+='<p class="lead">Para qué compito, más allá del resultado. Puedes cambiarlo cuando quieras.</p>';
-  h+='<textarea id="dirInput" rows="3">'+esc(DB.settings.direccion||'')+'</textarea>';
+  h+='<textarea id="dirInput" rows="3" aria-label="Mi dirección: para qué compito">'+esc(DB.settings.direccion||'')+'</textarea>';
   h+='<div class="ok-flash" id="okflash"></div>';
   h+='<button class="btn ghost full" style="margin-top:10px" onclick="guardaDireccion()">Guardar mi dirección</button></div>';
 

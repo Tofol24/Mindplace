@@ -27,7 +27,7 @@
 .emono .btn:active{transform:scale(.98)}
 .emono .btn.ghost{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
 .emono .btn.oro{background:var(--oro2);box-shadow:0 6px 18px rgba(202,167,101,.32)}
-.emono .btn.wa{background:#25D366;box-shadow:0 6px 18px rgba(37,211,102,.32)}
+.emono .btn.wa{background:#178540;box-shadow:0 6px 18px rgba(37,211,102,.32)}
 .emono .btn.small{width:auto;padding:11px 16px;font-size:14.5px;margin-top:0}
 .emono .btn svg{width:19px;height:19px}
 .emono .btn.ok{background:var(--salvia)!important;color:#fff!important}

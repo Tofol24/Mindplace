@@ -53,7 +53,7 @@
     '.vh-sil{max-width:150px;margin:0 auto;border-radius:12px;overflow:hidden}',
     '.vh-sil .ra-ui,.vh-sil .ra-count,.vh-sil .ra-legend{display:none!important}',
     '.vh-pie{margin-top:10px;background:var(--azulLt,#E6EEF5);border-left:4px solid var(--azul,#1B4F8C);border-radius:0 10px 10px 0;padding:12px 15px;font-size:12.5px;color:var(--azul,#1B4F8C);line-height:1.6}',
-    '.vh-det{margin:10px 0}.vh-det>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;color:var(--vb-acc,#3f6b74);background:var(--vb-acc-bg,rgba(63,107,116,.12));border-radius:18px;padding:7px 13px}',
+    '.vh-det{margin:10px 0}.vh-det>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;color:var(--vb-acc,#3c666f);background:var(--vb-acc-bg,rgba(63,107,116,.12));border-radius:18px;padding:7px 13px}',
     '.vh-det>summary::-webkit-details-marker{display:none}.vh-det[open]>summary{margin-bottom:10px}'
   ].join('\n');
 

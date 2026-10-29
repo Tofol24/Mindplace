@@ -5,7 +5,7 @@ function pad(n){return (n<10?"0":"")+n;}
 
 /* ventana de capacidad (SVG) — misma gramática que la herramienta 🌊 */
 function ventana(state,size){
-  var C={verde:{light:'#6F8F83',rows:1,perRow:1,frame:'#4a4a42',mut:0},amarillo:{light:'#C6A66B',rows:1,perRow:3,frame:'#4a4a42',mut:0},naranja:{light:'#CE8A56',rows:2,perRow:3,frame:'#464038',mut:.05},rojo:{light:'#B85C52',rows:3,perRow:4,frame:'#3a332f',mut:.16},azul:{light:'#7895A8',rows:1,perRow:3,frame:'#45474a',mut:.10,door:true}}[state];
+  var C={verde:{light:'#5f7b71',rows:1,perRow:1,frame:'#4a4a42',mut:0},amarillo:{light:'#C6A66B',rows:1,perRow:3,frame:'#4a4a42',mut:0},naranja:{light:'#CE8A56',rows:2,perRow:3,frame:'#464038',mut:.05},rojo:{light:'#B85C52',rows:3,perRow:4,frame:'#3a332f',mut:.16},azul:{light:'#7895A8',rows:1,perRow:3,frame:'#45474a',mut:.10,door:true}}[state];
   var uid=(ventana._n=(ventana._n||0)+1),gid="g"+state+uid,cid="c"+state+uid;
   var inX=20,inW=160,floor=172,top=34;
   var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+C.light+'" stop-opacity="0.95"/><stop offset="1" stop-color="'+C.light+'" stop-opacity="0.30"/></linearGradient><clipPath id="'+cid+'"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" rx="8"/></clipPath></defs><rect x="8" y="8" width="184" height="184" rx="18" fill="#efe9dc" stroke="'+C.frame+'" stroke-width="6"/><g clip-path="url(#'+cid+')"><rect x="'+inX+'" y="'+top+'" width="'+inW+'" height="'+(floor-top+8)+'" fill="url(#'+gid+')"/>';
@@ -70,7 +70,9 @@ window.initReader=function(id){
   var bar=document.getElementById("bar"), count=document.getElementById("count"), prevBtn=document.getElementById("prevBtn");
   // rótulos e idioma según la selección (ES/CA)
   try{document.documentElement.lang=LANG; document.title=B.title;
-      var homeA=bar.querySelector(".home"); if(homeA)homeA.textContent=UI.home; prevBtn.textContent=UI.back;}catch(e){}
+      var homeA=bar.querySelector(".home"); if(homeA){homeA.textContent=UI.home;
+        // El nombre accesible empieza por lo que se ve (control por voz).
+        homeA.setAttribute("aria-label",UI.home.replace(/^\W+/,"")+(LANG==="ca"?": tornar a l'índex dels contes":": volver al índice de los cuentos"));} prevBtn.textContent=UI.back;}catch(e){}
   var idx=0; try{var sv2=parseInt(localStorage.getItem(POS),10); if(sv2>=0&&sv2<els.length)idx=sv2;}catch(e){}
   try{if(localStorage.getItem(CALM)==="1")stage.classList.add("calm");}catch(e){}
   function updateChrome(){

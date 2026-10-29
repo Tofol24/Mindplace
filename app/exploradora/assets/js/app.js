@@ -108,7 +108,7 @@
 
   /* ---------- confeti (papelines) ---------- */
   function confeti() {
-    var cols = ["#DDA637", "#5B9B8B", "#D98A6A", "#516E46", "#E4C79E"];
+    var cols = ["#DDA637", "#4a7e71", "#D98A6A", "#516E46", "#E4C79E"];
     for (var i = 0; i < 28; i++) {
       var c = document.createElement("div"); c.className = "confeti";
       c.style.left = (i * 3.6) + "vw"; c.style.background = cols[i % cols.length];

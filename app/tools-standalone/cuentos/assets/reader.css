@@ -1,7 +1,7 @@
 /* APRENS · Cuentos — estilos compartidos (lector, índice, mapa) */
 :root{
-  --paper:#F7F6F2; --ink:#28312F; --muted:#6b726d;
-  --sage:#6F8F83; --azul:#7895A8; --ocre:#C6A66B; --coral:#C9786E;
+  --paper:#F7F6F2; --ink:#28312F; --muted:#676e69;
+  --sage:#5f7b71; --azul:#7895A8; --ocre:#C6A66B; --coral:#b65044;
   --card:#FBFAF6; --line:#e6e2d8; --stage:#1d211f; --art:#efece4; --tap:52px;
   --serif:'Fraunces',Georgia,'Times New Roman',serif;
   --sans:'Nunito Sans',system-ui,-apple-system,Segoe UI,sans-serif;

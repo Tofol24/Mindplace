@@ -47,7 +47,7 @@
   /* ---------- CSS (una sola vez) ---------- */
   var CSS = '' +
   '.respiro-ais{--ra-air:#3FA6D8;--ra-air-hi:#EAF6FF;--ra-mind:#E9B458;--ra-mind-hi:#FFFBEF;' +
-  '  --ra-ink:#33474d;--ra-muted:#7c8a88;--ra-serif:"Fraunces","Newsreader",Georgia,serif;' +
+  '  --ra-ink:#33474d;--ra-muted:#5f6a68;--ra-serif:"Fraunces","Newsreader",Georgia,serif;' +
   '  --ra-mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;' +
   '  --ra-pill-bg:rgba(252,251,247,.9);--ra-pill-bd:rgba(16,58,68,.14);--ra-pill-ink:#1B5A68;' +
   '  display:flex;flex-direction:column;align-items:center;}' +

@@ -7,7 +7,7 @@
 <title>Mi Brújula de Valores · APRENS</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  :root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;--lila:#7B4FC1;--lilaLt:#ECE3F8;}
+  :root{--azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2a7256;--verdeLt:#D4EDDA;--naranja:#E07B39;--rojo:#C0392B;--gris:#6B7280;--fondo:#F0F4F8;--oro:#C8973A;--lila:#7B4FC1;--lilaLt:#ECE3F8;}
   body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);min-height:100vh;color:#1a1a2e;padding-bottom:env(safe-area-inset-bottom);}
   .header{background:var(--azul);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50;}
   .hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:'Playfair Display',serif;}
@@ -19,7 +19,7 @@
   .bpg{background:var(--verde);color:#fff;padding:14px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3);}
   .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 22px;font-size:13px;}
   .bsm{padding:9px 18px;font-size:13px;}
-  .bwa{background:#25D366;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+  .bwa{background:#178540;color:#fff;padding:14px 24px;font-size:15px;box-shadow:0 4px 14px rgba(37,211,102,.3);}
   .bmail{background:#EA4335;color:#fff;padding:14px 24px;font-size:15px;}
   .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 20px;font-size:14px;}
   .card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:18px;}
@@ -85,11 +85,11 @@
   .sug-note{font-size:12px;color:var(--oro);background:#FBF4E6;border-radius:10px;padding:8px 12px;margin-top:8px;line-height:1.5;}
 
 /* ══ NUEVO ESTILO EDITORIAL (migración) · identidad propia ══ */
-:root{--azul:#9e7529;--azulLt:#ecdfc6;--oro:#a7802f;--gris:#6f675c;}
+:root{--azul:#7c5c20;--azulLt:#ecdfc6;--oro:#a7802f;--gris:#6f675c;}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#2b2a30;background:linear-gradient(170deg,#F3EDDF 0%,#F4EEE1 100%);-webkit-font-smoothing:antialiased;}
-::selection{background:#9e7529;color:#fff;}
+::selection{background:#7c5c20;color:#fff;}
 .header{background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0)),#F3EDDF;color:#2b2a30;box-shadow:0 1px 0 #E1D9C9;backdrop-filter:saturate(120%) blur(3px);}
-.hlogo{background:#9e7529;color:#fff;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
+.hlogo{background:#7c5c20;color:#fff;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
 .htitle{color:#2b2a30;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
 .hsub{color:#6f675c;opacity:1;}
 .card{border:1px solid #E7DECB;box-shadow:0 12px 30px -24px rgba(43,40,35,.4);}
@@ -216,7 +216,7 @@ function calcular(){
   });
   return {filas,totImp,totCon,totDisc,nAreas};
 }
-function colorDisc(d){ if(d>=6)return "#C0392B"; if(d>=3)return "#E07B39"; return "#2E7D5E"; }
+function colorDisc(d){ if(d>=6)return "#C0392B"; if(d>=3)return "#E07B39"; return "#2a7256"; }
 function nivelTotal(tot,n){
   // Normalizamos a escala 0-90 sobre 10 áreas; si hay menos áreas evaluadas, prorrateamos.
   const max = n*9;
@@ -453,7 +453,7 @@ _flush:function(){if(typeof collector==="function"){try{var r=collector();if(r)t
 buildEnvelope:function(){var db=load();return{aprens:SCHEMA,type:"aprens-export",paciente:{codigo:db.paciente.codigo||""},exportado:new Date().toISOString(),tools:db.tools};},
 exportJSON:function(){this._flush();var env=this.buildEnvelope();var nombre="aprens_"+(env.paciente.codigo||"paciente")+"_"+(st.toolId||"datos")+"_"+new Date().toISOString().slice(0,10)+".json";var blob=new Blob([JSON.stringify(env,null,2)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();return nombre;},
 copyJSON:function(){this._flush();var t=JSON.stringify(this.buildEnvelope());if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();return Promise.resolve();},
-mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2d7dd2")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
+mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return;var bar=document.createElement("div");bar.id="aprensBar";bar.setAttribute("style","position:sticky;bottom:0;z-index:9999;margin-top:24px;padding:10px 12px;background:#0f2a3f;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,.18);border-radius:14px 14px 0 0;");var cod=this.getPacienteCodigo();function btn(bg){return "padding:8px 12px;border:0;border-radius:9px;background:"+bg+";color:#fff;font-size:13px;font-weight:600;cursor:pointer;";}bar.innerHTML=(cod?'<span style="opacity:.85;font-size:12px;">Código: <b>'+cod+'</b></span>':'<input id="aprensCod" placeholder="Código paciente" style="padding:7px 9px;border-radius:8px;border:0;font-size:13px;width:150px;">')+'<button id="aprensFile" style="'+btn("#2a75c5")+'">📤 Enviar al panel (.json)</button><button id="aprensCopy" style="'+btn("#5a6b7b")+'">⧉ Copiar</button>';document.body.appendChild(bar);var ci=document.getElementById("aprensCod");if(ci)ci.addEventListener("change",function(){self.setPacienteCodigo(this.value);});document.getElementById("aprensFile").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.exportJSON();};document.getElementById("aprensCopy").onclick=function(){if(ci)self.setPacienteCodigo(ci.value);self.copyJSON().then(function(){var b=document.getElementById("aprensCopy");var t=b.textContent;b.textContent="✓ Copiado";setTimeout(function(){b.textContent=t;},1500);});};}
 };g.Aprens=A;})(window);
 </script>
 

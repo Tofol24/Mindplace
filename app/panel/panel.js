@@ -389,7 +389,7 @@
     screening_tec: "Screening TEC/AIS", seguimiento_tec: "Seguimiento TEC",
     screening_seg: "Screening · seguimiento", tracker_tec: "Tracker TEC",
     control_ira: "Control de ira", retorno_trabajo: "Retorno al trabajo", tracker_ais: "Tracker AIS",
-    autorregistro: "Autorregistro", registro_texto: "Registro TEC/AIS",
+    autorregistro: "Autorregistro",
     donde_mono: "¿Dónde está el mono?", herramienta_diaria: "Herramienta diaria", protocolo_ais: "Protocolo AIS (audio)",
     compromiso_semanal: "Compromiso semanal",
     // Herramientas nuevas (para que el panel muestre el nombre, no el id)
@@ -400,7 +400,6 @@
     escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
     escalera_comidas: "La escalera de las comidas",
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
-    agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
     microaccion_valor: "Micro-acción con valor (0/1)",
     registro_texto: "Registro (texto)", reto_mona: "Reto: salir con mi mona", autorregistro_hospital: "Autorregistro hospital",
@@ -1078,7 +1077,7 @@
           data: {
             labels: s.map(function (x) { return x.date; }),
             datasets: [
-              { label: "Latencia", data: s.map(function (x) { return x.L; }), borderColor: "#2d7dd2", backgroundColor: "#2d7dd2", tension: .3, pointRadius: 3, borderWidth: 2 },
+              { label: "Latencia", data: s.map(function (x) { return x.L; }), borderColor: "#2a75c5", backgroundColor: "#2a75c5", tension: .3, pointRadius: 3, borderWidth: 2 },
               { label: "Densidad", data: s.map(function (x) { return x.D; }), borderColor: "#3a9e8c", backgroundColor: "#3a9e8c", tension: .3, pointRadius: 3, borderWidth: 2 },
               { label: "Continuidad", data: s.map(function (x) { return x.C; }), borderColor: "#5f9070", backgroundColor: "#5f9070", tension: .3, pointRadius: 3, borderWidth: 2 }
             ]
@@ -1171,7 +1170,7 @@
       data: {
         labels: s.map(function (x) { return x.date; }),
         datasets: [
-          ds("Latencia", s.map(function (x) { return x.L; }), "#2d7dd2"),
+          ds("Latencia", s.map(function (x) { return x.L; }), "#2a75c5"),
           ds("Densidad", s.map(function (x) { return x.D; }), "#3a9e8c"),
           ds("Continuidad", s.map(function (x) { return x.C; }), "#5f9070")
         ]

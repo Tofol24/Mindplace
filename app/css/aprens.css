@@ -17,8 +17,8 @@
 
 :root{
   /* Estilo editorial cálido (coherente con la portada) */
-  --azul:#3f6b74; --azulLt:#dde7e7; --verde:#2E7D5E; --verdeLt:#D4EDDA;
-  --naranja:#E07B39; --rojo:#C0392B; --gris:#6f665b; --fondo:#efe9dd; --oro:#a9781f;
+  --azul:#3f6b74; --azulLt:#dde7e7; --verde:#2d795b; --verdeLt:#D4EDDA;
+  --naranja:#E07B39; --rojo:#C0392B; --gris:#6f665b; --fondo:#efe9dd; --oro:#8d641a;
   --cL:#b83232; --cLlt:#FDEAEA; --cD:#3257b8; --cDlt:#E8EFFE; --cC:#1f7a30; --cClt:#E8FDEA;
   --tinta:#2b2620; --linea:#E1D9C9;
   /* Serif del sistema (Playfair no se carga → cae a serif) + sans del sistema */
@@ -118,7 +118,7 @@ body{
 .bp{background:var(--azul);color:#fff;padding:13px 26px;font-size:14px;box-shadow:0 4px 14px rgba(43,38,32,.3)}
 .bpg{background:var(--verde);color:#fff;padding:14px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3)}
 .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 20px;font-size:13px}
-.bwa{background:#25D366;color:#fff;padding:13px 22px;font-size:14px}
+.bwa{background:#178540;color:#fff;padding:13px 22px;font-size:14px}
 .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 18px;font-size:13px}
 .full{width:100%;justify-content:center}
 

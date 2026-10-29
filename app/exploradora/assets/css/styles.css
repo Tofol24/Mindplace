@@ -6,8 +6,8 @@
    ============================================================================ */
 :root{
   --crema:#F4EEE0; --cielo:#EAF0EC; --bosque:#26403B; --bosque-soft:#4c635d;
-  --oro:#DDA637; --oro-dark:#b47f21; --menta:#5B9B8B; --menta-dark:#3f7267;
-  --coral:#D98A6A; --coral-dark:#b6653f; --linea:#DED3BE; --alarma:#C46A4A;
+  --oro:#DDA637; --oro-dark:#b47f21; --menta:#4a7e71; --menta-dark:#3f7267;
+  --coral:#D98A6A; --coral-dark:#b6653f; --linea:#DED3BE; --alarma:#a55336;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
