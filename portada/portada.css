@@ -70,6 +70,9 @@ footer{max-width:1080px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-
 .doc{max-width:760px}
 .doc h2{margin-top:10px}
 .doc p,.doc li{max-width:68ch}
+.premsa figure{margin:22px 0;background:var(--card,#fff);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.premsa figure img{display:block;width:100%;height:auto}
+.premsa figcaption{padding:10px 14px;font-size:.9rem;color:var(--muted)}
 .es-only{display:none}
 html[lang=es] .es-only{display:block} html[lang=es] .ca-only{display:none}
 .llibre .enllacos{display:flex;gap:14px;flex-wrap:wrap}
