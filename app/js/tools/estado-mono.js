@@ -339,7 +339,7 @@
 
     $$('[data-send]').forEach(b=>b.onclick=()=>{
       persist(); const txt=construirResumen(); pintaPrev();
-      if(b.dataset.send==='wa') window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+      if(b.dataset.send==='wa') window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(txt)),'_blank');
       else copiar(txt,b);
       if(window.Aprens) Aprens.mountBar();   // barra unificada (.json al panel)
     });

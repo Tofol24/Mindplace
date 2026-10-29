@@ -586,7 +586,7 @@ function prep(){
   L.push('(Enviado desde mi app de acompañamiento APRENS)');
   $('#msgBox').textContent=L.join('\n');
 }
-function abrirWA(e){ e.preventDefault(); if($('#msgBox').textContent.indexOf('Pulsa')===0)prep(); var t=$('#msgBox').innerText||$('#msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function abrirWA(e){ e.preventDefault(); if($('#msgBox').textContent.indexOf('Pulsa')===0)prep(); var t=$('#msgBox').innerText||$('#msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(t)),'_blank'); }
 function copiar(btn){
   if($('#msgBox').textContent.indexOf('Pulsa')===0)prep();
   var box=$('#msgBox'),txt=box.innerText||box.textContent;
@@ -596,5 +596,7 @@ function copiar(btn){
 
 render();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

@@ -173,6 +173,21 @@
       return { codigo: r.codigo, added: r.added, updated: r.updated, tipo: env._tipo };
     },
 
+    /* Mensajes de WhatsApp de cualquier herramienta (pegados o por enlace #t=…). */
+    importTexto: function (texto, pac) {
+      var regs = parseMensajes(texto), codigo = normCodigoPac(pac);
+      if (!regs.length || !codigo) throw new Error("texto-invalido");
+      var tools = {};
+      regs.forEach(function (x) {
+        var b = tools[x.toolId] || (tools[x.toolId] = { meta: { nombre: x.nombre, v: 1 }, records: [] });
+        b.records.push(x.record);
+      });
+      var now = new Date().toISOString();
+      var r = this.mergeEnvelope({ type: "aprens-export", paciente: { codigo: codigo }, exportado: now, tools: tools, estado: { recibido: now } });
+      return { codigo: r.codigo, added: r.added, updated: r.updated, n: regs.length,
+        tipo: regs.length === 1 ? regs[0].nombre : regs.length + " registros" };
+    },
+
     save: function () { return this._persist(); },
     patients: function () { return Object.keys(this.data.patients).map(function (k) { return this.data.patients[k]; }, this); }
   };
@@ -344,7 +359,9 @@
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
     agenda_atencional: "Agenda atencional", tracker_ais: "Tracker AIS",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
-    microaccion_valor: "Micro-acción con valor (0/1)"
+    microaccion_valor: "Micro-acción con valor (0/1)",
+    registro_texto: "Registro (texto)", reto_mona: "Reto: salir con mi mona", autorregistro_hospital: "Autorregistro hospital",
+    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crónico"
   };
   var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
@@ -427,7 +444,7 @@
       case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (pick(r.patron, r.perfil) ? " · " + pick(r.patron, r.perfil) : "") + (pick(r.codigo3, r.codigo) ? " · cód " + pick(r.codigo3, r.codigo) : "");
       case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : "")) + (r.cuali ? " · «" + firstLine(r.cuali) + "»" : "");
       case "microaccion_valor": return num(r.cv) === 1 ? "✔ 1 · " + (r.descripcion ? firstLine(r.descripcion) : "micro-acción hecha") : "○ 0 · hoy no";
-      default: return r.texto ? firstLine(r.texto) : "—";
+      default: return r.texto ? firstLine(r.texto.split("\n").slice(r.fuente === "texto" ? 1 : 0).join("\n") || r.texto) : "—";
     }
   }
   function cualTxt(c) { if (!c) return ""; var a = Array.isArray(c) ? c : [c]; a = a.filter(Boolean); return a.length ? " · " + a.join(", ") : ""; }
@@ -934,6 +951,7 @@
       '<div class="d-head"><h2>' + esc(p.codigo) + '</h2>' +
         '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span>' +
         (esPendiente(p) ? '<span class="d-pend">● Pendiente de respuesta</span><button id="btnAtendido" class="btn">✓ Marcar como respondido</button>' : '') +
+        '<button id="btnPegar" class="btn d-csv">📋 Pegar registro</button>' +
         '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button>' +
         '<button id="btnCsvDia" class="btn d-csv" title="Registro diario del paciente · formato TEC Anexo E.2 (UTF-8, separador ;)">⬇ CSV diario</button>' +
         '<button id="btnCsvLdc" class="btn d-csv" title="Evolución L/D/C e índice de seguimiento (0–10)">⬇ CSV L/D/C</button></div>' +
@@ -978,13 +996,16 @@
         recentActivity(p, 30).map(function (x) {
           return '<tr><td class="date">' + esc(recDate(x.r) || "—") + '</td>' +
             '<td><span class="tag">' + esc(TOOL_LABEL[x.tool] || x.tool) + '</span></td>' +
-            '<td>' + esc(recSummary(x.tool, x.r)) + '</td></tr>';
+            '<td>' + (x.r.texto
+              ? '<details class="txt"><summary>' + esc(recSummary(x.tool, x.r)) + '</summary><pre>' + esc(x.r.texto) + '</pre></details>'
+              : esc(recSummary(x.tool, x.r))) + '</td></tr>';
         }).join("") +
         '</tbody></table></div>';
 
     drawLCC(p);
     drawAlerta(p);
     var bp = $("btnPauta"); if (bp) bp.onclick = function () { openPauta(p); };
+    var bg = $("btnPegar"); if (bg) bg.onclick = function () { openPegar(p.codigo); };
     var ba = $("btnAtendido"); if (ba) ba.onclick = function () { marcarAtendido(p); };
     var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
     var today = new Date().toISOString().slice(0, 10);
@@ -1173,8 +1194,22 @@
      El registro viaja en el fragmento de la URL: no pasa por ningún servidor.
      Se guarda en memoria hasta que el psicólogo abre el panel con su código. */
   var pendientes = [];
+  function claveTexto(texto, pac) { return "T|" + normCodigoPac(pac || "") + "|" + texto; }
+  function esClaveTexto(k) { return k.slice(0, 2) === "T|"; }
+  function partesTexto(k) { var i = k.indexOf("|", 2); return { pac: k.slice(2, i), texto: k.slice(i + 1) }; }
+  /* Enlaces #t=<texto comprimido>[&p=<paciente>] que añaden las herramientas. */
+  function extraerTextos(str) {
+    var out = [], re = /[#&]t=([A-Za-z0-9+\-$_]+)(?:&p=([^\s&#]*))?/g, m;
+    while ((m = re.exec(String(str || "")))) {
+      try {
+        var t = window.LZString && LZString.decompressFromEncodedURIComponent(m[1].replace(/_/g, "$"));
+        if (t) out.push(claveTexto(t, m[2] ? decodeURIComponent(m[2]) : ""));
+      } catch (e) {}
+    }
+    return out;
+  }
   function tomarHash() {
-    var cs = extraerCodigos(location.hash);
+    var cs = extraerCodigos(location.hash).concat(extraerTextos(location.hash));
     if (!cs.length) return;   // el #r= se queda en la URL hasta guardarlo: recargar no lo pierde
     cs.forEach(function (c) { if (pendientes.indexOf(c) < 0) pendientes.push(c); });
     if (PanelStore._key) procesarPendientes(); else avisoLock();
@@ -1182,7 +1217,7 @@
   function avisoLock() {
     var n = pendientes.length, el = $("lockPending");
     el.style.display = n ? "block" : "none";
-    el.textContent = n ? "📥 Tienes " + (n === 1 ? "1 registro nuevo" : n + " registros nuevos") + " del Screening. Entra con tu código y se guardará" + (n === 1 ? "" : "n") + " en su ficha." : "";
+    el.textContent = n ? "📥 Tienes " + (n === 1 ? "1 registro nuevo" : n + " registros nuevos") + " de tus pacientes. Entra con tu código y se guardará" + (n === 1 ? "" : "n") + " en su ficha." : "";
   }
   var procesando = false, sinGuardar = [];   // sinGuardar: [código, paciente] que fallaron al guardar
   async function procesarPendientes() {
@@ -1191,8 +1226,9 @@
     var hechos = [], listos = sinGuardar.splice(0), malos = 0, fallo = false;
     try {
       while (pendientes.length) {
-        var c = pendientes[0];
-        var pac = (parseCodigo(c) || parseCodigoSeg(c)) ? pacienteDeCodigo(c) : null;
+        var c = pendientes[0], pac;
+        if (esClaveTexto(c)) pac = parseMensajes(partesTexto(c).texto).length ? partesTexto(c).pac : null;
+        else pac = (parseCodigo(c) || parseCodigoSeg(c)) ? pacienteDeCodigo(c) : null;
         if (pac === null) { malos++; pendientes.shift(); continue; }
         if (!pac) pac = await pedirPaciente(c);
         pendientes.shift();
@@ -1201,7 +1237,10 @@
       if (listos.length) {
         try {
           var ok = await PanelStore.exclusivo(function () {
-            listos.forEach(function (x) { try { hechos.push(PanelStore.importCodigo(x[0], x[1])); } catch (e) { malos++; } });
+            listos.forEach(function (x) {
+              try { hechos.push(esClaveTexto(x[0]) ? PanelStore.importTexto(partesTexto(x[0]).texto, x[1]) : PanelStore.importCodigo(x[0], x[1])); }
+              catch (e) { malos++; }
+            });
             return true;
           });
           // Bloqueado a mitad (no se guardó): se conservan para la próxima entrada.
@@ -1210,7 +1249,9 @@
           // No se pudo guardar (p. ej. almacenamiento lleno): vuelven a la cola para reintentar.
           hechos = []; sinGuardar = listos; fallo = true;   // se reintenta en la próxima entrada o importación
           // Se devuelven a la URL: recargar la pestaña vuelve a intentarlo sin perder nada.
-          try { history.replaceState(null, "", location.pathname + location.search + "#" + listos.map(function (x) { return "r=" + encodeURIComponent(x[0]); }).join("&")); } catch (e2) {}
+          try { history.replaceState(null, "", location.pathname + location.search + "#" + listos.map(function (x) {
+            return esClaveTexto(x[0]) ? "t=" + LZString.compressToEncodedURIComponent(partesTexto(x[0]).texto).replace(/\$/g, "_") + "&p=" + encodeURIComponent(x[1])
+              : "r=" + encodeURIComponent(x[0]); }).join("&")); } catch (e2) {}
           toast("⚠️ No se pudo guardar. No cierres esta pestaña: libera espacio y recárgala para reintentar.");
           return [];
         }
@@ -1218,7 +1259,7 @@
       }
     } finally {
       procesando = false;
-      if (!fallo && !pendientes.length && /[#&]r=/.test(location.hash)) {
+      if (!fallo && !pendientes.length && /[#&][rt]=/.test(location.hash)) {
         try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
       }
       // Enlaces que llegaron mientras se guardaba: se procesan ahora.
@@ -1237,9 +1278,11 @@
   /* Registros antiguos (sin código de paciente): se pregunta a quién asignarlo. */
   function pedirPaciente(code) {
     return new Promise(function (resolve) {
-      var t = parseCodigo(code), s = !t && parseCodigoSeg(code);
+      var t = !esClaveTexto(code) && parseCodigo(code), s = !t && !esClaveTexto(code) && parseCodigoSeg(code);
       var f = (t && t.fase0) || {};
-      $("asigInfo").textContent = t
+      $("asigInfo").textContent = esClaveTexto(code)
+        ? parseMensajes(partesTexto(code).texto).map(function (x) { return x.nombre + " (" + x.record.date + ")"; }).join(" · ") + "."
+        : t
         ? "Screening inicial del " + (t.fecha || "—") + (f.nombre ? " · nombre: " + f.nombre : "") + (f.edad ? " · " + f.edad + " años" : "") + "."
         : "Seguimiento del " + ((s && s.fecha) || "—") + (s && s.perfil ? " · perfil " + s.perfil : "") + ".";
       $("asigLista").innerHTML = PanelStore.patients().map(function (p) { return '<option value="' + esc(p.codigo) + '">'; }).join("");
@@ -1255,13 +1298,44 @@
     });
   }
 
+  /* ───────── Pegar registro en la ficha (como en el panel anterior) ───────── */
+  var pegarCodigo = null;
+  function openPegar(codigo) {
+    pegarCodigo = codigo;
+    $("pegarTit").textContent = "📋 Pegar registro — " + codigo;
+    $("pegarTxt").value = ""; previewPegar();
+    $("pegarModal").style.display = "flex"; $("app").inert = true;
+    setTimeout(function () { $("pegarTxt").focus(); }, 50);
+  }
+  function closePegar() { $("pegarModal").style.display = "none"; $("pegarTxt").value = ""; $("pegarPrev").innerHTML = ""; $("app").inert = false; pegarCodigo = null; }
+  function previewPegar() {
+    var t = $("pegarTxt").value, regs = t.trim() ? parseMensajes(t) : [];
+    $("pegarOk").disabled = !regs.length;
+    $("pegarPrev").innerHTML = !t.trim() ? "" : !regs.length ? "No se reconoce ningún registro." :
+      "Se guardarán <b>" + regs.length + "</b> registro" + (regs.length === 1 ? "" : "s") + ":<ul>" + regs.map(function (x) {
+        var ldc = ["L", "D", "C"].filter(function (k) { return x.record[k] != null; }).map(function (k) { return k + " " + x.record[k]; }).join(" · ");
+        return "<li><b>" + esc(x.nombre) + "</b> · " + esc(x.record.date) + " · " + esc(recSummary(x.toolId, x.record)) + (ldc ? " · " + esc(ldc) : "") + "</li>";
+      }).join("") + "</ul>";
+  }
+  async function guardarPegar() {
+    var t = $("pegarTxt").value, codigo = pegarCodigo; if (!codigo || !t.trim()) return;
+    var res;
+    try { res = await PanelStore.exclusivo(function () { return PanelStore.importTexto(t, codigo); }); }
+    catch (e) { toast("⚠️ No se pudo guardar"); return; }
+    if (!res) return;
+    closePegar(); selected = res.codigo; renderList($("pfilter").value); renderDetail();
+    toast("✔ " + res.codigo + ": " + res.n + " registro" + (res.n === 1 ? "" : "s") + (res.added ? "" : " (ya estaban)"));
+  }
+
   /* ───────────────────────── Importar ─────────────────────────── */
   function openImport() { $("importModal").style.display = "flex"; $("impMsg").textContent = ""; }
   function closeImport() { $("importModal").style.display = "none"; }
 
   async function importText(txt, label) {
     var esJson = false; try { JSON.parse(txt); esJson = true; } catch (e) {}
-    var cs = esJson ? [] : extraerCodigos(txt);
+    var cs = esJson ? [] : extraerCodigos(txt).concat(extraerTextos(txt));
+    // Mensajes de las herramientas pegados tal cual (sin enlace): se pregunta de quién son.
+    if (!esJson && !cs.length && parseMensajes(txt).some(function (x) { return esDeHerramienta(x.record.texto); })) cs = [claveTexto(txt, "")];
     if (cs.length) {
       closeImport();
       cs.forEach(function (c) { if (pendientes.indexOf(c) < 0) pendientes.push(c); });
@@ -1333,6 +1407,10 @@
     $("btnUso").addEventListener("click", renderUso);
     $("pfilter").addEventListener("input", function () { renderList(this.value); });
     $("pfPend").addEventListener("change", function () { renderList($("pfilter").value); });
+    $("pegarTxt").addEventListener("input", previewPegar);
+    $("pegarOk").addEventListener("click", guardarPegar);
+    $("pegarClose").addEventListener("click", closePegar);
+    $("pegarModal").addEventListener("click", function (e) { if (e.target === $("pegarModal")) closePegar(); });
     $("pautaClose").addEventListener("click", closePauta);
     $("pautaModal").addEventListener("click", function (e) { if (e.target === $("pautaModal")) closePauta(); });
     // Añade o quita solo la línea del código: respeta lo que ya hayas editado.
@@ -1380,11 +1458,12 @@
     $("informeOverlay").addEventListener("click", function (e) { if (e.target === $("informeOverlay")) closeInforme(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("informeOverlay").style.display === "flex") closeInforme(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("pautaModal").style.display === "flex") closePauta(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("pegarModal").style.display === "flex") closePegar(); });
   }
 
   /* Al bloquear: cerrar y vaciar todo lo que muestre datos clínicos. */
   function bloquearPantallas() {
-    closePauta(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
+    closePauta(); closePegar(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
     if ($("asignarModal").style.display !== "none") $("asigSaltar").click();
     destroyCharts(); $("detailBody").innerHTML = ""; selected = null; showLock();
   }

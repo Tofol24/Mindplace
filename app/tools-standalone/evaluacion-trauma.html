@@ -715,7 +715,7 @@ function finalizar(){S.fecha=HOY();ultimoCodigo=genCodigo(S);guardarProgreso();i
 function vFin(){
   const code=ultimoCodigo||genCodigo(S);
   const msg="Hola Tòfol, he terminado la evaluación de trauma. Este es mi código de resultado:\n\n"+code;
-  const wa="https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent(msg);
+  const wa="https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent((window.aprensConEnlace||String)(msg));
   const r=corregir(S);
   return `
   <div class="hero">
@@ -966,5 +966,7 @@ function reabrir(code){
   render();
 })();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

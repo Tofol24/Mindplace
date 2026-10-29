@@ -434,7 +434,7 @@
     if (window.Aprens) Aprens.save(s, { append: true });
     var note = $("#expNote");
     if (share) {
-      try { window.open("https://wa.me/?text=" + encodeURIComponent(resumenSesion(s)), "_blank"); } catch (e) {}
+      try { window.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(resumenSesion(s))), "_blank"); } catch (e) {}
       if (note) note.textContent = "Guardada en este dispositivo. Se ha abierto WhatsApp para enviarla.";
     } else if (note) { note.textContent = "Exposición guardada en este dispositivo."; }
     renderLadder();

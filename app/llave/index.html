@@ -1089,7 +1089,7 @@ function informeTxt(){
 }
 function enviarWA(){
   var tel=(DB.settings.telPsico||'').replace(/[^\d]/g,'');
-  var url='https://wa.me/'+tel+'?text='+encodeURIComponent(informeTxt());
+  var url='https://wa.me/'+tel+'?text='+encodeURIComponent((window.aprensConEnlace||String)(informeTxt()));
   try{ window.open(url,'_blank'); }catch(e){ location.href=url; }
   if(!tel) flash(t("Si pones el número en Ajustes, se abre directo con tu psicólogo.",
                    "Si poses el número a Ajustos, s'obre directament amb el teu psicòleg."));
@@ -1407,5 +1407,7 @@ render();
 /* PWA: instalable y disponible sin cobertura (sótanos, garajes, obra) */
 if("serviceWorker" in navigator && window.top===window.self){ window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

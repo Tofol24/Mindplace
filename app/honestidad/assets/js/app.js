@@ -93,7 +93,7 @@
   if (btnC) btnC.addEventListener("click", function () {
     persist();
     var txt = resumen(record());
-    try { window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank"); } catch (e) {}
+    try { window.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(txt)), "_blank"); } catch (e) {}
     flash("Guardado en este dispositivo. Se ha abierto para compartir.");
   });
   if (btnG) btnG.addEventListener("click", function () {

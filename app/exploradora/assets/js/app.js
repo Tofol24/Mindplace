@@ -476,7 +476,7 @@
     var r = buildRonda(); saveRec(r);
     var note = $("#runNote"); var lograda = r.logrado && r.logrado !== "aun";
     if (lograda) confeti();
-    if (share) { try { window.open("https://wa.me/?text=" + encodeURIComponent(resumenRonda(r)), "_blank"); } catch (e) {} if (note) note.textContent = "Guardada en este dispositivo. Se ha abierto WhatsApp para enviarla."; }
+    if (share) { try { window.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(resumenRonda(r))), "_blank"); } catch (e) {} if (note) note.textContent = "Guardada en este dispositivo. Se ha abierto WhatsApp para enviarla."; }
     else if (note) { note.textContent = "Misión guardada en este dispositivo."; }
     renderAll();
     if (lograda && note) note.textContent += " ¡Fue valiente! No olvidéis el premio y celebrarlo.";
