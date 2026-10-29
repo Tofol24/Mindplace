@@ -407,7 +407,7 @@ function generarTexto(c,nv){
 function abrirWA(e){
   e.preventDefault();
   const txt=document.getElementById("msgBox").innerText||document.getElementById("msgBox").textContent;
-  window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
+  window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(txt)),"_blank");
 }
 function copiar(btn){
   const box=document.getElementById("msgBox");
@@ -462,5 +462,7 @@ mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return
 Aprens.config({ toolId:"brujula_valores", toolName:"Brújula de valores", toolVersion:1, pacienteCodigo:"" });
 Aprens.collect(function(){ return window._aprensRec || null; });
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

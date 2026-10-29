@@ -908,7 +908,7 @@ function updResum(){
   t+=TXT.s6label+"\n"+(D.grounding.length?D.grounding.map(function(g){return g.activitat+" | "+TXT.por+": "+g.por+"/10 | "+TXT.dupres+": "+g.sat+"/10";}).join("\n"):TXT.noGrounding)+"\n";
   var mb=document.getElementById("msgBox");
   if(mb) mb.textContent=t;
-  document.getElementById("btnWA").href="https://wa.me/?text="+encodeURIComponent(t);
+  document.getElementById("btnWA").href="https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t));
 }
 function copiar(btn){
   var txt=document.getElementById("msgBox").textContent;
@@ -982,5 +982,7 @@ Aprens.collect(function(){
 });
 if(window.Aprens) Aprens.mountBar();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

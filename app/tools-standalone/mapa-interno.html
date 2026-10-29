@@ -729,7 +729,7 @@ function resumenZona(){
 }
 function guardarZona(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); if(btn) feedback(btn,'Guardado en tu día'); }
 function copiarResumen(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); var t=resumenZona(); document.getElementById('msgBox').textContent=t; copiarText(t,btn); }
-function enviarWA(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); var t=resumenZona(); document.getElementById('msgBox').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function enviarWA(btn){ registraHecho(ZONAS[zonaActual].tit); _mapaSaveZona(); var t=resumenZona(); document.getElementById('msgBox').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(t)),'_blank'); }
 
 /* ════════════════════════ RECORRIDO ════════════════════════ */
 function abrirRecorrido(){
@@ -763,7 +763,7 @@ function resumenRecorrido(){
 }
 function guardarRecorrido(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); if(btn) feedback(btn,'Guardado en tu día'); }
 function copiarRecorrido(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); var t=resumenRecorrido(); document.getElementById('msgBoxRec').textContent=t; copiarText(t,btn); }
-function enviarWArec(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); var t=resumenRecorrido(); document.getElementById('msgBoxRec').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function enviarWArec(btn){ registraHecho('Recorrido completo'); _mapaSaveRecorrido(); var t=resumenRecorrido(); document.getElementById('msgBoxRec').textContent=t; window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(t)),'_blank'); }
 
 /* ════════════════════════ COPIAR / FEEDBACK ════════════════════════ */
 function feedback(btn,texto){
@@ -788,5 +788,7 @@ pintaZcards();
 pintaContinuidad();
 try{ Aprens.mountBar(); }catch(e){}
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

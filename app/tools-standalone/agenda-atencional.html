@@ -1199,7 +1199,7 @@ function renderResumen(){ document.getElementById('msgBox').textContent=construi
     Aprens.mountBar();
   }}catch(e){}
 }
-function abrirWA(e){ e.preventDefault(); var t=document.getElementById('msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank'); }
+function abrirWA(e){ e.preventDefault(); var t=document.getElementById('msgBox').textContent; window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(t)),'_blank'); }
 function copiar(btn){
   var box=document.getElementById('msgBox'); var t=box.textContent;
   if(navigator.clipboard && window.isSecureContext){
@@ -1228,5 +1228,7 @@ renderPlan();
 var _pb=document.getElementById('planBody');
 if(_pb) _pb.addEventListener('pointerdown', planPointerDown);
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

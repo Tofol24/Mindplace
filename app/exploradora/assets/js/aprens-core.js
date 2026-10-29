@@ -212,7 +212,7 @@
     /* Abre WhatsApp con un resumen legible (no el JSON crudo). */
     shareWhatsApp: function (texto) {
       var msg = texto || this.resumenTexto();
-      global.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+      global.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(msg)), "_blank");
     },
 
     /* Resumen humano del último registro de la herramienta actual. */

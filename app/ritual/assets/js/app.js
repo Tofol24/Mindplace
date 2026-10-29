@@ -96,7 +96,7 @@
     if (r.respeto === "si") { confeti(); if (note) note.textContent = "Guardado. " + fraseRefuerzo() + " No olvidéis los 10 minutos acordados."; }
     else if (note) { note.textContent = "Guardado en este dispositivo."; }
     if (share) {
-      try { window.open("https://wa.me/?text=" + encodeURIComponent(resumenRegistro(r)), "_blank"); } catch (e) {}
+      try { window.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(resumenRegistro(r))), "_blank"); } catch (e) {}
       if (note) note.textContent = "Guardado. Se ha abierto WhatsApp para enviarlo.";
     }
   }

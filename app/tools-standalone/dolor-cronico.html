@@ -985,7 +985,7 @@ function enviarWA(){
   }catch(e){}
 
   copiarTexto(msg);
-  var url = "https://wa.me/" + WHATSAPP_DESTINO + "?text=" + encodeURIComponent(msg);
+  var url = "https://wa.me/" + WHATSAPP_DESTINO + "?text=" + encodeURIComponent((window.aprensConEnlace||String)(msg));
   var w = window.open(url, "_blank");
   if(!w) window.location.href = url;
   setTimeout(mostrarGracias, 1600);
@@ -1006,5 +1006,7 @@ document.getElementById("btnImprimir").addEventListener("click", function(){
   window.print();
 });
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

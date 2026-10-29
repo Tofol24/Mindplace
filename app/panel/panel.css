@@ -204,3 +204,26 @@ button{font-family:inherit}
 .uso-tabla td:nth-child(2){min-width:140px}
 .uso-bar{display:inline-block;height:8px;border-radius:4px;background:var(--blue2);margin-right:8px;vertical-align:middle;max-width:110px}
 @media (max-width:640px){.uso-tabla th:nth-child(4),.uso-tabla td:nth-child(4){display:none}}
+
+/* ---------- Enlace de un toque · pendientes · pauta ---------- */
+.lock-pending{background:#eaf6ee;color:#2e6b45;border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.45;margin:-8px 0 14px}
+.pf-pend{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.pill-pend{background:#d9822b}
+.pi-pend{display:inline-block;background:#fdeedd;color:#a8571a;border-radius:7px;padding:0 7px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:1px}
+.d-pend{background:#fdeedd;color:#a8571a;border-radius:8px;padding:3px 9px;font-size:12px;font-weight:700}
+.card-pauta{border:2px solid var(--lado)}
+.card-pauta .mod{font-size:16px;font-weight:700;color:#2e5a3c;margin:0 0 6px}
+.card-pauta .motivo{font-size:12.5px;color:var(--muted);background:#f6f9fc;border-radius:9px;padding:9px 11px;margin:8px 0 10px;line-height:1.5}
+.card-pauta .codes{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.card-pauta .codes b{color:var(--navy)}
+.card-pauta .acc{display:flex;gap:8px;flex-wrap:wrap}
+.cuali{border-left:3px solid var(--lado);background:#eef6f0;border-radius:0 8px 8px 0;padding:7px 11px;margin:6px 0;font-size:13px;line-height:1.5}
+.modal-wide{max-width:600px}
+.pauta-ta{min-height:280px;font-family:inherit;font-size:13px;line-height:1.55}
+.pauta-cod{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0 8px}
+.btn-wa{background:#075E54;border-color:#075E54;color:#fff;text-decoration:none}
+.asig-input{width:100%;margin:6px 0 4px}
+.pegar-prev{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+.pegar-prev ul{margin:4px 0 0;padding-left:18px}
+details.txt summary{cursor:pointer}
+details.txt pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;background:#f6f9fc;border-radius:8px;padding:8px 10px;margin:6px 0 0}

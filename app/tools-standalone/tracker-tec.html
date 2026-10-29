@@ -541,7 +541,7 @@ function prepararResumen() {
   document.getElementById('sendBtns').style.display='flex';
 }
 
-function abrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('msgBox').innerText||document.getElementById('msgBox').textContent),'_blank');}
+function abrirWA(e){e.preventDefault();window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(document.getElementById('msgBox').innerText||document.getElementById('msgBox').textContent)),'_blank');}
 function copiar(btn){const txt=document.getElementById('msgBox').innerText||document.getElementById('msgBox').textContent;if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>{btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar',2200);});}else{const r=document.createRange();r.selectNodeContents(document.getElementById('msgBox'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.execCommand('copy');s.removeAllRanges();btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar',2200);}}
 
 // ════════════════════════════════════════
@@ -667,5 +667,7 @@ function importar(input){
 // ════════════════════════════════════════
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

@@ -427,7 +427,7 @@ function renderMsg(d,rec){
 }
 
 /* ===== Envío ===== */
-function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").innerText||document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").innerText||document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t)),"_blank");}
 function copiar(btn){
   const box=document.getElementById("msgBox");const t=box.innerText||box.textContent;
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar texto",2200);});}
@@ -437,5 +437,7 @@ function copiar(btn){
 /* ===== init ===== */
 load();render();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

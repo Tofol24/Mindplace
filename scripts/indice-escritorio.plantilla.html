@@ -294,6 +294,7 @@ function restaurarFocoUso(sel){
 }
 function agregarUso(diasPedidos){
   var t = { app:0, inicio:0, dispositivos:0, nuevos:0, instalada:0, abrir:0, registros:0 }, por = {}, serie = [];
+  var pt = { visites:0, fonts:{}, clics:{} }, seriePt = [];
   var dias = uso.datos.dias || {};
   // Días de calendario contados desde el «hoy» del servidor (hora de Mallorca),
   // sin depender de la zona ni de los cambios de hora del ordenador.
@@ -311,8 +312,14 @@ function agregarUso(diasPedidos){
       });
     }
     serie.push({ dia: k, n: ent });
+    var rp = r && r.portada, vp = 0;
+    if(rp){
+      vp = rp.visites || 0; pt.visites += vp;
+      ["fonts","clics"].forEach(function(c){ Object.keys(rp[c] || {}).forEach(function(id){ pt[c][id] = (pt[c][id] || 0) + (rp[c][id] || 0); }); });
+    }
+    seriePt.push({ dia: k, n: vp });
   }
-  uso.totales = t; uso.porId = por; uso.serie = serie;
+  uso.totales = t; uso.porId = por; uso.serie = serie; uso.portada = pt; uso.seriePt = seriePt;
 }
 function nombreDe(id){ for(var i=0;i<D.items.length;i++) if(D.items[i].id === id) return D.items[i]; return null; }
 function ratoHabitual(tm){ var best = null; TRAMOS.forEach(function(b){ if(tm[b] && (!best || tm[b] > tm[best])) best = b; }); return best ? TRAMO_TXT[best] : "—"; }
@@ -362,10 +369,35 @@ function pintarUso(){
       }).join("") + '</tbody></table>' + (filas.length > 10 ? '<button type="button" class="btn ghost" data-uso="todas" style="margin-top:8px">'+(uso.todas?'Ver solo las 10 más usadas':'Ver las '+filas.length)+'</button>' : '')
       : '<p class="uso-msg">Todavía no hay aperturas registradas en este periodo.</p>';
     h += '<p class="uso-msg">Recuentos anónimos de quienes han aceptado contarlo en la app o en Mi espacio: no se sabe quién entra. «Primeras visitas» se cuentan por navegador y por sitio: un mismo móvil que entra en la app y en Mi espacio suma dos, y no son personas únicas del periodo. «Registros» solo cuenta las herramientas que guardan datos. Si en tus dispositivos aceptas el contador, tus visitas también cuentan: elige «No, gracias» o «No contar mis visitas».</p>';
+    h += bloquePortada();
   }
   $("uso").innerHTML = h;
   var f = $("usoForm");
   if(f) f.onsubmit = function(e){ e.preventDefault(); var v = $("usoClave").value.trim(); if(v){ usoGuardar(v); uso.focoTras = true; cargarUso(); } };
+}
+// aprens.net · visitas por origen y clics por destino (sin nada guardado en el dispositivo)
+var FONT_TXT = { directe:"Directo (escrito o guardado)", cercador:"Buscadores (Google…)", instagram:"Instagram", facebook:"Facebook", whatsapp:"WhatsApp", aprens_es:"aprens.es", app_aprens:"App APRENS", explica:"Explica-ho", doctoralia:"Doctoralia", qr:"Código QR (?font=qr)", correu:"Correo (?font=correu)", altres:"Otras webs" };
+var DESTI_TXT = { app:"App APRENS", cita:"Pedir cita (Doctoralia)", consulta:"La consulta: aprens.es", explica:"Explica-ho", laboratori:"Laboratorio TEC", appstore:"Apps del App Store", novetat:"Novedades (leer)", descarrega:"Descargas de PDF", destacat:"Pantallas destacadas", llibre:"Libros (Amazon)", video:"Vídeos", instagram:"Instagram", facebook:"Facebook", telefon:"Teléfono", whatsapp:"WhatsApp", correu:"Correo", ais:"El AIS, en un vistazo (abrir)", ais_app:"El AIS → App APRENS", avis:"Aviso legal" };
+function tablaPt(obj, nombres, titulo){
+  var filas = Object.keys(obj).map(function(id){ return { id:id, n:obj[id] }; }).sort(function(a,b){ return b.n - a.n; });
+  if(!filas.length) return "";
+  var max = Math.max.apply(null, filas.map(function(f){ return f.n; }).concat([1]));
+  return '<table class="rank"><thead><tr><th>'+titulo+'</th><th>Veces</th></tr></thead><tbody>' + filas.map(function(f){
+    return '<tr><td>'+esc(nombres[f.id] || f.id)+'</td><td class="n"><span class="bar" style="width:'+Math.max(2,Math.round(90*f.n/max))+'px"></span>'+f.n+'</td></tr>'; }).join("") + '</tbody></table>';
+}
+function bloquePortada(){
+  var p = uso.portada, nClics = Object.keys(p.clics).reduce(function(a,k){ return a + p.clics[k]; }, 0);
+  var max = Math.max.apply(null, uso.seriePt.map(function(x){ return x.n; }).concat([1]));
+  var h = '<h3 style="margin:18px 0 8px">🌐 Portada aprens.net</h3>';
+  if(!p.visites && !nClics) return h + '<p class="uso-msg">Todavía no hay visitas registradas en la portada en este periodo.</p>';
+  h += '<div class="kpis">' + kpi(p.visites, 'visitas a la portada') + kpi(nClics, 'clics en enlaces') + '</div>';
+  h += '<div class="dias" aria-hidden="true">' + uso.seriePt.map(function(x){
+    return '<i style="height:'+Math.round(100*x.n/max)+'%" title="'+x.dia+': '+x.n+' visitas"></i>'; }).join("") + '</div>' +
+    '<details class="uso-msg"><summary>Visitas por día (tabla)</summary><table class="rank"><thead><tr><th>Día</th><th>Visitas</th></tr></thead><tbody>' +
+    uso.seriePt.slice().reverse().map(function(x){ return '<tr><td>'+x.dia+'</td><td class="n">'+x.n+'</td></tr>'; }).join("") + '</tbody></table></details>';
+  h += tablaPt(p.fonts, FONT_TXT, 'De dónde llegan') + tablaPt(p.clics, DESTI_TXT, 'Dónde entran');
+  h += '<p class="uso-msg">Cuenta todas las visitas, sin aviso previo, porque no guarda nada en el dispositivo ni nada que identifique a la persona: no se pueden unir visitas ni saber si son personas distintas. Si recargan la página, cuenta otra vez. Para saber cuántas llegan por un QR o un correo, añade <code>?font=qr</code> o <code>?font=correu</code> al final del enlace.</p>';
+  return h;
 }
 function kpi(n, txt){ return '<div class="kpi"><b>'+n+'</b><span>'+esc(txt)+'</span></div>'; }
 $("uso").addEventListener("click", function(e){

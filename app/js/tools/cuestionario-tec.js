@@ -97,7 +97,7 @@
       return false;
     };
 
-    function abrirWA(){ const box=app.querySelector("#msgBox"); const t=box.innerText||box.textContent; window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank"); }
+    function abrirWA(){ const box=app.querySelector("#msgBox"); const t=box.innerText||box.textContent; window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t)),"_blank"); }
     function copiar(btn){
       const box=app.querySelector("#msgBox"); const t=box.innerText||box.textContent;
       const ok=()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);};

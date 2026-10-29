@@ -459,7 +459,7 @@ function verResumen(){
 }
 function reiniciar(){vista="intro";grupoIdx=0;fase="idle";hechos=[false,false,false,false,false];activFin=activIni;zonaMasTension="";microAccion="";motivo="";render();scrollTo(0,0);}
 
-function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function abrirWA(e){e.preventDefault();const t=document.getElementById("msgBox").textContent;window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t)),"_blank");}
 function copiar(btn){
   const t=document.getElementById("msgBox").textContent;
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copiado";setTimeout(()=>btn.textContent="📋 Copiar",2000);});}
@@ -500,5 +500,7 @@ mountBar:function(){var self=this;if(document.getElementById("aprensBar"))return
 Aprens.config({ toolId:"ais_muscular", toolName:"AIS muscular", toolVersion:1, pacienteCodigo:"" });
 Aprens.collect(function(){ return window._aprensRec || null; });
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

@@ -1995,7 +1995,7 @@
   }
   function sendWa(){
     var phone=(S.crisis.contacts.phoneProf||'').replace(/[^\d]/g,'');
-    var url='https://wa.me/'+phone+'?text='+encodeURIComponent(waText());
+    var url='https://wa.me/'+phone+'?text='+encodeURIComponent((window.aprensConEnlace||String)(waText()));
     window.open(url,'_blank','noopener');
     if(!phone) toast('Consejo: pon el teléfono del profesional (con prefijo, p. ej. 34…) en «Plan de crisis».');
   }
@@ -2665,5 +2665,7 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 </script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

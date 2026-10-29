@@ -1,5 +1,5 @@
 {
-  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista).",
+  "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista). «ordre» (número, per defecte 0) avança o endarrereix una notícia a la llista i al carrusel: com més baix, més amunt.",
   "enllacos": {
     "app": "https://aprens-app.netlify.app/",
     "consulta": "https://aprens.es/",
@@ -24,7 +24,7 @@
         "es": "Entrevista de Elena Ballestero sobre las pantallas en la escuela y la comprensión lectora: hay que regular la tecnología para que no se rija por criterios de consumo."
       },
       "enllac": "https://www.ultimahora.es/noticias/local/2026/09/15/2708535/pantallas-comprension-lectora-puede-aprobar-examen-historia-viendo-videos-peliculas.html",
-      "imatge": "img/novetats/tofol-ib3.jpg",
+      "imatge": "img/novetats/tofol-pantalles.jpg",
       "destacat": true
     },
     {
@@ -34,6 +34,7 @@
         "ca": "Premi Joan Calafat 2025",
         "es": "Premio Joan Calafat 2025"
       },
+      "ordre": -1,
       "text": {
         "ca": "El jurat dels premis Joan Calafat ha triat Tòfol Villalonga professional de la Psicologia 2025.",
         "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."
@@ -214,30 +215,34 @@
       "destacat": true
     },
     {
-      "tipus": "article",
+      "tipus": "esport",
       "titol": {
-        "ca": "El paper dels pares dins l'esport de base",
-        "es": "El papel de los padres en el deporte base"
+        "ca": "Els pares també juguen: el paper dels pares dins l'esport de base",
+        "es": "Los padres también juegan: el papel de los padres en el deporte base"
       },
       "text": {
-        "ca": "Unes pautes que ajuden els fills a jugar millor i d'una manera més sana.",
-        "es": "Unas pautas que ayudan a los hijos a jugar mejor y de una manera más sana."
+        "ca": "Guia revisada en PDF: com acompanyar els fills a l'esport sense afegir-los pressió, als partits, als mals moments, quan juguen poc o destaquen molt, i com compaginar-ho amb els estudis.",
+        "es": "Guía revisada en PDF: cómo acompañar a los hijos en el deporte sin añadirles presión, en los partidos, en los malos momentos, cuando juegan poco o destacan mucho, y cómo compaginarlo con los estudios."
       },
       "imatge": "img/novetats/pares-esport-de-base.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-PAPER-DELS-PARES-A-LESPORT-BASE.pdf"
+      "enllac": "descarregues/APRENS-paper-pares-esport-base.pdf",
+      "descarrega": true,
+      "idioma_doc": "ca"
     },
     {
-      "tipus": "article",
+      "tipus": "esport",
       "titol": {
         "ca": "Atenció i maneig emocional a l'esport",
         "es": "Atención y manejo emocional en el deporte"
       },
       "text": {
-        "ca": "Com s'entrena l'atenció dins l'esport i com es relaciona amb el maneig emocional.",
-        "es": "Cómo se entrena la atención en el deporte y cómo se relaciona con el manejo emocional."
+        "ca": "Guia revisada en PDF: l'atenció externa i interna, per què el cos decideix on es fixa durant el joc, i com entrenar-la amb exercicis, paraules clau i gests per tornar a la jugada.",
+        "es": "Guía revisada en PDF: la atención externa e interna, por qué el cuerpo decide dónde se fija durante el juego, y cómo entrenarla con ejercicios, palabras clave y gestos para volver a la jugada."
       },
       "imatge": "img/novetats/atencio-maneig-emocional-esport.jpg",
-      "enllac": "https://aprens.es/image/articulos/descargas/APRENS-Atencio-i-maneig-emocional-a-lesport.pdf"
+      "enllac": "descarregues/APRENS-atencio-maneig-emocional-esport.pdf",
+      "descarrega": true,
+      "idioma_doc": "ca"
     },
     {
       "data": "2026-02-27",
