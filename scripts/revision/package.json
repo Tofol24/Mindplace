@@ -1,0 +1,12 @@
+{
+  "name": "mindplace-revision",
+  "private": true,
+  "description": "Comprobaciones automáticas (HTML, accesibilidad, JavaScript y privacidad). No se publica.",
+  "type": "module",
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
+    "html-validate": "11.17.0"
+  }
+}
