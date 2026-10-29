@@ -109,6 +109,21 @@
   </div>
 </div>
 
+<!-- ═══════════════ MODAL UNIR FICHAS ═══════════════ -->
+<div id="unirModal" class="modal" style="display:none">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="unirTit">
+    <button class="modal-x" id="unirClose" aria-label="Cerrar">✕</button>
+    <h2 id="unirTit">🔀 Unir con otro paciente</h2>
+    <p class="muted" id="unirInfo"></p>
+    <input id="unirCodigo" class="pfilter asig-input" list="unirLista" placeholder="Código de la ficha buena (ej: TMC48)" aria-label="Código de la ficha buena" autocapitalize="characters" autocomplete="off">
+    <datalist id="unirLista"></datalist>
+    <div class="modal-foot">
+      <button class="btn btn-primary" id="unirOk">Unir fichas</button>
+      <span id="unirMsg" class="imp-msg err"></span>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════ MODAL PEGAR REGISTRO (mensajes de WhatsApp) ═══════════════ -->
 <div id="pegarModal" class="modal" style="display:none">
   <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="pegarTit">

@@ -100,10 +100,38 @@
     lock: function () { this._key = null; this.data = { patients: {} }; },
     reset: function () { localStorage.removeItem(VAULT_KEY); this.lock(); },
 
+    /* Códigos unidos a otra ficha («🔀 Unir con…»): AMC48 → TMC48. Lo que llegue
+       después con el código antiguo va a la ficha buena. */
+    resolverAlias: function (codigo) {
+      var al = this.data.alias || {}, c = codigo;
+      for (var i = 0; i < 10 && al[String(c).toUpperCase()]; i++) c = al[String(c).toUpperCase()];
+      return c;
+    },
+    aliasDe: function (codigo) {
+      var al = this.data.alias || {};
+      return Object.keys(al).filter(function (k) { return al[k] === codigo; });
+    },
+    /* Pasa todos los registros de «origen» a «destino», borra la ficha de origen
+       y recuerda la equivalencia. */
+    fusionar: function (origen, destino) {
+      var o = this.data.patients[origen];
+      destino = this.resolverAlias(destino);
+      if (!o || !destino || origen.toUpperCase() === destino.toUpperCase()) throw new Error("fusion-invalida");
+      var r = this.mergeEnvelope({ type: "aprens-export", paciente: { codigo: destino }, exportado: o.updated || new Date(0).toISOString(), tools: o.tools });
+      var d = this.data.patients[r.codigo];
+      ["updated", "recibido", "pautaEnviada"].forEach(function (k) { if (o[k] && (!d[k] || o[k] > d[k])) d[k] = o[k]; });
+      delete this.data.patients[origen];
+      var al = this.data.alias || (this.data.alias = {});
+      al[origen.toUpperCase()] = r.codigo;
+      Object.keys(al).forEach(function (k) { if (al[k] === origen) al[k] = r.codigo; });
+      delete al[r.codigo.toUpperCase()];   // sin ciclos
+      return { codigo: r.codigo, added: r.added, updated: r.updated };
+    },
+
     /* Fusiona un sobre aprens-export en el paciente que corresponda. */
     mergeEnvelope: function (env) {
       if (!env || (env.type && env.type !== "aprens-export") || !env.tools) throw new Error("no-envelope");
-      var codigo = (env.paciente && env.paciente.codigo || "").trim() || "SIN-CÓDIGO";
+      var codigo = this.resolverAlias((env.paciente && env.paciente.codigo || "").trim() || "SIN-CÓDIGO");
       // dfg22 y DFG22 son la misma ficha, venga del .json o del enlace.
       var mismo = Object.keys(this.data.patients).filter(function (k) { return k.toUpperCase() === codigo.toUpperCase(); })[0];
       if (mismo) codigo = mismo;
@@ -152,6 +180,14 @@
     importAny: function (obj) {
       if (!obj || typeof obj !== "object") throw new Error("no-json");
       var envs;
+      // Las equivalencias de códigos de una copia del panel se aplican antes de fusionar.
+      if (obj.type === "aprens-panel-backup" && obj.alias && typeof obj.alias === "object") {
+        var al = this.data.alias || (this.data.alias = {});
+        Object.keys(obj.alias).forEach(function (k) {
+          var kk = normCodigoPac(k), v = normCodigoPac(obj.alias[k]);
+          if (kk && v && kk !== v && !al[kk]) al[kk] = v;
+        });
+      }
       if (obj.type === "aprens-export" && obj.tools) envs = [Object.assign({}, obj, { estado: { recibido: new Date().toISOString() } })];
       else if ((obj.app === "APRENS_TEC" || obj.app === "APRENS_TEC_INVESTIGACION") && obj.datos) envs = tecBackupToEnvelopes(obj.datos);
       else if (obj.type === "aprens-panel-backup" && obj.patients) envs = patientMapToEnvelopes(obj.patients);
@@ -950,8 +986,10 @@
     body.innerHTML =
       '<div class="d-head"><h2>' + esc(p.codigo) + '</h2>' +
         '<span class="muted">' + (rng ? rng.from + " → " + rng.to : "sin fechas") + '</span>' +
+        (PanelStore.aliasDe(p.codigo).length ? '<span class="muted" title="Códigos unidos a esta ficha">· también ' + esc(PanelStore.aliasDe(p.codigo).join(", ")) + '</span>' : '') +
         (esPendiente(p) ? '<span class="d-pend">● Pendiente de respuesta</span><button id="btnAtendido" class="btn">✓ Marcar como respondido</button>' : '') +
         '<button id="btnPegar" class="btn d-csv">📋 Pegar registro</button>' +
+        '<button id="btnUnir" class="btn d-csv" title="Unir esta ficha con la de otro código (p. ej. si el paciente escribió mal sus iniciales)">🔀 Unir con…</button>' +
         '<button id="btnInforme" class="btn btn-primary d-informe">📄 Generar informe</button>' +
         '<button id="btnCsvDia" class="btn d-csv" title="Registro diario del paciente · formato TEC Anexo E.2 (UTF-8, separador ;)">⬇ CSV diario</button>' +
         '<button id="btnCsvLdc" class="btn d-csv" title="Evolución L/D/C e índice de seguimiento (0–10)">⬇ CSV L/D/C</button></div>' +
@@ -1006,6 +1044,7 @@
     drawAlerta(p);
     var bp = $("btnPauta"); if (bp) bp.onclick = function () { openPauta(p); };
     var bg = $("btnPegar"); if (bg) bg.onclick = function () { openPegar(p.codigo); };
+    var bu = $("btnUnir"); if (bu) bu.onclick = function () { openUnir(p.codigo); };
     var ba = $("btnAtendido"); if (ba) ba.onclick = function () { marcarAtendido(p); };
     var bi = $("btnInforme"); if (bi) bi.onclick = function () { openInforme(p); };
     var today = new Date().toISOString().slice(0, 10);
@@ -1298,6 +1337,34 @@
     });
   }
 
+  /* ───────── Unir fichas (código mal escrito: AMC48 → TMC48) ───────── */
+  var unirOrigen = null;
+  function openUnir(codigo) {
+    unirOrigen = codigo;
+    $("unirInfo").textContent = "Todos los registros de " + codigo + " pasarán a la ficha que elijas, la ficha " + codigo +
+      " desaparecerá y lo que llegue después con el código " + codigo + " irá directamente a esa ficha.";
+    $("unirLista").innerHTML = PanelStore.patients().filter(function (x) { return x.codigo !== codigo; })
+      .map(function (x) { return '<option value="' + esc(x.codigo) + '">'; }).join("");
+    $("unirCodigo").value = ""; $("unirMsg").textContent = "";
+    $("unirModal").style.display = "flex"; $("app").inert = true;
+    setTimeout(function () { $("unirCodigo").focus(); }, 50);
+  }
+  function closeUnir() { $("unirModal").style.display = "none"; $("app").inert = false; unirOrigen = null; }
+  async function confirmarUnir() {
+    var origen = unirOrigen, destino = normCodigoPac($("unirCodigo").value);
+    if (!origen || !destino) { $("unirCodigo").focus(); return; }
+    if (destino === origen.toUpperCase()) { $("unirMsg").textContent = "Elige un código distinto."; return; }
+    var nuevo = !PanelStore.data.patients[PanelStore.resolverAlias(destino)] &&
+      !PanelStore.patients().some(function (x) { return x.codigo.toUpperCase() === destino; });
+    if (nuevo && !confirm("No hay ninguna ficha " + destino + ". ¿Renombrar " + origen + " como " + destino + "?")) return;
+    var res;
+    try { res = await PanelStore.exclusivo(function () { return PanelStore.fusionar(origen, destino); }); }
+    catch (e) { toast("⚠️ No se pudo unir"); return; }
+    if (!res) return;
+    closeUnir(); selected = res.codigo; renderList($("pfilter").value); renderDetail();
+    toast("✔ " + origen + " unido a " + res.codigo);
+  }
+
   /* ───────── Pegar registro en la ficha (como en el panel anterior) ───────── */
   var pegarCodigo = null;
   function openPegar(codigo) {
@@ -1371,7 +1438,7 @@
 
   /* ───────────────────────── Copia de seguridad ─────────────────────────── */
   function backup() {
-    var blob = new Blob([JSON.stringify({ type: "aprens-panel-backup", exportado: new Date().toISOString(), patients: PanelStore.data.patients }, null, 2)], { type: "application/json" });
+    var blob = new Blob([JSON.stringify({ type: "aprens-panel-backup", exportado: new Date().toISOString(), patients: PanelStore.data.patients, alias: PanelStore.data.alias || {} }, null, 2)], { type: "application/json" });
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
     a.download = "aprens_panel_backup_" + new Date().toISOString().slice(0, 10) + ".json";
     document.body.appendChild(a); a.click(); a.remove();
@@ -1408,6 +1475,10 @@
     $("pfilter").addEventListener("input", function () { renderList(this.value); });
     $("pfPend").addEventListener("change", function () { renderList($("pfilter").value); });
     $("pegarTxt").addEventListener("input", previewPegar);
+    $("unirOk").addEventListener("click", confirmarUnir);
+    $("unirClose").addEventListener("click", closeUnir);
+    $("unirCodigo").addEventListener("keydown", function (e) { if (e.key === "Enter") confirmarUnir(); });
+    $("unirModal").addEventListener("click", function (e) { if (e.target === $("unirModal")) closeUnir(); });
     $("pegarOk").addEventListener("click", guardarPegar);
     $("pegarClose").addEventListener("click", closePegar);
     $("pegarModal").addEventListener("click", function (e) { if (e.target === $("pegarModal")) closePegar(); });
@@ -1459,11 +1530,12 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("informeOverlay").style.display === "flex") closeInforme(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("pautaModal").style.display === "flex") closePauta(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("pegarModal").style.display === "flex") closePegar(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("unirModal").style.display === "flex") closeUnir(); });
   }
 
   /* Al bloquear: cerrar y vaciar todo lo que muestre datos clínicos. */
   function bloquearPantallas() {
-    closePauta(); closePegar(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
+    closePauta(); closePegar(); closeUnir(); closeImport(); $("pasteBox").value = ""; closeInforme(); $("informeBody").innerHTML = "";
     if ($("asignarModal").style.display !== "none") $("asigSaltar").click();
     destroyCharts(); $("detailBody").innerHTML = ""; selected = null; showLock();
   }
