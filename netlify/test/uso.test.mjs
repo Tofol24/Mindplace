@@ -18,6 +18,8 @@ const lib = await import(root + "/netlify/lib/uso.mjs");
 const post = (o) => uso(new Request("https://x/api/uso", { method: "POST", body: typeof o === "string" ? o : JSON.stringify(o) }));
 assert.equal((await post({ e: "entrada", o: "app", p: 1, d: 1, nv: 0 })).status, 204);
 assert.equal((await post({ e: "abrir", t: "bajar_alerta" })).status, 204);
+// visita a aprens.net: sin datos del dispositivo aunque los mande
+assert.equal((await post({ e: "entrada", o: "portada", p: 1, d: 1, nv: 1 })).status, 204);
 assert.equal((await post({ e: "abrir", t: "bajar_alerta" })).status, 204);
 assert.equal((await post({ e: "registro", t: "bajar_alerta", n: 2 })).status, 204);
 assert.equal((await post({ e: "tiempo", t: "bajar_alerta", b: "3-10" })).status, 204);
@@ -41,6 +43,7 @@ assert.equal(r.status, 200);
 const j = await r.json();
 const hoy = lib.diaMadrid();
 assert.equal(j.dias[hoy].entradas.app, 1); assert.equal(j.dias[hoy].entradas.instalada, 1); assert.equal(j.dias[hoy].entradas.dispositivos, 1);
+assert.equal(j.dias[hoy].entradas.portada, 1); assert.equal(j.dias[hoy].entradas.nuevos, 0);
 assert.deepEqual(j.dias[hoy].herramientas.bajar_alerta, { abrir: 2, registros: 2, tiempo: { "0-1": 0, "1-3": 0, "3-10": 1, "10+": 0 } });
 // el día pasado se ha resumido en dia/ y ya no quedan eventos sueltos de ese día
 assert.equal((await st.list({ prefix: "ev/2026-01-05/" })).blobs.length, 0);
