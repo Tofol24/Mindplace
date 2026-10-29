@@ -46,6 +46,7 @@
     <div class="pbrand"><span class="pblogo">ap</span><div><b>APRENS · Panel</b><span>Evolución de tus pacientes</span></div></div>
     <div class="pactions">
       <a class="btn btn-ghost" href="../tools-standalone/dinamicas-tec-8-12.html" target="_blank" rel="noopener" style="text-decoration:none">📘 Dinámicas TEC 8–12</a>
+      <button id="btnMsg" class="btn btn-ghost">💬 Mensajes</button>
       <button id="btnUso" class="btn btn-ghost">📈 Uso por herramienta</button>
       <button id="btnImport" class="btn btn-primary">⬆ Importar .json</button>
       <button id="btnBackup" class="btn">💾 Copia de seguridad</button>
@@ -105,6 +106,29 @@
     <div class="modal-foot">
       <button class="btn btn-primary" id="asigOk">Guardar en su ficha</button>
       <button class="btn" id="asigSaltar">Descartar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL MENSAJES (plantillas para WhatsApp) ═══════════════ -->
+<div id="msgModal" class="modal" style="display:none">
+  <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="msgTit">
+    <button class="modal-x" id="msgClose" aria-label="Cerrar">✕</button>
+    <h2 id="msgTit">💬 Mensajes para pacientes</h2>
+    <div class="msg-bar">
+      <select id="msgSel" class="pfilter" aria-label="Mensaje"></select>
+      <span class="msg-idioma" role="group" aria-label="Idioma">
+        <button class="btn" id="msgEs" data-lang="es">Castellano</button>
+        <button class="btn" id="msgCa" data-lang="ca">Català</button>
+      </span>
+    </div>
+    <textarea id="msgTa" class="paste pauta-ta" aria-label="Texto del mensaje"></textarea>
+    <div class="modal-foot msg-foot">
+      <button class="btn btn-primary" id="msgCopy">📋 Copiar</button>
+      <a class="btn btn-wa" id="msgWa" href="#" target="_blank" rel="noopener">📱 Abrir en WhatsApp</a>
+      <button class="btn" id="msgGuardar" title="Guarda tus cambios en este panel para la próxima vez">💾 Guardar mis cambios</button>
+      <button class="linklike" id="msgOriginal">Volver al texto original</button>
+      <span id="msgInfo" class="imp-msg muted"></span>
     </div>
   </div>
 </div>
@@ -176,6 +200,7 @@
 <script src="../js/tec-screening.js"></script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/registro-texto.js"></script>
+<script src="plantillas.js"></script>
 <script src="panel.js"></script>
 <script>
 if ("serviceWorker" in navigator) {
