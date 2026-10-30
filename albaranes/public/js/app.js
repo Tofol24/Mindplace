@@ -634,6 +634,7 @@ async function vistaEditor(alb) {
   const error = h("p", { class: "error-form", role: "alert" });
   const irAFirma = async () => {
     if (!ajustes.negocio.nombre) { error.textContent = "Antes de firmar, pon el nombre de tu negocio en Ajustes: sale en el PDF."; return; }
+    if (alb.avisoDictado) { error.textContent = "Antes de firmar, revisa el aviso del dictado (arriba): falta algún servicio."; return; }
     const fallos = [];
     if (!c.nombre.trim()) fallos.push("el nombre del cliente");
     if (!alb.lineas.length) fallos.push("al menos una línea");
@@ -669,6 +670,12 @@ async function vistaEditor(alb) {
       ...(ajustes.servicios || []).map((sv) => h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: sv.nombre, precio: sv.precio }) }, `+ ${sv.nombre}`)),
       h("button", { type: "button", class: "btn secundario", onclick: () => anadir({}) }, "+ Otro concepto"),
     ];
+  // Servicios dictados que no estaban en la lista: aviso hasta revisarlo (y sin él no se firma).
+  const avisoDict = alb.avisoDictado && h("div", { class: "tarjeta aviso-tarjeta", role: "alert" },
+    h("strong", {}, "Revisa el dictado"),
+    h("p", {}, `${alb.avisoDictado.omitidas === 1 ? "Un servicio dictado no está" : `${alb.avisoDictado.omitidas} servicios dictados no están`} en tus servicios habituales y no se ha añadido. Añádelo a mano (o a la lista, en Ajustes).`),
+    alb.avisoDictado.texto && h("p", { class: "ayuda" }, `Lo que dictaste: «${alb.avisoDictado.texto}»`),
+    h("button", { type: "button", class: "btn secundario", onclick: () => { delete alb.avisoDictado; avisoDict.remove(); error.textContent = ""; cambiado(); } }, "Ya lo he revisado"));
   // Sin dirección de la obra en el perfil, el campo solo sale si ya tiene algo (albaranes antiguos).
   const conLugar = !!pf.lugar || !!alb.direccionObra;
   return [
@@ -679,6 +686,7 @@ async function vistaEditor(alb) {
       guardar: async () => { clearTimeout(guardarTimer); await autoguardar(alb); },
       alAplicar: () => ir(`/editar/${alb.id}`),
     }),
+    avisoDict,
     h("section", { class: "tarjeta" },
       h("h3", {}, "Cliente"),
       h("div", { class: "campo-busqueda" }, campo("Nombre", inputNombre), sugerencias),

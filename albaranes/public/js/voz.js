@@ -25,7 +25,7 @@ async function catalogoParaIA() {
  * Mezcla en el borrador lo que ha entendido la IA. Solo rellena los datos del cliente
  * que estén vacíos (no pisa lo escrito a mano) y añade las líneas al final.
  */
-export async function aplicarDictado(alb, d, ajustes) {
+export async function aplicarDictado(alb, d, ajustes, textoDictado = "") {
   const c = alb.cliente;
   const vinoCliente = d.cliente.nombre && !c.nombre;
   for (const k of ["nombre", "telefono", "email", "nif", "direccion", "poblacion"]) {
@@ -35,8 +35,11 @@ export async function aplicarDictado(alb, d, ajustes) {
   if (!alb.direccionObra && d.direccionObra) alb.direccionObra = d.direccionObra;
   if (d.trabajo) alb.trabajo = alb.trabajo ? `${alb.trabajo}\n${d.trabajo}` : d.trabajo;
   if (d.observaciones) alb.observaciones = alb.observaciones ? `${alb.observaciones}\n${d.observaciones}` : d.observaciones;
+  // Servicios dictados que no están en la lista: no se han añadido. Queda un aviso en el borrador
+  // (con lo dictado, que no sale del móvil) hasta revisarlo; sin revisarlo no se firma.
   if (d.omitidas > 0) {
-    aviso(`${d.omitidas === 1 ? "Un servicio dictado no está" : `${d.omitidas} servicios dictados no están`} en tus servicios habituales: añádelo a mano (o añádelo a la lista en Ajustes).`, "info");
+    const previo = alb.avisoDictado || { omitidas: 0, texto: "" };
+    alb.avisoDictado = { omitidas: previo.omitidas + d.omitidas, texto: [previo.texto, textoDictado].filter(Boolean).join(" / ").slice(0, 2000) };
   }
   const articulos = new Map((await db.todos("articulos")).map((a) => [a.id, a]));
   // Servicios: el precio de cada servicio habitual nombrado (la IA deja el precio en null).
@@ -89,11 +92,13 @@ export async function aplicarDictadosPendientes(ctx) {
     if (!r.ok) { if (r.pasajero) return; continue; }
     const actual = await db.obtener("albaranes", alb.id);
     if (!actual || actual.estado !== "borrador" || actual.dictadoPendiente !== alb.dictadoPendiente) continue;
-    await aplicarDictado(actual, r.datos, ctx.ajustes());
+    await aplicarDictado(actual, r.datos, ctx.ajustes(), actual.dictadoPendiente);
     delete actual.dictadoPendiente;
     actual.actualizado = new Date().toISOString();
     if (await db.guardarBorrador(actual)) {
-      aviso(`Dictado aplicado al albarán${actual.cliente.nombre ? ` de ${actual.cliente.nombre}` : ""} ✓`, "info");
+      const de = actual.cliente.nombre ? ` de ${actual.cliente.nombre}` : "";
+      if (actual.avisoDictado) aviso(`Dictado aplicado al albarán${de}, pero falta algún servicio: revísalo antes de firmar.`, "error");
+      else aviso(`Dictado aplicado al albarán${de} ✓`, "info");
       ctx.refrescar(`/editar/${actual.id}`);
     }
   }
@@ -122,7 +127,7 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
         const r = await interpretar(ctx, alb.dictadoPendiente);
         e.target.disabled = false;
         if (!r.ok) { estado.textContent = r.pasajero ? "No se ha podido ahora; vuelve a intentarlo en un momento." : r.error; return; }
-        await aplicarDictado(alb, r.datos, ctx.ajustes());
+        await aplicarDictado(alb, r.datos, ctx.ajustes(), alb.dictadoPendiente);
         delete alb.dictadoPendiente;
         await guardar();
         alAplicar();
@@ -203,7 +208,7 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
         }
         return;
       }
-      await aplicarDictado(alb, r.datos, ctx.ajustes());
+      await aplicarDictado(alb, r.datos, ctx.ajustes(), t);
       texto.value = "";
       estado.textContent = `Listo: ${r.datos.lineas.length} líneas añadidas. Revisa los precios antes de firmar.`;
       await guardar();
