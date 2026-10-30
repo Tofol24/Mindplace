@@ -124,8 +124,14 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
     obra y desplazamiento, pestañas de compras y catálogo, y dictado por voz.
   - *Servicios profesionales* (consulta, sesiones): sin dirección de la obra
     ni compras; las líneas salen de tus **servicios habituales** («Primera
-    visita: 60», uno por línea), y no hay dictado con IA para que no salga
-    ningún dato de pacientes. Los albaranes ya firmados no cambian.
+    visita: 60», uno por línea). El **dictado por voz con IA** está apagado:
+    se activa a sabiendas en Ajustes (lo dictado sale a la IA de Anthropic a
+    través de tu servidor; dicta solo datos administrativos y recógelo en tu
+    aviso de privacidad; necesita `ANTHROPIC_API_KEY`). Con él, «doce primeras
+    visitas y cuarenta y una de seguimiento» rellena las líneas con tus precios,
+    y la IA tiene orden de descartar cualquier dato clínico. Sin activarlo, el
+    micrófono del teclado del móvil sirve para dictar campo a campo. Los
+    albaranes ya firmados no cambian.
 - Precio de la hora, del desplazamiento e IVA por defecto (21 %, 10 % o
   **exento**, p. ej. servicios sanitarios), y el texto de la exención que sale
   en el PDF.
@@ -165,8 +171,8 @@ mezclan: viven en el móvil de cada uno y en su cuenta de Holded.
    | `APP_SERVICIOS` | `Primera visita: 60 \| Sesión de seguimiento: 50` |
    | `APP_PREFIJO` | `AP` |
 
-3. Con el perfil `servicios` no hay dictado ni fotos de compras: no hace falta
-   `ANTHROPIC_API_KEY`.
+3. Con el perfil `servicios` no hay fotos de compras, y el dictado con IA es
+   opcional (Ajustes): `ANTHROPIC_API_KEY` solo hace falta si lo vas a activar.
 
 ## Comprobaciones recomendadas antes de usarla con clientes
 

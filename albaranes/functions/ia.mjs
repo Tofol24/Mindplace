@@ -1,5 +1,5 @@
 // /api/ia/* · lectura con IA (ver lib/ia.mjs).
-//   POST /api/ia/dictado   { texto, catalogo }        → datos para rellenar el albarán
+//   POST /api/ia/dictado   { texto, catalogo, perfil, servicios } → datos para rellenar el albarán
 //   POST /api/ia/compra    { imagen, tipoImagen }     → datos del albarán o factura del proveedor
 //
 // La clave de Anthropic vive en la variable ANTHROPIC_API_KEY de Netlify.
@@ -23,7 +23,7 @@ export default async (req) => {
   const anthropic = new Anthropic({ maxRetries: 0, timeout: 25_000 });
   try {
     if (ruta === "/api/ia/dictado") {
-      return json({ ok: true, albaran: await interpretarDictado({ anthropic, texto: datos.texto, catalogo: datos.catalogo }) });
+      return json({ ok: true, albaran: await interpretarDictado({ anthropic, texto: datos.texto, catalogo: datos.catalogo, perfil: datos.perfil, servicios: datos.servicios }) });
     }
     if (ruta === "/api/ia/compra") {
       return json({ ok: true, compra: await leerCompra({ anthropic, imagen: datos.imagen, tipoImagen: datos.tipoImagen }) });

@@ -22,6 +22,7 @@ export const PERFILES = {
     mensaje: "del trabajo realizado el",
     compras: true, // pestañas Compras y Catálogo, margen sobre el coste
     dictado: true,
+    placeholderDictado: "Pulsa 🎤 y habla, o usa el micrófono del teclado. Ej.: «Cliente Jesús Arribas, teléfono 600 111 222. Cambio de grifo del baño: un grifo monomando, dos latiguillos y hora y media de mano de obra.»",
   },
   // Consulta y sesiones (psicología, fisioterapia, asesoría…): servicios con precio fijo.
   servicios: {
@@ -39,8 +40,11 @@ export const PERFILES = {
     asuntoPdf: "Albarán de servicios",
     mensaje: "de los servicios del",
     compras: false,
-    // El dictado se interpreta con IA fuera del móvil: con datos de pacientes, mejor no.
+    // El dictado se interpreta con IA fuera del móvil: con datos de pacientes, solo si se activa
+    // a sabiendas en Ajustes («Dictado por voz con IA»).
     dictado: false,
+    dictadoOpcional: true,
+    placeholderDictado: "Pulsa 🎤 y habla. Ej.: «Mutua Balear, CIF G07046196. Doce primeras visitas y cuarenta y una sesiones de seguimiento.» Solo datos administrativos: nada clínico.",
   },
 };
 
@@ -53,7 +57,10 @@ export const perfil = (clave) => PERFILES[clave] || PERFILES[PERFIL_DEFECTO];
  * Si se puede dictar (y mandar el texto a la IA). No mientras un móvil nuevo espera los Ajustes
  * de su instalación: podría ser de servicios sanitarios aunque aún se vea como «oficio».
  */
-export const dictadoPermitido = (ajustes) => perfil(ajustes?.perfil).dictado && ajustes?.configInstalacion !== "pendiente";
+export const dictadoPermitido = (ajustes) => {
+  const pf = perfil(ajustes?.perfil);
+  return (pf.dictado || (pf.dictadoOpcional && ajustes?.dictadoServicios === true)) && ajustes?.configInstalacion !== "pendiente";
+};
 
 /** Servicios habituales del perfil «servicios»: botones «+ …» con su precio. */
 export const SERVICIOS_DEFECTO = [

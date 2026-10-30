@@ -40,6 +40,8 @@ const AJUSTES_DEF = {
   perfil: PERFIL_DEFECTO,
   // Perfil «servicios»: botones «+ …» con su precio.
   servicios: SERVICIOS_DEFECTO,
+  // Perfil «servicios»: dictado por voz con IA, solo si se activa a sabiendas (salen datos del móvil).
+  dictadoServicios: false,
   // Retención de IRPF que te aplican las empresas y entidades (CIF) a las que facturas; 0 = ninguna.
   retencionEmpresas: 0,
   margen: 30,
@@ -951,6 +953,7 @@ async function vistaAjustes() {
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
   const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
   const selPerfil = h("select", {}, Object.entries(PERFILES).map(([k, p]) => h("option", { value: k, selected: k === (ajustes.perfil || PERFIL_DEFECTO) }, p.nombre)));
+  const chkDictado = h("input", { type: "checkbox", checked: ajustes.dictadoServicios === true });
   const inputServicios = h("textarea", { rows: 4, placeholder: "Primera visita: 60\nSesión de seguimiento: 50" }, escribirServicios(ajustes.servicios));
   // Lo de oficio (hora, desplazamiento, margen) o lo de servicios, según el tipo de actividad.
   const soloOficio = h("div");
@@ -961,7 +964,9 @@ async function vistaAjustes() {
     h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
     campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."));
   soloServicios.append(
-    campo("Servicios habituales", inputServicios, "Uno por línea, con su precio: «Primera visita: 60». Cada uno será un botón «+» al hacer el albarán."));
+    campo("Servicios habituales", inputServicios, "Uno por línea, con su precio: «Primera visita: 60». Cada uno será un botón «+» al hacer el albarán."),
+    h("label", { class: "campo campo-check" }, chkDictado, h("span", {}, "Dictado por voz con IA"),
+      h("small", {}, "Lo que dictas (nombre del cliente, servicios) se envía a la IA de Anthropic, a través de tu servidor, para rellenar el albarán; Anthropic no lo usa para entrenar. Dicta solo datos administrativos, nada clínico, y recógelo en tu aviso de privacidad. Necesita ANTHROPIC_API_KEY en Netlify. Sin activarlo, puedes usar el micrófono del teclado: eso no sale a la IA.")));
   pintarPerfil();
   const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, etiquetaIva(v))));
   const selRet = h("select", {}, RETENCIONES.map((v) => h("option", { value: v, selected: v === (ajustes.retencionEmpresas || 0) }, v ? `${v} %` : "Ninguna")));
@@ -994,6 +999,7 @@ async function vistaAjustes() {
     if (servicios.some((sv) => !(sv.precio >= 0 && sv.precio <= 1e7))) { aviso("Revisa los precios de los servicios.", "error"); return false; }
     ajustes.perfil = selPerfil.value;
     ajustes.servicios = servicios;
+    ajustes.dictadoServicios = chkDictado.checked;
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.retencionEmpresas = Number(selRet.value);
     ajustes.claveApp = inputClave.value.trim();

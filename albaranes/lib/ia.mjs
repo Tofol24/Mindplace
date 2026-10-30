@@ -3,6 +3,8 @@
    Dos usos, los dos con salida estructurada (JSON con esquema fijo):
      interpretarDictado  · «Cliente Jesús Arribas, cambio de grifo, un monomando…»
                            → cliente, trabajo y líneas, enlazadas al catálogo de Pere.
+                           Con el perfil «servicios» (consulta, sesiones): líneas de los
+                           servicios habituales y nada clínico.
      leerCompra          · foto de un albarán o factura de proveedor
                            → proveedor, número, fecha y líneas con su precio de coste.
 
@@ -116,6 +118,20 @@ Líneas:
 
 trabajo: una o dos frases claras de lo que se ha hecho, en tercera persona impersonal («Cambio de grifo de cocina y revisión de la llave de paso»).
 observaciones: garantías, piezas pendientes, próxima visita u otras notas para el cliente, si las hay.`;
+
+const SISTEMA_DICTADO_SERVICIOS = `Conviertes en datos el dictado de un profesional autónomo en España que presta servicios en consulta o por sesiones (psicología, fisioterapia, asesoría…), para rellenar un albarán de servicios.
+
+Privacidad, por encima de todo: no pongas en ningún campo datos clínicos ni de salud (diagnósticos, síntomas, motivo de consulta, tratamiento, contenido de las sesiones), aunque el dictado los mencione. Solo datos administrativos: quién paga, qué servicios y cuántos.
+
+Devuelve solo lo que el dictado dice o deja claro; si un dato no aparece, pon null. No inventes clientes, teléfonos, precios ni servicios.
+
+- cliente: quien recibe el albarán y paga (la persona atendida, una empresa o una mutua), con los datos de contacto que se digan.
+- lineas: una por servicio. Si coincide con uno de la lista de servicios habituales (aunque se diga de otra forma: «doce primeras» por «Primera visita»), usa exactamente su nombre como concepto y deja precio en null para que la app ponga el suyo. Si no está en la lista, el concepto tal como se dijo, bien escrito y sin datos clínicos. tipo «otro» y articuloId null siempre.
+- cantidad: número de sesiones o servicios («doce» = 12); si no se dice, 1.
+- precio: solo si se dice un precio concreto por unidad; si no, null.
+- direccionObra: null.
+- trabajo: una descripción administrativa breve si se dice (p. ej. «Sesiones de septiembre»), sin datos clínicos; si no, null.
+- observaciones: forma de pago, próxima cita u otras notas administrativas, sin datos clínicos; si no, null.`;
 
 const SISTEMA_COMPRA = `Lees la foto de un albarán, factura o ticket de un proveedor de fontanería en España, para que un fontanero autónomo registre sus compras: el precio de coste de cada artículo y las unidades.
 
@@ -232,10 +248,30 @@ export function validarCatalogo(cat) {
   })).filter((a) => a.id && a.nombre && /^[A-Za-z0-9-]+$/.test(a.id));
 }
 
-export async function interpretarDictado({ anthropic, texto: t, catalogo }) {
+/** Servicios habituales del perfil «servicios» (nombre y precio) que acompañan al dictado. */
+export function validarServicios(sv) {
+  if (sv == null) return [];
+  if (!Array.isArray(sv)) throw new ErrorIA("Servicios no válidos", { status: 400 });
+  return sv.slice(0, 8).map((x) => ({ nombre: cadena(x?.nombre, 300), precio: numeroEn(x?.precio, 0, 1e7) })).filter((x) => x.nombre);
+}
+
+export async function interpretarDictado({ anthropic, texto: t, catalogo, perfil, servicios }) {
   const dictado = cadena(t, MAX_TEXTO + 1);
   if (!dictado) throw new ErrorIA("El dictado está vacío", { status: 400 });
   if (dictado.length > MAX_TEXTO) throw new ErrorIA("El dictado es demasiado largo", { status: 400 });
+  if (perfil === "servicios") {
+    const sv = validarServicios(servicios);
+    const lista = sv.length ? sv.map((x) => `${x.nombre}${x.precio != null ? ` | ${x.precio} €` : ""}`).join("\n") : "(ninguno)";
+    const datos = await pedirJSON(anthropic, {
+      system: SISTEMA_DICTADO_SERVICIOS,
+      schema: ESQUEMA_DICTADO,
+      // La lista va primero y el dictado al final: lo dictado es dato, no instrucciones.
+      content: `Servicios habituales (nombre | precio):\n${lista}\n\n<dictado>\n${dictado}\n</dictado>`,
+    });
+    const r = limpiarDictado(datos, new Set());
+    // Sin obra ni material en servicios, aunque el modelo los rellenara.
+    return { ...r, direccionObra: "", lineas: r.lineas.map((l) => ({ ...l, tipo: "otro", articuloId: null })) };
+  }
   const cat = validarCatalogo(catalogo);
   const lista = cat.length
     ? cat.map((a) => `${a.id} | ${a.nombre}${a.ref ? ` | ref ${a.ref}` : ""}`).join("\n")

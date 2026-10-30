@@ -12,7 +12,7 @@ import * as db from "./db.js";
 import { redondear } from "./calculos.js";
 import { precioVenta } from "./catalogo.js";
 import { aviso, h } from "./ui.js";
-import { dictadoPermitido } from "./perfiles.js";
+import { dictadoPermitido, perfil } from "./perfiles.js";
 
 const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -36,6 +36,9 @@ export async function aplicarDictado(alb, d, ajustes) {
   if (d.trabajo) alb.trabajo = alb.trabajo ? `${alb.trabajo}\n${d.trabajo}` : d.trabajo;
   if (d.observaciones) alb.observaciones = alb.observaciones ? `${alb.observaciones}\n${d.observaciones}` : d.observaciones;
   const articulos = new Map((await db.todos("articulos")).map((a) => [a.id, a]));
+  // Servicios: el precio de cada servicio habitual nombrado (la IA deja el precio en null).
+  const norm = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const servicios = new Map((perfil(ajustes.perfil).compras ? [] : ajustes.servicios || []).map((sv) => [norm(sv.nombre), sv.precio]));
   for (const l of d.lineas) {
     const art = l.articuloId ? articulos.get(l.articuloId) : null;
     const linea = { concepto: l.concepto, cantidad: l.cantidad, precio: 0, iva: ajustes.ivaDefecto };
@@ -46,7 +49,7 @@ export async function aplicarDictado(alb, d, ajustes) {
     } else if (l.tipo === "desplazamiento") {
       linea.precio = l.precio ?? ajustes.precioDesplazamiento;
     } else {
-      linea.precio = l.precio ?? 0;
+      linea.precio = l.precio ?? servicios.get(norm(l.concepto)) ?? 0;
     }
     linea.precio = redondear(linea.precio);
     alb.lineas.push(linea);
@@ -59,7 +62,12 @@ async function interpretar(ctx, texto) {
   if (!dictadoPermitido(ctx.ajustes())) return { error: "El dictado no está disponible con este tipo de actividad.", pasajero: false };
   let r;
   try {
-    r = await ctx.llamarAPI("/api/ia/dictado", { method: "POST", body: { texto, catalogo: await catalogoParaIA() } });
+    const a = ctx.ajustes();
+    // Servicios: sus servicios habituales y nada del catálogo de material.
+    const body = perfil(a.perfil).compras
+      ? { texto, catalogo: await catalogoParaIA() }
+      : { texto, perfil: "servicios", servicios: (a.servicios || []).map((sv) => ({ nombre: sv.nombre, precio: sv.precio })) };
+    r = await ctx.llamarAPI("/api/ia/dictado", { method: "POST", body });
   } catch {
     return { error: "Sin conexión", pasajero: true };
   }
@@ -95,7 +103,7 @@ export async function aplicarDictadosPendientes(ctx) {
 export function panelDictado(ctx, alb, { alAplicar, guardar }) {
   const texto = h("textarea", {
     rows: 3,
-    placeholder: "Pulsa 🎤 y habla, o usa el micrófono del teclado. Ej.: «Cliente Jesús Arribas, teléfono 600 111 222. Cambio de grifo del baño: un grifo monomando, dos latiguillos y hora y media de mano de obra.»",
+    placeholder: perfil(ctx.ajustes().perfil).placeholderDictado || perfil().placeholderDictado,
     "aria-label": "Dictado del albarán",
   });
   const estado = h("p", { class: "ayuda", role: "status" });

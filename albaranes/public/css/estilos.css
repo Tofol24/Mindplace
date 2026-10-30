@@ -153,6 +153,11 @@ details.mas summary { color: var(--acento); font-weight: 600; cursor: pointer; p
 .chip-holded { margin: -4px 0 10px; }
 
 .campo-busqueda { position: relative; }
+/* Casilla con su texto al lado (p. ej. «Dictado por voz con IA» en Ajustes). */
+.campo-check { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; }
+.campo-check input[type="checkbox"] { width: 24px; height: 24px; min-height: 0; margin: 0; padding: 0; accent-color: var(--acento); }
+.campo-check span { font-weight: 600; }
+.campo-check small { grid-column: 1 / -1; }
 .sugerencias {
   position: absolute; left: 0; right: 0; top: calc(100% - 8px); z-index: 5;
   background: #fff; border: 1px solid var(--borde); border-radius: 10px;

@@ -102,3 +102,36 @@ test("leerCompra: rechaza fotos no válidas", async () => {
   await assert.rejects(leerCompra({ anthropic: a, imagen: "QUJD", tipoImagen: "image/gif" }), /Formato/);
   assert.equal(a.llamadas.length, 0);
 });
+
+test("interpretarDictado con el perfil «servicios»: sus servicios, sin obra ni catálogo y sin datos clínicos", async () => {
+  const respuesta = {
+    cliente: { nombre: "Mutua Balear", telefono: null, email: null, nif: "G07046196", direccion: null, poblacion: null },
+    direccionObra: "Calle inventada 1", // no tiene sentido en servicios: se descarta
+    trabajo: "Sesiones de septiembre",
+    observaciones: null,
+    lineas: [
+      { tipo: "material", articuloId: "art-1", concepto: "Primera visita", cantidad: 12, precio: null },
+      { tipo: "otro", articuloId: null, concepto: "Sesión de seguimiento", cantidad: 41, precio: null },
+    ],
+  };
+  const ia = anthropicFalso(respuesta);
+  const r = await interpretarDictado({
+    anthropic: ia,
+    texto: "Mutua Balear, CIF G07046196, doce primeras visitas y cuarenta y una de seguimiento",
+    perfil: "servicios",
+    servicios: [{ nombre: "Primera visita", precio: 60 }, { nombre: "Sesión de seguimiento", precio: 50 }],
+    catalogo: [{ id: "art-1", nombre: "Grifo" }], // en servicios no se usa
+  });
+  const p = ia.llamadas[0];
+  assert.match(p.system, /datos clínicos/);
+  assert.doesNotMatch(p.system, /fontanero/);
+  assert.match(p.messages[0].content, /Primera visita \| 60 €\nSesión de seguimiento \| 50 €/);
+  assert.doesNotMatch(p.messages[0].content, /Grifo/);
+  assert.equal(r.direccionObra, "");
+  assert.deepEqual(r.lineas.map((l) => [l.tipo, l.articuloId, l.concepto, l.cantidad]), [["otro", null, "Primera visita", 12], ["otro", null, "Sesión de seguimiento", 41]]);
+  assert.equal(r.cliente.nif, "G07046196");
+  // Sin perfil (Pere): las instrucciones de siempre.
+  const ia2 = anthropicFalso(dictadoOk);
+  await interpretarDictado({ anthropic: ia2, texto: "Cliente Jesús, un grifo", catalogo: [] });
+  assert.match(ia2.llamadas[0].system, /fontanero/);
+});
