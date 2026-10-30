@@ -35,6 +35,9 @@ export async function aplicarDictado(alb, d, ajustes) {
   if (!alb.direccionObra && d.direccionObra) alb.direccionObra = d.direccionObra;
   if (d.trabajo) alb.trabajo = alb.trabajo ? `${alb.trabajo}\n${d.trabajo}` : d.trabajo;
   if (d.observaciones) alb.observaciones = alb.observaciones ? `${alb.observaciones}\n${d.observaciones}` : d.observaciones;
+  if (d.omitidas > 0) {
+    aviso(`${d.omitidas === 1 ? "Un servicio dictado no está" : `${d.omitidas} servicios dictados no están`} en tus servicios habituales: añádelo a mano (o añádelo a la lista en Ajustes).`, "info");
+  }
   const articulos = new Map((await db.todos("articulos")).map((a) => [a.id, a]));
   // Servicios: el precio de cada servicio habitual nombrado (la IA deja el precio en null).
   const norm = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();

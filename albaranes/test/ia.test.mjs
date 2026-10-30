@@ -107,11 +107,13 @@ test("interpretarDictado con el perfil «servicios»: sus servicios, sin obra ni
   const respuesta = {
     cliente: { nombre: "Mutua Balear", telefono: null, email: null, nif: "G07046196", direccion: null, poblacion: null },
     direccionObra: "Calle inventada 1", // no tiene sentido en servicios: se descarta
-    trabajo: "Sesiones de septiembre",
-    observaciones: null,
+    // Aunque el modelo se equivoque y escriba algo clínico, no debe llegar al albarán.
+    trabajo: "Sesiones por ansiedad generalizada",
+    observaciones: "Diagnóstico: TAG",
     lineas: [
-      { tipo: "material", articuloId: "art-1", concepto: "Primera visita", cantidad: 12, precio: null },
+      { tipo: "material", articuloId: "art-1", concepto: "primera  VISITA", cantidad: 12, precio: null },
       { tipo: "otro", articuloId: null, concepto: "Sesión de seguimiento", cantidad: 41, precio: null },
+      { tipo: "otro", articuloId: null, concepto: "Terapia de exposición para fobia social", cantidad: 1, precio: null },
     ],
   };
   const ia = anthropicFalso(respuesta);
@@ -128,7 +130,12 @@ test("interpretarDictado con el perfil «servicios»: sus servicios, sin obra ni
   assert.match(p.messages[0].content, /Primera visita \| 60 €\nSesión de seguimiento \| 50 €/);
   assert.doesNotMatch(p.messages[0].content, /Grifo/);
   assert.equal(r.direccionObra, "");
+  assert.equal(r.trabajo, "");
+  assert.equal(r.observaciones, "");
+  // Solo servicios de la lista, con su nombre exacto; lo demás se descarta y se cuenta.
   assert.deepEqual(r.lineas.map((l) => [l.tipo, l.articuloId, l.concepto, l.cantidad]), [["otro", null, "Primera visita", 12], ["otro", null, "Sesión de seguimiento", 41]]);
+  assert.equal(r.omitidas, 1);
+  assert.doesNotMatch(JSON.stringify(r), /ansiedad|TAG|fobia/);
   assert.equal(r.cliente.nif, "G07046196");
   // Sin perfil (Pere): las instrucciones de siempre.
   const ia2 = anthropicFalso(dictadoOk);

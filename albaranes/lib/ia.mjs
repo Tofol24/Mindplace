@@ -126,12 +126,12 @@ Privacidad, por encima de todo: no pongas en ningún campo datos clínicos ni de
 Devuelve solo lo que el dictado dice o deja claro; si un dato no aparece, pon null. No inventes clientes, teléfonos, precios ni servicios.
 
 - cliente: quien recibe el albarán y paga (la persona atendida, una empresa o una mutua), con los datos de contacto que se digan.
-- lineas: una por servicio. Si coincide con uno de la lista de servicios habituales (aunque se diga de otra forma: «doce primeras» por «Primera visita»), usa exactamente su nombre como concepto y deja precio en null para que la app ponga el suyo. Si no está en la lista, el concepto tal como se dijo, bien escrito y sin datos clínicos. tipo «otro» y articuloId null siempre.
+- lineas: una por servicio. Si coincide con uno de la lista de servicios habituales (aunque se diga de otra forma: «doce primeras» por «Primera visita»), usa exactamente su nombre de la lista como concepto y deja precio en null para que la app ponga el suyo. Si no está en la lista, pon igualmente una línea con el concepto tal como se dijo, sin datos clínicos (la app avisará de que no está en la lista). tipo «otro» y articuloId null siempre.
 - cantidad: número de sesiones o servicios («doce» = 12); si no se dice, 1.
 - precio: solo si se dice un precio concreto por unidad; si no, null.
 - direccionObra: null.
-- trabajo: una descripción administrativa breve si se dice (p. ej. «Sesiones de septiembre»), sin datos clínicos; si no, null.
-- observaciones: forma de pago, próxima cita u otras notas administrativas, sin datos clínicos; si no, null.`;
+- trabajo: null.
+- observaciones: null.`;
 
 const SISTEMA_COMPRA = `Lees la foto de un albarán, factura o ticket de un proveedor de fontanería en España, para que un fontanero autónomo registre sus compras: el precio de coste de cada artículo y las unidades.
 
@@ -269,8 +269,16 @@ export async function interpretarDictado({ anthropic, texto: t, catalogo, perfil
       content: `Servicios habituales (nombre | precio):\n${lista}\n\n<dictado>\n${dictado}\n</dictado>`,
     });
     const r = limpiarDictado(datos, new Set());
-    // Sin obra ni material en servicios, aunque el modelo los rellenara.
-    return { ...r, direccionObra: "", lineas: r.lineas.map((l) => ({ ...l, tipo: "otro", articuloId: null })) };
+    // Que no entre nada clínico no puede depender solo de las instrucciones al modelo: de un
+    // dictado de servicios solo se aceptan los datos del cliente y líneas que sean exactamente
+    // uno de los servicios habituales (con su nombre de la lista). Ningún texto libre:
+    // ni descripción, ni observaciones, ni conceptos que no estén en la lista.
+    const norm = (x) => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+    const permitidos = new Map(sv.map((x) => [norm(x.nombre), x.nombre]));
+    const lineas = r.lineas
+      .map((l) => ({ ...l, tipo: "otro", articuloId: null, concepto: permitidos.get(norm(l.concepto)) || "" }))
+      .filter((l) => l.concepto);
+    return { cliente: r.cliente, direccionObra: "", trabajo: "", observaciones: "", lineas, omitidas: r.lineas.length - lineas.length };
   }
   const cat = validarCatalogo(catalogo);
   const lista = cat.length
