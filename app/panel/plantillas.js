@@ -38,5 +38,30 @@ window.APRENS_PLANTILLAS = {
 "Entra com a pacient, tria «Ya tengo mi código de seguimiento» i escriu el codi de 3 xifres que et vaig donar (si no el tens a mà, demana-me'l per aquí). Respon pensant en com has estat aquests darrers dies i, en acabar, pitja WhatsApp i envia'm el missatge tal com surt.\n\n" +
 "Amb el teu registre revisaré la teva evolució i et diré què convé prioritzar aquesta setmana.\n\n" +
 "Tòfol Villalonga"
+  },
+  // Pauta libre: los [corchetes] se rellenan antes de enviar. La pauta automática
+  // según el Screening está en la ficha («Pauta de esta semana»).
+  pauta: {
+    nombre: "Pauta semanal · rellenar los [corchetes]",
+    es:
+"Hola, te dejo la pauta para esta semana.\n\n" +
+"Lo que vamos a priorizar: [foco de la semana]\n\n" +
+"Para recordarlo, quédate con esta frase:\n«[frase o consigna]»\n\n" +
+"Tarea de la semana:\n[qué hacer, cuándo y cuántas veces]\n\n" +
+"Para acompañarte, te recomiendo esta herramienta del Espai APRENS: [nombre de la herramienta]\n" +
+"https://aprens-app.netlify.app\n" +
+"Cuando la uses, pulsa WhatsApp y envíame el mensaje tal cual sale, así podré ir viendo cómo te va.\n\n" +
+"No hace falta que salga perfecto. Lo importante es hacerlo con presencia y no con exigencia. Lo revisamos en la próxima sesión.\n\n" +
+"Tòfol Villalonga",
+    ca:
+"Hola, et deix la pauta per a aquesta setmana.\n\n" +
+"El que prioritzarem: [focus de la setmana]\n\n" +
+"Per recordar-ho, queda't amb aquesta frase:\n«[frase o consigna]»\n\n" +
+"Tasca de la setmana:\n[què fer, quan i quantes vegades]\n\n" +
+"Per acompanyar-te, et recoman aquesta eina de l'Espai APRENS: [nom de l'eina]\n" +
+"https://aprens-app.netlify.app\n" +
+"Quan la facis servir, pitja WhatsApp i envia'm el missatge tal com surt, així podré anar veient com et va.\n\n" +
+"No cal que surti perfecte. L'important és fer-ho amb presència i no amb exigència. Ho revisarem a la propera sessió.\n\n" +
+"Tòfol Villalonga"
   }
 };
