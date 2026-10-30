@@ -1,6 +1,7 @@
 /* Albaranes · PDF del albarán firmado (jsPDF, guardado en vendor/ para que
    funcione sin conexión). Devuelve un Blob listo para compartir o adjuntar. */
 
+import { perfil } from "./perfiles.js";
 import { etiquetaIva, fechaCortaSegura as fechaCorta, formatoCantidad, formatoEuros, importeLinea, totales } from "./calculos.js";
 
 const A4 = { w: 210, h: 297 };
@@ -10,9 +11,10 @@ const TINTA = [25, 25, 25];
 const ACENTO = [12, 74, 110];
 
 export function generarPDF(alb, negocio) {
+  const pf = perfil(alb.perfil);
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
-  doc.setProperties({ title: `Albarán ${alb.numero}`, subject: "Albarán de trabajo", creator: "App de albaranes" });
+  doc.setProperties({ title: `Albarán ${alb.numero}`, subject: pf.asuntoPdf, creator: "App de albaranes" });
   let y = M;
 
   const texto = (t, x, yy, { size = 10, bold = false, color = TINTA, align = "left" } = {}) => {
@@ -72,13 +74,14 @@ export function generarPDF(alb, negocio) {
   };
   const dirCliente = [c.direccion, [c.cp, c.poblacion].filter(Boolean).join(" ")].filter(Boolean).join(", ");
   const y1 = bloque("Cliente", [c.nombre, c.nif && `NIF: ${c.nif}`, dirCliente, [c.telefono, c.email].filter(Boolean).join(" · ")], M);
-  const y2 = bloque("Dirección de la obra", [alb.direccionObra || dirCliente || "—"], M + colW + 6);
+  // Sin dirección de la obra en el perfil (servicios), la columna solo sale si el albarán la tiene.
+  const y2 = pf.lugar || alb.direccionObra ? bloque(pf.lugar || "Dirección de la obra", [alb.direccionObra || dirCliente || "—"], M + colW + 6) : y;
   y = Math.max(y1, y2) + 4;
 
   // --- Trabajo realizado ---
   if (alb.trabajo) {
     sitio(12);
-    texto("TRABAJO REALIZADO", M, y, { size: 8, bold: true, color: GRIS });
+    texto(pf.lugar ? "TRABAJO REALIZADO" : "DESCRIPCIÓN", M, y, { size: 8, bold: true, color: GRIS });
     y += 5;
     parrafo(alb.trabajo, M, A4.w - 2 * M);
     y += 3;
@@ -195,7 +198,7 @@ export function generarPDF(alb, negocio) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(...GRIS);
-  doc.text(doc.splitTextToSize("El cliente da su conformidad al trabajo realizado y al material indicado en este albarán.", A4.w - M - xf), xf, yf);
+  doc.text(doc.splitTextToSize(pf.conformidad, A4.w - M - xf), xf, yf);
   y += 36;
 
   // --- Pie en cada página ---

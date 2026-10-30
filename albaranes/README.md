@@ -119,6 +119,13 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
   de Holded, para que no choquen los números. Cada móvil lleva su propia
   numeración: si usas la app en más de uno, pon un prefijo distinto en cada uno
   (por ejemplo `M` y `M2`).
+- **Tipo de actividad**:
+  - *Oficio* (obras, reparaciones): dirección de la obra, material, mano de
+    obra y desplazamiento, pestañas de compras y catálogo, y dictado por voz.
+  - *Servicios profesionales* (consulta, sesiones): sin dirección de la obra
+    ni compras; las líneas salen de tus **servicios habituales** («Primera
+    visita: 60», uno por línea), y no hay dictado con IA para que no salga
+    ningún dato de pacientes. Los albaranes ya firmados no cambian.
 - Precio de la hora, del desplazamiento e IVA por defecto (21 %, 10 % o
   **exento**, p. ej. servicios sanitarios), y el texto de la exención que sale
   en el PDF.

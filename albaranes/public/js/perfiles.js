@@ -1,0 +1,65 @@
+/* Albaranes · perfiles de profesión.
+   ---------------------------------------------------------------------------
+   Lo que cambia según a qué se dedica quien usa la app: textos, botones de
+   líneas, pestañas y si hay dictado con IA. Se elige en Ajustes («Tipo de
+   actividad»). Lo demás (sin conexión, firma, PDF, envío a Holded) es igual.
+*/
+
+export const PERFILES = {
+  // Obras, reparaciones, instalaciones: material con stock, mano de obra y desplazamiento.
+  oficio: {
+    nombre: "Oficio (obras, reparaciones, instalaciones…)",
+    lugar: "Dirección de la obra",
+    seccionTrabajo: "Trabajo",
+    trabajo: "Trabajo realizado",
+    placeholderTrabajo: "Qué se ha hecho: avería, reparación, instalación…",
+    ayudaTrabajo: "",
+    seccionLineas: "Material y mano de obra",
+    placeholderConcepto: "Concepto (p. ej. Grifo monomando)",
+    placeholderObservaciones: "Garantía, piezas pendientes, próxima visita…",
+    conformidad: "El cliente da su conformidad al trabajo realizado y al material indicado en este albarán.",
+    asuntoPdf: "Albarán de trabajo",
+    mensaje: "del trabajo realizado el",
+    compras: true, // pestañas Compras y Catálogo, margen sobre el coste
+    dictado: true,
+  },
+  // Consulta y sesiones (psicología, fisioterapia, asesoría…): servicios con precio fijo.
+  servicios: {
+    nombre: "Servicios profesionales (consulta, sesiones…)",
+    lugar: null, // no se pide dirección de la obra
+    seccionTrabajo: "Servicio",
+    trabajo: "Descripción (opcional)",
+    placeholderTrabajo: "P. ej. sesiones del mes de septiembre",
+    // En sanidad, que alguien sea cliente ya es un dato de salud: lo mínimo, y nada clínico.
+    ayudaTrabajo: "No escribas datos clínicos ni diagnósticos: este texto llega a Holded y al PDF.",
+    seccionLineas: "Servicios",
+    placeholderConcepto: "Concepto (p. ej. Sesión de seguimiento)",
+    placeholderObservaciones: "Forma de pago, próxima cita…",
+    conformidad: "Conforme con los servicios indicados en este albarán.",
+    asuntoPdf: "Albarán de servicios",
+    mensaje: "de los servicios del",
+    compras: false,
+    // El dictado se interpreta con IA fuera del móvil: con datos de pacientes, mejor no.
+    dictado: false,
+  },
+};
+
+export const PERFIL_DEFECTO = "oficio";
+
+/** Perfil por su clave (el de ajustes, o el que quedó guardado en un albarán firmado). */
+export const perfil = (clave) => PERFILES[clave] || PERFILES[PERFIL_DEFECTO];
+
+/** Servicios habituales del perfil «servicios»: botones «+ …» con su precio. */
+export const SERVICIOS_DEFECTO = [
+  { nombre: "Primera visita", precio: 60 },
+  { nombre: "Sesión de seguimiento", precio: 50 },
+];
+
+/** «Nombre: precio» por línea → lista de servicios. Ignora líneas vacías o sin nombre. */
+export function leerServicios(texto) {
+  return String(texto || "").split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 8).map((l) => {
+    const m = /^(.*?)[\s:=;-]+(\d+(?:[.,]\d{1,2})?)\s*€?$/.exec(l);
+    return m ? { nombre: m[1].trim().slice(0, 300), precio: Number(m[2].replace(",", ".")) } : { nombre: l.slice(0, 300), precio: 0 };
+  }).filter((s) => s.nombre);
+}
+export const escribirServicios = (lista) => (lista || []).map((s) => `${s.nombre}: ${String(s.precio).replace(".", ",")}`).join("\n");
