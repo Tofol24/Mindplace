@@ -12,6 +12,7 @@ import * as db from "./db.js";
 import { redondear } from "./calculos.js";
 import { precioVenta } from "./catalogo.js";
 import { aviso, h } from "./ui.js";
+import { dictadoPermitido } from "./perfiles.js";
 
 const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -54,6 +55,8 @@ export async function aplicarDictado(alb, d, ajustes) {
 
 /** Manda un dictado a la IA. Devuelve { ok, datos } o { error, pasajero }. */
 async function interpretar(ctx, texto) {
+  // Última barrera: con un perfil sin dictado (p. ej. servicios sanitarios) nada sale hacia la IA.
+  if (!dictadoPermitido(ctx.ajustes())) return { error: "El dictado no está disponible con este tipo de actividad.", pasajero: false };
   let r;
   try {
     r = await ctx.llamarAPI("/api/ia/dictado", { method: "POST", body: { texto, catalogo: await catalogoParaIA() } });
@@ -66,7 +69,7 @@ async function interpretar(ctx, texto) {
 
 /** Aplica los dictados que quedaron guardados sin cobertura. */
 export async function aplicarDictadosPendientes(ctx) {
-  if (!navigator.onLine || !ctx.ajustes().claveApp) return;
+  if (!navigator.onLine || !ctx.ajustes().claveApp || !dictadoPermitido(ctx.ajustes())) return;
   const borradores = (await db.todos("albaranes")).filter((a) => a.estado === "borrador" && a.dictadoPendiente);
   for (const alb of borradores) {
     // Si Pere tiene ese borrador abierto, lo aplica él con el botón (así no se pisan los cambios).

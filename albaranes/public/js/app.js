@@ -22,7 +22,7 @@ import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./
 import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from "./catalogo.js";
 import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
 import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
-import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, escribirServicios, leerServicios, perfil } from "./perfiles.js";
+import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, dictadoPermitido, escribirServicios, leerServicios, perfil } from "./perfiles.js";
 
 const AJUSTES_DEF = {
   // En blanco: cada profesional pone los suyos (en Ajustes o con las variables APP_* de su
@@ -77,13 +77,21 @@ async function aplicarConfigInstalacion() {
   if (r.status === 401) return { aplicada: false, error: "La clave de la app no es correcta." };
   const c = r.datos && typeof r.datos === "object" ? r.datos : {};
   const { negocio, ...resto } = c;
-  ajustes = {
-    ...ajustes, ...resto,
-    ...(negocio ? { negocio: { ...AJUSTES_DEF.negocio, ...negocio } } : {}),
-    configInstalacion: Object.keys(c).length ? "aplicada" : "ninguna",
-  };
+  // Solo rellena lo que sigue sin tocar: lo que se haya guardado a mano antes (p. ej. sin
+  // conexión) manda sobre los valores de partida.
+  const igual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  let cambios = 0;
+  for (const [k, v] of Object.entries(resto)) {
+    if (k in AJUSTES_DEF && igual(ajustes[k], AJUSTES_DEF[k]) && !igual(v, ajustes[k])) { ajustes[k] = v; cambios++; }
+  }
+  for (const [k, v] of Object.entries(negocio || {})) {
+    if (k in AJUSTES_DEF.negocio && v && (!ajustes.negocio[k] || ajustes.negocio[k] === AJUSTES_DEF.negocio[k]) && v !== ajustes.negocio[k]) {
+      ajustes.negocio[k] = v; cambios++;
+    }
+  }
+  ajustes.configInstalacion = Object.keys(c).length ? "aplicada" : "ninguna";
   await guardarAjustes();
-  return { aplicada: Object.keys(c).length > 0, error: "" };
+  return { aplicada: cambios > 0, error: "" };
 }
 const guardarAjustes = () => db.escribirKV("ajustes", ajustes);
 const perfilActual = () => perfil(ajustes.perfil);
@@ -665,7 +673,7 @@ async function vistaEditor(alb) {
     h("div", { class: "cab-vista" },
       h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await autoguardar(alb); ir("/"); } }, "‹ Albaranes"),
       h("h2", {}, alb.numero ? `Corregir ${alb.numero}` : "Nuevo albarán")),
-    (pf.dictado || alb.dictadoPendiente) && panelDictado(ctx, alb, {
+    (dictadoPermitido(ajustes) || alb.dictadoPendiente) && panelDictado(ctx, alb, {
       guardar: async () => { clearTimeout(guardarTimer); await autoguardar(alb); },
       alAplicar: () => ir(`/editar/${alb.id}`),
     }),

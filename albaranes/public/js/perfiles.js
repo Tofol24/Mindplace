@@ -49,6 +49,12 @@ export const PERFIL_DEFECTO = "oficio";
 /** Perfil por su clave (el de ajustes, o el que quedó guardado en un albarán firmado). */
 export const perfil = (clave) => PERFILES[clave] || PERFILES[PERFIL_DEFECTO];
 
+/**
+ * Si se puede dictar (y mandar el texto a la IA). No mientras un móvil nuevo espera los Ajustes
+ * de su instalación: podría ser de servicios sanitarios aunque aún se vea como «oficio».
+ */
+export const dictadoPermitido = (ajustes) => perfil(ajustes?.perfil).dictado && ajustes?.configInstalacion !== "pendiente";
+
 /** Servicios habituales del perfil «servicios»: botones «+ …» con su precio. */
 export const SERVICIOS_DEFECTO = [
   { nombre: "Primera visita", precio: 60 },
