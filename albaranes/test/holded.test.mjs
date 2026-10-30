@@ -358,3 +358,16 @@ test("crearClienteHolded.impuestos lee GET /taxes, lo recuerda y sin permiso usa
   await assert.rejects(hCaido.impuestos(), (e) => e.reintentar === true);
   olvidarImpuestos();
 });
+
+// --- Perfiles de profesión --------------------------------------------------------
+
+test("leerServicios: «Nombre: precio» por línea, con coma o punto decimal", async () => {
+  const { leerServicios, escribirServicios } = await import("../public/js/perfiles.js");
+  assert.deepEqual(leerServicios("Primera visita: 60\nSesión de seguimiento = 50,5 €\n\nInforme"), [
+    { nombre: "Primera visita", precio: 60 },
+    { nombre: "Sesión de seguimiento", precio: 50.5 },
+    { nombre: "Informe", precio: 0 },
+  ]);
+  const lista = [{ nombre: "Sesión de pareja", precio: 70 }];
+  assert.deepEqual(leerServicios(escribirServicios(lista)), lista);
+});

@@ -22,6 +22,7 @@ import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./
 import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from "./catalogo.js";
 import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
 import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
+import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, escribirServicios, leerServicios, perfil } from "./perfiles.js";
 
 const AJUSTES_DEF = {
   negocio: {
@@ -33,6 +34,10 @@ const AJUSTES_DEF = {
   precioHora: 35,
   precioDesplazamiento: 20,
   ivaDefecto: 21,
+  // Tipo de actividad (perfiles.js): «oficio» o «servicios».
+  perfil: PERFIL_DEFECTO,
+  // Perfil «servicios»: botones «+ …» con su precio.
+  servicios: SERVICIOS_DEFECTO,
   // Retención de IRPF que te aplican las empresas y entidades (CIF) a las que facturas; 0 = ninguna.
   retencionEmpresas: 0,
   margen: 30,
@@ -53,6 +58,7 @@ async function cargarAjustes() {
   ajustes = { ...structuredClone(AJUSTES_DEF), ...guardados, negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) } };
 }
 const guardarAjustes = () => db.escribirKV("ajustes", ajustes);
+const perfilActual = () => perfil(ajustes.perfil);
 
 function nuevoAlbaran() {
   const ahora = new Date().toISOString();
@@ -298,7 +304,7 @@ async function tareasIA() {
 
 function mensajeCliente(alb) {
   const nombre = alb.cliente.nombre.split(" ")[0] || "";
-  return `Hola${nombre ? ` ${nombre}` : ""}, te envío el albarán ${alb.numero} del trabajo realizado el ${fechaCorta(alb.fecha)}. Total: ${formatoEuros(totales(alb.lineas, alb.retencion).total)}. Gracias.${ajustes.negocio.nombre ? `\n${ajustes.negocio.nombre}` : ""}`;
+  return `Hola${nombre ? ` ${nombre}` : ""}, te envío el albarán ${alb.numero} ${perfil(alb.perfil || ajustes.perfil).mensaje} ${fechaCorta(alb.fecha)}. Total: ${formatoEuros(totales(alb.lineas, alb.retencion).total)}. Gracias.${ajustes.negocio.nombre ? `\n${ajustes.negocio.nombre}` : ""}`;
 }
 
 // Los datos del negocio se congelan al firmar: el PDF del cliente y el de Holded son el mismo.
@@ -534,7 +540,7 @@ async function vistaEditor(alb) {
       return h("div", { class: "linea" },
         h("div", { class: "linea-cab" },
           h("input", {
-            class: "concepto", value: l.concepto, list: "conceptos", placeholder: "Concepto (p. ej. Grifo monomando)",
+            class: "concepto", value: l.concepto, list: "conceptos", placeholder: perfilActual().placeholderConcepto,
             oninput: (e) => {
               l.concepto = e.target.value;
               const art = porNombre.get(normal(l.concepto));
@@ -605,11 +611,25 @@ async function vistaEditor(alb) {
   };
 
   const inputObra = entrada(alb, "direccionObra", { placeholder: "Calle, número, piso…" });
+  const pf = perfilActual();
+  // Botones de líneas: los del oficio, o los servicios habituales de Ajustes.
+  const botonesLinea = pf.compras
+    ? [
+      h("button", { type: "button", class: "btn secundario", onclick: () => anadir({}) }, "+ Material"),
+      h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: "Mano de obra", precio: ajustes.precioHora, unidad: "h" }) }, "+ Mano de obra"),
+      h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: "Desplazamiento", precio: ajustes.precioDesplazamiento }) }, "+ Desplazamiento"),
+    ]
+    : [
+      ...(ajustes.servicios || []).map((sv) => h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: sv.nombre, precio: sv.precio }) }, `+ ${sv.nombre}`)),
+      h("button", { type: "button", class: "btn secundario", onclick: () => anadir({}) }, "+ Otro concepto"),
+    ];
+  // Sin dirección de la obra en el perfil, el campo solo sale si ya tiene algo (albaranes antiguos).
+  const conLugar = !!pf.lugar || !!alb.direccionObra;
   return [
     h("div", { class: "cab-vista" },
       h("button", { class: "btn-volver", onclick: async () => { clearTimeout(guardarTimer); await autoguardar(alb); ir("/"); } }, "‹ Albaranes"),
       h("h2", {}, alb.numero ? `Corregir ${alb.numero}` : "Nuevo albarán")),
-    panelDictado(ctx, alb, {
+    (pf.dictado || alb.dictadoPendiente) && panelDictado(ctx, alb, {
       guardar: async () => { clearTimeout(guardarTimer); await autoguardar(alb); },
       alAplicar: () => ir(`/editar/${alb.id}`),
     }),
@@ -627,31 +647,28 @@ async function vistaEditor(alb) {
         h("div", { class: "rejilla" }, campoCliente("cp", "C. P.", { inputmode: "numeric" }), campoCliente("poblacion", "Población"))),
       contRet),
     h("section", { class: "tarjeta" },
-      h("h3", {}, "Trabajo"),
+      h("h3", {}, pf.seccionTrabajo),
       h("div", { class: "rejilla" },
         campo("Fecha", entrada(alb, "fecha", { type: "date" })),
         h("div")),
-      campo("Dirección de la obra", inputObra),
-      h("button", {
+      conLugar && campo(pf.lugar || "Dirección de la obra", inputObra),
+      conLugar && h("button", {
         type: "button", class: "btn enlace",
         onclick: () => { alb.direccionObra = [c.direccion, [c.cp, c.poblacion].filter(Boolean).join(" ")].filter(Boolean).join(", "); inputObra.value = alb.direccionObra; cambiado(); },
       }, "Usar la dirección del cliente"),
-      campo("Trabajo realizado", h("textarea", {
-        rows: 4, placeholder: "Qué se ha hecho: avería, reparación, instalación…",
+      campo(pf.trabajo, h("textarea", {
+        rows: pf.compras ? 4 : 2, placeholder: pf.placeholderTrabajo,
         oninput: (e) => { alb.trabajo = e.target.value; cambiado(); },
-      }, alb.trabajo))),
+      }, alb.trabajo), pf.ayudaTrabajo || undefined)),
     h("section", { class: "tarjeta" },
-      h("h3", {}, "Material y mano de obra"),
+      h("h3", {}, pf.seccionLineas),
       datalist,
       contLineas,
-      h("div", { class: "botones-linea" },
-        h("button", { type: "button", class: "btn secundario", onclick: () => anadir({}) }, "+ Material"),
-        h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: "Mano de obra", precio: ajustes.precioHora, unidad: "h" }) }, "+ Mano de obra"),
-        h("button", { type: "button", class: "btn secundario", onclick: () => anadir({ concepto: "Desplazamiento", precio: ajustes.precioDesplazamiento }) }, "+ Desplazamiento")),
+      h("div", { class: "botones-linea" }, ...botonesLinea),
       contTotales),
     h("section", { class: "tarjeta" },
       campo("Observaciones (opcional)", h("textarea", {
-        rows: 2, placeholder: "Garantía, piezas pendientes, próxima visita…",
+        rows: 2, placeholder: pf.placeholderObservaciones,
         oninput: (e) => { alb.observaciones = e.target.value; cambiado(); },
       }, alb.observaciones))),
     error,
@@ -752,6 +769,7 @@ function vistaFirma(alb) {
       // Al corregir un albarán rechazado se mantiene su número.
       if (!alb.numero) alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
       alb.negocio = { ...ajustes.negocio };
+      alb.perfil = ajustes.perfil; // los textos del PDF firmado no cambian si luego se cambia de perfil
       alb.estado = "pendiente";
       alb.error = "";
       alb.stockDescontado = true;
@@ -887,6 +905,19 @@ async function vistaAjustes() {
   const inputHora = h("input", { value: String(ajustes.precioHora).replace(".", ","), inputmode: "decimal" });
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
   const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
+  const selPerfil = h("select", {}, Object.entries(PERFILES).map(([k, p]) => h("option", { value: k, selected: k === (ajustes.perfil || PERFIL_DEFECTO) }, p.nombre)));
+  const inputServicios = h("textarea", { rows: 4, placeholder: "Primera visita: 60\nSesión de seguimiento: 50" }, escribirServicios(ajustes.servicios));
+  // Lo de oficio (hora, desplazamiento, margen) o lo de servicios, según el tipo de actividad.
+  const soloOficio = h("div");
+  const soloServicios = h("div");
+  const pintarPerfil = () => { const of = perfil(selPerfil.value).compras; soloOficio.hidden = !of; soloServicios.hidden = of; };
+  selPerfil.addEventListener("change", pintarPerfil);
+  soloOficio.append(
+    h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
+    campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."));
+  soloServicios.append(
+    campo("Servicios habituales", inputServicios, "Uno por línea, con su precio: «Primera visita: 60». Cada uno será un botón «+» al hacer el albarán."));
+  pintarPerfil();
   const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, etiquetaIva(v))));
   const selRet = h("select", {}, RETENCIONES.map((v) => h("option", { value: v, selected: v === (ajustes.retencionEmpresas || 0) }, v ? `${v} %` : "Ninguna")));
   const inputClave = h("input", { value: ajustes.claveApp, type: "password", autocomplete: "off" });
@@ -914,6 +945,10 @@ async function vistaAjustes() {
     const margen = num(inputMargen.value);
     if (!(margen >= 0 && margen <= 1000)) { aviso("El margen no es válido.", "error"); return false; }
     ajustes.margen = margen;
+    const servicios = leerServicios(inputServicios.value);
+    if (servicios.some((sv) => !(sv.precio >= 0 && sv.precio <= 1e7))) { aviso("Revisa los precios de los servicios.", "error"); return false; }
+    ajustes.perfil = selPerfil.value;
+    ajustes.servicios = servicios;
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.retencionEmpresas = Number(selRet.value);
     ajustes.claveApp = inputClave.value.trim();
@@ -995,8 +1030,9 @@ async function vistaAjustes() {
       h("div", { class: "rejilla" }, campo("Prefijo", inputPrefijo), campo("Próximo número", inputSiguiente)),
       ejemplo,
       h("small", { class: "ayuda" }, "Usa un prefijo distinto al de tus series de Holded (por ejemplo M), para que no choquen los números. Si usas la app en más de un móvil, pon un prefijo distinto en cada uno."),
-      h("div", { class: "rejilla" }, campo("Precio hora €", inputHora), campo("Desplazamiento €", inputDesp)),
-      campo("Margen general sobre el coste %", inputMargen, "Precio de venta del material = coste + este %. Cada artículo del catálogo puede tener el suyo."),
+      campo("Tipo de actividad", selPerfil, "Cambia los textos, los botones de las líneas y las pestañas. Los albaranes ya firmados no cambian."),
+      soloOficio,
+      soloServicios,
       campo("IVA por defecto", selIva, "21% general. 10% en reparaciones de vivienda particular cuando se cumplen los requisitos. Exento: p. ej. servicios sanitarios (psicología, fisioterapia…)."),
       campo("Texto si va exento de IVA (sale en el PDF)", ent(n, "textoExencion", { placeholder: "Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992)." })),
       campo("Retención de IRPF que te aplican las empresas", selRet, "Se propone sola en los albaranes a clientes con CIF (empresas, mutuas…). Ninguna si no te retienen.")),
@@ -1026,6 +1062,8 @@ async function render() {
   const ruta = location.hash.slice(1) || "/";
   const [, seccion, id] = ruta.split("/");
   let contenido;
+  // Sin compras ni catálogo en el perfil, esas pantallas no existen.
+  if (["compras", "compra", "catalogo", "articulo"].includes(seccion) && !perfilActual().compras) { ir("/"); return; }
   if (seccion === "ajustes") contenido = await vistaAjustes();
   else if (seccion === "compras") contenido = await vistaCompras(ctx);
   else if (seccion === "compra") contenido = await vistaCompra(ctx, id);
@@ -1044,7 +1082,7 @@ async function render() {
   barraEstado.hidden = seccion === "firmar";
   // Pestañas solo en las tres listas principales.
   const pestana = { "": "/", compras: "/compras", catalogo: "/catalogo" }[seccion ?? ""];
-  pestanas.hidden = !pestana;
+  pestanas.hidden = !pestana || !perfilActual().compras;
   for (const b of pestanas.querySelectorAll("button")) b.setAttribute("aria-current", b.dataset.ruta === pestana ? "page" : "false");
   // Al repintar la misma pantalla (p. ej. tras un envío) no se pierde la posición.
   if (vista.dataset.ruta !== ruta) window.scrollTo(0, 0);
