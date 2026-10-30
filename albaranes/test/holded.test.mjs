@@ -371,3 +371,31 @@ test("leerServicios: «Nombre: precio» por línea, con coma o punto decimal", a
   const lista = [{ nombre: "Sesión de pareja", precio: 70 }];
   assert.deepEqual(leerServicios(escribirServicios(lista)), lista);
 });
+
+// --- Ajustes de partida de cada instalación ------------------------------------
+
+test("configInicial: lee las variables APP_* y descarta las mal puestas", async () => {
+  const { configInicial } = await import("../lib/config.mjs");
+  assert.deepEqual(configInicial({}), {}); // sin variables (instalación de Pere): nada
+  const c = configInicial({
+    APP_PERFIL: "servicios",
+    APP_NEGOCIO_NOMBRE: " Cristóbal Villalonga Melis ",
+    APP_NEGOCIO_NIF: "78210217M",
+    APP_IVA: "0",
+    APP_RETENCION: "15",
+    APP_TEXTO_EXENCION: "Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992).",
+    APP_SERVICIOS: "Primera visita: 60 | Sesión de seguimiento: 50,5 | sin precio",
+    APP_PREFIJO: "ap",
+  });
+  assert.equal(c.perfil, "servicios");
+  assert.deepEqual(c.negocio, {
+    nombre: "Cristóbal Villalonga Melis", nif: "78210217M", direccion: "", telefono: "", email: "",
+    textoExencion: "Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992).",
+  });
+  assert.equal(c.ivaDefecto, 0);
+  assert.equal(c.retencionEmpresas, 15);
+  assert.deepEqual(c.servicios, [{ nombre: "Primera visita", precio: 60 }, { nombre: "Sesión de seguimiento", precio: 50.5 }]);
+  assert.equal(c.prefijo, "AP");
+  assert.deepEqual(configInicial({ APP_PERFIL: "otro", APP_IVA: "4", APP_RETENCION: "19", APP_PREFIJO: "A-1" }), {});
+  assert.deepEqual(configInicial({ APP_IVA: "", APP_RETENCION: " " }), {}); // vacías: no son «0»
+});

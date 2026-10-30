@@ -53,8 +53,31 @@ const pestanas = document.getElementById("pestanas");
 // Datos
 // ---------------------------------------------------------------------------
 
+/** Ajustes de partida de esta instalación (variables APP_* de Netlify), o null si no tiene. */
+async function pedirConfigInicial() {
+  if (!navigator.onLine) return null;
+  try {
+    const res = await fetch("/api/config", { cache: "no-store", signal: AbortSignal.timeout(2500) });
+    const datos = res.ok ? await res.json() : null;
+    return datos && typeof datos === "object" && Object.keys(datos).length ? datos : null;
+  } catch {
+    return null;
+  }
+}
+
 async function cargarAjustes() {
-  const guardados = await db.leerKV("ajustes", {});
+  let guardados = await db.leerKV("ajustes", null);
+  if (!guardados) {
+    // Primera vez en este móvil: si la instalación trae sus Ajustes de partida, se usan y se
+    // guardan (su negocio entero: no se mezcla con los datos por defecto de otro profesional).
+    const inicial = await pedirConfigInicial();
+    if (inicial) {
+      ajustes = { ...structuredClone(AJUSTES_DEF), ...inicial, negocio: { ...(inicial.negocio || AJUSTES_DEF.negocio) } };
+      await guardarAjustes();
+      return;
+    }
+    guardados = {};
+  }
   ajustes = { ...structuredClone(AJUSTES_DEF), ...guardados, negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) } };
 }
 const guardarAjustes = () => db.escribirKV("ajustes", ajustes);

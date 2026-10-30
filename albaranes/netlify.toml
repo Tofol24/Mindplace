@@ -6,6 +6,7 @@
   command = ""
 
 # Puente con Holded: /api/holded/*. Necesita las variables HOLDED_API_KEY y APP_CLAVE.
+# /api/config: Ajustes de partida de cada instalación (variables APP_*, ver README).
 [functions]
   directory = "functions"
   node_bundler = "esbuild"

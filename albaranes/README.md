@@ -135,6 +135,36 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
 
 ---
 
+## Otra instalación para otro profesional
+
+El mismo código sirve a cualquier profesional: cada uno con **su propio sitio
+de Netlify**, su Holded y sus claves. Los datos (albaranes, clientes) nunca se
+mezclan: viven en el móvil de cada uno y en su cuenta de Holded.
+
+1. Crea un sitio nuevo como en «Publicar la app en Netlify» (mismo repositorio,
+   **Base directory** = `albaranes`), con sus propias `HOLDED_API_KEY` y
+   `APP_CLAVE`.
+2. Añade, si quieres, sus **Ajustes de partida** como variables de entorno. El
+   móvil los toma la primera vez que abre la app; después se cambian en Ajustes.
+   Ninguno es secreto: son los datos que salen en el PDF.
+
+   | Variable | Ejemplo |
+   |---|---|
+   | `APP_PERFIL` | `servicios` (o `oficio`) |
+   | `APP_NEGOCIO_NOMBRE` | `Cristóbal Villalonga Melis` |
+   | `APP_NEGOCIO_NIF` | `78210217M` |
+   | `APP_NEGOCIO_DIRECCION` | `C/ Virgen de la Esperanza, 70, 2º, 07300 Inca (Baleares)` |
+   | `APP_NEGOCIO_TELEFONO` | `636 93 76 61` |
+   | `APP_NEGOCIO_EMAIL` | `info@aprens.es` |
+   | `APP_IVA` | `0` (exento), `21` o `10` |
+   | `APP_RETENCION` | `15` (la que aplican las empresas), `7` o `0` |
+   | `APP_TEXTO_EXENCION` | `Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992).` |
+   | `APP_SERVICIOS` | `Primera visita: 60 \| Sesión de seguimiento: 50` |
+   | `APP_PREFIJO` | `AP` |
+
+3. Con el perfil `servicios` no hay dictado ni fotos de compras: no hace falta
+   `ANTHROPIC_API_KEY`.
+
 ## Comprobaciones recomendadas antes de usarla con clientes
 
 - Con la prueba gratuita de Holded, haz un albarán de prueba y mira que en
