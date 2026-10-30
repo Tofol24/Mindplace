@@ -21,6 +21,16 @@ Les assignatures de tipus «problemes» tenen una pestanya **Exercicis**:
 
 El tipus de cada assignatura es pot canviar a Configuració.
 
+## Exportar la guia
+
+A la pestanya de la guia hi ha dos botons:
+
+- **PDF / imprimir**: obre la impressió del navegador amb una versió neta de la guia (resum, fórmules,
+  regles, mètodes, mapa conceptual en forma de llista, relacions i conceptes clau). Des d'allà es pot
+  imprimir o «Desar com a PDF».
+- **Word**: descarrega un `.docx` editable (Word, Google Docs, LibreOffice) amb el mateix contingut i
+  títols de veritat. Es genera al navegador, sense cap biblioteca externa.
+
 ## Fitxers
 
 - `explica-ho.html` — font de la pàgina publicada a claude.ai (Artifact). No porta
