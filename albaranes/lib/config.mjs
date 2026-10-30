@@ -7,6 +7,7 @@
    mismos datos que salen en el PDF.
 
      APP_PERFIL          oficio | servicios
+     APP_DESTINO         holded | volcado (sin Holded: se exportan para el programa de facturación)
      APP_NEGOCIO_NOMBRE, APP_NEGOCIO_NIF, APP_NEGOCIO_DIRECCION,
      APP_NEGOCIO_TELEFONO, APP_NEGOCIO_EMAIL
      APP_TEXTO_EXENCION  mención del PDF si va exento de IVA
@@ -26,6 +27,7 @@ const deLista = (v, permitidos) => {
 export function configInicial(env = {}) {
   const c = {};
   if (["oficio", "servicios"].includes(texto(env.APP_PERFIL, 20))) c.perfil = texto(env.APP_PERFIL, 20);
+  if (["holded", "volcado"].includes(texto(env.APP_DESTINO, 20))) c.destino = texto(env.APP_DESTINO, 20);
   const negocio = {
     nombre: texto(env.APP_NEGOCIO_NOMBRE, 200),
     nif: texto(env.APP_NEGOCIO_NIF, 30),

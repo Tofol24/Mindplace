@@ -141,6 +141,19 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
 
 ---
 
+## Sin Holded: volcado a tu programa de facturación
+
+En Ajustes → **Destino de los albaranes** → «Sin Holded: volcado a mi programa
+de facturación». Los albaranes firmados se quedan en el móvil (no se envían a
+ningún sitio) y, desde **📤 Volcado a facturación**, se filtran por fechas y
+cliente, se ven con sus totales y se exportan en **CSV** (dos ficheros:
+albaranes y líneas, para Access o Excel) o **JSON**. Después se marcan como
+volcados para no repetirlos. El formato, columna a columna y pensado para
+convertirlos en facturas con VeriFactu, está en [VOLCADO.md](VOLCADO.md).
+
+Los ficheros llevan datos de los clientes: guárdalos en un sitio seguro y
+bórralos del móvil o del correo cuando ya estén en el programa.
+
 ## Otra instalación para otro profesional
 
 El mismo código sirve a cualquier profesional: cada uno con **su propio sitio
@@ -160,6 +173,7 @@ mezclan: viven en el móvil de cada uno y en su cuenta de Holded.
    | Variable | Ejemplo |
    |---|---|
    | `APP_PERFIL` | `servicios` (o `oficio`) |
+   | `APP_DESTINO` | `volcado` (sin Holded) o `holded` |
    | `APP_NEGOCIO_NOMBRE` | `Cristóbal Villalonga Melis` |
    | `APP_NEGOCIO_NIF` | `78210217M` |
    | `APP_NEGOCIO_DIRECCION` | `C/ Virgen de la Esperanza, 70, 2º, 07300 Inca (Baleares)` |

@@ -2,7 +2,7 @@
    Se sirve siempre lo guardado (abre al instante, con o sin señal) y, si hay red,
    se descarga a la vez la versión nueva para la próxima vez que se abra.
    Subir VERSION solo hace falta al añadir o quitar ficheros de la lista. */
-const VERSION = "albaranes-v7";
+const VERSION = "albaranes-v8";
 const FICHEROS = [
   "/",
   "/css/estilos.css",
@@ -15,6 +15,8 @@ const FICHEROS = [
   "/js/compras.js",
   "/js/voz.js",
   "/js/perfiles.js",
+  "/js/volcado.js",
+  "/js/volcado-formato.js",
   "/vendor/jspdf.umd.min.js",
   "/manifest.webmanifest",
   "/icons/icono.svg",

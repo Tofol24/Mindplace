@@ -32,7 +32,7 @@ export const PERFILES = {
     trabajo: "Descripción (opcional)",
     placeholderTrabajo: "P. ej. sesiones del mes de septiembre",
     // En sanidad, que alguien sea cliente ya es un dato de salud: lo mínimo, y nada clínico.
-    ayudaTrabajo: "No escribas datos clínicos ni diagnósticos: este texto llega a Holded y al PDF.",
+    ayudaTrabajo: "No escribas datos clínicos ni diagnósticos: este texto sale en el PDF y en lo que exportes (Holded o tu programa de facturación).",
     seccionLineas: "Servicios",
     placeholderConcepto: "Concepto (p. ej. Sesión de seguimiento)",
     placeholderObservaciones: "Forma de pago, próxima cita…",

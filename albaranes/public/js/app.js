@@ -22,6 +22,7 @@ import { aviso, campo, h, ir, normal, normalNif, normalTel, num, uuid } from "./
 import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from "./catalogo.js";
 import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
 import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
+import { vistaVolcado } from "./volcado.js";
 import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, dictadoPermitido, escribirServicios, leerServicios, perfil } from "./perfiles.js";
 
 const AJUSTES_DEF = {
@@ -36,6 +37,9 @@ const AJUSTES_DEF = {
   precioHora: 35,
   precioDesplazamiento: 20,
   ivaDefecto: 21,
+  // A dónde van los albaranes firmados: «holded» (se envían solos) o «volcado» (se quedan en el
+  // móvil y se exportan para el programa de facturación; nada se envía a ningún sitio).
+  destino: "holded",
   // Tipo de actividad (perfiles.js): «oficio» o «servicios».
   perfil: PERFIL_DEFECTO,
   // Perfil «servicios»: botones «+ …» con su precio.
@@ -97,6 +101,7 @@ async function aplicarConfigInstalacion() {
 }
 const guardarAjustes = () => db.escribirKV("ajustes", ajustes);
 const perfilActual = () => perfil(ajustes.perfil);
+const conHolded = () => ajustes.destino !== "volcado";
 
 function nuevoAlbaran() {
   const ahora = new Date().toISOString();
@@ -256,6 +261,8 @@ async function enviarUno(alb) {
 /** Envía los pendientes. `manual` también reintenta los que dieron error. */
 async function sincronizar({ manual = false } = {}) {
   if (enviando) return;
+  // Sin Holded no se envía nada: los firmados esperan al volcado.
+  if (!conHolded()) { if (manual) ir("/volcado"); pintarEstado(); return; }
   if (!navigator.onLine) { if (manual) aviso("No hay cobertura. Se enviará cuando vuelva la señal.", "info"); pintarEstado(); return; }
   if (!ajustes.claveApp) { if (manual) aviso("Primero configura la conexión con Holded en Ajustes.", "error"); pintarEstado(); return; }
   // El cerrojo se pone antes de cualquier espera: dos rondas a la vez enviarían el mismo albarán.
@@ -292,6 +299,12 @@ async function sincronizar({ manual = false } = {}) {
 
 async function pintarEstado() {
   const lista = await db.todos("albaranes");
+  if (!conHolded()) {
+    const sinVolcar = lista.filter((a) => a.estado !== "borrador" && a.numero && !a.volcadoEn).length;
+    barraEstado.textContent = sinVolcar ? `${sinVolcar} sin volcar` : "Todo volcado";
+    barraEstado.className = `estado ${sinVolcar ? "aviso" : "ok"}`;
+    return;
+  }
   const pendientes = lista.filter((a) => a.estado === "pendiente").length;
   const errores = lista.filter((a) => a.estado === "error").length;
   let texto, clase;
@@ -317,6 +330,7 @@ const ctx = {
   llamarAPI: (...a) => llamarAPI(...a),
   descargar: (f) => descargar(f),
   // Repinta solo si se está viendo esa pantalla (o su lista).
+  pintarEstado: () => pintarEstado(),
   refrescar: (ruta) => {
     const r = location.hash.slice(1) || "/";
     if (r === ruta || (ruta.startsWith("/compra/") && r === "/compras")) render();
@@ -396,7 +410,8 @@ function filasTotales(t) {
   ];
 }
 
-const ETIQUETA_ESTADO = { borrador: "Borrador", pendiente: "Por enviar", error: "Revisar", enviado: "En Holded ✓" };
+const ETIQUETA_ESTADO = { borrador: "Borrador", pendiente: "Por enviar", error: "Revisar", enviado: "En Holded ✓", firmado: "Firmado" };
+const etiquetaEstado = (a) => (a.estado === "firmado" && a.volcadoEn ? "Volcado ✓" : ETIQUETA_ESTADO[a.estado]);
 
 async function vistaLista() {
   let lista = await db.todos("albaranes");
@@ -412,7 +427,7 @@ async function vistaLista() {
     ajustes.negocio.nombre && !ajustes.negocio.nif && "pon tu NIF (sale en el PDF)",
     !ajustes.claveApp && (ajustes.configInstalacion === "pendiente"
       ? "escribe la clave de la app (con ella se cargan los datos de esta instalación)"
-      : "conecta Holded con la clave de la app"),
+      : conHolded() && "conecta Holded con la clave de la app"),
   ].filter(Boolean);
   if (falta.length) {
     avisos.push(h("div", { class: "tarjeta aviso-tarjeta" },
@@ -429,12 +444,13 @@ async function vistaLista() {
   return [
     ...avisos,
     h("button", { class: "btn principal grande", onclick: async () => { const a = nuevoAlbaran(); await guardarAlbaran(a); ir(`/editar/${a.id}`); } }, "+ Nuevo albarán"),
+    lista.some((a) => a.estado !== "borrador") && h("button", { class: "btn secundario btn-volcado", onclick: () => ir("/volcado") }, "📤 Volcado a facturación"),
     lista.length
       ? h("ul", { class: "lista" }, lista.map((a) => h("li", {},
         h("button", { class: "fila", onclick: () => ir(a.estado === "borrador" ? `/editar/${a.id}` : `/albaran/${a.id}`) },
           h("div", { class: "fila-principal" },
             h("strong", {}, a.cliente.nombre || "Sin cliente"),
-            h("span", { class: `chip ${a.estado}` }, ETIQUETA_ESTADO[a.estado])),
+            h("span", { class: `chip ${a.estado === "firmado" && a.volcadoEn ? "enviado" : a.estado}` }, etiquetaEstado(a))),
           h("div", { class: "fila-sec" },
             h("span", {}, `${a.numero || "Sin número"} · ${fechaCorta(a.fecha)}`),
             h("span", {}, formatoEuros(totales(a.lineas, a.retencion).total)))))))
@@ -517,7 +533,8 @@ async function vistaEditor(alb) {
       }, h("strong", {}, x.nombre), h("small", {}, [x.nif, x.poblacion, x.origen].filter(Boolean).join(" · ")))));
     };
     pinta();
-    if (navigator.onLine && ajustes.claveApp && nq.length >= 2) {
+    // Sin Holded no se le pregunta nada (solo los clientes guardados en el móvil).
+    if (conHolded() && navigator.onLine && ajustes.claveApp && nq.length >= 2) {
       clearTimeout(buscarTimer);
       buscarTimer = setTimeout(async () => {
         try {
@@ -825,7 +842,7 @@ function vistaFirma(alb) {
       if (!alb.numero) alb.numero = await db.siguienteNumero(ajustes.prefijo, anio);
       alb.negocio = { ...ajustes.negocio };
       alb.perfil = ajustes.perfil; // los textos del PDF firmado no cambian si luego se cambia de perfil
-      alb.estado = "pendiente";
+      alb.estado = conHolded() ? "pendiente" : "firmado";
       alb.error = "";
       alb.stockDescontado = true;
       alb.actualizado = new Date().toISOString();
@@ -867,7 +884,31 @@ function vistaDetalle(alb) {
   const c = alb.cliente;
   const tel = telefonoWhatsApp(c.telefono);
 
+  // Reabre un albarán firmado para corregirlo (mismo número; el cliente vuelve a firmar).
+  const reabrir = async (estadoEsperado) => {
+    if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
+    alb.estado = "borrador";
+    alb.firma = "";
+    alb.firmadoEn = "";
+    // Se devuelve el material al stock (a la vez que se reabre): se descontará al firmar de nuevo.
+    const devolver = alb.stockDescontado ? alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })) : [];
+    alb.stockDescontado = false;
+    alb.actualizado = new Date().toISOString();
+    if (!(await db.guardarAlbaranYStock(alb, devolver, estadoEsperado))) { ir(`/albaran/${alb.id}`); return; }
+    ir(`/editar/${alb.id}`);
+  };
   const estadoHolded = {
+    // Sin Holded: firmado y a la espera del volcado (o ya volcado, y entonces ya no se corrige aquí).
+    firmado: alb.volcadoEn
+      ? h("div", { class: "tarjeta estado-alb ok" },
+        h("strong", {}, "Volcado ✓"),
+        h("p", {}, `Exportado el ${new Date(alb.volcadoEn).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })} para tu programa de facturación. Si hay que cambiar algo, corrígelo allí.`))
+      : h("div", { class: "tarjeta estado-alb aviso" },
+        h("strong", {}, "Firmado · pendiente de volcar"),
+        h("p", {}, "Está guardado en el móvil. Pásalo a tu programa de facturación desde «Volcado a facturación»."),
+        h("div", { class: "botones-linea" },
+          h("button", { class: "btn secundario", onclick: () => ir("/volcado") }, "Ir al volcado"),
+          h("button", { class: "btn secundario", onclick: () => reabrir("firmado") }, "Corregir"))),
     pendiente: h("div", { class: "tarjeta estado-alb aviso" },
       h("strong", {}, navigator.onLine ? "Pendiente de enviar a Holded" : "Guardado en el móvil · sin cobertura"),
       h("p", {}, alb.error || "Se enviará solo en cuanto haya conexión. No hace falta que hagas nada."),
@@ -878,21 +919,7 @@ function vistaDetalle(alb) {
       h("div", { class: "botones-linea" },
         // Si el albarán ya existe en Holded (p. ej. solo falló el PDF), corregirlo aquí lo dejaría
         // sin poder enviarse y perdería la firma: se reintenta tal cual o se arregla en Holded.
-        !alb.yaEnHolded && h("button", {
-          class: "btn secundario",
-          onclick: async () => {
-            if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
-            alb.estado = "borrador";
-            alb.firma = "";
-            alb.firmadoEn = "";
-            // Se devuelve el material al stock (a la vez que se reabre): se descontará al firmar de nuevo.
-            const devolver = alb.stockDescontado ? alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })) : [];
-            alb.stockDescontado = false;
-            alb.actualizado = new Date().toISOString();
-            if (!(await db.guardarAlbaranYStock(alb, devolver, "error"))) { ir(`/albaran/${alb.id}`); return; }
-            ir(`/editar/${alb.id}`);
-          },
-        }, "Corregir"),
+        !alb.yaEnHolded && h("button", { class: "btn secundario", onclick: () => reabrir("error") }, "Corregir"),
         h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo"))),
     enviado: h("div", { class: "tarjeta estado-alb ok" },
       h("strong", {}, "Ya está en Holded ✓"),
@@ -961,6 +988,9 @@ async function vistaAjustes() {
   const inputDesp = h("input", { value: String(ajustes.precioDesplazamiento).replace(".", ","), inputmode: "decimal" });
   const inputMargen = h("input", { value: String(ajustes.margen).replace(".", ","), inputmode: "decimal" });
   const selPerfil = h("select", {}, Object.entries(PERFILES).map(([k, p]) => h("option", { value: k, selected: k === (ajustes.perfil || PERFIL_DEFECTO) }, p.nombre)));
+  const selDestino = h("select", {},
+    h("option", { value: "holded", selected: conHolded() }, "Holded (se envían solos)"),
+    h("option", { value: "volcado", selected: !conHolded() }, "Sin Holded: volcado a mi programa de facturación"));
   const chkDictado = h("input", { type: "checkbox", checked: ajustes.dictadoServicios === true });
   const inputServicios = h("textarea", { rows: 4, placeholder: "Primera visita: 60\nSesión de seguimiento: 50" }, escribirServicios(ajustes.servicios));
   // Lo de oficio (hora, desplazamiento, margen) o lo de servicios, según el tipo de actividad.
@@ -1005,6 +1035,16 @@ async function vistaAjustes() {
     ajustes.margen = margen;
     const servicios = leerServicios(inputServicios.value);
     if (servicios.some((sv) => !(sv.precio >= 0 && sv.precio <= 1e7))) { aviso("Revisa los precios de los servicios.", "error"); return false; }
+    // Al cambiar de destino, los firmados que aún no han salido pasan al nuevo: a «firmado» para el
+    // volcado, o a la cola de Holded. Los ya volcados o ya en Holded no se tocan.
+    const destino = selDestino.value === "volcado" ? "volcado" : "holded";
+    if (destino !== (ajustes.destino === "volcado" ? "volcado" : "holded")) {
+      for (const a of await db.todos("albaranes")) {
+        if (destino === "volcado" && (a.estado === "pendiente" || a.estado === "error") && !a.yaEnHolded) { a.estado = "firmado"; a.error = ""; await db.guardar("albaranes", a); }
+        if (destino === "holded" && a.estado === "firmado" && !a.volcadoEn) { a.estado = "pendiente"; await db.guardar("albaranes", a); }
+      }
+    }
+    ajustes.destino = destino;
     ajustes.perfil = selPerfil.value;
     ajustes.servicios = servicios;
     ajustes.dictadoServicios = chkDictado.checked;
@@ -1029,8 +1069,10 @@ async function vistaAjustes() {
     if (!navigator.onLine) { resultadoPrueba.textContent = "Ahora no hay conexión. Pruébalo con cobertura."; return; }
     resultadoPrueba.textContent = "Comprobando…";
     try {
-      const r = await llamarAPI("/api/holded/estado");
-      resultadoPrueba.textContent = r.ok ? `✓ Conectado con Holded.${avisoImpuestos(r.datos.impuestos)}` : `✗ ${r.datos.error || `Error ${r.status}`}`;
+      // Sin Holded solo hace falta comprobar la clave de la app (Holded ni está configurado).
+      const r = await llamarAPI(conHolded() ? "/api/holded/estado" : "/api/config");
+      const bien = conHolded() ? `✓ Conectado con Holded.${avisoImpuestos(r.datos.impuestos)}` : "✓ La clave de la app es correcta.";
+      resultadoPrueba.textContent = r.ok ? bien : `✗ ${r.datos.error || `Error ${r.status}`}`;
       if (r.ok) sincronizar();
     } catch {
       resultadoPrueba.textContent = "✗ No se ha podido conectar.";
@@ -1100,7 +1142,8 @@ async function vistaAjustes() {
       campo("Texto si va exento de IVA (sale en el PDF)", ent(n, "textoExencion", { placeholder: "Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992)." })),
       campo("Retención de IRPF que te aplican las empresas", selRet, "Se propone sola en los albaranes a clientes con CIF (empresas, mutuas…). Ninguna si no te retienen.")),
     h("section", { class: "tarjeta" },
-      h("h3", {}, "Conexión con Holded"),
+      h("h3", {}, "Destino y conexión"),
+      campo("Destino de los albaranes", selDestino, "Sin Holded, los albaranes firmados se quedan en el móvil y los pasas a tu programa con «Volcado a facturación» (CSV para Access/Excel o JSON)."),
       campo("Clave de la app", inputClave, "La misma que pusiste en Netlify como APP_CLAVE."),
       h("button", { class: "btn secundario", onclick: probar }, "Guardar y probar conexión"),
       resultadoPrueba),
@@ -1128,6 +1171,7 @@ async function render() {
   // Sin compras ni catálogo en el perfil, esas pantallas no existen.
   if (["compras", "compra", "catalogo", "articulo"].includes(seccion) && !perfilActual().compras) { ir("/"); return; }
   if (seccion === "ajustes") contenido = await vistaAjustes();
+  else if (seccion === "volcado") contenido = await vistaVolcado(ctx);
   else if (seccion === "compras") contenido = await vistaCompras(ctx);
   else if (seccion === "compra") contenido = await vistaCompra(ctx, id);
   else if (seccion === "catalogo") contenido = await vistaCatalogo(ctx);
@@ -1156,7 +1200,7 @@ async function iniciar() {
   await cargarAjustes();
   db.pedirPersistencia();
   document.getElementById("btn-ajustes").addEventListener("click", () => ir("/ajustes"));
-  barraEstado.addEventListener("click", () => sincronizar({ manual: true }));
+  barraEstado.addEventListener("click", () => (conHolded() ? sincronizar({ manual: true }) : ir("/volcado")));
   window.addEventListener("hashchange", render);
   for (const b of pestanas.querySelectorAll("button")) b.addEventListener("click", () => ir(b.dataset.ruta));
   window.addEventListener("online", () => { pintarEstado(); sincronizar(); tareasIA(); });
