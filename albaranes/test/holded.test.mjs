@@ -399,3 +399,16 @@ test("configInicial: lee las variables APP_* y descarta las mal puestas", async 
   assert.deepEqual(configInicial({ APP_PERFIL: "otro", APP_IVA: "4", APP_RETENCION: "19", APP_PREFIJO: "A-1" }), {});
   assert.deepEqual(configInicial({ APP_IVA: "", APP_RETENCION: " " }), {}); // vacías: no son «0»
 });
+
+test("GET /api/config pide la clave de la app (los datos del profesional no son públicos)", async () => {
+  process.env.APP_CLAVE = "clave-de-prueba";
+  process.env.APP_NEGOCIO_NOMBRE = "Cristóbal Villalonga Melis";
+  const { default: handler } = await import("../functions/config.mjs");
+  const sin = await handler(new Request("https://x/api/config"));
+  assert.equal(sin.status, 401);
+  assert.ok(!(await sin.text()).includes("Villalonga"));
+  const con = await handler(new Request("https://x/api/config", { headers: { "x-clave-app": "clave-de-prueba" } }));
+  assert.equal(con.status, 200);
+  assert.equal((await con.json()).negocio.nombre, "Cristóbal Villalonga Melis");
+  delete process.env.APP_CLAVE; delete process.env.APP_NEGOCIO_NOMBRE;
+});

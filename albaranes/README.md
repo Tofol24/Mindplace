@@ -144,9 +144,12 @@ mezclan: viven en el móvil de cada uno y en su cuenta de Holded.
 1. Crea un sitio nuevo como en «Publicar la app en Netlify» (mismo repositorio,
    **Base directory** = `albaranes`), con sus propias `HOLDED_API_KEY` y
    `APP_CLAVE`.
-2. Añade, si quieres, sus **Ajustes de partida** como variables de entorno. El
-   móvil los toma la primera vez que abre la app; después se cambian en Ajustes.
-   Ninguno es secreto: son los datos que salen en el PDF.
+2. Añade, si quieres, sus **Ajustes de partida** como variables de entorno. Un
+   móvil nuevo los recibe en cuanto se escribe la **clave de la app** en Ajustes
+   (sin la clave no se dan: incluyen el NIF y la dirección). Después se cambian
+   en Ajustes, y unos Ajustes ya guardados en un móvil nunca se sobrescriben.
+   Sin estas variables, cada uno pone sus datos en Ajustes: la app no firma
+   ningún albarán sin el nombre del negocio.
 
    | Variable | Ejemplo |
    |---|---|

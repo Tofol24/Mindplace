@@ -1,10 +1,12 @@
 // GET /api/config · Ajustes de partida de esta instalación (variables APP_* de Netlify).
-// El móvil los pide la primera vez que se abre la app; luego mandan sus Ajustes.
-// Sin clave de la app: no hay secretos (son los datos que salen en el PDF) y hacen
-// falta antes de haber escrito la clave.
-import { json } from "../lib/http.mjs";
+// Un móvil nuevo los pide en cuanto tiene la clave de la app; luego mandan sus Ajustes.
+// Con clave: el NIF, la dirección o el teléfono del profesional no se dan a cualquiera.
+import { claveCorrecta, json } from "../lib/http.mjs";
 import { configInicial } from "../lib/config.mjs";
 
-export default async () => json(configInicial(process.env));
+export default async (req) => {
+  if (!claveCorrecta(req)) return json({ error: "La clave de la app no es correcta", reintentar: false }, 401);
+  return json(configInicial(process.env));
+};
 
 export const config = { path: "/api/config" };

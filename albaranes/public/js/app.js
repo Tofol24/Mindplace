@@ -25,8 +25,10 @@ import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
 import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, escribirServicios, leerServicios, perfil } from "./perfiles.js";
 
 const AJUSTES_DEF = {
+  // En blanco: cada profesional pone los suyos (en Ajustes o con las variables APP_* de su
+  // instalación). Sin nombre no se firma nada, para que ningún PDF salga a nombre de otro.
   negocio: {
-    nombre: "Pere Plomer Bennassar", nif: "", direccion: "", telefono: "", email: "pere.plomer@gmail.com",
+    nombre: "", nif: "", direccion: "", telefono: "", email: "",
     // Sale en el PDF si alguna línea va exenta de IVA.
     textoExencion: "Operación exenta de IVA.",
   },
@@ -53,32 +55,35 @@ const pestanas = document.getElementById("pestanas");
 // Datos
 // ---------------------------------------------------------------------------
 
-/** Ajustes de partida de esta instalación (variables APP_* de Netlify), o null si no tiene. */
-async function pedirConfigInicial() {
-  if (!navigator.onLine) return null;
-  try {
-    const res = await fetch("/api/config", { cache: "no-store", signal: AbortSignal.timeout(2500) });
-    const datos = res.ok ? await res.json() : null;
-    return datos && typeof datos === "object" && Object.keys(datos).length ? datos : null;
-  } catch {
-    return null;
-  }
+async function cargarAjustes() {
+  const guardados = await db.leerKV("ajustes", null);
+  ajustes = { ...structuredClone(AJUSTES_DEF), ...(guardados || {}), negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) } };
+  // Un móvil nuevo espera los Ajustes de partida de su instalación (llegan con la clave de la app).
+  // Unos Ajustes ya guardados antes son de quien usa el móvil: nunca se sobrescriben.
+  if (!guardados) ajustes.configInstalacion = "pendiente";
+  else if (!guardados.configInstalacion) ajustes.configInstalacion = "previa";
 }
 
-async function cargarAjustes() {
-  let guardados = await db.leerKV("ajustes", null);
-  if (!guardados) {
-    // Primera vez en este móvil: si la instalación trae sus Ajustes de partida, se usan y se
-    // guardan (su negocio entero: no se mezcla con los datos por defecto de otro profesional).
-    const inicial = await pedirConfigInicial();
-    if (inicial) {
-      ajustes = { ...structuredClone(AJUSTES_DEF), ...inicial, negocio: { ...(inicial.negocio || AJUSTES_DEF.negocio) } };
-      await guardarAjustes();
-      return;
-    }
-    guardados = {};
-  }
-  ajustes = { ...structuredClone(AJUSTES_DEF), ...guardados, negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) } };
+/**
+ * Trae, una sola vez, los Ajustes de partida de la instalación (variables APP_* de Netlify).
+ * Necesita la clave de la app: el NIF o la dirección del profesional no son públicos.
+ * Devuelve { aplicada, error }; con error se reintenta más adelante.
+ */
+async function aplicarConfigInstalacion() {
+  if (ajustes.configInstalacion !== "pendiente" || !ajustes.claveApp || !navigator.onLine) return { aplicada: false, error: "" };
+  let r;
+  try { r = await llamarAPI("/api/config"); } catch { r = null; }
+  if (!r || (!r.ok && r.status !== 401)) return { aplicada: false, error: "No se han podido cargar los datos de esta instalación. Se reintentará con conexión." };
+  if (r.status === 401) return { aplicada: false, error: "La clave de la app no es correcta." };
+  const c = r.datos && typeof r.datos === "object" ? r.datos : {};
+  const { negocio, ...resto } = c;
+  ajustes = {
+    ...ajustes, ...resto,
+    ...(negocio ? { negocio: { ...AJUSTES_DEF.negocio, ...negocio } } : {}),
+    configInstalacion: Object.keys(c).length ? "aplicada" : "ninguna",
+  };
+  await guardarAjustes();
+  return { aplicada: Object.keys(c).length > 0, error: "" };
 }
 const guardarAjustes = () => db.escribirKV("ajustes", ajustes);
 const perfilActual = () => perfil(ajustes.perfil);
@@ -391,7 +396,14 @@ async function vistaLista() {
   for (const a of vacios) { try { await db.borrar("albaranes", a.id); } catch { /* se intentará la próxima vez */ } }
   lista = lista.filter((a) => !vacios.includes(a)).sort((a, b) => b.actualizado.localeCompare(a.actualizado));
   const avisos = [];
-  const falta = [!ajustes.negocio.nif && "pon tu NIF (sale en el PDF)", !ajustes.claveApp && "conecta Holded con la clave de la app"].filter(Boolean);
+  const falta = [
+    !ajustes.negocio.nombre && !ajustes.negocio.nif && "pon tu nombre y tu NIF (salen en el PDF)",
+    !ajustes.negocio.nombre && ajustes.negocio.nif && "pon tu nombre (sale en el PDF)",
+    ajustes.negocio.nombre && !ajustes.negocio.nif && "pon tu NIF (sale en el PDF)",
+    !ajustes.claveApp && (ajustes.configInstalacion === "pendiente"
+      ? "escribe la clave de la app (con ella se cargan los datos de esta instalación)"
+      : "conecta Holded con la clave de la app"),
+  ].filter(Boolean);
   if (falta.length) {
     avisos.push(h("div", { class: "tarjeta aviso-tarjeta" },
       h("strong", {}, "Primer paso: tus datos"),
@@ -611,6 +623,7 @@ async function vistaEditor(alb) {
 
   const error = h("p", { class: "error-form", role: "alert" });
   const irAFirma = async () => {
+    if (!ajustes.negocio.nombre) { error.textContent = "Antes de firmar, pon el nombre de tu negocio en Ajustes: sale en el PDF."; return; }
     const fallos = [];
     if (!c.nombre.trim()) fallos.push("el nombre del cliente");
     if (!alb.lineas.length) fallos.push("al menos una línea");
@@ -780,6 +793,7 @@ function vistaFirma(alb) {
   const terminar = async () => {
     if (terminando) return;
     if (!hayTrazo) { error.textContent = "Falta la firma del cliente."; return; }
+    if (!ajustes.negocio.nombre) { error.textContent = "Falta el nombre de tu negocio en Ajustes: sale en el PDF."; return; }
     terminando = true;
     try {
       const anio = alb.fecha.slice(0, 4);
@@ -979,6 +993,10 @@ async function vistaAjustes() {
     ajustes.negocio = n;
     await guardarAjustes();
     if (sig !== siguiente) await db.fijarProximoDelAnio(anio, sig);
+    // Móvil nuevo: con la clave ya puesta, llegan los datos de esta instalación.
+    const cfg = await aplicarConfigInstalacion();
+    if (cfg.aplicada) { aviso("Se han cargado los datos de esta instalación ✓ Revísalos."); setTimeout(render, 0); }
+    else if (cfg.error) aviso(cfg.error, "error");
     pintarEstado();
     return true;
   };
@@ -1125,6 +1143,8 @@ async function iniciar() {
   setInterval(() => { sincronizar(); tareasIA(); }, 60000);
   await render();
   pintarEstado();
+  aplicarConfigInstalacion().then((r) => { if (r.aplicada) render(); });
+  window.addEventListener("online", () => aplicarConfigInstalacion().then((r) => { if (r.aplicada) render(); }));
   sincronizar();
   tareasIA();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
