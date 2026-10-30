@@ -73,3 +73,11 @@ test("jsonVolcado: formato y versión, números como números", () => {
   assert.equal(j.albaranes[0].total, 2354.5);
   assert.equal(j.albaranes[0].lineas[1].cantidad, 41);
 });
+
+test("las líneas cuadran con la cabecera (mismo redondeo que el PDF)", () => {
+  const a = { ...mutua(), retencion: 0, lineas: [{ concepto: "x", cantidad: 1.005, precio: 1, iva: 0 }, { concepto: "y", cantidad: 3, precio: 0.335, iva: 21 }] };
+  const d = datosVolcado(a);
+  const sumaLineas = Math.round(d.lineas.reduce((s, l) => s + l.base, 0) * 100) / 100;
+  assert.equal(sumaLineas, d.baseImponible);
+  assert.equal(d.lineas[0].base, 1.01);
+});

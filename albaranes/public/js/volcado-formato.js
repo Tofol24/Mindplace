@@ -10,11 +10,12 @@
    Sin DOM: se puede probar con Node.
 */
 
-import { esEmpresa, totales } from "./calculos.js";
+import { esEmpresa, importeLinea, redondear, totales } from "./calculos.js";
 
 export const FORMATO_VERSION = 1;
 
-const r2 = (n) => Math.round((Number(n) || 0) * 100 + Number.EPSILON) / 100;
+// Mismo redondeo que el PDF y los totales (calculos.js): las líneas cuadran con la cabecera.
+const r2 = (n) => redondear(Number(n) || 0);
 
 /** Datos de un albarán listos para volcar (el mismo objeto alimenta CSV y JSON). */
 export function datosVolcado(a) {
@@ -52,7 +53,7 @@ export function datosVolcado(a) {
     verifactuCausaExencion: exento && /\b20\b/.test(textoExencion) ? "E1" : "",
     volcadoEn: a.volcadoEn || "",
     lineas: a.lineas.map((l, i) => {
-      const base = r2((Number(l.cantidad) || 0) * (Number(l.precio) || 0));
+      const base = importeLinea(l);
       return {
         linea: i + 1,
         concepto: l.concepto,

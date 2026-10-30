@@ -74,7 +74,8 @@ export async function vistaVolcado(ctx) {
       const ahora = new Date().toISOString();
       for (const a of nuevos) {
         const actual = await db.obtener("albaranes", a.id);
-        if (actual && actual.estado !== "borrador") { actual.volcadoEn = ahora; await db.guardar("albaranes", actual); }
+        // También «actualizado»: una copia de seguridad posterior al volcado debe ganar al restaurar.
+        if (actual && actual.estado !== "borrador") { actual.volcadoEn = ahora; actual.actualizado = ahora; await db.guardar("albaranes", actual); }
       }
       aviso(`${nuevos.length === 1 ? "Albarán marcado" : `${nuevos.length} albaranes marcados`} como volcados ✓`);
       ctx.pintarEstado();

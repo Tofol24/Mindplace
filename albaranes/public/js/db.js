@@ -172,12 +172,14 @@ export function moverStock(movimientos) {
  * Guarda el albarán y mueve el stock a la vez (o nada). Con `siEstado`, solo si el
  * albarán guardado sigue en ese estado: así no se firma ni se descuenta dos veces.
  */
-export function guardarAlbaranYStock(alb, movimientos, siEstado) {
+export function guardarAlbaranYStock(alb, movimientos, siEstado, { sinVolcar = false } = {}) {
   return transaccion(["albaranes", "articulos"], (t, res) => {
     const albaranes = t.objectStore("albaranes");
     const r = albaranes.get(alb.id);
     r.onsuccess = () => {
       if (siEstado && r.result && r.result.estado !== siEstado) return;
+      // Reabrir un albarán ya volcado al programa de facturación dejaría allí los datos viejos.
+      if (sinVolcar && r.result?.volcadoEn) return;
       albaranes.put(alb);
       aplicarMovimientos(t.objectStore("articulos"), movimientos, new Date().toISOString());
       res.hecho = true;

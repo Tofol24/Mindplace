@@ -886,6 +886,7 @@ function vistaDetalle(alb) {
 
   // Reabre un albarán firmado para corregirlo (mismo número; el cliente vuelve a firmar).
   const reabrir = async (estadoEsperado) => {
+    if (alb.volcadoEn) { aviso("Este albarán ya está volcado a tu programa de facturación: corrígelo allí.", "error"); return; }
     if (!confirm("Se reabrirá para corregirlo, con el mismo número. El cliente tendrá que volver a firmar. ¿Seguir?")) return;
     alb.estado = "borrador";
     alb.firma = "";
@@ -894,7 +895,7 @@ function vistaDetalle(alb) {
     const devolver = alb.stockDescontado ? alb.lineas.map((l) => ({ articuloId: l.articuloId, cantidad: Number(l.cantidad) })) : [];
     alb.stockDescontado = false;
     alb.actualizado = new Date().toISOString();
-    if (!(await db.guardarAlbaranYStock(alb, devolver, estadoEsperado))) { ir(`/albaran/${alb.id}`); return; }
+    if (!(await db.guardarAlbaranYStock(alb, devolver, estadoEsperado, { sinVolcar: true }))) { ir(`/albaran/${alb.id}`); return; }
     ir(`/editar/${alb.id}`);
   };
   const estadoHolded = {
@@ -919,7 +920,7 @@ function vistaDetalle(alb) {
       h("div", { class: "botones-linea" },
         // Si el albarán ya existe en Holded (p. ej. solo falló el PDF), corregirlo aquí lo dejaría
         // sin poder enviarse y perdería la firma: se reintenta tal cual o se arregla en Holded.
-        !alb.yaEnHolded && h("button", { class: "btn secundario", onclick: () => reabrir("error") }, "Corregir"),
+        !alb.yaEnHolded && !alb.volcadoEn && h("button", { class: "btn secundario", onclick: () => reabrir("error") }, "Corregir"),
         h("button", { class: "btn secundario", onclick: () => sincronizar({ manual: true }) }, "Volver a intentarlo"))),
     enviado: h("div", { class: "tarjeta estado-alb ok" },
       h("strong", {}, "Ya está en Holded ✓"),
@@ -1039,6 +1040,10 @@ async function vistaAjustes() {
     // volcado, o a la cola de Holded. Los ya volcados o ya en Holded no se tocan.
     const destino = selDestino.value === "volcado" ? "volcado" : "holded";
     if (destino !== (ajustes.destino === "volcado" ? "volcado" : "holded")) {
+      // Con un envío a Holded en marcha, su respuesta pisaría el cambio: se espera a que acabe.
+      if (enviando) { aviso("Se está enviando a Holded ahora mismo. Espera unos segundos y vuelve a guardar.", "error"); return false; }
+      // Se cambia ya (sin esperas entre medias): desde aquí no puede empezar otra ronda de envío.
+      ajustes.destino = destino;
       for (const a of await db.todos("albaranes")) {
         if (destino === "volcado" && (a.estado === "pendiente" || a.estado === "error") && !a.yaEnHolded) { a.estado = "firmado"; a.error = ""; await db.guardar("albaranes", a); }
         if (destino === "holded" && a.estado === "firmado" && !a.volcadoEn) { a.estado = "pendiente"; await db.guardar("albaranes", a); }
@@ -1097,7 +1102,15 @@ async function vistaAjustes() {
     for (const a of datos.albaranes) {
       if (!a || typeof a.id !== "string" || !Array.isArray(a.lineas) || !a.cliente) continue;
       const actual = await db.obtener("albaranes", a.id);
-      if (!actual || String(a.actualizado) > String(actual.actualizado)) { await db.guardar("albaranes", a); nuevos++; }
+      // La marca de volcado no se pierde nunca (si no, se facturaría dos veces): gana la más antigua.
+      const volcadoEn = [a.volcadoEn, actual?.volcadoEn].filter(Boolean).sort()[0];
+      if (!actual || String(a.actualizado) > String(actual.actualizado)) {
+        if (volcadoEn) a.volcadoEn = volcadoEn;
+        await db.guardar("albaranes", a); nuevos++;
+      } else if (volcadoEn && !actual.volcadoEn) {
+        actual.volcadoEn = volcadoEn;
+        await db.guardar("albaranes", actual);
+      }
       const m = /^[A-Z0-9]+-(\d{4})-(\d+)$/.exec(a.numero || "");
       if (m && (await db.proximoDelAnio(m[1])) <= Number(m[2])) await db.fijarProximoDelAnio(m[1], Number(m[2]) + 1);
     }
