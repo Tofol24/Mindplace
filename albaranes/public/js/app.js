@@ -1099,10 +1099,21 @@ async function vistaAjustes() {
     if (!confirm(`La copia tiene ${datos.albaranes.length} albaranes. ¿Restaurarla en este móvil?`
       + (hayCatalogo ? "\n\nOjo: este móvil ya tiene catálogo. Sus artículos no se tocan, así que el stock puede no cuadrar con las compras de la copia. Lo ideal es restaurar en un móvil vacío." : ""))) return;
     let nuevos = 0;
+    let conflictos = 0;
+    // Lo que se manda al programa de facturación: si dos versiones difieren en esto, no son el mismo albarán volcado.
+    const contenido = (x) => JSON.stringify([x.numero, x.fecha, x.firmadoEn, x.retencion || 0, x.cliente?.nombre, x.cliente?.nif,
+      (x.lineas || []).map((l) => [l.concepto, Number(l.cantidad), Number(l.precio), Number(l.iva)])]);
     for (const a of datos.albaranes) {
       if (!a || typeof a.id !== "string" || !Array.isArray(a.lineas) || !a.cliente) continue;
       const actual = await db.obtener("albaranes", a.id);
-      // La marca de volcado no se pierde nunca (si no, se facturaría dos veces): gana la más antigua.
+      // Una versión volcada y otra con datos distintos (p. ej. de otro móvil): se queda la volcada,
+      // que es la que tiene el programa de facturación. La marca nunca pasa a una versión no exportada.
+      if (actual && (a.volcadoEn || actual.volcadoEn) && contenido(a) !== contenido(actual)) {
+        if (a.volcadoEn && !actual.volcadoEn) { await db.guardar("albaranes", a); nuevos++; }
+        conflictos++;
+        continue;
+      }
+      // Mismo contenido: la marca de volcado no se pierde nunca (si no, se facturaría dos veces).
       const volcadoEn = [a.volcadoEn, actual?.volcadoEn].filter(Boolean).sort()[0];
       if (!actual || String(a.actualizado) > String(actual.actualizado)) {
         if (volcadoEn) a.volcadoEn = volcadoEn;
@@ -1128,7 +1139,9 @@ async function vistaAjustes() {
       ajustes = { ...ajustes, ...datos.ajustes, claveApp: ajustes.claveApp, negocio: { ...ajustes.negocio, ...datos.ajustes.negocio } };
       await guardarAjustes();
     }
-    aviso(`Copia restaurada: ${nuevos} albaranes ✓`);
+    if (conflictos) {
+      alert(`Copia restaurada: ${nuevos} albaranes. ${conflictos === 1 ? "Un albarán no coincidía" : `${conflictos} albaranes no coincidían`} con ${conflictos === 1 ? "el ya volcado" : "los ya volcados"} a facturación: se ha dejado la versión volcada, que es la que tiene tu programa. Revísalo allí si hace falta.`);
+    } else aviso(`Copia restaurada: ${nuevos} albaranes ✓`);
     ir("/");
   };
   const inputCopia = h("input", { type: "file", accept: "application/json,.json", hidden: true, onchange: (e) => { const f = e.target.files?.[0]; if (f) restaurar(f); } });
