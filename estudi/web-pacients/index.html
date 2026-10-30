@@ -215,6 +215,7 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .pas.falta .ico{background:transparent;color:var(--muted);border:2px dashed var(--line)}
 .sol{margin:8px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;white-space:pre-wrap}
 .res{font-family:var(--f-mono);background:var(--soft);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.res.ej{white-space:normal;overflow-wrap:anywhere;max-width:100%}
 .formulas{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
 .formula{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .formula .expr{font-family:var(--f-mono);font-size:1.2rem;background:var(--soft);padding:8px 10px;border-radius:8px;overflow-x:auto;white-space:nowrap}
@@ -1536,11 +1537,13 @@ function viewGuide(t) {
   const st = conceptStatus(t);
   const colors = ["var(--s1)","var(--s5)","var(--s3)","var(--s4)","var(--s2)","var(--s6)"];
   return `
-    <section class="panel"><div class="row"><h3>Resum ordenat</h3><span class="spacer"></span><span class="label">Fet el ${fmtDate(g.generat)}</span></div>
+    <section class="panel"><div class="row"><h3>Resum ordenat</h3><span class="spacer"></span><span class="label">Fet el ${fmtDate(g.generat)}</span>
+      <button class="btn sm" data-act="guiaPdf" type="button" title="Obre la impressió: des d'allà la pots imprimir o desar com a PDF">🖨 PDF / imprimir</button>
+      <button class="btn sm" data-act="guiaWord" type="button" title="Document de Word (.docx) per editar-lo a Word, Google Docs o LibreOffice">⬇ Word</button></div>
       <div class="resum">${arr(g.resum).map(r => `<section><h3>${esc(r.apartat)}</h3><ul>${arr(r.punts).map(p => `<li>${esc(p)}</li>`).join("")}</ul></section>`).join("")}</div>
     </section>
     ${arr(g.formules).length ? `<section class="panel"><h3>Fórmules</h3><div class="formulas">${arr(g.formules).map(f => `<div class="formula"><span class="label">${esc(f.nom)}</span><div class="expr">${esc(f.expressio)}</div>${f.variables ? `<p class="small">${esc(f.variables)}</p>` : ""}${f.quan ? `<p class="muted small">${esc(f.quan)}</p>` : ""}</div>`).join("")}</div></section>` : ""}
-    ${arr(g.regles).length ? `<section class="panel"><h3>Regles</h3><div class="formulas">${arr(g.regles).map(r => `<div class="formula"><span class="label">${esc(r.nom)}</span><p>${esc(r.regla)}</p>${arr(r.exemples).length ? `<div class="row" style="gap:6px">${arr(r.exemples).map(x => `<span class="res">${esc(x)}</span>`).join("")}</div>` : ""}${r.excepcions ? `<p class="muted small"><strong>Excepcions:</strong> ${esc(r.excepcions)}</p>` : ""}</div>`).join("")}</div>
+    ${arr(g.regles).length ? `<section class="panel"><h3>Regles</h3><div class="formulas">${arr(g.regles).map(r => `<div class="formula"><span class="label">${esc(r.nom)}</span><p>${esc(r.regla)}</p>${arr(r.exemples).length ? `<div class="row" style="gap:6px">${arr(r.exemples).map(x => `<span class="res ej">${esc(x)}</span>`).join("")}</div>` : ""}${r.excepcions ? `<p class="muted small"><strong>Excepcions:</strong> ${esc(r.excepcions)}</p>` : ""}</div>`).join("")}</div>
       ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus d'exercici</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
     ${arr(g.metodes).length ? `<section class="panel"><h3>Mètodes pas a pas</h3><div class="resum">${arr(g.metodes).map(m => `<section><h3>${esc(m.nom)}</h3><ol>${arr(m.passos).map(x => `<li>${esc(x)}</li>`).join("")}</ol></section>`).join("")}</div>
       ${arr(g.tipus_problemes).length ? `<p class="small"><span class="label">Tipus de problemes</span> ${arr(g.tipus_problemes).map(x => `<span class="chip" title="${esc(x.descripcio)}">${esc(x.nom)}</span>`).join(" ")}</p>` : ""}</section>` : ""}
@@ -1923,10 +1926,125 @@ async function portalLink(btn) {
 }
 async function exportAll() {
   const data = JSON.stringify({app: "explica-ho", v: 1, exportat: Date.now(), subjects: S.subjects, temes: S.temes, mats: S.mats});
-  const name = `explica-ho-copia-${today()}.json`;
+  await baixaFitxer(`explica-ho-copia-${today()}.json`, new Blob([data], {type: "application/json"}), "No s'ha pogut descarregar la còpia");
+}
+async function baixaFitxer(name, blob, errMsg) {
   const dl = window.claude?.use ? await claude.use("downloads").catch(() => null) : null;
-  if (dl) { try { await dl.save({filename: name, data: new Blob([data], {type: "application/json"})}); } catch (e) { if (e?.code !== "declined") toast("No s'ha pogut descarregar la còpia"); } return; }
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"})); a.download = name; document.body.append(a); a.click(); a.remove();
+  if (dl) { try { await dl.save({filename: name, data: blob}); } catch (e) { if (e?.code !== "declined") toast(errMsg); } return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+// Nom de fitxer sense accents ni signes: amb accents, alguns navegadors el descarreguen com a «download».
+const nomFitxer = (s) => String(s || "guia").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9 ._-]+/g, "").replace(/\s+/g, " ").trim().slice(0, 60) || "guia";
+
+/* ── Exportar la guia: PDF (impressió del navegador) i Word (.docx) ──
+   Els dos surten de la mateixa llista de blocs, perquè tinguin el mateix contingut.
+   Blocs: {k: title|h1|h2|p|li, t: text, lab: inici en negreta, n: sagnat, muted, mono} */
+function guiaBlocs(t) {
+  const g = t.guia, s = getSubj(t.subjId), B = [];
+  const h1 = (x) => B.push({k: "h1", t: x}), h2 = (x) => x && B.push({k: "h2", t: x});
+  const p = (x, o = {}) => (x || o.lab) && B.push({k: "p", t: x || "", ...o});
+  const li = (x, o = {}) => (x || o.lab) && B.push({k: "li", t: x || "", n: 0, ...o});
+  B.push({k: "title", t: t.titol});
+  p(`${s.nom} · Guia feta el ${new Date(g.generat || Date.now()).toLocaleDateString("ca-ES", {day: "numeric", month: "long", year: "numeric"})}`, {muted: true});
+  h1("Resum ordenat");
+  arr(g.resum).forEach(r => { h2(r.apartat); arr(r.punts).forEach(x => li(x)); });
+  if (arr(g.formules).length) { h1("Fórmules"); g.formules.forEach(f => { h2(f.nom); p(f.expressio, {mono: true}); p(f.variables); p(f.quan, {muted: true}); }); }
+  if (arr(g.regles).length) {
+    h1("Regles");
+    g.regles.forEach(r => { h2(r.nom); p(r.regla); if (arr(r.exemples).length) { p("", {lab: "Exemples:"}); r.exemples.forEach(x => li(x)); } if (r.excepcions) p(r.excepcions, {lab: "Excepcions: "}); });
+  }
+  if (arr(g.metodes).length) { h1("Mètodes pas a pas"); g.metodes.forEach(m => { h2(m.nom); arr(m.passos).forEach((x, i) => li(x, {lab: (i + 1) + ". "})); }); }
+  if (arr(g.tipus_problemes).length) { h1(isLang(s) ? "Tipus d'exercici" : "Tipus de problemes"); g.tipus_problemes.forEach(x => li(x.descripcio ? " " + x.descripcio : "", {lab: x.nom + (x.descripcio ? ":" : "")})); }
+  h1("Mapa conceptual");
+  p(g.mapa?.centre || t.titol, {lab: "Idea central: "});
+  arr(g.mapa?.branques).forEach(b => { li(b.idea ? " " + b.idea : "", {lab: b.nom + (b.idea ? ":" : "")}); arr(b.fills).forEach(f => li(f.idea ? " " + f.idea : "", {lab: f.nom + (f.idea ? ":" : ""), n: 1})); });
+  if (arr(g.relacions).length) { h1("Com es relacionen les idees"); g.relacions.forEach(r => li(r.explicacio ? " " + r.explicacio : "", {lab: `${r.de} → ${r.tipus} → ${r.a}` + (r.explicacio ? ":" : "")})); }
+  h1("Conceptes clau");
+  arr(g.conceptes).forEach(c => li(c.definicio ? " " + c.definicio : "", {lab: c.nom + (c.definicio ? ":" : "")}));
+  return B;
+}
+function guiaHTMLDoc(t) {
+  let h = "", ul = false;
+  const tanca = () => { if (ul) { h += "</ul>"; ul = false; } };
+  for (const b of guiaBlocs(t)) {
+    const txt = (b.lab ? `<strong>${esc(b.lab)}</strong>` : "") + esc(b.t);
+    if (b.k === "li") { if (!ul) { h += "<ul>"; ul = true; } h += `<li${b.n ? ` style="margin-left:${b.n * 1.5}em"` : ""}>${txt}</li>`; continue; }
+    tanca();
+    if (b.k === "title") h += `<h1>${esc(b.t)}</h1>`;
+    else if (b.k === "h1") h += `<h2>${esc(b.t)}</h2>`;
+    else if (b.k === "h2") h += `<h3>${esc(b.t)}</h3>`;
+    else h += `<p class="${b.muted ? "m" : ""}${b.mono ? " mono" : ""}">${txt}</p>`;
+  }
+  tanca();
+  // Sense l'etiqueta d'obertura de l'arrel al text (l'idioma el posa imprimeixGuia): així
+  // aquesta font continua sent un fragment d'artefacte per a les comprovacions.
+  return `<!doctype html><head><meta charset="utf-8"><title>${esc(t.titol)}</title><style>
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#000;background:#fff;max-width:720px;margin:24px auto;padding:0 16px;line-height:1.45;font-size:11.5pt}
+h1{font-size:20pt;margin:0 0 4px}h2{font-size:14pt;margin:18px 0 6px;border-bottom:1px solid #888;padding-bottom:2px;break-after:avoid}
+h3{font-size:12pt;margin:10px 0 4px;break-after:avoid}p{margin:4px 0}ul{margin:2px 0 6px;padding-left:1.3em}li{margin:2px 0;break-inside:avoid}
+.m{color:#555}.mono{font-family:ui-monospace,Menlo,Consolas,monospace}@page{margin:16mm}
+</style></head><body>${h}</body>`;
+}
+function imprimeixGuia(t) {
+  const f = document.createElement("iframe");
+  f.setAttribute("aria-hidden", "true"); f.tabIndex = -1;
+  f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
+  document.body.append(f);
+  const d = f.contentDocument; d.open(); d.write(guiaHTMLDoc(t)); d.close(); d.documentElement.lang = "ca";
+  setTimeout(() => {
+    try { f.contentWindow.focus(); f.contentWindow.print(); }
+    catch (e) { toast("No s'ha pogut obrir la impressió. Descarrega el Word i imprimeix-lo des d'allà."); }
+    setTimeout(() => f.remove(), 60000);
+  }, 300);
+}
+/* Word (.docx) fet a mà: XML d'OOXML dins d'un ZIP sense compressió (cap biblioteca externa). */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u) { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipSenseCompressio(files, type) {
+  const enc = new TextEncoder(), parts = [], cent = []; let off = 0;
+  for (const f of files) {
+    const nm = enc.encode(f.name), dt = enc.encode(f.data), crc = crc32(dt);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(12, 0x21, true);
+    h.setUint32(14, crc, true); h.setUint32(18, dt.length, true); h.setUint32(22, dt.length, true); h.setUint16(26, nm.length, true);
+    parts.push(h, nm, dt);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(14, 0x21, true);
+    c.setUint32(16, crc, true); c.setUint32(20, dt.length, true); c.setUint32(24, dt.length, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    cent.push(c, nm);
+    off += 30 + nm.length + dt.length;
+  }
+  const mida = cent.reduce((a, x) => a + x.byteLength, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, mida, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...cent, e], {type});
+}
+function guiaDocx(t) {
+  const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  const x = (s) => String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+  const run = (s, o = {}) => !s ? "" : `<w:r>${o.b || o.mono || o.color ? `<w:rPr>${o.mono ? '<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>' : ""}${o.b ? "<w:b/>" : ""}${o.color ? `<w:color w:val="${o.color}"/>` : ""}</w:rPr>` : ""}<w:t xml:space="preserve">${x(s)}</w:t></w:r>`;
+  const par = (runs, pPr = "") => `<w:p>${pPr ? `<w:pPr>${pPr}</w:pPr>` : ""}${runs}</w:p>`;
+  let body = "";
+  for (const b of guiaBlocs(t)) {
+    if (b.k === "title") body += par(run(b.t), '<w:pStyle w:val="Title"/>');
+    else if (b.k === "h1") body += par(run(b.t), '<w:pStyle w:val="Heading1"/>');
+    else if (b.k === "h2") body += par(run(b.t), '<w:pStyle w:val="Heading2"/>');
+    else if (b.k === "li") body += par(run("•\t") + run(b.lab, {b: true}) + run(b.t), `<w:tabs><w:tab w:val="left" w:pos="${360 * (b.n + 1)}"/></w:tabs><w:ind w:left="${360 * (b.n + 1)}" w:hanging="300"/>`);
+    else body += par(run(b.lab, {b: true}) + run(b.t, {mono: b.mono, color: b.muted ? "555555" : null}));
+  }
+  const xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const estil = (id, nom, pPr, rPr) => `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${nom}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr>${pPr}</w:pPr><w:rPr>${rPr}</w:rPr></w:style>`;
+  return zipSenseCompressio([
+    {name: "[Content_Types].xml", data: xml + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>'},
+    {name: "_rels/.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name: "word/_rels/document.xml.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+    {name: "word/styles.xml", data: xml + `<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="ca-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>` +
+      `<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>` +
+      estil("Title", "Title", '<w:spacing w:after="120"/>', '<w:b/><w:sz w:val="40"/><w:szCs w:val="40"/>') +
+      estil("Heading1", "heading 1", '<w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="0"/>', '<w:b/><w:color w:val="1F3864"/><w:sz w:val="30"/><w:szCs w:val="30"/>') +
+      estil("Heading2", "heading 2", '<w:keepNext/><w:spacing w:before="200" w:after="80"/><w:outlineLvl w:val="1"/>', '<w:b/><w:sz w:val="24"/><w:szCs w:val="24"/>') + `</w:styles>`},
+    {name: "word/document.xml", data: xml + `<w:document xmlns:w="${W}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`}
+  ], "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 }
 // Una còpia ve d'un fitxer: es reconstrueix camp a camp, amb id segurs i tipus forçats.
 const okId = (x) => typeof x === "string" && /^[A-Za-z0-9_-]{1,60}$/.test(x);
@@ -2023,6 +2141,8 @@ document.addEventListener("click", (e) => {
       const m = {id: uid(), temaId: t.id, nom: $("#pasteName").value.trim() || "Text enganxat", tipus: "TEXT", text: txt.slice(0, MAX_MAT), creat: Date.now()};
       S.mats[m.id] = m; t.mats = [...arr(t.mats), m.id]; saveMat(m); saveTema(t); delete S.paste[t.id]; render(); break; }
     case "guide": if (!t.exemple) keepWork([t.ronda, t.exRonda], () => makeGuide(t)); break;
+    case "guiaPdf": if (t.guia) imprimeixGuia(t); break;
+    case "guiaWord": if (t.guia) baixaFitxer(nomFitxer(t.titol) + ".docx", guiaDocx(t), "No s'ha pogut descarregar el Word"); break;
     case "stop": S.busy[b.dataset.key]?.ctl.abort(); break;
     case "level": if (b.dataset.kind === "ex") { S.view.tab = "ex"; (S.exLevelSel ??= {})[t.id] = +b.dataset.l; } else { S.view.tab = "quiz"; (S.levelSel ??= {})[t.id] = +b.dataset.l; } render(); break;
     case "exAsk": if (exEvaluating(t)) { toast("Espera que acabi la correcció."); break; } keepWork(t.exRonda, () => makeExercises(t, S.exLevelSel?.[t.id] ?? recommended(t, "ex"))); break;
