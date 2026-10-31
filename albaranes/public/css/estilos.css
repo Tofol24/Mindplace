@@ -247,3 +247,7 @@ input[type="search"] { margin-bottom: 8px; }
 .fila-volcado { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px 2px; background: none; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
 .fila-volcado small { display: block; color: var(--suave); font-size: 13px; }
 .fila-volcado .importe { white-space: nowrap; font-weight: 600; }
+
+/* Vista previa del pantallazo de la cita antes de enviarlo a la IA */
+.previa-cita { margin-top: 10px; }
+.previa-cita img { display: block; max-width: 100%; max-height: 320px; margin: 0 auto 8px; border: 1px solid var(--borde); border-radius: 10px; }

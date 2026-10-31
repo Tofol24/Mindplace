@@ -12,7 +12,7 @@ import * as db from "./db.js";
 import { redondear } from "./calculos.js";
 import { precioVenta } from "./catalogo.js";
 import { reducirFoto } from "./compras.js";
-import { aviso, h } from "./ui.js";
+import { aviso, h, normalTel } from "./ui.js";
 import { dictadoPermitido, perfil } from "./perfiles.js";
 
 const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -74,13 +74,24 @@ const normCita = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f
  * cliente, la fecha si aún no tiene líneas, y añade la sesión (solo si es un servicio de la lista
  * y la cita no está marcada «No ha venido»). Devuelve el texto para el usuario.
  */
-export function aplicarCita(alb, cita, ajustes) {
+/** Clave de una cita (fecha, paciente y servicio), para no añadir dos veces la misma. */
+export const claveCita = (cita) => [cita.fecha, normCita(cita.paciente), normalTel(cita.telefono), normCita(cita.servicio || cita.servicioFueraDeLista)].join("|");
+
+export function aplicarCita(alb, cita, ajustes, { repetir = false } = {}) {
   if (!cita.esCita) return { ok: false, texto: "La imagen no parece una cita de la agenda." };
   const c = alb.cliente;
-  if (c.nombre && cita.paciente && normCita(c.nombre) !== normCita(cita.paciente)) {
+  // Que sea la misma persona: el nombre solo no basta (dos pacientes pueden llamarse igual).
+  if (c.nombre && !cita.paciente) return { ok: false, texto: "No se lee el nombre del paciente en la cita: no se puede comprobar que sea el de este albarán." };
+  if (c.nombre && normCita(c.nombre) !== normCita(cita.paciente)) {
     return { ok: false, texto: `La cita es de «${cita.paciente}» y este albarán es de «${c.nombre}». Haz un albarán nuevo para esa cita.` };
   }
+  if (c.nombre && normalTel(c.telefono).length === 9 && normalTel(cita.telefono).length === 9 && normalTel(c.telefono) !== normalTel(cita.telefono)) {
+    return { ok: false, texto: `La cita es de otra persona con el mismo nombre (otro teléfono). Haz un albarán nuevo para esa cita.` };
+  }
   if (cita.asistencia === "no_ha_venido") return { ok: false, texto: "Esa cita está marcada «No ha venido»: no se ha añadido." };
+  const clave = claveCita(cita);
+  if (!repetir && (alb.citasImportadas || []).includes(clave)) return { ok: false, repetida: true, texto: "Esta cita ya está añadida a este albarán." };
+  alb.citasImportadas = [...(alb.citasImportadas || []), clave].slice(-200);
   if (!c.nombre && cita.paciente) { c.nombre = cita.paciente; c.holdedId = ""; }
   if (!c.telefono && cita.telefono) c.telefono = cita.telefono;
   if (!alb.lineas.length && cita.fecha) alb.fecha = cita.fecha;
@@ -255,33 +266,57 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
     },
   }, "✨ Rellenar el albarán");
 
-  // Servicios: también desde el pantallazo de la cita en la agenda.
+  // Servicios: también desde el pantallazo de la cita en la agenda. La imagen se enseña antes de
+  // enviarla a la IA: que se vea solo la cita (sin notas clínicas) lo comprueba quien la envía.
   const servicios = !perfil(ctx.ajustes().perfil).compras;
+  let fotoLista = "";
+  let leyendo = false;
+  const previa = servicios && h("div", { class: "previa-cita", hidden: true });
+  const cerrarPrevia = () => { fotoLista = ""; previa.hidden = true; previa.replaceChildren(); };
+  const enviarCita = async () => {
+    if (leyendo || !fotoLista) return;
+    const a = ctx.ajustes();
+    if (!dictadoPermitido(a)) { estado.textContent = "Activa «Rellenar con IA» en Ajustes."; return; }
+    if (!navigator.onLine || !a.claveApp) { estado.textContent = "Para leer la cita hace falta cobertura."; return; }
+    leyendo = true;
+    for (const b of previa.querySelectorAll("button")) b.disabled = true;
+    if (botonFoto) botonFoto.disabled = true;
+    estado.textContent = "Leyendo la cita…";
+    let r;
+    try {
+      r = await ctx.llamarAPI("/api/ia/cita", { method: "POST", body: { imagen: fotoLista.split(",")[1], tipoImagen: "image/jpeg", servicios: (a.servicios || []).map((sv) => ({ nombre: sv.nombre, precio: sv.precio })) } });
+    } catch {
+      r = null;
+    } finally {
+      leyendo = false;
+      if (botonFoto) botonFoto.disabled = false;
+    }
+    cerrarPrevia();
+    if (!r) { estado.textContent = "No se ha podido leer ahora; vuelve a intentarlo con cobertura."; return; }
+    if (!(r.ok && r.datos.ok)) { estado.textContent = r.datos?.error || `Error ${r.status}`; return; }
+    let res = aplicarCita(alb, r.datos.cita, a);
+    if (res.repetida && confirm("Esta cita ya está añadida a este albarán. ¿Añadirla otra vez?")) res = aplicarCita(alb, r.datos.cita, a, { repetir: true });
+    estado.textContent = res.texto;
+    if (!res.ok) return;
+    await guardar();
+    aviso(res.texto, "info");
+    alAplicar();
+  };
   const entradaFoto = servicios && h("input", {
     type: "file", accept: "image/*", hidden: true,
     onchange: async (e) => {
       const f = e.target.files?.[0];
       e.target.value = "";
-      if (!f) return;
-      const a = ctx.ajustes();
-      if (!dictadoPermitido(a)) { estado.textContent = "Activa «Rellenar con IA» en Ajustes."; return; }
-      if (!navigator.onLine || !a.claveApp) { estado.textContent = "Para leer la cita hace falta cobertura."; return; }
-      estado.textContent = "Leyendo la cita…";
-      let r;
-      try {
-        const foto = await reducirFoto(f);
-        r = await ctx.llamarAPI("/api/ia/cita", { method: "POST", body: { imagen: foto.split(",")[1], tipoImagen: "image/jpeg", servicios: (a.servicios || []).map((sv) => ({ nombre: sv.nombre, precio: sv.precio })) } });
-      } catch {
-        estado.textContent = "No se ha podido leer ahora; vuelve a intentarlo con cobertura.";
-        return;
-      }
-      if (!(r.ok && r.datos.ok)) { estado.textContent = r.datos?.error || `Error ${r.status}`; return; }
-      const res = aplicarCita(alb, r.datos.cita, a);
-      estado.textContent = res.texto;
-      if (!res.ok) return;
-      await guardar();
-      aviso(res.texto, "info");
-      alAplicar();
+      if (!f || leyendo) return;
+      try { fotoLista = await reducirFoto(f); } catch { estado.textContent = "No se ha podido abrir la imagen. Prueba con otra."; return; }
+      previa.replaceChildren(
+        h("img", { src: fotoLista, alt: "Pantallazo de la cita que se enviará" }),
+        h("p", { class: "ayuda" }, "Se enviará esta imagen a la IA. Que se vea solo la ficha de la cita (paciente, fecha, servicio), sin notas ni datos clínicos; si no, recórtala antes en Fotos."),
+        h("div", { class: "botones-linea" },
+          h("button", { type: "button", class: "btn principal", onclick: enviarCita }, "Enviar a la IA"),
+          h("button", { type: "button", class: "btn secundario", onclick: () => { cerrarPrevia(); estado.textContent = ""; } }, "Cancelar")));
+      previa.hidden = false;
+      estado.textContent = "";
     },
   });
   const botonFoto = servicios && h("button", { type: "button", class: "btn secundario", onclick: () => entradaFoto.click() }, "📷 Desde la agenda");
@@ -292,6 +327,7 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
     texto,
     h("div", { class: "botones-linea" }, micro, rellenar, botonFoto),
     servicios && h("small", { class: "ayuda" }, "«Desde la agenda»: elige el pantallazo de la cita y se rellenan el paciente, la fecha y la sesión."),
+    previa,
     entradaFoto,
     estado);
 }
