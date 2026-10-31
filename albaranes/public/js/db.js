@@ -5,6 +5,7 @@
      clientes   · clientes usados, para autocompletar sin conexión
      articulos  · catálogo: precio de coste, margen, precio de venta y stock
      compras    · albaranes y facturas de proveedor (con su foto, para el asesor)
+     consentimientos · consentimientos RGPD firmados por pacientes (texto, datos y firmas)
      kv         · ajustes y contador de numeración
 */
 
@@ -14,7 +15,7 @@ let conexion;
 function abrir() {
   if (conexion) return conexion;
   conexion = new Promise((ok, ko) => {
-    const r = indexedDB.open(NOMBRE, 2);
+    const r = indexedDB.open(NOMBRE, 3);
     r.onupgradeneeded = (e) => {
       const db = r.result;
       if (e.oldVersion < 1) {
@@ -26,6 +27,10 @@ function abrir() {
         // Versión 2: catálogo de artículos (coste, margen, stock) y compras a proveedores.
         db.createObjectStore("articulos", { keyPath: "id" });
         db.createObjectStore("compras", { keyPath: "id" });
+      }
+      if (e.oldVersion < 3) {
+        // Versión 3: consentimientos firmados (solo en el móvil; nunca van a Holded ni al volcado).
+        db.createObjectStore("consentimientos", { keyPath: "id" });
       }
     };
     r.onsuccess = () => {

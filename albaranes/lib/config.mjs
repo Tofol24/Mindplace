@@ -15,6 +15,8 @@
      APP_RETENCION       0 | 7 | 15 (la que aplican las empresas)
      APP_SERVICIOS       «Primera visita: 60 | Sesión de seguimiento: 50»
      APP_PREFIJO         prefijo de la numeración (letras y números)
+     APP_CONSENTIMIENTO  si → pedir el consentimiento RGPD en las primeras visitas (servicios)
+     APP_COLEGIADO, APP_DPD, APP_HERRAMIENTA_ONLINE   datos del texto del consentimiento
 */
 
 const texto = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -49,5 +51,13 @@ export function configInicial(env = {}) {
   if (servicios.length) c.servicios = servicios;
   const prefijo = texto(env.APP_PREFIJO, 8).toUpperCase();
   if (/^[A-Z0-9]{1,8}$/.test(prefijo)) c.prefijo = prefijo;
+  const consentimiento = {
+    activo: ["si", "sí", "true", "1"].includes(texto(env.APP_CONSENTIMIENTO, 10).toLowerCase()),
+    clave: "primera",
+    colegiado: texto(env.APP_COLEGIADO, 40),
+    dpd: texto(env.APP_DPD, 300),
+    herramienta: texto(env.APP_HERRAMIENTA_ONLINE, 200),
+  };
+  if (consentimiento.activo || consentimiento.colegiado || consentimiento.dpd || consentimiento.herramienta) c.consentimiento = consentimiento;
   return c;
 }

@@ -23,6 +23,8 @@ import { articulosOrdenados, precioVenta, vistaArticulo, vistaCatalogo } from ".
 import { leerComprasPendientes, vistaCompra, vistaCompras } from "./compras.js";
 import { aplicarDictadosPendientes, panelDictado } from "./voz.js";
 import { vistaVolcado } from "./volcado.js";
+import { lienzoFirma } from "./firma.js";
+import { CONSENTIMIENTO_DEF, activo as consentimientoActivo, tarjetaConsentimiento, vistaConsentimiento, vistaConsentimientos, vistaConsentir } from "./consentimiento.js";
 import { PERFILES, PERFIL_DEFECTO, SERVICIOS_DEFECTO, dictadoPermitido, escribirServicios, leerServicios, perfil } from "./perfiles.js";
 
 const AJUSTES_DEF = {
@@ -48,6 +50,8 @@ const AJUSTES_DEF = {
   dictadoServicios: false,
   // Retención de IRPF que te aplican las empresas y entidades (CIF) a las que facturas; 0 = ninguna.
   retencionEmpresas: 0,
+  // Perfil «servicios»: consentimiento RGPD firmado con el dedo en las primeras visitas.
+  consentimiento: CONSENTIMIENTO_DEF,
   margen: 30,
   claveApp: "",
 };
@@ -63,7 +67,8 @@ const pestanas = document.getElementById("pestanas");
 
 async function cargarAjustes() {
   const guardados = await db.leerKV("ajustes", null);
-  ajustes = { ...structuredClone(AJUSTES_DEF), ...(guardados || {}), negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) } };
+  ajustes = { ...structuredClone(AJUSTES_DEF), ...(guardados || {}), negocio: { ...AJUSTES_DEF.negocio, ...(guardados?.negocio || {}) },
+    consentimiento: { ...AJUSTES_DEF.consentimiento, ...(guardados?.consentimiento || {}) } };
   // Un móvil nuevo espera los Ajustes de partida de su instalación (llegan con la clave de la app).
   // Unos Ajustes ya guardados antes son de quien usa el móvil: nunca se sobrescriben.
   if (!guardados) ajustes.configInstalacion = "pendiente";
@@ -467,7 +472,12 @@ async function vistaEditor(alb) {
     clearTimeout(guardarTimer);
     guardarTimer = setTimeout(() => autoguardar(alb), 400);
     pintarTotales();
+    consent?.pintar();
   };
+  // Primera visita sin consentimiento firmado: se ofrece firmarlo (perfil «servicios»).
+  const consent = consentimientoActivo(ajustes, perfilActual())
+    ? await tarjetaConsentimiento(ajustes, alb, { antesDeIr: async () => { clearTimeout(guardarTimer); await autoguardar(alb); } })
+    : null;
   const entrada = (obj, clave, attrs = {}) => h("input", {
     value: obj[clave] ?? "", ...attrs,
     oninput: (e) => { obj[clave] = e.target.value; cambiado(); },
@@ -704,6 +714,7 @@ async function vistaEditor(alb) {
       alAplicar: () => ir(`/editar/${alb.id}`),
     }),
     avisoDict,
+    consent?.el,
     h("section", { class: "tarjeta" },
       h("h3", {}, "Cliente"),
       h("div", { class: "campo-busqueda" }, campo("Nombre", inputNombre), sugerencias),
@@ -755,69 +766,9 @@ async function vistaEditor(alb) {
 
 // --- Firma ----------------------------------------------------------------
 
-/** Copia la firma a 600 px de ancho: se ve bien en el PDF y pesa poco. */
-function firmaReducida(canvas) {
-  const ancho = Math.min(600, canvas.width);
-  const alto = Math.round((canvas.height * ancho) / canvas.width);
-  const c = document.createElement("canvas");
-  c.width = ancho;
-  c.height = alto;
-  const ctx = c.getContext("2d");
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, ancho, alto);
-  ctx.drawImage(canvas, 0, 0, ancho, alto);
-  return c.toDataURL("image/png");
-}
-
 function vistaFirma(alb) {
   if (alb.estado !== "borrador") { ir(`/albaran/${alb.id}`); return []; }
-  const canvas = h("canvas", { class: "lienzo", "aria-label": "Zona de firma" });
-  let ctx;
-  let hayTrazo = false;
-  let dibujando = false;
-  const preparar = () => {
-    const ratio = window.devicePixelRatio || 1;
-    const ancho = canvas.clientWidth;
-    const alto = canvas.clientHeight;
-    canvas.width = Math.round(ancho * ratio);
-    canvas.height = Math.round(alto * ratio);
-    ctx = canvas.getContext("2d");
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, ancho, alto);
-    ctx.lineWidth = 2.4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = "#0b2340";
-    hayTrazo = false;
-  };
-  const punto = (e) => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-  canvas.addEventListener("pointerdown", (e) => {
-    dibujando = true;
-    canvas.setPointerCapture(e.pointerId);
-    const [x, y] = punto(e);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 0.1, y + 0.1);
-    ctx.stroke();
-    hayTrazo = true;
-  });
-  canvas.addEventListener("pointermove", (e) => {
-    if (!dibujando) return;
-    const [x, y] = punto(e);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  });
-  const fin = () => { dibujando = false; };
-  canvas.addEventListener("pointerup", fin);
-  canvas.addEventListener("pointercancel", fin);
-  requestAnimationFrame(preparar);
-  // Al girar el móvil cambia el tamaño: si aún no hay firma, se ajusta el lienzo.
-  const alGirar = () => {
-    if (!canvas.isConnected) { window.removeEventListener("resize", alGirar); return; }
-    if (!hayTrazo) preparar();
-  };
-  window.addEventListener("resize", alGirar);
+  const lienzo = lienzoFirma();
 
   // Holded admite hasta 120 caracteres para quien firma.
   const firmante = h("input", { value: (alb.firmante || alb.cliente.nombre).slice(0, 120), maxlength: "120", placeholder: "Nombre de quien firma" });
@@ -827,12 +778,12 @@ function vistaFirma(alb) {
 
   const terminar = async () => {
     if (terminando) return;
-    if (!hayTrazo) { error.textContent = "Falta la firma del cliente."; return; }
+    if (!lienzo.hayTrazo()) { error.textContent = "Falta la firma del cliente."; return; }
     if (!ajustes.negocio.nombre) { error.textContent = "Falta el nombre de tu negocio en Ajustes: sale en el PDF."; return; }
     terminando = true;
     try {
       const anio = alb.fecha.slice(0, 4);
-      alb.firma = firmaReducida(canvas);
+      alb.firma = lienzo.imagen();
       alb.firmante = firmante.value.trim();
       alb.firmadoEn = new Date().toISOString();
       // Si ya se firmó en otra ventana, no se vuelve a numerar ni a firmar.
@@ -867,8 +818,8 @@ function vistaFirma(alb) {
       h("div", {}, h("span", {}, "Líneas"), h("strong", {}, String(alb.lineas.length))),
       h("div", { class: "total" }, h("span", {}, "Total con IVA"), h("strong", {}, formatoEuros(t.total)))),
     h("p", { class: "ayuda" }, "Pásale el móvil al cliente para que firme con el dedo."),
-    canvas,
-    h("button", { type: "button", class: "btn enlace", onclick: preparar }, "Borrar firma"),
+    lienzo.canvas,
+    h("button", { type: "button", class: "btn enlace", onclick: lienzo.borrar }, "Borrar firma"),
     campo("Nombre de quien firma", firmante),
     error,
     h("div", { class: "acciones" },
@@ -878,8 +829,9 @@ function vistaFirma(alb) {
 
 // --- Detalle --------------------------------------------------------------
 
-function vistaDetalle(alb) {
+async function vistaDetalle(alb) {
   if (alb.estado === "borrador") { ir(`/editar/${alb.id}`); return []; }
+  const consent = consentimientoActivo(ajustes, perfil(alb.perfil)) ? await tarjetaConsentimiento(ajustes, alb) : null;
   const t = totales(alb.lineas, alb.retencion);
   const c = alb.cliente;
   const tel = telefonoWhatsApp(c.telefono);
@@ -932,6 +884,7 @@ function vistaDetalle(alb) {
       h("button", { class: "btn-volver", onclick: () => ir("/") }, "‹ Albaranes"),
       h("h2", {}, `Albarán ${alb.numero}`)),
     estadoHolded,
+    consent?.el,
     h("section", { class: "tarjeta" },
       h("h3", {}, "Enviar al cliente"),
       h("button", { class: "btn principal grande", onclick: () => compartirPDF(alb) }, "Enviar PDF (WhatsApp, email…)"),
@@ -993,6 +946,8 @@ async function vistaAjustes() {
     h("option", { value: "holded", selected: conHolded() }, "Holded (se envían solos)"),
     h("option", { value: "volcado", selected: !conHolded() }, "Sin Holded: volcado a mi programa de facturación"));
   const chkDictado = h("input", { type: "checkbox", checked: ajustes.dictadoServicios === true });
+  const cons = { ...ajustes.consentimiento };
+  const chkConsent = h("input", { type: "checkbox", checked: cons.activo === true });
   const inputServicios = h("textarea", { rows: 4, placeholder: "Primera visita: 60\nSesión de seguimiento: 50" }, escribirServicios(ajustes.servicios));
   // Lo de oficio (hora, desplazamiento, margen) o lo de servicios, según el tipo de actividad.
   const soloOficio = h("div");
@@ -1005,7 +960,14 @@ async function vistaAjustes() {
   soloServicios.append(
     campo("Servicios habituales", inputServicios, "Uno por línea, con su precio: «Primera visita: 60». Cada uno será un botón «+» al hacer el albarán."),
     h("label", { class: "campo campo-check" }, chkDictado, h("span", {}, "Rellenar con IA (voz o foto de la agenda)"),
-      h("small", {}, "Lo que dictas o el pantallazo de la cita (nombre y teléfono del paciente, fecha, servicio) se envía a la IA de Anthropic, a través de tu servidor, para rellenar el albarán; Anthropic no lo usa para entrenar. Solo pasan al albarán datos administrativos y servicios de tu lista. Recógelo en tu aviso de privacidad. Necesita ANTHROPIC_API_KEY en Netlify. Sin activarlo, puedes usar el micrófono del teclado: eso no sale a la IA.")));
+      h("small", {}, "Lo que dictas o el pantallazo de la cita (nombre y teléfono del paciente, fecha, servicio) se envía a la IA de Anthropic, a través de tu servidor, para rellenar el albarán; Anthropic no lo usa para entrenar. Solo pasan al albarán datos administrativos y servicios de tu lista. Recógelo en tu aviso de privacidad. Necesita ANTHROPIC_API_KEY en Netlify. Sin activarlo, puedes usar el micrófono del teclado: eso no sale a la IA.")),
+    h("label", { class: "campo campo-check" }, chkConsent, h("span", {}, "Consentimiento RGPD en las primeras visitas"),
+      h("small", {}, "En un albarán con un servicio que contenga la palabra de abajo, si el paciente aún no lo ha firmado, la app te ofrece que lo firme con el dedo (él o sus representantes legales). Se guarda solo en el móvil y en la copia de seguridad: no va a Holded, al volcado ni a la IA. Lleva tu nombre, NIF, dirección, teléfono y email de arriba.")),
+    campo("Palabra del servicio que lo pide", ent(cons, "clave", { placeholder: "primera" }), "Por ejemplo «primera» para «Primera visita»."),
+    campo("Nº de colegiado", ent(cons, "colegiado", { placeholder: "B-00000" })),
+    campo("Delegado de Protección de Datos (opcional)", ent(cons, "dpd", { placeholder: "CONTACTO: https://… / Email: …" })),
+    campo("Herramienta de sesiones en línea (opcional)", ent(cons, "herramienta", { placeholder: "p. ej. Doctoralia Software, WhatsApp" }), "Si la pones, sale la casilla para autorizar las sesiones en línea con ella."),
+    h("button", { type: "button", class: "btn secundario", onclick: async () => { if (await guardar()) ir("/consentimientos"); } }, "Ver consentimientos firmados"));
   pintarPerfil();
   const selIva = h("select", {}, IVAS.map((v) => h("option", { value: v, selected: v === ajustes.ivaDefecto }, etiquetaIva(v))));
   const selRet = h("select", {}, RETENCIONES.map((v) => h("option", { value: v, selected: v === (ajustes.retencionEmpresas || 0) }, v ? `${v} %` : "Ninguna")));
@@ -1053,6 +1015,7 @@ async function vistaAjustes() {
     ajustes.perfil = selPerfil.value;
     ajustes.servicios = servicios;
     ajustes.dictadoServicios = chkDictado.checked;
+    ajustes.consentimiento = { ...cons, activo: chkConsent.checked, clave: String(cons.clave || "").trim(), colegiado: String(cons.colegiado || "").trim(), dpd: String(cons.dpd || "").trim(), herramienta: String(cons.herramienta || "").trim() };
     ajustes.ivaDefecto = Number(selIva.value);
     ajustes.retencionEmpresas = Number(selRet.value);
     ajustes.claveApp = inputClave.value.trim();
@@ -1085,7 +1048,7 @@ async function vistaAjustes() {
   };
 
   const copia = async () => {
-    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes"), articulos: await db.todos("articulos"), compras: await db.todos("compras") };
+    const datos = { app: "albaranes-obra", version: 1, exportado: new Date().toISOString(), ajustes: { ...ajustes, claveApp: "" }, albaranes: await db.todos("albaranes"), clientes: await db.todos("clientes"), articulos: await db.todos("articulos"), compras: await db.todos("compras"), consentimientos: await db.todos("consentimientos") };
     descargar(new File([JSON.stringify(datos, null, 1)], `copia-albaranes-${hoyISO()}.json`, { type: "application/json" }));
   };
 
@@ -1134,6 +1097,10 @@ async function vistaAjustes() {
     }
     for (const c of Array.isArray(datos.compras) ? datos.compras : []) {
       if (c && typeof c.id === "string" && typeof c.foto === "string" && c.foto.startsWith("data:image/") && Array.isArray(c.lineas) && !(await db.obtener("compras", c.id))) await db.guardar("compras", c);
+    }
+    // Consentimientos firmados: se añaden los que falten (un firmado no cambia nunca).
+    for (const c of Array.isArray(datos.consentimientos) ? datos.consentimientos : []) {
+      if (c && typeof c.id === "string" && c.paciente?.nombre && Array.isArray(c.apartados) && Array.isArray(c.firmas) && c.firmas.every((f) => typeof f?.imagen === "string" && f.imagen.startsWith("data:image/png")) && !(await db.obtener("consentimientos", c.id))) await db.guardar("consentimientos", c);
     }
     if (datos.ajustes?.negocio && !ajustes.negocio.nif) {
       ajustes = { ...ajustes, ...datos.ajustes, claveApp: ajustes.claveApp, negocio: { ...ajustes.negocio, ...datos.ajustes.negocio } };
@@ -1198,21 +1165,25 @@ async function render() {
   if (["compras", "compra", "catalogo", "articulo"].includes(seccion) && !perfilActual().compras) { ir("/"); return; }
   if (seccion === "ajustes") contenido = await vistaAjustes();
   else if (seccion === "volcado") contenido = await vistaVolcado(ctx);
+  else if (seccion === "consentimientos") contenido = await vistaConsentimientos();
+  else if (seccion === "consentimiento") contenido = await vistaConsentimiento(ctx, id);
   else if (seccion === "compras") contenido = await vistaCompras(ctx);
   else if (seccion === "compra") contenido = await vistaCompra(ctx, id);
   else if (seccion === "catalogo") contenido = await vistaCatalogo(ctx);
   else if (seccion === "articulo") contenido = await vistaArticulo(ctx, id);
-  else if (["editar", "firmar", "albaran"].includes(seccion)) {
+  else if (["editar", "firmar", "albaran", "consentir"].includes(seccion)) {
     const alb = await db.obtener("albaranes", id);
     if (!alb) { ir("/"); return; }
-    contenido = seccion === "editar" ? await vistaEditor(alb) : seccion === "firmar" ? vistaFirma(alb) : vistaDetalle(alb);
+    contenido = seccion === "editar" ? await vistaEditor(alb) : seccion === "firmar" ? vistaFirma(alb)
+      : seccion === "consentir" ? vistaConsentir(ctx, alb) : await vistaDetalle(alb);
   } else contenido = await vistaLista();
   if (yo !== renderId) return; // otra navegación más reciente ya está pintando
   // Las pantallas pueden dejar huecos (cond && elemento): no se pintan.
   vista.replaceChildren(...contenido.filter((x) => x != null && x !== false && x !== ""));
   // Mientras firma el cliente (con el móvil en sus manos) no hay acceso a Ajustes ni al envío.
-  document.getElementById("btn-ajustes").hidden = seccion === "ajustes" || seccion === "firmar";
-  barraEstado.hidden = seccion === "firmar";
+  const firmando = seccion === "firmar" || seccion === "consentir";
+  document.getElementById("btn-ajustes").hidden = seccion === "ajustes" || firmando;
+  barraEstado.hidden = firmando;
   // Pestañas solo en las tres listas principales.
   const pestana = { "": "/", compras: "/compras", catalogo: "/catalogo" }[seccion ?? ""];
   pestanas.hidden = !pestana || !perfilActual().compras;

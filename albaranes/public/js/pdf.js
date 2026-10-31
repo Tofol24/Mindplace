@@ -214,3 +214,126 @@ export function generarPDF(alb, negocio) {
 export function nombrePDF(alb) {
   return `Albaran-${alb.numero || "borrador"}.pdf`;
 }
+
+/**
+ * PDF de un consentimiento firmado. Usa el texto guardado con la firma (c.apartados y
+ * c.opciones), no el actual: el PDF muestra siempre lo que se firmó.
+ */
+export function generarPDFConsentimiento(c) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
+  doc.setProperties({ title: "Consentimiento RGPD", subject: "Consentimiento R.G.P.D. – Pacientes", creator: "App de albaranes" });
+  const ancho = A4.w - 2 * M;
+  let y = M + 4;
+  const sitio = (alto) => { if (y + alto > A4.h - M - 8) { doc.addPage(); y = M + 4; } };
+  const fuente = (size, bold = false, color = TINTA) => { doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(size); doc.setTextColor(...color); };
+
+  fuente(13, true, ACENTO);
+  doc.text("CONSENTIMIENTO R.G.P.D. – PACIENTES", A4.w / 2, y, { align: "center" });
+  y += 8;
+
+  // Recuadro de datos, como en el documento: entidad, paciente y representantes.
+  const r = c.responsable || {};
+  const p = c.paciente || {};
+  const filas = [
+    [`DATOS ENTIDAD: ${r.nombre || ""}`, [r.nif && `CIF: ${r.nif}`, r.colegiado && `Nº Coleg: ${r.colegiado}`].filter(Boolean).join("   ")],
+    [`PACIENTE: ${p.nombre || ""}`, `NIF: ${p.nif || ""}`],
+    [`EMAIL: ${p.email || ""}`, `TELÉFONO: ${p.telefono || ""}`],
+    [`DIRECCIÓN: ${p.direccion || ""}`, ""],
+    ...(c.representantes || []).map((rep, i, todos) => {
+      const n = todos.length > 1 ? ` ${i + 1}` : "";
+      return [`REPRESENTANTE LEGAL${n}: ${rep.nombre || ""}`, `DNI${n}: ${rep.dni || ""}`];
+    }),
+  ];
+  const col = ancho * 0.62;
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(0.25);
+  for (const [i, [izq, der]] of filas.entries()) {
+    fuente(9, i === 0);
+    const li = doc.splitTextToSize(izq, col - 4);
+    const ld = doc.splitTextToSize(der, ancho - col - 4);
+    const alto = Math.max(li.length, ld.length || 1) * 4.2 + 2.6;
+    sitio(alto);
+    if (i === 0) { doc.setFillColor(236, 242, 246); doc.rect(M, y, ancho, alto, "F"); }
+    doc.rect(M, y, ancho, alto);
+    doc.text(li, M + 2, y + 4.4);
+    if (der) doc.text(ld, M + col + 2, y + 4.4);
+    y += alto;
+  }
+  y += 6;
+
+  // Texto legal: apartados con su título en negrita.
+  for (const a of c.apartados || []) {
+    const cuerpo = a.titulo ? `${a.titulo}: ${a.texto}` : a.texto;
+    fuente(8.6);
+    const lineas = doc.splitTextToSize(cuerpo, ancho);
+    for (const [i, l] of lineas.entries()) {
+      sitio(4);
+      if (i === 0 && a.titulo) {
+        fuente(8.6, true);
+        doc.text(`${a.titulo}:`, M, y);
+        const w = doc.getTextWidth(`${a.titulo}:`) + 1.3;
+        fuente(8.6);
+        doc.text(l.slice(a.titulo.length + 1).trimStart(), M + w, y);
+      } else doc.text(l, M, y);
+      y += 3.9;
+    }
+    y += 2;
+  }
+
+  // Casillas: marcadas solo si la persona lo eligió.
+  y += 1;
+  for (const o of c.opciones || []) {
+    fuente(8.6);
+    const lineas = doc.splitTextToSize(o.texto, ancho - 9);
+    sitio(lineas.length * 3.9 + 3);
+    doc.setDrawColor(...TINTA);
+    doc.rect(M, y - 3, 3.6, 3.6);
+    if (o.marcada) { fuente(9, true); doc.text("X", M + 0.75, y - 0.1); fuente(8.6); }
+    doc.text(lineas, M + 7, y);
+    y += lineas.length * 3.9 + 3;
+  }
+
+  // Firmas (una o dos), con nombre y fecha.
+  y += 4;
+  const firmas = c.firmas || [];
+  const wf = firmas.length > 1 ? (ancho - 8) / 2 : 90;
+  sitio(46);
+  firmas.forEach((f, i) => {
+    const x = M + i * (wf + 8);
+    fuente(8, true, GRIS);
+    doc.text(firmas.length > 1 ? `FIRMA ${i + 1}` : "FIRMA", x, y);
+    doc.setDrawColor(200, 200, 200);
+    doc.rect(x, y + 2, wf, 30);
+    try {
+      const pr = doc.getImageProperties(f.imagen);
+      const escala = Math.min((wf - 2) / pr.width, 28 / pr.height);
+      const w = pr.width * escala;
+      const hh = pr.height * escala;
+      doc.addImage(f.imagen, "PNG", x + 1 + (wf - 2 - w) / 2, y + 3 + (28 - hh) / 2, w, hh, undefined, "FAST");
+    } catch { /* firma ilegible: se deja el recuadro */ }
+    fuente(9, true);
+    doc.text(doc.splitTextToSize(f.nombre || "", wf), x, y + 37);
+  });
+  y += 42;
+  fuente(8.5, false, GRIS);
+  sitio(5);
+  doc.text(`Firmado el ${new Date(c.firmadoEn).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}`, M, y);
+
+  const paginas = doc.getNumberOfPages();
+  for (let n = 1; n <= paginas; n++) {
+    doc.setPage(n);
+    texto(`Consentimiento RGPD · ${p.nombre || ""} · Página ${n} de ${paginas}`, A4.w / 2, A4.h - 8, { size: 8, color: GRIS, align: "center" });
+  }
+  return doc.output("blob");
+
+  function texto(t, x, yy, { size = 10, color = TINTA, align = "left" } = {}) {
+    fuente(size, false, color);
+    doc.text(String(t), x, yy, { align });
+  }
+}
+
+export function nombrePDFConsentimiento(c) {
+  const nombre = String(c.paciente?.nombre || "paciente").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return `Consentimiento-${nombre || "paciente"}-${String(c.firmadoEn).slice(0, 10)}.pdf`;
+}

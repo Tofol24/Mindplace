@@ -251,3 +251,12 @@ input[type="search"] { margin-bottom: 8px; }
 /* Vista previa del pantallazo de la cita antes de enviarlo a la IA */
 .previa-cita { margin-top: 10px; }
 .previa-cita img { display: block; max-width: 100%; max-height: 320px; margin: 0 auto 8px; border: 1px solid var(--borde); border-radius: 10px; }
+
+/* Consentimiento RGPD */
+.texto-legal { max-height: 340px; overflow-y: auto; font-size: 14px; line-height: 1.5; padding-right: 4px; }
+.texto-legal p { margin: 0 0 10px; }
+.texto-opcion { font-weight: 400 !important; font-size: 14px; line-height: 1.45; }
+.campo-check:has(.texto-opcion) { align-items: start; }
+.bloque-firma { margin-bottom: 14px; }
+.bloque-firma h3 { margin: 0 0 6px; }
+.consent-ok { margin: 0 0 12px; }
