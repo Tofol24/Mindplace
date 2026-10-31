@@ -20,17 +20,32 @@ export const normalizar = (s) => String(s || "").normalize("NFD").replace(/[̀-�
 const digitos = (s) => String(s || "").replace(/\D/g, "").slice(-9);
 
 /**
- * El consentimiento de este paciente, si ya lo firmó: mismo nombre y, si los dos tienen
- * teléfono, mismo teléfono (dos pacientes con el mismo nombre no se confunden).
+ * El consentimiento de este paciente, si ya lo firmó. Devuelve { c, seguro } o null:
+ *  · seguro: se firmó desde este albarán, se vinculó a mano, o coincide el nombre y además
+ *    el NIF o el teléfono (y ninguno de los dos se contradice).
+ *  · no seguro: solo coincide el nombre (faltan NIF y teléfono para comprobarlo): hay que
+ *    preguntar si es la misma persona. Un NIF o un teléfono distinto descarta la coincidencia.
  */
-export function consentimientoDe(cliente, lista) {
+export function consentimientoDe(cliente, lista, alb = {}) {
+  const directo = (lista || []).find((c) => (alb.id && c.albaranId === alb.id) || (alb.consentimientoId && c.id === alb.consentimientoId));
+  if (directo) return { c: directo, seguro: true };
   const n = normalizar(cliente?.nombre);
   if (!n) return null;
-  const t = digitos(cliente?.telefono);
-  return (lista || [])
-    .filter((c) => normalizar(c.paciente?.nombre) === n && (!t || !digitos(c.paciente?.telefono) || digitos(c.paciente.telefono) === t))
-    .sort((a, b) => String(b.firmadoEn).localeCompare(String(a.firmadoEn)))[0] || null;
+  const nif = normalNif(cliente?.nif);
+  const tel = digitos(cliente?.telefono);
+  const candidatos = (lista || [])
+    .filter((c) => normalizar(c.paciente?.nombre) === n)
+    .map((c) => {
+      const cn = normalNif(c.paciente?.nif);
+      const ct = digitos(c.paciente?.telefono);
+      if ((nif && cn && nif !== cn) || (tel && ct && tel !== ct)) return null; // otra persona
+      return { c, seguro: (!!nif && nif === cn) || (!!tel && tel === ct) };
+    })
+    .filter(Boolean)
+    .sort((a, b) => (b.seguro - a.seguro) || String(b.c.firmadoEn).localeCompare(String(a.c.firmadoEn)));
+  return candidatos[0] || null;
 }
+const normalNif = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 /**
  * Apartados del texto con los datos del responsable.

@@ -34,23 +34,34 @@ function faltaEnAjustes(ajustes) {
 
 /**
  * Tarjeta del albarán: en una primera visita, si este paciente aún no ha firmado, ofrece
- * firmarlo; si ya lo firmó, lo dice. Devuelve { el, pintar } para repintarla al editar.
+ * firmarlo; si ya lo firmó, lo dice. Si solo coincide el nombre, pregunta si es la misma
+ * persona (con `vincular`, que lo anota en el albarán). Devuelve { el, pintar }.
+ * `antesDeIr` guarda el borrador: si devuelve false, no se sale de la pantalla.
  */
-export async function tarjetaConsentimiento(ajustes, alb, { antesDeIr } = {}) {
+export async function tarjetaConsentimiento(ajustes, alb, { antesDeIr, vincular } = {}) {
   const el = h("div");
   const lista = await db.todos("consentimientos");
+  const irA = async (ruta) => { if ((await antesDeIr?.()) === false) return; ir(ruta); };
   const pintar = () => {
-    const firmado = consentimientoDe(alb.cliente, lista);
+    const m = consentimientoDe(alb.cliente, lista, alb);
     const toca = pideConsentimiento(alb.lineas, ajustes.consentimiento?.clave);
-    if (firmado) {
-      el.replaceChildren(h("p", { class: "ayuda consent-ok" },
-        `Consentimiento RGPD firmado el ${fechaHora(firmado.firmadoEn)} ✓ `,
-        h("button", { type: "button", class: "btn enlace", onclick: async () => { await antesDeIr?.(); ir(`/consentimiento/${firmado.id}`); } }, "Ver")));
+    const ver = (c) => h("button", { type: "button", class: "btn enlace", onclick: () => irA(`/consentimiento/${c.id}`) }, "Ver");
+    const firmar = h("button", { type: "button", class: "btn principal", onclick: () => irA(`/consentir/${alb.id}`) }, "Firmar el consentimiento");
+    if (m?.seguro) {
+      el.replaceChildren(h("p", { class: "ayuda consent-ok" }, `Consentimiento RGPD firmado el ${fechaHora(m.c.firmadoEn)} ✓ `, ver(m.c)));
+    } else if (m && (toca || vincular)) {
+      el.replaceChildren(h("section", { class: "tarjeta aviso-tarjeta" },
+        h("strong", {}, "¿Es el mismo paciente?"),
+        h("p", {}, `Hay un consentimiento firmado el ${fechaHora(m.c.firmadoEn)} por alguien con este nombre, pero sin NIF ni teléfono para comprobar que es la misma persona.`),
+        h("div", { class: "botones-linea" },
+          vincular && h("button", { type: "button", class: "btn secundario", onclick: () => { vincular(m.c.id); pintar(); } }, "Sí, es el mismo"),
+          ver(m.c)),
+        toca && firmar));
     } else if (toca && alb.cliente?.nombre?.trim()) {
       el.replaceChildren(h("section", { class: "tarjeta aviso-tarjeta" },
         h("strong", {}, "Consentimiento informado"),
         h("p", {}, `Es una primera visita y ${alb.cliente.nombre.trim()} aún no ha firmado el consentimiento RGPD.`),
-        h("button", { type: "button", class: "btn principal", onclick: async () => { await antesDeIr?.(); ir(`/consentir/${alb.id}`); } }, "Firmar el consentimiento")));
+        firmar));
     } else el.replaceChildren();
   };
   pintar();

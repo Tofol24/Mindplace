@@ -11,15 +11,23 @@ test("pideConsentimiento: solo con un servicio que contiene la palabra clave", (
   assert.equal(pideConsentimiento([], "primera"), false);
 });
 
-test("consentimientoDe: mismo nombre y, si ambos tienen teléfono, el mismo", () => {
+test("consentimientoDe: seguro solo si coincide NIF o teléfono; si se contradicen, es otra persona", () => {
   const lista = [
-    { id: "a", paciente: { nombre: "Paciente Ficticio", telefono: "600000001" }, firmadoEn: "2026-01-01T10:00:00Z" },
-    { id: "b", paciente: { nombre: "Paciente Ficticio", telefono: "" }, firmadoEn: "2026-03-01T10:00:00Z" },
+    { id: "a", paciente: { nombre: "Paciente Ficticio", telefono: "600000001", nif: "" }, firmadoEn: "2026-01-01T10:00:00Z" },
+    { id: "b", paciente: { nombre: "Paciente Ficticio", telefono: "", nif: "11111111H" }, firmadoEn: "2026-03-01T10:00:00Z" },
+    { id: "c", paciente: { nombre: "Solo Nombre", telefono: "", nif: "" }, firmadoEn: "2026-02-01T10:00:00Z", albaranId: "alb-1" },
   ];
-  assert.equal(consentimientoDe({ nombre: "paciente  ficticio", telefono: "+34 600 000 001" }, lista).id, "b"); // el más reciente compatible
-  assert.equal(consentimientoDe({ nombre: "Paciente Ficticio", telefono: "600000009" }, lista.slice(0, 1)), null); // otro teléfono: otra persona
-  assert.equal(consentimientoDe({ nombre: "Otra Ficticia" }, lista), null);
-  assert.equal(consentimientoDe({ nombre: "" }, lista), null);
+  const de = (cl, alb) => { const m = consentimientoDe(cl, lista, alb); return m && `${m.c.id}${m.seguro ? "" : "?"}`; };
+  assert.equal(de({ nombre: "paciente  ficticio", telefono: "+34 600 000 001" }), "a"); // teléfono: seguro
+  assert.equal(de({ nombre: "Paciente Ficticio", nif: "11111111-h" }), "b"); // NIF: seguro
+  assert.equal(de({ nombre: "Paciente Ficticio", telefono: "600000009", nif: "22222222J" }), null); // homónimo con otros datos
+  assert.equal(de({ nombre: "Paciente Ficticio", nif: "22222222J" }), "a?"); // «a» no tiene NIF: hay que preguntar
+  assert.equal(de({ nombre: "Paciente Ficticio" }), "b?"); // solo el nombre: hay que preguntar
+  assert.equal(de({ nombre: "Solo Nombre" }), "c?");
+  assert.equal(de({ nombre: "Solo Nombre" }, { id: "alb-1" }), "c"); // firmado desde este albarán
+  assert.equal(de({ nombre: "Otro" }, { consentimientoId: "a" }), "a"); // vinculado a mano
+  assert.equal(de({ nombre: "Otra Ficticia" }), null);
+  assert.equal(de({ nombre: "" }), null);
 });
 
 test("texto: lleva los datos del responsable y nada de otro profesional", () => {

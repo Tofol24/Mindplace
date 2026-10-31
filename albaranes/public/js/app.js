@@ -476,7 +476,10 @@ async function vistaEditor(alb) {
   };
   // Primera visita sin consentimiento firmado: se ofrece firmarlo (perfil «servicios»).
   const consent = consentimientoActivo(ajustes, perfilActual())
-    ? await tarjetaConsentimiento(ajustes, alb, { antesDeIr: async () => { clearTimeout(guardarTimer); await autoguardar(alb); } })
+    ? await tarjetaConsentimiento(ajustes, alb, {
+      antesDeIr: async () => { clearTimeout(guardarTimer); return autoguardar(alb); },
+      vincular: (id) => { alb.consentimientoId = id; cambiado(); },
+    })
     : null;
   const entrada = (obj, clave, attrs = {}) => h("input", {
     value: obj[clave] ?? "", ...attrs,
