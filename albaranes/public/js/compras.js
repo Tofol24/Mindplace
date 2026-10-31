@@ -46,7 +46,7 @@ export function totalesCompra(c) {
 // ---------------------------------------------------------------------------
 
 /** Reduce la foto (lado largo 1600 px, JPEG): se lee igual de bien y pesa poco. */
-async function reducirFoto(fichero) {
+export async function reducirFoto(fichero) {
   const url = URL.createObjectURL(fichero);
   try {
     const img = await new Promise((ok, ko) => {

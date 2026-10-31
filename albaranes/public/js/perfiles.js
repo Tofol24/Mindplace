@@ -41,7 +41,7 @@ export const PERFILES = {
     mensaje: "de los servicios del",
     compras: false,
     // El dictado se interpreta con IA fuera del móvil: con datos de pacientes, solo si se activa
-    // a sabiendas en Ajustes («Dictado por voz con IA»).
+    // a sabiendas en Ajustes («Rellenar con IA»: voz o foto de la agenda).
     dictado: false,
     dictadoOpcional: true,
     placeholderDictado: "Pulsa 🎤 y habla. Ej.: «Mutua Balear, CIF G07046196. Doce primeras visitas y cuarenta y una sesiones de seguimiento.» Solo datos administrativos: nada clínico.",

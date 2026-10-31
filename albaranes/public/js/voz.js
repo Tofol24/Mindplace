@@ -11,6 +11,7 @@
 import * as db from "./db.js";
 import { redondear } from "./calculos.js";
 import { precioVenta } from "./catalogo.js";
+import { reducirFoto } from "./compras.js";
 import { aviso, h } from "./ui.js";
 import { dictadoPermitido, perfil } from "./perfiles.js";
 
@@ -60,6 +61,44 @@ export async function aplicarDictado(alb, d, ajustes, textoDictado = "") {
     linea.precio = redondear(linea.precio);
     alb.lineas.push(linea);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Pantallazo de una cita de la agenda (servicios profesionales)
+// ---------------------------------------------------------------------------
+
+const normCita = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+
+/**
+ * Mezcla en el borrador lo leído de una cita. Rellena el paciente si el albarán aún no tiene
+ * cliente, la fecha si aún no tiene líneas, y añade la sesión (solo si es un servicio de la lista
+ * y la cita no está marcada «No ha venido»). Devuelve el texto para el usuario.
+ */
+export function aplicarCita(alb, cita, ajustes) {
+  if (!cita.esCita) return { ok: false, texto: "La imagen no parece una cita de la agenda." };
+  const c = alb.cliente;
+  if (c.nombre && cita.paciente && normCita(c.nombre) !== normCita(cita.paciente)) {
+    return { ok: false, texto: `La cita es de «${cita.paciente}» y este albarán es de «${c.nombre}». Haz un albarán nuevo para esa cita.` };
+  }
+  if (cita.asistencia === "no_ha_venido") return { ok: false, texto: "Esa cita está marcada «No ha venido»: no se ha añadido." };
+  if (!c.nombre && cita.paciente) { c.nombre = cita.paciente; c.holdedId = ""; }
+  if (!c.telefono && cita.telefono) c.telefono = cita.telefono;
+  if (!alb.lineas.length && cita.fecha) alb.fecha = cita.fecha;
+  const avisos = [];
+  if (cita.servicio) {
+    const habitual = (ajustes.servicios || []).find((sv) => normCita(sv.nombre) === normCita(cita.servicio));
+    const precio = cita.precio ?? habitual?.precio ?? 0;
+    alb.lineas.push({ concepto: cita.servicio, cantidad: 1, precio: redondear(precio), iva: ajustes.ivaDefecto });
+  } else {
+    // Igual que en el dictado: aviso que se queda en el borrador hasta revisarlo (no sale del móvil).
+    const previo = alb.avisoDictado || { omitidas: 0, texto: "" };
+    const lo = `cita del ${cita.fecha || "?"}${cita.servicioFueraDeLista ? `: «${cita.servicioFueraDeLista}»` : ""}`;
+    alb.avisoDictado = { omitidas: previo.omitidas + 1, texto: [previo.texto, lo].filter(Boolean).join(" / ").slice(0, 2000) };
+    avisos.push("El servicio de la cita no está en tus servicios habituales: añádelo a mano (o a la lista, en Ajustes).");
+  }
+  if (cita.aseguradora) avisos.push(`La cita es de la aseguradora «${cita.aseguradora}»: quizá el albarán debe ir a su nombre.`);
+  if (cita.asistencia === "desconocido") avisos.push("No se ve si la cita está marcada como visitada: compruébalo.");
+  return { ok: true, texto: [cita.servicio ? `Cita añadida: ${cita.servicio}.` : "Paciente y fecha rellenados.", ...avisos].join(" ") };
 }
 
 /** Manda un dictado a la IA. Devuelve { ok, datos } o { error, pasajero }. */
@@ -216,10 +255,43 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
     },
   }, "✨ Rellenar el albarán");
 
+  // Servicios: también desde el pantallazo de la cita en la agenda.
+  const servicios = !perfil(ctx.ajustes().perfil).compras;
+  const entradaFoto = servicios && h("input", {
+    type: "file", accept: "image/*", hidden: true,
+    onchange: async (e) => {
+      const f = e.target.files?.[0];
+      e.target.value = "";
+      if (!f) return;
+      const a = ctx.ajustes();
+      if (!dictadoPermitido(a)) { estado.textContent = "Activa «Rellenar con IA» en Ajustes."; return; }
+      if (!navigator.onLine || !a.claveApp) { estado.textContent = "Para leer la cita hace falta cobertura."; return; }
+      estado.textContent = "Leyendo la cita…";
+      let r;
+      try {
+        const foto = await reducirFoto(f);
+        r = await ctx.llamarAPI("/api/ia/cita", { method: "POST", body: { imagen: foto.split(",")[1], tipoImagen: "image/jpeg", servicios: (a.servicios || []).map((sv) => ({ nombre: sv.nombre, precio: sv.precio })) } });
+      } catch {
+        estado.textContent = "No se ha podido leer ahora; vuelve a intentarlo con cobertura.";
+        return;
+      }
+      if (!(r.ok && r.datos.ok)) { estado.textContent = r.datos?.error || `Error ${r.status}`; return; }
+      const res = aplicarCita(alb, r.datos.cita, a);
+      estado.textContent = res.texto;
+      if (!res.ok) return;
+      await guardar();
+      aviso(res.texto, "info");
+      alAplicar();
+    },
+  });
+  const botonFoto = servicios && h("button", { type: "button", class: "btn secundario", onclick: () => entradaFoto.click() }, "📷 Desde la agenda");
+
   return h("section", { class: "tarjeta dictado" },
-    h("h3", {}, "Dictar el albarán"),
+    h("h3", {}, servicios ? "Rellenar con IA" : "Dictar el albarán"),
     pendiente,
     texto,
-    h("div", { class: "botones-linea" }, micro, rellenar),
+    h("div", { class: "botones-linea" }, micro, rellenar, botonFoto),
+    servicios && h("small", { class: "ayuda" }, "«Desde la agenda»: elige el pantallazo de la cita y se rellenan el paciente, la fecha y la sesión."),
+    entradaFoto,
     estado);
 }

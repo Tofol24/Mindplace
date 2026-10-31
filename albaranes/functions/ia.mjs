@@ -1,12 +1,13 @@
 // /api/ia/* · lectura con IA (ver lib/ia.mjs).
 //   POST /api/ia/dictado   { texto, catalogo, perfil, servicios } → datos para rellenar el albarán
 //   POST /api/ia/compra    { imagen, tipoImagen }     → datos del albarán o factura del proveedor
+//   POST /api/ia/cita      { imagen, tipoImagen, servicios } → datos de una cita de la agenda
 //
 // La clave de Anthropic vive en la variable ANTHROPIC_API_KEY de Netlify.
 // El móvil se identifica con la clave de la app (APP_CLAVE), igual que con Holded.
 import Anthropic from "@anthropic-ai/sdk";
 import { claveCorrecta, json } from "../lib/http.mjs";
-import { ErrorIA, MAX_IMAGEN_BASE64, interpretarDictado, leerCompra } from "../lib/ia.mjs";
+import { ErrorIA, MAX_IMAGEN_BASE64, interpretarDictado, leerCita, leerCompra } from "../lib/ia.mjs";
 
 export default async (req) => {
   if (!claveCorrecta(req)) return json({ error: "La clave de la app no es correcta", reintentar: false }, 401);
@@ -25,6 +26,9 @@ export default async (req) => {
     if (ruta === "/api/ia/dictado") {
       return json({ ok: true, albaran: await interpretarDictado({ anthropic, texto: datos.texto, catalogo: datos.catalogo, perfil: datos.perfil, servicios: datos.servicios }) });
     }
+    if (ruta === "/api/ia/cita") {
+      return json({ ok: true, cita: await leerCita({ anthropic, imagen: datos.imagen, tipoImagen: datos.tipoImagen, servicios: datos.servicios }) });
+    }
     if (ruta === "/api/ia/compra") {
       return json({ ok: true, compra: await leerCompra({ anthropic, imagen: datos.imagen, tipoImagen: datos.tipoImagen }) });
     }
@@ -37,6 +41,6 @@ export default async (req) => {
 };
 
 export const config = {
-  path: ["/api/ia/dictado", "/api/ia/compra"],
+  path: ["/api/ia/dictado", "/api/ia/compra", "/api/ia/cita"],
   rateLimit: { windowLimit: 30, windowSize: 60, aggregateBy: ["ip", "domain"] },
 };

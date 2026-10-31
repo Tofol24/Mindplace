@@ -5,6 +5,8 @@
                            → cliente, trabajo y líneas, enlazadas al catálogo de Pere.
                            Con el perfil «servicios» (consulta, sesiones): líneas de los
                            servicios habituales y nada clínico.
+     leerCita            · pantallazo de una cita de la agenda (servicios profesionales)
+                           → paciente, fecha, servicio de la lista, precio y si vino.
      leerCompra          · foto de un albarán o factura de proveedor
                            → proveedor, número, fecha y líneas con su precio de coste.
 
@@ -64,6 +66,22 @@ export const ESQUEMA_DICTADO = {
         },
       },
     },
+  },
+};
+
+export const ESQUEMA_CITA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["esCita", "paciente", "telefono", "fecha", "servicio", "precio", "asistencia", "aseguradora"],
+  properties: {
+    esCita: { type: "boolean" },
+    paciente: textoONulo,
+    telefono: textoONulo,
+    fecha: textoONulo,
+    servicio: textoONulo,
+    precio: numeroONulo,
+    asistencia: { type: "string", enum: ["visitado", "no_ha_venido", "desconocido"] },
+    aseguradora: textoONulo,
   },
 };
 
@@ -132,6 +150,19 @@ Devuelve solo lo que el dictado dice o deja claro; si un dato no aparece, pon nu
 - direccionObra: null.
 - trabajo: null.
 - observaciones: null.`;
+
+const SISTEMA_CITA = `Lees el pantallazo de una cita de la agenda de un profesional sanitario o de servicios en España (por ejemplo, la app de Doctoralia), para hacer el albarán de esa sesión.
+
+Copia solo datos administrativos de la cita, tal como aparecen; si algo no se ve, pon null. Nunca copies contenido clínico (episodio clínico, notas, diagnósticos, motivo de consulta), aunque aparezca.
+
+- esCita: false si la imagen no es una cita de una agenda.
+- paciente: nombre de la persona citada, tal como aparece.
+- telefono: su teléfono, si aparece.
+- fecha: fecha de la cita en formato AAAA-MM-DD.
+- servicio: tipo de visita o servicio de la cita (p. ej. «Visitas sucesivas Psicología»). Si coincide con uno de la lista de servicios habituales (aunque se escriba distinto), pon exactamente el nombre de la lista; si no, tal como aparece.
+- precio: precio del servicio que muestra la cita, en euros; si no aparece, null.
+- asistencia: «visitado» si la cita está marcada como visitada o realizada, «no_ha_venido» si está marcada como no presentada, «desconocido» si no se ve.
+- aseguradora: aseguradora o mutua de la cita si aparece; null si pone que no tiene («Sin aseguradora») o no aparece.`;
 
 const SISTEMA_COMPRA = `Lees la foto de un albarán, factura o ticket de un proveedor de fontanería en España, para que un fontanero autónomo registre sus compras: el precio de coste de cada artículo y las unidades.
 
@@ -308,4 +339,42 @@ export async function leerCompra({ anthropic, imagen, tipoImagen }) {
     ],
   });
   return limpiarCompra(datos);
+}
+
+/**
+ * Lee el pantallazo de una cita (perfil «servicios»). Como el dictado, solo deja pasar al
+ * albarán un servicio de la lista; el que no esté se devuelve aparte (solo para avisar en el móvil).
+ */
+export async function leerCita({ anthropic, imagen, tipoImagen, servicios }) {
+  if (typeof imagen !== "string" || !imagen || imagen.length > MAX_IMAGEN_BASE64 || !/^[A-Za-z0-9+/]+=*$/.test(imagen)) {
+    throw new ErrorIA("La imagen no es válida o es demasiado grande", { status: 400 });
+  }
+  if (!TIPOS_IMAGEN.includes(tipoImagen)) throw new ErrorIA("Formato de imagen no admitido", { status: 400 });
+  const sv = validarServicios(servicios);
+  const lista = sv.length ? sv.map((x) => `${x.nombre}${x.precio != null ? ` | ${x.precio} €` : ""}`).join("\n") : "(ninguno)";
+  const d = await pedirJSON(anthropic, {
+    system: SISTEMA_CITA,
+    schema: ESQUEMA_CITA,
+    content: [
+      { type: "image", source: { type: "base64", media_type: tipoImagen, data: imagen } },
+      { type: "text", text: `Servicios habituales (nombre | precio):\n${lista}\n\nLee esta cita.` },
+    ],
+  });
+  const norm = (x) => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+  const permitidos = new Map(sv.map((x) => [norm(x.nombre), x.nombre]));
+  const leido = cadena(d?.servicio, 120);
+  const servicio = permitidos.get(norm(leido)) || "";
+  const fecha = typeof d?.fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.fecha) ? d.fecha : "";
+  return {
+    esCita: d?.esCita !== false,
+    paciente: cadena(d?.paciente, 200),
+    telefono: cadena(d?.telefono, 40),
+    fecha,
+    servicio,
+    // El que no está en la lista no entra en el albarán: solo se nombra en el aviso del móvil.
+    servicioFueraDeLista: servicio ? "" : leido,
+    precio: numeroEn(d?.precio, 0, 1e7),
+    asistencia: ["visitado", "no_ha_venido"].includes(d?.asistencia) ? d.asistencia : "desconocido",
+    aseguradora: /^sin\b/i.test(cadena(d?.aseguradora, 120)) ? "" : cadena(d?.aseguradora, 120),
+  };
 }

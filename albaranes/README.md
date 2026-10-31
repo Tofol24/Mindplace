@@ -124,7 +124,8 @@ siempre código o huella activados y, si lo pierdes, bórralo a distancia
     obra y desplazamiento, pestañas de compras y catálogo, y dictado por voz.
   - *Servicios profesionales* (consulta, sesiones): sin dirección de la obra
     ni compras; las líneas salen de tus **servicios habituales** («Primera
-    visita: 60», uno por línea). El **dictado por voz con IA** está apagado:
+    visita: 60», uno por línea). **Rellenar con IA** (por voz o con el
+    **pantallazo de la cita** de la agenda, botón «📷 Desde la agenda») está apagado:
     se activa a sabiendas en Ajustes (lo dictado sale a la IA de Anthropic a
     través de tu servidor; dicta solo datos administrativos y recógelo en tu
     aviso de privacidad; necesita `ANTHROPIC_API_KEY`). Con él, «doce primeras

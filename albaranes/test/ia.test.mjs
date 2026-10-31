@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ErrorIA, MODELO, interpretarDictado, leerCompra } from "../lib/ia.mjs";
+import { ErrorIA, MODELO, interpretarDictado, leerCita, leerCompra } from "../lib/ia.mjs";
 
 function anthropicFalso(respuesta, { stop = "end_turn", fallo } = {}) {
   const llamadas = [];
@@ -141,4 +141,28 @@ test("interpretarDictado con el perfil «servicios»: sus servicios, sin obra ni
   const ia2 = anthropicFalso(dictadoOk);
   await interpretarDictado({ anthropic: ia2, texto: "Cliente Jesús, un grifo", catalogo: [] });
   assert.match(ia2.llamadas[0].system, /fontanero/);
+});
+
+test("leerCita: datos administrativos de la cita, servicio solo si está en la lista", async () => {
+  const servicios = [{ nombre: "Visitas sucesivas Psicología", precio: 60 }, { nombre: "Primera visita", precio: 60 }];
+  const imagen = Buffer.from("png falso").toString("base64");
+  const ia = anthropicFalso({ esCita: true, paciente: "Paciente Ficticio", telefono: "600000001", fecha: "2026-10-29",
+    servicio: "visitas sucesivas psicologia", precio: 60, asistencia: "visitado", aseguradora: "Sin aseguradora" });
+  const r = await leerCita({ anthropic: ia, imagen, tipoImagen: "image/png", servicios });
+  assert.deepEqual(r, { esCita: true, paciente: "Paciente Ficticio", telefono: "600000001", fecha: "2026-10-29",
+    servicio: "Visitas sucesivas Psicología", servicioFueraDeLista: "", precio: 60, asistencia: "visitado", aseguradora: "" });
+  const p = ia.llamadas[0];
+  assert.match(p.system, /Nunca copies contenido clínico/);
+  assert.equal(p.messages[0].content[0].type, "image");
+  assert.match(p.messages[0].content[1].text, /Visitas sucesivas Psicología \| 60 €/);
+  // Servicio que no está en la lista: no se devuelve como servicio (no entra en el albarán).
+  const r2 = await leerCita({ anthropic: anthropicFalso({ esCita: true, paciente: "Otra Ficticia", telefono: null, fecha: "29/10/2026",
+    servicio: "Atencion psicológica infantil", precio: 50, asistencia: "no_ha_venido", aseguradora: "Mutua X" }), imagen, tipoImagen: "image/png", servicios });
+  assert.equal(r2.servicio, "");
+  assert.equal(r2.servicioFueraDeLista, "Atencion psicológica infantil");
+  assert.equal(r2.fecha, ""); // formato no válido: no se usa
+  assert.equal(r2.asistencia, "no_ha_venido");
+  assert.equal(r2.aseguradora, "Mutua X");
+  await assert.rejects(leerCita({ anthropic: ia, imagen: "no base64!", tipoImagen: "image/png", servicios }), /no es válida/);
+  await assert.rejects(leerCita({ anthropic: ia, imagen, tipoImagen: "image/gif", servicios }), /no admitido/);
 });
