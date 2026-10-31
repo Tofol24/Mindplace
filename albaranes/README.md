@@ -185,9 +185,20 @@ mezclan: viven en el móvil de cada uno y en su cuenta de Holded.
    | `APP_TEXTO_EXENCION` | `Operación exenta de IVA (art. 20.Uno.3 de la Ley 37/1992).` |
    | `APP_SERVICIOS` | `Primera visita: 60 \| Sesión de seguimiento: 50` |
    | `APP_PREFIJO` | `AP` |
+   | `APP_CONSENTIMIENTO` | `si`: pide el consentimiento RGPD en las primeras visitas |
+   | `APP_COLEGIADO` | Nº de colegiado (sale en el consentimiento) |
+   | `APP_DPD` | Contacto del Delegado de Protección de Datos (opcional) |
+   | `APP_HERRAMIENTA_ONLINE` | Herramienta de las sesiones en línea (opcional; sin ella no sale esa casilla) |
 
 3. Con el perfil `servicios` no hay fotos de compras, y el dictado con IA es
    opcional (Ajustes): `ANTHROPIC_API_KEY` solo hace falta si lo vas a activar.
+4. **Consentimiento RGPD** (perfil `servicios`, se activa en Ajustes): en un
+   albarán con un servicio que contiene «primera» (se cambia en Ajustes), si el
+   paciente aún no lo ha firmado, la app ofrece firmarlo con el dedo: el
+   paciente, un representante legal o dos (tutores separados). El texto lleva
+   los datos del negocio de Ajustes y se guarda tal como se firmó, con las
+   firmas, solo en el móvil y en la copia de seguridad (nunca en Holded, el
+   volcado ni la IA). Se comparte en PDF para la historia clínica.
 
 ## Comprobaciones recomendadas antes de usarla con clientes
 
