@@ -74,8 +74,12 @@ const normCita = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f
  * cliente, la fecha si aún no tiene líneas, y añade la sesión (solo si es un servicio de la lista
  * y la cita no está marcada «No ha venido»). Devuelve el texto para el usuario.
  */
-/** Clave de una cita (fecha, paciente y servicio), para no añadir dos veces la misma. */
-export const claveCita = (cita) => [cita.fecha, normCita(cita.paciente), normalTel(cita.telefono), normCita(cita.servicio || cita.servicioFueraDeLista)].join("|");
+/**
+ * Clave de una cita (fecha, paciente y servicio), para no añadir dos veces la misma. Sin el
+ * teléfono, que es opcional (un recorte puede no mostrarlo): el teléfono ya se usa arriba para
+ * detectar que son dos personas distintas.
+ */
+export const claveCita = (cita) => [cita.fecha, normCita(cita.paciente), normCita(cita.servicio || cita.servicioFueraDeLista)].join("|");
 
 export function aplicarCita(alb, cita, ajustes, { repetir = false } = {}) {
   if (!cita.esCita) return { ok: false, texto: "La imagen no parece una cita de la agenda." };
