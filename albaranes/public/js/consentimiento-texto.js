@@ -21,14 +21,13 @@ const digitos = (s) => String(s || "").replace(/\D/g, "").slice(-9);
 
 /**
  * El consentimiento de este paciente, si ya lo firmó. Devuelve { c, seguro } o null:
- *  · seguro: se firmó desde este albarán, se vinculó a mano, o coincide el nombre y además
- *    el NIF o el teléfono (y ninguno de los dos se contradice).
+ *  · seguro: coincide el nombre, ni el NIF ni el teléfono se contradicen, y además coincide
+ *    uno de los dos, o se firmó desde este albarán, o se vinculó a mano. Si luego se cambia
+ *    el paciente del albarán, el vínculo deja de valer.
  *  · no seguro: solo coincide el nombre (faltan NIF y teléfono para comprobarlo): hay que
  *    preguntar si es la misma persona. Un NIF o un teléfono distinto descarta la coincidencia.
  */
 export function consentimientoDe(cliente, lista, alb = {}) {
-  const directo = (lista || []).find((c) => (alb.id && c.albaranId === alb.id) || (alb.consentimientoId && c.id === alb.consentimientoId));
-  if (directo) return { c: directo, seguro: true };
   const n = normalizar(cliente?.nombre);
   if (!n) return null;
   const nif = normalNif(cliente?.nif);
@@ -39,7 +38,9 @@ export function consentimientoDe(cliente, lista, alb = {}) {
       const cn = normalNif(c.paciente?.nif);
       const ct = digitos(c.paciente?.telefono);
       if ((nif && cn && nif !== cn) || (tel && ct && tel !== ct)) return null; // otra persona
-      return { c, seguro: (!!nif && nif === cn) || (!!tel && tel === ct) };
+      // Firmado desde este albarán o vinculado a mano: vale mientras siga siendo el mismo paciente.
+      const directo = (alb.id && c.albaranId === alb.id) || (alb.consentimientoId && c.id === alb.consentimientoId);
+      return { c, seguro: !!directo || (!!nif && nif === cn) || (!!tel && tel === ct) };
     })
     .filter(Boolean)
     .sort((a, b) => (b.seguro - a.seguro) || String(b.c.firmadoEn).localeCompare(String(a.c.firmadoEn)));

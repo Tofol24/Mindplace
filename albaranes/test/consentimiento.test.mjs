@@ -25,7 +25,10 @@ test("consentimientoDe: seguro solo si coincide NIF o teléfono; si se contradic
   assert.equal(de({ nombre: "Paciente Ficticio" }), "b?"); // solo el nombre: hay que preguntar
   assert.equal(de({ nombre: "Solo Nombre" }), "c?");
   assert.equal(de({ nombre: "Solo Nombre" }, { id: "alb-1" }), "c"); // firmado desde este albarán
-  assert.equal(de({ nombre: "Otro" }, { consentimientoId: "a" }), "a"); // vinculado a mano
+  assert.equal(de({ nombre: "Paciente Ficticio" }, { consentimientoId: "b" }), "b"); // vinculado a mano
+  assert.equal(de({ nombre: "Otro" }, { consentimientoId: "a" }), null); // se cambió el paciente: ya no vale
+  assert.equal(de({ nombre: "Solo Nombre", telefono: "600000005" }, { id: "alb-1" }), "c"); // sin contradicción, sigue
+  assert.equal(de({ nombre: "Paciente Ficticio", telefono: "600000009" }, { consentimientoId: "a" }), "b?"); // «a» tiene otro teléfono: queda «b», por confirmar
   assert.equal(de({ nombre: "Otra Ficticia" }), null);
   assert.equal(de({ nombre: "" }), null);
 });
