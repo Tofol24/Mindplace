@@ -21,7 +21,14 @@ ja feia servir l'eina continua en català. Es canvia a **Configuració → Idiom
 - En castellà, les assignatures noves són en castellà per defecte, i les explicacions de les
   assignatures d'anglès i alemany van en castellà. La llengua de cada assignatura continua
   manant per a la guia, les preguntes i les correccions.
-- Les pàgines de subscripció i els correus encara són només en català (fase 2).
+- A la capçalera hi ha les banderes catalana i espanyola: obren Configuració amb l'idioma a la vista.
+- La versió web amb codis tria l'idioma pel navegador la primera vegada; la de claude.ai i el fitxer
+  autònom comencen en català. L'idioma es desa (`explica:ui`).
+- Les pàgines de subscripció (`subscriu`, `gracies`, `recupera`) fan servir `web-pacients/idioma.js`, amb el
+  mateix criteri i un canvi d'idioma al peu. L'idioma s'envia al servidor: el pagament de Stripe surt en
+  castellà i els correus (codi, «He perdut el codi», enllaç de gestió) i la pàgina del portal surten en
+  l'idioma de qui es va subscriure o ho demana. Les estadístiques (només per a l'administrador) són en català.
+- Pendent: condicions i privacitat en castellà.
 
 ## Mode de problemes (Matemàtiques, Física i Química)
 
