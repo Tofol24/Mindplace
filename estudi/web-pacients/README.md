@@ -23,9 +23,12 @@ crides a Claude amb la clau, que mai arriba al navegador.
    - Build command: (buit)
 3. **Variables d'entorn** (Site configuration → Environment variables):
    - `ANTHROPIC_API_KEY` = la clau del pas 1.
-   - `EXPLICA_CODIS` = els codis, separats per comes. Exemple: `k7m2qpx4, r9tx4bm8:30`
-     (`:30` vol dir 30 peticions al dia per a aquell codi; mínim 8 caràcters per codi).
+   - `EXPLICA_CODIS` = els codis, separats per comes. Exemple: `k7m2qpx4, r9tx4bm8:30, p3hw8zq1:20:100`
+     (format `codi:dia:mes`: `:30` vol dir 30 peticions al dia; `:20:100`, 20 al dia i 100 al mes natural;
+     `codi::100` deixa el diari per defecte; mínim 8 caràcters per codi).
    - Opcionals: `EXPLICA_LIMIT_DIA` (per defecte 60 peticions per codi i dia; 0 = sense límit). Si el comptador diari no funciona, el servidor denega les peticions: per desactivar-lo posa `EXPLICA_LIMIT_DIA=0` i no posis límits als codis,
+     `EXPLICA_LIMIT_MES` (peticions al mes dels codis donats a mà que no en porten; per defecte 0 = sense límit mensual.
+     Amb un cost de ~0,03 € per petició, 100 al mes són uns 3 €),
      `EXPLICA_MODEL` (per defecte `claude-sonnet-5-5`), `EXPLICA_MODEL_COMPLEX`, `EXPLICA_MODEL_QUICK`.
 4. **Torna a desplegar** (Deploys → Trigger deploy) perquè agafi les variables.
 
@@ -53,7 +56,8 @@ crides a Claude amb la clau, que mai arriba al navegador.
 
 Opcional. Sense aquestes variables, el lloc funciona només amb els codis donats a mà.
 Amb elles, qualsevol persona pot subscriure's a `/subscriu.html`, rep un codi i té una quota mensual.
-Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual i sense quota mensual.
+Els codis donats a mà (`EXPLICA_CODIS`) continuen funcionant igual, amb el seu límit mensual propi
+(`codi:dia:mes`) o el per defecte (`EXPLICA_LIMIT_MES`), si n'hi ha.
 
 **Primer, en mode de prova** (claus que comencen per `sk_test_`; targeta de prova `4242 4242 4242 4242`).
 

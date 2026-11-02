@@ -48,12 +48,14 @@ export async function uncount(st, key) {
 // Un límit ha de ser un enter complet; "0" vol dir sense límit. Un valor mal escrit fa servir el per defecte.
 export const toLimit = (v, def) => /^\s*\d+\s*$/.test(v ?? "") ? parseInt(v, 10) : def;
 
-// Codis donats a mà (pacients): EXPLICA_CODIS = "k7m2qpx4, r9tx4bm8:30" (mínim 8 caràcters)
-export function manualCodes(defLimit) {
+// Codis donats a mà (pacients): EXPLICA_CODIS = "k7m2qpx4, r9tx4bm8:30, p3hw8zq1:20:100" (mínim 8 caràcters)
+// codi[:límit diari[:límit mensual]]. Si falta un límit (o està buit, «codi::100»), es fa servir el per defecte.
+// Retorna codi → {dia, mes}; 0 vol dir sense límit.
+export function manualCodes(defDia, defMes = 0) {
   const m = new Map();
   for (const part of String(env("EXPLICA_CODIS")).split(/[,\n]/)) {
-    const [c, l] = part.trim().toLowerCase().split(":");
-    if (/^[a-z0-9_-]{8,40}$/.test(c || "")) m.set(c, toLimit(l, defLimit));   // mínim 8 caràcters: que no es puguin endevinar
+    const [c, dia, mes] = part.trim().toLowerCase().split(":");
+    if (/^[a-z0-9_-]{8,40}$/.test(c || "")) m.set(c, {dia: toLimit(dia, defDia), mes: toLimit(mes, defMes)});   // mínim 8 caràcters: que no es puguin endevinar
   }
   return m;
 }

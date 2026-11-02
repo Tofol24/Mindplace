@@ -6,8 +6,11 @@
 //
 // Variables d'entorn (Netlify → Site configuration → Environment variables):
 //   ANTHROPIC_API_KEY   clau de l'API (millor d'un espai de treball amb límit de despesa)
-//   EXPLICA_CODIS       codis separats per comes; opcionalment amb límit diari: "k7m2qpx4:40, r9tx4bm8" (mínim 8 caràcters)
+//   EXPLICA_CODIS       codis separats per comes; opcionalment amb límit diari i mensual:
+//                       "k7m2qpx4:40, r9tx4bm8, p3hw8zq1:20:100" → codi[:dia[:mes]] (mínim 8 caràcters)
 //   EXPLICA_LIMIT_DIA   peticions per codi i dia si el codi no en porta (per defecte 60; 0 = sense límit)
+//   EXPLICA_LIMIT_MES   peticions per mes natural dels codis donats a mà que no en porten (per defecte 0 = sense límit).
+//                       Les subscripcions fan servir la quota del seu pla (EXPLICA_PLANS).
 //   EXPLICA_MODEL       model per a la feina normal (per defecte claude-sonnet-5-5)
 //   EXPLICA_MODEL_COMPLEX  model per corregir exercicis (per defecte el mateix)
 //   EXPLICA_MODEL_QUICK    model per a tasques curtes (per defecte claude-haiku-5-5)
@@ -78,7 +81,7 @@ export default async (req, context) => {
   purgeLater(context);
 
   const dayLimit = toLimit(env("EXPLICA_LIMIT_DIA"), DEFAULT_LIMIT);
-  const codis = manualCodes(dayLimit);
+  const codis = manualCodes(dayLimit, toLimit(env("EXPLICA_LIMIT_MES"), 0));
   const codi = (req.headers.get("x-codi") || "").trim().toLowerCase();
   // Si el magatzem no està disponible, no es compten els intents (la resta de límits ja deneguen per si sols).
   let us = null, fk = null;
@@ -86,9 +89,11 @@ export default async (req, context) => {
   if (us && (Number((await getJSON(us, fk).catch(() => null))?.n) || 0) >= MAX_FAILS) return json(429, {error: "intents"});
   const badCode = async () => { if (us) await count(us, fk, MAX_FAILS + 1).catch(() => {}); return json(401, {error: "codi"}); };
   if (!/^[a-z0-9_-]{4,40}$/.test(codi)) return badCode();
-  // Codi donat a mà (pacients) o codi d'una subscripció de Stripe (quota mensual del seu pla).
-  let lim = codis.get(codi), monthLimit = 0;
-  if (lim === undefined) {
+  // Codi donat a mà (pacients: límits propis o per defecte) o codi d'una subscripció de Stripe
+  // (quota mensual del seu pla).
+  const manual = codis.get(codi);
+  let lim = manual?.dia, monthLimit = manual?.mes || 0;
+  if (!manual) {
     if (!env("STRIPE_SECRET_KEY")) return badCode();   // sense subscripcions, només valen els codis donats a mà
     let sub = null;
     try { sub = await subForCode(await store("explica-subs"), codi); } catch { return json(503, {error: "servei"}); }
@@ -116,7 +121,7 @@ export default async (req, context) => {
   let restants = null;
   if (monthLimit) {
     const m = await allow(monthKey, monthLimit);
-    if (!m.ok) { await refund(counted); return json(429, {error: "quota", quota: monthLimit}); }
+    if (!m.ok) { await refund(counted); return json(429, {error: "quota", quota: monthLimit, origen: manual ? "codi" : "pla"}); }
     counted.push(monthKey);
     restants = Math.max(0, monthLimit - m.used);
   }

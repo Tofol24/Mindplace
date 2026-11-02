@@ -706,7 +706,7 @@ const AI = {
     if (!res.ok) {
       const b = await res.json().catch(() => ({}));
       if (res.status === 401) { this.codiOk = false; renderConn(); }
-      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
+      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || (b.error === "quota" && b.origen === "codi" ? "month_quota_code" : null) || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
         message: b.message || ("HTTP " + res.status)};
     }
     const rest = res.headers.get("x-explica-restants");
@@ -768,6 +768,7 @@ function aiErr(e) {
     no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
     too_many_tries: "Hi ha hagut massa intents amb codis incorrectes des d'aquesta connexió. Torna-ho a provar demà, amb el codi ben escrit.",
     month_quota: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.",
+    month_quota_code: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, demana-ho a qui t'ha donat el codi.",
     sub_inactive: "La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.",
     empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
   })[c] || (e?.message ? "Error: " + e.message : "Alguna cosa ha fallat. Torna-ho a provar.");
