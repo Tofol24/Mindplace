@@ -1,6 +1,8 @@
 // Explica-ho · peces compartides de les funcions del servidor (codis, comptadors, Stripe).
 
 export const env = (k, d = "") => (globalThis.Netlify?.env.get(k) ?? d);
+// Idioma dels correus i de les pàgines del servidor: "es" (castellà) o "ca" (català, per defecte).
+export const lang = (x) => x === "es" ? "es" : "ca";
 export const json = (status, body, headers = {}) => new Response(JSON.stringify(body), {
   status, headers: {"content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers},
 });
@@ -101,6 +103,7 @@ export function subInfo(sub) {
     id: sub.id, customer: typeof sub.customer === "string" ? sub.customer : sub.customer?.id,
     status: sub.status, price: it?.price?.id || "", periodEnd: Number(sub.current_period_end ?? it?.current_period_end ?? 0),
     endedAt: Number(sub.ended_at || 0) * 1000,   // quan va acabar, segons Stripe (0 si continua)
+    lang: lang(sub.metadata?.idioma),   // idioma triat en subscriure's (per als correus)
   };
 }
 // Activa, de prova, o amb un pagament pendent: 3 dies de marge comptats des del primer impagament.
@@ -205,13 +208,19 @@ export async function mailCode(st, subId, origin) {
     const to = await customerEmail(rec.customer);
     if (!to) { await release(false); return "no"; }
     await indexEmail(st, to, rec.customer);
-    const {text, html} = mailBody([
+    const es = rec.lang === "es";
+    const {text, html} = mailBody(es ? [
+      "Gracias por suscribirte a Explica-ho. Este es el código de acceso:",
+      "CODI:" + rec.code,
+      "Para empezar, abre Explica-ho, ve a Configuración y escribe el código. El mismo código sirve en cualquier ordenador o móvil.",
+      "Guarda este correo: si alguna vez pierdes el código, puedes volver a pedirlo en la página «He perdido el código».",
+    ] : [
       "Gràcies per subscriure't a Explica-ho. Aquest és el codi d'accés:",
       "CODI:" + rec.code,
       "Per començar, obre Explica-ho, ves a Configuració i escriu-hi el codi. El mateix codi serveix en qualsevol ordinador o mòbil.",
       "Guarda aquest correu: si mai perds el codi, el pots tornar a demanar a la pàgina «He perdut el codi».",
-    ], {label: "Obre Explica-ho", url: origin + "/"});
-    await sendMail({to, subject: "El teu codi d'accés a Explica-ho", html, text});
+    ], {label: es ? "Abre Explica-ho" : "Obre Explica-ho", url: origin + "/"});
+    await sendMail({to, subject: es ? "Tu código de acceso a Explica-ho" : "El teu codi d'accés a Explica-ho", html, text});
     await release(true);
     return "enviat";
   } catch (e) {

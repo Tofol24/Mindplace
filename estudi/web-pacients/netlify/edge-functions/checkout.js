@@ -1,5 +1,5 @@
 // Explica-ho · comença una subscripció: crea la pàgina de pagament de Stripe (Checkout) i en retorna l'adreça.
-import {json, plans, stripe, subsEnabled} from "../lib/comu.js";
+import {json, plans, stripe, subsEnabled, lang} from "../lib/comu.js";
 
 export default async (req) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
@@ -12,15 +12,16 @@ export default async (req) => {
   const email = String(body?.email || "").trim();
   if (email && !/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(email)) return json(400, {error: "email"});
 
-  const origin = new URL(req.url).origin;
+  const origin = new URL(req.url).origin, idioma = lang(body?.idioma);
   const form = {
     mode: "subscription",
     "line_items[0][price]": plan.price, "line_items[0][quantity]": "1",
     success_url: origin + "/gracies.html?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: origin + "/subscriu.html",
     allow_promotion_codes: "true",
-    locale: "auto",
+    locale: idioma === "es" ? "es" : "auto",   // Stripe no té la pàgina de pagament en català
     "metadata[app]": "explica-ho", "subscription_data[metadata][app]": "explica-ho",
+    "metadata[idioma]": idioma, "subscription_data[metadata][idioma]": idioma,   // idioma dels correus
     // Constància del consentiment: condicions i privacitat, i inici immediat del servei dins el termini de desistiment.
     "metadata[consentiment]": "condicions+privacitat " + new Date().toISOString(),
     "metadata[inici_immediat]": "sol·licitat; desistiment amb descompte proporcional",
