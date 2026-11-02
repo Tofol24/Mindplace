@@ -124,6 +124,9 @@ if (UI === "es") {
   trNode(document.body);
   document.title = T(document.title);
 }
+// En castellà, els enllaços a les condicions i a la privacitat porten a la versió castellana.
+if (UI === "es") for (const a of document.querySelectorAll('a[href^="condicions.html"], a[href^="privacitat.html"]'))
+  a.setAttribute("href", a.getAttribute("href").replace("condicions.html", "condiciones.html").replace("privacitat.html", "privacidad.html").replace("#desistiment", "#desistimiento"));
 // Canvi d'idioma al peu de la pàgina.
 (() => {
   const main = document.querySelector("main"); if (!main) return;
