@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Privacidad de Explica-ho</title>
+<link rel="stylesheet" href="_base.css">
+</head>
+<body>
+<main class="doc">
+  <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <h1>Política de privacidad</h1>
+  <p class="muted">Última actualización: 2 de noviembre de 2026 · <a href="privacitat.html" lang="ca" hreflang="ca">Versió en català</a></p>
+
+  <h2>Responsable</h2>
+  <p>Cristóbal Villalonga Melis, NIF 78210217M, C/ Mare de Déu de l'Esperança, 70, 2.º, 07300 Inca (Illes Balears). Correo de contacto para cualquier cuestión de privacidad: <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>.</p>
+
+  <h2>Cómo funciona, en pocas palabras</h2>
+  <p>Explica-ho está pensado para guardar lo mínimo posible. El trabajo del estudiante se queda en su dispositivo; el servidor solo guarda lo necesario para saber si un código de acceso es válido y cuántas peticiones le quedan. No se guardan nombres ni correos en claro, no hay cookies de seguimiento ni analítica, y los datos no se usan para publicidad.</p>
+
+  <h2>Qué datos se tratan</h2>
+  <ul>
+    <li><strong>El trabajo del estudiante</strong> (material, guías, respuestas y progreso) y las preferencias de la herramienta, como el idioma, se guardan solo en el navegador del dispositivo, en el almacenamiento local. El servidor de Explica-ho no los guarda.</li>
+    <li><strong>El material y las respuestas</strong>, cuando se pide una guía, una pregunta o una corrección, se envían a Anthropic (Claude) para procesarlos, pasando por el servidor de Explica-ho, que no guarda copia. Anthropic no usa estos datos para entrenar sus modelos y solo los conserva el tiempo limitado que fijan sus condiciones comerciales.</li>
+    <li><strong>En el servidor</strong> se guarda:
+      <ul>
+        <li>el código de acceso y la referencia de la suscripción y del cliente en Stripe, con el estado de la suscripción, el plan y el idioma elegido al suscribirse (para enviar los correos en ese idioma);</li>
+        <li>contadores de peticiones por código, por día y por mes;</li>
+        <li>una huella cifrada (no reversible) del correo de quien paga, para poder volver a enviarle el código si lo pierde;</li>
+        <li>contadores de intentos fallidos y de solicitudes de recuperación, identificados por una huella cifrada del correo o de la dirección IP, para evitar abusos;</li>
+        <li>los enlaces de un solo uso para gestionar la suscripción, que caducan a los 30 minutos;</li>
+        <li>estadísticas de uso por día: número de peticiones, tokens y coste, y cuántas peticiones ha hecho cada código de acceso (identificado solo por las tres primeras letras y una huella cifrada, no por el código completo). No incluyen ningún contenido.</li>
+      </ul>
+    </li>
+    <li><strong>El pago</strong>: Stripe recibe el correo, el nombre y los datos de pago de quien paga, y el idioma elegido. Explica-ho nunca ve los datos de la tarjeta.</li>
+    <li><strong>Los correos</strong> (el código de acceso y los enlaces para gestionar la suscripción) se envían con Resend, que recibe la dirección de destino y el contenido del mensaje.</li>
+    <li><strong>La dirección IP</strong> de conexión la recibe el servicio de alojamiento (Netlify), como en cualquier página web, para poder servirla y protegerla; también la recibe Stripe durante el pago, que se hace en su página. Anthropic y Resend no la reciben: las llamadas a estos servicios las hace el servidor de Explica-ho. Al abrir la página, el navegador también se conecta a Google Fonts (tipos de letra) y a jsDelivr (los lectores de PDF y Word), que reciben la dirección IP como cualquier servidor web.</li>
+    <li><strong>El dictado por voz</strong> («Habla») lo hace el navegador: en Chrome, el audio se procesa en los servidores de Google. Es opcional; se puede escribir o dictar con el teclado del dispositivo.</li>
+  </ul>
+
+  <h2>Para qué y con qué base</h2>
+  <ul>
+    <li>Prestar el servicio de estudio y gestionar la suscripción, el cobro y el envío del código: ejecución del contrato (art. 6.1.b del RGPD).</li>
+    <li>Conservar las facturas: obligación legal fiscal y mercantil (art. 6.1.c del RGPD).</li>
+    <li>Limitar peticiones e intentos para evitar abusos y proteger el servicio, y conocer el coste del servicio para poder mantenerlo: interés legítimo (art. 6.1.f del RGPD).</li>
+  </ul>
+  <p>No se toman decisiones automatizadas con efectos jurídicos. Las correcciones de la IA son orientaciones de estudio.</p>
+
+  <h2>Menores de edad</h2>
+  <p>La suscripción la contrata siempre una persona mayor de edad. Por debajo de los 14 años, el tratamiento de los datos del estudiante requiere el consentimiento del padre, la madre o el tutor legal, que lo da al contratar. Recomendamos que el material de estudio no incluya datos personales ni información de salud.</p>
+
+  <h2>Quién tiene acceso (encargados del tratamiento)</h2>
+  <ul>
+    <li><strong>Anthropic, PBC</strong> (EE. UU.): procesamiento con inteligencia artificial.</li>
+    <li><strong>Netlify, Inc.</strong> (EE. UU.): alojamiento de la web y del servidor.</li>
+    <li><strong>Resend</strong> (EE. UU., con envío desde la región europea de Irlanda): envío de correos.</li>
+    <li><strong>Stripe Payments Europe, Ltd.</strong> (Irlanda): pagos. Para algunas finalidades propias, como la prevención del fraude o las obligaciones legales, Stripe actúa como responsable independiente y aplica su propia política de privacidad.</li>
+  </ul>
+  <p>Cuando los datos se tratan fuera del Espacio Económico Europeo, la transferencia se hace con las garantías que prevé el RGPD: el Marco de Privacidad de Datos UE-EE. UU., en el caso de las empresas certificadas, o las cláusulas contractuales tipo aprobadas por la Comisión Europea.</p>
+
+  <h2>Cuánto tiempo</h2>
+  <ul>
+    <li>El trabajo guardado en el navegador: hasta que la persona usuaria lo borra (Configuración → Borra todos los datos de este navegador) o borra los datos del navegador.</li>
+    <li>Contadores diarios y de intentos: se borran a partir del día siguiente. Contadores mensuales: cuando termina el mes.</li>
+    <li>Estadísticas de uso por día: el mes en curso y los 12 anteriores.</li>
+    <li>Enlaces de gestión: caducan a los 30 minutos y se borran en la limpieza diaria.</li>
+    <li>Código y referencia de la suscripción: mientras la suscripción esté activa y hasta 12 meses después de la baja, para poder atender consultas y reclamaciones. Después se borran, junto con la huella del correo.</li>
+    <li>Facturas y datos de pago (en Stripe): el tiempo que exigen las normas fiscales y mercantiles.</li>
+  </ul>
+
+  <h2>Derechos</h2>
+  <p>Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad escribiendo a <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>. Si consideras que no se han respetado tus derechos, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" rel="noopener">aepd.es</a>).</p>
+
+  <p class="muted small">Consulta también las <a href="condiciones.html">condiciones de uso</a>.</p>
+</main>
+</body>
+</html>
