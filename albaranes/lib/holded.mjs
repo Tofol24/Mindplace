@@ -446,12 +446,19 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       }
     }
     if (!estado.albaranId) {
-      // La lista de impuestos de la cuenta solo hace falta para el IVA exento o la retención:
-      // el 21 % y el 10 % usan las claves de siempre. Así un albarán normal no depende de que la
-      // clave tenga permiso para leer impuestos, ni gasta una llamada más.
+      // Se usan los impuestos de la cuenta si se pueden leer (algunas tienen su propio 21 %).
+      // Si no se pueden leer, un albarán con IVA del 21 % o 10 % y sin retención sale igual con
+      // las claves de siempre: solo el IVA exento y la retención necesitan la lista sí o sí.
       const necesitaLista = !!a.retencion || a.lineas.some((l) => l.iva === 0);
+      let impuestos;
+      try {
+        impuestos = await holded.impuestos();
+      } catch (e) {
+        if (necesitaLista) throw e;
+        impuestos = IMPUESTOS_DEFECTO;
+      }
       // Antes de marcar «creando»: si falta un impuesto en Holded no se ha intentado nada.
-      const datos = albaranParaHolded(a, estado.contactId, necesitaLista ? await holded.impuestos() : IMPUESTOS_DEFECTO);
+      const datos = albaranParaHolded(a, estado.contactId, impuestos);
       estado.creando = true;
       estado.huella = huella;
       await guardar();
