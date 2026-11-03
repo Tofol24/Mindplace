@@ -332,6 +332,22 @@ test("si falta un impuesto en Holded no se intenta crear el albarán (ni queda �
   assert.deepEqual(h2.llamadas.find((l) => l[0] === "crearAlbaran")[1].items[0].taxes, ["s_iva_exento", "s_ret_15"]);
 });
 
+test("IVA del 21 %: usa el impuesto propio de la cuenta y, si no se puede leer la lista, el de siempre", async () => {
+  const propio = holdedFalso();
+  propio.impuestos = async () => ({ iva: { 21: "iva_ventas_21", 10: "s_iva_10", 0: null }, retencion: { 7: null, 15: null } });
+  await enviarAlbaran({ holded: propio, almacen: almacenMemoria(), albaran: validarAlbaran(base()) });
+  assert.deepEqual(propio.llamadas.find((l) => l[0] === "crearAlbaran")[1].items[0].taxes, ["iva_ventas_21"]);
+  // Holded no responde a la lista de impuestos: el albarán normal sale igual.
+  const caido = holdedFalso();
+  caido.impuestos = async () => { throw new ErrorHolded("Holded no responde", { status: 503, reintentar: true }); };
+  const r = await enviarAlbaran({ holded: caido, almacen: almacenMemoria(), albaran: validarAlbaran(base()) });
+  assert.equal(r.adjunto, true);
+  assert.deepEqual(caido.llamadas.find((l) => l[0] === "crearAlbaran")[1].items[0].taxes, ["s_iva_21"]);
+  // Con IVA exento sí hace falta la lista: sin ella no se envía.
+  const exento = validarAlbaran({ ...base(), lineas: [{ concepto: "Sesión", cantidad: 1, precio: 60, iva: 0 }] });
+  await assert.rejects(enviarAlbaran({ holded: caido, almacen: almacenMemoria(), albaran: exento }), /no responde/);
+});
+
 test("la retención forma parte de la huella, sin cambiar la de los albaranes sin retención", () => {
   const sin = validarAlbaran(base());
   assert.equal(huellaAlbaran(sin), huellaAlbaran({ ...sin, retencion: 0 }));
@@ -353,6 +369,10 @@ test("crearClienteHolded.impuestos lee GET /taxes, lo recuerda y sin permiso usa
   assert.equal(d.sinLista, true);
   assert.equal(d.iva[21], "s_iva_21");
   assert.equal(d.iva[0], null);
+  // Sin el permiso de impuestos Holded puede responder 401: tampoco para el envío.
+  olvidarImpuestos();
+  const h401 = crearClienteHolded({ apiKey: "k4", fetch: async () => new Response("", { status: 401 }) });
+  assert.equal((await h401.impuestos()).iva[21], "s_iva_21");
   olvidarImpuestos();
   const hCaido = crearClienteHolded({ apiKey: "k3", fetch: async () => new Response("", { status: 503 }) });
   await assert.rejects(hCaido.impuestos(), (e) => e.reintentar === true);

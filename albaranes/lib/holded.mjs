@@ -153,8 +153,10 @@ export function crearClienteHolded({ apiKey, fetch = globalThis.fetch, timeoutMs
         const r = await llamar("GET", "/taxes");
         valor = resolverImpuestos(Array.isArray(r) ? r : r?.items);
       } catch (e) {
-        if (e instanceof ErrorHolded && (e.reintentar || e.status === 401)) throw e;
-        valor = { ...IMPUESTOS_DEFECTO, sinLista: true }; // p. ej. la clave no tiene permiso para leer impuestos
+        if (e instanceof ErrorHolded && e.reintentar) throw e;
+        // Sin permiso para leer impuestos (accounting:taxes.read): según el caso Holded responde
+        // 403 o 401. La clave sí vale para el resto (contactos y albaranes), así que no se para nada.
+        valor = { ...IMPUESTOS_DEFECTO, sinLista: true };
       }
       cacheImpuestos = { apiKey, en: Date.now(), valor };
       return valor;
@@ -444,8 +446,19 @@ async function enviarSinBloqueo({ holded, almacen, albaran: a }) {
       }
     }
     if (!estado.albaranId) {
+      // Se usan los impuestos de la cuenta si se pueden leer (algunas tienen su propio 21 %).
+      // Si no se pueden leer, un albarán con IVA del 21 % o 10 % y sin retención sale igual con
+      // las claves de siempre: solo el IVA exento y la retención necesitan la lista sí o sí.
+      const necesitaLista = !!a.retencion || a.lineas.some((l) => l.iva === 0);
+      let impuestos;
+      try {
+        impuestos = await holded.impuestos();
+      } catch (e) {
+        if (necesitaLista) throw e;
+        impuestos = IMPUESTOS_DEFECTO;
+      }
       // Antes de marcar «creando»: si falta un impuesto en Holded no se ha intentado nada.
-      const datos = albaranParaHolded(a, estado.contactId, await holded.impuestos());
+      const datos = albaranParaHolded(a, estado.contactId, impuestos);
       estado.creando = true;
       estado.huella = huella;
       await guardar();
