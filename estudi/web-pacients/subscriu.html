@@ -32,6 +32,7 @@
     <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció. Per desistir dins els 14 dies, escriu-nos (ho explicam a les <a href="condicions.html#desistiment" target="_blank" rel="noopener">condicions</a>).</p>
   </form>
 </main>
+<script src="idioma.js"></script>
 <script>
 "use strict";
 const $ = (s) => document.querySelector(s);
@@ -51,7 +52,7 @@ $("#f").addEventListener("submit", async (e) => {
   if (!pla || !$("#ok").checked || !$("#inici").checked) return;
   $("#go").disabled = true; $("#go").textContent = "Obrint el pagament…";
   try {
-    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true})});
+    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true, idioma: UI})});
     const b = await r.json().catch(() => ({}));
     if (!r.ok || !b.url) throw new Error(b.error === "email" ? "Revisa el correu: no sembla vàlid." : "No s'ha pogut obrir el pagament. Torna-ho a provar.");
     location.href = b.url;

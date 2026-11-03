@@ -61,6 +61,13 @@ p{margin:0}
 .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
 .brand h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
 .brand h1 span{background:linear-gradient(transparent 58%,var(--marker) 58%);padding:0 .1em;color:inherit}
+.flags{display:inline-flex;gap:6px}
+.flag{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:4px;cursor:pointer;line-height:0;display:inline-flex;align-items:center;gap:6px;color:var(--ink);font:inherit;font-size:.9rem}
+.flag svg{width:27px;height:18px;display:block;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.flag[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.flag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.field.lang .flag{padding:8px 12px;line-height:1.2}
+.field.hl{outline:2px solid var(--accent);outline-offset:6px;border-radius:6px}
 .conn{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted)}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
 .dot.on{background:var(--ok)} .dot.off{background:var(--warn)}
@@ -299,6 +306,7 @@ dialog::backdrop{background:rgba(10,14,30,.45)}
 <header class="top">
   <div class="brand"><h1><span>Explica</span>-ho</h1><span class="label">Estudi de 4t d'ESO</span></div>
   <span class="conn" id="conn"><span class="dot"></span><span>Connectant…</span></span>
+  <span class="flags" role="group" aria-label="Idioma de l'eina"><button class="flag" data-flag="ca" type="button" title="Català" aria-label="Català"><svg viewBox="0 0 27 18" aria-hidden="true"><rect width="27" height="18" fill="#fcdd09"/><path d="M0 3h27M0 7h27M0 11h27M0 15h27" stroke="#da121a" stroke-width="2"/></svg></button><button class="flag" data-flag="es" type="button" title="Castellano" aria-label="Castellano"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg></button></span>
   <button class="btn sm" id="btnSettings" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
     Configuració</button>
@@ -322,7 +330,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const today = (t = Date.now()) => { const d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
-const fmtDate = (t) => new Date(t).toLocaleDateString("ca-ES", {day:"numeric", month:"short"});
+const fmtDate = (t) => new Date(t).toLocaleDateString(LOC, {day:"numeric", month:"short"});
 const kchars = (n) => n >= 1000 ? (n/1000).toFixed(n >= 10000 ? 0 : 1) + "k car." : n + " car.";
 const arr = (x) => Array.isArray(x) ? x : [];
 function lsAvailable() { try { localStorage.setItem("explica:probe", "1"); localStorage.removeItem("explica:probe"); return true; } catch { return false; } }
@@ -336,6 +344,670 @@ function toast(msg) {
 }
 
 /* ============================================================
+   Idioma de l'eina (català / castellà)
+   La interfície s'escriu en català i, si l'idioma és el castellà, es tradueix
+   en mostrar-se (diccionari ES + regles ES_RX). Només es tradueixen textos que
+   coincideixen sencers amb una frase de l'eina: el material i el que escriu
+   Claude no es toquen.
+   ============================================================ */
+// Només la versió web amb codis tria segons el navegador; la de la filla (claude.ai o fitxer) comença en català.
+// L'idioma detectat es desa: si no, en guardar les primeres dades es tornaria al català.
+const UI = (() => {
+  const v = ls("explica:ui"); if (v === "ca" || v === "es") return v;
+  const pick = () => {
+    if (!document.querySelector('meta[name="explica-proxy"]')) return "ca";
+    try { if (Object.keys(localStorage).some(k => k.startsWith("explica:") && k !== "explica:probe")) return "ca"; } catch { /* sense localStorage */ }
+    for (const l of navigator.languages || [navigator.language || ""]) {
+      const b = String(l).toLowerCase().split("-")[0];
+      if (b === "ca" || b === "va") return "ca";
+      if (b === "es" || b === "gl" || b === "eu") return "es";
+    }
+    return "es";
+  };
+  const r = pick(); ls("explica:ui", r); return r;
+})();
+const LOC = UI === "es" ? "es-ES" : "ca-ES";
+document.documentElement.lang = UI;
+const ES = {
+"Dades, definicions i fets concrets.": "Datos, definiciones y hechos concretos.",
+"Recordar dades, definicions, noms, dates i fets concrets del material.": "Recordar datos, definiciones, nombres, fechas y hechos concretos del material.",
+"Comprendre": "Comprender",
+"Explicar-ho amb les teves paraules i el perquè.": "Explicarlo con tus palabras y el porqué.",
+"Explicar amb les pròpies paraules, dir el perquè de les coses i posar exemples.": "Explicar con las propias palabras, decir el porqué de las cosas y poner ejemplos.",
+"Connectar idees: causes, comparacions, processos.": "Conectar ideas: causas, comparaciones, procesos.",
+"Connectar dos o més conceptes del tema: causa i efecte, comparar semblances i diferències, ordenar un procés pas a pas.": "Conectar dos o más conceptos del tema: causa y efecto, comparar semejanzas y diferencias, ordenar un proceso paso a paso.",
+"Visió de conjunt, aplicar i lligar amb altres temes.": "Visión de conjunto, aplicar y relacionar con otros temas.",
+"Visió de conjunt del tema, aplicar-lo a una situació nova, argumentar una opinió amb dades i relacionar-lo amb altres temes de la mateixa assignatura.": "Visión de conjunto del tema, aplicarlo a una situación nueva, argumentar una opinión con datos y relacionarlo con otros temas de la misma asignatura.",
+"català": "catalán",
+"castellà": "castellano",
+"anglès": "inglés",
+"alemany": "alemán",
+"Biologia": "Biología",
+"Història": "Historia",
+"Geografia": "Geografía",
+"Català": "Catalán",
+"Castellà": "Castellano",
+"Anglès": "Inglés",
+"Alemany": "Alemán",
+"Matemàtiques": "Matemáticas",
+"Física i Química": "Física y Química",
+"Filosofia": "Filosofía",
+"1r d'ESO": "1.º de ESO",
+"2n d'ESO": "2.º de ESO",
+"3r d'ESO": "3.º de ESO",
+"4t d'ESO": "4.º de ESO",
+"1r de batxillerat": "1.º de Bachillerato",
+"2n de batxillerat": "2.º de Bachillerato",
+"La cèl·lula": "La célula",
+"Tipus": "Tipos",
+"Moviment rectilini uniforme": "Movimiento rectilíneo uniforme",
+"Tria la fórmula": "Elige la fórmula",
+"Aïlla la incògnita": "Despeja la incógnita",
+"Escriu les dades": "Escribe los datos",
+"Assignatura": "Asignatura",
+"Tens molt de material guardat: potser no surt tot. Esborra temes antics.": "Tienes mucho material guardado: puede que no salga todo. Borra temas antiguos.",
+"No es pot guardar al compte. Obre Configuració per descarregar una còpia o guardar en aquest navegador.": "No se puede guardar en la cuenta. Abre Configuración para descargar una copia o guardar en este navegador.",
+"No queda espai per guardar. Esborra material que ja no facis servir.": "No queda espacio para guardar. Borra material que ya no uses.",
+"No s'ha pogut guardar. Es tornarà a provar amb el següent canvi.": "No se ha podido guardar. Se volverá a intentar con el siguiente cambio.",
+"Estudi d'ESO i batxillerat": "Estudio de ESO y Bachillerato",
+"Estudi de 4t d'ESO": "Estudio de 4.º de ESO",
+"Connectant…": "Conectando…",
+"Configuració": "Configuración",
+"No hi ha connexió amb Claude. Comprova internet.": "No hay conexión con Claude. Comprueba internet.",
+"No hi ha connexió. Comprova internet.": "No hay conexión. Comprueba internet.",
+"La connexió s'ha tallat. Torna-ho a provar.": "La conexión se ha cortado. Vuelve a intentarlo.",
+"La resposta s'ha tallat. Torna-ho a provar.": "La respuesta se ha cortado. Vuelve a intentarlo.",
+"La resposta era massa llarga.": "La respuesta era demasiado larga.",
+"No has permès que aquesta pàgina faci servir Claude. Pots activar-ho al menú de permisos de la pàgina.": "No has permitido que esta página use Claude. Puedes activarlo en el menú de permisos de la página.",
+"Massa peticions seguides o has arribat al límit d'ús de Claude. Espera una estona i torna-ho a provar.": "Demasiadas peticiones seguidas o has llegado al límite de uso de Claude. Espera un rato y vuelve a intentarlo.",
+"Has de tornar a iniciar sessió a claude.ai.": "Tienes que volver a iniciar sesión en claude.ai.",
+"El material és massa llarg per enviar-lo de cop. Divideix-lo en dos temes o esborra material repetit.": "El material es demasiado largo para enviarlo de golpe. Divídelo en dos temas o borra material repetido.",
+"La resposta no ha arribat completa. Torna-ho a provar.": "La respuesta no ha llegado completa. Vuelve a intentarlo.",
+"Claude no ha respost aquesta petició. Revisa el material o reformula-ho.": "Claude no ha respondido a esta petición. Revisa el material o reformúlalo.",
+"Aquesta imatge no s'ha pogut llegir (format o mida). Prova amb una altra captura.": "Esta imagen no se ha podido leer (formato o tamaño). Prueba con otra captura.",
+"En aquesta vista no es poden enviar imatges a Claude. Prova amb PDF o Word, o enganxa el text.": "En esta vista no se pueden enviar imágenes a Claude. Prueba con PDF o Word, o pega el texto.",
+"Claude no està disponible per a aquest compte.": "Claude no está disponible para esta cuenta.",
+"Primer posa el teu codi d'accés a Configuració.": "Primero pon tu código de acceso en Configuración.",
+"Encara no hi ha connexió amb Claude. Obre Configuració per connectar-la.": "Todavía no hay conexión con Claude. Abre Configuración para conectarla.",
+"La clau de l'API no és vàlida. Revisa-la a Configuració.": "La clave de la API no es válida. Revísala en Configuración.",
+"Aquest codi d'accés no és vàlid o ja no està actiu. Revisa'l a Configuració.": "Este código de acceso no es válido o ya no está activo. Revísalo en Configuración.",
+"Avui ja has fet totes les peticions del dia, o el comptador no funciona. Demà podràs continuar; si passa des del primer moment, avisa qui t'ha donat el codi.": "Hoy ya has hecho todas las peticiones del día, o el contador no funciona. Mañana podrás continuar; si pasa desde el primer momento, avisa a quien te ha dado el código.",
+"L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.": "La herramienta está detenida temporalmente. Avisa a la persona que te ha dado el código.",
+"Hi ha hagut massa intents amb codis incorrectes des d'aquesta connexió. Torna-ho a provar demà, amb el codi ben escrit.": "Ha habido demasiados intentos con códigos incorrectos desde esta conexión. Vuelve a intentarlo mañana, con el código bien escrito.",
+"Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.": "Ya has usado todas las peticiones de este mes. Se renuevan el mes que viene; si necesitas más, puedes cambiar de plan en Configuración → Gestiona la suscripción.",
+"Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, demana-ho a qui t'ha donat el codi.": "Ya has usado todas las peticiones de este mes. Se renuevan el mes que viene; si necesitas más, pídeselo a quien te ha dado el código.",
+"La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.": "La suscripción de este código no está activa (puede que haya un pago pendiente o se haya dado de baja). Revísala en Configuración → Gestiona la suscripción.",
+"Claude no ha retornat res. Torna-ho a provar.": "Claude no ha devuelto nada. Vuelve a intentarlo.",
+"Alguna cosa ha fallat. Torna-ho a provar.": "Algo ha fallado. Vuelve a intentarlo.",
+"Escrivint…": "Escribiendo…",
+"Pensant…": "Pensando…",
+"Atura": "Detener",
+"No s'ha pogut carregar el lector de fitxers. Comprova la connexió.": "No se ha podido cargar el lector de archivos. Comprueba la conexión.",
+"Llegint la imatge amb Claude…": "Leyendo la imagen con Claude…",
+"Llegint el Word…": "Leyendo el Word…",
+"Els .doc antics no es poden llegir. Obre'l amb Word i desa'l com a .docx o PDF.": "Los .doc antiguos no se pueden leer. Ábrelo con Word y guárdalo como .docx o PDF.",
+"Les presentacions no es poden llegir directament. Exporta-la a PDF i puja el PDF.": "Las presentaciones no se pueden leer directamente. Expórtala a PDF y sube el PDF.",
+"Llegint el PDF…": "Leyendo el PDF…",
+"Aquest tipus de fitxer no es pot llegir. Fes servir fotos, PDF, Word (.docx) o text.": "Este tipo de archivo no se puede leer. Usa fotos, PDF, Word (.docx) o texto.",
+"Captura enganxada": "Captura pegada",
+"Preparant…": "Preparando…",
+"No s'hi ha trobat text.": "No se ha encontrado texto.",
+"Material molt llarg: s'ha guardat només el principi": "Material muy largo: se ha guardado solo el principio",
+"no s'ha pogut llegir.": "no se ha podido leer.",
+"encara no treballat": "todavía no trabajado",
+"a reforçar": "a reforzar",
+"en procés": "en proceso",
+"sòlid": "sólido",
+"Primer afegeix material a la pestanya Material.": "Primero añade material en la pestaña Material.",
+"Claude està ordenant el material: resum, mapa conceptual i conceptes clau.": "Claude está ordenando el material: resumen, mapa conceptual y conceptos clave.",
+"La guia ha arribat incompleta. Torna-ho a provar.": "La guía ha llegado incompleta. Vuelve a intentarlo.",
+"Primer genera la guia del tema (pestanya Guia).": "Primero genera la guía del tema (pestaña Guía).",
+"No han arribat preguntes. Torna-ho a provar.": "No han llegado preguntas. Vuelve a intentarlo.",
+"explicació lliure": "explicación libre",
+"lliure": "libre",
+"Primer respon la pregunta (escrivint o amb el micròfon).": "Primero responde la pregunta (escribiendo o con el micrófono).",
+"Aquesta resposta ja està avaluada. Millora-la amb el que t'has deixat i torna-la a enviar.": "Esta respuesta ya está evaluada. Mejórala con lo que te has dejado y vuelve a enviarla.",
+"Claude està llegint la teva resposta.": "Claude está leyendo tu respuesta.",
+"Encara no hi ha respostes avaluades. Fes primer alguna ronda de preguntes.": "Todavía no hay respuestas evaluadas. Haz primero alguna ronda de preguntas.",
+"Claude fa la valoració global del tema.": "Claude hace la valoración global del tema.",
+"Un pas: una fórmula o un procediment amb dades directes.": "Un paso: una fórmula o un procedimiento con datos directos.",
+"Un sol pas: aplicar una fórmula o un procediment amb les dades que dona l'enunciat.": "Un solo paso: aplicar una fórmula o un procedimiento con los datos que da el enunciado.",
+"Dos o tres passos: aïllar, canviar unitats, combinar.": "Dos o tres pasos: despejar, cambiar unidades, combinar.",
+"Dos o tres passos seguits: aïllar una incògnita, canviar unitats o combinar dues fórmules.": "Dos o tres pasos seguidos: despejar una incógnita, cambiar unidades o combinar dos fórmulas.",
+"Plantejar": "Plantear",
+"Problema amb context: tu tries el mètode.": "Problema con contexto: tú eliges el método.",
+"Problema amb context real on l'estudiant ha de decidir quin mètode cal i plantejar-lo ella.": "Problema con contexto real en el que hay que decidir qué método usar y plantearlo.",
+"Raonar": "Razonar",
+"Combinar continguts, justificar i interpretar.": "Combinar contenidos, justificar e interpretar.",
+"Combinar continguts del tema (o d'altres temes), justificar el procediment i interpretar si el resultat té sentit.": "Combinar contenidos del tema (o de otros temas), justificar el procedimiento e interpretar si el resultado tiene sentido.",
+"càlcul": "cálculo",
+"unitats": "unidades",
+"signes": "signos",
+"plantejament": "planteamiento",
+"lectura de l'enunciat": "lectura del enunciado",
+"interpretació": "interpretación",
+"Reconèixer": "Reconocer",
+"Identificar i classificar exemples.": "Identificar y clasificar ejemplos.",
+"Reconèixer el fenomen i classificar exemples (per exemple, dir si cada paraula té diftong o hiat).": "Reconocer el fenómeno y clasificar ejemplos (por ejemplo, decir si cada palabra tiene diptongo o hiato).",
+"Aplicar la regla: completar buits, transformar frases, accentuar, conjugar o triar la forma correcta.": "Aplicar la regla: completar huecos, transformar frases, acentuar, conjugar o elegir la forma correcta.",
+"Trobar errors i explicar la regla.": "Encontrar errores y explicar la regla.",
+"Trobar i corregir errors en frases o en un text breu, i justificar cada correcció amb la regla.": "Encontrar y corregir errores en frases o en un texto breve, y justificar cada corrección con la regla.",
+"Produir": "Producir",
+"Escriure frases o un text aplicant-ho.": "Escribir frases o un texto aplicándolo.",
+"Escriure frases o un text breu que facin servir la regla en un context real (o traduir, si és llengua estrangera).": "Escribir frases o un texto breve que usen la regla en un contexto real (o traducir, si es lengua extranjera).",
+"ortografia": "ortografía",
+"accentuació": "acentuación",
+"gramàtica": "gramática",
+"concordança": "concordancia",
+"temps verbal": "tiempo verbal",
+"vocabulari": "vocabulario",
+"puntuació": "puntuación",
+"comprensió de l'enunciat": "comprensión del enunciado",
+"error arrossegat": "error arrastrado",
+"exercicis de llengua": "ejercicios de lengua",
+"Respon ítem per ítem": "Responde ítem por ítem",
+"Treu el mode per ítems": "Quita el modo por ítems",
+"La teva resposta (un ítem per línia)": "Tu respuesta (un ítem por línea)",
+"Mostra les respostes correctes": "Muestra las respuestas correctas",
+"Tot correcte": "Todo correcto",
+"Hi ha ítems per revisar": "Hay ítems por revisar",
+"Guia'm pas a pas": "Guíame paso a paso",
+"Treu el mode guiat": "Quita el modo guiado",
+"La teva resolució (un pas per línia)": "Tu resolución (un paso por línea)",
+"Mostra la solució pas a pas": "Muestra la solución paso a paso",
+"Resultat correcte": "Resultado correcto",
+"Resultat per revisar": "Resultado por revisar",
+"Pas": "Paso",
+"encara cap": "todavía ninguno",
+"No han arribat exercicis. Torna-ho a provar.": "No han llegado ejercicios. Vuelve a intentarlo.",
+"Claude prepara un exercici semblant.": "Claude prepara un ejercicio parecido.",
+"No ha arribat l'exercici. Torna-ho a provar.": "No ha llegado el ejercicio. Vuelve a intentarlo.",
+"Primer escriu la resolució o afegeix una foto del paper.": "Primero escribe la resolución o añade una foto del papel.",
+"Aquesta resolució ja està corregida. Arregla el que t'ha marcat i torna-la a enviar.": "Esta resolución ya está corregida. Arregla lo que te ha marcado y vuelve a enviarla.",
+"El dictat necessita connexió. Escriu la resposta o torna-ho a provar.": "El dictado necesita conexión. Escribe la respuesta o vuelve a intentarlo.",
+"El navegador no reconeix aquesta llengua. Tria'n una altra o escriu.": "El navegador no reconoce este idioma. Elige otro o escribe.",
+"← Inici": "← Inicio",
+"Guia i regles": "Guía y reglas",
+"Exercicis": "Ejercicios",
+"Progrés": "Progreso",
+"Guia i fórmules": "Guía y fórmulas",
+"Teoria": "Teoría",
+"Guia i mapa": "Guía y mapa",
+"Encara no hi ha guia": "Todavía no hay guía",
+"Afegeix material i prem «Fes la guia».": "Añade material y pulsa «Haz la guía».",
+"Ves a Material": "Ve a Material",
+"Primer cal la guia del tema": "Primero hace falta la guía del tema",
+"Les preguntes surten del material ordenat.": "Las preguntas salen del material ordenado.",
+"No hi ha permís per fer servir la càmera. Dona-li permís a la icona de la barra d'adreces, o puja una foto feta amb el mòbil.": "No hay permiso para usar la cámara. Dale permiso en el icono de la barra de direcciones, o sube una foto hecha con el móvil.",
+"No s'ha trobat cap càmera disponible. Puja una foto feta amb el mòbil.": "No se ha encontrado ninguna cámara disponible. Sube una foto hecha con el móvil.",
+"Foto afegida": "Foto añadida",
+"Els exercicis surten de les fórmules i els mètodes del material.": "Los ejercicios salen de las fórmulas y los métodos del material.",
+"Resultat:": "Resultado:",
+"es guarda al teu compte": "se guarda en tu cuenta",
+"es guarda en aquest navegador": "se guarda en este navegador",
+"no es guarda": "no se guarda",
+"No s'ha pogut guardar l'últim canvi": "No se ha podido guardar el último cambio",
+"Falta el codi d'accés": "Falta el código de acceso",
+"Claude sense connectar": "Claude sin conectar",
+"Desa": "Guardar",
+"Cancel·la": "Cancelar",
+"Esborra": "Borrar",
+"Nou tema": "Nuevo tema",
+"Nom del tema (per exemple: Tema 3. La Revolució Francesa)": "Nombre del tema (por ejemplo: Tema 3. La Revolución Francesa)",
+"Codi desat": "Código guardado",
+"Codi esborrat": "Código borrado",
+"Clau desada": "Clave guardada",
+"Clau esborrada": "Clave borrada",
+"Aquest codi no té cap subscripció associada (és un codi donat directament).": "Este código no tiene ninguna suscripción asociada (es un código dado directamente).",
+"Ja s'han enviat molts enllaços avui. Mira el correu o torna-ho a provar demà.": "Ya se han enviado muchos enlaces hoy. Mira el correo o vuelve a intentarlo mañana.",
+"No s'ha pogut enviar l'enllaç. Torna-ho a provar d'aquí a una estona.": "No se ha podido enviar el enlace. Vuelve a intentarlo dentro de un rato.",
+"No s'ha pogut descarregar la còpia": "No se ha podido descargar la copia",
+"Resum ordenat": "Resumen ordenado",
+"Fórmules": "Fórmulas",
+"Regles": "Reglas",
+"Exemples:": "Ejemplos:",
+"Excepcions:": "Excepciones:",
+"Mètodes pas a pas": "Métodos paso a paso",
+"Tipus d'exercici": "Tipos de ejercicio",
+"Tipus de problemes": "Tipos de problemas",
+"Com es relacionen les idees": "Cómo se relacionan las ideas",
+"Conceptes clau": "Conceptos clave",
+"No s'ha pogut obrir la impressió. Descarrega el Word i imprimeix-lo des d'allà.": "No se ha podido abrir la impresión. Descarga el Word e imprímelo desde allí.",
+"No s'ha pogut descarregar el Word": "No se ha podido descargar el Word",
+"Aquest fitxer no és una còpia d'Explica-ho": "Este archivo no es una copia de Explica-ho",
+"Continuar?": "¿Continuar?",
+"Tens respostes (o canvis) que encara no has fet corregir i es perdran.": "Tienes respuestas (o cambios) que todavía no has hecho corregir y se perderán.",
+"Continua igualment": "Continúa igualmente",
+"Un moment: s'estan carregant les dades…": "Un momento: se están cargando los datos…",
+"Canvia el nom": "Cambia el nombre",
+"Nom del tema": "Nombre del tema",
+"Esborrar el tema?": "¿Borrar el tema?",
+"Esborrar aquest material?": "¿Borrar este material?",
+"La guia ja feta no canvia fins que la tornis a fer.": "La guía ya hecha no cambia hasta que la vuelvas a hacer.",
+"Text enganxat": "Texto pegado",
+"Espera que acabi la correcció.": "Espera a que termine la corrección.",
+"Espera que acabi la valoració de la resposta.": "Espera a que termine la valoración de la respuesta.",
+"Es guardarà en aquest navegador": "Se guardará en este navegador",
+"Esborrar-ho tot d'aquest navegador?": "¿Borrarlo todo de este navegador?",
+"S'esborraran assignatures, temes, material, historial i la clau de l'API guardats aquí. Descarrega abans una còpia si la vols.": "Se borrarán asignaturas, temas, material, historial y la clave de la API guardados aquí. Descarga antes una copia si la quieres.",
+"Dades esborrades": "Datos borrados",
+"Esborra-ho tot": "Bórralo todo",
+"+ Nou tema": "+ Nuevo tema",
+"Guarda en aquest navegador": "Guarda en este navegador",
+"Ara mateix no es guarda res.": "Ahora mismo no se guarda nada.",
+"No s'han pogut carregar les teves dades.": "No se han podido cargar tus datos.",
+"No hi facis canvis fins que es carreguin, perquè no es perdi res.": "No hagas cambios hasta que se carguen, para que no se pierda nada.",
+"Torna-ho a provar": "Vuelve a intentarlo",
+"No en tinc: subscriu-m'hi": "No tengo: quiero suscribirme",
+"He perdut el codi": "He perdido el código",
+"Per començar, posa el teu codi d'accés.": "Para empezar, pon tu código de acceso.",
+"És el codi que t'han donat o el que vas rebre en subscriure't.": "Es el código que te han dado o el que recibiste al suscribirte.",
+"Posa el codi": "Pon el código",
+"Comença triant les teves assignatures": "Empieza eligiendo tus asignaturas",
+"Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis pas a pas; les llengües, amb teoria per explicar i exercicis per aplicar-la.": "Puedes añadir más cuando quieras. Matemáticas y Física y Química funcionan con ejercicios paso a paso; las lenguas, con teoría para explicar y ejercicios para aplicarla.",
+"Afegeix aquestes assignatures": "Añade estas asignaturas",
+"Mira els exemples:": "Mira los ejemplos:",
+"«La cèl·lula», de Biologia (preguntes per explicar), i «Moviment rectilini uniforme», de Física i Química (exercicis). No es guarden.": "«La célula», de Biología (preguntas para explicar), y «Movimiento rectilíneo uniforme», de Física y Química (ejercicios). No se guardan.",
+"Amaga'l": "Ocúltalo",
+"Com funciona": "Cómo funciona",
+"Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.": "Sube los apuntes, explícalo en voz alta y descubre hasta dónde te lo sabes.",
+"Claude ordena el material en un resum i un mapa conceptual, et fa preguntes que comencen per les dades concretes i van baixant fins a relacionar-ho tot, i et diu què has explicat bé, què t'has deixat i com encaixar-ho. A Matemàtiques i Física i Química et posa exercicis, els resols pas a pas i et diu en quin pas t'has equivocat.": "Claude ordena el material en un resumen y un mapa conceptual, te hace preguntas que empiezan por los datos concretos y van bajando hasta relacionarlo todo, y te dice qué has explicado bien, qué te has dejado y cómo encajarlo. En Matemáticas y Física y Química te pone ejercicios, los resuelves paso a paso y te dice en qué paso te has equivocado.",
+"Les respostes les genera una intel·ligència artificial (Claude) i es pot equivocar: si alguna cosa no et quadra, consulta el llibre o el professorat.": "Las respuestas las genera una inteligencia artificial (Claude) y se puede equivocar: si algo no te cuadra, consulta el libro o al profesorado.",
+"Pas 1 · Material": "Paso 1 · Material",
+"Captures del llibre, fotos del quadern, apunts en PDF o .docx.": "Capturas del libro, fotos del cuaderno, apuntes en PDF o .docx.",
+"Pas 2 · Guia": "Paso 2 · Guía",
+"Resum i mapa": "Resumen y mapa",
+"Les idees ordenades, els conceptes clau i com es relacionen.": "Las ideas ordenadas, los conceptos clave y cómo se relacionan.",
+"Pas 3 · Explica-ho": "Paso 3 · Explica-ho",
+"Preguntes en 4 nivells": "Preguntas en 4 niveles",
+"Respon parlant pel micròfon o escrivint. Claude ho avalua.": "Responde hablando por el micrófono o escribiendo. Claude lo evalúa.",
+"Pas 4 · Progrés": "Paso 4 · Progreso",
+"Fins on t'ho saps": "Hasta dónde te lo sabes",
+"Quins conceptes tens sòlids i quin nivell de profunditat domines.": "Qué conceptos tienes sólidos y qué nivel de profundidad dominas.",
+"Això és un": "Esto es un",
+"exemple": "ejemplo",
+". Pots provar-ho tot, però no es guarda. Crea el teu primer tema des d'una assignatura.": ". Puedes probarlo todo, pero no se guarda. Crea tu primer tema desde una asignatura.",
+"Afegeix material d'estudi": "Añade material de estudio",
+"Arrossega-hi fitxers, toca per triar-los o enganxa una captura (Ctrl+V). Fotos, captures, PDF, Word (.docx) o text.": "Arrastra aquí archivos, toca para elegirlos o pega una captura (Ctrl+V). Fotos, capturas, PDF, Word (.docx) o texto.",
+"Esborra aquest material": "Borra este material",
+"Revisa el text llegit i corregeix el que calgui: és el que farà servir Claude.": "Revisa el texto leído y corrige lo que haga falta: es lo que usará Claude.",
+"Enganxa o escriu text": "Pega o escribe texto",
+"Text": "Texto",
+"Nom": "Nombre",
+"Afegeix el text": "Añade el texto",
+"Enganxa aquí apunts, un fragment del llibre o el que hagis copiat d'una web…": "Pega aquí apuntes, un fragmento del libro o lo que hayas copiado de una web…",
+"Nom (opcional)": "Nombre (opcional)",
+"Organitza el tema": "Organiza el tema",
+"Claude en farà el resum ordenat, el mapa conceptual i la llista de conceptes clau.": "Claude hará el resumen ordenado, el mapa conceptual y la lista de conceptos clave.",
+"Fes la guia": "Haz la guía",
+"Torna a fer la guia": "Vuelve a hacer la guía",
+"Aquestes connexions són les que et preguntaran als nivells 3 i 4.": "Estas conexiones son las que te preguntarán en los niveles 3 y 4.",
+"Fes exercicis": "Haz ejercicios",
+"Explica la teoria": "Explica la teoría",
+"Preguntes de teoria": "Preguntas de teoría",
+"Comença a explicar-ho": "Empieza a explicarlo",
+"Obre la impressió: des d'allà la pots imprimir o desar com a PDF": "Abre la impresión: desde allí puedes imprimirla o guardarla como PDF",
+"Document de Word (.docx) per editar-lo a Word, Google Docs o LibreOffice": "Documento de Word (.docx) para editarlo en Word, Google Docs o LibreOffice",
+"no treballat": "no trabajado",
+"El botó «Parla» fa servir el reconeixement de veu del navegador: a Chrome l'àudio es processa als servidors de Google i a Safari als d'Apple. Si no ho vols, escriu la resposta o dicta amb el teclat.": "El botón «Habla» usa el reconocimiento de voz del navegador: en Chrome el audio se procesa en los servidores de Google y en Safari en los de Apple. Si no quieres, escribe la respuesta o dicta con el teclado.",
+"Tria un nivell i prem «Fes-me preguntes», o prova d'explicar tot el tema de cop.": "Elige un nivel y pulsa «Hazme preguntas», o prueba a explicar todo el tema de golpe.",
+"Tria la profunditat": "Elige la profundidad",
+"Comença per dalt i ves baixant. Quan les últimes respostes d'un nivell fan mitjana de 7, passes al següent.": "Empieza por arriba y ve bajando. Cuando las últimas respuestas de un nivel tienen una media de 7, pasas al siguiente.",
+"Explica tot el tema": "Explica todo el tema",
+"El micròfon d'aquesta pàgina no està disponible aquí.": "El micrófono de esta página no está disponible aquí.",
+"Pots dictar igualment amb el teclat: al mòbil, toca el micròfon del teclat; a Windows, prem": "Puedes dictar igualmente con el teclado: en el móvil, toca el micrófono del teclado; en Windows, pulsa",
+"; al Mac, prem dues vegades la tecla": "; en el Mac, pulsa dos veces la tecla",
+"). El text apareixerà a la caixa de resposta.": "). El texto aparecerá en la caja de respuesta.",
+"Entesos": "Entendido",
+"Vull una pista": "Quiero una pista",
+"Prem el micròfon i explica-ho en veu alta, o escriu aquí.": "Pulsa el micrófono y explícalo en voz alta, o escribe aquí.",
+"Llengua del micròfon": "Idioma del micrófono",
+"Intents:": "Intentos:",
+"Un moment": "Un momento",
+"Què has millorat:": "Qué has mejorado:",
+"El que ja saps": "Lo que ya sabes",
+"El que t'has deixat": "Lo que te has dejado",
+"Per corregir": "Para corregir",
+"Com encaixar-ho a la teva explicació": "Cómo encajarlo en tu explicación",
+"Mira la teva resposta amb el que faltava": "Mira tu respuesta con lo que faltaba",
+"Profunditat que demostres": "Profundidad que demuestras",
+"Prova de tornar-ho a explicar sense mirar la versió millorada: és quan més es fixa.": "Prueba a volver a explicarlo sin mirar la versión mejorada: es cuando más se fija.",
+"Fes una foto del paper": "Haz una foto del papel",
+"Posa el full davant la càmera amb bona llum, que ocupi gairebé tota la imatge. Amb «Captura en 3 s» tens temps d'aguantar-lo quiet.": "Pon la hoja delante de la cámara con buena luz, que ocupe casi toda la imagen. Con «Captura en 3 s» tienes tiempo de sujetarla quieta.",
+"Captura ara": "Captura ahora",
+"Vista en mirall": "Vista en espejo",
+"Tanca": "Cerrar",
+"Fes-ne una altra": "Haz otra",
+"Afegeix la foto": "Añade la foto",
+"Tria un nivell i prem «Fes-me exercicis». Resol-los aquí o en paper i fes-hi una foto.": "Elige un nivel y pulsa «Hazme ejercicios». Resuélvelos aquí o en papel y hazles una foto.",
+"Tria la dificultat": "Elige la dificultad",
+"nous, semblants als del llibre": "nuevos, parecidos a los del libro",
+"del meu material": "de mi material",
+"Les fotos no es guarden: fes corregir l'exercici abans de tancar. El que Claude hi llegeixi sí que queda guardat.": "Las fotos no se guardan: haz corregir el ejercicio antes de cerrar. Lo que Claude lea en ellas sí queda guardado.",
+"Fes una foto": "Haz una foto",
+"Puja una foto": "Sube una foto",
+"Exercici": "Ejercicio",
+"Símbols per escriure": "Símbolos para escribir",
+"Què has arreglat:": "Qué has arreglado:",
+"El que Claude ha llegit a la teva foto": "Lo que Claude ha leído en tu foto",
+"Correcció pas a pas": "Corrección paso a paso",
+"El que has fet bé": "Lo que has hecho bien",
+"On t'has equivocat": "Dónde te has equivocado",
+"Com arreglar-ho": "Cómo arreglarlo",
+"Fes-me'n un de semblant": "Hazme uno parecido",
+"Exercicis per dificultat": "Ejercicios por dificultad",
+"On t'equivoques més": "Dónde te equivocas más",
+"Tipus d'error en els exercicis (compta l'últim intent de cada un).": "Tipos de error en los ejercicios (cuenta el último intento de cada uno).",
+"Mapa de domini dels conceptes": "Mapa de dominio de los conceptos",
+"Ja ho domines": "Ya lo dominas",
+"Per reforçar": "Para reforzar",
+"Propera sessió": "Próxima sesión",
+"Dia": "Día",
+"Nivell": "Nivel",
+"Dies d'estudi": "Días de estudio",
+"amb preguntes": "con preguntas",
+"Respostes": "Respuestas",
+"mitjana": "media",
+"Conceptes sòlids": "Conceptos sólidos",
+"Valoració global": "Valoración global",
+"Claude mira tot l'historial i et diu fins a quin nivell domines el tema i què fer a la propera sessió.": "Claude mira todo el historial y te dice hasta qué nivel dominas el tema y qué hacer en la próxima sesión.",
+"Nova assignatura": "Nueva asignatura",
+"Com s'estudia": "Cómo se estudia",
+"Teoria: explicar-ho i relacionar": "Teoría: explicarlo y relacionar",
+"Problemes: exercicis pas a pas (mates, física, química…)": "Problemas: ejercicios paso a paso (mates, física, química…)",
+"Llengua: teoria i exercicis d'aplicació (català, castellà, anglès…)": "Lengua: teoría y ejercicios de aplicación (castellano, catalán, inglés…)",
+"Llengua de l'assignatura": "Idioma de la asignatura",
+"Afegeix": "Añade",
+"Per exemple: Economia": "Por ejemplo: Economía",
+"Per canviar la targeta, veure les factures o donar-se de baixa, s'envia un enllaç al correu de qui paga.": "Para cambiar la tarjeta, ver las facturas o darse de baja, se envía un enlace al correo de quien paga.",
+"Envia l'enllaç per gestionar-la": "Envía el enlace para gestionarla",
+"Per canviar la targeta, veure les factures o donar-se de baixa (també si has perdut el codi), Stripe envia un codi al correu de qui paga.": "Para cambiar la tarjeta, ver las facturas o darse de baja (también si has perdido el código), Stripe envía un código al correo de quien paga.",
+"Gestiona la subscripció": "Gestiona la suscripción",
+"Plans i subscripció": "Planes y suscripción",
+"Subscripció": "Suscripción",
+"Codi d'accés": "Código de acceso",
+"Connexió amb Claude": "Conexión con Claude",
+"Escriu el codi que t'han donat. El material i les respostes s'envien a Claude (Anthropic) perquè els processi; la teva feina només es guarda en aquest dispositiu. Si fas servir el botó «Parla», el navegador envia l'àudio al seu propi servei de reconeixement de veu (a Chrome, de Google).": "Escribe el código que te han dado. El material y las respuestas se envían a Claude (Anthropic) para que los procese; tu trabajo solo se guarda en este dispositivo. Si usas el botón «Habla», el navegador envía el audio a su propio servicio de reconocimiento de voz (en Chrome, de Google).",
+"Recorda'l en aquest dispositiu": "Recuérdalo en este dispositivo",
+"El teu curs": "Tu curso",
+"Tria el curs": "Elige el curso",
+"Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.": "Conectado a través de claude.ai: usa la cuenta de quien tiene la página abierta. La primera vez te pedirá permiso.",
+"Si obres aquest fitxer fora de claude.ai, cal una clau de l'API d'Anthropic (console.anthropic.com). Es guarda només en aquest navegador.": "Si abres este archivo fuera de claude.ai, hace falta una clave de la API de Anthropic (console.anthropic.com). Se guarda solo en este navegador.",
+"Recorda-la en aquest navegador (no ho facis en un ordinador compartit)": "Recuérdala en este navegador (no lo hagas en un ordenador compartido)",
+"Model": "Modelo",
+"Clau de l'API": "Clave de la API",
+"Sonnet 5.5 (recomanat)": "Sonnet 5.5 (recomendado)",
+"Opus 5.5 (més precís, més car)": "Opus 5.5 (más preciso, más caro)",
+"Haiku 5.5 (més ràpid i barat)": "Haiku 5.5 (más rápido y barato)",
+"On es guarda": "Dónde se guarda",
+"Al teu compte de claude.ai (privat: només ho veus tu).": "En tu cuenta de claude.ai (privado: solo lo ves tú).",
+"Descarrega còpia": "Descarga copia",
+"Recupera una còpia": "Recupera una copia",
+"Ara mateix no es guarda res. Pots guardar-ho en aquest navegador (no ho facis en un ordinador compartit).": "Ahora mismo no se guarda nada. Puedes guardarlo en este navegador (no lo hagas en un ordenador compartido).",
+"Esborrar": "Borrar",
+"Esborra totes les dades d'aquest navegador": "Borra todos los datos de este navegador",
+"Problemes": "Problemas",
+"Llengua": "Lengua",
+"Com s'estudia cada assignatura": "Cómo se estudia cada asignatura",
+"Exemple": "Ejemplo",
+"Idioma de l'eina": "Idioma de la herramienta",
+"En canviar l'idioma es torna a carregar la pàgina. La teva feina no es perd.": "Al cambiar el idioma se vuelve a cargar la página. Tu trabajo no se pierde.",
+"Afegeix material": "Añade material",
+"Parla": "Habla",
+"Fes-me preguntes": "Hazme preguntas",
+"Fes-me exercicis": "Hazme ejercicios",
+"sense respostes": "sin respuestas",
+"La teva resposta (pots millorar-la i tornar-la a enviar)": "Tu respuesta (puedes mejorarla y volver a enviarla)",
+"La teva resposta": "Tu respuesta",
+"Torna-ho a avaluar": "Vuelve a evaluarla",
+"Avalua la resposta": "Evalúa la respuesta",
+"Per fixar-ho, prova'n un altre sense pistes.": "Para fijarlo, prueba otro sin pistas.",
+"Arregla'l i torna'l a corregir, o practica amb un de semblant.": "Arréglalo y vuelve a corregirlo, o practica con uno parecido.",
+"En aquest navegador. Si esborres les dades del navegador es perd: fes còpies de seguretat.": "En este navegador. Si borras los datos del navegador se pierde: haz copias de seguridad.",
+"Enlloc: aquest navegador no deixa guardar. Fes còpies de seguretat.": "En ningún sitio: este navegador no deja guardar. Haz copias de seguridad.",
+"recomanat": "recomendado",
+"Encara no hi ha assignatures.": "Todavía no hay asignaturas.",
+"Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració.": "Puedes guardarlo en este navegador o descargar copias desde Configuración.",
+"Descarrega còpies des de Configuració.": "Descarga copias desde Configuración.",
+"Ajuda'm a començar": "Ayúdame a empezar",
+"Una altra pista": "Otra pista",
+"Corregeix": "Corrige",
+"Torna-la a corregir": "Vuelve a corregirla",
+"correcte": "correcto",
+"falta": "falta",
+"Nivell on ets": "Nivel en el que estás",
+"Profunditat per nivells": "Profundidad por niveles",
+"Teoria per nivells": "Teoría por niveles",
+"Actualitza la valoració": "Actualiza la valoración",
+"Fes la valoració": "Haz la valoración",
+"Nivell de profunditat": "Nivel de profundidad",
+"Dificultat dels exercicis": "Dificultad de los ejercicios",
+"Dades: …\nFórmula: …\nCàlcul: …\nResultat: …": "Datos: …\nFórmula: …\nCálculo: …\nResultado: …",
+"Mostra el tema d'exemple": "Muestra el tema de ejemplo",
+"Amaga el tema d'exemple": "Oculta el tema de ejemplo",
+"Tria fitxers": "Elige archivos",
+"Atura el micròfon": "Detén el micrófono",
+"Envia la resposta": "Envía la respuesta",
+"Envia a corregir": "Envía a corregir"
+};
+// Textos dels temes d'exemple (només per traduir-los, no la pantalla).
+const ES_EX = {
+"Exemple · Biologia": "Ejemplo · Biología",
+"Teoria cel·lular": "Teoría celular",
+"Tots els éssers vius estan formats per una o més cèl·lules.": "Todos los seres vivos están formados por una o más células.",
+"La cèl·lula és la unitat estructural i funcional dels éssers vius.": "La célula es la unidad estructural y funcional de los seres vivos.",
+"Tota cèl·lula prové d'una altra cèl·lula preexistent.": "Toda célula procede de otra célula preexistente.",
+"Tipus de cèl·lules": "Tipos de células",
+"Procariotes: sense nucli; l'ADN és lliure al citoplasma (bacteris).": "Procariotas: sin núcleo; el ADN está libre en el citoplasma (bacterias).",
+"Eucariotes: ADN dins un nucli amb embolcall i orgànuls amb membrana (animals, plantes, fongs).": "Eucariotas: ADN dentro de un núcleo con envoltura y orgánulos con membrana (animales, plantas, hongos).",
+"Orgànuls principals": "Orgánulos principales",
+"Membrana plasmàtica: separa la cèl·lula de l'exterior i controla què entra i què surt.": "Membrana plasmática: separa la célula del exterior y controla qué entra y qué sale.",
+"Mitocondris: fan la respiració cel·lular i obtenen energia (ATP).": "Mitocondrias: realizan la respiración celular y obtienen energía (ATP).",
+"Cloroplasts: fan la fotosíntesi (només en cèl·lules vegetals).": "Cloroplastos: realizan la fotosíntesis (solo en células vegetales).",
+"Ribosomes: fabriquen proteïnes seguint les instruccions de l'ADN.": "Ribosomas: fabrican proteínas siguiendo las instrucciones del ADN.",
+"Animal i vegetal": "Animal y vegetal",
+"La vegetal té paret cel·lular de cel·lulosa, cloroplasts i un vacúol gran.": "La vegetal tiene pared celular de celulosa, cloroplastos y una vacuola grande.",
+"L'animal no té paret ni cloroplasts i té vacúols petits.": "La animal no tiene pared ni cloroplastos y tiene vacuolas pequeñas.",
+"Tres principis que ho expliquen tot": "Tres principios que lo explican todo",
+"Unitat estructural": "Unidad estructural",
+"tot ésser viu és fet de cèl·lules": "todo ser vivo está hecho de células",
+"Unitat funcional": "Unidad funcional",
+"les funcions vitals passen a la cèl·lula": "las funciones vitales ocurren en la célula",
+"tota cèl·lula ve d'una altra": "toda célula viene de otra",
+"Segons si tenen nucli": "Según si tienen núcleo",
+"sense nucli, ADN al citoplasma": "sin núcleo, ADN en el citoplasma",
+"nucli i orgànuls amb membrana": "núcleo y orgánulos con membrana",
+"Orgànuls": "Orgánulos",
+"Cada un, una feina": "Cada uno, una función",
+"Mitocondri": "Mitocondria",
+"energia (respiració)": "energía (respiración)",
+"Cloroplast": "Cloroplasto",
+"fotosíntesi": "fotosíntesis",
+"proteïnes": "proteínas",
+"Nucli": "Núcleo",
+"guarda l'ADN": "guarda el ADN",
+"Animal vs vegetal": "Animal frente a vegetal",
+"Diferències clau": "Diferencias clave",
+"Paret cel·lular": "Pared celular",
+"només vegetal": "solo vegetal",
+"Vacúol": "Vacuola",
+"gran a la vegetal": "grande en la vegetal",
+"complementen": "se complementan",
+"La fotosíntesi produeix la glucosa i l'oxigen que el mitocondri fa servir per obtenir energia.": "La fotosíntesis produce la glucosa y el oxígeno que la mitocondria usa para obtener energía.",
+"Nucli (ADN)": "Núcleo (ADN)",
+"dona instruccions": "da instrucciones",
+"L'ADN porta la informació que els ribosomes fan servir per fabricar proteïnes.": "El ADN lleva la información que los ribosomas usan para fabricar proteínas.",
+"La teoria endosimbiòtica diu que els mitocondris provenen de bacteris antics.": "La teoría endosimbiótica dice que las mitocondrias proceden de bacterias antiguas.",
+"s'aplica a": "se aplica a",
+"Els principis valen tant per a procariotes com per a eucariotes.": "Los principios valen tanto para procariotas como para eucariotas.",
+"Conjunt de tres principis sobre la cèl·lula com a unitat de la vida.": "Conjunto de tres principios sobre la célula como unidad de la vida.",
+"Cèl·lula procariota": "Célula procariota",
+"Cèl·lula sense nucli, amb l'ADN lliure al citoplasma.": "Célula sin núcleo, con el ADN libre en el citoplasma.",
+"Cèl·lula eucariota": "Célula eucariota",
+"Cèl·lula amb nucli i orgànuls envoltats de membrana.": "Célula con núcleo y orgánulos rodeados de membrana.",
+"Membrana plasmàtica": "Membrana plasmática",
+"Capa que envolta la cèl·lula i regula l'intercanvi de substàncies.": "Capa que rodea la célula y regula el intercambio de sustancias.",
+"Nucli i ADN": "Núcleo y ADN",
+"El nucli guarda l'ADN, que conté la informació genètica.": "El núcleo guarda el ADN, que contiene la información genética.",
+"Orgànul de la respiració cel·lular, on s'obté l'energia.": "Orgánulo de la respiración celular, donde se obtiene la energía.",
+"Orgànul de les cèl·lules vegetals on es fa la fotosíntesi.": "Orgánulo de las células vegetales donde se realiza la fotosíntesis.",
+"Estructura que fabrica proteïnes.": "Estructura que fabrica proteínas.",
+"Coberta rígida de cel·lulosa de les cèl·lules vegetals.": "Cubierta rígida de celulosa de las células vegetales.",
+"Per què diem que els cloroplasts i els mitocondris es complementen? Explica què fa cadascun i què es passen l'un a l'altre.": "¿Por qué decimos que los cloroplastos y las mitocondrias se complementan? Explica qué hace cada uno y qué se pasan el uno al otro.",
+"Pensa en què produeix la fotosíntesi i què necessita la respiració cel·lular.": "Piensa en qué produce la fotosíntesis y qué necesita la respiración celular.",
+"Cloroplast: fotosíntesi, fabrica glucosa i allibera oxigen": "Cloroplasto: fotosíntesis, fabrica glucosa y libera oxígeno",
+"Mitocondri: respiració cel·lular, obté energia de la glucosa": "Mitocondria: respiración celular, obtiene energía de la glucosa",
+"El que produeix un és el que necessita l'altre": "Lo que produce uno es lo que necesita el otro",
+"doncs el cloroplast fa la fotosíntesi que és quan la planta agafa la llum del sol i fa aliment i el mitocondri és el que dona energia a la cèl·lula, o sigui que un fa el menjar i l'altre el crema": "pues el cloroplasto hace la fotosíntesis que es cuando la planta coge la luz del sol y hace alimento y la mitocondria es la que da energía a la célula, o sea que uno hace la comida y el otro la quema",
+"Saps què fa cada orgànul: fotosíntesi al cloroplast i energia al mitocondri.": "Sabes qué hace cada orgánulo: fotosíntesis en el cloroplasto y energía en la mitocondria.",
+"La idea «un fa el menjar i l'altre el crema» és una bona manera de resumir la relació.": "La idea «uno hace la comida y el otro la quema» es una buena manera de resumir la relación.",
+"Dir que l'«aliment» és glucosa.": "Decir que el «alimento» es glucosa.",
+"L'oxigen: el cloroplast l'allibera i el mitocondri el necessita.": "El oxígeno: el cloroplasto lo libera y la mitocondria lo necesita.",
+"Anomenar el procés del mitocondri: respiració cel·lular.": "Nombrar el proceso de la mitocondria: respiración celular.",
+"Quan dius que el cloroplast «fa aliment», concreta: fabrica glucosa i allibera oxigen. Després, quan parles del mitocondri, afegeix que fa la respiració cel·lular i que fa servir aquesta glucosa i aquest oxigen. Així la teva frase final («un fa el menjar i l'altre el crema») queda demostrada.": "Cuando dices que el cloroplasto «hace alimento», concreta: fabrica glucosa y libera oxígeno. Después, cuando hablas de la mitocondria, añade que realiza la respiración celular y que usa esa glucosa y ese oxígeno. Así tu frase final («uno hace la comida y el otro la quema») queda demostrada.",
+"El cloroplast fa la fotosíntesi: amb la llum del sol fabrica glucosa i allibera oxigen. El mitocondri fa la respiració cel·lular: agafa la glucosa i l'oxigen i n'obté energia. Per això es complementen: el que produeix l'un és just el que necessita l'altre. Un fa el menjar i l'altre el crema.": "El cloroplasto realiza la fotosíntesis: con la luz del sol fabrica glucosa y libera oxígeno. La mitocondria realiza la respiración celular: toma la glucosa y el oxígeno y obtiene energía. Por eso se complementan: lo que produce uno es justo lo que necesita el otro. Uno hace la comida y el otro la quema.",
+"Quins són els tres principis de la teoria cel·lular?": "¿Cuáles son los tres principios de la teoría celular?",
+"Quina funció té la membrana plasmàtica?": "¿Qué función tiene la membrana plasmática?",
+"Explica amb les teves paraules la diferència entre procariota i eucariota.": "Explica con tus palabras la diferencia entre procariota y eucariota.",
+"Per què una cèl·lula vegetal pot mantenir la forma i una animal no?": "¿Por qué una célula vegetal puede mantener la forma y una animal no?",
+"Per què diem que els cloroplasts i els mitocondris es complementen?": "¿Por qué decimos que los cloroplastos y las mitocondrias se complementan?",
+"Apunts tema 2 (foto del quadern)": "Apuntes tema 2 (foto del cuaderno)",
+"TEMA 2. LA CÈL·LULA\nTeoria cel·lular: 1) tots els éssers vius estan formats per cèl·lules 2) la cèl·lula és la unitat funcional 3) tota cèl·lula prové d'una altra.\nProcariotes: no tenen nucli, l'ADN està al citoplasma. Ex: bacteris.\nEucariotes: tenen nucli i orgànuls amb membrana.\nOrgànuls: membrana plasmàtica (controla entrada i sortida), mitocondris (respiració cel·lular → energia/ATP), cloroplasts (fotosíntesi, només vegetals), ribosomes (fabriquen proteïnes), nucli (ADN).\nCèl·lula vegetal: paret de cel·lulosa, cloroplasts, vacúol gran. Animal: sense paret ni cloroplasts, vacúols petits.\nTeoria endosimbiòtica: mitocondris i cloroplasts provenen de bacteris que van quedar dins d'una altra cèl·lula.": "TEMA 2. LA CÉLULA\nTeoría celular: 1) todos los seres vivos están formados por células 2) la célula es la unidad funcional 3) toda célula procede de otra.\nProcariotas: no tienen núcleo, el ADN está en el citoplasma. Ej.: bacterias.\nEucariotas: tienen núcleo y orgánulos con membrana.\nOrgánulos: membrana plasmática (controla la entrada y la salida), mitocondrias (respiración celular → energía/ATP), cloroplastos (fotosíntesis, solo vegetales), ribosomas (fabrican proteínas), núcleo (ADN).\nCélula vegetal: pared de celulosa, cloroplastos, vacuola grande. Animal: sin pared ni cloroplastos, vacuolas pequeñas.\nTeoría endosimbiótica: mitocondrias y cloroplastos proceden de bacterias que quedaron dentro de otra célula.",
+"Exemple · Física i Química": "Ejemplo · Física y Química",
+"Què és el MRU": "Qué es el MRU",
+"Moviment en línia recta amb velocitat constant.": "Movimiento en línea recta con velocidad constante.",
+"En temps iguals, el mòbil recorre distàncies iguals.": "En tiempos iguales, el móvil recorre distancias iguales.",
+"Equacions": "Ecuaciones",
+"A la gràfica x–t surt una recta: el pendent és la velocitat.": "En la gráfica x–t sale una recta: la pendiente es la velocidad.",
+"Unitats": "Unidades",
+"Al SI: posició en m, temps en s, velocitat en m/s.": "En el SI: posición en m, tiempo en s, velocidad en m/s.",
+"De km/h a m/s es divideix entre 3,6.": "De km/h a m/s se divide entre 3,6.",
+"Magnituds": "Magnitudes",
+"Què es mesura": "Qué se mide",
+"Posició (x)": "Posición (x)",
+"en metres": "en metros",
+"Temps (t)": "Tiempo (t)",
+"en segons": "en segundos",
+"Velocitat (v)": "Velocidad (v)",
+"m/s, constant": "m/s, constante",
+"Com es calcula": "Cómo se calcula",
+"velocitat": "velocidad",
+"on és el mòbil": "dónde está el móvil",
+"Gràfiques": "Gráficas",
+"Com es dibuixa": "Cómo se dibuja",
+"recta horitzontal": "recta horizontal",
+"Velocitat": "Velocidad",
+"Gràfica x–t": "Gráfica x–t",
+"és el pendent de": "es la pendiente de",
+"Com més ràpid va el mòbil, més inclinada és la recta.": "Cuanto más rápido va el móvil, más inclinada es la recta.",
+"Desplaçament per unitat de temps; al MRU és constant.": "Desplazamiento por unidad de tiempo; en el MRU es constante.",
+"Posició i desplaçament": "Posición y desplazamiento",
+"On és el mòbil i quant ha canviat la posició.": "Dónde está el móvil y cuánto ha cambiado la posición.",
+"Equació del MRU": "Ecuación del MRU",
+"Canvi d'unitats": "Cambio de unidades",
+"Passar les dades al SI abans de calcular.": "Pasar los datos al SI antes de calcular.",
+"Recta el pendent de la qual és la velocitat.": "Recta cuya pendiente es la velocidad.",
+"v: velocitat (m/s) · Δx: desplaçament (m) · Δt: temps (s)": "v: velocidad (m/s) · Δx: desplazamiento (m) · Δt: tiempo (s)",
+"Quan coneixes la distància recorreguda i el temps.": "Cuando conoces la distancia recorrida y el tiempo.",
+"Equació de posició": "Ecuación de posición",
+"x₀: posició inicial (m) · t: temps (s)": "x₀: posición inicial (m) · t: tiempo (s)",
+"Per saber on és el mòbil en un instant o quan arriba a un punt.": "Para saber dónde está el móvil en un instante o cuándo llega a un punto.",
+"Abans de calcular, si les dades no estan al SI.": "Antes de calcular, si los datos no están en el SI.",
+"Resoldre un problema de MRU": "Resolver un problema de MRU",
+"Escriu les dades amb les unitats": "Escribe los datos con sus unidades",
+"Passa-les al SI": "Pásalos al SI",
+"Substitueix i calcula": "Sustituye y calcula",
+"Escriu el resultat amb unitats i mira si té sentit": "Escribe el resultado con unidades y comprueba si tiene sentido",
+"Un sol mòbil amb velocitat constant.": "Un solo móvil con velocidad constante.",
+"Trobada de dos mòbils": "Encuentro de dos móviles",
+"S'igualen les posicions dels dos mòbils.": "Se igualan las posiciones de los dos móviles.",
+"Un tren surt de Palma a 72 km/h i manté la velocitat constant. Quant de temps tarda a recórrer 3 km? Dona el resultat en segons i en minuts.": "Un tren sale de Palma a 72 km/h y mantiene la velocidad constante. ¿Cuánto tiempo tarda en recorrer 3 km? Da el resultado en segundos y en minutos.",
+"Abans de calcular, mira si totes les dades estan en les mateixes unitats.": "Antes de calcular, comprueba si todos los datos están en las mismas unidades.",
+"Passa 72 km/h a m/s i 3 km a metres.": "Pasa 72 km/h a m/s y 3 km a metros.",
+"Δt = Δx / v, amb Δx = 3000 m.": "Δt = Δx / v, con Δx = 3000 m.",
+"Tria la fórmula i aïlla la incògnita": "Elige la fórmula y despeja la incógnita",
+"Passa a minuts": "Pasa a minutos",
+"150 s = 2,5 minuts": "150 s = 2,5 minutos",
+"Dades: v = 72 km/h, x = 3 km": "Datos: v = 72 km/h, x = 3 km",
+"Dades ben identificades.": "Datos bien identificados.",
+"El càlcul és bo, però no hi poses la unitat: són 0,0417 hores.": "El cálculo es correcto, pero no pones la unidad: son 0,0417 horas.",
+"Bon pas d'hores a minuts.": "Buen paso de horas a minutos.",
+"Escrius 0,0417 sense unitat. Són hores, i si no ho dius no se sap què has calculat.": "Escribes 0,0417 sin unidad. Son horas, y si no lo dices no se sabe qué has calculado.",
+"Has vist que les unitats havien de coincidir i has treballat en km i hores: és un camí vàlid.": "Has visto que las unidades tenían que coincidir y has trabajado en km y horas: es un camino válido.",
+"Has passat bé d'hores a minuts i de minuts a segons.": "Has pasado bien de horas a minutos y de minutos a segundos.",
+"Escriu sempre la unitat al costat de cada resultat parcial: t = 0,0417 h.": "Escribe siempre la unidad junto a cada resultado parcial: t = 0,0417 h.",
+"Què vol dir que un moviment és uniforme?": "¿Qué quiere decir que un movimiento es uniforme?",
+"Un ciclista recorre 600 m en 2 minuts. Quina és la seva velocitat en m/s?": "Un ciclista recorre 600 m en 2 minutos. ¿Cuál es su velocidad en m/s?",
+"Un cotxe va a 90 km/h. Quina distància recorre en 20 minuts?": "Un coche va a 90 km/h. ¿Qué distancia recorre en 20 minutos?",
+"Un autobús és a 2 km de l'escola i s'hi acosta a 36 km/h. On és al cap d'1 minut?": "Un autobús está a 2 km de la escuela y se acerca a 36 km/h. ¿Dónde está al cabo de 1 minuto?",
+"Un tren surt de Palma a 72 km/h i manté la velocitat constant. Quant de temps tarda a recórrer 3 km?": "Un tren sale de Palma a 72 km/h y mantiene la velocidad constante. ¿Cuánto tiempo tarda en recorrer 3 km?",
+"Llibre pàg. 110-112 (PDF)": "Libro pág. 110-112 (PDF)",
+"--- Pàgina 1 ---\nMOVIMENT RECTILINI UNIFORME (MRU)\nUn mòbil fa un MRU quan es desplaça en línia recta amb velocitat constant.\nv = Δx / Δt    x = x₀ + v·t\nUnitats SI: m, s, m/s. 1 km/h = 1/3,6 m/s.\nLa gràfica posició-temps és una recta; el pendent és la velocitat.\n--- Pàgina 3 ---\nACTIVITATS\n1. Un cotxe va a 90 km/h. Quina distància recorre en 20 minuts?\n2. Un tren va a 72 km/h. Quant tarda a fer 3 km?\n3. Dos cotxes surten alhora de dues ciutats separades 150 km i van l'un cap a l'altre a 80 km/h i 70 km/h. On i quan es troben?": "--- Página 1 ---\nMOVIMIENTO RECTILÍNEO UNIFORME (MRU)\nUn móvil realiza un MRU cuando se desplaza en línea recta con velocidad constante.\nv = Δx / Δt    x = x₀ + v·t\nUnidades SI: m, s, m/s. 1 km/h = 1/3,6 m/s.\nLa gráfica posición-tiempo es una recta; la pendiente es la velocidad.\n--- Página 3 ---\nACTIVIDADES\n1. Un coche va a 90 km/h. ¿Qué distancia recorre en 20 minutos?\n2. Un tren va a 72 km/h. ¿Cuánto tarda en recorrer 3 km?\n3. Dos coches salen a la vez de dos ciudades separadas 150 km y van el uno hacia el otro a 80 km/h y 70 km/h. ¿Dónde y cuándo se encuentran?"
+};
+const T = (s) => UI === "es" && Object.hasOwn(ES, s) ? ES[s] : s;
+// Textos amb parts variables (nombres, noms…).
+const ES_RX = [
+  [/^\((.+)\)$/, (_, a) => ES[a] ? `(${ES[a]})` : null],
+  [/^([NLP]\d) (.+)$/, (_, a, b) => ES[b] ? `${a} ${ES[b]}` : null],
+  [/^Pas (\d+)$/, "Paso $1"],
+  [/^Pas (\d+) · (.+)$/, (_, n, x) => `Paso ${n} · ${T(x)}`],
+  [/^(Pregunta|Exercici) (\d+)$/, (_, a, n) => `${a === "Exercici" ? "Ejercicio" : a} ${n}`],
+  [/^Fes-me preguntes de nivell (\d)$/, "Hazme preguntas de nivel $1"],
+  [/^Fes-me exercicis de nivell (\w+)$/, "Hazme ejercicios de nivel $1"],
+  [/^(\d+) a reforçar$/, "$1 a reforzar"],
+  [/^Insereix (.+)$/, "Inserta $1"],
+  [/^Text del material (.*)$/, "Texto del material $1"],
+  [/^Fet el (.+)$/, "Hecho el $1"],
+  [/^S'esborraran «(.*)», el seu material i tot l'historial\. No es pot desfer\.$/s, "Se borrarán «$1», su material y todo el historial. No se puede deshacer."],
+  [/^Claude connectat · (.+)$/, (_, x) => `Claude conectado · ${T(x)}`],
+  [/^Claude \(clau API\) · (.+)$/, (_, x) => `Claude (clave API) · ${T(x)}`],
+  [/^Codi desat \(es comprovarà en fer servir Claude\) · (.+)$/, (_, x) => `Código guardado (se comprobará al usar Claude) · ${T(x)}`],
+  [/^Codi d'accés actiu(?: · queden (\d+) peticions aquest mes)? · (.+)$/, (_, n, x) => `Código de acceso activo${n ? ` · quedan ${n} peticiones este mes` : ""} · ${T(x)}`],
+  [/^mitjana (.+)$/, "media $1"],
+  [/^Escrivint… (.+)$/, "Escribiendo… $1"],
+  [/^(\d+) materials?, ([\d.]+k? car\.)\.? ?(.*)$/, (_, n, k, r) => `${n} material${n > 1 ? "es" : ""}, ${k}${r ? " " + (ES[r] || r) : ""}`],
+  [/^De ([NLP])1 a \1(4)\. Quan les últimes (respostes|resolucions) d'un nivell fan mitjana de 7, passes al següent\.$/, (_, t, q, w) => `De ${t}1 a ${t}4. Cuando ${w === "respostes" ? "las últimas respuestas" : "las últimas resoluciones"} de un nivel tienen una media de 7, pasas al siguiente.`],
+  [/^Claude prepara (\d+) preguntes de nivell (\d) \((.+)\)\.$/, (_, n, l, nom) => `Claude prepara ${n} preguntas de nivel ${l} (${ES[nom] || nom}).`],
+  [/^Claude prepara (\d+) exercicis de nivell (\w+) i els resol per poder-te corregir\.$/, "Claude prepara $1 ejercicios de nivel $2 y los resuelve para poder corregirte."],
+  [/^Pàgina escanejada (\d+): llegint-la amb Claude \((\d+) de (\d+)\)…$/, "Página escaneada $1: leyéndola con Claude ($2 de $3)…"],
+  [/^(\d+) temes? recuperats?(?:; (\d+) ja hi eren i no s'han tocat)?$/, (_, n, k) => `${n} tema${n === "1" ? "" : "s"} recuperado${n === "1" ? "" : "s"}${k ? `; ${k} ya estaban y no se han tocado` : ""}`],
+  [/^Com a màxim (\d+) fotos per exercici$/, "Como máximo $1 fotos por ejercicio"],
+  // «Biologia · Guia» i semblants: es tradueix cada part.
+  [/ · /, (s) => { const p = s.split(" · "), q = p.map(T); return q.some((x, i) => x !== p[i]) ? q.join(" · ") : null; }],
+];
+function trText(s) {
+  const core = s.trim(); if (!core || core.length > 2000) return null;
+  let r = Object.hasOwn(ES, core) ? ES[core] : null;
+  if (r === null) for (const [rx, f] of ES_RX) { const m = core.match(rx); if (m) { r = typeof f === "function" ? f(...m) : core.replace(rx, f); if (r !== null) break; } }
+  if (r === null || r === core) return null;
+  const i = s.indexOf(core); return s.slice(0, i) + r + s.slice(i + core.length);
+}
+const I18N_ATTR = ["placeholder", "title", "aria-label", "alt"];
+const I18N_SKIP = "script,style,textarea,[data-noi18n]";
+function trNode(n) {
+  if (n.nodeType === 3) { const p = n.parentElement; if (!p || p.closest(I18N_SKIP)) return; const r = trText(n.data); if (r !== null) n.data = r; return; }
+  if (n.nodeType !== 1 || n.closest("script,style,[data-noi18n]")) return;
+  const els = [n, ...n.querySelectorAll("*")];
+  for (const el of els) {
+    if (el.closest("[data-noi18n]")) continue;
+    for (const a of I18N_ATTR) { const v = el.getAttribute(a); if (v) { const r = trText(v); if (r !== null) el.setAttribute(a, r); } }
+  }
+  const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+  for (let t = w.nextNode(); t; t = w.nextNode()) trNode(t);
+}
+if (UI === "es") {
+  new MutationObserver((ms) => {
+    for (const m of ms) {
+      if (m.type === "characterData") trNode(m.target);
+      else if (m.type === "attributes") { const v = m.target.getAttribute(m.attributeName); const r = v && !m.target.closest("[data-noi18n]") ? trText(v) : null; if (r !== null) m.target.setAttribute(m.attributeName, r); }
+      else m.addedNodes.forEach(trNode);
+    }
+  }).observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: I18N_ATTR});
+  trNode(document.body);
+  if (ES[document.title]) document.title = ES[document.title];
+}
+
+/* ============================================================
    Nivells, assignatures, llengües
    ============================================================ */
 const LEVELS = {
@@ -345,12 +1017,16 @@ const LEVELS = {
   4: {nom:"Integrar",   curt:"Visió de conjunt, aplicar i lligar amb altres temes.", llarg:"Visió de conjunt del tema, aplicar-lo a una situació nova, argumentar una opinió amb dades i relacionar-lo amb altres temes de la mateixa assignatura."},
 };
 const LANGS = { ca:{nom:"català", sr:"ca-ES"}, es:{nom:"castellà", sr:"es-ES"}, en:{nom:"anglès", sr:"en-GB"}, de:{nom:"alemany", sr:"de-DE"} };
-const PRESETS = [
+const PRESETS_CA = [
   {nom:"Biologia", llengua:"ca", c:1}, {nom:"Història", llengua:"ca", c:2}, {nom:"Geografia", llengua:"ca", c:7},
   {nom:"Català", llengua:"ca", c:4, tipus:"llengua"}, {nom:"Castellà", llengua:"es", c:6, tipus:"llengua"}, {nom:"Anglès", llengua:"en", c:5, tipus:"llengua"},
   {nom:"Alemany", llengua:"de", c:3, tipus:"llengua"}, {nom:"Matemàtiques", llengua:"ca", c:5, tipus:"problemes"},
-  {nom:"Física i Química", llengua:"ca", c:6, tipus:"problemes"}, {nom:"Filosofia", llengua:"ca", c:8},
+  {nom:"Física i Química", llengua:"ca", c:6, tipus:"problemes"}, {nom:"Filosofia", llengua:"ca", c:8, off:true},
 ];
+// En castellà: assignatures en castellà; català i alemany, sense marcar.
+const PRESETS = UI === "es"
+  ? [PRESETS_CA[4], ...PRESETS_CA.filter((_, i) => i !== 4)].map(p => ({...p, nom: T(p.nom), llengua: p.llengua === "ca" && p.nom !== "Català" ? "es" : p.llengua, off: p.off || p.nom === "Català" || p.nom === "Alemany"}))
+  : PRESETS_CA;
 // A qui parlen les peticions a Claude: la filla (4t d'ESO) o, a la versió amb codis, qualsevol estudiant.
 // A la versió amb codis, cada estudiant tria el seu curs a Configuració.
 const CURSOS = ["1r d'ESO", "2n d'ESO", "3r d'ESO", "4t d'ESO", "1r de batxillerat", "2n de batxillerat"];
@@ -362,9 +1038,11 @@ const WHO = document.querySelector('meta[name="explica-proxy"]')
 const subjColor = (s) => `var(--s${(s?.c ?? 8)})`;
 // Guia i preguntes: en la llengua de l'assignatura si és ca/es; per a anglès i alemany,
 // explicacions en català i preguntes en la llengua estrangera.
-const guideLang = (s) => (s.llengua === "en" || s.llengua === "de") ? `català, però amb els exemples, el vocabulari i les regles en ${LANGS[s.llengua].nom}` : LANGS[s.llengua]?.nom || "català";
-const qLang = (s) => LANGS[s.llengua]?.nom || "català";
-const fbLang = (s) => s.llengua === "es" ? "castellà" : "català";
+// Si la llengua de l'assignatura no és ni català ni castellà, les explicacions van en l'idioma de l'eina.
+const uiLang = UI === "es" ? "castellà" : "català";
+const guideLang = (s) => (s.llengua === "en" || s.llengua === "de") ? `${uiLang}, però amb els exemples, el vocabulari i les regles en ${LANGS[s.llengua].nom}` : LANGS[s.llengua]?.nom || uiLang;
+const qLang = (s) => LANGS[s.llengua]?.nom || uiLang;
+const fbLang = (s) => s.llengua === "es" ? "castellà" : s.llengua === "ca" ? "català" : uiLang;
 
 /* ============================================================
    Exemple (no es guarda): Biologia · La cèl·lula
@@ -524,10 +1202,16 @@ const S = {
 };
 const EX_SUBJS = [EX_SUBJ, EX_SUBJ2];
 const ex = {temes: {"exemple": exampleTema(), "exemple-fq": exampleFQ()}, mats: {exm1: EX_MAT, exm2: EX_MAT2}};
+// En castellà, els exemples també: es tradueix cada text que és al diccionari.
+if (UI === "es") {
+  const trDeep = (o) => { for (const k of Object.keys(o)) { const v = o[k]; if (typeof v === "string") o[k] = Object.hasOwn(ES_EX, v) ? ES_EX[v] : T(v); else if (v && typeof v === "object") trDeep(v); } };
+  trDeep(ex.temes); trDeep(EX_MAT); trDeep(EX_MAT2);
+  for (const x of EX_SUBJS) { x.nom = ES_EX[x.nom] || T(x.nom); x.llengua = "es"; }
+}
 function allSubjects() { return S.exampleHidden ? S.subjects : [...S.subjects, ...EX_SUBJS]; }
 function getTema(id) { return ex.temes[id] || S.temes[id]; }
 function getMat(id) { return ex.mats[id] || S.mats[id]; }
-function getSubj(id) { return EX_SUBJS.find(s => s.id === id) || S.subjects.find(s => s.id === id) || {id, nom: "Assignatura", llengua: "ca", c: 8}; }
+function getSubj(id) { return EX_SUBJS.find(s => s.id === id) || S.subjects.find(s => s.id === id) || {id, nom: T("Assignatura"), llengua: UI, c: 8}; }
 function temesOf(subjId) { return Object.values(S.temes).filter(t => t.subjId === subjId).sort((a,b) => a.creat - b.creat); }
 
 /* ============================================================
@@ -713,7 +1397,7 @@ const AI = {
     if (!res.ok) {
       const b = await res.json().catch(() => ({}));
       if (res.status === 401) { this.codiOk = false; renderConn(); }
-      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
+      throw {code: ({401: "bad_code", 413: "prompt_too_large"})[res.status] || (b.error === "quota" && b.origen === "codi" ? "month_quota_code" : null) || ({intents: "too_many_tries", limit: "daily_limit", quota: "month_quota", subscripcio: "sub_inactive", saldo: "no_credit"})[b.error] || (res.status === 429 ? "rate_limited" : "upstream_error"),
         message: b.message || ("HTTP " + res.status)};
     }
     const rest = res.headers.get("x-explica-restants");
@@ -775,6 +1459,7 @@ function aiErr(e) {
     no_credit: "L'eina està aturada temporalment. Avisa la persona que t'ha donat el codi.",
     too_many_tries: "Hi ha hagut massa intents amb codis incorrectes des d'aquesta connexió. Torna-ho a provar demà, amb el codi ben escrit.",
     month_quota: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, pots canviar de pla a Configuració → Gestiona la subscripció.",
+    month_quota_code: "Ja has fet servir totes les peticions d'aquest mes. Es renoven el mes que ve; si en necessites més, demana-ho a qui t'ha donat el codi.",
     sub_inactive: "La subscripció d'aquest codi no està activa (potser hi ha un pagament pendent o s'ha donat de baixa). Revisa-la a Configuració → Gestiona la subscripció.",
     empty_completion: "Claude no ha retornat res. Torna-ho a provar.",
   })[c] || (e?.message ? "Error: " + e.message : "Alguna cosa ha fallat. Torna-ho a provar.");
@@ -879,7 +1564,7 @@ async function extract(f, signal, status) {
       pages[i] = (await ocr([img], signal)).replace(/^--- Pàgina[^\n]*\n?/, "");
     }
     const skipped = scan.slice(MAXOCR).map(i => i + 1);
-    return {kind: k, text: (skipped.length ? `[No s'han llegit ${skipped.length} pàgines escanejades: ${skipped.join(", ")}. Puja-les com a fotos si les necessites.]\n\n` : "") +
+    return {kind: k, text: (skipped.length ? (UI === "es" ? `[No se han leído ${skipped.length} páginas escaneadas: ${skipped.join(", ")}. Súbelas como fotos si las necesitas.]\n\n` : `[No s'han llegit ${skipped.length} pàgines escanejades: ${skipped.join(", ")}. Puja-les com a fotos si les necessites.]\n\n`) : "") +
       pages.map((t, i) => `--- Pàgina ${i + 1} ---\n${t}`).join("\n\n")};
   }
   throw new Error("Aquest tipus de fitxer no es pot llegir. Fes servir fotos, PDF, Word (.docx) o text.");
@@ -1468,7 +2153,7 @@ function renderHome() {
     ${has ? "" : `<div class="panel">
       <h3>Comença triant les teves assignatures</h3>
       <p class="muted small">Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis pas a pas; les llengües, amb teoria per explicar i exercicis per aplicar-la.</p>
-      <div class="row">${PRESETS.map((p, i) => `<label class="chip" style="cursor:pointer;text-transform:none;font-family:var(--f-body);font-size:.92rem;letter-spacing:0;color:var(--ink);padding:6px 12px"><input type="checkbox" id="pre_${i}" ${i < 9 ? "checked" : ""}> ${esc(p.nom)}</label>`).join("")}</div>
+      <div class="row">${PRESETS.map((p, i) => `<label class="chip" style="cursor:pointer;text-transform:none;font-family:var(--f-body);font-size:.92rem;letter-spacing:0;color:var(--ink);padding:6px 12px"><input type="checkbox" id="pre_${i}" ${p.off ? "" : "checked"}> ${esc(p.nom)}</label>`).join("")}</div>
       <div class="row"><button class="btn primary" data-act="addPresets" type="button">Afegeix aquestes assignatures</button></div>
     </div>`}
     ${S.exampleHidden ? "" : `<div class="banner"><p><strong>Mira els exemples:</strong> «La cèl·lula», de Biologia (preguntes per explicar), i «Moviment rectilini uniforme», de Física i Química (exercicis). No es guarden.</p><button class="btn sm" data-act="open" data-id="exemple" type="button">Biologia</button><button class="btn sm" data-act="open" data-id="exemple-fq" type="button">Física i Química</button><button class="btn sm ghost" data-act="hideExample" type="button">Amaga'l</button></div>`}
@@ -1867,7 +2552,7 @@ function newSubject() {
   openDialog(`<h3>Nova assignatura</h3>
     <div class="field"><label class="label" for="dlgIn">Nom</label><input type="text" id="dlgIn" placeholder="Per exemple: Economia"></div>
     <div class="field"><label class="label" for="dlgTipus">Com s'estudia</label><select id="dlgTipus"><option value="teoria">Teoria: explicar-ho i relacionar</option><option value="problemes">Problemes: exercicis pas a pas (mates, física, química…)</option><option value="llengua">Llengua: teoria i exercicis d'aplicació (català, castellà, anglès…)</option></select></div>
-    <div class="field"><label class="label" for="dlgLang">Llengua de l'assignatura</label><select id="dlgLang">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}">${v.nom}</option>`).join("")}</select></div>
+    <div class="field"><label class="label" for="dlgLang">Llengua de l'assignatura</label><select id="dlgLang">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}" ${k === UI ? "selected" : ""}>${v.nom}</option>`).join("")}</select></div>
     <div class="row"><span class="spacer"></span><button class="btn ghost" data-act="dlgClose" type="button">Cancel·la</button><button class="btn primary" data-act="dlgOk" type="button">Afegeix</button></div>`,
     () => { const nom = $("#dlgIn").value.trim(); if (!nom) return; S.subjects.push({id: uid(), nom, llengua: $("#dlgLang").value, c: (S.subjects.length % 8) + 1, tipus: $("#dlgTipus").value}); saveConfig(); closeDialog(); render(); });
 }
@@ -1892,7 +2577,7 @@ function settings() {
          <div class="row"><a class="btn sm" href="${esc(AI.portalLogin)}" target="_blank" rel="noopener">Gestiona la subscripció</a></div>` : ""}
          ${AI.subs ? `<div class="row"><a class="btn sm ghost" href="subscriu.html">Plans i subscripció</a></div>` : ""}<p class="err small" id="portalErr" role="alert" hidden></p>` : ""}
          <label class="label" for="cursIn">El teu curs</label>
-         <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
+         <select id="cursIn"><option value="">Tria el curs</option>${CURSOS.map(c => `<option value="${c}" ${ls("explica:curs") === c ? "selected" : ""}>${c}</option>`).join("")}</select>`
       : inClaude ? `<p>Connectat a través de claude.ai: fa servir el compte de qui té la pàgina oberta. La primera vegada et demanarà permís.</p>`
       : `<p class="small muted">Si obres aquest fitxer fora de claude.ai, cal una clau de l'API d'Anthropic (console.anthropic.com). Es guarda només en aquest navegador.</p>
          <input type="password" id="apiKey" placeholder="sk-ant-…" value="${esc(AI.apiKey)}" autocomplete="off" aria-label="Clau de l'API">
@@ -1900,6 +2585,9 @@ function settings() {
          <label class="label" for="apiModel">Model</label>
          <select id="apiModel">${[["claude-sonnet-5-5","Sonnet 5.5 (recomanat)"],["claude-opus-5-5","Opus 5.5 (més precís, més car)"],["claude-haiku-5-5","Haiku 5.5 (més ràpid i barat)"]].map(([v, l]) => `<option value="${v}" ${AI.model === v ? "selected" : ""}>${l}</option>`).join("")}</select>`}
     </div>
+    <div class="field lang" id="fLang" role="group" aria-labelledby="lLang"><span class="label" id="lLang">Idioma de l'eina</span>
+      <div class="row"><button class="flag" data-uilang="ca" type="button" lang="ca" aria-pressed="${UI === "ca"}"><svg viewBox="0 0 27 18" aria-hidden="true"><rect width="27" height="18" fill="#fcdd09"/><path d="M0 3h27M0 7h27M0 11h27M0 15h27" stroke="#da121a" stroke-width="2"/></svg> Català</button><button class="flag" data-uilang="es" type="button" lang="es" aria-pressed="${UI === "es"}"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg> Castellano</button></div>
+      <p class="small muted">En canviar l'idioma es torna a carregar la pàgina. La teva feina no es perd.</p></div>
     <div class="field"><span class="label">On es guarda</span><p class="small">${Store.kind === "db" ? "Al teu compte de claude.ai (privat: només ho veus tu)." : Store.kind === "local" ? "En aquest navegador. Si esborres les dades del navegador es perd: fes còpies de seguretat." : "Enlloc: aquest navegador no deixa guardar. Fes còpies de seguretat."}</p>
       <div class="row"><button class="btn sm" data-act="export" type="button">Descarrega còpia</button><button class="btn sm" data-act="import" type="button">Recupera una còpia</button></div></div>
     ${Store.kind === "mem" && lsAvailable() ? `<div class="field"><span class="label">Guardar aquí</span><p class="small muted">Ara mateix no es guarda res. Pots guardar-ho en aquest navegador (no ho facis en un ordinador compartit).</p><div class="row"><button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button></div></div>` : ""}
@@ -1916,7 +2604,7 @@ async function portalLink(btn) {
   const err = $("#portalErr"), ok = $("#portalOk"); btn.disabled = true;
   if (err) err.hidden = true;
   try {
-    const r = await fetch(PROXY.replace(/claude$/, "portal-enllac"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi})});
+    const r = await fetch(PROXY.replace(/claude$/, "portal-enllac"), {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({codi: AI.codi, idioma: UI})});
     const b = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(r.status === 404 ? "Aquest codi no té cap subscripció associada (és un codi donat directament)." : r.status === 429 ? "Ja s'han enviat molts enllaços avui. Mira el correu o torna-ho a provar demà." : "No s'ha pogut enviar l'enllaç. Torna-ho a provar d'aquí a una estona.");
     if (ok) { ok.textContent = `Fet: hem enviat l'enllaç a ${b.a}. Caduca d'aquí a 30 minuts.`; ok.hidden = false; }
@@ -1940,22 +2628,22 @@ const nomFitxer = (s) => String(s || "guia").normalize("NFD").replace(/[\u0300-\
    Blocs: {k: title|h1|h2|p|li, t: text, lab: inici en negreta, n: sagnat, muted, mono} */
 function guiaBlocs(t) {
   const g = t.guia, s = getSubj(t.subjId), B = [];
-  const h1 = (x) => B.push({k: "h1", t: x}), h2 = (x) => x && B.push({k: "h2", t: x});
+  const h1 = (x) => B.push({k: "h1", t: T(x)}), h2 = (x) => x && B.push({k: "h2", t: x});
   const p = (x, o = {}) => (x || o.lab) && B.push({k: "p", t: x || "", ...o});
   const li = (x, o = {}) => (x || o.lab) && B.push({k: "li", t: x || "", n: 0, ...o});
   B.push({k: "title", t: t.titol});
-  p(`${s.nom} · Guia feta el ${new Date(g.generat || Date.now()).toLocaleDateString("ca-ES", {day: "numeric", month: "long", year: "numeric"})}`, {muted: true});
+  p(`${s.nom} · ${UI === "es" ? "Guía hecha el" : "Guia feta el"} ${new Date(g.generat || Date.now()).toLocaleDateString(LOC, {day: "numeric", month: "long", year: "numeric"})}`, {muted: true});
   h1("Resum ordenat");
   arr(g.resum).forEach(r => { h2(r.apartat); arr(r.punts).forEach(x => li(x)); });
   if (arr(g.formules).length) { h1("Fórmules"); g.formules.forEach(f => { h2(f.nom); p(f.expressio, {mono: true}); p(f.variables); p(f.quan, {muted: true}); }); }
   if (arr(g.regles).length) {
     h1("Regles");
-    g.regles.forEach(r => { h2(r.nom); p(r.regla); if (arr(r.exemples).length) { p("", {lab: "Exemples:"}); r.exemples.forEach(x => li(x)); } if (r.excepcions) p(r.excepcions, {lab: "Excepcions: "}); });
+    g.regles.forEach(r => { h2(r.nom); p(r.regla); if (arr(r.exemples).length) { p("", {lab: T("Exemples:")}); r.exemples.forEach(x => li(x)); } if (r.excepcions) p(r.excepcions, {lab: T("Excepcions:") + " "}); });
   }
   if (arr(g.metodes).length) { h1("Mètodes pas a pas"); g.metodes.forEach(m => { h2(m.nom); arr(m.passos).forEach((x, i) => li(x, {lab: (i + 1) + ". "})); }); }
   if (arr(g.tipus_problemes).length) { h1(isLang(s) ? "Tipus d'exercici" : "Tipus de problemes"); g.tipus_problemes.forEach(x => li(x.descripcio ? " " + x.descripcio : "", {lab: x.nom + (x.descripcio ? ":" : "")})); }
   h1("Mapa conceptual");
-  p(g.mapa?.centre || t.titol, {lab: "Idea central: "});
+  p(g.mapa?.centre || t.titol, {lab: T("Idea central:") + " "});
   arr(g.mapa?.branques).forEach(b => { li(b.idea ? " " + b.idea : "", {lab: b.nom + (b.idea ? ":" : "")}); arr(b.fills).forEach(f => li(f.idea ? " " + f.idea : "", {lab: f.nom + (f.idea ? ":" : ""), n: 1})); });
   if (arr(g.relacions).length) { h1("Com es relacionen les idees"); g.relacions.forEach(r => li(r.explicacio ? " " + r.explicacio : "", {lab: `${r.de} → ${r.tipus} → ${r.a}` + (r.explicacio ? ":" : "")})); }
   h1("Conceptes clau");
@@ -1989,7 +2677,7 @@ function imprimeixGuia(t) {
   f.setAttribute("aria-hidden", "true"); f.tabIndex = -1;
   f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
   document.body.append(f);
-  const d = f.contentDocument; d.open(); d.write(guiaHTMLDoc(t)); d.close(); d.documentElement.lang = "ca";
+  const d = f.contentDocument; d.open(); d.write(guiaHTMLDoc(t)); d.close(); d.documentElement.lang = UI;
   setTimeout(() => {
     try { f.contentWindow.focus(); f.contentWindow.print(); }
     catch (e) { toast("No s'ha pogut obrir la impressió. Descarrega el Word i imprimeix-lo des d'allà."); }
@@ -2036,7 +2724,7 @@ function guiaDocx(t) {
     {name: "[Content_Types].xml", data: xml + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>'},
     {name: "_rels/.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
     {name: "word/_rels/document.xml.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
-    {name: "word/styles.xml", data: xml + `<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="ca-ES"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>` +
+    {name: "word/styles.xml", data: xml + `<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="${LOC}"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>` +
       `<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>` +
       estil("Title", "Title", '<w:spacing w:after="120"/>', '<w:b/><w:sz w:val="40"/><w:szCs w:val="40"/>') +
       estil("Heading1", "heading 1", '<w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="0"/>', '<w:b/><w:color w:val="1F3864"/><w:sz w:val="30"/><w:szCs w:val="30"/>') +
@@ -2207,6 +2895,13 @@ document.addEventListener("change", (e) => {
   if (e.target.dataset.subjtipus) { const x = S.subjects.find(y => y.id === e.target.dataset.subjtipus); if (x) { x.tipus = e.target.value; saveConfig(); if (S.view.tab === "ex" && !hasEx(getSubj(getTema(S.view.temaId)?.subjId))) S.view.tab = "quiz"; render(); } }
 });
 $("#btnSettings").addEventListener("click", settings);
+// Banderes de la capçalera: obren Configuració amb l'idioma a la vista i el botó d'aquella llengua a punt.
+document.querySelectorAll("[data-flag]").forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.flag === UI)); b.addEventListener("click", () => {
+  settings(); const f = $("#fLang"); if (!f) return;
+  f.classList.add("hl"); f.scrollIntoView({block: "center"}); $(`#fLang [data-uilang="${b.dataset.flag}"]`)?.focus();
+}); });
+// Canvi d'idioma (Configuració).
+document.addEventListener("click", (e) => { const b = e.target.closest?.("[data-uilang]"); if (!b) return; const l = b.dataset.uilang; if (l === UI) return; ls("explica:ui", l); location.reload(); });
 document.addEventListener("focusin", (e) => { if (e.target.dataset?.exans || e.target.dataset?.exstep) S.lastExField = e.target.id; });
 document.addEventListener("mousedown", (e) => { if (e.target.closest?.(".sym")) e.preventDefault(); });  // el focus es queda a la caixa
 function addPhotos(id, blobs) {
@@ -2230,7 +2925,7 @@ document.addEventListener("paste", (e) => {
   if (S.view.tab !== "material" || !S.view.temaId || ex.temes[S.view.temaId]) return;
   if (e.target.closest?.("textarea,input")) return;
   const imgs = [...(e.clipboardData?.items || [])].filter(i => i.type.startsWith("image/")).map(i => i.getAsFile()).filter(Boolean);
-  if (imgs.length) { e.preventDefault(); addFiles(imgs.map((f, i) => new File([f], `Captura ${new Date().toLocaleTimeString("ca-ES")}${imgs.length > 1 ? " " + (i + 1) : ""}.png`, {type: f.type}))); }
+  if (imgs.length) { e.preventDefault(); addFiles(imgs.map((f, i) => new File([f], `Captura ${new Date().toLocaleTimeString(LOC)}${imgs.length > 1 ? " " + (i + 1) : ""}.png`, {type: f.type}))); }
 });
 
 /* ============================================================

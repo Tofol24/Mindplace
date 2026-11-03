@@ -6,6 +6,30 @@ i després fa preguntes en quatre nivells de profunditat (recordar, comprendre,
 relacionar, integrar). Es pot respondre parlant (micròfon) o escrivint, i Claude
 valora què se sap, què falta i com encaixar-ho a l'explicació.
 
+## Idioma de l'eina (català / castellà)
+
+La pantalla surt en català o en castellà. La primera vegada es tria segons el navegador
+(català o valencià → català; castellà, gallec o basc → castellà; altres → castellà), però qui
+ja feia servir l'eina continua en català. Es canvia a **Configuració → Idioma de l'eina**.
+
+- El codi s'escriu en català. En castellà, cada text de la pantalla es tradueix en mostrar-se
+  amb el diccionari `ES` (frases senceres) i les regles `ES_RX` (frases amb nombres o noms) del
+  bloc «Idioma de l'eina» d'`explica-ho.html`. Només es tradueixen textos que coincideixen
+  sencers amb una frase de l'eina: el material i el que escriu Claude no es toquen.
+- Si afegeixes un text nou a la pantalla, afegeix-ne la traducció a `ES` (o una regla a `ES_RX`).
+- Els temes d'exemple tenen la seva traducció a `ES_EX`.
+- En castellà, les assignatures noves són en castellà per defecte, i les explicacions de les
+  assignatures d'anglès i alemany van en castellà. La llengua de cada assignatura continua
+  manant per a la guia, les preguntes i les correccions.
+- A la capçalera hi ha les banderes catalana i espanyola: obren Configuració amb l'idioma a la vista.
+- La versió web amb codis tria l'idioma pel navegador la primera vegada; la de claude.ai i el fitxer
+  autònom comencen en català. L'idioma es desa (`explica:ui`).
+- Les pàgines de subscripció (`subscriu`, `gracies`, `recupera`) fan servir `web-pacients/idioma.js`, amb el
+  mateix criteri i un canvi d'idioma al peu. L'idioma s'envia al servidor: el pagament de Stripe surt en
+  castellà i els correus (codi, «He perdut el codi», enllaç de gestió) i la pàgina del portal surten en
+  l'idioma de qui es va subscriure o ho demana. Les estadístiques (només per a l'administrador) són en català.
+- Pendent: condicions i privacitat en castellà.
+
 ## Mode de problemes (Matemàtiques, Física i Química)
 
 Les assignatures de tipus «problemes» tenen una pestanya **Exercicis**:
