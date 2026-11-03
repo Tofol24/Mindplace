@@ -332,6 +332,14 @@ test("si falta un impuesto en Holded no se intenta crear el albarán (ni queda �
   assert.deepEqual(h2.llamadas.find((l) => l[0] === "crearAlbaran")[1].items[0].taxes, ["s_iva_exento", "s_ret_15"]);
 });
 
+test("un albarán con IVA del 21 % o 10 % y sin retención no lee los impuestos de la cuenta", async () => {
+  const h = holdedFalso();
+  h.impuestos = async () => { throw new ErrorHolded("sin permiso para impuestos", { status: 502 }); };
+  const r = await enviarAlbaran({ holded: h, almacen: almacenMemoria(), albaran: validarAlbaran(base()) });
+  assert.equal(r.adjunto, true);
+  assert.deepEqual(h.llamadas.find((l) => l[0] === "crearAlbaran")[1].items[0].taxes, ["s_iva_21"]);
+});
+
 test("la retención forma parte de la huella, sin cambiar la de los albaranes sin retención", () => {
   const sin = validarAlbaran(base());
   assert.equal(huellaAlbaran(sin), huellaAlbaran({ ...sin, retencion: 0 }));
@@ -353,6 +361,10 @@ test("crearClienteHolded.impuestos lee GET /taxes, lo recuerda y sin permiso usa
   assert.equal(d.sinLista, true);
   assert.equal(d.iva[21], "s_iva_21");
   assert.equal(d.iva[0], null);
+  // Sin el permiso de impuestos Holded puede responder 401: tampoco para el envío.
+  olvidarImpuestos();
+  const h401 = crearClienteHolded({ apiKey: "k4", fetch: async () => new Response("", { status: 401 }) });
+  assert.equal((await h401.impuestos()).iva[21], "s_iva_21");
   olvidarImpuestos();
   const hCaido = crearClienteHolded({ apiKey: "k3", fetch: async () => new Response("", { status: 503 }) });
   await assert.rejects(hCaido.impuestos(), (e) => e.reintentar === true);
