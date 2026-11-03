@@ -175,7 +175,8 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
     h("button", {
       type: "button", class: "btn secundario",
       onclick: async (e) => {
-        if (!navigator.onLine || !ctx.ajustes().claveApp) { estado.textContent = "Aún no hay cobertura. Se puede aplicar en cuanto vuelva."; return; }
+        if (!ctx.ajustes().claveApp) { estado.textContent = "Falta la clave de la app: ponla en Ajustes."; return; }
+        if (!navigator.onLine) { estado.textContent = "Aún no hay cobertura. Se puede aplicar en cuanto vuelva."; return; }
         e.target.disabled = true;
         estado.textContent = "Rellenando el albarán…";
         const r = await interpretar(ctx, alb.dictadoPendiente);
@@ -200,10 +201,9 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
       rec.interimResults = true;
       base = texto.value ? `${texto.value.trim()} ` : "";
       rec.onresult = (e) => {
-        let final = "";
-        let parcial = "";
-        for (const r of e.results) (r.isFinal ? (final += r[0].transcript) : (parcial += r[0].transcript));
-        texto.value = `${base}${final}${parcial}`;
+        // El iPhone da cada frase por separado y sin espacio delante: se unen con un espacio.
+        const trozos = [...e.results].map((r) => r[0].transcript.trim()).filter(Boolean);
+        texto.value = `${base}${trozos.join(" ")}`;
       };
       rec.onerror = (e) => {
         estado.textContent = e.error === "not-allowed" || e.error === "service-not-allowed"
@@ -240,7 +240,12 @@ export function panelDictado(ctx, alb, { alAplicar, guardar }) {
       rec?.stop();
       const t = texto.value.trim();
       if (!t) { estado.textContent = "Primero dicta o escribe qué se ha hecho."; return; }
-      if (!navigator.onLine || !ctx.ajustes().claveApp) {
+      // Sin la clave de la app no es un problema de cobertura: el texto se queda donde está.
+      if (!ctx.ajustes().claveApp) {
+        estado.textContent = "Falta la clave de la app: ponla en Ajustes (⚙︎ arriba a la derecha) y vuelve a pulsar «Rellenar». Lo dictado no se borra.";
+        return;
+      }
+      if (!navigator.onLine) {
         alb.dictadoPendiente = alb.dictadoPendiente ? `${alb.dictadoPendiente}\n${t}` : t;
         await guardar();
         texto.value = "";
