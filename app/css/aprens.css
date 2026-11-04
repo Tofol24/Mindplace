@@ -310,6 +310,20 @@ table.t td.r{text-align:center;font-weight:700}
 .rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:var(--rh,#3f6b74);font-weight:700;font-size:15px;padding:10px 16px;border-radius:22px}
 .rh-note{font-size:12.5px;color:var(--gris);margin:4px 4px 16px;line-height:1.45}
 
+/* Tus cuatro herramientas básicas (justo debajo del recorrido) */
+.basicas{margin:0 0 20px}
+.bas-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+@media(min-width:620px){.bas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bas-card{background:#fff;border:1px solid var(--linea);border-top:4px solid var(--bc,var(--verde));border-radius:16px;padding:13px 15px 12px;box-shadow:0 4px 18px rgba(43,38,32,.06)}
+.bas-para{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--bc,var(--verde))}
+.bas-t{font-family:var(--serif);font-size:19px;line-height:1.2;color:var(--tinta);margin:3px 0 5px;display:flex;align-items:center;gap:8px}
+.bas-e{font-size:20px}
+.bas-d{font-size:13.5px;line-height:1.5;color:#4a443c}
+.bas-go{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.bas-go a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-size:13px;font-weight:700;color:var(--bc,var(--verde));background:#f7f3ec;border:1px solid var(--linea);border-radius:18px;padding:6px 12px}
+.bas-go a:first-child{background:var(--bc,var(--verde));border-color:var(--bc,var(--verde));color:#fff}
+.bas-reg{display:inline-block;margin:10px 4px 0;font-size:13px;font-weight:600;color:var(--azul);text-decoration:none}
+
 /* Aviso de privacidad · botón del contador anónimo de uso */
 .aviso-uso{display:inline-block;margin-top:6px;font-weight:600}
 .aviso-btn{margin-top:8px;margin-left:0;font:inherit;font-size:.9em;font-weight:600;background:transparent;color:var(--azul);border:1.5px solid var(--azul);border-radius:16px;padding:5px 12px;cursor:pointer}
