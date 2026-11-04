@@ -97,6 +97,11 @@
   /* ===== Tarjetas ===== */
   .card{background:var(--card);border:1px solid var(--linia);border-radius:var(--r);padding:22px 20px;margin:16px 0;box-shadow:var(--ombra-s)}
   .card h2{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:20px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+  .ancla-det>summary{cursor:pointer;display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:18px;font-weight:600;list-style:none}
+  .ancla-det>summary::-webkit-details-marker{display:none}
+  .ancla-det>summary::after{content:"▾";margin-left:auto;color:var(--suau);font-size:14px}
+  .ancla-det[open]>summary{margin-bottom:8px}
+  .ancla-det[open]>summary::after{content:"▴"}
   .card h3{font-size:16px;margin:18px 0 8px;font-weight:700}
   .card p{margin:8px 0;color:#46504a}
   .card p.lead{color:var(--suau);font-size:14.5px;margin-top:2px}
@@ -226,6 +231,7 @@
   @media (max-width:380px){h1{font-size:24px}body{font-size:15px}.ring{width:158px;height:158px}.ring .rinner{width:124px;height:124px}.ring .rtime{font-size:26px}}
 </style>
 <script src="../js/descarga-segura.js"></script>
+<script src="../js/respiro-ais.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -378,6 +384,14 @@
     </div>
   </header>
 
+  <!-- Lo visual, lo primero: la viñeta propia del ejercicio (parada, abrazo) o la
+       silueta AIS de las dos luces (js/respiro-ais.js) -->
+  <div class="card" id="visCard">
+    <h2><span class="ic" id="visIc">🫁</span><span id="visTit">Respira con la silueta</span></h2>
+    <p class="lead" id="visLead">La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.</p>
+    <div id="silBox" style="max-width:280px;margin:6px auto 0"></div>
+  </div>
+
   <!-- A · Explicación + contexto -->
   <div class="card">
     <h2><span class="ic">🧭</span>De qué va</h2>
@@ -385,9 +399,10 @@
     <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
   </div>
 
-  <!-- A2 · Ancla visual opcional (mapa interno) -->
+  <!-- A2 · Ancla visual opcional (mapa interno), plegada bajo la silueta -->
   <div class="card">
-    <h2><span class="ic">🔍</span>Ancla visual <span style="font-weight:400;font-size:13px;color:var(--suau)">· opcional</span></h2>
+    <details class="ancla-det">
+    <summary><span class="ic">🔍</span>Ancla visual: el mapa del cuerpo <span style="font-weight:400;font-size:13px;color:var(--suau)">· opcional</span></summary>
     <p class="lead">¿No sabes por dónde entrar? Mira una zona del cuerpo: la imagen es solo la <b>rampa</b> para llevar ahí tu atención. En cuanto la localices, intenta <b>sentirla</b> y suelta el dibujo.</p>
     <div class="mapa">
       <svg viewBox="0 0 220 380" role="img" aria-label="Mapa del cuerpo: cuello, pecho y barriga">
@@ -440,6 +455,7 @@
       </svg>
     </div>
     <div class="ancla-msg" id="anclaMsg"></div>
+    </details>
   </div>
 
   <!-- A1 · ¿Por qué vienes ahora? (práctica programada vs. el cuerpo avisó) -->
@@ -692,6 +708,7 @@ function _aprensSaveAIS(){
 
 /* ════════════════════════ NAVEGACIÓN ════════════════════════ */
 function irPantalla(id){
+  if(id!=='s-ejercicio') pararSil();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -721,6 +738,33 @@ function confirmarExplorar(){
   intencion='acompanamiento';
   intencionTexto='me ha costado, pero vengo a explorar sin concluir';
   irPantalla('s-menu');
+}
+
+/* Silueta AIS de las dos luces: se monta al abrir un ejercicio y se para al salir.
+   Si el ejercicio tiene viñeta propia (vis:'parada' | 'abrazo'), sale esa. */
+var silAIS=null;
+function pararSil(){ if(silAIS){ try{ silAIS.destroy(); }catch(e){} silAIS=null; } }
+var VIS={
+  silueta:{ ic:'🫁', tit:'Respira con la silueta', lead:'La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.' },
+  parada:{ ic:'✋', tit:'Para · respira · vuelve', lead:'Así se hace la parada de pensamiento: <b>STOP</b>, una respiración, la atención unos segundos en la barriga, el pecho o el cuello, y vuelves a lo que hacías.' },
+  abrazo:{ ic:'🤗', tit:'Respira · ánclate · abraza', lead:'Así se hace el abrazo sentido: respiras, llevas la atención a la barriga y <b>abrazas con la atención ahí</b>, desde la complicidad.' }
+};
+function montarSil(){
+  pararSil();
+  var b=document.getElementById('silBox'); if(!b) return;
+  var tipo=(exActual&&exActual.vis)||'silueta';
+  if(tipo==='parada' && !window.VinetaAtencion) tipo='silueta';
+  if(tipo==='abrazo' && !window.VinetaAbrazo) tipo='silueta';
+  var v=VIS[tipo];
+  document.getElementById('visIc').textContent=v.ic;
+  document.getElementById('visTit').textContent=v.tit;
+  document.getElementById('visLead').innerHTML=v.lead;
+  b.style.maxWidth = tipo==='silueta' ? '280px' : 'none';
+  try{
+    if(tipo==='parada') silAIS=VinetaAtencion.mount(b,{silueta:true,titulo:'',pie:true,lang:'es',rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}});
+    else if(tipo==='abrazo') silAIS=VinetaAbrazo.mount(b,{titulo:'',pie:true,lang:'es'});
+    else if(window.RespiroAIS) silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true});
+  }catch(e){ silAIS=null; }
 }
 
 /* ════════════════════════ MENÚ DE EJERCICIOS ════════════════════════ */
@@ -783,6 +827,7 @@ function abrirEjercicio(id){
 
   resetTimer();
   irPantalla('s-ejercicio');
+  montarSil();
 }
 
 /* ¿Por qué vienes ahora? · 🟢 práctica en calma (programada) / 🔴 el cuerpo avisó */
@@ -973,6 +1018,13 @@ function fallback(text,btn){
 pintaMenu();
 pintaChecklist();
 pintaContinuidad();
+
+/* Enlace directo a un ejercicio (#/tool/<herramienta>/<ejercicio> en el hub →
+   #<ejercicio> aquí): abre el ejercicio sin pasar por la portada ni la intención. */
+(function(){
+  var id=(location.hash||'').replace(/^#/,'');
+  if(id && EJERCICIOS.some(function(e){return e.id===id;})) abrirEjercicio(id);
+})();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>

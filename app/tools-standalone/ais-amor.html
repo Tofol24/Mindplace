@@ -211,6 +211,9 @@
   @media (max-width:380px){h1{font-size:24px}body{font-size:15px}.ring{width:158px;height:158px}.ring .rinner{width:124px;height:124px}.ring .rtime{font-size:26px}}
 </style>
 <script src="../js/descarga-segura.js"></script>
+<script src="../js/respiro-ais.js"></script>
+<script src="../js/vineta-atencion.js"></script>
+<script src="../js/vineta-abrazo.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -356,12 +359,21 @@
     </div>
   </header>
 
+  <!-- Lo visual, lo primero: la viñeta propia del ejercicio (parada, abrazo) o la
+       silueta AIS de las dos luces (js/respiro-ais.js) -->
+  <div class="card" id="visCard">
+    <h2><span class="ic" id="visIc">🫁</span><span id="visTit">Respira con la silueta</span></h2>
+    <p class="lead" id="visLead">La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.</p>
+    <div id="silBox" style="max-width:280px;margin:6px auto 0"></div>
+  </div>
+
   <!-- A · Explicación + contexto -->
   <div class="card">
     <h2><span class="ic">🌿</span>De qué va</h2>
     <p id="exExplica"></p>
     <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
   </div>
+
 
   <!-- A1 · ¿Por qué vienes ahora? (práctica programada vs. el cuerpo avisó) -->
   <div class="card">
@@ -500,7 +512,7 @@ var EJERCICIOS = [
     frase:'Puedo estar contigo sin abandonarme a mí.',
     reflexion:'¿Has podido estar con el otro sin abandonarte a ti?' },
 
-  { id:'abrazo_sentido', icon:'🤗', titulo:'El abrazo sentido', nivel:'vinculo', dur:'el tiempo del abrazo',
+  { id:'abrazo_sentido', icon:'🤗', titulo:'El abrazo sentido', nivel:'vinculo', vis:'abrazo', dur:'el tiempo del abrazo',
     contexto:'En los encuentros: al llegar a casa, al recoger a tus hijos, al reencontrarte con alguien querido.',
     explica:'Conectar con tus vínculos desde la complicidad. No es un abrazo automático: abrazas a la otra persona y, a la vez, te quedas presente contigo, con la atención centrada en la barriga mientras dura el abrazo. Así cualquier sensación, también la que duele, tiene cabida dentro de tu manada.',
     pasos:['Antes del encuentro, respira una vez.','Nota qué sensación hay dentro, sin cambiarla.','Abraza a esa persona.','Mientras abrazas, deja la atención en tu barriga.','Quédate unos segundos más de lo habitual, sin prisa por soltar.','Si te sale, acompáñalo con la frase honesta: «No sé por qué, pero hoy lo noto aquí.»'],
@@ -521,7 +533,7 @@ var EJERCICIOS = [
     frase:'No necesito que la incomodidad desaparezca para seguir presente.',
     reflexion:'¿Has podido sostener la incomodidad sin correr a quitarla?' },
 
-  { id:'parada', icon:'✋', titulo:'Parada de pensamiento', nivel:'incomodidad', dur:'5 – 10 seg',
+  { id:'parada', icon:'✋', titulo:'Parada de pensamiento', nivel:'incomodidad', vis:'parada', dur:'5 – 10 seg',
     contexto:'Cada vez que algo te afecta y te lleva a sobrepensar, o notas sensaciones internas desagradables. 30, 40 o 50 veces al día no es demasiado.',
     explica:'Si no paro, respiro y vuelvo, me quedo secuestrado atencionalmente, como los perros de Pavlov con la campana: el pensamiento suena y mi atención se va detrás. Mantenido en el tiempo, este secuestro hace que el cuerpo solo perciba lo negativo y viva en una alerta constante, y puede llevar a un cuadro ansioso depresivo. Por eso la parada tiene que ser algo muy cotidiano, tan habitual como la respiración curiosa.',
     pasos:['Date cuenta: «Me estoy enganchando».','Di mentalmente: «STOP».','Haz una respiración.','Lleva la atención a la barriga, el pecho o el cuello, unos segundos, aunque no notes nada.','No discutas con el pensamiento ni busques el porqué.','Vuelve a lo que estabas haciendo.'],
@@ -608,6 +620,7 @@ function _aprensSaveAmor(){ try{ if(!window.Aprens||!exActual) return; if(!pract
 
 /* ════════════════════════ NAVEGACIÓN ════════════════════════ */
 function irPantalla(id){
+  if(id!=='s-ejercicio') pararSil();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -638,6 +651,33 @@ function confirmarAcompanar(){
   intencion='acompanamiento';
   intencionTexto='me ha costado, pero vengo a acompañarme'; // honesto: reconoció control y reformuló
   irPantalla('s-menu');
+}
+
+/* Silueta AIS de las dos luces: se monta al abrir un ejercicio y se para al salir.
+   Si el ejercicio tiene viñeta propia (vis:'parada' | 'abrazo'), sale esa. */
+var silAIS=null;
+function pararSil(){ if(silAIS){ try{ silAIS.destroy(); }catch(e){} silAIS=null; } }
+var VIS={
+  silueta:{ ic:'🫁', tit:'Respira con la silueta', lead:'La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.' },
+  parada:{ ic:'✋', tit:'Para · respira · vuelve', lead:'Así se hace la parada de pensamiento: <b>STOP</b>, una respiración, la atención unos segundos en la barriga, el pecho o el cuello, y vuelves a lo que hacías.' },
+  abrazo:{ ic:'🤗', tit:'Respira · ánclate · abraza', lead:'Así se hace el abrazo sentido: respiras, llevas la atención a la barriga y <b>abrazas con la atención ahí</b>, desde la complicidad.' }
+};
+function montarSil(){
+  pararSil();
+  var b=document.getElementById('silBox'); if(!b) return;
+  var tipo=(exActual&&exActual.vis)||'silueta';
+  if(tipo==='parada' && !window.VinetaAtencion) tipo='silueta';
+  if(tipo==='abrazo' && !window.VinetaAbrazo) tipo='silueta';
+  var v=VIS[tipo];
+  document.getElementById('visIc').textContent=v.ic;
+  document.getElementById('visTit').textContent=v.tit;
+  document.getElementById('visLead').innerHTML=v.lead;
+  b.style.maxWidth = tipo==='silueta' ? '280px' : 'none';
+  try{
+    if(tipo==='parada') silAIS=VinetaAtencion.mount(b,{silueta:true,titulo:'',pie:true,lang:'es',rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}});
+    else if(tipo==='abrazo') silAIS=VinetaAbrazo.mount(b,{titulo:'',pie:true,lang:'es'});
+    else if(window.RespiroAIS) silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true});
+  }catch(e){ silAIS=null; }
 }
 
 /* ════════════════════════ MENÚ DE EJERCICIOS ════════════════════════ */
@@ -696,6 +736,7 @@ function abrirEjercicio(id){
 
   resetTimer();
   irPantalla('s-ejercicio');
+  montarSil();
 }
 
 /* ¿Por qué vienes ahora? · 🟢 práctica en calma (programada) / 🔴 el cuerpo avisó */
@@ -875,6 +916,13 @@ function fallback(text,btn){
 pintaMenu();
 pintaChecklist();
 pintaContinuidad();
+
+/* Enlace directo a un ejercicio (#/tool/<herramienta>/<ejercicio> en el hub →
+   #<ejercicio> aquí): abre el ejercicio sin pasar por la portada ni la intención. */
+(function(){
+  var id=(location.hash||'').replace(/^#/,'');
+  if(id && EJERCICIOS.some(function(e){return e.id===id;})) abrirEjercicio(id);
+})();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
