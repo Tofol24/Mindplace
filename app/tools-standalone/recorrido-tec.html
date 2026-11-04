@@ -152,6 +152,27 @@
   details.vid video{display:block;width:100%;max-width:320px;aspect-ratio:9/16;object-fit:contain;background:#000;border-radius:14px;margin-top:8px;}
   .tasks .pl{display:block;}
   .tasks .pl details.vid summary{padding:5px 11px;font-size:12.5px;}
+  /* Líneas básicas: lo que acompaña todo el recorrido, cada día */
+  .lb{list-style:none;margin:8px 0 0;}
+  .lb > li{border-top:1px solid var(--line);padding:10px 0;}
+  .lb > li:first-child{border-top:0;}
+  .lb .lbt{font-weight:800;font-size:15px;}
+  .lb .lbw{font-size:13px;color:var(--muted);margin-top:2px;}
+  .lb .lbg{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-top:2px;}
+  .lb details summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;margin-top:6px;}
+  .lb details p{font-size:14px;margin-top:6px;}
+  .lb .frase{font-family:var(--serif);font-style:italic;background:var(--bg2);border-radius:10px;padding:8px 11px;margin-top:6px;}
+  .dia{list-style:none;margin:6px 0 0;}
+  .dia li{display:flex;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:9px 0;}
+  .dia li:first-child{border-top:0;}
+  .dia .dt{font-weight:700;font-size:14.5px;}
+  .dia .dd{font-size:12.5px;color:var(--muted);}
+  .dia .cnt{display:flex;align-items:center;gap:6px;flex:none;}
+  .dia .cnt b{min-width:28px;text-align:center;font-size:18px;}
+  .dia .cnt button{min-width:40px;min-height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);font-weight:800;font-size:15px;cursor:pointer;}
+  .dia .cnt button.mas{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);padding:0 12px;}
+  .dia .tg{min-height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);font-weight:700;font-size:13px;padding:0 12px;cursor:pointer;flex:none;}
+  .dia .tg[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff;}
   details.vin{margin-top:8px;}
   details.vin summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;list-style:none;display:inline-flex;align-items:center;gap:6px;background:var(--acc-soft);border-radius:18px;padding:6px 12px;}
   details.vin summary::-webkit-details-marker{display:none;}
@@ -177,6 +198,7 @@
     <div class="progress" aria-hidden="true"><i id="hoyBar"></i></div>
     <p class="small muted" id="hoyCount"></p>
     <ul class="today" id="hoyList"></ul>
+    <div class="card" id="todoDia"></div>
     <div class="card" id="cierre"></div>
     <div class="quote" id="hoyFrase"></div>
   </section>
@@ -185,6 +207,8 @@
   <section class="view" id="v-plan">
     <h2>Tu recorrido</h2>
     <p class="muted">El orden importa: <b>primero entender, después aparecer, después permanecer</b>, y desde ahí elegir. No se avanza por calendario, sino cuando tu práctica lo muestra. Tu psicólogo/a puede ajustar la etapa.</p>
+    <div class="card" id="lineas"></div>
+    <h3>Las etapas</h3>
     <ul class="map" id="mapa"></ul>
     <div class="card" id="etapaCard"></div>
   </section>
@@ -301,7 +325,7 @@
       d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
       idea:"La atención es un vector: la misma atención produce efectos opuestos según vaya hacia fuera (la amenaza, el juicio, el futuro) o hacia dentro (la sensación presente). Y el sobrepensamiento no es un rasgo: es una conducta que busca alivio.",
       frase:"«La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",
-      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true },
+      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Y a lo largo del día, cada vez que te enganches: 30, 40, 50 veces no es demasiado.", vin:true },
       pasos:[
         ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce", ["tool:historia_animada","pdf:quien-conduce-tu-vida.pdf"]],
         ["Vídeo: la Teoría del Efecto Consciente", "video:tec"],
@@ -318,7 +342,7 @@
       crit:[["auto","pasosHechos","He visto todas las piezas de la etapa"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
     },
     { n:"Etapa 2", t:"Aparecer", w:"Semanas 3–5", col:"var(--e2)", min:14,
-      d:"Que tu cuerpo registre que hay una presencia disponible. Visitas breves, tres veces al día, <b>también cuando estás bien</b>. No para calmarte: para aparecer.",
+      d:"Que tu cuerpo registre que hay una presencia disponible. Visitas breves: tres momentos fijos al día y, entre medias, <b>una respiración curiosa cada hora</b>, también cuando estás bien. No para calmarte: para aparecer.",
       idea:"La conciencia acompaña siempre al cuerpo, pero él no puede verla. La respiración es el canal por el que esa presencia se vuelve perceptible: el aire es el cebo. Lo que se entrena aquí es la frecuencia, no la duración: visitas breves y repetidas, no condicionadas al malestar.",
       frase:"«Aunque no note nada especial, vuelvo al cuerpo. No busco calmarme: estoy enseñando a mi cuerpo que mi conciencia también aparece cuando todo parece estar bien.»",
       practica:{ t:"Práctica programada (3–5 min)", d:"Respiración con anclaje: el aire es el cebo; tu atención lo sigue y se queda en la barriga.", go:"tool:herramienta_diaria" },
@@ -395,6 +419,93 @@
       crit:[]
     }
   ];
+
+  /* ============================================================
+     LÍNEAS BÁSICAS (herramientas AIS básicas)
+     No son una etapa: acompañan todo el recorrido, cada día, desde el
+     primer día. Se registran en «Hoy › Durante todo el día».
+     cnt:true → contador (veces al día) · si no → «hoy lo he hecho».
+     ============================================================ */
+  var LB = [
+    { k:"rc", e:"🫁", t:"Respiración curiosa · una vez cada hora", cnt:true, meta:14,
+      w:"Cada hora, y sobre todo cuando no la necesitas.",
+      como:"Paras unos 10 segundos: una respiración y la atención, con curiosidad, en la barriga, el pecho o el cuello, para ver qué hay. Aunque no notes nada, y después vuelves a lo que hacías.",
+      porque:"Hacerla una vez cada hora son simplemente 10 segundos, y es lo que garantiza que tu cuerpo tenga un acompañamiento curioso a lo largo de todo el día, no solo cuando algo va mal. Por eso se entrena sobre todo en los momentos en que no hace falta: ir parando, de manera continua, para que más adelante se automatice y aparezca sola.",
+      dd:"Meta orientativa: una por cada hora despierto/a (unas 14).",
+      go:[["tool:ais_curiosidad","AIS desde la curiosidad"],["tool:respiro_ais","Respiro · dos luces"]] },
+    { k:"pp", e:"✋", t:"Parada de pensamiento · cada vez que te enganchas", cnt:true,
+      w:"Cada vez que algo te afecta y te lleva a sobrepensar, o notas sensaciones internas desagradables.",
+      como:"Dices mentalmente «STOP», haces una respiración, llevas la atención unos segundos a la barriga, el pecho o el cuello, y vuelves a lo que estabas haciendo. Para, respira y vuelve.",
+      porque:"Cuando me encuentro sobrepensando, tengo que tener muy claro que si no paro, respiro y vuelvo, me quedo secuestrado/a atencionalmente, como los perros de Pavlov con la campana: el pensamiento suena y mi atención se va detrás. Si este secuestro se mantiene, mi cuerpo acaba percibiendo solo lo negativo, vive en una alerta constante, afecta a mi estado fisiológico y me puede llevar a un cuadro ansioso depresivo. Por tanto, la parada de pensamiento tiene que ser algo muy cotidiano, tan habitual como la respiración curiosa, hasta el punto de hacerla 30, 40 o 50 veces al día. No es demasiado: es entrenar.",
+      dd:"Sin límite: 30, 40, 50 veces al día es lo normal cuando se entrena.",
+      go:[["tool:juegos_exposicion/pavlov","Juego: la campana de Pavlov"],["tool:juegos_exposicion/carrusel","Juego: El carrusel"]] },
+    { k:"ab", e:"🤗", g:"En los vínculos afectivos", t:"El abrazo sentido",
+      w:"En los encuentros: al llegar a casa, al reencontrarte con alguien querido.",
+      como:"Respiras, notas qué sensación hay dentro y abrazas a esa persona con tu atención centrada en la barriga mientras dura el abrazo.",
+      porque:"Es una manera de conectar con tus vínculos desde la complicidad: no solo abrazas a la otra persona, también te quedas presente contigo mientras lo haces.",
+      dd:"En algún encuentro de hoy.",
+      go:[["tool:juegos_exposicion/casa","Juego: Llegar a casa"]] },
+    { k:"ho", e:"💬", g:"En los vínculos afectivos", t:"La honestidad emocional",
+      w:"Cuando algo te va afectando, e incluso sin que nada en concreto te afecte.",
+      como:"Con la mano en la barriga o en el pecho, lo dices tal como lo notas, señalándolo y sin justificaciones:",
+      frase:"«Aquí tengo una sensación. No sé por qué, pero quería expresarlo contigo.»",
+      porque:"Expresar lo que el cuerpo nota, sin tener que explicarlo, es una forma de validarte y darte espacio, y a la vez de dar espacio al vínculo. Así se refuerzan las tres columnas que sostienen un vínculo afectivo:",
+      pilares:[["Comunicación","afectiva, no solo logística: no hablamos solo de horarios y tareas, también de lo que sentimos."],
+               ["Confianza","proactiva, no reactiva: comparto lo que noto antes de que estalle, sin esperar a que el otro lo adivine o lo descubra."],
+               ["Respeto","desde la complicidad, no desde la culpabilidad: lo que siento no es un reproche, es algo que comparto contigo."]],
+      dd:"Con alguien de confianza, o al menos contigo.",
+      go:[["tool:honestidad_emocional","Honestidad emocional"]] },
+    { k:"en", e:"🚪", t:"Entradas y salidas · de la mano de tu niño interno",
+      w:"En cada entrada y en cada salida de un lugar: casa, trabajo, el coche, una reunión, la consulta…",
+      como:"Antes de cruzar la puerta, una respiración interna con la atención en la barriga, el pecho o el cuello.",
+      porque:"Es dejar muy claro, para ti y para tu cuerpo, que entras y sales cogiendo de la mano a tu niño interno: no se queda fuera, va contigo a cada lugar.",
+      dd:"Al entrar y al salir de los sitios de hoy.",
+      go:[["tool:juegos_exposicion/puertas","Juego: Puertas"]] }
+  ];
+  function renderLineas(){
+    var h = '<b>🌱 Las líneas básicas · cada día, en todas las etapas</b>'
+      + '<p class="small muted">Las etapas marcan qué vas entendiendo y qué practicas con más calma. Estas líneas básicas, en cambio, te acompañan durante todo el recorrido desde el primer día, junto a la psicoeducación: son la manera de llevar el AIS a tu día a día. Las registras en «Hoy», en el apartado «Durante todo el día».</p>'
+      + '<ol class="lb">' + LB.map(function(b, i){
+        return '<li>' + (b.g ? '<div class="lbg">'+esc(b.g)+'</div>' : '')
+          + '<div class="lbt">'+(i+1)+'. '+b.e+' '+esc(b.t)+'</div><div class="lbw"><b>Cuándo:</b> '+esc(b.w)+'</div>'
+          + '<details><summary>Cómo y por qué</summary><p><b>Cómo:</b> '+esc(b.como)+'</p>'
+          + (b.frase ? '<p class="frase">'+esc(b.frase)+'</p>' : '')
+          + '<p><b>Por qué:</b> '+esc(b.porque)+'</p>'
+          + (b.pilares ? '<ul style="margin:6px 0 0 18px;font-size:14px">'+b.pilares.map(function(x){ return '<li><b>'+esc(x[0])+'</b> '+esc(x[1])+'</li>'; }).join("")+'</ul>' : '')
+          + '<div>'+b.go.map(function(g){ return link(g[0], esc(g[1])); }).join("")+'</div></details></li>';
+      }).join("") + '</ol>'
+      + '<div>'+link("tool:ais_basicas","Herramientas AIS básicas")+'<a class="tl" href="../assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener">📄 La ficha en PDF <span class="ar">↓</span></a></div>';
+    $("#lineas").innerHTML = h;
+  }
+  function renderTodoDia(){
+    var d = dia();
+    var h = '<b>🔁 Durante todo el día</b> <span class="small muted">(las líneas básicas)</span>'
+      + '<p class="small muted">Cada vez que lo hagas, súmalo aquí. Breve y frecuente vale más que largo y ocasional. <a href="#" data-tab="v-plan">Ver cómo y por qué</a>.</p><ul class="dia">'
+      + LB.map(function(b){
+        var v = d[b.k] || 0;
+        var ctl = b.cnt
+          ? '<span class="cnt"><button type="button" data-lb="'+b.k+'" data-d="-1" aria-label="Restar una: '+esc(b.t)+'">−</button><b aria-live="polite">'+v+'</b><button type="button" class="mas" data-lb="'+b.k+'" data-d="1" aria-label="+1 '+esc(b.t)+'">+1</button></span>'
+          : '<button type="button" class="tg" data-lbt="'+b.k+'" aria-pressed="'+(v?'true':'false')+'" aria-label="'+(v?'Hecho':'Hoy, sí')+': '+esc(b.t)+'">'+(v?'✓ Hecho':'Hoy, sí')+'</button>';
+        return '<li><div><div class="dt">'+b.e+' '+esc(b.t)+'</div><div class="dd">'+esc(b.dd)+(b.meta && v ? ' · llevas '+v+' de '+b.meta : '')+'</div></div>'+ctl+'</li>';
+      }).join("") + '</ul>';
+    $("#todoDia").innerHTML = h;
+    $$("#todoDia [data-lb]").forEach(function(b){ b.onclick = function(){
+      var k = b.getAttribute("data-lb"); d[k] = Math.max(0, Math.min(200, (d[k]||0) + (+b.getAttribute("data-d"))));
+      save(); renderTodoDia(); renderSemana();
+      var nb = $('#todoDia [data-lb="'+k+'"][data-d="'+b.getAttribute("data-d")+'"]'); if(nb) nb.focus();
+    };});
+    $$("#todoDia [data-lbt]").forEach(function(b){ b.onclick = function(){
+      var k = b.getAttribute("data-lbt"); d[k] = d[k] ? 0 : 1; save(); renderTodoDia(); renderSemana();
+      var nb = $('#todoDia [data-lbt="'+k+'"]'); if(nb) nb.focus();
+    };});
+  }
+  // Media diaria (7 d) de las líneas básicas para «Mi semana» y el resumen.
+  function lbSemana(){
+    var u7 = ultimos(7), r = {};
+    LB.forEach(function(b){ var s = 0, dias = 0; u7.forEach(function(f){ var v = (S.dias[f]||{})[b.k]||0; s += v; if(v) dias++; });
+      r[b.k] = b.cnt ? Math.round(s/7*10)/10 : dias; });
+    return r;
+  }
 
   /* ---------- Tipos de paso y material ---------- */
   function tipo(spec){
@@ -515,7 +626,7 @@
   function renderHoy(){
     stageHead();
     var e = E[S.etapa], d = dia(), m = metr(), av = "";
-    if(S.etapa===0) av += '<div class="note acc"><b>Bienvenido/a a tu recorrido.</b> Cada día encontrarás aquí lo que te toca, <b>en orden</b>: una práctica por la mañana, tu paso del día, una parada a mediodía, una práctica por la noche y un cierre de un minuto. Las etapas siguen la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. No hace falta hacerlo perfecto: hace falta volver.</div>';
+    if(S.etapa===0) av += '<div class="note acc"><b>Bienvenido/a a tu recorrido.</b> Cada día encontrarás aquí lo que te toca, <b>en orden</b>: una práctica por la mañana, tu paso del día, una parada a mediodía, una práctica por la noche y un cierre de un minuto. Las etapas siguen la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. Y, desde hoy mismo, <b>durante todo el día</b>: una respiración curiosa cada hora y una parada de pensamiento cada vez que te descubras sobrepensando. No hace falta hacerlo perfecto: hace falta volver.</div>';
     if(evalPendiente() && S.etapa>0) av += '<div class="note gold">🔄 <b>Toca autoevaluarte.</b> Han pasado 4 semanas (o aún no la has hecho). Son 2 minutos. <button class="tl" type="button" data-tab="v-eval">Hacerla <span class="ar">→</span></button></div>';
     if(S.etapa>=2 && m.mal > m.calma && m.mal >= 3) av += '<div class="note warn"><b>Señal de aviso:</b> estás practicando más cuando estás mal que en calma. No aumentes la práctica de apoyo: vuelve a los tres momentos fijos. Es lo que enseña a tu cuerpo que no tiene que estar mal para recibir tu atención.</div>';
     $("#hoyAvisos").innerHTML = av;
@@ -536,7 +647,7 @@
     }
     else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length+" · "+tipo(e.pasos[sp][1])[1], t:e.pasos[sp][0], paso:e.pasos[sp]});
     else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
-    items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías.", vin:true});
+    items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Esta es la parada programada; las demás, cada vez que te descubras sobrepensando, súmalas abajo.", vin:true});
     items.push({k:"n", w:"🌙 Tarde o noche", t: S.etapa===0 ? "Respira 1 minuto antes de dormir" : "Práctica programada (3–5 min)", d:"Al llegar a casa o antes de dormir. También si el día ha ido bien.", go:e.practica.go});
     var done = 0, vinAbierta = false;
     $("#hoyList").innerHTML = items.map(function(it){
@@ -565,6 +676,7 @@
     montarVinetas();
     var ad = $("#adelantar"); if(ad) ad.onclick = function(){ adelantarAbierto = true; renderHoy(); };
     var ah = $("#adelHecho"); if(ah) ah.onclick = function(){ (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[sp] = HOY; adelantarAbierto = false; save(); toast("Paso adelantado hecho."); renderAll(); };
+    renderTodoDia();
     renderCierre();
     $("#hoyFrase").innerHTML = e.frase;
   }
@@ -611,6 +723,7 @@
 
   /* ========================= RECORRIDO ========================= */
   function renderPlan(){
+    renderLineas();
     $("#mapa").innerHTML = E.map(function(e,i){
       var cls = i < S.etapa ? "past" : i === S.etapa ? "cur" : "";
       return '<li class="'+cls+'"><span class="dot"></span><div class="mw" style="color:'+e.col+'">'+e.n+' · '+e.w+(i===S.etapa?' · estás aquí':'')+'</div><div class="mt">'+e.t+'</div><div class="md">'+e.d+'</div>'
@@ -649,7 +762,7 @@
         S.etapa++; S.etapaDesde = HOY; S.porPsico = false; save(); toast("Bienvenido/a a la " + E[S.etapa].n.toLowerCase() + ": " + E[S.etapa].t); show("v-hoy"); renderAll();
       };
     } else {
-      h += '<div class="note ok">Esta etapa no tiene final: es tu manera de seguir. Mantén los tres momentos al día y vuelve a autoevaluarte cada 4 semanas.</div>'
+      h += '<div class="note ok">Esta etapa no tiene final: es tu manera de seguir. Mantén los tres momentos al día y las líneas básicas (respiración curiosa cada hora, paradas de pensamiento, abrazo sentido, honestidad emocional y entradas y salidas), y vuelve a autoevaluarte cada 4 semanas.</div>'
         + '<div class="row"><button class="btn ghost" id="btnPrev" type="button">← Volver a la etapa anterior</button></div>';
       $("#etapaCard").innerHTML = h;
     }
@@ -734,6 +847,8 @@
       + '<div class="ldc"><div><b>'+m.prog14+'/14</b><span>días con práctica programada</span></div><div><b>'+m.calma+' : '+m.mal+'</b><span>en calma : porque estaba mal</span></div><div><b>'+(m.ruido==null?'—':m.ruido)+'</b><span>ruido medio (↓ mejor)</span></div></div>';
     if(S.etapa >= 2) h += '<p>Micro-acción con valor: <b>'+m.cv7+' de 7 días</b>'+(m.cvReg7<7?' <span class="small muted">('+m.cvReg7+' días registrados)</span>':'')+'.</p>';
     if(S.etapa >= 3) h += '<p>Tolerancia (ITI) esta semana: <b>'+(m.itiAhora==null?'—':m.itiAhora+' %')+'</b>'+(m.itiAntes!=null?' · la anterior: '+m.itiAntes+' %':'')+'.</p>';
+    var lb = lbSemana();
+    h += '<p><b>Líneas básicas</b> <span class="small muted">(últimos 7 días)</span><br>Respiración curiosa: <b>'+lb.rc+'</b> al día · Paradas de pensamiento: <b>'+lb.pp+'</b> al día<br>Abrazo sentido: <b>'+lb.ab+' de 7</b> días · Honestidad emocional: <b>'+lb.ho+' de 7</b> · Entradas y salidas: <b>'+lb.en+' de 7</b></p>';
     $("#semana").innerHTML = h;
     var ev = S.evals[S.evals.length-1];
     var txt = "Mi recorrido TEC · " + HOY + "\n"
@@ -741,6 +856,7 @@
       + "Pasos hechos en la etapa: " + pasosHechos(S.etapa) + " de " + e.pasos.length + "\n"
       + "Práctica programada: " + m.prog14 + " de 14 días · en calma " + m.calma + " / porque estaba mal " + m.mal + "\n"
       + "Ruido interno medio (7 d): " + (m.ruido==null?"—":m.ruido+"/10") + "\n"
+      + "Líneas básicas (media 7 d): respiración curiosa " + lb.rc + "/día · paradas de pensamiento " + lb.pp + "/día · abrazo sentido " + lb.ab + "/7 d · honestidad emocional " + lb.ho + "/7 d · entradas y salidas " + lb.en + "/7 d\n"
       + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días\n" : "")
       + (S.etapa>=3 ? "ITI (7 d): " + (m.itiAhora==null?"—":m.itiAhora+" %") + "\n" : "")
       + quizResumen()
