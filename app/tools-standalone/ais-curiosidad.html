@@ -384,18 +384,19 @@
     </div>
   </header>
 
+  <!-- Lo visual, lo primero: la viñeta propia del ejercicio (parada, abrazo) o la
+       silueta AIS de las dos luces (js/respiro-ais.js) -->
+  <div class="card" id="visCard">
+    <h2><span class="ic" id="visIc">🫁</span><span id="visTit">Respira con la silueta</span></h2>
+    <p class="lead" id="visLead">La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.</p>
+    <div id="silBox" style="max-width:280px;margin:6px auto 0"></div>
+  </div>
+
   <!-- A · Explicación + contexto -->
   <div class="card">
     <h2><span class="ic">🧭</span>De qué va</h2>
     <p id="exExplica"></p>
     <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
-  </div>
-
-  <!-- Silueta AIS de las dos luces (js/respiro-ais.js) -->
-  <div class="card">
-    <h2><span class="ic">🫁</span>Respira con la silueta</h2>
-    <p class="lead">La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.</p>
-    <div id="silBox" style="max-width:280px;margin:6px auto 0"></div>
   </div>
 
   <!-- A2 · Ancla visual opcional (mapa interno), plegada bajo la silueta -->
@@ -739,13 +740,31 @@ function confirmarExplorar(){
   irPantalla('s-menu');
 }
 
-/* Silueta AIS de las dos luces: se monta al abrir un ejercicio y se para al salir. */
+/* Silueta AIS de las dos luces: se monta al abrir un ejercicio y se para al salir.
+   Si el ejercicio tiene viñeta propia (vis:'parada' | 'abrazo'), sale esa. */
 var silAIS=null;
 function pararSil(){ if(silAIS){ try{ silAIS.destroy(); }catch(e){} silAIS=null; } }
+var VIS={
+  silueta:{ ic:'🫁', tit:'Respira con la silueta', lead:'La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.' },
+  parada:{ ic:'✋', tit:'Para · respira · vuelve', lead:'Así se hace la parada de pensamiento: <b>STOP</b>, una respiración, la atención unos segundos en la barriga, el pecho o el cuello, y vuelves a lo que hacías.' },
+  abrazo:{ ic:'🤗', tit:'Respira · ánclate · abraza', lead:'Así se hace el abrazo sentido: respiras, llevas la atención a la barriga y <b>abrazas con la atención ahí</b>, desde la complicidad.' }
+};
 function montarSil(){
   pararSil();
-  var b=document.getElementById('silBox');
-  if(b && window.RespiroAIS){ try{ silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true}); }catch(e){ silAIS=null; } }
+  var b=document.getElementById('silBox'); if(!b) return;
+  var tipo=(exActual&&exActual.vis)||'silueta';
+  if(tipo==='parada' && !window.VinetaAtencion) tipo='silueta';
+  if(tipo==='abrazo' && !window.VinetaAbrazo) tipo='silueta';
+  var v=VIS[tipo];
+  document.getElementById('visIc').textContent=v.ic;
+  document.getElementById('visTit').textContent=v.tit;
+  document.getElementById('visLead').innerHTML=v.lead;
+  b.style.maxWidth = tipo==='silueta' ? '280px' : 'none';
+  try{
+    if(tipo==='parada') silAIS=VinetaAtencion.mount(b,{silueta:true,titulo:'',pie:true,lang:'es',rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}});
+    else if(tipo==='abrazo') silAIS=VinetaAbrazo.mount(b,{titulo:'',pie:true,lang:'es'});
+    else if(window.RespiroAIS) silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true});
+  }catch(e){ silAIS=null; }
 }
 
 /* ════════════════════════ MENÚ DE EJERCICIOS ════════════════════════ */
@@ -999,6 +1018,13 @@ function fallback(text,btn){
 pintaMenu();
 pintaChecklist();
 pintaContinuidad();
+
+/* Enlace directo a un ejercicio (#/tool/<herramienta>/<ejercicio> en el hub →
+   #<ejercicio> aquí): abre el ejercicio sin pasar por la portada ni la intención. */
+(function(){
+  var id=(location.hash||'').replace(/^#/,'');
+  if(id && EJERCICIOS.some(function(e){return e.id===id;})) abrirEjercicio(id);
+})();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>

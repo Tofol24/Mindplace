@@ -431,19 +431,19 @@
       { para:"Para aparecer", e:"🫁", col:"#2d795b",
         t:"Respiración curiosa",
         d:"Una vez <b>cada hora</b>, unos 10 segundos, sobre todo cuando no hace falta. Y en cada <b>entrada y salida</b> de un lugar o de una situación, cogiendo de la mano a tu niño interno.",
-        go:[["ais_curiosidad","Respiración curiosa"],["ais_amor","Entradas y salidas"]] },
+        go:[["ais_curiosidad/respiracion","Respiración curiosa"],["ais_amor/entrada","Entradas y salidas"]] },
       { para:"Para permanecer", e:"✋", col:"#3f6b74",
         t:"Parada de pensamiento",
         d:"Cada vez que te enganchas a sobrepensar: <b>para, respira y vuelve</b>. 30, 40 o 50 veces al día, para que la atención no quede secuestrada.",
-        go:[["ais_amor","Parada de pensamiento"],["juegos_exposicion/carrusel","Juego: El carrusel"]] },
+        go:[["ais_amor/parada","Parada de pensamiento"],["juegos_exposicion/carrusel","Juego: El carrusel"]] },
       { para:"Para integrar mi vulnerabilidad en mi familia", e:"🤗", col:"#8d641a",
         t:"Abrazo sentido",
         d:"En los encuentros, al llegar a casa: respira, nota la sensación y abraza con la <b>atención en la barriga</b>, desde la complicidad.",
-        go:[["ais_amor","Abrazo sentido"],["juegos_exposicion/casa","Juego: Llegar a casa"]] },
+        go:[["ais_amor/abrazo_sentido","Abrazo sentido"],["juegos_exposicion/casa","Juego: Llegar a casa"]] },
       { para:"Para validarme y darme espacio en mis vínculos", e:"💬", col:"#9c5238",
         t:"Honestidad emocional",
         d:"Con la <b>mano fija</b> en la barriga, el pecho o el cuello: «No sé por qué, pero noto una sensación aquí, y necesito compartirlo contigo».",
-        go:[["honestidad_emocional","Honestidad emocional"]] }
+        go:[["honestidad_emocional/vinetas","Honestidad emocional"]] }
     ];
     const cards = B.map(b=>`<div class="bas-card" style="--bc:${b.col}">
         <div class="bas-para">${b.para}</div>
