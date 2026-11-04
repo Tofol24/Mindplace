@@ -162,6 +162,7 @@
   .lb details summary{cursor:pointer;font-weight:700;color:var(--acc);font-size:13.5px;margin-top:6px;}
   .lb details p{font-size:14px;margin-top:6px;}
   .lb .frase{font-family:var(--serif);font-style:italic;background:var(--bg2);border-radius:10px;padding:8px 11px;margin-top:6px;}
+  .vvBox{--azul:#3f6b74;--azulLt:#dde7e7;--fondo:#f3eee4;--vb-acc:var(--acc);--vb-acc-bg:var(--acc-soft);margin-top:8px;}
   .dia{list-style:none;margin:6px 0 0;}
   .dia li{display:flex;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:9px 0;}
   .dia li:first-child{border-top:0;}
@@ -182,6 +183,7 @@
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
 <script src="../js/comprension.js"></script>
+<script src="../js/vineta-vinculo.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -454,6 +456,7 @@
                ["Confianza","proactiva, no reactiva: comparto lo que noto antes de que estalle, sin esperar a que el otro lo adivine o lo descubra."],
                ["Respeto","desde la complicidad, no desde la culpabilidad: lo que siento no es un reproche, es algo que comparto contigo."]],
       dd:"Con alguien de confianza, o al menos contigo.",
+      vinculo:true,
       go:[["tool:honestidad_emocional","Honestidad emocional"]] },
     { k:"en", e:"🚪", t:"Entradas y salidas · de la mano de tu niño interno",
       w:"En cada entrada y en cada salida de un lugar: casa, trabajo, el coche, una reunión, la consulta…",
@@ -472,6 +475,7 @@
           + (b.frase ? '<p class="frase">'+esc(b.frase)+'</p>' : '')
           + '<p><b>Por qué:</b> '+esc(b.porque)+'</p>'
           + (b.pilares ? '<ul style="margin:6px 0 0 18px;font-size:14px">'+b.pilares.map(function(x){ return '<li><b>'+esc(x[0])+'</b> '+esc(x[1])+'</li>'; }).join("")+'</ul>' : '')
+          + (b.vinculo ? '<div class="vvBox" data-vineta-vinculo></div>' : '')
           + '<div>'+b.go.map(function(g){ return link(g[0], esc(g[1])); }).join("")+'</div></details></li>';
       }).join("") + '</ol>'
       + '<div>'+link("tool:ais_basicas","Herramientas AIS básicas")+'<a class="tl" href="../assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener">📄 La ficha en PDF <span class="ar">↓</span></a></div>';
