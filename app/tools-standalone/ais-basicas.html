@@ -47,12 +47,14 @@
   .vinbox{margin-top:12px;}
   .vinbox[hidden]{display:none;}
   .vinbox{--azul:#3f4430;--azulLt:#eef0e2;--fondo:#F4EFE6;}
+  .vvBox{--azul:#3f4430;--azulLt:#eef0e2;--fondo:#F4EFE6;--vb-acc:var(--oliva);--vb-acc-bg:#eef0e2;margin-top:12px;}
   .tool .go.alt{background:transparent;color:var(--oliva);border:1.5px solid var(--oliva);margin-left:6px;}
 </style>
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
 <script src="../js/vineta-abrazo.js"></script>
 <script src="../js/vineta-honestidad.js"></script>
+<script src="../js/vineta-vinculo.js"></script>
 </head>
 <body>
 <div class="langbar">
@@ -141,7 +143,9 @@ function render(){
     var JG = ["juegos_exposicion/carrusel","juegos_exposicion/casa","juegos_exposicion/campana","juegos_ais/globo","juegos_exposicion/puertas","juegos_ais/sonar"][i];
     var juego = JG ? '<a class="go alt" href="'+toolLink(JG)+'" target="_top" style="margin-left:6px">'+(LANG==='ca'?'🎮 Entrena-ho jugant →':'🎮 Entrénalo jugando →')+'</a>' : '';
     return '<div class="tool"><div class="tn"><span class="num">'+(i+1)+'</span><span class="tt">'+esc(x.tt)+'</span></div>'+
-      '<div class="when">'+esc(x.when)+'</div><div class="tx">'+x.tx+'</div>'+frase+go+juego+'</div>';
+      '<div class="when">'+esc(x.when)+'</div><div class="tx">'+x.tx+'</div>'+frase+go+juego+
+      // Honestidad emocional: la casa del vínculo y sus cuatro pilares (js/vineta-vinculo.js).
+      (x.vin==='honestidad' && window.VinetaVinculo ? '<div class="vvBox" data-vineta-vinculo data-lang="'+LANG+'"></div>' : '')+'</div>';
   }).join('');
   document.getElementById('app').innerHTML=
     '<div class="intro"><span class="kick">'+esc(t.kick)+'</span><h1>'+esc(t.h1)+'</h1><p class="lead">'+esc(t.lead)+'</p></div>'+
