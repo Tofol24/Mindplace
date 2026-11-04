@@ -172,3 +172,4 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 .col3 .vs s{color:var(--tinta-soft); text-decoration-thickness:1px;}
 .col3 p{font-size:15.5px; color:var(--tinta-soft); margin:0;}
 @media (max-width:820px){ .cols3{grid-template-columns:1fr;} }
+.vinculo-vin{margin-top:34px;--azul:#9c5238;--azulLt:#f3e7dc;--fondo:#fbf7f0;--vb-acc:#9c5238;--vb-acc-bg:rgba(156,82,56,.1);}
