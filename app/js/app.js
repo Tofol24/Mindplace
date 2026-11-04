@@ -708,6 +708,7 @@
       ${vinetaHTML()}
       ${abrazoHTML()}
       ${honestidadHTML()}
+      ${casaHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
       ${cvHoyHTML()}
@@ -727,6 +728,7 @@
     montarVineta();
     montarAbrazo();
     montarHonestidad();
+    montarCasa();
   }
 
   // «Para · respira · vuelve»: la parada de pensamiento (TEC 11.2 §1) en tres
@@ -770,6 +772,24 @@
       ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
     </section>`;
   }
+  // «La casa de nuestro vínculo»: cuatro pilares (comunicación, confianza, respeto y
+  // honestidad emocional); la honestidad es transversal a los otros tres.
+  function casaHTML(){
+    if(!window.VinetaVinculo) return "";
+    return `<section class="vineta-sec">
+      <div class="hub-sec"><span class="hub-sec-e">🏠</span><span class="hub-sec-t">La casa de nuestro vínculo · cuatro pilares</span></div>
+      <div class="hub-sec-d">Nuestra relación es una casa que sostienen cuatro pilares: comunicación, confianza, respeto y honestidad emocional. Si son fuertes, la casa no nos cae encima. Y la honestidad emocional es transversal: pasa por dentro de los otros tres.</div>
+      <div id="casaHub" style="margin-top:10px"></div>
+      <div class="puerta-chips" style="margin-top:10px"><a class="puerta-chip" href="#/tool/honestidad_emocional">🤍 Honestidad emocional</a></div>
+    </section>`;
+  }
+  var hubCasa = null;
+  function pararCasa(){ if(hubCasa){ try{ hubCasa.destroy(); }catch(e){} hubCasa = null; } }
+  function montarCasa(){
+    pararCasa();
+    var box = document.getElementById("casaHub");
+    if(box && window.VinetaVinculo){ hubCasa = VinetaVinculo.mount(box, { lang:"es", titulo:"", pie:true }); }
+  }
   var hubHonestidad = null;
   function pararHonestidad(){ if(hubHonestidad){ try{ hubHonestidad.destroy(); }catch(e){} hubHonestidad = null; } }
   function montarHonestidad(){
@@ -796,7 +816,7 @@
 
   // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
   var hubRespiro = null;
-  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); pararHonestidad(); }
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); pararHonestidad(); pararCasa(); }
   function montarNucleoAIS(){
     pararNucleoAIS();
     var box = document.getElementById("aisNucleoBox");
