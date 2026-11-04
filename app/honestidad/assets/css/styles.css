@@ -159,3 +159,16 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 @media (max-width:560px){
   .brandbar > .brand:last-child{display:none;}   /* etiqueta secundaria fuera en móvil */
 }
+
+/* ---------- Las tres columnas del vínculo (tras «Compártelo») ---------- */
+.columnas{padding-top:0;}
+.columnas h2{font-size:clamp(26px,4vw,42px); margin-bottom:14px;}
+.columnas .intro{max-width:56ch; color:var(--tinta-soft);}
+.cols3{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,3vw,32px); margin-top:30px;}
+.col3{border-top:2px solid var(--dorado); padding-top:16px;}
+.col3 h3{font-family:var(--serif); font-size:24px; font-weight:500; margin:0 0 10px;}
+.col3 .vs{font-size:14.5px; margin:0 0 10px; color:var(--tinta);}
+.col3 .vs b{color:var(--terracota-dark);}
+.col3 .vs s{color:var(--tinta-soft); text-decoration-thickness:1px;}
+.col3 p{font-size:15.5px; color:var(--tinta-soft); margin:0;}
+@media (max-width:820px){ .cols3{grid-template-columns:1fr;} }
