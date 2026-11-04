@@ -211,6 +211,7 @@
   @media (max-width:380px){h1{font-size:24px}body{font-size:15px}.ring{width:158px;height:158px}.ring .rinner{width:124px;height:124px}.ring .rtime{font-size:26px}}
 </style>
 <script src="../js/descarga-segura.js"></script>
+<script src="../js/respiro-ais.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -362,6 +363,14 @@
     <p id="exExplica"></p>
     <p class="lead"><b>Cuándo:</b> <span id="exContexto"></span></p>
   </div>
+
+  <!-- Silueta AIS de las dos luces (js/respiro-ais.js) -->
+  <div class="card">
+    <h2><span class="ic">🫁</span>Respira con la silueta</h2>
+    <p class="lead">La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.</p>
+    <div id="silBox" style="max-width:280px;margin:6px auto 0"></div>
+  </div>
+
 
   <!-- A1 · ¿Por qué vienes ahora? (práctica programada vs. el cuerpo avisó) -->
   <div class="card">
@@ -608,6 +617,7 @@ function _aprensSaveAmor(){ try{ if(!window.Aprens||!exActual) return; if(!pract
 
 /* ════════════════════════ NAVEGACIÓN ════════════════════════ */
 function irPantalla(id){
+  if(id!=='s-ejercicio') pararSil();
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -638,6 +648,15 @@ function confirmarAcompanar(){
   intencion='acompanamiento';
   intencionTexto='me ha costado, pero vengo a acompañarme'; // honesto: reconoció control y reformuló
   irPantalla('s-menu');
+}
+
+/* Silueta AIS de las dos luces: se monta al abrir un ejercicio y se para al salir. */
+var silAIS=null;
+function pararSil(){ if(silAIS){ try{ silAIS.destroy(); }catch(e){} silAIS=null; } }
+function montarSil(){
+  pararSil();
+  var b=document.getElementById('silBox');
+  if(b && window.RespiroAIS){ try{ silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true}); }catch(e){ silAIS=null; } }
 }
 
 /* ════════════════════════ MENÚ DE EJERCICIOS ════════════════════════ */
@@ -696,6 +715,7 @@ function abrirEjercicio(id){
 
   resetTimer();
   irPantalla('s-ejercicio');
+  montarSil();
 }
 
 /* ¿Por qué vienes ahora? · 🟢 práctica en calma (programada) / 🔴 el cuerpo avisó */
