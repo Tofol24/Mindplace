@@ -214,6 +214,7 @@ details.vin>div{margin-top:10px;}
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
 <script src="../js/vineta-abrazo.js"></script>
+<script src="../js/vineta-puertas.js"></script>
 <script src="../js/vineta-honestidad.js"></script>
 <script>
 "use strict";
@@ -890,6 +891,7 @@ function montarVineta(box, tipo){
   try{
     if(tipo==="campana" && window.VinetaHonestidad) VinetaHonestidad.mount(box,o);
     else if(tipo==="casa" && window.VinetaAbrazo) VinetaAbrazo.mount(box,o);
+    else if(tipo==="puertas" && window.VinetaPuertas) VinetaPuertas.mount(box,o);
     else if(window.VinetaAtencion) VinetaAtencion.mount(box,{ silueta:true, titulo:"", pie:true, juego:false, rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500} });
   }catch(e){}
 }
@@ -1723,6 +1725,7 @@ function vPuertas(){
     const recHora = st.puertaHora || "08:00";
     app.innerHTML = cabecera() + `<button class="btn mini" onclick="ir('hub')">${t("volver")}</button>
       <h1>🚪 ${t("g_puertas")}</h1><p class="tag">${t("g_puertas_d")}</p>
+      ${vinetaHTML("puertas")}
       <div class="card"><h2>${t("p_t")}</h2><p class="muted" style="margin-top:0">${t("p_x")}</p>
         <div class="puertas">${grid}</div><p style="margin:0;font-weight:700;color:var(--verde)">${t("p_hoy")(hoy.length)}</p></div>
       <div class="card"><h2>${t("p_dia_t")}</h2><p class="muted" style="margin-top:0">${t("p_dia_x")}</p>

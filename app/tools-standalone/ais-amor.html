@@ -214,6 +214,7 @@
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
 <script src="../js/vineta-abrazo.js"></script>
+<script src="../js/vineta-puertas.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -484,7 +485,7 @@ var EJERCICIOS = [
     frase:'No espero para desesperarme. Espero para volver a mí.',
     reflexion:'¿Has podido tratar la espera como un encuentro contigo, y no como tiempo perdido?' },
 
-  { id:'entrada', icon:'🚪', titulo:'Rituales de entrada y salida', nivel:'vinculo', dur:'10 seg',
+  { id:'entrada', icon:'🚪', titulo:'Rituales de entrada y salida', nivel:'vinculo', vis:'puertas', dur:'10 seg',
     contexto:'En cada entrada y en cada salida de un lugar: casa, trabajo, el coche, una reunión, la consulta, la escuela…',
     explica:'Una respiración interna en cada puerta, para dejar muy claro, a ti y a tu cuerpo, que entras y sales cogiendo de la mano a tu niño interno. No se queda fuera ni atrás: va contigo a cada lugar. Así llegas a los demás desde ti, y no desde el automático.',
     pasos:['Antes de cruzar la puerta, detente un momento.','Haz una respiración.','Lleva la atención a la barriga, el pecho o el cuello.','Nota lo que haya, aunque no notes nada.','Di internamente: «Entro contigo», o al salir: «Nos vamos juntos».','Cruza la puerta con presencia.'],
@@ -660,6 +661,7 @@ function pararSil(){ if(silAIS){ try{ silAIS.destroy(); }catch(e){} silAIS=null;
 var VIS={
   silueta:{ ic:'🫁', tit:'Respira con la silueta', lead:'La luz <b>azul</b> es el aire: hace de cebo. La <b>amarilla</b> es tu atención: baja con el aire y <b>se queda en la barriga</b>, aunque el aire vuelva a salir.' },
   parada:{ ic:'✋', tit:'Para · respira · vuelve', lead:'Así se hace la parada de pensamiento: <b>STOP</b>, una respiración, la atención unos segundos en la barriga, el pecho o el cuello, y vuelves a lo que hacías.' },
+  puertas:{ ic:'🚪', tit:'Paro · respiro · entro contigo', lead:'Así se hacen los rituales de entrada y salida: en cada puerta, una respiración con la atención en la barriga, y <b>entras y sales cogiendo de la mano a tu niño interno</b>.' },
   abrazo:{ ic:'🤗', tit:'Respira · ánclate · abraza', lead:'Así se hace el abrazo sentido: respiras, llevas la atención a la barriga y <b>abrazas con la atención ahí</b>, desde la complicidad.' }
 };
 function montarSil(){
@@ -668,6 +670,7 @@ function montarSil(){
   var tipo=(exActual&&exActual.vis)||'silueta';
   if(tipo==='parada' && !window.VinetaAtencion) tipo='silueta';
   if(tipo==='abrazo' && !window.VinetaAbrazo) tipo='silueta';
+  if(tipo==='puertas' && !window.VinetaPuertas) tipo='silueta';
   var v=VIS[tipo];
   document.getElementById('visIc').textContent=v.ic;
   document.getElementById('visTit').textContent=v.tit;
@@ -676,6 +679,7 @@ function montarSil(){
   try{
     if(tipo==='parada') silAIS=VinetaAtencion.mount(b,{silueta:true,titulo:'',pie:true,lang:'es',rhythm:{inhale:4000,anchor:2000,exhale:6000,pause:1500}});
     else if(tipo==='abrazo') silAIS=VinetaAbrazo.mount(b,{titulo:'',pie:true,lang:'es'});
+    else if(tipo==='puertas') silAIS=VinetaPuertas.mount(b,{titulo:'',pie:true,lang:'es'});
     else if(window.RespiroAIS) silAIS=RespiroAIS.mount(b,{lang:'es',figure:'organism',showControl:true,showZones:true,autostart:true});
   }catch(e){ silAIS=null; }
 }
