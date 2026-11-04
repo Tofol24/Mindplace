@@ -421,7 +421,42 @@
     return `<a class="rec-hero" href="#/tool/recorrido_tec" style="--rh:${col}">
       <span class="rh-ic">🧭</span><span class="rh-b">${cuerpo}<span class="rh-m">${marcas}</span></span>
       <span class="rh-go">${st ? "Seguir" : "Empezar"} →</span></a>
-      <div class="rh-note">Las herramientas de abajo son tu <b>caja de apoyo</b>: el recorrido te irá llevando a cada una en su momento.</div>`;
+      <div class="rh-note">Justo debajo tienes tus <b>cuatro herramientas básicas</b>, para tenerlas a mano cada día. El resto es tu <b>caja de apoyo</b>: el recorrido te irá llevando a cada una en su momento.</div>`;
+  }
+
+  // «Tus cuatro herramientas básicas»: las líneas básicas del AIS, a mano justo
+  // debajo del recorrido. Cada una dice para qué sirve y lleva a su herramienta.
+  function basicasHTML(){
+    const B = [
+      { para:"Para aparecer", e:"🫁", col:"#2d795b",
+        t:"Respiración curiosa",
+        d:"Una vez <b>cada hora</b>, unos 10 segundos, sobre todo cuando no hace falta. Y en cada <b>entrada y salida</b> de un lugar o de una situación, cogiendo de la mano a tu niño interno.",
+        go:[["ais_curiosidad","Respiración curiosa"],["ais_amor","Entradas y salidas"]] },
+      { para:"Para permanecer", e:"✋", col:"#3f6b74",
+        t:"Parada de pensamiento",
+        d:"Cada vez que te enganchas a sobrepensar: <b>para, respira y vuelve</b>. 30, 40 o 50 veces al día, para que la atención no quede secuestrada.",
+        go:[["ais_amor","Parada de pensamiento"],["juegos_exposicion/carrusel","Juego: El carrusel"]] },
+      { para:"Para integrar mi vulnerabilidad en mi familia", e:"🤗", col:"#8d641a",
+        t:"Abrazo sentido",
+        d:"En los encuentros, al llegar a casa: respira, nota la sensación y abraza con la <b>atención en la barriga</b>, desde la complicidad.",
+        go:[["ais_amor","Abrazo sentido"],["juegos_exposicion/casa","Juego: Llegar a casa"]] },
+      { para:"Para validarme y darme espacio en mis vínculos", e:"💬", col:"#9c5238",
+        t:"Honestidad emocional",
+        d:"Con la <b>mano fija</b> en la barriga, el pecho o el cuello: «No sé por qué, pero noto una sensación aquí, y necesito compartirlo contigo».",
+        go:[["honestidad_emocional","Honestidad emocional"]] }
+    ];
+    const cards = B.map(b=>`<div class="bas-card" style="--bc:${b.col}">
+        <div class="bas-para">${b.para}</div>
+        <div class="bas-t"><span class="bas-e" aria-hidden="true">${b.e}</span>${b.t}</div>
+        <div class="bas-d">${b.d}</div>
+        <div class="bas-go">${b.go.map(([id,txt])=>`<a href="#/tool/${id}">${txt} →</a>`).join("")}</div>
+      </div>`).join("");
+    return `<section class="basicas" aria-labelledby="basTit">
+      <div class="hub-sec"><span class="hub-sec-e">🧰</span><span class="hub-sec-t" id="basTit">Tus cuatro herramientas básicas</span></div>
+      <div class="hub-sec-d">Para tenerlas a mano cada día, también cuando estás bien. Breve y frecuente vale más que largo y ocasional.</div>
+      <div class="bas-grid">${cards}</div>
+      <a class="bas-reg" href="#/tool/recorrido_tec">📝 Apúntalas en tu recorrido, en «Hoy › Durante todo el día» →</a>
+    </section>`;
   }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
   function porqueHTML(){
@@ -541,7 +576,8 @@
     try{ sec.focus({preventScroll:true}); }catch(e){}
   }
   function montarIndice(){
-    const secs = Array.from(screen.querySelectorAll(".hub-sec"));
+    // Las cuatro herramientas básicas ya están justo encima del índice: no llevan botón.
+    const secs = Array.from(screen.querySelectorAll(".hub-sec")).filter(s=>!s.closest(".basicas"));
     if(secs.length < 2) return;
     const nav = document.createElement("nav");
     nav.className = "hub-idx";
@@ -615,8 +651,9 @@
       if(sec) irASeccion(sec);
     });
     nav.appendChild(tit); nav.appendChild(chips);
-    // El índice va debajo del recorrido (lo principal) y de la bienvenida.
-    const bienvenida = screen.querySelector(".rh-note") || screen.querySelector(".hub-welcome");
+    // El índice va debajo del recorrido (lo principal), de las cuatro herramientas
+    // básicas y de la bienvenida.
+    const bienvenida = screen.querySelector(".basicas") || screen.querySelector(".rh-note") || screen.querySelector(".hub-welcome");
     if(bienvenida) bienvenida.insertAdjacentElement("afterend", nav);
     else screen.insertAdjacentElement("afterbegin", nav);
   }
@@ -665,6 +702,7 @@
         </div>
       </div>
       ${recorridoHoyHTML()}
+      ${basicasHTML()}
       ${porqueHTML()}
       ${aisNucleoHTML()}
       ${vinetaHTML()}
