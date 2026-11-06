@@ -149,3 +149,12 @@ Les subscripcions no s'obren sense una de les dues vies (Resend o la pàgina d'a
 - El servidor afegeix a cada petició unes instruccions fixes: contingut adequat a l'edat, només estudi.
 - Si en una resposta hi apareix malestar emocional greu o risc, la valoració hi afegeix un missatge
   cuidat que anima a parlar-ne amb un adult de confiança i recorda el 024 i el 112.
+
+## Cercadors i assistents (Google, Bing, ChatGPT…)
+
+- Es poden indexar la portada, la subscripció i els textos legals (català i castellà). `gracies`, `recupera`,
+  `estadistiques` i `/api/` porten `noindex` (`_headers`, `robots.txt`). Mapa del lloc: `sitemap.xml`.
+- L'eina es construeix amb JavaScript i els robots no l'executen: `fes-pacients.sh` posa dins `<main>` el text de
+  `estudi/presentacio-web.html` (el que llegeixen) i el títol, la descripció i les etiquetes per compartir.
+  Quan l'eina arrenca, el substitueix. Si canvia el que fa l'eina o el preu, cal actualitzar aquest text.
+- Cal donar d'alta el lloc a Google Search Console i a Bing Webmaster Tools i enviar-hi el `sitemap.xml`.

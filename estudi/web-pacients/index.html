@@ -3,9 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <meta name="explica-proxy" content="/api/claude">
-<title>Explica-ho</title>
+<meta name="description" content="Eina d'estudi amb IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu: resums, mapes conceptuals, preguntes i exercicis corregits pas a pas. ESO, batxillerat, FP, universitat i oposicions. Herramienta de estudio con IA: si no lo puedes explicar, no te lo sabes.">
+<link rel="canonical" href="https://explica.aprens.net/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://explica.aprens.net/">
+<meta property="og:title" content="Explica-ho · Si no ho pots explicar, no t'ho saps">
+<meta property="og:description" content="Eina d'estudi amb IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu: resums, mapes conceptuals, preguntes i exercicis corregits pas a pas. ESO, batxillerat, FP, universitat i oposicions. Herramienta de estudio con IA: si no lo puedes explicar, no te lo sabes.">
+<title>Explica-ho · Si no ho pots explicar, no t'ho saps</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,7 +323,7 @@ dialog::backdrop{background:rgba(10,14,30,.45)}
 <body>
 
 <header class="top">
-  <div class="brand"><h1><span>Explica</span>-ho</h1><span class="label">Estudi de 4t d'ESO</span></div>
+  <div class="brand"><h1><span>Explica</span>-ho</h1><span class="label">Estudi actiu</span></div>
   <span class="conn" id="conn"><span class="dot"></span><span>Connectant…</span></span>
   <span class="flags" role="group" aria-label="Idioma de l'eina"><button class="flag" data-flag="ca" type="button" title="Català" aria-label="Català"><svg viewBox="0 0 27 18" aria-hidden="true"><rect width="27" height="18" fill="#fcdd09"/><path d="M0 3h27M0 7h27M0 11h27M0 15h27" stroke="#da121a" stroke-width="2"/></svg></button><button class="flag" data-flag="es" type="button" title="Castellano" aria-label="Castellano"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg></button></span>
   <button class="btn sm" id="btnSettings" type="button">
@@ -326,7 +332,26 @@ dialog::backdrop{background:rgba(10,14,30,.45)}
 </header>
 <div class="shell">
   <aside class="side" id="side"></aside>
-  <main id="main"></main>
+  <main id="main">
+<div class="wrap" id="presentacio">
+  <section class="hero" lang="es">
+    <span class="label">Explica-ho · explicalo.net</span>
+    <h2>Si no lo puedes explicar, no te lo sabes.</h2>
+    <p class="lead"><strong>Una herramienta de IA que te ayuda a interiorizar los conceptos, no que lo haga por ti.</strong></p>
+    <p>Explica-ho es una herramienta de estudio en línea creada por Tòfol Villalonga, psicólogo del gabinete APRENS (Inca, Mallorca). Ayuda a estudiar de manera activa: a partir de los apuntes o el temario (fotos, capturas, PDF o Word) prepara un resumen ordenado y un mapa conceptual, hace preguntas en cuatro niveles de profundidad (recordar, comprender, relacionar e integrar) y valora las respuestas, dichas en voz alta o escritas: qué se ha explicado bien, qué falta y cómo encajarlo.</p>
+    <p>En matemáticas, física, química y lengua propone ejercicios por niveles de dificultad, los corrige paso a paso (también a partir de una foto del papel), explica la resolución paso a paso, de dónde sale cada número y por qué se hace cada operación, y responde las dudas concretas sobre cada ejercicio.</p>
+    <p>Sirve para ESO, Bachillerato, FP de grado medio y superior, universidad y preparación de oposiciones, y se ajusta al nivel de cada estudiante. Funciona en castellano y en catalán desde el navegador del móvil o del ordenador. El material y el trabajo del estudiante se guardan solo en su dispositivo.</p>
+    <p>Se puede probar gratis con temas de ejemplo. La suscripción cuesta 6 € al mes (IVA incluido) con 100 peticiones y se puede dar de baja en cualquier momento: <a href="subscriu.html">suscripción</a> · <a href="condiciones.html">condiciones de uso</a> · <a href="privacidad.html">privacidad</a>.</p>
+    <p class="muted small">Las respuestas las genera una inteligencia artificial (Claude, de Anthropic) y pueden contener errores. Es un apoyo al estudio y no sustituye al profesorado. Más información sobre APRENS en <a href="https://aprens.net/">aprens.net</a>.</p>
+  </section>
+  <section class="hero" lang="ca">
+    <h2>Si no ho pots explicar, no t'ho saps.</h2>
+    <p class="lead"><strong>Una eina d'IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu.</strong></p>
+    <p>Explica-ho és una eina d'estudi en línia creada per Tòfol Villalonga, psicòleg del gabinet APRENS (Inca, Mallorca). A partir dels apunts o el temari prepara un resum ordenat i un mapa conceptual, fa preguntes en quatre nivells de profunditat i valora les respostes; a matemàtiques, física, química i llengua corregeix exercicis pas a pas, n'explica la resolució i respon els dubtes concrets. Serveix per a ESO, batxillerat, FP, universitat i oposicions, en català i en castellà. La subscripció costa 6 € al mes: <a href="subscriu.html">subscripció</a> · <a href="condicions.html">condicions d'ús</a> · <a href="privacitat.html">privacitat</a>.</p>
+  </section>
+  <noscript><p class="err">Explica-ho necessita JavaScript per funcionar. Explica-ho necesita JavaScript para funcionar.</p></noscript>
+</div>
+  </main>
 </div>
 
 <dialog id="dlg" aria-labelledby="dlgTitle"><div class="dlg" id="dlgBody"></div></dialog>
@@ -838,7 +863,8 @@ const ES = {
 "Una eina d'APRENS · aprens.net": "Una herramienta de APRENS · aprens.net",
 "Si no ho pots explicar,": "Si no lo puedes explicar,",
 "no t'ho saps.": "no te lo sabes.",
-"Una eina d'IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu.": "Una herramienta de IA que te ayuda a interiorizar los conceptos, no que lo haga por ti."
+"Una eina d'IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu.": "Una herramienta de IA que te ayuda a interiorizar los conceptos, no que lo haga por ti.",
+"Explica-ho · Si no ho pots explicar, no t'ho saps": "Explica-ho · Si no lo puedes explicar, no te lo sabes"
 };
 // Textos dels temes d'exemple (només per traduir-los, no la pantalla).
 const ES_EX = {
