@@ -290,6 +290,8 @@ details.better p{margin-top:8px;white-space:pre-wrap}
 /* inici */
 .hero{display:flex;flex-direction:column;gap:10px;max-width:68ch}
 .hero h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-.02em}
+.hero .mk{background:linear-gradient(transparent 60%,var(--marker) 60%)}
+.hero .lead{font-size:1.12rem}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
 .step{border-top:3px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:4px}
 .step .label{color:var(--accent)}
@@ -831,7 +833,9 @@ const ES = {
 "No ha arribat l'explicació. Torna-ho a provar.": "No ha llegado la explicación. Vuelve a intentarlo.",
 "Escriu primer la pregunta.": "Escribe primero la pregunta.",
 "No ha arribat la resposta. Torna-ho a provar.": "No ha llegado la respuesta. Vuelve a intentarlo.",
-"Una eina d'APRENS · aprens.net": "Una herramienta de APRENS · aprens.net"
+"Una eina d'APRENS · aprens.net": "Una herramienta de APRENS · aprens.net",
+"Si no ho pots explicar,": "Si no lo puedes explicar,",
+"no t'ho saps.": "no te lo sabes."
 };
 // Textos dels temes d'exemple (només per traduir-los, no la pantalla).
 const ES_EX = {
@@ -2292,7 +2296,8 @@ function renderHome() {
     ${AI.mode === "proxy" && AI.codi && S.loaded && !ls("explica:curs") ? `<div class="banner" role="note"><p><strong>Tria què estudies.</strong> ESO, batxillerat, FP, universitat o oposicions: així les preguntes i les correccions s'ajusten al teu nivell.</p><button class="btn sm primary" data-act="settings" type="button">Tria el curs</button></div>` : ""}
     <div class="hero">
       <span class="label">Com funciona</span>
-      <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
+      <h2>Si no ho pots explicar, <span class="mk">no t'ho saps.</span></h2>
+      <p class="lead">Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</p>
       <p class="muted">Claude ordena el material en un resum i un mapa conceptual, et fa preguntes que comencen per les dades concretes i van baixant fins a relacionar-ho tot, i et diu què has explicat bé, què t'has deixat i com encaixar-ho. A Matemàtiques i Física i Química et posa exercicis, els resols pas a pas i et diu en quin pas t'has equivocat.</p>
       <p class="muted small">Les respostes les genera una intel·ligència artificial (Claude) i es pot equivocar: si alguna cosa no et quadra, consulta el llibre o el professorat.</p>
     </div>
