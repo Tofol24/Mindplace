@@ -11,6 +11,8 @@ DESC="Eina d'estudi amb IA que t'ajuda a interioritzar els conceptes, no que ho 
 {
   printf '<!doctype html>\n<html lang="ca">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<meta name="robots" content="index, follow">\n<meta name="explica-proxy" content="/api/claude">\n'
   printf '<meta name="description" content="%s">\n<link rel="canonical" href="https://explica.aprens.net/">\n' "$DESC"
+  # Verificació de Bing Webmaster Tools (explica.aprens.net). No la treguis: Bing la torna a comprovar.
+  printf '<meta name="msvalidate.01" content="B0ABF317EE25CC7F78C872EAB330A9E8">\n'
   printf '<meta property="og:type" content="website">\n<meta property="og:url" content="https://explica.aprens.net/">\n<meta property="og:title" content="Explica-ho · Si no ho pots explicar, no t%sho saps">\n<meta property="og:description" content="%s">\n' "'" "$DESC"
   head -n "$fi" explica-ho.html | sed 's#^<title>Explica-ho</title>$#<title>Explica-ho · Si no ho pots explicar, no t'"'"'ho saps</title>#'
   printf '</head>\n<body>\n'
