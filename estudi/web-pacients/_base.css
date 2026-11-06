@@ -12,6 +12,8 @@ p{margin:0}
 a{color:var(--accent)}
 .brand{font-family:var(--f-display);font-weight:800;font-size:1.4rem;text-decoration:none;color:var(--ink)}
 .brand span{background:linear-gradient(transparent 58%,var(--marker) 58%)}
+.lema{font-family:var(--f-display);font-weight:800;font-size:clamp(1.25rem,3.2vw,1.6rem);line-height:1.2;color:var(--muted)}
+.lema span{color:var(--ink);background:linear-gradient(transparent 60%,var(--marker) 60%)}
 .muted{color:var(--muted)} .small{font-size:.9rem}
 .label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
