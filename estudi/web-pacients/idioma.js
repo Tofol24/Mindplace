@@ -34,6 +34,7 @@ const ES = {
   "Subscripció a Explica-ho": "Suscripción a Explica-ho",
   "Si no ho pots explicar,": "Si no lo puedes explicar,",
   "no t'ho saps.": "no te lo sabes.",
+  "Una eina d'IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu.": "Una herramienta de IA que te ayuda a interiorizar los conceptos, no que lo haga por ti.",
   "Explica-ho ajuda a estudiar de manera activa: ordena el material del curs en un resum i un mapa conceptual, fa preguntes que van de les dades concretes fins a relacionar les idees, i corregeix exercicis de matemàtiques, ciències i llengua pas a pas. Serveix per a ESO, batxillerat, FP, universitat i oposicions. La subscripció dona un codi d'accés personal per fer-la servir des del navegador de qualsevol ordinador o mòbil.":
     "Explica-ho ayuda a estudiar de manera activa: ordena el material del curso en un resumen y un mapa conceptual, hace preguntas que van de los datos concretos hasta relacionar las ideas, y corrige ejercicios de matemáticas, ciencias y lengua paso a paso. Sirve para ESO, Bachillerato, FP, universidad y oposiciones. La suscripción da un código de acceso personal para usarla desde el navegador de cualquier ordenador o móvil.",
   "1 · Tria el pla": "1 · Elige el plan",
