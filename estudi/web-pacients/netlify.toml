@@ -10,3 +10,24 @@
 [build]
   publish = "."
   command = ""
+
+# explicalo.net (i www) és una porta d'entrada: porta sempre a explica.aprens.net, l'adreça principal.
+# Així la feina i el codi de cada estudiant queden guardats en una sola adreça (el navegador els
+# separa per domini). Si mai explicalo.net passa a ser la principal, cal traslladar abans les dades.
+[[redirects]]
+  from = "https://explicalo.net/*"
+  to = "https://explica.aprens.net/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://explicalo.net/*"
+  to = "https://explica.aprens.net/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.explicalo.net/*"
+  to = "https://explica.aprens.net/:splat"
+  status = 301
+  force = true
