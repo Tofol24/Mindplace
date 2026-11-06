@@ -269,6 +269,8 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .msg{padding:8px 12px;border-radius:12px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
 .msg.jo{align-self:flex-end;background:var(--accent-soft)}
 .msg.cl{align-self:flex-start;background:var(--soft)}
+.web-link{color:var(--muted);text-align:center;text-decoration:underline;text-underline-offset:2px}
+.web-link:hover{color:var(--ink)}
 .weave{border-left:4px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:4px}
 details.better{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
 details.better summary{cursor:pointer;font-weight:700}
@@ -830,7 +832,8 @@ const ES = {
 "Claude pensa la resposta.": "Claude piensa la respuesta.",
 "No ha arribat l'explicació. Torna-ho a provar.": "No ha llegado la explicación. Vuelve a intentarlo.",
 "Escriu primer la pregunta.": "Escribe primero la pregunta.",
-"No ha arribat la resposta. Torna-ho a provar.": "No ha llegado la respuesta. Vuelve a intentarlo."
+"No ha arribat la resposta. Torna-ho a provar.": "No ha llegado la respuesta. Vuelve a intentarlo.",
+"Una eina d'APRENS · aprens.net": "Una herramienta de APRENS · aprens.net"
 };
 // Textos dels temes d'exemple (només per traduir-los, no la pantalla).
 const ES_EX = {
@@ -2278,6 +2281,7 @@ function renderSide() {
     <div class="side-list">${list || '<p class="muted small">Encara no hi ha assignatures.</p>'}</div>
     <div class="side-actions">
       <button class="btn sm" data-act="newSubj" type="button">${ICON.plus} Assignatura</button>
+      ${PROXY ? `<a class="small muted web-link" href="https://aprens.net/">Una eina d'APRENS · aprens.net</a>` : ""}
     </div>`;
 }
 
