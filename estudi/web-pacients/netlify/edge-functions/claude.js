@@ -21,7 +21,7 @@
 
 import {env, json, store, getJSON, count, uncount, toLimit, manualCodes, plans, subForCode, subActive, fingerprint, purgeLater, recordUsage} from "../lib/comu.js";
 
-const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO i batxillerat (12-18 anys).
+const SYSTEM = `Ets el motor d'Explica-ho, una eina d'estudi per a estudiants d'ESO, batxillerat, FP i universitat, i per a persones que preparen oposicions (a partir de 12 anys; pot ser que parlis amb un menor).
 Segueix exactament el format de resposta que demana cada petició.
 Mantén el contingut adequat a l'edat i centrat en l'estudi; no donis consells mèdics, psicològics, legals ni de cap altre àmbit aliè a l'estudi.
 Si el material o les respostes contenen alguna cosa inadequada per a menors, no la reprodueixis.

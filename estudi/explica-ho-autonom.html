@@ -260,6 +260,15 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .fb-box.miss{background:var(--warn-soft)} .fb-box.miss h3{color:var(--warn)}
 .fb-box.wrong{background:var(--bad-soft)} .fb-box.wrong h3{color:var(--bad)}
 .care{border:2px solid var(--accent);background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.tutor{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--card)}
+.tstep{border-left:4px solid var(--accent);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+.tstep p{margin:0;white-space:pre-wrap}
+.xat{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.msg{padding:8px 12px;border-radius:12px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.jo{align-self:flex-end;background:var(--accent-soft)}
+.msg.cl{align-self:flex-start;background:var(--soft)}
+.web-link{color:var(--muted);text-align:center;text-decoration:underline;text-underline-offset:2px}
+.web-link:hover{color:var(--ink)}
 .weave{border-left:4px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:4px}
 details.better{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px}
 details.better summary{cursor:pointer;font-weight:700}
@@ -788,7 +797,41 @@ const ES = {
 "Tria fitxers": "Elige archivos",
 "Atura el micròfon": "Detén el micrófono",
 "Envia la resposta": "Envía la respuesta",
-"Envia a corregir": "Envía a corregir"
+"Envia a corregir": "Envía a corregir",
+"FP de grau mitjà": "FP de grado medio",
+"FP de grau superior": "FP de grado superior",
+"Universitat": "Universidad",
+"Oposicions": "Oposiciones",
+"Altres estudis": "Otros estudios",
+"Estudi actiu": "Estudio activo",
+"Tria què estudies.": "Elige qué estudias.",
+"ESO, batxillerat, FP, universitat o oposicions: així les preguntes i les correccions s'ajusten al teu nivell.": "ESO, Bachillerato, FP, universidad u oposiciones: así las preguntas y las correcciones se ajustan a tu nivel.",
+"Si estudies FP, a la universitat o oposicions, desmarca les que no et serveixin i crea les teves amb el botó «+ Assignatura» (per exemple: Dret administratiu, Anatomia o Comptabilitat).": "Si estudias FP, en la universidad u oposiciones, desmarca las que no te sirvan y crea las tuyas con el botón «+ Asignatura» (por ejemplo: Derecho administrativo, Anatomía o Contabilidad).",
+"Explica-m'ho pas a pas": "Explícamelo paso a paso",
+"Resolució explicada pas a pas": "Resolución explicada paso a paso",
+"Què demana:": "Qué pide:",
+"La regla:": "La regla:",
+"La pista:": "La pista:",
+"Resposta:": "Respuesta:",
+"Què fem:": "Qué hacemos:",
+"Per què:": "Por qué:",
+"D'on surt cada dada:": "De dónde sale cada dato:",
+"Càlcul:": "Cálculo:",
+"Per recordar": "Para recordar",
+"Mostra'ls tots": "Muéstralos todos",
+"Abans de passar al següent, prova de pensar quin seria. Si un pas no l'entens, pregunta-ho a sota.": "Antes de pasar al siguiente, intenta pensar cuál sería. Si no entiendes un paso, pregúntalo abajo.",
+"Pregunta sobre aquest exercici": "Pregunta sobre este ejercicio",
+"Preguntes sobre aquest exercici": "Preguntas sobre este ejercicio",
+"Per exemple: d'on surt el 3,6? Per què aquí va elevat al cub?": "Por ejemplo: ¿de dónde sale el 3,6? ¿Por qué aquí va elevado al cubo?",
+"Envia la pregunta": "Envía la pregunta",
+"Cada pregunta compta com una petició.": "Cada pregunta cuenta como una petición.",
+"Tu:": "Tú:",
+"Claude prepara l'explicació pas a pas.": "Claude prepara la explicación paso a paso.",
+"Claude pensa la resposta.": "Claude piensa la respuesta.",
+"No ha arribat l'explicació. Torna-ho a provar.": "No ha llegado la explicación. Vuelve a intentarlo.",
+"Escriu primer la pregunta.": "Escribe primero la pregunta.",
+"No ha arribat la resposta. Torna-ho a provar.": "No ha llegado la respuesta. Vuelve a intentarlo.",
+"Una eina d'APRENS · aprens.net": "Una herramienta de APRENS · aprens.net"
 };
 // Textos dels temes d'exemple (només per traduir-los, no la pantalla).
 const ES_EX = {
@@ -951,6 +994,8 @@ const ES_RX = [
   [/^([NLP]\d) (.+)$/, (_, a, b) => ES[b] ? `${a} ${ES[b]}` : null],
   [/^Pas (\d+)$/, "Paso $1"],
   [/^Pas (\d+) · (.+)$/, (_, n, x) => `Paso ${n} · ${T(x)}`],
+  [/^Pas (\d+) de (\d+) · (.+)$/, (_, n, m, x) => `Paso ${n} de ${m} · ${T(x)}`],
+  [/^Següent pas \((\d+) de (\d+)\)$/, "Siguiente paso ($1 de $2)"],
   [/^(Pregunta|Exercici) (\d+)$/, (_, a, n) => `${a === "Exercici" ? "Ejercicio" : a} ${n}`],
   [/^Fes-me preguntes de nivell (\d)$/, "Hazme preguntas de nivel $1"],
   [/^Fes-me exercicis de nivell (\w+)$/, "Hazme ejercicios de nivel $1"],
@@ -1029,12 +1074,24 @@ const PRESETS = UI === "es"
   : PRESETS_CA;
 // A qui parlen les peticions a Claude: la filla (4t d'ESO) o, a la versió amb codis, qualsevol estudiant.
 // A la versió amb codis, cada estudiant tria el seu curs a Configuració.
-const CURSOS = ["1r d'ESO", "2n d'ESO", "3r d'ESO", "4t d'ESO", "1r de batxillerat", "2n de batxillerat"];
+const CURSOS = ["1r d'ESO", "2n d'ESO", "3r d'ESO", "4t d'ESO", "1r de batxillerat", "2n de batxillerat", "FP de grau mitjà", "FP de grau superior", "Universitat", "Oposicions", "Altres estudis"];
+// Estudis d'adults: com es diu als prompts i com s'ha d'ajustar Claude (exigència, vocabulari i to).
+const PERFILS = {
+  "FP de grau mitjà": {curs: "un cicle formatiu de grau mitjà", una: "un o una estudiant de FP de grau mitjà", ajust: "nivell de cicle formatiu de grau mitjà: llenguatge clar i pràctic, i quan el material ho permeti, connecta-ho amb situacions de la feina"},
+  "FP de grau superior": {curs: "un cicle formatiu de grau superior", una: "un o una estudiant de FP de grau superior", ajust: "nivell de cicle formatiu de grau superior: terminologia tècnica i aplicació a casos professionals reals"},
+  "Universitat": {curs: "la universitat", una: "un o una estudiant universitari", ajust: "nivell universitari: rigor, terminologia tècnica precisa i preguntes que demanin argumentar, comparar i aplicar"},
+  "Oposicions": {curs: "la preparació d'oposicions", una: "una persona que prepara oposicions", ajust: "prepara oposicions: fidelitat al temari, terminologia exacta i dades, articles, terminis i classificacions tal com surten al material; preguntes de l'estil de les proves"},
+  "Altres estudis": {curs: "estudis d'adults", una: "una persona adulta que estudia", ajust: "persona adulta: ajusta l'exigència i el vocabulari al nivell del material"},
+};
 const WHO = document.querySelector('meta[name="explica-proxy"]')
-  ? {get curs() { const c = ls("explica:curs"); return CURSOS.includes(c) ? c : "ESO o batxillerat"; },
-     get una() { return "un o una estudiant de " + this.curs; }, get duna() { return "d'un o una estudiant de " + this.curs; },
+  ? {get _c() { const c = ls("explica:curs"); return CURSOS.includes(c) ? c : ""; },
+     get adult() { return !!PERFILS[this._c]; },
+     get curs() { const c = this._c; return PERFILS[c]?.curs || c || "el seu curs (no l'ha indicat: ajusta't al nivell del material)"; },
+     get una() { const c = this._c, p = PERFILS[c]; return p ? `${p.una} (${p.ajust}; tracta'l com a adult)` : c ? "un o una estudiant de " + c : "un o una estudiant (no ha indicat el curs: ajusta't al nivell del material)"; },
+     get duna() { return "d'" + this.una; },
+     get confianca() { return this.adult ? "una persona de confiança o un professional" : "un adult de confiança"; },
      la: "l'estudiant", dela: "de l'estudiant", Ella: "L'estudiant"}
-  : {curs: "4t d'ESO", una: "una alumna de 4t d'ESO (15-16 anys)", duna: "d'una alumna de 4t d'ESO (15-16 anys)", la: "l'alumna", dela: "de l'alumna", Ella: "Ella"};
+  : {curs: "4t d'ESO", una: "una alumna de 4t d'ESO (15-16 anys)", duna: "d'una alumna de 4t d'ESO (15-16 anys)", la: "l'alumna", dela: "de l'alumna", Ella: "Ella", confianca: "un adult de confiança"};
 const subjColor = (s) => `var(--s${(s?.c ?? 8)})`;
 // Guia i preguntes: en la llengua de l'assignatura si és ca/es; per a anglès i alemany,
 // explicacions en català i preguntes en la llengua estrangera.
@@ -1198,6 +1255,7 @@ const S = {
   paste: {},           // tema → esborrany de text enganxat {text, nom}
   photos: {},          // exercici → fotos de la resolució (només en memòria)
   exOrigen: {},        // tema → "nous" | "material"
+  xatDraft: {},        // exercici → pregunta que s'està escrivint (només en memòria)
   lastExField: null,
 };
 const EX_SUBJS = [EX_SUBJ, EX_SUBJ2];
@@ -1305,7 +1363,7 @@ function flushSoon() { for (const [k, fn] of dirty) { clearTimeout(draftTimers[k
 // Versió per a pacients: la pàgina porta <meta name="explica-proxy"> i parla amb Claude a través
 // del servidor propi (que guarda la clau); aquí només cal el codi d'accés de cada alumne.
 const PROXY = document.querySelector('meta[name="explica-proxy"]')?.content || "";
-if (PROXY) document.querySelector(".brand .label").textContent = "Estudi d'ESO i batxillerat";
+if (PROXY) document.querySelector(".brand .label").textContent = "Estudi actiu";
 const AI = {
   mode: "none", sample: null, imgMax: 5,
   memKey: "", memCodi: "",
@@ -1776,7 +1834,7 @@ ${s.llengua !== "ca" && s.llengua !== "es" ? `- És una assignatura de llengua (
 - "com_integrar": explica on i com encaixar el que falta DINS de la seva pròpia explicació (per exemple: "Després de dir que…, afegeix que… perquè…").
 - "resposta_millorada": la seva resposta reescrita mantenint la seva manera de parlar, amb el que falta ja integrat. Breu.
 - Escriu tot el feedback en ${fbLang(s)}.
-- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb ${WHO.confianca} o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
 
 Respon només amb JSON:
 {"nota":7,"profunditat":2,"punts_forts":["…"],"falta":["idea o connexió que no ha dit"],"errors":["el que ha dit malament i la correcció"],"com_integrar":"…","resposta_millorada":"…","conceptes_ok":["c1"],"conceptes_febles":["c3"],"millora":"${prev ? "què ha millorat respecte de l'intent anterior" : ""}","benestar":""}
@@ -1881,13 +1939,13 @@ function guideTextP(t) {
 function cleanExercise(e, L) {
   return {id: uid(), nivell: L, tipus: str(e.tipus, 80), enunciat: str(e.enunciat, 4000), conceptes: strs(e.conceptes, 60), pistes: strs(e.pistes, 600).slice(0, 4),
     solucio: {passos: arr(e.solucio?.passos).slice(0, 10).map(p => ({titol: str(p?.titol, 160), explicacio: str(p?.explicacio, 1500), resultat: str(p?.resultat, 1500)})), resultat: str(e.solucio?.resultat, 3000)},
-    resposta: "", passosAlumna: [], guiat: false, pistesVistes: 0, avals: []};
+    resposta: "", passosAlumna: [], guiat: false, pistesVistes: 0, avals: [], tutor: null, xat: []};
 }
 function exercisePrompt(t, s, extra) {
   const st = conceptStatus(t), pf = exProf(s), lang = isLang(s);
   const fets = arr(t.historial).filter(h => h.mode === "ex").slice(-30).map(h => "- " + h.pregunta).join("\n") || "(cap)";
   const errs = errStats(t).map(([k, v]) => `${k} (${v})`).join(", ") || "encara cap";
-  return `Ets un professor/a de ${s.nom} de ${WHO.curs} que prepara ${pf.word} de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà ${lang ? "ítem per ítem" : "pas a pas"} (escrivint o amb una foto del paper) i després rebrà la correcció.
+  return `Ets un professor/a de ${s.nom} (${WHO.curs}) que prepara ${pf.word} de pràctica per a ${WHO.una}. ${WHO.Ella} els resoldrà ${lang ? "ítem per ítem" : "pas a pas"} (escrivint o amb una foto del paper) i després rebrà la correcció.
 Tema: ${t.titol}.
 
 NIVELLS DE DIFICULTAT
@@ -2008,7 +2066,7 @@ ${lang ? `- Revisa ítem per ítem. A "passos" posa un element per ítem: què h
 - To proper, directe i respectuós; comença pel que ha fet bé. Res d'elogis buits; els errors són informació per millorar.
 - ${lang ? `Cita les paraules i frases en ${qLang(s)} tal com són.` : PLAIN_MATH}
 - Escriu en ${fbLang(s)}.
-- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb un adult de confiança o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
+- "benestar": normalment buit. Només si el que escriu ${WHO.la} mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), escriu-hi 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb ${WHO.confianca} o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112. No ho esmentis enlloc més.
 
 Respon només amb JSON:
 {"nota":6,"correcte":false,"transcripcio":"${photos.length ? "el que has llegit a les fotos" : ""}","passos":[{"pas":"què ha fet en aquest pas, resumit","estat":"ok | error | arrossegat | falta","comentari":"…"}],"errors":[{"tipus":"${pf.errs[lang ? 0 : 3]}","explicacio":"on és l'error i quina és la correcció"}],"punts_forts":["…"],"com_continuar":"…","resultat_correcte":"${lang ? "les respostes correctes, numerades" : "resultat final correcte amb unitats"}","conceptes_ok":["c1"],"conceptes_febles":["c2"],"millora":"${prev ? "què ha arreglat respecte de l'intent anterior" : ""}","referencia_erronia":false,"solucio_corregida":[],"benestar":""}
@@ -2028,12 +2086,104 @@ Només si la solució de referència té un error: "referencia_erronia": true i,
   if (fixed?.passos.length) {
     // Els passos guiats anaven lligats a la referència antiga: es conserven com a text lliure.
     if (q.guiat) { q.resposta = exAnswerText(q); q.guiat = false; q.passosAlumna = []; }
-    q.solucio = fixed; av.sig = exSignature(q).slice(0, 30000); if (allSnap === exAll(q)) av.all = exAll(q).slice(0, 40000);
+    q.solucio = fixed; q.tutor = null; av.sig = exSignature(q).slice(0, 30000); if (allSnap === exAll(q)) av.all = exAll(q).slice(0, 40000);
   }
   q.avals.push(av); q.avals = q.avals.slice(-5);  // es guarden els 5 últims intents
   t.historial = [...arr(t.historial), {t: av.t, qid: q.id, mode: "ex", nivell: q.nivell, nota: av.nota, prof: q.nivell, ok: av.conceptes_ok, feble: av.conceptes_febles,
     pregunta: q.enunciat.slice(0, 220), intent: q.avals.length, errs: [...new Set(av.errors.map(e => e.tipus))], pistes: q.pistesVistes}];
   saveTema(t); render();
+}
+/* ── Tutor de l'exercici: la resolució explicada pas a pas, i preguntes lliures sobre l'exercici ── */
+const MAX_XAT = 30;
+const refSolution = (q) => q.solucio.passos.map((p, i) => `${i + 1}. ${p.titol}: ${p.explicacio}${p.resultat ? " → " + p.resultat : ""}`).join("\n") + "\nResultat: " + q.solucio.resultat;
+// Ha vist ja la solució? (correcció, explicació pas a pas o totes les pistes)
+const solucioVista = (q) => !!(q.tutor || q.avals.length || (q.pistes.length && q.pistesVistes >= q.pistes.length));
+function cleanTutor(x) {
+  if (!x || typeof x !== "object") return null;
+  const passos = arr(x.passos).slice(0, 12).map(p => ({titol: str(p?.titol, 200), que: str(p?.que, 1500), perque: str(p?.perque, 1500), dades: str(p?.dades, 1500), calcul: str(p?.calcul, 1500)})).filter(p => p.titol || p.que || p.calcul);
+  return passos.length ? {passos, resultat: str(x.resultat, 3000), idea: str(x.idea || x.idea_clau, 600), vist: num(x.vist, 1, passos.length)} : null;
+}
+const cleanXat = (x) => arr(x).filter(m => m && (m.de === "jo" || m.de === "claude")).slice(-MAX_XAT).map(m => ({de: m.de, text: str(m.text, 4000), t: num(m.t, 0, 9e15)}));
+async function explainSteps(t, q) {
+  const s = getSubj(t.subjId), lang = isLang(s), pf = exProf(s);
+  const r = await work("xt_" + q.id, "Claude prepara l'explicació pas a pas.", (signal, onText) => AI.json(
+`Ets un professor/a pacient de ${s.nom} (${WHO.curs}) que explica a ${WHO.una} com es resol aquest exercici, pas a pas, com si ho fes a la pissarra. Tema: ${t.titol}. Nivell ${pf.tag}${q.nivell}.
+
+Enunciat:
+"""
+${q.enunciat}
+"""
+
+Solució de referència (si té algun error, segueix ${lang ? "la norma de la llengua" : "les matemàtiques correctes"}):
+${refSolution(q)}
+
+Per a cada pas${lang ? " (un per ítem)" : ""}:
+- "titol": què fem, en poques paraules.
+- "que": ${lang ? "què demana l'ítem i com l'enfoquem" : "què fem en aquest pas i amb quin objectiu"}.
+- "perque": ${lang ? "la regla que s'hi aplica, explicada amb paraules senzilles" : "per què es fa així i no d'una altra manera; si hi havia un altre camí vàlid, digues-ho"}.
+- "dades": ${lang ? "quina pista de la frase ens diu quina forma va (accent, context, concordança…)" : "d'on surt cada número o dada que fem servir: de l'enunciat, d'un pas anterior, d'una fórmula o d'un canvi d'unitats"}.
+- "calcul": ${lang ? "la resposta correcta de l'ítem" : "l'operació escrita sencera i el resultat del pas"}.
+${lang ? "" : "No et saltis cap operació. Si hi ha potències, arrels, fraccions, canvis d'unitats o aïllaments, explica la regla que s'aplica (per exemple, per què una magnitud va al cub o per què es divideix entre 3,6).\n"}Frases clares i curtes, sense donar res per sabut.
+- ${lang ? `Cita les paraules en ${qLang(s)} tal com són.` : PLAIN_MATH}
+- Escriu en ${fbLang(s)}.
+
+Respon només amb JSON:
+{"passos":[{"titol":"…","que":"…","perque":"…","dades":"…","calcul":"…"}],"resultat":"${lang ? "totes les respostes, numerades" : "resultat final amb unitats"}","idea_clau":"una frase amb el que cal recordar per resoldre exercicis semblants"}`,
+    {signal, onText, tier: "complex"}));
+  if (!r) return;
+  const tu = cleanTutor({...r, vist: 1});
+  if (!tu) { S.errors["xt_" + q.id] = "No ha arribat l'explicació. Torna-ho a provar."; render(); return; }
+  if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.exRonda?.items).includes(q)) return;
+  q.tutor = tu; saveTema(t); render();
+  document.getElementById(`tp_${q.id}_0`)?.focus();
+}
+async function askAboutExercise(t, q) {
+  const s = getSubj(t.subjId), lang = isLang(s), pf = exProf(s);
+  const text = String(S.xatDraft[q.id] || "").trim();
+  if (!text) { document.getElementById("xqi_" + q.id)?.focus(); return; }
+  const last = q.avals[q.avals.length - 1], prev = arr(q.xat).slice(-10);
+  q.xat = [...arr(q.xat), {de: "jo", text: text.slice(0, 4000), t: Date.now()}].slice(-MAX_XAT); delete S.xatDraft[q.id];
+  const ans = await work("xq_" + q.id, "Claude pensa la resposta.", (signal, onText) => AI.text(
+`Ets un professor/a de ${s.nom} (${WHO.curs}) que resol els dubtes ${WHO.duna} sobre un exercici concret, com en una tutoria. Tema: ${t.titol}. Nivell ${pf.tag}${q.nivell}.
+
+Enunciat:
+"""
+${q.enunciat}
+"""
+
+Solució de referència (només per a tu; si té algun error, segueix ${lang ? "la norma de la llengua" : "les matemàtiques correctes"}):
+${refSolution(q)}
+${q.tutor ? `\nJa li has explicat la resolució pas a pas (n'ha vist ${q.tutor.vist} de ${q.tutor.passos.length} passos):\n${q.tutor.passos.map((p, i) => `${i + 1}. ${p.titol}: ${p.calcul}`).join("\n")}\n` : ""}
+${last ? `La seva última resolució:\n"""\n${String(last.resposta || last.transcripcio || "").slice(0, 4000)}\n"""\nCorrecció: nota ${last.nota}/10. Errors: ${last.errors.map(e => e.tipus + ": " + e.explicacio).join("; ") || "cap"}.` : `Encara no ha fet corregir cap resolució.${exAnswerText(q) ? `\nEl que porta escrit:\n"""\n${exAnswerText(q).slice(0, 4000)}\n"""` : ""}`}
+${solucioVista(q) ? "" : "Encara no ha vist la solució: ajuda'l a pensar i respon just el que pregunta, sense resoldre-li tot l'exercici, llevat que t'ho demani expressament."}
+${prev.length ? `\nConversa fins ara:\n${prev.map(m => (m.de === "jo" ? "Estudiant: " : "Tu: ") + m.text).join("\n")}\n` : ""}
+Pregunta nova ${WHO.dela}:
+"""
+${text}
+"""
+
+Com respondre:
+- Respon directament a la pregunta, a partir d'aquest exercici.
+- Si pregunta d'on surt un número o una dada, digues de quina dada de l'enunciat, de quin pas o de quina operació surt, i fes l'operació.
+- Si pregunta per què es fa un procés i no un altre, explica-ho; si l'altre camí també és vàlid, digues-ho i quan convé cada un.
+- Si no entén un pas, torna-l'hi a explicar d'una altra manera, més a poc a poc o amb un exemple més senzill.
+- Frases clares i curtes. Com a màxim unes 150 paraules, llevat que demani una explicació llarga.
+- ${lang ? `Cita les paraules en ${qLang(s)} tal com són.` : PLAIN_MATH}
+- Escriu en ${fbLang(s)}.
+- Si la pregunta no té res a veure amb l'estudi, reconduceix-la amablement cap a l'exercici.
+- Si el que escriu mostra malestar emocional greu o risc (autolesió, idees de mort, maltractament, assetjament), respon amb 2-3 frases càlides i serenes que l'animin a parlar-ne avui amb ${WHO.confianca} o amb el seu psicòleg, i que si és urgent truqui al 024 (atenció a la conducta suïcida) o al 112.
+
+Respon només amb el text de la resposta (sense JSON ni títols).`, {signal, onText}));
+  if ((S.temes[t.id] !== t && !t.exemple) || !arr(t.exRonda?.items).includes(q)) return;
+  if (!ans || !String(ans).trim()) {
+    // No ha arribat resposta: es treu la pregunta i torna a la caixa per poder-la reenviar.
+    const i = q.xat.map(m => m.text).lastIndexOf(text.slice(0, 4000)); if (i >= 0) q.xat.splice(i, 1);
+    S.xatDraft[q.id] = text; if (!S.errors["xq_" + q.id] && ans !== null) S.errors["xq_" + q.id] = "No ha arribat la resposta. Torna-ho a provar.";
+    render(); return;
+  }
+  q.xat = [...q.xat, {de: "claude", text: String(ans).trim().slice(0, 4000), t: Date.now()}].slice(-MAX_XAT);
+  saveTema(t); render();
+  document.getElementById(`xqi_${q.id}`)?.focus({preventScroll: true});
 }
 function insertSymbol(q, ch) {
   const ids = q.guiat ? arr(q.solucio.passos).map((_, j) => `xs_${q.id}_${j}`) : [`xr_${q.id}`];
@@ -2129,6 +2279,7 @@ function renderSide() {
     <div class="side-list">${list || '<p class="muted small">Encara no hi ha assignatures.</p>'}</div>
     <div class="side-actions">
       <button class="btn sm" data-act="newSubj" type="button">${ICON.plus} Assignatura</button>
+      ${PROXY ? `<a class="small muted web-link" href="https://aprens.net/">Una eina d'APRENS · aprens.net</a>` : ""}
     </div>`;
 }
 
@@ -2138,6 +2289,7 @@ function renderHome() {
     ${S.loaded && Store.kind === "mem" ? `<div class="banner" role="note"><p><strong>Ara mateix no es guarda res.</strong> ${lsAvailable() ? "Pots guardar-ho en aquest navegador o descarregar còpies des de Configuració." : "Descarrega còpies des de Configuració."}</p>${lsAvailable() ? `<button class="btn sm" data-act="useLocal" type="button">Guarda en aquest navegador</button>` : ""}</div>` : ""}
     ${S.loadError ? `<div class="banner" role="alert"><p><strong>No s'han pogut carregar les teves dades.</strong> No hi facis canvis fins que es carreguin, perquè no es perdi res.</p><button class="btn sm primary" data-act="retryLoad" type="button">Torna-ho a provar</button></div>` : ""}
     ${AI.mode === "proxy" && !AI.codi && S.loaded ? `<div class="banner" role="note"><p><strong>Per començar, posa el teu codi d'accés.</strong> És el codi que t'han donat o el que vas rebre en subscriure't.</p><button class="btn sm primary" data-act="settings" type="button">Posa el codi</button>${AI.subs ? `<a class="btn sm" href="subscriu.html">No en tinc: subscriu-m'hi</a>` : ""}${AI.correu || AI.portalLogin ? `<a class="btn sm ghost" href="recupera.html">He perdut el codi</a>` : ""}</div>` : ""}
+    ${AI.mode === "proxy" && AI.codi && S.loaded && !ls("explica:curs") ? `<div class="banner" role="note"><p><strong>Tria què estudies.</strong> ESO, batxillerat, FP, universitat o oposicions: així les preguntes i les correccions s'ajusten al teu nivell.</p><button class="btn sm primary" data-act="settings" type="button">Tria el curs</button></div>` : ""}
     <div class="hero">
       <span class="label">Com funciona</span>
       <h2>Puja els apunts, explica-ho en veu alta i descobreix fins on t'ho saps.</h2>
@@ -2153,6 +2305,7 @@ function renderHome() {
     ${has ? "" : `<div class="panel">
       <h3>Comença triant les teves assignatures</h3>
       <p class="muted small">Pots afegir-ne quan vulguis. Matemàtiques i Física i Química funcionen amb exercicis pas a pas; les llengües, amb teoria per explicar i exercicis per aplicar-la.</p>
+      <p class="muted small">Si estudies FP, a la universitat o oposicions, desmarca les que no et serveixin i crea les teves amb el botó «+ Assignatura» (per exemple: Dret administratiu, Anatomia o Comptabilitat).</p>
       <div class="row">${PRESETS.map((p, i) => `<label class="chip" style="cursor:pointer;text-transform:none;font-family:var(--f-body);font-size:.92rem;letter-spacing:0;color:var(--ink);padding:6px 12px"><input type="checkbox" id="pre_${i}" ${p.off ? "" : "checked"}> ${esc(p.nom)}</label>`).join("")}</div>
       <div class="row"><button class="btn primary" data-act="addPresets" type="button">Afegeix aquestes assignatures</button></div>
     </div>`}
@@ -2425,7 +2578,10 @@ function viewExercise(t, q, i) {
     <div class="row">
       ${q.pistesVistes < q.pistes.length ? `<button id="xh_${q.id}" class="btn sm ghost" data-act="exHint" data-id="${q.id}" type="button">${q.pistesVistes ? "Una altra pista" : "Ajuda'm a començar"} <span class="muted">${q.pistesVistes}/${q.pistes.length}</span></button>` : ""}
       ${steps.length ? `<button id="xg_${q.id}" class="btn sm ghost" data-act="exGuided" data-id="${q.id}" aria-pressed="${q.guiat}" type="button">${q.guiat ? pf.unguided : pf.guided}</button>` : ""}
+      ${steps.length && !q.tutor ? `<button id="xt_${q.id}" class="btn sm ghost" data-act="exTutor" data-id="${q.id}" type="button" ${S.busy["xt_" + q.id] ? "disabled" : ""}>Explica-m'ho pas a pas</button>` : ""}
     </div>
+    ${busyBox("xt_" + q.id)}
+    ${q.tutor ? tutorBlock(q, lang) : ""}
     <div class="answer">
       ${q.guiat
         ? `<div class="steps-in">${steps.map((p, j) => `<div class="field"><label class="label" for="xs_${q.id}_${j}">${lang ? esc(p.titol) : `Pas ${j + 1} · ${esc(p.titol)}`}</label><textarea id="xs_${q.id}_${j}" data-exstep="${q.id}:${j}" maxlength="4000" rows="2" ${busy ? "readonly" : ""}>${esc(q.passosAlumna?.[j] || "")}</textarea></div>`).join("")}</div>`
@@ -2442,7 +2598,35 @@ function viewExercise(t, q, i) {
       ${!last && q.pistesVistes >= q.pistes.length && q.pistes.length ? solutionBlock(q, "", pf) : ""}
     </div>
     ${last ? viewExFeedback(q, last, pf) : ""}
+    ${chatBlock(q)}
   </article>`;
+}
+// La resolució explicada: es mostra un pas cada vegada, amb el perquè i d'on surt cada dada.
+function tutorBlock(q, lang) {
+  const tu = q.tutor, n = tu.passos.length, L = lang
+    ? {que: "Què demana", perque: "La regla", dades: "La pista", calcul: "Resposta"}
+    : {que: "Què fem", perque: "Per què", dades: "D'on surt cada dada", calcul: "Càlcul"};
+  return `<section class="tutor" aria-label="Resolució explicada pas a pas">
+    <span class="label">Resolució explicada pas a pas</span>
+    ${tu.passos.slice(0, tu.vist).map((p, j) => `<div class="tstep" id="tp_${q.id}_${j}" tabindex="-1"><strong>Pas ${j + 1} de ${n} · ${esc(p.titol)}</strong>
+      ${["que", "perque", "dades"].map(k => p[k] ? `<p><strong>${L[k]}:</strong> ${esc(p[k])}</p>` : "").join("")}
+      ${p.calcul ? `<p class="mathtxt"><strong>${L.calcul}:</strong> <span class="res">${esc(p.calcul)}</span></p>` : ""}</div>`).join("")}
+    ${tu.vist < n
+      ? `<div class="row"><button id="tn_${q.id}" class="btn sm primary" data-act="exTutorNext" data-id="${q.id}" type="button">Següent pas (${tu.vist + 1} de ${n})</button><button class="btn sm ghost" data-act="exTutorAll" data-id="${q.id}" type="button">Mostra'ls tots</button></div>
+         <p class="muted small">Abans de passar al següent, prova de pensar quin seria. Si un pas no l'entens, pregunta-ho a sota.</p>`
+      : `${tu.resultat ? `<p><strong>Resultat:</strong> <span class="res">${esc(tu.resultat)}</span></p>` : ""}${tu.idea ? `<div class="weave"><span class="label">Per recordar</span><p>${esc(tu.idea)}</p></div>` : ""}`}
+  </section>`;
+}
+// Preguntes lliures sobre l'exercici («d'on surt aquest número?», «per què va al cub?»).
+function chatBlock(q) {
+  const busy = !!S.busy["xq_" + q.id], xs = arr(q.xat);
+  return `<section class="xat" aria-label="Preguntes sobre aquest exercici">
+    <label class="label" for="xqi_${q.id}">Pregunta sobre aquest exercici</label>
+    ${xs.length ? `<div class="xat" style="border:0;padding:0" role="log" aria-live="polite">${xs.map(m => `<p class="msg ${m.de === "jo" ? "jo" : "cl"} ${m.de === "jo" ? "" : "mathtxt"}"><span class="sr">${m.de === "jo" ? "Tu: " : "Claude: "}</span>${esc(m.text)}</p>`).join("")}</div>` : ""}
+    <textarea id="xqi_${q.id}" data-xatin="${q.id}" rows="2" maxlength="4000" placeholder="Per exemple: d'on surt el 3,6? Per què aquí va elevat al cub?" ${busy ? "readonly" : ""}>${esc(S.xatDraft[q.id] || "")}</textarea>
+    <div class="row"><button id="xqb_${q.id}" class="btn sm" data-act="exChat" data-id="${q.id}" type="button" ${busy ? "disabled" : ""}>Envia la pregunta</button>${AI.mode === "proxy" ? `<span class="muted small">Cada pregunta compta com una petició.</span>` : ""}</div>
+    ${busyBox("xq_" + q.id)}
+  </section>`;
 }
 function viewExFeedback(q, a, pf) {
   const tone = a.nota >= 7 ? "var(--ok)" : a.nota >= 5 ? "var(--warn)" : "var(--bad)";
@@ -2750,7 +2934,7 @@ function cleanTema(t) {
     metodes: arr(t.guia.metodes).map(m => ({nom: str(m?.nom, 200), passos: strs(m?.passos, 400)})),
     tipus_problemes: arr(t.guia.tipus_problemes).map(x => ({id: str(x?.id, 40), nom: str(x?.nom, 200), descripcio: str(x?.descripcio, 600)}))} : null;
   const exItems = arr(t.exRonda?.items).filter(q => okId(q?.id)).map(q => ({...cleanExercise(q, num(q.nivell, 1, 4)), id: q.id,
-    resposta: str(q.resposta, 20000), passosAlumna: strs(q.passosAlumna, 4000), guiat: !!q.guiat, pistesVistes: num(q.pistesVistes, 0, 4),
+    resposta: str(q.resposta, 20000), passosAlumna: strs(q.passosAlumna, 4000), guiat: !!q.guiat, pistesVistes: num(q.pistesVistes, 0, 4), tutor: cleanTutor(q.tutor), xat: cleanXat(q.xat),
     avals: arr(q.avals).map(a => ({t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), correcte: a?.correcte === true, transcripcio: str(a?.transcripcio, 6000),
       passos: arr(a?.passos).map(p => ({pas: str(p?.pas, 600), estat: ["ok", "error", "arrossegat", "falta"].includes(p?.estat) ? p.estat : "ok", comentari: str(p?.comentari, 1000)})),
       errors: arr(a?.errors).map(e => ({tipus: str(e?.tipus, 40), explicacio: str(e?.explicacio, 1000)})), punts_forts: strs(a?.punts_forts, 600),
@@ -2835,6 +3019,10 @@ document.addEventListener("click", (e) => {
     case "exHint": { const q = exItem(t, b.dataset.id); if (!q) break; q.pistesVistes = Math.min(q.pistes.length, q.pistesVistes + 1); saveTema(t); render(); document.getElementById(`hn_${q.id}_${q.pistesVistes - 1}`)?.focus(); break; }
     case "exGuided": { const q = exItem(t, b.dataset.id); if (!q || S.busy["xe_" + q.id]) break; q.guiat = !q.guiat; saveTema(t); render(); document.getElementById(q.guiat ? `xs_${q.id}_0` : `xr_${q.id}`)?.focus(); break; }
     case "sym": { const q = exItem(t, b.dataset.id); if (q) insertSymbol(q, b.dataset.s); break; }
+    case "exTutor": { const q = exItem(t, b.dataset.id); if (q && !S.busy["xt_" + q.id]) explainSteps(t, q); break; }
+    case "exTutorNext": case "exTutorAll": { const q = exItem(t, b.dataset.id); if (!q?.tutor) break; const j = q.tutor.vist;
+      q.tutor.vist = act === "exTutorAll" ? q.tutor.passos.length : Math.min(q.tutor.passos.length, j + 1); saveTema(t); render(); document.getElementById(`tp_${q.id}_${j}`)?.focus(); break; }
+    case "exChat": { const q = exItem(t, b.dataset.id); if (q && !S.busy["xq_" + q.id]) askAboutExercise(t, q); break; }
     case "exPhoto": S.photoTarget = b.dataset.id; $("#photoIn").click(); break;
     case "camOpen": Cam.open(b.dataset.id); break;
     case "camTimer": Cam.countdown(); break;
@@ -2877,6 +3065,8 @@ document.addEventListener("keydown", (e) => {
     tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]?.click(); e.preventDefault();
   }
   if (e.key === "Enter" && e.target.id === "dlgIn") { e.preventDefault(); $("#dlg")._submit?.(); }
+  // Preguntes sobre l'exercici: Intro envia, Maj+Intro fa un salt de línia.
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.target.dataset?.xatin) { e.preventDefault(); document.getElementById("xqb_" + e.target.dataset.xatin)?.click(); }
   if ((e.key === "Enter" || e.key === " ") && e.target.id === "drop") { e.preventDefault(); $("#fileIn").click(); }
 });
 document.addEventListener("input", (e) => {
@@ -2885,6 +3075,7 @@ document.addEventListener("input", (e) => {
   if (el.dataset.ans) { const q = t.ronda?.items.find(x => x.id === el.dataset.ans); if (q) { q.resposta = el.value;
       if (Mic.qid === q.id) { Mic.base = el.value.replace(/\s*$/, ""); Mic.finals = ""; } /* el dictat continua des del text corregit */ if (Mic.qid !== q.id && !el.value.trim()) q.oral = false; saveTemaSoon(t); } }
   if (el.dataset.exans) { const q = exItem(t, el.dataset.exans); if (q) { q.resposta = el.value; saveTemaSoon(t); } }
+  if (el.dataset.xatin) S.xatDraft[el.dataset.xatin] = el.value;
   if (el.dataset.exstep) { const [qid, j] = el.dataset.exstep.split(":"); const q = exItem(t, qid);
     if (q) { const n = arr(q.solucio.passos).length; q.passosAlumna = Array.from({length: n}, (_, i) => String(q.passosAlumna?.[i] ?? "")); q.passosAlumna[+j] = el.value; saveTemaSoon(t); } }
   if (el.dataset.mat && !t.exemple) { const m = S.mats[el.dataset.mat]; if (m) { m.text = el.value.slice(0, MAX_MAT); saveSoon("m" + m.id, () => saveMat(m)); } }
