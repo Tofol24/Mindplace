@@ -110,49 +110,80 @@ window.EPJ_TXT.ca = {
 
   disparadors: {
     familia: [
-      { id: "errors", t: "Que el meu fill o filla cometi errors" },
-      { id: "minuts", t: "Que jugui pocs minuts" },
-      { id: "arbitre", t: "Que l'àrbitre s'equivoqui" },
-      { id: "decisions", t: "Que l'entrenador prengui decisions que no compartesc" },
-      { id: "altresPares", t: "Que altres pares facin comentaris" },
-      { id: "actitud", t: "Que no mostri l'actitud que esper" },
-      { id: "perdre", t: "Que l'equip perdi" },
-      { id: "euforia", t: "Que guanyem i jo m'exciti massa" }
+      { id: "errors", c: "Els seus errors", t: "Que el meu fill o filla cometi errors" },
+      { id: "minuts", c: "Pocs minuts", t: "Que jugui pocs minuts" },
+      { id: "arbitre", c: "L'àrbitre", t: "Que l'àrbitre s'equivoqui" },
+      { id: "decisions", c: "Decisions de l'entrenador", t: "Que l'entrenador prengui decisions que no compartesc" },
+      { id: "altresPares", c: "Altres pares", t: "Que altres pares facin comentaris" },
+      { id: "actitud", c: "La seva actitud", t: "Que no mostri l'actitud que esper" },
+      { id: "perdre", c: "Perdre", t: "Que l'equip perdi" },
+      { id: "euforia", c: "L'eufòria de guanyar", t: "Que guanyem i jo m'exciti massa" }
     ],
     entrenador: [
-      { id: "errorsRep", t: "Errors repetits" },
-      { id: "atencio", t: "Falta d'atenció" },
-      { id: "arbitre", t: "Decisions arbitrals" },
-      { id: "faltaRespecte", t: "Comportaments irrespectuosos" },
-      { id: "resultat", t: "La pressió del resultat" },
-      { id: "conflictes", t: "Conflictes entre jugadors" },
-      { id: "families", t: "Reaccions de les famílies" },
-      { id: "comunicacio", t: "Dificultat per mantenir una comunicació educativa" }
+      { id: "errorsRep", c: "Errors repetits", t: "Errors repetits" },
+      { id: "atencio", c: "Falta d'atenció", t: "Falta d'atenció" },
+      { id: "arbitre", c: "L'àrbitre", t: "Decisions arbitrals" },
+      { id: "faltaRespecte", c: "Faltes de respecte", t: "Comportaments irrespectuosos" },
+      { id: "resultat", c: "Pressió del resultat", t: "La pressió del resultat" },
+      { id: "conflictes", c: "Conflictes", t: "Conflictes entre jugadors" },
+      { id: "families", c: "Les famílies", t: "Reaccions de les famílies" },
+      { id: "comunicacio", c: "Parlar amb calma", t: "Dificultat per mantenir una comunicació educativa" }
     ]
   },
 
   compromisos: {
     familia: [
-      { id: "respectar", t: "Respectar tothom: àrbitres, rivals, entrenadors i famílies" },
-      { id: "noInstruccions", t: "No cridar instruccions des de la grada" },
-      { id: "noCritiques", t: "No criticar els errors" },
-      { id: "acompanyar", t: "Acompanyar des del respecte" },
-      { id: "serenPerdre", t: "Mantenir una actitud serena també si perdem" },
-      { id: "escoltar", t: "Escoltar abans d'aconsellar" },
-      { id: "reconeixer", t: "Reconèixer l'esforç i el companyerisme" },
-      { id: "exemple", t: "Ser un exemple d'autocontrol i respecte" },
-      { id: "noDiscutirEntrenador", t: "No discutir les decisions de l'entrenador davant del meu fill" }
+      { id: "respectar", c: "Respectar tothom", t: "Respectar tothom: àrbitres, rivals, entrenadors i famílies" },
+      { id: "noInstruccions", c: "Animar, no dirigir", t: "No cridar instruccions des de la grada" },
+      { id: "noCritiques", c: "No criticar errors", t: "No criticar els errors" },
+      { id: "acompanyar", c: "Acompanyar amb respecte", t: "Acompanyar des del respecte" },
+      { id: "serenPerdre", c: "Serè si perdem", t: "Mantenir una actitud serena també si perdem" },
+      { id: "escoltar", c: "Escoltar primer", t: "Escoltar abans d'aconsellar" },
+      { id: "reconeixer", c: "Valorar l'esforç", t: "Reconèixer l'esforç i el companyerisme" },
+      { id: "exemple", c: "Ser exemple", t: "Ser un exemple d'autocontrol i respecte" },
+      { id: "noDiscutirEntrenador", c: "No discutir l'entrenador", t: "No discutir les decisions de l'entrenador davant del meu fill" }
     ],
     entrenador: [
-      { id: "respectar", t: "Respectar tothom, també l'àrbitre, davant dels jugadors" },
-      { id: "instruccionsBreus", t: "Donar instruccions breus i clares, sense cridar" },
-      { id: "corregirPrivat", t: "Corregir en privat i reconèixer en públic" },
-      { id: "esforc", t: "Valorar l'esforç, les decisions i la cooperació, no només l'encert" },
-      { id: "serenPerdre", t: "Mantenir una actitud serena també si perdem" },
-      { id: "escoltar", t: "Escoltar abans de corregir" },
-      { id: "totsSurten", t: "Que cada jugador surti sabent què ha fet bé" },
-      { id: "exemple", t: "Ser un exemple d'autocontrol i respecte" }
+      { id: "respectar", c: "Respectar tothom", t: "Respectar tothom, també l'àrbitre, davant dels jugadors" },
+      { id: "instruccionsBreus", c: "Instruccions breus", t: "Donar instruccions breus i clares, sense cridar" },
+      { id: "corregirPrivat", c: "Corregir en privat", t: "Corregir en privat i reconèixer en públic" },
+      { id: "esforc", c: "Valorar l'esforç", t: "Valorar l'esforç, les decisions i la cooperació, no només l'encert" },
+      { id: "serenPerdre", c: "Serè si perdem", t: "Mantenir una actitud serena també si perdem" },
+      { id: "escoltar", c: "Escoltar primer", t: "Escoltar abans de corregir" },
+      { id: "totsSurten", c: "Tots saben què han fet bé", t: "Que cada jugador surti sabent què ha fet bé" },
+      { id: "exemple", c: "Ser exemple", t: "Ser un exemple d'autocontrol i respecte" }
     ]
+  },
+
+  /* ---------- TEXTOS CURTS PER ALS MOMENTS CLAU (ulls al camp) ---------- */
+  ux: {
+    abansT: ["Com arribes avui?", "Què et pot activar?", "Respira un moment", "Com et vols comportar?"],
+    abansD: ["Toca el que encaixi.", "Saber-ho abans ajuda.", "Tres respiracions, amb els ulls oberts.", "Tria'n un o dos."],
+    llest: "Llest",
+    durantT: "Mode partit",
+    durantD: "Ulls al camp. Si t'actives, toca el botó.",
+    compromisT: "Avui",
+    pausaRapida: "Pausa",
+    pausaRapidaD: "10 segons",
+    pausaGuiada: "Pausa guiada",
+    situacions: "Situacions",
+    pantalla: "Pantalla encesa",
+    vibracio: "Guia amb vibració",
+    vibracioD: "Pots mirar el camp: el mòbil vibrarà a cada pas.",
+    seguretatLink: "Risc per a un menor?",
+    acabat: "El partit s'ha acabat",
+    despresT: ["Com està?", "Has estat fidel a la teva mà?", "Com t'has sentit?", "Alguna reacció a reparar?", "Per al pròxim partit"],
+    comEsta: { familia: "Com està el teu fill o filla?", entrenador: "Com està l'equip?" },
+    digues: "Li pots dir",
+    escala: ["Tranquil", "Molt activat"],
+    reparar: ["Reconeix-ho", "Demana disculpes", "Explica què faràs diferent", "Prepara-ho abans del pròxim partit"],
+    hoFare: "Ho faré",
+    notaPh: "Una cosa per al pròxim partit (opcional)",
+    mesDetall: "Més detall (opcional)",
+    noComp: "Sense compromís triat",
+    preparat: "Preparat",
+    abansMini: "Prepara't en un minut",
+    comFunciona: "Com funciona"
   },
 
   /* ---------- SILUETA AIS ---------- */
