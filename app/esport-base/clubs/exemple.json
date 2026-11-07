@@ -1,0 +1,17 @@
+{
+  "nom": "Club Esportiu d'Exemple",
+  "color": "#1F6E43",
+  "idioma": "ca",
+  "missatge": "Benvingudes, famílies. Aquesta temporada volem una grada que anima, respecta i acompanya. Gràcies per posar-hi la vostra mà.",
+  "codi": [
+    "Animam tots els jugadors i jugadores, dels dos equips.",
+    "Respectam les decisions arbitrals i dels entrenadors.",
+    "No donam instruccions des de la grada.",
+    "Les discrepàncies es parlen amb cita, amb la coordinació.",
+    "Cap insult ni menyspreu és acceptable al nostre camp."
+  ],
+  "proteccio": {
+    "text": "El club disposa d'un protocol de protecció de menors. Davant qualsevol situació de violència, assetjament o risc, avisau de seguida el delegat de protecció.",
+    "contacte": "Delegat de protecció del club (telèfon a la circular de la temporada)"
+  }
+}
