@@ -260,3 +260,4 @@ h2.h3{font-size:17px;margin:14px 0 4px;color:var(--blau-d)}
 .pir-n .pl i.e{background:var(--terra-lt);color:#6e2f1b}
 .pir-n.sel{outline:3px solid var(--tinta);outline-offset:2px}
 @media (max-width:380px){ .pir-or{grid-template-columns:1fr} }
+h1:focus,h1:focus-visible,.pas-t:focus,.pas-t:focus-visible{outline:none}

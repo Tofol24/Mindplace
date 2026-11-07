@@ -864,7 +864,7 @@
   VISTES.club = function () {
     var t = T(), c = t.club, cl = S.club;
     var h = '<span class="kick">' + esc(cl && cl.nom ? cl.nom : t.ui.perClubs) + '</span><h1>' + esc(c.titol) + '</h1>';
-    if (cl && cl.escut) h += '<img onerror="this.remove()" src="' + esc(cl.escut) + '" alt="' + esc(c.escut + ' ' + cl.nom) + '" style="width:80px;height:80px;object-fit:contain">';
+    if (cl && cl.escut) h += '<img onerror="this.remove()" src="' + esc(cl.escut) + '" alt="' + esc(c.escut + ' ' + cl.nom) + '" style="display:block;width:96px;height:auto;margin:6px auto 4px">';
     h += '<p class="lead">' + esc(c.intro) + '</p>';
     if (cl && cl.missatge) h += '<div class="card blau"><h2>' + esc(c.missatge) + '</h2><p style="margin:0;white-space:pre-line">' + esc(cl.missatge) + '</p></div>';
     h += '<div class="club-comp">' + ['families', 'entrenadors', 'club'].map(function (k) { var x = c.comp[k]; return '<div class="card" style="margin:0"><h2>' + esc(x.t) + '</h2><ul class="punts">' + x.l.map(function (y) { return '<li>' + esc(y) + '</li>'; }).join('') + '</ul></div>'; }).join('') + '</div>';
