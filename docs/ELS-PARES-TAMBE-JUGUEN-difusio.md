@@ -16,7 +16,7 @@ Tòfol Villalonga
 
 Aquesta temporada provam «Els pares també juguen», una eina d'APRENS per a famílies i entrenadors. Abans de cada partit o sessió us ajuda a preparar una intenció educativa (per exemple, corregir una sola cosa cada vegada); durant, us ofereix una pausa breu quan el partit us activa; i després, un repàs de dos minuts. Hi trobareu també situacions de banqueta i exemples de comunicació que corregeix sense humiliar.
 
-Us demanam una cosa més: abans de cada partit, preparar l'enquesta de «la pinya de les famílies» al grup de WhatsApp. L'eina us dona el text a punt. Vosaltres no veureu cap registre de les famílies, ni és la idea: la pinya és un gest voluntari de compromís, no un control.
+Us demanam una cosa més: abans de cada partit, convocar «la pinya de les famílies»: amb una enquesta al canal de WhatsApp del club (al grup de l'equip els vots es veuen amb noms) o amb el missatge sense enquesta. L'eina us dona els dos textos a punt. Vosaltres no veureu cap registre de les famílies, ni és la idea: la pinya és un gest voluntari de compromís, no un control.
 
 [ENLLAÇ]
 
@@ -24,7 +24,7 @@ Us demanam una cosa més: abans de cada partit, preparar l'enquesta de «la piny
 
 Bon dia, famílies. Igual que els jugadors fan pinya dins el camp, noltros també podem fer equip des de fora. Us compartim «Els pares també juguen», una eina breu per preparar com volem animar i acompanyar els nostres al·lots i al·lotes, i per tenir un recurs a mà quan el partit ens activa.
 
-No cal instal·lar res ni donar cap dada: el que anoteu queda només en el vostre mòbil. Quan acabeu la preparació, si voleu, podeu posar la vostra mà a la pinya responent l'enquesta del grup.
+No cal instal·lar res ni donar cap dada: el que anoteu queda només en el vostre mòbil. Quan acabeu la preparació, si voleu, podeu posar la vostra mà a la pinya: ja ho feis en preparar-vos amb l'app i, si el club en fa, responent l'enquesta del canal del club.
 
 [ENLLAÇ]
 
