@@ -91,6 +91,7 @@ Probado con Playwright (Chromium, 390×844):
 - axe-core (WCAG 2.1 AA + buenas prácticas) en 15 vistas × 2 idiomas: sin incidencias.
 - `npm run check`: 0 errores, 0 avisos.
 - Ningún error de JavaScript en consola.
+- Revisión con Codex (dos pasadas). Corregido: borrado sincronizado entre pestañas, borrar la preparación activa no deja copia, gráfico semanal con fechas locales (fallaba en Europe/Madrid), cambiar de rol cierra el partido en curso, y la sincronización entre pestañas no interrumpe una pausa abierta.
 
 No probado en un iPhone ni en un Android reales. Conviene hacerlo antes del piloto, sobre todo el menú de compartir.
 
