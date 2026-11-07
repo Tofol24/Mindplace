@@ -937,8 +937,9 @@ window.EPJ_TXT.es = {
       club: { t: "El club", l: ["Ponemos la formación y el bienestar por delante del resultado.", "Cuidamos un entorno seguro y aplicamos el protocolo de protección.", "Facilitamos canales claros de comunicación.", "Ofrecemos formación a familias y entrenadores."] }
     },
     guiaT: "Guía de trabajo psicológico con clubes",
-    guiaD: "Deporte base: salud y rendimiento. Marco de trabajo para toda la temporada, con módulos para familias, entrenadores, jugadores y club, y fichas para fotocopiar (PDF, en catalán).",
+    guiaD: "Deporte base: salud y rendimiento. Marco de trabajo para toda la temporada, con módulos para familias, entrenadores, jugadores y club, y fichas para fotocopiar (PDF).",
     guiaBtn: "Abrir la guía (PDF)",
+    guiaUrl: "../assets/pdf/guia-clubs-esport-aprens-es.pdf",
     qrT: "Compartir con un QR",
     qrD: "Para carteles, circulares y reuniones. Al escanearlo se abre la herramienta con la configuración del club.",
     descarregaQr: "Descargar el QR",
