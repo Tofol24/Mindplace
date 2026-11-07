@@ -7,6 +7,10 @@
 /assets/ics/*
   Content-Type: text/calendar; charset=utf-8
 
+# Manifests de l'app (pantalla d'inici): amb nosniff cal declarar el tipus.
+/*.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+
 /sw.js
   Cache-Control: public, max-age=0, must-revalidate
 /index.html
