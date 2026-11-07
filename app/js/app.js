@@ -33,8 +33,13 @@
       ids:["escalera_exposicion","salidas_paso_a_paso","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
       ids:["retorno_trabajo","toco_desde_dentro","llave_de_paso"] },
-    { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
-      ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
+    { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo. También para clubes, familias y entrenadores del deporte base.",
+      ids:["pedalea_desde_dentro","entre_punto_y_punto","pares_tambien_juegan"],
+      pdfs:[
+        { emoji:"📘", nombre:"Guía para clubes de deporte base", desc:"«Deporte base: salud y rendimiento». Guía de trabajo psicológico con clubes: familias, entrenadores, jugadores y club.", url:"assets/pdf/guia-clubs-esport-aprens-es.pdf" },
+        { emoji:"📗", nombre:"Guia per a clubs (català)", desc:"«Esport de base: salut i rendiment». La mateixa guia, en català.", url:"assets/pdf/guia-clubs-esport-aprens.pdf" },
+        { emoji:"🤝", nombre:"Propuesta para clubes", desc:"Una página con lo que incluye, la cuota por temporada, el piloto gratuito y las ayudas.", url:"assets/pdf/proposta-clubs-aprens-es.pdf" }
+      ] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
       ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","escalera_comidas","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
@@ -156,6 +161,12 @@
         aria-label="${t.nombre} · se abre fuera de la app"><span class="hub-emoji">${t.emoji}</span>
         <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
         <span class="hub-tag fuera">Abrir fuera ↗</span></a>`;
+    }
+    // App del mismo sitio con su propia entrada (p. ej. esport-base/): enlace normal.
+    if(t.enlace){
+      return `<a class="hub-card" href="${t.enlace}"><span class="hub-emoji">${t.emoji}</span>
+        <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
+        <span class="hub-tag">Abrir →</span></a>`;
     }
     return `<a class="hub-card" href="#/tool/${t.id}"><span class="hub-emoji">${t.emoji}</span>
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
@@ -841,6 +852,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    if(tool.enlace){ location.href = tool.enlace; return; }
     if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();
     registrarPractica();
