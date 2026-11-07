@@ -261,3 +261,11 @@ h2.h3{font-size:17px;margin:14px 0 4px;color:var(--blau-d)}
 .pir-n.sel{outline:3px solid var(--tinta);outline-offset:2px}
 @media (max-width:380px){ .pir-or{grid-template-columns:1fr} }
 h1:focus,h1:focus-visible,.pas-t:focus,.pas-t:focus-visible{outline:none}
+
+/* navegació enrere / endavant */
+.enrere-cap{border:1.5px solid var(--linia2);background:var(--card);color:var(--tinta);border-radius:10px;font:inherit;font-size:14px;font-weight:700;min-height:40px;padding:0 12px;cursor:pointer;flex:0 0 auto}
+body.amb-enrere .marca{display:none}
+.flux{display:flex;gap:10px;margin:26px 0 4px;padding-top:16px;border-top:1px solid var(--linia)}
+.flux > *{flex:1 1 0;min-width:0}
+.flux .btn{min-height:52px;font-size:15px;white-space:normal;line-height:1.2}
+@media (max-width:380px){ .top .escut{display:none} }
