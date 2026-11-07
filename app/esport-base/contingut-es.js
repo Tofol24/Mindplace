@@ -55,8 +55,8 @@ window.EPJ_TXT.es = {
   },
 
   rols: {
-    familia: { t: "Soy padre, madre o familiar", d: "Acompaño a un jugador o jugadora desde la grada y en casa.", qui: "el padre, la madre o el familiar" },
-    entrenador: { t: "Soy entrenador o entrenadora", d: "Dirijo el equipo, el banquillo y las sesiones.", qui: "el entrenador o la entrenadora" }
+    familia: { t: "Soy padre, madre o familiar", d: "Acompaño a un jugador o jugadora desde la grada y en casa.", qui: "al padre, a la madre o al familiar" },
+    entrenador: { t: "Soy entrenador o entrenadora", d: "Dirijo el equipo, el banquillo y las sesiones.", qui: "al entrenador o a la entrenadora" }
   },
 
   inici: {
@@ -231,7 +231,7 @@ window.EPJ_TXT.es = {
     pas2t: "Puedo sentir este enfado sin tener que descargarlo.",
     pas2d: "Tu atención (amarilla) se queda en la zona y la respiración (azul) la acompaña, natural y suave. Bastarán unos segundos.",
     pas3: "Elijo",
-    pas3t: "¿Qué respuesta representa a {qui} que quiero ser?",
+    pas3t: "¿Qué respuesta representa {qui} que quiero ser?",
     pas3sense: "Hoy no has elegido compromiso. Piensa en una sola cosa que puedas hacer ahora y que te acerque a la persona que quieres ser.",
     tornar: "Vuelvo al partido desde el respeto",
     rapidT: "Modo rápido",
