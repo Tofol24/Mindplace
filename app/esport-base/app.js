@@ -254,6 +254,7 @@
     if (!S.avis || !S.rol) v = 'benvinguda';
     if (!VISTES[v]) v = 'inici';
     vistaActual = v;
+    if (v !== 'durant' && wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
     pintaCap(); pintaNav(v);
     var m = $('#app');
     var html = VISTES[v](r.arg), fx = v === 'benvinguda' ? '' : fluxHTML(v, r.arg);
@@ -387,7 +388,7 @@
     aturaRespiro();
     var v = $('#app .vista'); if (!v) return;
     v.innerHTML = abansHTML();
-    if (abPas === 2) { muntaRespiro($('#abResp'), function (n) { if (n >= 1) ab.ais.percepcio = ab.ais.percepcio || 'feta'; }); ab.ais.blau = ['panxa']; }
+    if (abPas === 2) { muntaRespiro($('#abResp'), function (n) { if (n >= 1) { ab.ais.percepcio = ab.ais.percepcio || 'feta'; ab.ais.blau = ['panxa']; } }); }
     var h1 = $('h1', v); if (h1) { h1.setAttribute('tabindex', '-1'); try { h1.focus({ preventScroll: true }); } catch (e) {} }
     window.scrollTo(0, 0);
   }
@@ -574,7 +575,10 @@
   var wakeLock = null;
   function demanaWake() {
     if (!('wakeLock' in navigator)) return;
-    navigator.wakeLock.request('screen').then(function (w) { wakeLock = w; w.addEventListener('release', function () { wakeLock = null; }); }).catch(function () {});
+    navigator.wakeLock.request('screen').then(function (w) {
+      if (vistaActual !== 'durant' || !S.pantalla) { try { w.release(); } catch (e) {} return; }
+      wakeLock = w; w.addEventListener('release', function () { wakeLock = null; });
+    }).catch(function () {});
   }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && S.pantalla && !wakeLock && vistaActual === 'durant') demanaWake(); });
   VISTES.durant = function () {
@@ -1216,7 +1220,7 @@
       var a2 = S.actual;
       registra({ tipus: 'despres', moment: 'despres', partit: a2 ? a2.id : null, compromisos: a2 ? a2.compromisos.slice() : [], activacio: dp.activacio, deteccio: dp.deteccio, ais: dp.ais,
         check: dp.check.slice(), impulsiva: dp.impulsiva, reparacio: dp.reparacio, reparacioNota: val('#repNota'), recordat: dp.fq1, acompanyat: dp.fq2,
-        ajudat: val('#fq3'), repetir: val('#q6') || (dp.repetir || '').trim().slice(0, 300) || null, millorar: val('#q7'), rebre: dp.rebre });
+        ajudat: val('#fq3'), repetir: $('#q6') ? val('#q6') : ((dp.repetir || '').trim().slice(0, 300) || null), millorar: val('#q7'), rebre: dp.rebre });
       S.actual = null; desa(); toast(t.despres.desat); go('registre'); return;
     }
 
