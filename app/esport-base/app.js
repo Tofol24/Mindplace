@@ -748,7 +748,8 @@
   }
 
   /* ================= REGISTRE ================= */
-  function setmanaDe(iso) { var d = new Date(iso + 'T00:00:00'); var dia = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dia); return d.toISOString().slice(0, 10); }
+  function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function setmanaDe(iso) { var d = new Date(iso + 'T00:00:00'); var dia = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dia); return ymd(d); }
   VISTES.registre = function () {
     var t = T(), g = t.registre, R = S.reg;
     var h = '<span class="kick">' + esc(t.ui.registre) + '</span><h1>' + esc(g.titol) + '</h1><p class="lead">' + esc(g.intro) + '</p>';
@@ -769,7 +770,7 @@
       '<div><b>' + respecte + '</b><span>' + esc(g.respecte) + '</span></div><div><b>' + aprenentatges.length + '</b><span>' + esc(g.aprenentatges) + '</span></div></div>';
     /* pauses per setmana (6 darreres setmanes) */
     var setm = [], d0 = new Date(setmanaDe(avui()) + 'T00:00:00');
-    for (var i = 5; i >= 0; i--) { var d = new Date(d0); d.setDate(d.getDate() - 7 * i); setm.push(d.toISOString().slice(0, 10)); }
+    for (var i = 5; i >= 0; i--) { var d = new Date(d0); d.setDate(d.getDate() - 7 * i); setm.push(ymd(d)); }
     var comptes = setm.map(function (s) { return R.filter(function (r) { return r.tipus === 'pausa' && setmanaDe(r.data) === s; }).length; });
     var max = Math.max.apply(null, comptes.concat([1]));
     h += '<div class="card"><h2>' + esc(g.setmanes) + '</h2><div class="barres" role="img" aria-label="' + esc(g.setmanes) + ': ' + comptes.join(', ') + '">' +
@@ -923,7 +924,7 @@
     if (b.id === 'acceptaAvis') { S.avis = true; if (!S.lang) S.lang = 'ca'; desa(); pinta(); return; }
     if (b.hasAttribute('data-rol')) {
       var nou = b.getAttribute('data-rol');
-      if (S.rol && S.rol !== nou) S.actual = null;
+      if (S.actual && S.actual.rol !== nou) S.actual = null;
       S.rol = nou; desa(); go('inici'); pinta(); return;
     }
     if (b.hasAttribute('data-canvirol')) { S.rol = null; desa(); pinta(); return; }
@@ -1042,7 +1043,9 @@
     }
     if (b.hasAttribute('data-del')) {
       if (!confirm(t.registre.confirmaEsborrar)) return;
-      var did = b.getAttribute('data-del'); S.reg = S.reg.filter(function (r) { return r.id !== did; }); desa(); pinta(); return;
+      var did = b.getAttribute('data-del'), rd = trobaPer(S.reg, did);
+      if (rd && S.actual && rd.partit === S.actual.id && rd.tipus === 'abans') S.actual = null; /* no deixar còpia de la preparació esborrada */
+      S.reg = S.reg.filter(function (r) { return r.id !== did; }); desa(); pinta(); return;
     }
     if (b.id === 'expJson') { exportaJSON(); return; }
     if (b.id === 'expCsv') { exportaCSV(); return; }
@@ -1088,6 +1091,16 @@
     }
   });
   $('#modal').addEventListener('click', function (ev) { if (ev.target === this) tancaModal(); });
+
+  /* Sincronització entre pestanyes: si una altra pestanya esborra o canvia les dades,
+     aquesta recarrega l'estat i no pot tornar a escriure dades velles. */
+  window.addEventListener('storage', function (ev) {
+    if (ev.key !== LS && ev.key !== null) return;
+    var lang = S.lang;
+    S = carrega(); if (!S.lang) S.lang = lang;
+    if ($('#modal').classList.contains('on')) tancaModal();
+    pinta();
+  });
 
   /* ================= ARRENCADA ================= */
   llegeixURL(function () { if (!S.lang) S.lang = (navigator.language || 'ca').slice(0, 2) === 'es' ? 'es' : 'ca'; pinta(); });
