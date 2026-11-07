@@ -131,10 +131,21 @@
     if (Array.isArray(c.codi)) o.codi = c.codi.map(function (x) { return txt(x, 300); }).filter(Boolean).slice(0, 20);
     if (c.proteccio && typeof c.proteccio === 'object') o.proteccio = { text: txt(c.proteccio.text, 600) || '', contacte: txt(c.proteccio.contacte, 200) || '' };
     if (typeof c.slug === 'string' && /^[a-z0-9-]{1,40}$/.test(c.slug)) o.slug = c.slug;
+    if (c.icones === true) o.icones = true;
+    if (typeof c.curt === 'string') o.curt = c.curt.replace(/[<>]/g, '').trim().slice(0, 24);
     return o.nom ? o : null;
+  }
+  /* Icona i manifest de la pantalla d'inici: els del club si en té (clubs/<slug>-icona-*.png), si no, els d'APRENS */
+  function aplicaIcones(c) {
+    var m = $('#lnkManifest'), ap = $('#lnkApple'), tt = $('#metaTitolApp');
+    var club = c && c.icones && c.slug;
+    if (m) m.setAttribute('href', club ? 'clubs/' + c.slug + '.webmanifest' : 'manifest.webmanifest');
+    if (ap) ap.setAttribute('href', club ? 'clubs/' + c.slug + '-icona-180.png' : 'icones/aprens-icona-180.png');
+    if (tt) tt.setAttribute('content', club ? (c.curt || c.nom) : 'Pares juguen');
   }
   function aplicaClub() {
     var c = S.club;
+    aplicaIcones(c);
     document.documentElement.style.setProperty('--club', c && c.color ? c.color : '#2F5E9E');
     var ts = $('#subtitol'); if (ts) ts.textContent = c && c.nom ? c.nom + ' · APRENS' : 'APRENS · ' + (S.lang === 'es' ? 'Deporte base' : 'Esport de base');
     var lloc = $('#escutLloc');
