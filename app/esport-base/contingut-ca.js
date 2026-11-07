@@ -937,8 +937,9 @@ window.EPJ_TXT.ca = {
       club: { t: "El club", l: ["Posam la formació i el benestar per davant del resultat.", "Cuidam un entorn segur i aplicam el protocol de protecció.", "Facilitam canals clars de comunicació.", "Donam formació a famílies i entrenadors."] }
     },
     guiaT: "Guia de treball psicològic amb clubs",
-    guiaD: "Esport de base: salut i rendiment. Marc de treball per a tota la temporada, amb mòduls per a famílies, entrenadors, jugadors i club, i fitxes per fotocopiar (PDF, en català).",
+    guiaD: "Esport de base: salut i rendiment. Marc de treball per a tota la temporada, amb mòduls per a famílies, entrenadors, jugadors i club, i fitxes per fotocopiar (PDF).",
     guiaBtn: "Obrir la guia (PDF)",
+    guiaUrl: "../assets/pdf/guia-clubs-esport-aprens.pdf",
     qrT: "Compartir amb un QR",
     qrD: "Per posar a cartells, circulars i reunions. Escanejant-lo s'obri l'eina amb la configuració del club.",
     descarregaQr: "Descarregar el QR",

@@ -1088,7 +1088,7 @@
       '<p style="margin:0">' + esc(t.ui.seguretatText) + (cl && cl.proteccio && cl.proteccio.contacte ? '<br><b>' + esc(t.ui.seguretatClub) + '</b> ' + esc(loc(cl.proteccio.contacte)) : '') + '</p></div>';
     h += limitsPinya();
     h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
-    h += '<div class="card blau"><h2>' + esc(c.guiaT) + '</h2><p>' + esc(c.guiaD) + '</p><a class="btn sm blau" href="../assets/pdf/guia-clubs-esport-aprens.pdf" target="_blank" rel="noopener">' + esc(c.guiaBtn) + '</a></div>';
+    h += '<div class="card blau"><h2>' + esc(c.guiaT) + '</h2><p>' + esc(c.guiaD) + '</p><a class="btn sm blau" href="' + esc(c.guiaUrl) + '" target="_blank" rel="noopener">' + esc(c.guiaBtn) + '</a></div>';
     h += '<div class="card"><h2>' + esc(c.recursos) + '</h2><p style="margin:0">' + esc(c.recursosText) + '</p></div>';
     h += '<div class="card"><h2>' + esc(c.qrT) + '</h2><p class="muted">' + esc(c.qrD) + '</p><div class="qr" id="qr"></div><p class="muted" style="word-break:break-all;text-align:center" id="qrUrl"></p>' +
       '<div class="btnrow"><button type="button" class="btn sm ghost" id="baixaQr">' + esc(c.descarregaQr) + '</button><button type="button" class="btn sm ghost" id="copiaUrl">' + esc(c.copiaEnllac) + '</button><button type="button" class="btn sm verd" id="waUrl">' + esc(c.compartir) + '</button></div></div>';
