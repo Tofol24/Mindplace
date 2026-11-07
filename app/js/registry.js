@@ -114,6 +114,10 @@ window.APRENS_TOOLS = [
     desc:"Tenis de competición (adolescente): mapa atencional del juego (saque, resto, error no forzado, bucle, punto clave, cambio de lado, miradas de fuera, cansancio), autorregistro al salir de la pista con los tres parámetros TEC, exposición en imaginación para sostener la tensión y verse jugando bien con ella dentro, y escalera progresiva de mirada hacia adentro (AIS) hasta la pista con la raqueta.",
     migrada:true, iframe:"tools-standalone/entre_punto_y_punto_aprens.html" },
 
+  { id:"pares_tambien_juegan", emoji:"⚽", nombre:"Els pares també juguen · deporte base",
+    desc:"Para familias, entrenadores y clubes de deporte base: prepararse antes del partido, una pausa breve cuando el partido nos activa y acompañar al jugador después. Incluye «la piña de las familias» y el espacio propio del club. En castellano y en catalán.",
+    migrada:true, enlace:"esport-base/?lang=es" },
+
   { id:"estoy_aqui_conmigo", emoji:"🤍", nombre:"Estoy aquí conmigo",
     desc:"Para adolescentes: entrenar la presencia interna y el apego seguro con una misma tras una ruptura o cuando cuesta sostener la soledad. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia, registro y plan de apoyo (TEC–AIS).",
     migrada:true, iframe:"tools-standalone/estoy_aqui_conmigo_ais.html" },
