@@ -502,6 +502,74 @@ window.EPJ_TXT.ca = {
       accio: "Abans del pròxim partit, fes un minut de pràctica amb la silueta." }
   ],
 
+  /* ---------- ATENCIÓ AL JOC (dossier «Atenció i maneig emocional a l'esport») ---------- */
+  atencio: {
+    titol: "Atenció al joc",
+    intro: "Com entrenam l'atenció per estar més concentrats en el joc, i què podem fer quan els pensaments i les emocions ens distreuen. Val per als jugadors i també per als adults de la grada i de la banqueta.",
+    focusT: "On pot estar la nostra atenció",
+    externa: { t: "Atenció externa", quan: "Joc en marxa", d: "Tot el que es percep sobretot amb la vista i l'oïda.", ex: ["Un mà a mà amb el porter.", "Un regat a un contrari.", "El desmarcatge d'un company.", "El marcatge d'un rival.", "Les indicacions de l'entrenador amb la pilota en joc."] },
+    interna: { t: "Atenció interna", quan: "Joc aturat i després d'errades", d: "Tot el que passa dins el jugador: pensaments, emocions, reaccions fisiològiques, cansament, dolor.", ex: ["Després d'una errada tècnica.", "Abans de xutar un penal.", "Un mà a mà en el darrer minut.", "Les correccions de l'entrenador després d'un encert o d'una errada."] },
+    tots: "Tots dos focus són normals i, sovint, es donen dins la mateixa jugada.",
+    jocT: "Cap enfora o cap endins?",
+    jocD: "En aquests moments, cap on sol anar l'atenció del jugador?",
+    jocFi: "Totes dues direccions són normals. El que entrenam és adonar-nos-en i tornar al que és rellevant.",
+    cadenaT: "De la situació de joc a la conducta",
+    cadena: [
+      { t: "Situació de joc", d: "el que passa al camp" },
+      { t: "El cos", d: "hàbits apresos als entrenaments i creences sobre la situació" },
+      { t: "Focus atencional", d: "estímuls rellevants o estímuls distractors" },
+      { t: "Conducta", d: "la decisió i l'acció" }
+    ],
+    cadenaNota: "L'atenció és limitada, i no és el jugador qui decideix l'estímul que atén: ho fa el seu cos, segons els hàbits que ha après i segons les creences sobre la situació.",
+    creencesT: "Les creences que fan de distractors",
+    creences: [
+      { t: "És important?", ex: "«Ens jugam punts vitals», «hi ha en joc els objectius de la temporada»…" },
+      { t: "Som competent?", ex: "«Sé resoldre un cara a cara?», «sé xutar aquesta falta?»…" },
+      { t: "I si m'equivoc?", ex: "«Puc perdre la titularitat», «perdré la confiança de l'entrenador»…" }
+    ],
+    creencesAdults: {
+      familia: "Molts de comentaris de la grada alimenten aquestes creences: «avui és molt important», «ho has de fer bé», «si falles…». Sense voler, hi afegim distractors interns. I les instruccions des de la grada són distractors externs que competeixen amb els de l'entrenador.",
+      entrenador: "El to i el missatge de la banqueta poden reduir aquests distractors o multiplicar-los. Posar el focus en la tasca, i no en la importància del partit o en la por a l'errada, deixa l'atenció més lliure per a la jugada."
+    },
+    observadorT: "El jugador com a observador",
+    observador: ["Durant una jugada, el jugador és en bona part un espectador del seu cos: l'atenció no és del tot voluntària.", "Com més vol intervenir per corregir errades, pensaments o emocions enmig del joc, més distractors hi afegeix."],
+    lluitarT: "No lluitar, tornar",
+    lluitar: ["El cos viu la situació de joc i, per tant, tindrà pensaments, emocions i reaccions fisiològiques. No podem lluitar contra això.", "Però sí que podem tornar a atendre els estímuls rellevants, amb l'ajuda de les indicacions de l'entrenador.", "I podem entrenar-nos per adonar-nos que ens hem distret i tornar a la jugada."],
+    clau: "La clau no és no distreure's mai, sinó adonar-se'n abans i tornar més aviat.",
+    entrenadorT: "Atenció externa: el paper de l'entrenador",
+    entrenadorD: "A cada joc i a cada exercici tècnic o tàctic, el jugador ha de saber:",
+    enQue: { t: "En què s'ha de fixar?", d: "La pilota, el company, el contrari, la posició del jugador, cap on mira, el peu…" },
+    quan: { t: "Quan s'hi ha de fixar?", d: "En quin moment de la jugada ha d'atendre cada estímul per fer l'acció a temps." },
+    exerciciT: "Prepara l'exercici d'avui",
+    exerciciD: "Escriu l'estímul rellevant i el moment, per explicar-ho a l'equip. Es guarda en aquest dispositiu.",
+    exerciciQue: "Estímul rellevant", exerciciQuan: "Quan",
+    exerciciPh1: "Ex.: al rondo, la posició del company lliure",
+    exerciciPh2: "Ex.: abans de rebre la pilota, no quan ja la tens",
+    formalsT: "Exercicis formals",
+    formals: "Dur voluntàriament l'atenció a un estímul concret i mantenir-la-hi: la respiració, el tacte de la pilota amb les mans, la tensió i la distensió d'un múscul. Apareixeran distraccions (coses que veu o sent, pensaments, sensacions internes); adonar-se'n i tornar és l'entrenament.",
+    informalsT: "Exercicis informals",
+    informals: "Dins el joc i els entrenaments, utilitzar els estímuls que ha indicat l'entrenador per atendre el que és rellevant. I quan el jugador s'adoni que s'ha distret, recórrer a una paraula clau o a un gest.",
+    tornadaT: "La meva tornada",
+    tornadaD: {
+      familia: "A la grada també ens distreim i ens activam. Tria la teva paraula i el teu gest per tornar al teu paper: et sortiran a la pausa ràpida.",
+      entrenador: "Tria la teva paraula i el teu gest per tornar a una banqueta serena: et sortiran a la pausa ràpida. Proposa també als jugadors que triïn els seus i que els entrenin als entrenaments, perquè el dia del partit surtin sols."
+    },
+    paraula: "La meva paraula clau", gest: "El meu gest",
+    exemplesT: "Exemples",
+    exemplesJugador: ["Reset!", "A sa pròxima!", "Pilota!", "Ara!"],
+    exemplesAdult: ["Respir", "Som equip", "Anim", "Torn"],
+    gestPh: "Ex.: tocar-me el canell, deixar anar les espatles",
+    desat: "La teva tornada s'ha desat.",
+    recordaT: "La teva tornada",
+    resumT: "En resum",
+    resum: ["L'atenció pot anar cap enfora (la jugada) o cap endins (pensaments, emocions, cos). Totes dues són normals.", "L'atenció és limitada, i qui decideix on va durant el joc és el cos, segons els hàbits i les creences.", "Els entrenaments ensenyen el cos a fixar-se en el que és rellevant: l'entrenador ha de dir en què i quan fixar-se.", "Pensaments i emocions no es combaten: s'observen, i es torna a la jugada.", "Una paraula clau o un gest ajuden a tornar més aviat."],
+    aisT: "Com ho treballam a APRENS",
+    ais: "Entrenam aquest mateix gest amb l'Atenció Interna Sensorial (AIS): aprendre a adonar-se d'on és l'atenció, a estar amb el que el cos sent sense lluitar-hi, i a tornar. Així el cos es regula millor davant la pressió, i l'atenció queda més lliure per a la jugada.",
+    saludT: "Salut i rendiment van junts",
+    salut: "Un cos més regulat davant la pressió i una atenció més lliure no només fan que l'esportista ho passi millor: també prenen millors decisions. Cuidar la salut esportiva no és incompatible amb el rendiment, n'és la base.",
+    accio: "Al pròxim partit, quan notis que t'has distret o activat, fes servir la teva paraula clau i torna."
+  },
+
   /* ---------- LA PIRÀMIDE DEL RENDIMENT (APRENS) ---------- */
   piramide: {
     titol: "La piràmide del rendiment",
@@ -799,6 +867,9 @@ window.EPJ_TXT.ca = {
       entrenadors: { t: "Els entrenadors", l: ["Pensam en el progrés de tots al llarg de la temporada.", "Corregim sense humiliar.", "Valoram l'esforç, les decisions i la cooperació.", "Som exemple de respecte a la banqueta."] },
       club: { t: "El club", l: ["Posam la formació i el benestar per davant del resultat.", "Cuidam un entorn segur i aplicam el protocol de protecció.", "Facilitam canals clars de comunicació.", "Donam formació a famílies i entrenadors."] }
     },
+    guiaT: "Guia de treball psicològic amb clubs",
+    guiaD: "Esport de base: salut i rendiment. Marc de treball per a tota la temporada, amb mòduls per a famílies, entrenadors, jugadors i club, i fitxes per fotocopiar (PDF, en català).",
+    guiaBtn: "Obrir la guia (PDF)",
     qrT: "Compartir amb un QR",
     qrD: "Per posar a cartells, circulars i reunions. Escanejant-lo s'obri l'eina amb la configuració del club.",
     descarregaQr: "Descarregar el QR",

@@ -269,3 +269,14 @@ body.amb-enrere .marca{display:none}
 .flux > *{flex:1 1 0;min-width:0}
 .flux .btn{min-height:52px;font-size:15px;white-space:normal;line-height:1.2}
 @media (max-width:380px){ .top .escut{display:none} }
+
+/* atenció al joc */
+.badge{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;border-radius:999px;padding:3px 10px;background:var(--tinta);color:#fff}
+.duo2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.creences{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.cadena{list-style:none;padding:0;margin:10px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;counter-reset:c}
+.cadena li{background:var(--card);border:1px solid var(--linia);border-radius:14px;padding:10px;position:relative;font-size:13px;color:var(--suau)}
+.cadena li b{display:block;font-family:var(--titol);font-size:15.5px;color:var(--tinta);margin-bottom:2px}
+.cadena li:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--suau);font-weight:700;background:var(--fons);line-height:1}
+.cadena li:nth-child(2){background:var(--terra-lt)} .cadena li:nth-child(3){background:var(--blau-lt)}
+@media (max-width:560px){ .duo2,.creences{grid-template-columns:1fr} .cadena{grid-template-columns:1fr} .cadena li:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-12px;transform:translateX(-50%)} }

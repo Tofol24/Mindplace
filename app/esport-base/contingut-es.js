@@ -502,6 +502,74 @@ window.EPJ_TXT.es = {
       accio: "Antes del próximo partido, haz un minuto de práctica con la silueta." }
   ],
 
+  /* ---------- ATENCIÓN AL JUEGO (dosier «Atenció i maneig emocional a l'esport») ---------- */
+  atencio: {
+    titol: "Atención al juego",
+    intro: "Cómo entrenamos la atención para estar más concentrados en el juego, y qué podemos hacer cuando los pensamientos y las emociones nos distraen. Sirve para los jugadores y también para los adultos de la grada y del banquillo.",
+    focusT: "Dónde puede estar nuestra atención",
+    externa: { t: "Atención externa", quan: "Juego en marcha", d: "Todo lo que se percibe sobre todo con la vista y el oído.", ex: ["Un mano a mano con el portero.", "Un regate a un contrario.", "El desmarque de un compañero.", "El marcaje de un rival.", "Las indicaciones del entrenador con el balón en juego."] },
+    interna: { t: "Atención interna", quan: "Juego parado y después de errores", d: "Todo lo que ocurre dentro del jugador: pensamientos, emociones, reacciones fisiológicas, cansancio, dolor.", ex: ["Después de un error técnico.", "Antes de tirar un penalti.", "Un mano a mano en el último minuto.", "Las correcciones del entrenador después de un acierto o de un error."] },
+    tots: "Los dos focos son normales y, a menudo, se dan dentro de la misma jugada.",
+    jocT: "¿Hacia fuera o hacia dentro?",
+    jocD: "En estos momentos, ¿hacia dónde suele ir la atención del jugador?",
+    jocFi: "Las dos direcciones son normales. Lo que entrenamos es darnos cuenta y volver a lo que es relevante.",
+    cadenaT: "De la situación de juego a la conducta",
+    cadena: [
+      { t: "Situación de juego", d: "lo que pasa en el campo" },
+      { t: "El cuerpo", d: "hábitos aprendidos en los entrenamientos y creencias sobre la situación" },
+      { t: "Foco atencional", d: "estímulos relevantes o estímulos distractores" },
+      { t: "Conducta", d: "la decisión y la acción" }
+    ],
+    cadenaNota: "La atención es limitada, y no es el jugador quien decide el estímulo que atiende: lo hace su cuerpo, según los hábitos que ha aprendido y según las creencias sobre la situación.",
+    creencesT: "Las creencias que hacen de distractores",
+    creences: [
+      { t: "¿Es importante?", ex: "«Nos jugamos puntos vitales», «están en juego los objetivos de la temporada»…" },
+      { t: "¿Soy competente?", ex: "«¿Sé resolver un cara a cara?», «¿sé tirar esta falta?»…" },
+      { t: "¿Y si me equivoco?", ex: "«Puedo perder la titularidad», «perderé la confianza del entrenador»…" }
+    ],
+    creencesAdults: {
+      familia: "Muchos comentarios de la grada alimentan estas creencias: «hoy es muy importante», «tienes que hacerlo bien», «si fallas…». Sin querer, añadimos distractores internos. Y las instrucciones desde la grada son distractores externos que compiten con los del entrenador.",
+      entrenador: "El tono y el mensaje del banquillo pueden reducir estos distractores o multiplicarlos. Poner el foco en la tarea, y no en la importancia del partido o en el miedo al error, deja la atención más libre para la jugada."
+    },
+    observadorT: "El jugador como observador",
+    observador: ["Durante una jugada, el jugador es en buena parte un espectador de su cuerpo: la atención no es del todo voluntaria.", "Cuanto más quiere intervenir para corregir errores, pensamientos o emociones en medio del juego, más distractores añade."],
+    lluitarT: "No luchar, volver",
+    lluitar: ["El cuerpo vive la situación de juego y, por tanto, tendrá pensamientos, emociones y reacciones fisiológicas. No podemos luchar contra eso.", "Pero sí podemos volver a atender los estímulos relevantes, con la ayuda de las indicaciones del entrenador.", "Y podemos entrenarnos para darnos cuenta de que nos hemos distraído y volver a la jugada."],
+    clau: "La clave no es no distraerse nunca, sino darse cuenta antes y volver antes.",
+    entrenadorT: "Atención externa: el papel del entrenador",
+    entrenadorD: "En cada juego y en cada ejercicio técnico o táctico, el jugador tiene que saber:",
+    enQue: { t: "¿En qué tiene que fijarse?", d: "El balón, el compañero, el contrario, la posición del jugador, hacia dónde mira, el pie…" },
+    quan: { t: "¿Cuándo tiene que fijarse?", d: "En qué momento de la jugada tiene que atender cada estímulo para hacer la acción a tiempo." },
+    exerciciT: "Prepara el ejercicio de hoy",
+    exerciciD: "Escribe el estímulo relevante y el momento, para explicárselo al equipo. Se guarda en este dispositivo.",
+    exerciciQue: "Estímulo relevante", exerciciQuan: "Cuándo",
+    exerciciPh1: "Ej.: en el rondo, la posición del compañero libre",
+    exerciciPh2: "Ej.: antes de recibir el balón, no cuando ya lo tienes",
+    formalsT: "Ejercicios formales",
+    formals: "Llevar voluntariamente la atención a un estímulo concreto y mantenerla ahí: la respiración, el tacto del balón con las manos, la tensión y la distensión de un músculo. Aparecerán distracciones (cosas que ve u oye, pensamientos, sensaciones internas); darse cuenta y volver es el entrenamiento.",
+    informalsT: "Ejercicios informales",
+    informals: "Dentro del juego y los entrenamientos, utilizar los estímulos que ha indicado el entrenador para atender lo que es relevante. Y cuando el jugador se dé cuenta de que se ha distraído, recurrir a una palabra clave o a un gesto.",
+    tornadaT: "Mi vuelta",
+    tornadaD: {
+      familia: "En la grada también nos distraemos y nos activamos. Elige tu palabra y tu gesto para volver a tu papel: te aparecerán en la pausa rápida.",
+      entrenador: "Elige tu palabra y tu gesto para volver a un banquillo sereno: te aparecerán en la pausa rápida. Propón también a los jugadores que elijan los suyos y que los entrenen en los entrenamientos, para que el día del partido salgan solos."
+    },
+    paraula: "Mi palabra clave", gest: "Mi gesto",
+    exemplesT: "Ejemplos",
+    exemplesJugador: ["¡Reset!", "¡A la próxima!", "¡Balón!", "¡Ahora!"],
+    exemplesAdult: ["Respiro", "Somos equipo", "Animo", "Vuelvo"],
+    gestPh: "Ej.: tocarme la muñeca, soltar los hombros",
+    desat: "Tu vuelta se ha guardado.",
+    recordaT: "Tu vuelta",
+    resumT: "En resumen",
+    resum: ["La atención puede ir hacia fuera (la jugada) o hacia dentro (pensamientos, emociones, cuerpo). Las dos son normales.", "La atención es limitada, y quien decide adónde va durante el juego es el cuerpo, según los hábitos y las creencias.", "Los entrenamientos enseñan al cuerpo a fijarse en lo que es relevante: el entrenador tiene que decir en qué y cuándo fijarse.", "Los pensamientos y las emociones no se combaten: se observan, y se vuelve a la jugada.", "Una palabra clave o un gesto ayudan a volver antes."],
+    aisT: "Cómo lo trabajamos en APRENS",
+    ais: "Entrenamos este mismo gesto con la Atención Interna Sensorial (AIS): aprender a darse cuenta de dónde está la atención, a estar con lo que el cuerpo siente sin luchar, y a volver. Así el cuerpo se regula mejor ante la presión, y la atención queda más libre para la jugada.",
+    saludT: "Salud y rendimiento van juntos",
+    salut: "Un cuerpo más regulado ante la presión y una atención más libre no solo hacen que el deportista lo pase mejor: también toman mejores decisiones. Cuidar la salud deportiva no es incompatible con el rendimiento, es su base.",
+    accio: "En el próximo partido, cuando notes que te has distraído o activado, usa tu palabra clave y vuelve."
+  },
+
   /* ---------- LA PIRÁMIDE DEL RENDIMIENTO (APRENS) ---------- */
   piramide: {
     titol: "La pirámide del rendimiento",
@@ -799,6 +867,9 @@ window.EPJ_TXT.es = {
       entrenadors: { t: "Los entrenadores", l: ["Pensamos en el progreso de todos a lo largo de la temporada.", "Corregimos sin humillar.", "Valoramos el esfuerzo, las decisiones y la cooperación.", "Somos ejemplo de respeto en el banquillo."] },
       club: { t: "El club", l: ["Ponemos la formación y el bienestar por delante del resultado.", "Cuidamos un entorno seguro y aplicamos el protocolo de protección.", "Facilitamos canales claros de comunicación.", "Ofrecemos formación a familias y entrenadores."] }
     },
+    guiaT: "Guía de trabajo psicológico con clubes",
+    guiaD: "Deporte base: salud y rendimiento. Marco de trabajo para toda la temporada, con módulos para familias, entrenadores, jugadores y club, y fichas para fotocopiar (PDF, en catalán).",
+    guiaBtn: "Abrir la guía (PDF)",
     qrT: "Compartir con un QR",
     qrD: "Para carteles, circulares y reuniones. Al escanearlo se abre la herramienta con la configuración del club.",
     descarregaQr: "Descargar el QR",
