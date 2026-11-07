@@ -7,7 +7,7 @@
     ca: {
       destacat: "Destacat", fitxa: "Fitxa", perA: "Per a: ", obre: "Obre l'enllaç",
       carrusel: "Carrusel", totes: "Descarrega-les totes", copia: "Copia el text", copiat: "Copiat",
-      ig: "Instagram · text del carrusel", fb: "Facebook · publicació", yt: "YouTube · vídeo o Short",
+      ig: "Instagram (@tofol49) · text del carrusel", fb: "Facebook (pàgina d'APRENS) · publicació", yt: "YouTube · vídeo o Short",
       titol: "Títol", desc: "Descripció", guio: "Guió (45-60 s, vertical per Shorts i Reels)", mini: "Miniatura",
       descarrega: "Descarrega el vídeo", setmana: "Setmana",
       tipus: { carrusel: "carrusel a Instagram i Facebook", short: "Short / Reel", fb: "publicació a Facebook", youtube: "vídeo a YouTube" },
