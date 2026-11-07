@@ -18,7 +18,7 @@ const T = {
     expEt: "Estudio", appsT: "Apps para iPhone", appsD: "Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.", retratAlt: "Tòfol Villalonga en la entrada de APRENS, en Inca, junto al cartel de los servicios del centro", appAlt: "Ilustración de la app: una silueta con tres puntos donde llevar la atención. 1, cuello: conecta con tu garganta y nuca. 2, pecho: siente tu corazón y pulmones. 3, barriga: percibe tu estómago e intestinos.", expD: "Una herramienta para organizar los apuntes, repasar con preguntas y corregir ejercicios.",
     novetats: "Novedades y apariciones", llibres: "Libros", fotos: "El despacho y el día a día", contacte: "Contacto",
     horari: "Horario: de 9 a 21 h", avis: "Aviso legal y privacidad", galetes: "Esta web no usa cookies. Contamos de forma anónima las visitas y los clics.",
-    tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos", eina: "Herramientas para probar", esport: "Psicología del deporte", provar: "Pruébala", destacats: "Destacados", pausa: "Pausa", repren: "Reanudar", ant: "Anterior", seg: "Siguiente", pantallesN: "Pantallas", pantallaN: "Pantalla", videos: "Vídeos", videosD: "Explicaciones cortas sobre la atención, el cuerpo y la Teoría del Efecto Consciente.", labEt: "Para psicólogos", labT: "Laboratorio TEC", labD: "La Teoría del Efecto Consciente hecha laboratorio: entender el modelo, practicar el AIS y medir el cambio.",
+    tot: "Todo", mitjans: "En los medios", llibre: "Libros", novetat: "Novedades", article: "Artículos", eina: "Herramientas para probar", esport: "Psicología del deporte", provar: "Pruébala", destacats: "Destacados", pausa: "Pausa", repren: "Reanudar", ant: "Anterior", seg: "Siguiente", pantallesN: "Pantallas", pantallaN: "Pantalla", videos: "Vídeos", videosD: "Explicaciones cortas sobre la atención, el cuerpo y la Teoría del Efecto Consciente.", labEt: "Para psicólogos", labT: "Laboratorio TEC", labD: "La Teoría del Efecto Consciente hecha laboratorio: entender el modelo, practicar el AIS y medir el cambio.", espEt: "Deporte", espT: "Deporte base", espD: "Para clubes, familias y entrenadores: una herramienta para acompañar antes, durante y después de cada partido.",
     disponible: "Disponible", properament: "Próximamente", llegir: "Ver más", descarrega: "Descarga el PDF", en_ca: "(en catalán)", en_es: "(en castellano)", comprar: "Dónde comprarlo", autor: "Todos los libros del autor en Amazon →", serie: "La colección completa «Crece, cría y trasciende desde dentro» →",
   },
 };
@@ -236,7 +236,7 @@ fetch("contingut.json", {cache: "no-cache"}).then(r => r.json()).then(d => { dat
   };
   const f = font();
   if (f) envia({e: "visita", t: f});
-  const PORTES = {"l-app": "app", "l-cita": "cita", "l-consulta": "consulta", "l-explica": "explica", "l-laboratori": "laboratori", "l-ais": "ais_app", "l-serie": "llibre", "l-autor": "llibre"};
+  const PORTES = {"l-app": "app", "l-cita": "cita", "l-consulta": "consulta", "l-explica": "explica", "l-laboratori": "laboratori", "l-esport": "esport", "l-ais": "ais_app", "l-serie": "llibre", "l-autor": "llibre"};
   const desti = (el) => {
     if (el.id === "ais-obre") return "ais";
     const a = el.closest("a"); if (!a) return null;
