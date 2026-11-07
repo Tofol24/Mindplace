@@ -7,8 +7,9 @@
     ca: {
       destacat: "Destacat", fitxa: "Fitxa", perA: "Per a: ", obre: "Obre l'enllaç",
       carrusel: "Carrusel", totes: "Descarrega-les totes",
-      comparteix: "Desa les {n} imatges a Fotos o comparteix-les",
+      comparteix: "Desa les {n} imatges a Fotos i copia el text",
       preparant: "Preparant les imatges…", tornaTocar: "Ja estan a punt: torna a tocar el botó.",
+      peuCopiat: "El text d'Instagram també està copiat: a Instagram, mantén premut el peu de foto i tria Enganxa.",
       error: "No s'han pogut carregar les imatges. Comprova la connexió i torna-ho a provar.", copia: "Copia el text", copiat: "Copiat",
       ig: "Instagram (@tofol49) · text del carrusel", fb: "Facebook (pàgina d'APRENS) · publicació", yt: "YouTube · vídeo o Short",
       titol: "Títol", desc: "Descripció", guio: "Guió amb temps (pla de muntatge)", bigvu: "Teleprompter de BIGVU (enganxa-ho tal qual)", recurs: "Plans de recurs", mini: "Miniatura",
@@ -44,15 +45,21 @@
     }, { rootMargin: "300px" });
     io.observe(el);
   }
-  function comparteix(fitxers, titol, estat) {
+  function comparteix(fitxers, titol, estat, peu) {
     var t = UI.ca;
+    /* El text d'Instagram es copia dins el mateix toc (Safari ho exigeix), abans d'obrir el full. */
+    var copiat = Promise.resolve(false);
+    if (peu && navigator.clipboard && navigator.clipboard.writeText) {
+      copiat = navigator.clipboard.writeText(peu).then(function () { return true; }, function () { return false; });
+    }
     estat.textContent = t.preparant;
     Promise.all(fitxers.map(carrega)).then(function (files) {
       return navigator.share({ files: files, title: "APRENS · " + titol }).then(function () {
-        estat.textContent = "";
+        return copiat.then(function (ok) { estat.textContent = ok ? t.peuCopiat : ""; });
       }, function (err) {
         /* Si les imatges han tardat a arribar, el navegador pot no deixar obrir el full: amb un segon toc ja va. */
-        estat.textContent = err && err.name === "AbortError" ? "" : t.tornaTocar;
+        if (err && err.name === "AbortError") return copiat.then(function (ok) { estat.textContent = ok ? t.peuCopiat : ""; });
+        estat.textContent = t.tornaTocar;
       });
     }).catch(function () { estat.textContent = t.error; });
   }
@@ -134,7 +141,7 @@
          o les envia directament a Instagram. Les descàrregues múltiples, al mòbil, no funcionen. */
       totes.textContent = t.comparteix.replace("{n}", fitxers.length);
       preparaQuanEsVegi(car, fitxers);
-      totes.addEventListener("click", function () { comparteix(fitxers, f.id, estat); });
+      totes.addEventListener("click", function () { comparteix(fitxers, f.id, estat, f.ig[lang]); });
       car.querySelectorAll("a").forEach(function (l, i) {
         l.addEventListener("click", function (e) { e.preventDefault(); comparteix([fitxers[i]], f.id, estat); });
       });
