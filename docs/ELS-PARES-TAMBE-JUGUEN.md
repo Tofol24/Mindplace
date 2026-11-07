@@ -147,3 +147,16 @@ y revisión del RGPD y de la normativa de protección de menores.
 - Fuente editable: `docs/guia-clubs/guia.html` (imágenes en `docs/guia-clubs/img/`).
 - Generar el PDF: `node docs/guia-clubs/build.cjs` → `app/assets/pdf/guia-clubs-esport-aprens.pdf` (enlazado desde «Per a clubs»).
 - Revisado con Codex (contenido y código); se incorporaron las observaciones sobre LOPIVI, derivación, anonimato del pilotaje, dolor y lesión, y prudencia en las afirmaciones.
+
+## 9. Icono del club en la pantalla de inicio (iPhone y Android)
+
+Al añadir la app a la pantalla de inicio desde el enlace del club, aparece el escudo y el nombre corto del club.
+
+1. Generar iconos y manifest a partir del escudo (PNG con fondo transparente):
+   `node scripts/esport-base/icones-club.cjs --slug <club> --imatge ruta/escut.png --nom "Nombre del club" --curt "Nombre corto" --tema "#color"`
+2. Añadir `"icones": true` y `"curt": "Nombre corto"` a `app/esport-base/clubs/<club>.json`.
+3. Subir los cambios. Sin iconos propios, se usa el icono de APRENS.
+
+Cómo añadirla (desde el enlace del club, p. ej. `…/esport-base/?club=constancia`):
+- **iPhone (Safari):** Compartir → «Añadir a pantalla de inicio».
+- **Android (Chrome):** menú ⋮ → «Añadir a pantalla de inicio» o «Instalar aplicación».
