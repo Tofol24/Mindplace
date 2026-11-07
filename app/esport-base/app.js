@@ -36,12 +36,12 @@
       fitxa: 'Fitxa', totes: 'Totes', partit: 'Partit', sessio: 'Entrenament', avui: 'Avui', setmana: 'set.', compartirTxt: 'Compartir',
       sense: 'Sense compromís', ok: 'D\'acord', manualDesat: 'Registre desat.', marcaUna: 'Marca almenys una resposta.', club: 'Club', qrAlt: 'Codi QR de l\'enllaç',
       copiaFallida: 'No s\'ha pogut copiar. Selecciona el text i copia\'l manualment.', llegeix: 'Llegir', tancarPausa: 'Tancar la pausa', silueta: 'Silueta',
-      sessioPreparada: 'Preparació desada.', intencioPropia: 'Intenció pròpia', triaIntencio: 'O tria\'n una', continuarSense: 'Continuar sense triar', accions: 'Accions' },
+      sessioPreparada: 'Preparació desada.', intencioPropia: 'Intenció pròpia', triaIntencio: 'O tria\'n una', continuarSense: 'Continuar sense triar', accions: 'Accions', anterior: 'Anterior', navPas: 'Pantalla anterior i següent' },
     es: { pas: 'Paso', de: 'de', obrirPausa: 'Hacer una pausa', practicaT: 'Práctica breve con la silueta', zonaNo: 'No lo sé', percepcioQ: '¿Qué notas?',
       fitxa: 'Ficha', totes: 'Todas', partit: 'Partido', sessio: 'Entrenamiento', avui: 'Hoy', setmana: 'sem.', compartirTxt: 'Compartir',
       sense: 'Sin compromiso', ok: 'De acuerdo', manualDesat: 'Registro guardado.', marcaUna: 'Marca al menos una respuesta.', club: 'Club', qrAlt: 'Código QR del enlace',
       copiaFallida: 'No se ha podido copiar. Selecciona el texto y cópialo manualmente.', llegeix: 'Leer', tancarPausa: 'Cerrar la pausa', silueta: 'Silueta',
-      sessioPreparada: 'Preparación guardada.', intencioPropia: 'Intención propia', triaIntencio: 'O elige una', continuarSense: 'Continuar sin elegir', accions: 'Acciones' }
+      sessioPreparada: 'Preparación guardada.', intencioPropia: 'Intención propia', triaIntencio: 'O elige una', continuarSense: 'Continuar sin elegir', accions: 'Acciones', anterior: 'Anterior', navPas: 'Pantalla anterior y siguiente' }
   };
   function X() { return XX[S.lang] || XX.ca; }
   function fmt(s, o) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : ''; }); }
@@ -179,6 +179,35 @@
 
   /* ================= NAVEGACIÓ ================= */
   var TABS = ['inici', 'abans', 'durant', 'despres', 'apren', 'registre'];
+  /* pantalla «mare» de cada pantalla secundària (botó Enrere de la capçalera) */
+  var PARE = { piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
+  /* Navegació anterior / següent al peu de cada pantalla */
+  function flux(v, arg) {
+    var t = T(), u = t.ui, r = rol();
+    function pas(vv, a, txt) { return { v: vv, arg: a || null, t: txt || u[vv] }; }
+    function veins(llista, id, mare) {
+      var i = -1; llista.forEach(function (x, k) { if (x.id === id) i = k; });
+      return { prev: i > 0 ? pas(mare === 'durant' ? 'escenari' : 'llico', llista[i - 1].id, X().anterior) : pas(mare),
+               next: i >= 0 && i < llista.length - 1 ? pas(mare === 'durant' ? 'escenari' : 'llico', llista[i + 1].id, u.seguent) : pas(mare) };
+    }
+    switch (v) {
+      case 'inici': return { next: pas('abans') };
+      case 'abans': return { prev: pas('inici'), next: pas('durant') };
+      case 'pinya': return { prev: pas('abans'), next: pas('durant') };
+      case 'durant': return { prev: pas('abans'), next: pas('despres') };
+      case 'despres': return { prev: pas('durant'), next: pas('registre') };
+      case 'registre': return { prev: pas('despres'), next: pas('inici') };
+      case 'apren': return { prev: pas('inici'), next: pas('registre') };
+      case 'escenari': return veins(t.escenaris.filter(function (e) { return e.rols.indexOf(r) >= 0; }), arg, 'durant');
+      case 'llico': return veins(t.llicons, arg, 'apren');
+      default: return PARE[v] ? { prev: pas(PARE[v]) } : null;
+    }
+  }
+  function fluxHTML(v, arg) {
+    var f = flux(v, arg); if (!f) return '';
+    function b(x, dir) { return '<button type="button" class="btn ' + (dir === 'prev' ? 'ghost' : '') + '" data-go="' + x.v + '"' + (x.arg ? ' data-arg="' + esc(x.arg) + '"' : '') + '>' + (dir === 'prev' ? '← ' : '') + esc(x.t) + (dir === 'next' ? ' →' : '') + '</button>'; }
+    return '<nav class="flux" aria-label="' + esc(X().navPas) + '">' + (f.prev ? b(f.prev, 'prev') : '<span></span>') + (f.next ? b(f.next, 'next') : '<span></span>') + '</nav>';
+  }
   var vistaActual = null, silActual = null;
   function ruta() { var h = (location.hash || '').replace(/^#\/?/, ''); var p = h.split('/'); return { v: p[0] || 'inici', arg: p[1] ? decodeURIComponent(p[1]) : null }; }
   function go(v, arg) { var h = '#/' + v + (arg ? '/' + encodeURIComponent(arg) : ''); if (location.hash === h) pinta(); else location.hash = h; }
@@ -186,8 +215,7 @@
     var n = $('#nav');
     if (!S.avis || !S.rol) { n.hidden = true; document.body.classList.add('sense-nav'); return; }
     n.hidden = false; document.body.classList.remove('sense-nav');
-    var mapa = { piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
-    var act = TABS.indexOf(v) >= 0 ? v : (mapa[v] || 'inici');
+    var act = TABS.indexOf(v) >= 0 ? v : (PARE[v] || 'inici');
     var t = T().ui;
     n.innerHTML = '<div class="in">' + TABS.map(function (id) {
       return '<button type="button" data-go="' + id + '"' + (id === act ? ' aria-current="page"' : '') + '>' + IC[id] + '<span>' + esc(t[id]) + '</span></button>';
@@ -212,7 +240,12 @@
     vistaActual = v;
     pintaCap(); pintaNav(v);
     var m = $('#app');
-    m.innerHTML = '<div class="vista">' + VISTES[v](r.arg) + '</div>';
+    var html = VISTES[v](r.arg), fx = v === 'benvinguda' ? '' : fluxHTML(v, r.arg);
+    if (fx) { var k = html.lastIndexOf('<footer>'); html = k >= 0 ? html.slice(0, k) + fx + html.slice(k) : html + fx; }
+    m.innerHTML = '<div class="vista">' + html + '</div>';
+    var eb = $('#enrereCap'), pare = v !== 'benvinguda' && PARE[v];
+    if (eb) { eb.hidden = !pare; if (pare) { eb.setAttribute('data-go', pare); eb.textContent = '← ' + T().ui.enrere; eb.setAttribute('aria-label', T().ui.enrere + ': ' + T().ui[pare]); } }
+    document.body.classList.toggle('amb-enrere', !!pare);
     if (DESPRES[v]) DESPRES[v](r.arg);
     window.scrollTo(0, 0);
     var h1 = $('h1', m); if (h1) { h1.setAttribute('tabindex', '-1'); try { h1.focus({ preventScroll: true }); } catch (e) {} }
@@ -514,7 +547,7 @@
     var comp = compromisosText();
     if (comp.length) h += '<div class="compromis-box"><span class="et">' + esc(t.pinya.recorda) + '</span>' + comp.map(esc).join('<br>') + '</div>';
     h += '<p class="muted">' + esc(d.noDefecte) + '</p>';
-    h += '<div class="btnrow"><button type="button" class="btn full" data-pausa="1" data-situacio="' + e.id + '">' + esc(d.ferPausa) + '</button><button type="button" class="btn full ghost" data-go="durant">' + esc(t.ui.enrere) + '</button></div>';
+    h += '<div class="btnrow"><button type="button" class="btn full" data-pausa="1" data-situacio="' + e.id + '">' + esc(d.ferPausa) + '</button></div>';
     return h + peu();
   };
 
@@ -542,18 +575,18 @@
       h += '<p><b>' + esc(d.pas1t) + '</b> ' + esc(d.pas1d) + '</p><div id="pzSil"></div>';
       h += '<label class="lb" for="pzSit">' + esc(d.situacioQ) + '</label><select id="pzSit"><option value="">–</option>' +
         t.escenaris.filter(function (e) { return e.rols.indexOf(r) >= 0; }).map(function (e) { return '<option value="' + e.id + '"' + (pz.situacio === e.id ? ' selected' : '') + '>' + esc(e.t) + '</option>'; }).join('') + '</select>';
-      h += '<div class="btnrow"><button type="button" class="btn full" data-pzpas="1">' + esc(t.ui.seguent) + '</button></div>';
+      h += '<div class="btnrow"><button type="button" class="btn full" data-pzpas="1">' + esc(t.ui.seguent) + ' →</button></div>';
     } else if (pz.pas === 1) {
       h += '<p class="cita" style="margin-top:4px">' + esc(d.pas2t) + '</p><p class="muted">' + esc(d.pas2d) + '</p><div id="pzSil"></div>';
       h += '<div class="btnrow"><button type="button" class="btn sm ghost" id="pzResp" aria-pressed="true">' + esc(t.silueta.respiracio) + ': ' + esc(t.silueta.respiracioOn) + '</button><button type="button" class="link" id="pzExt">' + esc(t.silueta.externaBtn) + '</button></div><div id="pzExtBox" hidden></div>';
-      h += '<div class="btnrow"><button type="button" class="btn full" data-pzpas="2">' + esc(t.ui.seguent) + '</button></div>';
+      h += '<div class="btnrow"><button type="button" class="btn full ghost" data-pzpas="0">← ' + esc(t.ui.enrere) + '</button><button type="button" class="btn full" data-pzpas="2">' + esc(t.ui.seguent) + ' →</button></div>';
     } else {
       var comp = compromisosText();
       h += '<p>' + esc(fmt(d.pas3t, { qui: t.rols[r].qui })) + '</p>';
       h += comp.length ? '<div class="compromis-box"><span class="et">' + esc(S.actual && S.actual.pinya ? p.recorda : p.recordaSense) + '</span>' + comp.map(esc).join('<br>') + '</div>' : '<p class="muted">' + esc(d.pas3sense) + '</p>';
       if (pz.groc.length) h += '<p class="muted">' + esc(t.silueta.groguesQueden) + '</p>';
       h += '<h3>' + esc(p.conductesT) + '</h3><div role="group" aria-label="' + esc(p.conductesT) + '">' + p.conductes.map(function (c) { return opt('data-conducta', c.id, c.t, pz.conducta === c.id); }).join('') + '</div>';
-      h += '<div class="btnrow"><button type="button" class="btn full verd" id="pzFi">' + esc(d.tornar) + '</button></div>';
+      h += '<div class="btnrow"><button type="button" class="btn full ghost" data-pzpas="1">← ' + esc(t.ui.enrere) + '</button><button type="button" class="btn full verd" id="pzFi">' + esc(d.tornar) + '</button></div>';
     }
     $('#sheet').innerHTML = h;
     $('#modal').setAttribute('aria-labelledby', 'pasTitol');
@@ -651,7 +684,7 @@
       '<div class="fb" id="fb" aria-live="polite"></div></div>';
     h += '<div class="card verd"><h2>' + esc(a.accio) + '</h2><p>' + esc(l.accio) + '</p><button type="button" class="btn sm" data-setmanal="' + esc(l.accio) + '">' + esc(a.ferCompromis) + '</button></div>';
     var seg_ = t.llicons[i + 1];
-    h += '<div class="btnrow">' + (seg_ ? '<button type="button" class="btn full" data-go="llico" data-arg="' + seg_.id + '">' + esc(t.ui.seguent) + ': ' + esc(seg_.t) + '</button>' : '') + '<button type="button" class="btn full ghost" data-go="apren">' + esc(t.ui.enrere) + '</button></div>';
+    if (seg_) h += '<p class="muted" style="margin-top:16px">' + esc(t.ui.seguent) + ': ' + esc(seg_.t) + '</p>';
     return h + peu();
   };
 
