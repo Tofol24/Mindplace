@@ -502,6 +502,42 @@ window.EPJ_TXT.es = {
       accio: "Antes del próximo partido, haz un minuto de práctica con la silueta." }
   ],
 
+  /* ---------- UN CLUB, NO ISLAS (comunidad y cantera) ---------- */
+  comunitat: {
+    titol: "Un club, no islas",
+    intro: "Ser un jugador o una jugadora de éxito no es solo llegar a vivir del fútbol. Es poder jugar gran parte de la vida, con amistades, vivencias y el sentimiento de pertenecer a un lugar. El club tiene mucho que ver: no solo con las actitudes de los adultos, sino con la manera de plantear los equipos.",
+    exitT: "¿Qué es un jugador de éxito?",
+    exit: ["El que sigue jugando dentro de diez, veinte o treinta años, porque el deporte le gusta y le hace bien.", "El que hace amigos en el equipo y se siente parte del club, juegue donde juegue.", "El que aprende a esforzarse, a tolerar la frustración y a cooperar, y lo lleva al resto de su vida.", "Y, si llega, el que juega en la élite sin haber perdido todo esto por el camino."],
+    exitCita: "Un jugador de éxito es el que puede jugar gran parte de la vida.",
+    valorsT: "Lo que también entrenamos",
+    valorsD: "Los valores no son una charla aparte: se entrenan dentro de los mismos ejercicios, al mismo tiempo que la técnica, la táctica y la preparación física.",
+    valors: [
+      { t: "Respeto", camp: "Saludar al rival y al árbitro; aceptar las decisiones.", adult: "Ser ejemplo en la grada y en el banquillo." },
+      { t: "Esfuerzo", camp: "Valorar el intento y la perseverancia, no solo el acierto.", adult: "Felicitar el esfuerzo, sea cual sea el resultado." },
+      { t: "Tolerancia a la frustración", camp: "Volver a la jugada después de un error.", adult: "No dramatizar los errores ni las derrotas." },
+      { t: "Orientación a la tarea", camp: "Objetivos de proceso en cada ejercicio.", adult: "Preguntar qué ha aprendido antes que por el resultado." },
+      { t: "Cooperación", camp: "Ejercicios donde solo se gana si el equipo colabora.", adult: "Reconocer los gestos de ayuda a los compañeros." },
+      { t: "Comunidad", camp: "Rituales de equipo y de club; sentirse parte de un grupo.", adult: "Animar a todos los jugadores, no solo al propio hijo." }
+    ],
+    equipsT: "Equipos conectados, no islas",
+    equips: ["Formar los equipos cuidando también la amistad, la confianza y la continuidad de los grupos, no solo el nivel.", "Padrinazgos: los equipos mayores acompañan a los pequeños en un entrenamiento o un partido.", "Ir a ver partidos de otros equipos del club y animarlos.", "Jornadas de club y rituales comunes, como la piña de las familias.", "Que la comunicación del club hable de todos los equipos, no solo del primero."],
+    nivellsT: "Niveles y ritmos de crecimiento",
+    nivells: ["Ningún equipo es «el de los mejores» ni «el de los peores»: todos tienen un papel relevante dentro del club.", "Muchas veces el nivel de hoy depende del ritmo de crecimiento: hay chicos que maduran antes y chicos que lo hacen más tarde y llegan más lejos.", "Las puertas entre niveles tienen que estar abiertas, y las decisiones se tienen que explicar con criterios educativos.", "Compararse con uno mismo, y no con los compañeros, también vale para los equipos."],
+    pedreraT: "La cantera de los entrenadores de mañana",
+    pedrera: ["Muchos de los jugadores de hoy pueden ser los entrenadores, delegados y directivos de mañana.", "Ofrecer a los juveniles que ayuden en entrenamientos de equipos pequeños, acompañados.", "Formarlos en los mismos valores: así el club mantiene una idea y un sentimiento compartidos.", "Invitar a los exjugadores a volver: también son parte de la comunidad."],
+    rolT: "Qué puedo aportar yo",
+    rol: {
+      familia: ["Animar a todos los jugadores, también a los de los otros equipos del club.", "Explicar a mi hijo que su equipo y su nivel de hoy no lo definen.", "Participar en las actividades de club, no solo en los partidos de mi hijo."],
+      entrenador: ["Proponer una actividad compartida con otro equipo del club.", "Explicar las decisiones de nivel con criterios educativos y puertas abiertas.", "Invitar a un juvenil a ayudarme en un entrenamiento y acompañarlo."]
+    },
+    tecT: "Desde la TEC",
+    tec: "Desde la Teoría del Efecto Consciente entendemos que un entorno previsible, respetuoso y en el que el joven se siente parte de un grupo puede hacerse fiable para él, y que en un entorno así es más fácil aprender y arriesgarse. Es una hipótesis de trabajo de nuestro modelo, coherente con lo que sabemos sobre clima motivacional y pertenencia, que seguimos evaluando.",
+    accio: {
+      familia: "Esta semana, ir a ver un partido de otro equipo del club y animarlo.",
+      entrenador: "Esta semana, hacer una actividad compartida con otro equipo del club."
+    }
+  },
+
   /* ---------- ATENCIÓN AL JUEGO (dosier «Atenció i maneig emocional a l'esport») ---------- */
   atencio: {
     titol: "Atención al juego",
@@ -703,7 +739,8 @@ window.EPJ_TXT.es = {
       "Escuchar después del partido",
       "Hacer una pausa AIS cuando detecte enfado",
       "Respetar el silencio de mi hijo",
-      "Felicitar su actitud, sea cual sea el resultado"
+      "Felicitar su actitud, sea cual sea el resultado",
+      "Ir a ver un partido de otro equipo del club"
     ],
     entrenador: [
       "Corregir una sola cosa cada vez",
@@ -711,7 +748,8 @@ window.EPJ_TXT.es = {
       "No discutir decisiones arbitrales delante del equipo",
       "Hacer una pausa AIS cuando detecte enfado",
       "Atender a las familias solo con cita",
-      "Terminar cada sesión con un reconocimiento al grupo"
+      "Terminar cada sesión con un reconocimiento al grupo",
+      "Hacer una actividad compartida con otro equipo del club"
     ]
   },
 

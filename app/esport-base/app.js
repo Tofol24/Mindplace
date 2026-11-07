@@ -197,7 +197,7 @@
   /* ================= NAVEGACIÓ ================= */
   var TABS = ['inici', 'abans', 'durant', 'despres', 'apren', 'registre'];
   /* pantalla «mare» de cada pantalla secundària (botó Enrere de la capçalera) */
-  var PARE = { atencio: 'apren', piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
+  var PARE = { comunitat: 'apren', atencio: 'apren', piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
   /* Navegació anterior / següent al peu de cada pantalla */
   function flux(v, arg) {
     var t = T(), u = t.ui, r = rol();
@@ -701,6 +701,7 @@
     var t = T(), a = t.apren, r = rol();
     var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, t.inici.entrenadorsT, t.inici.entrenadorsD);
+    h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
     h += acces('atencio', IC.atencio, t.atencio.titol, t.atencio.clau);
     h += acces('piramide', IC.piramide, t.piramide.titol, t.piramide.mestria.lema);
     h += acces('silueta', IC.silueta, t.inici.siluetaT, t.inici.siluetaD);
@@ -723,6 +724,23 @@
     return h + peu();
   };
 
+  /* ================= UN CLUB, NO ILLES ================= */
+  VISTES.comunitat = function () {
+    var t = T(), c = t.comunitat, r = rol();
+    function llista(l) { return '<ul class="punts">' + l.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
+    var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(c.titol) + '</h1><p class="lead">' + esc(c.intro) + '</p>';
+    h += '<div class="card verd"><h2>' + esc(c.exitT) + '</h2>' + llista(c.exit) + '<p class="cita" style="margin-bottom:0">' + esc(c.exitCita) + '</p></div>';
+    h += '<h2 style="margin-top:16px">' + esc(c.valorsT) + '</h2><p class="muted">' + esc(c.valorsD) + '</p><div class="valors">' +
+      c.valors.map(function (v) { return '<div class="card" style="margin:0"><h3 style="margin-top:0">' + esc(v.t) + '</h3><p style="margin:0 0 4px"><span class="badge" style="background:var(--verd)">' + esc(t.ui.durant) + '</span> ' + esc(v.camp) + '</p><p class="muted" style="margin:0">' + esc(v.adult) + '</p></div>'; }).join('') + '</div>';
+    h += '<div class="card blau"><h2>' + esc(c.equipsT) + '</h2>' + llista(c.equips) + '</div>';
+    h += '<div class="card"><h2>' + esc(c.nivellsT) + '</h2>' + llista(c.nivells) + '</div>';
+    h += '<div class="card terra"><h2>' + esc(c.pedreraT) + '</h2>' + llista(c.pedrera) + '</div>';
+    h += '<div class="card"><h2>' + esc(c.rolT) + '</h2>' + llista(c.rol[r]) + '</div>';
+    h += '<div class="card suau"><h2>' + esc(c.tecT) + '</h2><p style="margin:0">' + esc(c.tec) + '</p></div>';
+    h += '<div class="card verd"><h2>' + esc(t.apren.accio) + '</h2><p>' + esc(c.accio[r]) + '</p><button type="button" class="btn sm" data-setmanal="' + esc(c.accio[r]) + '">' + esc(t.apren.ferCompromis) + '</button></div>';
+    return h + peu();
+  };
+
   /* ================= ATENCIÓ AL JOC ================= */
   var jocA = null;
   function nouJocA() {
@@ -742,6 +760,8 @@
   VISTES.atencio = function () {
     var t = T(), a = t.atencio, r = rol(), tor = S.tornada || {}, exe = S.exercici || {};
     if (!jocA) jocA = nouJocA();
+    /* si s'havia respost i es redibuixa la vista (idioma, navegació), passam a la següent per no quedar bloquejats */
+    if (jocA.resp) { jocA.n++; jocA.resp = false; }
     function llista(l) { return '<ul class="punts">' + l.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
     function focus(f, cls) { return '<div class="card ' + cls + '" style="margin:0"><span class="badge">' + esc(f.quan) + '</span><h2 style="margin-top:6px">' + esc(f.t) + '</h2><p class="muted" style="margin-bottom:4px">' + esc(f.d) + '</p>' + llista(f.ex) + '</div>'; }
     var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
@@ -998,6 +1018,7 @@
     h += '<div class="card terra"><h2>' + esc(c.proteccio) + '</h2>' + (cl && cl.proteccio && cl.proteccio.text ? '<p>' + esc(loc(cl.proteccio.text)) + '</p>' : '') +
       '<p style="margin:0">' + esc(t.ui.seguretatText) + (cl && cl.proteccio && cl.proteccio.contacte ? '<br><b>' + esc(t.ui.seguretatClub) + '</b> ' + esc(loc(cl.proteccio.contacte)) : '') + '</p></div>';
     h += limitsPinya();
+    h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
     h += '<div class="card blau"><h2>' + esc(c.guiaT) + '</h2><p>' + esc(c.guiaD) + '</p><a class="btn sm blau" href="../assets/pdf/guia-clubs-esport-aprens.pdf" target="_blank" rel="noopener">' + esc(c.guiaBtn) + '</a></div>';
     h += '<div class="card"><h2>' + esc(c.recursos) + '</h2><p style="margin:0">' + esc(c.recursosText) + '</p></div>';
     h += '<div class="card"><h2>' + esc(c.qrT) + '</h2><p class="muted">' + esc(c.qrD) + '</p><div class="qr" id="qr"></div><p class="muted" style="word-break:break-all;text-align:center" id="qrUrl"></p>' +

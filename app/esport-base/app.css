@@ -280,3 +280,4 @@ body.amb-enrere .marca{display:none}
 .cadena li:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:var(--suau);font-weight:700;background:var(--fons);line-height:1}
 .cadena li:nth-child(2){background:var(--terra-lt)} .cadena li:nth-child(3){background:var(--blau-lt)}
 @media (max-width:560px){ .duo2,.creences{grid-template-columns:1fr} .cadena{grid-template-columns:1fr} .cadena li:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-12px;transform:translateX(-50%)} }
+.valors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0} @media (max-width:560px){.valors{grid-template-columns:1fr}}

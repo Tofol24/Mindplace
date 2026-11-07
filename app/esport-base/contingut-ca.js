@@ -421,7 +421,7 @@ window.EPJ_TXT.ca = {
             "Quan les nostres reaccions són molt diferents si guanya o si perd, sense voler li deim que el resultat ens importa més que ell."],
       q: { t: "Quina frase transmet millor aquesta idea?", o: [
         { t: "«Avui sí que m'has fet content.»", ok: false, fb: "Lliga la teva alegria al resultat." },
-        { t: "«Jugui com jugui, t'estim igual.»", ok: true, fb: "Exacte. Separa l'estima del rendiment." } ] },
+        { t: "«Juguis com juguis, t'estim igual.»", ok: true, fb: "Exacte. Separa l'estima del rendiment." } ] },
       accio: "Després del pròxim partit, abans de parlar del resultat, demana-li com s'ho ha passat." },
     { id: "animar", t: "Animar no és donar instruccions",
       cos: ["Molts al·lots rendeixen pitjor si escolten instruccions, crítiques o gests de desaprovació des de la grada.",
@@ -501,6 +501,42 @@ window.EPJ_TXT.ca = {
         { t: "Aguantar-ho fins que esclati.", ok: false, fb: "Reprimir no és el mateix que acompanyar." } ] },
       accio: "Abans del pròxim partit, fes un minut de pràctica amb la silueta." }
   ],
+
+  /* ---------- UN CLUB, NO ILLES (comunitat i pedrera) ---------- */
+  comunitat: {
+    titol: "Un club, no illes",
+    intro: "Ser un jugador o una jugadora d'èxit no és només arribar a viure del futbol. És poder-hi jugar gran part de la vida, amb amistats, vivències i el sentiment de pertànyer a un lloc. El club hi té molt a veure: no només amb les actituds dels adults, sinó amb la manera de plantejar els equips.",
+    exitT: "Què és un jugador d'èxit?",
+    exit: ["El que continua jugant d'aquí a deu, vint o trenta anys, perquè l'esport li agrada i li fa bé.", "El que fa amics a l'equip i se sent part del club, jugui on jugui.", "El que aprèn a esforçar-se, a tolerar la frustració i a cooperar, i ho du a la resta de la seva vida.", "I, si arriba, el que juga a l'elit sense haver perdut tot això pel camí."],
+    exitCita: "Un jugador d'èxit és el que pot jugar-hi gran part de la vida.",
+    valorsT: "El que també entrenam",
+    valorsD: "Els valors no són una xerrada a part: s'entrenen dins els mateixos exercicis, al mateix temps que la tècnica, la tàctica i la preparació física.",
+    valors: [
+      { t: "Respecte", camp: "Saludar el rival i l'àrbitre; acceptar les decisions.", adult: "Ser-ne exemple a la grada i a la banqueta." },
+      { t: "Esforç", camp: "Valorar l'intent i la perseverança, no només l'encert.", adult: "Felicitar l'esforç, sigui quin sigui el resultat." },
+      { t: "Tolerància a la frustració", camp: "Tornar a la jugada després d'una errada.", adult: "No dramatitzar els errors ni les derrotes." },
+      { t: "Orientació a la tasca", camp: "Objectius de procés a cada exercici.", adult: "Preguntar què ha après abans que pel resultat." },
+      { t: "Cooperació", camp: "Exercicis on només es guanya si l'equip col·labora.", adult: "Reconèixer els gests d'ajuda als companys." },
+      { t: "Comunitat", camp: "Rituals d'equip i de club; sentir-se part d'un grup.", adult: "Animar tots els jugadors, no només el propi fill." }
+    ],
+    equipsT: "Equips connectats, no illes",
+    equips: ["Formar els equips cuidant també l'amistat, la confiança i la continuïtat dels grups, no només el nivell.", "Padrinatges: els equips grans acompanyen els petits en un entrenament o un partit.", "Anar a veure partits d'altres equips del club i animar-los.", "Jornades de club i rituals comuns, com la pinya de les famílies.", "Que la comunicació del club parli de tots els equips, no només del primer."],
+    nivellsT: "Nivells i ritmes de creixement",
+    nivells: ["Cap equip no és «el dels millors» ni «el dels pitjors»: tots tenen un paper rellevant dins el club.", "Moltes vegades el nivell d'avui depèn del ritme de creixement: hi ha al·lots que maduren abans i al·lots que ho fan més tard i arriben més lluny.", "Les portes entre nivells han d'estar obertes, i les decisions s'han d'explicar amb criteris educatius.", "Comparar-se amb un mateix, i no amb els companys, també val per als equips."],
+    pedreraT: "La pedrera dels entrenadors de demà",
+    pedrera: ["Molts dels jugadors d'avui poden ser els entrenadors, delegats i directius de demà.", "Oferir als juvenils que ajudin en entrenaments d'equips petits, acompanyats.", "Formar-los en els mateixos valors: així el club manté una idea i un sentiment compartits.", "Convidar els exjugadors a tornar: també són part de la comunitat."],
+    rolT: "Què hi puc aportar jo",
+    rol: {
+      familia: ["Animar tots els jugadors, també els dels altres equips del club.", "Explicar al meu fill que el seu equip i el seu nivell d'avui no el defineixen.", "Participar en les activitats de club, no només en els partits del meu fill."],
+      entrenador: ["Proposar una activitat compartida amb un altre equip del club.", "Explicar les decisions de nivell amb criteris educatius i portes obertes.", "Convidar un juvenil a ajudar-me en un entrenament i acompanyar-lo."]
+    },
+    tecT: "Des de la TEC",
+    tec: "Des de la Teoria de l'Efecte Conscient entenem que un entorn previsible, respectuós i on el jove se sent part d'un grup pot fer-se fiable per a ell, i que en un entorn així és més fàcil aprendre i arriscar-se. És una hipòtesi de treball del nostre model, coherent amb el que sabem sobre clima motivacional i pertinença, que seguim avaluant.",
+    accio: {
+      familia: "Aquesta setmana, anar a veure un partit d'un altre equip del club i animar-lo.",
+      entrenador: "Aquesta setmana, fer una activitat compartida amb un altre equip del club."
+    }
+  },
 
   /* ---------- ATENCIÓ AL JOC (dossier «Atenció i maneig emocional a l'esport») ---------- */
   atencio: {
@@ -703,7 +739,8 @@ window.EPJ_TXT.ca = {
       "Escoltar després del partit",
       "Fer una pausa AIS quan detecti enuig",
       "Respectar el silenci del meu fill",
-      "Felicitar la seva actitud, sigui quin sigui el resultat"
+      "Felicitar la seva actitud, sigui quin sigui el resultat",
+      "Anar a veure un partit d'un altre equip del club"
     ],
     entrenador: [
       "Corregir una sola cosa cada vegada",
@@ -711,7 +748,8 @@ window.EPJ_TXT.ca = {
       "No discutir decisions arbitrals davant l'equip",
       "Fer una pausa AIS quan detecti enuig",
       "Atendre les famílies només amb cita",
-      "Acabar cada sessió amb un reconeixement al grup"
+      "Acabar cada sessió amb un reconeixement al grup",
+      "Fer una activitat compartida amb un altre equip del club"
     ]
   },
 
