@@ -71,7 +71,7 @@ Mismo código de colores que el resto de herramientas APRENS (Respiro AIS, Mapa 
 - Las manos dibujadas son simbólicas y lo dice el propio dibujo. **No hay contador colectivo.**
 - Solo se comparte el mensaje de compromiso (editable). Emociones, sensaciones, pensamientos, historial y datos del hijo nunca salen del móvil.
 - Compartir usa el menú nativo del móvil y, si no existe, `api.whatsapp.com/send?text=`. La app no afirma que el mensaje se haya enviado.
-- «Preparar s'enquesta»: copiar la pregunta, copiar cada opción, abrir WhatsApp, y pasos para crearla a mano (una sola respuesta y, si se puede, ocultar votantes). El recuento está solo en WhatsApp.
+- «Preparar s'enquesta»: copiar la pregunta, copiar cada opción, abrir WhatsApp, y pasos para crearla a mano (una sola respuesta). En un grupo normal de WhatsApp los votos se ven con nombres, así que se recomienda hacerla en el canal de WhatsApp del club o usar el mensaje «sin encuesta» que también ofrece la app. El recuento está solo en WhatsApp.
 
 **Fase 2 (sin implementar):** una sesión por partido creada por el club (id de equipo, fecha,
 id de sesión), con un recuento agregado de participaciones voluntarias. Requeriría: base

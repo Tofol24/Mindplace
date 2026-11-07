@@ -545,7 +545,10 @@
       '<ol class="consignes">' + p.enquestaOpcions.map(function (o, i) { return '<li class="on" style="align-items:center"><span style="flex:1">' + esc(o) + '</span><button type="button" class="btn sm ghost" data-copia="' + i + '" aria-label="' + esc(p.copiaOpcio + ': ' + o) + '">' + esc(p.copiaOpcio) + '</button></li>'; }).join('') + '</ol>' +
       '<div class="btnrow"><button type="button" class="btn sm ghost" data-copia="tot">' + esc(p.copiaTot) + '</button><button type="button" class="btn sm ghost" id="obreWa">' + esc(p.obrirWa) + '</button></div>' +
       '<h2 class="h3">' + esc(S.lang === 'es' ? 'Pasos' : 'Passes') + '</h2><ol class="consignes">' + p.passos.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol>' +
-      '<p class="muted">' + esc(p.enquestaNota) + '</p></div></details>';
+      '<p class="muted">' + esc(p.enquestaNota) + '</p>' +
+      '<h2 class="h3">' + esc(p.senseT) + '</h2><p class="muted">' + esc(p.senseD) + '</p>' +
+      '<label class="sr" for="msgSense">' + esc(p.senseT) + '</label><textarea id="msgSense" rows="6">' + esc(fmt(p.senseText, { enllac: enllacClub() }).replace(/\\n/g, '\n')) + '</textarea>' +
+      '<div class="btnrow"><button type="button" class="btn sm verd" id="enviaSense">' + esc(p.enviaSense) + '</button><button type="button" class="btn sm ghost" id="copiaSense">' + esc(p.copiaSense) + '</button></div></div></details>';
     return h;
   }
   function invitacioText() { return fmt(T().pinya.invitacioText, { enllac: enllacClub() }).replace(/\\n/g, '\n'); }
@@ -1193,6 +1196,8 @@
     }
     if (b.id === 'obreWa') { obreWhatsApp(''); return; }
     if (b.id === 'enviaInv') { comparteix($('#msgInv').value); return; }
+    if (b.id === 'enviaSense') { comparteix($('#msgSense').value); return; }
+    if (b.id === 'copiaSense') { copia($('#msgSense').value, t.pinya.copiat); return; }
     if (b.id === 'copiaInv') { copia($('#msgInv').value, t.pinya.copiat); return; }
 
     /* ---- pausa ---- */
