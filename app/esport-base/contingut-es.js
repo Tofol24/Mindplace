@@ -55,8 +55,8 @@ window.EPJ_TXT.es = {
   },
 
   rols: {
-    familia: { t: "Soy padre, madre o familiar", d: "Acompaño a un jugador o jugadora desde la grada y en casa.", qui: "el padre, la madre o el familiar" },
-    entrenador: { t: "Soy entrenador o entrenadora", d: "Dirijo el equipo, el banquillo y las sesiones.", qui: "el entrenador o la entrenadora" }
+    familia: { t: "Soy padre, madre o familiar", d: "Acompaño a un jugador o jugadora desde la grada y en casa.", qui: "al padre, a la madre o al familiar" },
+    entrenador: { t: "Soy entrenador o entrenadora", d: "Dirijo el equipo, el banquillo y las sesiones.", qui: "al entrenador o a la entrenadora" }
   },
 
   inici: {
@@ -174,11 +174,11 @@ window.EPJ_TXT.es = {
     intro: "Una práctica corta de Atención Interna Sensorial (AIS). No hace falta cerrar los ojos: puedes hacerla en la grada o en el banquillo, con los ojos abiertos.",
     estats: [
       { id: "reconec", n: "1", t: "Reconozco", d: "Toca donde notas la activación: tensión, inquietud, calor, un nudo… Llevas ahí la luz amarilla, que es tu consciencia, tu atención." },
-      { id: "acompany", n: "2", t: "Me acompaño", d: "La luz azul es la respiración. Respira de forma natural y deja que el aire acompañe la zona donde está tu atención. Las dos luces conviven." },
+      { id: "acompany", n: "2", t: "Me acompaño", d: "La luz azul es el aire: entra por la nariz y hace de cebo. La amarilla es tu atención: sale de la cabeza, baja con el aire y se queda en la barriga, aunque el aire vuelva a salir." },
       { id: "elegesc", n: "3", t: "Elijo", d: "Con la atención presente y la respiración tranquila, eliges cómo quieres comportarte." }
     ],
     llegendaGroc: "Luz amarilla · consciencia, atención",
-    llegendaBlau: "Luz azul · respiración",
+    llegendaBlau: "Luz azul · el aire, la respiración",
     grocMsg: "Has llevado ahí la atención. No hace falta eliminar esta sensación: puedes reconocerla y acompañarla.",
     blauMsg: "La respiración acompaña esta zona, sin prisa.",
     elegescMsg: "La sensación puede seguir aquí. Tú puedes elegir cómo actuar.",
@@ -217,6 +217,14 @@ window.EPJ_TXT.es = {
     accessible: "Puedes usar la lista de zonas en lugar del dibujo. Cada zona indica en texto si tiene luz amarilla, azul o ambas."
   },
 
+  /* ---------- RESPIRACIÓN DE DOS LUCES (componente del Respiro AIS) ---------- */
+  respiro: {
+    phase: { inhale: "Inhala", anchor: "Quédate", exhale: "Exhala", pause: "Pausa" },
+    hint: { inhale: "el aire entra por la nariz y la atención baja", anchor: "la conciencia se queda en el vientre", exhale: "el aire sube y sale; la conciencia permanece", pause: "respira natural" },
+    legend: { air: "el aire · entra por la nariz", mind: "tu atención consciente · desde la cabeza" },
+    start: "Empezar", stop: "Parar", one: " respiración", many: " respiraciones"
+  },
+
   /* ---------- PAUSA (DURANTE) ---------- */
   durant: {
     titol: "Cuando el partido te activa, vuelve a ti",
@@ -229,9 +237,9 @@ window.EPJ_TXT.es = {
     situacioQ: "¿Qué ha pasado? (opcional)",
     pas2: "Me acompaño",
     pas2t: "Puedo sentir este enfado sin tener que descargarlo.",
-    pas2d: "Tu atención (amarilla) se queda en la zona y la respiración (azul) la acompaña, natural y suave. Bastarán unos segundos.",
+    pas2d: "La luz azul es el aire: entra por la nariz y hace de cebo. La amarilla es tu atención: baja con el aire y se queda en la barriga, aunque el aire vuelva a salir. Respira natural, sin forzar.",
     pas3: "Elijo",
-    pas3t: "¿Qué respuesta representa a {qui} que quiero ser?",
+    pas3t: "¿Qué respuesta representa {qui} que quiero ser?",
     pas3sense: "Hoy no has elegido compromiso. Piensa en una sola cosa que puedas hacer ahora y que te acerque a la persona que quieres ser.",
     tornar: "Vuelvo al partido desde el respeto",
     rapidT: "Modo rápido",

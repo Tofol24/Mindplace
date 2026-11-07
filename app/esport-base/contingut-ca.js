@@ -174,11 +174,11 @@ window.EPJ_TXT.ca = {
     intro: "Una pràctica curta d'Atenció Interna Sensorial (AIS). No cal tancar els ulls: la pots fer a la grada o a la banqueta, amb els ulls oberts.",
     estats: [
       { id: "reconec", n: "1", t: "Reconec", d: "Toca on notes l'activació: tensió, inquietud, calor, nus… Hi portes la llum groga, que és la teva consciència, la teva atenció." },
-      { id: "acompany", n: "2", t: "M'acompany", d: "La llum blava és la respiració. Respira de manera natural i deixa que l'aire acompanyi la zona on és la teva atenció. Les dues llums conviuen." },
+      { id: "acompany", n: "2", t: "M'acompany", d: "La llum blava és l'aire: entra pel nas i fa d'esquer. La groga és la teva atenció: surt del cap, baixa amb l'aire i es queda a la panxa, encara que l'aire torni a sortir." },
       { id: "elegesc", n: "3", t: "Elegesc", d: "Amb l'atenció present i la respiració tranquil·la, elegeixes com et vols comportar." }
     ],
     llegendaGroc: "Llum groga · consciència, atenció",
-    llegendaBlau: "Llum blava · respiració",
+    llegendaBlau: "Llum blava · l'aire, la respiració",
     grocMsg: "Hi has portat l'atenció. No cal eliminar aquesta sensació: la pots reconèixer i acompanyar.",
     blauMsg: "La respiració acompanya aquesta zona, sense pressa.",
     elegescMsg: "La sensació pot seguir aquí. Tu pots elegir com actuar.",
@@ -217,6 +217,14 @@ window.EPJ_TXT.ca = {
     accessible: "Pots fer servir la llista de zones en lloc del dibuix. Cada zona indica en text si té llum groga, blava o totes dues."
   },
 
+  /* ---------- RESPIRACIÓ DE DUES LLUMS (component del Respiro AIS) ---------- */
+  respiro: {
+    phase: { inhale: "Inspira", anchor: "Queda't", exhale: "Expira", pause: "Pausa" },
+    hint: { inhale: "l'aire entra pel nas i l'atenció baixa", anchor: "l'atenció es queda a la panxa", exhale: "l'aire puja i surt; l'atenció hi roman", pause: "respira natural" },
+    legend: { air: "l'aire · entra pel nas", mind: "la teva atenció · des del cap" },
+    start: "Començar", stop: "Aturar", one: " respiració", many: " respiracions"
+  },
+
   /* ---------- PAUSA (DURANT) ---------- */
   durant: {
     titol: "Quan el partit t'activa, torna a tu",
@@ -229,7 +237,7 @@ window.EPJ_TXT.ca = {
     situacioQ: "Què ha passat? (opcional)",
     pas2: "M'acompany",
     pas2t: "Puc sentir aquest enuig sense haver de descarregar-lo.",
-    pas2d: "La teva atenció (groga) es queda a la zona i la respiració (blava) l'acompanya, natural i suau. Uns segons bastaran.",
+    pas2d: "La llum blava és l'aire: entra pel nas i fa d'esquer. La groga és la teva atenció: baixa amb l'aire i es queda a la panxa, encara que l'aire torni a sortir. Respira natural, sense forçar.",
     pas3: "Elegesc",
     pas3t: "Quina resposta representa {qui} que vull ser?",
     pas3sense: "Avui no has triat compromís. Pensa en una sola cosa que pots fer ara que t'acosti a la persona que vols ser.",

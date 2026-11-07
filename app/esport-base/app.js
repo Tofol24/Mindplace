@@ -44,6 +44,21 @@
       sessioPreparada: 'Preparación guardada.', intencioPropia: 'Intención propia', triaIntencio: 'O elige una', continuarSense: 'Continuar sin elegir', accions: 'Acciones', anterior: 'Anterior', navPas: 'Pantalla anterior y siguiente' }
   };
   function X() { return XX[S.lang] || XX.ca; }
+  /* Textos guardats (compromís setmanal, intenció…) que provenen del contingut de l'app:
+     es tornen a mostrar en l'idioma actual. Es construeix un mapa CA⇄ES recorrent els
+     dos fitxers de contingut en paral·lel. Un text escrit per la persona no hi és i surt tal qual. */
+  var MAPA = null;
+  function mapa() {
+    if (MAPA) return MAPA; MAPA = {};
+    (function camina(a, b) {
+      if (typeof a === 'string' && typeof b === 'string') { var o = { ca: a, es: b }; MAPA[a] = o; MAPA[b] = o; return; }
+      if (a && b && typeof a === 'object') Object.keys(a).forEach(function (k) { camina(a[k], b[k]); });
+    })(window.EPJ_TXT.ca, window.EPJ_TXT.es || {});
+    return MAPA;
+  }
+  function tr(s) { if (typeof s !== 'string') return s; var m = mapa()[s]; return m ? (m[S.lang] || s) : s; }
+  /* textos de club: cadena o { ca, es } */
+  function loc(v) { if (!v) return ''; if (typeof v === 'string') return v; return v[S.lang] || v.ca || v.es || ''; }
   function fmt(s, o) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : ''; }); }
 
   /* ================= UTILITATS ================= */
@@ -93,7 +108,7 @@
     return id;
   }
   function zonaText(id) { var z = trobaPer(T().zones, id); return z ? z.t : id; }
-  function conductaText(id) { var c = trobaPer(T().pinya.conductes, id); return c ? c.t : (id ? compText(id) : ''); }
+  function conductaText(id) { var c = trobaPer(T().pinya.conductes, id); return c ? c.t : (id ? tr(compText(id)) : ''); }
   function compromisosActuals() { return S.actual && S.actual.compromisos ? S.actual.compromisos : []; }
   function compromisosText() { return compromisosActuals().map(function (id) { return compText(id, S.actual.rol); }); }
 
@@ -110,10 +125,11 @@
     if (typeof c.nom === 'string') o.nom = c.nom.replace(/[<>]/g, '').trim().slice(0, 60);
     if (typeof c.color === 'string' && COLOR_RE.test(c.color)) o.color = c.color;
     if (c.idioma === 'ca' || c.idioma === 'es') o.idioma = c.idioma;
-    if (typeof c.missatge === 'string') o.missatge = c.missatge.slice(0, 600);
+    function txt(v, n) { if (typeof v === 'string') return v.slice(0, n); if (v && typeof v === 'object') { var r = {}; ['ca', 'es'].forEach(function (k) { if (typeof v[k] === 'string') r[k] = v[k].slice(0, n); }); return (r.ca || r.es) ? r : null; } return null; }
+    if (txt(c.missatge, 600)) o.missatge = txt(c.missatge, 600);
     if (typeof c.escut === 'string' && /^clubs\/[a-z0-9-]+\.(png|svg|webp|jpg)$/.test(c.escut)) o.escut = c.escut;
-    if (Array.isArray(c.codi)) o.codi = c.codi.filter(function (x) { return typeof x === 'string'; }).slice(0, 20).map(function (x) { return x.slice(0, 300); });
-    if (c.proteccio && typeof c.proteccio === 'object') o.proteccio = { text: String(c.proteccio.text || '').slice(0, 600), contacte: String(c.proteccio.contacte || '').slice(0, 200) };
+    if (Array.isArray(c.codi)) o.codi = c.codi.map(function (x) { return txt(x, 300); }).filter(Boolean).slice(0, 20);
+    if (c.proteccio && typeof c.proteccio === 'object') o.proteccio = { text: txt(c.proteccio.text, 600) || '', contacte: txt(c.proteccio.contacte, 200) || '' };
     if (typeof c.slug === 'string' && /^[a-z0-9-]{1,40}$/.test(c.slug)) o.slug = c.slug;
     return o.nom ? o : null;
   }
@@ -137,7 +153,7 @@
       q.push('nom=' + encodeURIComponent(c.nom));
       if (c.color) q.push('color=' + encodeURIComponent(c.color.slice(1)));
       if (c.idioma) q.push('lang=' + c.idioma);
-      if (c.missatge) q.push('msg=' + encodeURIComponent(c.missatge.slice(0, 200)));
+      if (c.missatge) q.push('msg=' + encodeURIComponent(loc(c.missatge).slice(0, 200)));
     }
     return u + (q.length ? '?' + q.join('&') : '');
   }
@@ -233,6 +249,7 @@
   }
   function pinta() {
     if (silActual) { try { silActual.destroy(); } catch (e) {} silActual = null; }
+    aturaRespiro();
     if (!S.lang) S.lang = 'ca';
     var r = ruta(), v = r.v;
     if (!S.avis || !S.rol) v = 'benvinguda';
@@ -260,7 +277,7 @@
   function seguretat() {
     var t = T().ui, c = S.club;
     return '<div class="seguretat" role="note"><div><b>' + esc(t.seguretatTitol) + '</b>' + esc(t.seguretatText) +
-      (c && c.proteccio && c.proteccio.contacte ? '<br>' + esc(t.seguretatClub) + ' ' + esc(c.proteccio.contacte) : '') + '</div></div>';
+      (c && c.proteccio && c.proteccio.contacte ? '<br>' + esc(t.seguretatClub) + ' ' + esc(loc(c.proteccio.contacte)) : '') + '</div></div>';
   }
   function avisNoms() { return '<div class="avis-noms">' + esc(T().ui.noNoms) + '</div>'; }
   function opt(attr, val, txt, on, rolAria) {
@@ -299,7 +316,7 @@
   VISTES.inici = function () {
     var t = T(), i = t.inici, r = rol(), c = S.club;
     var h = '<span class="kick">' + esc(c && c.nom ? c.nom : 'APRENS') + '</span><h1>' + esc(t.ui.appName) + '</h1><p class="lead">' + esc(t.ui.subtitol) + '</p>';
-    if (c && c.missatge) h += '<div class="card blau"><h2>' + esc(t.club.missatge) + '</h2><p style="margin:0;white-space:pre-line">' + esc(c.missatge) + '</p></div>';
+    if (c && c.missatge) h += '<div class="card blau"><h2>' + esc(t.club.missatge) + '</h2><p style="margin:0;white-space:pre-line">' + esc(loc(c.missatge)) + '</p></div>';
     h += '<div class="cita">' + esc(t.benvinguda.principi) + '</div>';
     h += '<p class="muted">' + esc(i[r]) + '</p>';
     if (S.actual) {
@@ -344,8 +361,8 @@
       t.compromisos[r].map(function (c) { return opt('data-comp', c.id, c.t, ab.compromisos.indexOf(c.id) >= 0, 'checkbox'); }).join('') + '</div><p class="muted" id="maxDos" aria-live="polite"></p>';
     if (r === 'entrenador') {
       h += '<label class="lb" for="intencio">' + esc(a.intencio) + '</label><p class="muted">' + esc(a.intencioD) + '</p><div class="chips">' +
-        t.intencionsEntrenador.map(function (x) { return '<button type="button" class="chip" data-intencio="' + esc(x) + '" aria-pressed="' + (ab.intencio === x) + '">' + esc(x) + '</button>'; }).join('') +
-        '</div><input type="text" id="intencio" maxlength="140" placeholder="' + esc(a.intencioPh) + '" value="' + esc(ab.intencio) + '" autocomplete="off">' + avisNoms();
+        t.intencionsEntrenador.map(function (x) { return '<button type="button" class="chip" data-intencio="' + esc(x) + '" aria-pressed="' + (tr(ab.intencio) === x) + '">' + esc(x) + '</button>'; }).join('') +
+        '</div><input type="text" id="intencio" maxlength="140" placeholder="' + esc(a.intencioPh) + '" value="' + esc(tr(ab.intencio)) + '" autocomplete="off">' + avisNoms();
     }
     h += '</div>';
     h += '<div class="btnrow"><button type="button" class="btn full blau" id="desaAbans">' + esc(t.ui.continuar) + ' · ' + esc(t.pinya.titol) + '</button></div>';
@@ -354,14 +371,33 @@
   DESPRES.abans = function () { muntaPractica($('#silAbans'), ab.ais, true); };
 
   /* pràctica AIS compacta i reutilitzable (abans i pràctica lliure) */
+  /* Respiració de dues llums: el mateix component que el Respiro AIS.
+     Blau = l'aire, entra pel nas i baixa fins a la panxa (fa d'esquer).
+     Groc = l'atenció, surt del cap, segueix l'aire i es queda ancorada a la panxa
+     quan l'aire torna a pujar i sortir. */
+  var respActual = null;
+  function aturaRespiro() { if (respActual) { try { respActual.destroy(); } catch (e) {} respActual = null; } }
+  function muntaRespiro(box, onCycle) {
+    aturaRespiro();
+    if (!box || !window.RespiroAIS) return null;
+    var r = T().respiro;
+    respActual = window.RespiroAIS.mount(box, {
+      lang: 'es', figure: 'organism', showControl: true, autostart: true,
+      rhythm: { inhale: 4000, anchor: 1500, exhale: 6500, pause: 800 },
+      labels: { phase: r.phase, hint: r.hint, legend: r.legend, start: r.start, stop: r.stop, one: r.one, many: r.many },
+      onCycle: onCycle
+    });
+    return respActual;
+  }
+
   function muntaPractica(box, desti, ambPercepcio) {
     if (!box) return;
     var t = T(), s = t.silueta, mode = 'reconec', idx = 0;
     var h = '<div class="estats" role="group" aria-label="' + esc(s.titol) + '">' + s.estats.map(function (e) { return '<button type="button" data-estat="' + e.id + '" aria-pressed="' + (e.id === mode) + '"><b>' + e.n + '</b>' + esc(e.t) + '</button>'; }).join('') + '</div>' +
-      '<p class="muted" id="estatD">' + esc(s.estats[0].d) + '</p><div id="silFig"></div><div class="missatge-sil" id="silMsg" aria-live="polite"></div>' +
+      '<p class="muted" id="estatD">' + esc(s.estats[0].d) + '</p><div id="silFig"></div><div id="respBox" hidden></div><div class="missatge-sil" id="silMsg" aria-live="polite"></div>' +
       '<div id="silElegesc" hidden></div>' +
       '<h2 class="h3">' + esc(t.ui.seguent) + '…</h2><ol class="consignes" id="consignes">' + s.consignes.map(function (c, i) { return '<li' + (i === 0 ? ' class="on"' : '') + '>' + esc(c) + '</li>'; }).join('') + '</ol>' +
-      '<div class="btnrow"><button type="button" class="btn sm ghost" id="consSeg">' + esc(t.ui.seguent) + '</button><button type="button" class="btn sm ghost" id="respTog" aria-pressed="false">' + esc(s.respiracio) + ': ' + esc(s.respiracioOff) + '</button></div>' +
+      '<div class="btnrow"><button type="button" class="btn sm ghost" id="consSeg">' + esc(t.ui.seguent) + '</button></div>' +
       '<div class="btnrow"><button type="button" class="link" id="externa">' + esc(s.externaBtn) + '</button></div><div id="extBox" hidden></div>';
     if (ambPercepcio) h += '<h2 class="h3">' + esc(s.percepcio) + '</h2>' + seg('percepcio', s.percepcions, desti.percepcio, s.percepcio) + '<p class="muted" id="percMsg" aria-live="polite">' + esc(t.ui.totesValides) + '</p>';
     h += '<p class="muted" style="margin-top:10px">' + esc(t.ui.colors) + '</p>';
@@ -378,11 +414,11 @@
       var b = ev.target.closest('button'); if (!b || !box.contains(b)) return;
       if (b.hasAttribute('data-estat')) {
         mode = b.getAttribute('data-estat'); sil.setMode(mode);
+        var rb = $('#respBox', box), sf = $('#silFig', box);
         if (mode === 'acompany') {
-          /* la respiració (blava) acompanya on és l'atenció (groga) */
-          if (!desti.blau.length) { (desti.groc.length ? desti.groc : ['panxa']).forEach(function (z) { sil.focusBlau(z); }); desti.blau = sil.get().blau; }
-          var rt = $('#respTog', box); if (rt && rt.getAttribute('aria-pressed') !== 'true') rt.click();
-        }
+          /* respiració de dues llums: l'aire (blau) fa d'esquer i l'atenció (groga) queda a la panxa */
+          sf.hidden = true; rb.hidden = false; muntaRespiro(rb); desti.blau = ['panxa'];
+        } else { aturaRespiro(); rb.hidden = true; rb.innerHTML = ''; sf.hidden = false; }
         $$('[data-estat]', box).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
         var e = trobaPer(s.estats, mode); $('#estatD', box).textContent = e.d;
         var el = $('#silElegesc', box);
@@ -397,9 +433,6 @@
         idx = (idx + 1) % s.consignes.length;
         $$('#consignes li', box).forEach(function (li, i) { li.classList.toggle('on', i === idx); });
         if (idx === 1 && mode === 'reconec') { b.blur(); }
-      } else if (b.id === 'respTog') {
-        var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on));
-        b.textContent = s.respiracio + ': ' + (on ? s.respiracioOn : s.respiracioOff); sil.setRespiracio(on);
       } else if (b.id === 'externa') {
         var eb = $('#extBox', box); eb.hidden = !eb.hidden;
         eb.innerHTML = '<div class="card suau"><h3 style="margin-top:0">' + esc(s.externaT) + '</h3><ol class="consignes">' + s.externa.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>';
@@ -560,12 +593,14 @@
   function obreModal() { $('#modal').classList.add('on'); document.body.style.overflow = 'hidden'; }
   function tancaModal() {
     if (pausaSil) { try { pausaSil.destroy(); } catch (e) {} pausaSil = null; }
+    aturaRespiro();
     clearInterval(rapidT); $('#modal').classList.remove('on'); document.body.style.overflow = '';
     var b = $('.pausa-btn') || $('#app h1'); if (b) try { b.focus(); } catch (e) {}
   }
   var pausaSil = null;
   function pintaPausa() {
     if (pausaSil) { try { pausaSil.destroy(); } catch (e) {} pausaSil = null; }
+    aturaRespiro();
     var t = T(), d = t.durant, p = t.pinya, r = rol();
     var titols = [d.pas1, d.pas2, d.pas3];
     var h = '<div class="capsh"><span class="pas-n">' + esc(X().pas) + ' ' + (pz.pas + 1) + ' ' + esc(X().de) + ' 3</span><span class="sp"></span><button type="button" class="link" data-tanca="1">' + esc(t.ui.tancar) + '</button></div>' +
@@ -577,8 +612,8 @@
         t.escenaris.filter(function (e) { return e.rols.indexOf(r) >= 0; }).map(function (e) { return '<option value="' + e.id + '"' + (pz.situacio === e.id ? ' selected' : '') + '>' + esc(e.t) + '</option>'; }).join('') + '</select>';
       h += '<div class="btnrow"><button type="button" class="btn full" data-pzpas="1">' + esc(t.ui.seguent) + ' →</button></div>';
     } else if (pz.pas === 1) {
-      h += '<p class="cita" style="margin-top:4px">' + esc(d.pas2t) + '</p><p class="muted">' + esc(d.pas2d) + '</p><div id="pzSil"></div>';
-      h += '<div class="btnrow"><button type="button" class="btn sm ghost" id="pzResp" aria-pressed="true">' + esc(t.silueta.respiracio) + ': ' + esc(t.silueta.respiracioOn) + '</button><button type="button" class="link" id="pzExt">' + esc(t.silueta.externaBtn) + '</button></div><div id="pzExtBox" hidden></div>';
+      h += '<p class="cita" style="margin-top:4px">' + esc(d.pas2t) + '</p><p class="muted">' + esc(d.pas2d) + '</p><div id="pzResp"></div>';
+      h += '<div class="btnrow"><button type="button" class="link" id="pzExt">' + esc(t.silueta.externaBtn) + '</button></div><div id="pzExtBox" hidden></div>';
       h += '<div class="btnrow"><button type="button" class="btn full ghost" data-pzpas="0">← ' + esc(t.ui.enrere) + '</button><button type="button" class="btn full" data-pzpas="2">' + esc(t.ui.seguent) + ' →</button></div>';
     } else {
       var comp = compromisosText();
@@ -592,13 +627,10 @@
     $('#modal').setAttribute('aria-labelledby', 'pasTitol');
     var box = $('#pzSil');
     if (box) {
-      pausaSil = window.SiluetaAIS.mount(box, { txt: t, mode: pz.pas === 0 ? 'reconec' : 'acompany', groc: pz.groc, blau: pz.blau, llista: true,
-        onChange: function (st) { pz.groc = st.groc; pz.blau = st.blau; } });
-      if (pz.pas === 1) {
-        if (!pz.blau.length) { pz.groc.forEach(function (z) { pausaSil.focusBlau(z); }); if (!pz.groc.length) pausaSil.focusBlau('panxa'); pz.blau = pausaSil.get().blau; }
-        pausaSil.setRespiracio(true);
-      }
+      pausaSil = window.SiluetaAIS.mount(box, { txt: t, mode: 'reconec', groc: pz.groc, blau: pz.blau, llista: true,
+        onChange: function (st) { pz.groc = st.groc; } });
     }
+    if (pz.pas === 1) { muntaRespiro($('#pzResp')); pz.blau = ['panxa']; }
     var tt = $('#pasTitol'); tt.setAttribute('tabindex', '-1'); try { tt.focus(); } catch (e) {}
   }
   function fiPausa(mode) {
@@ -752,9 +784,9 @@
     var t = T(), s = t.setmanal, a = S.setm.actual;
     if (!a) return '';
     var dies = diesDes(a.desDe);
-    if (nomesReflexio && dies < 7) return '<div class="card suau"><span class="pas-n">' + esc(s.actual) + '</span><p style="margin:4px 0 0"><b>' + esc(a.t) + '</b></p></div>';
+    if (nomesReflexio && dies < 7) return '<div class="card suau"><span class="pas-n">' + esc(s.actual) + '</span><p style="margin:4px 0 0"><b>' + esc(tr(a.t)) + '</b></p></div>';
     if (dies >= 7 || !nomesReflexio) {
-      return '<div class="card blau"><h2>' + esc(dies >= 7 ? s.reflexioT : s.actual) + '</h2><p><b>' + esc(a.t) + '</b><br><span class="muted">' + esc(s.desDe) + ' ' + esc(dataCurta(a.desDe)) + '</span></p>' +
+      return '<div class="card blau"><h2>' + esc(dies >= 7 ? s.reflexioT : s.actual) + '</h2><p><b>' + esc(tr(a.t)) + '</b><br><span class="muted">' + esc(s.desDe) + ' ' + esc(dataCurta(a.desDe)) + '</span></p>' +
         (dies >= 7 || !nomesReflexio ? '<div id="reflexio"' + (dies >= 7 ? '' : ' hidden') + '>' + seg('reflexio', s.reflexioO, null, s.reflexioT) +
           '<label class="lb" for="reflexioNota">' + esc(s.reflexioQ) + '</label><textarea id="reflexioNota" maxlength="300"></textarea>' + avisNoms() +
           '<div class="btnrow"><button type="button" class="btn sm" id="renova">' + esc(s.renovar) + '</button><button type="button" class="btn sm ghost" id="nouSetm">' + esc(s.nou) + '</button></div></div>' : '') +
@@ -772,7 +804,7 @@
     if (S.setm.hist.length) {
       h += '<h2>' + esc(s.historial) + '</h2>' + S.setm.hist.slice().reverse().map(function (x) {
         var v = trobaPer(s.reflexioO, x.valoracio);
-        return '<div class="reg"><div class="rt"><b>' + esc(x.t) + '</b><span class="rd">' + esc(dataCurta(x.desDe)) + '</span></div>' + (v ? '<div class="rb">' + esc(v.t) + (x.nota ? ' · ' + esc(x.nota) : '') + '</div>' : '') + '</div>';
+        return '<div class="reg"><div class="rt"><b>' + esc(tr(x.t)) + '</b><span class="rd">' + esc(dataCurta(x.desDe)) + '</span></div>' + (v ? '<div class="rb">' + esc(v.t) + (x.nota ? ' · ' + esc(x.nota) : '') + '</div>' : '') + '</div>';
       }).join('');
     }
     return h + peu();
@@ -799,7 +831,7 @@
       if (r.tipus === 'manual') partits['m' + r.id] = 1;
       if (r.tipus === 'pausa') pauses++;
       if (r.tipus === 'despres' && r.check) { respecte += r.check.length; r.check.forEach(function (c) { conds[c] = (conds[c] || 0) + 1; }); }
-      ['repetir', 'millorar', 'ajudat', 'aprenentatge'].forEach(function (k) { if (r[k]) aprenentatges.push({ d: r.data, t: r[k] }); });
+      ['repetir', 'millorar', 'ajudat', 'aprenentatge'].forEach(function (k) { if (r[k]) aprenentatges.push({ d: r.data, t: tr(r[k]) }); });
       if (r.tipus === 'abans' && r.compromisos) r.compromisos.forEach(function (c) { comps[c] = (comps[c] || 0) + 1; });
       if (r.tipus === 'abans' && r.disparadors) r.disparadors.forEach(function (c) { sits[c] = (sits[c] || 0) + 1; });
       if ((r.tipus === 'pausa' || r.tipus === 'manual') && r.situacio) sits[r.situacio] = (sits[r.situacio] || 0) + 1;
@@ -848,7 +880,7 @@
     if (r.conducta) parts.push(c.conducta + ': ' + conductaText(r.conducta));
     if (r.impulsiva) parts.push(c.impulsiva + ': ' + (r.impulsiva === 'si' ? g.si : g.no));
     if (r.reparacio) parts.push(c.reparacio + ': ' + g.si);
-    ['ajudat', 'repetir', 'millorar', 'aprenentatge'].forEach(function (k) { if (r[k]) parts.push(r[k]); });
+    ['ajudat', 'repetir', 'millorar', 'aprenentatge'].forEach(function (k) { if (r[k]) parts.push(tr(r[k])); });
     return '<div class="reg"><div class="rt"><b>' + esc(g.tipus[r.tipus] || r.tipus) + '</b><span class="rd">' + esc(dataCurta(r.data)) + '</span></div><div class="rb">' + parts.map(esc).join(' · ') + '</div>' +
       '<button type="button" class="del" data-del="' + esc(r.id) + '">' + esc(g.esborrar) + '</button></div>';
   }
@@ -893,7 +925,7 @@
     S.reg.forEach(function (r) {
       files.push([r.data, r.tipus, r.rol, r.moment, situacioText(r.situacio), r.activacio, (r.zones || []).map(zonaText).join(', '), r.ais,
         r.conducta ? conductaText(r.conducta) : (r.compromisos || []).map(function (x) { return compText(x, r.rol); }).join(' | '),
-        r.impulsiva, r.reparacio ? 'si' : '', [r.ajudat, r.repetir, r.millorar, r.aprenentatge].filter(Boolean).join(' | ')].map(q).join(';'));
+        r.impulsiva, r.reparacio ? 'si' : '', [r.ajudat, r.repetir, r.millorar, r.aprenentatge].filter(Boolean).map(tr).join(' | ')].map(q).join(';'));
     });
     descarrega('els-pares-tambe-juguen-' + avui() + '.csv', '﻿' + files.join('\r\n'), 'text/csv;charset=utf-8');
   }
@@ -904,11 +936,11 @@
     var h = '<span class="kick">' + esc(cl && cl.nom ? cl.nom : t.ui.perClubs) + '</span><h1>' + esc(c.titol) + '</h1>';
     if (cl && cl.escut) h += '<img onerror="this.remove()" src="' + esc(cl.escut) + '" alt="' + esc(c.escut + ' ' + cl.nom) + '" style="display:block;width:96px;height:auto;margin:6px auto 4px">';
     h += '<p class="lead">' + esc(c.intro) + '</p>';
-    if (cl && cl.missatge) h += '<div class="card blau"><h2>' + esc(c.missatge) + '</h2><p style="margin:0;white-space:pre-line">' + esc(cl.missatge) + '</p></div>';
+    if (cl && cl.missatge) h += '<div class="card blau"><h2>' + esc(c.missatge) + '</h2><p style="margin:0;white-space:pre-line">' + esc(loc(cl.missatge)) + '</p></div>';
     h += '<div class="club-comp">' + ['families', 'entrenadors', 'club'].map(function (k) { var x = c.comp[k]; return '<div class="card" style="margin:0"><h2>' + esc(x.t) + '</h2><ul class="punts">' + x.l.map(function (y) { return '<li>' + esc(y) + '</li>'; }).join('') + '</ul></div>'; }).join('') + '</div>';
-    if (cl && cl.codi && cl.codi.length) h += '<div class="card"><h2>' + esc(c.codi) + '</h2><ul class="punts">' + cl.codi.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
-    h += '<div class="card terra"><h2>' + esc(c.proteccio) + '</h2>' + (cl && cl.proteccio && cl.proteccio.text ? '<p>' + esc(cl.proteccio.text) + '</p>' : '') +
-      '<p style="margin:0">' + esc(t.ui.seguretatText) + (cl && cl.proteccio && cl.proteccio.contacte ? '<br><b>' + esc(t.ui.seguretatClub) + '</b> ' + esc(cl.proteccio.contacte) : '') + '</p></div>';
+    if (cl && cl.codi && cl.codi.length) h += '<div class="card"><h2>' + esc(c.codi) + '</h2><ul class="punts">' + cl.codi.map(function (x) { return '<li>' + esc(loc(x)) + '</li>'; }).join('') + '</ul></div>';
+    h += '<div class="card terra"><h2>' + esc(c.proteccio) + '</h2>' + (cl && cl.proteccio && cl.proteccio.text ? '<p>' + esc(loc(cl.proteccio.text)) + '</p>' : '') +
+      '<p style="margin:0">' + esc(t.ui.seguretatText) + (cl && cl.proteccio && cl.proteccio.contacte ? '<br><b>' + esc(t.ui.seguretatClub) + '</b> ' + esc(loc(cl.proteccio.contacte)) : '') + '</p></div>';
     h += limitsPinya();
     h += '<div class="card"><h2>' + esc(c.recursos) + '</h2><p style="margin:0">' + esc(c.recursosText) + '</p></div>';
     h += '<div class="card"><h2>' + esc(c.qrT) + '</h2><p class="muted">' + esc(c.qrD) + '</p><div class="qr" id="qr"></div><p class="muted" style="word-break:break-all;text-align:center" id="qrUrl"></p>' +
@@ -917,7 +949,7 @@
       '<label class="lb" for="cfNom">' + esc(c.nom) + '</label><input type="text" id="cfNom" maxlength="60" value="' + esc(cl ? cl.nom : '') + '" autocomplete="off">' +
       '<label class="lb" for="cfColor">' + esc(c.color) + '</label><input type="color" id="cfColor" value="' + esc(cl && cl.color ? cl.color : '#2F5E9E') + '">' +
       '<label class="lb">' + esc(c.idiomaPrincipal) + '</label>' + seg('cfLang', [{ id: 'ca', t: 'Català' }, { id: 'es', t: 'Castellano' }], cl && cl.idioma ? cl.idioma : S.lang, c.idiomaPrincipal) +
-      '<label class="lb" for="cfMsg">' + esc(c.missatgeCurt) + '</label><textarea id="cfMsg" maxlength="200">' + esc(cl && cl.missatge && !cl.slug ? cl.missatge : '') + '</textarea>' +
+      '<label class="lb" for="cfMsg">' + esc(c.missatgeCurt) + '</label><textarea id="cfMsg" maxlength="200">' + esc(cl && cl.missatge && !cl.slug ? loc(cl.missatge) : '') + '</textarea>' +
       '<div class="btnrow"><button type="button" class="btn full blau" id="cfGenera">' + esc(c.generar) + '</button></div></div></details>';
     return h + peu();
   };
@@ -1014,7 +1046,6 @@
     /* ---- pausa ---- */
     if (b.hasAttribute('data-tanca')) { tancaModal(); return; }
     if (b.hasAttribute('data-pzpas')) { if (pz.pas === 0) { var sl = $('#pzSit'); pz.situacio = sl && sl.value ? sl.value : pz.situacio; } pz.pas = +b.getAttribute('data-pzpas'); pintaPausa(); return; }
-    if (b.id === 'pzResp') { var on2 = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on2)); b.textContent = t.silueta.respiracio + ': ' + (on2 ? t.silueta.respiracioOn : t.silueta.respiracioOff); if (pausaSil) pausaSil.setRespiracio(on2); return; }
     if (b.id === 'pzExt') { var eb = $('#pzExtBox'); eb.hidden = !eb.hidden; eb.innerHTML = '<div class="card suau"><h3 style="margin-top:0">' + esc(t.silueta.externaT) + '</h3><ol class="consignes">' + t.silueta.externa.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>'; return; }
     if (b.hasAttribute('data-conducta')) { pz.conducta = b.getAttribute('data-conducta'); $$('[data-conducta]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); return; }
     if (b.id === 'pzFi') { fiPausa('complet'); return; }
