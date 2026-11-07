@@ -128,6 +128,70 @@ Más información: https://aprens.net/explica-ho.html
 
 Tòfol Villalonga · APRENS Psicología · Inca`
         },
+        bigvu: {
+          ca: `Si no ho pots explicar,
+no t'ho saps.
+
+Fa anys que faig feina amb estudiants.
+I molt sovint veig el mateix:
+llegeixen, subratllen,
+i tenen la sensació de saber-ho.
+
+Però a l'examen,
+quan ho han d'explicar amb les seves paraules,
+apareixen els buits.
+
+Per això hem fet Explica-ho.
+
+Puges els apunts.
+T'ordena les idees
+en un resum i un mapa conceptual.
+I et pregunta en quatre nivells:
+recordar, comprendre,
+relacionar i integrar.
+
+Respons parlant o escrivint,
+i veus quins conceptes tens sòlids
+i quins encara no.
+
+La intel·ligència artificial t'acompanya.
+No estudia per tu.
+
+La trobaràs a explica.aprens.net.`,
+          es: `Si no lo puedes explicar,
+no te lo sabes.
+
+Hace años que trabajo con estudiantes.
+Y muchas veces veo lo mismo:
+leen, subrayan,
+y tienen la sensación de saberlo.
+
+Pero en el examen,
+cuando lo tienen que explicar con sus palabras,
+aparecen los huecos.
+
+Por eso hemos hecho Explica-ho.
+
+Subes los apuntes.
+Te ordena las ideas
+en un resumen y un mapa conceptual.
+Y te pregunta en cuatro niveles:
+recordar, comprender,
+relacionar e integrar.
+
+Respondes hablando o escribiendo,
+y ves qué conceptos tienes sólidos
+y cuáles todavía no.
+
+La inteligencia artificial te acompaña.
+No estudia por ti.
+
+La encontrarás en explica.aprens.net.`
+        },
+        recurs: {
+          ca: `Gravació de pantalla: pujar unes fotos d'apunts · el mapa conceptual · una pregunta de nivell 3 i la valoració · rètol final «explica.aprens.net». Sempre amb el tema d'exemple «La cèl·lula».`,
+          es: `Grabación de pantalla: subir unas fotos de apuntes · el mapa conceptual · una pregunta de nivel 3 y la valoración · rótulo final «explica.aprens.net». Siempre con el tema de ejemplo «La célula».`
+        },
         guio: {
           ca: `[0-5 s · Tòfol a càmera] Si no ho pots explicar, no t'ho saps.
 [5-15 s] Molts d'estudiants llegeixen i subratllen hores, i tenen la sensació de saber-ho. Però a l'examen, quan ho han d'explicar amb les seves paraules, apareixen els buits.
@@ -246,6 +310,82 @@ App: https://aprens-app.aprens.net/esport-base/
 Para clubes: https://aprens.net/clubs-esport-base.html
 
 Tòfol Villalonga · APRENS Psicología · Inca`
+        },
+        bigvu: {
+          ca: `Els pares també juguen.
+
+Des de la grada
+vivim el partit amb molta intensitat.
+I és normal.
+
+Però el nostre fill
+no hauria de carregar
+amb les nostres emocions.
+
+Primer m'acompany a mi mateix,
+per poder acompanyar millor l'esportista.
+
+Per això hem fet una app
+per a famílies i entrenadors.
+
+Abans del partit,
+un minut per preparar-me
+i elegir un compromís.
+
+Durant,
+una pausa breu
+quan el partit m'activa.
+
+I després,
+pensar com el vull rebre.
+
+També hi ha la pinya de les famílies:
+un gest de compromís
+abans de cada partit.
+
+No demana cap registre.
+El que anotes queda al teu mòbil.
+
+L'enllaç, a aprens.net.`,
+          es: `Los padres también juegan.
+
+Desde la grada
+vivimos el partido con mucha intensidad.
+Y es normal.
+
+Pero nuestro hijo
+no debería cargar
+con nuestras emociones.
+
+Primero me acompaño a mí mismo,
+para poder acompañar mejor al deportista.
+
+Por eso hemos hecho una app
+para familias y entrenadores.
+
+Antes del partido,
+un minuto para prepararme
+y elegir un compromiso.
+
+Durante,
+una pausa breve
+cuando el partido me activa.
+
+Y después,
+pensar cómo lo quiero recibir.
+
+También está la piña de las familias:
+un gesto de compromiso
+antes de cada partido.
+
+No pide ningún registro.
+Lo que anotas queda en tu móvil.
+
+El enlace, en aprens.net.`
+        },
+        recurs: {
+          ca: `Gravar a peu de camp o a la grada, sense cares de menors identificables. Recurs: la grada d'esquena · la pantalla «Abans» de l'app · el botó «Necessit fer una pausa» · l'animació de la pinya · rètol final «aprens.net».`,
+          es: `Grabar a pie de campo o en la grada, sin caras de menores identificables. Recurso: la grada de espaldas · la pantalla «Antes» de la app · el botón «Necesito hacer una pausa» · la animación de la piña · rótulo final «aprens.net».`
         },
         guio: {
           ca: `[0-5 s · Tòfol a peu de camp] Els pares també juguen.
@@ -425,6 +565,54 @@ Versión web: https://aprens-app.aprens.net/
 
 Tòfol Villalonga · APRENS Psicología · Inca`
         },
+        bigvu: {
+          ca: `Si prohibeixes un mitjà,
+el converteixes en un desig.
+
+Molta de gent em demana
+què pot fer amb el mòbil.
+El seu, o el dels fills.
+
+El que us propòs és una altra cosa:
+fer servir el mateix mòbil
+per anar cap endins.
+
+Una respiració guiada.
+Una pràctica breu d'atenció al cos.
+Un recurs per baixar l'alerta
+quan el cap s'accelera.
+
+Això és AIS APRENS,
+l'app d'Atenció Interna Sensorial
+que faig servir amb els meus pacients.
+
+La trobaràs a l'App Store.`,
+          es: `Si prohíbes un medio,
+lo conviertes en un deseo.
+
+Mucha gente me pregunta
+qué puede hacer con el móvil.
+El suyo, o el de sus hijos.
+
+Lo que os propongo es otra cosa:
+usar el mismo móvil
+para ir hacia dentro.
+
+Una respiración guiada.
+Una práctica breve de atención al cuerpo.
+Un recurso para bajar la alerta
+cuando la cabeza se acelera.
+
+Esto es AIS APRENS,
+la app de Atención Interna Sensorial
+que uso con mis pacientes.
+
+La encontrarás en la App Store.`
+        },
+        recurs: {
+          ca: `Gravació de pantalla de l'app: la respiració guiada · una pràctica d'atenció al cos · el recurs per baixar l'alerta · rètol final «AIS APRENS · App Store».`,
+          es: `Grabación de pantalla de la app: la respiración guiada · una práctica de atención al cuerpo · el recurso para bajar la alerta · rótulo final «AIS APRENS · App Store».`
+        },
         guio: {
           ca: `[0-5 s] Si prohibeixes un mitjà, el converteixes en un desig.
 [5-20 s · Tòfol a càmera] Per això, més que lluitar contra el mòbil, us propòs fer-lo servir per anar cap endins.
@@ -580,6 +768,52 @@ Versión interactiva: https://aprens-app.aprens.net/tools-standalone/historia-an
 La manada: https://aprens-app.aprens.net/tools-standalone/historia-manada.html
 
 APRENS Psicología · Inca`
+        },
+        bigvu: {
+          ca: `[INICI · abans de l'animació]
+
+Tots duim un mono dins.
+
+La part de nosaltres que s'alerta,
+que vol fugir
+o controlar-ho tot.
+
+No és l'enemic.
+Mirau.
+
+[FINAL · després de l'animació]
+
+El teu mono és un mamífer de manada.
+Quan se sent acompanyat,
+baixa l'alerta.
+
+Per això respiram amb atenció.
+
+Les dues històries, a aprens.net.`,
+          es: `[INICIO · antes de la animación]
+
+Todos llevamos un mono dentro.
+
+La parte de nosotros que se alerta,
+que quiere huir
+o controlarlo todo.
+
+No es el enemigo.
+Mirad.
+
+[FINAL · después de la animación]
+
+Tu mono es un mamífero de manada.
+Cuando se siente acompañado,
+baja la alerta.
+
+Por eso respiramos con atención.
+
+Las dos historias, en aprens.net.`
+        },
+        recurs: {
+          ca: `Grava les dues parts a BIGVU com a clips separats i, al mig, la gravació de pantalla de l'animació (uns 40 s). Total, menys de 60 s.`,
+          es: `Graba las dos partes en BIGVU como clips separados y, en medio, la grabación de pantalla de la animación (unos 40 s). Total, menos de 60 s.`
         },
         guio: {
           ca: `Gravació de pantalla de l'animació (1 min), amb la veu de Tòfol al principi: «Aquest és el teu mono. No és l'enemic.» i al final: «Quan se sent acompanyat, baixa l'alerta.» Format vertical per a Shorts i Reels.`,

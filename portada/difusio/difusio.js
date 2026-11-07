@@ -8,7 +8,7 @@
       destacat: "Destacat", fitxa: "Fitxa", perA: "Per a: ", obre: "Obre l'enllaç",
       carrusel: "Carrusel", totes: "Descarrega-les totes", copia: "Copia el text", copiat: "Copiat",
       ig: "Instagram (@tofol49) · text del carrusel", fb: "Facebook (pàgina d'APRENS) · publicació", yt: "YouTube · vídeo o Short",
-      titol: "Títol", desc: "Descripció", guio: "Guió (45-60 s, vertical per Shorts i Reels)", mini: "Miniatura",
+      titol: "Títol", desc: "Descripció", guio: "Guió amb temps (pla de muntatge)", bigvu: "Teleprompter de BIGVU (enganxa-ho tal qual)", recurs: "Plans de recurs", mini: "Miniatura",
       descarrega: "Descarrega el vídeo", setmana: "Setmana",
       tipus: { carrusel: "carrusel a Instagram i Facebook", short: "Short / Reel", fb: "publicació a Facebook", youtube: "vídeo a YouTube" },
       diapo: "Diapositiva"
@@ -97,6 +97,11 @@
       var fr = document.createDocumentFragment();
       fr.appendChild(blocCopia(t.titol, f.yt.titol[lang]));
       fr.appendChild(blocCopia(t.desc, f.yt.desc[lang]));
+      if (f.yt.bigvu) {
+        fr.appendChild(blocCopia(t.bigvu, f.yt.bigvu[lang]));
+        fr.appendChild(h("h4", null, t.recurs));
+        fr.appendChild(h("p", { lang: lang }, f.yt.recurs[lang]));
+      }
       fr.appendChild(blocCopia(t.guio, f.yt.guio[lang]));
       fr.appendChild(h("h4", null, t.mini));
       var mini = "img/" + f.id + "-" + lang + "-yt.jpg";
