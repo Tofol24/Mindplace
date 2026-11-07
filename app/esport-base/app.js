@@ -8,7 +8,7 @@
 
   /* ================= ESTAT ================= */
   var LS = 'aprens_epj_v1';
-  var BASE = { v: 1, lang: null, rol: null, avis: false, actual: null, reg: [], setm: { actual: null, hist: [] }, llegides: {}, club: null };
+  var BASE = { v: 1, lang: null, rol: null, avis: false, actual: null, reg: [], setm: { actual: null, hist: [] }, llegides: {}, club: null, tornada: null, exercici: null };
   var MEM = null;
   function lsGet() { try { return localStorage.getItem(LS); } catch (e) { return MEM; } }
   function lsSet(v) { try { localStorage.setItem(LS, v); } catch (e) { MEM = v; } }
@@ -36,12 +36,12 @@
       fitxa: 'Fitxa', totes: 'Totes', partit: 'Partit', sessio: 'Entrenament', avui: 'Avui', setmana: 'set.', compartirTxt: 'Compartir',
       sense: 'Sense compromís', ok: 'D\'acord', manualDesat: 'Registre desat.', marcaUna: 'Marca almenys una resposta.', club: 'Club', qrAlt: 'Codi QR de l\'enllaç',
       copiaFallida: 'No s\'ha pogut copiar. Selecciona el text i copia\'l manualment.', llegeix: 'Llegir', tancarPausa: 'Tancar la pausa', silueta: 'Silueta',
-      sessioPreparada: 'Preparació desada.', intencioPropia: 'Intenció pròpia', triaIntencio: 'O tria\'n una', continuarSense: 'Continuar sense triar', accions: 'Accions', anterior: 'Anterior', navPas: 'Pantalla anterior i següent' },
+      sessioPreparada: 'Preparació desada.', intencioPropia: 'Intenció pròpia', triaIntencio: 'O tria\'n una', continuarSense: 'Continuar sense triar', accions: 'Accions', anterior: 'Anterior', navPas: 'Pantalla anterior i següent', tornarJugar: 'Tornar a jugar' },
     es: { pas: 'Paso', de: 'de', obrirPausa: 'Hacer una pausa', practicaT: 'Práctica breve con la silueta', zonaNo: 'No lo sé', percepcioQ: '¿Qué notas?',
       fitxa: 'Ficha', totes: 'Todas', partit: 'Partido', sessio: 'Entrenamiento', avui: 'Hoy', setmana: 'sem.', compartirTxt: 'Compartir',
       sense: 'Sin compromiso', ok: 'De acuerdo', manualDesat: 'Registro guardado.', marcaUna: 'Marca al menos una respuesta.', club: 'Club', qrAlt: 'Código QR del enlace',
       copiaFallida: 'No se ha podido copiar. Selecciona el texto y cópialo manualmente.', llegeix: 'Leer', tancarPausa: 'Cerrar la pausa', silueta: 'Silueta',
-      sessioPreparada: 'Preparación guardada.', intencioPropia: 'Intención propia', triaIntencio: 'O elige una', continuarSense: 'Continuar sin elegir', accions: 'Acciones', anterior: 'Anterior', navPas: 'Pantalla anterior y siguiente' }
+      sessioPreparada: 'Preparación guardada.', intencioPropia: 'Intención propia', triaIntencio: 'O elige una', continuarSense: 'Continuar sin elegir', accions: 'Acciones', anterior: 'Anterior', navPas: 'Pantalla anterior y siguiente', tornarJugar: 'Volver a jugar' }
   };
   function X() { return XX[S.lang] || XX.ca; }
   /* Textos guardats (compromís setmanal, intenció…) que provenen del contingut de l'app:
@@ -189,6 +189,7 @@
     entrenador: ic('<path d="M4 4h16v12H4z"/><path d="M8 20h8M12 16v4M8 9l3 3 5-5"/>'),
     setmanal: ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     club: ic('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'),
+    atencio: ic('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'),
     piramide: ic('<path d="M12 3l9 17H3z"/><path d="M7.5 12h9M5.5 16h13"/>'),
     priv: ic('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')
   };
@@ -196,7 +197,7 @@
   /* ================= NAVEGACIÓ ================= */
   var TABS = ['inici', 'abans', 'durant', 'despres', 'apren', 'registre'];
   /* pantalla «mare» de cada pantalla secundària (botó Enrere de la capçalera) */
-  var PARE = { piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
+  var PARE = { comunitat: 'apren', atencio: 'apren', piramide: 'apren', pinya: 'abans', escenari: 'durant', llico: 'apren', entrenadors: 'apren', setmanal: 'inici', privacitat: 'registre', club: 'inici', silueta: 'inici' };
   /* Navegació anterior / següent al peu de cada pantalla */
   function flux(v, arg) {
     var t = T(), u = t.ui, r = rol();
@@ -552,6 +553,7 @@
     var h = '<span class="kick">' + esc(t.ui.durant) + '</span><h1>' + esc(d.titol) + '</h1><p class="lead">' + esc(d.intro) + '</p>';
     var comp = compromisosText();
     if (comp.length) h += '<div class="compromis-box"><span class="et">' + esc(S.actual.pinya ? p.recorda : p.recordaSense) + '</span>' + comp.map(esc).join('<br>') + '</div>';
+    h += tornadaHTML();
     h += '<button type="button" class="pausa-btn" data-pausa="1">' + esc(t.ui.pausaBtn) + '<small>' + esc(t.ui.pausaBtnSub) + '</small></button>';
     h += '<div class="btnrow" style="margin-top:0"><button type="button" class="btn full ghost" data-rapid="1">' + esc(t.ui.rapidBtn) + '</button></div>';
     h += '<div class="card suau"><ol class="consignes">' + p.passosActivacio.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>';
@@ -648,7 +650,7 @@
     var comp = compromisosText();
     $('#sheet').innerHTML = '<div class="capsh"><span class="pas-n">' + esc(d.rapidT) + '</span><span class="sp"></span><button type="button" class="link" data-tanca="1">' + esc(t.ui.tancar) + '</button></div>' +
       '<div class="rapid"><h2 class="sr" id="pasTitol">' + esc(d.rapidT) + '</h2><div class="paraula" id="paraula" aria-live="assertive">' + esc(d.rapid[0]) + '</div><div class="anell" aria-hidden="true"></div>' +
-      '<div id="rapidFi" hidden>' + (comp.length ? '<div class="compromis-box" style="text-align:left"><span class="et">' + esc(t.pinya.recorda) + '</span>' + comp.map(esc).join('<br>') + '</div>' : '') +
+      '<div id="rapidFi" hidden>' + (S.tornada && S.tornada.paraula ? '<div style="text-align:left">' + tornadaHTML() + '</div>' : '') + (comp.length ? '<div class="compromis-box" style="text-align:left"><span class="et">' + esc(t.pinya.recorda) + '</span>' + comp.map(esc).join('<br>') + '</div>' : '') +
       '<button type="button" class="btn full verd" id="rapidOk">' + esc(d.rapidFi) + '</button></div></div>';
     $('#modal').setAttribute('aria-labelledby', 'pasTitol');
     clearInterval(rapidT);
@@ -699,6 +701,8 @@
     var t = T(), a = t.apren, r = rol();
     var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, t.inici.entrenadorsT, t.inici.entrenadorsD);
+    h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
+    h += acces('atencio', IC.atencio, t.atencio.titol, t.atencio.clau);
     h += acces('piramide', IC.piramide, t.piramide.titol, t.piramide.mestria.lema);
     h += acces('silueta', IC.silueta, t.inici.siluetaT, t.inici.siluetaD);
     h += '<div class="escenaris" style="margin-top:12px">' + t.llicons.map(function (l, i) {
@@ -719,6 +723,78 @@
     if (seg_) h += '<p class="muted" style="margin-top:16px">' + esc(t.ui.seguent) + ': ' + esc(seg_.t) + '</p>';
     return h + peu();
   };
+
+  /* ================= UN CLUB, NO ILLES ================= */
+  VISTES.comunitat = function () {
+    var t = T(), c = t.comunitat, r = rol();
+    function llista(l) { return '<ul class="punts">' + l.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
+    var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(c.titol) + '</h1><p class="lead">' + esc(c.intro) + '</p>';
+    h += '<div class="card verd"><h2>' + esc(c.exitT) + '</h2>' + llista(c.exit) + '<p class="cita" style="margin-bottom:0">' + esc(c.exitCita) + '</p></div>';
+    h += '<h2 style="margin-top:16px">' + esc(c.valorsT) + '</h2><p class="muted">' + esc(c.valorsD) + '</p><div class="valors">' +
+      c.valors.map(function (v) { return '<div class="card" style="margin:0"><h3 style="margin-top:0">' + esc(v.t) + '</h3><p style="margin:0 0 4px"><span class="badge" style="background:var(--verd)">' + esc(t.ui.durant) + '</span> ' + esc(v.camp) + '</p><p class="muted" style="margin:0">' + esc(v.adult) + '</p></div>'; }).join('') + '</div>';
+    h += '<div class="card blau"><h2>' + esc(c.equipsT) + '</h2>' + llista(c.equips) + '</div>';
+    h += '<div class="card"><h2>' + esc(c.nivellsT) + '</h2>' + llista(c.nivells) + '</div>';
+    h += '<div class="card terra"><h2>' + esc(c.pedreraT) + '</h2>' + llista(c.pedrera) + '</div>';
+    h += '<div class="card"><h2>' + esc(c.rolT) + '</h2>' + llista(c.rol[r]) + '</div>';
+    h += '<div class="card suau"><h2>' + esc(c.tecT) + '</h2><p style="margin:0">' + esc(c.tec) + '</p></div>';
+    h += '<div class="card verd"><h2>' + esc(t.apren.accio) + '</h2><p>' + esc(c.accio[r]) + '</p><button type="button" class="btn sm" data-setmanal="' + esc(c.accio[r]) + '">' + esc(t.apren.ferCompromis) + '</button></div>';
+    return h + peu();
+  };
+
+  /* ================= ATENCIÓ AL JOC ================= */
+  var jocA = null;
+  function nouJocA() {
+    var a = T().atencio, it = [];
+    a.externa.ex.forEach(function (x, i) { it.push({ k: 'e', i: i }); });
+    a.interna.ex.forEach(function (x, i) { it.push({ k: 'i', i: i }); });
+    for (var j = it.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)), tmp = it[j]; it[j] = it[r]; it[r] = tmp; }
+    return { it: it.slice(0, 6), n: 0, ok: 0, resp: false };
+  }
+  function jocAHTML() {
+    var a = T().atencio, j = jocA;
+    if (j.n >= j.it.length) return '<p><b>' + j.ok + ' / ' + j.it.length + '</b></p><p class="muted">' + esc(a.jocFi) + '</p><button type="button" class="btn sm ghost" id="jocAReinicia" aria-label="' + esc(X().tornarJugar) + '">↺ ' + esc(X().tornarJugar) + '</button>';
+    var q = j.it[j.n], txt = (q.k === 'e' ? a.externa : a.interna).ex[q.i];
+    return '<p class="muted">' + (j.n + 1) + ' / ' + j.it.length + '</p><p class="cita" style="margin:6px 0 10px">' + esc(txt) + '</p>' +
+      '<div class="seg" role="group" aria-label="' + esc(a.jocT) + '"><button type="button" data-joca="e"' + (j.resp ? ' disabled' : '') + '>' + esc(a.externa.t) + '</button><button type="button" data-joca="i"' + (j.resp ? ' disabled' : '') + '>' + esc(a.interna.t) + '</button></div><div id="jocAFb" aria-live="polite"></div>';
+  }
+  VISTES.atencio = function () {
+    var t = T(), a = t.atencio, r = rol(), tor = S.tornada || {}, exe = S.exercici || {};
+    if (!jocA) jocA = nouJocA();
+    /* si s'havia respost i es redibuixa la vista (idioma, navegació), passam a la següent per no quedar bloquejats */
+    if (jocA.resp) { jocA.n++; jocA.resp = false; }
+    function llista(l) { return '<ul class="punts">' + l.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
+    function focus(f, cls) { return '<div class="card ' + cls + '" style="margin:0"><span class="badge">' + esc(f.quan) + '</span><h2 style="margin-top:6px">' + esc(f.t) + '</h2><p class="muted" style="margin-bottom:4px">' + esc(f.d) + '</p>' + llista(f.ex) + '</div>'; }
+    var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
+    h += '<h2 style="margin-top:16px">' + esc(a.focusT) + '</h2><div class="duo2">' + focus(a.externa, 'blau') + focus(a.interna, 'terra') + '</div><p class="muted" style="margin-top:8px">' + esc(a.tots) + '</p>';
+    h += '<div class="card"><h2>' + esc(a.jocT) + '</h2><p class="muted">' + esc(a.jocD) + '</p><div id="jocA">' + jocAHTML() + '</div></div>';
+    h += '<h2 style="margin-top:16px">' + esc(a.cadenaT) + '</h2><ol class="cadena">' + a.cadena.map(function (c) { return '<li><b>' + esc(c.t) + '</b><span>' + esc(c.d) + '</span></li>'; }).join('') + '</ol><p class="muted">' + esc(a.cadenaNota) + '</p>';
+    h += '<h2 style="margin-top:16px">' + esc(a.creencesT) + '</h2><div class="creences">' + a.creences.map(function (c) { return '<div class="card" style="margin:0"><h3 style="margin-top:0">' + esc(c.t) + '</h3><p class="muted" style="margin:0;font-style:italic">' + esc(c.ex) + '</p></div>'; }).join('') + '</div>';
+    h += '<div class="card suau"><p style="margin:0">' + esc(a.creencesAdults[r]) + '</p></div>';
+    h += '<div class="card"><h2>' + esc(a.observadorT) + '</h2>' + llista(a.observador) + '</div>';
+    h += '<div class="card"><h2>' + esc(a.lluitarT) + '</h2>' + llista(a.lluitar) + '<p class="cita" style="margin-bottom:0">' + esc(a.clau) + '</p></div>';
+    if (r === 'entrenador') {
+      h += '<h2 style="margin-top:16px">' + esc(a.entrenadorT) + '</h2><p class="muted">' + esc(a.entrenadorD) + '</p><div class="duo2">' +
+        [a.enQue, a.quan].map(function (x) { return '<div class="card blau" style="margin:0"><h3 style="margin-top:0">' + esc(x.t) + '</h3><p class="muted" style="margin:0">' + esc(x.d) + '</p></div>'; }).join('') + '</div>';
+      h += '<div class="card"><h2>' + esc(a.exerciciT) + '</h2><p class="muted">' + esc(a.exerciciD) + '</p><label class="lb" for="exQue">' + esc(a.exerciciQue) + '</label><input type="text" id="exQue" maxlength="140" placeholder="' + esc(a.exerciciPh1) + '" value="' + esc(exe.que || '') + '" autocomplete="off">' +
+        '<label class="lb" for="exQuan">' + esc(a.exerciciQuan) + '</label><input type="text" id="exQuan" maxlength="140" placeholder="' + esc(a.exerciciPh2) + '" value="' + esc(exe.quan || '') + '" autocomplete="off">' + avisNoms() + '</div>';
+    }
+    h += '<div class="duo2"><div class="card verd" style="margin:0"><h3 style="margin-top:0">' + esc(a.formalsT) + '</h3><p style="margin:0">' + esc(a.formals) + '</p></div><div class="card blau" style="margin:0"><h3 style="margin-top:0">' + esc(a.informalsT) + '</h3><p style="margin:0">' + esc(a.informals) + '</p></div></div>';
+    var ex = r === 'entrenador' ? a.exemplesJugador.concat(a.exemplesAdult) : a.exemplesAdult;
+    h += '<div class="card" id="tornada"><h2>' + esc(a.tornadaT) + '</h2><p class="muted">' + esc(a.tornadaD[r]) + '</p><p class="muted" style="margin-bottom:4px">' + esc(a.exemplesT) + '</p><div class="chips">' +
+      ex.map(function (x) { return '<button type="button" class="chip" data-paraula="' + esc(x) + '" aria-pressed="' + (tr(tor.paraula) === x) + '">«' + esc(x) + '»</button>'; }).join('') + '</div>' +
+      '<label class="lb" for="torPar">' + esc(a.paraula) + '</label><input type="text" id="torPar" maxlength="40" value="' + esc(tr(tor.paraula || '')) + '" autocomplete="off">' +
+      '<label class="lb" for="torGest">' + esc(a.gest) + '</label><input type="text" id="torGest" maxlength="80" placeholder="' + esc(a.gestPh) + '" value="' + esc(tor.gest || '') + '" autocomplete="off">' +
+      '<div class="btnrow"><button type="button" class="btn full blau" id="desaTornada">' + esc(t.ui.desar) + '</button></div></div>';
+    h += '<div class="card verd"><h2>' + esc(a.resumT) + '</h2>' + llista(a.resum) + '</div>';
+    h += '<div class="card blau"><h2>' + esc(a.aisT) + '</h2><p>' + esc(a.ais) + '</p><button type="button" class="btn sm" data-go="silueta">' + esc(t.inici.siluetaT) + '</button></div>';
+    h += '<div class="card suau"><h2>' + esc(a.saludT) + '</h2><p style="margin:0">' + esc(a.salut) + '</p></div>';
+    h += '<div class="card verd"><h2>' + esc(t.apren.accio) + '</h2><p>' + esc(a.accio) + '</p><button type="button" class="btn sm" data-setmanal="' + esc(a.accio) + '">' + esc(t.apren.ferCompromis) + '</button></div>';
+    return h + peu();
+  };
+  function tornadaHTML() {
+    var tor = S.tornada; if (!tor || !tor.paraula) return '';
+    return '<div class="compromis-box"><span class="et">' + esc(T().atencio.recordaT) + '</span>«' + esc(tr(tor.paraula)) + '»' + (tor.gest ? ' · ' + esc(tor.gest) : '') + '</div>';
+  }
 
   /* ================= PIRÀMIDE DEL RENDIMENT ================= */
   var pirOr = 'totes', pirNiv = null;
@@ -942,6 +1018,8 @@
     h += '<div class="card terra"><h2>' + esc(c.proteccio) + '</h2>' + (cl && cl.proteccio && cl.proteccio.text ? '<p>' + esc(loc(cl.proteccio.text)) + '</p>' : '') +
       '<p style="margin:0">' + esc(t.ui.seguretatText) + (cl && cl.proteccio && cl.proteccio.contacte ? '<br><b>' + esc(t.ui.seguretatClub) + '</b> ' + esc(loc(cl.proteccio.contacte)) : '') + '</p></div>';
     h += limitsPinya();
+    h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
+    h += '<div class="card blau"><h2>' + esc(c.guiaT) + '</h2><p>' + esc(c.guiaD) + '</p><a class="btn sm blau" href="../assets/pdf/guia-clubs-esport-aprens.pdf" target="_blank" rel="noopener">' + esc(c.guiaBtn) + '</a></div>';
     h += '<div class="card"><h2>' + esc(c.recursos) + '</h2><p style="margin:0">' + esc(c.recursosText) + '</p></div>';
     h += '<div class="card"><h2>' + esc(c.qrT) + '</h2><p class="muted">' + esc(c.qrD) + '</p><div class="qr" id="qr"></div><p class="muted" style="word-break:break-all;text-align:center" id="qrUrl"></p>' +
       '<div class="btnrow"><button type="button" class="btn sm ghost" id="baixaQr">' + esc(c.descarregaQr) + '</button><button type="button" class="btn sm ghost" id="copiaUrl">' + esc(c.copiaEnllac) + '</button><button type="button" class="btn sm verd" id="waUrl">' + esc(c.compartir) + '</button></div></div>';
@@ -1083,6 +1161,23 @@
     }
 
     if (b.hasAttribute('data-pir')) { pirNiv = pirNiv === b.getAttribute('data-pir') ? null : b.getAttribute('data-pir'); $('#pir').innerHTML = pirHTML(); pirDetall(); var nb = $('[data-pir="' + b.getAttribute('data-pir') + '"]'); if (nb) nb.focus(); return; }
+    /* ---- atenció ---- */
+    if (b.hasAttribute('data-joca')) {
+      if (!jocA || jocA.resp) return; jocA.resp = true;
+      var qa = jocA.it[jocA.n], ok = b.getAttribute('data-joca') === qa.k; if (ok) jocA.ok++;
+      var aa = t.atencio, fbA = $('#jocAFb');
+      $$('[data-joca]').forEach(function (y) { y.disabled = true; });
+      fbA.innerHTML = '<div class="fb on ' + (ok ? 'ok' : 'ko') + '">' + esc((qa.k === 'e' ? aa.externa : aa.interna).t) + ' · ' + esc((qa.k === 'e' ? aa.externa : aa.interna).quan) +
+        '<div class="btnrow"><button type="button" class="btn sm" id="jocASeg">' + esc(t.ui.seguent) + ' →</button></div></div>';
+      var sgA = $('#jocASeg'); if (sgA) sgA.focus(); return;
+    }
+    if (b.id === 'jocASeg') { jocA.n++; jocA.resp = false; $('#jocA').innerHTML = jocAHTML(); var f1 = $('#jocA [data-joca]') || $('#jocAReinicia'); if (f1) f1.focus(); return; }
+    if (b.id === 'jocAReinicia') { jocA = nouJocA(); $('#jocA').innerHTML = jocAHTML(); return; }
+    if (b.hasAttribute('data-paraula')) { $('#torPar').value = b.getAttribute('data-paraula'); $$('[data-paraula]').forEach(function (y) { y.setAttribute('aria-pressed', String(y === b)); }); return; }
+    if (b.id === 'desaTornada') {
+      var par = ($('#torPar').value || '').trim().slice(0, 40), ge = ($('#torGest').value || '').trim().slice(0, 80);
+      S.tornada = par ? { paraula: par, gest: ge } : null; desa(); toast(t.atencio.desat); return;
+    }
     /* ---- aprèn ---- */
     if (b.hasAttribute('data-resp')) {
       var l = trobaPer(t.llicons, ruta().arg), o = l.q.o[+b.getAttribute('data-resp')], fb = $('#fb');
@@ -1147,7 +1242,8 @@
     var bo = dp.fq1 === 'si' && dp.fq2 !== 'no' && dp.impulsiva !== 'si';
     box.innerHTML = dificil ? '<div class="card terra" style="margin:10px 0 0"><p style="margin:0">' + esc(p.compassiu) + '</p></div>' : bo ? '<div class="card verd" style="margin:10px 0 0"><p style="margin:0">' + esc(p.bo) + '</p></div>' : '';
   }
-  document.addEventListener('input', function (ev) { if (ev.target.id === 'objPropi' && ev.target.value) { objectiuSel = null; $$('[data-objectiu]').forEach(function (y) { y.setAttribute('aria-pressed', 'false'); }); } });
+  document.addEventListener('input', function (ev) {
+    if (ev.target.id === 'exQue' || ev.target.id === 'exQuan') { S.exercici = { que: ($('#exQue').value || '').slice(0, 140), quan: ($('#exQuan').value || '').slice(0, 140) }; desa(); } if (ev.target.id === 'objPropi' && ev.target.value) { objectiuSel = null; $$('[data-objectiu]').forEach(function (y) { y.setAttribute('aria-pressed', 'false'); }); } });
   document.addEventListener('keydown', function (ev) {
     var m = $('#modal');
     if (!m.classList.contains('on')) return;

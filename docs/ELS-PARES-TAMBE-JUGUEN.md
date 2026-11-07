@@ -38,7 +38,7 @@ y Chrome (Android) sin instalar nada.
 | **La pinya de les famílies** | Ritual tras «Antes»: frase de grupo, animación de manos, «1, 2, 3… EQUIP!», mensaje editable, compartir/copiar, preparar encuesta, invitación del entrenador. Se registra una sola vez por partido |
 | **Durante** | Recuerdo del compromiso («Recorda sa mà…»), botón «Necessit fer una pausa» (3 pasos), modo rápido de 10 s, aviso de protección de menores, 12 escenarios con ficha completa |
 | **Después** (2 min) | Cómo recibir al deportista (9 estados) o cerrar con el equipo (7) · «He estat fidel a sa meva mà?» · activación 0-10 · detección corporal · uso de AIS · checklist por rol · reacción a reparar (pauta de reparación) · qué repetir y qué seguir entrenando |
-| Aprende | 12 microlecciones con pregunta y acción · pirámide del rendimiento interactiva · práctica libre con la silueta · itinerario de entrenadores (10 situaciones, comunicación educativa, corregir no es humillar) |
+| Aprende | «Un club, no illes» (comunidad, cantera, equipos conectados, niveles y ritmos de crecimiento) · «Atenció al joc» (dos focos, creencias distractoras, «la meva tornada»: palabra clave y gesto, también en la pausa rápida) · 12 microlecciones con pregunta y acción · pirámide del rendimiento interactiva · práctica libre con la silueta · itinerario de entrenadores (10 situaciones, comunicación educativa, corregir no es humillar) |
 | Compromiso semanal | Objetivo de la semana; a los 7 días pide una reflexión breve (sin puntos) |
 | Registro | Indicadores descriptivos, pausas por semana (6 semanas), compromisos elegidos, situaciones a entrenar, conductas reconocidas, secuencia Situación → Activación → Pausa → Conducta, aprendizajes, historial y registro manual (ningún campo obligatorio) |
 | Privacidad | Explicación, consultar, exportar JSON y CSV, borrar todo |
@@ -139,3 +139,11 @@ quién participa; y no se compara entre familias. Si más adelante se quiere una
 sistemática (por ejemplo, exportaciones voluntarias o cuestionarios pre/post), hará falta un
 protocolo aparte con hoja informativa, consentimiento, seudonimización, plazo de conservación
 y revisión del RGPD y de la normativa de protección de menores.
+
+## 8. Guía de trabajo psicológico con clubes (PDF)
+
+«Esport de base: salut i rendiment». Integra los tres dosieres (paper dels pares, piràmide del rendiment, atenció i maneig emocional), la app y el cartel, con el eje «la salud deportiva no es incompatible con el rendimiento». Incluye el capítulo «Un club, no illes» (comunidad, formación de equipos, cantera de entrenadores), plan de temporada, guiones de sesión, pilotaje y siete fichas.
+
+- Fuente editable: `docs/guia-clubs/guia.html` (imágenes en `docs/guia-clubs/img/`).
+- Generar el PDF: `node docs/guia-clubs/build.cjs` → `app/assets/pdf/guia-clubs-esport-aprens.pdf` (enlazado desde «Per a clubs»).
+- Revisado con Codex (contenido y código); se incorporaron las observaciones sobre LOPIVI, derivación, anonimato del pilotaje, dolor y lesión, y prudencia en las afirmaciones.
