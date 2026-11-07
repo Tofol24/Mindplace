@@ -249,6 +249,7 @@
   }
   function pinta() {
     if (silActual) { try { silActual.destroy(); } catch (e) {} silActual = null; }
+    aturaRespiro();
     if (!S.lang) S.lang = 'ca';
     var r = ruta(), v = r.v;
     if (!S.avis || !S.rol) v = 'benvinguda';
@@ -370,14 +371,33 @@
   DESPRES.abans = function () { muntaPractica($('#silAbans'), ab.ais, true); };
 
   /* pràctica AIS compacta i reutilitzable (abans i pràctica lliure) */
+  /* Respiració de dues llums: el mateix component que el Respiro AIS.
+     Blau = l'aire, entra pel nas i baixa fins a la panxa (fa d'esquer).
+     Groc = l'atenció, surt del cap, segueix l'aire i es queda ancorada a la panxa
+     quan l'aire torna a pujar i sortir. */
+  var respActual = null;
+  function aturaRespiro() { if (respActual) { try { respActual.destroy(); } catch (e) {} respActual = null; } }
+  function muntaRespiro(box, onCycle) {
+    aturaRespiro();
+    if (!box || !window.RespiroAIS) return null;
+    var r = T().respiro;
+    respActual = window.RespiroAIS.mount(box, {
+      lang: 'es', figure: 'organism', showControl: true, autostart: true,
+      rhythm: { inhale: 4000, anchor: 1500, exhale: 6500, pause: 800 },
+      labels: { phase: r.phase, hint: r.hint, legend: r.legend, start: r.start, stop: r.stop, one: r.one, many: r.many },
+      onCycle: onCycle
+    });
+    return respActual;
+  }
+
   function muntaPractica(box, desti, ambPercepcio) {
     if (!box) return;
     var t = T(), s = t.silueta, mode = 'reconec', idx = 0;
     var h = '<div class="estats" role="group" aria-label="' + esc(s.titol) + '">' + s.estats.map(function (e) { return '<button type="button" data-estat="' + e.id + '" aria-pressed="' + (e.id === mode) + '"><b>' + e.n + '</b>' + esc(e.t) + '</button>'; }).join('') + '</div>' +
-      '<p class="muted" id="estatD">' + esc(s.estats[0].d) + '</p><div id="silFig"></div><div class="missatge-sil" id="silMsg" aria-live="polite"></div>' +
+      '<p class="muted" id="estatD">' + esc(s.estats[0].d) + '</p><div id="silFig"></div><div id="respBox" hidden></div><div class="missatge-sil" id="silMsg" aria-live="polite"></div>' +
       '<div id="silElegesc" hidden></div>' +
       '<h2 class="h3">' + esc(t.ui.seguent) + '…</h2><ol class="consignes" id="consignes">' + s.consignes.map(function (c, i) { return '<li' + (i === 0 ? ' class="on"' : '') + '>' + esc(c) + '</li>'; }).join('') + '</ol>' +
-      '<div class="btnrow"><button type="button" class="btn sm ghost" id="consSeg">' + esc(t.ui.seguent) + '</button><button type="button" class="btn sm ghost" id="respTog" aria-pressed="false">' + esc(s.respiracio) + ': ' + esc(s.respiracioOff) + '</button></div>' +
+      '<div class="btnrow"><button type="button" class="btn sm ghost" id="consSeg">' + esc(t.ui.seguent) + '</button></div>' +
       '<div class="btnrow"><button type="button" class="link" id="externa">' + esc(s.externaBtn) + '</button></div><div id="extBox" hidden></div>';
     if (ambPercepcio) h += '<h2 class="h3">' + esc(s.percepcio) + '</h2>' + seg('percepcio', s.percepcions, desti.percepcio, s.percepcio) + '<p class="muted" id="percMsg" aria-live="polite">' + esc(t.ui.totesValides) + '</p>';
     h += '<p class="muted" style="margin-top:10px">' + esc(t.ui.colors) + '</p>';
@@ -394,11 +414,11 @@
       var b = ev.target.closest('button'); if (!b || !box.contains(b)) return;
       if (b.hasAttribute('data-estat')) {
         mode = b.getAttribute('data-estat'); sil.setMode(mode);
+        var rb = $('#respBox', box), sf = $('#silFig', box);
         if (mode === 'acompany') {
-          /* la respiració (blava) acompanya on és l'atenció (groga) */
-          if (!desti.blau.length) { (desti.groc.length ? desti.groc : ['panxa']).forEach(function (z) { sil.focusBlau(z); }); desti.blau = sil.get().blau; }
-          var rt = $('#respTog', box); if (rt && rt.getAttribute('aria-pressed') !== 'true') rt.click();
-        }
+          /* respiració de dues llums: l'aire (blau) fa d'esquer i l'atenció (groga) queda a la panxa */
+          sf.hidden = true; rb.hidden = false; muntaRespiro(rb); desti.blau = ['panxa'];
+        } else { aturaRespiro(); rb.hidden = true; rb.innerHTML = ''; sf.hidden = false; }
         $$('[data-estat]', box).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
         var e = trobaPer(s.estats, mode); $('#estatD', box).textContent = e.d;
         var el = $('#silElegesc', box);
@@ -413,9 +433,6 @@
         idx = (idx + 1) % s.consignes.length;
         $$('#consignes li', box).forEach(function (li, i) { li.classList.toggle('on', i === idx); });
         if (idx === 1 && mode === 'reconec') { b.blur(); }
-      } else if (b.id === 'respTog') {
-        var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on));
-        b.textContent = s.respiracio + ': ' + (on ? s.respiracioOn : s.respiracioOff); sil.setRespiracio(on);
       } else if (b.id === 'externa') {
         var eb = $('#extBox', box); eb.hidden = !eb.hidden;
         eb.innerHTML = '<div class="card suau"><h3 style="margin-top:0">' + esc(s.externaT) + '</h3><ol class="consignes">' + s.externa.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>';
@@ -576,12 +593,14 @@
   function obreModal() { $('#modal').classList.add('on'); document.body.style.overflow = 'hidden'; }
   function tancaModal() {
     if (pausaSil) { try { pausaSil.destroy(); } catch (e) {} pausaSil = null; }
+    aturaRespiro();
     clearInterval(rapidT); $('#modal').classList.remove('on'); document.body.style.overflow = '';
     var b = $('.pausa-btn') || $('#app h1'); if (b) try { b.focus(); } catch (e) {}
   }
   var pausaSil = null;
   function pintaPausa() {
     if (pausaSil) { try { pausaSil.destroy(); } catch (e) {} pausaSil = null; }
+    aturaRespiro();
     var t = T(), d = t.durant, p = t.pinya, r = rol();
     var titols = [d.pas1, d.pas2, d.pas3];
     var h = '<div class="capsh"><span class="pas-n">' + esc(X().pas) + ' ' + (pz.pas + 1) + ' ' + esc(X().de) + ' 3</span><span class="sp"></span><button type="button" class="link" data-tanca="1">' + esc(t.ui.tancar) + '</button></div>' +
@@ -593,8 +612,8 @@
         t.escenaris.filter(function (e) { return e.rols.indexOf(r) >= 0; }).map(function (e) { return '<option value="' + e.id + '"' + (pz.situacio === e.id ? ' selected' : '') + '>' + esc(e.t) + '</option>'; }).join('') + '</select>';
       h += '<div class="btnrow"><button type="button" class="btn full" data-pzpas="1">' + esc(t.ui.seguent) + ' →</button></div>';
     } else if (pz.pas === 1) {
-      h += '<p class="cita" style="margin-top:4px">' + esc(d.pas2t) + '</p><p class="muted">' + esc(d.pas2d) + '</p><div id="pzSil"></div>';
-      h += '<div class="btnrow"><button type="button" class="btn sm ghost" id="pzResp" aria-pressed="true">' + esc(t.silueta.respiracio) + ': ' + esc(t.silueta.respiracioOn) + '</button><button type="button" class="link" id="pzExt">' + esc(t.silueta.externaBtn) + '</button></div><div id="pzExtBox" hidden></div>';
+      h += '<p class="cita" style="margin-top:4px">' + esc(d.pas2t) + '</p><p class="muted">' + esc(d.pas2d) + '</p><div id="pzResp"></div>';
+      h += '<div class="btnrow"><button type="button" class="link" id="pzExt">' + esc(t.silueta.externaBtn) + '</button></div><div id="pzExtBox" hidden></div>';
       h += '<div class="btnrow"><button type="button" class="btn full ghost" data-pzpas="0">← ' + esc(t.ui.enrere) + '</button><button type="button" class="btn full" data-pzpas="2">' + esc(t.ui.seguent) + ' →</button></div>';
     } else {
       var comp = compromisosText();
@@ -608,13 +627,10 @@
     $('#modal').setAttribute('aria-labelledby', 'pasTitol');
     var box = $('#pzSil');
     if (box) {
-      pausaSil = window.SiluetaAIS.mount(box, { txt: t, mode: pz.pas === 0 ? 'reconec' : 'acompany', groc: pz.groc, blau: pz.blau, llista: true,
-        onChange: function (st) { pz.groc = st.groc; pz.blau = st.blau; } });
-      if (pz.pas === 1) {
-        if (!pz.blau.length) { pz.groc.forEach(function (z) { pausaSil.focusBlau(z); }); if (!pz.groc.length) pausaSil.focusBlau('panxa'); pz.blau = pausaSil.get().blau; }
-        pausaSil.setRespiracio(true);
-      }
+      pausaSil = window.SiluetaAIS.mount(box, { txt: t, mode: 'reconec', groc: pz.groc, blau: pz.blau, llista: true,
+        onChange: function (st) { pz.groc = st.groc; } });
     }
+    if (pz.pas === 1) { muntaRespiro($('#pzResp')); pz.blau = ['panxa']; }
     var tt = $('#pasTitol'); tt.setAttribute('tabindex', '-1'); try { tt.focus(); } catch (e) {}
   }
   function fiPausa(mode) {
@@ -1030,7 +1046,6 @@
     /* ---- pausa ---- */
     if (b.hasAttribute('data-tanca')) { tancaModal(); return; }
     if (b.hasAttribute('data-pzpas')) { if (pz.pas === 0) { var sl = $('#pzSit'); pz.situacio = sl && sl.value ? sl.value : pz.situacio; } pz.pas = +b.getAttribute('data-pzpas'); pintaPausa(); return; }
-    if (b.id === 'pzResp') { var on2 = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on2)); b.textContent = t.silueta.respiracio + ': ' + (on2 ? t.silueta.respiracioOn : t.silueta.respiracioOff); if (pausaSil) pausaSil.setRespiracio(on2); return; }
     if (b.id === 'pzExt') { var eb = $('#pzExtBox'); eb.hidden = !eb.hidden; eb.innerHTML = '<div class="card suau"><h3 style="margin-top:0">' + esc(t.silueta.externaT) + '</h3><ol class="consignes">' + t.silueta.externa.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>'; return; }
     if (b.hasAttribute('data-conducta')) { pz.conducta = b.getAttribute('data-conducta'); $$('[data-conducta]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); return; }
     if (b.id === 'pzFi') { fiPausa('complet'); return; }
