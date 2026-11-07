@@ -1096,8 +1096,13 @@
      aquesta recarrega l'estat i no pot tornar a escriure dades velles. */
   window.addEventListener('storage', function (ev) {
     if (ev.key !== LS && ev.key !== null) return;
-    var lang = S.lang;
+    var lang = S.lang, abansId = S.actual ? S.actual.id : null, abansRol = S.rol;
     S = carrega(); if (!S.lang) S.lang = lang;
+    var esborrat = !S.avis, canviSessio = (S.actual ? S.actual.id : null) !== abansId || S.rol !== abansRol;
+    /* Canvis ordinaris (p. ex. una lliçó llegida): s'actualitza l'estat sense tocar
+       la pausa ni els formularis oberts. Només es redibuixa si s'ha esborrat tot o
+       ha canviat el partit en curs o el rol. */
+    if (!esborrat && !canviSessio) return;
     if ($('#modal').classList.contains('on')) tancaModal();
     pinta();
   });
