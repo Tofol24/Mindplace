@@ -46,7 +46,7 @@ y Chrome (Android) sin instalar nada.
 
 ## 2. La silueta AIS
 
-Figura adulta neutra en SVG con 10 zonas: cabeza, garganta, hombros, pecho, abdomen,
+La misma figura realista del Respiro AIS (`app/assets/respiro/organismo.webp`), con las zonas y las luces en SVG encima. 10 zonas (cames y peus, fuera de la imagen, se marcan en el borde inferior): cabeza, garganta, hombros, pecho, abdomen,
 espalda, brazos, manos, piernas y pies.
 
 Mismo código de colores que el resto de herramientas APRENS (Respiro AIS, Mapa interno):
