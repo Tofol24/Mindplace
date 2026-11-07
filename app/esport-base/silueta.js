@@ -1,4 +1,4 @@
-/* APRENS · Els pares també juguen — Silueta AIS interactiva (SVG)
+/* APRENS · Els pares també juguen — Silueta AIS interactiva (SVG sobre la figura realista del Respiro AIS)
    ---------------------------------------------------------------
    Tres estats:
      Mateix codi que la resta d'eines APRENS: GROC = consciència / atenció,
@@ -20,14 +20,17 @@
   var NS = 'http://www.w3.org/2000/svg';
   var uid = 0;
 
-  /* centres de llum per zona (coordenades del viewBox 0 0 200 430) */
+  /* Figura: la mateixa il·lustració realista del Respiro AIS (assets/respiro/organismo.webp),
+     en el seu sistema de coordenades 1024×1536. La imatge arriba fins als malucs:
+     cames i peus es marquen a la vora inferior, com a continuació del cos. */
+  var IMG = '../assets/respiro/organismo.webp';
   var PUNTS = {
-    cap: [[100, 36]], gola: [[100, 71]], espatles: [[66, 92], [134, 92]],
-    pit: [[100, 122]], panxa: [[100, 188]], esquena: [[100, 150]],
-    bracos: [[47, 160], [153, 160]], mans: [[38, 250], [162, 250]],
-    cames: [[85, 318], [115, 318]], peus: [[80, 410], [120, 410]]
+    cap: [[508, 150]], gola: [[508, 330]], espatles: [[300, 470], [716, 470]],
+    pit: [[508, 640]], panxa: [[508, 990]], esquena: [[318, 760], [698, 760]],
+    bracos: [[205, 860], [811, 860]], mans: [[85, 1340], [939, 1340]],
+    cames: [[420, 1450], [600, 1450]], peus: [[420, 1528], [600, 1528]]
   };
-  var RADI = { cap: 22, gola: 13, espatles: 14, pit: 26, panxa: 26, esquena: 72, bracos: 14, mans: 12, cames: 18, peus: 12 };
+  var RADI = { cap: 80, gola: 48, espatles: 58, pit: 110, panxa: 100, esquena: 60, bracos: 62, mans: 70, cames: 62, peus: 48 };
 
   function el(tag, at, pare) {
     var e = document.createElementNS(NS, tag);
@@ -38,14 +41,11 @@
 
   var CSS = '' +
     '.sil{display:flex;flex-direction:column;align-items:center;gap:10px}' +
-    '.sil-fig{position:relative;width:min(100%,260px)}' +
-    '.sil svg{width:100%;height:auto;display:block;overflow:visible}' +
-    '.sil .cos{fill:#ECE7DD;stroke:#B7AE9F;stroke-width:1.4}' +
-    '.sil .memb-o{stroke:#B7AE9F;fill:none;stroke-linecap:round;stroke-linejoin:round}' +
-    '.sil .memb{stroke:#ECE7DD;fill:none;stroke-linecap:round;stroke-linejoin:round}' +
+    '.sil-fig{position:relative;width:min(100%,calc(58vh*1024/1536),320px)}' +
+    '.sil svg{width:100%;height:auto;display:block;border-radius:22px;background:#0a0e16;box-shadow:0 10px 30px rgba(0,0,0,.28)}' +
     '.sil .zona{fill:transparent;cursor:pointer;outline:none}' +
-    '.sil .zona:focus-visible .hit{fill:rgba(47,94,158,.10);stroke:#2F5E9E;stroke-width:1.5;stroke-dasharray:3 3}' +
-    '@media (hover:hover){.sil .zona:hover .hit{fill:rgba(47,94,158,.06);stroke:#2F5E9E;stroke-width:1.2;stroke-dasharray:3 3}}' +
+    '.sil .zona:focus-visible .hit{fill:rgba(47,94,158,.10);stroke:#9CC8F5;stroke-width:6;stroke-dasharray:14 12}' +
+    '@media (hover:hover){.sil .zona:hover .hit{fill:rgba(47,94,158,.06);stroke:#9CC8F5;stroke-width:5;stroke-dasharray:14 12}}' +
     '.sil .hit{fill:transparent}' +
     '.sil .groc{opacity:0;transition:opacity .6s ease}' +
     '.sil .groc.on{opacity:1;animation:silPols 3.2s ease-in-out infinite}' +
@@ -54,11 +54,10 @@
     '.sil.resp .blau.on{animation:silResp 10s ease-in-out infinite}' +
     '.sil .cami{opacity:0;transition:opacity .8s ease}' +
     '.sil.m-elegesc .cami{opacity:1}' +
-    '.sil.m-elegesc .cami path{stroke-dasharray:6 6;animation:silFlux 1.6s linear infinite}' +
-    '.sil.m-elegesc .cos,.sil.m-elegesc .memb{opacity:.92}' +
-    '@keyframes silPols{0%,100%{opacity:.78}50%{opacity:1}}' +
+    '.sil.m-elegesc .cami path{stroke-dasharray:26 22;animation:silFlux 1.6s linear infinite}' +
+        '@keyframes silPols{0%,100%{opacity:.78}50%{opacity:1}}' +
     '@keyframes silResp{0%{transform:scale(.82)}40%{transform:scale(1.18)}100%{transform:scale(.82)}}' +
-    '@keyframes silFlux{to{stroke-dashoffset:-24}}' +
+    '@keyframes silFlux{to{stroke-dashoffset:-96}}' +
     '@media (prefers-reduced-motion: reduce){.sil .groc.on,.sil.resp .blau.on,.sil.m-elegesc .cami path{animation:none}}' +
     '.sil-resp-txt{min-height:1.4em;font-size:14px;color:#244A7E;font-weight:600;text-align:center}' +
     '.sil-llista{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:420px}' +
@@ -77,38 +76,18 @@
     var s = document.createElement('style'); s.id = 'sil-css'; s.textContent = CSS; document.head.appendChild(s);
   }
 
-  function dibuixaCos(g) {
-    /* ombra exterior dels membres (contorn) */
-    var memb = [
-      'M58 98 Q48 130 46 165 Q43 205 39 238', 'M142 98 Q152 130 154 165 Q157 205 161 238',
-      'M86 232 Q84 280 85 322 Q86 365 81 400', 'M114 232 Q116 280 115 322 Q114 365 119 400'
-    ];
-    var amples = [17, 17, 27, 27];
-    memb.forEach(function (d, i) { el('path', { d: d, 'class': 'memb-o', 'stroke-width': amples[i] + 2.6 }, g); });
-    memb.forEach(function (d, i) { el('path', { d: d, 'class': 'memb', 'stroke-width': amples[i] }, g); });
-    /* mans i peus */
-    el('ellipse', { cx: 38, cy: 252, rx: 8.5, ry: 13, 'class': 'cos' }, g);
-    el('ellipse', { cx: 162, cy: 252, rx: 8.5, ry: 13, 'class': 'cos' }, g);
-    el('path', { d: 'M70 404 Q80 398 90 402 L92 412 Q80 417 67 413 Z', 'class': 'cos' }, g);
-    el('path', { d: 'M130 404 Q120 398 110 402 L108 412 Q120 417 133 413 Z', 'class': 'cos' }, g);
-    /* tronc */
-    el('path', { d: 'M90 76 L110 76 Q112 84 120 86 Q140 88 148 100 Q151 128 140 160 Q134 182 134 205 Q137 222 133 240 L67 240 Q63 222 66 205 Q66 182 60 160 Q49 128 52 100 Q60 88 80 86 Q88 84 90 76 Z', 'class': 'cos' }, g);
-    /* coll i cap */
-    el('path', { d: 'M91 56 L109 56 L110 80 Q100 84 90 80 Z', 'class': 'cos' }, g);
-    el('ellipse', { cx: 100, cy: 36, rx: 20, ry: 25, 'class': 'cos' }, g);
-  }
-
   function zonesHit(id) {
+    function cerc(p, rx, ry) { return ['ellipse', { cx: p[0], cy: p[1], rx: rx, ry: ry || rx }]; }
     switch (id) {
-      case 'cap': return [['ellipse', { cx: 100, cy: 36, rx: 23, ry: 28 }]];
-      case 'gola': return [['rect', { x: 86, y: 60, width: 28, height: 22, rx: 6 }]];
-      case 'espatles': return [['ellipse', { cx: 66, cy: 93, rx: 17, ry: 10 }], ['ellipse', { cx: 134, cy: 93, rx: 17, ry: 10 }]];
-      case 'pit': return [['ellipse', { cx: 100, cy: 124, rx: 34, ry: 24 }]];
-      case 'panxa': return [['ellipse', { cx: 100, cy: 190, rx: 30, ry: 30 }]];
-      case 'bracos': return [['rect', { x: 34, y: 108, width: 24, height: 104, rx: 10 }], ['rect', { x: 142, y: 108, width: 24, height: 104, rx: 10 }]];
-      case 'mans': return [['ellipse', { cx: 38, cy: 250, rx: 13, ry: 18 }], ['ellipse', { cx: 162, cy: 250, rx: 13, ry: 18 }]];
-      case 'cames': return [['rect', { x: 70, y: 246, width: 30, height: 140, rx: 12 }], ['rect', { x: 100, y: 246, width: 30, height: 140, rx: 12 }]];
-      case 'peus': return [['ellipse', { cx: 80, cy: 408, rx: 16, ry: 10 }], ['ellipse', { cx: 120, cy: 408, rx: 16, ry: 10 }]];
+      case 'cap': return [cerc(PUNTS.cap[0], 95, 120)];
+      case 'gola': return [['rect', { x: 448, y: 280, width: 120, height: 110, rx: 30 }]];
+      case 'espatles': return PUNTS.espatles.map(function (p) { return cerc(p, 80, 55); });
+      case 'pit': return [cerc(PUNTS.pit[0], 170, 130)];
+      case 'panxa': return [cerc(PUNTS.panxa[0], 150, 150)];
+      case 'bracos': return [['rect', { x: 140, y: 560, width: 130, height: 620, rx: 50 }], ['rect', { x: 754, y: 560, width: 130, height: 620, rx: 50 }]];
+      case 'mans': return PUNTS.mans.map(function (p) { return cerc(p, 80, 110); });
+      case 'cames': return [['rect', { x: 340, y: 1390, width: 344, height: 100, rx: 30 }]];
+      case 'peus': return [['rect', { x: 340, y: 1490, width: 344, height: 46, rx: 20 }]];
       default: return [];
     }
   }
@@ -125,7 +104,7 @@
     var arrel = document.createElement('div'); arrel.className = 'sil'; container.appendChild(arrel);
     var fig = document.createElement('div'); fig.className = 'sil-fig'; arrel.appendChild(fig);
 
-    var svg = el('svg', { viewBox: '0 0 200 430', role: 'group', 'aria-label': txt.silueta.titol }, null);
+    var svg = el('svg', { viewBox: '0 0 1024 1536', role: 'group', 'aria-label': txt.silueta.titol }, null);
     fig.appendChild(svg);
     var defs = el('defs', {}, svg);
     var gG = el('radialGradient', { id: id + 'gg' }, defs);
@@ -133,23 +112,21 @@
     el('stop', { offset: '55%', 'stop-color': '#F2C14E', 'stop-opacity': '.85' }, gG);
     el('stop', { offset: '100%', 'stop-color': '#F2C14E', 'stop-opacity': '0' }, gG);
     var gB = el('radialGradient', { id: id + 'gb' }, defs);
-    el('stop', { offset: '0%', 'stop-color': '#9CC4F2', 'stop-opacity': '.15' }, gB);
-    el('stop', { offset: '60%', 'stop-color': '#3D86D6', 'stop-opacity': '.35' }, gB);
+    el('stop', { offset: '0%', 'stop-color': '#9CC4F2', 'stop-opacity': '.12' }, gB);
+    el('stop', { offset: '60%', 'stop-color': '#5AA2EC', 'stop-opacity': '.4' }, gB);
     el('stop', { offset: '100%', 'stop-color': '#5A9BE0', 'stop-opacity': '0' }, gB);
-    var pat = el('pattern', { id: id + 'pd', width: 5, height: 5, patternUnits: 'userSpaceOnUse' }, defs);
-    el('circle', { cx: 2.5, cy: 2.5, r: .9, fill: '#8A5D0E', 'fill-opacity': '.55' }, pat);
+    var pat = el('pattern', { id: id + 'pd', width: 22, height: 22, patternUnits: 'userSpaceOnUse' }, defs);
+    el('circle', { cx: 11, cy: 11, r: 4, fill: '#7A5310', 'fill-opacity': '.55' }, pat);
 
-    /* capa esquena (darrere del cos) */
-    var capaEsq = el('g', {}, svg);
-    var gCos = el('g', { 'aria-hidden': 'true' }, svg);
-    dibuixaCos(gCos);
+    el('image', { href: IMG, x: 0, y: 0, width: 1024, height: 1536, preserveAspectRatio: 'none', 'aria-hidden': 'true' }, svg);
+    var capaEsq = el('g', { 'aria-hidden': 'true', 'pointer-events': 'none' }, svg);
     var capaLlums = el('g', { 'aria-hidden': 'true', 'pointer-events': 'none' }, svg);
     var capaZones = el('g', {}, svg);
 
     /* camí cap al compromís (estat 3) */
     var cami = el('g', { 'class': 'cami', 'aria-hidden': 'true' }, svg);
-    el('path', { d: 'M100 122 C 140 112, 170 90, 196 64', fill: 'none', stroke: '#2F6FC0', 'stroke-width': 3, 'stroke-linecap': 'round' }, cami);
-    el('circle', { cx: 196, cy: 64, r: 6, fill: '#2F6FC0' }, cami);
+    el('path', { d: 'M508 640 C 700 600, 860 420, 990 250', fill: 'none', stroke: '#7DB8F2', 'stroke-width': 12, 'stroke-linecap': 'round' }, cami);
+    el('circle', { cx: 990, cy: 250, r: 22, fill: '#7DB8F2' }, cami);
 
     var llums = {};
     Object.keys(PUNTS).forEach(function (z) {
@@ -163,13 +140,13 @@
         grp.g.push(g);
         var b = el('g', { 'class': 'blau' }, capa);
         el('circle', { cx: p[0], cy: p[1], r: r * 1.25, fill: 'url(#' + id + 'gb)' }, b);
-        el('circle', { cx: p[0], cy: p[1], r: r * 1.12, fill: 'none', stroke: '#1F5FB0', 'stroke-width': 3, 'stroke-dasharray': '5 3' }, b);
+        el('circle', { cx: p[0], cy: p[1], r: r * 1.12, fill: 'none', stroke: '#7DB8F2', 'stroke-width': 12, 'stroke-dasharray': '22 14' }, b);
         grp.b.push(b);
       });
       llums[z] = grp;
     });
 
-    /* zones clicables (l'esquena només a la llista: no es veu de cara) */
+    /* zones clicables (l'esquena només a la llista: no es veu de cara; la llum surt als costats del tronc) */
     var zEls = {};
     txt.zones.forEach(function (z) {
       var forms = zonesHit(z.id); if (!forms.length) return;
