@@ -6,14 +6,64 @@
   var UI = {
     ca: {
       destacat: "Destacat", fitxa: "Fitxa", perA: "Per a: ", obre: "Obre l'enllaç",
-      carrusel: "Carrusel", totes: "Descarrega-les totes", copia: "Copia el text", copiat: "Copiat",
+      carrusel: "Carrusel", totes: "Descarrega-les totes",
+      comparteix: "Desa les {n} imatges a Fotos i copia el text",
+      preparant: "Preparant les imatges…", tornaTocar: "Ja estan a punt: torna a tocar el botó.",
+      peuCopiat: "El text d'Instagram també està copiat: a Instagram, mantén premut el peu de foto i tria Enganxa.",
+      error: "No s'han pogut carregar les imatges. Comprova la connexió i torna-ho a provar.", copia: "Copia el text", copiat: "Copiat",
       ig: "Instagram (@tofol49) · text del carrusel", fb: "Facebook (pàgina d'APRENS) · publicació", yt: "YouTube · vídeo o Short",
-      titol: "Títol", desc: "Descripció", guio: "Guió (45-60 s, vertical per Shorts i Reels)", mini: "Miniatura",
+      titol: "Títol", desc: "Descripció", guio: "Guió amb temps (pla de muntatge)", bigvu: "Teleprompter de BIGVU (enganxa-ho tal qual)", recurs: "Plans de recurs", mini: "Miniatura",
       descarrega: "Descarrega el vídeo", setmana: "Setmana",
       tipus: { carrusel: "carrusel a Instagram i Facebook", short: "Short / Reel", fb: "publicació a Facebook", youtube: "vídeo a YouTube" },
       diapo: "Diapositiva"
     }
   };
+  /* Compartir fitxers (iPhone i Android): és l'única manera de dur un carrusel sencer a Fotos o a Instagram. */
+  var potCompartir = (function () {
+    try {
+      return !!(navigator.canShare && window.File &&
+        navigator.canShare({ files: [new File([""], "prova.jpg", { type: "image/jpeg" })] }));
+    } catch (e) { return false; }
+  })();
+  var cache = {};
+  function carrega(src) {
+    if (!cache[src]) {
+      cache[src] = fetch(src).then(function (r) {
+        if (!r.ok) throw new Error(src);
+        return r.blob();
+      }).then(function (b) {
+        return new File([b], "APRENS-" + src.replace(/^img\//, ""), { type: "image/jpeg" });
+      });
+      cache[src].catch(function () { delete cache[src]; });
+    }
+    return cache[src];
+  }
+  function preparaQuanEsVegi(el, fitxers) {
+    if (!("IntersectionObserver" in window)) { fitxers.forEach(carrega); return; }
+    var io = new IntersectionObserver(function (entrades) {
+      if (entrades.some(function (e) { return e.isIntersecting; })) { io.disconnect(); fitxers.forEach(carrega); }
+    }, { rootMargin: "300px" });
+    io.observe(el);
+  }
+  function comparteix(fitxers, titol, estat, peu) {
+    var t = UI.ca;
+    /* El text d'Instagram es copia dins el mateix toc (Safari ho exigeix), abans d'obrir el full. */
+    var copiat = Promise.resolve(false);
+    if (peu && navigator.clipboard && navigator.clipboard.writeText) {
+      copiat = navigator.clipboard.writeText(peu).then(function () { return true; }, function () { return false; });
+    }
+    estat.textContent = t.preparant;
+    Promise.all(fitxers.map(carrega)).then(function (files) {
+      return navigator.share({ files: files, title: "APRENS · " + titol }).then(function () {
+        return copiat.then(function (ok) { estat.textContent = ok ? t.peuCopiat : ""; });
+      }, function (err) {
+        /* Si les imatges han tardat a arribar, el navegador pot no deixar obrir el full: amb un segon toc ja va. */
+        if (err && err.name === "AbortError") return copiat.then(function (ok) { estat.textContent = ok ? t.peuCopiat : ""; });
+        estat.textContent = t.tornaTocar;
+      });
+    }).catch(function () { estat.textContent = t.error; });
+  }
+
   var lang = "ca";
   try { if (localStorage.getItem("aprens-difusio-lang") === "es") lang = "es"; } catch (e) { /* sense emmagatzematge */ }
 
@@ -85,10 +135,22 @@
       car.appendChild(l);
     });
     var totes = node.querySelector(".totes");
-    totes.textContent = t.totes;
-    totes.addEventListener("click", function () {
-      car.querySelectorAll("a").forEach(function (l, i) { setTimeout(function () { l.click(); }, i * 350); });
-    });
+    var estat = node.querySelector(".estat-carrusel");
+    if (potCompartir) {
+      /* Mòbil: el full de compartir desa totes les imatges a Fotos en ordre («Desa N imatges»)
+         o les envia directament a Instagram. Les descàrregues múltiples, al mòbil, no funcionen. */
+      totes.textContent = t.comparteix.replace("{n}", fitxers.length);
+      preparaQuanEsVegi(car, fitxers);
+      totes.addEventListener("click", function () { comparteix(fitxers, f.id, estat, f.ig[lang]); });
+      car.querySelectorAll("a").forEach(function (l, i) {
+        l.addEventListener("click", function (e) { e.preventDefault(); comparteix([fitxers[i]], f.id, estat); });
+      });
+    } else {
+      totes.textContent = t.totes;
+      totes.addEventListener("click", function () {
+        car.querySelectorAll("a").forEach(function (l, i) { setTimeout(function () { l.click(); }, i * 350); });
+      });
+    }
 
     var xs = node.querySelector(".xarxes");
     xs.appendChild(xarxa(t.ig, blocCopia(null, f.ig[lang]), true));
@@ -97,6 +159,11 @@
       var fr = document.createDocumentFragment();
       fr.appendChild(blocCopia(t.titol, f.yt.titol[lang]));
       fr.appendChild(blocCopia(t.desc, f.yt.desc[lang]));
+      if (f.yt.bigvu) {
+        fr.appendChild(blocCopia(t.bigvu, f.yt.bigvu[lang]));
+        fr.appendChild(h("h4", null, t.recurs));
+        fr.appendChild(h("p", { lang: lang }, f.yt.recurs[lang]));
+      }
       fr.appendChild(blocCopia(t.guio, f.yt.guio[lang]));
       fr.appendChild(h("h4", null, t.mini));
       var mini = "img/" + f.id + "-" + lang + "-yt.jpg";

@@ -56,6 +56,8 @@ La intel·ligència artificial hi és per acompanyar l'estudiant, no per fer-li 
 Per a ESO, batxillerat, FP, universitat i oposicions. En català i en castellà.
 Prova-la a explica.aprens.net (enllaç a la bio).
 
+Per fer-la servir amb els teus apunts, subscripció de 6 € al mes. Dubtes: info@aprens.es
+
 #APRENS #estudiactiu #tècniquesdestudi #ESO #batxillerat #Mallorca`,
         es: `Si no lo puedes explicar, no te lo sabes.
 
@@ -67,6 +69,8 @@ La inteligencia artificial está para acompañar al estudiante, no para hacerle 
 
 Para ESO, bachillerato, FP, universidad y oposiciones. En catalán y en castellano.
 Pruébala en explica.aprens.net (enlace en la bio).
+
+Para usarla con tus apuntes, suscripción de 6 € al mes. Dudas: info@aprens.es
 
 #APRENS #estudioactivo #técnicasdeestudio #ESO #bachillerato #Mallorca`
       },
@@ -128,6 +132,70 @@ Más información: https://aprens.net/explica-ho.html
 
 Tòfol Villalonga · APRENS Psicología · Inca`
         },
+        bigvu: {
+          ca: `Si no ho pots explicar,
+no t'ho saps.
+
+Fa anys que faig feina amb estudiants.
+I molt sovint veig el mateix:
+llegeixen, subratllen,
+i tenen la sensació de saber-ho.
+
+Però a l'examen,
+quan ho han d'explicar amb les seves paraules,
+apareixen els buits.
+
+Per això hem fet Explica-ho.
+
+Puges els apunts.
+T'ordena les idees
+en un resum i un mapa conceptual.
+I et pregunta en quatre nivells:
+recordar, comprendre,
+relacionar i integrar.
+
+Respons parlant o escrivint,
+i veus quins conceptes tens sòlids
+i quins encara no.
+
+La intel·ligència artificial t'acompanya.
+No estudia per tu.
+
+La trobaràs a explica.aprens.net.`,
+          es: `Si no lo puedes explicar,
+no te lo sabes.
+
+Hace años que trabajo con estudiantes.
+Y muchas veces veo lo mismo:
+leen, subrayan,
+y tienen la sensación de saberlo.
+
+Pero en el examen,
+cuando lo tienen que explicar con sus palabras,
+aparecen los huecos.
+
+Por eso hemos hecho Explica-ho.
+
+Subes los apuntes.
+Te ordena las ideas
+en un resumen y un mapa conceptual.
+Y te pregunta en cuatro niveles:
+recordar, comprender,
+relacionar e integrar.
+
+Respondes hablando o escribiendo,
+y ves qué conceptos tienes sólidos
+y cuáles todavía no.
+
+La inteligencia artificial te acompaña.
+No estudia por ti.
+
+La encontrarás en explica.aprens.net.`
+        },
+        recurs: {
+          ca: `Gravació de pantalla: pujar unes fotos d'apunts · el mapa conceptual · una pregunta de nivell 3 i la valoració · rètol final «explica.aprens.net». Sempre amb el tema d'exemple «La cèl·lula».`,
+          es: `Grabación de pantalla: subir unas fotos de apuntes · el mapa conceptual · una pregunta de nivel 3 y la valoración · rótulo final «explica.aprens.net». Siempre con el tema de ejemplo «La célula».`
+        },
         guio: {
           ca: `[0-5 s · Tòfol a càmera] Si no ho pots explicar, no t'ho saps.
 [5-15 s] Molts d'estudiants llegeixen i subratllen hores, i tenen la sensació de saber-ho. Però a l'examen, quan ho han d'explicar amb les seves paraules, apareixen els buits.
@@ -179,6 +247,8 @@ No demana cap registre. El que hi anotes queda només al teu mòbil.
 
 Enllaç a la bio.
 
+Si sou d'un club i ho voleu provar amb un equip, escriviu-me a info@aprens.es.
+
 #APRENS #esportdebase #futbolbase #famílies #psicologiadelesport #Mallorca`,
         es: `Los padres también juegan.
 
@@ -189,6 +259,8 @@ Desde la grada vivimos el partido con mucha intensidad, y es normal. Lo que nos 
 No pide ningún registro. Lo que anotas queda solo en tu móvil.
 
 Enlace en la bio.
+
+Si sois de un club y queréis probarlo con un equipo, escribidme a info@aprens.es.
 
 #APRENS #deportebase #futbolbase #familias #psicologiadeldeporte #Mallorca`
       },
@@ -247,6 +319,82 @@ Para clubes: https://aprens.net/clubs-esport-base.html
 
 Tòfol Villalonga · APRENS Psicología · Inca`
         },
+        bigvu: {
+          ca: `Els pares també juguen.
+
+Des de la grada
+vivim el partit amb molta intensitat.
+I és normal.
+
+Però el nostre fill
+no hauria de carregar
+amb les nostres emocions.
+
+Primer m'acompany a mi mateix,
+per poder acompanyar millor l'esportista.
+
+Per això hem fet una app
+per a famílies i entrenadors.
+
+Abans del partit,
+un minut per preparar-me
+i elegir un compromís.
+
+Durant,
+una pausa breu
+quan el partit m'activa.
+
+I després,
+pensar com el vull rebre.
+
+També hi ha la pinya de les famílies:
+un gest de compromís
+abans de cada partit.
+
+No demana cap registre.
+El que anotes queda al teu mòbil.
+
+L'enllaç, a aprens.net.`,
+          es: `Los padres también juegan.
+
+Desde la grada
+vivimos el partido con mucha intensidad.
+Y es normal.
+
+Pero nuestro hijo
+no debería cargar
+con nuestras emociones.
+
+Primero me acompaño a mí mismo,
+para poder acompañar mejor al deportista.
+
+Por eso hemos hecho una app
+para familias y entrenadores.
+
+Antes del partido,
+un minuto para prepararme
+y elegir un compromiso.
+
+Durante,
+una pausa breve
+cuando el partido me activa.
+
+Y después,
+pensar cómo lo quiero recibir.
+
+También está la piña de las familias:
+un gesto de compromiso
+antes de cada partido.
+
+No pide ningún registro.
+Lo que anotas queda en tu móvil.
+
+El enlace, en aprens.net.`
+        },
+        recurs: {
+          ca: `Gravar a peu de camp o a la grada, sense cares de menors identificables. Recurs: la grada d'esquena · la pantalla «Abans» de l'app · el botó «Necessit fer una pausa» · l'animació de la pinya · rètol final «aprens.net».`,
+          es: `Grabar a pie de campo o en la grada, sin caras de menores identificables. Recurso: la grada de espaldas · la pantalla «Antes» de la app · el botón «Necesito hacer una pausa» · la animación de la piña · rótulo final «aprens.net».`
+        },
         guio: {
           ca: `[0-5 s · Tòfol a peu de camp] Els pares també juguen.
 [5-20 s] Des de la grada ho vivim molt, i és normal. Però el nostre fill no hauria de carregar amb les nostres emocions. Primer m'acompany a mi mateix, per poder acompanyar millor l'esportista.
@@ -295,6 +443,8 @@ Hem preparat una proposta per a clubs: l'app «Els pares també juguen» amb l'e
 
 Si sou d'un club i us agradaria fer-ne una primera experiència, en parlam. Enllaç a la bio.
 
+Pilot gratuït de quatre a sis setmanes. Contacte: info@aprens.es · 636 93 76 61
+
 #APRENS #esportdebase #clubs #futbolbase #Mallorca`,
         es: `Mi club es un lugar emocionalmente seguro.
 
@@ -303,6 +453,8 @@ Para mí el deporte base es uno de los contextos donde más se puede ayudar a un
 Hemos preparado una propuesta para clubes: la app «Los padres también juegan» con el espacio propio del club, una guía de trabajo para familias, entrenadores y jugadores, carteles con QR y acompañamiento durante la temporada.
 
 Si sois de un club y os gustaría hacer una primera experiencia, hablamos. Enlace en la bio.
+
+Piloto gratuito de cuatro a seis semanas. Contacto: info@aprens.es · 636 93 76 61
 
 #APRENS #deportebase #clubes #futbolbase #Mallorca`
       },
@@ -376,6 +528,8 @@ AIS APRENS és l'app d'Atenció Interna Sensorial: pràctiques breus de respirac
 
 Disponible a l'App Store. Enllaç a la bio.
 
+Dubtes o consultes: info@aprens.es
+
 #APRENS #AIS #atenció #regulacióemocional #salutmental #Mallorca`,
         es: `El móvil también puede entrenar la atención.
 
@@ -384,6 +538,8 @@ Si prohíbes un medio, lo conviertes en un deseo. Por eso, más que luchar contr
 AIS APRENS es la app de Atención Interna Sensorial: prácticas breves de respiración y de atención al cuerpo, recursos para bajar la alerta y pequeñas rutinas de cada día, pensadas para prevenir conductas evitativas y compulsivas.
 
 Disponible en la App Store. Enlace en la bio.
+
+Dudas o consultas: info@aprens.es
 
 #APRENS #AIS #atención #regulaciónemocional #saludmental #Mallorca`
       },
@@ -424,6 +580,54 @@ App Store: https://apps.apple.com/es/app/ais-aprens/id6757331269
 Versión web: https://aprens-app.aprens.net/
 
 Tòfol Villalonga · APRENS Psicología · Inca`
+        },
+        bigvu: {
+          ca: `Si prohibeixes un mitjà,
+el converteixes en un desig.
+
+Molta de gent em demana
+què pot fer amb el mòbil.
+El seu, o el dels fills.
+
+El que us propòs és una altra cosa:
+fer servir el mateix mòbil
+per anar cap endins.
+
+Una respiració guiada.
+Una pràctica breu d'atenció al cos.
+Un recurs per baixar l'alerta
+quan el cap s'accelera.
+
+Això és AIS APRENS,
+l'app d'Atenció Interna Sensorial
+que faig servir amb els meus pacients.
+
+La trobaràs a l'App Store.`,
+          es: `Si prohíbes un medio,
+lo conviertes en un deseo.
+
+Mucha gente me pregunta
+qué puede hacer con el móvil.
+El suyo, o el de sus hijos.
+
+Lo que os propongo es otra cosa:
+usar el mismo móvil
+para ir hacia dentro.
+
+Una respiración guiada.
+Una práctica breve de atención al cuerpo.
+Un recurso para bajar la alerta
+cuando la cabeza se acelera.
+
+Esto es AIS APRENS,
+la app de Atención Interna Sensorial
+que uso con mis pacientes.
+
+La encontrarás en la App Store.`
+        },
+        recurs: {
+          ca: `Gravació de pantalla de l'app: la respiració guiada · una pràctica d'atenció al cos · el recurs per baixar l'alerta · rètol final «AIS APRENS · App Store».`,
+          es: `Grabación de pantalla de la app: la respiración guiada · una práctica de atención al cuerpo · el recurso para bajar la alerta · rótulo final «AIS APRENS · App Store».`
         },
         guio: {
           ca: `[0-5 s] Si prohibeixes un mitjà, el converteixes en un desig.
@@ -467,12 +671,16 @@ El Racó de calma i els Jocs AIS són jocs visuals i curts per practicar-ho, a c
 
 Enllaç a la bio.
 
+Per a escoles i famílies que en vulguin saber més: info@aprens.es
+
 #APRENS #criança #educacióemocional #infància #mestres #Mallorca`,
         es: `Cuando un niño está desbordado, la tendencia es querer que se calme rápido. Pero lo que le ayuda a regularse cada vez mejor es aprender a notar lo que siente y quedarse un rato acompañado.
 
 El Rincón de calma y los Juegos AIS son juegos visuales y cortos para practicarlo, en casa o en el aula, juntos. Gratuitos, desde el navegador y sin registro.
 
 Enlace en la bio.
+
+Para escuelas y familias que quieran saber más: info@aprens.es
 
 #APRENS #crianza #educaciónemocional #infancia #maestros #Mallorca`
       },
@@ -536,6 +744,8 @@ Dos contes animats d'un minut per entendre-ho: La història del mono i La manada
 
 Enllaç a la bio.
 
+Si vols fer-ne feina en consulta, pots demanar cita a l'enllaç de la bio.
+
 #APRENS #TEC #AIS #psicologia #educacióemocional`,
         es: `¿Quién conduce tu vida?
 
@@ -544,6 +754,8 @@ Todos llevamos un mono dentro: la parte que se alerta, que quiere huir o control
 Dos cuentos animados de un minuto para entenderlo: La historia del mono y La manada. Para ver solos, en familia o en el aula.
 
 Enlace en la bio.
+
+Si quieres trabajarlo en consulta, puedes pedir cita en el enlace de la bio.
 
 #APRENS #TEC #AIS #psicología #educaciónemocional`
       },
@@ -581,6 +793,52 @@ La manada: https://aprens-app.aprens.net/tools-standalone/historia-manada.html
 
 APRENS Psicología · Inca`
         },
+        bigvu: {
+          ca: `[INICI · abans de l'animació]
+
+Tots duim un mono dins.
+
+La part de nosaltres que s'alerta,
+que vol fugir
+o controlar-ho tot.
+
+No és l'enemic.
+Mirau.
+
+[FINAL · després de l'animació]
+
+El teu mono és un mamífer de manada.
+Quan se sent acompanyat,
+baixa l'alerta.
+
+Per això respiram amb atenció.
+
+Les dues històries, a aprens.net.`,
+          es: `[INICIO · antes de la animación]
+
+Todos llevamos un mono dentro.
+
+La parte de nosotros que se alerta,
+que quiere huir
+o controlarlo todo.
+
+No es el enemigo.
+Mirad.
+
+[FINAL · después de la animación]
+
+Tu mono es un mamífero de manada.
+Cuando se siente acompañado,
+baja la alerta.
+
+Por eso respiramos con atención.
+
+Las dos historias, en aprens.net.`
+        },
+        recurs: {
+          ca: `Grava les dues parts a BIGVU com a clips separats i, al mig, la gravació de pantalla de l'animació (uns 40 s). Total, menys de 60 s.`,
+          es: `Graba las dos partes en BIGVU como clips separados y, en medio, la grabación de pantalla de la animación (unos 40 s). Total, menos de 60 s.`
+        },
         guio: {
           ca: `Gravació de pantalla de l'animació (1 min), amb la veu de Tòfol al principi: «Aquest és el teu mono. No és l'enemic.» i al final: «Quan se sent acompanyat, baixa l'alerta.» Format vertical per a Shorts i Reels.`,
           es: `Grabación de pantalla de la animación (1 min), con la voz de Tòfol al principio: «Este es tu mono. No es el enemigo.» y al final: «Cuando se siente acompañado, baja la alerta.» Formato vertical para Shorts y Reels.`
@@ -617,12 +875,16 @@ Quan una cosa ens fa por, la tendència és evitar-la, i de cada vegada el món 
 
 L'escala és una eina d'APRENS per fer-ho pas a pas, sempre dins un procés amb el teu psicòleg.
 
+Si vols començar un procés amb nosaltres, pots demanar cita a l'enllaç de la bio.
+
 #APRENS #ansietat #pors #psicologia #AIS`,
         es: `Un escalón cada vez.
 
 Cuando algo nos da miedo, la tendencia es evitarlo, y cada vez el mundo se hace más pequeño. La exposición no consiste en aguantar el miedo, sino en dar el paso acompañándote por dentro, para que el cuerpo aprenda que puede estar ahí.
 
 La escalera es una herramienta de APRENS para hacerlo paso a paso, siempre dentro de un proceso con tu psicólogo.
+
+Si quieres empezar un proceso con nosotros, puedes pedir cita en el enlace de la bio.
 
 #APRENS #ansiedad #miedos #psicología #AIS`
       },
@@ -674,12 +936,16 @@ Quan l'atenció va a la tasca, hi ha més control, l'errada es regula millor i l
 
 A aprens.net hi trobareu, gratuïtes, La piràmide del rendiment i Atenció i maneig emocional a l'esport, i per als ciclistes, Pedala des de dins.
 
+Per a clubs, entrenadors i esportistes: info@aprens.es
+
 #APRENS #psicologiadelesport #rendiment #atenció #ciclisme #futbol`,
         es: `¿Dónde se enfoca el cuerpo del deportista durante la competición?
 
 Cuando la atención va a la tarea, hay más control, el error se regula mejor y la motivación se mantiene. Cuando va al resultado y a la mirada de los demás, el cuerpo se alerta y el rendimiento se resiente.
 
 En aprens.net encontraréis, gratuitas, La pirámide del rendimiento y Atención y manejo emocional en el deporte, y para los ciclistas, Pedalea desde dentro.
+
+Para clubes, entrenadores y deportistas: info@aprens.es
 
 #APRENS #psicologíadeldeporte #rendimiento #atención #ciclismo #fútbol`
       },
@@ -735,6 +1001,8 @@ Conseqüents amb el que volem ensenyar i compassius amb el que costa aprendre.
 
 Dues guies gratuïtes en PDF a aprens.net: Maneig emocional per a pares i mares i Guia per a pares de fills adolescents.
 
+Si voleu fer-ne feina en consulta, podeu demanar cita a l'enllaç de la bio.
+
 #APRENS #criança #adolescència #famílies #educacióemocional`,
         es: `¿Por qué no cambia, si ya lo entiende?
 
@@ -743,6 +1011,8 @@ Muchos padres y madres me lo preguntan en consulta. Entender no es aprender: una
 Consecuentes con lo que queremos enseñar y compasivos con lo que cuesta aprender.
 
 Dos guías gratuitas en PDF en aprens.net: Manejo emocional para padres y madres y Guía para padres de hijos adolescentes.
+
+Si queréis trabajarlo en consulta, podéis pedir cita en el enlace de la bio.
 
 #APRENS #crianza #adolescencia #familias #educaciónemocional`
       },
@@ -796,12 +1066,16 @@ Lidera la teva mon(e)a, Cría desde dentro, Trasciende desde dentro i la Teoría
 
 Disponibles a Amazon. Enllaç a la bio.
 
+Per a presentacions i xerrades: info@aprens.es
+
 #APRENS #llibres #TEC #consciència #criança`,
         es: `La colección «Crece, cría y trasciende desde dentro» es para mí una manera de poner por escrito lo que he aprendido en todos estos años de trabajo con mis pacientes.
 
 Lidera tu mon(e)a, Cría desde dentro, Trasciende desde dentro y la Teoría del Efecto Consciente, el metamodelo que lo une todo.
 
 Disponibles en Amazon. Enlace en la bio.
+
+Para presentaciones y charlas: info@aprens.es
 
 #APRENS #libros #TEC #conciencia #crianza`
       },
