@@ -1,7 +1,7 @@
 {
   "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista). «ordre» (número, per defecte 0) avança o endarrereix una notícia a la llista i al carrusel: com més baix, més amunt.",
   "enllacos": {
-    "app": "https://aprens-app.netlify.app/",
+    "app": "https://aprens-app.aprens.net/",
     "consulta": "https://aprens.es/",
     "cita": "https://www.doctoralia.es/perfil/tofol-villalonga-melis",
     "explica": "https://explica.aprens.net/",
@@ -10,7 +10,7 @@
     "autor": "https://www.amazon.es/stores/T%C3%B2fol-Villalonga/author/B0DWLHLD2V",
     "serie": "https://www.amazon.es/dp/B0FDR8B1JP",
     "facebook_aprens": "https://www.facebook.com/aprens70/",
-    "laboratori": "https://aprens-app.netlify.app/#/tool/laboratorio_tec"
+    "laboratori": "https://aprens-app.aprens.net/#/tool/laboratorio_tec"
   },
   "novetats": [
     {
@@ -83,7 +83,7 @@
         "es": "Un cuento de un minuto sobre quién conduce tu vida y cómo aprender a llevar el volante acompañando a tu mono."
       },
       "imatge": "img/eines/historia-mono.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-animada.html",
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/historia-animada.html",
       "destacat": true
     },
     {
@@ -97,7 +97,7 @@
         "es": "Por qué respiramos: tu mono es un mamífero de manada, y el AIS es la manera de no dejarlo solo."
       },
       "imatge": "img/eines/manada.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-manada.html"
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/historia-manada.html"
     },
     {
       "tipus": "eina",
@@ -110,7 +110,7 @@
         "es": "Juegos cortos para entrenar la atención hacia dentro, para adultos y para los peques."
       },
       "imatge": "img/eines/juegos-ais.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/juegos-ais.html",
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/juegos-ais.html",
       "destacat": true
     },
     {
@@ -124,7 +124,7 @@
         "es": "Juegos visuales y cortos para que los niños practiquen estar con lo que sienten."
       },
       "imatge": "img/eines/rincon.jpg",
-      "enllac": "https://aprens-app.netlify.app/rincon/"
+      "enllac": "https://aprens-app.aprens.net/rincon/"
     },
     {
       "tipus": "eina",
@@ -137,7 +137,7 @@
         "es": "Un peldaño cada vez, no para aguantar el miedo sino para dar el paso acompañándote por dentro."
       },
       "imatge": "img/eines/escalera.jpg",
-      "enllac": "https://aprens-app.netlify.app/exposicion/"
+      "enllac": "https://aprens-app.aprens.net/exposicion/"
     },
     {
       "tipus": "esport",
@@ -150,7 +150,7 @@
         "es": "Ciclismo de competición desde la tarea y el amor a la bici, no desde el látigo."
       },
       "imatge": "img/eines/pedalea.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/pedalea_desde_dentro_aprens.html"
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/pedalea_desde_dentro_aprens.html"
     },
     {
       "tipus": "article",
