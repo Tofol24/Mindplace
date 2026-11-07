@@ -8,7 +8,13 @@
   Content-Type: text/calendar; charset=utf-8
 
 # Manifests de l'app (pantalla d'inici): amb nosniff cal declarar el tipus.
-/*.webmanifest
+# Rutes explícites (un * a Netlify faria de comodí per a tot el que segueix).
+# En afegir les icones d'un club nou, afegiu-hi la seva ruta.
+/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+/esport-base/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+/esport-base/clubs/constancia.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
 
 /sw.js

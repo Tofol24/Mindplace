@@ -155,7 +155,8 @@ Al añadir la app a la pantalla de inicio desde el enlace del club, aparece el e
 1. Generar iconos y manifest a partir del escudo (PNG con fondo transparente):
    `node scripts/esport-base/icones-club.cjs --slug <club> --imatge ruta/escut.png --nom "Nombre del club" --curt "Nombre corto" --tema "#color"`
 2. Añadir `"icones": true` y `"curt": "Nombre corto"` a `app/esport-base/clubs/<club>.json`.
-3. Subir los cambios. Sin iconos propios, se usa el icono de APRENS.
+3. Añadir la ruta `/esport-base/clubs/<club>.webmanifest` con `Content-Type: application/manifest+json` en `app/_headers` (rutas explícitas: en Netlify un `*` actúa de comodín para todo lo que sigue).
+4. Subir los cambios. Sin iconos propios, se usa el icono de APRENS.
 
 Cómo añadirla (desde el enlace del club, p. ej. `…/esport-base/?club=constancia`):
 - **iPhone (Safari):** Compartir → «Añadir a pantalla de inicio».
