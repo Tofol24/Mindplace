@@ -110,49 +110,80 @@ window.EPJ_TXT.es = {
 
   disparadors: {
     familia: [
-      { id: "errors", t: "Que mi hijo o hija cometa errores" },
-      { id: "minuts", t: "Que juegue pocos minutos" },
-      { id: "arbitre", t: "Que el árbitro se equivoque" },
-      { id: "decisions", t: "Que el entrenador tome decisiones que no comparto" },
-      { id: "altresPares", t: "Que otros padres hagan comentarios" },
-      { id: "actitud", t: "Que no muestre la actitud que espero" },
-      { id: "perdre", t: "Que el equipo pierda" },
-      { id: "euforia", t: "Que ganemos y yo me exalte demasiado" }
+      { id: "errors", c: "Sus errores", t: "Que mi hijo o hija cometa errores" },
+      { id: "minuts", c: "Pocos minutos", t: "Que juegue pocos minutos" },
+      { id: "arbitre", c: "El árbitro", t: "Que el árbitro se equivoque" },
+      { id: "decisions", c: "Decisiones del entrenador", t: "Que el entrenador tome decisiones que no comparto" },
+      { id: "altresPares", c: "Otros padres", t: "Que otros padres hagan comentarios" },
+      { id: "actitud", c: "Su actitud", t: "Que no muestre la actitud que espero" },
+      { id: "perdre", c: "Perder", t: "Que el equipo pierda" },
+      { id: "euforia", c: "La euforia de ganar", t: "Que ganemos y yo me exalte demasiado" }
     ],
     entrenador: [
-      { id: "errorsRep", t: "Errores repetidos" },
-      { id: "atencio", t: "Falta de atención" },
-      { id: "arbitre", t: "Decisiones arbitrales" },
-      { id: "faltaRespecte", t: "Comportamientos irrespetuosos" },
-      { id: "resultat", t: "La presión del resultado" },
-      { id: "conflictes", t: "Conflictos entre jugadores" },
-      { id: "families", t: "Reacciones de las familias" },
-      { id: "comunicacio", t: "Dificultad para mantener una comunicación educativa" }
+      { id: "errorsRep", c: "Errores repetidos", t: "Errores repetidos" },
+      { id: "atencio", c: "Falta de atención", t: "Falta de atención" },
+      { id: "arbitre", c: "El árbitro", t: "Decisiones arbitrales" },
+      { id: "faltaRespecte", c: "Faltas de respeto", t: "Comportamientos irrespetuosos" },
+      { id: "resultat", c: "Presión del resultado", t: "La presión del resultado" },
+      { id: "conflictes", c: "Conflictos", t: "Conflictos entre jugadores" },
+      { id: "families", c: "Las familias", t: "Reacciones de las familias" },
+      { id: "comunicacio", c: "Hablar con calma", t: "Dificultad para mantener una comunicación educativa" }
     ]
   },
 
   compromisos: {
     familia: [
-      { id: "respectar", t: "Respetar a todos: árbitros, rivales, entrenadores y familias" },
-      { id: "noInstruccions", t: "No gritar instrucciones desde la grada" },
-      { id: "noCritiques", t: "No criticar los errores" },
-      { id: "acompanyar", t: "Acompañar desde el respeto" },
-      { id: "serenPerdre", t: "Mantener una actitud serena también si perdemos" },
-      { id: "escoltar", t: "Escuchar antes de aconsejar" },
-      { id: "reconeixer", t: "Reconocer el esfuerzo y el compañerismo" },
-      { id: "exemple", t: "Ser un ejemplo de autocontrol y respeto" },
-      { id: "noDiscutirEntrenador", t: "No discutir las decisiones del entrenador delante de mi hijo" }
+      { id: "respectar", c: "Respetar a todos", t: "Respetar a todos: árbitros, rivales, entrenadores y familias" },
+      { id: "noInstruccions", c: "Animar, no dirigir", t: "No gritar instrucciones desde la grada" },
+      { id: "noCritiques", c: "No criticar errores", t: "No criticar los errores" },
+      { id: "acompanyar", c: "Acompañar con respeto", t: "Acompañar desde el respeto" },
+      { id: "serenPerdre", c: "Sereno si perdemos", t: "Mantener una actitud serena también si perdemos" },
+      { id: "escoltar", c: "Escuchar primero", t: "Escuchar antes de aconsejar" },
+      { id: "reconeixer", c: "Valorar el esfuerzo", t: "Reconocer el esfuerzo y el compañerismo" },
+      { id: "exemple", c: "Ser ejemplo", t: "Ser un ejemplo de autocontrol y respeto" },
+      { id: "noDiscutirEntrenador", c: "No discutir al entrenador", t: "No discutir las decisiones del entrenador delante de mi hijo" }
     ],
     entrenador: [
-      { id: "respectar", t: "Respetar a todos, también al árbitro, delante de los jugadores" },
-      { id: "instruccionsBreus", t: "Dar instrucciones breves y claras, sin gritar" },
-      { id: "corregirPrivat", t: "Corregir en privado y reconocer en público" },
-      { id: "esforc", t: "Valorar el esfuerzo, las decisiones y la cooperación, no solo el acierto" },
-      { id: "serenPerdre", t: "Mantener una actitud serena también si perdemos" },
-      { id: "escoltar", t: "Escuchar antes de corregir" },
-      { id: "totsSurten", t: "Que cada jugador salga sabiendo qué ha hecho bien" },
-      { id: "exemple", t: "Ser un ejemplo de autocontrol y respeto" }
+      { id: "respectar", c: "Respetar a todos", t: "Respetar a todos, también al árbitro, delante de los jugadores" },
+      { id: "instruccionsBreus", c: "Instrucciones breves", t: "Dar instrucciones breves y claras, sin gritar" },
+      { id: "corregirPrivat", c: "Corregir en privado", t: "Corregir en privado y reconocer en público" },
+      { id: "esforc", c: "Valorar el esfuerzo", t: "Valorar el esfuerzo, las decisiones y la cooperación, no solo el acierto" },
+      { id: "serenPerdre", c: "Sereno si perdemos", t: "Mantener una actitud serena también si perdemos" },
+      { id: "escoltar", c: "Escuchar primero", t: "Escuchar antes de corregir" },
+      { id: "totsSurten", c: "Todos saben qué han hecho bien", t: "Que cada jugador salga sabiendo qué ha hecho bien" },
+      { id: "exemple", c: "Ser ejemplo", t: "Ser un ejemplo de autocontrol y respeto" }
     ]
+  },
+
+  /* ---------- TEXTOS CORTOS PARA LOS MOMENTOS CLAVE (ojos en el campo) ---------- */
+  ux: {
+    abansT: ["¿Cómo llegas hoy?", "¿Qué te puede activar?", "Respira un momento", "¿Cómo quieres comportarte?"],
+    abansD: ["Toca lo que encaje.", "Saberlo antes ayuda.", "Tres respiraciones, con los ojos abiertos.", "Elige uno o dos."],
+    llest: "Listo",
+    durantT: "Modo partido",
+    durantD: "Ojos en el campo. Si te activas, toca el botón.",
+    compromisT: "Hoy",
+    pausaRapida: "Pausa",
+    pausaRapidaD: "10 segundos",
+    pausaGuiada: "Pausa guiada",
+    situacions: "Situaciones",
+    pantalla: "Pantalla encendida",
+    vibracio: "Guía con vibración",
+    vibracioD: "Puedes mirar el campo: el móvil vibrará en cada paso.",
+    seguretatLink: "¿Riesgo para un menor?",
+    acabat: "El partido ha terminado",
+    despresT: ["¿Cómo está?", "¿Has sido fiel a tu mano?", "¿Cómo te has sentido?", "¿Alguna reacción que reparar?", "Para el próximo partido"],
+    comEsta: { familia: "¿Cómo está tu hijo o hija?", entrenador: "¿Cómo está el equipo?" },
+    digues: "Le puedes decir",
+    escala: ["Tranquilo", "Muy activado"],
+    reparar: ["Reconócelo", "Pide disculpas", "Explica qué harás diferente", "Prepáralo antes del próximo partido"],
+    hoFare: "Lo haré",
+    notaPh: "Una cosa para el próximo partido (opcional)",
+    mesDetall: "Más detalle (opcional)",
+    noComp: "Sin compromiso elegido",
+    preparat: "Preparado",
+    abansMini: "Prepárate en un minuto",
+    comFunciona: "Cómo funciona"
   },
 
   /* ---------- SILUETA AIS ---------- */
