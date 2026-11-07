@@ -1,0 +1,16 @@
+/* APRENS · aprens.net/enllacos: l'enllaç de la bio d'Instagram. */
+.enllacos-pag{max-width:560px;gap:22px}
+.cap-enllacos{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding-top:6px}
+.cap-enllacos img{width:112px;height:112px;border-radius:50%;object-fit:cover;object-position:top;box-shadow:0 6px 20px rgb(0 0 0 / .12)}
+.cap-enllacos h1{font-size:2.4rem}
+.grup{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.grup h2{font-size:1.5rem;margin:6px 0 0}
+.boto-e{display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:14px;background:var(--card);border:1px solid var(--line);border-left:8px solid var(--c,var(--blau));text-decoration:none;color:var(--ink)}
+.boto-e:hover{box-shadow:0 6px 18px rgb(0 0 0 / .08)}
+.boto-e b{font-size:1.08rem;color:var(--c,var(--blau))}
+.boto-e span{font-size:.92rem;color:var(--muted)}
+.c-explica{--c:var(--lila)}.c-esport{--c:var(--turquesa)}.c-app{--c:var(--blau)}.c-cita{--c:var(--verd)}.c-contacte{--c:var(--taronja)}
+.contacte{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.contacte a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;padding:10px;border-radius:12px;background:var(--taronja);color:#fff;font-weight:700;text-decoration:none}
+@media (prefers-color-scheme:dark){.contacte a{color:#1a1208}}
+.peu-e{text-align:center;font-size:.9rem;color:var(--muted)}
