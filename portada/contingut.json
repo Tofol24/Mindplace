@@ -14,6 +14,22 @@
   },
   "novetats": [
     {
+      "data": "2026-11-07",
+      "tipus": "esport",
+      "titol": {
+        "ca": "El meu club és un lloc emocionalment segur",
+        "es": "Mi club es un lugar emocionalmente seguro"
+      },
+      "ordre": -2,
+      "text": {
+        "ca": "Proposta d'APRENS per a clubs esportius de base: una app, una guia i un acompanyament perquè famílies, entrenadors i club fomentin el respecte, l'esforç, la tolerància a la frustració, la cooperació i la comunitat.",
+        "es": "Propuesta de APRENS para clubes deportivos de base: una app, una guía y un acompañamiento para que familias, entrenadores y club fomenten el respeto, el esfuerzo, la tolerancia a la frustración, la cooperación y la comunidad."
+      },
+      "imatge": "img/novetats/clubs-esport-base.jpg",
+      "enllac": "/clubs-esport-base.html",
+      "destacat": true
+    },
+    {
       "data": "2026-09-15",
       "tipus": "mitjans",
       "mitja": "Última Hora",
