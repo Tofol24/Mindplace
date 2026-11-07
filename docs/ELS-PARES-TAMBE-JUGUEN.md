@@ -49,21 +49,20 @@ y Chrome (Android) sin instalar nada.
 Figura adulta neutra en SVG con 10 zonas: cabeza, garganta, hombros, pecho, abdomen,
 espalda, brazos, manos, piernas y pies.
 
+Mismo código de colores que el resto de herramientas APRENS (Respiro AIS, Mapa interno):
+**amarillo = consciencia, atención; azul = respiración**.
+
 | Estado | Qué pasa |
 |---|---|
-| 1 · Reconec | Tocar una zona enciende una **luz amarilla** (mancha llena con puntos): activación que reconozco. Mensaje: «No cal eliminar aquesta sensació…» |
-| 2 · M'acompany | Tocar una zona enciende una **luz azul** (anillo discontinuo): atención que llevo ahí. Convive con la amarilla. Respiración guiada opcional (4 s entra, 6 s sale) |
-| 3 · Elegesc | Una línea azul sale del pecho hacia el compromiso. **La amarilla no se apaga**: se puede actuar bien aunque la sensación siga |
+| 1 · Reconec | Tocar donde se nota la activación lleva ahí la **luz amarilla** (mancha llena con puntos): la atención. Mensaje: «Hi has portat l'atenció. No cal eliminar aquesta sensació…» |
+| 2 · M'acompany | La **luz azul** (anillo discontinuo), la respiración, acompaña esa zona y se activa la guía (4 s entra, 6 s sale). Convive con la amarilla |
+| 3 · Elegesc | Una línea azul sale del pecho hacia el compromiso. **La amarilla no se apaga**: la atención se queda con la sensación y se puede actuar bien aunque siga |
 
 - Seis consignas guiadas, una a una. No pide cerrar los ojos.
 - Percepción: «clara», «muy suave» o «no noto nada». Todas son válidas.
 - Alternativa externa si atender al cuerpo incomoda: mirar tres cosas, sentir los pies, escuchar dos sonidos.
 - Accesibilidad: cada zona es un botón con teclado y lector de pantalla, y hay una lista de zonas equivalente. Amarillo y azul se distinguen también por la forma (puntos frente a anillo) y por el texto.
 - Aviso permanente: los colores son pedagógicos y no miden ningún estado fisiológico.
-
-**Ojo:** en «Respiro AIS» (`app/js/respiro-ais.js`) el azul es el aire y el amarillo la atención.
-Aquí, siguiendo el encargo, el amarillo es la activación y el azul la atención. Si una
-misma persona usa las dos herramientas, conviene explicárselo o unificar el código de colores.
 
 ## 3. La pinya de les famílies
 

@@ -1,9 +1,11 @@
 /* APRENS · Els pares també juguen — Silueta AIS interactiva (SVG)
    ---------------------------------------------------------------
    Tres estats:
-     reconec   → tocar una zona hi encén una LLUM GROGA (activació que reconec)
-     acompany  → tocar una zona hi encén una LLUM BLAVA (atenció que hi port);
-                 pot conviure amb la groga
+     Mateix codi que la resta d'eines APRENS: GROC = consciència / atenció,
+     BLAU = respiració (l'aire).
+     reconec   → tocar on es nota l'activació hi porta la LLUM GROGA (l'atenció)
+     acompany  → la LLUM BLAVA (la respiració) acompanya aquesta zona;
+                 conviu amb la groga
      elegesc   → l'atenció es dirigeix cap al compromís; la groga NO s'apaga
    Accessibilitat: cada zona és un botó (teclat + lector de pantalla) i hi ha
    una llista de zones equivalent. Groc = taca plena amb punts; blau = anell
@@ -254,6 +256,7 @@
       setMode: function (m) { estat.mode = m; pinta(); },
       setRespiracio: setRespiracio,
       setCompromis: function (t) { estat.compromis = t || ''; },
+      focusGroc: function (z) { if (estat.groc.indexOf(z) < 0) estat.groc.push(z); pinta(); },
       focusBlau: function (z) { if (estat.blau.indexOf(z) < 0) estat.blau.push(z); pinta(); },
       get: function () { return { mode: estat.mode, groc: estat.groc.slice(), blau: estat.blau.slice() }; },
       reset: function () { estat.groc = []; estat.blau = []; pinta(); },

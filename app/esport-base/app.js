@@ -345,6 +345,11 @@
       var b = ev.target.closest('button'); if (!b || !box.contains(b)) return;
       if (b.hasAttribute('data-estat')) {
         mode = b.getAttribute('data-estat'); sil.setMode(mode);
+        if (mode === 'acompany') {
+          /* la respiració (blava) acompanya on és l'atenció (groga) */
+          if (!desti.blau.length) { (desti.groc.length ? desti.groc : ['panxa']).forEach(function (z) { sil.focusBlau(z); }); desti.blau = sil.get().blau; }
+          var rt = $('#respTog', box); if (rt && rt.getAttribute('aria-pressed') !== 'true') rt.click();
+        }
         $$('[data-estat]', box).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
         var e = trobaPer(s.estats, mode); $('#estatD', box).textContent = e.d;
         var el = $('#silElegesc', box);
@@ -365,7 +370,7 @@
       } else if (b.id === 'externa') {
         var eb = $('#extBox', box); eb.hidden = !eb.hidden;
         eb.innerHTML = '<div class="card suau"><h3 style="margin-top:0">' + esc(s.externaT) + '</h3><ol class="consignes">' + s.externa.map(function (x) { return '<li class="on">' + esc(x) + '</li>'; }).join('') + '</ol></div>';
-        if (!eb.hidden) { sil.focusBlau('peus'); desti.blau = sil.get().blau; }
+        if (!eb.hidden) { sil.focusGroc('peus'); desti.groc = sil.get().groc; } /* l'atenció (groga) als peus */
       } else if (b.getAttribute('data-seg') === 'percepcio') {
         desti.percepcio = b.getAttribute('data-v');
         $$('[data-seg="percepcio"]', box).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
@@ -557,7 +562,7 @@
       pausaSil = window.SiluetaAIS.mount(box, { txt: t, mode: pz.pas === 0 ? 'reconec' : 'acompany', groc: pz.groc, blau: pz.blau, llista: true,
         onChange: function (st) { pz.groc = st.groc; pz.blau = st.blau; } });
       if (pz.pas === 1) {
-        if (!pz.blau.length) { pz.groc.forEach(function (z) { pausaSil.focusBlau(z); }); if (!pz.groc.length) pausaSil.focusBlau('peus'); pz.blau = pausaSil.get().blau; }
+        if (!pz.blau.length) { pz.groc.forEach(function (z) { pausaSil.focusBlau(z); }); if (!pz.groc.length) pausaSil.focusBlau('panxa'); pz.blau = pausaSil.get().blau; }
         pausaSil.setRespiracio(true);
       }
     }
