@@ -44,7 +44,8 @@
     '.sil .memb-o{stroke:#B7AE9F;fill:none;stroke-linecap:round;stroke-linejoin:round}' +
     '.sil .memb{stroke:#ECE7DD;fill:none;stroke-linecap:round;stroke-linejoin:round}' +
     '.sil .zona{fill:transparent;cursor:pointer;outline:none}' +
-    '.sil .zona:hover .hit,.sil .zona:focus-visible .hit{fill:rgba(47,94,158,.10);stroke:#2F5E9E;stroke-width:1.5;stroke-dasharray:3 3}' +
+    '.sil .zona:focus-visible .hit{fill:rgba(47,94,158,.10);stroke:#2F5E9E;stroke-width:1.5;stroke-dasharray:3 3}' +
+    '@media (hover:hover){.sil .zona:hover .hit{fill:rgba(47,94,158,.06);stroke:#2F5E9E;stroke-width:1.2;stroke-dasharray:3 3}}' +
     '.sil .hit{fill:transparent}' +
     '.sil .groc{opacity:0;transition:opacity .6s ease}' +
     '.sil .groc.on{opacity:1;animation:silPols 3.2s ease-in-out infinite}' +
