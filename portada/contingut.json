@@ -15,6 +15,22 @@
   "novetats": [
     {
       "data": "2026-11-07",
+      "tipus": "novetat",
+      "titol": {
+        "ca": "Explica-ho: si no ho pots explicar, no t'ho saps",
+        "es": "Explica-ho: si no lo puedes explicar, no te lo sabes"
+      },
+      "ordre": -3,
+      "text": {
+        "ca": "Una eina d'estudi actiu d'APRENS: ordena els apunts en un resum i un mapa conceptual, et fa preguntes en quatre nivells de profunditat i corregeix els exercicis pas a pas. Per a ESO, batxillerat, FP, universitat i oposicions.",
+        "es": "Una herramienta de estudio activo de APRENS: ordena los apuntes en un resumen y un mapa conceptual, te hace preguntas en cuatro niveles de profundidad y corrige los ejercicios paso a paso. Para ESO, bachillerato, FP, universidad y oposiciones."
+      },
+      "imatge": "img/novetats/explica-ho.jpg",
+      "enllac": "/explica-ho.html",
+      "destacat": true
+    },
+    {
+      "data": "2026-11-07",
       "tipus": "esport",
       "titol": {
         "ca": "El meu club és un lloc emocionalment segur",
