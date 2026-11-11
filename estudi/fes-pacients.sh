@@ -22,4 +22,13 @@ DESC="Eina d'estudi amb IA que t'ajuda a interioritzar els conceptes, no que ho 
   printf '\n</body>\n</html>\n'
 } > web-pacients/index.html
 grep -q 'id="presentacio"' web-pacients/index.html || { echo "Error: no s'ha posat el text de presentació" >&2; exit 1; }
+# Lletres i lectors de PDF i Word des del mateix domini (/fonts i /vendor), com exigeix la CSP de _headers.
+sed -i -e '/<link rel="preconnect" href="https:\/\/fonts\.g[a-z]*\.com"/d' \
+       -e 's#<link rel="stylesheet" href="https://fonts\.googleapis\.com/css2?[^"]*">#<link rel="stylesheet" href="/fonts/fonts.css">#' \
+       -e 's#https://cdn\.jsdelivr\.net/npm/pdfjs-dist@3\.11\.174/build/#/vendor/#g' \
+       -e 's#https://cdn\.jsdelivr\.net/npm/mammoth@1\.6\.0/#/vendor/#g' \
+       web-pacients/index.html
+if grep -qE 'fonts\.g(oogleapis|static)\.com|cdn\.jsdelivr\.net' web-pacients/index.html; then
+  echo "Atenció: index.html encara carrega recursos externs que la CSP bloqueja (actualitza fes-pacients.sh)." >&2; exit 1
+fi
 echo "Fet: estudi/web-pacients/index.html"
