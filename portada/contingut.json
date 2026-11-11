@@ -1,7 +1,7 @@
 {
   "_com_funciona": "Aquest fitxer és el contingut de la portada. Cada text pot ser un sol text o {\"ca\": ..., \"es\": ...}. Les llistes buides no es mostren. «idioma_titol» marca l'idioma d'un títol que es deixa en l'original (p. ex. una cita d'una entrevista). «ordre» (número, per defecte 0) avança o endarrereix una notícia a la llista i al carrusel: com més baix, més amunt.",
   "enllacos": {
-    "app": "https://aprens-app.netlify.app/",
+    "app": "https://aprens-app.aprens.net/",
     "consulta": "https://aprens.es/",
     "cita": "https://www.doctoralia.es/perfil/tofol-villalonga-melis",
     "explica": "https://explica.aprens.net/",
@@ -10,9 +10,41 @@
     "autor": "https://www.amazon.es/stores/T%C3%B2fol-Villalonga/author/B0DWLHLD2V",
     "serie": "https://www.amazon.es/dp/B0FDR8B1JP",
     "facebook_aprens": "https://www.facebook.com/aprens70/",
-    "laboratori": "https://aprens-app.netlify.app/#/tool/laboratorio_tec"
+    "laboratori": "https://aprens-app.aprens.net/#/tool/laboratorio_tec"
   },
   "novetats": [
+    {
+      "data": "2026-11-07",
+      "tipus": "novetat",
+      "titol": {
+        "ca": "Explica-ho: si no ho pots explicar, no t'ho saps",
+        "es": "Explica-ho: si no lo puedes explicar, no te lo sabes"
+      },
+      "ordre": -3,
+      "text": {
+        "ca": "Una eina d'estudi actiu d'APRENS: ordena els apunts en un resum i un mapa conceptual, et fa preguntes en quatre nivells de profunditat i corregeix els exercicis pas a pas. Per a ESO, batxillerat, FP, universitat i oposicions.",
+        "es": "Una herramienta de estudio activo de APRENS: ordena los apuntes en un resumen y un mapa conceptual, te hace preguntas en cuatro niveles de profundidad y corrige los ejercicios paso a paso. Para ESO, bachillerato, FP, universidad y oposiciones."
+      },
+      "imatge": "img/novetats/explica-ho.jpg",
+      "enllac": "/explica-ho.html",
+      "destacat": true
+    },
+    {
+      "data": "2026-11-07",
+      "tipus": "esport",
+      "titol": {
+        "ca": "El meu club és un lloc emocionalment segur",
+        "es": "Mi club es un lugar emocionalmente seguro"
+      },
+      "ordre": -2,
+      "text": {
+        "ca": "Proposta d'APRENS per a clubs esportius de base: una app, una guia i un acompanyament perquè famílies, entrenadors i club fomentin el respecte, l'esforç, la tolerància a la frustració, la cooperació i la comunitat.",
+        "es": "Propuesta de APRENS para clubes deportivos de base: una app, una guía y un acompañamiento para que familias, entrenadores y club fomenten el respeto, el esfuerzo, la tolerancia a la frustración, la cooperación y la comunidad."
+      },
+      "imatge": "img/novetats/clubs-esport-base.jpg",
+      "enllac": "/clubs-esport-base.html",
+      "destacat": true
+    },
     {
       "data": "2026-09-15",
       "tipus": "mitjans",
@@ -40,7 +72,7 @@
         "es": "El jurado de los premios Joan Calafat ha elegido a Tòfol Villalonga profesional de la Psicología 2025."
       },
       "imatge": "img/novetats/premi-joan-calafat-2025.jpg",
-      "enllac": "https://aprens.es/articulo.php?id=12",
+      "enllac": "/premi-joan-calafat-2025.html",
       "destacat": true
     },
     {
@@ -83,7 +115,7 @@
         "es": "Un cuento de un minuto sobre quién conduce tu vida y cómo aprender a llevar el volante acompañando a tu mono."
       },
       "imatge": "img/eines/historia-mono.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-animada.html",
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/historia-animada.html",
       "destacat": true
     },
     {
@@ -97,7 +129,7 @@
         "es": "Por qué respiramos: tu mono es un mamífero de manada, y el AIS es la manera de no dejarlo solo."
       },
       "imatge": "img/eines/manada.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/historia-manada.html"
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/historia-manada.html"
     },
     {
       "tipus": "eina",
@@ -110,7 +142,7 @@
         "es": "Juegos cortos para entrenar la atención hacia dentro, para adultos y para los peques."
       },
       "imatge": "img/eines/juegos-ais.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/juegos-ais.html",
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/juegos-ais.html",
       "destacat": true
     },
     {
@@ -124,7 +156,7 @@
         "es": "Juegos visuales y cortos para que los niños practiquen estar con lo que sienten."
       },
       "imatge": "img/eines/rincon.jpg",
-      "enllac": "https://aprens-app.netlify.app/rincon/"
+      "enllac": "https://aprens-app.aprens.net/rincon/"
     },
     {
       "tipus": "eina",
@@ -137,7 +169,7 @@
         "es": "Un peldaño cada vez, no para aguantar el miedo sino para dar el paso acompañándote por dentro."
       },
       "imatge": "img/eines/escalera.jpg",
-      "enllac": "https://aprens-app.netlify.app/exposicion/"
+      "enllac": "https://aprens-app.aprens.net/exposicion/"
     },
     {
       "tipus": "esport",
@@ -150,7 +182,7 @@
         "es": "Ciclismo de competición desde la tarea y el amor a la bici, no desde el látigo."
       },
       "imatge": "img/eines/pedalea.jpg",
-      "enllac": "https://aprens-app.netlify.app/tools-standalone/pedalea_desde_dentro_aprens.html"
+      "enllac": "https://aprens-app.aprens.net/tools-standalone/pedalea_desde_dentro_aprens.html"
     },
     {
       "tipus": "article",

@@ -65,3 +65,32 @@ cae en «Sin clasificar» para que no se pierda. `--comprobar` consulta Netlify 
 marca cada tarjeta como publicada o sin publicar. La plantilla es
 `indice-escritorio.plantilla.html`. El resultado vive fuera de `app/`, así que
 no se publica.
+
+## `revision/` — comprobaciones automáticas (`npm run check`)
+
+Revisión sin IA y sin coste, para pasar al terminar cualquier cambio:
+
+```sh
+npm run check:instalar        # una vez (instala las herramientas en scripts/revision/)
+npm run check                 # lo cambiado frente a main y lo pendiente de commit
+npm run check -- --todo       # todo el repositorio (añade --avisos para ver los avisos)
+npm run check -- app/x.html   # solo esos archivos
+```
+
+Qué mira:
+
+- **HTML** (html-validate): etiquetas mal cerradas, `<title>` fuera de `<head>`,
+  enlaces sin texto, etiquetas de formulario mal asociadas.
+- **JavaScript** (ESLint): variables o funciones sin definir, claves duplicadas,
+  código inalcanzable. Los `<script>` de cada página se analizan juntos.
+- **Privacidad**: rastreadores (Google Analytics, píxel de Facebook…) en cualquier
+  carpeta; en `app/`, cualquier recurso o envío a otro dominio es error (lo bloquearía
+  la CSP y filtraría la IP del paciente). Los `c-*.html` deben estar cifrados y con
+  `noindex` en `app/_headers`.
+- **Navegador** (Chromium + axe-core): abre cada página sin conexión a internet,
+  recoge los errores de JavaScript al cargarla y comprueba la accesibilidad
+  (WCAG 2.1 AA). El contraste de color queda como aviso. Sin Playwright instalado
+  (por ejemplo, en el Mac) este paso se omite con un aviso; `--sin-navegador` lo salta.
+
+Errores → código de salida 1. Los avisos no bloquean. Si una página usa una
+global que viene de otro archivo, añádela a `COMPARTIDOS` en `revision/eslint.config.mjs`.

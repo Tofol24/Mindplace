@@ -23,6 +23,7 @@
     <p class="small" id="noMail" hidden>Ara mateix no es poden enviar codis per correu. El codi surt a les factures mensuals a partir de la segona; per gestionar o donar de baixa la subscripció, entra al <a id="portalLogin" href="#" target="_blank" rel="noopener">portal de Stripe</a> amb el correu amb què es va pagar.</p>
   </form>
 </main>
+<script src="idioma.js"></script>
 <script>
 "use strict";
 const $ = (s) => document.querySelector(s);
@@ -37,7 +38,7 @@ $("#f").addEventListener("submit", async (e) => {
   if (!email) { $("#err").textContent = "Escriu el correu."; $("#err").hidden = false; return; }
   $("#go").disabled = true;
   try {
-    const r = await fetch("/api/recupera", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({email})});
+    const r = await fetch("/api/recupera", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({email, idioma: UI})});
     const b = await r.json().catch(() => ({}));
     if (r.status === 429) throw new Error("Ja s'ha demanat moltes vegades avui. Torna-ho a provar demà.");
     if (r.status === 400) throw new Error("Revisa el correu: no sembla vàlid.");

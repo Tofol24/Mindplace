@@ -9,3 +9,19 @@
   base = "portada"
   publish = "."
   command = ""
+
+# aprens-app.aprens.net és una porta d'entrada a l'app de pacients: porta sempre a aprens-app.netlify.app,
+# que continua essent l'adreça de veritat. El navegador guarda per domini els registres dels pacients i el
+# panell (xifrat): si l'app canviés d'adreça, tothom l'obriria buida. Per això el domini s'afegeix com a
+# àlies d'AQUEST lloc (la portada) i no del de l'app. Els fragments (#/tool/…, #r=…) es conserven.
+[[redirects]]
+  from = "https://aprens-app.aprens.net/*"
+  to = "https://aprens-app.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://aprens-app.aprens.net/*"
+  to = "https://aprens-app.netlify.app/:splat"
+  status = 301
+  force = true

@@ -108,7 +108,7 @@
 
   /* ---------- confeti (papelines) ---------- */
   function confeti() {
-    var cols = ["#DDA637", "#5B9B8B", "#D98A6A", "#516E46", "#E4C79E"];
+    var cols = ["#DDA637", "#4a7e71", "#D98A6A", "#516E46", "#E4C79E"];
     for (var i = 0; i < 28; i++) {
       var c = document.createElement("div"); c.className = "confeti";
       c.style.left = (i * 3.6) + "vw"; c.style.background = cols[i % cols.length];
@@ -476,7 +476,7 @@
     var r = buildRonda(); saveRec(r);
     var note = $("#runNote"); var lograda = r.logrado && r.logrado !== "aun";
     if (lograda) confeti();
-    if (share) { try { window.open("https://wa.me/?text=" + encodeURIComponent(resumenRonda(r)), "_blank"); } catch (e) {} if (note) note.textContent = "Guardada en este dispositivo. Se ha abierto WhatsApp para enviarla."; }
+    if (share) { try { window.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(resumenRonda(r))), "_blank"); } catch (e) {} if (note) note.textContent = "Guardada en este dispositivo. Se ha abierto WhatsApp para enviarla."; }
     else if (note) { note.textContent = "Misión guardada en este dispositivo."; }
     renderAll();
     if (lograda && note) note.textContent += " ¡Fue valiente! No olvidéis el premio y celebrarlo.";

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Deporte base: salud y rendimiento · Guía de trabajo psicológico con clubes · APRENS</title>
+<style>
+@page { size: A4; margin: 13mm 16mm 17mm; }
+@page :first { margin: 0; }
+:root{ --blau:#3B66A8; --blau-d:#244A7E; --blau-lt:#E8EEF8; --verd:#3B7224; --verd-lt:#EAF3E3; --terra:#A2531E; --terra-lt:#FBEDE2; --vermell:#9E3B30; --vermell-lt:#F7E3E0; --tinta:#1F2A37; --suau:#55606B; --linia:#E2DED6; --fons:#FAF8F3; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; }
+body{ font-family:Inter, system-ui, sans-serif; font-size:9.8pt; line-height:1.5; color:var(--tinta); }
+h1,h2,h3{ font-family:'Inter Display', Inter, sans-serif; color:var(--blau); line-height:1.12; letter-spacing:-.005em; }
+h1{ font-size:21pt; margin:0 0 3mm; font-weight:700; }
+h2{ font-size:13.5pt; margin:4.5mm 0 1.6mm; font-weight:700; }
+h3{ font-size:11pt; margin:3mm 0 1.2mm; color:var(--blau-d); font-weight:700; }
+p{ margin:0 0 2.2mm; }
+.kick{ font-family:'Inter Display',Inter; font-size:9pt; letter-spacing:.16em; text-transform:uppercase; color:var(--verd); font-weight:700; margin-bottom:1mm; }
+.cap{ break-before:page; }
+.segueix{ margin-top:9mm; padding-top:5mm; border-top:1px solid var(--linia); }
+.lead{ font-size:10.8pt; color:#38424D; }
+ul{ margin:1mm 0 3mm; padding-left:5mm; } li{ margin:1mm 0; } li::marker{ color:var(--verd); }
+ol{ margin:1mm 0 3mm; padding-left:5.5mm; } ol li::marker{ color:var(--verd); font-weight:700; }
+b,strong{ color:var(--blau-d); }
+.card{ border:1px solid var(--linia); border-radius:3.5mm; padding:3.2mm 4.2mm; margin:2.6mm 0; background:#fff; break-inside:avoid; }
+.card.blau{ background:var(--blau-lt); border-color:#D3DFF0; } .card.verd{ background:var(--verd-lt); border-color:#D5E5CA; } .card.terra{ background:var(--terra-lt); border-color:#F0D9C6; } .card.vermell{ background:var(--vermell-lt); border-color:#EFCFCB; }
+.card h3:first-child, .card h2:first-child{ margin-top:0; }
+.dest{ border-left:1.6mm solid var(--verd); background:var(--verd-lt); border-radius:0 3mm 3mm 0; padding:3mm 4.5mm; margin:3mm 0; break-inside:avoid; }
+.dest.blau{ border-color:var(--blau); background:var(--blau-lt); } .dest.terra{ border-color:var(--terra); background:var(--terra-lt); }
+.duo{ display:grid; grid-template-columns:1fr 1fr; gap:4mm; } .tri{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:3.5mm; }
+.duo > .card, .tri > .card{ margin:0; }
+table{ width:100%; border-collapse:collapse; margin:2.5mm 0; font-size:9.2pt; break-inside:avoid; }
+th{ text-align:left; background:var(--blau-lt); color:var(--blau-d); padding:2mm 3mm; font-weight:700; }
+td{ padding:1.6mm 2.6mm; border-bottom:1px solid var(--linia); vertical-align:top; }
+.muted{ color:var(--suau); font-size:9.4pt; }
+.cita{ font-family:'Inter Display',Inter; font-size:12pt; color:var(--blau-d); font-weight:600; border-left:1.6mm solid var(--verd); padding:1mm 0 1mm 4.5mm; margin:4mm 0; break-inside:avoid; }
+.flux{ display:grid; grid-template-columns:repeat(4,1fr); gap:5mm; margin:3mm 0; }
+.flux div{ border:1px solid var(--linia); border-radius:3mm; padding:3mm; text-align:center; position:relative; background:#fff; font-size:9pt; color:var(--suau); }
+.flux div b{ display:block; font-family:'Inter Display',Inter; font-size:11pt; color:var(--blau-d); }
+.flux div:not(:last-child)::after{ content:"→"; position:absolute; right:-4.4mm; top:40%; color:var(--blau); font-weight:700; }
+.flux .t{ background:var(--terra-lt); } .flux .b{ background:var(--blau-lt); }
+.pill{ display:inline-block; background:var(--blau); color:#fff; border-radius:2.5mm; padding:1.5mm 3.5mm; font-family:'Inter Display',Inter; font-weight:700; margin:0 1.5mm 1.5mm 0; }
+.figs{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:3mm 0; }
+.figs figure{ margin:0; text-align:center; font-size:8.6pt; color:var(--suau); }
+.figs img{ width:100%; max-height:92mm; object-fit:cover; object-position:top; border-radius:3mm; border:1px solid var(--linia); display:block; margin-bottom:1.5mm; }
+/* piràmide */
+.pir{ display:flex; flex-direction:column; align-items:center; gap:1.4mm; margin:3mm 0; }
+.pir .cim{ font-family:'Inter Display',Inter; font-weight:800; letter-spacing:.2em; color:var(--blau-d); font-size:15pt; margin-bottom:1mm; }
+.pir .n{ display:grid; grid-template-columns:1fr auto 1fr; align-items:stretch; width:100%; }
+.pir .n .m, .pir .n .e{ font-size:8.6pt; padding:1.6mm 2.5mm; display:flex; align-items:center; }
+.pir .n .m{ justify-content:flex-end; background:var(--verd-lt); color:var(--verd); border-radius:2mm 0 0 2mm; text-align:right; }
+.pir .n .e{ background:var(--terra-lt); color:#7A3A12; border-radius:0 2mm 2mm 0; }
+.pir .n .c{ background:var(--blau); color:#fff; font-weight:700; font-size:8.6pt; text-transform:uppercase; padding:1.6mm 3mm; text-align:center; letter-spacing:.03em; }
+.pir .n .c small{ display:block; font-weight:400; text-transform:none; font-size:7.6pt; opacity:.85; }
+.pir .n.top .c{ border-radius:2mm; } .pir .n.top{ grid-template-columns:1fr; justify-items:center; }
+/* fitxes */
+.fitxa{ border:1.4px dashed #9AA6B2; border-radius:3mm; padding:4mm; margin:3mm 0; break-inside:avoid; }
+.fitxa .linia{ border-bottom:1px solid #C9CFD6; height:8mm; }
+.fitxa table td{ height:11mm; border:1px solid #C9CFD6; }
+.fitxa table th{ border:1px solid #C9CFD6; }
+.check li{ list-style:none; margin-left:-5mm; } .check li::before{ content:"☐  "; color:var(--blau-d); }
+/* portada */
+.portada{ height:297mm; display:flex; flex-direction:column; background:#fff; }
+.portada .dalt{ padding:22mm 20mm 0; flex:1; }
+.portada .marca{ display:flex; align-items:center; gap:5mm; }
+.portada .marca img{ height:26mm; }
+.portada .marca b{ font-family:'Inter Display',Inter; font-size:17pt; letter-spacing:.12em; color:var(--blau); display:block; }
+.portada .marca span{ font-size:9pt; color:var(--suau); }
+.portada .barra{ width:42mm; height:2.2mm; background:var(--verd); border-radius:2mm; margin:20mm 0 7mm; }
+.portada h1{ font-size:34pt; line-height:1.04; margin:0 0 5mm; }
+.portada .sub{ font-size:13pt; color:#4A5562; max-width:150mm; }
+.portada .eix{ margin-top:10mm; font-family:'Inter Display',Inter; font-size:14pt; font-weight:700; color:var(--verd); }
+.portada .baix{ background:var(--blau-lt); padding:14mm 20mm; display:flex; align-items:center; gap:7mm; }
+.portada .baix img{ width:36mm; height:46mm; object-fit:cover; border-radius:3mm; box-shadow:0 2mm 6mm rgba(0,0,0,.15); }
+.portada .baix b{ font-family:'Inter Display',Inter; font-size:15pt; color:var(--blau-d); display:block; margin-bottom:1.5mm; }
+.portada .baix span{ font-size:9.4pt; color:#38424D; display:block; }
+.index ol{ font-size:11pt; } .index li{ margin:1.8mm 0; }
+.qr{ width:34mm; height:34mm; }
+.peu-qr{ display:flex; gap:6mm; align-items:center; }
+</style>
+</head>
+<body>
+
+<!-- ================= PORTADA ================= -->
+<section class="portada">
+  <div class="dalt">
+    <div class="marca"><img src="img/logo.png" alt="Logotipo de APRENS"><div><b>APRENS</b><span>Psicología · Inca</span></div></div>
+    <div class="barra"></div>
+    <div class="kick">Guía de trabajo psicológico con clubes deportivos</div>
+    <h1>Deporte base:<br>salud y rendimiento</h1>
+    <p class="sub">Atención, manejo emocional y acompañamiento de familias, entrenadores y jugadores. Un marco de trabajo para toda la temporada, con fichas prácticas y la app «Los padres también juegan».</p>
+    <p class="eix">La salud deportiva no es incompatible con el rendimiento. Es su base.</p>
+  </div>
+  <div class="baix">
+    <img src="img/foto.jpg" alt="Tòfol Villalonga">
+    <div><b>Tòfol Villalonga</b><span>Psicólogo General Sanitario (B-01599) · Psicología del deporte</span><span>APRENS Psicología · C/ Mare de Déu de l'Esperança, 70, 2.º · Inca</span><span>aprens.net · 636 93 76 61 · info@aprens.es</span></div>
+  </div>
+</section>
+
+<!-- ================= ÍNDEX ================= -->
+<section class="cap index">
+  <div class="kick">Contenido</div>
+  <h1>Qué encontraréis</h1>
+  <ol>
+    <li>Por qué esta guía</li>
+    <li>La idea central: salud y rendimiento van juntos</li>
+    <li>El marco de trabajo: materiales, modelo y app</li>
+    <li>La pirámide del rendimiento</li>
+    <li>Atención y manejo emocional en el juego</li>
+    <li>La regulación de los adultos: percibir, acompañar, elegir, actuar</li>
+    <li>Módulo familias</li>
+    <li>Módulo entrenadores</li>
+    <li>Módulo jugadores y jugadoras</li>
+    <li>Módulo club</li>
+    <li>Un club, no islas: comunidad y cantera</li>
+    <li>La app «Los padres también juegan»</li>
+    <li>Plan de temporada y guiones de sesión</li>
+    <li>Pilotaje y evaluación</li>
+    <li>Fichas para fotocopiar</li>
+    <li>Recursos y contacto</li>
+  </ol>
+  <div class="dest blau"><b>Cómo usar esta guía.</b> Está pensada para coordinadores deportivos, entrenadores y psicólogos que acompañan a un club. Se puede leer entera o por módulos. Las fichas del final se pueden fotocopiar, y la app permite que familias y entrenadores entrenen lo mismo desde el móvil, antes, durante y después de cada partido.</div>
+</section>
+
+<!-- ================= 1 ================= -->
+<section class="cap">
+  <div class="kick">1 · Para empezar</div>
+  <h1>Por qué esta guía</h1>
+  <p class="lead">Hace años que trabajo con deportistas jóvenes, con sus familias y con sus entrenadores, y para mí el deporte base es uno de los contextos donde más se puede ayudar a un chico o a una chica a crecer, a nivel físico, emocional y como persona. También es uno de los contextos donde más fácilmente podemos añadirle presión sin querer.</p>
+  <p>Esta guía recoge y ordena tres materiales de APRENS que hemos trabajado con familias y clubes: <b>«Los padres también juegan. El papel de los padres en el deporte base»</b>, <b>«La pirámide del rendimiento»</b> y <b>«Atención y manejo emocional en el deporte»</b>. Los une una idea que cada temporada veo en los campos: cuidar la salud deportiva es compatible con desarrollar el rendimiento a largo plazo, aunque a veces implique renunciar a un resultado inmediato. Y la salud tiene valor propio, también cuando el rendimiento no mejora.</p>
+  <p>Los tres materiales hablan de lo mismo desde lugares distintos. El primero, desde los adultos que rodean al jugador. El segundo, desde la motivación y la orientación a la tarea. El tercero, desde la atención y el manejo de las emociones dentro del juego. Esta guía los integra en una propuesta común de acompañamiento. La práctica de darse cuenta de dónde está la atención, estar con lo que el cuerpo siente sin luchar contra ello y volver a lo relevante se desarrolla en el dosier de atención; aquí la extendemos al trabajo con adultos y con el club.</p>
+  <div class="cita">Primero me acompaño a mí mismo para poder acompañar mejor al deportista.</div>
+  <p>No se trata de formar adultos que no se enfaden nunca ni jugadores que no se pongan nunca nerviosos. Se trata de que cada uno, desde su papel, aprenda a reconocer lo que siente, a acompañarlo y a elegir cómo actúa, de modo que el niño o la niña no tenga que gestionar las emociones de los adultos y pueda hacer aquello para lo que está en el campo: jugar, aprender y disfrutar.</p>
+  <div class="card verd"><h3>A quién va dirigida</h3>
+    <ul><li><b>Coordinación y dirección del club</b>: para definir el clima educativo y el plan de la temporada.</li><li><b>Entrenadores y entrenadoras</b>: para entrenar la atención del jugador, comunicarse de manera educativa y regularse en el banquillo.</li><li><b>Familias</b>: para acompañar sin presionar, antes, durante y después de los partidos.</li><li><b>Psicólogos y profesionales</b> que acompañan al club: como guion de trabajo.</li></ul></div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section class="cap">
+  <div class="kick">2 · La idea central</div>
+  <h1>Salud y rendimiento van juntos</h1>
+  <p>A menudo se habla de bienestar y de rendimiento como si fueran dos fuerzas opuestas: o cuidamos al chico o buscamos resultados. Lo que observamos, y lo que recoge la psicología del deporte, es que muchas de las habilidades que protegen la salud del deportista son las mismas que pueden sostener su rendimiento a medio y largo plazo.</p>
+  <p class="muted">Contribuciones posibles, según la persona y el contexto:</p>
+  <table>
+    <tr><th style="width:22%">Clave</th><th style="width:39%">Qué aporta a la salud</th><th>Qué aporta al rendimiento</th></tr>
+    <tr><td><b>Atención</b></td><td>Menos rumiación, más presencia en lo que hace; menos angustia ante el error.</td><td>Puede facilitar atender a los estímulos relevantes y tomar decisiones más ajustadas a la jugada.</td></tr>
+    <tr><td><b>Regulación emocional</b></td><td>Puede sentir nervios o enfado sin que lo desborden.</td><td>Puede volver a participar en la jugada aunque siga sintiendo malestar.</td></tr>
+    <tr><td><b>Orientación a la maestría</b></td><td>El éxito es aprender: el valor personal no depende del marcador.</td><td>Puede favorecer la continuidad, el aprendizaje y la percepción de autoeficacia.</td></tr>
+    <tr><td><b>Clima adulto sereno</b></td><td>Se siente querido juegue como juegue; el deporte no es una carga.</td><td>Menos distractores desde la grada y el banquillo; más confianza para arriesgar y probar.</td></tr>
+    <tr><td><b>Mirada a largo plazo</b></td><td>Respeta las etapas y el ritmo de cada uno.</td><td>No cierra los caminos que llevan al rendimiento adulto.</td></tr>
+  </table>
+  <div class="dest"><b>Nuestra tesis.</b> Cuidar la salud deportiva no es un lujo que solo pueda permitirse quien no compite. Es una condición para que el talento pueda desarrollarse y para que el deportista quiera seguir haciendo deporte dentro de cinco, diez o treinta años. A veces significa renunciar a un resultado inmediato, reducir la carga o parar temporalmente; el dosier de familias lo dice claro: es mejor no cerrar los caminos que llevan al rendimiento a largo plazo, aunque sea a costa del resultado de hoy.</div>
+  <h2>Doble objetivo, un mismo entrenamiento</h2>
+  <p>En la práctica, muchas de estas habilidades se pueden entrenar dentro de la actividad deportiva: en los ejercicios, en la manera de corregir, en cómo recibimos al jugador después del partido y en cómo nos comportamos en la grada. Esto se puede complementar con espacios específicos de formación, escucha o atención profesional cuando sean necesarios.</p>
+</section>
+
+<!-- ================= 3 ================= -->
+<section class="cap">
+  <div class="kick">3 · Marco de trabajo</div>
+  <h1>Materiales, modelo y app</h1>
+  <div class="tri">
+    <div class="card blau"><h3>Los padres también juegan</h3><p class="muted" style="margin:0">El papel de los padres en el deporte base: qué aporta el deporte, la presión que añadimos, los malos momentos, los partidos, cómo acompañar.</p></div>
+    <div class="card verd"><h3>La pirámide del rendimiento</h3><p class="muted" style="margin:0">Orientación a la maestría y al ego: cómo la atención y la regulación emocional sostienen la motivación, la adherencia y la autoeficacia.</p></div>
+    <div class="card terra"><h3>Atención y manejo emocional</h3><p class="muted" style="margin:0">Dos focos de atención, de la situación a la conducta, las creencias que distraen y cómo entrenar el «volver».</p></div>
+  </div>
+  <h2>El modelo: TEC y AIS</h2>
+  <p>En APRENS trabajamos con la <b>Teoría del Efecto Consciente (TEC)</b> y la <b>Atención Interna Sensorial (AIS)</b>. La TEC es para mí una manera de dar un lenguaje común a muchas orientaciones psicológicas que, por caminos distintos, llegan a un mismo punto. Utiliza la idea de hacernos presentes y fiables para nuestro organismo para orientar el acompañamiento de las sensaciones. Esta explicación es una hipótesis propia del modelo, no un mecanismo fisiológico establecido, y la práctica no exige que la activación disminuya. La AIS es su práctica: aprender a darse cuenta de dónde está la atención, a estar con lo que el cuerpo siente sin luchar contra ello, y a volver.</p>
+  <p>Este trabajo se integra con conocimientos consolidados de la psicología: la atención selectiva y limitada, la regulación emocional, y los principios de las terapias de aceptación y compromiso (aceptar lo que sentimos, tomar distancia de los pensamientos, contactar con el presente y actuar de acuerdo con los valores).</p>
+  <div class="dest terra"><b>Honestidad con lo que ofrecemos.</b> Distinguimos lo que es conocimiento consolidado de lo que son hipótesis propias del modelo TEC/AIS, que seguimos evaluando. Ni esta guía ni la app son un tratamiento psicológico, ni prometen resultados clínicos ni mecanismos fisiológicos concretos. Son recursos educativos y de entrenamiento. Si el malestar persiste, interfiere en la vida cotidiana o el deportista pide ayuda, facilitaremos una consulta con un profesional sanitario cualificado. El entrenador escucha y acompaña, sin diagnosticar. Ante un riesgo inmediato para la integridad de la persona, hay que activar los servicios de emergencia (112).</div>
+  <h2>Cuatro agentes, un mismo equipo</h2>
+  <p>Trabajamos con los cuatro agentes que rodean al jugador: <b>familias, entrenadores, el propio jugador y el club</b>. Cada módulo de esta guía trata uno, pero todos comparten el mismo lenguaje: <i>percibir, acompañar, elegir, actuar</i>, y la misma práctica de volver.</p>
+</section>
+
+<!-- ================= 4 ================= -->
+<section class="cap">
+  <div class="kick">4 · Motivación</div>
+  <h1>La pirámide del rendimiento</h1>
+  <p>Se lee de abajo arriba: dónde ponemos la atención durante la competición acaba marcando el control que percibimos, cómo regulamos el error, la motivación, la adherencia y, al final, el rendimiento.</p>
+  <div class="pir">
+    <div class="cim">RENDIMIENTO</div>
+    <div class="n top" style="width:42%"><div class="c">Percepción de autoeficacia</div></div>
+    <div class="n top" style="width:52%"><div class="c">Adherencia al deporte</div></div>
+    <div class="n" style="width:66%"><div class="m">aprendizaje</div><div class="c">Motivación<small>intrínseca · extrínseca</small></div><div class="e">resultados</div></div>
+    <div class="n" style="width:76%"><div class="m">percepción de mejora</div><div class="c">Regulación emocional<small>ante el error y la derrota</small></div><div class="e">obtener buenos resultados</div></div>
+    <div class="n" style="width:86%"><div class="m">aprendizaje y reto</div><div class="c">Percepción de control<small>+ · −</small></div><div class="e">miedo y percepción de fracaso</div></div>
+    <div class="n" style="width:93%"><div class="m">estímulos de aprendizaje</div><div class="c">Atención</div><div class="e">estímulos de resultados</div></div>
+    <div class="n" style="width:100%"><div class="m">enfocada en los procesos de aprendizaje</div><div class="c">¿Dónde se enfoca mi cuerpo<small>durante la competición?</small></div><div class="e">enfocada en los resultados</div></div>
+  </div>
+  <div class="duo">
+    <div class="card verd"><h3>Orientación a la maestría</h3><p><b>Para percibir éxito, tengo que aprender continuamente.</b></p><p style="margin:0">El éxito como camino: aprender es mi éxito. Me comparo conmigo mismo.</p></div>
+    <div class="card terra"><h3>Orientación al ego</h3><p><b>Para percibir éxito, tengo que obtener buenos resultados.</b></p><p style="margin:0">El éxito como destino: ganar, ganar y ganar. Me comparo con los demás.</p></div>
+  </div>
+  <p>Los resultados pueden generar mucha motivación. Pero si no orientamos al deportista hacia la tarea, la adherencia, el aprendizaje continuo y la capacidad de regular la propia motivación pueden desvanecerse, y con ellos también pueden disminuir el esfuerzo y la ilusión por el deporte. <b>Orientarse a la maestría es como una vacuna</b>: puede ayudar a sostener la motivación cuando los resultados no acompañan, que es precisamente cuando más se necesita.</p>
+  <div class="card blau"><h3>Qué podemos hacer los adultos</h3><table style="margin:0">
+    <tr><th>Orientación al ego</th><th>Orientación a la maestría</th></tr>
+    <tr><td>«¿Habéis ganado?» «¿Cuántos goles has metido?»</td><td>«¿Qué has aprendido hoy?» «¿Qué te ha salido mejor que la otra vez?»</td></tr>
+    <tr><td>Compararlo con los compañeros o con el rival.</td><td>Compararlo consigo mismo: cómo jugaba hace unos meses y cómo juega ahora.</td></tr>
+    <tr><td>Objetivos solo de resultado: «tenemos que ganar».</td><td>Objetivos de proceso: «hoy, salir jugando desde atrás».</td></tr>
+  </table></div>
+  <p class="muted">El deportista y el entrenador lo tienen que entrenar. El psicólogo asesora para detectarlo y aprenderlo.</p>
+</section>
+
+<!-- ================= 5 ================= -->
+<section class="cap">
+  <div class="kick">5 · Atención</div>
+  <h1>Atención y manejo emocional en el juego</h1>
+  <h2>Dos focos</h2>
+  <div class="duo">
+    <div class="card blau"><span class="pill" style="font-size:8pt">Juego en marcha</span><h3>Atención externa</h3><p class="muted">Todo lo que se percibe sobre todo con la vista y el oído.</p><ul style="margin-bottom:0"><li>Un mano a mano con el portero, un regate, un desmarque, un marcaje.</li><li>Las indicaciones del entrenador con el balón en juego.</li></ul></div>
+    <div class="card terra"><span class="pill" style="font-size:8pt;background:var(--terra)">Juego parado y después de errores</span><h3>Atención interna</h3><p class="muted">Pensamientos, emociones, reacciones fisiológicas, cansancio, dolor.</p><ul style="margin-bottom:0"><li>Después de un error técnico, antes de tirar un penalti.</li><li>Las correcciones del entrenador después de un acierto o de un error.</li></ul></div>
+  </div>
+  <p>Los dos focos son normales y, a menudo, se dan dentro de la misma jugada. A veces queremos estar pendientes de lo relevante, y el cuerpo decide atender a otros estímulos que nos distraen: un pensamiento, una emoción, el ruido de la grada.</p>
+  <h2>De la situación de juego a la conducta</h2>
+  <div class="flux"><div><b>Situación de juego</b>lo que pasa en el campo</div><div class="t"><b>El cuerpo</b>hábitos aprendidos + creencias sobre la situación</div><div class="b"><b>Foco atencional</b>estímulos relevantes o distractores</div><div><b>Conducta</b>la decisión y la acción</div></div>
+  <p>La atención es limitada, y el dosier lo formula así: «durante el juego no es el jugador quien decide el estímulo que atiende, lo hace su cuerpo», según los hábitos que ha aprendido en los entrenamientos y según las creencias sobre la situación (lo importante que es, si se siente competente y qué pasará si acierta o si falla). Dicho de otra manera: la atención combina procesos automáticos y voluntarios, y lo que sí podemos entrenar es la capacidad de reorientarnos.</p>
+  <div class="tri">
+    <div class="card terra"><h3>¿Es importante?</h3><p class="muted" style="margin:0"><i>«Nos jugamos puntos vitales», «están en juego los objetivos de la temporada»…</i></p></div>
+    <div class="card terra"><h3>¿Soy competente?</h3><p class="muted" style="margin:0"><i>«¿Sé resolver un cara a cara?», «¿sé tirar esta falta?»…</i></p></div>
+    <div class="card terra"><h3>¿Y si me equivoco?</h3><p class="muted" style="margin:0"><i>«Puedo perder la titularidad», «perderé la confianza del entrenador»…</i></p></div>
+  </div>
+  <div class="dest blau"><b>Aquí es donde los adultos tenemos mucho que ver.</b> Muchos comentarios de la grada y del banquillo alimentan estas creencias («hoy es muy importante», «lo tienes que hacer bien», «si fallas…»): sin querer, añadimos distractores internos. Y las instrucciones desde la grada son distractores externos que compiten con las del entrenador.</div>
+  <h2>El jugador como observador</h2>
+  <p>Durante una jugada, el jugador es en buena parte un espectador de su cuerpo: la atención no es del todo voluntaria. Intentar controlar cada detalle, cada pensamiento o cada emoción en mitad del juego puede añadir distracciones.</p>
+  <h2>No luchar, volver</h2>
+  <ul><li>El cuerpo vive la situación de juego y tendrá pensamientos, emociones y reacciones fisiológicas. No podemos luchar contra eso.</li><li>Lo que sí podemos es volver a atender a los estímulos relevantes, con la ayuda de las indicaciones del entrenador.</li><li>Y podemos entrenarnos para darnos cuenta de que nos hemos distraído y volver a la jugada.</li></ul>
+  <div class="cita">La clave no es no distraerse nunca, sino darse cuenta antes y volver más pronto.</div>
+  <div class="dest terra"><b>El dolor no es una simple distracción.</b> El dolor y las señales de lesión se deben comunicar al entrenador, que valorará si hay que detener la actividad y pedir atención sanitaria. Volver a la jugada solo es adecuado si es seguro.</div>
+  <div class="duo">
+    <div class="card verd"><h3>Ejercicios formales</h3><p style="margin:0">Llevar voluntariamente la atención a un estímulo concreto y mantenerla en él: la respiración, el tacto del balón con las manos, la tensión y la distensión de un músculo. Aparecerán distracciones; darse cuenta y volver es el entrenamiento.</p></div>
+    <div class="card blau"><h3>Ejercicios informales</h3><p style="margin:0">Dentro del juego y de los entrenamientos, utilizar los estímulos que ha indicado el entrenador. Y cuando el jugador se dé cuenta de que se ha distraído, recurrir a una <b>palabra clave</b> o a un <b>gesto</b> (subirse las medias, un estiramiento concreto).</p></div>
+  </div>
+  <p><span class="pill">«¡Reset!»</span><span class="pill">«¡A la próxima!»</span><span class="pill">«¡Balón!»</span><span class="pill">«¡Ahora!»</span></p>
+</section>
+
+<!-- ================= 6 ================= -->
+<section class="segueix">
+  <div class="kick">6 · Regulación de los adultos</div>
+  <h1>Percibir, acompañar, elegir, actuar</h1>
+  <p>Las emociones de un partido también nos alteran a los adultos. Ante un error del hijo, una decisión arbitral discutible o un cambio inesperado, el cuerpo reacciona de manera automática. Lo que importa es qué hacemos con esa activación. Queremos entrenar la diferencia entre:</p>
+  <table>
+    <tr><th>Sentir…</th><th>…y descargarlo</th><th>…y acompañarlo</th></tr>
+    <tr><td>Enfado</td><td>Gritar, protestar, increpar.</td><td>Notarlo en el cuerpo y no descargarlo sobre nadie.</td></tr>
+    <tr><td>Preocupación</td><td>Transmitir presión.</td><td>Ofrecer seguridad.</td></tr>
+    <tr><td>Frustración</td><td>Criticar.</td><td>Actuar desde el respeto.</td></tr>
+  </table>
+  <div class="flux"><div><b>1 · Percibir</b>mi cuerpo está reaccionando</div><div class="t"><b>2 · Acompañar</b>atención y respiración, sin luchar</div><div class="b"><b>3 · Elegir</b>¿qué haría la persona que quiero ser?</div><div><b>4 · Actuar</b>una conducta coherente con mi compromiso</div></div>
+  <h2>La respiración de dos luces</h2>
+  <div class="duo" style="grid-template-columns:36mm 1fr; align-items:center">
+    <img src="img/respiro.jpg" alt="Figura de la respiración de dos luces" style="width:36mm;border-radius:3mm">
+    <div><p>Es la práctica central de la AIS que usamos en la app. <b>La luz azul es el aire</b>: entra por la nariz y baja hacia la barriga; hace de cebo. <b>La luz amarilla es tu atención</b>: sale de la cabeza, sigue al aire y se queda anclada en la barriga, aunque el aire vuelva a subir y salir. Es una visualización: el aire va a los pulmones, y lo que notamos en la barriga es el movimiento de la respiración. Respiramos de manera natural y cómoda, sin forzar ni retener el aire.</p><p>No hace falta cerrar los ojos: se puede hacer en la grada o en el banquillo con los ojos abiertos. Si atender al cuerpo resulta incómodo, la alternativa es orientarse hacia fuera: mirar tres cosas alrededor, sentir los pies en el suelo, escuchar dos sonidos.</p><p class="muted" style="margin:0">Los colores son una representación pedagógica, no una medida de ningún estado fisiológico.</p></div>
+  </div>
+  <h2>Reparar también es educar</h2>
+  <p>Todos podemos perder las formas. Eso no nos define como padre, madre o entrenador. Lo que educa es lo que hacemos después:</p>
+  <ol><li>Reconocer qué ha pasado, sin justificarlo.</li><li>Asumir la responsabilidad y pedir disculpas a quien corresponda.</li><li>Explicar qué haremos diferente la próxima vez.</li><li>Elegir un compromiso concreto para el próximo partido y prepararlo antes de entrar.</li></ol>
+  <div class="dest terra"><b>Seguridad antes que regulación.</b> Si hay violencia, acoso o riesgo para un menor, primero la protección: avisar al árbitro, al entrenador, al delegado y al delegado de protección, y seguir el protocolo del club. Si hay peligro inmediato, 112. La pausa puede esperar.</div>
+</section>
+
+<!-- ================= 7 ================= -->
+<section class="cap">
+  <div class="kick">7 · Módulo familias</div>
+  <h1>Los padres también juegan</h1>
+  <h2>Doce principios</h2>
+  <ol style="columns:2; column-gap:8mm; font-size:9.6pt">
+    <li>El deporte es un espacio de desarrollo físico, psicológico y social.</li>
+    <li>El jugador tiene que sentirse querido sea cual sea el resultado.</li>
+    <li>Acompañamos sin añadir presión.</li>
+    <li>El entrenador tiene la responsabilidad de la formación deportiva.</li>
+    <li>Los errores y las derrotas forman parte del aprendizaje.</li>
+    <li>Evitamos las comparaciones entre jugadores.</li>
+    <li>Respetamos a árbitros, rivales, entrenadores y familias.</li>
+    <li>El esfuerzo, la perseverancia, la cooperación y la actitud importan más que el resultado de hoy.</li>
+    <li>Escuchamos sin invadir ni resolverle los problemas.</li>
+    <li>El comportamiento de la grada también es la imagen del club.</li>
+    <li>Los adultos nos preparamos para manejar el nerviosismo, el enfado y la euforia.</li>
+    <li>Miramos a largo plazo y respetamos las etapas.</li>
+  </ol>
+  <h2>La presión que añadimos sin querer</h2>
+  <table>
+    <tr><th style="width:34%">Tipo de mensaje</th><th>Ejemplo</th></tr>
+    <tr><td>Expectativas sobre el rendimiento</td><td><i>«Estoy seguro de que lo harás bien», «confío en ti».</i></td></tr>
+    <tr><td>Críticas y desprecio</td><td><i>«Te tienes que esforzar más», «hoy has jugado bien por casualidad».</i></td></tr>
+    <tr><td>Preocupación y amenazas</td><td><i>«Si sigues así no te convocarán», «si no juegas mejor, te saco del equipo».</i></td></tr>
+    <tr><td>Culpa</td><td><i>«Con el esfuerzo que hago para que juegues, y tú no me das ninguna alegría».</i></td></tr>
+  </table>
+  <div class="duo">
+    <div class="card verd"><h3>Antes del partido</h3><ul style="margin:0"><li>Cómo llego y qué me puede activar hoy.</li><li>Uno o dos compromisos concretos.</li><li>Un minuto de respiración de dos luces.</li><li>«Disfrútalo.» «Juegues como juegues, te quiero igual.»</li></ul></div>
+    <div class="card blau"><h3>Durante el partido</h3><ul style="margin:0"><li>Animar al equipo, no dirigirlo.</li><li>Respetar al árbitro aunque no estemos de acuerdo.</li><li>Si me altero, pausa antes de decir nada.</li><li>Si otros padres pierden las formas, no ponerse a su altura.</li></ul></div>
+  </div>
+  <div class="card terra"><h3>Después del partido</h3><p>Acercarse como cualquier otro día y elegir el momento. Felicitar el esfuerzo y el comportamiento, sea cual sea el resultado; corregir es tarea del entrenador. Si quiere hablar, escuchar; si quiere estar solo, respetarlo. Muchas veces es más útil escuchar y acompañar que analizar enseguida todos los errores.</p><p style="margin:0"><i>«Me ha gustado verte disfrutar.» «Si quieres hablar de cómo te has sentido, te escucho.» «¿Quieres que lo hablemos o prefieres descansar?» «El resultado no cambia lo que siento por ti.»</i></p></div>
+  <h2>La piña de las familias</h2>
+  <p>Igual que los jugadores hacen piña antes del partido, las familias pueden hacerla desde fuera. Después de preparar su papel, cada adulto puede «poner la mano»: guardando el compromiso para sí mismo, enviándolo a quien quiera o respondiendo la encuesta que prepara el delegado. Es un gesto voluntario de intención educativa: no garantiza una conducta perfecta y no sustituye las normas de convivencia ni el protocolo de protección del club. No se piden confirmaciones individuales, listas ni capturas de participación; la encuesta solo se hará si la herramienta impide que el delegado y el resto del grupo identifiquen quién participa o qué responde; si no podemos garantizarlo, haremos un gesto simbólico sin recuento. En un grupo normal de WhatsApp los votos se ven con nombres: la encuesta se puede hacer en el canal de WhatsApp del club, donde los seguidores no ven quién vota (conviene comprobarlo en la versión que se use), o bien el delegado envía al grupo un mensaje de convocatoria y cada familia hace la piña dentro de la app, sin recuento.</p>
+  <div class="cita">Hoy no vengo solo a ver jugar a mi hijo. Vengo a formar parte de un equipo que acompaña a todos los jugadores.</div>
+</section>
+
+<!-- ================= 8 ================= -->
+<section class="segueix">
+  <div class="kick">8 · Módulo entrenadores</div>
+  <h1>El entrenador, figura educativa</h1>
+  <p>El entrenador no solo regula sus emociones: es la figura adulta que puede hacer del equipo un entorno de aprendizaje seguro y respetuoso. Este módulo amplía los materiales originales desde los mismos principios.</p>
+  <h2>Entrenar la atención externa: en qué y cuándo</h2>
+  <div class="duo">
+    <div class="card blau"><h3>¿En qué se tiene que fijar?</h3><p style="margin:0">El balón, el compañero, el contrario, la posición del jugador, hacia dónde mira, el pie…</p></div>
+    <div class="card blau"><h3>¿Cuándo se tiene que fijar?</h3><p style="margin:0">En qué momento de la jugada tiene que atender a cada estímulo para hacer la acción a tiempo.</p></div>
+  </div>
+  <p>Repetir las situaciones de juego enseña al cuerpo a detectar los estímulos relevantes y a tomar buenas decisiones, también cuando hay presión. Por eso cada ejercicio debería tener un estímulo relevante y un momento explícitos, y el entrenador debería decirlos en voz alta.</p>
+  <h2>Corregir no es humillar</h2>
+  <table>
+    <tr><th>En lugar de…</th><th>Prueba…</th></tr>
+    <tr><td>«Siempre haces lo mismo. No aprendes.»</td><td>«Revisemos qué puedes hacer diferente la próxima vez.»</td></tr>
+    <tr><td>«Si sigues así, no jugarás.»</td><td>«Necesito que vuelvas a tu posición cuando perdemos el balón. Lo trabajaremos el martes.»</td></tr>
+    <tr><td>«Qué vergüenza de partido.»</td><td>«Hoy no nos ha salido. Pensemos una cosa que hemos hecho bien y una para mejorar.»</td></tr>
+    <tr><td>«Eres un desastre defendiendo.»</td><td>«En defensa, fíjate en el hombre, no en el balón.»</td></tr>
+  </table>
+  <p>La corrección técnica es legítima y necesaria: habla de la acción, es concreta y mira hacia el futuro. La humillación o la descarga emocional habla de la persona, es general («siempre», «nunca»), se hace en público y mira hacia el enfado del adulto. <b>Pregunta útil: ¿lo que voy a decir le ayuda a aprender, o me ayuda a mí a descargar?</b></p>
+  <h2>Situaciones de banquillo</h2>
+  <table>
+    <tr><th style="width:34%">Situación</th><th>Clave y respuesta</th></tr>
+    <tr><td>Errores continuados</td><td>Una sola indicación observable; reconocer el intento antes de corregir; trabajarlo en el entrenamiento.</td></tr>
+    <tr><td>Bloqueo por miedo a fallar</td><td>Permiso explícito para equivocarse; objetivos de conducta (intentar, ofrecerse), no de resultado.</td></tr>
+    <tr><td>Protesta al ser sustituido</td><td>Dejar pasar el momento caliente; validar lo que siente y poner límite a la forma, en privado.</td></tr>
+    <tr><td>Derrotas repetidas</td><td>Objetivos de proceso y hacer visible la mejora aunque el marcador no lo muestre.</td></tr>
+    <tr><td>Familias que cuestionan decisiones</td><td>No discutir justo después del partido; ofrecer una cita y explicar criterios de grupo y de temporada.</td></tr>
+    <tr><td>Faltas de respeto</td><td>Parar, nombrar la norma del equipo y aplicar la consecuencia pactada, con calma.</td></tr>
+  </table>
+  <div class="dest"><b>Antes y después de cada sesión.</b> Una intención educativa en una frase (por ejemplo, «corregir una sola cosa cada vez») y, al terminar, un repaso de dos minutos: qué ha ido bien, qué reacción quiero reparar, qué quiero seguir entrenando. La app lo guía.</div>
+</section>
+
+<!-- ================= 9 ================= -->
+<section class="segueix">
+  <div class="kick">9 · Módulo jugadores y jugadoras</div>
+  <h1>Jugar, aprender y volver</h1>
+  <div class="duo">
+    <div class="card verd"><h3>De los más pequeños a infantiles</h3><ul style="margin:0"><li>Todavía no es la edad del rendimiento.</li><li>Lo prioritario es que se diviertan y jueguen sin miedo a equivocarse.</li><li>Atención: juegos breves de «volver» (sentir el balón en las manos, escuchar al entrenador, respirar tres veces).</li><li>Palabra clave compartida por todo el equipo.</li></ul></div>
+    <div class="card blau"><h3>Cadetes y juveniles</h3><ul style="margin:0"><li>Poco a poco, asumen responsabilidad sobre su rendimiento.</li><li>Las situaciones difíciles son ocasiones para fortalecerse.</li><li>Atención: identificar sus creencias distractoras y elegir palabra y gesto personales.</li><li>Necesitan un apoyo muy especial de los adultos.</li></ul></div>
+  </div>
+  <h2>Mi vuelta</h2>
+  <p>Cada jugador elige una palabra clave y un gesto, y los entrena en los entrenamientos para que el día del partido salgan solos. El entrenador puede dedicarle cinco minutos al inicio de una sesión y recordarlo en los momentos de juego parado.</p>
+  <h2>Microsesión de 10 minutos (dentro del entrenamiento)</h2>
+  <p class="muted">Antes de empezar, explicamos que pueden participar, observar o elegir una alternativa externa (mirar el balón, escuchar sonidos). No hace falta cerrar los ojos ni compartir sensaciones personales. Si la práctica incomoda a alguien, la paramos o la adaptamos. El cierre es voluntario.</p>
+  <ol><li><b>2 min · Respirar</b>: tres respiraciones notando el aire que entra por la nariz y la atención que baja hasta la barriga.</li><li><b>3 min · Ejercicio formal</b>: atención al tacto del balón con las manos; cuando aparece una distracción, darse cuenta y volver.</li><li><b>3 min · Ejercicio informal</b>: un rondo con un estímulo relevante explícito; cuando el entrenador dice la palabra clave, todos vuelven al estímulo.</li><li><b>2 min · Cierre</b> (voluntario): «¿Cuándo te has dado cuenta de que te habías distraído? ¿Qué te ha ayudado a volver?».</li></ol>
+  <div class="dest blau"><b>Salud y rendimiento, juntos.</b> Un jugador que vuelve antes después de un error puede volver a estar disponible para la jugada siguiente, aunque el malestar no haya desaparecido del todo.</div>
+  <h2>El deporte y los estudios</h2>
+  <p>Estudiar también forma parte del entrenamiento. Planificar el tiempo desde el primer día, dosificar pantallas y salidas y mostrar interés por los estudios forma parte de ser deportista. Estudiar y hacer deporte es la mejor combinación para estar preparado para la vida, llegue o no a ser profesional.</p>
+</section>
+
+<!-- ================= 10 ================= -->
+<section class="cap">
+  <div class="kick">10 · Módulo club</div>
+  <h1>Somos un equipo también fuera del campo</h1>
+  <p>El club es lo que hace que todo esto no dependa de la buena voluntad de una familia o de un entrenador. Define el clima educativo, pone normas claras y cuida los canales.</p>
+  <div class="tri">
+    <div class="card"><h3>Las familias</h3><ul style="margin:0;font-size:9.4pt"><li>Animamos sin dar instrucciones.</li><li>Respetamos a árbitros, rivales, entrenadores y familias.</li><li>Queremos igual cuando ganan y cuando pierden.</li><li>Expresamos las discrepancias con cita y con calma.</li></ul></div>
+    <div class="card"><h3>Los entrenadores</h3><ul style="margin:0;font-size:9.4pt"><li>Pensamos en el progreso de todos a lo largo de la temporada.</li><li>Corregimos sin humillar.</li><li>Valoramos el esfuerzo, las decisiones y la cooperación.</li><li>Somos ejemplo de respeto en el banquillo.</li></ul></div>
+    <div class="card"><h3>El club</h3><ul style="margin:0;font-size:9.4pt"><li>Formación y bienestar por delante del resultado.</li><li>Entorno seguro y protocolo de protección.</li><li>Canales claros de comunicación.</li><li>Formación a familias y entrenadores.</li></ul></div>
+  </div>
+  <div class="dest terra"><b>Protección de menores: obligaciones del club.</b> Las entidades deportivas que trabajan con menores deben aplicar un protocolo de protección y designar un delegado o delegada de protección, con un contacto accesible para los menores (Ley Orgánica 8/2021, LOPIVI). Ante indicios de violencia, hay que proteger al menor y comunicarlo a los servicios competentes: avisar al club no sustituye este deber. En caso de peligro inmediato, 112. Las situaciones de protección no esperan una cita ni el final del partido.</div>
+  <h2>Elementos que conviene tener definidos</h2>
+  <ul class="check"><li>Código de conducta para familias, entrenadores y jugadores, breve y visible.</li><li>Protocolo de protección y delegado o delegada de protección (obligatorios), conocidos por todo el club.</li><li>Canal para discrepancias: cita con el entrenador o la coordinación, nunca justo después del partido.</li><li>Rol del delegado de equipo: grupo de WhatsApp, convocatoria de la piña (canal del club o mensaje sin encuesta), contacto con el club.</li><li>Calendario de formación: reunión de familias, taller de entrenadores, seguimiento trimestral.</li><li>Cartel con el QR de la app en la grada y en el vestuario.</li></ul>
+  <div class="dest terra"><b>Límites.</b> La piña y la app expresan intenciones educativas. El club sigue siendo responsable de aplicar las normas de convivencia, gestionar los conflictos y proteger a los menores. Ninguna herramienta debe servir para vigilar o evaluar moralmente a las familias.</div>
+</section>
+
+<!-- ================= 11 · COMUNITAT ================= -->
+<section class="cap">
+  <div class="kick">11 · Comunidad y cantera</div>
+  <h1>Un club, no islas</h1>
+  <p class="lead">Las aspiraciones de ser un jugador o una jugadora de éxito no se limitan a poder vivir del fútbol. Para mí, ser un jugador de éxito es poder jugar gran parte de la vida, haciendo amistades, viviendo experiencias y con el sentimiento de pertenecer a un lugar. Y aquí no solo cuentan las actitudes de los padres, de los entrenadores y de los directivos: también cuenta, y mucho, la manera en que el club plantea los equipos.</p>
+  <div class="cita">Un jugador de éxito es el que puede jugar gran parte de la vida.</div>
+  <h2>Los aprendizajes que el club quiere dejar</h2>
+  <p>Queremos que el entorno del club sea un espacio donde los agentes psicosociales (familias, entrenadores, directivos y compañeros) fomenten en el joven aprendizajes clave, al mismo tiempo que aprende los conceptos técnicos, tácticos y físicos del fútbol. No son dos programaciones: es la misma sesión, bien pensada.</p>
+  <table>
+    <tr><th style="width:22%">Aprendizaje</th><th style="width:40%">Cómo se entrena en el campo</th><th>Qué aporta el adulto</th></tr>
+    <tr><td><b>Respeto</b></td><td>Saludar al rival y al árbitro; aceptar las decisiones; cuidar el material y los espacios.</td><td>Ser ejemplo en la grada, en el banquillo y en la directiva.</td></tr>
+    <tr><td><b>Esfuerzo</b></td><td>Valorar el intento y la perseverancia, no solo el acierto.</td><td>Felicitar el esfuerzo, sea cual sea el resultado.</td></tr>
+    <tr><td><b>Tolerancia a la frustración</b></td><td>Volver a la jugada después de un error; aceptar jugar menos un día.</td><td>No dramatizar errores ni derrotas; acompañar sin resolverlo todo.</td></tr>
+    <tr><td><b>Orientación a la tarea</b></td><td>Objetivos de proceso en cada ejercicio.</td><td>Preguntar qué ha aprendido antes que por el resultado.</td></tr>
+    <tr><td><b>Cooperación</b></td><td>Ejercicios donde solo se gana si el equipo colabora.</td><td>Reconocer en público los gestos de ayuda.</td></tr>
+    <tr><td><b>Comunidad</b></td><td>Rituales de equipo y de club; sentirse parte de un grupo.</td><td>Animar a todos los jugadores y a todos los equipos, no solo al propio.</td></tr>
+  </table>
+  <h2>La gestión deportiva también educa</h2>
+  <p>Cómo se forman los equipos, cómo se reparten los minutos y cómo se comunican las decisiones envía mensajes muy potentes a los chicos, a menudo más que cualquier charla. Proponemos que el club acuerde unos criterios explícitos:</p>
+  <ul><li><b>Formar equipos cuidando también la amistad, la confianza y la continuidad de los grupos</b>, y no solo el nivel de hoy.</li><li>Evitar nombres y mensajes que conviertan los equipos en «el de los mejores» y «el de los peores»: cada equipo tiene un papel relevante dentro del club.</li><li>En las edades pequeñas, minutos de juego repartidos; a medida que crecen, criterios claros y conocidos por todos.</li><li>Puertas abiertas entre niveles durante la temporada, y decisiones explicadas con criterios educativos, al chico o la chica y a la familia.</li></ul>
+  <h2>Niveles y ritmos de crecimiento</h2>
+  <p>El nivel de hoy puede estar influido, entre otros factores, por la edad relativa (la diferencia de edad dentro de una misma categoría según la fecha de nacimiento) y por la maduración biológica, que sigue ritmos distintos en cada chico. Son factores distintos y no determinan hasta dónde llegará cada jugador: hay quien destaca pronto y después se estanca, y hay quien tarda más pero llega más lejos. No debemos confundir las ventajas de hoy con el potencial de mañana. Por eso el club tiene que mirar el proceso y no cerrar puertas demasiado pronto, y tiene que ayudar a los jugadores a compararse consigo mismos.</p>
+  <h2>Equipos conectados: generar sinergias</h2>
+  <div class="duo">
+    <div class="card blau"><h3>Entre equipos</h3><ul style="margin:0"><li>Apadrinamientos: un equipo mayor acompaña a uno pequeño en un entrenamiento o un partido.</li><li>Entrenamientos compartidos y juegos entre edades.</li><li>Ir a ver y animar partidos de otros equipos del club.</li></ul></div>
+    <div class="card verd"><h3>De todo el club</h3><ul style="margin:0"><li>Jornadas de club y rituales comunes, como la piña de las familias.</li><li>Una comunicación que hable de todos los equipos, no solo del primero.</li><li>Espacios de encuentro para familias de distintos equipos.</li></ul></div>
+  </div>
+  <h2>De jugadores a entrenadores: la cantera del club</h2>
+  <p>Consolidar estos valores es también preparar a quienes mañana querrán implicarse en el club. Un itinerario posible:</p>
+  <ol><li><b>Juveniles colaboradores</b>: ayudan en actividades y entrenamientos de equipos pequeños. Si son menores, la participación es voluntaria, con tareas adecuadas a la edad y la supervisión presencial de un adulto responsable; no sustituyen al entrenador ni asumen solos el cuidado del grupo.</li><li><b>Ayudantes de entrenador</b>: con un mentor, formación inicial y esta guía como marco compartido.</li><li><b>Entrenadores del club</b>: con formación federativa y el modelo de club como referencia.</li><li><b>Exjugadores y familias</b>: invitados a volver como delegados, colaboradores o directivos.</li></ol>
+  <p>Así el club construye una cantera con una idea y un sentimiento compartidos: los entrenadores de mañana habrán vivido, como jugadores, la misma manera de acompañar que después ofrecerán.</p>
+  <div class="dest blau"><b>Desde la TEC.</b> Entendemos que un entorno previsible, respetuoso y donde el joven se siente parte de un grupo puede hacerse fiable para él, y que en un entorno así es más fácil aprender, equivocarse y arriesgarse. Es una hipótesis de trabajo de nuestro modelo, coherente con lo que sabemos sobre el clima motivacional y la pertenencia, que seguimos evaluando con los clubes.</div>
+  <h3>Indicadores de comunidad</h3>
+  <ul><li>Continuidad: porcentaje de jugadores que siguen en el club entre los que podían continuar; recogida voluntaria de los motivos de salida y, cuando se sepa, de la continuidad deportiva fuera del club.</li><li>Pertenencia percibida (cuestionario voluntario y agregado): «Me siento parte del club», «Tengo amigos en el equipo».</li><li>Actividades entre equipos realizadas en la temporada.</li><li>Juveniles y exjugadores que colaboran como ayudantes, entrenadores o delegados.</li></ul>
+</section>
+
+<!-- ================= 12 ================= -->
+<section class="cap">
+  <div class="kick">12 · Herramienta digital</div>
+  <h1>La app «Los padres también juegan»</h1>
+  <p>Es la herramienta que lleva todo este trabajo al móvil de familias y entrenadores. Funciona desde un enlace o un QR, sin instalar nada, en catalán y en castellano, y con un recorrido distinto para familias y para entrenadores.</p>
+  <div class="figs">
+    <figure><img src="img/app-inici-es.jpg" alt="Pantalla de inicio de la app">Inicio: los tres momentos</figure>
+    <figure><img src="img/app-pinya-es.jpg" alt="La piña de las familias">La piña de las familias</figure>
+    <figure><img src="img/app-pausa-es.jpg" alt="Modo partido con el botón de pausa">Modo partido: pausa de 10 segundos</figure>
+  </div>
+  <table>
+    <tr><th style="width:26%">Apartado</th><th>Qué hace</th></tr>
+    <tr><td><b>Antes</b></td><td>Cómo llego, qué me puede activar, práctica con la silueta, uno o dos compromisos. Termina con la piña de las familias.</td></tr>
+    <tr><td><b>Durante</b></td><td>Recuerda el compromiso y la palabra clave. Botón «Necesito hacer una pausa» (reconozco, me acompaño, elijo) y modo rápido de 10 segundos. Doce situaciones de juego.</td></tr>
+    <tr><td><b>Después</b></td><td>Cómo recibir al deportista o cerrar con el equipo, «¿He sido fiel a mi mano?», pauta de reparación.</td></tr>
+    <tr><td><b>Aprende</b></td><td>Un club, no islas; atención en el juego y mi vuelta; pirámide del rendimiento; doce microlecciones; itinerario de entrenadores.</td></tr>
+    <tr><td><b>Registro</b></td><td>Historial privado: pausas por semana, compromisos, situaciones para entrenar, aprendizajes. Sin puntuaciones.</td></tr>
+    <tr><td><b>Para clubes</b></td><td>Compromisos compartidos, código de conducta, protocolo, QR y configuración por club.</td></tr>
+  </table>
+  <div class="card verd"><h3>Privacidad</h3><p style="margin:0">No pide nombre ni correo. Los registros se guardan localmente en el navegador del móvil; la persona puede exportarlos en JSON o CSV y borrarlos, y si borra los datos del navegador o cambia de dispositivo puede perderlos. El club no ve ningún registro. Compartir un compromiso o entregar una exportación es siempre una decisión voluntaria, y el club no debe pedir registros personales como prueba de implicación. Antes de una implantación con evaluación sistemática hay que revisar el RGPD y la normativa de protección de menores.</p></div>
+  <div class="peu-qr"><img class="qr" src="__QR__" alt="QR de la app"><div><b>aprens-app.aprens.net/esport-base</b><br><span class="muted">El apartado «Para clubes» genera el enlace y el QR con el nombre, el color, el idioma y un mensaje breve. Para incorporar el escudo, el código de conducta y el protocolo, APRENS prepara el archivo de configuración del club.</span></div></div>
+</section>
+
+<!-- ================= 12 ================= -->
+<section class="segueix">
+  <div class="kick">13 · Temporada</div>
+  <h1>Plan de temporada y guiones de sesión</h1>
+  <table>
+    <tr><th style="width:20%">Momento</th><th style="width:27%">Club y coordinación</th><th style="width:27%">Entrenadores</th><th>Familias y jugadores</th></tr>
+    <tr><td><b>Pretemporada</b></td><td>Modelo de club y criterios para formar equipos. Código de conducta, protocolo y delegado de protección. Enlace y QR.</td><td>Taller 1 (90'): atención y comunicación educativa.</td><td>Reunión de familias (60'). Cartel y mensaje al grupo.</td></tr>
+    <tr><td><b>1.er trimestre</b></td><td>Apadrinamientos entre equipos. Piña de las familias.</td><td>Intención educativa y repaso en cada sesión. Microsesiones de 10'.</td><td>Antes, durante y después con la app. Palabra clave por equipo.</td></tr>
+    <tr><td><b>2.º trimestre</b></td><td>Jornada de club. Revisión con coordinadores: qué funciona.</td><td>Taller 2 (90'): situaciones de banquillo y familias.</td><td>Compromiso semanal. Palabra y gesto personales (cadetes y juveniles).</td></tr>
+    <tr><td><b>3.er trimestre</b></td><td>Valoración e indicadores de comunidad. Juveniles colaboradores para la temporada siguiente.</td><td>Intercambio de buenas prácticas.</td><td>Cierre: qué hemos aprendido como grada y como equipo.</td></tr>
+  </table>
+  <div class="duo">
+    <div class="card"><h3>Reunión de familias · 60'</h3><ol style="margin:0;font-size:9.4pt"><li>10' · Por qué el deporte educa y cómo añadimos presión sin querer.</li><li>10' · La pirámide: maestría y ego.</li><li>10' · Atención: los adultos como distractores.</li><li>15' · Práctica: respiración de dos luces y «Mi plan si me altero».</li><li>10' · La app y la piña de las familias.</li><li>5' · Preguntas y compromiso de grupo.</li></ol></div>
+    <div class="card"><h3>Taller de entrenadores · 2 × 90'</h3><ol style="margin:0;font-size:9.4pt"><li>Atención externa: en qué y cuándo. Diseñar estímulos relevantes para tres ejercicios.</li><li>Atención interna: no luchar, volver. Microsesión de 10' para los jugadores.</li><li>Comunicación educativa: corregir sin humillar (role-playing).</li><li>Regulación en el banquillo y reparación.</li><li>Situaciones difíciles: familias, conflictos, límites.</li><li>Plan de temporada de cada equipo.</li></ol></div>
+  </div>
+</section>
+
+<!-- ================= 13 ================= -->
+<section class="cap">
+  <div class="kick">14 · Evaluación</div>
+  <h1>Pilotaje y evaluación</h1>
+  <p>Proponemos empezar con un pilotaje de cuatro a seis semanas con un equipo o un club colaborador. El objetivo es valorar la viabilidad, la experiencia de uso y los posibles cambios de conducta que perciban los propios participantes, sin presentarlo como una eficacia demostrada.</p>
+  <table>
+    <tr><th style="width:18%">Semana</th><th>Qué se hace</th></tr>
+    <tr><td>0</td><td>Reunión con coordinación y entrenadores. Configuración del club, cartel y QR. Presentación a las familias.</td></tr>
+    <tr><td>1-4</td><td>Uso libre de la app. El delegado convoca la piña en cada partido (canal del club o mensaje sin encuesta). Los entrenadores hacen «Antes» y «Después».</td></tr>
+    <tr><td>2</td><td>Contacto breve con los entrenadores: dificultades y ajustes.</td></tr>
+    <tr><td>4-6</td><td>Cuestionario voluntario sin identificadores y una conversación de grupo con cuatro a seis familias y entrenadores (voluntaria y confidencial, pero no anónima). Escucha de los deportistas adaptada a la edad.</td></tr>
+  </table>
+  <h2>Indicadores</h2>
+  <ul><li>Facilidad de uso y utilidad percibida (escala 1-5).</li><li>Frecuencia de práctica autodeclarada.</li><li>Reconocimiento de activaciones y uso de pausas antes de reaccionar.</li><li>Autopercepción de conductas de respeto y ejemplos de reparación.</li><li>Escucha voluntaria de los deportistas, adaptada a la edad: «Puedo equivocarme sin que me ridiculicen», «Puedo pedir ayuda», «Tengo ganas de continuar», «¿Qué cambiarías de los entrenamientos?». Respuestas agregadas, para mejorar el entorno.</li><li>Valoración cualitativa de entrenadores, familias y coordinación.</li></ul>
+  <div class="dest terra"><b>Ética y protección de datos.</b> Antes del pilotaje definimos la información a los participantes, la gestión de datos y el plazo de conservación. No se recogen los registros de la app, que quedan en el móvil de cada persona; el cuestionario evita identificadores y relatos reconocibles, y solo comunicamos conclusiones agregadas. No se comparan familias ni entrenadores, y estos datos no permiten demostrar por sí solos una mejora del rendimiento. Si más adelante se quiere una evaluación sistemática (cuestionarios pre y post, exportaciones voluntarias), hará falta un protocolo propio con hoja informativa, consentimiento, seudonimización, plazo de conservación y revisión del RGPD y de la normativa de protección de menores.</div>
+</section>
+
+<!-- ================= 14 ================= -->
+<section class="cap">
+  <div class="kick">15 · Fichas</div>
+  <h1>Fichas para fotocopiar</h1>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 1 · Mi plan si me altero (familias y entrenadores)</h3>
+    <table><tr><th>Qué no debo hacer</th><th>Qué puedo hacer para regularme</th></tr><tr><td><span class="muted">Ej.: gritar instrucciones desde la grada</span></td><td><span class="muted">Ej.: tres respiraciones de dos luces</span></td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr></table>
+    <p style="margin:0"><b>Mi compromiso para el próximo partido:</b></p><div class="linia"></div></div>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 2 · Mi vuelta (jugadores y jugadoras)</h3>
+    <div class="duo"><div><b>Mi palabra clave:</b><div class="linia"></div></div><div><b>Mi gesto:</b><div class="linia"></div></div></div>
+    <p style="margin:3mm 0 0"><b>¿Cuándo me suele costar más volver?</b> (después de un error, antes de un penalti…)</p><div class="linia"></div></div>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 3 · Preparar un ejercicio (entrenadores)</h3>
+    <table><tr><th style="width:30%">Ejercicio</th><th>¿En qué se tiene que fijar?</th><th>¿Cuándo?</th></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table></div>
+</section>
+<section class="cap">
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 4 · Repaso después del partido (adultos)</h3>
+    <ul class="check"><li>He respetado a los árbitros y a los entrenadores.</li><li>Familias: he animado sin dirigir el juego.</li><li>Entrenadores: he dado indicaciones breves, pertinentes y respetuosas.</li><li>He podido reconocer mi enfado o mis nervios.</li><li>He hecho una pausa antes de reaccionar.</li><li>He acompañado sin presionar, pase lo que pase.</li><li>He escuchado antes de corregir.</li></ul>
+    <p style="margin:0"><b>¿Qué me gustaría repetir?</b></p><div class="linia"></div><p style="margin:2mm 0 0"><b>¿Qué quiero seguir entrenando?</b></p><div class="linia"></div><p style="margin:2mm 0 0"><b>¿Hay algo que quiero reparar?</b></p><div class="linia"></div></div>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 5 · Compromisos compartidos del club</h3>
+    <div class="tri"><div><b>Las familias</b><div class="linia"></div><div class="linia"></div><div class="linia"></div></div><div><b>Los entrenadores</b><div class="linia"></div><div class="linia"></div><div class="linia"></div></div><div><b>El club</b><div class="linia"></div><div class="linia"></div><div class="linia"></div></div></div>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 6 · Criterios para formar equipos (coordinación)</h3>
+    <ul class="check"><li>Hemos tenido en cuenta la amistad, la confianza y la continuidad de los grupos.</li><li>Hemos considerado la edad relativa y la maduración biológica, sin confundir la ventaja de hoy con el potencial.</li><li>Los nombres y los mensajes no jerarquizan los equipos.</li><li>Las puertas entre niveles quedan abiertas durante la temporada.</li><li>Explicaremos la decisión a cada jugador y a cada familia con criterios educativos.</li></ul></div>
+  <div class="fitxa"><h3 style="margin-top:0">Ficha 7 · Sinergias entre equipos</h3>
+    <table><tr><th>Equipo</th><th>Equipo padrino o invitado</th><th>Actividad</th><th>Adulto responsable</th><th style="width:14%">Fecha</th></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></table><p class="muted" style="margin:0">Adaptar los juegos compartidos a las diferencias de edad, tamaño y experiencia.</p></div>
+  </div>
+</section>
+
+<!-- ================= 15 ================= -->
+<section class="cap">
+  <div class="kick">16 · Recursos</div>
+  <h1>Recursos y contacto</h1>
+  <div class="duo" style="grid-template-columns:62mm 1fr;align-items:start">
+    <img src="img/cartell-es.jpg" alt="Cartel con el QR para el club" style="width:62mm;border:1px solid var(--linia);border-radius:2mm">
+    <div>
+      <h3 style="margin-top:0">Materiales de APRENS</h3>
+      <ul><li>«Els pares també juguen. El paper dels pares dins l'esport de base» (Los padres también juegan. El papel de los padres en el deporte base).</li><li>«La piràmide del rendiment» (La pirámide del rendimiento).</li><li>«Atenció i maneig emocional a l'esport» (Atención y manejo emocional en el deporte).</li><li>Cartel A4 para el club, con el QR de la app (en catalán y en castellano).</li><li>Mensajes de difusión para presidencia, coordinación, entrenadores y familias.</li><li>App «Los padres también juegan» (con los apartados «Atención en el juego» y «Un club, no islas») y App APRENS, con las prácticas guiadas de AIS y las herramientas de respiración.</li></ul>
+      <p>El aprendizaje que proponemos es sencillo de decir y exigente de hacer: reconocer lo que sentimos, acompañarlo y elegir cómo actuamos, para ofrecer a nuestros chicos y chicas un entorno más seguro, respetuoso y educativo. Espero que esta guía os sea útil, y que también lo podáis ver en el día a día del club.</p>
+      <p><b>Tòfol Villalonga</b></p>
+    </div>
+  </div>
+  <div class="card blau"><b>Cuota del club.</b> 250 € + IVA por temporada (septiembre a junio), equivalente a 25 € al mes, o 225 € + IVA en un solo pago al inicio de la temporada (IVA del 21 %). El precio es por club, no por equipo, e incluye la app con el espacio propio del club, los carteles y los mensajes de difusión, esta guía, las actualizaciones y el apoyo durante la temporada. El trabajo presencial (charlas, formación de entrenadores, seguimiento) se presupuesta aparte, y siempre se puede empezar con un piloto gratuito de cuatro a seis semanas con un equipo.</div>
+  <div class="dest blau"><b>Si queréis hablarlo:</b> APRENS Psicología · C/ Mare de Déu de l'Esperança, 70, 2.º · Inca · 636 93 76 61 · info@aprens.es · aprens.net</div>
+  <div class="cita">Los jugadores hacen equipo dentro del campo. Las familias también hacemos equipo fuera. Y nuestra manera de animar, respetar y acompañar forma parte de su educación.</div>
+</section>
+
+</body>
+</html>

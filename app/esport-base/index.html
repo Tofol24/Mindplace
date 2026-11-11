@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FAF8F3">
+<meta name="description" content="APRENS · Els pares també juguen. Eina per a famílies i entrenadors de futbol base: abans, durant i després del partit.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pares juguen" id="metaTitolApp">
+<link rel="manifest" href="manifest.webmanifest" id="lnkManifest">
+<link rel="apple-touch-icon" href="icones/aprens-icona-180.png" id="lnkApple">
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<title>Els pares també juguen · APRENS</title>
+<link rel="stylesheet" href="app.css">
+<script src="../js/descarga-segura.js"></script>
+</head>
+<body>
+<a class="salta" id="salta" href="#app">Anar al contingut</a>
+<header class="top">
+  <button type="button" class="enrere-cap" id="enrereCap" hidden>← Enrere</button>
+  <span class="marca" aria-hidden="true">APRENS</span>
+  <span id="escutLloc"></span>
+  <div>
+    <div class="tt" id="ttApp">Els pares també juguen</div>
+    <div class="ts" id="subtitol">APRENS · Esport de base</div>
+  </div>
+  <span class="sp"></span>
+  <div class="lang" id="lang" role="group" aria-label="Idioma"></div>
+</header>
+
+<main id="app" tabindex="-1">
+  <noscript><p>Aquesta eina necessita JavaScript. / Esta herramienta necesita JavaScript.</p></noscript>
+</main>
+
+<nav class="nav" id="nav" aria-label="Seccions" hidden></nav>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="pasTitol">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="contingut-ca.js"></script>
+<script src="contingut-es.js"></script>
+<script src="../vendor/qrcode-generator-1.4.4.js"></script>
+<script src="../js/respiro-ais.js"></script>
+<script src="silueta.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

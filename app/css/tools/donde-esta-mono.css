@@ -80,7 +80,7 @@
 .dmono .wa textarea{min-height:150px;font-size:13px;background:#fff}
 .dmono .row2{display:flex;gap:10px}
 .dmono .row2 .btn{margin-top:10px}
-.dmono .btn.wabtn{background:#25d366;box-shadow:0 6px 18px rgba(37,211,102,.3)}
+.dmono .btn.wabtn{background:#178540;box-shadow:0 6px 18px rgba(37,211,102,.3)}
 .dmono .btn.copybtn{background:#fff;color:var(--terra-d);border:1.6px solid var(--terra);box-shadow:none}
 
 .dmono .dm-footer{text-align:center;color:var(--suau);font-size:12.5px;padding:26px 8px 8px;line-height:1.7}

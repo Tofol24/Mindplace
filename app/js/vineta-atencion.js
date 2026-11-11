@@ -106,15 +106,15 @@
       '<line x1="60" y1="50" x2="60" y2="98" stroke="#E9B458" stroke-width="3" stroke-dasharray="2 4" opacity=".85"/>' +
       '<circle cx="60" cy="96" r="7" fill="#E9B458"/><circle cx="60" cy="96" r="12" fill="#E9B458" opacity=".25"/>' +
       '<path d="M72 52 q10 -4 18 0" stroke="#3FA6D8" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="92" cy="52" r="3.4" fill="#3FA6D8"/>' +
-      '<path d="M92 116 q28 8 52 2" stroke="#2E7D5E" stroke-width="3" fill="none" stroke-linecap="round"/>' +
-      '<polygon points="142,112 152,118 142,124" fill="#2E7D5E"/></svg>';
+      '<path d="M92 116 q28 8 52 2" stroke="#2d795b" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<polygon points="142,112 152,118 142,124" fill="#2d795b"/></svg>';
   }
   // Junto a la silueta: la vuelta a la tarea (flecha verde).
   function svg3b() {
     return '<svg viewBox="0 0 120 100" role="img" aria-label="Vuelvo a lo que estaba haciendo">' +
       '<rect x="34" y="58" width="78" height="8" rx="3" fill="#cfd9e1"/>' +
-      '<path d="M6 52 q30 12 60 4" stroke="#2E7D5E" stroke-width="3" fill="none" stroke-linecap="round"/>' +
-      '<polygon points="64,50 76,56 64,62" fill="#2E7D5E"/>' +
+      '<path d="M6 52 q30 12 60 4" stroke="#2d795b" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<polygon points="64,50 76,56 64,62" fill="#2d795b"/>' +
       '<text x="73" y="86" text-anchor="middle" font-size="9.5" fill="#6B7280" font-style="italic">lo que hacía</text></svg>';
   }
   function panel(n, inner, cap) { return '<div class="va-p"><span class="va-n">' + n + '</span>' + inner + '<div class="va-c">' + cap + '</div></div>'; }

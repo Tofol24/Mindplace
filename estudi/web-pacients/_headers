@@ -1,12 +1,20 @@
 # Explica-ho (versió amb codis d'accés)
 # La pàgina només pot parlar amb el seu propi servidor (connect-src 'self'): el material
 # dels alumnes no surt cap a cap altre lloc que l'intermediari, que el passa a Claude.
+# Cercadors: es poden indexar la portada, la subscripció i els textos legals; la resta, no.
 # Tot es serveix des del mateix domini: les lletres (/fonts) i els lectors de PDF i Word (/vendor).
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
-  X-Robots-Tag: noindex, nofollow
   Permissions-Policy: microphone=(self), camera=(self), geolocation=()
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+/gracies.html
+  X-Robots-Tag: noindex, nofollow
+/recupera.html
+  X-Robots-Tag: noindex, nofollow
+/estadistiques.html
+  X-Robots-Tag: noindex, nofollow
+/api/*
+  X-Robots-Tag: noindex, nofollow

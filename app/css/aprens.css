@@ -17,8 +17,8 @@
 
 :root{
   /* Estilo editorial cálido (coherente con la portada) */
-  --azul:#3f6b74; --azulLt:#dde7e7; --verde:#2E7D5E; --verdeLt:#D4EDDA;
-  --naranja:#E07B39; --rojo:#C0392B; --gris:#6f665b; --fondo:#efe9dd; --oro:#a9781f;
+  --azul:#3f6b74; --azulLt:#dde7e7; --verde:#2d795b; --verdeLt:#D4EDDA;
+  --naranja:#E07B39; --rojo:#C0392B; --gris:#6f665b; --fondo:#efe9dd; --oro:#8d641a;
   --cL:#b83232; --cLlt:#FDEAEA; --cD:#3257b8; --cDlt:#E8EFFE; --cC:#1f7a30; --cClt:#E8FDEA;
   --tinta:#2b2620; --linea:#E1D9C9;
   /* Serif del sistema (Playfair no se carga → cae a serif) + sans del sistema */
@@ -118,7 +118,7 @@ body{
 .bp{background:var(--azul);color:#fff;padding:13px 26px;font-size:14px;box-shadow:0 4px 14px rgba(43,38,32,.3)}
 .bpg{background:var(--verde);color:#fff;padding:14px 28px;font-size:15px;box-shadow:0 4px 14px rgba(46,125,94,.3)}
 .bs{background:#fff;color:var(--azul);border:2px solid var(--azul);padding:11px 20px;font-size:13px}
-.bwa{background:#25D366;color:#fff;padding:13px 22px;font-size:14px}
+.bwa{background:#178540;color:#fff;padding:13px 22px;font-size:14px}
 .bcopy{background:#fff;color:var(--gris);border:2px solid #E0E7EF;padding:12px 18px;font-size:13px}
 .full{width:100%;justify-content:center}
 
@@ -309,6 +309,20 @@ table.t td.r{text-align:center;font-weight:700}
 .rec-hero .rh-m i.on{background:#fff}
 .rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:var(--rh,#3f6b74);font-weight:700;font-size:15px;padding:10px 16px;border-radius:22px}
 .rh-note{font-size:12.5px;color:var(--gris);margin:4px 4px 16px;line-height:1.45}
+
+/* Tus cuatro herramientas básicas (justo debajo del recorrido) */
+.basicas{margin:0 0 20px}
+.bas-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+@media(min-width:620px){.bas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bas-card{background:#fff;border:1px solid var(--linea);border-top:4px solid var(--bc,var(--verde));border-radius:16px;padding:13px 15px 12px;box-shadow:0 4px 18px rgba(43,38,32,.06)}
+.bas-para{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--bc,var(--verde))}
+.bas-t{font-family:var(--serif);font-size:19px;line-height:1.2;color:var(--tinta);margin:3px 0 5px;display:flex;align-items:center;gap:8px}
+.bas-e{font-size:20px}
+.bas-d{font-size:13.5px;line-height:1.5;color:#4a443c}
+.bas-go{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.bas-go a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-size:13px;font-weight:700;color:var(--bc,var(--verde));background:#f7f3ec;border:1px solid var(--linea);border-radius:18px;padding:6px 12px}
+.bas-go a:first-child{background:var(--bc,var(--verde));border-color:var(--bc,var(--verde));color:#fff}
+.bas-reg{display:inline-block;margin:10px 4px 0;font-size:13px;font-weight:600;color:var(--azul);text-decoration:none}
 
 /* Aviso de privacidad · botón del contador anónimo de uso */
 .aviso-uso{display:inline-block;margin-top:6px;font-weight:600}

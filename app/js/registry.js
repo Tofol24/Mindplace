@@ -9,8 +9,11 @@
    cuestionario-tec.js (reutiliza su CFG actual tal cual) y pon migrada:true.
    ============================================================ */
 window.APRENS_TOOLS = [
+  // oculta:true → no sale en el inicio (ni en «otras»), pero sigue abriéndose por su
+  // enlace directo (#/tool/cuestionario_tec) y el panel lee sus registros antiguos.
+  // Se retira del inicio porque se solapa con el seguimiento del Screening TEC/AIS.
   { id:"cuestionario_tec", emoji:"📝", nombre:"Cuestionario TEC",
-    desc:"Cómo va tu presencia interna esta semana (L/D/C).", migrada:true },
+    desc:"Cómo va tu presencia interna esta semana (L/D/C).", migrada:true, oculta:true },
   { id:"estado_mono", emoji:"🐒", nombre:"Estado del mono",
     desc:"Ya sabes cómo estás: márcalo y practica el AIS ahí mismo (respiración de 60 s y seguimiento del día a día).", migrada:true },
   { id:"donde_esta_mono", emoji:"🔍", nombre:"¿Dónde está el mono?",
@@ -68,7 +71,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"tools-standalone/tracker-tec.html" },
 
   { id:"screening_tec", emoji:"🧪", nombre:"Screening TEC/AIS",
-    desc:"Cribado inicial y seguimiento (L/D/C) con gráficas de evolución.",
+    desc:"Tu autoevaluación inicial y, después, los registros cortos de seguimiento para tu psicólogo/a.",
     migrada:true, iframe:"tools-standalone/screening-tec.html" },
 
   { id:"evaluacion_trauma", emoji:"🧭", nombre:"Evaluación de trauma",
@@ -110,6 +113,10 @@ window.APRENS_TOOLS = [
   { id:"entre_punto_y_punto", emoji:"🎾", nombre:"Entre punto y punto",
     desc:"Tenis de competición (adolescente): mapa atencional del juego (saque, resto, error no forzado, bucle, punto clave, cambio de lado, miradas de fuera, cansancio), autorregistro al salir de la pista con los tres parámetros TEC, exposición en imaginación para sostener la tensión y verse jugando bien con ella dentro, y escalera progresiva de mirada hacia adentro (AIS) hasta la pista con la raqueta.",
     migrada:true, iframe:"tools-standalone/entre_punto_y_punto_aprens.html" },
+
+  { id:"pares_tambien_juegan", emoji:"⚽", nombre:"Els pares també juguen · deporte base",
+    desc:"Para familias, entrenadores y clubes de deporte base: prepararse antes del partido, una pausa breve cuando el partido nos activa y acompañar al jugador después. Incluye «la piña de las familias» y el espacio propio del club. En castellano y en catalán.",
+    migrada:true, enlace:"esport-base/?lang=es" },
 
   { id:"estoy_aqui_conmigo", emoji:"🤍", nombre:"Estoy aquí conmigo",
     desc:"Para adolescentes: entrenar la presencia interna y el apego seguro con una misma tras una ruptura o cuando cuesta sostener la soledad. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia, registro y plan de apoyo (TEC–AIS).",

@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v181";
+const CACHE = "aprens-v212";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -23,7 +23,12 @@ const SHELL = [
   "./js/comprension.js",
   "./js/vineta-abrazo.js",
   "./js/vineta-honestidad.js",
+  "./js/vineta-vinculo.js",
+  "./js/vineta-puertas.js",
   "./js/descarga-segura.js",
+  "./js/enlace-panel.js",
+  "./vendor/lz-string.min.js",
+  "./js/tec-screening.js",
   "./assets/respiro/organismo.webp",
   "./assets/respiro/organismo_nino.webp",
   "./js/tools/cuestionario-tec.js",
@@ -167,6 +172,13 @@ const SHELL = [
   "./tools-standalone/assets/editorial/tracker-ais.webp",
   "./tools-standalone/tracker-tec.html",
   "./tools-standalone/assets/editorial/tracker-tec.webp",
+  "./esport-base/index.html",
+  "./esport-base/app.css",
+  "./esport-base/app.js",
+  "./esport-base/silueta.js",
+  "./esport-base/contingut-ca.js",
+  "./esport-base/contingut-es.js",
+  "./vendor/qrcode-generator-1.4.4.js",
   "./pareja/evaluacion.html",
   "./honestidad/index.html",
   "./honestidad/assets/css/styles.css",

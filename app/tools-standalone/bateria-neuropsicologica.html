@@ -213,57 +213,57 @@ body.patient header.top,body.patient .layout{display:none}
   <div class="card">
     <h2>Espacio de evaluación</h2>
     <div class="row" style="margin-top:8px">
-      <label class="chips" style="margin:0"><label><input type="radio" name="space" value="aprens" data-b="meta.space"> Espacio APRENS (clínico / educativo)</label><label><input type="radio" name="space" value="mutua" data-b="meta.space"> Espacio Mutua Balear (laboral / pericial)</label></label>
+      <div class="chips" role="radiogroup" aria-label="Espacio de evaluación" style="margin:0"><label><input type="radio" name="space" value="aprens" data-b="meta.space"> Espacio APRENS (clínico / educativo)</label><label><input type="radio" name="space" value="mutua" data-b="meta.space"> Espacio Mutua Balear (laboral / pericial)</label></div>
     </div>
     <p class="mini" id="spaceHelp"></p>
   </div>
   <div class="card">
     <h2>Identificación</h2>
     <div class="grid">
-      <div><label>Código del caso</label><input data-b="meta.code" placeholder="NP-2026-001"></div>
-      <div><label>Edad (años)</label><input type="number" min="12" max="99" data-b="meta.age" placeholder="16"></div>
-      <div><label>Años de escolaridad</label><input type="number" min="0" max="25" data-b="meta.edu"></div>
-      <div><label>Curso / nivel educativo</label><input data-b="meta.level" placeholder="4º ESO, Bachillerato, FP, grado..."></div>
-      <div><label>Lateralidad</label><select data-b="meta.hand"><option value="">—</option><option>Diestra</option><option>Zurda</option><option>Ambidiestra</option></select></div>
-      <div><label>Lengua dominante / de evaluación</label><input data-b="meta.lang" placeholder="Castellano / Catalán / bilingüe"></div>
-      <div><label>Profesional</label><input data-b="meta.prof" placeholder="Nombre y nº colegiado"></div>
-      <div><label>Fecha de inicio</label><input type="date" data-b="meta.date"></div>
+      <div><label>Código del caso</label><input aria-label="Código del caso" data-b="meta.code" placeholder="NP-2026-001"></div>
+      <div><label>Edad (años)</label><input aria-label="Edad (años)" type="number" min="12" max="99" data-b="meta.age" placeholder="16"></div>
+      <div><label>Años de escolaridad</label><input aria-label="Años de escolaridad" type="number" min="0" max="25" data-b="meta.edu"></div>
+      <div><label>Curso / nivel educativo</label><input aria-label="Curso / nivel educativo" data-b="meta.level" placeholder="4º ESO, Bachillerato, FP, grado..."></div>
+      <div><label>Lateralidad</label><select aria-label="Lateralidad" data-b="meta.hand"><option value="">—</option><option>Diestra</option><option>Zurda</option><option>Ambidiestra</option></select></div>
+      <div><label>Lengua dominante / de evaluación</label><input aria-label="Lengua dominante / de evaluación" data-b="meta.lang" placeholder="Castellano / Catalán / bilingüe"></div>
+      <div><label>Profesional</label><input aria-label="Profesional" data-b="meta.prof" placeholder="Nombre y nº colegiado"></div>
+      <div><label>Fecha de inicio</label><input aria-label="Fecha de inicio" type="date" data-b="meta.date"></div>
     </div>
     <label>Motivo de consulta y pregunta que debe responder la evaluación</label>
-    <textarea data-b="meta.reason" placeholder="Ej.: dificultades de atención y memoria tras TCE leve; ¿hay alteración objetivable y compatible con el puesto?"></textarea>
+    <textarea aria-label="Motivo de consulta y pregunta que debe responder la evaluación" data-b="meta.reason" placeholder="Ej.: dificultades de atención y memoria tras TCE leve; ¿hay alteración objetivable y compatible con el puesto?"></textarea>
     <label>Antecedentes relevantes (neurológicos, del desarrollo, psiquiátricos, consumo, tratamientos)</label>
-    <textarea data-b="meta.history"></textarea>
+    <textarea aria-label="Antecedentes relevantes (neurológicos, del desarrollo, psiquiátricos, consumo, tratamientos)" data-b="meta.history"></textarea>
   </div>
   <div class="card" id="ctxAprens">
     <h2>Contexto APRENS</h2>
     <div class="grid">
-      <div><label>Rendimiento académico actual</label><select data-b="meta.school.perf"><option value="">—</option><option>Adecuado</option><option>Irregular</option><option>Bajo en algunas áreas</option><option>Bajo generalizado</option><option>No aplica</option></select></div>
-      <div><label>Adaptaciones / apoyos actuales</label><input data-b="meta.school.supports"></div>
-      <div><label>Diagnósticos previos</label><input data-b="meta.school.dx" placeholder="TDAH, dislexia, TEA, ansiedad..."></div>
-      <div><label>Informantes disponibles</label><input data-b="meta.school.informants" placeholder="Familia, tutor/a, orientador/a"></div>
+      <div><label>Rendimiento académico actual</label><select aria-label="Rendimiento académico actual" data-b="meta.school.perf"><option value="">—</option><option>Adecuado</option><option>Irregular</option><option>Bajo en algunas áreas</option><option>Bajo generalizado</option><option>No aplica</option></select></div>
+      <div><label>Adaptaciones / apoyos actuales</label><input aria-label="Adaptaciones / apoyos actuales" data-b="meta.school.supports"></div>
+      <div><label>Diagnósticos previos</label><input aria-label="Diagnósticos previos" data-b="meta.school.dx" placeholder="TDAH, dislexia, TEA, ansiedad..."></div>
+      <div><label>Informantes disponibles</label><input aria-label="Informantes disponibles" data-b="meta.school.informants" placeholder="Familia, tutor/a, orientador/a"></div>
     </div>
   </div>
   <div class="card" id="ctxMutua">
     <h2>Contexto Mutua Balear</h2>
     <div class="grid">
-      <div><label>Nº de expediente (anonimizado)</label><input data-b="meta.mutua.exp"></div>
-      <div><label>Contingencia</label><select data-b="meta.mutua.cont"><option value="">—</option><option>Accidente de trabajo</option><option>Enfermedad profesional</option><option>Contingencia común</option><option>Otra</option></select></div>
-      <div><label>Fecha del accidente / lesión</label><input type="date" data-b="meta.mutua.injury"></div>
-      <div><label>Mecanismo / diagnóstico médico</label><input data-b="meta.mutua.mech" placeholder="TCE leve, latigazo, hipoxia, ictus..."></div>
-      <div><label>Situación laboral</label><select data-b="meta.mutua.sit"><option value="">—</option><option>Incapacidad temporal</option><option>Alta, en activo</option><option>Reincorporación progresiva</option><option>Propuesta de incapacidad</option></select></div>
-      <div><label>Puesto de trabajo</label><input data-b="meta.mutua.job"></div>
+      <div><label>Nº de expediente (anonimizado)</label><input aria-label="Nº de expediente (anonimizado)" data-b="meta.mutua.exp"></div>
+      <div><label>Contingencia</label><select aria-label="Contingencia" data-b="meta.mutua.cont"><option value="">—</option><option>Accidente de trabajo</option><option>Enfermedad profesional</option><option>Contingencia común</option><option>Otra</option></select></div>
+      <div><label>Fecha del accidente / lesión</label><input aria-label="Fecha del accidente / lesión" type="date" data-b="meta.mutua.injury"></div>
+      <div><label>Mecanismo / diagnóstico médico</label><input aria-label="Mecanismo / diagnóstico médico" data-b="meta.mutua.mech" placeholder="TCE leve, latigazo, hipoxia, ictus..."></div>
+      <div><label>Situación laboral</label><select aria-label="Situación laboral" data-b="meta.mutua.sit"><option value="">—</option><option>Incapacidad temporal</option><option>Alta, en activo</option><option>Reincorporación progresiva</option><option>Propuesta de incapacidad</option></select></div>
+      <div><label>Puesto de trabajo</label><input aria-label="Puesto de trabajo" data-b="meta.mutua.job"></div>
     </div>
     <label>Demandas cognitivas del puesto</label>
     <div class="chips" id="jobDemands"></div>
     <label>Pregunta concreta de la mutua</label>
-    <textarea data-b="meta.mutua.q" placeholder="Ej.: ¿existen secuelas cognitivas objetivables? ¿son compatibles con la reincorporación?"></textarea>
+    <textarea aria-label="Pregunta concreta de la mutua" data-b="meta.mutua.q" placeholder="Ej.: ¿existen secuelas cognitivas objetivables? ¿son compatibles con la reincorporación?"></textarea>
   </div>
   <div class="card">
     <h2>Condiciones de la evaluación</h2>
     <p class="mini">Factores que pueden reducir el rendimiento. Se trasladan a la interpretación como cautelas.</p>
     <div class="grid" id="condGrid"></div>
     <label>Observación conductual general (colaboración, fatiga, ritmo, estrategia, ánimo)</label>
-    <textarea data-b="meta.behavior"></textarea>
+    <textarea aria-label="Observación conductual general (colaboración, fatiga, ritmo, estrategia, ánimo)" data-b="meta.behavior"></textarea>
   </div>
   <div class="card">
     <h2>Sesiones</h2>
@@ -291,7 +291,7 @@ body.patient header.top,body.patient .layout{display:none}
   <div class="card noprint"><h2>Añadir un cuaderno</h2>
     <div class="drop" id="stDrop"><p style="margin:4px 0 10px"><strong>Arrastra aquí un ZIP o imágenes</strong> (JPG, PNG, WEBP) o selecciónalos.</p>
       <input type="file" id="stFile" accept=".zip,application/zip,image/*" multiple style="max-width:420px;margin:auto"></div>
-    <div class="grid" style="margin-top:10px"><div><label>Nombre del cuaderno</label><input id="stName" placeholder="WISC-V · Puzles visuales"></div><div><label>Prueba / medida de destino (para pasar la suma)</label><select id="stTarget"></select></div><div><label>&nbsp;</label><button id="stAdd" disabled>Añadir cuaderno</button></div></div>
+    <div class="grid" style="margin-top:10px"><div><label>Nombre del cuaderno</label><input aria-label="Nombre del cuaderno" id="stName" placeholder="WISC-V · Puzles visuales"></div><div><label>Prueba / medida de destino (para pasar la suma)</label><select aria-label="Prueba / medida de destino (para pasar la suma)" id="stTarget"></select></div><div><label>&nbsp;</label><button id="stAdd" disabled>Añadir cuaderno</button></div></div>
     <p class="mini" id="stStatus">Las imágenes se ordenan por su nombre de archivo (1, 2, 3, 3-1, 10…). En un PDF, expórtalo antes a imágenes (una por página).</p>
   </div>
   <div class="card"><h2>Mis cuadernos en este dispositivo</h2><div id="stList"></div></div>
@@ -323,8 +323,8 @@ body.patient header.top,body.patient .layout{display:none}
   <div class="sechead"><h2>11 · Informe</h2><p>Borrador estructurado a partir de lo registrado. Revísalo y redáctalo con tu criterio antes de entregarlo.</p></div>
   <div class="card noprint">
     <div class="grid">
-      <div><label>Conclusión clínica (redacción del profesional)</label><textarea data-b="report.conclusion" style="min-height:110px"></textarea></div>
-      <div><label>Recomendaciones / orientaciones</label><textarea data-b="report.recs" style="min-height:110px"></textarea></div>
+      <div><label>Conclusión clínica (redacción del profesional)</label><textarea aria-label="Conclusión clínica (redacción del profesional)" data-b="report.conclusion" style="min-height:110px"></textarea></div>
+      <div><label>Recomendaciones / orientaciones</label><textarea aria-label="Recomendaciones / orientaciones" data-b="report.recs" style="min-height:110px"></textarea></div>
     </div>
     <div class="row" style="margin-top:10px">
       <button id="btnGen">↻ Generar borrador</button>
@@ -659,13 +659,13 @@ function testCard(t){
    <div class="meta">${matPill(t)}<span class="pill">${t.ages[0]}–${t.ages[1]} años</span>${t.min?`<span class="pill">≈ ${t.min}′</span>`:''}${ageBadge(t)}</div></div>
    <select class="statusSel" data-b="tests.${t.id}.status"><option ${st==='pendiente'?'selected':''}>pendiente</option><option ${st==='hecho'?'selected':''}>hecho</option><option ${st==='no aplica'?'selected':''}>no aplica</option></select></div>
    <p class="mini" style="margin:8px 0 0">${esc(t.what)}</p>${t.wech?'':setsFor(t.id)}${guideBlock(t)}`;
-  if(t.versionSel)h+=`<label>Versión / forma</label><select data-b="tests.${t.id}.ver">${t.versionSel.map(v=>`<option ${ts.ver===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`;
+  if(t.versionSel)h+=`<label>Versión / forma</label><select aria-label="Versión / forma" data-b="tests.${t.id}.ver">${t.versionSel.map(v=>`<option ${ts.ver===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`;
   if(t.wech)h+=wechHeader();
   if(t.timer)h+=timerBlock(t);
   if(t.flu)h+=fluBlock(t);
   h+=scoreTable(t);
   h+=`<div class="computed" data-comp="${t.id}" ${compText(t.id)?'':'hidden'}>${compText(t.id)}</div>`;
-  if(t.id==='rey')h+=`<label>Tipo de copia (Osterrieth)</label><select data-b="tests.rey.type"><option value="">—</option>${['I · Armazón + detalles','II · Detalles englobados en armazón','III · Contorno general','IV · Yuxtaposición de detalles','V · Detalles sobre fondo confuso','VI · Reducción a esquema familiar','VII · Garabato'].map(o=>`<option ${ts.type===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  if(t.id==='rey')h+=`<label>Tipo de copia (Osterrieth)</label><select aria-label="Tipo de copia (Osterrieth)" data-b="tests.rey.type"><option value="">—</option>${['I · Armazón + detalles','II · Detalles englobados en armazón','III · Contorno general','IV · Yuxtaposición de detalles','V · Detalles sobre fondo confuso','VI · Reducción a esquema familiar','VII · Garabato'].map(o=>`<option ${ts.type===o?'selected':''}>${o}</option>`).join('')}</select>`;
   if(t.id==='cancel')h+=cancelBlock();
   if(t.id==='autobio')h+=autobioBlock();
   if(t.id==='plan')h+=rubricBlock('plan',PLAN_SCEN,PLAN_CRIT);
@@ -673,7 +673,7 @@ function testCard(t){
   if(t.id==='ref')h+=refBlock();
   if(t.id==='lengq')h+=lengqBlock();
   if(t.id==='valq')h+=valqBlock();
-  h+=`<label>Observaciones cualitativas</label><textarea data-b="tests.${t.id}.notes">${esc(ts.notes||'')}</textarea></div>`;
+  h+=`<label>Observaciones cualitativas</label><textarea aria-label="Observaciones cualitativas" data-b="tests.${t.id}.notes">${esc(ts.notes||'')}</textarea></div>`;
   return h}
 function linkedCard(area){
   const subs=DOMAINS.find(d=>d.id===area);if(!subs)return'';
@@ -690,7 +690,7 @@ function renderAreas(){['aten','mem','leng','fe','visu','wech','valid'].forEach(
 /* ---------- Wechsler ---------- */
 function wechHeader(){const v=S.tests.wech.ver||'WAIS-IV';const a=age();
   let sug='';if(a!==null){sug=a<16?'Por edad corresponde el WISC-V (o el WISC-IV).':a<17?'Con 16 años puedes usar el WISC-V o el WAIS-IV.':'Por edad corresponde el WAIS-IV (o el WAIS-III).'}
-  return`<div class="grid" style="margin-top:8px"><div><label>Versión</label><select data-b="tests.wech.ver" data-rerender="1">${Object.keys(WECH).map(k=>`<option ${k===v?'selected':''}>${k}</option>`).join('')}</select></div><div><label>&nbsp;</label><p class="mini" style="margin:6px 0">${sug} Rango de la versión elegida: ${WECH[v].ages[0]}–${WECH[v].ages[1]} años.</p></div></div>${setsFor('wech')}`}
+  return`<div class="grid" style="margin-top:8px"><div><label>Versión</label><select aria-label="Versión" data-b="tests.wech.ver" data-rerender="1">${Object.keys(WECH).map(k=>`<option ${k===v?'selected':''}>${k}</option>`).join('')}</select></div><div><label>&nbsp;</label><p class="mini" style="margin:6px 0">${sug} Rango de la versión elegida: ${WECH[v].ages[0]}–${WECH[v].ages[1]} años.</p></div></div>${setsFor('wech')}`}
 
 /* ---------- temporizadores ---------- */
 let audioCtx=null;
@@ -724,14 +724,14 @@ function fluTrials(t){const ts=T(t.id);if(t.flu==='fon'){const set=ts.set||'PMR'
   return['Animales',ts.cat2||''].filter(Boolean)}
 function fluState(tid,i){const ts=T(tid);if(!ts.tr)ts.tr=[];if(!ts.tr[i])ts.tr[i]={q:[[0,0,0],[0,0,0],[0,0,0],[0,0,0]],w:''};return ts.tr[i]}
 function fluBlock(t){const ts=T(t.id);let h='';
-  if(t.flu==='fon')h+=`<div class="grid"><div><label>Juego de letras</label><select data-b="tests.${t.id}.set" data-rerender="1">${['PMR','FAS','PAS','otra'].map(o=>`<option value="${o}" ${(ts.set||'PMR')===o?'selected':''}>${o==='otra'?'Otras letras…':o.split('').join('-')}</option>`).join('')}</select></div>${(ts.set==='otra')?`<div><label>Letras (separadas por comas)</label><input data-b="tests.${t.id}.custom" data-rerender="1" value="${esc(ts.custom||'')}"></div>`:''}</div>`;
-  else h+=`<div class="grid"><div><label>2ª categoría (opcional)</label><select data-b="tests.${t.id}.cat2" data-rerender="1"><option value="">— ninguna —</option>${SEMCATS.slice(1).map(c=>`<option ${ts.cat2===c?'selected':''}>${c}</option>`).join('')}</select></div></div>`;
+  if(t.flu==='fon')h+=`<div class="grid"><div><label>Juego de letras</label><select aria-label="Juego de letras" data-b="tests.${t.id}.set" data-rerender="1">${['PMR','FAS','PAS','otra'].map(o=>`<option value="${o}" ${(ts.set||'PMR')===o?'selected':''}>${o==='otra'?'Otras letras…':o.split('').join('-')}</option>`).join('')}</select></div>${(ts.set==='otra')?`<div><label>Letras (separadas por comas)</label><input aria-label="Letras (separadas por comas)" data-b="tests.${t.id}.custom" data-rerender="1" value="${esc(ts.custom||'')}"></div>`:''}</div>`;
+  else h+=`<div class="grid"><div><label>2ª categoría (opcional)</label><select aria-label="2ª categoría (opcional)" data-b="tests.${t.id}.cat2" data-rerender="1"><option value="">— ninguna —</option>${SEMCATS.slice(1).map(c=>`<option ${ts.cat2===c?'selected':''}>${c}</option>`).join('')}</select></div></div>`;
   fluTrials(t).forEach((cue,i)=>{const s=fluState(t.id,i);const k=`${t.id}-${i}`;
     h+=`<div class="flu" id="flu-${k}"><div class="row" style="justify-content:space-between"><div class="row"><span class="cue">${esc(cue)}</span><button class="small alt" data-show="${t.flu==='fon'?'letter':'cat'}" data-cue="${esc(cue)}">Mostrar al paciente</button></div>
      <div class="row"><span class="clock" style="font-weight:800;font-variant-numeric:tabular-nums" id="fclk-${k}">60″</span><button class="small" data-flu="start" data-t="${t.id}" data-i="${i}">▶ Iniciar 60″</button><button class="small ghost" data-flu="stop" data-t="${t.id}" data-i="${i}">■</button></div></div>
      <div class="row tally" style="margin-top:8px"><button data-flu="v" data-t="${t.id}" data-i="${i}">✓ Válida</button><button class="alt" data-flu="r" data-t="${t.id}" data-i="${i}">↻ Repetición</button><button class="alt" data-flu="x" data-t="${t.id}" data-i="${i}">✗ Intrusión / error</button><button class="ghost small" data-flu="undo" data-t="${t.id}" data-i="${i}">Deshacer</button></div>
      <div class="qgrid" id="fq-${k}">${fluGrid(s,-1)}</div>
-     <label>Palabras dichas (opcional, para analizar agrupaciones y cambios)</label><textarea data-b="tests.${t.id}.tr.${i}.w" style="min-height:44px">${esc(s.w||'')}</textarea></div>`});
+     <label>Palabras dichas (opcional, para analizar agrupaciones y cambios)</label><textarea aria-label="Palabras dichas (opcional, para analizar agrupaciones y cambios)" data-b="tests.${t.id}.tr.${i}.w" style="min-height:44px">${esc(s.w||'')}</textarea></div>`});
   return h}
 function fluGrid(s,curQ){const tot=s.q.reduce((a,q)=>[a[0]+q[0],a[1]+q[1],a[2]+q[2]],[0,0,0]);
   return`<div class="h"></div><div class="h">0–15″</div><div class="h">15–30″</div><div class="h">30–45″</div><div class="h">45–60″</div>`+
@@ -754,9 +754,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-flu]');if(
 /* ---------- rúbricas APRENS ---------- */
 function rubricBlock(id,SC,CR){const ts=T(id);if(!ts.items)ts.items=[{}];const pool=[...SC[group()],...(group()==='mutua'?SC.adult:[])];
   return ts.items.map((it,ix)=>{const sc=pool.find(p=>p.t===it.scen)||pool[ix%pool.length];if(!it.scen)it.scen=sc.t;
-    return`<div class="scen"><div class="grid"><div><label>Escenario ${ix+1}</label><select data-b="tests.${id}.items.${ix}.scen" data-rerender="1">${pool.map(p=>`<option ${p.t===sc.t?'selected':''}>${esc(p.t)}</option>`).join('')}</select></div><div><label>Latencia de inicio (s)</label><input inputmode="decimal" data-b="tests.${id}.items.${ix}.lat" value="${esc(it.lat||'')}"></div></div>
+    return`<div class="scen"><div class="grid"><div><label>Escenario ${ix+1}</label><select aria-label="Escenario ${ix+1}" data-b="tests.${id}.items.${ix}.scen" data-rerender="1">${pool.map(p=>`<option ${p.t===sc.t?'selected':''}>${esc(p.t)}</option>`).join('')}</select></div><div><label>Latencia de inicio (s)</label><input aria-label="Latencia de inicio (s)" inputmode="decimal" data-b="tests.${id}.items.${ix}.lat" value="${esc(it.lat||'')}"></div></div>
      <div class="stext">${esc(sc.x)}</div><div class="row"><button class="small alt" data-showtext="${esc(sc.t)}" data-body="${esc(sc.x)}">Mostrar al paciente</button></div>
-     <label>Respuesta (literal o resumida)</label><textarea data-b="tests.${id}.items.${ix}.resp">${esc(it.resp||'')}</textarea>
+     <label>Respuesta (literal o resumida)</label><textarea aria-label="Respuesta (literal o resumida)" data-b="tests.${id}.items.${ix}.resp">${esc(it.resp||'')}</textarea>
      <table class="rubric"><tbody>${CR.map((c,ci)=>`<tr><td>${esc(c)}</td><td class="c"><select data-b="tests.${id}.items.${ix}.s.${ci}"><option value="">—</option>${[[2,'2 · adecuado'],[1,'1 · parcial'],[0,'0 · ausente']].map(([v,n])=>`<option value="${v}" ${String(it.s?.[ci]??'')===String(v)?'selected':''}>${n}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table>
      <div class="computed" data-rub="${id}.${ix}"></div></div>`}).join('')+(ts.items.length<3?`<button class="small alt" data-additem="${id}">+ Añadir otro escenario</button>`:'')}
 function rubScore(id,ix,n){const it=S.tests[id]?.items?.[ix];if(!it?.s)return null;const v=Object.values(it.s).map(num).filter(x=>x!==null);if(!v.length)return null;return{sum:v.reduce((a,b)=>a+b,0),max:v.length*2,full:n*2,n:v.length}}
@@ -767,14 +767,14 @@ function refBlock(){const ts=T('ref');if(!ts.r)ts.r={};
 function refScore(){const r=S.tests.ref?.r||{};const v=Object.values(r).map(x=>x.s).filter(s=>s==='0'||s==='1'||s==='2').map(Number);if(!v.length)return null;return{sum:v.reduce((a,b)=>a+b,0),max:v.length*2,n:v.length}}
 function autobioBlock(){const ts=T('autobio');if(!ts.p)ts.p={};
   return`<table class="rubric"><thead><tr><th>Periodo</th><th>Datos personales (0–3)</th><th>Suceso concreto (0–3)</th><th>Notas</th><th></th></tr></thead><tbody>${AUTO_PER.map(([k,n])=>`<tr><td>${n}</td>${['sem','epi'].map(f=>`<td class="c"><select data-b="tests.autobio.p.${k}.${f}"><option value="">—</option>${[3,2,1,0].map(v=>`<option ${String(ts.p[k]?.[f]??'')===String(v)?'selected':''}>${v}</option>`).join('')}</select></td>`).join('')}<td><input data-b="tests.autobio.p.${k}.n" value="${esc(ts.p[k]?.n||'')}"></td><td><button class="small alt" data-showtext="Recuerdos" data-body="${esc(n)}">Mostrar</button></td></tr>`).join('')}</tbody></table>
-  <div class="grid"><div><label>Conocimiento de actualidad (noticias recientes, personajes públicos)</label><select data-b="tests.autobio.news"><option value="">—</option>${['3 · actualizado','2 · parcial','1 · escaso','0 · nulo'].map(o=>`<option ${ts.news===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Contrastado con informante</label><select data-b="tests.autobio.inf"><option value="">—</option>${['Sí, coincide','Sí, con discrepancias','No'].map(o=>`<option ${ts.inf===o?'selected':''}>${o}</option>`).join('')}</select></div></div><div class="computed" data-rub="autobio"></div>`}
+  <div class="grid"><div><label>Conocimiento de actualidad (noticias recientes, personajes públicos)</label><select aria-label="Conocimiento de actualidad (noticias recientes, personajes públicos)" data-b="tests.autobio.news"><option value="">—</option>${['3 · actualizado','2 · parcial','1 · escaso','0 · nulo'].map(o=>`<option ${ts.news===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Contrastado con informante</label><select aria-label="Contrastado con informante" data-b="tests.autobio.inf"><option value="">—</option>${['Sí, coincide','Sí, con discrepancias','No'].map(o=>`<option ${ts.inf===o?'selected':''}>${o}</option>`).join('')}</select></div></div><div class="computed" data-rub="autobio"></div>`}
 function lengqBlock(){const ts=T('lengq');if(!ts.o)ts.o={};return`<table class="rubric"><tbody>${LENG_OBS.map(([k,n])=>`<tr><td>${n}</td><td class="c"><select data-b="tests.lengq.o.${k}"><option value="">—</option>${['Normal','Alteración leve','Alteración clara','No valorado'].map(o=>`<option ${ts.o[k]===o?'selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table>`}
-function valqBlock(){const ts=T('valq');return`<div class="computed" data-comp="valq">${compText('valq')}</div><div class="grid"><div><label>Esfuerzo observado</label><select data-b="tests.valq.eff"><option value="">—</option>${['Adecuado y constante','Variable','Bajo / abandona con facilidad'].map(o=>`<option ${ts.eff===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Incongruencias detectadas</label><select data-b="tests.valq.inc"><option value="">—</option>${['Ninguna','Alguna, explicable','Relevantes'].map(o=>`<option ${ts.inc===o?'selected':''}>${o}</option>`).join('')}</select></div></div>`}
+function valqBlock(){const ts=T('valq');return`<div class="computed" data-comp="valq">${compText('valq')}</div><div class="grid"><div><label>Esfuerzo observado</label><select aria-label="Esfuerzo observado" data-b="tests.valq.eff"><option value="">—</option>${['Adecuado y constante','Variable','Bajo / abandona con facilidad'].map(o=>`<option ${ts.eff===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Incongruencias detectadas</label><select aria-label="Incongruencias detectadas" data-b="tests.valq.inc"><option value="">—</option>${['Ninguna','Alguna, explicable','Relevantes'].map(o=>`<option ${ts.inc===o?'selected':''}>${o}</option>`).join('')}</select></div></div>`}
 
 /* ---------- cancelación ---------- */
 const CAN_TGT=[['E','E entre F, B, P, R, L'],['b','b entre d, p, q, h'],['7','7 entre 1, 4, 9, 2'],['★','★ entre ☆, ✦, ✧, ✪']];
 function cancelBlock(){const ts=T('cancel');const r=ts.last;
-  return`<div class="grid" style="margin-top:8px"><div><label>Objetivo</label><select data-b="tests.cancel.tg">${CAN_TGT.map(([k,n])=>`<option value="${k}" ${(ts.tg||'E')===k?'selected':''}>${esc(n)}</option>`).join('')}</select></div><div><label>Filas × columnas</label><select data-b="tests.cancel.size">${['10x14','12x16','14x20'].map(o=>`<option ${(ts.size||'12x16')===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Tiempo límite (s, 0 = sin límite)</label><input type="number" min="0" max="600" data-b="tests.cancel.lim" value="${esc(ts.lim??'120')}"></div></div>
+  return`<div class="grid" style="margin-top:8px"><div><label>Objetivo</label><select aria-label="Objetivo" data-b="tests.cancel.tg">${CAN_TGT.map(([k,n])=>`<option value="${k}" ${(ts.tg||'E')===k?'selected':''}>${esc(n)}</option>`).join('')}</select></div><div><label>Filas × columnas</label><select aria-label="Filas × columnas" data-b="tests.cancel.size">${['10x14','12x16','14x20'].map(o=>`<option ${(ts.size||'12x16')===o?'selected':''}>${o}</option>`).join('')}</select></div><div><label>Tiempo límite (s, 0 = sin límite)</label><input aria-label="Tiempo límite (s, 0 = sin límite)" type="number" min="0" max="600" data-b="tests.cancel.lim" value="${esc(ts.lim??'120')}"></div></div>
   <div class="row" style="margin-top:10px"><button id="cancelStart">▶ Iniciar en pantalla del paciente</button><span class="mini">Requiere la pantalla del paciente abierta (ventana o «Mostrar aquí»).</span></div>
   <div class="computed" id="cancelRes">${r?cancelText(r):'Sin resultados todavía.'}</div>`}
 function cancelText(r){const pct=x=>r.targets?Math.round(100*x/r.targets):0;
@@ -1126,8 +1126,8 @@ async function renderAdmin(){const card=$('#stAdminCard');const set=SETS.find(q=
     <label class="mini" style="margin:0;display:flex;gap:5px;align-items:center"><input type="checkbox" id="stAuto" ${a.auto?'checked':''}> iniciar cronómetro al mostrar</label></div>
     <p class="mini">Teclado: ← → para cambiar de ítem · Espacio para iniciar o parar el cronómetro (con el foco fuera de los campos).</p></div>
   <div><div class="timerbox"><span class="lbl">Ítem</span><span class="clock" id="itClock">${fmtClock(itElapsed())}</span><button class="small" id="itGo">▶</button><button class="small" id="itStopB">■</button><button class="small" id="itRe">↺</button><label class="lbl" style="margin:0">límite (s) <input style="width:58px;display:inline-block" inputmode="numeric" id="itLim" value="${esc(a.lim||'')}" placeholder="—"></label></div>
-    <label>Respuesta del paciente</label><input id="itResp" value="${esc(it.r||'')}" placeholder="p. ej., 2, 4, 5 · A · «no sé»">
-    <div class="grid"><div><label>Puntuación del ítem</label><select id="itSc"><option value="">—</option>${[0,1,2,3].map(v=>`<option ${String(it.s??'')===String(v)?'selected':''}>${v}</option>`).join('')}</select></div><div><label>Tiempo (s)</label><input id="itT" inputmode="decimal" value="${esc(it.t||'')}"></div></div>
+    <label>Respuesta del paciente</label><input aria-label="Respuesta del paciente" id="itResp" value="${esc(it.r||'')}" placeholder="p. ej., 2, 4, 5 · A · «no sé»">
+    <div class="grid"><div><label>Puntuación del ítem</label><select aria-label="Puntuación del ítem" id="itSc"><option value="">—</option>${[0,1,2,3].map(v=>`<option ${String(it.s??'')===String(v)?'selected':''}>${v}</option>`).join('')}</select></div><div><label>Tiempo (s)</label><input aria-label="Tiempo (s)" id="itT" inputmode="decimal" value="${esc(it.t||'')}"></div></div>
     <div class="row" style="margin-top:8px"><button class="small" id="itSave">Guardar y siguiente ▶</button></div>
     <div class="computed">Ítems puntuados: <b>${scored.length}</b> · suma <b>${sum}</b>${set.target?` <button class="small alt" id="itToPD" style="margin-left:6px">→ Pasar ${sum} a la PD de ${esc(targetLabel(set.target))}</button>`:''}</div>
     <div class="sitems">${scored.length?`<table class="linked"><tbody>${scored.map(([k,v])=>`<tr><td>${k+1} · ${esc(set.items[k]?.name||'')}</td><td>${esc(v.r||'')}</td><td><b>${esc(v.s)}</b></td><td>${v.t?esc(v.t)+' s':''}</td></tr>`).join('')}</tbody></table>`:''}</div>

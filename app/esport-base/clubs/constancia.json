@@ -1,0 +1,44 @@
+{
+  "nom": "C.E. Constància",
+  "color": "#111111",
+  "idioma": "ca",
+  "escut": "clubs/constancia-escut.png",
+  "icones": true,
+  "curt": "Constància",
+  "missatge": {
+    "ca": "Benvingudes, famílies del Constància. Aquesta temporada provam una eina d'APRENS per acompanyar millor els nostres jugadors i jugadores, abans, durant i després de cada partit. Gràcies per posar-hi la vostra mà.",
+    "es": "Bienvenidas, familias del Constància. Esta temporada probamos una herramienta de APRENS para acompañar mejor a nuestros jugadores y jugadoras, antes, durante y después de cada partido. Gracias por poner vuestra mano."
+  },
+  "codi": [
+    {
+      "ca": "Animam tots els jugadors i jugadores, dels dos equips.",
+      "es": "Animamos a todos los jugadores y jugadoras, de los dos equipos."
+    },
+    {
+      "ca": "Respectam les decisions arbitrals i dels entrenadors.",
+      "es": "Respetamos las decisiones arbitrales y de los entrenadores."
+    },
+    {
+      "ca": "No donam instruccions des de la grada.",
+      "es": "No damos instrucciones desde la grada."
+    },
+    {
+      "ca": "Les discrepàncies es parlen amb cita, amb l'entrenador o la coordinació.",
+      "es": "Las discrepancias se hablan con cita, con el entrenador o la coordinación."
+    },
+    {
+      "ca": "Cap insult ni menyspreu és acceptable al nostre camp.",
+      "es": "Ningún insulto ni desprecio es aceptable en nuestro campo."
+    }
+  ],
+  "proteccio": {
+    "text": {
+      "ca": "Davant qualsevol situació de violència, assetjament o risc per a un menor, avisau de seguida el delegat de l'equip o la coordinació del club, que aplicaran el protocol de protecció.",
+      "es": "Ante cualquier situación de violencia, acoso o riesgo para un menor, avisad enseguida al delegado del equipo o a la coordinación del club, que aplicarán el protocolo de protección."
+    },
+    "contacte": {
+      "ca": "Delegat de l'equip o coordinació del club",
+      "es": "Delegado del equipo o coordinación del club"
+    }
+  }
+}

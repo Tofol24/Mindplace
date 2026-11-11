@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/css/styles.css">
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-honestidad.js"></script>
+<script src="../js/vineta-vinculo.js"></script>
 <script src="../js/descarga-segura.js"></script>
 </head>
 <body>
@@ -38,10 +39,11 @@
     <video controls playsinline preload="none" poster="/assets/video/poster-honestidad.png" style="width:191px;height:340px;object-fit:contain;max-width:100%;display:inline-block;background:#000;border-radius:16px;box-shadow:0 8px 30px rgba(70,60,40,.16)">
       <source src="/assets/video/video-honestidad.mp4" type="video/mp4">
     </video>
-    <p style="text-align:center;font-size:13px;color:#8a8f86;margin:8px 0 0;font-family:system-ui,-apple-system,sans-serif">▶ Honestidad emocional, con Tòfol Villalonga · psicólogo</p>
+    <p style="text-align:center;font-size:13px;color:#696d65;margin:8px 0 0;font-family:system-ui,-apple-system,sans-serif">▶ Honestidad emocional, con Tòfol Villalonga · psicólogo</p>
   </div>
 
-  <div style="max-width:680px;margin:14px auto 0;padding:0 16px"><div data-vineta-honestidad></div></div>
+  <div id="vinetas" style="max-width:680px;margin:14px auto 0;padding:0 16px;scroll-margin-top:12px"><div data-vineta-honestidad data-open></div>
+    <div class="vinculo-vin" data-vineta-vinculo data-open></div></div>
 
   <!-- ═══════════ ENTRADA EDITORIAL ═══════════ -->
   <section class="lede" id="lede">
@@ -139,6 +141,7 @@
           <h2>Compártelo,<br>sin justificarlo</h2>
           <p class="saying">«No sé por qué… pero noto algo aquí, y quería compartirlo contigo.»</p>
           <p style="margin-top:22px">No necesitas entenderlo ni explicarlo. Basta con nombrar la sensación y abrir la puerta a alguien a quien quieres.</p>
+          <p style="margin-top:12px"><b>Mientras lo dices, deja la mano fija donde notas la sensación.</b> Y si no notas nada, ponla igualmente en la barriga, el pecho o el cuello, porque ahí está tu vulnerabilidad. La mano ancla tu atención consciente en el cuerpo: no hablas desde la cabeza, hablas desde lo que sientes.</p>
           <p style="margin-top:12px">Si todavía no te sale decírselo a alguien, empieza por decírtelo a ti, en voz baja, con la mano donde lo notas. Después, a tu psicólogo/a; más adelante, a las personas de confianza.</p>
           <div class="field">
             <label for="conQuien">¿Con quién?</label>
@@ -148,6 +151,32 @@
             <label for="queDices">Qué notas / qué le dirías</label>
             <textarea id="queDices" rows="2" placeholder="una presión en el pecho, ganas de que me escuchen…"></textarea>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LAS TRES COLUMNAS DEL VÍNCULO ═══════════ -->
+  <section class="step columnas" aria-labelledby="colTit">
+    <div class="wrap">
+      <p class="eyebrow reveal">Lo que cuida en el vínculo</p>
+      <h2 class="reveal" id="colTit">Las tres columnas del vínculo</h2>
+      <p class="intro reveal">Decir «no sé por qué, pero siento una sensación interna y necesito compartirlo contigo» con la mano fija en la sensación, no solo mejora el vínculo con esa persona: también te validas y te das espacio ante ella, integrando tu vulnerabilidad dentro de la relación de manera cómplice. Cada vez que lo haces, se refuerzan las tres columnas que sostienen un vínculo afectivo: la comunicación, la confianza y el respeto.</p>
+      <div class="cols3">
+        <div class="col3 reveal">
+          <h3>Comunicación</h3>
+          <p class="vs"><b>Afectiva</b> en lugar de <s>solo logística</s></p>
+          <p>No hablamos solo de horarios, tareas y lo que hay que hacer, también de lo que sentimos y de cómo estamos por dentro.</p>
+        </div>
+        <div class="col3 reveal">
+          <h3>Confianza</h3>
+          <p class="vs"><b>Proactiva</b> en lugar de <s>reactiva</s></p>
+          <p>Comparto lo que noto antes de que se acumule o estalle, sin esperar a que el otro lo adivine o lo descubra por mi reacción.</p>
+        </div>
+        <div class="col3 reveal">
+          <h3>Respeto</h3>
+          <p class="vs"><b>Desde la complicidad</b> en lugar de <s>desde la culpabilidad</s></p>
+          <p>Lo que siento no es un reproche ni algo que el otro tenga que arreglar: es algo que comparto contigo, y que podemos acompañar juntos.</p>
         </div>
       </div>
     </div>
@@ -209,5 +238,7 @@
 
 <script src="assets/js/aprens-core.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </body>
 </html>

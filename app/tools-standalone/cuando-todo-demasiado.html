@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#F7F6F2; --card:#FFFFFF; --ink:#28312F; --muted:#5f6b66;
-  --verde:#6F8F83; --azul:#7895A8; --ocre:#C6A66B; --coral:#C9786E;
+  --verde:#5f7b71; --azul:#7895A8; --ocre:#C6A66B; --coral:#C9786E;
   --line:#e6e3da; --soft:0 8px 26px rgba(40,49,47,.07);
   --radius:20px; --tap:48px;
   --amarillo:#D9B65A; --naranja:#D08A54; --rojo:#C9786E; --azulr:#7895A8;
@@ -708,7 +708,7 @@ function copyPlan(){var t=planText();if(navigator.clipboard&&navigator.clipboard
 function fallbackCopy(t){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');miniToast('Plan copiado.')}catch(e){miniToast('No se pudo copiar; puedes imprimirlo.')}document.body.removeChild(a);}
 function printPlan(){savePlan();var p=collectPlan();var w=window.open('','_blank');
  var rows=planFields.map(function(f){return '<tr><th style="text-align:left;vertical-align:top;padding:8px 12px 8px 0;width:44%">'+f[1]+'</th><td style="padding:8px 0;border-bottom:1px solid #eee">'+((p[f[0]]||'—').replace(/</g,'&lt;'))+'</td></tr>';}).join('');
- w.document.write('<html><head><meta charset="utf-8"><title>Plan familiar · APRENS</title></head><body style="font-family:-apple-system,Segoe UI,Arial;color:#28312F;max-width:640px;margin:30px auto;padding:0 20px"><h1 style="font-family:Georgia,serif">Nuestro plan de desbordamiento</h1><table style="width:100%;border-collapse:collapse">'+rows+'</table><p style="color:#6F8F83;letter-spacing:.06em;margin-top:24px">APRENS · Psicologia · Aprenentatge · Consciència — aprens.es</p><p style="font-size:12px;color:#888">Herramienta psicoeducativa. No sustituye una valoración profesional individualizada.</p></body></html>');
+ w.document.write('<html><head><meta charset="utf-8"><title>Plan familiar · APRENS</title></head><body style="font-family:-apple-system,Segoe UI,Arial;color:#28312F;max-width:640px;margin:30px auto;padding:0 20px"><h1 style="font-family:Georgia,serif">Nuestro plan de desbordamiento</h1><table style="width:100%;border-collapse:collapse">'+rows+'</table><p style="color:#5f7b71;letter-spacing:.06em;margin-top:24px">APRENS · Psicologia · Aprenentatge · Consciència — aprens.es</p><p style="font-size:12px;color:#888">Herramienta psicoeducativa. No sustituye una valoración profesional individualizada.</p></body></html>');
  w.document.close();setTimeout(function(){w.print()},300);}
 
 /* ---------- REGISTRO ---------- */

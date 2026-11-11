@@ -24,7 +24,7 @@
     st.textContent =
       ".esc-lat{overflow-x:auto;-webkit-overflow-scrolling:touch;background:linear-gradient(#eaf4fb,#fffaf2);border-radius:18px;padding:8px 4px 0;box-shadow:inset 0 0 0 1px #efe1cf;margin:0 0 6px}" +
       ".esc-lat svg{display:block}" +
-      ".esc-lat-ley{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#7a6a60;margin:6px 2px 12px}" +
+      ".esc-lat-ley{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#77685e;margin:6px 2px 12px}" +
       ".esc-lat-ley i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}" +
       ".esc-lat-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}";
     document.head.appendChild(st);

@@ -1,0 +1,16 @@
+# Albaranes de obra · cabeceras de Netlify
+# El service worker y la portada no se cachean en el CDN: así una versión nueva
+# llega enseguida (el propio service worker ya guarda la app para usarla sin señal).
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Todo se sirve desde el propio sitio: ningún recurso de terceros.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(self), microphone=(self), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; frame-src 'self' blob:; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'

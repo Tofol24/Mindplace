@@ -1,0 +1,23 @@
+{
+  "nom": "Club Esportiu d'Exemple",
+  "color": "#1F6E43",
+  "idioma": "ca",
+  "missatge": {
+    "ca": "Benvingudes, famílies. Aquesta temporada volem una grada que anima, respecta i acompanya. Gràcies per posar-hi la vostra mà.",
+    "es": "Bienvenidas, familias. Esta temporada queremos una grada que anima, respeta y acompaña. Gracias por poner vuestra mano."
+  },
+  "codi": [
+    { "ca": "Animam tots els jugadors i jugadores, dels dos equips.", "es": "Animamos a todos los jugadores y jugadoras, de los dos equipos." },
+    { "ca": "Respectam les decisions arbitrals i dels entrenadors.", "es": "Respetamos las decisiones arbitrales y de los entrenadores." },
+    { "ca": "No donam instruccions des de la grada.", "es": "No damos instrucciones desde la grada." },
+    { "ca": "Les discrepàncies es parlen amb cita, amb la coordinació.", "es": "Las discrepancias se hablan con cita, con la coordinación." },
+    { "ca": "Cap insult ni menyspreu és acceptable al nostre camp.", "es": "Ningún insulto ni desprecio es aceptable en nuestro campo." }
+  ],
+  "proteccio": {
+    "text": {
+      "ca": "El club disposa d'un protocol de protecció de menors. Davant qualsevol situació de violència, assetjament o risc, avisau de seguida el delegat de protecció.",
+      "es": "El club dispone de un protocolo de protección de menores. Ante cualquier situación de violencia, acoso o riesgo, avisad enseguida al delegado de protección."
+    },
+    "contacte": { "ca": "Delegat de protecció del club (telèfon a la circular de la temporada)", "es": "Delegado de protección del club (teléfono en la circular de la temporada)" }
+  }
+}

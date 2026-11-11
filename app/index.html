@@ -40,6 +40,7 @@
 <script src="js/vineta-atencion.js"></script>
 <script src="js/vineta-abrazo.js"></script>
 <script src="js/vineta-honestidad.js"></script>
+<script src="js/vineta-vinculo.js"></script>
 <!-- Shell (hub + router) -->
 <script src="js/uso.js"></script>
 <script src="js/app.js"></script>
@@ -47,10 +48,33 @@
 <!-- PWA: offline + instalable -->
 <script>
 if ("serviceWorker" in navigator) {
+  // Si al cargar ya había una versión guardada, una versión nueva que tome el
+  // control se avisa con una barra «Actualizar» (no se recarga sola, para no
+  // perder lo que el paciente esté escribiendo en una herramienta).
+  const habiaVersion = !!navigator.serviceWorker.controller;
+  let avisado = false;
+  function avisarVersionNueva(){
+    if (avisado || !habiaVersion) return; avisado = true;
+    const bar = document.createElement("div");
+    bar.setAttribute("role", "status");
+    bar.style.cssText = "position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:9999;display:flex;align-items:center;gap:12px;justify-content:space-between;background:#2b2620;color:#fff;border-radius:14px;padding:12px 14px;font:600 14px/1.35 system-ui,-apple-system,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.3);max-width:560px;margin:0 auto";
+    bar.innerHTML = '<span>Hay una versión nueva de APRENS.</span><button type="button" style="flex:none;min-height:40px;border:0;border-radius:20px;background:#E9B458;color:#2b2620;font:700 14px system-ui,-apple-system,sans-serif;padding:8px 16px;cursor:pointer">Actualizar</button>';
+    bar.querySelector("button").onclick = () => location.reload();
+    document.body.appendChild(bar);
+  }
+  navigator.serviceWorker.addEventListener("controllerchange", avisarVersionNueva);
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(()=>{});
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      // Al volver a la app (p. ej. la app instalada que se reabre desde segundo
+      // plano), comprobar si hay versión nueva.
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update().catch(()=>{});
+      });
+    }).catch(()=>{});
   });
 }
 </script>
+<script src="vendor/lz-string.min.js"></script>
+<script src="js/enlace-panel.js"></script>
 </body>
 </html>

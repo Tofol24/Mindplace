@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /api/
+Disallow: /gracies.html
+Disallow: /recupera.html
+Disallow: /estadistiques.html
+
+Sitemap: https://explica.aprens.net/sitemap.xml

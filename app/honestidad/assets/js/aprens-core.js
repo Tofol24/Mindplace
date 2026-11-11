@@ -212,7 +212,7 @@
     /* Abre WhatsApp con un resumen legible (no el JSON crudo). */
     shareWhatsApp: function (texto) {
       var msg = texto || this.resumenTexto();
-      global.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+      global.open("https://wa.me/?text=" + encodeURIComponent((window.aprensConEnlace||String)(msg)), "_blank");
     },
 
     /* Resumen humano del último registro de la herramienta actual. */
@@ -256,8 +256,8 @@
 
       bar.innerHTML =
         codHtml +
-        '<button id="aprensWA" style="' + btn("#25D366") + '">📱 WhatsApp</button>' +
-        '<button id="aprensFile" style="' + btn("#2d7dd2") + '">⬇ Archivo .json</button>' +
+        '<button id="aprensWA" style="' + btn("#178540") + '">📱 WhatsApp</button>' +
+        '<button id="aprensFile" style="' + btn("#2a75c5") + '">⬇ Archivo .json</button>' +
         '<button id="aprensCopy" style="' + btn("#5a6b7b") + '">⧉ Copiar</button>';
       document.body.appendChild(bar);
 

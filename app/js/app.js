@@ -33,13 +33,18 @@
       ids:["escalera_exposicion","salidas_paso_a_paso","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
       ids:["retorno_trabajo","toco_desde_dentro","llave_de_paso"] },
-    { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo.",
-      ids:["pedalea_desde_dentro","entre_punto_y_punto"] },
+    { emoji:"🚵", label:"Deporte", desc:"Rendir acompañando el cuerpo, no castigándolo. También para clubes, familias y entrenadores del deporte base.",
+      ids:["pedalea_desde_dentro","entre_punto_y_punto","pares_tambien_juegan"],
+      pdfs:[
+        { emoji:"📘", nombre:"Guía para clubes de deporte base", desc:"«Deporte base: salud y rendimiento». Guía de trabajo psicológico con clubes: familias, entrenadores, jugadores y club.", url:"assets/pdf/guia-clubs-esport-aprens-es.pdf" },
+        { emoji:"📗", nombre:"Guia per a clubs (català)", desc:"«Esport de base: salut i rendiment». La mateixa guia, en català.", url:"assets/pdf/guia-clubs-esport-aprens.pdf" },
+        { emoji:"🤝", nombre:"Propuesta para clubes", desc:"Una página con lo que incluye, la cuota por temporada, el piloto gratuito y las ayudas.", url:"assets/pdf/proposta-clubs-aprens-es.pdf" }
+      ] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
       ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","escalera_comidas","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
-      ids:["cuestionario_tec","screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
+      ids:["screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
     { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada, de un minuto cada una. Son las mismas de «Empieza por aquí», en vídeo, para verlas con calma o compartirlas.",
       ids:["historia_animada","historia_manada","historia_control"] },
     { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
@@ -156,6 +161,12 @@
         aria-label="${t.nombre} · se abre fuera de la app"><span class="hub-emoji">${t.emoji}</span>
         <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
         <span class="hub-tag fuera">Abrir fuera ↗</span></a>`;
+    }
+    // App del mismo sitio con su propia entrada (p. ej. esport-base/): enlace normal.
+    if(t.enlace){
+      return `<a class="hub-card" href="${t.enlace}"><span class="hub-emoji">${t.emoji}</span>
+        <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
+        <span class="hub-tag">Abrir →</span></a>`;
     }
     return `<a class="hub-card" href="#/tool/${t.id}"><span class="hub-emoji">${t.emoji}</span>
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
@@ -399,7 +410,7 @@
   // «Mi recorrido · paso a paso»: lo que toca hoy, leído del estado de la
   // herramienta (tools-standalone/recorrido-tec.html, mismo origen).
   function recorridoHoyHTML(){
-    const ETAPAS = [["Punto de partida","#6f665b"],["Entender","#8f5639"],["Aparecer","#2e7d5e"],["Permanecer","#3f6b74"],["Elegir y actuar","#a9781f"],["Consolidar","#7a4f8a"]];
+    const ETAPAS = [["Punto de partida","#6f665b"],["Entender","#8f5639"],["Aparecer","#2d795b"],["Permanecer","#3f6b74"],["Elegir y actuar","#8d641a"],["Consolidar","#7a4f8a"]];
     let st = null;
     try{ st = JSON.parse(localStorage.getItem("aprens.recorrido.v1")||"null"); }catch(e){ st = null; }
     const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
@@ -421,7 +432,42 @@
     return `<a class="rec-hero" href="#/tool/recorrido_tec" style="--rh:${col}">
       <span class="rh-ic">🧭</span><span class="rh-b">${cuerpo}<span class="rh-m">${marcas}</span></span>
       <span class="rh-go">${st ? "Seguir" : "Empezar"} →</span></a>
-      <div class="rh-note">Las herramientas de abajo son tu <b>caja de apoyo</b>: el recorrido te irá llevando a cada una en su momento.</div>`;
+      <div class="rh-note">Justo debajo tienes tus <b>cuatro herramientas básicas</b>, para tenerlas a mano cada día. El resto es tu <b>caja de apoyo</b>: el recorrido te irá llevando a cada una en su momento.</div>`;
+  }
+
+  // «Tus cuatro herramientas básicas»: las líneas básicas del AIS, a mano justo
+  // debajo del recorrido. Cada una dice para qué sirve y lleva a su herramienta.
+  function basicasHTML(){
+    const B = [
+      { para:"Para aparecer", e:"🫁", col:"#2d795b",
+        t:"Respiración curiosa",
+        d:"Una vez <b>cada hora</b>, unos 10 segundos, sobre todo cuando no hace falta. Y en cada <b>entrada y salida</b> de un lugar o de una situación, cogiendo de la mano a tu niño interno.",
+        go:[["ais_curiosidad/respiracion","Respiración curiosa"],["ais_amor/entrada","Entradas y salidas"]] },
+      { para:"Para permanecer", e:"✋", col:"#3f6b74",
+        t:"Parada de pensamiento",
+        d:"Cada vez que te enganchas a sobrepensar: <b>para, respira y vuelve</b>. 30, 40 o 50 veces al día, para que la atención no quede secuestrada.",
+        go:[["ais_amor/parada","Parada de pensamiento"],["juegos_exposicion/carrusel","Juego: El carrusel"]] },
+      { para:"Para integrar mi vulnerabilidad en mi familia", e:"🤗", col:"#8d641a",
+        t:"Abrazo sentido",
+        d:"En los encuentros, al llegar a casa: respira, nota la sensación y abraza con la <b>atención en la barriga</b>, desde la complicidad.",
+        go:[["ais_amor/abrazo_sentido","Abrazo sentido"],["juegos_exposicion/casa","Juego: Llegar a casa"]] },
+      { para:"Para validarme y darme espacio en mis vínculos", e:"💬", col:"#9c5238",
+        t:"Honestidad emocional",
+        d:"Con la <b>mano fija</b> en la barriga, el pecho o el cuello: «No sé por qué, pero noto una sensación aquí, y necesito compartirlo contigo».",
+        go:[["honestidad_emocional/vinetas","Honestidad emocional"]] }
+    ];
+    const cards = B.map(b=>`<div class="bas-card" style="--bc:${b.col}">
+        <div class="bas-para">${b.para}</div>
+        <div class="bas-t"><span class="bas-e" aria-hidden="true">${b.e}</span>${b.t}</div>
+        <div class="bas-d">${b.d}</div>
+        <div class="bas-go">${b.go.map(([id,txt])=>`<a href="#/tool/${id}">${txt} →</a>`).join("")}</div>
+      </div>`).join("");
+    return `<section class="basicas" aria-labelledby="basTit">
+      <div class="hub-sec"><span class="hub-sec-e">🧰</span><span class="hub-sec-t" id="basTit">Tus cuatro herramientas básicas</span></div>
+      <div class="hub-sec-d">Para tenerlas a mano cada día, también cuando estás bien. Breve y frecuente vale más que largo y ocasional.</div>
+      <div class="bas-grid">${cards}</div>
+      <a class="bas-reg" href="#/tool/recorrido_tec">📝 Apúntalas en tu recorrido, en «Hoy › Durante todo el día» →</a>
+    </section>`;
   }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
   function porqueHTML(){
@@ -541,7 +587,8 @@
     try{ sec.focus({preventScroll:true}); }catch(e){}
   }
   function montarIndice(){
-    const secs = Array.from(screen.querySelectorAll(".hub-sec"));
+    // Las cuatro herramientas básicas ya están justo encima del índice: no llevan botón.
+    const secs = Array.from(screen.querySelectorAll(".hub-sec")).filter(s=>!s.closest(".basicas"));
     if(secs.length < 2) return;
     const nav = document.createElement("nav");
     nav.className = "hub-idx";
@@ -580,10 +627,10 @@
         w.appendChild(im); b.appendChild(w);
       }
       // En el botón cabe el nombre corto (lo de antes del «·»); el título
-      // completo queda en el apartado y en la etiqueta accesible del botón.
+      // completo queda en el apartado y como descripción del botón (title).
+      const corto = nombre.split(" · ")[0];
       const n = document.createElement("span");
-      n.className = "idx-n"; n.textContent = nombre.split(" · ")[0];
-      b.setAttribute("aria-label", "Ir a " + nombre);
+      n.className = "idx-n"; n.textContent = corto;
       b.title = nombre;
       b.appendChild(n);
 
@@ -598,9 +645,12 @@
         const c = document.createElement("span");
         c.className = "idx-c";
         c.textContent = String(cuantas);
-        c.setAttribute("aria-label", cuantas===1 ? "1 ficha" : cuantas+" fichas");
+        b.append(" "); // separa nombre y número en el texto leído (no cambia nada en el flex)
         b.appendChild(c);
       }
+      // El nombre accesible empieza por lo que se ve («Superar miedos 12»): así
+      // también funciona quien maneja el móvil con la voz diciendo lo que lee.
+      b.setAttribute("aria-label", corto + (cuantas ? ", " + (cuantas===1 ? "1 ficha" : cuantas+" fichas") : ""));
       chips.appendChild(b);
     });
     if(!chips.children.length) return;
@@ -612,8 +662,9 @@
       if(sec) irASeccion(sec);
     });
     nav.appendChild(tit); nav.appendChild(chips);
-    // El índice va debajo del recorrido (lo principal) y de la bienvenida.
-    const bienvenida = screen.querySelector(".rh-note") || screen.querySelector(".hub-welcome");
+    // El índice va debajo del recorrido (lo principal), de las cuatro herramientas
+    // básicas y de la bienvenida.
+    const bienvenida = screen.querySelector(".basicas") || screen.querySelector(".rh-note") || screen.querySelector(".hub-welcome");
     if(bienvenida) bienvenida.insertAdjacentElement("afterend", nav);
     else screen.insertAdjacentElement("afterbegin", nav);
   }
@@ -643,7 +694,7 @@
         <div class="hub-sec-d">${g.desc}</div>
         <div class="hub-grid">${cards}</div>`;
     });
-    const otras = tools.filter(t=>!usados[t.id]);
+    const otras = tools.filter(t=>!usados[t.id] && !t.oculta);
     if(otras.length){
       secciones += `<div class="hub-sec"><span class="hub-sec-e">🧩</span><span class="hub-sec-t">Otras</span></div>
         <div class="hub-grid">${otras.map(hubCard).join("")}</div>`;
@@ -662,11 +713,13 @@
         </div>
       </div>
       ${recorridoHoyHTML()}
+      ${basicasHTML()}
       ${porqueHTML()}
       ${aisNucleoHTML()}
       ${vinetaHTML()}
       ${abrazoHTML()}
       ${honestidadHTML()}
+      ${casaHTML()}
       ${puertasHTML()}
       ${continuidadHTML()}
       ${cvHoyHTML()}
@@ -686,6 +739,7 @@
     montarVineta();
     montarAbrazo();
     montarHonestidad();
+    montarCasa();
   }
 
   // «Para · respira · vuelve»: la parada de pensamiento (TEC 11.2 §1) en tres
@@ -729,6 +783,24 @@
       ${chips?`<div class="puerta-chips" style="margin-top:10px">${chips}</div>`:""}
     </section>`;
   }
+  // «La casa de nuestro vínculo»: cuatro pilares (comunicación, confianza, respeto y
+  // honestidad emocional); la honestidad es transversal a los otros tres.
+  function casaHTML(){
+    if(!window.VinetaVinculo) return "";
+    return `<section class="vineta-sec">
+      <div class="hub-sec"><span class="hub-sec-e">🏠</span><span class="hub-sec-t">La casa de nuestro vínculo · cuatro pilares</span></div>
+      <div class="hub-sec-d">Nuestra relación es una casa que sostienen cuatro pilares: comunicación, confianza, respeto y honestidad emocional. Si son fuertes, la casa no nos cae encima. Y la honestidad emocional es transversal: pasa por dentro de los otros tres.</div>
+      <div id="casaHub" style="margin-top:10px"></div>
+      <div class="puerta-chips" style="margin-top:10px"><a class="puerta-chip" href="#/tool/honestidad_emocional">🤍 Honestidad emocional</a></div>
+    </section>`;
+  }
+  var hubCasa = null;
+  function pararCasa(){ if(hubCasa){ try{ hubCasa.destroy(); }catch(e){} hubCasa = null; } }
+  function montarCasa(){
+    pararCasa();
+    var box = document.getElementById("casaHub");
+    if(box && window.VinetaVinculo){ hubCasa = VinetaVinculo.mount(box, { lang:"es", titulo:"", pie:true }); }
+  }
   var hubHonestidad = null;
   function pararHonestidad(){ if(hubHonestidad){ try{ hubHonestidad.destroy(); }catch(e){} hubHonestidad = null; } }
   function montarHonestidad(){
@@ -755,7 +827,7 @@
 
   // Silueta viva del núcleo AIS en el hub (organismo realista, dos luces).
   var hubRespiro = null;
-  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); pararHonestidad(); }
+  function pararNucleoAIS(){ if(hubRespiro){ try{ hubRespiro.destroy(); }catch(e){} hubRespiro = null; } pararVineta(); pararAbrazo(); pararHonestidad(); pararCasa(); }
   function montarNucleoAIS(){
     pararNucleoAIS();
     var box = document.getElementById("aisNucleoBox");
@@ -780,6 +852,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    if(tool.enlace){ location.href = tool.enlace; return; }
     if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();
     registrarPractica();
@@ -829,7 +902,7 @@
   function goHome(){ if((location.hash||"#/") !== "#/") location.hash = "#/"; }
   // El logo/título lleva siempre al inicio.
   const brand = document.querySelector(".header .hlogo");
-  if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","Inicio"); brand.onclick = goHome; }
+  if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","ap · Inicio"); brand.onclick = goHome; }
   const brandTitle = document.getElementById("htitle");
   if(brandTitle){ brandTitle.style.cursor = "pointer"; brandTitle.onclick = goHome; }
 

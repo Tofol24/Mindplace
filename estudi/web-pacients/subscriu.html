@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Subscripció a Explica-ho</title>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="stylesheet" href="_base.css">
@@ -11,8 +11,10 @@
 <body>
 <main>
   <a class="brand" href="/"><span>Explica</span>-ho</a>
+  <p class="lema">Si no ho pots explicar, <span>no t'ho saps.</span></p>
+  <p><strong>Una eina d'IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu.</strong></p>
   <h1>Subscripció a Explica-ho</h1>
-  <p>Explica-ho ajuda a estudiar de manera activa: ordena el material del curs en un resum i un mapa conceptual, fa preguntes que van de les dades concretes fins a relacionar les idees, i corregeix exercicis de matemàtiques, ciències i llengua pas a pas. La subscripció dona un codi d'accés personal per fer-la servir des del navegador de qualsevol ordinador o mòbil.</p>
+  <p>Explica-ho ajuda a estudiar de manera activa: ordena el material del curs en un resum i un mapa conceptual, fa preguntes que van de les dades concretes fins a relacionar les idees, i corregeix exercicis de matemàtiques, ciències i llengua pas a pas. Serveix per a ESO, batxillerat, FP, universitat i oposicions. La subscripció dona un codi d'accés personal per fer-la servir des del navegador de qualsevol ordinador o mòbil.</p>
 
   <form id="f" class="panel" novalidate>
     <span class="label">1 · Tria el pla</span>
@@ -32,6 +34,7 @@
     <p class="muted small">El pagament el gestiona Stripe: les dades de la targeta no passen mai per Explica-ho. Et pots donar de baixa quan vulguis des de l'eina, a Configuració → Gestiona la subscripció. Per desistir dins els 14 dies, escriu-nos (ho explicam a les <a href="condicions.html#desistiment" target="_blank" rel="noopener">condicions</a>).</p>
   </form>
 </main>
+<script src="idioma.js"></script>
 <script>
 "use strict";
 const $ = (s) => document.querySelector(s);
@@ -51,7 +54,7 @@ $("#f").addEventListener("submit", async (e) => {
   if (!pla || !$("#ok").checked || !$("#inici").checked) return;
   $("#go").disabled = true; $("#go").textContent = "Obrint el pagament…";
   try {
-    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true})});
+    const r = await fetch("/api/checkout", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({pla, email: $("#email").value.trim(), acceptat: true, inici: true, idioma: UI})});
     const b = await r.json().catch(() => ({}));
     if (!r.ok || !b.url) throw new Error(b.error === "email" ? "Revisa el correu: no sembla vàlid." : "No s'ha pogut obrir el pagament. Torna-ho a provar.");
     location.href = b.url;

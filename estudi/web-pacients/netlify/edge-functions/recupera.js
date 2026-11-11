@@ -1,14 +1,17 @@
 // Explica-ho · «He perdut el codi»: envia els codis de les subscripcions actives al correu de qui paga.
 // La resposta és sempre la mateixa, hi hagi o no subscripció, perquè ningú pugui saber qui està subscrit.
-import {json, stripe, store, count, plans, subInfo, subActive, saveSub, ensureCode, mailEnabled, mailBody, sendMail, env, fingerprint, getJSON, cleanup, token} from "../lib/comu.js";
+import {json, stripe, store, count, plans, subInfo, subActive, saveSub, ensureCode, mailEnabled, mailBody, sendMail, env, fingerprint, getJSON, cleanup, token, lang} from "../lib/comu.js";
 
-const SAME = {ok: true, missatge: "Si hi ha alguna subscripció amb aquest correu, t'hi acabam d'enviar el codi i un enllaç per gestionar-la. Mira també la carpeta de correu brossa."};
+const SAME = {
+  ca: {ok: true, missatge: "Si hi ha alguna subscripció amb aquest correu, t'hi acabam d'enviar el codi i un enllaç per gestionar-la. Mira també la carpeta de correu brossa."},
+  es: {ok: true, missatge: "Si hay alguna suscripción con este correo, te acabamos de enviar el código y un enlace para gestionarla. Mira también la carpeta de correo no deseado."},
+};
 
 export default async (req, context) => {
   if (req.method !== "POST") return json(405, {error: "metode"});
   if (!env("STRIPE_SECRET_KEY") || !mailEnabled()) return json(404, {error: "sense-correu"});
   let body; try { body = await req.json(); } catch { return json(400, {error: "format"}); }
-  const email = String(body?.email || "").trim();
+  const email = String(body?.email || "").trim(), es = lang(body?.idioma) === "es";
   if (!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(email)) return json(400, {error: "email"});
   // Límits: 3 intents al dia per correu i 10 per adreça de connexió.
   const day = new Date().toISOString().slice(0, 10);
@@ -49,9 +52,17 @@ export default async (req, context) => {
         for (const customer of customers.slice(0, 5)) {
           const t = token();
           await st.set("tok/" + t, JSON.stringify({customer, exp: Date.now() + 30 * 60 * 1000}), {onlyIfNew: true});
-          links.push(origin + "/api/portal-obre?t=" + t);
+          links.push(origin + "/api/portal-obre?t=" + t + (es ? "&l=es" : ""));
         }
-        const {text, html} = mailBody([
+        const {text, html} = mailBody(es ? [
+          ...(codes.length ? [codes.length > 1 ? "Estos son los códigos de acceso de tus suscripciones a Explica-ho:" : "Este es el código de acceso de tu suscripción a Explica-ho:", ...codes.map(c => "CODI:" + c),
+            "Escríbelo en Explica-ho, en Configuración."] : ["Ahora mismo no tienes ninguna suscripción activa en Explica-ho, así que no hay ningún código que funcione."]),
+          links.length > 1
+            ? "Para ver las facturas, cambiar la tarjeta, reactivarlas o darte de baja, usa estos enlaces (uno por cada cuenta de pago). Cada uno sirve una sola vez y caduca dentro de 30 minutos:"
+            : "Para ver las facturas, cambiar la tarjeta, reactivarla o darte de baja, usa el enlace de abajo. Sirve una sola vez y caduca dentro de 30 minutos.",
+          ...(links.length > 1 ? links.slice(1) : []),
+          "Si no has pedido este correo, puedes ignorarlo.",
+        ] : [
           ...(codes.length ? [codes.length > 1 ? "Aquests són els codis d'accés de les teves subscripcions a Explica-ho:" : "Aquest és el codi d'accés de la teva subscripció a Explica-ho:", ...codes.map(c => "CODI:" + c),
             "Escriu-lo a Explica-ho, a Configuració."] : ["Ara mateix no tens cap subscripció activa a Explica-ho, així que no hi ha cap codi que funcioni."]),
           links.length > 1
@@ -59,8 +70,8 @@ export default async (req, context) => {
             : "Per veure les factures, canviar la targeta, reactivar-la o donar-te de baixa, fes servir l'enllaç de sota. Serveix una sola vegada i caduca d'aquí a 30 minuts.",
           ...(links.length > 1 ? links.slice(1) : []),
           "Si no has demanat aquest correu, el pots ignorar.",
-        ], {label: "Gestiona la subscripció", url: links[0]});
-        await sendMail({to, subject: codes.length ? "El teu codi d'accés a Explica-ho" : "La teva subscripció a Explica-ho", html, text});
+        ], {label: es ? "Gestiona la suscripción" : "Gestiona la subscripció", url: links[0]});
+        await sendMail({to, subject: es ? (codes.length ? "Tu código de acceso a Explica-ho" : "Tu suscripción a Explica-ho") : (codes.length ? "El teu codi d'accés a Explica-ho" : "La teva subscripció a Explica-ho"), html, text});
       }
     } catch {}
   })();
@@ -68,7 +79,7 @@ export default async (req, context) => {
   // Neteja: comptadors d'intents de dies anteriors.
   try { const us = await store("explica-us"); await cleanup(us, "rec/", (k) => !k.endsWith("/" + day)); await cleanup(us, "fail/", (k) => !k.endsWith("/" + day)); } catch {}
   try { const st = await store("explica-subs"); await cleanup(st, "tok/", async (k) => ((await getJSON(st, k))?.exp || 0) < Date.now()); } catch {}
-  return json(200, SAME);
+  return json(200, SAME[es ? "es" : "ca"]);
 };
 
 export const config = {path: "/api/recupera"};

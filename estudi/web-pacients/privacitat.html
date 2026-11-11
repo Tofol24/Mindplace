@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Privacitat d'Explica-ho</title>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="stylesheet" href="_base.css">
@@ -12,7 +12,7 @@
 <main class="doc">
   <a class="brand" href="/"><span>Explica</span>-ho</a>
   <h1>Política de privacitat</h1>
-  <p class="muted">Darrera actualització: 11 de novembre de 2026</p>
+  <p class="muted">Darrera actualització: 11 de novembre de 2026 · <a href="privacidad.html" lang="es" hreflang="es">Versión en castellano</a></p>
 
   <h2>Responsable</h2>
   <p>Cristóbal Villalonga Melis, NIF 78210217M, C/ Mare de Déu de l'Esperança, 70, 2n, 07300 Inca (Illes Balears). Correu de contacte per a qualsevol qüestió de privacitat: <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>.</p>
@@ -22,19 +22,19 @@
 
   <h2>Quines dades es tracten</h2>
   <ul>
-    <li><strong>La feina de l'estudiant</strong> (material, guies, respostes i progrés) es guarda només al navegador del dispositiu, a l'emmagatzematge local. El servidor d'Explica-ho no la desa.</li>
+    <li><strong>La feina de l'estudiant</strong> (material, guies, respostes i progrés) i les preferències de l'eina, com l'idioma, es guarden només al navegador del dispositiu, a l'emmagatzematge local. El servidor d'Explica-ho no les desa.</li>
     <li><strong>El material i les respostes</strong>, quan es demana una guia, una pregunta o una correcció, s'envien a Anthropic (Claude) per processar-los, passant pel servidor d'Explica-ho, que no en guarda còpia. Anthropic no fa servir aquestes dades per entrenar els seus models i només les conserva el temps limitat que fixen les seves condicions comercials.</li>
     <li><strong>Al servidor</strong> es guarda:
       <ul>
-        <li>el codi d'accés i la referència de la subscripció i del client a Stripe, amb l'estat de la subscripció i el pla;</li>
+        <li>el codi d'accés i la referència de la subscripció i del client a Stripe, amb l'estat de la subscripció, el pla i l'idioma triat en subscriure's (per enviar els correus en aquest idioma);</li>
         <li>comptadors de peticions per codi, per dia i per mes;</li>
         <li>una empremta xifrada (no reversible) del correu de qui paga, per poder-li tornar a enviar el codi si el perd;</li>
         <li>comptadors d'intents fallits i de sol·licituds de recuperació, identificats per una empremta xifrada del correu o de l'adreça IP, per evitar abusos;</li>
-        <li>els enllaços d'un sol ús per gestionar la subscripció, que caduquen als 30 minuts.</li>
+        <li>els enllaços d'un sol ús per gestionar la subscripció, que caduquen als 30 minuts;</li>
         <li>estadístiques d'ús per dia: nombre de peticions, tokens i cost, i quantes peticions ha fet cada codi d'accés (identificat només per les tres primeres lletres i una empremta xifrada, no pel codi sencer). No inclouen cap contingut.</li>
       </ul>
     </li>
-    <li><strong>El pagament</strong>: Stripe rep el correu, el nom i les dades de pagament de qui paga. Explica-ho no veu mai les dades de la targeta.</li>
+    <li><strong>El pagament</strong>: Stripe rep el correu, el nom i les dades de pagament de qui paga, i l'idioma triat. Explica-ho no veu mai les dades de la targeta.</li>
     <li><strong>Els correus</strong> (el codi d'accés i els enllaços per gestionar la subscripció) s'envien amb Resend, que rep l'adreça de destinació i el contingut del missatge.</li>
     <li><strong>L'adreça IP</strong> de connexió la rep el servei d'allotjament (Netlify), com en qualsevol pàgina web, per poder-la servir i protegir; també la rep Stripe durant el pagament, que es fa a la seva pàgina. Anthropic i Resend no la reben: les crides a aquests serveis les fa el servidor d'Explica-ho. Els tipus de lletra i els lectors de PDF i Word se serveixen des del mateix domini d'Explica-ho, sense connectar amb altres serveis.</li>
     <li><strong>El dictat per veu</strong> («Parla») el fa el navegador: a Chrome, l'àudio es processa als servidors de Google. És opcional; es pot escriure o dictar amb el teclat del dispositiu.</li>

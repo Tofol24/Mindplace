@@ -133,6 +133,27 @@ consola donde tú reúnes la evolución de cada paciente a partir de los `.json`
   **posiciones del mono** (conduce/delante/maletero/a mi lado + % «a mi lado»), **valores**
   (discrepancia y cercanía de la brújula), **regulación de la alerta** (antes→después) y
   **actividad reciente** (todas las herramientas, con resumen por registro).
+- **Screening por enlace de un toque**: al terminar el Screening (inicial o seguimiento), el paciente
+  pone su código (iniciales + edad, p. ej. `DFG22`; se recuerda en su móvil) y envía por WhatsApp un
+  **enlace** `…/panel/#r=<AICE-TEC|AICE-SEG…>`. Al tocarlo se abre el panel, se pide el código de acceso
+  y el registro se puntúa con el **mismo motor** del Screening (`js/tec-screening.js`, compartido) y se
+  guarda en su ficha. El registro viaja en el fragmento `#`: al abrir el enlace no llega al servidor del
+  panel (sí viaja, como cualquier mensaje, por WhatsApp/email, igual que el texto de antes). Los mensajes
+  antiguos (sin código de paciente) o varios mensajes a la vez se pueden **pegar** en «Importar»; si falta
+  el código, el panel pregunta a qué paciente asignarlo.
+- **Mensajes de cualquier herramienta**: todas las herramientas que envían por WhatsApp añaden al
+  final un **enlace de un toque** `…/panel/#t=<texto comprimido lz-string>&p=<código>` (`js/enlace-panel.js`
+  + `vendor/lz-string.min.js`; sin enlace en la versión de bienestar). En la ficha, **«📋 Pegar registro»**
+  (como en el panel anterior) acepta uno o varios mensajes, también copiados de WhatsApp Web
+  (`[hora, fecha] Nombre: …`): `js/registro-texto.js` reconoce herramienta, fecha y datos (alerta
+  antes/después, posición del mono, L/D/C…) y guarda el texto íntegro (desplegable en «Actividad»). El
+  mismo mensaje por enlace o pegado tiene el mismo id: no se duplica.
+- **Pauta desde el panel**: tarjeta «Pauta de esta semana» (misma regla `moduloEvolucion` que el
+  Screening), código de seguimiento de 3 cifras, últimas reflexiones del paciente y botón de WhatsApp con
+  el mensaje editable. **Pendientes de respuesta**: un paciente con registros nuevos posteriores a la última
+  pauta enviada sale marcado «nuevo» (filtro «Solo pendientes»).
+- ⚠️ Los datos del panel viven en **un** navegador: abre los enlaces de WhatsApp en el mismo equipo donde
+  usas el panel (p. ej. WhatsApp Web/Escritorio). La sincronización entre dispositivos es la Ruta 2 (Supabase).
 - **Copia de seguridad**: exporta todo el panel a un `.json` (⚠️ sin cifrar) para mover de equipo.
 - **`PanelStore`** es una capa de almacenamiento **intercambiable**: hoy es local+cifrado;
   para MVP2.5 se sustituye por un adaptador Supabase sin tocar la UI ni las métricas.

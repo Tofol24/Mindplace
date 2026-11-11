@@ -143,6 +143,14 @@ recuento por día y se borran: no se conserva nada más que esos números.
 
 En tus propios dispositivos elige «No, gracias» para que tus visitas no se mezclen.
 
+**Visitas y clics de aprens.net (portada pública).** La portada envía a este mismo `/api/uso`
+una visita por carga, con su origen (directa, buscador, Instagram…), y los clics en sus
+enlaces (pedir cita, la app, descargas…). Sin aviso: no guarda nada en el navegador ni envía
+identificadores, y no cuenta nada si el navegador pide no ser rastreado (Global Privacy
+Control). La portada y aprens-app son sitios distintos: si la portada envía un tipo de evento
+nuevo, aprens-app tiene que estar publicado con la misma versión de `netlify/lib/uso.mjs`,
+o el servidor lo rechaza y no se cuenta.
+
 ---
 
 *Para el detalle técnico (arquitectura, herramientas, offline/RGPD) mira

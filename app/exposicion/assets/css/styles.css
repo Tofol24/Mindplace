@@ -7,7 +7,7 @@
 :root{
   --noche:#1E2E36; --carbon:#2B3A42; --niebla:#F3EEE4; --arena:#E7DCC7;
   --ambar:#CF9A3E; --ambar-dark:#a97b28; --salvia:#5E7C6E; --salvia-dark:#456155;
-  --linea:#D9CFBC; --tinta-soft:#4a5a62; --alarma:#C0603F; --calma:#3f7d5f;
+  --linea:#D9CFBC; --tinta-soft:#4a5a62; --alarma:#a55336; --calma:#3f7d5f;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
