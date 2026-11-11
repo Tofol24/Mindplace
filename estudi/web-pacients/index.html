@@ -9,9 +9,7 @@
 <body>
 <title>Explica-ho</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>
 /* Layout: taula d'estudi. Columna esquerra = assignatures i temes; dreta = el tema obert, amb pestanyes
    Material · Guia · Autoavaluació · Progrés. La profunditat (N1→N4) es pinta com una escala de blaus. */
@@ -814,12 +812,12 @@ function loadScript(src) {
 }
 async function getPdfjs() {
   // El "worker" es carrega com a script normal: pdf.js el fa servir dins la mateixa pàgina.
-  await loadScript("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js");
-  await loadScript("https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js");
-  const lib = window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+  await loadScript("/vendor/pdf.min.js");
+  await loadScript("/vendor/pdf.worker.min.js");
+  const lib = window.pdfjsLib; lib.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.js";
   return lib;
 }
-async function getMammoth() { await loadScript("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"); return window.mammoth; }
+async function getMammoth() { await loadScript("/vendor/mammoth.browser.min.js"); return window.mammoth; }
 
 function kindOf(f) {
   const n = (f.name || "").toLowerCase();
