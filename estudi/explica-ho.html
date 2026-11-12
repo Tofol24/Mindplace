@@ -1814,6 +1814,7 @@ Hi han de sortir totes les regles del material (fins a 15), amb 2-5 exemples cad
   // Les rondes es buiden només si no hi ha feina sense corregir (pot haver-n'hi d'escrita mentre s'esperava).
   if (![t.ronda, t.exRonda].some(r => arr(r?.items).some(unsaved))) { t.ronda = null; t.exRonda = null; }
   g.generat = Date.now();
+  delete g.visuals; g.visual_recomanat = cleanRec(g.visual_recomanat);   // els esquemes només entren per «Fes-ho visual», validats
   t.guia = g; saveTema(t); if (S.view.temaId === t.id) S.view.tab = "guia"; render();
 }
 async function makeQuestions(t, L) {
@@ -2478,15 +2479,16 @@ function cleanSvg(src) {
   return {vb, inner: copy(root, 0)};
 }
 const VIS_TIPUS = ["diagrama", "taula", "sequencia", "cicle", "linia_temps"];
+const cleanRec = (r) => r && VIS_TIPUS.concat("cap").includes(r.tipus) ? {tipus: r.tipus, motiu: String(r.motiu ?? "").slice(0, 160)} : null;
 function normVisual(v) {
   const str = (x, n) => String(x ?? "").slice(0, n);
   if (!v || !VIS_TIPUS.includes(v.tipus)) return null;
   const o = {tipus: v.tipus, titol: str(v.titol, 120)};
   if (v.tipus === "diagrama") {
     const c = cleanSvg(v.svg); if (!c || !c.inner) return null;
-    const num = (x) => Number.isFinite(+x) ? +x : null;
+    const num = (x) => x === null || x === undefined || x === "" || !Number.isFinite(+x) ? null : Math.round(+x * 10) / 10;
     o.svg = v.svg; o.parts = arr(v.parts).slice(0, 12).map((p, i) => ({n: i + 1, nom: str(p.nom, 60), funcio: str(p.funcio, 240), x: num(p.x), y: num(p.y), lx: num(p.lx), ly: num(p.ly)}))
-      .filter(p => p.nom && p.x !== null && p.y !== null);
+      .filter(p => p.nom && p.x !== null && p.y !== null && (p.lx === null) === (p.ly === null));
     if (o.parts.length < 2) return null;
   } else if (v.tipus === "taula") {
     o.columnes = arr(v.columnes).slice(0, 5).map(x => str(x, 60));
@@ -2547,23 +2549,25 @@ function lev(a, b) {
     for (let j = 1; j <= b.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = tmp; } }
   return d[b.length];
 }
-function nomOk(resp, nom) {
-  const a = normNom(resp), b = normNom(nom); if (!a) return false;
-  if (a === b || lev(a, b) <= (b.length > 6 ? 2 : 1)) return true;
-  // «membrana» per «membrana plasmàtica», «ribosoma» per «ribosomes»…
-  const wa = a.split(" "), wb = b.split(" ");
-  return wb[0].length >= 4 && wa.some(w => w.length >= 4 && (lev(w, wb[0]) <= 1 || wb[0].startsWith(w) || w.startsWith(wb[0].slice(0, -1))));
+// Es compara paraula per paraula (singular i sense accents): una errada de lletra només en paraules llargues,
+// i la forma curta («membrana» per «membrana plasmàtica») només si cap altra part comença igual.
+function nomOk(resp, nom, altres = []) {
+  const words = (x) => normNom(x).split(" ").filter(Boolean).map(w => w.length > 4 ? w.replace(/(es|s)$/, "") : w);
+  const same = (a, b) => a === b || (b.length >= 6 && lev(a, b) <= 1);
+  const a = words(resp), b = words(nom); if (!a.length) return false;
+  if (a.length === b.length && a.every((w, i) => same(w, b[i]))) return true;
+  return a.length === 1 && b.length > 1 && same(a[0], b[0]) && !altres.some(o => o !== nom && same(a[0], words(o)[0] || ""));
 }
 function visState(t, i) { const k = t.id + ":" + i; return (S.vis ??= {})[k] ??= {mode: "mira", resp: {}, comprovat: false}; }
 function svgDiagram(v, st) {
   const c = cleanSvg(v.svg); if (!c) return "";
   const amaga = st.mode === "etiqueta";
   const marks = v.parts.map(p => {
-    const lx = p.lx ?? p.x, ly = p.ly ?? p.y;
-    const ok = amaga && st.comprovat ? nomOk(st.resp[p.n], p.nom) : null;
+    const n = +p.n | 0, x = +p.x, y = +p.y, lx = p.lx === null ? x : +p.lx, ly = p.ly === null ? y : +p.ly;
+    const ok = amaga && st.comprovat ? nomOk(st.resp[p.n], p.nom, v.parts.map(q => q.nom)) : null;
     const col = ok === true ? "#2f9e6b" : ok === false ? "#c2543d" : "#1f2430";
-    return (p.lx !== null && p.ly !== null ? `<line x1="${p.x}" y1="${p.y}" x2="${lx}" y2="${ly}" stroke="#1f2430" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="${p.x}" cy="${p.y}" r="3" fill="#1f2430"/>` : "") +
-      `<circle cx="${lx}" cy="${ly}" r="12" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${lx}" y="${ly + 4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">${p.n}</text>`;
+    return (lx !== x || ly !== y ? `<line x1="${x}" y1="${y}" x2="${lx}" y2="${ly}" stroke="#1f2430" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="${x}" cy="${y}" r="3" fill="#1f2430"/>` : "") +
+      `<circle cx="${lx}" cy="${ly}" r="12" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${lx}" y="${ly + 4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">${n}</text>`;
   }).join("");
   const desc = amaga ? "Dibuix amb les parts numerades, sense noms." : v.parts.map(p => `${p.n}: ${p.nom}`).join(", ");
   return `<svg xmlns="${SVG_NS}" viewBox="${c.vb.join(" ")}" role="img" aria-label="${esc(v.titol)}. ${esc(desc)}">${c.inner}${marks}</svg>`;
@@ -2574,9 +2578,9 @@ function viewVisual(t, v, i) {
   if (v.tipus === "linia_temps") return `<div class="vis">${titol}<ol class="vis-time">${v.fets.map(f => `<li><strong>${esc(f.data)}</strong> · ${esc(f.fet)}</li>`).join("")}</ol></div>`;
   if (v.tipus !== "diagrama") return `<div class="vis">${titol}<ol class="vis-steps ${v.tipus === "cicle" ? "cicle" : ""}">${v.passos.map(x => `<li><strong>${esc(x.nom)}</strong>${x.idea ? `<p class="muted small">${esc(x.idea)}</p>` : ""}</li>`).join("")}</ol>${v.tipus === "cicle" ? `<p class="muted small">↻ Després de l'últim pas, torna a començar.</p>` : ""}</div>`;
   const st = visState(t, i), et = st.mode === "etiqueta";
-  const encerts = et && st.comprovat ? v.parts.filter(p => nomOk(st.resp[p.n], p.nom)).length : 0;
+  const encerts = et && st.comprovat ? v.parts.filter(p => nomOk(st.resp[p.n], p.nom, v.parts.map(q => q.nom))).length : 0;
   const llista = et
-    ? v.parts.map(p => { const ok = st.comprovat ? nomOk(st.resp[p.n], p.nom) : null;
+    ? v.parts.map(p => { const ok = st.comprovat ? nomOk(st.resp[p.n], p.nom, v.parts.map(q => q.nom)) : null;
         return `<li><span class="vis-n" aria-hidden="true">${p.n}</span><span><label class="sr" for="vi_${t.id}_${i}_${p.n}">Part ${p.n}</label><input type="text" id="vi_${t.id}_${i}_${p.n}" data-visin="${i}:${p.n}" value="${esc(st.resp[p.n] || "")}" autocomplete="off" placeholder="Què és la part ${p.n}?">${ok === null ? "" : ok ? `<span class="ok small"> ✓ ${esc(p.nom)}</span>` : `<span class="ko small"> ✗ És: ${esc(p.nom)}</span>`}${ok === null ? "" : `<p class="muted small">${esc(p.funcio)}</p>`}</span></li>`; }).join("")
     : v.parts.map(p => `<li><span class="vis-n" aria-hidden="true">${p.n}</span><span><strong>${esc(p.nom)}</strong>${p.funcio ? `<p class="muted small">${esc(p.funcio)}</p>` : ""}</span></li>`).join("");
   return `<div class="vis">
@@ -2588,7 +2592,7 @@ function viewVisual(t, v, i) {
         ${et ? `<div class="row" style="margin-top:8px"><button class="btn sm primary" data-act="visCheck" data-i="${i}" type="button">Comprova</button><button class="btn sm ghost" data-act="visReset" data-i="${i}" type="button">Torna a començar</button>${st.comprovat ? `<span class="small" role="status"><strong>${encerts} de ${v.parts.length}</strong> encertades</span>` : ""}</div>` : ""}</div></div></div>`;
 }
 function viewVisuals(t) {
-  const g = t.guia, vis = arr(g.visuals);
+  const g = t.guia, vis = arr(g.visuals).map(normVisual).filter(Boolean);
   const rec = g.visual_recomanat?.tipus && g.visual_recomanat.tipus !== "cap" ? g.visual_recomanat : null;
   const boto = t.exemple ? "" : `<button class="btn ${vis.length ? "ghost sm" : "primary"}" data-act="visual" type="button" ${S.busy.visual ? "disabled" : ""}>${vis.length ? "Torna a fer l'esquema" : "Fes-ho visual"}</button>`;
   if (!vis.length) return `<section class="panel"><h3>Esquema visual</h3>
@@ -3163,7 +3167,8 @@ function cleanTema(t) {
     regles: arr(t.guia.regles).map(r => ({nom: str(r?.nom, 200), regla: str(r?.regla, 1500), exemples: strs(r?.exemples, 300).slice(0, 8), excepcions: str(r?.excepcions, 800)})),
     formules: arr(t.guia.formules).map(f => ({nom: str(f?.nom, 200), expressio: str(f?.expressio, 300), variables: str(f?.variables, 600), quan: str(f?.quan, 600)})),
     metodes: arr(t.guia.metodes).map(m => ({nom: str(m?.nom, 200), passos: strs(m?.passos, 400)})),
-    tipus_problemes: arr(t.guia.tipus_problemes).map(x => ({id: str(x?.id, 40), nom: str(x?.nom, 200), descripcio: str(x?.descripcio, 600)}))} : null;
+    tipus_problemes: arr(t.guia.tipus_problemes).map(x => ({id: str(x?.id, 40), nom: str(x?.nom, 200), descripcio: str(x?.descripcio, 600)})),
+    visuals: arr(t.guia.visuals).map(normVisual).filter(Boolean).slice(0, 2), visual_recomanat: cleanRec(t.guia.visual_recomanat)} : null;
   const exItems = arr(t.exRonda?.items).filter(q => okId(q?.id)).map(q => ({...cleanExercise(q, num(q.nivell, 1, 4)), id: q.id,
     resposta: str(q.resposta, 20000), passosAlumna: strs(q.passosAlumna, 4000), guiat: !!q.guiat, pistesVistes: num(q.pistesVistes, 0, 4), tutor: cleanTutor(q.tutor), xat: cleanXat(q.xat),
     avals: arr(q.avals).map(a => ({t: num(a?.t, 0, 9e15), nota: num(a?.nota, 0, 10), correcte: a?.correcte === true, transcripcio: str(a?.transcripcio, 6000),
