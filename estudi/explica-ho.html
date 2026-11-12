@@ -559,6 +559,7 @@ const ES = {
 "Teoria": "Teoría",
 "Guia i mapa": "Guía y mapa",
 "Fes-ho visual": "Hazlo visual",
+"Per practicar: etiqueta l'esquema": "Para practicar: etiqueta el esquema",
 "Torna a fer l'esquema": "Vuelve a hacer el esquema",
 "Mira-ho": "Míralo",
 "Etiqueta-ho tu": "Etiquétalo tú",
@@ -3044,7 +3045,8 @@ const nomFitxer = (s) => String(s || "guia").normalize("NFD").replace(/[\u0300-\
 
 /* ── Exportar la guia: PDF (impressió del navegador) i Word (.docx) ──
    Els dos surten de la mateixa llista de blocs, perquè tinguin el mateix contingut.
-   Blocs: {k: title|h1|h2|p|li, t: text, lab: inici en negreta, n: sagnat, muted, mono} */
+   Blocs: {k: title|h1|h2|p|li, t: text, lab: inici en negreta, n: sagnat, muted, mono}
+          {k: svg, v: esquema, buit: sense noms}  {k: table, cols, rows} */
 function guiaBlocs(t) {
   const g = t.guia, s = getSubj(t.subjId), B = [];
   const h1 = (x) => B.push({k: "h1", t: T(x)}), h2 = (x) => x && B.push({k: "h2", t: x});
@@ -3064,9 +3066,26 @@ function guiaBlocs(t) {
   h1("Mapa conceptual");
   p(g.mapa?.centre || t.titol, {lab: T("Idea central:") + " "});
   arr(g.mapa?.branques).forEach(b => { li(b.idea ? " " + b.idea : "", {lab: b.nom + (b.idea ? ":" : "")}); arr(b.fills).forEach(f => li(f.idea ? " " + f.idea : "", {lab: f.nom + (f.idea ? ":" : ""), n: 1})); });
+  const vis = arr(g.visuals).map(normVisual).filter(Boolean);
+  if (vis.length) {
+    h1("Esquema visual");
+    vis.forEach(v => {
+      h2(T(v.titol));
+      if (v.tipus === "diagrama") { B.push({k: "svg", v}); v.parts.forEach(x => li(x.funcio ? " " + T(x.funcio) : "", {lab: `${x.n}. ${T(x.nom)}` + (x.funcio ? ":" : "")})); }
+      else if (v.tipus === "taula") B.push({k: "table", cols: v.columnes.map(T), rows: v.files.map(f => f.map(T))});
+      else if (v.tipus === "linia_temps") v.fets.forEach(f => li(" " + f.fet, {lab: f.data + ":"}));
+      else { v.passos.forEach((x, i) => li(x.idea ? " " + x.idea : "", {lab: `${i + 1}. ${x.nom}` + (x.idea ? ":" : "")})); if (v.tipus === "cicle") p(T("↻ Després de l'últim pas, torna a començar."), {muted: true}); }
+    });
+  }
   if (arr(g.relacions).length) { h1("Com es relacionen les idees"); g.relacions.forEach(r => li(r.explicacio ? " " + r.explicacio : "", {lab: `${r.de} → ${r.tipus} → ${r.a}` + (r.explicacio ? ":" : "")})); }
   h1("Conceptes clau");
   arr(g.conceptes).forEach(c => li(c.definicio ? " " + c.definicio : "", {lab: c.nom + (c.definicio ? ":" : "")}));
+  // Full per practicar: el mateix dibuix, només amb els números, i línies per escriure el nom de cada part.
+  const dib = vis.filter(v => v.tipus === "diagrama");
+  if (dib.length) {
+    B.push({k: "h1", t: T("Per practicar: etiqueta l'esquema"), salt: true});
+    dib.forEach(v => { h2(T(v.titol)); B.push({k: "svg", v, buit: true}); v.parts.forEach(x => li("______________________________", {lab: `${x.n}. `})); });
+  }
   return B;
 }
 function guiaHTMLDoc(t) {
@@ -3076,8 +3095,10 @@ function guiaHTMLDoc(t) {
     const txt = (b.lab ? `<strong>${esc(b.lab)}</strong>` : "") + esc(b.t);
     if (b.k === "li") { if (!ul) { h += "<ul>"; ul = true; } h += `<li${b.n ? ` style="margin-left:${b.n * 1.5}em"` : ""}>${txt}</li>`; continue; }
     tanca();
+    if (b.k === "svg") { h += `<div class="fig">${svgDiagram(b.v, {mode: b.buit ? "etiqueta" : "mira", resp: {}, comprovat: false})}</div>`; continue; }
+    if (b.k === "table") { h += `<table><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${b.rows.map(r => `<tr>${r.map((c, j) => j ? `<td>${esc(c)}</td>` : `<th>${esc(c)}</th>`).join("")}</tr>`).join("")}</tbody></table>`; continue; }
     if (b.k === "title") h += `<h1>${esc(b.t)}</h1>`;
-    else if (b.k === "h1") h += `<h2>${esc(b.t)}</h2>`;
+    else if (b.k === "h1") h += `<h2${b.salt ? ' class="salt"' : ""}>${esc(b.t)}</h2>`;
     else if (b.k === "h2") h += `<h3>${esc(b.t)}</h3>`;
     else h += `<p class="${b.muted ? "m" : ""}${b.mono ? " mono" : ""}">${txt}</p>`;
   }
@@ -3089,6 +3110,9 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;colo
 h1{font-size:20pt;margin:0 0 4px}h2{font-size:14pt;margin:18px 0 6px;border-bottom:1px solid #888;padding-bottom:2px;break-after:avoid}
 h3{font-size:12pt;margin:10px 0 4px;break-after:avoid}p{margin:4px 0}ul{margin:2px 0 6px;padding-left:1.3em}li{margin:2px 0;break-inside:avoid}
 .m{color:#555}.mono{font-family:ui-monospace,Menlo,Consolas,monospace}@page{margin:16mm}
+.fig{max-width:540px;margin:6px 0 8px;break-inside:avoid}.fig svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;margin:4px 0 10px;font-size:10.5pt;break-inside:avoid}th,td{border:1px solid #888;padding:4px 6px;text-align:left;vertical-align:top}thead th{background:#eee}
+.salt{break-before:page}
 </style></head><body>${h}</body>`;
 }
 function imprimeixGuia(t) {
@@ -3109,7 +3133,7 @@ function crc32(u) { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = C
 function zipSenseCompressio(files, type) {
   const enc = new TextEncoder(), parts = [], cent = []; let off = 0;
   for (const f of files) {
-    const nm = enc.encode(f.name), dt = enc.encode(f.data), crc = crc32(dt);
+    const nm = enc.encode(f.name), dt = typeof f.data === "string" ? enc.encode(f.data) : f.data, crc = crc32(dt);
     const h = new DataView(new ArrayBuffer(30));
     h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(12, 0x21, true);
     h.setUint32(14, crc, true); h.setUint32(18, dt.length, true); h.setUint32(22, dt.length, true); h.setUint16(26, nm.length, true);
@@ -3124,15 +3148,45 @@ function zipSenseCompressio(files, type) {
   e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, mida, true); e.setUint32(16, off, true);
   return new Blob([...parts, ...cent, e], {type});
 }
-function guiaDocx(t) {
+// El dibuix de l'esquema passa a PNG al navegador perquè el Word el pugui mostrar.
+async function svgPng(svg, w = 1200) {
+  const url = URL.createObjectURL(new Blob([svg], {type: "image/svg+xml"}));
+  try {
+    const img = new Image(); img.src = url; await img.decode();
+    const vb = (svg.match(/viewBox="([^"]+)"/)?.[1] || "0 0 500 340").split(" ").map(Number), h = Math.round(w * vb[3] / vb[2]);
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    return {bytes: new Uint8Array(await blob.arrayBuffer()), w, h};
+  } finally { URL.revokeObjectURL(url); }
+}
+async function guiaDocx(t) {
   const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
   const x = (s) => String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
   const run = (s, o = {}) => !s ? "" : `<w:r>${o.b || o.mono || o.color ? `<w:rPr>${o.mono ? '<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>' : ""}${o.b ? "<w:b/>" : ""}${o.color ? `<w:color w:val="${o.color}"/>` : ""}</w:rPr>` : ""}<w:t xml:space="preserve">${x(s)}</w:t></w:r>`;
   const par = (runs, pPr = "") => `<w:p>${pPr ? `<w:pPr>${pPr}</w:pPr>` : ""}${runs}</w:p>`;
   let body = "";
+  const imgs = [];
   for (const b of guiaBlocs(t)) {
+    if (b.k === "svg") {
+      const png = await svgPng(svgDiagram(b.v, {mode: b.buit ? "etiqueta" : "mira", resp: {}, comprovat: false})).catch(() => null);
+      if (!png) continue;
+      const n = imgs.push(png), cx = 5760000, cy = Math.round(cx * png.h / png.w);   // 16 cm d'ample
+      body += par(`<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${n}" name="Esquema ${n}"/>` +
+        `<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">` +
+        `<pic:nvPicPr><pic:cNvPr id="${n}" name="esquema${n}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg${n}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+        `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`);
+      continue;
+    }
+    if (b.k === "table") {
+      const vora = '<w:top w:val="single" w:sz="4" w:color="888888"/><w:left w:val="single" w:sz="4" w:color="888888"/><w:bottom w:val="single" w:sz="4" w:color="888888"/><w:right w:val="single" w:sz="4" w:color="888888"/><w:insideH w:val="single" w:sz="4" w:color="888888"/><w:insideV w:val="single" w:sz="4" w:color="888888"/>';
+      const cw = Math.floor(9638 / b.cols.length), cel = (s, bold) => `<w:tc><w:tcPr><w:tcW w:w="${cw}" w:type="dxa"/></w:tcPr>${par(run(s, {b: bold}))}</w:tc>`;
+      body += `<w:tbl><w:tblPr><w:tblW w:w="9638" w:type="dxa"/><w:tblBorders>${vora}</w:tblBorders></w:tblPr><w:tblGrid>${b.cols.map(() => `<w:gridCol w:w="${cw}"/>`).join("")}</w:tblGrid>` +
+        `<w:tr>${b.cols.map(c => cel(c, true)).join("")}</w:tr>${b.rows.map(r => `<w:tr>${b.cols.map((_, j) => cel(r[j] || "", j === 0)).join("")}</w:tr>`).join("")}</w:tbl>` + par("");
+      continue;
+    }
     if (b.k === "title") body += par(run(b.t), '<w:pStyle w:val="Title"/>');
-    else if (b.k === "h1") body += par(run(b.t), '<w:pStyle w:val="Heading1"/>');
+    else if (b.k === "h1") body += par(run(b.t), '<w:pStyle w:val="Heading1"/>' + (b.salt ? '<w:pageBreakBefore/>' : ""));
     else if (b.k === "h2") body += par(run(b.t), '<w:pStyle w:val="Heading2"/>');
     else if (b.k === "li") body += par(run("•\t") + run(b.lab, {b: true}) + run(b.t), `<w:tabs><w:tab w:val="left" w:pos="${360 * (b.n + 1)}"/></w:tabs><w:ind w:left="${360 * (b.n + 1)}" w:hanging="300"/>`);
     else body += par(run(b.lab, {b: true}) + run(b.t, {mono: b.mono, color: b.muted ? "555555" : null}));
@@ -3140,15 +3194,17 @@ function guiaDocx(t) {
   const xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
   const estil = (id, nom, pPr, rPr) => `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${nom}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/><w:pPr>${pPr}</w:pPr><w:rPr>${rPr}</w:rPr></w:style>`;
   return zipSenseCompressio([
-    {name: "[Content_Types].xml", data: xml + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>'},
+    {name: "[Content_Types].xml", data: xml + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>'},
     {name: "_rels/.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
-    {name: "word/_rels/document.xml.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+    {name: "word/_rels/document.xml.rels", data: xml + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+      imgs.map((_, i) => `<Relationship Id="rIdImg${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/esquema${i + 1}.png"/>`).join("") + '</Relationships>'},
+    ...imgs.map((im, i) => ({name: `word/media/esquema${i + 1}.png`, data: im.bytes})),
     {name: "word/styles.xml", data: xml + `<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="${LOC}"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>` +
       `<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>` +
       estil("Title", "Title", '<w:spacing w:after="120"/>', '<w:b/><w:sz w:val="40"/><w:szCs w:val="40"/>') +
       estil("Heading1", "heading 1", '<w:keepNext/><w:spacing w:before="320" w:after="120"/><w:outlineLvl w:val="0"/>', '<w:b/><w:color w:val="1F3864"/><w:sz w:val="30"/><w:szCs w:val="30"/>') +
       estil("Heading2", "heading 2", '<w:keepNext/><w:spacing w:before="200" w:after="80"/><w:outlineLvl w:val="1"/>', '<w:b/><w:sz w:val="24"/><w:szCs w:val="24"/>') + `</w:styles>`},
-    {name: "word/document.xml", data: xml + `<w:document xmlns:w="${W}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`}
+    {name: "word/document.xml", data: xml + `<w:document xmlns:w="${W}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`}
   ], "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 }
 // Una còpia ve d'un fitxer: es reconstrueix camp a camp, amb id segurs i tipus forçats.
@@ -3252,7 +3308,7 @@ document.addEventListener("click", (e) => {
     case "visMode": { const st = visState(t, +b.dataset.i); st.mode = b.dataset.m; st.comprovat = false; render(); document.querySelector(`[data-act=visMode][data-i="${b.dataset.i}"][data-m="${b.dataset.m}"]`)?.focus(); break; }
     case "visCheck": { visState(t, +b.dataset.i).comprovat = true; render(); document.querySelector(`[data-act=visCheck][data-i="${b.dataset.i}"]`)?.focus(); break; }
     case "visReset": { const st = visState(t, +b.dataset.i); st.resp = {}; st.comprovat = false; render(); document.querySelector(`[data-visin^="${b.dataset.i}:"]`)?.focus(); break; }
-    case "guiaWord": if (t.guia) baixaFitxer(nomFitxer(t.titol) + ".docx", guiaDocx(t), "No s'ha pogut descarregar el Word"); break;
+    case "guiaWord": if (t.guia) guiaDocx(t).then(f => baixaFitxer(nomFitxer(t.titol) + ".docx", f, "No s'ha pogut descarregar el Word"), () => toast("No s'ha pogut descarregar el Word")); break;
     case "stop": S.busy[b.dataset.key]?.ctl.abort(); break;
     case "level": if (b.dataset.kind === "ex") { S.view.tab = "ex"; (S.exLevelSel ??= {})[t.id] = +b.dataset.l; } else { S.view.tab = "quiz"; (S.levelSel ??= {})[t.id] = +b.dataset.l; } render(); break;
     case "exAsk": if (exEvaluating(t)) { toast("Espera que acabi la correcció."); break; } keepWork(t.exRonda, () => makeExercises(t, S.exLevelSel?.[t.id] ?? recommended(t, "ex"))); break;
