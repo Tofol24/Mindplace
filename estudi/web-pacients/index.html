@@ -592,6 +592,32 @@ const ES = {
 "Teoria": "Teoría",
 "Guia i mapa": "Guía y mapa",
 "Fes-ho visual": "Hazlo visual",
+"Als temes d'exemple no es demanen esquemes nous. En un tema teu, el botó «Fes-ho visual» et fa l'esquema que més t'ajudi.": "En los temas de ejemplo no se piden esquemas nuevos. En un tema tuyo, el botón «Hazlo visual» te hace el esquema que más te ayude.",
+"Les gràfiques del MRU: posició–temps i velocitat–temps": "Las gráficas del MRU: posición–tiempo y velocidad–tiempo",
+"Eix del temps": "Eje del tiempo",
+"A les dues gràfiques, el temps (t) va a l'eix horitzontal, en segons.": "En las dos gráficas, el tiempo (t) va en el eje horizontal, en segundos.",
+"Eix de la posició": "Eje de la posición",
+"A la gràfica x–t, la posició (x) va a l'eix vertical, en metres.": "En la gráfica x–t, la posición (x) va en el eje vertical, en metros.",
+"Posició inicial": "Posición inicial",
+"On és el mòbil quan t = 0 (x₀): on la recta talla l'eix vertical.": "Dónde está el móvil cuando t = 0 (x₀): donde la recta corta el eje vertical.",
+"Pendent de la recta x–t": "Pendiente de la recta x–t",
+"Δx / Δt: és la velocitat. Com més inclinada, més ràpid va.": "Δx / Δt: es la velocidad. Cuanto más inclinada, más rápido va.",
+"Recta v–t horitzontal": "Recta v–t horizontal",
+"Al MRU la velocitat no canvia: la recta és plana.": "En el MRU la velocidad no cambia: la recta es plana.",
+"Àrea sota la recta v–t": "Área bajo la recta v–t",
+"És el desplaçament: Δx = v · t.": "Es el desplazamiento: Δx = v · t.",
+"Les dues gràfiques del MRU": "Las dos gráficas del MRU",
+"Gràfica v–t": "Gráfica v–t",
+"Recta horitzontal": "Recta horizontal",
+"Què indica el pendent": "Qué indica la pendiente",
+"La velocitat": "La velocidad",
+"Que la velocitat no canvia (pendent 0)": "Que la velocidad no cambia (pendiente 0)",
+"Què indica l'àrea": "Qué indica el área",
+"No s'hi fa servir": "No se usa",
+"El desplaçament (Δx = v · t)": "El desplazamiento (Δx = v · t)",
+"Si el mòbil va més ràpid": "Si el móvil va más rápido",
+"Més inclinada": "Más inclinada",
+"Més amunt": "Más arriba",
 "Per practicar: etiqueta l'esquema": "Para practicar: etiqueta el esquema",
 "Torna a fer l'esquema": "Vuelve a hacer el esquema",
 "Mira-ho": "Míralo",
@@ -1308,6 +1334,23 @@ function exampleFQ() {
         {nom:"Gràfiques", idea:"Com es dibuixa", fills:[{nom:"x–t",idea:"recta inclinada"},{nom:"v–t",idea:"recta horitzontal"}]},
       ]},
       relacions:[{de:"Velocitat", a:"Gràfica x–t", tipus:"és el pendent de", explicacio:"Com més ràpid va el mòbil, més inclinada és la recta."}],
+      visuals:[
+        {tipus:"diagrama", titol:"Les gràfiques del MRU: posició–temps i velocitat–temps", svg:'<svg viewBox="0 0 500 340"><rect x="60" y="60" width="175" height="230" fill="#f4f8fd"/><rect x="290" y="60" width="175" height="230" fill="#f4f8fd"/><rect x="290" y="150" width="120" height="140" fill="#cfe8d6"/><path d="M60 295V55M55 290H240" fill="none" stroke="#33404f" stroke-width="2.5"/><path d="M60 52l-5 9h10zM243 290l-9-5v10z" fill="#33404f"/><path d="M290 295V55M285 290H470" fill="none" stroke="#33404f" stroke-width="2.5"/><path d="M290 52l-5 9h10zM473 290l-9-5v10z" fill="#33404f"/><line x1="60" y1="230" x2="225" y2="85" stroke="#2b7bbf" stroke-width="4" stroke-linecap="round"/><path d="M120 177.3H180V124.6" fill="none" stroke="#c2543d" stroke-width="2" stroke-dasharray="5 4"/><line x1="290" y1="150" x2="455" y2="150" stroke="#2f9e6b" stroke-width="4" stroke-linecap="round"/><path d="M410 150V290" fill="none" stroke="#2f9e6b" stroke-width="1.5" stroke-dasharray="4 4"/><circle cx="60" cy="230" r="5" fill="#2b7bbf"/></svg>',
+         parts:[
+          {n:1, nom:"Eix del temps", funcio:"A les dues gràfiques, el temps (t) va a l'eix horitzontal, en segons.", x:200, y:290, lx:200, ly:316},
+          {n:2, nom:"Eix de la posició", funcio:"A la gràfica x–t, la posició (x) va a l'eix vertical, en metres.", x:60, y:100, lx:22, ly:100},
+          {n:3, nom:"Posició inicial", funcio:"On és el mòbil quan t = 0 (x₀): on la recta talla l'eix vertical.", x:60, y:230, lx:22, ly:230},
+          {n:4, nom:"Pendent de la recta x–t", funcio:"Δx / Δt: és la velocitat. Com més inclinada, més ràpid va.", x:180, y:150},
+          {n:5, nom:"Recta v–t horitzontal", funcio:"Al MRU la velocitat no canvia: la recta és plana.", x:440, y:150, lx:478, ly:110},
+          {n:6, nom:"Àrea sota la recta v–t", funcio:"És el desplaçament: Δx = v · t.", x:350, y:225},
+         ]},
+        {tipus:"taula", titol:"Les dues gràfiques del MRU", columnes:["", "Gràfica x–t", "Gràfica v–t"], files:[
+          ["Forma", "Recta inclinada", "Recta horitzontal"],
+          ["Què indica el pendent", "La velocitat", "Que la velocitat no canvia (pendent 0)"],
+          ["Què indica l'àrea", "No s'hi fa servir", "El desplaçament (Δx = v · t)"],
+          ["Si el mòbil va més ràpid", "Més inclinada", "Més amunt"],
+        ]},
+      ],
       conceptes:[
         {id:"c1",nom:"Velocitat",definicio:"Desplaçament per unitat de temps; al MRU és constant."},
         {id:"c2",nom:"Posició i desplaçament",definicio:"On és el mòbil i quant ha canviat la posició."},
@@ -2628,12 +2671,13 @@ function viewVisual(t, v, i) {
 function viewVisuals(t) {
   const g = t.guia, vis = arr(g.visuals).map(normVisual).filter(Boolean);
   const rec = g.visual_recomanat?.tipus && g.visual_recomanat.tipus !== "cap" ? g.visual_recomanat : null;
+  const nota = t.exemple ? `<p class="muted small">Als temes d'exemple no es demanen esquemes nous. En un tema teu, el botó «Fes-ho visual» et fa l'esquema que més t'ajudi.</p>` : "";
   const boto = t.exemple ? "" : `<button class="btn ${vis.length ? "ghost sm" : "primary"}" data-act="visual" type="button" ${S.busy.visual ? "disabled" : ""}>${vis.length ? "Torna a fer l'esquema" : "Fes-ho visual"}</button>`;
   if (!vis.length) return `<section class="panel"><h3>Esquema visual</h3>
     <p class="muted small">${rec ? `Per a aquest tema, a Claude li sembla que t'ajudaria ${esc(rec.motiu || "un esquema visual")}.` : "Un dibuix amb les parts, una taula comparativa, els passos d'un procés o una línia del temps, segons què t'ajudi més en aquest tema."} Compta com una petició.</p>
-    <div class="row">${boto}</div>${busyBox("visual")}</section>`;
+    ${nota}<div class="row">${boto}</div>${busyBox("visual")}</section>`;
   return `<section class="panel"><div class="row"><h3>Esquema visual</h3><span class="spacer"></span>${boto}</div>
-    ${vis.map((v, i) => viewVisual(t, v, i)).join("")}${busyBox("visual")}</section>`;
+    ${nota}${vis.map((v, i) => viewVisual(t, v, i)).join("")}${busyBox("visual")}</section>`;
 }
 function viewGuide(t) {
   const g = t.guia;
