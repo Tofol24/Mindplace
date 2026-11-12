@@ -160,6 +160,27 @@ input[type=text],input[type=password],select{border:1px solid var(--line);border
 .branch-name{font-family:var(--f-display);font-weight:700;font-size:1.05rem;display:flex;gap:8px;align-items:center}
 .branch-name::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--b);flex:none}
 .branch-idea{font-size:.9rem;color:var(--muted)}
+/* Esquemes visuals (diagrama etiquetat, taula, seqüència, cicle, línia del temps) */
+.vis{display:flex;flex-direction:column;gap:12px}
+.vis + .vis{border-top:1px solid var(--line);padding-top:14px}
+.vis-wrap{display:grid;grid-template-columns:minmax(0,3fr) minmax(220px,2fr);gap:16px;align-items:start}
+@media (max-width:760px){.vis-wrap{grid-template-columns:1fr}}
+.vis-fig{background:#fbfcf7;border:1px solid var(--line);border-radius:var(--r);padding:6px}
+.vis-fig svg{width:100%;height:auto;display:block}
+.vis-parts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.vis-parts li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.vis-n{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.vis-parts input{width:100%}
+.vis-parts .ok{color:var(--s1);font-weight:700}.vis-parts .ko{color:var(--s2);font-weight:700}
+.vis-table{overflow-x:auto}.vis-table table{border-collapse:collapse;width:100%;font-size:.95rem}
+.vis-table th,.vis-table td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.vis-table thead th{background:var(--soft,#f1efe8)}
+.vis-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;counter-reset:pas}
+.vis-steps li{counter-increment:pas;border:1px solid var(--line);border-top:4px solid var(--s5);border-radius:var(--r);padding:10px;background:var(--card)}
+.vis-steps li::before{content:counter(pas);font-weight:800;color:var(--s5);margin-right:6px}
+.vis-steps.cicle li{border-top-color:var(--s1)}.vis-steps.cicle li::before{color:var(--s1)}
+.vis-time{list-style:none;margin:0;padding:0 0 0 18px;border-left:3px solid var(--s3);display:flex;flex-direction:column;gap:10px}
+.vis-time li{position:relative}.vis-time li::before{content:"";position:absolute;left:-26px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--s3)}
 .kids{list-style:none;margin:2px 0 0;padding:0 0 0 12px;border-left:2px solid var(--b);display:flex;flex-direction:column;gap:6px}
 .kids li{font-size:.92rem}
 .kids b{display:block}
@@ -537,6 +558,42 @@ const ES = {
 "Guia i fórmules": "Guía y fórmulas",
 "Teoria": "Teoría",
 "Guia i mapa": "Guía y mapa",
+"Fes-ho visual": "Hazlo visual",
+"Torna a fer l'esquema": "Vuelve a hacer el esquema",
+"Mira-ho": "Míralo",
+"Etiqueta-ho tu": "Etiquétalo tú",
+"Comprova": "Comprueba",
+"Torna a començar": "Vuelve a empezar",
+"encertades": "acertadas",
+"Mode": "Modo",
+"Escriu el nom de cada part. Després comprova-ho: es corregeix aquí mateix, sense gastar peticions.": "Escribe el nombre de cada parte. Después compruébalo: se corrige aquí mismo, sin gastar peticiones.",
+"Claude està fent l'esquema visual del tema.": "Claude está haciendo el esquema visual del tema.",
+"Per a aquest tema, Claude no hi ha trobat cap esquema visual que t'ajudi més que el resum i el mapa.": "Para este tema, Claude no ha encontrado ningún esquema visual que te ayude más que el resumen y el mapa.",
+"↻ Després de l'últim pas, torna a començar.": "↻ Después del último paso, vuelve a empezar.",
+"Un dibuix amb les parts, una taula comparativa, els passos d'un procés o una línia del temps, segons què t'ajudi més en aquest tema. Compta com una petició.": "Un dibujo con las partes, una tabla comparativa, los pasos de un proceso o una línea del tiempo, según lo que más te ayude en este tema. Cuenta como una petición.",
+"Cèl·lula vegetal i les seves parts": "Célula vegetal y sus partes",
+"Ribosomes": "Ribosomas",
+"Coberta rígida de cel·lulosa que dona forma i protegeix (només vegetal).": "Cubierta rígida de celulosa que da forma y protege (solo vegetal).",
+"Separa la cèl·lula de l'exterior i controla què entra i què surt.": "Separa la célula del exterior y controla qué entra y qué sale.",
+"Guarda l'ADN, la informació genètica.": "Guarda el ADN, la información genética.",
+"Gran a la cèl·lula vegetal; guarda aigua i substàncies.": "Grande en la célula vegetal; guarda agua y sustancias.",
+"Fa la fotosíntesi: fabrica glucosa i allibera oxigen.": "Hace la fotosíntesis: fabrica glucosa y libera oxígeno.",
+"Fa la respiració cel·lular i obté energia (ATP).": "Hace la respiración celular y obtiene energía (ATP).",
+"Fabriquen proteïnes seguint les instruccions de l'ADN.": "Fabrican proteínas siguiendo las instrucciones del ADN.",
+"Medi intern on hi ha els orgànuls.": "Medio interno donde están los orgánulos.",
+"Procariota, animal i vegetal": "Procariota, animal y vegetal",
+"Orgànuls amb membrana": "Orgánulos con membrana",
+"No: ADN lliure al citoplasma": "No: ADN libre en el citoplasma",
+"Sí (no de cel·lulosa)": "Sí (no de celulosa)",
+"Sí, de cel·lulosa": "Sí, de celulosa",
+"Cloroplasts": "Cloroplastos",
+"Vacúols": "Vacuolas",
+"Petits": "Pequeñas",
+"Un de gran": "Una grande",
+"Exemples": "Ejemplos",
+"Bacteris": "Bacterias",
+"Animals": "Animales",
+"Plantes": "Plantas",
 "Encara no hi ha guia": "Todavía no hay guía",
 "Afegeix material i prem «Fes la guia».": "Añade material y pulsa «Haz la guía».",
 "Ves a Material": "Ve a Material",
@@ -992,6 +1049,11 @@ const ES_RX = [
   [/^\((.+)\)$/, (_, a) => ES[a] ? `(${ES[a]})` : null],
   [/^([NLP]\d) (.+)$/, (_, a, b) => ES[b] ? `${a} ${ES[b]}` : null],
   [/^Pas (\d+)$/, "Paso $1"],
+  [/^Part (\d+)$/, "Parte $1"],
+  [/^Què és la part (\d+)\?$/, "¿Qué es la parte $1?"],
+  [/^✗ És: (.+)$/, (_, a) => `✗ Es: ${T(a)}`],
+  [/^✓ (.+)$/, (_, a) => ES[a] ? `✓ ${ES[a]}` : null],
+  [/^Per a aquest tema, a Claude li sembla que t'ajudaria (.+)\. Compta com una petició\.$/, (_, a) => `Para este tema, a Claude le parece que te ayudaría ${a}. Cuenta como una petición.`],
   [/^Pas (\d+) · (.+)$/, (_, n, x) => `Paso ${n} · ${T(x)}`],
   [/^Pas (\d+) de (\d+) · (.+)$/, (_, n, m, x) => `Paso ${n} de ${m} · ${T(x)}`],
   [/^Següent pas \((\d+) de (\d+)\)$/, "Siguiente paso ($1 de $2)"],
@@ -1127,6 +1189,27 @@ function exampleTema() {
         {de:"Nucli (ADN)", a:"Ribosoma", tipus:"dona instruccions", explicacio:"L'ADN porta la informació que els ribosomes fan servir per fabricar proteïnes."},
         {de:"Procariota", a:"Mitocondri", tipus:"origen", explicacio:"La teoria endosimbiòtica diu que els mitocondris provenen de bacteris antics."},
         {de:"Teoria cel·lular", a:"Tipus de cèl·lules", tipus:"s'aplica a", explicacio:"Els principis valen tant per a procariotes com per a eucariotes."},
+      ],
+      visuals:[
+        {tipus:"diagrama", titol:"Cèl·lula vegetal i les seves parts", svg:'<svg viewBox="0 0 500 340"><rect x="60" y="30" width="380" height="280" rx="30" fill="#d7ecc4" stroke="#4c8a2a" stroke-width="8"/><rect x="70" y="40" width="360" height="260" rx="22" fill="#f1f8e8" stroke="#86b866" stroke-width="2.5"/><ellipse cx="290" cy="180" rx="100" ry="76" fill="#cfe5f6" stroke="#5f9ccc" stroke-width="2.5"/><circle cx="150" cy="118" r="46" fill="#e9d6f4" stroke="#8a5db0" stroke-width="3"/><circle cx="160" cy="110" r="14" fill="#b88ad8"/><path d="M125 120c8-10 14 6 22-4s14 8 22 0" fill="none" stroke="#8a5db0" stroke-width="1.5"/><g transform="rotate(-18 130 250)"><ellipse cx="130" cy="250" rx="30" ry="14" fill="#8cc56a" stroke="#3e7d1e" stroke-width="2"/><path d="M110 250h40M114 244h32M114 256h32" stroke="#3e7d1e" stroke-width="1.5"/></g><g transform="rotate(22 385 85)"><ellipse cx="385" cy="85" rx="30" ry="14" fill="#8cc56a" stroke="#3e7d1e" stroke-width="2"/><path d="M365 85h40M369 79h32M369 91h32" stroke="#3e7d1e" stroke-width="1.5"/></g><g transform="rotate(-28 395 262)"><ellipse cx="395" cy="262" rx="30" ry="14" fill="#8cc56a" stroke="#3e7d1e" stroke-width="2"/><path d="M375 262h40M379 256h32M379 268h32" stroke="#3e7d1e" stroke-width="1.5"/></g><ellipse cx="235" cy="278" rx="26" ry="12" fill="#f6c7a0" stroke="#c4723b" stroke-width="2"/><path d="M215 278l6-7 6 13 6-13 6 13 6-13 6 7" fill="none" stroke="#c4723b" stroke-width="1.5"/><g transform="rotate(14 255 70)"><ellipse cx="255" cy="70" rx="26" ry="12" fill="#f6c7a0" stroke="#c4723b" stroke-width="2"/><path d="M235 70l6-7 6 13 6-13 6 13 6-13 6 7" fill="none" stroke="#c4723b" stroke-width="1.5"/></g><g fill="#5a4a3a"><circle cx="206" cy="150" r="3.5"/><circle cx="214" cy="158" r="3.5"/><circle cx="200" cy="162" r="3.5"/><circle cx="330" cy="285" r="3.5"/><circle cx="340" cy="60" r="3.5"/><circle cx="96" cy="200" r="3.5"/><circle cx="180" cy="230" r="3.5"/></g></svg>',
+         parts:[
+          {n:1, nom:"Paret cel·lular", funcio:"Coberta rígida de cel·lulosa que dona forma i protegeix (només vegetal).", x:62, y:200, lx:22, ly:200},
+          {n:2, nom:"Membrana plasmàtica", funcio:"Separa la cèl·lula de l'exterior i controla què entra i què surt.", x:70, y:110, lx:22, ly:110},
+          {n:3, nom:"Nucli", funcio:"Guarda l'ADN, la informació genètica.", x:140, y:128},
+          {n:4, nom:"Vacúol", funcio:"Gran a la cèl·lula vegetal; guarda aigua i substàncies.", x:300, y:186},
+          {n:5, nom:"Cloroplast", funcio:"Fa la fotosíntesi: fabrica glucosa i allibera oxigen.", x:395, y:262},
+          {n:6, nom:"Mitocondri", funcio:"Fa la respiració cel·lular i obté energia (ATP).", x:235, y:278},
+          {n:7, nom:"Ribosomes", funcio:"Fabriquen proteïnes seguint les instruccions de l'ADN.", x:222, y:150, lx:478, ly:150},
+          {n:8, nom:"Citoplasma", funcio:"Medi intern on hi ha els orgànuls.", x:110, y:205},
+         ]},
+        {tipus:"taula", titol:"Procariota, animal i vegetal", columnes:["", "Procariota", "Eucariota animal", "Eucariota vegetal"], files:[
+          ["Nucli", "No: ADN lliure al citoplasma", "Sí", "Sí"],
+          ["Orgànuls amb membrana", "No", "Sí", "Sí"],
+          ["Paret cel·lular", "Sí (no de cel·lulosa)", "No", "Sí, de cel·lulosa"],
+          ["Cloroplasts", "No", "No", "Sí"],
+          ["Vacúols", "No", "Petits", "Un de gran"],
+          ["Exemples", "Bacteris", "Animals", "Plantes"],
+        ]},
       ],
       conceptes:[
         {id:"c1",nom:"Teoria cel·lular",definicio:"Conjunt de tres principis sobre la cèl·lula com a unitat de la vida."},
@@ -1706,7 +1789,8 @@ Respon només amb un objecte JSON amb aquesta forma exacta:
  "resum":[{"apartat":"nom de l'apartat","punts":["idea clau"]}],
  "mapa":{"centre":"idea central","branques":[{"nom":"branca","idea":"de què va, en poques paraules","fills":[{"nom":"subconcepte","idea":"explicació breu"}]}]},
  "relacions":[{"de":"concepte A","a":"concepte B","tipus":"causa / conseqüència / part de / contrast / exemple de / precedeix…","explicacio":"una frase que expliqui la relació"}],
- "conceptes":[{"id":"c1","nom":"concepte clau","definicio":"definició breu"}]}
+ "conceptes":[{"id":"c1","nom":"concepte clau","definicio":"definició breu"}],
+ "visual_recomanat":{"tipus":"diagrama | taula | sequencia | cicle | linia_temps | cap","motiu":"en poques paraules, quin esquema ajudaria, p. ex. «un dibuix de la cèl·lula amb les parts»"}}
 Mides: 3-7 apartats amb 2-6 punts cadascun; 3-6 branques amb 2-5 fills cadascuna; 4-10 relacions entre idees de branques diferents; 8-20 conceptes clau (els que podria preguntar un examen), amb id c1, c2, c3…${isProb(s) ? `
 
 És una assignatura de problemes. Afegeix també al mateix objecte JSON:
@@ -2368,6 +2452,151 @@ function viewMaterial(t) {
     </div>`;
 }
 
+/* ============================================================
+   Esquemes visuals: Claude tria el format i la pàgina el dibuixa
+   ============================================================ */
+// L'SVG que proposa Claude es reconstrueix amb una llista tancada d'elements i atributs de forma i color:
+// sense text, scripts, estils, enllaços ni imatges. Els noms de les parts els posa la pàgina.
+const SVG_EL = new Set(["svg", "g", "path", "circle", "ellipse", "rect", "line", "polyline", "polygon"]);
+const SVG_AT = new Set(["d", "cx", "cy", "r", "rx", "ry", "x", "y", "width", "height", "x1", "y1", "x2", "y2", "points", "fill", "stroke", "stroke-width",
+  "stroke-linecap", "stroke-linejoin", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "transform"]);
+const SVG_NS = "http://www.w3.org/2000/svg";
+function cleanSvg(src) {
+  let doc;
+  try { doc = new DOMParser().parseFromString(String(src || "").slice(0, 60000), "image/svg+xml"); } catch { return null; }
+  const root = doc.documentElement;
+  if (!root || root.nodeName !== "svg" || doc.querySelector("parsererror")) return null;
+  const vb = String(root.getAttribute("viewBox") || "0 0 500 340").trim().split(/[\s,]+/).map(Number);
+  if (vb.length !== 4 || vb.some(n => !Number.isFinite(n)) || vb[2] <= 0 || vb[3] <= 0) return null;
+  const copy = (el, depth) => {
+    if (depth > 12 || !SVG_EL.has(el.nodeName)) return "";
+    const at = [...el.attributes].filter(a => SVG_AT.has(a.name) && /^[#\w\s.,%()+-]*$/.test(a.value) && !/url|script|expression/i.test(a.value))
+      .map(a => ` ${a.name}="${esc(a.value)}"`).join("");
+    const kids = [...el.children].map(c => copy(c, depth + 1)).join("");
+    return el.nodeName === "svg" ? kids : `<${el.nodeName}${at}>${kids}</${el.nodeName}>`;
+  };
+  return {vb, inner: copy(root, 0)};
+}
+const VIS_TIPUS = ["diagrama", "taula", "sequencia", "cicle", "linia_temps"];
+function normVisual(v) {
+  const str = (x, n) => String(x ?? "").slice(0, n);
+  if (!v || !VIS_TIPUS.includes(v.tipus)) return null;
+  const o = {tipus: v.tipus, titol: str(v.titol, 120)};
+  if (v.tipus === "diagrama") {
+    const c = cleanSvg(v.svg); if (!c || !c.inner) return null;
+    const num = (x) => Number.isFinite(+x) ? +x : null;
+    o.svg = v.svg; o.parts = arr(v.parts).slice(0, 12).map((p, i) => ({n: i + 1, nom: str(p.nom, 60), funcio: str(p.funcio, 240), x: num(p.x), y: num(p.y), lx: num(p.lx), ly: num(p.ly)}))
+      .filter(p => p.nom && p.x !== null && p.y !== null);
+    if (o.parts.length < 2) return null;
+  } else if (v.tipus === "taula") {
+    o.columnes = arr(v.columnes).slice(0, 5).map(x => str(x, 60));
+    o.files = arr(v.files).slice(0, 10).map(f => arr(f).slice(0, o.columnes.length).map(x => str(x, 200)));
+    if (o.columnes.length < 2 || !o.files.length) return null;
+  } else if (v.tipus === "linia_temps") {
+    o.fets = arr(v.fets).slice(0, 12).map(f => ({data: str(f.data, 40), fet: str(f.fet, 240)})).filter(f => f.fet);
+    if (!o.fets.length) return null;
+  } else {
+    o.passos = arr(v.passos).slice(0, 10).map(x => ({nom: str(x.nom, 80), idea: str(x.idea, 240)})).filter(x => x.nom);
+    if (o.passos.length < 2) return null;
+  }
+  return o;
+}
+async function makeVisual(t) {
+  const s = getSubj(t.subjId), g = t.guia;
+  if (!g) return;
+  const r = await work("visual", "Claude està fent l'esquema visual del tema.", (signal, onText) => AI.json(
+`Ets un professor/a que fa esquemes visuals perquè ${WHO.una} entengui i recordi millor el que estudia.
+Assignatura: ${s.nom}. Tema: ${t.titol}.
+Aquest és el resum del tema:
+
+<guia>
+${guideText(t)}
+</guia>
+
+Tria els 1 o 2 esquemes visuals que més l'ajudarien, d'entre aquests tipus:
+- "diagrama": un dibuix esquemàtic amb parts numerades (una cèl·lula, un òrgan, un aparell, una planta, un volcà…). Només si el tema té una estructura física o espacial que es pugui dibuixar.
+- "taula": una taula comparativa de semblances i diferències entre 2-4 elements.
+- "sequencia": passos o fases d'un procés, en ordre.
+- "cicle": fases que es repeteixen en cercle.
+- "linia_temps": fets amb data (història, literatura…).
+Si cap tipus no ajuda de debò, respon {"visuals":[]}.
+Basa't només en el contingut del resum. Escriu en ${guideLang(s)}.
+
+Respon només amb un objecte JSON {"visuals":[…]} on cada element té una d'aquestes formes:
+{"tipus":"diagrama","titol":"…","svg":"<svg viewBox=\\"0 0 500 340\\">…</svg>","parts":[{"n":1,"nom":"…","funcio":"una frase","x":0,"y":0,"lx":0,"ly":0}]}
+{"tipus":"taula","titol":"…","columnes":["","A","B"],"files":[["característica","…","…"]]}
+{"tipus":"sequencia","titol":"…","passos":[{"nom":"…","idea":"…"}]}   (o "cicle", amb la mateixa forma)
+{"tipus":"linia_temps","titol":"…","fets":[{"data":"…","fet":"…"}]}
+Regles del diagrama:
+- L'SVG només pot tenir g, path, circle, ellipse, rect, line, polyline i polygon, amb atributs de forma i de color (fill, stroke, stroke-width, opacity, transform). Sense text, sense estils, sense imatges: els noms els posa l'aplicació.
+- viewBox 0 0 500 340. Dibuixa entre x=50 i x=450 i deixa els marges per a les etiquetes. Formes senzilles però reconeixibles i colors suaus, diferents per a cada part.
+- 4-10 parts numerades. x,y és el punt de la part on va el número, dins la part. Si la part és prima o petita (una membrana, una línia), posa lx,ly a un marge (x entre 15 i 35 o entre 465 i 485) i l'aplicació hi traçarà una línia guia.
+Mides: taula de 3-8 files; seqüència o cicle de 3-8 passos; línia del temps de 3-10 fets.`, {signal, onText}));
+  if (!r) return;
+  const vis = arr(r.visuals).map(normVisual).filter(Boolean).slice(0, 2);
+  if (S.temes[t.id] !== t || t.guia !== g) return;   // el tema o la guia han canviat mentre esperàvem
+  if (!vis.length) { S.errors.visual = "Per a aquest tema, Claude no hi ha trobat cap esquema visual que t'ajudi més que el resum i el mapa."; render(); return; }
+  g.visuals = vis; delete S.vis; saveTema(t); render();
+}
+// «Etiqueta-ho tu»: es corregeix aquí mateix, sense gastar cap petició.
+const normNom = (x) => String(x || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+function lev(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 3;
+  const d = Array.from({length: b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) { let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = tmp; } }
+  return d[b.length];
+}
+function nomOk(resp, nom) {
+  const a = normNom(resp), b = normNom(nom); if (!a) return false;
+  if (a === b || lev(a, b) <= (b.length > 6 ? 2 : 1)) return true;
+  // «membrana» per «membrana plasmàtica», «ribosoma» per «ribosomes»…
+  const wa = a.split(" "), wb = b.split(" ");
+  return wb[0].length >= 4 && wa.some(w => w.length >= 4 && (lev(w, wb[0]) <= 1 || wb[0].startsWith(w) || w.startsWith(wb[0].slice(0, -1))));
+}
+function visState(t, i) { const k = t.id + ":" + i; return (S.vis ??= {})[k] ??= {mode: "mira", resp: {}, comprovat: false}; }
+function svgDiagram(v, st) {
+  const c = cleanSvg(v.svg); if (!c) return "";
+  const amaga = st.mode === "etiqueta";
+  const marks = v.parts.map(p => {
+    const lx = p.lx ?? p.x, ly = p.ly ?? p.y;
+    const ok = amaga && st.comprovat ? nomOk(st.resp[p.n], p.nom) : null;
+    const col = ok === true ? "#2f9e6b" : ok === false ? "#c2543d" : "#1f2430";
+    return (p.lx !== null && p.ly !== null ? `<line x1="${p.x}" y1="${p.y}" x2="${lx}" y2="${ly}" stroke="#1f2430" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="${p.x}" cy="${p.y}" r="3" fill="#1f2430"/>` : "") +
+      `<circle cx="${lx}" cy="${ly}" r="12" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${lx}" y="${ly + 4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">${p.n}</text>`;
+  }).join("");
+  const desc = amaga ? "Dibuix amb les parts numerades, sense noms." : v.parts.map(p => `${p.n}: ${p.nom}`).join(", ");
+  return `<svg xmlns="${SVG_NS}" viewBox="${c.vb.join(" ")}" role="img" aria-label="${esc(v.titol)}. ${esc(desc)}">${c.inner}${marks}</svg>`;
+}
+function viewVisual(t, v, i) {
+  const titol = `<h4>${esc(v.titol)}</h4>`;
+  if (v.tipus === "taula") return `<div class="vis">${titol}<div class="vis-table"><table><thead><tr>${v.columnes.map(c => `<th scope="col">${esc(c)}</th>`).join("")}</tr></thead><tbody>${v.files.map(f => `<tr>${f.map((x, j) => j === 0 ? `<th scope="row">${esc(x)}</th>` : `<td>${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+  if (v.tipus === "linia_temps") return `<div class="vis">${titol}<ol class="vis-time">${v.fets.map(f => `<li><strong>${esc(f.data)}</strong> · ${esc(f.fet)}</li>`).join("")}</ol></div>`;
+  if (v.tipus !== "diagrama") return `<div class="vis">${titol}<ol class="vis-steps ${v.tipus === "cicle" ? "cicle" : ""}">${v.passos.map(x => `<li><strong>${esc(x.nom)}</strong>${x.idea ? `<p class="muted small">${esc(x.idea)}</p>` : ""}</li>`).join("")}</ol>${v.tipus === "cicle" ? `<p class="muted small">↻ Després de l'últim pas, torna a començar.</p>` : ""}</div>`;
+  const st = visState(t, i), et = st.mode === "etiqueta";
+  const encerts = et && st.comprovat ? v.parts.filter(p => nomOk(st.resp[p.n], p.nom)).length : 0;
+  const llista = et
+    ? v.parts.map(p => { const ok = st.comprovat ? nomOk(st.resp[p.n], p.nom) : null;
+        return `<li><span class="vis-n" aria-hidden="true">${p.n}</span><span><label class="sr" for="vi_${t.id}_${i}_${p.n}">Part ${p.n}</label><input type="text" id="vi_${t.id}_${i}_${p.n}" data-visin="${i}:${p.n}" value="${esc(st.resp[p.n] || "")}" autocomplete="off" placeholder="Què és la part ${p.n}?">${ok === null ? "" : ok ? `<span class="ok small"> ✓ ${esc(p.nom)}</span>` : `<span class="ko small"> ✗ És: ${esc(p.nom)}</span>`}${ok === null ? "" : `<p class="muted small">${esc(p.funcio)}</p>`}</span></li>`; }).join("")
+    : v.parts.map(p => `<li><span class="vis-n" aria-hidden="true">${p.n}</span><span><strong>${esc(p.nom)}</strong>${p.funcio ? `<p class="muted small">${esc(p.funcio)}</p>` : ""}</span></li>`).join("");
+  return `<div class="vis">
+    <div class="row">${titol}<span class="spacer"></span>
+      <div class="row" role="group" aria-label="Mode"><button class="btn sm ${et ? "ghost" : "primary"}" data-act="visMode" data-i="${i}" data-m="mira" aria-pressed="${!et}" type="button">Mira-ho</button><button class="btn sm ${et ? "primary" : "ghost"}" data-act="visMode" data-i="${i}" data-m="etiqueta" aria-pressed="${et}" type="button">Etiqueta-ho tu</button></div></div>
+    <div class="vis-wrap"><div class="vis-fig">${svgDiagram(v, st)}</div>
+      <div>${et ? `<p class="small">Escriu el nom de cada part. Després comprova-ho: es corregeix aquí mateix, sense gastar peticions.</p>` : ""}
+        <ol class="vis-parts">${llista}</ol>
+        ${et ? `<div class="row" style="margin-top:8px"><button class="btn sm primary" data-act="visCheck" data-i="${i}" type="button">Comprova</button><button class="btn sm ghost" data-act="visReset" data-i="${i}" type="button">Torna a començar</button>${st.comprovat ? `<span class="small" role="status"><strong>${encerts} de ${v.parts.length}</strong> encertades</span>` : ""}</div>` : ""}</div></div></div>`;
+}
+function viewVisuals(t) {
+  const g = t.guia, vis = arr(g.visuals);
+  const rec = g.visual_recomanat?.tipus && g.visual_recomanat.tipus !== "cap" ? g.visual_recomanat : null;
+  const boto = t.exemple ? "" : `<button class="btn ${vis.length ? "ghost sm" : "primary"}" data-act="visual" type="button" ${S.busy.visual ? "disabled" : ""}>${vis.length ? "Torna a fer l'esquema" : "Fes-ho visual"}</button>`;
+  if (!vis.length) return `<section class="panel"><h3>Esquema visual</h3>
+    <p class="muted small">${rec ? `Per a aquest tema, a Claude li sembla que t'ajudaria ${esc(rec.motiu || "un esquema visual")}.` : "Un dibuix amb les parts, una taula comparativa, els passos d'un procés o una línia del temps, segons què t'ajudi més en aquest tema."} Compta com una petició.</p>
+    <div class="row">${boto}</div>${busyBox("visual")}</section>`;
+  return `<section class="panel"><div class="row"><h3>Esquema visual</h3><span class="spacer"></span>${boto}</div>
+    ${vis.map((v, i) => viewVisual(t, v, i)).join("")}${busyBox("visual")}</section>`;
+}
 function viewGuide(t) {
   const g = t.guia;
   if (!g) return `<div class="panel empty"><h3>Encara no hi ha guia</h3><p>Afegeix material i prem «Fes la guia».</p><button class="btn" data-act="tab" data-tab="material" type="button">Ves a Material</button>${busyBox("guia")}</div>`;
@@ -2392,6 +2621,7 @@ function viewGuide(t) {
           <ul class="kids">${arr(b.fills).map(f => `<li><b>${esc(f.nom)}</b>${f.idea ? `<span>${esc(f.idea)}</span>` : ""}</li>`).join("")}</ul></div>`).join("")}</div>
       </div>
     </section>
+    ${viewVisuals(t)}
     ${arr(g.relacions).length ? `<section class="panel"><h3>Com es relacionen les idees</h3><p class="muted small">Aquestes connexions són les que et preguntaran als nivells 3 i 4.</p>
       <div class="rels">${arr(g.relacions).map(r => `<div class="rel"><div class="rel-line"><span class="node">${esc(r.de)}</span><span class="arrow">— ${esc(r.tipus)} →</span><span class="node">${esc(r.a)}</span></div><p class="muted small">${esc(r.explicacio)}</p></div>`).join("")}</div></section>` : ""}
     <section class="panel"><div class="row"><h3>Conceptes clau</h3><span class="spacer"></span>
@@ -3013,6 +3243,10 @@ document.addEventListener("click", (e) => {
       S.mats[m.id] = m; t.mats = [...arr(t.mats), m.id]; saveMat(m); saveTema(t); delete S.paste[t.id]; render(); break; }
     case "guide": if (!t.exemple) keepWork([t.ronda, t.exRonda], () => makeGuide(t)); break;
     case "guiaPdf": if (t.guia) imprimeixGuia(t); break;
+    case "visual": if (t.guia && !t.exemple && !S.busy.visual) makeVisual(t); break;
+    case "visMode": { const st = visState(t, +b.dataset.i); st.mode = b.dataset.m; st.comprovat = false; render(); document.querySelector(`[data-act=visMode][data-i="${b.dataset.i}"][data-m="${b.dataset.m}"]`)?.focus(); break; }
+    case "visCheck": { visState(t, +b.dataset.i).comprovat = true; render(); document.querySelector(`[data-act=visCheck][data-i="${b.dataset.i}"]`)?.focus(); break; }
+    case "visReset": { const st = visState(t, +b.dataset.i); st.resp = {}; st.comprovat = false; render(); document.querySelector(`[data-visin^="${b.dataset.i}:"]`)?.focus(); break; }
     case "guiaWord": if (t.guia) baixaFitxer(nomFitxer(t.titol) + ".docx", guiaDocx(t), "No s'ha pogut descarregar el Word"); break;
     case "stop": S.busy[b.dataset.key]?.ctl.abort(); break;
     case "level": if (b.dataset.kind === "ex") { S.view.tab = "ex"; (S.exLevelSel ??= {})[t.id] = +b.dataset.l; } else { S.view.tab = "quiz"; (S.levelSel ??= {})[t.id] = +b.dataset.l; } render(); break;
@@ -3077,6 +3311,7 @@ document.addEventListener("input", (e) => {
       if (Mic.qid === q.id) { Mic.base = el.value.replace(/\s*$/, ""); Mic.finals = ""; } /* el dictat continua des del text corregit */ if (Mic.qid !== q.id && !el.value.trim()) q.oral = false; saveTemaSoon(t); } }
   if (el.dataset.exans) { const q = exItem(t, el.dataset.exans); if (q) { q.resposta = el.value; saveTemaSoon(t); } }
   if (el.dataset.xatin) S.xatDraft[el.dataset.xatin] = el.value;
+  if (el.dataset.visin) { const [i, n] = el.dataset.visin.split(":"); visState(t, +i).resp[n] = el.value; }
   if (el.dataset.exstep) { const [qid, j] = el.dataset.exstep.split(":"); const q = exItem(t, qid);
     if (q) { const n = arr(q.solucio.passos).length; q.passosAlumna = Array.from({length: n}, (_, i) => String(q.passosAlumna?.[i] ?? "")); q.passosAlumna[+j] = el.value; saveTemaSoon(t); } }
   if (el.dataset.mat && !t.exemple) { const m = S.mats[el.dataset.mat]; if (m) { m.text = el.value.slice(0, MAX_MAT); saveSoon("m" + m.id, () => saveMat(m)); } }
