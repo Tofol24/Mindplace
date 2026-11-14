@@ -1,8 +1,8 @@
 /* APRENS · portada de aprens.net. Colors i lletra dels títols, els d'aprens.es. */
 @font-face{font-family:"Economica";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/economica-700.woff2) format("woff2")}
-:root{--on-blau:#fff;--paper:#f4f6f9;--card:#fff;--ink:#22303f;--muted:#5d6b7c;--line:#dfe4ec;--blau:#3d69ab;--blau-soft:#e6eef9;--verd:#3d7a1a;--verd-soft:#ebf5e3;--taronja:#a3500d;--taronja-soft:#fbefe2;--lila:#6d5aa8;--lila-soft:#efecf8;--vermell:#a3284f;--vermell-soft:#f8e6ec;--turquesa:#0d6e69;--turquesa-soft:#e0f2f0;
+:root{--on-blau:#fff;--paper:#f4f6f9;--card:#fff;--ink:#22303f;--muted:#5d6b7c;--line:#dfe4ec;--blau:#3d69ab;--blau-soft:#e6eef9;--verd:#3d7a1a;--verd-soft:#ebf5e3;--taronja:#a3500d;--taronja-soft:#fbefe2;--lila:#6d5aa8;--lila-soft:#efecf8;--vermell:#a3284f;--vermell-soft:#f8e6ec;--turquesa:#0d6e69;--turquesa-soft:#e0f2f0;--indi:#4a4f9e;--indi-soft:#e9eaf7;
   --f-tit:"Economica","Avenir Next Condensed","Arial Narrow",sans-serif;--f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-@media (prefers-color-scheme:dark){:root{--on-blau:#0d1724;--paper:#11161d;--card:#19202a;--ink:#e6ebf2;--muted:#9aa7b8;--line:#2a3442;--blau:#86aee8;--blau-soft:#1d2a3d;--verd:#8fcf63;--verd-soft:#1d2b17;--taronja:#f0a35e;--taronja-soft:#33241a;--lila:#b3a4ea;--lila-soft:#272238;--vermell:#ef8fae;--vermell-soft:#361d27;--turquesa:#6fd3c8;--turquesa-soft:#16302d;color-scheme:dark}}
+@media (prefers-color-scheme:dark){:root{--on-blau:#0d1724;--paper:#11161d;--card:#19202a;--ink:#e6ebf2;--muted:#9aa7b8;--line:#2a3442;--blau:#86aee8;--blau-soft:#1d2a3d;--verd:#8fcf63;--verd-soft:#1d2b17;--taronja:#f0a35e;--taronja-soft:#33241a;--lila:#b3a4ea;--lila-soft:#272238;--vermell:#ef8fae;--vermell-soft:#361d27;--turquesa:#6fd3c8;--turquesa-soft:#16302d;--indi:#a6abef;--indi-soft:#23264a;color-scheme:dark}}
 *{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--f-body)}
 a{color:var(--blau)}
@@ -43,6 +43,7 @@ main{max-width:1080px;margin:0 auto;padding:8px max(16px,env(safe-area-inset-lef
 .porta.explica{--c:var(--lila);--cs:var(--lila-soft)}
 .porta.lab{--c:var(--vermell);--cs:var(--vermell-soft)}
 .porta.esport{--c:var(--turquesa);--cs:var(--turquesa-soft)}
+.porta.filo{--c:var(--indi);--cs:var(--indi-soft)}
 
 .filtres{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .filtres button{font:600 .9rem var(--f-body);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
