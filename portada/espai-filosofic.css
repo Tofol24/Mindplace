@@ -9,6 +9,9 @@ html[lang="es"] [lang="ca"], html[lang="ca"] [lang="es"]{display:none !important
 @media (max-width:640px){.espai-menu{order:3;width:100%;margin-left:0;gap:12px}}
 
 .espai{gap:0}
+.tornar{margin:0 0 12px}
+.tornar a{display:inline-block;font-weight:700;text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 16px}
+.tornar a:hover{border-color:var(--blau)}
 .espai .wrap{display:block}
 .espai section{padding:36px 0;border-top:1px solid var(--line)}
 .espai .read{max-width:66ch}
