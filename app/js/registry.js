@@ -94,6 +94,10 @@ window.APRENS_TOOLS = [
     desc:"Juego infantil de exposición gradual para la ansiedad de separación (para madres y padres): escalera de misiones de valiente y dos llaves, el QUÉ y el CÓMO (co-regulación AIS).",
     migrada:true, iframe:"exploradora/index.html" },
 
+  { id:"mision_barrio", emoji:"🏙️", nombre:"Misión Barrio",
+    desc:"Para chicos y chicas de 9 a 12 años con miedo a salir solos: volver a salir con los amigos nivel a nivel. Mapa de niveles desbloqueables, superpoderes (balón, radar, comentarista, detective), predicción de la alarma y comprobación al volver, XP, cromos y tienda de premios pactados, con pautas para la familia.",
+    migrada:true, iframe:"mision-barrio/index.html" },
+
   { id:"escalera_comidas", emoji:"🍽️", nombre:"La escalera de las comidas",
     desc:"Para peques y familias: probar alimentos nuevos poco a poco. Escalera visual de alimento × porción (de lo que menos cuesta en porción pequeña a la ración de siempre), trato claro con el postre u otro refuerzo, purpurina y copas al conseguirlo, pauta compasiva y firme para mamá o papá y registro para el psicólogo/a.",
     migrada:true, iframe:"tools-standalone/escalera-comidas.html" },

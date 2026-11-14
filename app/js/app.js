@@ -41,7 +41,7 @@
         { emoji:"🤝", nombre:"Propuesta para clubes", desc:"Una página con lo que incluye, la cuota por temporada, el piloto gratuito y las ayudas.", url:"assets/pdf/proposta-clubs-aprens-es.pdf" }
       ] },
     { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
-      ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","escalera_comidas","ritual_calma","rincon_calma"] },
+      ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","mision_barrio","escalera_comidas","ritual_calma","rincon_calma"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
       ids:["screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
