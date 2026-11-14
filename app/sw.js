@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v213";
+const CACHE = "aprens-v214";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -202,6 +202,7 @@ const SHELL = [
   "./exploradora/assets/js/aprens-core.js",
   "./mision-barrio/index.html",
   "./mision-barrio/assets/css/styles.css",
+  "./mision-barrio/assets/js/i18n.js",
   "./mision-barrio/assets/js/app.js",
   "./mision-barrio/assets/js/aprens-core.js",
   "./ritual/index.html",

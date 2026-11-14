@@ -95,7 +95,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"exploradora/index.html" },
 
   { id:"mision_barrio", emoji:"🏙️", nombre:"Misión Barrio",
-    desc:"Para chicos y chicas de 9 a 12 años con miedo a salir solos: volver a salir con los amigos nivel a nivel. Mapa de niveles desbloqueables, superpoderes (balón, radar, comentarista, detective), predicción de la alarma y comprobación al volver, XP, cromos y tienda de premios pactados, con pautas para la familia.",
+    desc:"Para chicos y chicas de 9 a 12 años con miedo a salir solos: volver a salir con los amigos nivel a nivel. Mapa de niveles desbloqueables, superpoderes (balón, radar, comentarista, detective), predicción de la alarma y comprobación al volver, XP, cromos y tienda de premios pactados, con pautas para la familia. En castellano o catalán (selector ES/CA; enlace directo en catalán: #/tool/mision_barrio/ca).",
     migrada:true, iframe:"mision-barrio/index.html" },
 
   { id:"escalera_comidas", emoji:"🍽️", nombre:"La escalera de las comidas",

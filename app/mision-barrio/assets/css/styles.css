@@ -234,3 +234,10 @@ input[type=range]{width:100%;accent-color:var(--lima)}
 
 .confeti{position:fixed;top:-12px;width:10px;height:14px;border-radius:2px;z-index:10001;pointer-events:none}
 @keyframes cae{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+
+/* ---------- selector de idioma ---------- */
+.lang{display:inline-flex;border:2px solid var(--borde);border-radius:999px;overflow:hidden;margin-left:10px}
+.lang button{border:0;background:transparent;color:var(--mute);font-weight:800;font-size:12px;letter-spacing:.06em;padding:6px 10px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--lima);color:var(--lima-osc)}
+.brandbar .brand-2{margin-left:auto}
+@media(max-width:400px){.brandbar .brand-2{display:none}}
