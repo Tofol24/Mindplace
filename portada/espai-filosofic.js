@@ -22,6 +22,7 @@
     es: { buit: "Escribe tu pregunta o reflexión.", consent: "Para enviar, marca la casilla de consentimiento.", envia: "Enviando…", ok: "Gracias. Hemos recibido tu pregunta; la leeremos con calma.", err: "No se ha podido enviar. Vuelve a probar más tarde o escribe a tofol@aprens.es." }
   };
   const form = document.getElementById("qform");
+  if (!form) return;   // pàgines de l'Espai sense formulari (l'assaig)
   const st = document.getElementById("status");
   const diu = (txt, cls) => { st.textContent = txt; st.className = "status" + (cls ? " " + cls : ""); };
   form.addEventListener("submit", async (e) => {
