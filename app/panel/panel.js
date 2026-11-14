@@ -397,7 +397,7 @@
     estoy_aqui_conmigo: "Estoy aquí conmigo", toco_desde_dentro: "Toco desde dentro",
     pedalea_desde_dentro: "Pedalea desde dentro", cuento_familia: "La familia de Koa (cuento)",
     tiempo_limite: "El tiempo límite (peques)", fondos_frases: "Fondos de frases",
-    escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente",
+    escalera_exposicion: "La escalera (exposición)", exploradora_valiente: "La exploradora valiente", mision_barrio: "Misión Barrio",
     escalera_comidas: "La escalera de las comidas",
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
