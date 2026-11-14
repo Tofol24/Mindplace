@@ -1,0 +1,118 @@
+/* APRENS · Espai Filosòfic (aprens.net/espai-filosofic.html). Fa servir els colors i la lletra de portada.css.
+   Semàfor del coneixement: A verd (sabem), B blau (interpretam), C taronja (proposam comprovar), D lila (només pensam). */
+html[lang="es"] [lang="ca"], html[lang="ca"] [lang="es"]{display:none !important}
+
+.top{flex-wrap:wrap}
+.espai-menu{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
+.espai-menu a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.95rem}
+.espai-menu a:hover{color:var(--blau)}
+@media (max-width:640px){.espai-menu{order:3;width:100%;margin-left:0;gap:12px}}
+
+.espai{gap:0}
+.espai .wrap{display:block}
+.espai section{padding:36px 0;border-top:1px solid var(--line)}
+.espai .read{max-width:66ch}
+.lv-a{--c:var(--verd);--cs:var(--verd-soft)}
+.lv-b{--c:var(--blau);--cs:var(--blau-soft)}
+.lv-c{--c:var(--taronja);--cs:var(--taronja-soft)}
+.lv-d{--c:var(--lila);--cs:var(--lila-soft)}
+
+/* portada de l'espai */
+.espai-hero{border-top:6px solid var(--lila);padding:22px 0 30px}
+.espai-hero .wrap{display:grid !important;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:28px;align-items:center}
+.kicker{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lila)}
+.espai-hero h1{font-size:clamp(2.8rem,8vw,4.6rem);margin:6px 0 14px}
+.espai-hero h1 em{font-style:normal;color:var(--lila)}
+.espai-hero .lead{font-size:1.15rem;max-width:46ch;margin-bottom:12px}
+.byline{color:var(--muted);font-size:.95rem;max-width:56ch}
+.fold svg{width:100%;height:auto;display:block}
+.fold .p{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1400;stroke-dashoffset:0;animation:espai-plec 2.4s ease-out both}
+.fold circle{fill:var(--lila)}
+.fold text{font-size:12px;fill:var(--muted)}
+@keyframes espai-plec{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.fold .p{animation:none}}
+
+.sec-head{display:flex;align-items:baseline;gap:6px 18px;flex-wrap:wrap;margin-bottom:18px}
+.sec-head h2{margin:0}
+.sec-head p{color:var(--muted);max-width:58ch}
+
+/* semàfor */
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.level{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--c);border-radius:16px;padding:16px}
+.level b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--cs);color:var(--c);font-weight:700}
+.level h3{color:var(--c);margin:6px 0 4px}
+.level p{color:var(--muted);font-size:.95rem}
+.rule{margin-top:16px;max-width:72ch}
+
+/* eixos */
+.axes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.axis{display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:16px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .15s,box-shadow .15s}
+.axis:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgb(0 0 0 / .08)}
+.axis .n{font-size:.8rem;font-weight:700;color:var(--muted)}
+.axis p{color:var(--muted);font-size:.95rem}
+.axis .q{margin-top:auto;font-weight:700;color:var(--lila)}
+@media (prefers-reduced-motion:reduce){.axis{transition:none}.axis:hover{transform:none}}
+
+/* entrades */
+.entries{display:grid;gap:20px}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px clamp(16px,4vw,36px);display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px}
+.entry .meta{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lila)}
+.entry h3{font-size:clamp(1.7rem,3.6vw,2.2rem);margin:6px 0 12px}
+.entry p{margin:0 0 12px}
+.claims{border-left:1px solid var(--line);padding-left:20px;align-self:start}
+.claims h4{margin:0 0 10px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.claims ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.claims li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;font-size:.92rem;line-height:1.45}
+.chip{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:.78rem;font-weight:700;background:var(--c);color:var(--card)}
+.chip.off{background:transparent;color:var(--muted);border:1px dashed var(--line)}
+.none{color:var(--muted)}
+
+/* aula */
+.norms{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.norms li{border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:.92rem;background:var(--card)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card .tag{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card h3{margin:4px 0 10px}
+.card dl{margin:0;display:grid;gap:6px}
+.card dt{font-weight:700;font-size:.92rem}
+.card dd{margin:0;font-size:.95rem}
+.sema{width:100%;border-collapse:collapse;font-size:.93rem;margin-top:8px}
+.sema td{border-top:1px solid var(--line);padding:6px 4px;vertical-align:top}
+.sema td:last-child{text-align:right;width:36px}
+
+/* preguntes */
+.qa{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px clamp(16px,4vw,36px)}
+.example{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px dashed var(--taronja);color:var(--taronja);padding:3px 10px;border-radius:999px}
+.qa blockquote{margin:12px 0 16px;font-family:var(--f-tit);font-size:1.7rem;line-height:1.2;color:var(--blau)}
+.qa p{margin:0 0 12px}
+.sig{color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:10px}
+
+/* formulari */
+.form-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+#qform{display:grid;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+#qform label{font-weight:700;font-size:.93rem;display:grid;gap:6px}
+#qform input[type=text], #qform select, #qform textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+#qform textarea{min-height:140px;resize:vertical}
+#qform .check{grid-template-columns:22px minmax(0,1fr);gap:10px;font-weight:400;font-size:.92rem}
+#qform .check input{margin-top:4px;width:18px;height:18px}
+.trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.send{font:700 1rem var(--f-body);background:var(--blau);color:var(--on-blau);border:0;border-radius:999px;padding:11px 22px;cursor:pointer;justify-self:start}
+.send[disabled]{opacity:.6;cursor:wait}
+.status{font-size:.95rem;min-height:1.4em}
+.status.ok{color:var(--verd);font-weight:700}
+.status.err{color:var(--vermell);font-weight:700}
+.care{border:1px solid var(--line);border-left:6px solid var(--taronja);border-radius:16px;padding:16px;background:var(--card);font-size:.95rem}
+.care h3{font-size:1.3rem;margin-bottom:6px;color:var(--taronja)}
+.care p{margin:0 0 8px}
+
+.espai-peu .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.espai-peu .how div{border-top:3px solid var(--blau);padding-top:8px}
+
+@media (max-width:900px){
+  .espai-hero .wrap, .form-grid, .entry{grid-template-columns:1fr}
+  .claims{border-left:0;border-top:1px solid var(--line);padding:14px 0 0}
+  .levels, .axes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards, .espai-peu .how{grid-template-columns:1fr}
+}
+@media (max-width:460px){.levels, .axes{grid-template-columns:1fr}}
