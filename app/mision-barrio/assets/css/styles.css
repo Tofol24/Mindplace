@@ -87,10 +87,11 @@ h3{margin:0;font-size:18px}
 .poder p{margin:0 0 10px;color:var(--mute);font-size:15px}
 .poder p b,.poder p i{color:var(--tinta)}
 .balon-box{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0 2px}
-.balon{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 10%,var(--naranja) 11% 100%);box-shadow:0 0 0 3px rgba(255,154,61,.25);transition:transform 4s ease-in-out}
-.balon.in{transform:scale(1.9)}
-.balon.out{transform:scale(1);transition-duration:6s}
-.balon-txt{margin:28px 0 4px!important;font-weight:700;color:var(--tinta)!important;min-height:1.5em}
+.balon-stage{width:150px;height:190px;display:flex;align-items:flex-end;justify-content:center}
+.balon{width:120px;height:170px;overflow:visible}
+.balon-bar{width:150px;height:6px;border-radius:999px;background:var(--input);overflow:hidden}
+.balon-bar i{display:block;height:100%;width:0;background:var(--naranja);border-radius:999px}
+.balon-txt{margin:6px 0 4px!important;font-weight:700;color:var(--tinta)!important;min-height:1.5em}
 .frases{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
 .frases li{background:var(--input);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600}
 
