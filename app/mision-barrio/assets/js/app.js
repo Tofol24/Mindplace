@@ -186,24 +186,62 @@
      SUPERPODERES · balón y frases
      ============================================================ */
   function renderFrases() { $("#frasesList").innerHTML = frases().map(function (f) { return "<li>«" + esc(f) + "»</li>"; }).join(""); }
-  var balonTimer = null;
+  /* El globo se mueve con requestAnimationFrame (no con transiciones CSS), para
+     que se infle y desinfle de forma continua también con «Reducir movimiento».
+     Ritmo: inspira 4 s · mantén 1 s · espira 6 s · descansa 1,5 s · 3 veces.
+     Pequeño y algo alargado cuando está vacío; redondo y brillante cuando está lleno. */
+  var FASES = [
+    { k: "in", ms: 4000, de: 0.42, a: 1 },
+    { k: "hold", ms: 1000, de: 1, a: 1 },
+    { k: "out", ms: 6000, de: 1, a: 0.42 },
+    { k: "rest", ms: 1500, de: 0.42, a: 0.42 }
+  ];
+  var CICLOS = 3, balonRAF = null;
+  function faseTxt(k, seg, ciclo) {
+    if (k === "in") return L("Coge aire por la nariz… ", "Agafa aire pel nas… ") + seg + " (" + ciclo + "/" + CICLOS + ")";
+    if (k === "hold") return L("Mantén un momento…", "Aguanta un moment…");
+    if (k === "out") return L("Suéltalo despacito por la boca… ", "Deixa'l anar a poc a poc per la boca… ") + seg;
+    return L("Descansa…", "Descansa…");
+  }
+  function dibujaBalon(s, t) {
+    var sx = s, sy = s * (1 + 0.14 * (1 - s));               // vacío: más estrecho y alargado
+    var bam = Math.sin(t / 380) * 2.2 * s;                    // se balancea un poco
+    var cos = $("#balonCos"); if (!cos) return;
+    cos.setAttribute("transform", "rotate(" + bam.toFixed(2) + " 60 118) translate(60 118) scale(" + sx.toFixed(3) + " " + sy.toFixed(3) + ") translate(-60 -118)");
+    $("#balonBrillo").setAttribute("opacity", (0.2 + 0.45 * s).toFixed(2));
+    $("#balonFil").setAttribute("d", "M60 118 C " + (52 - bam * 2).toFixed(1) + " 132, " + (68 + bam * 2).toFixed(1) + " 146, 58 168");
+  }
+  function suave(x) { return 0.5 - 0.5 * Math.cos(Math.PI * x); }
   function balonReset() {
-    if (balonTimer) { clearTimeout(balonTimer); balonTimer = null; }
-    $("#balon").className = "balon"; $("#balonTxt").textContent = L("Pulsa para entrenar", "Prem per entrenar"); $("#balonBtn").textContent = L("Entrenar el balón", "Entrenar el globus");
+    if (balonRAF) { cancelAnimationFrame(balonRAF); balonRAF = null; }
+    dibujaBalon(0.42, 0); $("#balonProg").style.width = "0";
+    $("#balonTxt").textContent = L("Pulsa para entrenar", "Prem per entrenar"); $("#balonBtn").textContent = L("Entrenar el balón", "Entrenar el globus");
   }
   $("#balonBtn").addEventListener("click", function () {
-    var b = $("#balon"), t = $("#balonTxt"), btn = this;
-    if (balonTimer) { balonReset(); return; }
+    var t = $("#balonTxt"), btn = this, prog = $("#balonProg");
+    if (balonRAF) { balonReset(); return; }
     btn.textContent = L("Parar", "Aturar");
-    var ciclo = 0;
-    function inhala() {
-      if (ciclo >= 3) { b.className = "balon"; t.textContent = L("¡Tres balones! Superpoder cargado 💪", "Tres globus! Superpoder carregat 💪"); btn.textContent = L("Otra vez", "Una altra vegada"); balonTimer = null; return; }
-      ciclo++; b.className = "balon in"; t.textContent = L("Coge aire por la nariz… se hincha (", "Agafa aire pel nas… s'infla (") + ciclo + "/3)";
-      balonTimer = setTimeout(exhala, 4000);
+    var total = FASES.reduce(function (x, f) { return x + f.ms; }, 0), t0 = null, ultimo = "";
+    function frame(now) {
+      if (t0 == null) t0 = now;
+      var el = now - t0, ciclo = Math.floor(el / total);
+      if (ciclo >= CICLOS) {
+        balonRAF = null; dibujaBalon(0.42, 0); prog.style.width = "100%";
+        t.textContent = L("¡Tres balones! Superpoder cargado 💪", "Tres globus! Superpoder carregat 💪"); btn.textContent = L("Otra vez", "Una altra vegada");
+        return;
+      }
+      var r = el - ciclo * total, i = 0;
+      while (r >= FASES[i].ms) { r -= FASES[i].ms; i++; }
+      var f = FASES[i], x = r / f.ms, s = f.de + (f.a - f.de) * suave(x);
+      dibujaBalon(s, now);
+      prog.style.width = ((el % total) / total * 100).toFixed(1) + "%";
+      var txt = faseTxt(f.k, Math.min(Math.floor(r / 1000) + 1, Math.round(f.ms / 1000)), ciclo + 1);
+      if (txt !== ultimo) { t.textContent = txt; ultimo = txt; }
+      balonRAF = requestAnimationFrame(frame);
     }
-    function exhala() { b.className = "balon out"; t.textContent = L("Suéltalo despacito por la boca…", "Deixa'l anar a poc a poc per la boca…"); balonTimer = setTimeout(inhala, 6000); }
-    inhala();
+    balonRAF = requestAnimationFrame(frame);
   });
+  dibujaBalon(0.42, 0);
 
   /* ============================================================
      MAPA DE NIVELES

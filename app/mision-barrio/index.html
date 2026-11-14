@@ -108,7 +108,18 @@
           <div class="poder-h"><span class="pi" aria-hidden="true">🎈</span><h3 data-i18n="h3Balon">El balón</h3></div>
           <p data-i18n="pBalon">Imagina un balón en tu barriga. Al coger aire por la nariz se hincha despacio; al soltarlo por la boca se deshincha todavía más despacio. Tres veces.</p>
           <div class="balon-box">
-            <div class="balon" id="balon" aria-hidden="true"></div>
+            <div class="balon-stage" aria-hidden="true">
+              <svg class="balon" id="balon" viewBox="0 0 120 170" focusable="false">
+                <path class="balon-fil" id="balonFil" d="M60 118 C 52 132, 68 146, 58 168" fill="none" stroke="#B9C7E6" stroke-width="2" stroke-linecap="round"/>
+                <g id="balonCos">
+                  <path d="M60 8 C 92 8, 108 34, 108 60 C 108 90, 84 112, 60 116 C 36 112, 12 90, 12 60 C 12 34, 28 8, 60 8 Z" fill="#FF9A3D"/>
+                  <path d="M60 8 C 92 8, 108 34, 108 60 C 108 90, 84 112, 60 116 C 74 100, 86 80, 86 58 C 86 30, 76 14, 60 8 Z" fill="#E07A22" opacity=".55"/>
+                  <ellipse id="balonBrillo" cx="40" cy="36" rx="9" ry="15" fill="#FFFFFF" opacity=".55" transform="rotate(-24 40 36)"/>
+                  <path d="M54 115 L66 115 L62 122 L58 122 Z" fill="#E07A22"/>
+                </g>
+              </svg>
+            </div>
+            <div class="balon-bar" aria-hidden="true"><i id="balonProg"></i></div>
             <p class="balon-txt" id="balonTxt" aria-live="polite" data-i18n="balonTxt">Pulsa para entrenar</p>
             <button class="btn btn-sm" id="balonBtn" type="button" data-i18n="balonBtn">Entrenar el balón</button>
           </div>
