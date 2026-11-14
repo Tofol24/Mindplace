@@ -119,3 +119,73 @@ html[lang="es"] [lang="ca"], html[lang="ca"] [lang="es"]{display:none !important
   .cards, .espai-peu .how{grid-template-columns:1fr}
 }
 @media (max-width:460px){.levels, .axes{grid-template-columns:1fr}}
+
+/* il·lustracions dels eixos (dibuixos vectorials; segueixen el tema clar o fosc) */
+.il{width:100%;max-width:170px;height:auto;display:block;margin-bottom:4px}
+.il-l{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.il-f{fill:var(--lila-soft);stroke:var(--lila);stroke-width:2}
+.il-a{fill:var(--lila)}
+.il-a2{fill:var(--blau-soft);stroke:var(--blau);stroke-width:2}
+.il-g{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:4 5}
+.il-d{fill:var(--ink)}
+.il-d.o2{opacity:.6}.il-d.o3{opacity:.35}.il-d.o4{opacity:.18}
+.il-t{font:700 26px var(--f-tit);fill:var(--lila)}
+.il-s{fill:var(--c)}
+
+/* jocs */
+.joc{grid-column:1 / -1;border-top:1px dashed var(--line);padding-top:18px;display:grid;gap:10px}
+.joc h4{margin:0;font-family:var(--f-tit);font-size:1.45rem;color:var(--lila)}
+.joc-intro{color:var(--muted);max-width:68ch}
+.joc-zona{display:grid;gap:12px}
+.joc-boto{font:700 .95rem var(--f-body);background:var(--blau);color:var(--on-blau);border:0;border-radius:999px;padding:9px 18px;cursor:pointer}
+.joc-boto.sec{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.joc-boto[disabled]{opacity:.45;cursor:default}
+.joc-peu{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.joc-compte{color:var(--muted);font-size:.9rem;margin:0}
+.joc-fi{background:var(--verd-soft);color:var(--ink);border-left:4px solid var(--verd);border-radius:10px;padding:10px 14px;margin:0}
+.joc-nota{color:var(--muted);font-size:.82rem;margin:0}
+
+.pensaments{display:flex;flex-wrap:wrap;gap:8px}
+.pensament{font:600 .95rem var(--f-body);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:8px 14px;cursor:pointer;text-align:left;animation:espai-apareix .5s ease-out both}
+.pensament:hover{border-color:var(--lila)}
+.pensament.notat{background:var(--lila-soft);border-color:var(--lila);font-weight:400}
+@keyframes espai-apareix{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.via{list-style:none;margin:0;padding:6px 0 0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;position:relative}
+.via::before{content:"";position:absolute;left:6%;right:6%;top:13px;border-top:2px solid var(--line)}
+.via li{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;position:relative}
+.via .punt{width:16px;height:16px;border-radius:50%;background:var(--card);border:2px solid var(--line)}
+.via li.vist .punt{background:var(--blau);border-color:var(--blau)}
+.via li.ara .punt{outline:3px solid var(--blau-soft)}
+.via li.final.vist .punt{background:var(--lila);border-color:var(--lila)}
+.via .quan{font-size:.75rem;color:var(--muted);line-height:1.25}
+.via-text{background:var(--paper);border-radius:12px;padding:12px 14px}
+.via-text b{color:var(--blau)}
+.via-text.final b{color:var(--lila)}
+.via-text p{margin:4px 0 0}
+@media (max-width:560px){.via .quan{display:none}}
+
+.cercles{width:100%;max-width:420px;height:auto}
+.c-jo{fill:var(--blau-soft);stroke:var(--blau);stroke-width:2;fill-opacity:.85}
+.c-altre{fill:var(--lila-soft);stroke:var(--lila);stroke-width:2;fill-opacity:.85}
+.c-t{font:700 15px var(--f-body);fill:var(--ink)}
+.rang{display:grid;gap:4px;font-weight:700;font-size:.9rem;max-width:420px}
+.rang input{width:100%;accent-color:var(--lila)}
+.estat-c{border-radius:12px;padding:10px 14px;border-left:4px solid var(--c);background:var(--cs)}
+.estat-c.sep{--c:var(--muted);--cs:var(--paper)}
+.estat-c.rel{--c:var(--verd);--cs:var(--verd-soft)}
+.estat-c.abs{--c:var(--vermell);--cs:var(--vermell-soft)}
+.estat-c p{margin:4px 0 0}
+
+.frase{font-family:var(--f-tit);font-size:1.5rem;line-height:1.2;color:var(--ink);margin:0}
+.lletres{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lletra{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font:600 .85rem var(--f-body)}
+.lletra b{font-size:1.2rem;color:var(--c)}
+.lletra:hover:not([disabled]){border-color:var(--c)}
+.lletra[disabled]{cursor:default}
+.lletra.triada{border-color:var(--c);background:var(--cs)}
+.lletra.proposta{box-shadow:0 0 0 3px var(--cs);border-style:dashed;border-color:var(--c)}
+.resposta{background:var(--paper);border-radius:12px;padding:10px 14px}
+.resposta p{margin:4px 0 0}
+@media (max-width:520px){.lletres{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){.pensament{animation:none}}
