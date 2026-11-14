@@ -189,3 +189,16 @@ html[lang="es"] [lang="ca"], html[lang="ca"] [lang="es"]{display:none !important
 .resposta p{margin:4px 0 0}
 @media (max-width:520px){.lletres{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){.pensament{animation:none}}
+
+/* assaig «El gest originari» */
+.assaig{gap:14px}
+.assaig > div{display:flex;flex-direction:column;gap:14px}
+.assaig h1{font-size:clamp(2.6rem,7vw,4rem)}
+.assaig .lead{font-size:1.2rem;color:var(--lila);font-weight:700}
+.assaig h2{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.assaig h3{margin-top:14px}
+.assaig h4{margin:8px 0 0;font-size:1.05rem;color:var(--lila)}
+.assaig-index{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+.assaig-index ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.refs{padding-left:20px;display:grid;gap:8px;font-size:.93rem}
+.marc-enllac{display:inline-block;margin-top:14px;font-weight:700;text-decoration:none;background:var(--lila);color:var(--card);border-radius:999px;padding:9px 18px}
