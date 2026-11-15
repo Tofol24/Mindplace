@@ -18,12 +18,14 @@
   .botiga .producte h3{color:var(--c)}
   .botiga .producte.explica{--c:var(--lila)}
   .botiga .producte.esport{--c:var(--turquesa)}
-  .botiga .producte.apps-ios{--c:var(--blau)}
-  .botiga .apps-cos{display:flex;gap:18px;align-items:flex-start}
-  .botiga .apps-cos img{width:120px;height:auto;border-radius:14px;flex:none}
-  .botiga .apps-cos > div{flex-direction:column;gap:10px}
-  html:not([lang=es]) .botiga .apps-cos > div.ca-only,html[lang=es] .botiga .apps-cos > div.es-only{display:flex}
-  @media (max-width:480px){.botiga .apps-cos{flex-direction:column}}
+  .botiga .apps-ios{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px}
+  .botiga .app-ais{--c:var(--blau)}
+  .botiga .app-mindplace{--c:var(--turquesa)}
+  .botiga .app-cap{display:flex;gap:14px;align-items:center}
+  .botiga .app-cap img{width:72px;height:72px;border-radius:18px;flex:none}
+  .botiga .producte > div.ca-only,.botiga .producte > div.es-only{display:flex;flex-direction:column;gap:10px}
+  .botiga .producte > div.es-only{display:none}
+  html[lang=es] .botiga .producte > div.es-only{display:flex} html[lang=es] .botiga .producte > div.ca-only{display:none}
   .botiga .preu{font-size:1.15rem}
   .botiga .preu b{font-family:var(--f-tit);font-size:2rem;color:var(--c)}
   .botiga .producte ul{margin:0;padding-left:20px}
@@ -100,29 +102,38 @@
   </section>
 
   <section class="seccio" aria-labelledby="t-apps">
-    <h2 id="t-apps" class="sr"><span class="ca-only" lang="ca">Apps per a iPhone</span><span class="es-only" lang="es">Apps para iPhone</span></h2>
-    <div class="producte apps-ios">
-      <div class="apps-cos">
-        <img src="img/app-ais-sessio.jpg" width="360" height="510" alt="" loading="lazy">
+    <h2 id="t-apps"><span class="ca-only" lang="ca">Apps per a iPhone</span><span class="es-only" lang="es">Apps para iPhone</span></h2>
+    <p class="ca-only" lang="ca">Dues apps per entrenar l'Atenció Interna Sensorial (AIS) en el dia a dia: portar l'atenció al coll, al pit i a la panxa per baixar l'alerta i estar amb un mateix.</p>
+    <p class="es-only" lang="es">Dos apps para entrenar la Atención Interna Sensorial (AIS) en el día a día: llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.</p>
+    <div class="apps-ios">
+      <article class="producte app-ais">
+        <div class="app-cap">
+          <img src="img/app-icona-ais-aprens.png" width="160" height="160" alt="">
+          <div><h3>AIS APRENS</h3><p class="preu"><b>1,99 €</b></p></div>
+        </div>
         <div class="ca-only" lang="ca">
-          <h3>Apps per a iPhone: AIS APRENS i AIS MINDPLACE</h3>
-          <p>Sessions guiades d'Atenció Interna Sensorial (AIS): portar l'atenció al coll, al pit i a la panxa per baixar l'alerta i estar amb un mateix.</p>
-          <p class="enllacos">
-            <a class="boto" href="https://apps.apple.com/es/app/ais-aprens/id6757331269" rel="noopener">Descarrega AIS APRENS</a>
-            <a class="boto" href="https://apps.apple.com/es/app/ais-mindplace/id6759057064" rel="noopener">Descarrega AIS MINDPLACE</a>
-          </p>
-          <p class="suau">A l'App Store d'Apple, per a iPhone.</p>
+          <p><b>De l'impuls a l'elecció.</b> Tries les apps que et costa deixar i, abans d'obrir-les, fas una sessió guiada d'AIS. Inclou el protocol guiat, el bloqueig manual, un test subjectiu i el progrés del teu perfil.</p>
+          <p class="enllacos"><a class="boto" href="https://apps.apple.com/es/app/ais-aprens/id6757331269" rel="noopener">Descarrega-la a l'App Store</a></p>
         </div>
         <div class="es-only" lang="es">
-          <h3>Apps para iPhone: AIS APRENS y AIS MINDPLACE</h3>
-          <p>Sesiones guiadas de Atención Interna Sensorial (AIS): llevar la atención al cuello, al pecho y a la barriga para bajar la alerta y estar con uno mismo.</p>
-          <p class="enllacos">
-            <a class="boto" href="https://apps.apple.com/es/app/ais-aprens/id6757331269" rel="noopener">Descarga AIS APRENS</a>
-            <a class="boto" href="https://apps.apple.com/es/app/ais-mindplace/id6759057064" rel="noopener">Descarga AIS MINDPLACE</a>
-          </p>
-          <p class="suau">En la App Store de Apple, para iPhone.</p>
+          <p><b>Del impulso a la elección.</b> Eliges las apps que te cuesta dejar y, antes de abrirlas, haces una sesión guiada de AIS. Incluye el protocolo guiado, el bloqueo manual, un test subjetivo y el progreso de tu perfil.</p>
+          <p class="enllacos"><a class="boto" href="https://apps.apple.com/es/app/ais-aprens/id6757331269" rel="noopener">Descárgala en la App Store</a></p>
         </div>
-      </div>
+      </article>
+      <article class="producte app-mindplace">
+        <div class="app-cap">
+          <img src="img/app-icona-ais-mindplace.png" width="160" height="160" alt="">
+          <div><h3>AIS MINDPLACE</h3><p class="suau ca-only" lang="ca">Entrena la teva atenció diària</p><p class="suau es-only" lang="es">Entrena tu atención diaria</p></div>
+        </div>
+        <div class="ca-only" lang="ca">
+          <p><b>Els teus llocs activen patrons.</b> Fixes els llocs habituals (casa, la feina, l'escola) i hi registres com et sents, amb entrenament de regulació emocional, el protocol AIS en àudio, eines bàsiques i l'anàlisi del teu progrés.</p>
+          <p class="enllacos"><a class="boto" href="https://apps.apple.com/es/app/ais-mindplace/id6759057064" rel="noopener">Descarrega-la a l'App Store</a></p>
+        </div>
+        <div class="es-only" lang="es">
+          <p><b>Tus lugares activan patrones.</b> Fijas tus lugares habituales (casa, el trabajo, el colegio) y registras ahí cómo te sientes, con entrenamiento de regulación emocional, el protocolo AIS en audio, herramientas básicas y el análisis de tu progreso.</p>
+          <p class="enllacos"><a class="boto" href="https://apps.apple.com/es/app/ais-mindplace/id6759057064" rel="noopener">Descárgala en la App Store</a></p>
+        </div>
+      </article>
     </div>
   </section>
 
