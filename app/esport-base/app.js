@@ -140,7 +140,7 @@
     var m = $('#lnkManifest'), ap = $('#lnkApple'), tt = $('#metaTitolApp');
     var club = c && c.icones && c.slug;
     if (m) m.setAttribute('href', club ? 'clubs/' + c.slug + '.webmanifest' : 'manifest.webmanifest');
-    if (ap) ap.setAttribute('href', club ? 'clubs/' + c.slug + '-icona-180.png' : 'icones/aprens-icona-180.png');
+    if (ap) ap.setAttribute('href', club ? 'clubs/' + c.slug + '-icona-180.png' : 'icones/pares-juguen-icona-180.png');
     if (tt) tt.setAttribute('content', club ? (c.curt || c.nom) : 'Pares juguen');
   }
   function aplicaClub() {
