@@ -14,6 +14,22 @@
   },
   "novetats": [
     {
+      "data": "2026-11-15",
+      "tipus": "novetat",
+      "titol": {
+        "ca": "Missió Barri: tornar a sortir amb els amics, nivell a nivell",
+        "es": "Misión Barrio: volver a salir con los amigos, nivel a nivel"
+      },
+      "ordre": -4,
+      "text": {
+        "ca": "Una nova eina d'APRENS per a nins i nines de 9 a 12 anys a qui fa por sortir sols. Nivell a nivell, i acompanyats per mamà o papà, tornen a sortir amb la seva colla: no cal que la por se'n vagi per poder jugar, surt amb ells, i el comandament el duen ells. Té un mapa de nivells que la família pot adaptar, XP, cromos i una botiga de premis pactats a casa, i es pot fer servir en català o en castellà.",
+        "es": "Una nueva herramienta de APRENS para chicos y chicas de 9 a 12 años a los que les da miedo salir solos. Nivel a nivel, y acompañados por mamá o papá, vuelven a salir con su grupo de amigos: no hace falta que el miedo se vaya para poder jugar, sale con ellos, y el mando lo llevan ellos. Tiene un mapa de niveles que la familia puede adaptar, XP, cromos y una tienda de premios pactados en casa, y se puede usar en catalán o en castellano."
+      },
+      "imatge": "img/novetats/mision-barrio.jpg",
+      "enllac": "https://aprens-app.aprens.net/#/tool/mision_barrio",
+      "destacat": true
+    },
+    {
       "data": "2026-11-07",
       "tipus": "novetat",
       "titol": {
