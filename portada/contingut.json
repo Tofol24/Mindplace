@@ -17,6 +17,22 @@
       "data": "2026-11-15",
       "tipus": "novetat",
       "titol": {
+        "ca": "«La escalera de las comidas»: provar aliments nous a poc a poc",
+        "es": "La escalera de las comidas: probar alimentos nuevos poco a poco"
+      },
+      "ordre": -5,
+      "text": {
+        "ca": "Una nova eina d'APRENS per provar aliments nous a poc a poc: primer el que menys costa i en porció petita, i escaló a escaló fins a la ració de sempre. No es tracta de convèncer ni d'obligar, sinó que el menjar aparegui moltes vegades amb un tracte clar, i inclou la pauta per a mamà o papà, compassius i ferms alhora. De moment, en castellà.",
+        "es": "Una nueva herramienta de APRENS para probar alimentos nuevos poco a poco: primero lo que menos cuesta y en porción pequeña, y escalón a escalón hasta la ración de siempre. No se trata de convencer ni de obligar, sino de que la comida aparezca muchas veces con un trato claro, e incluye la pauta para mamá o papá, compasivos y firmes a la vez."
+      },
+      "imatge": "img/novetats/escalera-comidas.jpg",
+      "enllac": "https://aprens-app.aprens.net/#/tool/escalera_comidas",
+      "destacat": true
+    },
+    {
+      "data": "2026-11-15",
+      "tipus": "novetat",
+      "titol": {
         "ca": "Missió Barri: tornar a sortir amb els amics, nivell a nivell",
         "es": "Misión Barrio: volver a salir con los amigos, nivel a nivel"
       },
