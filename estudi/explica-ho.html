@@ -1,4 +1,5 @@
 <title>Explica-ho</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='#2c47c9'/%3E%3Cpath d='M160 88h192a72 72 0 0 1 72 72v120a72 72 0 0 1-72 72H230l-78 62a8 8 0 0 1-13-7l8-55h0a72 72 0 0 1-59-72V160a72 72 0 0 1 72-72z' fill='#fff'/%3E%3Cpath d='M112 248 q148 -8 299.9 -2 l-3 68 q-148 6 -295.9 2z' fill='#ffe766'/%3E%3Cg transform='translate%28138 298%29 scale%280.2%29' fill='#18203a'%3E%3Cpath d='M36 0V-279V-700H198V-568Q198 -547 195.5 -512.5Q193 -478 188.5 -439Q184 -400 179.5 -364.5Q175 -329 172 -305H181Q190 -388 212 -440.5Q234 -493 272 -517.5Q310 -542 364 -542Q449 -542 490 -481.5Q531 -421 531 -299V0H369V-292Q369 -348 354 -374Q339 -400 305 -400Q275 -400 251 -377.5Q227 -355 212.5 -306Q198 -257 198 -179V0Z M824 14Q748 14 689 -16.5Q630 -47 597 -108.5Q564 -170 564 -263Q564 -360 598.5 -421.5Q633 -483 692.5 -512.5Q752 -542 827 -542Q905 -542 963.5 -511.5Q1022 -481 1054.5 -419.5Q1087 -358 1087 -264Q1087 -167 1052.5 -105.5Q1018 -44 958.5 -15Q899 14 824 14ZM828 -105Q859 -105 880 -122.5Q901 -140 912 -174Q923 -208 923 -255Q923 -307 911 -342.5Q899 -378 876.5 -397Q854 -416 822 -416Q792 -416 771 -398.5Q750 -381 739 -347Q728 -313 728 -265Q728 -189 754.5 -147Q781 -105 828 -105Z'/%3E%3C/g%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,6 +56,7 @@ p{margin:0}
   border-bottom:1px solid var(--line);background:var(--card)}
 .brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
 .brand h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+.brand .logo{width:34px;height:34px;flex:none;align-self:center;border-radius:8px}
 .brand h1 span{background:linear-gradient(transparent 58%,var(--marker) 58%);padding:0 .1em;color:inherit}
 .flags{display:inline-flex;gap:6px}
 .flag{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:4px;cursor:pointer;line-height:0;display:inline-flex;align-items:center;gap:6px;color:var(--ink);font:inherit;font-size:.9rem}
@@ -329,7 +331,7 @@ dialog::backdrop{background:rgba(10,14,30,.45)}
 </style>
 
 <header class="top">
-  <div class="brand"><h1><span>Explica</span>-ho</h1><span class="label">Estudi de 4t d'ESO</span></div>
+  <div class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="logo" aria-hidden="true" focusable="false"><rect width="512" height="512" rx="112" fill="#2c47c9"/><path d="M160 88h192a72 72 0 0 1 72 72v120a72 72 0 0 1-72 72H230l-78 62a8 8 0 0 1-13-7l8-55h0a72 72 0 0 1-59-72V160a72 72 0 0 1 72-72z" fill="#fff"/><path d="M112 248 q148 -8 299.9 -2 l-3 68 q-148 6 -295.9 2z" fill="#ffe766"/><g transform="translate(138 298) scale(0.2)" fill="#18203a"><path d="M36 0V-279V-700H198V-568Q198 -547 195.5 -512.5Q193 -478 188.5 -439Q184 -400 179.5 -364.5Q175 -329 172 -305H181Q190 -388 212 -440.5Q234 -493 272 -517.5Q310 -542 364 -542Q449 -542 490 -481.5Q531 -421 531 -299V0H369V-292Q369 -348 354 -374Q339 -400 305 -400Q275 -400 251 -377.5Q227 -355 212.5 -306Q198 -257 198 -179V0Z M824 14Q748 14 689 -16.5Q630 -47 597 -108.5Q564 -170 564 -263Q564 -360 598.5 -421.5Q633 -483 692.5 -512.5Q752 -542 827 -542Q905 -542 963.5 -511.5Q1022 -481 1054.5 -419.5Q1087 -358 1087 -264Q1087 -167 1052.5 -105.5Q1018 -44 958.5 -15Q899 14 824 14ZM828 -105Q859 -105 880 -122.5Q901 -140 912 -174Q923 -208 923 -255Q923 -307 911 -342.5Q899 -378 876.5 -397Q854 -416 822 -416Q792 -416 771 -398.5Q750 -381 739 -347Q728 -313 728 -265Q728 -189 754.5 -147Q781 -105 828 -105Z"/></g></svg><h1>Explica-<span>ho</span></h1><span class="label">Estudi de 4t d'ESO</span></div>
   <span class="conn" id="conn"><span class="dot"></span><span>Connectant…</span></span>
   <span class="flags" role="group" aria-label="Idioma de l'eina"><button class="flag" data-flag="ca" type="button" title="Català" aria-label="Català"><svg viewBox="0 0 27 18" aria-hidden="true"><rect width="27" height="18" fill="#fcdd09"/><path d="M0 3h27M0 7h27M0 11h27M0 15h27" stroke="#da121a" stroke-width="2"/></svg></button><button class="flag" data-flag="es" type="button" title="Castellano" aria-label="Castellano"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg></button></span>
   <button class="btn sm" id="btnSettings" type="button">
