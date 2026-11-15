@@ -10,6 +10,7 @@ fi=$(grep -n -m1 '^</style>' explica-ho.html | cut -d: -f1)
 DESC="Eina d'estudi amb IA que t'ajuda a interioritzar els conceptes, no que ho faci per tu: resums, mapes conceptuals, preguntes i exercicis corregits pas a pas. ESO, batxillerat, FP, universitat i oposicions. Herramienta de estudio con IA: si no lo puedes explicar, no te lo sabes."
 {
   printf '<!doctype html>\n<html lang="ca">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<meta name="robots" content="index, follow">\n<meta name="explica-proxy" content="/api/claude">\n'
+  printf '<link rel="apple-touch-icon" href="/icona-180.png">\n'
   printf '<meta name="description" content="%s">\n<link rel="canonical" href="https://explica.aprens.net/">\n' "$DESC"
   # Verificació de Bing Webmaster Tools (explica.aprens.net). No la treguis: Bing la torna a comprovar.
   printf '<meta name="msvalidate.01" content="B0ABF317EE25CC7F78C872EAB330A9E8">\n'
