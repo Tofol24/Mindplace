@@ -71,6 +71,8 @@ window.EPJ_TXT.es = {
     aprenD: "Microlecciones de un minuto con una acción para el próximo partido.",
     entrenadorsT: "Itinerario para entrenadores",
     entrenadorsD: "Situaciones de banquillo y comunicación educativa.",
+    quadernT: "El cuaderno del entrenador",
+    quadernD: "Seguimiento semanal del equipo: objetivos, entrevista breve y tendencias.",
     setmanalT: "Mi compromiso como acompañante",
     setmanalD: "Un objetivo concreto para esta semana."
   },
