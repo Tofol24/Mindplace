@@ -15,6 +15,7 @@
   var BASE = { v: 1, lang: 'ca', avis: false, club: null, psiLl: null, equip: null, jug: [], setm: {}, notes: [],
     cfg: { climaOff: {}, dimsOff: {}, pssOff: {}, dimsExtra: [], llindars: { fin: 3, min: 2, ego: 3 }, recorda: { dia: 0, hora: '20:00' } } };
   var MEM = null, NO_DESA = false;
+  var PREP = null; /* fitxer xifrat preparat, per si el navegador demana un segon toc per compartir */
   function lsGet() { if (MEM != null) return MEM; try { return localStorage.getItem(LS); } catch (e) { return null; } }
   function lsSet(v) { try { localStorage.setItem(LS, v); MEM = null; return true; } catch (e) { MEM = v; return false; } }
   function lsDel() { try { localStorage.removeItem(LS); } catch (e) { /* res */ } MEM = null; }
@@ -118,6 +119,7 @@
   function carrega() { try { return normalitza(JSON.parse(lsGet())); } catch (e) { return clone(BASE); } }
   var S = carrega();
   function desa() {
+    PREP = null; /* qualsevol canvi invalida un fitxer preparat i no enviat */
     if (!S.avis) return;
     var ok = lsSet(JSON.stringify(S));
     if (!ok && !NO_DESA) { NO_DESA = true; setTimeout(render, 0); }
@@ -199,7 +201,7 @@
       informesT: 'Informes per a les famílies', informesQ: 'Un esborrany per jugador a partir de les darreres 12 setmanes, per revisar i imprimir o desar en PDF tots alhora.', imprimeixTots: 'Imprimeix tots (un per pàgina)',
       enviaT: 'Envia al psicòleg', enviaQ: 'Desa una sola vegada la clau que t\'ha donat el psicòleg del club. Després, cada setmana, envia-li les dades xifrades per WhatsApp o correu.', enviaQ2: 'Les dades surten xifrades amb la clau del psicòleg del club.', clauPsi: 'Clau del psicòleg del club', clauDesa: 'Desa la clau', clauDesada: 'Clau desada.',
       enviaBtn: 'Envia al psicòleg', enviaCanvia: 'Canvia la clau', enviat: 'Darrer enviament', enviaPrep: 'Fitxer xifrat preparat. Toca «Comparteix» i tria WhatsApp o el correu del psicòleg.', enviaComp: 'Comparteix', enviaBaixa: 'Descarrega el fitxer', enviaBaixat: 'Fitxer descarregat. Adjunta\'l en un missatge al psicòleg.', enviaMsg: 'Seguiment setmanal',
-      impRecT: 'Recupera una còpia teva', panelLect: 'Només lectura: les dades d\'aquest equip les escriu l\'entrenador.',
+      panelNoDesa: 'El navegador no deixa desar el panel. Descarrega ara una còpia: es fa amb les dades actuals.', impRecT: 'Recupera una còpia teva', panelLect: 'Només lectura: les dades d\'aquest equip les escriu l\'entrenador.',
       socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Fitxa APRENS ESPORT (conductes concretes)', vegades: 'vegades',
       senseEnt: 'setmanes sense entrevista', taula: 'Veure les dades en taula', mitjana: 'mitjana', avui: 'avui'
     },
@@ -266,7 +268,7 @@
       informesT: 'Informes para las familias', informesQ: 'Un borrador por jugador a partir de las últimas 12 semanas, para revisar e imprimir o guardar en PDF todos a la vez.', imprimeixTots: 'Imprime todos (uno por página)',
       enviaT: 'Envía al psicólogo', enviaQ: 'Guarda una sola vez la clave que te ha dado el psicólogo del club. Después, cada semana, envíale los datos cifrados por WhatsApp o correo.', enviaQ2: 'Los datos salen cifrados con la clave del psicólogo del club.', clauPsi: 'Clave del psicólogo del club', clauDesa: 'Guarda la clave', clauDesada: 'Clave guardada.',
       enviaBtn: 'Envía al psicólogo', enviaCanvia: 'Cambia la clave', enviat: 'Último envío', enviaPrep: 'Archivo cifrado preparado. Toca «Compartir» y elige WhatsApp o el correo del psicólogo.', enviaComp: 'Compartir', enviaBaixa: 'Descarga el archivo', enviaBaixat: 'Archivo descargado. Adjúntalo en un mensaje al psicólogo.', enviaMsg: 'Seguimiento semanal',
-      impRecT: 'Recupera una copia tuya', panelLect: 'Solo lectura: los datos de este equipo los escribe el entrenador.',
+      panelNoDesa: 'El navegador no deja guardar el panel. Descarga ahora una copia: se hace con los datos actuales.', impRecT: 'Recupera una copia tuya', panelLect: 'Solo lectura: los datos de este equipo los escribe el entrenador.',
       socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Ficha APRENS ESPORT (conductas concretas)', vegades: 'veces',
       senseEnt: 'semanas sin entrevista', taula: 'Ver los datos en tabla', mitjana: 'media', avui: 'hoy'
     }
@@ -914,7 +916,6 @@
     var dades = clone(S); delete dades.avis; delete dades.psiLl; dades.cfg.clauPsi = ''; dades.cfg.enviat = '';
     return { exportat: new Date().toISOString(), dades: dades };
   }
-  var PREP = null; /* fitxer xifrat preparat, per si el navegador demana un segon toc per compartir */
   function prepHtml() {
     if (!PREP) return '';
     return '<div class="card verd"><p>' + h(u('enviaPrep')) + '</p><div class="fila">' + (navigator.share ? '<button type="button" class="btn" data-act="comparteix">' + h(u('enviaComp')) + '</button>' : '') +
@@ -927,7 +928,7 @@
     return '<div class="card blau"><h2>' + h(u('enviaT')) + '</h2><p>' + h(u('enviaQ2')) + '</p>' + (S.cfg.enviat ? '<p class="muted">' + h(u('enviat')) + ': ' + h(S.cfg.enviat.slice(0, 10)) + '</p>' : '') +
       '<div class="fila"><button type="button" class="btn" data-act="envia">' + h(u('enviaBtn')) + '</button><button type="button" class="btn sec" data-act="canviaClau">' + h(u('enviaCanvia')) + '</button></div>' + prepHtml() + '</div>';
   }
-  function marcaEnviat() { S.cfg.enviat = new Date().toISOString(); PREP = null; desa(); render(); }
+  function marcaEnviat() { S.cfg.enviat = new Date().toISOString(); desa(); render(); }
   function envia() {
     if (!S.cfg.clauPsi || !S.equip) { vés('compartir'); return; }
     xifra(paquet(), S.cfg.clauPsi).then(function (box) {
@@ -955,14 +956,24 @@
   function lsGetK(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSetK(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
   function lsDelK(k) { try { localStorage.removeItem(k); } catch (e) { /* res */ } }
-  function tancaPanel() { PANEL = { key: null, salt: null, claus: [] }; PV = { llista: [], meta: [], act: -1 }; }
-  function desaPanel() {
-    if (!PANEL.key) return Promise.resolve();
+  function buidaImpressio() { var x = $('#impText'); if (x) x.innerHTML = ''; }
+  window.addEventListener('afterprint', buidaImpressio);
+  function tancaPanel() { PANEL = { key: null, salt: null, claus: [] }; PV = { llista: [], meta: [], act: -1 }; PANEL_NO_DESA = false; buidaImpressio(); }
+  var PANEL_NO_DESA = false;
+  /* Xifra l'estat actual del panel (en memòria) i en torna el text del fitxer. */
+  function caixaPanel() {
     var cos = { equips: PV.llista.map(function (d, i) { var x = clone(d); delete x.avis; delete x.psiLl; return { rebut: PV.meta[i].rebut, exportat: PV.meta[i].exportat, dades: x }; }), claus: PANEL.claus };
     var iv = crypto.getRandomValues(new Uint8Array(12));
     return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, PANEL.key, enc.encode(JSON.stringify(cos))).then(function (ct) {
-      var ok = lsSetK(LSP, JSON.stringify({ app: 'aprens-quadern-panel', v: 1, kdf: 'PBKDF2-SHA256', iter: ITER, salt: b64(PANEL.salt), iv: b64(iv), ct: b64(ct) }));
-      if (!ok) toast(u('noDesaT'));
+      return JSON.stringify({ app: 'aprens-quadern-panel', v: 1, kdf: 'PBKDF2-SHA256', iter: ITER, salt: b64(PANEL.salt), iv: b64(iv), ct: b64(ct) });
+    });
+  }
+  /* Desa el panel; si el navegador no deixa, queda un avís fix i la promesa falla. */
+  function desaPanel() {
+    if (!PANEL.key) return Promise.resolve();
+    return caixaPanel().then(function (txt) {
+      PANEL_NO_DESA = !lsSetK(LSP, txt);
+      if (PANEL_NO_DESA) throw new Error('desa');
     });
   }
   function obrePanel(box, codi) {
@@ -1022,7 +1033,7 @@
       var fr = fd.get('f'), cr = String(fd.get('c') || '');
       if (!fr || !fr.size || fr.size > 2e7) { toast(u('impErr')); return true; }
       fr.text().then(function (t) { return obrePanel(JSON.parse(t), cr); }).then(desaPanel)
-        .then(function () { toast(u('recOk')); render(); }, function () { tancaPanel(); toast(u('panelErr')); });
+        .then(function () { toast(u('recOk')); render(); }, function () { if (PANEL_NO_DESA) { render(); return; } tancaPanel(); toast(u('panelErr')); });
       return true;
     }
     if (tipus === 'panelImporta') {
@@ -1035,14 +1046,14 @@
       }, Promise.resolve()).then(desaPanel).then(function () {
         toast(u('panelImpRes').replace('{n}', res.nou).replace('{a}', res.act).replace('{e}', res.err + res.antic));
         render();
-      });
+      }, function () { render(); });
       return true;
     }
     if (tipus === 'panelClau') {
       var nc = String(fd.get('c') || '');
       if (nc.length < 8) { toast(u('passNo')); return true; }
       if (PANEL.claus.indexOf(nc) < 0) PANEL.claus.push(nc);
-      desaPanel().then(function () { toast(u('clauDesada')); render(); });
+      desaPanel().then(function () { toast(u('clauDesada')); render(); }, render);
       return true;
     }
     return false;
@@ -1061,6 +1072,7 @@
         '<form class="card suau" data-form="panelRecupera"><h2>' + h(u('panelRecT')) + '</h2><label class="camp"><span>' + h(u('impFitxer')) + '</span><input type="file" name="f" accept=".json,application/json" required></label>' +
         '<label class="camp"><span>' + h(u('codi')) + '</span><input type="password" name="c" autocomplete="off" required></label><button type="submit" class="btn sec">' + h(u('panelRecBtn')) + '</button></form>';
     }
+    if (PANEL_NO_DESA) o += '<div class="card terra" role="alert"><strong>' + h(u('noDesaT')) + '</strong><p>' + h(u('panelNoDesa')) + '</p><button type="button" class="btn petit" data-act="baixaPanel">' + h(u('panelCopiaBtn')) + '</button></div>';
     o += '<form class="card blau" data-form="panelImporta"><h2>' + h(u('panelImpT')) + '</h2><p>' + h(u('panelImpQ')) + '</p>' +
       '<label class="camp"><span>' + h(u('impFitxer')) + '</span><input type="file" name="f" accept=".json,application/json" multiple required></label>' +
       '<label class="camp"><span>' + h(u('panelImpPass')) + '</span><input type="password" name="c" autocomplete="off"></label>' +
@@ -1121,11 +1133,11 @@
       case 'baixaPrep': if (PREP) { baixa(PREP.nom, PREP.text, 'application/json'); marcaEnviat(); } break;
       case 'canviaClau': S.cfg.clauPsi = ''; desa(); render(); break;
       case 'obreEquip': PV.act = +b.dataset.i; vés('tendencies'); break;
-      case 'treuEquip': if (window.confirm(u('treuConf'))) { PV.llista.splice(+b.dataset.i, 1); PV.meta.splice(+b.dataset.i, 1); PV.act = -1; desaPanel().then(render); } break;
+      case 'treuEquip': if (window.confirm(u('treuConf'))) { PV.llista.splice(+b.dataset.i, 1); PV.meta.splice(+b.dataset.i, 1); PV.act = -1; desaPanel().then(render, render); } break;
       case 'tancaPanel': tancaPanel(); vés('panel'); break;
-      case 'baixaPanel': var bx = lsGetK(LSP); if (bx) baixa('aprens-panel-psicoleg-' + avuiISO() + '.json', bx, 'application/json'); break;
+      case 'baixaPanel': if (psi()) caixaPanel().then(function (bx) { baixa('aprens-panel-psicoleg-' + avuiISO() + '.json', bx, 'application/json'); }); break;
       case 'esborraPanel': if (window.confirm(u('panelEsborraConf'))) { lsDelK(LSP); tancaPanel(); vés('panel'); } break;
-      case 'treuClaus': if (window.confirm(u('treuClausConf'))) { PANEL.claus = []; desaPanel().then(render); } break;
+      case 'treuClaus': if (window.confirm(u('treuClausConf'))) { PANEL.claus = []; desaPanel().then(render, render); } break;
       case 'imprimeixTots':
         $('#impText').innerHTML = $$('textarea[data-inf]').map(function (t) { return '<section class="imp-pag">' + h(t.value) + '</section>'; }).join('');
         window.print(); break;
@@ -1244,7 +1256,7 @@
         var dd = normalitza(obj && obj.dades);
         if (!dd.equip) throw new Error('buit');
         if (!window.confirm(u('recConf'))) return;
-        dd.avis = true; dd.lang = S.lang; dd.cfg.clauPsi = S.cfg.clauPsi; S = dd; desa(); toast(u('recOk')); vés('setmana');
+        dd.avis = true; dd.lang = S.lang; dd.cfg.clauPsi = S.equip && S.equip.id === dd.equip.id ? S.cfg.clauPsi : ''; S = dd; desa(); toast(u('recOk')); vés('setmana');
       }).catch(function () { toast(u('impErr')); });
     } else if (tipus === 'clauPsi') {
       var cp = String(fd.get('c') || ''); if (cp.length < 8) { toast(u('passNo')); return; }
