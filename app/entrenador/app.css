@@ -218,8 +218,13 @@ table.calor td{padding:2px}
 .toast.on{opacity:1}
 
 .imp-text{display:none}
+.fila-eq{display:flex;align-items:center;gap:8px}
+.fila-eq .fila-jug{flex:1;flex-direction:column;align-items:flex-start;gap:2px}
 @media print{
   .top,.nav,.no-imp,.banda-psi,.salta{display:none!important}
   body{padding:0;background:#fff;color:#000}
-  .imp-text{display:block;white-space:pre-wrap;font-size:12pt;line-height:1.5}
+  .vista,.banda-psi,[role=alert]{display:none!important}
+  .imp-text{display:block;font-size:12pt;line-height:1.5}
+  .imp-pag{white-space:pre-wrap;break-after:page;page-break-after:always}
+  .imp-pag:last-child{break-after:auto;page-break-after:auto}
 }

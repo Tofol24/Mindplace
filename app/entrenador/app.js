@@ -43,6 +43,8 @@
     var areaIds = C.arees.map(function (x) { return x.id; });
     ['climaOff', 'dimsOff', 'pssOff'].forEach(function (k) { var o = {}; Object.keys(b.cfg[k] || {}).forEach(function (x) { if (RID.test(x.toLowerCase()) && b.cfg[k][x]) o[x] = true; }); b.cfg[k] = o; });
     var L = b.cfg.llindars || {}; b.cfg.llindars = { fin: num(L.fin, 2, 8) || 3, min: num(L.min, 1, 8) || 2, ego: num(L.ego, 1, 4) || 3 };
+    b.cfg.clauPsi = txt(b.cfg.clauPsi, 200);
+    b.cfg.enviat = txt(b.cfg.enviat, 30);
     var R = b.cfg.recorda || {}; b.cfg.recorda = { dia: num(R.dia, 0, 6) || 0, hora: /^\d{2}:\d{2}$/.test(R.hora) ? R.hora : '20:00' };
     var setm = {};
     Object.keys(b.setm).forEach(function (w) {
@@ -67,7 +69,7 @@
       .map(function (n) { return { id: n.id, w: n.w, j: ids[n.j] ? n.j : '', a: areaIds.indexOf(n.a) >= 0 ? n.a : '', ctx: n.ctx === 'par' ? 'par' : 'ent', t: txt(n.t, 600), data: txt(n.data, 10) }; });
     if (b.equip && typeof b.equip === 'object') {
       var et = b.equip.etapa;
-      b.equip = { nom: txt(b.equip.nom, 60) || '—', esport: txt(b.equip.esport, 40), etapa: C.etapes.some(function (x) { return x.id === et; }) ? et : 'formacio', temporada: txt(b.equip.temporada, 20), club: txt(b.equip.club, 60) };
+      b.equip = { id: typeof b.equip.id === 'string' && RID.test(b.equip.id) ? b.equip.id : uid(), nom: txt(b.equip.nom, 60) || '—', esport: txt(b.equip.esport, 40), etapa: C.etapes.some(function (x) { return x.id === et; }) ? et : 'formacio', temporada: txt(b.equip.temporada, 20), club: txt(b.equip.club, 60) };
     } else b.equip = null;
     b.lang = b.lang === 'es' ? 'es' : 'ca';
     b.avis = b.avis === true;
@@ -123,9 +125,13 @@
   }
 
   /* Vista del psicòleg: equips oberts des d'un fitxer xifrat. Només en memòria. */
-  var PV = { llista: [], act: -1 };
+  /* Panel del psicòleg: equips rebuts, desats xifrats amb el codi d'accés del psicòleg.
+     PANEL.key només existeix en memòria mentre el panel és obert. */
+  var PV = { llista: [], meta: [], act: -1 };
+  var PANEL = { key: null, salt: null, claus: [] };
   function D() { return PV.act >= 0 ? PV.llista[PV.act] : S; }
   function lectura() { return PV.act >= 0; }
+  function psi() { return !!PANEL.key; }
 
   /* ================= IDIOMA ================= */
   function tx(o) { if (o == null) return ''; if (typeof o === 'string') return o; return o[S.lang] || o.ca || ''; }
@@ -182,6 +188,18 @@
       metT: 'El mètode', confEquip: 'Dades de l\'equip', setmanes: 'setmanes', ultima: 'Darrera entrevista', mai: 'cap',
       noDesaT: 'No s\'ha pogut desar en aquest dispositiu', noDesa: 'El navegador no deixa guardar (mode privat o memòria plena). Els canvis es perdran en tancar. Crea ara un fitxer xifrat de còpia.', psiNoExp: 'Estàs a la vista del psicòleg. Tanca-la per exportar o recuperar les dades d\'aquest dispositiu.', infPoc: 'Encara no hi ha prou setmanes de seguiment (mínim tres) per fer un informe a la família.',
       copiaEnll: 'Copia l\'enllaç', ajPsiQ: 'Com a psicòleg, aquests llindars s\'apliquen als equips que obres en aquest dispositiu. Ajusta\'ls a mesura que vegis com funcionen.', enllT: 'Enllaç per als entrenadors del club', enllQ: 'Compartiu aquest enllaç amb els entrenadors: obrirà el quadern amb l\'escut i la configuració del club.',
+      navPanel: 'Panel', navInf: 'Informes', panelT: 'Panel del psicòleg', tornaPanel: '← Panel del psicòleg', psiT: 'Sóc el psicòleg del club', psiQ: 'El panel reuneix els equips de tots els entrenadors del club, amb els avisos i els informes per a les famílies.',
+      panelNouQ: 'El panel reuneix els fitxers que t\'envien els entrenadors. Es desa xifrat en aquest dispositiu amb el teu codi d\'accés, que només coneixes tu.', panelCrea: 'Crea el panel', codi: 'Codi d\'accés (mínim 8 caràcters)', codi2: 'Repeteix el codi',
+      panelAvisCodi: 'Si oblides el codi, les dades del panel no es poden recuperar. Guarda\'l bé i fes còpies del panel de tant en tant.', panelCreat: 'Panel creat.', panelObreQ: 'Escriu el teu codi d\'accés per obrir el panel.', panelObre: 'Obre el panel', panelErr: 'Codi incorrecte o fitxer no vàlid.',
+      panelOblit: 'Si has oblidat el codi, només pots esborrar el panel d\'aquest dispositiu i començar de nou (o recuperar una còpia).', panelEsborra: 'Esborra el panel d\'aquest dispositiu', panelEsborraConf: 'Segur que vols esborrar el panel? Es perden tots els equips rebuts que no tenguis en còpia.',
+      panelRecT: 'Recupera una còpia del panel', panelRecBtn: 'Recupera', panelImpT: 'Rep els fitxers dels entrenadors', panelImpQ: 'Pots triar-ne diversos alhora. Si un equip ja hi és, s\'actualitza amb el fitxer més nou.', panelImpPass: 'Clau (només si és nova; les desades es proven soles)', panelImpBtn: 'Importa',
+      panelImpRes: 'Equips nous: {n} · actualitzats: {a} · no oberts o antics: {e}', panelSenseEq: 'Encara no hi ha cap equip. Quan els entrenadors t\'enviïn el fitxer, importa\'l aquí.', panelEquipsT: 'Equips', panelAvClub: 'Avisos del club per revisar aviat',
+      panelClausT: 'Claus dels clubs', panelClausQ: 'Dona a cada entrenador la clau del seu club, en persona o per telèfon. Les claus queden desades xifrades dins el panel i s\'usen soles en importar.', nClaus: 'claus desades', clauNova: 'Clau nova', treuClaus: 'Esborra les claus', treuClausConf: 'Esborrar totes les claus desades?',
+      panelCopiaT: 'Còpia i sortida', panelCopiaQ: 'La còpia és el mateix fitxer xifrat amb el teu codi. Tanca el panel quan acabis.', panelCopiaBtn: 'Descarrega una còpia del panel', panelTanca: 'Tanca el panel', treuEquip: 'Treu', treuConf: 'Treure aquest equip del panel?',
+      informesT: 'Informes per a les famílies', informesQ: 'Un esborrany per jugador a partir de les darreres 12 setmanes, per revisar i imprimir o desar en PDF tots alhora.', imprimeixTots: 'Imprimeix tots (un per pàgina)',
+      enviaT: 'Envia al psicòleg', enviaQ: 'Desa una sola vegada la clau que t\'ha donat el psicòleg del club. Després, cada setmana, envia-li les dades xifrades per WhatsApp o correu.', enviaQ2: 'Les dades surten xifrades amb la clau del psicòleg del club.', clauPsi: 'Clau del psicòleg del club', clauDesa: 'Desa la clau', clauDesada: 'Clau desada.',
+      enviaBtn: 'Envia al psicòleg', enviaCanvia: 'Canvia la clau', enviat: 'Darrer enviament', enviaPrep: 'Fitxer xifrat preparat. Toca «Comparteix» i tria WhatsApp o el correu del psicòleg.', enviaComp: 'Comparteix', enviaBaixa: 'Descarrega el fitxer', enviaBaixat: 'Fitxer descarregat. Adjunta\'l en un missatge al psicòleg.', enviaMsg: 'Seguiment setmanal',
+      impRecT: 'Recupera una còpia teva', panelLect: 'Només lectura: les dades d\'aquest equip les escriu l\'entrenador.',
       socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Fitxa APRENS ESPORT (conductes concretes)', vegades: 'vegades',
       senseEnt: 'setmanes sense entrevista', taula: 'Veure les dades en taula', mitjana: 'mitjana', avui: 'avui'
     },
@@ -237,6 +255,18 @@
       metT: 'El método', confEquip: 'Datos del equipo', setmanes: 'semanas', ultima: 'Última entrevista', mai: 'ninguna',
       noDesaT: 'No se ha podido guardar en este dispositivo', noDesa: 'El navegador no deja guardar (modo privado o memoria llena). Los cambios se perderán al cerrar. Crea ahora un archivo cifrado de copia.', psiNoExp: 'Estás en la vista del psicólogo. Ciérrala para exportar o recuperar los datos de este dispositivo.', infPoc: 'Todavía no hay suficientes semanas de seguimiento (mínimo tres) para hacer un informe a la familia.',
       copiaEnll: 'Copia el enlace', ajPsiQ: 'Como psicólogo, estos umbrales se aplican a los equipos que abres en este dispositivo. Ajústalos a medida que veas cómo funcionan.', enllT: 'Enlace para los entrenadores del club', enllQ: 'Compartid este enlace con los entrenadores: abrirá el cuaderno con el escudo y la configuración del club.',
+      navPanel: 'Panel', navInf: 'Informes', panelT: 'Panel del psicólogo', tornaPanel: '← Panel del psicólogo', psiT: 'Soy el psicólogo del club', psiQ: 'El panel reúne los equipos de todos los entrenadores del club, con los avisos y los informes para las familias.',
+      panelNouQ: 'El panel reúne los archivos que te envían los entrenadores. Se guarda cifrado en este dispositivo con tu código de acceso, que solo conoces tú.', panelCrea: 'Crea el panel', codi: 'Código de acceso (mínimo 8 caracteres)', codi2: 'Repite el código',
+      panelAvisCodi: 'Si olvidas el código, los datos del panel no se pueden recuperar. Guárdalo bien y haz copias del panel de vez en cuando.', panelCreat: 'Panel creado.', panelObreQ: 'Escribe tu código de acceso para abrir el panel.', panelObre: 'Abre el panel', panelErr: 'Código incorrecto o archivo no válido.',
+      panelOblit: 'Si has olvidado el código, solo puedes borrar el panel de este dispositivo y empezar de nuevo (o recuperar una copia).', panelEsborra: 'Borra el panel de este dispositivo', panelEsborraConf: '¿Seguro que quieres borrar el panel? Se pierden todos los equipos recibidos que no tengas en copia.',
+      panelRecT: 'Recupera una copia del panel', panelRecBtn: 'Recupera', panelImpT: 'Recibe los archivos de los entrenadores', panelImpQ: 'Puedes elegir varios a la vez. Si un equipo ya está, se actualiza con el archivo más nuevo.', panelImpPass: 'Clave (solo si es nueva; las guardadas se prueban solas)', panelImpBtn: 'Importa',
+      panelImpRes: 'Equipos nuevos: {n} · actualizados: {a} · no abiertos o antiguos: {e}', panelSenseEq: 'Todavía no hay ningún equipo. Cuando los entrenadores te envíen el archivo, impórtalo aquí.', panelEquipsT: 'Equipos', panelAvClub: 'Avisos del club para revisar pronto',
+      panelClausT: 'Claves de los clubes', panelClausQ: 'Da a cada entrenador la clave de su club, en persona o por teléfono. Las claves quedan guardadas cifradas dentro del panel y se usan solas al importar.', nClaus: 'claves guardadas', clauNova: 'Clave nueva', treuClaus: 'Borra las claves', treuClausConf: '¿Borrar todas las claves guardadas?',
+      panelCopiaT: 'Copia y salida', panelCopiaQ: 'La copia es el mismo archivo cifrado con tu código. Cierra el panel cuando acabes.', panelCopiaBtn: 'Descarga una copia del panel', panelTanca: 'Cierra el panel', treuEquip: 'Quitar', treuConf: '¿Quitar este equipo del panel?',
+      informesT: 'Informes para las familias', informesQ: 'Un borrador por jugador a partir de las últimas 12 semanas, para revisar e imprimir o guardar en PDF todos a la vez.', imprimeixTots: 'Imprime todos (uno por página)',
+      enviaT: 'Envía al psicólogo', enviaQ: 'Guarda una sola vez la clave que te ha dado el psicólogo del club. Después, cada semana, envíale los datos cifrados por WhatsApp o correo.', enviaQ2: 'Los datos salen cifrados con la clave del psicólogo del club.', clauPsi: 'Clave del psicólogo del club', clauDesa: 'Guarda la clave', clauDesada: 'Clave guardada.',
+      enviaBtn: 'Envía al psicólogo', enviaCanvia: 'Cambia la clave', enviat: 'Último envío', enviaPrep: 'Archivo cifrado preparado. Toca «Compartir» y elige WhatsApp o el correo del psicólogo.', enviaComp: 'Compartir', enviaBaixa: 'Descarga el archivo', enviaBaixat: 'Archivo descargado. Adjúntalo en un mensaje al psicólogo.', enviaMsg: 'Seguimiento semanal',
+      impRecT: 'Recupera una copia tuya', panelLect: 'Solo lectura: los datos de este equipo los escribe el entrenador.',
       socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Ficha APRENS ESPORT (conductas concretas)', vegades: 'veces',
       senseEnt: 'semanas sin entrevista', taula: 'Ver los datos en tabla', mitjana: 'media', avui: 'hoy'
     }
@@ -317,7 +347,7 @@
   /* ================= AVISOS ================= */
   function avisos(d) {
     d = d || D();
-    var ws = setmanesFetes(d), L = lectura() && S.psiLl ? S.psiLl : d.cfg.llindars, out = [];
+    var ws = setmanesFetes(d), L = psi() && S.psiLl ? S.psiLl : d.cfg.llindars, out = [];
     var fin = Math.max(2, +L.fin || 3), min = Math.max(1, +L.min || 2), ego = Math.max(1, +L.ego || 3);
     var dimsA = dimsActives(d);
     var avui = wid(new Date());
@@ -408,17 +438,17 @@
   function capcalera() {
     $('#ttApp').textContent = u('app');
     var d = D();
-    $('#subtitol').textContent = d.equip ? (d.equip.nom + (d.equip.temporada ? ' · ' + d.equip.temporada : '')) : (S.club ? S.club.nom + ' · APRENS' : u('sub'));
+    $('#subtitol').textContent = psi() && !lectura() ? u('panelT') : d.equip ? (d.equip.nom + (d.equip.temporada ? ' · ' + d.equip.temporada : '')) : (S.club ? S.club.nom + ' · APRENS' : u('sub'));
     $('#salta').textContent = u('salta');
     document.documentElement.lang = S.lang;
     document.title = u('app') + ' · APRENS';
     $('#lang').innerHTML = ['ca', 'es'].map(function (l) { return '<button type="button" data-lang="' + l + '" aria-pressed="' + (S.lang === l) + '">' + l.toUpperCase() + '</button>'; }).join('');
     var nav = $('#nav');
-    if (!S.avis || (!S.equip && !lectura())) { nav.hidden = true; document.body.classList.add('sense-nav'); return; }
+    if (!S.avis || (!S.equip && !psi())) { nav.hidden = true; document.body.classList.add('sense-nav'); return; }
     nav.hidden = false; document.body.classList.remove('sense-nav');
-    var items = lectura() ? [['tendencies', 'navTend', '↗'], ['plantilla', 'navPlant', '☰'], ['compartir', 'navComp', '⇄'], ['metode', 'navMet', '△']]
+    var items = psi() ? (lectura() ? [['panel', 'navPanel', '▦'], ['tendencies', 'navTend', '↗'], ['informes', 'navInf', '✉'], ['plantilla', 'navPlant', '☰'], ['metode', 'navMet', '△']] : [['panel', 'navPanel', '▦'], ['metode', 'navMet', '△']])
       : [['setmana', 'navSetm', '◷'], ['tendencies', 'navTend', '↗'], ['plantilla', 'navPlant', '☰'], ['compartir', 'navComp', '⇄'], ['metode', 'navMet', '△']];
-    var grup = { entrevista: 'setmana', objectius: 'setmana', nota: 'setmana', jugador: 'tendencies', informe: 'tendencies', ajustos: 'compartir', equip: 'plantilla' };
+    var grup = { entrevista: 'setmana', objectius: 'setmana', nota: 'setmana', jugador: 'tendencies', informe: 'tendencies', ajustos: psi() ? 'panel' : 'compartir', equip: 'plantilla' };
     var act = grup[ruta] || ruta;
     nav.innerHTML = items.map(function (it) {
       return '<button type="button" data-nav="' + it[0] + '"' + (act === it[0] ? ' aria-current="page"' : '') + '><span aria-hidden="true">' + it[2] + '</span>' + h(u(it[1])) + '</button>';
@@ -428,11 +458,13 @@
   function render() {
     capcalera();
     var m = $('#app'), html;
-    if (!S.avis && !lectura()) html = vAvis();
-    else if (!S.equip && !lectura() && ruta !== 'compartir') html = vEquip(true);
+    if (!S.avis) html = vAvis();
+    else if (ruta === 'panel') html = vPanel();
+    else if (psi() && !lectura() && ['metode', 'ajustos'].indexOf(ruta) < 0) { ruta = 'panel'; html = vPanel(); }
+    else if (!S.equip && !lectura() && ['compartir', 'metode'].indexOf(ruta) < 0) html = vEquip(true);
     else {
-      if (lectura() && ruta === 'setmana') ruta = 'tendencies';
-      var V = { setmana: vSetmana, objectius: vObjectius, entrevista: vEntrevista, nota: vNota, tendencies: vTendencies, jugador: vJugador,
+      if (lectura() && ['setmana', 'compartir', 'objectius', 'entrevista', 'nota', 'equip'].indexOf(ruta) >= 0) ruta = 'tendencies';
+      var V = { informes: vInformes, setmana: vSetmana, objectius: vObjectius, entrevista: vEntrevista, nota: vNota, tendencies: vTendencies, jugador: vJugador,
         informe: vInforme, plantilla: vPlantilla, equip: function () { return vEquip(false); }, compartir: vCompartir, ajustos: vAjustos, metode: vMetode };
       html = (V[ruta] || vSetmana)();
     }
@@ -441,16 +473,15 @@
 
   function bandaPsi() {
     var d = D();
-    return '<div class="banda-psi" role="status"><strong>' + h(u('vistaPsi')) + '</strong> · ' + h(d.equip ? d.equip.nom : '') + '<br><span>' + h(u('vistaNoDesa')) + '</span>' +
-      (PV.llista.length > 1 ? '<label class="sel-equip">' + h(u('equipsOberts')) + ' <select data-act="canviPV">' + PV.llista.map(function (x, i) { return '<option value="' + i + '"' + (i === PV.act ? ' selected' : '') + '>' + h(x.equip ? x.equip.nom : '—') + '</option>'; }).join('') + '</select></label>' : '') +
-      '<button type="button" class="btn petit" data-act="tancaPV">' + h(u('tancaVista')) + '</button></div>';
+    return '<div class="banda-psi" role="status"><strong>' + h(u('panelT')) + '</strong> · ' + h(d.equip ? d.equip.nom : '') + (d.equip && d.equip.club ? ' · ' + h(d.equip.club) : '') +
+      '<br><span>' + h(u('panelLect')) + '</span><br><button type="button" class="btn petit" data-nav="panel">' + h(u('tornaPanel')) + '</button></div>';
   }
 
   /* ---------- Benvinguda ---------- */
   function vAvis() {
     return '<span class="kick">APRENS</span><h1 tabindex="-1">' + h(u('app')) + '</h1>' +
       '<div class="card"><h2>' + h(u('avisT')) + '</h2>' + u('avis').map(function (p) { return '<p>' + h(p) + '</p>'; }).join('') +
-      '<button type="button" class="btn" data-act="accepta">' + h(u('avisAcc')) + '</button></div>' +
+      '<div class="fila"><button type="button" class="btn" data-act="accepta">' + h(u('avisAcc')) + '</button><button type="button" class="btn sec" data-act="accPsi">' + h(u('psiT')) + '</button></div></div>' +
       '<p class="muted">APRENS · Tòfol Villalonga · Psicòleg General Sanitari (B-01599) · Psicologia de l\'esport</p>';
   }
 
@@ -465,7 +496,7 @@
       camp('temporada', u('temporada'), e.temporada, 'maxlength="20"') +
       camp('club', u('club'), e.club, 'maxlength="60"') +
       '<div class="fila"><button type="submit" class="btn">' + h(primer ? u('continua') : u('desa')) + '</button>' +
-      (primer ? '<button type="button" class="btn sec" data-nav="compartir">' + h(u('socPsi')) + '</button>' : '<button type="button" class="btn sec" data-nav="plantilla">' + h(u('cancel')) + '</button>') + '</div></form>';
+      (primer ? '<button type="button" class="btn sec" data-nav="panel">' + h(u('psiT')) + '</button>' : '<button type="button" class="btn sec" data-nav="plantilla">' + h(u('cancel')) + '</button>') + '</div></form>';
   }
   function camp(n, l, v, extra) { return '<label class="camp"><span>' + h(l) + '</span><input name="' + n + '" value="' + h(v || '') + '" ' + (extra || '') + '></label>'; }
   function temporadaDef() { var d = new Date(), y = d.getFullYear(); if (d.getMonth() < 7) y--; return y + '-' + String(y + 1).slice(2); }
@@ -488,7 +519,9 @@
       (obj ? '<ul class="objs">' + obj.map(function (x) { var a = per(x.a, C.arees); return '<li><span class="xip" style="--c:' + (a ? a.color : '#555') + '">' + h(a ? tx(a.t) : '') + '</span> ' + h(x.t) + '</li>'; }).join('') + '</ul>' : '<p class="muted">' + h(u('objBuit')) + '</p>') +
       '<button type="button" class="btn ' + (obj ? 'sec' : '') + '" data-nav="objectius">' + h(obj ? u('objEdita') : u('objFixa')) + '</button></section>';
     o += '<section class="card ' + (fet ? 'verd' : 'blau') + '"><h2>' + h(u('entT')) + '</h2><p class="muted">' + h(fet ? u('entFeta') : u('entPend') + ' · ' + u('entDur')) + '</p>' +
-      '<button type="button" class="btn" data-act="obreEnt">' + h(fet ? u('entRev') : u('entFes')) + '</button></section>';
+      '<div class="fila"><button type="button" class="btn" data-act="obreEnt">' + h(fet ? u('entRev') : u('entFes')) + '</button>' +
+      (fet ? '<button type="button" class="btn sec" data-act="' + (S.cfg.clauPsi ? 'envia' : 'anarEnvia') + '">' + h(u('enviaBtn')) + '</button>' : '') + '</div>' +
+      (fet && S.cfg.enviat ? '<p class="muted petit">' + h(u('enviat')) + ': ' + h(S.cfg.enviat.slice(0, 10)) + '</p>' : '') + prepHtml() + '</section>';
     o += '<section class="card"><h2>' + h(u('notaT')) + '</h2>' +
       (notes.length ? '<ul class="notes">' + notes.map(function (n) { var j = per(n.j, S.jug); return '<li><span class="muted">' + h(n.ctx === 'par' ? u('ctxPar') : u('ctxEnt')) + (j ? ' · ' + h(nomJ(j)) : '') + '</span><br>' + h(n.t) + ' <button type="button" class="enllac" data-act="esborraNota" data-id="' + n.id + '">' + h(u('esborra')) + '</button></li>'; }).join('') + '</ul>' : '') +
       '<button type="button" class="btn sec" data-nav="nota">' + h(u('notaFes')) + '</button></section>';
@@ -641,6 +674,7 @@
       o += grafic(ws, series);
     }
     o += '</section>';
+    if (psi()) o += '<div class="card blau"><h2>' + h(u('informesT')) + '</h2><p>' + h(u('informesQ')) + '</p><button type="button" class="btn" data-nav="informes">' + h(u('informesT')) + '</button></div>';
     o += '<section class="card"><h2>' + h(u('tendJug')) + '</h2><ul class="llista-jug">' + jugActius(d).map(function (j) {
       var a = av.filter(function (x) { return x.j && x.j.id === j.id; })[0];
       return '<li><button type="button" class="fila-jug' + (a ? (a.nivell === 2 ? ' alt' : a.nivell === -1 ? ' pos' : ' marcat') : '') + '" data-nav="jugador" data-arg="' + j.id + '"><strong>' + h(nomJ(j)) + '</strong>' + tira(d, j, ws.slice(-6), true) + '</button></li>';
@@ -751,7 +785,7 @@
     var d = D(), j = per(arg, d.jug); if (!j) return vTendencies();
     return '<button type="button" class="enllac no-imp" data-nav="jugador" data-arg="' + j.id + '">← ' + h(nomJ(j)) + '</button><span class="kick no-imp">' + h(u('infT')) + '</span><h1 tabindex="-1" class="no-imp">' + h(u('infT')) + '</h1>' +
       '<p class="muted no-imp">' + h(u('infQ')) + '</p><label class="camp no-imp"><span class="sr">' + h(u('infT')) + '</span><textarea id="txtInf" rows="18">' + h(textInforme(d, j)) + '</textarea></label>' +
-      '<div class="imp-text" id="impText" aria-hidden="true"></div>' +
+      
       '<div class="fila no-imp"><button type="button" class="btn" data-act="imprimeix">' + h(u('infImp')) + '</button><button type="button" class="btn sec" data-act="copiaInf">' + h(u('infCopia')) + '</button></div>';
   }
 
@@ -779,18 +813,19 @@
   /* ---------- Compartir ---------- */
   function vCompartir() {
     var o = (!S.equip && !lectura() ? '<button type="button" class="enllac" data-nav="setmana">← ' + h(u('equipT')) + '</button>' : '') + '<h1 tabindex="-1">' + h(u('compT')) + '</h1>';
-    if (lectura()) o += '<p class="card blau">' + h(u('psiNoExp')) + '</p>';
-    if (S.equip && !lectura()) o += '<form class="card" data-form="exporta"><h2>' + h(u('expT')) + '</h2><p>' + h(u('expQ')) + '</p>' +
+    if (S.equip) o += vEnvia();
+    if (S.equip) o += '<form class="card" data-form="exporta"><h2>' + h(u('expT')) + '</h2><p>' + h(u('expQ')) + '</p>' +
       '<label class="camp"><span>' + h(u('pass')) + '</span><input type="password" name="p1" minlength="8" autocomplete="new-password" required></label>' +
       '<label class="camp"><span>' + h(u('pass2')) + '</span><input type="password" name="p2" minlength="8" autocomplete="new-password" required></label>' +
       '<button type="submit" class="btn">' + h(u('expBtn')) + '</button></form>';
-    o += '<form class="card" data-form="importa"><h2>' + h(u('impT')) + '</h2><p>' + h(u('impQ')) + '</p><p class="muted">' + h(u('impQ2')) + '</p>' +
+    o += '<form class="card" data-form="importa"><h2>' + h(u('impRecT')) + '</h2><p>' + h(u('impQ2')) + '</p>' +
       '<label class="camp"><span>' + h(u('impFitxer')) + '</span><input type="file" name="f" accept=".json,application/json" required></label>' +
       '<label class="camp"><span>' + h(u('pass')) + '</span><input type="password" name="p" autocomplete="off" required></label>' +
-      '<div class="fila"><button type="submit" class="btn" name="mode" value="psi">' + h(u('impVeure')) + '</button>' + (S.avis && !lectura() ? '<button type="submit" class="btn sec" name="mode" value="rec">' + h(u('impRec')) + '</button>' : '') + '</div></form>';
-    if (S.equip || lectura()) o += '<div class="card"><h2>' + h(u(lectura() ? 'ajLl' : 'ajT')) + '</h2><p>' + h(u(lectura() ? 'ajPsiQ' : 'ajQ')) + '</p><button type="button" class="btn sec" data-nav="ajustos">' + h(u(lectura() ? 'ajLl' : 'ajT')) + '</button></div>';
-    if (S.club && S.club.slug && !lectura()) o += '<div class="card"><h2>' + h(u('enllT')) + '</h2><p>' + h(u('enllQ')) + '</p><p class="enllac-club">' + h(enllacClub()) + '</p><button type="button" class="btn sec" data-act="copiaEnll">' + h(u('copiaEnll')) + '</button></div>';
-    if (S.equip && !lectura()) {
+      '<button type="submit" class="btn sec">' + h(u('impRec')) + '</button></form>';
+    o += '<div class="card suau"><h2>' + h(u('psiT')) + '</h2><p>' + h(u('psiQ')) + '</p><button type="button" class="btn sec" data-nav="panel">' + h(u('panelT')) + '</button></div>';
+    if (S.equip) o += '<div class="card"><h2>' + h(u('ajT')) + '</h2><p>' + h(u('ajQ')) + '</p><button type="button" class="btn sec" data-nav="ajustos">' + h(u('ajT')) + '</button></div>';
+    if (S.club && S.club.slug) o += '<div class="card"><h2>' + h(u('enllT')) + '</h2><p>' + h(u('enllQ')) + '</p><p class="enllac-club">' + h(enllacClub()) + '</p><button type="button" class="btn sec" data-act="copiaEnll">' + h(u('copiaEnll')) + '</button></div>';
+    if (S.equip) {
       o += '<form class="card" data-form="recorda"><h2>' + h(u('recT')) + '</h2><p>' + h(u('recQ')) + '</p><div class="fila">' +
         '<label class="camp"><span>' + h(u('recDia')) + '</span><select name="dia">' + u('dies').map(function (x, i) { return '<option value="' + i + '"' + (i === +S.cfg.recorda.dia ? ' selected' : '') + '>' + h(x) + '</option>'; }).join('') + '</select></label>' +
         '<label class="camp"><span>' + h(u('recHora')) + '</span><input type="time" name="hora" value="' + h(S.cfg.recorda.hora || '20:00') + '"></label></div>' +
@@ -803,9 +838,9 @@
   /* ---------- Ajustos: ítems i llindars ---------- */
   function enllacClub() { return location.origin + location.pathname + '?club=' + encodeURIComponent(S.club.slug) + '&lang=' + S.lang; }
   function vAjustos() {
-    if (lectura()) {
-      var LP = S.psiLl || D().cfg.llindars;
-      return '<button type="button" class="enllac" data-nav="compartir">← ' + h(u('compT')) + '</button><h1 tabindex="-1">' + h(u('ajLl')) + '</h1><p class="lead">' + h(u('ajPsiQ')) + '</p>' +
+    if (psi()) {
+      var LP = S.psiLl || BASE.cfg.llindars;
+      return '<button type="button" class="enllac" data-nav="panel">' + h(u('tornaPanel')) + '</button><h1 tabindex="-1">' + h(u('ajLl')) + '</h1><p class="lead">' + h(u('ajPsiQ')) + '</p>' +
         '<fieldset class="card"><legend>' + h(u('ajLl')) + '</legend>' + numCamp('fin', u('ajFin'), LP.fin, 2, 8) + numCamp('min', u('ajMin'), LP.min, 1, 8) + numCamp('ego', u('ajEgo'), LP.ego, 1, 4) + '</fieldset>';
     }
     var cf = S.cfg, L = cf.llindars;
@@ -873,6 +908,199 @@
   function slug(s) { return String(s || 'equip').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'equip'; }
   function avuiISO() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
+  /* ================= ENVIAMENT AL PSICÒLEG (entrenador) ================= */
+  /* Paquet que surt del dispositiu: sense la clau del psicòleg ni l'acceptació. */
+  function paquet() {
+    var dades = clone(S); delete dades.avis; delete dades.psiLl; dades.cfg.clauPsi = ''; dades.cfg.enviat = '';
+    return { exportat: new Date().toISOString(), dades: dades };
+  }
+  var PREP = null; /* fitxer xifrat preparat, per si el navegador demana un segon toc per compartir */
+  function prepHtml() {
+    if (!PREP) return '';
+    return '<div class="card verd"><p>' + h(u('enviaPrep')) + '</p><div class="fila">' + (navigator.share ? '<button type="button" class="btn" data-act="comparteix">' + h(u('enviaComp')) + '</button>' : '') +
+      '<button type="button" class="btn sec" data-act="baixaPrep">' + h(u('enviaBaixa')) + '</button></div></div>';
+  }
+  function vEnvia() {
+    if (!S.cfg.clauPsi) return '<form class="card blau" data-form="clauPsi"><h2>' + h(u('enviaT')) + '</h2><p>' + h(u('enviaQ')) + '</p>' +
+      '<label class="camp"><span>' + h(u('clauPsi')) + '</span><input type="password" name="c" minlength="8" autocomplete="off" required></label>' +
+      '<button type="submit" class="btn">' + h(u('clauDesa')) + '</button></form>';
+    return '<div class="card blau"><h2>' + h(u('enviaT')) + '</h2><p>' + h(u('enviaQ2')) + '</p>' + (S.cfg.enviat ? '<p class="muted">' + h(u('enviat')) + ': ' + h(S.cfg.enviat.slice(0, 10)) + '</p>' : '') +
+      '<div class="fila"><button type="button" class="btn" data-act="envia">' + h(u('enviaBtn')) + '</button><button type="button" class="btn sec" data-act="canviaClau">' + h(u('enviaCanvia')) + '</button></div>' + prepHtml() + '</div>';
+  }
+  function marcaEnviat() { S.cfg.enviat = new Date().toISOString(); PREP = null; desa(); render(); }
+  function envia() {
+    if (!S.cfg.clauPsi || !S.equip) { vés('compartir'); return; }
+    xifra(paquet(), S.cfg.clauPsi).then(function (box) {
+      PREP = { nom: 'aprens-equip-' + slug(S.equip.nom) + '-' + avuiISO() + '.json', text: JSON.stringify(box) };
+      comparteix(true);
+    }, function () { toast(u('impErr')); });
+  }
+  function comparteix(primer) {
+    if (!PREP) return;
+    var f = null;
+    try { f = new File([PREP.text], PREP.nom, { type: 'application/json' }); } catch (e) { f = null; }
+    if (f && navigator.canShare && navigator.canShare({ files: [f] })) {
+      navigator.share({ files: [f], title: u('app'), text: u('enviaMsg') + (S.equip ? ' ' + S.equip.nom : '') }).then(marcaEnviat, function (e) {
+        if (e && e.name === 'AbortError') return;
+        render(); /* sense permís (cal un segon toc): queda el botó «Comparteix» */
+      });
+      if (primer) render();
+      return;
+    }
+    baixa(PREP.nom, PREP.text, 'application/json'); toast(u('enviaBaixat')); marcaEnviat();
+  }
+
+  /* ================= PANEL DEL PSICÒLEG ================= */
+  var LSP = 'aprens_quadern_panel_v1';
+  function lsGetK(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSetK(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function lsDelK(k) { try { localStorage.removeItem(k); } catch (e) { /* res */ } }
+  function tancaPanel() { PANEL = { key: null, salt: null, claus: [] }; PV = { llista: [], meta: [], act: -1 }; }
+  function desaPanel() {
+    if (!PANEL.key) return Promise.resolve();
+    var cos = { equips: PV.llista.map(function (d, i) { var x = clone(d); delete x.avis; delete x.psiLl; return { rebut: PV.meta[i].rebut, exportat: PV.meta[i].exportat, dades: x }; }), claus: PANEL.claus };
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, PANEL.key, enc.encode(JSON.stringify(cos))).then(function (ct) {
+      var ok = lsSetK(LSP, JSON.stringify({ app: 'aprens-quadern-panel', v: 1, kdf: 'PBKDF2-SHA256', iter: ITER, salt: b64(PANEL.salt), iv: b64(iv), ct: b64(ct) }));
+      if (!ok) toast(u('noDesaT'));
+    });
+  }
+  function obrePanel(box, codi) {
+    if (!box || box.app !== 'aprens-quadern-panel' || !box.ct) return Promise.reject(new Error('format'));
+    var salt = unb64(box.salt), iter = Math.min(Math.max(+box.iter || ITER, 100000), 2000000), key;
+    return clau(codi, salt, iter).then(function (k) { key = k; return crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(box.iv) }, k, unb64(box.ct)); })
+      .then(function (pt) {
+        var cos = JSON.parse(dec.decode(pt)) || {};
+        var claus = (Array.isArray(cos.claus) ? cos.claus : []).filter(function (c) { return typeof c === 'string' && c.length >= 8; }).slice(0, 50).map(function (c) { return c.slice(0, 200); });
+        var llista = [], meta = [];
+        (Array.isArray(cos.equips) ? cos.equips : []).forEach(function (e) {
+          var d = normalitza(e && e.dades); if (!d.equip) return;
+          llista.push(d); meta.push({ rebut: txt(e.rebut, 30), exportat: txt(e.exportat, 30) });
+        });
+        PANEL = { key: key, salt: salt, claus: claus }; PV = { llista: llista, meta: meta, act: -1 };
+        if (iter !== ITER) { PANEL.salt = crypto.getRandomValues(new Uint8Array(16)); return clau(codi, PANEL.salt, ITER).then(function (k2) { PANEL.key = k2; return desaPanel(); }); }
+      });
+  }
+  function creaPanel(codi) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    return clau(codi, salt, ITER).then(function (k) { PANEL = { key: k, salt: salt, claus: [] }; PV = { llista: [], meta: [], act: -1 }; return desaPanel(); });
+  }
+  /* Importa un fitxer d'un entrenador: prova la clau escrita i les claus desades al panel. */
+  function importaAlPanel(box, extra) {
+    var claus = (extra ? [extra] : []).concat(PANEL.claus.filter(function (c) { return c !== extra; }));
+    var i = 0;
+    function prova() {
+      if (i >= claus.length) return Promise.reject(new Error('clau'));
+      var c = claus[i++];
+      return desxifra(box, c).then(function (obj) { return { obj: obj, clau: c }; }, prova);
+    }
+    return prova().then(function (r) {
+      var d = normalitza(r.obj && r.obj.dades); if (!d.equip) throw new Error('buit');
+      if (PANEL.claus.indexOf(r.clau) < 0) PANEL.claus.push(r.clau);
+      var exportat = txt(r.obj.exportat, 30), idx = -1;
+      PV.llista.forEach(function (x, k) { if (x.equip && x.equip.id === d.equip.id) idx = k; });
+      var meta = { rebut: new Date().toISOString(), exportat: exportat };
+      if (idx < 0) { PV.llista.push(d); PV.meta.push(meta); return 'nou'; }
+      if (PV.meta[idx].exportat && exportat && exportat < PV.meta[idx].exportat) return 'antic';
+      PV.llista[idx] = d; PV.meta[idx] = meta; return 'act';
+    });
+  }
+  function submitPanel(tipus, fd, f) {
+    if (tipus === 'panelCrea') {
+      var c1 = String(fd.get('c1') || ''), c2 = String(fd.get('c2') || '');
+      if (c1.length < 8 || c1 !== c2) { toast(u('passNo')); return true; }
+      creaPanel(c1).then(function () { toast(u('panelCreat')); render(); }, function () { toast(u('impErr')); });
+      return true;
+    }
+    if (tipus === 'panelObre') {
+      var raw = null;
+      try { raw = JSON.parse(lsGetK(LSP)); } catch (e) { raw = null; }
+      obrePanel(raw, String(fd.get('c') || '')).then(render, function () { tancaPanel(); toast(u('panelErr')); });
+      return true;
+    }
+    if (tipus === 'panelRecupera') {
+      var fr = fd.get('f'), cr = String(fd.get('c') || '');
+      if (!fr || !fr.size || fr.size > 2e7) { toast(u('impErr')); return true; }
+      fr.text().then(function (t) { return obrePanel(JSON.parse(t), cr); }).then(desaPanel)
+        .then(function () { toast(u('recOk')); render(); }, function () { tancaPanel(); toast(u('panelErr')); });
+      return true;
+    }
+    if (tipus === 'panelImporta') {
+      var fitxers = fd.getAll('f').filter(function (x) { return x && x.size && x.size < 5e6; }), extra = String(fd.get('c') || '');
+      if (!fitxers.length) { toast(u('impErr')); return true; }
+      var res = { nou: 0, act: 0, antic: 0, err: 0 };
+      fitxers.reduce(function (pr, fi) {
+        return pr.then(function () { return fi.text(); }).then(function (t) { return importaAlPanel(JSON.parse(t), extra.length >= 8 ? extra : ''); })
+          .then(function (r) { res[r]++; }, function () { res.err++; });
+      }, Promise.resolve()).then(desaPanel).then(function () {
+        toast(u('panelImpRes').replace('{n}', res.nou).replace('{a}', res.act).replace('{e}', res.err + res.antic));
+        render();
+      });
+      return true;
+    }
+    if (tipus === 'panelClau') {
+      var nc = String(fd.get('c') || '');
+      if (nc.length < 8) { toast(u('passNo')); return true; }
+      if (PANEL.claus.indexOf(nc) < 0) PANEL.claus.push(nc);
+      desaPanel().then(function () { toast(u('clauDesada')); render(); });
+      return true;
+    }
+    return false;
+  }
+  function vPanel() {
+    PV.act = -1;
+    var o = '<span class="kick">APRENS</span><h1 tabindex="-1">' + h(u('panelT')) + '</h1>';
+    if (!psi()) {
+      if (lsGetK(LSP)) return o + '<form class="card" data-form="panelObre"><p>' + h(u('panelObreQ')) + '</p><label class="camp"><span>' + h(u('codi')) + '</span><input type="password" name="c" autocomplete="current-password" required></label>' +
+        '<button type="submit" class="btn">' + h(u('panelObre')) + '</button></form>' +
+        '<div class="card terra"><p>' + h(u('panelOblit')) + '</p><button type="button" class="btn perill petit" data-act="esborraPanel">' + h(u('panelEsborra')) + '</button></div>';
+      return o + '<p class="lead">' + h(u('panelNouQ')) + '</p><form class="card" data-form="panelCrea"><h2>' + h(u('panelCrea')) + '</h2>' +
+        '<label class="camp"><span>' + h(u('codi')) + '</span><input type="password" name="c1" minlength="8" autocomplete="new-password" required></label>' +
+        '<label class="camp"><span>' + h(u('codi2')) + '</span><input type="password" name="c2" minlength="8" autocomplete="new-password" required></label>' +
+        '<p class="muted">' + h(u('panelAvisCodi')) + '</p><button type="submit" class="btn">' + h(u('panelCrea')) + '</button></form>' +
+        '<form class="card suau" data-form="panelRecupera"><h2>' + h(u('panelRecT')) + '</h2><label class="camp"><span>' + h(u('impFitxer')) + '</span><input type="file" name="f" accept=".json,application/json" required></label>' +
+        '<label class="camp"><span>' + h(u('codi')) + '</span><input type="password" name="c" autocomplete="off" required></label><button type="submit" class="btn sec">' + h(u('panelRecBtn')) + '</button></form>';
+    }
+    o += '<form class="card blau" data-form="panelImporta"><h2>' + h(u('panelImpT')) + '</h2><p>' + h(u('panelImpQ')) + '</p>' +
+      '<label class="camp"><span>' + h(u('impFitxer')) + '</span><input type="file" name="f" accept=".json,application/json" multiple required></label>' +
+      '<label class="camp"><span>' + h(u('panelImpPass')) + '</span><input type="password" name="c" autocomplete="off"></label>' +
+      '<button type="submit" class="btn">' + h(u('panelImpBtn')) + '</button></form>';
+    var avui = wid(new Date()), totsAv = [];
+    if (!PV.llista.length) o += '<p class="card suau">' + h(u('panelSenseEq')) + '</p>';
+    else {
+      o += '<section class="card"><h2>' + h(u('panelEquipsT')) + '</h2><ul class="llista-jug">' + PV.llista.map(function (d, i) {
+        var ws = setmanesFetes(d), ult = ws[ws.length - 1], sense = ult ? setmanesEntre(ult, avui) : null;
+        var av = avisos(d), alts = av.filter(function (a) { return a.nivell === 2; }), nSeg = av.filter(function (a) { return a.nivell === 1; }).length;
+        alts.forEach(function (a) { totsAv.push({ d: d, a: a }); });
+        var info = [d.equip.club, u('ultima') + ': ' + (ult ? etiquetaW(ult) : u('mai'))];
+        if (sense != null && sense >= 2) info.push(sense + ' ' + u('senseEnt'));
+        if (alts.length) info.push(alts.length + ' · ' + u('avAlt').toLowerCase());
+        if (nSeg) info.push(nSeg + ' · ' + u('avSeg').toLowerCase());
+        return '<li><div class="fila-eq"><button type="button" class="fila-jug' + (alts.length ? ' alt' : nSeg ? ' marcat' : '') + '" data-act="obreEquip" data-i="' + i + '"><strong>' + h(d.equip.nom) + '</strong><span class="muted">' + h(info.filter(Boolean).join(' · ')) + '</span></button>' +
+          '<button type="button" class="enllac" data-act="treuEquip" data-i="' + i + '" aria-label="' + h(u('treuEquip') + ': ' + d.equip.nom) + '">' + h(u('treuEquip')) + '</button></div></li>';
+      }).join('') + '</ul></section>';
+      o += '<section class="card"><h2>' + h(u('panelAvClub')) + '</h2>' + (totsAv.length ? '<ul class="avisos">' + totsAv.map(function (x) {
+        return '<li class="av n2"><strong>' + h(x.d.equip.nom) + '</strong> · ' + (x.a.tipus === 'equip' ? h(u('avEquip')) : h(nomJ(x.a.j))) + '<ul>' + x.a.motius.map(function (m) { return '<li>' + h(m) + '</li>'; }).join('') + '</ul></li>';
+      }).join('') + '</ul>' : '<p>' + h(u('avBuit')) + '</p>') + '</section>';
+    }
+    o += '<form class="card" data-form="panelClau"><h2>' + h(u('panelClausT')) + '</h2><p>' + h(u('panelClausQ')) + '</p><p class="muted">' + PANEL.claus.length + ' ' + h(u('nClaus')) + '</p>' +
+      '<label class="camp"><span>' + h(u('clauNova')) + '</span><input type="password" name="c" minlength="8" autocomplete="off"></label><div class="fila"><button type="submit" class="btn sec">' + h(u('clauDesa')) + '</button>' +
+      (PANEL.claus.length ? '<button type="button" class="btn sec" data-act="treuClaus">' + h(u('treuClaus')) + '</button>' : '') + '</div></form>';
+    o += '<div class="card"><h2>' + h(u('ajLl')) + '</h2><p>' + h(u('ajPsiQ')) + '</p><button type="button" class="btn sec" data-nav="ajustos">' + h(u('ajLl')) + '</button></div>';
+    o += '<div class="card suau"><h2>' + h(u('panelCopiaT')) + '</h2><p>' + h(u('panelCopiaQ')) + '</p><div class="fila"><button type="button" class="btn sec" data-act="baixaPanel">' + h(u('panelCopiaBtn')) + '</button>' +
+      '<button type="button" class="btn" data-act="tancaPanel">' + h(u('panelTanca')) + '</button></div></div>';
+    return o;
+  }
+  function vInformes() {
+    var d = D();
+    var o = '<button type="button" class="enllac no-imp" data-nav="tendencies">← ' + h(u('tendT')) + '</button><span class="kick no-imp">' + h(d.equip ? d.equip.nom : '') + '</span><h1 tabindex="-1" class="no-imp">' + h(u('informesT')) + '</h1>' +
+      '<p class="muted no-imp">' + h(u('infQ')) + '</p><div class="fila no-imp"><button type="button" class="btn" data-act="imprimeixTots">' + h(u('imprimeixTots')) + '</button></div>';
+    jugActius(d).forEach(function (j) {
+      o += '<label class="camp no-imp card"><span>' + h(nomJ(j)) + '</span><textarea data-inf="' + j.id + '" rows="12">' + h(textInforme(d, j)) + '</textarea></label>';
+    });
+    return o;
+  }
+
   /* ================= ESDEVENIMENTS ================= */
   document.addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-lang],[data-nav],[data-act]'); if (!b) return;
@@ -880,11 +1108,27 @@
     if (b.dataset.nav) {
       if (b.dataset.nav === 'tendencies' && b.dataset.arg === 'avisos') { vés('tendencies'); var a = $('#avisos'); if (a) a.scrollIntoView(); return; }
       if (b.dataset.nav !== 'objectius') esborrany = esborrany && ruta === 'entrevista' && b.dataset.nav === 'plantilla' ? esborrany : null;
+      if (b.dataset.nav === 'panel') PV.act = -1;
       vés(b.dataset.nav, b.dataset.arg); return;
     }
     var act = b.dataset.act, sm;
     switch (act) {
       case 'accepta': S.avis = true; desa(); vés(S.equip ? 'setmana' : 'equip'); break;
+      case 'accPsi': S.avis = true; desa(); vés('panel'); break;
+      case 'envia': envia(); break;
+      case 'anarEnvia': vés('compartir'); break;
+      case 'comparteix': comparteix(); break;
+      case 'baixaPrep': if (PREP) { baixa(PREP.nom, PREP.text, 'application/json'); marcaEnviat(); } break;
+      case 'canviaClau': S.cfg.clauPsi = ''; desa(); render(); break;
+      case 'obreEquip': PV.act = +b.dataset.i; vés('tendencies'); break;
+      case 'treuEquip': if (window.confirm(u('treuConf'))) { PV.llista.splice(+b.dataset.i, 1); PV.meta.splice(+b.dataset.i, 1); PV.act = -1; desaPanel().then(render); } break;
+      case 'tancaPanel': tancaPanel(); vés('panel'); break;
+      case 'baixaPanel': var bx = lsGetK(LSP); if (bx) baixa('aprens-panel-psicoleg-' + avuiISO() + '.json', bx, 'application/json'); break;
+      case 'esborraPanel': if (window.confirm(u('panelEsborraConf'))) { lsDelK(LSP); tancaPanel(); vés('panel'); } break;
+      case 'treuClaus': if (window.confirm(u('treuClausConf'))) { PANEL.claus = []; desaPanel().then(render); } break;
+      case 'imprimeixTots':
+        $('#impText').innerHTML = $$('textarea[data-inf]').map(function (t) { return '<section class="imp-pag">' + h(t.value) + '</section>'; }).join('');
+        window.print(); break;
       case 'wAnt': setmVista.setDate(setmVista.getDate() - 7); render(); break;
       case 'wSeg': setmVista.setDate(setmVista.getDate() + 7); render(); break;
       case 'wAvui': setmVista = dilluns(new Date()); render(); break;
@@ -910,7 +1154,7 @@
         sm = setm(wActual(), true); esborrany.ent.fet = true; esborrany.ent.data = avuiISO();
         Object.keys(esborrany.ent.jug).forEach(function (k) { var rr = esborrany.ent.jug[k]; Object.keys(rr.d).forEach(function (dk) { if (!rr.d[dk]) delete rr.d[dk]; }); });
         sm.ent = esborrany.ent; esborrany = null; desa(); toast(u('entDesada')); vés('setmana'); break;
-      case 'imprimeix': $('#impText').textContent = $('#txtInf').value; window.print(); break;
+      case 'imprimeix': $('#impText').innerHTML = '<section class="imp-pag">' + h($('#txtInf').value) + '</section>'; window.print(); break;
       case 'copiaInf':
         var t = $('#txtInf').value;
         if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { toast(u('copiat')); }, function () { $('#txtInf').select(); });
@@ -921,7 +1165,6 @@
         break;
       case 'treuExtra': S.cfg.dimsExtra = S.cfg.dimsExtra.filter(function (x) { return x.id !== b.dataset.id; }); desa(); render(); break;
       case 'esborraTot': if (window.confirm(u('perillConf'))) { lsDel(); S = clone(BASE); S.lang = U[S.lang] ? S.lang : 'ca'; vés('setmana'); } break;
-      case 'tancaPV': PV.llista.splice(PV.act, 1); PV.act = PV.llista.length ? 0 : -1; vés(PV.act >= 0 ? 'tendencies' : 'compartir'); break;
     }
   });
   function afegeixObj(t) {
@@ -955,10 +1198,9 @@
     if (ds.ll) {
       var n = parseInt(el.value, 10); if (isNaN(n)) return;
       n = Math.max(+el.min, Math.min(+el.max, n));
-      if (lectura()) { if (!S.psiLl) S.psiLl = clone(D().cfg.llindars); S.psiLl[ds.ll] = n; } else S.cfg.llindars[ds.ll] = n;
+      if (psi()) { if (!S.psiLl) S.psiLl = clone(BASE.cfg.llindars); S.psiLl[ds.ll] = n; } else S.cfg.llindars[ds.ll] = n;
       desa(); return;
     }
-    if (ds.act === 'canviPV') { PV.act = +el.value; render(); }
   });
   document.addEventListener('input', function (ev) {
     var el = ev.target, ds = el.dataset;
@@ -972,7 +1214,7 @@
     var fd = new FormData(f);
     if (tipus === 'equip') {
       var nom = String(fd.get('nom') || '').trim(); if (!nom) return;
-      S.equip = { nom: nom.slice(0, 60), esport: String(fd.get('esport') || '').trim().slice(0, 40), etapa: String(fd.get('etapa')), temporada: String(fd.get('temporada') || '').trim().slice(0, 20), club: String(fd.get('club') || '').trim().slice(0, 60) };
+      S.equip = { id: S.equip && S.equip.id ? S.equip.id : uid(), nom: nom.slice(0, 60), esport: String(fd.get('esport') || '').trim().slice(0, 40), etapa: String(fd.get('etapa')), temporada: String(fd.get('temporada') || '').trim().slice(0, 20), club: String(fd.get('club') || '').trim().slice(0, 60) };
       desa(); vés(S.jug.length ? 'setmana' : 'plantilla');
     } else if (tipus === 'objPropi') { afegeixObj(fd.get('t')); }
     else if (tipus === 'nota') {
@@ -990,26 +1232,24 @@
       var tt = String(fd.get('t') || '').trim(); if (!tt) return;
       S.cfg.dimsExtra.push({ id: 'x' + uid(), t: tt.slice(0, 60) }); desa(); render();
     } else if (tipus === 'exporta') {
-      if (lectura()) return;
       var p1 = String(fd.get('p1') || ''), p2 = String(fd.get('p2') || '');
       if (p1.length < 8 || p1 !== p2) { toast(u('passNo')); return; }
-      var dades = clone(S); delete dades.avis;
-      xifra({ exportat: new Date().toISOString(), dades: dades }, p1).then(function (box) {
+      xifra(paquet(), p1).then(function (box) {
         baixa('aprens-equip-' + slug(S.equip.nom) + '-' + avuiISO() + '.json', JSON.stringify(box), 'application/json'); f.reset(); toast(u('expOk'));
       }, function () { toast(u('impErr')); });
     } else if (tipus === 'importa') {
-      var file = fd.get('f'), pass = String(fd.get('p') || ''), mode = ev.submitter && ev.submitter.value === 'rec' ? 'rec' : 'psi';
+      var file = fd.get('f'), pass = String(fd.get('p') || '');
       if (!file || !file.size || file.size > 5e6) { toast(u('impErr')); return; }
       file.text().then(function (txt) { return desxifra(JSON.parse(txt), pass); }).then(function (obj) {
         var dd = normalitza(obj && obj.dades);
         if (!dd.equip) throw new Error('buit');
-        if (mode === 'rec' && !lectura()) {
-          if (!window.confirm(u('recConf'))) return;
-          dd.avis = true; dd.lang = S.lang; S = dd; desa(); PV = { llista: [], act: -1 }; toast(u('recOk')); vés('setmana');
-        } else {
-          PV.llista.push(dd); PV.act = PV.llista.length - 1; toast(u('impOk')); vés('tendencies');
-        }
+        if (!window.confirm(u('recConf'))) return;
+        dd.avis = true; dd.lang = S.lang; dd.cfg.clauPsi = S.cfg.clauPsi; S = dd; desa(); toast(u('recOk')); vés('setmana');
       }).catch(function () { toast(u('impErr')); });
+    } else if (tipus === 'clauPsi') {
+      var cp = String(fd.get('c') || ''); if (cp.length < 8) { toast(u('passNo')); return; }
+      S.cfg.clauPsi = cp; desa(); toast(u('clauDesada')); render();
+    } else if (submitPanel(tipus, fd, f)) { /* gestionat pel panel */
     } else if (tipus === 'recorda') {
       S.cfg.recorda = { dia: +fd.get('dia'), hora: String(fd.get('hora') || '20:00') }; desa();
       baixa('recordatori-entrevista.ics', ics(S.cfg.recorda), 'text/calendar');

@@ -24,6 +24,18 @@ Les claus dels ítems són a `contingut.js` (`clima`, `dims`, `pss`).
 Si el club té icones pròpies (`"icones": true`), cal un `clubs/<slug>.webmanifest` aquí
 (vegeu `clubs/constancia.webmanifest`) i la seva ruta a `app/_headers`.
 
+## Enviament i panel del psicòleg (sense servidor)
+- L'entrenador desa una vegada la «clau del psicòleg» del club (Compartir) i, després de cada
+  entrevista, «Envia al psicòleg» xifra les dades amb aquesta clau i les comparteix (WhatsApp,
+  correu) o les descarrega. La clau no surt mai dins el fitxer.
+- El psicòleg entra amb «Sóc el psicòleg del club» i crea el seu panel amb un codi d'accés.
+  El panel es desa a `localStorage` (`aprens_quadern_panel_v1`) xifrat amb AES-GCM i una clau
+  derivada del codi (PBKDF2); el codi no es desa enlloc. Les claus dels clubs es desen dins
+  el panel xifrat i es proven soles en importar. Un equip ja rebut (mateix `equip.id`)
+  s'actualitza amb el fitxer més nou.
+- Des del panel: avisos de tot el club, setmanes sense entrevista per equip, llindars propis
+  i informes per a les famílies de tot un equip, per imprimir o desar en PDF.
+
 ## Llindars dels avisos
 L'entrenador els pot canviar a «Compartir › Ítems i avisos». El psicòleg, a la seva vista,
 té els seus propis llindars, que s'apliquen als equips que obre en el seu dispositiu.
