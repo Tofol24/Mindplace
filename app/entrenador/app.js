@@ -9,6 +9,7 @@
 (function () {
   'use strict';
   var C = window.QE;
+  C.escalaPss = C.escalaJug;
 
   /* ================= ESTAT ================= */
   var LS = 'aprens_entrenador_v1';
@@ -56,8 +57,8 @@
         var jug = {};
         Object.keys(e.jug || {}).forEach(function (id) {
           var r = e.jug[id]; if (!ids[id] || !r || typeof r !== 'object') return;
-          jug[id] = { d: mapaNum(r.d, -2, 2, dimsIds), o: r.o === 't' || r.o === 'e' ? r.o : '', as: r.as == null ? null : num(r.as, 0, 7),
-            s: (Array.isArray(r.s) ? r.s : []).filter(function (x) { return senIds.indexOf(x) >= 0; }), n: txt(r.n, 400), c: mapaNum(r.c, -1, 20, pssIds) };
+          jug[id] = { d: mapaNum(r.d, -2, 1, dimsIds), o: r.o === 't' || r.o === 'e' ? r.o : '', as: r.as == null ? null : num(r.as, 0, 7),
+            s: (Array.isArray(r.s) ? r.s : []).filter(function (x) { return senIds.indexOf(x) >= 0; }), n: txt(r.n, 400), c: mapaNum(r.c, -2, 20, pssIds) };
         });
         o.ent = { n: num(e.n, 0, 7) || 0, partit: !!e.partit, objV: (Array.isArray(e.objV) ? e.objV : []).slice(0, 3).map(function (v) { return num(v, 0, 3); }),
           clima: mapaNum(e.clima, 0, 3, C.clima.map(function (x) { return x.id; })), mi: mapaNum(e.mi, 0, 3, miIds), temps: e.temps == null ? null : num(e.temps, 0, 3),
@@ -160,10 +161,11 @@
       e1T: 'Els objectius', e1Q: 'Fins a quin punt s\'han treballat i assolit?', e1Buit: 'Aquesta setmana no hi havia objectius fixats. Pots continuar igualment.',
       e2T: 'El clima de l\'equip', e2Q: 'Com has vist l\'equip aquesta setmana?',
       e3T: 'La meva manera d\'entrenar', e3Q: 'Fitxa d\'observació del CE Constància. Respon pensant en el conjunt de la setmana.',
-      e4T: 'Els jugadors', e4Q: 'Per defecte, cadascú està en el seu habitual. Toca només els que has vist diferents, cap amunt o cap avall. Cada jugador es compara amb ell mateix.',
+      e4T: 'Els jugadors', e4Q: 'Davant cada ítem, demana\'t quins jugadors s\'han apartat aquesta setmana de la normalitat de l\'equip. Tots parteixen de 2: toca només els que han estat per davall (1), els que han destacat (3) o aquells amb qui ha passat alguna cosa significativa (0).',
+      massaMarcats: 'A «{x}» has marcat més de la meitat de l\'equip. Recorda la clau: la majoria són 2, i només alguns jugadors tenen 0, 1 o 3.',
       e5T: 'Per tancar', e5a: 'Què m\'emport d\'aquesta setmana?', e5b: 'Què vull provar la setmana que ve?',
       entDesa: 'Desa l\'entrevista', entDesada: 'Entrevista desada. Gràcies.',
-      habitual: 'El seu habitual', canvis: 'canvis', assist: 'Assistència', sessions: 'sessions', senyals: 'Senyals', notaJ: 'Nota', notaPriv: 'Es comparteix amb el psicòleg, no amb la família.',
+      habitual: 'Normalitat (2)', canvis: 'canvis', assist: 'Assistència', sessions: 'sessions', senyals: 'Senyals', notaJ: 'Nota', notaPriv: 'Es comparteix amb el psicòleg, no amb la família.',
       tendT: 'Tendències', tendEquip: 'L\'equip', tendJug: 'Jugadors', tendAv: 'Avisos per al psicòleg',
       clima: 'Clima d\'equip', estil: 'Estil orientat a l\'aprenentatge', tasca: '% jugadors orientats a la tasca',
       pocsDades: 'Encara hi ha poques entrevistes. Les tendències apareixen a partir de dues setmanes.',
@@ -182,9 +184,9 @@
       dies: ['Diumenge', 'Dilluns', 'Dimarts', 'Dimecres', 'Dijous', 'Divendres', 'Dissabte'],
       ajT: 'Ítems i avisos', ajQ: 'Amb el psicòleg del club podeu adaptar què s\'observa i quan salta un avís.',
       ajClima: 'Ítems de clima d\'equip', ajDims: 'Conductes que s\'observen en cada jugador', ajExtra: 'Conducta pròpia del club', ajExtraQ: 'Ex.: Anima els companys després d\'una errada',
-      ajLl: 'Llindars dels avisos', ajFin: 'Setmanes que es miren', ajMin: 'Setmanes per davall del seu habitual per avisar', ajEgo: 'Setmanes centrat en el resultat (de les darreres 4)',
+      ajLl: 'Llindars dels avisos', ajFin: 'Setmanes que es miren', ajMin: 'Setmanes per davall de la mitjana (1 o 0) per avisar', ajEgo: 'Setmanes centrat en el resultat (de les darreres 4)',
       perillT: 'Esborra totes les dades', perillQ: 'Esborra l\'equip, la plantilla i totes les setmanes d\'aquest dispositiu. No es pot desfer.', perillConf: 'Segur que vols esborrar-ho tot? Abans pots crear un fitxer xifrat de còpia.',
-      infT: 'Informe per a la família', infQ: 'Esborrany a partir de les darreres 12 setmanes. Revisa\'l i ajusta\'l abans d\'enviar-lo. No hi apareixen els senyals ni les notes.',
+      infT: 'Informe per a la família', infQ: 'Esborrany a partir de les darreres 12 setmanes, amb una taula que compara la mitjana del jugador amb la de l\'equip. Revisa\'l i ajusta\'l abans d\'enviar-lo. No hi apareixen els senyals ni les notes.',
       infImp: 'Imprimeix o desa en PDF', infCopia: 'Copia el text', copiat: 'Copiat.',
       jugDet: 'Fitxa del jugador', orientRow: 'Atenció', assistRow: 'Assistència', notesJug: 'Notes', senyalsJug: 'Senyals marcats',
       metT: 'El mètode', confEquip: 'Dades de l\'equip', setmanes: 'setmanes', ultima: 'Darrera entrevista', mai: 'cap',
@@ -202,6 +204,7 @@
       enviaT: 'Envia al psicòleg', enviaQ: 'Desa una sola vegada la clau que t\'ha donat el psicòleg del club. Després, cada setmana, envia-li les dades xifrades per WhatsApp o correu.', enviaQ2: 'Les dades surten xifrades amb la clau del psicòleg del club.', clauPsi: 'Clau del psicòleg del club', clauDesa: 'Desa la clau', clauDesada: 'Clau desada.',
       enviaBtn: 'Envia al psicòleg', enviaCanvia: 'Canvia la clau', enviat: 'Darrer enviament', enviaPrep: 'Fitxer xifrat preparat. Toca «Comparteix» i tria WhatsApp o el correu del psicòleg.', enviaComp: 'Comparteix', enviaBaixa: 'Descarrega el fitxer', enviaBaixat: 'Fitxer descarregat. Adjunta\'l en un missatge al psicòleg.', enviaMsg: 'Seguiment setmanal',
       panelNoDesa: 'El navegador no deixa desar el panel. Descarrega ara una còpia: es fa amb les dades actuals.', impRecT: 'Recupera una còpia teva', panelLect: 'Només lectura: les dades d\'aquest equip les escriu l\'entrenador.',
+      grupT: 'Informe de grup', grupQ: 'Per a l\'entrenador i la coordinació: la mitjana de l\'equip a cada ítem, cada jugador, el clima, l\'estil d\'entrenament i els avisos de les darreres 12 setmanes.', grupEquipT: 'L\'equip, ítem per ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Mitjana de l\'equip', periode: 'Període', clauQual: 'Mitjana de 0 a 3: 0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat',
       socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Fitxa APRENS ESPORT (conductes concretes)', vegades: 'vegades',
       senseEnt: 'setmanes sense entrevista', taula: 'Veure les dades en taula', mitjana: 'mitjana', avui: 'avui'
     },
@@ -227,10 +230,11 @@
       e1T: 'Los objetivos', e1Q: '¿Hasta qué punto se han trabajado y conseguido?', e1Buit: 'Esta semana no había objetivos fijados. Puedes continuar igualmente.',
       e2T: 'El clima del equipo', e2Q: '¿Cómo has visto al equipo esta semana?',
       e3T: 'Mi manera de entrenar', e3Q: 'Ficha de observación del CE Constància. Responde pensando en el conjunto de la semana.',
-      e4T: 'Los jugadores', e4Q: 'Por defecto, cada uno está en lo habitual en él. Toca solo a los que has visto diferentes, hacia arriba o hacia abajo. Cada jugador se compara consigo mismo.',
+      e4T: 'Los jugadores', e4Q: 'Ante cada ítem, pregúntate qué jugadores se han apartado esta semana de la normalidad del equipo. Todos parten de 2: toca solo a los que han estado por debajo (1), a los que han destacado (3) o a aquellos con los que ha pasado algo significativo (0).',
+      massaMarcats: 'En «{x}» has marcado a más de la mitad del equipo. Recuerda la clave: la mayoría son 2, y solo algunos jugadores tienen 0, 1 o 3.',
       e5T: 'Para cerrar', e5a: '¿Qué me llevo de esta semana?', e5b: '¿Qué quiero probar la semana que viene?',
       entDesa: 'Guarda la entrevista', entDesada: 'Entrevista guardada. Gracias.',
-      habitual: 'Lo habitual en él', canvis: 'cambios', assist: 'Asistencia', sessions: 'sesiones', senyals: 'Señales', notaJ: 'Nota', notaPriv: 'Se comparte con el psicólogo, no con la familia.',
+      habitual: 'Normalidad (2)', canvis: 'cambios', assist: 'Asistencia', sessions: 'sesiones', senyals: 'Señales', notaJ: 'Nota', notaPriv: 'Se comparte con el psicólogo, no con la familia.',
       tendT: 'Tendencias', tendEquip: 'El equipo', tendJug: 'Jugadores', tendAv: 'Avisos para el psicólogo',
       clima: 'Clima de equipo', estil: 'Estilo orientado al aprendizaje', tasca: '% jugadores orientados a la tarea',
       pocsDades: 'Todavía hay pocas entrevistas. Las tendencias aparecen a partir de dos semanas.',
@@ -249,9 +253,9 @@
       dies: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
       ajT: 'Ítems y avisos', ajQ: 'Con el psicólogo del club podéis adaptar qué se observa y cuándo salta un aviso.',
       ajClima: 'Ítems de clima de equipo', ajDims: 'Conductas que se observan en cada jugador', ajExtra: 'Conducta propia del club', ajExtraQ: 'Ej.: Anima a los compañeros tras un error',
-      ajLl: 'Umbrales de los avisos', ajFin: 'Semanas que se miran', ajMin: 'Semanas por debajo de lo habitual para avisar', ajEgo: 'Semanas centrado en el resultado (de las últimas 4)',
+      ajLl: 'Umbrales de los avisos', ajFin: 'Semanas que se miran', ajMin: 'Semanas por debajo de la media (1 o 0) para avisar', ajEgo: 'Semanas centrado en el resultado (de las últimas 4)',
       perillT: 'Borra todos los datos', perillQ: 'Borra el equipo, la plantilla y todas las semanas de este dispositivo. No se puede deshacer.', perillConf: '¿Seguro que quieres borrarlo todo? Antes puedes crear un archivo cifrado de copia.',
-      infT: 'Informe para la familia', infQ: 'Borrador a partir de las últimas 12 semanas. Revísalo y ajústalo antes de enviarlo. No aparecen las señales ni las notas.',
+      infT: 'Informe para la familia', infQ: 'Borrador a partir de las últimas 12 semanas, con una tabla que compara la media del jugador con la del equipo. Revísalo y ajústalo antes de enviarlo. No aparecen las señales ni las notas.',
       infImp: 'Imprime o guarda en PDF', infCopia: 'Copia el texto', copiat: 'Copiado.',
       jugDet: 'Ficha del jugador', orientRow: 'Atención', assistRow: 'Asistencia', notesJug: 'Notas', senyalsJug: 'Señales marcadas',
       metT: 'El método', confEquip: 'Datos del equipo', setmanes: 'semanas', ultima: 'Última entrevista', mai: 'ninguna',
@@ -269,6 +273,7 @@
       enviaT: 'Envía al psicólogo', enviaQ: 'Guarda una sola vez la clave que te ha dado el psicólogo del club. Después, cada semana, envíale los datos cifrados por WhatsApp o correo.', enviaQ2: 'Los datos salen cifrados con la clave del psicólogo del club.', clauPsi: 'Clave del psicólogo del club', clauDesa: 'Guarda la clave', clauDesada: 'Clave guardada.',
       enviaBtn: 'Envía al psicólogo', enviaCanvia: 'Cambia la clave', enviat: 'Último envío', enviaPrep: 'Archivo cifrado preparado. Toca «Compartir» y elige WhatsApp o el correo del psicólogo.', enviaComp: 'Compartir', enviaBaixa: 'Descarga el archivo', enviaBaixat: 'Archivo descargado. Adjúntalo en un mensaje al psicólogo.', enviaMsg: 'Seguimiento semanal',
       panelNoDesa: 'El navegador no deja guardar el panel. Descarga ahora una copia: se hace con los datos actuales.', impRecT: 'Recupera una copia tuya', panelLect: 'Solo lectura: los datos de este equipo los escribe el entrenador.',
+      grupT: 'Informe de grupo', grupQ: 'Para el entrenador y la coordinación: la media del equipo en cada ítem, cada jugador, el clima, el estilo de entrenamiento y los avisos de las últimas 12 semanas.', grupEquipT: 'El equipo, ítem por ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Media del equipo', periode: 'Periodo', clauQual: 'Media de 0 a 3: 0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacado',
       socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Ficha APRENS ESPORT (conductas concretas)', vegades: 'veces',
       senseEnt: 'semanas sin entrevista', taula: 'Ver los datos en tabla', mitjana: 'media', avui: 'hoy'
     }
@@ -365,10 +370,10 @@
       var fines = wj.filter(function (w) { return recent(w, fin); });
       dimsA.forEach(function (dm) {
         var baix = fines.filter(function (w) { var v = (d.setm[w].ent.jug[j.id].d || {})[dm.id]; return v != null && v <= -1; }).length;
-        if (dm.clau && baix >= min) { motius.push((es ? 'Tendencia a la baja en «' : 'Tendència a la baixa en «') + tx(dm.t) + '» (' + baix + '/' + fines.length + ')'); nivell = Math.max(nivell, 1); }
+        if (dm.clau && baix >= min) { motius.push((es ? 'Por debajo de la media del equipo, de forma repetida, en «' : 'Per davall de la mitjana de l\'equip, de manera repetida, en «') + tx(dm.t) + '» (' + baix + '/' + fines.length + ')'); nivell = Math.max(nivell, 1); }
         if (darrera && d.setm[darrera].ent.jug && d.setm[darrera].ent.jug[j.id]) {
           var v = (d.setm[darrera].ent.jug[j.id].d || {})[dm.id];
-          if (v != null && v <= -2) { motius.push((es ? 'Bajada marcada esta semana en «' : 'Baixada marcada aquesta setmana en «') + tx(dm.t) + '»'); nivell = Math.max(nivell, 1); }
+          if (v != null && v <= -2) { motius.push((es ? 'Hecho significativo negativo esta semana en «' : 'Fet significatiu negatiu aquesta setmana en «') + tx(dm.t) + '»'); nivell = Math.max(nivell, 1); }
         }
       });
       var ult4 = wj.filter(function (w) { return recent(w, 4); }), nE = ult4.filter(function (w) { return d.setm[w].ent.jug[j.id].o === 'e'; }).length;
@@ -378,6 +383,8 @@
         fines.forEach(function (w) { var c = d.setm[w].ent.jug[j.id].c || {}; var sg = pssSig(it, c[it.id]); if (sg < 0) neg++; if (sg > 0) posi++; });
         if (neg >= min) { motius.push(u('conductaRep') + ': ' + tx(it.t) + ' (' + neg + '/' + fines.length + ')'); nivell = Math.max(nivell, 1); }
         else if (it.tipus === 'num' && darrera && d.setm[darrera].ent.jug && d.setm[darrera].ent.jug[j.id] && (d.setm[darrera].ent.jug[j.id].c || {})[it.id] > 0) { motius.push(tx(it.t) + ': ' + d.setm[darrera].ent.jug[j.id].c[it.id]); nivell = Math.max(nivell, 1); }
+        var cD = darrera && d.setm[darrera].ent.jug && d.setm[darrera].ent.jug[j.id] ? (d.setm[darrera].ent.jug[j.id].c || {})[it.id] : null;
+        if (it.tipus === 'esc' && cD != null && cD <= -2 && neg < min) { motius.push((es ? 'Hecho significativo negativo esta semana: ' : 'Fet significatiu negatiu aquesta setmana: ') + tx(it.t)); nivell = Math.max(nivell, 1); }
         if (posi >= min) pos.push(u('conductaPos') + ': ' + tx(it.t) + ' (' + posi + '/' + fines.length + ')');
       });
       var ult2 = wj.filter(function (w) { return recent(w, 2); });
@@ -450,7 +457,7 @@
     nav.hidden = false; document.body.classList.remove('sense-nav');
     var items = psi() ? (lectura() ? [['panel', 'navPanel', '▦'], ['tendencies', 'navTend', '↗'], ['informes', 'navInf', '✉'], ['plantilla', 'navPlant', '☰'], ['metode', 'navMet', '△']] : [['panel', 'navPanel', '▦'], ['metode', 'navMet', '△']])
       : [['setmana', 'navSetm', '◷'], ['tendencies', 'navTend', '↗'], ['plantilla', 'navPlant', '☰'], ['compartir', 'navComp', '⇄'], ['metode', 'navMet', '△']];
-    var grup = { entrevista: 'setmana', objectius: 'setmana', nota: 'setmana', jugador: 'tendencies', informe: 'tendencies', ajustos: psi() ? 'panel' : 'compartir', equip: 'plantilla' };
+    var grup = { entrevista: 'setmana', objectius: 'setmana', nota: 'setmana', jugador: 'tendencies', informe: 'tendencies', grup: 'tendencies', ajustos: psi() ? 'panel' : 'compartir', equip: 'plantilla' };
     var act = grup[ruta] || ruta;
     nav.innerHTML = items.map(function (it) {
       return '<button type="button" data-nav="' + it[0] + '"' + (act === it[0] ? ' aria-current="page"' : '') + '><span aria-hidden="true">' + it[2] + '</span>' + h(u(it[1])) + '</button>';
@@ -466,7 +473,7 @@
     else if (!S.equip && !lectura() && ['compartir', 'metode'].indexOf(ruta) < 0) html = vEquip(true);
     else {
       if (lectura() && ['setmana', 'compartir', 'objectius', 'entrevista', 'nota', 'equip'].indexOf(ruta) >= 0) ruta = 'tendencies';
-      var V = { informes: vInformes, setmana: vSetmana, objectius: vObjectius, entrevista: vEntrevista, nota: vNota, tendencies: vTendencies, jugador: vJugador,
+      var V = { informes: vInformes, grup: vGrup, setmana: vSetmana, objectius: vObjectius, entrevista: vEntrevista, nota: vNota, tendencies: vTendencies, jugador: vJugador,
         informe: vInforme, plantilla: vPlantilla, equip: function () { return vEquip(false); }, compartir: vCompartir, ajustos: vAjustos, metode: vMetode };
       html = (V[ruta] || vSetmana)();
     }
@@ -588,7 +595,12 @@
       });
     } else if (pasEnt === 4) {
       o += '<h1 tabindex="-1">' + h(u('e4T')) + '</h1><p class="lead">' + h(u('e4Q')) + '</p>';
+      o += '<div class="card suau clau-esc"><ul>' + C.escalaJug.map(function (x) { return '<li><span class="num-esc v' + (x.v + 2) + '">' + x.k + '</span> ' + h(tx(x.c)) + '</li>'; }).join('') + '</ul></div>';
       var js = jugActius(S);
+      if (js.length >= 4) {
+        var massa = dimsActives(S).filter(function (dm) { var k = js.filter(function (j) { var r = E.jug[j.id]; return r && r.d[dm.id]; }).length; return k / js.length > 0.5; });
+        if (massa.length) o += '<div class="card terra" role="status"><p>' + h(u('massaMarcats').replace('{x}', massa.map(function (dm) { return tx(dm.t); }).join(', '))) + '</p></div>';
+      }
       if (!js.length) o += '<p class="card suau">' + h(u('plantBuit')) + ' <button type="button" class="enllac" data-nav="plantilla">' + h(u('afegeix')) + '</button></p>';
       o += '<ul class="llista-jug">' + js.map(function (j) {
         var r = E.jug[j.id] || (E.jug[j.id] = { d: {}, o: '', as: null, s: [], n: '' });
@@ -624,8 +636,8 @@
     var o = '<div class="editor-jug">';
     dimsActives(S).forEach(function (dm) {
       var v = r.d[dm.id] || 0, n = 'd_' + j.id + '_' + dm.id;
-      o += '<fieldset class="dim"><legend><strong>' + h(tx(dm.t)) + '</strong> <span class="muted">' + h(tx(dm.d)) + '</span></legend><div class="esc5">' +
-        C.escalaJug.map(function (s) { return '<label class="op5 v' + (s.v + 2) + '"><input type="radio" name="' + n + '" data-jd="' + j.id + '" data-dim="' + dm.id + '" value="' + s.v + '"' + (v === s.v ? ' checked' : '') + '><span aria-hidden="true">' + s.k + '</span><span class="sr">' + h(tx(s.c)) + '</span></label>'; }).join('') +
+      o += '<fieldset class="dim"><legend><strong>' + h(tx(dm.t)) + '</strong> <span class="muted">' + h(tx(dm.d)) + '</span></legend><div class="esc4">' +
+        C.escalaJug.map(function (s) { return '<label class="op4 v' + (s.v + 2) + '"><input type="radio" name="' + n + '" data-jd="' + j.id + '" data-dim="' + dm.id + '" value="' + s.v + '"' + (v === s.v ? ' checked' : '') + '><span aria-hidden="true">' + s.k + '</span><span class="sr">' + h(tx(s.c)) + '</span></label>'; }).join('') +
         '</div></fieldset>';
     });
     o += '<fieldset class="dim"><legend><strong>' + h(tx(C.orient.q)) + '</strong></legend><div class="radios">' + C.orient.op.map(function (op) {
@@ -643,7 +655,7 @@
       o += '<h4>' + h(tx(b.t)) + '</h4>';
       its.forEach(function (i) {
         var v = pc[i.id] || 0;
-        if (i.tipus === 'esc') o += '<fieldset class="pss-it"><legend>' + h(tx(i.t)) + '</legend><div class="esc3">' + C.escalaPss.map(function (s) { return '<label class="op3 v' + (s.v + 1) + '"><input type="radio" name="c_' + j.id + '_' + i.id + '" data-jc="' + j.id + '" data-it="' + i.id + '" value="' + s.v + '"' + (v === s.v ? ' checked' : '') + '><span aria-hidden="true">' + s.k + '</span><span class="sr">' + h(tx(s.c)) + '</span></label>'; }).join('') + '</div></fieldset>';
+        if (i.tipus === 'esc') o += '<fieldset class="pss-it"><legend>' + h(tx(i.t)) + '</legend><div class="esc4">' + C.escalaPss.map(function (s) { return '<label class="op4 v' + (s.v + 2) + '"><input type="radio" name="c_' + j.id + '_' + i.id + '" data-jc="' + j.id + '" data-it="' + i.id + '" value="' + s.v + '"' + (v === s.v ? ' checked' : '') + '><span aria-hidden="true">' + s.k + '</span><span class="sr">' + h(tx(s.c)) + '</span></label>'; }).join('') + '</div></fieldset>';
         else if (i.tipus === 'si') o += '<label class="chk bloc pss-si' + (i.sig < 0 ? ' neg' : '') + '"><input type="checkbox" data-jc="' + j.id + '" data-it="' + i.id + '"' + (v ? ' checked' : '') + '><span>' + h(tx(i.t)) + '</span></label>';
         else o += '<label class="pss-num"><span>' + h(tx(i.t)) + '</span><input type="number" min="0" max="20" inputmode="numeric" data-jc="' + j.id + '" data-it="' + i.id + '" value="' + (v || 0) + '"></label>';
       });
@@ -676,6 +688,7 @@
       o += grafic(ws, series);
     }
     o += '</section>';
+    o += '<div class="card"><h2>' + h(u('grupT')) + '</h2><p>' + h(u('grupQ')) + '</p><button type="button" class="btn sec" data-nav="grup">' + h(u('grupT')) + '</button></div>';
     if (psi()) o += '<div class="card blau"><h2>' + h(u('informesT')) + '</h2><p>' + h(u('informesQ')) + '</p><button type="button" class="btn" data-nav="informes">' + h(u('informesT')) + '</button></div>';
     o += '<section class="card"><h2>' + h(u('tendJug')) + '</h2><ul class="llista-jug">' + jugActius(d).map(function (j) {
       var a = av.filter(function (x) { return x.j && x.j.id === j.id; })[0];
@@ -696,7 +709,7 @@
       z.v.forEach(function (v, i) { if (v != null) s += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3" fill="' + z.c + '"/>'; });
     });
     s += '</svg><ul class="llegenda">' + series.map(function (z) { return '<li><span style="background:' + z.c + '"></span>' + h(z.t) + '</li>'; }).join('') + '</ul>';
-    s += '<details><summary>' + h(u('taula')) + '</summary><div class="taula-wrap"><table><thead><tr><th scope="col">' + h(u('setmana')) + '</th>' + series.map(function (z) { return '<th scope="col">' + h(z.t) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    s += '<details><summary>' + h(u('taula')) + '</summary><div class="taula-wrap" tabindex="0"><table><thead><tr><th scope="col">' + h(u('setmana')) + '</th>' + series.map(function (z) { return '<th scope="col">' + h(z.t) + '</th>'; }).join('') + '</tr></thead><tbody>' +
       ws.map(function (w, i) { return '<tr><th scope="row">' + etiquetaW(w) + '</th>' + series.map(function (z) { return '<td>' + (z.v[i] == null ? '—' : z.v[i]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div></details>';
     return s;
   }
@@ -723,18 +736,18 @@
     if (av) o += '<div class="card ' + (av.nivell === -1 ? 'verd' : 'terra') + '"><ul class="punts">' + av.motius.map(function (m) { return '<li>' + h(m) + '</li>'; }).join('') + '</ul></div>';
     if (!ws.length) o += '<p class="muted">' + h(u('pocsDades')) + '</p>';
     else {
-      o += '<div class="card"><div class="taula-wrap"><table class="calor"><thead><tr><th scope="col"><span class="sr">' + h(u('setmana')) + '</span></th>' + ws.map(function (w) { return '<th scope="col">' + etiquetaW(w) + '</th>'; }).join('') + '</tr></thead><tbody>';
+      o += '<div class="card"><div class="taula-wrap" tabindex="0"><table class="calor"><thead><tr><th scope="col"><span class="sr">' + h(u('setmana')) + '</span></th>' + ws.map(function (w) { return '<th scope="col">' + etiquetaW(w) + '</th>'; }).join('') + '</tr></thead><tbody>';
       dms.forEach(function (dm) {
-        o += '<tr><th scope="row">' + h(tx(dm.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; return '<td>' + (r ? cel((r.d || {})[dm.id] || 0) : cel(null)) + '</td>'; }).join('') + '</tr>';
+        o += '<tr><th scope="row">' + h(tx(dm.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; var vv = r ? (r.d || {})[dm.id] || 0 : null; return '<td>' + (r ? cel(vv, String(vv + 2)) : cel(null)) + '</td>'; }).join('') + '</tr>';
       });
       pssActius(d).forEach(function (it) {
         var algun = ws.some(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; return r && r.c && r.c[it.id]; });
         if (!algun) return;
-        o += '<tr class="pss-fila"><th scope="row">' + h(tx(it.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; if (!r) return '<td>' + cel(null) + '</td>'; var v = (r.c || {})[it.id]; var sg = pssSig(it, v); return '<td>' + cel(sg, v ? (it.tipus === 'num' ? String(v) : sg > 0 ? '+' : '−') : '·') + '</td>'; }).join('') + '</tr>';
+        o += '<tr class="pss-fila"><th scope="row">' + h(tx(it.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; if (!r) return '<td>' + cel(null) + '</td>'; var v = (r.c || {})[it.id]; var sg = pssSig(it, v); return '<td>' + cel(it.tipus === 'esc' ? (v || 0) : sg, it.tipus === 'num' ? (v ? String(v) : '·') : it.tipus === 'esc' ? String((v || 0) + 2) : (v ? (sg > 0 ? '+' : '−') : '·')) + '</td>'; }).join('') + '</tr>';
       });
       o += '<tr><th scope="row">' + h(u('orientRow')) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; var ov = r ? r.o : null; return '<td>' + cel(ov === 't' ? 1 : ov === 'e' ? -1 : null, ov === 't' ? 'T' : ov === 'e' ? 'R' : '·') + '</td>'; }).join('') + '</tr>';
       o += '<tr><th scope="row">' + h(u('assistRow')) + '</th>' + ws.map(function (w) { var e = d.setm[w].ent, r = e.jug && e.jug[j.id]; if (!r) return '<td>' + cel(null) + '</td>'; var as = r.as == null ? e.n : r.as; return '<td>' + cel(e.n ? (as / e.n < 0.5 ? -1 : 0) : null, as + '/' + e.n) + '</td>'; }).join('') + '</tr>';
-      o += '</tbody></table></div><p class="muted petit">− − / − / = / + / + +: ' + h(tx(C.escalaJug[2].c)) + ' = 0 · T: ' + h(tx(C.orient.op[0].t)) + ' · R: ' + h(tx(C.orient.op[1].t)) + '</p></div>';
+      o += '</tbody></table></div><p class="muted petit">' + C.escalaJug.map(function (x) { return x.k + ': ' + h(tx(x.c)); }).join(' · ') + ' · T: ' + h(tx(C.orient.op[0].t)) + ' · R: ' + h(tx(C.orient.op[1].t)) + '</p></div>';
       var sens = [], nts = [];
       ws.forEach(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; if (!r) return; (r.s || []).forEach(function (s) { var sg = per(s, C.senyals); if (sg) sens.push(etiquetaW(w) + ' · ' + tx(sg.t)); }); if (r.n) nts.push(etiquetaW(w) + ' · ' + r.n); });
       d.notes.filter(function (n) { return n.j === j.id; }).forEach(function (n) { nts.push(etiquetaW(n.w) + ' · ' + (n.ctx === 'par' ? u('ctxPar') : u('ctxEnt')) + ' · ' + n.t); });
@@ -746,15 +759,69 @@
     return o;
   }
 
+  /* ---------- Mitjanes 0-3 i paraula qualitativa (clau APRENS ESPORT) ----------
+     0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat (de 2,4 a 2,5 es compta Normal). */
+  var QUAL = [{ max: 1, k: 'alerta', t: { ca: 'Alerta', es: 'Alerta' } }, { max: 2, k: 'regular', t: { ca: 'Regular', es: 'Regular' } },
+    { max: 2.5, k: 'normal', t: { ca: 'Normal', es: 'Normal' } }, { max: Infinity, k: 'destacat', t: { ca: 'Destacat', es: 'Destacado' } }];
+  function qual(v) { if (v == null) return null; for (var i = 0; i < QUAL.length; i++) if (v < QUAL[i].max) return QUAL[i]; return QUAL[3]; }
+  function wsInf(d) { return setmanesFetes(d).slice(-12); }
+  function itemsInf(d) {
+    return dimsActives(d).map(function (x) { return { id: x.id, t: x.t, f: 'd' }; })
+      .concat(pssActius(d).filter(function (i) { return i.tipus === 'esc'; }).map(function (x) { return { id: x.id, t: x.t, f: 'c' }; }));
+  }
+  /* mitjana 0-3 d'un jugador en un ítem: setmanes en què té registre; el que no s'ha marcat és 2 */
+  function mitjJug(d, j, ws, it) {
+    var s = 0, n = 0;
+    ws.forEach(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; if (!r) return; s += ((r[it.f] || {})[it.id] || 0) + 2; n++; });
+    return n ? s / n : null;
+  }
+  function mitjEq(d, ws, it) {
+    var s = 0, n = 0;
+    jugActius(d).forEach(function (j) { var v = mitjJug(d, j, ws, it); if (v != null) { s += v; n++; } });
+    return n ? s / n : null;
+  }
+  function numF(v) { return v == null ? '—' : (Math.round(v * 10) / 10).toFixed(1).replace('.', S.lang === 'es' || S.lang === 'ca' ? ',' : '.'); }
+  function cQual(v, ambNum) { var q = qual(v); return q ? '<td class="q q-' + q.k + '">' + h(tx(q.t)) + (ambNum ? ' <small>' + numF(v) + '</small>' : '') + '</td>' : '<td>—</td>'; }
+  function periodeTxt(ws) { return ws.length ? etiquetaW(ws[0]) + '–' + etiquetaW(ws[ws.length - 1]) + ' · ' + ws.length + ' ' + u('setmanes') : ''; }
+  /* taula de l'informe individual: el jugador i la mitjana de l'equip, en paraules */
+  function taulaJug(d, j) {
+    var ws = wsInf(d);
+    return '<table class="inf-taula" id="taula-' + j.id + '"><caption>' + h(u('clauQual')) + '</caption><thead><tr><th scope="col">' + h(u('colItem')) + '</th><th scope="col">' + h(j.nom) + '</th><th scope="col">' + h(u('colEquip')) + '</th></tr></thead><tbody>' +
+      itemsInf(d).map(function (it) { return '<tr><th scope="row">' + h(tx(it.t)) + '</th>' + cQual(mitjJug(d, j, ws, it)) + cQual(mitjEq(d, ws, it)) + '</tr>'; }).join('') + '</tbody></table>';
+  }
+  function impJug(text, taulaHtml) { return '<section class="imp-pag"><div class="imp-txt">' + h(text) + '</div>' + (taulaHtml || '') + '</section>'; }
+
+  /* ---------- Informe de grup (entrenador i coordinació) ---------- */
+  function vGrup() {
+    var d = D(), ws = wsInf(d), its = itemsInf(d), dms = dimsActives(d), js = jugActius(d);
+    var o = '<button type="button" class="enllac no-imp" data-nav="tendencies">← ' + h(u('tendT')) + '</button><p class="muted no-imp">' + h(u('grupQ')) + '</p>' +
+      '<div class="fila no-imp"><button type="button" class="btn" data-act="imprimeixGrup">' + h(u('infImp')) + '</button></div>';
+    if (ws.length < 2) return o + '<p class="card suau">' + h(u('pocsDades')) + '</p>';
+    var mitjana = function (f) { var v = ws.map(function (w) { return f(d.setm[w].ent); }).filter(function (x) { return x != null; }); return v.length ? Math.round(v.reduce(function (a, b) { return a + b; }, 0) / v.length) : null; };
+    var g = '<h1 tabindex="-1">' + h(u('grupT')) + '</h1><p><strong>' + h(d.equip.nom) + '</strong>' + (d.equip.club ? ' · ' + h(d.equip.club) : '') + (d.equip.temporada ? ' · ' + h(d.equip.temporada) : '') + '<br>' + h(u('periode')) + ': ' + h(periodeTxt(ws)) + '</p>';
+    g += '<h2>' + h(u('grupEquipT')) + '</h2><div class="taula-wrap" tabindex="0"><table class="inf-taula"><caption>' + h(u('clauQual')) + '</caption><thead><tr><th scope="col">' + h(u('colItem')) + '</th><th scope="col">' + h(u('colEquip')) + '</th></tr></thead><tbody>' +
+      its.map(function (it) { return '<tr><th scope="row">' + h(tx(it.t)) + '</th>' + cQual(mitjEq(d, ws, it), true) + '</tr>'; }).join('') + '</tbody></table></div>';
+    g += '<ul class="punts"><li>' + h(u('clima')) + ': ' + (mitjana(function (e) { return climaIdx(e, d); }) == null ? '—' : mitjana(function (e) { return climaIdx(e, d); }) + '/100') + '</li><li>' + h(u('estil')) + ': ' + (mitjana(estilIdx) == null ? '—' : mitjana(estilIdx) + '/100') + '</li><li>' + h(u('tasca')) + ': ' + (mitjana(tascaPct) == null ? '—' : mitjana(tascaPct) + ' %') + '</li></ul>';
+    g += '<h2>' + h(u('grupJugT')) + '</h2><div class="taula-wrap" tabindex="0"><table class="inf-taula matriu"><thead><tr><th scope="col">' + h(u('tendJug')) + '</th>' + dms.map(function (dm) { return '<th scope="col">' + h(tx(dm.t)) + '</th>'; }).join('') + '<th scope="col">' + h(u('assist')) + '</th></tr></thead><tbody>' +
+      js.map(function (j) {
+        var as = 0, ses = 0; ws.forEach(function (w) { var e = d.setm[w].ent, r = e.jug && e.jug[j.id]; if (!r) return; ses += e.n || 0; as += r.as == null ? (e.n || 0) : r.as; });
+        return '<tr><th scope="row">' + h(nomJ(j)) + '</th>' + dms.map(function (dm) { return cQual(mitjJug(d, j, ws, { id: dm.id, f: 'd' })); }).join('') + '<td>' + (ses ? Math.round(as / ses * 100) + ' %' : '—') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    var av = avisos(d).filter(function (a) { return a.nivell !== 0; });
+    g += '<h2>' + h(u('tendAv')) + '</h2>' + (av.length ? '<ul class="punts">' + av.map(function (a) { return '<li><strong>' + h(a.tipus === 'equip' ? u('avEquip') : nomJ(a.j)) + '</strong> (' + h(a.nivell === 2 ? u('avAlt') : a.nivell === -1 ? u('avPos') : u('avSeg')) + '): ' + h(a.motius.join('; ')) + '</li>'; }).join('') + '</ul>' : '<p>' + h(u('avBuit')) + '</p>') +
+      '<p class="muted petit">' + h(u('avNota')) + '</p>';
+    return o + '<div id="grupCos" class="card">' + g + '</div>';
+  }
+
   /* ---------- Informe per a la família ---------- */
   function textInforme(d, j) {
     var ws = setmanesFetes(d).slice(-12).filter(function (w) { return d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; });
     var es = S.lang === 'es', ella = j.g === 'f', nom = j.nom;
     if (ws.length < 3) return u('infPoc');
-    var mitj = {}, dms = dimsActives(d);
-    dms.forEach(function (dm) { var s = 0; ws.forEach(function (w) { s += (d.setm[w].ent.jug[j.id].d || {})[dm.id] || 0; }); mitj[dm.id] = ws.length ? s / ws.length : 0; });
-    var forts = dms.filter(function (dm) { return mitj[dm.id] >= 0.25; }).map(function (dm) { return tx(dm.t).toLowerCase(); });
-    var feina = dms.filter(function (dm) { return mitj[dm.id] <= -0.25; }).map(function (dm) { return tx(dm.t).toLowerCase(); });
+    var its = itemsInf(d).filter(function (it) { return it.f === 'd'; });
+    var qk = function (it) { var q = qual(mitjJug(d, j, ws, it)); return q ? q.k : ''; };
+    var forts = its.filter(function (it) { return qk(it) === 'destacat'; }).map(function (it) { return tx(it.t).toLowerCase(); });
+    var feina = its.filter(function (it) { return qk(it) === 'alerta' || qk(it) === 'regular'; }).map(function (it) { return tx(it.t).toLowerCase(); });
     var nT = 0, nO = 0, as = 0, ses = 0;
     ws.forEach(function (w) { var e = d.setm[w].ent, r = e.jug[j.id]; if (r.o === 't' || r.o === 'e') { nO++; if (r.o === 't') nT++; } ses += e.n || 0; as += r.as == null ? (e.n || 0) : r.as; });
     var bons = pssActius(d).filter(function (it) { var k = 0; ws.forEach(function (w) { if (pssSig(it, (d.setm[w].ent.jug[j.id].c || {})[it.id]) > 0) k++; }); return k >= 3; }).map(function (it) { return tx(it.t).toLowerCase(); });
@@ -762,9 +829,9 @@
     var eq = d.equip ? d.equip.nom : '', p = [];
     if (es) {
       p.push('Informe de seguimiento · ' + nom + ' · ' + eq + (d.equip && d.equip.temporada ? ' · ' + d.equip.temporada : ''));
-      p.push('Durante estas semanas hemos seguido de manera semanal la evolución de ' + nom + ' en el equipo, sobre todo en aquello que el club considera prioritario: la orientación a la tarea, el fair-play y el aprendizaje continuo, más que los resultados. Cada jugador se compara consigo mismo y no con sus compañeros.');
+      p.push('Durante estas semanas hemos seguido de manera semanal la evolución de ' + nom + ' en el equipo, sobre todo en aquello que el club considera prioritario: la orientación a la tarea, el fair-play y el aprendizaje continuo, más que los resultados. Cada semana el entrenador recoge los momentos en que destaca y aquellos en que necesita más acompañamiento.');
       if (forts.length) p.push('Lo vemos cada vez con más recursos en ' + llista(forts) + ', y es un progreso que conviene reconocer en casa.');
-      else if (!feina.length) p.push((ella ? 'La' : 'Lo') + ' vemos estable, en su línea habitual, haciendo su camino de aprendizaje.');
+      else if (!feina.length) p.push((ella ? 'La' : 'Lo') + ' vemos dentro de la normalidad del grupo, haciendo su camino de aprendizaje.');
       if (nO) p.push(nT / nO >= 0.6 ? 'La mayor parte de las semanas hemos visto su atención puesta en la tarea: aprender, mejorar y estar en la jugada.' : 'Algunas semanas su atención se ha ido hacia el resultado. Os proponemos, después de los partidos, preguntar primero «¿qué has aprendido hoy?» antes de hablar del marcador.');
       if (bons.length) p.push('Destacamos también, de manera repetida: ' + llista(bons) + '.');
       if (feina.length) p.push('Un aspecto en el que conviene seguir trabajando es ' + llista(feina) + '. Lo acompañamos desde los entrenamientos.');
@@ -772,9 +839,9 @@
       p.push('Entiendo que vosotros también lo habéis podido ver en el día a día. Cualquier cosa que observéis en casa nos ayudará a acompañar' + (ella ? 'la' : 'lo') + ' mejor.');
     } else {
       p.push('Informe de seguiment · ' + nom + ' · ' + eq + (d.equip && d.equip.temporada ? ' · ' + d.equip.temporada : ''));
-      p.push('Durant aquestes setmanes hem seguit de manera setmanal l\'evolució ' + (ella ? 'de na ' : 'd\'en ') + nom + ' a l\'equip, sobretot en allò que el club considera prioritari: l\'orientació a la tasca, el fair-play i l\'aprenentatge continu, més que no els resultats. Cada jugador es compara amb ell mateix i no amb els companys.');
+      p.push('Durant aquestes setmanes hem seguit de manera setmanal l\'evolució ' + (ella ? 'de na ' : 'd\'en ') + nom + ' a l\'equip, sobretot en allò que el club considera prioritari: l\'orientació a la tasca, el fair-play i l\'aprenentatge continu, més que no els resultats. Cada setmana l\'entrenador recull els moments en què destaca i aquells en què necessita més acompanyament.');
       if (forts.length) p.push('El' + (ella ? 'la' : '') + ' veim de cada vegada amb més recursos en ' + llista(forts) + ', i és un progrés que convé reconèixer a casa.');
-      else if (!feina.length) p.push('El' + (ella ? 'la' : '') + ' veim estable, en la seva línia habitual, fent el seu camí d\'aprenentatge.');
+      else if (!feina.length) p.push('El' + (ella ? 'la' : '') + ' veim dins la normalitat del grup, fent el seu camí d\'aprenentatge.');
       if (nO) p.push(nT / nO >= 0.6 ? 'La major part de les setmanes hem vist la seva atenció posada en la tasca: aprendre, millorar i estar dins la jugada.' : 'Algunes setmanes la seva atenció ha anat cap al resultat. Us proposam, després dels partits, demanar primer «què has après avui?» abans de parlar del marcador.');
       if (bons.length) p.push('Destacam també, de manera repetida: ' + llista(bons) + '.');
       if (feina.length) p.push('Un aspecte en què convé continuar fent feina és ' + llista(feina) + '. L\'acompanyam des dels entrenaments.');
@@ -787,6 +854,7 @@
     var d = D(), j = per(arg, d.jug); if (!j) return vTendencies();
     return '<button type="button" class="enllac no-imp" data-nav="jugador" data-arg="' + j.id + '">← ' + h(nomJ(j)) + '</button><span class="kick no-imp">' + h(u('infT')) + '</span><h1 tabindex="-1" class="no-imp">' + h(u('infT')) + '</h1>' +
       '<p class="muted no-imp">' + h(u('infQ')) + '</p><label class="camp no-imp"><span class="sr">' + h(u('infT')) + '</span><textarea id="txtInf" rows="18">' + h(textInforme(d, j)) + '</textarea></label>' +
+      '<div class="taula-wrap card no-imp" tabindex="0">' + taulaJug(d, j) + '</div>' +
       
       '<div class="fila no-imp"><button type="button" class="btn" data-act="imprimeix">' + h(u('infImp')) + '</button><button type="button" class="btn sec" data-act="copiaInf">' + h(u('infCopia')) + '</button></div>';
   }
@@ -876,8 +944,8 @@
         : ['L\'atenció pot anar cap enfora (la jugada) o cap endins (pensaments, emocions, cos). Totes dues són normals.', 'Qui decideix on va l\'atenció durant el joc és el cos, segons els hàbits apresos als entrenaments i les creences sobre la situació.', 'Per això l\'entrenador ha de dir en què i quan fixar-se: és l\'ítem «claredat» de la fitxa del CE Constància.', 'Pensaments i emocions no es combaten: s\'observen, i es torna a la jugada. La clau no és no distreure\'s mai, sinó adonar-se\'n abans i tornar més aviat.']).map(function (x) { return '<li>' + h(x) + '</li>'; }).join('') +
       '</ul><p><a href="https://aprens.net/descarregues/APRENS-atencio-maneig-emocional-esport.pdf" rel="noopener">' + h(es ? 'Dosier: Atención y manejo emocional en el deporte (PDF)' : 'Dossier: Atenció i maneig emocional a l\'esport (PDF)') + '</a> · ' +
       '<a href="https://aprens.net/descarregues/APRENS-piramide-rendiment.pdf" rel="noopener">' + h(es ? 'La pirámide del rendimiento (PDF)' : 'La piràmide del rendiment (PDF)') + '</a></p></section>';
-    o += '<section class="card suau"><h2>' + h(es ? 'Por qué cada jugador se compara consigo mismo' : 'Per què cada jugador es compara amb ell mateix') + '</h2><p>' + h(es ? 'La escala semanal no ordena a los jugadores: pregunta si esta semana lo has visto por encima o por debajo de lo habitual en él. Así el registro refuerza la misma mirada que queremos que aprendan, la de la maestría, y deja a un lado los rankings internos.'
-      : 'L\'escala setmanal no ordena els jugadors: demana si aquesta setmana l\'has vist per damunt o per davall del seu habitual. Així el registre reforça la mateixa mirada que volem que aprenguin, la de la mestria, i deixa de banda els rànquings interns.') + '</p></section>';
+    o += '<section class="card suau"><h2>' + h(es ? 'La clave de puntuación' : 'La clau de puntuació') + '</h2><p>' + h(es ? 'Es la clave del programa APRENS ESPORT. Ante cada ítem, el entrenador se pregunta qué jugadores se han apartado esta semana de la normalidad del equipo: 1 si han estado por debajo de la media, 0 si ha pasado algo significativo negativo, 3 si han destacado en positivo, y 2 el resto. No todos son 3 ni todos son 1: solo algunos. Así la entrevista es rápida y lo que queda registrado son justamente los momentos que conviene mirar, sin hacer rankings.'
+      : 'És la clau del programa APRENS ESPORT. Davant cada ítem, l\'entrenador es demana quins jugadors s\'han apartat aquesta setmana de la normalitat de l\'equip: 1 si han estat per davall de la mitjana, 0 si ha passat alguna cosa significativa negativa, 3 si han destacat en positiu, i 2 la resta. No tots són 3 ni tots són 1: només alguns. Així l\'entrevista és ràpida i el que queda registrat són justament els moments que convé mirar, sense fer rànquings.') + '</p></section>';
     o += '<p class="muted">APRENS · Tòfol Villalonga · Psicòleg General Sanitari (B-01599) · Psicologia de l\'esport</p>';
     return o;
   }
@@ -1108,7 +1176,7 @@
     var o = '<button type="button" class="enllac no-imp" data-nav="tendencies">← ' + h(u('tendT')) + '</button><span class="kick no-imp">' + h(d.equip ? d.equip.nom : '') + '</span><h1 tabindex="-1" class="no-imp">' + h(u('informesT')) + '</h1>' +
       '<p class="muted no-imp">' + h(u('infQ')) + '</p><div class="fila no-imp"><button type="button" class="btn" data-act="imprimeixTots">' + h(u('imprimeixTots')) + '</button></div>';
     jugActius(d).forEach(function (j) {
-      o += '<label class="camp no-imp card"><span>' + h(nomJ(j)) + '</span><textarea data-inf="' + j.id + '" rows="12">' + h(textInforme(d, j)) + '</textarea></label>';
+      o += '<div class="card no-imp"><label class="camp"><span>' + h(nomJ(j)) + '</span><textarea data-inf="' + j.id + '" rows="12">' + h(textInforme(d, j)) + '</textarea></label><div class="taula-wrap" tabindex="0">' + taulaJug(d, j) + '</div></div>';
     });
     return o;
   }
@@ -1139,7 +1207,7 @@
       case 'esborraPanel': if (window.confirm(u('panelEsborraConf'))) { lsDelK(LSP); tancaPanel(); vés('panel'); } break;
       case 'treuClaus': if (window.confirm(u('treuClausConf'))) { PANEL.claus = []; desaPanel().then(render, render); } break;
       case 'imprimeixTots':
-        $('#impText').innerHTML = $$('textarea[data-inf]').map(function (t) { return '<section class="imp-pag">' + h(t.value) + '</section>'; }).join('');
+        $('#impText').innerHTML = $$('textarea[data-inf]').map(function (t) { var tb = document.getElementById('taula-' + t.dataset.inf); return impJug(t.value, tb ? tb.outerHTML : ''); }).join('');
         window.print(); break;
       case 'wAnt': setmVista.setDate(setmVista.getDate() - 7); render(); break;
       case 'wSeg': setmVista.setDate(setmVista.getDate() + 7); render(); break;
@@ -1166,7 +1234,8 @@
         sm = setm(wActual(), true); esborrany.ent.fet = true; esborrany.ent.data = avuiISO();
         Object.keys(esborrany.ent.jug).forEach(function (k) { var rr = esborrany.ent.jug[k]; Object.keys(rr.d).forEach(function (dk) { if (!rr.d[dk]) delete rr.d[dk]; }); });
         sm.ent = esborrany.ent; esborrany = null; desa(); toast(u('entDesada')); vés('setmana'); break;
-      case 'imprimeix': $('#impText').innerHTML = '<section class="imp-pag">' + h($('#txtInf').value) + '</section>'; window.print(); break;
+      case 'imprimeix': var tj = $('.inf-taula'); $('#impText').innerHTML = impJug($('#txtInf').value, tj ? tj.outerHTML : ''); window.print(); break;
+      case 'imprimeixGrup': var gc = $('#grupCos'); if (gc) { $('#impText').innerHTML = '<section class="imp-pag">' + gc.innerHTML + '</section>'; window.print(); } break;
       case 'copiaInf':
         var t = $('#txtInf').value;
         if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { toast(u('copiat')); }, function () { $('#txtInf').select(); });
@@ -1194,7 +1263,8 @@
     if (ds.jc) {
       var rc = esborrany.ent.jug[ds.jc], it = null; C.pss.forEach(function (b) { b.items.forEach(function (i) { if (i.id === ds.it) it = i; }); });
       if (!rc || !it) return; rc.c = rc.c || {};
-      var nv = it.tipus === 'si' ? (el.checked ? 1 : 0) : Math.max(-20, Math.min(20, parseInt(el.value, 10) || 0));
+      var nv = it.tipus === 'si' ? (el.checked ? 1 : 0) : Math.max(-2, Math.min(20, parseInt(el.value, 10) || 0));
+      if (it.tipus === 'esc') nv = Math.max(-2, Math.min(1, nv));
       if (it.tipus === 'num' && nv < 0) nv = 0;
       if (nv) rc.c[ds.it] = nv; else delete rc.c[ds.it];
       return;

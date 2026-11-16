@@ -66,13 +66,14 @@ window.QE = {
   escalaFreq: [
     { ca: "Mai", es: "Nunca" }, { ca: "A vegades", es: "A veces" }, { ca: "Sovint", es: "A menudo" }, { ca: "Quasi sempre", es: "Casi siempre" }
   ],
-  /* respecte del seu propi habitual: no es compara amb els companys */
+  /* Clau de puntuació d'APRENS ESPORT: davant cada ítem, l'entrenador es demana quins jugadors
+     s'han apartat aquesta setmana de la normalitat de l'equip. La majoria queden a 2; només
+     alguns tenen 0, 1 o 3. Internament es desa -2, -1, 0, +1 (0 = normalitat, no es desa). */
   escalaJug: [
-    { v: -2, c: { ca: "Molt per davall del seu habitual", es: "Muy por debajo de lo habitual en él" }, k: "−−" },
-    { v: -1, c: { ca: "Per davall del seu habitual", es: "Por debajo de lo habitual en él" }, k: "−" },
-    { v: 0, c: { ca: "El seu habitual", es: "Lo habitual en él" }, k: "=" },
-    { v: 1, c: { ca: "Per damunt del seu habitual", es: "Por encima de lo habitual en él" }, k: "+" },
-    { v: 2, c: { ca: "Molt per damunt del seu habitual", es: "Muy por encima de lo habitual en él" }, k: "++" }
+    { v: -2, k: "0", c: { ca: "Ha passat alguna cosa significativa negativa aquesta setmana", es: "Ha pasado algo significativo negativo esta semana" } },
+    { v: -1, k: "1", c: { ca: "Per davall de la mitjana de l'equip", es: "Por debajo de la media del equipo" } },
+    { v: 0, k: "2", c: { ca: "Normalitat", es: "Normalidad" } },
+    { v: 1, k: "3", c: { ca: "Destaca en positiu", es: "Destaca en positivo" } }
   ],
 
   /* ---------- CLIMA D'EQUIP (lligat a la piràmide) ---------- */
@@ -186,7 +187,7 @@ window.QE = {
       { id: "badalls", tipus: "si", sig: -1, dim: "er", t: { ca: "Abans del partit fa badalls sovint", es: "Antes del partido bosteza a menudo" } }
     ] }
   ],
-  escalaPss: [ { v: -1, k: "−", c: { ca: "Per davall del normal", es: "Por debajo de lo normal" } }, { v: 0, k: "=", c: { ca: "Normalitat", es: "Normalidad" } }, { v: 1, k: "+", c: { ca: "Destaca en positiu", es: "Destaca en positivo" } } ],
+  escalaPss: null, /* la mateixa clau que escalaJug (vegeu app.js) */
 
   /* ---------- LA PIRÀMIDE (material APRENS) ---------- */
   piramide: {
