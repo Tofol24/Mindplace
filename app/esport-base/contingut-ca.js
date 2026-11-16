@@ -71,6 +71,8 @@ window.EPJ_TXT.ca = {
     aprenD: "Microlliçons d'un minut amb una acció per al pròxim partit.",
     entrenadorsT: "Itinerari per a entrenadors",
     entrenadorsD: "Situacions de banqueta i comunicació educativa.",
+    quadernT: "El quadern de l'entrenador",
+    quadernD: "Seguiment setmanal de l'equip: objectius, entrevista breu i tendències.",
     setmanalT: "El meu compromís com a acompanyant",
     setmanalD: "Un objectiu concret per a aquesta setmana."
   },

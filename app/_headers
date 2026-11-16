@@ -16,6 +16,8 @@
   Content-Type: application/manifest+json; charset=utf-8
 /entrenador/manifest.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
+/entrenador/clubs/constancia.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
 /esport-base/clubs/constancia.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
 

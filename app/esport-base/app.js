@@ -340,11 +340,19 @@
     h += acces('pinya', IC.pinya, t.pinya.titol, t.pinya.subtitol);
     h += acces('apren', IC.apren, i.aprenT, i.aprenD);
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, i.entrenadorsT, i.entrenadorsD);
+    if (r === 'entrenador') h += accesQuadern();
     h += acces('silueta', IC.silueta, i.siluetaT, i.siluetaD);
     h += acces('setmanal', IC.setmanal, i.setmanalT, i.setmanalD);
     h += acces('club', IC.club, t.club.titol, t.club.intro.split('. ')[0] + '.');
     return h + peu();
   };
+  /* Enllaç a «El quadern de l'entrenador» (seguiment setmanal), amb el club si n'hi ha */
+  function accesQuadern() {
+    var i = T().inici, c = S.club, q = [];
+    if (c && c.slug) q.push('club=' + encodeURIComponent(c.slug));
+    if (S.lang) q.push('lang=' + S.lang);
+    return '<a class="acces" href="../entrenador/' + (q.length ? '?' + q.join('&') : '') + '"><span class="ic">' + IC.setmanal + '</span><span><b>' + esc(i.quadernT) + '</b><span class="d">' + esc(i.quadernD) + '</span></span><span class="fl" aria-hidden="true">›</span></a>';
+  }
   function acces(v, icona, tit, d) {
     return '<button type="button" class="acces" data-go="' + v + '"><span class="ic">' + icona + '</span><span><b>' + esc(tit) + '</b><span class="d">' + esc(d) + '</span></span><span class="fl" aria-hidden="true">›</span></button>';
   }
@@ -773,6 +781,7 @@
     var t = T(), a = t.apren, r = rol();
     var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, t.inici.entrenadorsT, t.inici.entrenadorsD);
+    if (r === 'entrenador') h += accesQuadern();
     h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
     h += acces('atencio', IC.atencio, t.atencio.titol, t.atencio.clau);
     h += acces('piramide', IC.piramide, t.piramide.titol, t.piramide.mestria.lema);
