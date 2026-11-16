@@ -24,7 +24,7 @@
      l'HTML sense passar per aquí. */
   var RID = /^[a-z0-9]{1,24}$/, RW = /^\d{4}-W\d{2}$/;
   function txt(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
-  function num(v, mn, mx) { v = Number(v); return isFinite(v) ? Math.max(mn, Math.min(mx, Math.round(v))) : null; }
+  function num(v, mn, mx) { if (v == null || v === '' || typeof v === 'boolean') return null; v = Number(v); return isFinite(v) ? Math.max(mn, Math.min(mx, Math.round(v))) : null; }
   function mapaNum(o, mn, mx, claus) {
     var r = {}; if (!o || typeof o !== 'object') return r;
     Object.keys(o).forEach(function (k) { if (claus && claus.indexOf(k) < 0) return; if (!RID.test(k.toLowerCase())) return; var v = num(o[k], mn, mx); if (v != null) r[k] = v; });
@@ -292,9 +292,11 @@
     var fin = Math.max(2, +L.fin || 3), min = Math.max(1, +L.min || 2), ego = Math.max(1, +L.ego || 3);
     var dimsA = dimsActives(d);
     var avui = wid(new Date());
-    var recent = function (w, n) { var k = setmanesEntre(w, avui); return k >= 0 && k < n; };
     var darreraAbs = ws[ws.length - 1];
-    var darrera = darreraAbs && recent(darreraAbs, 2) ? darreraAbs : null; /* «aquesta setmana» = la darrera, si és recent */
+    /* Les finestres es compten des de la darrera entrevista feta (la setmana en curs pot estar encara buida).
+       Si fa massa que no n'hi ha, ho diu l'avís de setmanes sense entrevista. */
+    var recent = function (w, n) { if (!darreraAbs) return false; var k = setmanesEntre(w, darreraAbs); return k >= 0 && k < n; };
+    var darrera = darreraAbs && setmanesEntre(darreraAbs, avui) <= 1 ? darreraAbs : null; /* «aquesta setmana» = la darrera, si és recent */
     var es = S.lang === 'es';
     jugActius(d).forEach(function (j) {
       var motius = [], nivell = 0, pos = [];
