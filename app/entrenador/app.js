@@ -204,7 +204,7 @@
       enviaT: 'Envia al psicòleg', enviaQ: 'Desa una sola vegada la clau que t\'ha donat el psicòleg del club. Després, cada setmana, envia-li les dades xifrades per WhatsApp o correu.', enviaQ2: 'Les dades surten xifrades amb la clau del psicòleg del club.', clauPsi: 'Clau del psicòleg del club', clauDesa: 'Desa la clau', clauDesada: 'Clau desada.',
       enviaBtn: 'Envia al psicòleg', enviaCanvia: 'Canvia la clau', enviat: 'Darrer enviament', enviaPrep: 'Fitxer xifrat preparat. Toca «Comparteix» i tria WhatsApp o el correu del psicòleg.', enviaComp: 'Comparteix', enviaBaixa: 'Descarrega el fitxer', enviaBaixat: 'Fitxer descarregat. Adjunta\'l en un missatge al psicòleg.', enviaMsg: 'Seguiment setmanal',
       panelNoDesa: 'El navegador no deixa desar el panel. Descarrega ara una còpia: es fa amb les dades actuals.', impRecT: 'Recupera una còpia teva', panelLect: 'Només lectura: les dades d\'aquest equip les escriu l\'entrenador.',
-      grupT: 'Informe de grup', grupQ: 'Per a l\'entrenador i la coordinació: la mitjana de l\'equip a cada ítem, cada jugador, el clima, l\'estil d\'entrenament i els avisos de les darreres 12 setmanes.', grupEquipT: 'L\'equip, ítem per ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Mitjana de l\'equip', periode: 'Període', clauQual: 'Mitjana de 0 a 3: 0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat',
+      grupT: 'Informe de grup', grupQ: 'Per a l\'entrenador i la coordinació: la mitjana de l\'equip a cada ítem, cada jugador, el clima, l\'estil d\'entrenament i els avisos de les darreres 12 setmanes.', grupEquipT: 'L\'equip, ítem per ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Mitjana de l\'equip', periode: 'Període', clauQual: 'Mitjana de 0 a 3: 0-1 A reforçar · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat',
       socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Fitxa APRENS ESPORT (conductes concretes)', vegades: 'vegades',
       senseEnt: 'setmanes sense entrevista', taula: 'Veure les dades en taula', mitjana: 'mitjana', avui: 'avui'
     },
@@ -273,7 +273,7 @@
       enviaT: 'Envía al psicólogo', enviaQ: 'Guarda una sola vez la clave que te ha dado el psicólogo del club. Después, cada semana, envíale los datos cifrados por WhatsApp o correo.', enviaQ2: 'Los datos salen cifrados con la clave del psicólogo del club.', clauPsi: 'Clave del psicólogo del club', clauDesa: 'Guarda la clave', clauDesada: 'Clave guardada.',
       enviaBtn: 'Envía al psicólogo', enviaCanvia: 'Cambia la clave', enviat: 'Último envío', enviaPrep: 'Archivo cifrado preparado. Toca «Compartir» y elige WhatsApp o el correo del psicólogo.', enviaComp: 'Compartir', enviaBaixa: 'Descarga el archivo', enviaBaixat: 'Archivo descargado. Adjúntalo en un mensaje al psicólogo.', enviaMsg: 'Seguimiento semanal',
       panelNoDesa: 'El navegador no deja guardar el panel. Descarga ahora una copia: se hace con los datos actuales.', impRecT: 'Recupera una copia tuya', panelLect: 'Solo lectura: los datos de este equipo los escribe el entrenador.',
-      grupT: 'Informe de grupo', grupQ: 'Para el entrenador y la coordinación: la media del equipo en cada ítem, cada jugador, el clima, el estilo de entrenamiento y los avisos de las últimas 12 semanas.', grupEquipT: 'El equipo, ítem por ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Media del equipo', periode: 'Periodo', clauQual: 'Media de 0 a 3: 0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacado',
+      grupT: 'Informe de grupo', grupQ: 'Para el entrenador y la coordinación: la media del equipo en cada ítem, cada jugador, el clima, el estilo de entrenamiento y los avisos de las últimas 12 semanas.', grupEquipT: 'El equipo, ítem por ítem', grupJugT: 'Cada jugador', colItem: 'Ítem', colEquip: 'Media del equipo', periode: 'Periodo', clauQual: 'Media de 0 a 3: 0-1 A reforzar · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacado',
       socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Ficha APRENS ESPORT (conductas concretas)', vegades: 'veces',
       senseEnt: 'semanas sin entrevista', taula: 'Ver los datos en tabla', mitjana: 'media', avui: 'hoy'
     }
@@ -760,8 +760,8 @@
   }
 
   /* ---------- Mitjanes 0-3 i paraula qualitativa (clau APRENS ESPORT) ----------
-     0-1 Alerta · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat (de 2,4 a 2,5 es compta Normal). */
-  var QUAL = [{ max: 1, k: 'alerta', t: { ca: 'Alerta', es: 'Alerta' } }, { max: 2, k: 'regular', t: { ca: 'Regular', es: 'Regular' } },
+     0-1 A reforçar · 1-2 Regular · 2-2,4 Normal · 2,5-3 Destacat (de 2,4 a 2,5 es compta Normal). */
+  var QUAL = [{ max: 1, k: 'alerta', t: { ca: 'A reforçar', es: 'A reforzar' } }, { max: 2, k: 'regular', t: { ca: 'Regular', es: 'Regular' } },
     { max: 2.5, k: 'normal', t: { ca: 'Normal', es: 'Normal' } }, { max: Infinity, k: 'destacat', t: { ca: 'Destacat', es: 'Destacado' } }];
   function qual(v) { if (v == null) return null; for (var i = 0; i < QUAL.length; i++) if (v < QUAL[i].max) return QUAL[i]; return QUAL[3]; }
   function wsInf(d) { return setmanesFetes(d).slice(-12); }
