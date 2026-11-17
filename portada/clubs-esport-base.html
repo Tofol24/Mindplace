@@ -17,6 +17,17 @@
   .doc .enllacos a{display:inline-block;padding:11px 16px;border-radius:12px;background:#1F2A37;color:#fff;text-decoration:none;font-weight:600}
   .doc .enllacos a.sec{background:var(--card,#fff);color:inherit;box-shadow:0 1px 3px rgba(0,0,0,.12)}
   .doc blockquote{margin:18px 0;padding:6px 0 6px 16px;border-left:4px solid #3B7224;font-size:1.12rem;font-weight:600}
+  .doc .pack{border:2px solid var(--verd,#3d7a1a);border-radius:18px;padding:16px;margin:18px 0 22px;background:var(--card,#fff)}
+  .doc .pack h2{margin:0 0 6px}
+  .doc .pack .apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+  .doc .pack .app{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:12px;background:var(--paper,#f4f6f9)}
+  .doc .pack .app img{width:64px;height:64px;border-radius:16px;flex:0 0 auto}
+  .doc .pack .app b{display:block;font-size:1.05rem}
+  .doc .pack .app span{display:block;font-size:.95rem;color:var(--muted,#5d6b7c)}
+  .doc .pack .app a{display:inline-block;margin-top:6px;font-weight:600}
+  .doc .pack .qui{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;padding:0;list-style:none}
+  .doc .pack .qui li{border-radius:999px;padding:4px 12px;background:var(--verd-soft,#ebf5e3);font-weight:600;font-size:.92rem;max-width:none;margin:0}
+  .doc .pack .preu{font-size:1.15rem;margin:10px 0 0}
 </style>
 </head>
 <body>
@@ -27,6 +38,16 @@
   <p><img src="img/pares-juguen-icona.svg" width="88" height="88" alt="" style="border-radius:20px"></p>
   <h1>El meu club és un lloc emocionalment segur</h1>
   <p>Presentam una proposta d'APRENS per a clubs esportius de base, de futbol i d'altres disciplines, pensada perquè famílies, entrenadors i directius tenguin un paper actiu en l'educació dels nostres jugadors i jugadores, i perquè el club sigui per a ells un lloc emocionalment segur.</p>
+  <section class="pack" aria-labelledby="pack-ca">
+    <h2 id="pack-ca">Un pack de dues aplicacions</h2>
+    <p>Fan feina juntes i de manera integral amb tots els adults que envolten el jugador:</p>
+    <ul class="qui"><li>Famílies</li><li>Delegats</li><li>Entrenadors</li><li>Coordinació</li><li>Psicòleg del club</li></ul>
+    <div class="apps">
+      <div class="app"><img src="img/pares-juguen-icona.svg" width="64" height="64" alt=""><div><b>Els pares també juguen</b><span>Per a famílies, delegats i entrenadors: abans, durant i després de cada partit.</span><a href="https://aprens-app.aprens.net/esport-base/" rel="noopener">Prova-la</a></div></div>
+      <div class="app"><img src="img/quadern-entrenador-icona.svg" width="64" height="64" alt=""><div><b>El quadern de l'entrenador</b><span>Per a entrenadors, coordinació i psicòleg: seguiment setmanal de cada equip i informes per a les famílies.</span><a href="https://aprens-app.aprens.net/entrenador/" rel="noopener">Prova'l</a></div></div>
+    </div>
+    <p class="preu"><b>Les dues, per 250 € + IVA per temporada i club</b>, sigui quin sigui el nombre d'equips.</p>
+  </section>
   <figure><img src="img/novetats/clubs-esport-base-gran.jpg" alt="El gest de la pinya, amb mans diverses unides al centre, i dues pantalles de l'app «Els pares també juguen»: l'inici amb els tres moments del partit i el mode partit amb el botó de pausa." width="1200" height="675" loading="lazy"><figcaption>La pinya de les famílies i l'app «Els pares també juguen».</figcaption></figure>
   <p>Fa anys que faig feina amb esportistes joves, amb les seves famílies i amb els seus entrenadors, i per mi l'esport de base és un dels contextos on més es pot ajudar un nin o una nina a créixer, a nivell físic, emocional i com a persona. A més de la tècnica, la tàctica i la preparació física, a cada entrenament i a cada partit s'aprenen coses que duren tota la vida:</p>
   <ul class="claus"><li>Respecte</li><li>Esforç</li><li>Tolerància a la frustració</li><li>Orientació a la tasca</li><li>Cooperació</li><li>Comunitat</li></ul>
@@ -37,7 +58,7 @@
   <h2>Què ofereix la proposta</h2>
   <ul>
     <li><b>L'app «Els pares també juguen»</b>, per a famílies i entrenadors, en català i en castellà. Acompanya els tres moments del partit en pocs tocs, perquè els ulls estiguin al camp i no al mòbil: preparar-se abans, una pausa breu quan el partit ens activa i una manera d'acompanyar el jugador després. Inclou «la pinya de les famílies», un gest voluntari de compromís abans de cada partit, i continguts per aprendre sobre atenció, motivació i comunitat. No demana cap registre i el que s'hi anota queda només al mòbil de cada persona.</li>
-    <li><b>«El quadern de l'entrenador»</b>, un seguiment setmanal breu perquè l'entrenador formalitzi el que observa dels seus jugadors i el psicòleg del club en vegi les tendències (més avall ho explicam).</li>
+    <li><b>L'app «El quadern de l'entrenador»</b>, un seguiment setmanal breu perquè l'entrenador formalitzi el que observa dels seus jugadors i el psicòleg del club en vegi les tendències, amb informes per a la coordinació i per a les famílies (més avall ho explicam).</li>
     <li><b>Una guia de treball psicològic per al club</b>, amb mòduls per a famílies, entrenadors, jugadors i club, un pla de temporada, guions de sessió i fitxes per fotocopiar.</li>
     <li><b>Acompanyament i formació</b>: reunió amb les famílies, tallers per als entrenadors, microsessions d'atenció dins els entrenaments i seguiment al llarg de la temporada.</li>
     <li><b>Adaptada a cada club</b>: amb el seu escut, els seus colors, el seu codi de conducta i el seu protocol de protecció de menors, i amb un cartell i un QR per a la grada i el vestidor.</li>
@@ -59,7 +80,7 @@
     <li><b>Sense comptes ni servidor</b>: l'entrenador envia cada setmana les dades xifrades al psicòleg, i el panel les desa xifrades amb el seu codi d'accés.</li>
   </ul>
   <p>Es basa en la piràmide del rendiment: on posam l'atenció durant la competició acaba marcant la percepció de control, la regulació de l'errada, la motivació, l'adherència i, al final, el rendiment. Serveix per a qualsevol esport i per a totes les etapes, de la iniciació al rendiment, i cada club el pot adaptar amb el seu escut i amb les conductes que vulgui observar.</p>
-  <p>Té un caràcter integral: formalitza l'aprenentatge, ajuda a prevenir problemes i conflictes abans que creixin i fomenta en els jugadors uns valors i uns principis de fair-play. És un servei a part de «Els pares també juguen», amb una quota pròpia de <b>250 € + IVA per temporada i club</b>, sigui quin sigui el nombre d'equips que el facin servir.</p>
+  <p>Té un caràcter integral: formalitza l'aprenentatge, ajuda a prevenir problemes i conflictes abans que creixin i fomenta en els jugadors uns valors i uns principis de fair-play. Forma part del mateix pack que «Els pares també juguen» i està inclòs en la mateixa quota del club.</p>
   <div class="enllacos">
     <a href="https://aprens-app.aprens.net/entrenador/" rel="noopener">Prova el quadern</a>
     <a class="sec" href="https://aprens-app.aprens.net/entrenador/?club=constancia" rel="noopener">Exemple: CE Constància</a>
@@ -86,14 +107,14 @@
     <li><b>Cada trimestre</b> revises els informes de grup i els informes per a les famílies abans d'enviar-los.</li>
     <li>Qualsevol <b>intervenció directa amb un jugador</b> es fa sempre amb el consentiment de la família.</li>
   </ol>
-  <p>La quota de 250 € + IVA per temporada és per club i inclou l'eina, l'espai propi del club, les actualitzacions i el suport. Les hores de seguiment psicològic les acorden el club i el seu psicòleg; si el psicòleg és d'APRENS, les pressupostam a part.</p>
+  <p>La quota de 250 € + IVA per temporada és per club i inclou les dues aplicacions, l'espai propi del club, les actualitzacions i el suport. Les hores de seguiment psicològic les acorden el club i el seu psicòleg; si el psicòleg és d'APRENS, les pressupostam a part.</p>
   <p>Les dades queden xifrades al mòbil de l'entrenador i al panel del psicòleg. APRENS no rep cap dada dels jugadors.</p>
   <h2>Una primera experiència</h2>
   <p>Ara volem començar amb una primera experiència amb clubs col·laboradors, per veure com funciona de veritat dins el dia a dia d'un equip i millorar-la amb el que hi trobem. Si sou d'un club i us agradaria fer-ho amb nosaltres, o només en voleu saber més, en parlam amb molt de gust.</p>
   <p>Aquesta proposta no és un tractament psicològic ni substitueix les normes de convivència del club ni el seu protocol de protecció de menors: és un recurs educatiu i d'entrenament per fer, entre tots, un entorn més segur, respectuós i educatiu per als nostres jugadors i jugadores.</p>
   <p>Els materials en què es basa: <a href="descarregues/APRENS-paper-pares-esport-base.pdf">Els pares també juguen</a>, <a href="descarregues/APRENS-piramide-rendiment.pdf">La piràmide del rendiment</a> i <a href="descarregues/APRENS-atencio-maneig-emocional-esport.pdf">Atenció i maneig emocional a l'esport</a>.</p>
-  <h2>Quota de «Els pares també juguen»</h2>
-  <p>La quota és de <b>250 € + IVA per temporada</b> (setembre a juny), equivalent a 25 € al mes, o 225 € + IVA si el club ho abona en un sol pagament a l'inici de temporada (IVA del 21 %). És per club, no per equip, perquè totes les categories hi puguin fer feina, i inclou l'app amb l'espai propi del club, els cartells amb el QR, els missatges de difusió, la guia, les actualitzacions i el suport durant la temporada. El treball presencial es pressuposta a part, i sempre es pot començar amb un pilot gratuït de quatre a sis setmanes amb un equip. Molts ajuntaments, el Consell de Mallorca i algunes federacions tenen ajudes per a aquest tipus de formació; si cal, preparam un pressupost formal perquè el club el pugui presentar.</p>
+  <h2>Quota per al club: les dues aplicacions</h2>
+  <p>La quota és de <b>250 € + IVA per temporada</b> (setembre a juny), equivalent a 25 € al mes, o 225 € + IVA si el club ho abona en un sol pagament a l'inici de temporada (IVA del 21 %). És per club, no per equip, perquè totes les categories hi puguin fer feina, i inclou les dues aplicacions, «Els pares també juguen» i «El quadern de l'entrenador», amb l'espai propi del club, els cartells amb el QR, els missatges de difusió, la guia, les actualitzacions i el suport durant la temporada. El treball presencial es pressuposta a part, i sempre es pot començar amb un pilot gratuït de quatre a sis setmanes amb un equip. Molts ajuntaments, el Consell de Mallorca i algunes federacions tenen ajudes per a aquest tipus de formació; si cal, preparam un pressupost formal perquè el club el pugui presentar.</p>
   <p><a href="https://aprens-app.aprens.net/assets/pdf/proposta-clubs-aprens.pdf" rel="noopener" hreflang="ca">Proposta per a clubs (PDF)</a></p>
   <p><b>Si en voleu parlar:</b> APRENS Psicologia · C/ Mare de Déu de l'Esperança, 70, 2n · Inca · 636 93 76 61 · info@aprens.es</p>
   <p>Tòfol Villalonga</p>
@@ -104,6 +125,16 @@
   <p><img src="img/pares-juguen-icona.svg" width="88" height="88" alt="" style="border-radius:20px"></p>
   <h1>Mi club es un lugar emocionalmente seguro</h1>
   <p>Presentamos una propuesta de APRENS para clubes deportivos de base, de fútbol y de otras disciplinas, pensada para que familias, entrenadores y directivos tengan un papel activo en la educación de nuestros jugadores y jugadoras, y para que el club sea para ellos un lugar emocionalmente seguro.</p>
+  <section class="pack" aria-labelledby="pack-es">
+    <h2 id="pack-es">Un pack de dos aplicaciones</h2>
+    <p>Trabajan juntas y de manera integral con todos los adultos que rodean al jugador:</p>
+    <ul class="qui"><li>Familias</li><li>Delegados</li><li>Entrenadores</li><li>Coordinación</li><li>Psicólogo del club</li></ul>
+    <div class="apps">
+      <div class="app"><img src="img/pares-juguen-icona.svg" width="64" height="64" alt=""><div><b>Els pares també juguen</b><span>Para familias, delegados y entrenadores: antes, durante y después de cada partido.</span><a href="https://aprens-app.aprens.net/esport-base/?lang=es" rel="noopener">Pruébala</a></div></div>
+      <div class="app"><img src="img/quadern-entrenador-icona.svg" width="64" height="64" alt=""><div><b>El cuaderno del entrenador</b><span>Para entrenadores, coordinación y psicólogo: seguimiento semanal de cada equipo e informes para las familias.</span><a href="https://aprens-app.aprens.net/entrenador/?lang=es" rel="noopener">Pruébalo</a></div></div>
+    </div>
+    <p class="preu"><b>Las dos, por 250 € + IVA por temporada y club</b>, sea cual sea el número de equipos.</p>
+  </section>
   <figure><img src="img/novetats/clubs-esport-base-gran.jpg" alt="El gesto de la piña, con manos diversas unidas en el centro, y dos pantallas de la app «Los padres también juegan»: el inicio con los tres momentos del partido y el modo partido con el botón de pausa." width="1200" height="675" loading="lazy"><figcaption>La piña de las familias y la app «Los padres también juegan».</figcaption></figure>
   <p>Hace años que trabajo con deportistas jóvenes, con sus familias y con sus entrenadores, y para mí el deporte base es uno de los contextos donde más se puede ayudar a un niño o a una niña a crecer, a nivel físico, emocional y como persona. Además de la técnica, la táctica y la preparación física, en cada entrenamiento y en cada partido se aprenden cosas que duran toda la vida:</p>
   <ul class="claus"><li>Respeto</li><li>Esfuerzo</li><li>Tolerancia a la frustración</li><li>Orientación a la tarea</li><li>Cooperación</li><li>Comunidad</li></ul>
@@ -114,7 +145,7 @@
   <h2>Qué ofrece la propuesta</h2>
   <ul>
     <li><b>La app «Los padres también juegan»</b>, para familias y entrenadores, en catalán y en castellano. Acompaña los tres momentos del partido en pocos toques, para que los ojos estén en el campo y no en el móvil: prepararse antes, una pausa breve cuando el partido nos activa y una manera de acompañar al jugador después. Incluye «la piña de las familias», un gesto voluntario de compromiso antes de cada partido, y contenidos para aprender sobre atención, motivación y comunidad. No pide ningún registro y lo que se anota queda solo en el móvil de cada persona.</li>
-    <li><b>«El cuaderno del entrenador»</b>, un seguimiento semanal breve para que el entrenador formalice lo que observa de sus jugadores y el psicólogo del club vea sus tendencias (más abajo lo explicamos).</li>
+    <li><b>La app «El cuaderno del entrenador»</b>, un seguimiento semanal breve para que el entrenador formalice lo que observa de sus jugadores y el psicólogo del club vea sus tendencias, con informes para la coordinación y para las familias (más abajo lo explicamos).</li>
     <li><b>Una guía de trabajo psicológico para el club</b>, con módulos para familias, entrenadores, jugadores y club, un plan de temporada, guiones de sesión y fichas para fotocopiar.</li>
     <li><b>Acompañamiento y formación</b>: reunión con las familias, talleres para los entrenadores, microsesiones de atención dentro de los entrenamientos y seguimiento a lo largo de la temporada.</li>
     <li><b>Adaptada a cada club</b>: con su escudo, sus colores, su código de conducta y su protocolo de protección de menores, y con un cartel y un QR para la grada y el vestuario.</li>
@@ -136,7 +167,7 @@
     <li><b>Sin cuentas ni servidor</b>: el entrenador envía cada semana los datos cifrados al psicólogo, y el panel los guarda cifrados con su código de acceso.</li>
   </ul>
   <p>Se basa en la pirámide del rendimiento: dónde ponemos la atención durante la competición acaba marcando la percepción de control, la regulación del error, la motivación, la adherencia y, al final, el rendimiento. Sirve para cualquier deporte y para todas las etapas, de la iniciación al rendimiento, y cada club lo puede adaptar con su escudo y con las conductas que quiera observar.</p>
-  <p>Tiene un carácter integral: formaliza el aprendizaje, ayuda a prevenir problemas y conflictos antes de que crezcan y fomenta en los jugadores unos valores y unos principios de fair-play. Es un servicio aparte de «Els pares també juguen», con una cuota propia de <b>250 € + IVA por temporada y club</b>, sea cual sea el número de equipos que lo usen.</p>
+  <p>Tiene un carácter integral: formaliza el aprendizaje, ayuda a prevenir problemas y conflictos antes de que crezcan y fomenta en los jugadores unos valores y unos principios de fair-play. Forma parte del mismo pack que «Els pares també juguen» y está incluido en la misma cuota del club.</p>
   <div class="enllacos">
     <a href="https://aprens-app.aprens.net/entrenador/?lang=es" rel="noopener">Prueba el cuaderno</a>
     <a class="sec" href="https://aprens-app.aprens.net/entrenador/?club=constancia&amp;lang=es" rel="noopener">Ejemplo: CE Constància</a>
@@ -163,14 +194,14 @@
     <li><b>Cada trimestre</b> revisas los informes de grupo y los informes para las familias antes de enviarlos.</li>
     <li>Cualquier <b>intervención directa con un jugador</b> se hace siempre con el consentimiento de la familia.</li>
   </ol>
-  <p>La cuota de 250 € + IVA por temporada es por club e incluye la herramienta, el espacio propio del club, las actualizaciones y el apoyo. Las horas de seguimiento psicológico las acuerdan el club y su psicólogo; si el psicólogo es de APRENS, las presupuestamos aparte.</p>
+  <p>La cuota de 250 € + IVA por temporada es por club e incluye las dos aplicaciones, el espacio propio del club, las actualizaciones y el apoyo. Las horas de seguimiento psicológico las acuerdan el club y su psicólogo; si el psicólogo es de APRENS, las presupuestamos aparte.</p>
   <p>Los datos quedan cifrados en el móvil del entrenador y en el panel del psicólogo. APRENS no recibe ningún dato de los jugadores.</p>
   <h2>Una primera experiencia</h2>
   <p>Ahora queremos empezar con una primera experiencia con clubes colaboradores, para ver cómo funciona de verdad en el día a día de un equipo y mejorarla con lo que encontremos. Si sois de un club y os gustaría hacerlo con nosotros, o solo queréis saber más, hablamos con mucho gusto.</p>
   <p>Esta propuesta no es un tratamiento psicológico ni sustituye las normas de convivencia del club ni su protocolo de protección de menores: es un recurso educativo y de entrenamiento para hacer, entre todos, un entorno más seguro, respetuoso y educativo para nuestros jugadores y jugadoras.</p>
   <p>Los materiales en los que se basa (en catalán): <a href="descarregues/APRENS-paper-pares-esport-base.pdf" hreflang="ca">Els pares també juguen</a>, <a href="descarregues/APRENS-piramide-rendiment.pdf" hreflang="ca">La piràmide del rendiment</a> y <a href="descarregues/APRENS-atencio-maneig-emocional-esport.pdf" hreflang="ca">Atenció i maneig emocional a l'esport</a>.</p>
-  <h2>Cuota de «Els pares també juguen»</h2>
-  <p>La cuota es de <b>250 € + IVA por temporada</b> (septiembre a junio), equivalente a 25 € al mes, o 225 € + IVA si el club la abona en un solo pago al inicio de la temporada (IVA del 21 %). Es por club, no por equipo, para que todas las categorías puedan trabajar con ella, e incluye la app con el espacio propio del club, los carteles con el QR, los mensajes de difusión, la guía, las actualizaciones y el apoyo durante la temporada. El trabajo presencial se presupuesta aparte, y siempre se puede empezar con un piloto gratuito de cuatro a seis semanas con un equipo. Muchos ayuntamientos, el Consell de Mallorca y algunas federaciones tienen ayudas para este tipo de formación; si hace falta, preparamos un presupuesto formal para que el club pueda presentarlo.</p>
+  <h2>Cuota para el club: las dos aplicaciones</h2>
+  <p>La cuota es de <b>250 € + IVA por temporada</b> (septiembre a junio), equivalente a 25 € al mes, o 225 € + IVA si el club la abona en un solo pago al inicio de la temporada (IVA del 21 %). Es por club, no por equipo, para que todas las categorías puedan trabajar con ella, e incluye las dos aplicaciones, «Els pares també juguen» y «El cuaderno del entrenador», con el espacio propio del club, los carteles con el QR, los mensajes de difusión, la guía, las actualizaciones y el apoyo durante la temporada. El trabajo presencial se presupuesta aparte, y siempre se puede empezar con un piloto gratuito de cuatro a seis semanas con un equipo. Muchos ayuntamientos, el Consell de Mallorca y algunas federaciones tienen ayudas para este tipo de formación; si hace falta, preparamos un presupuesto formal para que el club pueda presentarlo.</p>
   <p><a href="https://aprens-app.aprens.net/assets/pdf/proposta-clubs-aprens-es.pdf" rel="noopener" hreflang="es">Propuesta para clubes (PDF)</a></p>
   <p><b>Si queréis hablarlo:</b> APRENS Psicologia · C/ Mare de Déu de l'Esperança, 70, 2.º · Inca · 636 93 76 61 · info@aprens.es</p>
   <p>Tòfol Villalonga</p>
