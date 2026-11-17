@@ -24,6 +24,14 @@ Les claus dels ítems són a `contingut.js` (`clima`, `dims`, `pss`).
 Si el club té icones pròpies (`"icones": true`), cal un `clubs/<slug>.webmanifest` aquí
 (vegeu `clubs/constancia.webmanifest`) i la seva ruta a `app/_headers`.
 
+## Entrevista
+Equip i entrenador (setmana, objectius, clima, fitxa del CE Constància), assistència, els 6
+ítems ràpids ítem per ítem amb la clau 0-1-2-3 (2 per defecte), on posen l'atenció, senyals i
+incidències, i tancament: 14 passos. Les conductes concretes de la fitxa APRENS ESPORT no són
+un bloc a part: quan un jugador té 0, 1 o 3 en un ítem, s'obren com a botons les conductes
+d'aquell ítem (`dim`, etiquetes `neg`/`pos` a `contingut.js`). Els recomptes (faltes de
+respecte, temps fora) es demanen a «Senyals i notes».
+
 ## Enviament i panel del psicòleg (sense servidor)
 - L'entrenador desa una vegada la «clau del psicòleg» del club (Compartir) i, després de cada
   entrevista, «Envia al psicòleg» xifra les dades amb aquesta clau i les comparteix (WhatsApp,

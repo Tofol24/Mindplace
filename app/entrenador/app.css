@@ -244,6 +244,10 @@ table.calor td{padding:2px}
 .det-jug{border:1.5px solid var(--linia);border-radius:12px;padding:8px 12px;background:var(--card)}
 .det-jug summary{cursor:pointer;min-height:36px;display:flex;align-items:center;gap:6px}
 .det-jug .xips{margin:8px 0}
+.xips-dim{margin:2px 0 10px;align-items:center}
+.xips-dim > .muted{width:100%}
+.xips-dim .chk{font-size:13px;min-height:38px;padding:5px 9px}
+.incid{margin:8px 0;padding:6px 0;border-bottom:1px solid var(--linia)}
 .inf-taula{margin:6px 0 12px;font-size:13.5px}
 .inf-taula caption{caption-side:bottom;text-align:left;font-size:12px;color:var(--suau);padding-top:6px}
 .inf-taula th[scope=row]{white-space:normal;min-width:130px}
