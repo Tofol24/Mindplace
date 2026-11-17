@@ -32,6 +32,22 @@
     Object.keys(o).forEach(function (k) { if (claus && claus.indexOf(k) < 0) return; if (!RID.test(k.toLowerCase())) return; var v = num(o[k], mn, mx); if (v != null) r[k] = v; });
     return r;
   }
+  /* Conductes de la fitxa original que s'han ajuntat: les dades antigues passen a la clau nova. */
+  var MIGRA = { faltesComp: ['faltes', 'suma'], faltesEnt: ['faltes', 'suma'], foraConducta: ['fora', 'suma'], foraDistr: ['fora', 'suma'],
+    corregir: ['indicacions', -1], interromp: ['discuteix', 1], ulls: ['fracas', 1], badalls: ['activacio', 1],
+    recrimina: ['relComp', -1], anima: ['relComp', 1], disgusta: ['interes', 1], actuaErrada: null };
+  function migraC(c) {
+    if (!c || typeof c !== 'object') return c;
+    var o = {};
+    Object.keys(c).forEach(function (k) { if (!(k in MIGRA)) o[k] = c[k]; });
+    Object.keys(c).forEach(function (k) {
+      var m = MIGRA[k], v = Number(c[k]); if (!m || !v || !isFinite(v)) return;
+      if (m[1] === 'suma') { o[m[0]] = (Number(o[m[0]]) || 0) + Math.max(0, v); return; }
+      if (k === 'anima' && v < 0) return;
+      if (o[m[0]] == null) o[m[0]] = m[1];
+    });
+    return o;
+  }
   function neteja(b) {
     var ids = {};
     b.jug = b.jug.filter(function (j) { return j && typeof j.id === 'string' && RID.test(j.id) && !ids[j.id] && (ids[j.id] = true); })
@@ -58,7 +74,7 @@
         Object.keys(e.jug || {}).forEach(function (id) {
           var r = e.jug[id]; if (!ids[id] || !r || typeof r !== 'object') return;
           jug[id] = { d: mapaNum(r.d, -2, 1, dimsIds), o: r.o === 't' || r.o === 'e' ? r.o : '', as: r.as == null ? null : num(r.as, 0, 7),
-            s: (Array.isArray(r.s) ? r.s : []).filter(function (x) { return senIds.indexOf(x) >= 0; }), n: txt(r.n, 400), c: mapaNum(r.c, -2, 20, pssIds) };
+            s: (Array.isArray(r.s) ? r.s : []).filter(function (x) { return senIds.indexOf(x) >= 0; }), n: txt(r.n, 400), c: mapaNum(migraC(r.c), -2, 20, pssIds) };
         });
         o.ent = { n: num(e.n, 0, 7) || 0, partit: !!e.partit, objV: (Array.isArray(e.objV) ? e.objV : []).slice(0, 3).map(function (v) { return num(v, 0, 3); }),
           clima: mapaNum(e.clima, 0, 3, C.clima.map(function (x) { return x.id; })), mi: mapaNum(e.mi, 0, 3, miIds), temps: e.temps == null ? null : num(e.temps, 0, 3),
@@ -209,7 +225,7 @@
       marcats: 'Marcats', blocEquip: 'L\'equip i jo', eAssQ: 'Quantes sessions ha fet cada jugador? Per defecte, totes. Qui no ha vingut a cap no es valora aquesta setmana.', itemDe: 'ítem', itemQ: 'Tots parteixen de 2. Toca només els que aquesta setmana s\'han apartat de la normalitat de l\'equip; amb 0, 1 o 3 podràs marcar què ha passat.', itemSiQ: 'Marca els jugadors en què ho has observat aquesta setmana.', itemNumQ: 'Escriu quantes vegades, només als jugadors en què ha passat.',
       eOrT: 'On posen l\'atenció', eOrQ: 'Si no ho tens clar, deixa-ho en blanc.', pssIniT: 'Fitxa APRENS ESPORT', pssIniQ: 'Ara venen les conductes concretes del programa original, també ítem per ítem i amb la mateixa clau. Si aquesta setmana no tens temps, la pots saltar.', pssComenca: 'Comença la fitxa', pssSalta: 'Salta-la aquesta setmana',
       eSenT: 'Senyals i notes', eSenQ: 'Només si cal: incidències (faltes de respecte, temps fora) o alguna cosa que el psicòleg hauria de saber. Obre el jugador i marca-ho.', absent: 'No ha vingut',
-      socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Fitxa APRENS ESPORT (conductes concretes)', vegades: 'vegades',
+      socPsi: 'Sóc el psicòleg: obre un fitxer', pssT: 'Fitxa APRENS ESPORT: conductes concretes', pssQ: 'Opcional. Marca només el que s\'ha apartat de la normalitat.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Conductes concretes (fitxa APRENS ESPORT)', vegades: 'vegades',
       senseEnt: 'setmanes sense entrevista', taula: 'Veure les dades en taula', mitjana: 'mitjana', avui: 'avui'
     },
     es: {
@@ -282,7 +298,7 @@
       marcats: 'Marcados', blocEquip: 'El equipo y yo', eAssQ: '¿Cuántas sesiones ha hecho cada jugador? Por defecto, todas. Quien no ha venido a ninguna no se valora esta semana.', itemDe: 'ítem', itemQ: 'Todos parten de 2. Toca solo a los que esta semana se han apartado de la normalidad del equipo; con 0, 1 o 3 podrás marcar qué ha pasado.', itemSiQ: 'Marca a los jugadores en los que lo has observado esta semana.', itemNumQ: 'Escribe cuántas veces, solo en los jugadores en los que ha pasado.',
       eOrT: 'Dónde ponen la atención', eOrQ: 'Si no lo tienes claro, déjalo en blanco.', pssIniT: 'Ficha APRENS ESPORT', pssIniQ: 'Ahora vienen las conductas concretas del programa original, también ítem por ítem y con la misma clave. Si esta semana no tienes tiempo, puedes saltarla.', pssComenca: 'Empieza la ficha', pssSalta: 'Sáltala esta semana',
       eSenT: 'Señales y notas', eSenQ: 'Solo si hace falta: incidencias (faltas de respeto, tiempo fuera) o algo que el psicólogo debería saber. Abre el jugador y márcalo.', absent: 'No ha venido',
-      socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Ficha APRENS ESPORT (conductas concretas)', vegades: 'veces',
+      socPsi: 'Soy el psicólogo: abre un archivo', pssT: 'Ficha APRENS ESPORT: conductas concretas', pssQ: 'Opcional. Marca solo lo que se ha apartado de la normalidad.', conductaRep: 'Conducta repetida', conductaPos: 'Conducta positiva repetida', ajPss: 'Conductas concretas (ficha APRENS ESPORT)', vegades: 'veces',
       senseEnt: 'semanas sin entrevista', taula: 'Ver los datos en tabla', mitjana: 'media', avui: 'hoy'
     }
   };
@@ -1030,7 +1046,7 @@
     o += '<fieldset class="card"><legend>' + h(u('ajDims')) + '</legend>' + C.dims.map(function (i) { return '<label class="chk bloc"><input type="checkbox" data-off="dimsOff" value="' + i.id + '"' + (cf.dimsOff[i.id] ? '' : ' checked') + '><span>' + h(tx(i.t)) + ' <small class="muted">' + h(tx(i.d)) + '</small></span></label>'; }).join('') +
       cf.dimsExtra.map(function (x) { return '<div class="fila"><label class="chk bloc creix"><input type="checkbox" data-off="dimsOff" value="' + x.id + '"' + (cf.dimsOff[x.id] ? '' : ' checked') + '><span>' + h(x.t) + '</span></label><button type="button" class="enllac" data-act="treuExtra" data-id="' + x.id + '">' + h(u('esborra')) + '</button></div>'; }).join('') +
       '</fieldset><form class="card" data-form="extra"><label class="camp"><span>' + h(u('ajExtra')) + '</span><input name="t" maxlength="60" placeholder="' + h(u('ajExtraQ')) + '"></label><button type="submit" class="btn sec">' + h(u('afegeix')) + '</button></form>';
-    o += '<fieldset class="card"><legend>' + h(u('ajPss')) + '</legend>' + C.pss.map(function (b) { return '<h4>' + h(tx(b.t)) + '</h4>' + b.items.map(function (i) { return '<label class="chk bloc"><input type="checkbox" data-off="pssOff" value="' + i.id + '"' + (cf.pssOff[i.id] ? '' : ' checked') + '><span>' + h(tx(i.t)) + '</span></label>'; }).join(''); }).join('') + '</fieldset>';
+    o += '<fieldset class="card"><legend>' + h(u('ajPss')) + '</legend>' + C.pss.map(function (b) { return '<h4>' + (ICO[b.id] ? '<span class="amb-ico" style="--c:' + ICOCOL[b.id] + '">' + ico(b.id) + '</span>' : '') + h(tx(b.t)) + '</h4>' + b.items.map(function (i) { return '<label class="chk bloc"><input type="checkbox" data-off="pssOff" value="' + i.id + '"' + (cf.pssOff[i.id] ? '' : ' checked') + '><span>' + h(tx(i.t)) + '</span></label>'; }).join(''); }).join('') + '</fieldset>';
     o += '<fieldset class="card"><legend>' + h(u('ajLl')) + '</legend>' +
       numCamp('fin', u('ajFin'), L.fin, 2, 8) + numCamp('min', u('ajMin'), L.min, 1, 8) + numCamp('ego', u('ajEgo'), L.ego, 1, 4) + '</fieldset>';
     return o;
