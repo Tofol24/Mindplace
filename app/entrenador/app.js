@@ -437,6 +437,48 @@
   function wData(w) { var p = w.split('-W'), y = +p[0], n = +p[1]; var j4 = new Date(y, 0, 4); var m = dilluns(j4); m.setDate(m.getDate() + (n - 1) * 7); return m; }
   function setmanesEntre(a, b) { return Math.round((wData(b) - wData(a)) / (7 * 86400000)); }
 
+
+  /* ================= ICONES =================
+     Dibuixades aquí mateix (SVG en línia): sense imatges externes, funcionen sense connexió.
+     Cada ítem ràpid té icona i color propis; els ítems propis del club fan servir l'estrella. */
+  var ICO = {
+    tt: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.7"/><path d="M14.5 13.5l3 3M17.5 13.5l-3 3"/><path d="M9.6 10.6c2 1.4 3 2.6 4 4.4" stroke-dasharray="2 2.2"/>',
+    fi: '<path d="M20.5 8.6c0 5-8.5 10.9-8.5 10.9S3.5 13.6 3.5 8.6A4.5 4.5 0 0 1 12 6.2a4.5 4.5 0 0 1 8.5 2.4z"/><path d="M6.6 12.2h2.9l1.5-2.4 2 4.8 1.5-2.4h2.9"/>',
+    at: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="0.9" fill="currentColor"/>',
+    er: '<path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4.2V9h-4.8"/><path d="M8.8 12.4l2.2 2.2 4.2-4.6"/>',
+    mo: '<path d="M12 21c4 0 7-2.8 7-6.8 0-3.6-2.6-5.7-4-8.7-.9 2.2-2 3.2-3.3 3.5C11.7 6.6 10.5 4.6 9 3c0 4-4 6.3-4 11.2C5 18.2 8 21 12 21z"/><path d="M12 21c-1.7 0-3-1.3-3-3 0-2 1.6-2.8 2.3-4.5.9 1 3.7 2.1 3.7 4.5 0 1.7-1.3 3-3 3z"/>',
+    fp: '<circle cx="8" cy="8" r="2.7"/><circle cx="16" cy="8" r="2.7"/><path d="M2.8 19.5c0-3 2.3-5.2 5.2-5.2s5.2 2.2 5.2 5.2"/><path d="M10.8 19.5c0-3 2.3-5.2 5.2-5.2s5.2 2.2 5.2 5.2"/>',
+    propi: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+    setm: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    obj: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>',
+    clima: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+    mi: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/>',
+    assist: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15.2l2 2 4-4.2"/>',
+    orient: '<circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/>',
+    senyals: '<path d="M5 21V4"/><path d="M5 4h11.5l-2.2 4 2.2 4H5"/>',
+    tancar: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8 5.7-5.8"/>'
+  };
+  var ICOCOL = { tt: '#2F5E9E', fi: '#3B7224', at: '#7A4FA0', er: '#9C4A2E', mo: '#A0620A', fp: '#1F6E6E', propi: '#5A6470',
+    setm: '#1F2A37', obj: '#1F2A37', clima: '#1F2A37', mi: '#1F2A37', assist: '#1F2A37', orient: '#2F5E9E', senyals: '#9C4A2E', tancar: '#3B7224' };
+  /* àrea dels objectius → icona de l'ítem equivalent */
+  var AREAICO = { tt: 'tt', fi: 'fi', at: 'at', em: 'er', fp: 'fp' };
+  function icoId(id) { return ICO[id] ? id : 'propi'; }
+  function ico(id, cls) {
+    var k = icoId(id);
+    return '<svg class="ico ' + (cls || '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ICO[k] + '</svg>';
+  }
+  /* insígnia rodona amb la icona sobre el color de l'ítem */
+  function insignia(id, mida) { var k = icoId(id); return '<span class="insignia' + (mida ? ' ' + mida : '') + '" style="--c:' + ICOCOL[k] + '">' + ico(k) + '</span>'; }
+  function capPas(id, titolHtml) { return '<div class="cap-pas">' + insignia(id, 'gran') + '<h1 tabindex="-1">' + titolHtml + '</h1></div>'; }
+  /* tira dels ítems ràpids a l'entrevista: on som i salt directe */
+  function tiraItems(actual) {
+    var P = passos();
+    return '<nav class="tira-items" aria-label="' + h(u('e4T')) + '">' + dimsActives(S).map(function (dm) {
+      var i = P.indexOf('d:' + dm.id), fet = i < pasEnt, ara = dm.id === actual;
+      return '<button type="button" class="ti' + (fet ? ' fet' : '') + '" data-act="anarPas" data-i="' + i + '" style="--c:' + ICOCOL[icoId(dm.id)] + '"' + (ara ? ' aria-current="step"' : '') + ' aria-label="' + h(tx(dm.t)) + '">' + ico(dm.id) + '</button>';
+    }).join('') + '</nav>';
+  }
+
   /* ================= RENDER GENERAL ================= */
   var ruta = 'setmana', arg = null, pasEnt = 0, esborrany = null;
   function vés(r, a) { ruta = r; arg = a == null ? null : a; render(); window.scrollTo(0, 0); var m = $('#app'); if (m) m.focus({ preventScroll: true }); }
@@ -553,7 +595,7 @@
     var E = esborrany, a = per(E.area, C.arees);
     return '<span class="kick">' + h(u('setmana')) + ' ' + h(etiquetaW(wActual()).slice(1)) + '</span><h1 tabindex="-1">' + h(u('objT')) + '</h1><p class="lead">' + h(u('objQ')) + '</p>' +
       '<ul class="objs edit">' + E.obj.map(function (x, i) { var aa = per(x.a, C.arees); return '<li><span class="xip" style="--c:' + aa.color + '">' + h(tx(aa.t)) + '</span> ' + h(x.t) + ' <button type="button" class="enllac" data-act="treuObj" data-i="' + i + '" aria-label="' + h(u('esborra') + ': ' + x.t) + '">✕</button></li>'; }).join('') + '</ul>' +
-      '<fieldset class="card"><legend>' + h(u('objArea')) + '</legend><div class="segs">' + C.arees.map(function (x) { return '<button type="button" class="seg" data-act="area" data-id="' + x.id + '" aria-pressed="' + (x.id === E.area) + '" style="--c:' + x.color + '">' + h(tx(x.t)) + '</button>'; }).join('') + '</div>' +
+      '<fieldset class="card"><legend>' + h(u('objArea')) + '</legend><div class="segs">' + C.arees.map(function (x) { return '<button type="button" class="seg" data-act="area" data-id="' + x.id + '" aria-pressed="' + (x.id === E.area) + '" style="--c:' + x.color + '">' + ico(AREAICO[x.id]) + h(tx(x.t)) + '</button>'; }).join('') + '</div>' +
       '<h3>' + h(u('objSug')) + '</h3><div class="sugs">' + a.sug.map(function (s, i) { return '<button type="button" class="sug" data-act="sugObj" data-i="' + i + '">+ ' + h(tx(s)) + '</button>'; }).join('') + '</div>' +
       '<form data-form="objPropi" class="fila"><label class="camp creix"><span>' + h(u('objPropi')) + '</span><input name="t" maxlength="120"></label><button type="submit" class="btn sec">' + h(u('afegeix')) + '</button></form></fieldset>' +
       '<div class="fila"><button type="button" class="btn" data-act="desaObj">' + h(u('desa')) + '</button><button type="button" class="btn sec" data-act="cancelObj">' + h(u('cancel')) + '</button></div>';
@@ -647,26 +689,26 @@
     var bloc = pas === 'pssInici' || pas.slice(0, 2) === 'c:' ? u('pssIniT') : ['setm', 'obj', 'clima', 'mi'].indexOf(pas) >= 0 ? u('blocEquip') : pas === 'tancar' ? u('e5T') : u('e4T');
     o += '<span class="kick">' + h(u('entT')) + ' · ' + h(bloc) + '</span>';
     if (pas === 'setm') {
-      o += '<h1 tabindex="-1">' + h(u('e0T')) + '</h1><div class="card"><fieldset class="camp"><legend>' + h(u('e0Q')) + '</legend><div class="stepper">' +
+      o += capPas('setm', h(u('e0T'))) + '<div class="card"><fieldset class="camp"><legend>' + h(u('e0Q')) + '</legend><div class="stepper">' +
         '<button type="button" class="btn-icona" data-act="sessions" data-d="-1" aria-label="−1">−</button><output aria-live="polite">' + E.n + '</output><button type="button" class="btn-icona" data-act="sessions" data-d="1" aria-label="+1">+</button></div></fieldset>' +
         '<fieldset class="camp"><legend>' + h(u('e0P')) + '</legend><div class="radios">' + radioE('partit', '1', u('si'), E.partit) + radioE('partit', '0', u('no'), !E.partit) + '</div></fieldset><p class="muted">' + h(u('e0N')) + '</p></div>';
     } else if (pas === 'obj') {
-      o += '<h1 tabindex="-1">' + h(u('e1T')) + '</h1><p class="lead">' + h(u('e1Q')) + '</p>';
+      o += capPas('obj', h(u('e1T'))) + '<p class="lead">' + h(u('e1Q')) + '</p>';
       var obj = sm ? sm.obj : [];
       if (!obj.length) o += '<p class="card suau">' + h(u('e1Buit')) + '</p>';
       obj.forEach(function (x, i) { var a = per(x.a, C.arees); o += escala('objV.' + i, '<span class="xip" style="--c:' + a.color + '">' + h(tx(a.t)) + '</span> ' + h(x.t), C.escalaObj, E.objV[i]); });
     } else if (pas === 'clima') {
-      o += '<h1 tabindex="-1">' + h(u('e2T')) + '</h1><p class="lead">' + h(u('e2Q')) + '</p>';
+      o += capPas('clima', h(u('e2T'))) + '<p class="lead">' + h(u('e2Q')) + '</p>';
       climaActius(S).forEach(function (i) { o += escala('clima.' + i.id, h(tx(i.t)), C.escalaFreq, E.clima[i.id]); });
     } else if (pas === 'mi') {
-      o += '<h1 tabindex="-1">' + h(u('e3T')) + '</h1><p class="lead">' + h(u('e3Q')) + '</p>';
+      o += capPas('mi', h(u('e3T'))) + '<p class="lead">' + h(u('e3Q')) + '</p>';
       C.entrenador.forEach(function (f) {
         o += '<h2 class="fase">' + h(tx(f.t)) + '</h2>';
         f.items.forEach(function (i) { if (i.grup) o += '<h3>' + h(tx(i.grup)) + '</h3>'; o += escala('mi.' + i.id, h(tx(i.t)), C.escalaFreq, E.mi[i.id]); });
         if (f.fase === 'durant') o += escala('temps', h(tx(C.tempsJoc.t)), C.tempsJoc.op, E.temps);
       });
     } else if (pas === 'assist') {
-      o += '<h1 tabindex="-1">' + h(u('e4T')) + ': ' + h(u('assist').toLowerCase()) + '</h1><p class="lead">' + h(u('eAssQ')) + '</p><ul class="llista-item">' + js.map(function (j) {
+      o += capPas('assist', h(u('e4T')) + ': ' + h(u('assist').toLowerCase())) + '<p class="lead">' + h(u('eAssQ')) + '</p><ul class="llista-item">' + js.map(function (j) {
         var r = regJ(E, j), as = r.as == null ? E.n : r.as;
         return '<li class="fila-item' + (as === 0 && E.n ? ' absent' : '') + '"><span class="nom">' + h(nomJ(j)) + '</span><div class="stepper petit"><button type="button" class="btn-icona" data-act="assist" data-id="' + j.id + '" data-d="-1" aria-label="' + h(nomJ(j)) + ' −1">−</button><output>' + as + '/' + E.n + '</output><button type="button" class="btn-icona" data-act="assist" data-id="' + j.id + '" data-d="1" aria-label="' + h(nomJ(j)) + ' +1">+</button></div></li>';
       }).join('') + '</ul>';
@@ -674,8 +716,9 @@
       var it = itemDe(pas), dims = dimsActives(S), pssA = pssActius(S);
       var pos = it.f === 'd' ? dims.map(function (x) { return x.id; }).indexOf(it.id) + 1 : pssA.map(function (x) { return x.id; }).indexOf(it.id) + 1;
       var tot = it.f === 'd' ? dims.length : pssA.length;
+      if (it.f === 'd') o += tiraItems(it.id);
       o += '<p class="item-de">' + (it.f === 'c' ? h(tx(it.bloc.t)) + ' · ' : '') + h(u('itemDe')) + ' ' + pos + ' / ' + tot + '</p>';
-      o += '<h1 tabindex="-1">' + h(tx(it.t)) + '</h1>' + (tx(it.d) ? '<p class="lead">' + h(tx(it.d)) + '</p>' : '');
+      o += capPas(it.f === 'd' ? it.id : 'propi', h(tx(it.t))) + (tx(it.d) ? '<p class="lead">' + h(tx(it.d)) + '</p>' : '');
       if (it.tipus === 'esc') {
         o += '<p class="muted">' + h(u('itemQ')) + '</p><p class="clau-linia">' + C.escalaJug.map(function (x) { return '<span class="num-esc v' + (x.v + 2) + '">' + x.k + '</span> ' + h(tx(x.c)); }).join(' · ') + '</p>';
         o += '<div class="compt" id="compt" aria-live="polite">' + comptHtml(pas) + '</div>';
@@ -693,7 +736,7 @@
         return '<li><label class="fila-item"><span class="nom">' + h(nomJ(j)) + '</span><input class="num-petit" type="number" min="0" max="20" inputmode="numeric" data-jc="' + j.id + '" data-it="' + it.id + '" value="' + (v || 0) + '"></label></li>';
       }).join('') + '</ul>';
     } else if (pas === 'orient') {
-      o += '<h1 tabindex="-1">' + h(u('eOrT')) + '</h1><p class="lead">' + h(tx(C.orient.q)) + ' ' + h(u('eOrQ')) + '</p><ul class="llista-item">' + js.map(function (j) {
+      o += capPas('orient', h(u('eOrT'))) + '<p class="lead">' + h(tx(C.orient.q)) + ' ' + h(u('eOrQ')) + '</p><ul class="llista-item">' + js.map(function (j) {
         var r = regJ(E, j);
         if (absent(E, j)) return '<li class="fila-item absent"><span class="nom">' + h(nomJ(j)) + '</span><span class="muted">' + h(u('absent')) + '</span></li>';
         return '<li><fieldset class="fs-item"><legend class="sr">' + h(nomJ(j)) + '</legend><div class="fila-item"><span class="nom" aria-hidden="true">' + h(nomJ(j)) + '</span><div class="esc-or">' + C.orient.op.map(function (op) {
@@ -703,7 +746,7 @@
     } else if (pas === 'pssInici') {
       o += '<h1 tabindex="-1">' + h(u('pssIniT')) + '</h1><div class="card"><p>' + h(u('pssIniQ')) + '</p><div class="fila"><button type="button" class="btn" data-act="pasSeg">' + h(u('pssComenca')) + '</button><button type="button" class="btn sec" data-act="saltaPss">' + h(u('pssSalta')) + '</button></div></div>';
     } else if (pas === 'senyals') {
-      o += '<h1 tabindex="-1">' + h(u('eSenT')) + '</h1><p class="lead">' + h(u('eSenQ')) + '</p><ul class="llista-jug">' + js.map(function (j) {
+      o += capPas('senyals', h(u('eSenT'))) + '<p class="lead">' + h(u('eSenQ')) + '</p><ul class="llista-jug">' + js.map(function (j) {
         var r = regJ(E, j), nums = pssActius(S).filter(function (i) { return i.tipus === 'num'; }), cc = r.c || {};
         var nInc = nums.filter(function (i) { return cc[i.id]; }).length, te = r.s.length || r.n || nInc;
         if (absent(E, j)) return '<li class="fila-item absent"><span class="nom">' + h(nomJ(j)) + '</span><span class="muted">' + h(u('absent')) + '</span></li>';
@@ -713,7 +756,7 @@
           '<label class="camp"><span>' + h(u('notaJ')) + ' <small class="muted">' + h(u('notaPriv')) + '</small></span><textarea data-jn="' + j.id + '" rows="2" maxlength="400">' + h(r.n) + '</textarea></label></details></li>';
       }).join('') + '</ul>';
     } else if (pas === 'tancar') {
-      o += '<h1 tabindex="-1">' + h(u('e5T')) + '</h1><div class="card"><label class="camp"><span>' + h(u('e5a')) + '</span><textarea data-ent="r1" rows="3" maxlength="600">' + h(E.r1) + '</textarea></label>' +
+      o += capPas('tancar', h(u('e5T'))) + '<div class="card"><label class="camp"><span>' + h(u('e5a')) + '</span><textarea data-ent="r1" rows="3" maxlength="600">' + h(E.r1) + '</textarea></label>' +
         '<label class="camp"><span>' + h(u('e5b')) + '</span><textarea data-ent="r2" rows="3" maxlength="600">' + h(E.r2) + '</textarea></label></div>';
     }
     o += '<div class="fila peu-ent">' + (pasEnt > 0 ? '<button type="button" class="btn sec" data-act="pasAnt">' + h(u('enrere')) + '</button>' : '<button type="button" class="btn sec" data-nav="setmana">' + h(u('cancel')) + '</button>') +
@@ -802,7 +845,7 @@
     else {
       o += '<div class="card"><div class="taula-wrap" tabindex="0"><table class="calor"><thead><tr><th scope="col"><span class="sr">' + h(u('setmana')) + '</span></th>' + ws.map(function (w) { return '<th scope="col">' + etiquetaW(w) + '</th>'; }).join('') + '</tr></thead><tbody>';
       dms.forEach(function (dm) {
-        o += '<tr><th scope="row">' + h(tx(dm.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; var vv = r ? (r.d || {})[dm.id] || 0 : null; return '<td>' + (r ? cel(vv, String(vv + 2)) : cel(null)) + '</td>'; }).join('') + '</tr>';
+        o += '<tr><th scope="row"><span class="amb-ico" style="--c:' + ICOCOL[icoId(dm.id)] + '">' + ico(dm.id) + '</span>' + h(tx(dm.t)) + '</th>' + ws.map(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; var vv = r ? (r.d || {})[dm.id] || 0 : null; return '<td>' + (r ? cel(vv, String(vv + 2)) : cel(null)) + '</td>'; }).join('') + '</tr>';
       });
       pssActius(d).forEach(function (it) {
         var algun = ws.some(function (w) { var r = d.setm[w].ent.jug && d.setm[w].ent.jug[j.id]; return r && r.c && r.c[it.id]; });
@@ -855,7 +898,7 @@
   function taulaJug(d, j) {
     var ws = wsInf(d);
     return '<table class="inf-taula" id="taula-' + j.id + '"><caption>' + h(u('clauQual')) + '</caption><thead><tr><th scope="col">' + h(u('colItem')) + '</th><th scope="col">' + h(j.nom) + '</th><th scope="col">' + h(u('colEquip')) + '</th></tr></thead><tbody>' +
-      itemsInf(d).map(function (it) { return '<tr><th scope="row">' + h(tx(it.t)) + '</th>' + cQual(mitjJug(d, j, ws, it)) + cQual(mitjEq(d, ws, it)) + '</tr>'; }).join('') + '</tbody></table>';
+      itemsInf(d).map(function (it) { return '<tr><th scope="row">' + (it.f === 'd' ? '<span class="amb-ico" style="--c:' + ICOCOL[icoId(it.id)] + '">' + ico(it.id) + '</span>' : '') + h(tx(it.t)) + '</th>' + cQual(mitjJug(d, j, ws, it)) + cQual(mitjEq(d, ws, it)) + '</tr>'; }).join('') + '</tbody></table>';
   }
   function impJug(text, taulaHtml) { return '<section class="imp-pag"><div class="imp-txt">' + h(text) + '</div>' + (taulaHtml || '') + '</section>'; }
 
@@ -868,9 +911,9 @@
     var mitjana = function (f) { var v = ws.map(function (w) { return f(d.setm[w].ent); }).filter(function (x) { return x != null; }); return v.length ? Math.round(v.reduce(function (a, b) { return a + b; }, 0) / v.length) : null; };
     var g = '<h1 tabindex="-1">' + h(u('grupT')) + '</h1><p><strong>' + h(d.equip.nom) + '</strong>' + (d.equip.club ? ' · ' + h(d.equip.club) : '') + (d.equip.temporada ? ' · ' + h(d.equip.temporada) : '') + '<br>' + h(u('periode')) + ': ' + h(periodeTxt(ws)) + '</p>';
     g += '<h2>' + h(u('grupEquipT')) + '</h2><div class="taula-wrap" tabindex="0"><table class="inf-taula"><caption>' + h(u('clauQual')) + '</caption><thead><tr><th scope="col">' + h(u('colItem')) + '</th><th scope="col">' + h(u('colEquip')) + '</th></tr></thead><tbody>' +
-      its.map(function (it) { return '<tr><th scope="row">' + h(tx(it.t)) + '</th>' + cQual(mitjEq(d, ws, it), true) + '</tr>'; }).join('') + '</tbody></table></div>';
+      its.map(function (it) { return '<tr><th scope="row">' + (it.f === 'd' ? '<span class="amb-ico" style="--c:' + ICOCOL[icoId(it.id)] + '">' + ico(it.id) + '</span>' : '') + h(tx(it.t)) + '</th>' + cQual(mitjEq(d, ws, it), true) + '</tr>'; }).join('') + '</tbody></table></div>';
     g += '<ul class="punts"><li>' + h(u('clima')) + ': ' + (mitjana(function (e) { return climaIdx(e, d); }) == null ? '—' : mitjana(function (e) { return climaIdx(e, d); }) + '/100') + '</li><li>' + h(u('estil')) + ': ' + (mitjana(estilIdx) == null ? '—' : mitjana(estilIdx) + '/100') + '</li><li>' + h(u('tasca')) + ': ' + (mitjana(tascaPct) == null ? '—' : mitjana(tascaPct) + ' %') + '</li></ul>';
-    g += '<h2>' + h(u('grupJugT')) + '</h2><div class="taula-wrap" tabindex="0"><table class="inf-taula matriu"><thead><tr><th scope="col">' + h(u('tendJug')) + '</th>' + dms.map(function (dm) { return '<th scope="col">' + h(tx(dm.t)) + '</th>'; }).join('') + '<th scope="col">' + h(u('assist')) + '</th></tr></thead><tbody>' +
+    g += '<h2>' + h(u('grupJugT')) + '</h2><div class="taula-wrap" tabindex="0"><table class="inf-taula matriu"><thead><tr><th scope="col">' + h(u('tendJug')) + '</th>' + dms.map(function (dm) { return '<th scope="col"><span class="amb-ico col" style="--c:' + ICOCOL[icoId(dm.id)] + '">' + ico(dm.id) + '</span>' + h(tx(dm.t)) + '</th>'; }).join('') + '<th scope="col">' + h(u('assist')) + '</th></tr></thead><tbody>' +
       js.map(function (j) {
         var as = 0, ses = 0; ws.forEach(function (w) { var e = d.setm[w].ent, r = e.jug && e.jug[j.id]; if (!r) return; ses += e.n || 0; as += r.as == null ? (e.n || 0) : r.as; });
         return '<tr><th scope="row">' + h(nomJ(j)) + '</th>' + dms.map(function (dm) { return cQual(mitjJug(d, j, ws, { id: dm.id, f: 'd' })); }).join('') + '<td>' + (ses ? Math.round(as / ses * 100) + ' %' : '—') + '</td></tr>';
@@ -1294,6 +1337,7 @@
       case 'pasAnt': pasEnt = Math.max(0, pasEnt - 1); arg = null; render(); window.scrollTo(0, 0); break;
       case 'pasSeg': pasEnt = Math.min(passos().length - 1, pasEnt + 1); arg = null; render(); window.scrollTo(0, 0); var hh = $('h1'); if (hh) hh.focus(); break;
       case 'sessions': esborrany.ent.n = Math.max(0, Math.min(7, esborrany.ent.n + (+b.dataset.d))); render(); break;
+      case 'anarPas': var ip = +b.dataset.i; if (ip >= 0) { pasEnt = ip; arg = null; render(); window.scrollTo(0, 0); var h1 = $('h1'); if (h1) h1.focus(); } break;
       case 'saltaPss': esborrany.sensePss = true; pasEnt = passos().indexOf('senyals'); arg = null; render(); window.scrollTo(0, 0); break;
       case 'obreJug': arg = arg === b.dataset.id ? null : b.dataset.id; render(); var f = $('[data-act="obreJug"][data-id="' + b.dataset.id + '"]'); if (f) { f.focus(); f.scrollIntoView({ block: 'start' }); } break;
       case 'assist':
