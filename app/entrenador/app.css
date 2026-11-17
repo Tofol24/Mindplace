@@ -219,6 +219,31 @@ table.calor td{padding:2px}
 .toast.on{opacity:1}
 
 .imp-text{display:none}
+/* entrevista ítem per ítem */
+.item-de{font-size:12.5px;color:var(--suau);margin:6px 0 0;text-transform:uppercase;letter-spacing:.05em}
+.clau-linia{font-size:12.5px;line-height:2;color:var(--suau)}
+.compt{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:5;background:var(--fons);padding:6px 0;font-weight:700;font-size:14px}
+.avis-massa{margin:4px 0 0;font-weight:400;font-size:13px;color:var(--terra)}
+.llista-item{list-style:none;padding:0;margin:8px 0}
+.llista-item > li{margin:0}
+.fila-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;border-bottom:1px solid var(--linia);padding:8px 2px;margin:0;min-width:0;width:100%}
+.fs-item{border:0;padding:0;margin:0;min-width:0}
+.fila-item .nom{font-weight:600;font-size:15px;min-width:0;overflow-wrap:anywhere}
+.fila-item .esc4{flex:0 0 auto;width:min(212px,56%)}
+.fila-item.absent .nom{color:var(--suau);font-weight:400}
+.stepper.petit{gap:8px}
+.stepper.petit .btn-icona{width:40px;height:40px;font-size:19px}
+.stepper.petit output{font-size:15px;min-width:40px}
+.num-petit{width:78px;flex:0 0 auto}
+.esc-or{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.op-or{position:relative;cursor:pointer}
+.op-or input{position:absolute;opacity:0;width:1px;height:1px}
+.op-or span{display:inline-flex;align-items:center;min-height:40px;padding:4px 10px;border:1.5px solid var(--linia2);border-radius:10px;font-size:13px;background:var(--card)}
+.op-or input:checked + span{background:var(--blau);border-color:var(--blau);color:#fff;font-weight:700}
+.op-or input:focus-visible + span{outline:3px solid var(--blau);outline-offset:2px}
+.det-jug{border:1.5px solid var(--linia);border-radius:12px;padding:8px 12px;background:var(--card)}
+.det-jug summary{cursor:pointer;min-height:36px;display:flex;align-items:center;gap:6px}
+.det-jug .xips{margin:8px 0}
 .inf-taula{margin:6px 0 12px;font-size:13.5px}
 .inf-taula caption{caption-side:bottom;text-align:left;font-size:12px;color:var(--suau);padding-top:6px}
 .inf-taula th[scope=row]{white-space:normal;min-width:130px}
