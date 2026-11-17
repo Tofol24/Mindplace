@@ -30,7 +30,8 @@ Equip i entrenador (setmana, objectius, clima, fitxa del CE Constància), assist
 incidències, i tancament: 14 passos. Les conductes concretes de la fitxa APRENS ESPORT no són
 un bloc a part: quan un jugador té 0, 1 o 3 en un ítem, s'obren com a botons les conductes
 d'aquell ítem (`dim`, etiquetes `neg`/`pos` a `contingut.js`). Els recomptes (faltes de
-respecte, temps fora) es demanen a «Senyals i notes».
+respecte, temps fora) es demanen a «Senyals i notes». La fitxa original tenia 29 conductes;
+n'hi queden 19 sense repeticions, i les claus antigues es converteixen soles (`MIGRA`).
 
 ## Enviament i panel del psicòleg (sense servidor)
 - L'entrenador desa una vegada la «clau del psicòleg» del club (Compartir) i, després de cada

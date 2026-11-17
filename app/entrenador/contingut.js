@@ -144,51 +144,46 @@ window.QE = {
     { id: "cansament", t: { ca: "Cansament o son poc habituals", es: "Cansancio o sueño poco habituales" } }
   ],
 
-  /* ---------- FITXA APRENS ESPORT (programa de seguiment setmanal original, 2015-2017) ----------
-     A l'entrevista ja no és un bloc a part: quan un jugador té 0, 1 o 3 en un ítem ràpid,
-     s'obren com a botons les conductes concretes d'aquell ítem (camp «dim»). neg/pos són
-     les etiquetes del botó segons el sentit; «dup» no es mostra perquè repeteix l'ítem ràpid.
-     Els recomptes (num) es demanen a la pantalla de senyals i notes.
-     Conductes concretes per excepció. Tipus: esc (− = +, per defecte «normalitat»),
-     si (es marca si s'ha observat), num (recompte). sig: +1 conducta adaptativa, −1 a revisar.
-     El bloc «Metodologia» (nivell tàctic, tècnic i físic) ja el recullen les dimensions ràpides. */
+  /* ---------- CONDUCTES CONCRETES (de la fitxa APRENS ESPORT, 2015-2017, reduïda) ----------
+     La fitxa original tenia 29 ítems; aquí n'hi ha 19, sense repeticions, agrupats per l'ítem
+     ràpid al qual pertanyen (camp «dim»). A l'entrevista, quan un jugador té 0, 1 o 3 en un
+     ítem, s'obren com a botons les conductes d'aquell ítem: «neg» amb 0 o 1, «pos» amb 3.
+     Tipus: esc (té sentit negatiu i positiu), si (només un sentit, segons «sig»), num (recompte,
+     a la pantalla de senyals i notes). Les claus antigues es converteixen a aquestes (vegeu
+     MIGRA a app.js), de manera que les dades ja desades continuen valent. */
   pss: [
-    { id: "comp", t: { ca: "Competició", es: "Competición" }, items: [
-      { id: "sacrifici", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Poc sacrifici per l'equip", es: "Poco sacrificio por el equipo" }, pos: { ca: "Sacrifici per l'equip", es: "Sacrificio por el equipo" }, t: { ca: "Sacrifici per l'equip", es: "Sacrificio por el equipo" } },
-      { id: "indicacions", tipus: "esc", sig: 1, dim: "at", neg: { ca: "No segueix les indicacions", es: "No sigue las indicaciones" }, pos: { ca: "Segueix les indicacions", es: "Sigue las indicaciones" }, t: { ca: "Segueix les indicacions", es: "Sigue las indicaciones" } },
-      { id: "anima", tipus: "esc", sig: 1, dim: "fp", pos: { ca: "Anima els companys", es: "Anima a los compañeros" }, t: { ca: "Anima els companys", es: "Anima a los compañeros" } },
-      { id: "eficacia", tipus: "esc", sig: 1, dim: "tt", neg: { ca: "Poca eficàcia", es: "Poca eficacia" }, pos: { ca: "Eficàcia, rendiment", es: "Eficacia, rendimiento" }, t: { ca: "Rendiment (eficàcia)", es: "Rendimiento (eficacia)" } },
-      { id: "rivals", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Mala relació amb rivals o àrbitre", es: "Mala relación con rivales o árbitro" }, pos: { ca: "Respecte a rivals i àrbitre", es: "Respeto a rivales y árbitro" }, t: { ca: "Relació amb adversaris i àrbitre", es: "Relación con adversarios y árbitro" } },
-      { id: "faltesComp", tipus: "num", sig: -1, dim: "fp", t: { ca: "Faltes de respecte al partit (insults, agressions)", es: "Faltas de respeto en el partido (insultos, agresiones)" } }
+    { id: "tt", t: { ca: "Tècnic-tàctic", es: "Técnico-táctico" }, items: [
+      { id: "eficacia", tipus: "esc", sig: 1, dim: "tt", neg: { ca: "Poca eficàcia", es: "Poca eficacia" }, pos: { ca: "Eficàcia, rendiment", es: "Eficacia, rendimiento" }, t: { ca: "Rendiment (eficàcia)", es: "Rendimiento (eficacia)" } }
     ] },
-    { id: "ent", t: { ca: "Entrenament", es: "Entrenamiento" }, items: [
-      { id: "puntualitat", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Arriba tard", es: "Llega tarde" }, t: { ca: "Puntualitat", es: "Puntualidad" } },
-      { id: "interes", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Poc interès", es: "Poco interés" }, pos: { ca: "Molt d'interès", es: "Mucho interés" }, t: { ca: "Grau d'interès", es: "Grado de interés" } },
-      { id: "relComp", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Mala relació amb els companys", es: "Mala relación con los compañeros" }, pos: { ca: "Bona relació amb els companys", es: "Buena relación con los compañeros" }, t: { ca: "Relació amb els companys", es: "Relación con los compañeros" } },
-      { id: "material", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "No cuida el material", es: "No cuida el material" }, pos: { ca: "Cuida el material", es: "Cuida el material" }, t: { ca: "Cura del material esportiu", es: "Cuidado del material deportivo" } },
-      { id: "higiene", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Descuida la higiene i la imatge", es: "Descuida la higiene y la imagen" }, t: { ca: "Cura de la higiene i la imatge", es: "Cuidado de la higiene y la imagen" } },
-      { id: "foraConducta", tipus: "num", sig: -1, dim: "fp", t: { ca: "Temps fora per conducta negativa", es: "Tiempo fuera por conducta negativa" } },
-      { id: "faltesEnt", tipus: "num", sig: -1, dim: "fp", t: { ca: "Faltes de respecte a l'entrenament (insults, agressions)", es: "Faltas de respeto en el entrenamiento (insultos, agresiones)" } }
+    { id: "fi", t: { ca: "Físic", es: "Físico" }, items: [
+      { id: "activacio", tipus: "si", sig: -1, dim: "fi", t: { ca: "Baixa activació (apagat, badalls)", es: "Baja activación (apagado, bostezos)" } }
     ] },
-    { id: "atc", t: { ca: "Atenció i concentració", es: "Atención y concentración" }, items: [
-      { id: "avisa", tipus: "si", sig: 1, dim: "at", t: { ca: "Corregeix o avisa un company durant el joc", es: "Corrige o avisa a un compañero durante el juego" } },
-      { id: "disgusta", tipus: "si", sig: 1, dim: "mo", t: { ca: "Es disgusta perquè s'acaba el partit o l'entrenament", es: "Se disgusta porque se acaba el partido o el entrenamiento" } },
-      { id: "interromp", tipus: "si", sig: -1, dim: "at", t: { ca: "Interromp l'entrenador quan parla", es: "Interrumpe al entrenador cuando habla" } },
+    { id: "at", t: { ca: "Atenció a la tasca", es: "Atención a la tarea" }, items: [
+      { id: "indicacions", tipus: "esc", sig: 1, dim: "at", neg: { ca: "No segueix les indicacions, s'ha de corregir sovint", es: "No sigue las indicaciones, hay que corregirle a menudo" }, pos: { ca: "Segueix les indicacions", es: "Sigue las indicaciones" }, t: { ca: "Segueix les indicacions", es: "Sigue las indicaciones" } },
       { id: "distreu", tipus: "si", sig: -1, dim: "at", t: { ca: "Es distreu amb facilitat", es: "Se distrae con facilidad" } },
-      { id: "corregir", tipus: "si", sig: -1, dim: "at", t: { ca: "S'ha de corregir contínuament", es: "Hay que corregirle continuamente" } },
       { id: "public", tipus: "si", sig: -1, dim: "at", t: { ca: "Baixa el rendiment pels crits del públic", es: "Baja el rendimiento por los gritos del público" } },
-      { id: "activacio", tipus: "si", sig: -1, dim: "fi", t: { ca: "Baixa el rendiment per manca d'activació", es: "Baja el rendimiento por falta de activación" } },
-      { id: "foraDistr", tipus: "num", sig: -1, dim: "at", t: { ca: "Temps fora per distracció", es: "Tiempo fuera por distracción" } }
+      { id: "avisa", tipus: "si", sig: 1, dim: "at", t: { ca: "Corregeix o avisa un company durant el joc", es: "Corrige o avisa a un compañero durante el juego" } }
     ] },
-    { id: "eme", t: { ca: "Maneig emocional", es: "Manejo emocional" }, items: [
+    { id: "er", t: { ca: "Davant l'errada", es: "Ante el error" }, items: [
+      { id: "discuteix", tipus: "si", sig: -1, dim: "er", t: { ca: "Interromp o discuteix les ordres", es: "Interrumpe o discute las órdenes" } },
+      { id: "fracas", tipus: "si", sig: -1, dim: "er", t: { ca: "Quan el corregeixo, ho viu com un fracàs o abaixa la mirada", es: "Cuando le corrijo, lo vive como un fracaso o baja la mirada" } },
+      { id: "culpa", tipus: "si", sig: -1, dim: "er", t: { ca: "Quan el corregeixo, dona la culpa als altres", es: "Cuando le corrijo, echa la culpa a los demás" } }
+    ] },
+    { id: "mo", t: { ca: "Ganes i gaudi", es: "Ganas y disfrute" }, items: [
+      { id: "interes", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Poc interès", es: "Poco interés" }, pos: { ca: "Molt d'interès, no vol que s'acabi", es: "Mucho interés, no quiere que se acabe" }, t: { ca: "Grau d'interès", es: "Grado de interés" } },
+      { id: "puntualitat", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Arriba tard", es: "Llega tarde" }, t: { ca: "Puntualitat", es: "Puntualidad" } },
+      { id: "higiene", tipus: "esc", sig: 1, dim: "mo", neg: { ca: "Descuida la higiene i la imatge", es: "Descuida la higiene y la imagen" }, t: { ca: "Cura de la higiene i la imatge", es: "Cuidado de la higiene y la imagen" } }
+    ] },
+    { id: "fp", t: { ca: "Fair-play i equip", es: "Fair-play y equipo" }, items: [
+      { id: "relComp", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Recrimina o té conflictes amb els companys", es: "Recrimina o tiene conflictos con los compañeros" }, pos: { ca: "Anima i ajuda els companys", es: "Anima y ayuda a los compañeros" }, t: { ca: "Relació amb els companys", es: "Relación con los compañeros" } },
+      { id: "sacrifici", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Poc sacrifici per l'equip", es: "Poco sacrificio por el equipo" }, pos: { ca: "Sacrifici per l'equip", es: "Sacrificio por el equipo" }, t: { ca: "Sacrifici per l'equip", es: "Sacrificio por el equipo" } },
       { id: "influeix", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Influeix negativament en l'equip", es: "Influye negativamente en el equipo" }, pos: { ca: "Influeix positivament en l'equip", es: "Influye positivamente en el equipo" }, t: { ca: "Com influeix dins l'equip", es: "Cómo influye dentro del equipo" } },
-      { id: "actuaErrada", tipus: "esc", sig: 1, dim: "er", dup: true, t: { ca: "Com actua davant l'errada", es: "Cómo actúa ante el error" } },
-      { id: "recrimina", tipus: "si", sig: -1, dim: "fp", t: { ca: "Recrimina els companys", es: "Recrimina a los compañeros" } },
-      { id: "discuteix", tipus: "si", sig: -1, dim: "er", t: { ca: "Discuteix sovint les ordres", es: "Discute a menudo las órdenes" } },
-      { id: "fracas", tipus: "si", sig: -1, dim: "er", t: { ca: "Quan el corregeixo, ho viu com un fracàs", es: "Cuando le corrijo, lo vive como un fracaso" } },
-      { id: "culpa", tipus: "si", sig: -1, dim: "er", t: { ca: "Quan el corregeixo, dona la culpa als altres", es: "Cuando le corrijo, echa la culpa a los demás" } },
-      { id: "ulls", tipus: "si", sig: -1, dim: "er", t: { ca: "Quan hi parl, li costa mirar-me als ulls", es: "Cuando le hablo, le cuesta mirarme a los ojos" } },
-      { id: "badalls", tipus: "si", sig: -1, dim: "fi", t: { ca: "Abans del partit fa badalls sovint", es: "Antes del partido bosteza a menudo" } }
+      { id: "rivals", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "Mala relació amb rivals o àrbitre", es: "Mala relación con rivales o árbitro" }, pos: { ca: "Respecte a rivals i àrbitre", es: "Respeto a rivales y árbitro" }, t: { ca: "Relació amb adversaris i àrbitre", es: "Relación con adversarios y árbitro" } },
+      { id: "material", tipus: "esc", sig: 1, dim: "fp", neg: { ca: "No cuida el material", es: "No cuida el material" }, pos: { ca: "Cuida el material", es: "Cuida el material" }, t: { ca: "Cura del material esportiu", es: "Cuidado del material deportivo" } }
+    ] },
+    { id: "inc", t: { ca: "Incidències", es: "Incidencias" }, items: [
+      { id: "faltes", tipus: "num", sig: -1, dim: "fp", t: { ca: "Faltes de respecte (insults, agressions)", es: "Faltas de respeto (insultos, agresiones)" } },
+      { id: "fora", tipus: "num", sig: -1, dim: "fp", t: { ca: "Temps fora (per conducta o per distracció)", es: "Tiempo fuera (por conducta o por distracción)" } }
     ] }
   ],
   escalaPss: null, /* la mateixa clau que escalaJug (vegeu app.js) */
