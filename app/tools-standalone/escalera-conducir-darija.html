@@ -443,8 +443,15 @@ input[type=range]{width:100%}
     $$(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.id === "t-" + id ? "true" : "false"); });
     $$("[role=tabpanel]").forEach(function (v) { v.hidden = v.id !== "v-" + id; });
     window.scrollTo(0, 0);
+    try { history.replaceState(null, "", "#" + id); } catch (e) {}
     if (id === "registro") { renderLista(); prepMsg(); }
   }
+  var SECCIONES = ["inicio", "escalera", "ella", "dentro", "registro"];
+  function desdeEnlace() {
+    var h = (location.hash || "").replace("#", "");
+    if (SECCIONES.indexOf(h) > -1) abrir(h);
+  }
+  window.addEventListener("hashchange", desdeEnlace);
   $$(".tab").forEach(function (t) {
     t.addEventListener("click", function () { abrir(t.id.slice(2)); });
   });
@@ -563,6 +570,7 @@ input[type=range]{width:100%}
   });
 
   renderLadder();
+  desdeEnlace();
 })();
 </script>
 </body>
