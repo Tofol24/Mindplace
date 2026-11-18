@@ -204,7 +204,11 @@ window.APRENS_TOOLS = [
 
   { id:"escalera_conducir_darija", emoji:"🚗", nombre:"السّلّوم · Conducir juntos (dariya marroquí)",
     desc:"La misma escalera de exposición a la conducción en familia, escrita en dariya marroquí (letra árabe) para quien no lee con soltura el árabe estándar: guía de la pareja como coterapeuta, escalera por niveles empezando dentro del pueblo, herramientas AIS y registro con envío al psicólogo en castellano. Comparte el registro con la versión en árabe estándar.",
-    migrada:true, iframe:"tools-standalone/escalera-conducir-darija.html" }
+    migrada:true, iframe:"tools-standalone/escalera-conducir-darija.html" },
+
+  { id:"escalera_conducir_es", emoji:"🚗", nombre:"La escalera · Conducir juntos (castellano)",
+    desc:"Traducción al castellano de la guía de exposición a la conducción en árabe y dariya: escalera por niveles, guía de la esposa como coterapeuta, herramientas de dentro y registro. Sirve al psicólogo para ver exactamente lo que tienen el paciente y su pareja.",
+    migrada:true, iframe:"tools-standalone/escalera-conducir-es.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
