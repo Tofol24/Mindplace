@@ -228,6 +228,27 @@ input[type=range]{accent-color:var(--az);}
 button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dchip:focus-visible,.pbtn:focus-visible,.cntbtn:focus-visible,.doahora:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--au);outline-offset:2px;}
 .sopt,.dchip{min-height:40px;display:inline-flex;align-items:center;}
 .idxb{min-height:58px;}
+/* ── psicoeducación: cómo usar · cuándo · por qué ── */
+.guia h2{font-family:var(--serif);font-size:20px;color:var(--az);margin-bottom:6px;}
+.guia p{font-size:13.5px;color:#4a463f;line-height:1.6;margin-bottom:10px;}
+.dia-tipo{list-style:none;margin:6px 0 12px;}
+.dia-tipo li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--linea);font-size:13.5px;line-height:1.5;color:#3d3a35;}
+.dia-tipo li:first-child{border-top:0;}
+.dia-tipo .dt-ico{font-size:20px;line-height:1.2;flex-shrink:0;width:26px;text-align:center;}
+.desde-rec{background:#f3ece0;border-left:4px solid var(--au);border-radius:0 10px 10px 0;padding:10px 13px;font-size:13px;line-height:1.55;color:#5a4a33;}
+.cuando{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;color:#3d3a35;background:#fbf7ef;border:1px solid var(--linea);border-radius:10px;padding:8px 11px;margin-bottom:10px;}
+details.porque{margin:10px 0 4px;}
+details.porque summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--az);min-height:36px;display:flex;align-items:center;}
+details.porque p,details.porque ol{font-size:13px;color:#4a463f;line-height:1.6;margin-top:6px;}
+details.porque ol{margin-left:20px;}
+.idxgrp{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gr);margin:12px 0 6px;}
+.idxgrp:first-of-type{margin-top:4px;}
+/* modo enfocado: el enlace #secN muestra solo ese ejercicio */
+.focobar{display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--linea);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--gr);}
+.focobar button{border:1.5px solid var(--az);background:transparent;color:var(--az);border-radius:20px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;min-height:40px;font-family:inherit;}
+body.foco .phero{display:none;}
+body.foco .focobar{display:flex;}
+body.foco .wrap > *:not(.focobar):not(.enfoco){display:none!important;}
 @media (prefers-reduced-motion:reduce){
   .rcirc,.rcirc *{animation:none!important;transition:none!important;}
   html{scroll-behavior:auto!important;}
@@ -287,6 +308,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
   </div>
 </div>
 <div class="wrap">
+  <div class="focobar" id="focobar"><span id="focoTxt">Estás viendo un solo ejercicio.</span><button type="button" onclick="salirFoco()">Ver toda la herramienta</button></div>
   <a class="manada-link" href="../index.html#/tool/la_manada" target="_top" style="display:inline-flex;align-items:center;gap:7px;margin:2px 0 14px;padding:8px 14px;border-radius:999px;background:#f3ece0;border:1px solid #e2d6c2;color:#6b5a44;text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.3">🐾 &iquest;Por qu&eacute; respiras? &middot; La manada <span style="opacity:.55">&rarr;</span></a>
   <div id="banPWA" class="bpwa hidden" onclick="installPWA()">
     <span style="font-size:21px;flex-shrink:0">&#128242;</span>
@@ -310,6 +332,17 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="frase">Donde dirijo mi atenci&oacute;n, ah&iacute; voy yo.</div>
     <button class="doahora" onclick="startR('verd')" aria-label="Respirar ahora, 4·2·6: respiraci&oacute;n guiada">&#129718; Respirar ahora <span class="sub">4&middot;2&middot;6</span></button>
   </div>
+  <div class="card guia">
+    <h2>C&oacute;mo usar esta herramienta</h2>
+    <p>Es tu cuaderno de las <b>l&iacute;neas b&aacute;sicas del AIS</b>: peque&ntilde;os gestos que llevan tu atenci&oacute;n hacia dentro a lo largo del d&iacute;a. <b>No es una lista de tareas</b>: no hace falta hacerlo todo cada d&iacute;a. Lo importante es volver, aunque sea brevemente.</p>
+    <ul class="dia-tipo">
+      <li><span class="dt-ico">&#9728;&#65039;</span><span><b>Al empezar el d&iacute;a:</b> una respiraci&oacute;n por curiosidad (<i>punto verde</i>). Es el bot&oacute;n &laquo;Respirar ahora&raquo;. Un minuto.</span></li>
+      <li><span class="dt-ico">&#128257;</span><span><b>Durante el d&iacute;a:</b> una respiraci&oacute;n curiosa cada hora, sobre todo cuando no la necesitas, y una <b>parada de pensamiento</b> cada vez que te descubras sobrepensando. S&uacute;malas aqu&iacute;.</span></li>
+      <li><span class="dt-ico">&#129303;</span><span><b>Con las personas que quieres:</b> un abrazo sentido o un momento de honestidad emocional. Con uno al d&iacute;a basta.</span></li>
+      <li><span class="dt-ico">&#127769;</span><span><b>Al acabar el d&iacute;a:</b> echa un vistazo a &laquo;Tu evoluci&oacute;n&raquo; y, si te lo ha pedido tu psic&oacute;logo/a, env&iacute;ale un &uacute;nico resumen.</span></li>
+    </ul>
+    <div class="desde-rec">&#129517; <b>Si sigues &laquo;Mi recorrido&raquo;:</b> tu pr&aacute;ctica de cada d&iacute;a ya est&aacute; explicada y guiada all&iacute;, en el orden de tu etapa. Esta herramienta es para registrar lo que hagas <i>adem&aacute;s</i>, durante el d&iacute;a y en tus v&iacute;nculos.</div>
+  </div>
   <div class="card">
     <div class="ch-tit">Tres v&iacute;as para anclar la atenci&oacute;n hacia dentro</div>
     <div class="ch-canales">
@@ -319,15 +352,22 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     </div>
   </div>
   <div class="card">
-    <div class="idxhead">&#129517; &iquest;Qu&eacute; quieres entrenar hoy?</div>
+    <div class="idxhead">&#129517; &iquest;Qu&eacute; quieres hacer ahora?</div>
     <div class="idxsub">Toca un ejercicio para ir a &eacute;l. Cada uno trabaja un par&aacute;metro: <span class="pbadge pL">L</span> Latencia (espacio antes de reaccionar) &middot; <span class="pbadge pD">D</span> Densidad (ruido interno: cuanto menos, mejor) &middot; <span class="pbadge pC">C</span> Continuidad (sostener la atenci&oacute;n y tus valores en el tiempo).</div>
+    <div class="idxgrp">Practicar ahora</div>
     <div class="idxgrid">
       <button class="idxb" onclick="irA('sec1')"><span class="ib-ico">&#127756;</span><span class="ib-body"><span class="ib-tit">Respiraci&oacute;n por curiosidad</span><span class="ib-par"><span class="pbadge pL">L</span><span class="pbadge pD">D</span></span></span></button>
       <button class="idxb" onclick="irA('sec2')"><span class="ib-ico">&#9995;</span><span class="ib-body"><span class="ib-tit">Parada de pensamiento</span><span class="ib-par"><span class="pbadge pL">L</span></span></span></button>
+      <button class="idxb" onclick="irA('sec6')"><span class="ib-ico">&#129505;</span><span class="ib-body"><span class="ib-tit">Grounding 5-4-3-2-1 (ante el miedo)</span><span class="ib-par"><span class="pbadge pL">L</span><span class="pbadge pD">D</span></span></span></button>
+    </div>
+    <div class="idxgrp">En tus v&iacute;nculos</div>
+    <div class="idxgrid">
       <button class="idxb" onclick="irA('sec3')"><span class="ib-ico">&#129303;</span><span class="ib-body"><span class="ib-tit">Abrazo sentido</span><span class="ib-par"><span class="pbadge pD">D</span></span></span></button>
       <button class="idxb" onclick="irA('sec4')"><span class="ib-ico">&#128172;</span><span class="ib-body"><span class="ib-tit">Honestidad emocional</span><span class="ib-par"><span class="pbadge pC">C</span></span></span></button>
+    </div>
+    <div class="idxgrp">Planificar, revisar y enviar</div>
+    <div class="idxgrid">
       <button class="idxb" onclick="irA('sec5')"><span class="ib-ico">&#128197;</span><span class="ib-body"><span class="ib-tit">Retos y contactos</span><span class="ib-par"><span class="pbadge pC">C</span></span></span></button>
-      <button class="idxb" onclick="irA('sec6')"><span class="ib-ico">&#129505;</span><span class="ib-body"><span class="ib-tit">Grounding 5-4-3-2-1</span><span class="ib-par"><span class="pbadge pL">L</span><span class="pbadge pD">D</span></span></span></button>
       <button class="idxb" onclick="irA('sec7')"><span class="ib-ico">&#128200;</span><span class="ib-body"><span class="ib-tit">Tu evoluci&oacute;n</span><span class="ib-par"><span class="pbadge pL">L</span><span class="pbadge pD">D</span><span class="pbadge pC">C</span></span></span></button>
       <button class="idxb" onclick="irA('sec8')"><span class="ib-ico">&#128228;</span><span class="ib-body"><span class="ib-tit">Enviar al psic&oacute;logo</span><span class="ib-par"></span></span></button>
     </div>
@@ -336,6 +376,18 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="ctit"><span class="cnum">1</span> &#127756; Respiraci&oacute;n por curiosidad</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pL">Latencia</span><span class="pbadge pD">Densidad</span></span><span>Vas al cuerpo <em>sin necesidad</em>: entrenas la presencia interna (densidad) y la anticipaci&oacute;n proactiva que crea espacio (latencia).</span></div>
     <div class="aviso">El gran cambio no es respirar cuando la angustia sube. Es ir al cuerpo sin necesidad para decirle: <em>eres una prioridad para m&iacute;.</em></div>
+    <div class="cuando">&#128336;<span><b>Cu&aacute;ndo:</b> <b>punto verde</b> por la ma&ntilde;ana, por la noche y una breve cada hora, sobre todo cuando est&aacute;s bien. <b>Punto rojo</b> solo cuando el cuerpo te avisa (nervios, nudo, presi&oacute;n).</span></div>
+    <div class="steps">
+      <div class="si"><div class="sico">&#128067;</div><div class="stit">Inhala 4</div><div class="ssub">el aire es el cebo</div></div>
+      <div class="si"><div class="sico">&#11015;&#65039;</div><div class="stit">Ret&eacute;n 2</div><div class="ssub">la atenci&oacute;n baja</div></div>
+      <div class="si"><div class="sico">&#127788;&#65039;</div><div class="stit">Exhala 6</div><div class="ssub">el aire sale</div></div>
+      <div class="si"><div class="sico">&#129505;</div><div class="stit">Te quedas</div><div class="ssub">en la barriga</div></div>
+      <div class="si"><div class="sico">&#128269;</div><div class="stit">Curiosidad</div><div class="ssub">&iquest;qu&eacute; hay aqu&iacute;?</div></div>
+    </div>
+    <details class="porque"><summary>&iquest;Por qu&eacute; verde y rojo? &rsaquo;</summary>
+      <p>Si solo vas al cuerpo cuando hay malestar, el cuerpo aprende que tu atenci&oacute;n llega <i>porque</i> hay alarma, y la alarma se vuelve necesaria. El <b>punto verde</b> le ense&ntilde;a lo contrario: que apareces tambi&eacute;n cuando todo va bien. Por eso, con la pr&aacute;ctica, los verdes deber&iacute;an ser <b>m&aacute;s</b> que los rojos.</p>
+      <p>Si no notas nada, tambi&eacute;n vale: la presencia cuenta igual. Si llega la calma, es un efecto secundario, no el objetivo.</p>
+    </details>
     <div class="punt-grid">
       <button id="btnVerd" class="pbtn pvd" onclick="startR(&apos;verd&apos;)">
         <span class="pico">&#128994;</span><span class="ptit">Punto verde</span><span class="psub">Sin necesidad, por curiosidad</span>
@@ -355,6 +407,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="ctit"><span class="cnum">2</span> &#9995; Parada de pensamiento</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pL">Latencia</span></span><span>Cortar el piloto autom&aacute;tico y meter una pausa con cuerpo: ah&iacute; nace el espacio para decidir desde tus valores.</span></div>
     <div class="desc">Cuando la cabeza se va sola: para, respira, siente con compasi&oacute;n y vuelve.</div>
+    <div class="cuando">&#128336;<span><b>Cu&aacute;ndo:</b> cada vez que te descubras sobrepensando o con una sensaci&oacute;n desagradable. 30, 40 o 50 veces al d&iacute;a no es demasiado: es entrenar. Suma una cada vez.</span></div>
     <div class="steps">
       <div class="si"><div class="sico">&#9995;</div><div class="stit">STOP</div><div class="ssub">Para el piloto</div></div>
       <div class="si"><div class="sico">&#127756;</div><div class="stit">Respira</div><div class="ssub">4-2-6</div></div>
@@ -362,19 +415,26 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
       <div class="si"><div class="sico">&#129505;</div><div class="stit">Compas.</div><div class="ssub">Sin juzgar</div></div>
       <div class="si"><div class="sico">&#127919;</div><div class="stit">Vuelvo</div><div class="ssub">A la estructura</div></div>
     </div>
+    <details class="porque"><summary>&iquest;Por qu&eacute; parar, si el pensamiento parece importante? &rsaquo;</summary>
+      <p>El sobrepensamiento no busca soluciones: busca alivio. Como la campana de Pavlov, el pensamiento suena y la atenci&oacute;n se va detr&aacute;s. Si no paras, respiras y vuelves, te quedas secuestrado/a atencionalmente, y el cuerpo acaba viviendo en alerta. Parar no es reprimir el pensamiento: es no dejar solo a tu cuerpo mientras suena.</p>
+    </details>
     <div class="crow">
       <button class="cntbtn" onclick="chgP(-1)" aria-label="Restar una">&minus;</button>
       <div style="flex:1;text-align:center"><div id="cntP" class="cval">0</div><div class="clbl2">veces hoy</div></div>
       <button class="cntbtn" onclick="chgP(1)" aria-label="Sumar una">+</button>
     </div>
     <div class="brow"><button class="btn bp" onclick="startR(&apos;verd&apos;)">&#127756; Respira ahora</button></div>
-    <div style="margin-top:12px"><label class="flbl" for="notesP">Notes</label>
+    <div style="margin-top:12px"><label class="flbl" for="notesP">Notas</label>
     <textarea id="notesP" oninput="D.p.notes=this.value;saveToday()"></textarea></div>
   </div>
   <div class="card" id="sec3">
     <div class="ctit"><span class="cnum">3</span> &#129303; Abrazo sentido</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pD">Densidad</span></span><span>Llevar la atenci&oacute;n a la barriga antes de actuar: sostienes la sensaci&oacute;n interna y act&uacute;as desde el v&iacute;nculo, no desde el impulso.</span></div>
     <div class="desc">Pon la atenci&oacute;n en la barriga. &iquest;Noto algo? Abraza desde ah&iacute;. Si no notas nada, tambi&eacute;n vale: nota tus manos o tus pies y abraza desde ah&iacute;.</div>
+    <div class="cuando">&#128336;<span><b>Cu&aacute;ndo:</b> en los encuentros: al llegar a casa, al despedirte, al reencontrarte con alguien querido. Con uno al d&iacute;a basta. Despu&eacute;s, marca aqu&iacute; con qui&eacute;n.</span></div>
+    <details class="porque"><summary>&iquest;Por qu&eacute; con la atenci&oacute;n en la barriga? &rsaquo;</summary>
+      <p>No solo abrazas a la otra persona: tambi&eacute;n te quedas presente contigo mientras lo haces. As&iacute; el v&iacute;nculo se vive desde la complicidad, y tu cuerpo aprende que puede estar acompa&ntilde;ado por fuera y por dentro a la vez.</p>
+    </details>
     <div data-vineta-abrazo></div>
     <label class="flbl">&iquest;A qui&eacute;n?</label>
     <div class="sopts" id="optsAQui"><span class="sopt" onclick="selA(this,&apos;Hijo/a&apos;)">Hijo/a</span><span class="sopt" onclick="selA(this,&apos;Padre&apos;)">Padre</span><span class="sopt" onclick="selA(this,&apos;Madre&apos;)">Madre</span><span class="sopt" onclick="selA(this,&apos;Pareja&apos;)">Pareja</span><span class="sopt" onclick="selA(this,&apos;Hermano/a&apos;)">Hermano/a</span><span class="sopt" onclick="selA(this,&apos;Yo mismo/a&apos;)">Yo mismo/a</span></div>
@@ -386,6 +446,10 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="ctit"><span class="cnum">4</span> &#128172; Honestidad emocional</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pC">Continuidad</span></span><span>Compartir lo que sientes es una conducta coherente con tus valores, sostenida en el tiempo: refuerza autoestima y v&iacute;nculo.</span></div>
     <div class="desc">Comparto c&oacute;mo me siento con un v&iacute;nculo cercano. Me valido &rarr; autoestima.</div>
+    <div class="cuando">&#128336;<span><b>C&oacute;mo:</b> pon la mano donde notas la sensaci&oacute;n (si no notas nada, en la barriga, el pecho o el cuello) y d&iacute;lo tal como lo notas, sin justificarte. Abajo tienes la frase; elige con qui&eacute;n y d&oacute;nde.</span></div>
+    <details class="porque"><summary>&iquest;Por qu&eacute; &laquo;no s&eacute; por qu&eacute;&raquo;? &rsaquo;</summary>
+      <p>No hace falta entender lo que sientes para poder compartirlo. Buscar la explicaci&oacute;n te lleva a la cabeza; decir &laquo;lo noto aqu&iacute;&raquo; te deja en el cuerpo. As&iacute; te validas ante la otra persona y el v&iacute;nculo gana comunicaci&oacute;n afectiva, confianza proactiva y respeto desde la complicidad, no desde el reproche.</p>
+    </details>
     <div data-vineta-honestidad></div>
     <div class="fbuild">
       <em>No s&eacute; por qu&eacute; pero siento una sensaci&oacute;n en <span class="fill" id="fZona">barriga</span> que necesitaba compartir con <span class="fill" id="fVincle">...</span></em>
@@ -394,7 +458,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="sopts" id="optsVincle"><span class="sopt" onclick="selH(this,&apos;Hijo/a&apos;,&apos;vincle&apos;)">Hijo/a</span><span class="sopt" onclick="selH(this,&apos;Padre&apos;,&apos;vincle&apos;)">Padre</span><span class="sopt" onclick="selH(this,&apos;Madre&apos;,&apos;vincle&apos;)">Madre</span><span class="sopt" onclick="selH(this,&apos;Pareja&apos;,&apos;vincle&apos;)">Pareja</span><span class="sopt" onclick="selH(this,&apos;Hermano/a&apos;,&apos;vincle&apos;)">Hermano/a</span><span class="sopt" onclick="selH(this,&apos;Amigo/a cercano/a&apos;,&apos;vincle&apos;)">Amigo/a cercano/a</span></div>
     <label class="flbl">Zona corporal:</label>
     <div class="sopts" id="optsZona"><span class="sopt so" onclick="selH(this,&apos;barriga&apos;,&apos;zona&apos;)">barriga</span><span class="sopt" onclick="selH(this,&apos;pecho&apos;,&apos;zona&apos;)">pecho</span><span class="sopt" onclick="selH(this,&apos;garganta&apos;,&apos;zona&apos;)">garganta</span><span class="sopt" onclick="selH(this,&apos;cabeza&apos;,&apos;zona&apos;)">cabeza</span></div>
-    <div style="margin-top:12px"><label class="flbl" for="notesH">Notes</label>
+    <div style="margin-top:12px"><label class="flbl" for="notesH">Notas</label>
     <textarea id="notesH" oninput="D.h.notes=this.value;saveToday()"></textarea></div>
     <div id="badgeH" class="hidden"><span class="bok">&#10003; Honestidad registrada con <span id="badgeHVincle"></span></span></div>
   </div>
@@ -404,15 +468,15 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="aviso">Tanto para orientarte a tus valores como para evitar dependencia. A&ntilde;ade contactos, actividades o retos para uno o m&aacute;s d&iacute;as.</div>
     <div id="contactList" style="margin-bottom:14px"></div>
     <div class="cfform">
-      <div style="font-weight:600;font-size:12px;color:var(--az);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">+ Nou element</div>
-      <label class="flbl">Nom</label>
+      <div style="font-weight:600;font-size:12px;color:var(--az);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">+ Nuevo elemento</div>
+      <label class="flbl" for="cpNom">Nombre</label>
       <input type="text" id="cpNom" placeholder="Nombre (p.ej. salir a caminar, llamar a mam&aacute;...)" style="margin-bottom:10px">
       <div class="cfg2">
-        <div><label class="flbl" for="cpTipus">Tipus</label><select id="cpTipus"><option value="contacte">Contacto</option><option value="activitat">Actividad</option><option value="repte">Reto</option></select></div>
+        <div><label class="flbl" for="cpTipus">Tipo</label><select id="cpTipus"><option value="contacte">Contacto</option><option value="activitat">Actividad</option><option value="repte">Reto</option></select></div>
         <div><label class="flbl" for="cpHora">Hora (opcional)</label><input type="time" id="cpHora"></div>
         <div class="cfg-full"><label class="flbl">D&iacute;as de la semana</label>
         <div class="dies-row" id="diesChips"><span class="dchip" data-dia="Lunes" onclick="togDia(this)">Lu</span><span class="dchip" data-dia="Martes" onclick="togDia(this)">Ma</span><span class="dchip" data-dia="Miércoles" onclick="togDia(this)">Mi</span><span class="dchip" data-dia="Jueves" onclick="togDia(this)">Ju</span><span class="dchip" data-dia="Viernes" onclick="togDia(this)">Vi</span><span class="dchip" data-dia="Sábado" onclick="togDia(this)">Sá</span><span class="dchip" data-dia="Domingo" onclick="togDia(this)">Do</span></div></div>
-        <div class="cfg-full"><label class="flbl" for="cpTipusC">Tipus contacte</label><select id="cpTipusC"><option value="">Tipo...</option><option value="Presencial">Presencial</option><option value="WhatsApp">WhatsApp</option><option value="Llamada">Llamada</option></select></div>
+        <div class="cfg-full"><label class="flbl" for="cpTipusC">Tipo de contacto</label><select id="cpTipusC"><option value="">Tipo...</option><option value="Presencial">Presencial</option><option value="WhatsApp">WhatsApp</option><option value="Llamada">Llamada</option></select></div>
       </div>
       <div class="brow"><button class="btn bvd-main" onclick="addContact()">+ Añadir</button></div>
     </div>
@@ -422,6 +486,7 @@ button:focus-visible,a:focus-visible,.idxb:focus-visible,.sopt:focus-visible,.dc
     <div class="ctit"><span class="cnum">6</span> &#129505; Grounding 5-4-3-2-1</div>
     <div class="qtrab"><span class="qp"><span class="pbadge pL">Latencia</span><span class="pbadge pD">Densidad</span></span><span>Anclar la atenci&oacute;n en los sentidos frena el secuestro atencional (latencia) y te devuelve al presente corporal (densidad).</span></div>
     <div class="desc">Para cuando te enfrentas a una actividad que te genera miedo o sobrepensamiento. Puedes hacerlo mientras caminas.</div>
+    <div class="cuando">&#128336;<span><b>Cu&aacute;ndo:</b> justo antes o durante una situaci&oacute;n que te cuesta (salir de casa, el transporte, una reuni&oacute;n). No es para huir de ella: es para quedarte presente mientras la haces.</span></div>
     <label class="flbl">Actividad o situaci&oacute;n</label>
     <input type="text" id="gActivitat" placeholder="p.ej. salir de casa, coger el transporte..." style="margin-bottom:12px">
     <label class="flbl" for="gPorSlider">Nivel de miedo/sobrepensamiento (0-10): <strong id="porLbl" style="color:var(--ro)">5/10</strong></label>
@@ -650,7 +715,7 @@ function closeGrounding(){
   document.getElementById("gModal").classList.remove("on");
   var activitat=document.getElementById("gActivitat").value.trim();
   var por=parseInt(document.getElementById("gPorSlider").value||"5");
-  D.grounding.push({activitat:activitat,por:por,sat:GM.sat,date:TODAY,ts:new Date().toLocaleTimeString("ca",{hour:"2-digit",minute:"2-digit"})});
+  D.grounding.push({activitat:activitat,por:por,sat:GM.sat,date:TODAY,ts:new Date().toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"})});
   saveToday(); renderGrounding(); updEvo(); updResum();
   document.getElementById("gActivitat").value="";
   document.getElementById("gFinal").classList.add("hidden");
@@ -761,8 +826,8 @@ function updEvo(){
   // TEC bars
   var el;
   el=document.getElementById("tecL"); if(el){el.style.width=(tec.L*10)+"%"; document.getElementById("tecLv").textContent=tec.L+"/10";}
-  el=document.getElementById("tecD"); if(el){el.style.width=Math.min(100,tec.D*10)+"%"; document.getElementById("tecDv").textContent=tec.D+" /dia";}
-  el=document.getElementById("tecC"); if(el){el.style.width=Math.min(100,tec.C/7*100)+"%"; document.getElementById("tecCv").textContent=tec.C+" dies";}
+  el=document.getElementById("tecD"); if(el){el.style.width=Math.min(100,tec.D*10)+"%"; document.getElementById("tecDv").textContent=tec.D+" /día";}
+  el=document.getElementById("tecC"); if(el){el.style.width=Math.min(100,tec.C/7*100)+"%"; document.getElementById("tecCv").textContent=tec.C+" días";}
   // Charts
   drawSVGLine("svgVerd",  days.map(function(d){return d.log.r.vd||0;}), "#2E7D5E");
   drawBars("svgReptes", days.map(function(d){return d.done;}), days.map(function(d){return d.planned;}), "#2E7D5E","#D4EDDA");
@@ -937,10 +1002,26 @@ function pintaHoy(){
   }catch(e){}
 }
 
+// ─── MODO ENFOCADO ───────────────────────────────────────────────────────────
+// Un enlace a herramienta_diaria/secN (hash #secN) muestra solo ese ejercicio,
+// para que quien llega desde otra herramienta no se pierda entre registros.
+function aplicarFoco(){
+  var m=(location.hash||"").match(/^#(sec[1-8])$/);
+  document.querySelectorAll(".enfoco").forEach(function(e){e.classList.remove("enfoco");});
+  if(!m){ document.body.classList.remove("foco"); return; }
+  var el=document.getElementById(m[1]); if(!el) return;
+  el.classList.add("enfoco"); document.body.classList.add("foco");
+  var t=el.querySelector(".ctit"); document.getElementById("focoTxt").textContent="Est\u00e1s viendo solo: "+(t?t.textContent.replace(/^\s*\d+\s*/,"").trim():"un ejercicio");
+  window.scrollTo(0,0);
+}
+function salirFoco(){ try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){ location.hash=""; } aplicarFoco(); }
+window.addEventListener("hashchange",aplicarFoco);
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 loadToday();
 pintaHoy();
 updPend(); updEvo(); updResum(); renderContacts(); renderGrounding();
+aplicarFoco();
 
 </script>
 

@@ -179,6 +179,23 @@
   details.vin summary::-webkit-details-marker{display:none;}
   details.vin[open] summary{margin-bottom:8px;}
   .vinBox{--azul:#3f6b74;--azulLt:#dde7e7;--fondo:#f3eee4;}
+  /* Práctica guiada dentro del recorrido (sin salir a otra herramienta) */
+  details.prac{margin-top:8px;}
+  details.prac > summary{cursor:pointer;font-weight:800;font-size:14px;list-style:none;display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:var(--acc-ink);border-radius:20px;padding:9px 15px;min-height:40px;}
+  details.prac > summary::-webkit-details-marker{display:none;}
+  details.prac[open] > summary{background:var(--acc-soft);color:var(--acc-d);}
+  .praIn{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);padding:12px 13px;}
+  .praIn ol{margin:4px 0 6px 20px;font-size:14px;}
+  .praIn ol li{margin:3px 0;}
+  .praIn .srsa{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:8px 0;}
+  .praIn .srsa div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:13px;}
+  .praIn .srsa b{display:block;color:var(--acc-d);}
+  .praBox{max-width:300px;margin:6px auto 0;}
+  .praCnt{text-align:center;font-weight:700;font-size:14px;margin:4px 0;}
+  .praFin{background:var(--ok-soft);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px;}
+  .praIn input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--card);min-height:42px;margin-top:4px;}
+  .rcMini{margin-top:6px;}
+  .rcMini > summary{font-size:12.5px;padding:6px 12px;min-height:34px;}
 </style>
 <script src="../js/respiro-ais.js"></script>
 <script src="../js/vineta-atencion.js"></script>
@@ -314,7 +331,9 @@
       d:"Una foto inicial de tu atención, para poder ver después el cambio. Y una primera idea: lo que vas a entrenar no es a sentirte mejor, sino una nueva relación contigo.",
       idea:"La TEC propone que lo que cambia en terapia no es tanto lo que piensas o sientes, sino hacia dónde va tu atención en el instante entre lo que sientes y lo que haces.",
       frase:"«No vengo a cambiarte. Vengo a estar contigo.»",
-      practica:{ t:"Respira 1 minuto con la silueta", d:"Solo para conocer el gesto: la luz azul es el aire; la amarilla, tu atención, que baja y se queda.", go:"tool:respiro_ais" },
+      practica:{ t:"Respiración curiosa con la silueta · 1 minuto", guia:"P0",
+        d:"Solo para conocer el gesto que usarás todo el recorrido: la luz azul es el aire; la amarilla, tu atención, que baja con él y se queda en la barriga." },
+      noche:{ t:"Respiración curiosa con la silueta · 1 minuto antes de dormir", d:"La misma de la mañana. Sin buscar nada: solo conocer el gesto.", guia:"P0" },
       pasos:[
         ["¿Para qué sirven estos ejercicios? (el porqué, en 2 minutos)", "sec:porque"],
         ["Mi autoevaluación inicial, con la prueba de continuidad", "eval"],
@@ -327,7 +346,8 @@
       d:"Una pieza al día para entender para qué sirve todo esto. Sin entender el porqué, la práctica se convierte en una técnica más para controlar.",
       idea:"La atención es un vector: la misma atención produce efectos opuestos según vaya hacia fuera (la amenaza, el juicio, el futuro) o hacia dentro (la sensación presente). Y el sobrepensamiento no es un rasgo: es una conducta que busca alivio.",
       frase:"«La mente cree que busca explicaciones, pero el cuerpo busca alivio.»",
-      practica:{ t:"Para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Y a lo largo del día, cada vez que te enganches: 30, 40, 50 veces no es demasiado.", vin:true },
+      practica:{ t:"Parada de pensamiento: para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Y a lo largo del día, cada vez que te enganches: 30, 40, 50 veces no es demasiado.", vin:true },
+      noche:{ t:"Respiración curiosa con la silueta · 1–2 minutos", d:"Antes de dormir, también si el día ha ido bien. Es el gesto que en la etapa 2 se convertirá en tu práctica diaria.", guia:"P0" },
       pasos:[
         ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce", ["tool:historia_animada","pdf:quien-conduce-tu-vida.pdf"]],
         ["Vídeo: la Teoría del Efecto Consciente", "video:tec"],
@@ -347,7 +367,9 @@
       d:"Que tu cuerpo registre que hay una presencia disponible. Visitas breves: tres momentos fijos al día y, entre medias, <b>una respiración curiosa cada hora</b>, también cuando estás bien. No para calmarte: para aparecer.",
       idea:"La conciencia acompaña siempre al cuerpo, pero él no puede verla. La respiración es el canal por el que esa presencia se vuelve perceptible: el aire es el cebo. Lo que se entrena aquí es la frecuencia, no la duración: visitas breves y repetidas, no condicionadas al malestar.",
       frase:"«Aunque no note nada especial, vuelvo al cuerpo. No busco calmarme: estoy enseñando a mi cuerpo que mi conciencia también aparece cuando todo parece estar bien.»",
-      practica:{ t:"Práctica programada (3–5 min)", d:"Respiración con anclaje: el aire es el cebo; tu atención lo sigue y se queda en la barriga.", go:"tool:herramienta_diaria" },
+      practica:{ t:"Respiración curiosa con anclaje · 3–5 minutos", guia:"P2",
+        d:"Es la misma respiración curiosa de cada hora, pero más larga y en un momento fijo: el aire es el cebo; tu atención lo sigue y se queda en la barriga. No buscas calmarte: buscas aparecer." },
+      noche:{ t:"Respiración curiosa con anclaje · 3–5 minutos", d:"La misma de la mañana, al llegar a casa o antes de dormir. También si el día ha ido bien.", guia:"P2" },
       pasos:[
         ["Vídeo: «El día que tu cuerpo empezó a notarte»", "video:cuerpo"],
         ["Organiza tus tres momentos fijos del día", "tool:agenda_atencional"],
@@ -368,7 +390,9 @@
       d:"Que tu cuerpo compruebe que la presencia <b>no se retira</b> cuando la sensación es desagradable. Quedarte un poco más allá del impulso de irte. Permanecer no es aguantar: aguantar busca que desaparezca; permanecer mira a la sensación.",
       idea:"El aprendizaje ocurre en el margen: el tramo en el que te quedas algo más allá del punto en que el impulso pide retirarse. Y la honestidad emocional —«no sé por qué, pero lo noto aquí»— es la conciencia dando la cara por el cuerpo.",
       frase:"«No hago AIS para quitar esto. Hago AIS para no dejar solo a mi cuerpo mientras esto está presente.»",
-      practica:{ t:"Práctica programada + S·R·S·A", d:"Sentir · Respirar · Sostener · Acompañar, 20–60 s. Sigues con los tres momentos fijos del día.", go:"tool:laboratorio_tec/s-ais" },
+      practica:{ t:"Respiración curiosa con anclaje + S·R·S·A · 3–5 minutos", guia:"P3",
+        d:"Primero la respiración curiosa con anclaje, como en la etapa anterior. Después, si aparece una sensación desagradable: Sentir · Respirar · Sostener · Acompañar, 20–60 segundos, un poco más allá del impulso de irte." },
+      noche:{ t:"Respiración curiosa con anclaje + S·R·S·A · 3–5 minutos", d:"La misma de la mañana, al llegar a casa o antes de dormir.", guia:"P3" },
       pasos:[
         ["Vídeo: «La pregunta que casi nunca nos hacemos»", "video:pregunta"],
         ["Laboratorio: la práctica AIS guiada completa (PARA · SIENTE · ACOMPAÑA · ACTÚA)", "tool:laboratorio_tec/s-ais"],
@@ -390,7 +414,9 @@
       d:"Desde el espacio que has creado, <b>elegir</b>. La latencia se convierte en conducta: una micro-acción con valor cada día, aunque haya activación.",
       idea:"La latencia es el espacio entre lo que sientes y lo que haces. Cuando ese espacio se habita, aparece la pregunta que cierra el ciclo: «¿qué haría la persona que quiero ser?». La conducta valiosa es el criterio principal de cambio.",
       frase:"«La conducta valiosa no espera a la emoción correcta. La emoción correcta emerge de la conducta valiosa.»",
-      practica:{ t:"Práctica programada + micro-acción", d:"Tras la práctica: «¿qué haría la persona que quiero ser?». Un paso pequeño, observable y realizable ahora.", go:"tool:herramienta_diaria" },
+      practica:{ t:"Respiración curiosa con anclaje + micro-acción · 3–5 minutos", guia:"P4",
+        d:"La respiración curiosa con anclaje y, al terminar, la pregunta: «¿qué haría la persona que quiero ser?». Un paso pequeño, observable y realizable ahora." },
+      noche:{ t:"Respiración curiosa con anclaje · 3–5 minutos", d:"Al llegar a casa o antes de dormir. Si quieres, repasa la micro-acción de hoy: ¿la hiciste, aunque hubiera activación?", guia:"P2" },
       pasos:[
         ["Mi brújula de valores", "tool:brujula_valores"],
         ["Mi semana con foco y valores (revísala con lo aprendido)", "tool:agenda_atencional"],
@@ -407,7 +433,9 @@
       d:"Mantener lo aprendido y llevarlo a los vínculos y a contextos más difíciles. Extinguir no es borrar: la sensación puede volver; lo que cambia es tu forma de estar con ella. Por eso la práctica sigue.",
       idea:"La autoestima no es una opinión sobre ti: es la experiencia acumulada de no abandonarte. Cada vez que vuelves al cuerpo, también cuando duele, incluyes a tu niño interno en tu manada.",
       frase:"«Pase lo que pase dentro de mí, yo voy a estar aquí conmigo.»",
-      practica:{ t:"Práctica programada (mantenimiento)", d:"Tres momentos breves al día. Breve y frecuente vale más que largo y ocasional.", go:"tool:herramienta_diaria" },
+      practica:{ t:"Respiración curiosa con anclaje · 2–3 minutos (mantenimiento)", guia:"P5",
+        d:"La misma práctica de siempre, más breve. Breve y frecuente vale más que largo y ocasional." },
+      noche:{ t:"Respiración curiosa con anclaje · 2–3 minutos", d:"Al llegar a casa o antes de dormir. Si ha sido un día difícil, añade S·R·S·A.", guia:"P5" },
       pasos:[
         ["Reevaluación: registro de seguimiento del Screening", "tool:screening_tec"],
         ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
@@ -429,7 +457,7 @@
      cnt:true → contador (veces al día) · si no → «hoy lo he hecho».
      ============================================================ */
   var LB = [
-    { k:"rc", e:"🫁", t:"Respiración curiosa · una vez cada hora", cnt:true, meta:14,
+    { k:"rc", e:"🫁", t:"Respiración curiosa · una vez cada hora", cnt:true, meta:14, guia:"RC",
       w:"Cada hora, y sobre todo cuando no la necesitas.",
       como:"Paras unos 10 segundos: una respiración y la atención, con curiosidad, en la barriga, el pecho o el cuello, para ver qué hay. Aunque no notes nada, y después vuelves a lo que hacías.",
       porque:"Hacerla una vez cada hora son simplemente 10 segundos, y es lo que garantiza que tu cuerpo tenga un acompañamiento curioso a lo largo de todo el día, no solo cuando algo va mal. Por eso se entrena sobre todo en los momentos en que no hace falta: ir parando, de manera continua, para que más adelante se automatice y aparezca sola.",
@@ -476,7 +504,7 @@
           + '<p><b>Por qué:</b> '+esc(b.porque)+'</p>'
           + (b.pilares ? '<ul style="margin:6px 0 0 18px;font-size:14px">'+b.pilares.map(function(x){ return '<li><b>'+esc(x[0])+'</b> '+esc(x[1])+'</li>'; }).join("")+'</ul>' : '')
           + (b.vinculo ? '<div class="vvBox" data-vineta-vinculo></div>' : '')
-          + '<div>'+b.go.map(function(g){ return link(g[0], esc(g[1])); }).join("")+'</div></details></li>';
+          + '<p class="small muted" style="margin-top:8px">Para profundizar (se abre otra herramienta):</p><div>'+b.go.map(function(g){ return link(g[0], esc(g[1])); }).join("")+'</div></details></li>';
       }).join("") + '</ol>'
       + '<div>'+link("tool:ais_basicas","Herramientas AIS básicas")+'<a class="tl" href="../assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener">📄 La ficha en PDF <span class="ar">↓</span></a></div>';
     $("#lineas").innerHTML = h;
@@ -490,9 +518,10 @@
         var ctl = b.cnt
           ? '<span class="cnt"><button type="button" data-lb="'+b.k+'" data-d="-1" aria-label="Restar una: '+esc(b.t)+'">−</button><b aria-live="polite">'+v+'</b><button type="button" class="mas" data-lb="'+b.k+'" data-d="1" aria-label="+1 '+esc(b.t)+'">+1</button></span>'
           : '<button type="button" class="tg" data-lbt="'+b.k+'" aria-pressed="'+(v?'true':'false')+'" aria-label="'+(v?'Hecho':'Hoy, sí')+': '+esc(b.t)+'">'+(v?'✓ Hecho':'Hoy, sí')+'</button>';
-        return '<li><div><div class="dt">'+b.e+' '+esc(b.t)+'</div><div class="dd">'+esc(b.dd)+(b.meta && v ? ' · llevas '+v+' de '+b.meta : '')+'</div></div>'+ctl+'</li>';
+        return '<li><div><div class="dt">'+b.e+' '+esc(b.t)+'</div><div class="dd">'+esc(b.dd)+(b.meta && v ? ' · llevas '+v+' de '+b.meta : '')+'</div>'+(b.guia ? guiaHTML(b.guia, b.k) : '')+'</div>'+ctl+'</li>';
       }).join("") + '</ul>';
     $("#todoDia").innerHTML = h;
+    montarGuias($("#todoDia"));
     $$("#todoDia [data-lb]").forEach(function(b){ b.onclick = function(){
       var k = b.getAttribute("data-lb"); d[k] = Math.max(0, Math.min(200, (d[k]||0) + (+b.getAttribute("data-d"))));
       save(); renderTodoDia(); renderSemana();
@@ -510,6 +539,85 @@
       r[b.k] = b.cnt ? Math.round(s/7*10)/10 : dias; });
     return r;
   }
+
+  /* ============================================================
+     PRÁCTICA GUIADA AQUÍ MISMO
+     La práctica de mañana y noche se explica y se hace dentro del
+     recorrido: qué es exactamente, cómo se hace, por qué, y la guía
+     de respiración (componente RespiroAIS). No se sale a otra página.
+     ============================================================ */
+  var RITMO = {inhale:4000, anchor:2000, exhale:6000, pause:1500}; // 13,5 s por respiración
+  var PASOS_RC = [
+    "Siéntate cómodo/a y pon una mano en la barriga (o en el pecho o el cuello, donde notes más).",
+    "<b>Inhala 4 s</b> por la nariz: el aire es el cebo; tu atención lo sigue hacia abajo.",
+    "<b>Retén 2 s</b>: la atención llega a la barriga y se queda.",
+    "<b>Exhala 6 s</b>: el aire sale, pero tu atención no sube. Se queda dentro, con curiosidad: <i>¿qué hay aquí?</i>",
+    "Si la mente se va, no pasa nada: vuelve en la siguiente respiración. <b>Volver es el ejercicio.</b>"
+  ];
+  var GUIAS = {
+    P0:{ ciclos:5, dur:"1 minuto",
+      pasos:["Siéntate cómodo/a y pulsa «Empezar».","La <b>luz azul</b> es el aire: entra por la nariz y baja.","La <b>luz amarilla</b> es tu atención: baja siguiendo al aire…","…y se queda en la barriga cuando exhalas. El aire sale; tu atención, no.","5 respiraciones. Si no notas nada, también vale."],
+      porque:"Antes de entrenar nada, conoces el gesto que usarás todo el recorrido: el aire es el cebo que lleva tu atención hacia dentro." },
+    P2:{ ciclos:15, dur:"unos 3–4 minutos", pasos:PASOS_RC,
+      porque:"Lo que se entrena es <b>aparecer</b>: que tu cuerpo registre que tu atención llega también cuando todo está bien, no solo cuando hay alarma. Si llega la calma, es un efecto secundario, no el objetivo." },
+    P3:{ ciclos:15, dur:"unos 3–4 minutos", pasos:PASOS_RC, srsa:true,
+      porque:"<b>Permanecer no es aguantar.</b> Aguantar busca que la sensación desaparezca; permanecer la mira y se queda con ella. Tu cuerpo aprende que tu presencia no se retira cuando duele." },
+    P4:{ ciclos:15, dur:"unos 3–4 minutos", pasos:PASOS_RC, micro:true,
+      porque:"La respiración abre el espacio entre lo que sientes y lo que haces (latencia). La micro-acción lo convierte en conducta: no esperas a sentirte bien para actuar." },
+    P5:{ ciclos:10, dur:"unos 2–3 minutos", pasos:PASOS_RC,
+      porque:"Extinguir no es borrar: la sensación puede volver. Lo que se mantiene es tu manera de estar con ella, y eso se sostiene con práctica breve y frecuente." },
+    RC:{ ciclos:1, dur:"10–15 segundos", mini:true }
+  };
+  var SRSA = [["Sentir","Localiza la sensación: barriga, pecho o cuello."],["Respirar","Una respiración con anclaje hacia ese lugar."],["Sostener","Quédate 20–60 s, un poco más allá del impulso de irte. Sin forzar."],["Acompañar","«No sé por qué, pero lo noto aquí. Estoy contigo.»"]];
+  function guiaHTML(id, k, hecho){
+    var g = GUIAS[id]; if(!g) return "";
+    var h = '<details class="prac'+(g.mini?' rcMini':'')+'" data-g="'+id+'" data-k="'+k+'"><summary>🫁 '+(g.mini?'Hazla ahora · '+g.dur:(hecho?'Repetirla aquí':'Hazla aquí, guiada')+' · '+g.dur)+'</summary><div class="praIn">';
+    if(g.pasos) h += '<b>Cómo se hace</b><ol>'+g.pasos.map(function(x){ return '<li>'+x+'</li>'; }).join("")+'</ol>';
+    if(g.srsa) h += '<b>Si aparece una sensación desagradable: S·R·S·A</b><div class="srsa">'+SRSA.map(function(x){ return '<div><b>'+x[0]+'</b>'+x[1]+'</div>'; }).join("")+'</div>';
+    if(g.porque) h += '<p class="small"><b>Por qué:</b> '+g.porque+'</p>';
+    if(g.mini) h += '<p class="small muted">Una respiración: inhala siguiendo la luz azul, deja que la amarilla (tu atención) se quede en la barriga, y vuelve a lo que hacías. Se suma sola al terminar.</p>';
+    h += '<div class="praBox"></div><p class="praCnt" aria-live="polite"></p>';
+    h += '<div class="praFin" hidden></div>';
+    if(!g.mini) h += '<div class="row"><button class="tl" type="button" data-prahecha>✓ La he hecho</button></div>';
+    return h + '</div></details>';
+  }
+  var guias = [];
+  function montarGuias(root){
+    root = root || document;
+    $$("details.prac", root).forEach(function(det){
+      if(det._g) return; det._g = 1;
+      var id = det.getAttribute("data-g"), k = det.getAttribute("data-k"), g = GUIAS[id];
+      var box = det.querySelector(".praBox"), cnt = det.querySelector(".praCnt"), fin = det.querySelector(".praFin");
+      function marcar(){
+        var d = dia(), mi = det.querySelector(".praMicro");
+        if(mi && mi.value.trim()) d.micro = mi.value.trim().slice(0,140);
+        if(k==="rc"){ d.rc = Math.min(200, (d.rc||0) + 1); save(); toast("Respiración curiosa sumada. Vuelve a lo que hacías."); renderTodoDia(); renderSemana(); return; }
+        d[k] = 1; save(); toast("Práctica hecha. Gracias por aparecer."); renderAll();
+      }
+      function terminar(){
+        if(g.mini){ marcar(); return; }
+        fin.hidden = false;
+        fin.innerHTML = '<b>Hecho.</b> Si no has notado nada, también vale: la presencia cuenta igual.'
+          + (g.micro ? '<br><b>Y ahora: ¿qué haría la persona que quiero ser?</b><input type="text" class="praMicro" maxlength="140" placeholder="Un paso pequeño, posible hoy (opcional)" aria-label="Mi micro-acción con valor">' : '')
+          + '<div class="row"><button class="btn" type="button" data-prafin>✓ Marcar como hecha</button></div>';
+        fin.querySelector("[data-prafin]").onclick = marcar;
+        var mi = fin.querySelector(".praMicro"); if(mi) mi.focus(); else fin.querySelector("[data-prafin]").focus();
+      }
+      var bh = det.querySelector("[data-prahecha]"); if(bh) bh.onclick = function(){ if(g.micro && fin.hidden){ terminar(); } else marcar(); };
+      det.addEventListener("toggle", function(){
+        if(!det.open){ if(det._r){ try{ det._r.stop(); }catch(e){} } return; }
+        if(det._r || !window.RespiroAIS) return;
+        cnt.textContent = g.mini ? "Pulsa «Empezar»" : "0 de "+g.ciclos+" respiraciones · pulsa «Empezar»";
+        det._r = RespiroAIS.mount(box, { lang:"es", showControl:true, showZones:true, autostart:false, rhythm:RITMO,
+          onCycle:function(n){
+            cnt.textContent = g.mini ? "Hecho" : n+" de "+g.ciclos+" respiraciones";
+            if(n >= g.ciclos){ try{ det._r.stop(); }catch(e){} terminar(); }
+          } });
+        guias.push(det._r);
+      });
+    });
+  }
+  function pararGuias(){ guias.forEach(function(r){ try{ r.destroy(); }catch(e){} }); guias = []; }
 
   /* ---------- Tipos de paso y material ---------- */
   function tipo(spec){
@@ -628,6 +736,7 @@
   }, true);
   var adelantarAbierto = false;
   function renderHoy(){
+    pararGuias();
     stageHead();
     var e = E[S.etapa], d = dia(), m = metr(), av = "";
     if(S.etapa===0) av += '<div class="note acc"><b>Bienvenido/a a tu recorrido.</b> Cada día encontrarás aquí lo que te toca, <b>en orden</b>: una práctica por la mañana, tu paso del día, una parada a mediodía, una práctica por la noche y un cierre de un minuto. Las etapas siguen la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. Y, desde hoy mismo, <b>durante todo el día</b>: una respiración curiosa cada hora y una parada de pensamiento cada vez que te descubras sobrepensando. No hace falta hacerlo perfecto: hace falta volver.</div>';
@@ -637,7 +746,7 @@
 
     var sp = siguientePaso(), items = [], tE = S.tareas[S.etapa] || {}, hoyP = -1;
     for(var k in tE){ if(tE[k]===HOY) hoyP = Math.max(hoyP, +k); }
-    items.push({k:"m", w:"☀️ Mañana", t:e.practica.t, d:e.practica.d, go:e.practica.go, vin:e.practica.vin});
+    items.push({k:"m", w:"☀️ Mañana · tu práctica", t:e.practica.t, d:e.practica.d + (e.practica.guia==="P4" && d.micro ? '<br><b>Tu micro-acción de hoy:</b> «'+esc(d.micro)+'»' : ''), vin:e.practica.vin, guia:e.practica.guia});
     // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
     // El paso hecho conserva sus enlaces (para volver a abrirlo) y el siguiente se puede adelantar aquí mismo.
     if(hoyP >= 0){
@@ -652,7 +761,7 @@
     else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length+" · "+tipo(e.pasos[sp][1])[1], t:e.pasos[sp][0], paso:e.pasos[sp]});
     else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
     items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Esta es la parada programada; las demás, cada vez que te descubras sobrepensando, súmalas abajo.", vin:true});
-    items.push({k:"n", w:"🌙 Tarde o noche", t: S.etapa===0 ? "Respira 1 minuto antes de dormir" : "Práctica programada (3–5 min)", d:"Al llegar a casa o antes de dormir. También si el día ha ido bien.", go:e.practica.go});
+    items.push({k:"n", w:"🌙 Tarde o noche · tu práctica", t:e.noche.t, d:e.noche.d, guia:e.noche.guia});
     var done = 0, vinAbierta = false;
     $("#hoyList").innerHTML = items.map(function(it){
       var ok = it.hecho || (it.k==="t" ? false : !!d[it.k]);
@@ -661,6 +770,7 @@
       // Parada de pensamiento: las viñetas compartidas «para · respira · vuelve» (abiertas en la etapa 1).
       var abrir = S.etapa===1 && !ok && !vinAbierta; if(it.vin && abrir) vinAbierta = true;
       if(it.vin && window.VinetaAtencion) lk += '<details class="vin"'+(abrir ? ' open' : '')+'><summary>🎞️ Ver cómo se hace</summary><div class="vinBox"></div></details>';
+      if(it.guia) lk += guiaHTML(it.guia, it.k, ok);
       return '<li class="'+(ok?'done':'')+'"><button class="chk" type="button" data-k="'+it.k+'" '+(it.k==="t"&&sp>=0&&!it.hecho?'data-paso="'+sp+'"':'')+(it.hecho?' disabled':'')+' aria-label="Marcar como hecho: '+esc(it.t)+'" aria-pressed="'+ok+'">'+(ok?'✓':'')+'</button>'
         + '<div class="tb"><div class="tw">'+it.w+'</div><div class="tt">'+esc(it.t)+'</div>'+(it.d?'<div class="td">'+it.d+'</div>':'')+(lk?'<div>'+lk+'</div>':'')+(it.extra||'')+'</div></li>';
     }).join("");
@@ -678,6 +788,7 @@
       save(); renderAll();
     };});
     montarVinetas();
+    montarGuias();
     var ad = $("#adelantar"); if(ad) ad.onclick = function(){ adelantarAbierto = true; renderHoy(); };
     var ah = $("#adelHecho"); if(ah) ah.onclick = function(){ (S.tareas[S.etapa] = S.tareas[S.etapa] || {})[sp] = HOY; adelantarAbierto = false; save(); toast("Paso adelantado hecho."); renderAll(); };
     renderTodoDia();
@@ -861,7 +972,7 @@
       + "Práctica programada: " + m.prog14 + " de 14 días · en calma " + m.calma + " / porque estaba mal " + m.mal + "\n"
       + "Ruido interno medio (7 d): " + (m.ruido==null?"—":m.ruido+"/10") + "\n"
       + "Líneas básicas (media 7 d): respiración curiosa " + lb.rc + "/día · paradas de pensamiento " + lb.pp + "/día · abrazo sentido " + lb.ab + "/7 d · honestidad emocional " + lb.ho + "/7 d · entradas y salidas " + lb.en + "/7 d\n"
-      + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días\n" : "")
+      + (S.etapa>=2 ? "Micro-acción con valor: " + m.cv7 + " de 7 días" + (dia().micro ? " · hoy: «" + dia().micro + "»" : "") + "\n" : "")
       + (S.etapa>=3 ? "ITI (7 d): " + (m.itiAhora==null?"—":m.itiAhora+" %") + "\n" : "")
       + quizResumen()
       + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.Cs!=null ? " · continuidad " + ev.Cs + " s" : "") + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
