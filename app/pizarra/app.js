@@ -133,6 +133,8 @@
   // Todo lo que entra de fuera (enlace #ver=, copia de seguridad, localStorage)
   // se reconstruye campo a campo: ids, números, colores y tipos de una lista cerrada.
   const RE_ID = /^[A-Za-z0-9_]{1,16}$/;
+  const own = (o, k) => typeof k === "string" && Object.prototype.hasOwnProperty.call(o, k);
+  const MAX = { bloques: 60, pasos: 60, fichas: 120, dib: 60 };
   const txt = (v, n) => (typeof v === "string" || typeof v === "number" ? String(v).slice(0, n || 200) : "");
   const num = (v, a, b, def) => { const n = Number(v); return isFinite(n) ? lim(n, a, b) : def; };
   const pt = (v) => (Array.isArray(v) && v.length === 2 ? [num(v[0], -10, 78, 34), num(v[1], -10, 115, 52.5)] : null);
@@ -145,14 +147,14 @@
   function sanJugada(g) {
     if (!g || !Array.isArray(g.fichas) || !Array.isArray(g.pasos)) return null;
     const fichas = [], ids = new Set();
-    g.fichas.slice(0, 80).forEach((f) => {
+    g.fichas.slice(0, MAX.fichas).forEach((f) => {
       const id = idOk(f && f.id); if (!id || id === "_b" || ids.has(id) || !["a", "r", "c"].includes(f.eq)) return;
       const o = { id: id, eq: f.eq };
       if (idOk(f.pj)) o.pj = f.pj;
-      if (f.eq === "c") { o.forma = f.forma === "chino" ? "chino" : "cono"; o.col = COLORES_CONO[f.col] ? f.col : "amarillo"; }
+      if (f.eq === "c") { o.forma = f.forma === "chino" ? "chino" : "cono"; o.col = own(COLORES_CONO, f.col) ? f.col : "amarillo"; }
       ids.add(id); fichas.push(o);
     });
-    const pasos = g.pasos.slice(0, 40).map((p) => {
+    const pasos = g.pasos.slice(0, MAX.pasos).map((p) => {
       p = p || {};
       const pos = {};
       ids.forEach((id) => { const q = pt(p.pos && p.pos[id]); if (q) pos[id] = q; });
@@ -162,7 +164,7 @@
         const t = {}; ["m", "p", "f", "q"].forEach((k) => { const v = txt(p.tips[id][k], 300); if (v) t[k] = v; });
         if (Object.keys(t).length) tips[id] = t;
       });
-      const dib = (Array.isArray(p.dib) ? p.dib : []).slice(0, 40).map((k) => {
+      const dib = (Array.isArray(p.dib) ? p.dib : []).slice(0, MAX.dib).map((k) => {
         if (!k || !["linea", "flecha", "zona", "texto"].includes(k.k) || !Array.isArray(k.pts)) return null;
         const pts = k.pts.slice(0, 20).map((q) => (typeof q === "string" ? (ids.has(q) ? q : null) : pt(q))).filter(Boolean);
         if (!pts.length) return null;
@@ -181,9 +183,9 @@
       id: idOk(p.id) || uid(), tipo: p.tipo === "partido" ? "partido" : "entreno",
       fecha: /^\d{4}-\d{2}-\d{2}$/.test(p.fecha) ? p.fecha : "", titulo: txt(p.titulo, 80), rival: txt(p.rival, 60),
       objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30),
-      sistema: SISTEMAS[p.sistema] ? p.sistema : "4231", once: once,
-      bloques: p.bloques.slice(0, 30).map((b) => ({
-        id: idOk(b && b.id) || uid(), cat: CATS[b && b.cat] ? b.cat : "otro", titulo: txt(b.titulo, 80),
+      sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, sinNombres: p.sinNombres === true,
+      bloques: p.bloques.slice(0, MAX.bloques).map((b) => ({
+        id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
         min: b.min === "" || b.min == null ? "" : Math.round(num(b.min, 0, 120, 0)), texto: txt(b.texto, 1200),
         consignas: txt(b.consignas, 800), fij: txt(b.fij, 300), cuando: txt(b.cuando, 300), jug: sanJugada(b.jug)
       }))
@@ -273,6 +275,8 @@
       ] }
   };
 
+  // Puestos equivalentes cuando el sistema no tiene el mismo código (orden de preferencia)
+  const AFIN = { med: ["med", "mp", "piv"], piv: ["piv", "med"], mp: ["mp", "med"], del: ["del", "mp"], ext: ["ext"], lat: ["lat"], cen: ["cen"], por: ["por"] };
   function slotsDe(plan) { return (SISTEMAS[plan.sistema] || SISTEMAS["4231"]).s; }
 
   function nuevaJugada(plan, clave) {
@@ -291,7 +295,7 @@
       // toma el movimiento del puesto equivalente (mismo código o misma familia).
       const ref = SISTEMAS["4231"].s, usados = new Set(), mapa = {};
       sl.forEach((s, k) => { const j = ref.findIndex((r, n) => !usados.has(n) && r[0] === s[0]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
-      sl.forEach((s, k) => { if (mapa[k] !== undefined) return; let j = ref.findIndex((r, n) => !usados.has(n) && r[2] === s[2]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
+      sl.forEach((s, k) => { if (mapa[k] !== undefined) return; const afin = AFIN[s[2]] || [s[2]]; let j = -1; for (const fam of afin) { j = ref.findIndex((r, n) => !usados.has(n) && r[2] === fam); if (j >= 0) break; } if (j >= 0) { mapa[k] = j; usados.add(j); } });
       const inv = {}; Object.keys(mapa).forEach((k) => { inv[mapa[k]] = k; });
       const aMap = (arr) => { const m = {}; arr.forEach((p, n) => { if (p && inv[n] !== undefined) m["a" + inv[n]] = p.slice(); }); return m; };
       // un puesto sin equivalente (p. ej. el tercer central) se queda en su sitio del sistema
@@ -775,6 +779,7 @@
       host.querySelector('[data-a="play"]').textContent = reproduciendo ? "■ Parar" : "▶ Reproducir";
       if (ed) {
         host.querySelector('[data-a="menosPaso"]').disabled = tot < 2;
+        host.querySelector('[data-a="masPaso"]').disabled = tot >= MAX.pasos;
         host.querySelector('[data-a="deshacer"]').disabled = !hist.length;
         host.querySelector('[data-a="rehacer"]').disabled = !fut.length;
         $$("[data-h]", host).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.h === herr)));
@@ -902,6 +907,7 @@
       if (bor.pts.length >= min) {
         snap();
         const p = paso(); p.dib = p.dib || [];
+        if (p.dib.length >= MAX.dib) { bor = null; toast("Has llegado al máximo de dibujos en este paso"); pintarTodo(); return; }
         p.dib.push({ k: bor.k, c: bor.c, pts: bor.pts, t: bor.t });
         selDib = p.dib.length - 1; cambio();
       }
@@ -1033,6 +1039,7 @@
         snap(); jug.pasos.splice(i, 1); if (i >= jug.pasos.length) i = jug.pasos.length - 1; cambio(); pintarTodo();
       } else if (a === "cerrarZona") terminarDibujo();
       else if (a === "cancelarDib") { bor = null; pintarTodo(); }
+      else if (/^mas[ARC]|^masChino/.test(a) && jug.fichas.length >= MAX.fichas) toast("Has llegado al máximo de fichas");
       else if (a === "masA") anadirFicha("a");
       else if (a === "masR") anadirFicha("r");
       else if (a === "masCono") anadirFicha("c", { forma: "cono", col: R("conoCol").value });
@@ -1223,7 +1230,7 @@
       <div class="tarjeta">
         <p class="peq">Se crea un enlace con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada; el contenido viaja dentro del enlace.</p>
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
-        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" style="width:22px;height:22px"> Enviar solo dorsales, sin nombres</label>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
           <button type="button" class="btn" data-enviar="1">📤 Enviar al grupo</button>
           <button type="button" class="btn-sec" data-preview="1">👁 Ver como jugador</button>
@@ -1364,8 +1371,7 @@
     return lin.join("\n");
   }
   async function enviar(plan, cont) {
-    const sn = app.querySelector('[data-r="sinNombres"]');
-    const url = enlaceDe(plan, !!(sn && sn.checked));
+    const url = enlaceDe(plan, !!plan.sinNombres);
     const txt = textoGrupo(plan, url);
     if (navigator.share) {
       try { await navigator.share({ title: plan.titulo || "Pizarra", text: txt }); return; } catch (e) { if (e && e.name === "AbortError") return; }
@@ -1457,7 +1463,7 @@
   function pantPreview() {
     const p = db.planes.find((x) => x.id === estado.planId);
     if (!p) return ir("cuaderno");
-    vistaJugador(app, paquete(p), { volver: true });
+    vistaJugador(app, paquete(p, !!p.sinNombres), { volver: true });
   }
 
   // ---------------------------------------------------------------- eventos generales
@@ -1487,6 +1493,7 @@
       }
       if (d.pz) return abrirPizarra(plan, bl(d.pz));
       if (d.pzborrar) { if (!window.confirm("¿Quitar la pizarra de este apartado?")) return; bl(d.pzborrar).jug = null; guardar(); return pintarPantalla(); }
+      if (d.bnuevo && plan.bloques.length >= MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; guardar(); return pintarPantalla(); }
@@ -1527,6 +1534,7 @@
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
+    if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); return; }
     if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); return; }
     if (d.b === "cat" && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
