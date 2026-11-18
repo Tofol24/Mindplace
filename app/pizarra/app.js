@@ -1,4 +1,3 @@
-/* global LZString */
 /* APRENS · Pizarra del entrenador
    ---------------------------------------------------------------------------
    Cuaderno de entrenos y partidos con pizarra táctica animada.
@@ -130,12 +129,87 @@
   // Juego parado → momento de atención interna (APRENS: no luchar, volver al estímulo relevante)
   const PARADO = { banda: "quién se mueve y dónde está el espacio", cornerF: "tu zona y la trayectoria del balón", cornerC: "el balón y tu zona", falta: "la señal del lanzador y la línea del fuera de juego" };
 
+  // ---------------------------------------------------------------- saneado
+  // Todo lo que entra de fuera (enlace #ver=, copia de seguridad, localStorage)
+  // se reconstruye campo a campo: ids, números, colores y tipos de una lista cerrada.
+  const RE_ID = /^[A-Za-z0-9_]{1,16}$/;
+  const txt = (v, n) => (typeof v === "string" || typeof v === "number" ? String(v).slice(0, n || 200) : "");
+  const num = (v, a, b, def) => { const n = Number(v); return isFinite(n) ? lim(n, a, b) : def; };
+  const pt = (v) => (Array.isArray(v) && v.length === 2 ? [num(v[0], -10, 78, 34), num(v[1], -10, 115, 52.5)] : null);
+  const idOk = (v) => (typeof v === "string" && RE_ID.test(v) ? v : null);
+  const colOk = (v, def) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : def);
+  function sanJugador(j) {
+    const id = idOk(j && j.id); if (!id) return null;
+    return { id: id, d: Math.round(num(j.d, 0, 99, 0)), n: txt(j.n, 60) || "Jugador", c: txt(j.c, 18), p: txt(j.p, 24) };
+  }
+  function sanJugada(g) {
+    if (!g || !Array.isArray(g.fichas) || !Array.isArray(g.pasos)) return null;
+    const fichas = [], ids = new Set();
+    g.fichas.slice(0, 80).forEach((f) => {
+      const id = idOk(f && f.id); if (!id || id === "_b" || ids.has(id) || !["a", "r", "c"].includes(f.eq)) return;
+      const o = { id: id, eq: f.eq };
+      if (idOk(f.pj)) o.pj = f.pj;
+      if (f.eq === "c") { o.forma = f.forma === "chino" ? "chino" : "cono"; o.col = COLORES_CONO[f.col] ? f.col : "amarillo"; }
+      ids.add(id); fichas.push(o);
+    });
+    const pasos = g.pasos.slice(0, 40).map((p) => {
+      p = p || {};
+      const pos = {};
+      ids.forEach((id) => { const q = pt(p.pos && p.pos[id]); if (q) pos[id] = q; });
+      const tips = {};
+      if (p.tips && typeof p.tips === "object") Object.keys(p.tips).forEach((id) => {
+        if (!ids.has(id) || !p.tips[id]) return;
+        const t = {}; ["m", "p", "f", "q"].forEach((k) => { const v = txt(p.tips[id][k], 300); if (v) t[k] = v; });
+        if (Object.keys(t).length) tips[id] = t;
+      });
+      const dib = (Array.isArray(p.dib) ? p.dib : []).slice(0, 40).map((k) => {
+        if (!k || !["linea", "flecha", "zona", "texto"].includes(k.k) || !Array.isArray(k.pts)) return null;
+        const pts = k.pts.slice(0, 20).map((q) => (typeof q === "string" ? (ids.has(q) ? q : null) : pt(q))).filter(Boolean);
+        if (!pts.length) return null;
+        return { k: k.k, c: colOk(k.c, "#FFD23F"), pts: pts, t: txt(k.t, 40) };
+      }).filter(Boolean);
+      return { t: txt(p.t, 80), pos: pos, b: pt(p.b) || [34, 52.5], tips: tips, dib: dib };
+    });
+    if (!pasos.length) return null;
+    return { vista: ["C", "A", "D"].includes(g.vista) ? g.vista : "C", rivales: g.rivales !== false, fichas: fichas, pasos: pasos };
+  }
+  function sanPlan(p) {
+    if (!p || !Array.isArray(p.bloques)) return null;
+    const once = {};
+    if (p.once && typeof p.once === "object") Object.keys(p.once).forEach((k) => { if (/^\d{1,2}$/.test(k) && idOk(p.once[k])) once[k] = p.once[k]; });
+    return {
+      id: idOk(p.id) || uid(), tipo: p.tipo === "partido" ? "partido" : "entreno",
+      fecha: /^\d{4}-\d{2}-\d{2}$/.test(p.fecha) ? p.fecha : "", titulo: txt(p.titulo, 80), rival: txt(p.rival, 60),
+      objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30),
+      sistema: SISTEMAS[p.sistema] ? p.sistema : "4231", once: once,
+      bloques: p.bloques.slice(0, 30).map((b) => ({
+        id: idOk(b && b.id) || uid(), cat: CATS[b && b.cat] ? b.cat : "otro", titulo: txt(b.titulo, 80),
+        min: b.min === "" || b.min == null ? "" : Math.round(num(b.min, 0, 120, 0)), texto: txt(b.texto, 1200),
+        consignas: txt(b.consignas, 800), fij: txt(b.fij, 300), cuando: txt(b.cuando, 300), jug: sanJugada(b.jug)
+      }))
+    };
+  }
+  function sanDB(o) {
+    if (!o || typeof o !== "object" || !Array.isArray(o.planes) || !Array.isArray(o.plantilla)) return null;
+    return {
+      v: 1,
+      equipo: { nombre: txt(o.equipo && o.equipo.nombre, 60) || "Mi equipo", color: colOk(o.equipo && o.equipo.color, "#C8102E") },
+      plantilla: o.plantilla.map(sanJugador).filter(Boolean),
+      planes: o.planes.map(sanPlan).filter(Boolean)
+    };
+  }
+  function sanPaquete(o) {
+    if (!o || typeof o !== "object") return null;
+    const plan = sanPlan(o.plan); if (!plan) return null;
+    return { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") }, plan: plan, jug: (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean) };
+  }
+
   // ---------------------------------------------------------------- datos
   function dbVacia() {
     return { v: 1, equipo: { nombre: "Mi equipo", color: "#C8102E" }, plantilla: [], planes: [] };
   }
   let db;
-  try { db = JSON.parse(localStorage.getItem(CLAVE)) || dbVacia(); } catch (e) { db = dbVacia(); }
+  try { db = sanDB(JSON.parse(localStorage.getItem(CLAVE))) || dbVacia(); } catch (e) { db = dbVacia(); }
   if (!db.equipo) db.equipo = dbVacia().equipo;
   let tGuardar = null;
   function guardar() {
@@ -213,11 +287,19 @@
     if (DEF[clave]) {
       const d = DEF[clave];
       equipos();
-      let pos = Object.assign(arr2map("a", d.a), arr2map("r", d.r));
+      // Las plantillas están escritas para 1-4-2-3-1: cada puesto del sistema elegido
+      // toma el movimiento del puesto equivalente (mismo código o misma familia).
+      const ref = SISTEMAS["4231"].s, usados = new Set(), mapa = {};
+      sl.forEach((s, k) => { const j = ref.findIndex((r, n) => !usados.has(n) && r[0] === s[0]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
+      sl.forEach((s, k) => { if (mapa[k] !== undefined) return; let j = ref.findIndex((r, n) => !usados.has(n) && r[2] === s[2]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
+      const inv = {}; Object.keys(mapa).forEach((k) => { inv[mapa[k]] = k; });
+      const aMap = (arr) => { const m = {}; arr.forEach((p, n) => { if (p && inv[n] !== undefined) m["a" + inv[n]] = p.slice(); }); return m; };
+      // un puesto sin equivalente (p. ej. el tercer central) se queda en su sitio del sistema
+      let pos = Object.assign(arr2map("a", aBase), aMap(d.a), arr2map("r", d.r));
       let b = d.pasos[0].b;
       d.pasos.forEach((p) => {
         pos = clon(pos);
-        if (p.a) Object.keys(p.a).forEach((k) => { pos["a" + k] = p.a[k].slice(); });
+        if (p.a) Object.keys(p.a).forEach((k) => { if (inv[k] !== undefined) pos["a" + inv[k]] = p.a[k].slice(); });
         if (p.r) Object.keys(p.r).forEach((k) => { pos["r" + k] = p.r[k].slice(); });
         if (p.b) b = p.b.slice();
         jug.pasos.push({ t: p.t, pos: pos, b: b.slice(), tips: {}, dib: [] });
@@ -294,7 +376,7 @@
         if (!fam && j && j.p) fam = famDePuesto(j.p);
         return {
           pid: pid, nombre: j ? j.n : (rol || (f.eq === "a" ? "Jugador" : "Compañero (peto)")),
-          corto: j ? (j.c || j.n.split(" ")[0]) : cod, dorsal: j ? String(j.d) : "", rol: rol || (j && j.p) || "", fam: fam, cod: cod
+          corto: j ? (j.c || (/^Dorsal \d/.test(j.n) ? "" : j.n.split(" ")[0])) : cod, dorsal: j ? String(j.d) : "", rol: rol || (j && j.p) || "", fam: fam, cod: cod
         };
       }
     };
@@ -344,7 +426,7 @@
     if (!yo || !P[fid]) return [];
     const yoInfo = ctx.info(yo);
     const me = P[fid];
-    const vis = (f) => f.eq !== "c" && P[f.id] && (jug.rivales !== false || f.eq !== "r");
+    const vis = (f) => f.eq !== "c" && P[f.id];
     const todos = jug.fichas.filter(vis);
     const eq = yo.eq;
     const comp = todos.filter((f) => f.eq === eq && f.id !== fid);
@@ -779,16 +861,25 @@
       };
       anim = requestAnimationFrame(paso1);
     }
+    let sesion = 0, timers = [];
+    function pararTodo() {
+      sesion++; reproduciendo = false;
+      timers.forEach(clearTimeout); timers = [];
+      if (anim) { cancelAnimationFrame(anim); anim = null; }
+      mostrado = posPaso(paso());
+    }
     function reproducir() {
-      if (reproduciendo) { reproduciendo = false; pintarInfo(); return; }
+      if (reproduciendo) { pararTodo(); pintar(mostrado); pintarInfo(); return; }
+      pararTodo();
+      const s0 = sesion;
+      const luego = (fn, ms) => timers.push(setTimeout(() => { if (s0 === sesion) fn(); }, ms));
       reproduciendo = true;
       i = 0; mostrado = posPaso(jug.pasos[0]); pintar(mostrado); pintarInfo();
       const siguiente = () => {
-        if (!reproduciendo) return;
-        if (i >= jug.pasos.length - 1) { reproduciendo = false; pintarInfo(); return; }
-        setTimeout(() => { if (reproduciendo) animarA(i + 1, 1200, () => setTimeout(siguiente, 900)); }, 300);
+        if (i >= jug.pasos.length - 1) { reproduciendo = false; pintar(mostrado); pintarInfo(); return; }
+        luego(() => animarA(i + 1, 1200, () => { if (s0 === sesion) luego(siguiente, 900); }), 300);
       };
-      setTimeout(siguiente, 700);
+      luego(siguiente, 700);
     }
 
     // ----- acciones de edición
@@ -983,7 +1074,7 @@
     pintarTodo();
     return {
       seleccionarJugador(pid) { o.yoPid = pid; sel = fichaYo(); selDib = -1; pintar(mostrado || posPaso(paso())); pintarInfo(); },
-      parar() { reproduciendo = false; if (anim) cancelAnimationFrame(anim); }
+      parar() { pararTodo(); }
     };
   }
 
@@ -1131,6 +1222,8 @@
       <h2>Enviar</h2>
       <div class="tarjeta">
         <p class="peq">Se crea un enlace con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada; el contenido viaja dentro del enlace.</p>
+        <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" style="width:22px;height:22px"> Enviar solo dorsales, sin nombres</label>
         <div class="fila">
           <button type="button" class="btn" data-enviar="1">📤 Enviar al grupo</button>
           <button type="button" class="btn-sec" data-preview="1">👁 Ver como jugador</button>
@@ -1143,9 +1236,11 @@
     const dlg = $("#dlgPizarra");
     $("#dlgPzTit").textContent = bloque.titulo || CATS[bloque.cat] || "Pizarra";
     const cuerpo = $("#dlgPzCuerpo");
-    cuerpo.id = "dlgPzCuerpo";
+    cuerpo.innerHTML = "";
+    const hostPz = document.createElement("div");
+    cuerpo.appendChild(hostPz);
     const ctx = crearCtx(plan, db.plantilla, true);
-    const pz = crearPizarra(cuerpo, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: guardar });
+    const pz = crearPizarra(hostPz, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: guardar });
     dlg._pz = pz;
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   }
@@ -1237,23 +1332,23 @@
       </div>
       <h2>Sobre la privacidad</h2>
       <div class="tarjeta">
-        <p class="peq">La pizarra no usa servidores ni servicios externos. El enlace que envías al grupo lleva el plan dentro (después del símbolo #), así que no se guarda en ningún sitio: solo lo tiene quien recibe el mensaje. Usa nombres cortos o apodos si prefieres no compartir apellidos.</p>
+        <p class="peq">La pizarra no usa servidores ni servicios externos. El enlace que envías al grupo lleva el plan dentro (después del símbolo #) y no se guarda en ningún servidor. Eso sí: lo puede abrir cualquiera que tenga el enlace, también si se reenvía. Usa nombres cortos o apodos, o envía solo dorsales, si prefieres no compartir nombres.</p>
       </div>`;
   }
 
   // ---------------------------------------------------------------- compartir
-  function paquete(plan) {
+  function paquete(plan, sinNombres) {
     const usados = new Set();
     Object.values(plan.once || {}).forEach((x) => usados.add(x));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
-    const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => ({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" }));
+    const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color }, plan: pl, jug: jug };
   }
-  function enlaceDe(plan) {
-    const txt = LZString.compressToEncodedURIComponent(JSON.stringify(paquete(plan)));
+  function enlaceDe(plan, sinNombres) {
+    const txt = window.LZString.compressToEncodedURIComponent(JSON.stringify(paquete(plan, sinNombres)));
     return location.origin + location.pathname + "#ver=" + txt;
   }
   function textoGrupo(plan, url) {
@@ -1269,7 +1364,8 @@
     return lin.join("\n");
   }
   async function enviar(plan, cont) {
-    const url = enlaceDe(plan);
+    const sn = app.querySelector('[data-r="sinNombres"]');
+    const url = enlaceDe(plan, !!(sn && sn.checked));
     const txt = textoGrupo(plan, url);
     if (navigator.share) {
       try { await navigator.share({ title: plan.titulo || "Pizarra", text: txt }); return; } catch (e) { if (e && e.name === "AbortError") return; }
@@ -1441,10 +1537,11 @@
       const r = new FileReader();
       r.onload = () => {
         try {
-          const o = JSON.parse(r.result);
-          if (!o || !Array.isArray(o.planes) || !Array.isArray(o.plantilla)) throw new Error("formato");
+          const o = sanDB(JSON.parse(r.result));
+          if (!o) throw new Error("formato");
           if (!window.confirm("Esto sustituye el cuaderno actual por la copia. ¿Seguir?")) return;
-          db = o; if (!db.equipo) db.equipo = dbVacia().equipo; guardar(); toast("Copia recuperada"); ir("cuaderno");
+          try { localStorage.setItem(CLAVE, JSON.stringify(o)); } catch (err) { toast("No se ha podido guardar la copia en este navegador."); return; }
+          db = o; toast("Copia recuperada"); ir("cuaderno");
         } catch (err) { toast("Ese archivo no es una copia de la pizarra"); }
       };
       r.readAsText(t.files[0]);
@@ -1457,7 +1554,7 @@
     const h = location.hash || "";
     if (h.startsWith("#ver=")) {
       let pq = null;
-      try { pq = JSON.parse(LZString.decompressFromEncodedURIComponent(h.slice(5))); } catch (e) { pq = null; }
+      try { pq = sanPaquete(JSON.parse(window.LZString.decompressFromEncodedURIComponent(h.slice(5)))); } catch (e) { pq = null; }
       if (!pq || !pq.plan) {
         app.innerHTML = `<h1>Enlace incompleto</h1><p>Este enlace no se ha podido leer. Pide al entrenador que lo vuelva a enviar (a veces se corta al copiarlo).</p>`;
         return;
