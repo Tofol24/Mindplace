@@ -591,6 +591,19 @@
     return `<path d="M ${x} ${y - 1.7} L ${x + 1.3} ${y + 1} L ${x - 1.3} ${y + 1} Z" fill="${c}" stroke="#111" stroke-width="0.2"/><ellipse cx="${x}" cy="${y + 1}" rx="1.5" ry="0.45" fill="${c}" stroke="#111" stroke-width="0.15"/>`;
   }
 
+  // ---------------------------------------------------------------- mensajes sobre el campo (mostrar u ocultar)
+  // Preferencia de este dispositivo; vale para todas las pizarras de la página.
+  let burbOn = true;
+  try { burbOn = localStorage.getItem("pz_burbujas") !== "0"; } catch (e) { /* nada */ }
+  const burbujasVisibles = () => burbOn;
+  const textoBurb = () => (burbOn ? "💬 Ocultar mensajes del campo" : "💬 Mostrar mensajes del campo");
+  function ponerBurbujas(on) {
+    burbOn = on;
+    try { localStorage.setItem("pz_burbujas", on ? "1" : "0"); } catch (e) { /* nada */ }
+    document.querySelectorAll('[data-a="burb"]').forEach((b) => { b.textContent = textoBurb(); });
+    document.querySelectorAll(".pz").forEach((el) => { if (el.parentNode) el.parentNode.dispatchEvent(new CustomEvent("pz-burbujas")); });
+  }
+
   // ---------------------------------------------------------------- componente pizarra
   function crearPizarra(host, o) {
     // o: {ctx, jug, cat, editable, yoPid, alCambiar}
@@ -620,6 +633,7 @@
         <div class="pz-ctrl">
           <button type="button" class="btn-peq" data-a="ant" aria-label="Paso anterior">◀</button>
           <button type="button" class="btn-peq" data-a="play">▶ Reproducir</button>
+          <button type="button" class="btn-peq" data-a="burb">${textoBurb()}</button>
           <button type="button" class="btn-peq" data-a="sig" aria-label="Paso siguiente">▶▶</button>
           <span class="sp"></span>
           ${ed ? `<button type="button" class="btn-peq" data-a="deshacer" aria-label="Deshacer">↶</button><button type="button" class="btn-peq" data-a="rehacer" aria-label="Rehacer">↷</button>` : ""}
@@ -771,7 +785,7 @@
 
     function ponerBurbuja(P) {
       const f = sel && jug.fichas.find((x) => x.id === sel);
-      if (!f || f.eq === "c" || !P[sel] || !visible(f)) { burb.hidden = true; return; }
+      if (!burbujasVisibles() || !f || f.eq === "c" || !P[sel] || !visible(f)) { burb.hidden = true; return; }
       const tips = (paso().tips || {})[sel] || {};
       let txt = tips.m;
       if (!txt) {
@@ -1066,6 +1080,10 @@
       if (a === "ant" && i > 0) animarA(i - 1, 700);
       else if (a === "sig" && i < jug.pasos.length - 1) animarA(i + 1, 1100);
       else if (a === "play") reproducir();
+      else if (a === "burb") {
+        ponerBurbujas(!burbujasVisibles());
+        ponerBurbuja(mostrado || posPaso(paso()));
+      }
       else if (a === "deshacer" && hist.length) { fut.push(JSON.stringify(jug)); restaurar(hist.pop()); }
       else if (a === "rehacer" && fut.length) { hist.push(JSON.stringify(jug)); restaurar(fut.pop()); }
       else if (a === "masPaso") {
@@ -1122,6 +1140,7 @@
     });
 
     pintarTodo();
+    host.addEventListener("pz-burbujas", () => ponerBurbuja(mostrado || posPaso(paso())));
     return {
       seleccionarJugador(pid) { o.yoPid = pid; sel = fichaYo(); selDib = -1; pintar(mostrado || posPaso(paso())); pintarInfo(); },
       parar() { pararTodo(); }
