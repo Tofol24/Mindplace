@@ -1196,7 +1196,7 @@
         <div class="fila">
           <label class="btn" for="abrirFile" style="cursor:pointer">📂 Abrir archivo</label>
           <input type="file" id="abrirFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
-          ${(function () { try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); return u && u.plan ? `<button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(u.plan.titulo || "último plan").slice(0, 40))}»</button>` : ""; } catch (e) { return ""; } })()}
+          ${(function () { try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); return u && u.plan ? `<button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(u.plan.titulo || "último plan").slice(0, 40))}»</button><button type="button" class="btn-peq peligro" data-olvidar="1" aria-label="Olvidar el último plan abierto en este móvil">✕ Olvidar</button>` : ""; } catch (e) { return ""; } })()}
         </div>
       </div>
       ${db.plantilla.length ? "" : `<div class="tarjeta"><p><b>Primero, tu plantilla.</b> Añade el dorsal y el nombre de cada jugador para que aparezcan en las fichas del campo.</p><button type="button" class="btn-sec" data-ir2="plantilla">Ir a la plantilla</button></div>`}
@@ -1475,13 +1475,14 @@
     });
     return mejor;
   }
+  const LISTAS_FIJAS = new Set(["d", "planes", "plantilla", "bloques", "fichas", "pasos", "jug"]);
   function limpiarVacios(x) {
     if (Array.isArray(x)) { x.forEach(limpiarVacios); return; }
     if (!x || typeof x !== "object") return;
     Object.keys(x).forEach((k) => {
       const v = x[k];
       limpiarVacios(v);
-      if (v === "" || v === null || (Array.isArray(v) && !v.length && k !== "d") || (v && typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length)) delete x[k];
+      if (v === "" || v === null || (Array.isArray(v) && !v.length && !LISTAS_FIJAS.has(k)) || (v && typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length)) delete x[k];
     });
   }
   function compactar(pq, cortos) {
@@ -1509,8 +1510,15 @@
         const refL = ref ? ids.map((id) => (ref.pos[id] ? mm(ref.pos[id]) : null)) : prev;
         const refB = ref ? mm(ref.b) : null;
         if (!refL) p.q = lista.map((v) => v || [0, 0, 1]);
-        else { const d = []; lista.forEach((v, j) => { if (v && !igualP(v, refL[j])) d.push(j, v[0], v[1]); }); p.d = d; }
-        prev = lista.map((v, j) => v || (prev && prev[j]) || null);
+        else {
+          const d = [];
+          lista.forEach((v, j) => {
+            if (v && !igualP(v, refL[j])) d.push(j, v[0], v[1]);
+            else if (!v && refL[j]) d.push(j, null, null); // la ficha no está en este paso
+          });
+          p.d = d;
+        }
+        prev = lista;
         const c = mm(p.b); if (!refB || !igualP(c, refB)) p.c = c;
         if (ref && p.t === ref.t) delete p.t; else if (ref && !p.t) p.t = " ";
         delete p.pos; delete p.b;
@@ -1543,7 +1551,10 @@
           else {
             actual = ref ? ids.map((id) => (ref.pos[id] ? ref.pos[id].slice() : null)) : (actual ? actual.slice() : ids.map(() => null));
             const d = Array.isArray(p.d) ? p.d : [];
-            for (let j = 0; j + 2 < d.length; j += 3) if (Number.isInteger(d[j]) && d[j] >= 0 && d[j] < ids.length) actual[d[j]] = [d[j + 1] / 2, d[j + 2] / 2];
+            for (let j = 0; j + 2 < d.length; j += 3) {
+              if (!Number.isInteger(d[j]) || d[j] < 0 || d[j] >= ids.length) continue;
+              actual[d[j]] = d[j + 1] === null ? null : [d[j + 1] / 2, d[j + 2] / 2];
+            }
           }
           p.pos = {}; ids.forEach((id, j) => { if (id && actual[j]) p.pos[id] = actual[j]; });
           p.b = Array.isArray(p.c) ? [p.c[0] / 2, p.c[1] / 2] : ref ? ref.b.slice() : [34, 52.5];
@@ -1568,11 +1579,11 @@
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
   function descodificar(hash) {
-    const m = /^#(v|e|ver|ent)=(.*)$/.exec(hash || "");
+    const m = /^#(p|c|v|e|ver|ent)=(.*)$/.exec(hash || "");
     if (!m) return null;
     let datos = m[2];
     try { datos = decodeURIComponent(datos); } catch (e) { /* tal cual */ }
-    if (m[1] === "v" || m[1] === "e") {
+    if (m[1] === "p" || m[1] === "c" || m[1] === "v" || m[1] === "e") {
       let b = datos.replace(/[^A-Za-z0-9_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
       while (b.length % 4) b += "=";
       const bin = atob(b), u8 = new Uint8Array(bin.length);
@@ -1596,7 +1607,7 @@
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
   }
   function enlaceDe(plan, sinNombres) {
-    return location.origin + location.pathname + "#v=" + codificar(paquete(plan, sinNombres), true);
+    return location.origin + location.pathname + "#p=" + codificar(paquete(plan, sinNombres), true);
   }
   function textoGrupo(plan, url) {
     const lin = [];
@@ -1714,7 +1725,7 @@
   async function enviarEntrenador(ids, cont) {
     const sa = $("#envSinApe");
     const pq = paqueteEntrenador(ids, !!(sa && sa.checked));
-    const url = location.origin + location.pathname + "#e=" + codificar(pq);
+    const url = location.origin + location.pathname + "#c=" + codificar(pq);
     const txt = "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url;
     const largo = url.length > 12000;
     if (navigator.share && !largo) {
@@ -2010,6 +2021,7 @@
     const d = b.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (d.ir2) return ir(d.ir2);
+    if (d.olvidar) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
     if (d.ultimo) {
       let pq = null; try { pq = sanPaquete(JSON.parse(localStorage.getItem("pz_ultimo"))); } catch (e) { pq = null; }
       if (pq) return mostrarJugador(pq, true);
@@ -2153,13 +2165,13 @@
   // ---------------------------------------------------------------- arranque
   function arrancar() {
     const h = location.hash || "";
-    if (/^#(e|ent)=/.test(h)) {
+    if (/^#(c|e|ent)=/.test(h)) {
       let rec = null;
       try { rec = sanDB(descodificar(h)); } catch (e) { rec = null; }
       if (!rec) { app.innerHTML = `<h1>Enlace incompleto</h1><p>Este enlace no se ha podido leer. Pide que te lo vuelvan a enviar o que te pasen el archivo.</p>`; return; }
       return pantRecibido(rec);
     }
-    if (/^#(v|ver)=/.test(h)) {
+    if (/^#(p|v|ver)=/.test(h)) {
       let pq = null;
       try { pq = sanPaquete(descodificar(h)); } catch (e) { pq = null; }
       if (!pq || !pq.plan) {
@@ -2192,8 +2204,17 @@
       extra.innerHTML = `<p class="peq">¿Eres el entrenador? Puedes guardar este plan en tu cuaderno para editarlo.</p><button type="button" class="btn-sec" data-guardarplan="1">Guardar en mi cuaderno</button>`;
       app.appendChild(extra);
       extra.querySelector("button").addEventListener("click", () => {
-        const p = clon(pq.plan); p.id = uid();
-        (pq.jug || []).forEach((j) => { if (!db.plantilla.some((x) => x.id === j.id)) db.plantilla.push(clon(j)); });
+        const p = clon(pq.plan); p.id = uid(); p.mod = Date.now();
+        const mapa = {};
+        (pq.jug || []).forEach((j) => {
+          const ex = db.plantilla.find((x) => x.d === j.d && (normNom(x.c) === normNom(j.c || j.n) || normNom(x.n) === normNom(j.n)));
+          if (ex) { mapa[j.id] = ex.id; return; }
+          const n = clon(j); n.id = uid(); n.mod = Date.now(); mapa[j.id] = n.id; db.plantilla.push(n);
+        });
+        const m2 = (x) => (x && mapa[x]) || x;
+        Object.keys(p.once || {}).forEach((k) => { p.once[k] = m2(p.once[k]); });
+        Object.keys(p.extra || {}).forEach((k) => { p.extra[k] = p.extra[k].map(m2); });
+        p.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = m2(f.pj); }); });
         db.planes.push(p); guardar();
         history.replaceState(null, "", location.pathname);
         document.body.style.paddingBottom = "";
@@ -2205,11 +2226,11 @@
     let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
     if (!o) return;
     db = o;
-    if (/^#(v|ver|e|ent)=/.test(location.hash || "")) return;
+    if (/^#(p|c|v|ver|e|ent)=/.test(location.hash || "")) return;
     if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
   });
-  window.addEventListener("hashchange", () => { if (/^#(v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
+  window.addEventListener("hashchange", () => { if (/^#(p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();

@@ -256,9 +256,10 @@ self.addEventListener("fetch", e => {
   if (url.pathname.indexOf("/pizarra/") !== -1) {
     e.respondWith(
       fetch(req).then(res => {
-        if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); }
+        if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); return res; }
+        if (res && res.status >= 500) return caches.match(req).then(hit => hit || res);
         return res;
-      }).catch(() => caches.match(req).then(hit => hit || caches.match("./pizarra/index.html")))
+      }).catch(() => caches.match(req).then(hit => hit || (req.mode === "navigate" ? caches.match("./pizarra/index.html") : Response.error())))
     );
     return;
   }
