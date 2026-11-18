@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1B4F8C">
+<meta name="description" content="La escalera · Volvemos a conducir juntos · APRENS. Versión en castellano de la guía de exposición a la conducción con la esposa como coterapeuta.">
+<title>La escalera · Conducir juntos (castellano) · APRENS</title>
+<style>
+:root{
+  --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+  --naranja:#B85E1F;--rojo:#B03225;--gris:#5B6270;--fondo:#F0F4F8;--oro:#9A6F1F;--oroLt:#F6EBD3;--lila:#6B43AE;--lilaLt:#ECE4F7;
+  --tinta:#1a1a2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);color:var(--tinta);min-height:100vh;line-height:1.6;font-size:17px;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:var(--azul);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:Georgia,serif;flex:none}
+.htitle{font-size:18px;font-weight:700;line-height:1.3}
+.hsub{font-size:12px;opacity:.85}
+.hlangs{margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hlangs a{color:#fff;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff;border-bottom:1px solid #DDE5EE;position:sticky;top:60px;z-index:40}
+.tab{flex:none;border:1.5px solid var(--azulLt);background:#fff;color:var(--azul);border-radius:30px;padding:7px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--azul);color:#fff;border-color:var(--azul)}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 70px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:16px}
+h1{font-size:26px;margin:0 0 6px;color:var(--azul);line-height:1.4}
+h2{font-size:21px;margin:0 0 10px;color:var(--azul);line-height:1.45}
+h3{font-size:18px;margin:14px 0 6px;line-height:1.5}
+p{margin:0 0 10px}
+ul,ol{margin:0 0 10px;padding-inline-start:22px}
+li{margin-bottom:6px}
+.lead{font-size:18px}
+.quote{font-size:20px;color:var(--azul);font-weight:700;border-inline-start:4px solid var(--oro);padding-inline-start:12px;margin:6px 0 14px}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.keys{grid-template-columns:1fr}}
+.key{border-radius:16px;padding:16px}
+.key-que{background:var(--azulLt)}
+.key-como{background:var(--verdeLt)}
+.key h3{margin-top:0}
+.pill{display:inline-block;border-radius:30px;padding:2px 10px;font-size:13px;font-weight:700;margin-inline-end:4px;margin-bottom:4px}
+.p-que{background:var(--azulLt);color:var(--azul)}
+.p-como{background:var(--verdeLt);color:var(--verde)}
+.p-lvl{background:var(--oroLt);color:var(--oro)}
+.p-ella{background:var(--lilaLt);color:var(--lila)}
+.nivel{border:2px solid var(--azulLt);border-radius:18px;padding:16px;margin-bottom:14px;background:#fff}
+.nivel.actual{border-color:var(--oro);box-shadow:0 0 0 3px var(--oroLt)}
+.nivel-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.nivel-n{width:38px;height:38px;border-radius:50%;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:18px}
+.nivel-t{font-weight:700;font-size:18px;line-height:1.4}
+.nivel-s{font-size:14px;color:var(--gris)}
+.paso{border-top:1px dashed #D3DCE6;padding:10px 0}
+.paso:first-of-type{border-top:0}
+.paso-t{font-weight:700}
+.paso-v{font-size:14px;color:var(--gris)}
+.paso-c{font-size:14px;font-weight:700;color:var(--verde)}
+.paso-c.cero{color:var(--gris);font-weight:400}
+.bp{display:inline-block;border:0;border-radius:30px;padding:10px 18px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;background:var(--azul);color:#fff;text-decoration:none}
+.bpg{background:var(--verde)}
+.bs{background:#fff;color:var(--azul);border:1.5px solid var(--azul)}
+.bwa{background:#1E7A45}
+.bmini{padding:5px 12px;font-size:14px;margin-top:6px}
+.box{border-radius:14px;padding:14px;margin:10px 0}
+.box-oro{background:var(--oroLt)}
+.box-verde{background:var(--verdeLt)}
+.box-lila{background:var(--lilaLt)}
+.box-rojo{background:#FBE5E1}
+.frase{background:#fff;border-inline-start:4px solid var(--lila);border-radius:10px;padding:8px 12px;margin:6px 0;font-weight:700}
+.frase.no{border-color:var(--rojo);font-weight:400;text-decoration:line-through;text-decoration-color:rgba(176,50,37,.5)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.two{grid-template-columns:1fr}}
+details{background:#fff;border-radius:14px;padding:4px 14px;margin-bottom:10px;border:1px solid #E1E7EF}
+summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--azul)}
+label{display:block;font-weight:700;margin:12px 0 4px}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;font:inherit;font-size:16px;border:1.5px solid #C9D4E0;border-radius:12px;padding:9px 12px;background:#fff;color:var(--tinta)}
+textarea{min-height:80px}
+input[type=range]{width:100%}
+.rv{display:flex;justify-content:space-between;font-size:14px;color:var(--gris)}
+.rv b{color:var(--azul);font-size:18px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-weight:400;margin:6px 0}
+.chk input{margin-top:8px;width:20px;height:20px;flex:none}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{margin:0;font-weight:400;border:1.5px solid #C9D4E0;border-radius:30px;padding:5px 12px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.reg{border-top:1px solid #E1E7EF;padding:10px 0;font-size:15px}
+.reg b{color:var(--azul)}
+.msg{white-space:pre-wrap;background:#F6F8FB;border-radius:12px;padding:12px;font-size:14px;direction:ltr;text-align:left;font-family:system-ui,sans-serif;max-height:300px;overflow:auto}
+.ok{color:var(--verde);font-weight:700}
+.foot{text-align:center;font-size:13px;color:var(--gris);padding:10px 16px 40px;max-width:700px;margin:0 auto}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hlogo" aria-hidden="true">ap</div>
+  <div>
+    <div class="htitle">La escalera · Conducir juntos</div>
+    <div class="hsub">APRENS · TEC · AIS · castellano</div>
+  </div>
+  <nav class="hlangs" aria-label="Idioma">
+    <a href="escalera-conducir-darija.html" data-lang-link lang="ar-MA">الدارجة</a>
+    <a href="escalera-conducir-ar.html" data-lang-link lang="ar">العربية</a>
+  </nav>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Apartados">
+  <button class="tab" role="tab" id="t-inicio" aria-controls="v-inicio" aria-selected="true">Inicio</button>
+  <button class="tab" role="tab" id="t-escalera" aria-controls="v-escalera" aria-selected="false">La escalera</button>
+  <button class="tab" role="tab" id="t-ella" aria-controls="v-ella" aria-selected="false">Guía de la esposa</button>
+  <button class="tab" role="tab" id="t-dentro" aria-controls="v-dentro" aria-selected="false">Herramientas de dentro</button>
+  <button class="tab" role="tab" id="t-registro" aria-controls="v-registro" aria-selected="false">Registro</button>
+</nav>
+
+<main class="wrap">
+
+<div class="box box-lila" style="margin-top:0"><b>Versión en castellano para el psicólogo.</b> Es la traducción de lo que el paciente y su mujer ven en dariya y en árabe estándar. Los registros que se hagan en este mismo móvil son los mismos en las tres versiones.</div>
+
+<!-- ═══════════ INICIO ═══════════ -->
+<section id="v-inicio" role="tabpanel" aria-labelledby="t-inicio">
+  <div class="card">
+    <h1>Un peldaño cada vez</h1>
+    <p class="lead">Después del accidente, el cuerpo ha empezado a ver el coche como un peligro. Es comprensible. Pero cuanto más nos alejamos de conducir, más crece el miedo, y con él crecen el hablar solo, los pensamientos que dan vueltas sin parar y la distancia con tu mujer y tu hijo.</p>
+    <p class="quote">Quedarse no es apretar los dientes y aguantar.<br>Quedarse es sostener lo que sientes, acompañado.</p>
+    <p>La exposición funciona cuando <b>te quedas</b> en la situación el tiempo que hemos acordado, acompañándote por dentro, en lugar de huir para aliviarte. Si vuelves antes de tiempo para que baje el miedo, el miedo aprende que huir funciona, y la próxima vez pesa más. La alarma del cuerpo puede bajar o no: lo importante es que <b>has dado el paso y te has quedado contigo</b>.</p>
+    <p>Y quedarse <b>no es reprimir</b> el dolor de dentro. Es acompañarlo: respirar con curiosidad, soltar el cuerpo, abrazarte por dentro y ser honesto con lo que sientes.</p>
+  </div>
+
+  <div class="card">
+    <h2>Cada salida se abre con dos llaves</h2>
+    <div class="keys">
+      <div class="key key-que">
+        <h3>🔑 El QUÉ</h3>
+        <p><b>Qué hacemos hoy.</b> Qué peldaño, cuántos minutos, adónde y quién viene. El compromiso: completar el tiempo acordado sin huir, aunque el miedo siga alto.</p>
+      </div>
+      <div class="key key-como">
+        <h3>🔑 El CÓMO</h3>
+        <p><b>Cómo te acompañas por dentro</b> mientras estás ahí: respiración curiosa, tensión y distensión, abrazo sentido y honestidad con lo que sientes.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Los tres juntos: el padre, la madre y el hijo</h2>
+    <p>Este plan lo hacemos <b>los tres</b>. Tu mujer se sienta a tu lado y sostiene el acuerdo con firmeza y con cariño, y tu hijo os acompaña. Su presencia no es una carga para ti: es la razón por la que volvemos a la carretera, para que seas un padre y un marido presente, no ausente en sus pensamientos.</p>
+    <p>Ella también tiene carnet de conducir. Por eso una parte del plan es <b>aceptar que conduzca ella contigo</b> y que salga con el coche con vuestro hijo, aunque tengas miedo de que les pase algo. El miedo por ellos es amor, pero no dejamos que decida por nosotros.</p>
+    <div class="box box-oro">
+      <b>Primera semana:</b> solo trayectos cortos <b>dentro del pueblo</b>, de día, al menos una vez al día. Después subimos peldaño a peldaño, según lo que decida el psicólogo en la sesión.
+    </div>
+    <p><button class="bp" data-go="escalera">Ver la escalera →</button></p>
+  </div>
+</section>
+
+<!-- ═══════════ ESCALERA ═══════════ -->
+<section id="v-escalera" role="tabpanel" aria-labelledby="t-escalera" hidden>
+  <div class="card">
+    <h2>La escalera, de lo más fácil a lo más difícil</h2>
+    <p>Subimos al nivel siguiente cuando hemos hecho el paso <b>al menos 3 veces</b> completando el tiempo acordado <b>sin huir</b>, y con un buen «cómo»: no basta cuánto tiempo te quedaste, importa también cómo sostuviste lo que sentiste. Si el día es difícil, repetimos el mismo peldaño. No saltamos ni tenemos prisa.</p>
+    <p class="nivel-s">El contador verde cuenta las salidas registradas de cada paso en «Registro».</p>
+    <label for="nivelActual">Nivel en el que trabajamos ahora</label>
+    <select id="nivelActual"></select>
+  </div>
+  <div id="ladder"></div>
+  <div class="card box-rojo">
+    <h3 style="margin-top:0">⚠️ Primero la seguridad</h3>
+    <p>Si nota un mareo de verdad, hay una avería o la carretera es peligrosa (lluvia fuerte, niebla): paramos en un sitio seguro. Eso no es huir, es prudencia. Huir es volver a casa solo porque ha subido el miedo.</p>
+    <p>Pasar cerca del lugar del accidente <b>solo se hace cuando lo decide el psicólogo</b>.</p>
+  </div>
+  <div class="card" id="app">
+    <h2>La escalera de la app «السُّلَّم» (exposición en vivo)</h2>
+    <p>Es la escalera que el paciente tiene ya cargada en <a href="../exposicion-ar/index.html">la versión en árabe de La escalera</a>, con las dos llaves y el registro de cada exposición. Son 12 peldaños editables, ordenados por la dificultad anticipada:</p>
+    <ol id="appLadder"><li>Conduce ella; él de pasajero a su lado y el hijo detrás: vuelta corta por el pueblo (2/10)</li><li>En el asiento del conductor, arranca el motor sin moverse (3/10)</li><li>Conduce un trayecto muy corto y conocido del pueblo (panadería, tienda, mezquita) y vuelve (4/10)</li><li>Conduce por varias calles del pueblo y aparca al menos una vez (5/10)</li><li>Conduce 15 minutos por el pueblo en hora con tráfico (6/10)</li><li>Ella sale sola con el hijo a un recado corto; él en casa, un solo mensaje al llegar (6/10)</li><li>Conduce por el pueblo con ella sentada detrás con el hijo (7/10)</li><li>Conduce hasta el pueblo vecino por carretera secundaria y vuelve (7/10)</li><li>Conduce un tramo corto por carretera principal o autovía (8/10)</li><li>Ella hace un viaje más largo con el hijo; él en casa sin llamar una y otra vez (8/10)</li><li>Conduce solo un trayecto conocido; ella le espera en casa · solo si lo decide el psicólogo (9/10)</li><li>Conduce solo con el hijo en un trayecto habitual · solo si lo decide el psicólogo (9/10)</li></ol>
+    <p class="nivel-s">El resto de la app es la traducción de <a href="../#/tool/escalera_exposicion">La escalera</a> en castellano, con un apartado más sobre hablar solo o rumiar y el apoyo «parar la rumiación». El resumen de cada exposición le llega a usted en castellano.</p>
+  </div>
+</section>
+
+<!-- ═══════════ GUÍA DE LA ESPOSA ═══════════ -->
+<section id="v-ella" role="tabpanel" aria-labelledby="t-ella" hidden>
+  <div class="card">
+    <span class="pill p-ella">Para la esposa · coterapeuta</span>
+    <h1>Tu papel: una compañera firme y cariñosa</h1>
+    <p class="lead">No eres enfermera ni profesora de autoescuela. Tu papel es estar a su lado con <b>firmeza</b> y con <b>compasión</b> a la vez. Tu marido ahora no puede solo, y tu presencia hace posible el paso.</p>
+    <div class="two">
+      <div class="box box-oro">
+        <h3 style="margin-top:0">💪 La firmeza</h3>
+        <ul>
+          <li>La salida se hace <b>como acordamos</b>: a la hora, el trayecto entero y el tiempo completo.</li>
+          <li>No la cancelamos porque tenga miedo. El miedo es esperable y forma parte del tratamiento.</li>
+          <li>El acuerdo es un compromiso, y tú <b>proteges el acuerdo</b>: no lo cambias dentro del coche.</li>
+        </ul>
+      </div>
+      <div class="box box-verde">
+        <h3 style="margin-top:0">🤍 La compasión</h3>
+        <ul>
+          <li>Reconoces su miedo: «Veo que tienes miedo, y es comprensible después de lo que pasó».</li>
+          <li>Sin burlas, sin reproches, sin discusiones largas.</li>
+          <li>Elogias el <b>esfuerzo</b>, no el resultado: «Te has quedado aunque tenías miedo».</li>
+        </ul>
+      </div>
+    </div>
+    <p class="quote" style="font-size:18px">La firmeza sin compasión se vuelve presión. La compasión sin firmeza se vuelve huida. Necesitamos las dos juntas.</p>
+  </div>
+
+  <div class="card">
+    <h2>Qué hacer y cómo: paso a paso</h2>
+
+    <details open>
+      <summary>1. Antes de salir (5 minutos)</summary>
+      <ul>
+        <li>Acordad el paso de hoy de la escalera: <b>qué</b> (qué trayecto), <b>cuántos</b> minutos y <b>quién</b> viene.</li>
+        <li>Fijad una hora cada día. Mejor de día, y la primera semana en un momento con poco tráfico.</li>
+        <li>Sentaos en el coche antes de arrancar y respirad juntos un minuto: notamos el aire que entra y sale, sin forzarlo.</li>
+        <li>Pregúntale: «Del 0 al 10, ¿cuánto miedo tienes ahora?» y apunta el número.</li>
+        <li>El hijo va detrás con el cinturón. No le pedimos que tranquilice a su padre: solo acompaña.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>2. Mientras conduce</summary>
+      <ul>
+        <li>Voz tranquila y frases cortas. Tu silencio sereno también ayuda.</li>
+        <li>No le des muchas indicaciones de conducción, no cojas el volante y no levantes la voz salvo ante un peligro real.</li>
+        <li>Si empieza a <b>hablar solo</b> o a repetir «¿y si pasa…?»: es rumiación. No discutas la idea. Devuélvelo al ahora:
+          <div class="frase">«Estás aquí ahora. Mira la carretera, las manos en el volante, respira.»</div>
+        </li>
+        <li>Invítale a nombrar lo que siente sin explicarlo:
+          <div class="frase">«Di solo lo que sientes: siento miedo, y me quedo con él.»</div>
+        </li>
+        <li>A mitad del trayecto pregúntale una sola vez: «¿Cuánto miedo ahora, del 0 al 10?»</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>3. Si quiere parar o volver</summary>
+      <ul>
+        <li>Si no hay un peligro real, no volvemos a casa. Si lo necesita, <b>aparca a un lado en un sitio seguro</b>, respira uno o dos minutos dentro del coche y después <b>continúa</b> hasta completar el tiempo.</li>
+        <li>Díselo con firmeza y con cariño:
+          <div class="frase">«Sé que es difícil. Para un momento y respira, y después seguimos. Lo acordamos los dos.»</div>
+        </li>
+        <li>Si se niega del todo: no grites ni amenaces. Os quedáis en el coche parado el tiempo que falta, y eso también es exposición. Después se lo cuentas al psicólogo.</li>
+        <li>No cojas tú el volante en un paso en el que le toca conducir a él: eso le enseña al miedo que la solución es que conduzca otro.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>4. Después de la salida (5 minutos)</summary>
+      <ul>
+        <li>Elogia el esfuerzo con una sola frase sincera:
+          <div class="frase">«Te has quedado hasta el final aunque tenías miedo. Estoy orgullosa de ti.»</div>
+        </li>
+        <li>Registradlo juntos en «Registro»: el miedo antes, el punto más alto, después, y si completasteis el tiempo.</li>
+        <li>No volváis a hablar del accidente después de la salida. Hablad de otra cosa, tomad un té, volved a la vida normal.</li>
+        <li>Si ha sido un día difícil, dile: «Hoy ha sido difícil, y mañana repetimos el mismo paso». No es un fracaso.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>5. Cuando conduces tú (aceptar que le acompañes tú)</summary>
+      <p>Su miedo a que os pase algo si cogéis el coche es un miedo que nace del amor, pero crece si le obedecemos. Por eso:</p>
+      <ul>
+        <li>La primera semana conduces tú con él de pasajero a tu lado y el hijo detrás, un trayecto corto dentro del pueblo. Él practica <b>aceptar ser acompañado</b> y confiar.</li>
+        <li>Después sales tú con el hijo y él se queda en casa. Le dices una sola vez:
+          <div class="frase">«Entiendo tu miedo. Conduzco con prudencia. Salgo y vuelvo, y te mando un mensaje cuando llegue.»</div>
+        </li>
+        <li><b>Un solo mensaje</b> al llegar, no llamadas repetidas. Si llama muchas veces, no contestes a cada llamada: eso alimenta la ansiedad.</li>
+        <li>Mientras está en casa, practica las herramientas de dentro en lugar de llamar.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Frases que ayudan y frases que evitamos</h2>
+    <div class="two">
+      <div>
+        <h3>✔️ Di</h3>
+        <div class="frase">«Veo que tienes miedo, y estoy aquí contigo.»</div>
+        <div class="frase">«El miedo viene y se va, y nosotros seguimos.»</div>
+        <div class="frase">«Estás aquí ahora. La carretera, el volante, la respiración.»</div>
+        <div class="frase">«Acordamos 10 minutos. Queda poco.»</div>
+        <div class="frase">«Tu hijo te ve intentarlo. Eso es lo importante.»</div>
+      </div>
+      <div>
+        <h3>✖️ Evita</h3>
+        <div class="frase no">«No va a pasar nada, no va a pasar nada…» (tranquilizar una y otra vez)</div>
+        <div class="frase no">«Exageras, sé un hombre.»</div>
+        <div class="frase no">«Vale, volvemos a casa.» (solo porque tiene miedo)</div>
+        <div class="frase no">«Déjame conducir a mí.» (en su paso)</div>
+        <div class="frase no">«¿Te acuerdas de cómo fue el accidente?»</div>
+      </div>
+    </div>
+    <p class="nivel-s">Tranquilizar una vez está bien. Si se repite mucho, el miedo pide cada vez más.</p>
+  </div>
+
+  <div class="card">
+    <h2>En casa, fuera del coche</h2>
+    <ul>
+      <li>Cuando notes que habla solo o está ausente en sus pensamientos: pon la mano en su hombro con calma e invítale a respirar contigo un minuto. No le preguntes «¿en qué piensas?».</li>
+      <li>Reservad cada día un poco de tiempo en familia sin móvil: comer juntos, que juegue con el hijo, pasear un rato. La cercanía vuelve con gestos pequeños.</li>
+      <li>No cargues con todo tú. Tú también necesitas descansar y tener a alguien que te escuche.</li>
+    </ul>
+    <div class="box box-rojo">
+      <b>Avisa al psicólogo cuanto antes si:</b> habla de hacerse daño o de no querer vivir, las crisis de miedo son muy fuertes cada día, rechaza todas las salidas durante una semana entera, o empieza a beber alcohol o a tomar medicación sin receta. Si hay un peligro inmediato: <b>112</b>.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HERRAMIENTAS DE DENTRO ═══════════ -->
+<section id="v-dentro" role="tabpanel" aria-labelledby="t-dentro" hidden>
+  <div class="card">
+    <span class="pill p-como">El CÓMO</span>
+    <h1>Cómo acompañarte por dentro</h1>
+    <p><b>Primero aparecer, después permanecer.</b> Antes de exponerte, practica cada día en calma, a horas fijas (por ejemplo después del desayuno y antes de dormir, 3 minutos), no solo cuando aprieta el miedo. Así, cuando subas un peldaño, no estarás solo con lo que sientes: sabrás acompañarte.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🫁 Respiración curiosa</h3>
+    <p>Observa cómo entra y sale el aire, sin forzarlo. Curiosidad, no control. En el coche: antes de arrancar y en cada semáforo.</p>
+    <h3>💪 Tensión y distensión</h3>
+    <p>Tensa los hombros, las manos en el volante y la mandíbula 5 segundos, y después suéltalos despacio. De la tensión a la distensión. En el coche: con el coche parado.</p>
+    <h3>🤍 Abrazo sentido</h3>
+    <p>Acompáñate como acompañarías a alguien que quieres, como acompañas a tu hijo cuando tiene miedo. Pon la mano en el pecho un minuto (con el coche parado) y dite: «Estoy aquí contigo».</p>
+    <h3>🗣️ Honestidad emocional</h3>
+    <p>Nombra lo que sientes sin explicarlo ni taparlo: «Noto el miedo, y me quedo con él».</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🎠 Parar el carrusel (hablar solo y rumiar)</h3>
+    <ol>
+      <li><b>Date cuenta:</b> «Estoy dando vueltas a la misma idea» o «Estoy hablando solo».</li>
+      <li><b>Nómbralo:</b> «Esto es rumiación, no la realidad».</li>
+      <li><b>Vuelve al cuerpo:</b> una respiración con curiosidad, los pies en el suelo (o las manos en el volante).</li>
+      <li><b>Vuelve a lo que importa:</b> ¿qué hago ahora con mi mujer y mi hijo?</li>
+    </ol>
+    <p>Si la idea vuelve, y volverá, volvemos otra vez. No se trata de que no aparezca la idea, sino de darte cuenta de que te has ido y volver.</p>
+    <div class="box box-lila"><b>Tiempo de preocupación:</b> elige un cuarto de hora cada día (por ejemplo a las seis de la tarde) para escribir tus preocupaciones. Si la idea llega en otro momento, dile: «Pensaré en ti a las seis».</div>
+  </div>
+</section>
+
+<!-- ═══════════ REGISTRO ═══════════ -->
+<section id="v-registro" role="tabpanel" aria-labelledby="t-registro" hidden>
+  <div class="card">
+    <h1>Registro de la salida</h1>
+    <p>Lo rellena la esposa con su marido después de cada salida. Los datos se quedan <b>solo en este móvil</b>.</p>
+    <form id="fReg">
+      <label for="rFecha">Fecha</label>
+      <input type="date" id="rFecha" required>
+      <label for="rPaso">Paso</label>
+      <select id="rPaso" required></select>
+      <div class="two">
+        <div><label for="rPlan">Minutos acordados</label><input type="number" id="rPlan" min="0" max="240" inputmode="numeric"></div>
+        <div><label for="rReal">Minutos reales</label><input type="number" id="rReal" min="0" max="240" inputmode="numeric"></div>
+      </div>
+      <div id="rangos"></div>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">¿Completamos el tiempo sin huir?</legend>
+        <div class="seg">
+          <label><input type="radio" name="rQuedo" value="si" required> Sí</label>
+          <label><input type="radio" name="rQuedo" value="parcial"> Paramos y seguimos</label>
+          <label><input type="radio" name="rQuedo" value="no"> No, volvimos</label>
+        </div>
+      </fieldset>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">Hablar solo y rumiar durante la salida</legend>
+        <div class="seg">
+          <label><input type="radio" name="rRum" value="nada"> Nada</label>
+          <label><input type="radio" name="rRum" value="poco"> Poco</label>
+          <label><input type="radio" name="rRum" value="mucho"> Mucho</label>
+        </div>
+      </fieldset>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">¿Qué herramientas de dentro usó?</legend>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="respiracion"> 🫁 Respiración curiosa</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="muscular"> 💪 Tensión y distensión</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="abrazo"> 🤍 Abrazo sentido</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="honestidad"> 🗣️ Honestidad emocional</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="carrusel"> 🎠 Parar el carrusel</label>
+      </fieldset>
+      <label for="rNota">Nota breve (opcional)</label>
+      <textarea id="rNota" maxlength="500"></textarea>
+      <p style="margin-top:14px"><button type="submit" class="bp bpg">Guardar la salida</button> <span id="rOk" class="ok" role="status"></span></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Salidas registradas</h2>
+    <div id="lista"></div>
+  </div>
+
+  <div class="card">
+    <h2>Enviar al psicólogo</h2>
+    <p>El mensaje está escrito en castellano para que el psicólogo lo entienda directamente. Las notas se quedan tal como las escribisteis.</p>
+    <p>
+      <button type="button" class="bp bwa" id="bWA">📲 Enviar por WhatsApp</button>
+      <button type="button" class="bp bs" id="bCopy">📋 Copiar el texto</button>
+    </p>
+    <div class="msg" id="msgBox" aria-live="polite"></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b>. Esta herramienta acompaña la exposición que pauta el psicólogo, y no la sustituye.<br>
+  Los datos se guardan solo en este dispositivo y no se envían a ningún servidor.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var KEY = "aprens_conducir_ar_v1", KEY_NIV = "aprens_conducir_ar_nivel";
+
+  /* ---------- السُّلَّم (es: título en castellano para el informe al psicólogo) ---------- */
+  var NIVELES = [
+    { n: 1, t: "Primera semana · dentro del pueblo", s: "Trayectos cortos, de día, con poco tráfico. Al menos una salida al día.", pasos: [
+      { id: "1a", es: "N1 · Pasajero: ella conduce, él al lado, hijo detrás, vuelta corta por el pueblo", t: "Conduce tu mujer y tú vas a su lado de pasajero, con el hijo detrás: vuelta corta por el pueblo", v: "5–10 min · de día", ella: true },
+      { id: "1b", es: "N1 · Él en el asiento del conductor, motor encendido, sin moverse", t: "Te sientas en el asiento del conductor, arrancas el motor y no te mueves", v: "3–5 min · tu mujer al lado · delante de casa" },
+      { id: "1c", es: "N1 · Él conduce un trayecto muy corto y conocido del pueblo (panadería, tienda)", t: "Conduces un trayecto muy corto y conocido del pueblo (panadería, tienda, mezquita) y vuelves", v: "5 min · tu mujer al lado · el hijo detrás · de día" },
+      { id: "1d", es: "N1 · Él conduce por varias calles del pueblo y aparca", t: "Conduces por varias calles del pueblo y aparcas al menos una vez", v: "10 min · tu mujer al lado · el hijo detrás" }
+    ] },
+    { n: 2, t: "Nivel 2 · todo el pueblo", s: "Trayectos más largos dentro del pueblo y horas con más tráfico.", pasos: [
+      { id: "2a", es: "N2 · Él conduce 15 min por el pueblo en hora con más tráfico", t: "Conduces 15 minutos por el pueblo en una hora con tráfico (salida del colegio, mercado)", v: "15 min · tu mujer al lado · el hijo detrás" },
+      { id: "2b", es: "N2 · Ella sale sola con el hijo a un recado corto; él en casa, un solo mensaje", t: "Tu mujer sale sola con el hijo a un recado corto y tú te quedas en casa: un solo mensaje al llegar, sin llamadas", v: "15–20 min · tú en casa", ella: true },
+      { id: "2c", es: "N2 · Él conduce con ella en el asiento de atrás (menos apoyo)", t: "Conduces por el pueblo con tu mujer sentada detrás con el hijo, no a tu lado", v: "10–15 min" }
+    ] },
+    { n: 3, t: "Nivel 3 · fuera del pueblo", s: "La carretera al pueblo o la población de al lado.", pasos: [
+      { id: "3a", es: "N3 · Él conduce hasta el pueblo vecino por carretera secundaria", t: "Conduces hasta el pueblo vecino por carretera secundaria y vuelves", v: "15–20 min · tu mujer al lado · de día" },
+      { id: "3b", es: "N3 · Él como pasajero en un trayecto largo conducido por ella", t: "Tu mujer conduce un trayecto más largo fuera del pueblo y tú vas de pasajero, sin darle indicaciones", v: "20–30 min", ella: true },
+      { id: "3c", es: "N3 · Él conduce a la población cercana a hacer una compra", t: "Conduces a la población cercana a comprar algo, aparcas y vuelves", v: "30 min · tu mujer y el hijo" }
+    ] },
+    { n: 4, t: "Nivel 4 · vías más rápidas", s: "Carretera principal o autovía, y condiciones más difíciles.", pasos: [
+      { id: "4a", es: "N4 · Él conduce por carretera principal / vía rápida, ella al lado", t: "Conduces un tramo corto por carretera principal o autovía", v: "20–30 min · tu mujer al lado" },
+      { id: "4b", es: "N4 · Él conduce al atardecer o con lluvia ligera", t: "Conduces al atardecer o con lluvia ligera, primero por el pueblo y después fuera", v: "15–20 min · tu mujer al lado" },
+      { id: "4c", es: "N4 · Ella hace un viaje largo con el hijo; él en casa sin llamar", t: "Tu mujer hace un viaje más largo con el hijo y tú te quedas en casa sin llamar una y otra vez", v: "una hora o más", ella: true }
+    ] },
+    { n: 5, t: "Nivel 5 · autonomía", s: "Solo cuando lo decida el psicólogo.", pasos: [
+      { id: "5a", es: "N5 · Él conduce solo un trayecto conocido; ella espera en casa", t: "Conduces solo un trayecto conocido y tu mujer te espera en casa", v: "10–15 min" },
+      { id: "5b", es: "N5 · Pasar cerca del lugar del accidente (solo si lo indica el psicólogo)", t: "Pasar cerca del lugar del accidente, con tu mujer (solo si lo decide el psicólogo)", v: "según la sesión" },
+      { id: "5c", es: "N5 · Él lleva solo al hijo en un trayecto habitual", t: "Conduces tú solo con el hijo en un trayecto habitual", v: "15–20 min" }
+    ] }
+  ];
+  var PASOS = {};
+  NIVELES.forEach(function (nv) { nv.pasos.forEach(function (p) { p.nivel = nv.n; PASOS[p.id] = p; }); });
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function load() { try { var a = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function save(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+  var regs = load();
+  function nivelActual() { var n = 1; try { n = Number(localStorage.getItem(KEY_NIV)) || 1; } catch (e) {} return n; }
+
+  /* ---------- pestañas ---------- */
+  function abrir(id) {
+    $$(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.id === "t-" + id ? "true" : "false"); });
+    $$("[role=tabpanel]").forEach(function (v) { v.hidden = v.id !== "v-" + id; });
+    window.scrollTo(0, 0);
+    try { history.replaceState(null, "", "#" + id); } catch (e) {}
+    if (id === "registro") { renderLista(); prepMsg(); }
+  }
+  var SECCIONES = ["inicio", "escalera", "ella", "dentro", "registro"];
+  function desdeEnlace() {
+    var h = (location.hash || "").replace("#", "");
+    if (SECCIONES.indexOf(h) > -1) abrir(h);
+    else if (h === "app") { abrir("escalera"); var ap = document.getElementById("app"); if (ap) ap.scrollIntoView(); }
+  }
+  window.addEventListener("hashchange", desdeEnlace);
+  // Las pestañas se pegan justo debajo de la cabecera, mida lo que mida
+  function ajustarPestanas() { var h = $(".header"), t = $(".tabs"); if (h && t) t.style.top = h.offsetHeight + "px"; }
+  ajustarPestanas(); window.addEventListener("resize", ajustarPestanas);
+  // Cambiar de idioma conservando el apartado abierto
+  $$("[data-lang-link]").forEach(function (a) {
+    a.addEventListener("click", function () { a.href = a.getAttribute("href").split("#")[0] + location.hash; });
+  });
+  $$(".tab").forEach(function (t) {
+    t.addEventListener("click", function () { abrir(t.id.slice(2)); });
+  });
+  $$("[data-go]").forEach(function (b) { b.addEventListener("click", function () { abrir(b.getAttribute("data-go")); }); });
+
+  /* ---------- escalera ---------- */
+  function cuenta(id) { return regs.filter(function (r) { return r.paso === id; }).length; }
+  function renderLadder() {
+    var act = nivelActual();
+    $("#ladder").innerHTML = NIVELES.map(function (nv) {
+      return '<div class="nivel' + (nv.n === act ? " actual" : "") + '">' +
+        '<div class="nivel-h"><span class="nivel-n">' + nv.n + '</span><div><div class="nivel-t">' + esc(nv.t) + '</div><div class="nivel-s">' + esc(nv.s) + '</div></div></div>' +
+        nv.pasos.map(function (p) {
+          var c = cuenta(p.id);
+          return '<div class="paso"><div class="paso-t">' + (p.ella ? '<span class="pill p-ella">conduce ella</span>' : "") + esc(p.t) + '</div>' +
+            '<div class="paso-v">' + esc(p.v) + '</div>' +
+            '<div class="paso-c' + (c ? "" : " cero") + '">' + (c ? "✓ " + (c === 1 ? "1 salida registrada" : c + " salidas registradas") + (c >= 3 ? " · listo para subir si el «cómo» ha sido bueno" : "") : "Sin registrar todavía") + '</div>' +
+            '<button type="button" class="bp bs bmini" data-reg="' + p.id + '">Registrar una salida de este paso</button></div>';
+        }).join("") + '</div>';
+    }).join("");
+    $$("[data-reg]", $("#ladder")).forEach(function (b) {
+      b.addEventListener("click", function () { $("#rPaso").value = b.getAttribute("data-reg"); abrir("registro"); $("#rFecha").focus(); });
+    });
+  }
+  var sel = $("#nivelActual");
+  sel.innerHTML = NIVELES.map(function (nv) { return '<option value="' + nv.n + '">' + esc(nv.t) + '</option>'; }).join("");
+  sel.value = String(nivelActual());
+  sel.addEventListener("change", function () { try { localStorage.setItem(KEY_NIV, sel.value); } catch (e) {} renderLadder(); });
+
+  /* ---------- registro ---------- */
+  $("#rPaso").innerHTML = NIVELES.map(function (nv) {
+    return '<optgroup label="' + esc(nv.t) + '">' + nv.pasos.map(function (p) { return '<option value="' + p.id + '">' + esc(p.t) + '</option>'; }).join("") + '</optgroup>';
+  }).join("");
+  var RANGOS = [["rAntes", "Miedo antes de salir"], ["rPico", "Punto más alto del miedo"], ["rDespues", "Miedo después de la salida"], ["rComo", "El «cómo»: cuánto se acompañó por dentro"]];
+  $("#rangos").innerHTML = RANGOS.map(function (r) {
+    return '<label for="' + r[0] + '">' + r[1] + '</label><input type="range" id="' + r[0] + '" min="0" max="10" value="5">' +
+      '<div class="rv"><span>0</span><b id="' + r[0] + 'v">5</b><span>10</span></div>';
+  }).join("");
+  RANGOS.forEach(function (r) { var i = $("#" + r[0]); i.addEventListener("input", function () { $("#" + r[0] + "v").textContent = i.value; }); });
+  function hoy() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  $("#rFecha").value = hoy();
+  $("#rPaso").value = (NIVELES[nivelActual() - 1] || NIVELES[0]).pasos[0].id;
+
+  $("#fReg").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = $("input[name=rQuedo]:checked"), ru = $("input[name=rRum]:checked");
+    var r = {
+      id: "r" + Date.now(), fecha: $("#rFecha").value, paso: $("#rPaso").value,
+      plan: $("#rPlan").value, real: $("#rReal").value,
+      antes: +$("#rAntes").value, pico: +$("#rPico").value, despues: +$("#rDespues").value, como: +$("#rComo").value,
+      quedo: q ? q.value : "", rum: ru ? ru.value : "",
+      apoyos: $$("input[name=rApoyo]:checked").map(function (c) { return c.value; }),
+      nota: $("#rNota").value.trim()
+    };
+    regs.push(r);
+    var ok = save(regs);
+    $("#rOk").textContent = ok ? "✓ Guardada" : "Guardada solo para esta sesión";
+    setTimeout(function () { $("#rOk").textContent = ""; }, 2500);
+    $("#rNota").value = ""; $("#rPlan").value = ""; $("#rReal").value = "";
+    $$("input[name=rApoyo], input[name=rQuedo], input[name=rRum]").forEach(function (c) { c.checked = false; });
+    renderLista(); renderLadder(); prepMsg();
+  });
+
+  var TXT_Q = { si: "completada", parcial: "paramos y seguimos", no: "volvimos" };
+  var TXT_R = { nada: "nada", poco: "poco", mucho: "mucho" };
+  function renderLista() {
+    var box = $("#lista");
+    if (!regs.length) { box.innerHTML = '<p class="nivel-s">Todavía no hay salidas registradas.</p>'; return; }
+    box.innerHTML = regs.slice().reverse().map(function (r) {
+      var p = PASOS[r.paso] || { t: r.paso };
+      return '<div class="reg"><b>' + esc(r.fecha) + '</b> · ' + esc(p.t) + '<br>' +
+        'Miedo: ' + r.antes + ' → ' + r.pico + ' → ' + r.despues + ' · «Cómo»: ' + r.como + '/10' +
+        (r.real ? ' · ' + esc(r.real) + ' min' : "") + (r.quedo ? ' · ' + TXT_Q[r.quedo] : "") +
+        (r.nota ? '<br><span class="nivel-s">' + esc(r.nota) + '</span>' : "") +
+        '<br><button type="button" class="bp bs bmini" data-del="' + r.id + '">Borrar</button></div>';
+    }).join("");
+    $$("[data-del]", box).forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (!confirm("¿Borrar este registro?")) return;
+        regs = regs.filter(function (r) { return r.id !== b.getAttribute("data-del"); });
+        save(regs); renderLista(); renderLadder(); prepMsg();
+      });
+    });
+  }
+
+  /* ---------- mensaje al psicólogo (en castellano) ---------- */
+  var ES_Q = { si: "sí, sin huida", parcial: "paró y continuó", no: "no, volvieron" };
+  var ES_R = { nada: "nada", poco: "poco", mucho: "mucho" };
+  var ES_A = { respiracion: "respiración", muscular: "tensión-distensión", abrazo: "abrazo sentido", honestidad: "honestidad emocional", carrusel: "parar el carrusel" };
+  function prepMsg() {
+    var ult = regs.slice(-10);
+    var lin = ["APRENS · La escalera · Conducir juntos · castellano (registro de la coterapeuta)",
+      "Nivel actual: " + nivelActual() + " · Salidas registradas: " + regs.length, ""];
+    if (!ult.length) lin.push("Todavía no hay salidas registradas.");
+    ult.forEach(function (r) {
+      var p = PASOS[r.paso];
+      lin.push("• " + r.fecha + " · " + (p ? p.es : r.paso));
+      lin.push("  Miedo antes/pico/después: " + r.antes + "/" + r.pico + "/" + r.despues + " · CÓMO: " + r.como + "/10" +
+        (r.plan || r.real ? " · min previstos/reales: " + (r.plan || "-") + "/" + (r.real || "-") : ""));
+      lin.push("  Se quedó: " + (ES_Q[r.quedo] || "-") + " · Hablar solo/rumiación: " + (ES_R[r.rum] || "-") +
+        (r.apoyos && r.apoyos.length ? " · Apoyos: " + r.apoyos.map(function (a) { return ES_A[a] || a; }).join(", ") : ""));
+      if (r.nota) lin.push("  Nota (original): " + r.nota);
+    });
+    $("#msgBox").textContent = lin.join("\n");
+  }
+  $("#bWA").addEventListener("click", function () {
+    prepMsg();
+    window.open("https://wa.me/?text=" + encodeURIComponent($("#msgBox").textContent), "_blank", "noopener");
+  });
+  $("#bCopy").addEventListener("click", function () {
+    prepMsg();
+    var t = $("#msgBox").textContent, b = this;
+    function hecho() { b.textContent = "✓ Copiado"; setTimeout(function () { b.textContent = "📋 Copiar el texto"; }, 2200); }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(t).then(hecho); }
+    else { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); hecho(); } catch (e) {} ta.remove(); }
+  });
+
+  renderLadder();
+  desdeEnlace();
+})();
+</script>
+</body>
+</html>
