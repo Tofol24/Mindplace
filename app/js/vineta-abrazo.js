@@ -151,6 +151,17 @@
       nube: 'el que fa mal',
       juego: '🎮 Entrena-ho jugant: Arribar a casa →',
       pie: 'L\'abraçada sentida <b>valida i dona espai</b>: ensenya al teu cos que qualsevol dolor, sigui quin sigui, té cabuda a la teva <b>manada segura</b>. Per això deixa de ser amenaçant, i canvien la teva manera de viure el dia a dia i la teva relació amb els teus. Si vols, acompanya-la amb la frase honesta: «No sé per què, però avui ho noto aquí».'
+    },
+    ar: {
+      t: 'تنفّس · اثبُت · عانِق',
+      c1: 'قبل أن أدخل البيت، <b>أتوقّف</b> أمام الباب و<b>أتنفّس</b>. الهواء هو الطُّعم.',
+      c2: 'آخذ <b>انتباهي إلى البطن</b> (<span class="vb-dot">●</span>) وأتركه هناك. ألاحظ ما أحمله من يومي، <b>بدون أن أغيّره</b>.',
+      c3: '<b>أدخل وأعانق</b> زوجتي أو أبنائي وانتباهي ما زال في البطن. ليس عناقًا آليًا: إنه <b>عناق محسوس</b>.',
+      c4: 'ما أشعر به، مهما كان <b>مؤلمًا أو هشًّا</b>، <b>له مكان في عائلتي، في قطيعي</b>. لا شيء مما أشعر به تهديد: الألم يجعلنا <b>شركاء</b>، ولا يبعدنا.',
+      nube: 'ما يؤلم',
+      juego: '',
+      pie: 'العناق المحسوس <b>يعترف ويعطي مساحة</b>: يعلّم جسمك أن أيّ ألم، مهما كان، له مكان في <b>قطيعك الآمن</b>. لذلك يتوقّف عن أن يكون تهديدًا، وتتغيّر طريقتك في عيش يومك وعلاقتك بأهلك. وإن أردت، رافقه بالجملة الصادقة: «لا أعرف لماذا، لكنني أشعر بهذا هنا اليوم».',
+      sum: 'شاهد كيف يكون العناق المحسوس'
     }
   };
 
@@ -160,7 +171,7 @@
   function mount(container, opts) {
     opts = opts || {};
     injectCSS();
-    var L = TXT[opts.lang === 'ca' ? 'ca' : 'es'];
+    var L = TXT[opts.lang] || TXT.es;
     var useSil = opts.silueta !== false && !!(global.RespiroAIS && global.RespiroAIS.mount);
     var titulo = opts.titulo == null ? L.t : opts.titulo;
     container.classList.add('vb');
@@ -172,13 +183,13 @@
         panel(3, svg3(), L.c3) +
         panel(4, svg4().replace('LBL', esc(L.nube)), L.c4) +
       '</div>' +
-      (opts.pie !== false ? '<div class="vb-pie">' + L.pie + (opts.juego !== false ? juegoLink('casa', L.juego, 'vb-juego') : '') + '</div>' : '');
+      (opts.pie !== false ? '<div class="vb-pie">' + L.pie + (opts.juego !== false && L.juego ? juegoLink('casa', L.juego, 'vb-juego') : '') + '</div>' : '');
 
     var sil = null;
     if (useSil) {
       try {
         sil = global.RespiroAIS.mount(container.querySelector('.vb-sil'), {
-          lang: 'es', figure: 'organism', showControl: false, showZones: false, legend: false, autostart: true,
+          lang: opts.lang === 'ar' ? 'ar' : 'es', figure: 'organism', showControl: false, showZones: false, legend: false, autostart: true,
           rhythm: opts.rhythm || { inhale: 4000, anchor: 2000, exhale: 6000, pause: 1500 }
         });
       } catch (e) { sil = null; var b = container.querySelector('.vb-sil'); if (b) b.outerHTML = svg2(); }
@@ -199,7 +210,7 @@
     '.vb-det>summary::-webkit-details-marker{display:none}.vb-det[open]>summary{margin-bottom:10px}';
   function langDe(el) {
     var l = el.getAttribute('data-lang') || (document.documentElement.lang || 'es');
-    return /^ca/i.test(l) ? 'ca' : 'es';
+    return /^ca/i.test(l) ? 'ca' : /^ar/i.test(l) ? 'ar' : 'es';
   }
   function enhance(el) {
     if (el.__vbDone) return; el.__vbDone = true;
@@ -207,7 +218,7 @@
     var lang = langDe(el);
     var det = document.createElement('details'); det.className = 'vb-det';
     if (el.hasAttribute('data-open')) det.open = true;
-    det.innerHTML = '<summary>🎞️ ' + (lang === 'ca' ? 'Veure com es fa l\'abraçada sentida' : 'Ver cómo se hace el abrazo sentido') + '</summary><div></div>';
+    det.innerHTML = '<summary>🎞️ ' + (TXT[lang].sum || (lang === 'ca' ? 'Veure com es fa l\'abraçada sentida' : 'Ver cómo se hace el abrazo sentido')) + '</summary><div></div>';
     el.appendChild(det);
     var box = det.lastChild, inst = null;
     function sync() {

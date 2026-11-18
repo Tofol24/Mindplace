@@ -65,12 +65,16 @@
     if (cur < 0) s += '<text x="' + (fx + W / 2) + '" y="' + (fy - 64) + '" font-size="34" text-anchor="middle">' + esc(persona) + "</text>";
     s += "</svg>";
 
+    // Textos (por defecto en castellano; opts.textos permite traducirlos)
+    var T = Object.assign({ escalon: "Escalón", escalones: "escalones", hecho: "Conseguido", ahora: "El de ahora", ahoraSr: "Es el de ahora.",
+      pendiente: "Pendiente.", siguientes: "Los siguientes", alto: "escalón muy alto", escalera: "Escalera" }, opts.textos || {});
     var sr = pasos.map(function (p, i) {
-      return "<li>Escalón " + (i + 1) + ": " + esc(p.etiqueta) + ". " + (p.hecho ? "Conseguido." : (i === cur ? "Es el de ahora." : "Pendiente.")) + "</li>";
+      return "<li>" + esc(T.escalon) + " " + (i + 1) + ": " + esc(p.etiqueta) + ". " + (p.hecho ? esc(T.hecho) + "." : (i === cur ? esc(T.ahoraSr) : esc(T.pendiente))) + "</li>";
     }).join("");
-    caja.innerHTML = '<div class="esc-lat" role="img" aria-label="' + esc(opts.titulo || "Escalera") + ": " + n + ' escalones">' + s + "</div>" +
-      '<div class="esc-lat-ley" aria-hidden="true"><span><i style="background:#6fb383"></i>Conseguido</span><span><i style="background:#F2B84B"></i>El de ahora</span>' +
-      '<span><i style="background:#dfe9f2"></i>Los siguientes</span><span>⚠️ escalón muy alto</span>' + (opts.leyenda ? "<span>" + esc(opts.leyenda) + "</span>" : "") + "</div>" +
+    // dir="ltr": el dibujo sube de izquierda a derecha también en páginas en árabe; tabindex: se puede desplazar con el teclado
+    caja.innerHTML = '<div class="esc-lat" dir="ltr" tabindex="0" role="img" aria-label="' + esc(opts.titulo || T.escalera) + ": " + n + " " + esc(T.escalones) + '">' + s + "</div>" +
+      '<div class="esc-lat-ley" aria-hidden="true"><span><i style="background:#6fb383"></i>' + esc(T.hecho) + '</span><span><i style="background:#F2B84B"></i>' + esc(T.ahora) + '</span>' +
+      '<span><i style="background:#dfe9f2"></i>' + esc(T.siguientes) + '</span><span>⚠️ ' + esc(T.alto) + '</span>' + (opts.leyenda ? "<span>" + esc(opts.leyenda) + "</span>" : "") + "</div>" +
       '<ol class="esc-lat-sr">' + sr + "</ol>";
     var box = caja.querySelector(".esc-lat"), foco = cur < 0 ? n : cur;
     box.scrollLeft = Math.max(0, 24 + foco * W - box.clientWidth / 2 + W / 2);

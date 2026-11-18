@@ -191,6 +191,20 @@
       juego: '🎮 Entrena-ho jugant: La campana →',
       pie: '<b>Primer reconèixer, després explicar.</b> El «no sé per què» no nega el que saps: suspèn un moment l\'exigència d\'explicar-ho, perquè l\'explicació arribi després com a <b>informació</b> i no com a calmant. Si la causa és evident: «Sé que el que ha passat m\'ha afectat, però abans vull reconèixer que noto això aquí». Practica-ho també en calma, i a poc a poc: tot sol → amb el teu psicòleg/a → amb persones de confiança.',
       sum: 'Veure com es fa l\'honestedat emocional'
+    },
+    ar: {
+      t: 'الصدق العاطفي · لا أعرف لماذا',
+      a1: 'كلب بافلوف والجرس دائمًا أمامه', a3: 'أشير إلى بطني وأقول لا أعرف لماذا', a4: 'أشارك الإحساس', a5: 'الانتباه ينفتح',
+      porque: 'لماذا؟', atrapado: 'انتباه محبوس', nose: '«لا أعرف لماذا…»',
+      pero1: '«…لكنني أشعر بإحساس هنا', pero2: 'وأردت أن أشاركك إياه»',
+      c1: '<b>الجرس الذي نحمله معنا.</b> مثل كلب بافلوف والجرس دائمًا أمام عينيه: إذا صار <b>«لماذا؟»</b> هو الجرس، يبقى الانتباه <b>محبوسًا</b> فيه ولا يرى شيئًا آخر. الشرح يريح لحظة… ولهذا يتكرّر.',
+      c2: '<b>أثبت في البطن</b> (<span class="vh-dot">●</span>). ألاحظ شيئًا أو لا ألاحظ شيئًا: <b>لا يهمّ</b>. المهم أن أكون هناك.',
+      c3: 'وأنا <b>أشير إلى بطني</b>، أقول: <b>«لا أعرف لماذا…»</b>. هكذا أغلق باب التبرير: الألم <b>لا يبقى مربوطًا بسبب</b>.',
+      c4: '<b>«…لكنني أشعر بإحساس هنا وأردت أن أشاركه.»</b> بنبرة هادئة. إنه وعيي <b>يقف إلى جانب جسمي</b>: الأمان لا يتوقّف على ردّ الآخر.',
+      c5: 'بدون الجرس أمامي، <b>ينفتح الانتباه</b>: أعود أرى <b>باتّساع</b> ما يحدث، الحركة، الشاي، الضوء، لا فقط ما يؤكّد قصّتي.',
+      juego: '',
+      pie: '<b>أولًا نعترف، ثم نشرح.</b> «لا أعرف لماذا» لا تنكر ما تعرفه: هي تؤجّل لحظةً ضرورة الشرح، حتى يأتي الشرح بعد ذلك <b>معلومةً</b> لا مهدّئًا. إذا كان السبب واضحًا: «أعرف أن ما حدث أثّر فيّ، لكن قبل ذلك أريد أن أعترف أنني أشعر بهذا هنا». تمرّن عليها أيضًا في الهدوء، وشيئًا فشيئًا: وحدك، ثم مع أخصائيّك، ثم مع أشخاص تثق بهم.',
+      sum: 'شاهد كيف يكون الصدق العاطفي'
     }
   };
 
@@ -200,7 +214,7 @@
   function mount(container, opts) {
     opts = opts || {};
     injectCSS();
-    var L = TXT[opts.lang === 'ca' ? 'ca' : 'es'];
+    var L = TXT[opts.lang] || TXT.es;
     var useSil = opts.silueta !== false && !!(global.RespiroAIS && global.RespiroAIS.mount);
     var titulo = opts.titulo == null ? L.t : opts.titulo;
     container.classList.add('vh');
@@ -213,13 +227,13 @@
         panel(4, svg4(L), L.c4) +
         panel(5, svg5(L), L.c5) +
       '</div>' +
-      (opts.pie !== false ? '<div class="vh-pie">' + L.pie + (opts.juego !== false ? juegoLink('campana', L.juego, 'vh-juego') : '') + '</div>' : '');
+      (opts.pie !== false ? '<div class="vh-pie">' + L.pie + (opts.juego !== false && L.juego ? juegoLink('campana', L.juego, 'vh-juego') : '') + '</div>' : '');
 
     var sil = null;
     if (useSil) {
       try {
         sil = global.RespiroAIS.mount(container.querySelector('.vh-sil'), {
-          lang: 'es', figure: 'organism', showControl: false, showZones: false, legend: false, autostart: true,
+          lang: opts.lang === 'ar' ? 'ar' : 'es', figure: 'organism', showControl: false, showZones: false, legend: false, autostart: true,
           rhythm: opts.rhythm || { inhale: 4000, anchor: 2000, exhale: 6000, pause: 1500 }
         });
       } catch (e) { sil = null; var b = container.querySelector('.vh-sil'); if (b) b.outerHTML = svg2(); }
@@ -235,7 +249,7 @@
   /* ---- Modo automático: <div data-vineta-honestidad [data-lang="ca"] [data-open]></div> ---- */
   function langDe(el) {
     var l = el.getAttribute('data-lang') || (document.documentElement.lang || 'es');
-    return /^ca/i.test(l) ? 'ca' : 'es';
+    return /^ca/i.test(l) ? 'ca' : /^ar/i.test(l) ? 'ar' : 'es';
   }
   function enhance(el) {
     if (el.__vhDone) return; el.__vhDone = true;

@@ -89,6 +89,9 @@ window.APRENS_TOOLS = [
   { id:"escalera_exposicion", emoji:"🪜", nombre:"La escalera (exposición)",
     desc:"Exposición en vivo gradual: tu escalera de peldaños y dos llaves en cada exposición, el QUÉ (conductual) y el CÓMO (acompañamiento interno AIS).",
     migrada:true, iframe:"exposicion/index.html" },
+  { id:"escalera_exposicion_ar", emoji:"🚗", nombre:"السُّلَّم · La escalera para conducir (árabe)",
+    desc:"La escalera en árabe, solo para la conducción y ya configurada: primera semana con trayectos cortos dentro del pueblo, con la pareja al lado y el hijo detrás, y subida gradual, con peldaños en que conduce ella para aceptar ser acompañado. Mismas dos llaves (QUÉ y CÓMO), registro de cada exposición y resumen al psicólogo en castellano.",
+    migrada:true, iframe:"exposicion-ar/index.html" },
 
   { id:"exploradora_valiente", emoji:"🗺️", nombre:"La exploradora valiente",
     desc:"Juego infantil de exposición gradual para la ansiedad de separación (para madres y padres): escalera de misiones de valiente y dos llaves, el QUÉ y el CÓMO (co-regulación AIS).",
