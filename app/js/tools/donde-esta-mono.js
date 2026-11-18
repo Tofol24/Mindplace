@@ -39,7 +39,7 @@
              '<b>SIENTE.</b> Lleva la atención al cuerpo: ¿dónde está la urgencia? Pecho, manos, estómago.',
              '<b>ACOMPAÑA.</b> Respira hacia ahí y sostén la sensación 20-60 seg SIN ejecutar la conducta.',
              '<b>ACTÚA.</b> Sin esperar a que baje la ola, elige un paso pequeño con sentido, no el alivio rápido.'],
-      tool:{nombre:'Bajar la alerta', url:'https://aprens-bajaralerta.netlify.app', desc:'Para parar antes de actuar cuando el impulso compulsivo te empuja: cuatro pasos para volver al aquí y ahora.'},
+      tool:{nombre:'Bajar la alerta', url:'https://aprens-bajaralerta.netlify.app', desc:'Haz ahora sus cuatro pasos (1 minuto) para parar antes de actuar cuando el impulso te empuja y volver al aquí y ahora.'},
       alt:{nombre:'Acompañar la sensación', url:'https://aprens-acompanar-sensacion.netlify.app'} },
     delante:{ em:'🐒🙅', tit:'Lo llevo delante, juzgándolo', etiqueta:'delante (lo juzgo)', color:'delante', param:'densidad',
       galt:'Delante, juzgándolo', gald:'Lo juzgo, me reprocho y me sobreexijo no sentir.',
@@ -48,7 +48,7 @@
              '<b>SIENTE.</b> Deja de pelear: lleva la atención a la sensación tal como está, sin etiquetarla de «mala».',
              '<b>ACOMPAÑA.</b> Respira hacia ahí y trátala como tratarías a alguien con miedo: con amabilidad.',
              '<b>ACTÚA.</b> Da un paso amable contigo, no uno exigente.'],
-      tool:{nombre:'AIS desde el amor', url:'https://aprens-aisdiaadia.netlify.app', desc:'Para dejar de pelearte y exigirte, y acompañar lo que sientes desde el cariño, no el control.'},
+      tool:{nombre:'Abrazo del mono (AIS desde el amor)', url:'#/tool/ais_amor/abrazo', desc:'1 minuto: una mano en el pecho, otra en el abdomen, respira y di por dentro «Hola mono, estoy contigo». Sin arreglar nada: deja de pelearte y acompaña.'},
       alt:{nombre:'Acompañar la sensación', url:'https://aprens-acompanar-sensacion.netlify.app'} },
     maletero:{ em:'🐒📦', tit:'Lo llevo detrás, escondido', etiqueta:'detrás (lo escondo)', color:'maletero', param:'densidad',
       galt:'Detrás, escondido', gald:'Lo reprimo, lo tapo y me avergüenzo de sentirlo.',
@@ -57,7 +57,7 @@
              '<b>SIENTE.</b> Abre con cuidado lo que escondes: ¿dónde lo notas en el cuerpo?',
              '<b>ACOMPAÑA.</b> Respira hacia esa zona y quédate 20-60 seg. No hay nada de qué avergonzarse: solo es una sensación.',
              '<b>ACTÚA.</b> Elige un paso que cuide, no que tape.'],
-      tool:{nombre:'AIS desde la curiosidad', url:'https://aprens-aiscuriosidad.netlify.app', desc:'Para girarte hacia lo que escondes y mirarlo con curiosidad sensorial (temperatura, peso, textura), sin vergüenza.'},
+      tool:{nombre:'¿De qué está hecha? (AIS desde la curiosidad)', url:'#/tool/ais_curiosidad/cualidades', desc:'1 minuto: localiza lo que escondes en el cuerpo y explora su temperatura, su peso y su textura. Sin el «por qué» y sin vergüenza.'},
       alt:{nombre:'Honestidad emocional', url:'#/tool/honestidad_emocional'} },
     lado:{ em:'🐒🧡', tit:'Lo llevo a mi lado', etiqueta:'a mi lado', color:'lado', param:'continuidad',
       galt:'A mi lado', gald:'Aparezco, sostengo el dolor y decido según mis valores.',
@@ -66,8 +66,8 @@
              '<b>Sostén.</b> Hazte cargo del dolor sin pelearte con él: respíralo, déjalo estar.',
              '<b>Decide.</b> Elige el paso coherente con lo que te importa, a pesar del camino y sus circunstancias.',
              '<b>Vuelve.</b> Acompáñalo otra vez a lo largo del día; el AIS también se practica cuando estás bien.'],
-      tool:{nombre:'Brújula de valores', url:'https://aprens-brujulavalores.netlify.app', desc:'Para decidir hacia dónde ir según lo que te importa, sosteniendo el malestar y a pesar del camino.'},
-      alt:{nombre:'AIS desde el amor', url:'https://aprens-aisdiaadia.netlify.app'} }
+      tool:{nombre:'Brújula de valores', url:'https://aprens-brujulavalores.netlify.app', desc:'Elige un área de tu vida y escribe en una frase qué te importa ahí: así decides hacia dónde ir, sosteniendo el malestar.'},
+      alt:{nombre:'Cierre del día con presencia', url:'#/tool/ais_amor/cierre'} }
   };
   var ORDEN=['conduce','delante','maletero','lado'];
 

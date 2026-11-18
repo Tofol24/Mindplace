@@ -130,10 +130,10 @@
         <div class="hs-quote">«El mono nunca quiso conducir. Solo necesitaba saber que no iba solo.»</div>
         <div class="hs-acts">
           <p class="hs-acts-t"><b>¿Y ahora? Según dónde lleves al mono hoy, una herramienta para acompañarlo:</b></p>
-          <a class="hs-act" href="#/tool/bajar_alerta"><span class="se">🚗</span><span class="st">Si coge el volante (reaccionas por impulso)<small>Bajar la alerta · parar antes de actuar</small></span><span class="sarr">→</span></a>
-          <a class="hs-act" href="#/tool/ais_amor"><span class="se">🏃</span><span class="st">Si lo persigues (te exiges, te riñes)<small>AIS desde el amor · acompañarte, no controlarte</small></span><span class="sarr">→</span></a>
-          <a class="hs-act" href="#/tool/acompanar_sensacion"><span class="se">📦</span><span class="st">Si lo metes en el maletero (lo evitas)<small>Acompañar la sensación · estar con lo que sientes</small></span><span class="sarr">→</span></a>
-          <a class="hs-act" href="#/tool/herramienta_diaria"><span class="se">🧡</span><span class="st">Para sentarlo a tu lado (cada día)<small>Herramienta diaria · tu práctica de presencia</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/bajar_alerta"><span class="se">🚗</span><span class="st">Si coge el volante (reaccionas por impulso)<small>Bajar la alerta · 4 pasos para parar antes de actuar</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/ais_amor/abrazo"><span class="se">🏃</span><span class="st">Si lo persigues (te exiges, te riñes)<small>Abrazo del mono · 1 minuto: compañía, sin arreglar nada</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/acompanar_sensacion"><span class="se">📦</span><span class="st">Si lo metes en el maletero (lo evitas)<small>Acompañar la sensación · una parada AIS de 1 minuto</small></span><span class="sarr">→</span></a>
+          <a class="hs-act" href="#/tool/herramienta_diaria/sec1"><span class="se">🧡</span><span class="st">Para sentarlo a tu lado (cada día)<small>Respiración por curiosidad · 1 minuto, también cuando estás bien</small></span><span class="sarr">→</span></a>
         </div>
         <a class="hs-pdf" href="assets/pdf/quien-conduce-tu-vida.pdf" target="_blank" rel="noopener" download>📄 Leer la historia completa (PDF ilustrado)</a>
         <p class="hs-pdfnote">El cuento entero, con sus ilustraciones, para leerlo con calma siempre que quieras.</p>
@@ -224,11 +224,15 @@
     const ultimo = dias[dias.length-1]; const hoy=_isoDay(new Date());
     let n=0, cur=hoy; while(cur!==ultimo && n<400){ n++; cur=_diaMenos(hoy,n); } return n;
   }
+  // sub: abre el ejercicio concreto (no la herramienta entera). nombre: lo que se va a hacer.
   const CTA_POR_FOCO = { L:"bajar_alerta", D:"honestidad_emocional", C:"herramienta_diaria" };
+  const CTA_SUB = { herramienta_diaria:{sub:"sec1", nombre:"Respiración por curiosidad (1 min)", emoji:"🫁"} };
   function toolSugerido(){
     const id = CTA_POR_FOCO[focoPauta] || "herramienta_diaria";
     const t = (window.APRENS_TOOLS||[]).find(x=>x.id===id);
-    return t ? {id:t.id, nombre:t.nombre, emoji:t.emoji} : {id:"herramienta_diaria", nombre:"Herramienta diaria", emoji:"🧡"};
+    const x = CTA_SUB[id];
+    if(x) return {id:id+"/"+x.sub, nombre:x.nombre, emoji:x.emoji};
+    return t ? {id:t.id, nombre:t.nombre, emoji:t.emoji} : {id:"herramienta_diaria/sec1", nombre:"Respiración por curiosidad (1 min)", emoji:"🫁"};
   }
   function continuidadHTML(){
     const c = loadCont(); const racha = calcRacha(c.dias); const desde = diasDesde(c.dias);
@@ -499,7 +503,7 @@
         main:"bajar_alerta", chips:["control_ira","estoy_aqui_conmigo"], lab:"s-cadena" },
       { emoji:"🌬️", tit:"Estar presente", sub:"Densidad", col:"var(--verde)",
         obj:"Aparecer por dentro y sostener lo que sientes, sin luchar contra ello.",
-        main:"herramienta_diaria", chips:["acompanar_sensacion","ais_basicas"], lab:"s-afeccion" },
+        main:"herramienta_diaria", mainSub:"sec1", mainTxt:"🫁 Empezar · Respiración por curiosidad (1 min) →", chips:["acompanar_sensacion","ais_basicas"], lab:"s-afeccion" },
       { emoji:"🧭", tit:"Seguir tu dirección", sub:"Continuidad", col:"var(--oro)",
         obj:"Que tus acciones, día a día, vayan hacia lo que de verdad te importa.",
         main:"brujula_valores", chips:["honestidad_emocional","agenda_atencional"], lab:"s-ais" }
@@ -509,7 +513,7 @@
       const chips = d.chips.map(id=>byId[id]).filter(Boolean)
         .map(t=>`<a class="puerta-chip" href="#/tool/${t.id}">${t.emoji} ${t.nombre}</a>`).join("");
       const cta = main
-        ? `<a class="puerta-cta" href="#/tool/${main.id}">${main.emoji} Empezar · ${main.nombre} →</a>`
+        ? `<a class="puerta-cta" href="#/tool/${main.id}${d.mainSub?"/"+d.mainSub:""}">${d.mainTxt || main.emoji+" Empezar · "+main.nombre+" →"}</a>`
         : "";
       return `<div class="puerta" style="--pc:${d.col}">
         <div class="puerta-h"><span class="puerta-e">${d.emoji}</span>
