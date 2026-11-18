@@ -187,3 +187,5 @@ button:disabled { opacity: .45; cursor: default; }
 .lista-env label { display: flex; gap: 8px; align-items: center; }
 .lista-env input { width: 20px; height: 20px; }
 .abrir-arch { border-left: 6px solid var(--aviso); }
+.btn.grande { width: 100%; min-height: 56px; font-size: 18px; margin-top: 6px; }
+.inicio-jug { border-left: 6px solid var(--aviso); }

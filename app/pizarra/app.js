@@ -1171,7 +1171,33 @@
   }
   const hoyISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 
+  function esEntrenador() {
+    if (db.plantilla.length || db.planes.length) return true;
+    try { return localStorage.getItem("pz_modo") === "entrenador"; } catch (e) { return false; }
+  }
+  function pantInicio() {
+    $("#nav").hidden = true;
+    $("#ttApp").textContent = "Pizarra";
+    $("#ttSub").textContent = "Entrenos y partidos del equipo";
+    let ult = null; try { ult = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); } catch (e) { ult = null; }
+    app.innerHTML = `
+      <h1>Hola</h1>
+      <div class="tarjeta inicio-jug">
+        <h2 style="margin-top:0">Soy jugador</h2>
+        <p>Tu entrenador te ha enviado un archivo. Si aún no lo has guardado, mantenlo pulsado en WhatsApp y elige «Guardar» (o «Descargar»).</p>
+        <label class="btn grande" for="abrirFileJ" style="cursor:pointer">📂 Soy jugador: abrir el archivo</label>
+        <input type="file" id="abrirFileJ" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+        ${ult && ult.plan ? `<div class="fila" style="margin-top:10px"><button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(ult.plan.titulo || "último plan").slice(0, 40))}»</button><button type="button" class="btn-peq peligro" data-olvidar="1" aria-label="Olvidar el último plan abierto en este móvil">✕ Olvidar</button></div>` : ""}
+        <p class="peq">Si te ha llegado un enlace, ábrelo directamente: no hace falta pasar por aquí.</p>
+      </div>
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Soy entrenador</h2>
+        <p class="peq">Prepara entrenos y partidos, coloca a tu equipo en la pizarra y envíalo al grupo.</p>
+        <button type="button" class="btn-sec" data-soyentr="1">Empezar mi cuaderno</button>
+      </div>`;
+  }
   function pintarPantalla() {
+    if (estado.pant === "cuaderno" && !esEntrenador()) return pantInicio();
     $("#nav").hidden = false;
     $("#ttApp").textContent = (db.equipo && db.equipo.nombre) || "Pizarra del entrenador";
     $("#ttSub").textContent = "Pizarra y cuaderno del entrenador";
@@ -1643,11 +1669,11 @@
   const URL_APP = () => location.origin + location.pathname;
   async function enviarArchivoGrupo(plan, cont) {
     const pq = Object.assign({ tipo: "jugadores" }, paquete(plan, !!plan.sinNombres));
-    const texto = (plan.titulo || "Pizarra") + ". Para verlo: abre " + URL_APP() + " , pulsa «Abrir archivo» y elige este archivo.";
+    const texto = "📋 " + (plan.titulo || "Pizarra") + "\n\nPara verlo:\n1) Mantén pulsado este archivo y elige «Guardar» (o «Descargar»).\n2) Abre " + URL_APP() + "\n3) Pulsa «Soy jugador: abrir el archivo» y elige el archivo.\n\nEn Android, si tienes la Pizarra instalada, basta con: Compartir → Pizarra.";
     const r = await compartirArchivo(nombreArchivo("pizarra", plan.titulo), pq, plan.titulo || "Pizarra", texto);
     if (r === "cancelado") return;
     cont.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíalo al grupo como documento."} Escribe en el grupo:</p>
-      <label class="sr-only" for="txtArch">Mensaje para acompañar el archivo</label><textarea id="txtArch" rows="3" readonly>${esc(texto)}</textarea>`;
+      <label class="sr-only" for="txtArch">Mensaje para acompañar el archivo</label><textarea id="txtArch" rows="8" readonly>${esc(texto)}</textarea>`;
   }
   async function enviar(plan, cont) {
     const url = enlaceDe(plan, !!plan.sinNombres);
@@ -2020,6 +2046,7 @@
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
+    if (d.soyentr) { try { localStorage.setItem("pz_modo", "entrenador"); } catch (e) { /* nada */ } return ir("cuaderno"); }
     if (d.ir2) return ir(d.ir2);
     if (d.olvidar) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
     if (d.ultimo) {
@@ -2072,7 +2099,7 @@
       const ids = $$("[data-envplan]", app).filter((x) => x.checked).map((x) => x.dataset.envplan);
       if (d.enventr) return enviarEntrenador(ids, app.querySelector('[data-r="envEntr"]'));
       const sa = $("#envSinApe");
-      const texto = "Cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "). Abre " + URL_APP() + " , pulsa «Abrir archivo» y elige este archivo para juntarlo con tu cuaderno.";
+      const texto = "Cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + ").\n\n1) Mantén pulsado este archivo y elige «Guardar» (o «Descargar»).\n2) Abre " + URL_APP() + "\n3) En el Cuaderno, pulsa «📂 Abrir archivo» y elige el archivo: se junta con tu cuaderno sin borrar nada.\n\nEn Android, con la Pizarra instalada: Compartir → Pizarra.";
       compartirArchivo(nombreArchivo("cuaderno", db.equipo.nombre), paqueteEntrenador(ids, !!(sa && sa.checked)), "Cuaderno de la pizarra", texto).then((r) => {
         const c = app.querySelector('[data-r="envEntr"]');
         if (r === "cancelado" || !c) return;
@@ -2117,16 +2144,9 @@
       if (b) { const viejo = CATS[b.cat]; b.cat = t.value; if (!b.titulo || b.titulo === viejo) b.titulo = CATS[t.value]; guardar(); pintarPantalla(); }
       return;
     }
-    if (t.id === "abrirFile" && t.files && t.files[0]) {
+    if ((t.id === "abrirFile" || t.id === "abrirFileJ") && t.files && t.files[0]) {
       const r3 = new FileReader();
-      r3.onload = () => {
-        let crudo = null;
-        try { crudo = JSON.parse(r3.result); } catch (err) { crudo = null; }
-        if (crudo && crudo.tipo === "entrenador") { const rec = sanDB(crudo); if (rec) return pantRecibido(rec); }
-        if (crudo && crudo.plan) { const pq = sanPaquete(crudo); if (pq) return mostrarJugador(pq, true); }
-        if (crudo && Array.isArray(crudo.planes) && Array.isArray(crudo.plantilla)) { toast("Es una copia de seguridad: recupérala desde Ajustes."); return; }
-        toast("Ese archivo no es de la pizarra");
-      };
+      r3.onload = () => abrirTextoArchivo(r3.result);
       r3.readAsText(t.files[0]);
       return;
     }
@@ -2163,6 +2183,29 @@
   $("#nav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) ir(b.dataset.ir); });
 
   // ---------------------------------------------------------------- arranque
+  function abrirTextoArchivo(texto) {
+    let crudo = null;
+    try { crudo = JSON.parse(texto); } catch (err) { crudo = null; }
+    if (crudo && crudo.tipo === "entrenador") { const rec = sanDB(crudo); if (rec) return pantRecibido(rec); }
+    if (crudo && crudo.plan) { const pq = sanPaquete(crudo); if (pq) return mostrarJugador(pq, true); }
+    if (crudo && Array.isArray(crudo.planes) && Array.isArray(crudo.plantilla)) { toast("Es una copia de seguridad: recupérala desde Ajustes."); return; }
+    toast("Ese archivo no es de la pizarra");
+  }
+  // Android: archivo compartido con «Compartir → Pizarra» (lo deja el service worker en una caché local)
+  async function abrirCompartido() {
+    try {
+      if (!("caches" in window)) return false;
+      const c = await caches.open("pizarra-compartido");
+      const clave = new URL("__archivo", location.href).href;
+      const r = await c.match(clave);
+      if (!r) return false;
+      const texto = await r.text();
+      await c.delete(clave);
+      history.replaceState(null, "", location.pathname);
+      abrirTextoArchivo(texto);
+      return true;
+    } catch (e) { return false; }
+  }
   function arrancar() {
     const h = location.hash || "";
     if (/^#(c|e|ent)=/.test(h)) {
@@ -2179,6 +2222,10 @@
         return;
       }
       mostrarJugador(pq);
+      return;
+    }
+    if (/[?&]compartido=1/.test(location.search)) {
+      abrirCompartido().then((ok) => { if (!ok) { history.replaceState(null, "", location.pathname); pintarPantalla(); toast("No ha llegado ningún archivo"); } });
       return;
     }
     pintarPantalla();
@@ -2231,6 +2278,9 @@
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
   });
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(() => { /* sin service worker la pizarra funciona igual */ });
+  }
   window.addEventListener("hashchange", () => { if (/^#(p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
