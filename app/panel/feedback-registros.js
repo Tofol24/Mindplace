@@ -21,7 +21,7 @@
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
-  var URL_SCREENING = "https://aprens-app.aprens.net/#/tool/screening_tec";
+  var URL_SCREENING = "https://aprens-app.netlify.app/#/tool/screening_tec";
 
   function num(v) { if (v == null || v === "") return null; var n = typeof v === "number" ? v : parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : null; }
   function r1(v) { return Math.round(v * 10) / 10; }
