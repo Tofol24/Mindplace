@@ -23,14 +23,35 @@
     { n: 5, dur: "3:46" }, { n: 6, dur: "5:57" }, { n: 7, dur: "5:06" }, { n: 8, dur: "4:19" },
     { n: 9, dur: "3:29" }, { n: 10, dur: "4:21" }, { n: 11, dur: "5:25" }
   ];
+  /* «Hoy toca»: una pista al día, en orden. Se recuerda la última que se puso
+     a sonar (solo en este dispositivo); el día siguiente toca la siguiente. */
+  var PKEY = "aprens.ritual.pista";
+  function pistaGuardada() { try { var v = JSON.parse(localStorage.getItem(PKEY) || "null"); if (v && v.n) return v; } catch (e) {} return null; }
+  function pistaHoy() {
+    var g = pistaGuardada();
+    if (!g) return 1;
+    if (g.f === ymd()) return g.n;              // la de hoy ya ha sonado: se mantiene
+    return (g.n % AUDIOS.length) + 1;           // si no, la siguiente
+  }
+  function pistaDeHoyHecha() { var g = pistaGuardada(); return g && g.f === ymd() ? g.n : null; }
   function renderAudios() {
     var box = $("#audios"); if (!box) return;
+    var hoy = pistaHoy(), a0 = AUDIOS[hoy - 1];
+    var guia = $("#pistaHoy");
+    if (guia) guia.innerHTML = '<b>Hoy toca la pista ' + hoy + '</b> (' + a0.dur + ' min). Una pista al día, en orden: mañana, la siguiente. ' +
+      'Si vuestro psicólogo/a os ha indicado una pista concreta, usad esa.';
     box.innerHTML = AUDIOS.map(function (a) {
-      return '<div class="audioc">' +
-        '<div class="audioc-top"><span class="an">Pista ' + a.n + '</span><span class="ad">' + a.dur + '</span></div>' +
-        '<audio controls preload="none" src="assets/audio/pista-' + a.n + '.mp3"></audio>' +
+      var esHoy = a.n === hoy;
+      return '<div class="audioc' + (esHoy ? ' audioc-hoy' : '') + '">' +
+        '<div class="audioc-top"><span class="an">Pista ' + a.n + (esHoy ? ' <span class="hoytag">Hoy</span>' : '') + '</span><span class="ad">' + a.dur + '</span></div>' +
+        '<audio controls preload="none" data-n="' + a.n + '" src="assets/audio/pista-' + a.n + '.mp3"></audio>' +
       '</div>';
     }).join("");
+    $$("audio[data-n]", box).forEach(function (au) {
+      au.addEventListener("play", function () {
+        try { localStorage.setItem(PKEY, JSON.stringify({ n: +au.getAttribute("data-n"), f: ymd() })); } catch (e) {}
+      });
+    });
   }
 
   /* ---------- Confeti (papelines) + frase reforzadora ---------- */
@@ -76,12 +97,12 @@
   function buildRegistro() {
     return {
       id: "rit_" + ymd(), kind: "ritual", date: ymd(), ts: Date.now(),
-      participo: reg.participo, respeto: reg.respeto, nota: ($("#rNota").value || "").trim()
+      participo: reg.participo, respeto: reg.respeto, pista: pistaDeHoyHecha(), nota: ($("#rNota").value || "").trim()
     };
   }
   function resumenRegistro(r) {
     var L = ["Ritual diario · calma y atención — APRENS", "Fecha: " + r.date];
-    if (r.participo) L.push("Audio: " + (PART_TXT[r.participo] || r.participo));
+    if (r.participo) L.push("Audio: " + (PART_TXT[r.participo] || r.participo) + (r.pista ? " · pista " + r.pista : ""));
     if (r.respeto) L.push("¿Respetó el momento?: " + (RESP_TXT[r.respeto] || r.respeto));
     if (r.nota) L.push("Nota: " + r.nota);
     L.push("", "(Enviado desde el Ritual diario · adjunta también el .json para el panel)");
