@@ -782,7 +782,7 @@
       const left = ((x - vb[0]) / vb[2]) * 100, top = ((y - vb[1]) / vb[3]) * 100;
       const inB = ctx.info(f);
       const quienB = [inB.dorsal, inB.corto || inB.nombre].filter(Boolean).join(" ") + (inB.otros && inB.otros.length ? " (y " + inB.otros.map((x) => x.c || x.n).join(", ") + ")" : "");
-      burb.innerHTML = `<b>${esc(quienB)}</b>${quienB ? ": " : ""}${esc(txt.length > 140 ? txt.slice(0, 137) + "…" : txt)}`;
+      burb.innerHTML = `<b>${esc(quienB)}</b>${quienB ? ": " : ""}${esc(txt.length > 110 ? txt.slice(0, 107) + "…" : txt)}`;
       burb.hidden = false;
       const cw = campo.clientWidth || 1, bw = burb.offsetWidth;
       burb.style.left = lim((left / 100) * cw, bw / 2 + 6, Math.max(bw / 2 + 6, cw - bw / 2 - 6)) + "px";
