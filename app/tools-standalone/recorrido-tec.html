@@ -195,6 +195,7 @@
   .praFin{background:var(--ok-soft);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px;}
   .praIn input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--card);min-height:42px;margin-top:4px;}
   .rcMini{margin-top:6px;}
+  .haz{font-size:13.5px;line-height:1.5;background:var(--gold-soft);border-radius:10px;padding:8px 11px;margin:8px 0 2px;}
   .rcMini > summary{font-size:12.5px;padding:6px 12px;min-height:34px;}
 </style>
 <script src="../js/respiro-ais.js"></script>
@@ -335,10 +336,10 @@
         d:"Solo para conocer el gesto que usarás todo el recorrido: la luz azul es el aire; la amarilla, tu atención, que baja con él y se queda en la barriga." },
       noche:{ t:"Respiración curiosa con la silueta · 1 minuto antes de dormir", d:"La misma de la mañana. Sin buscar nada: solo conocer el gesto.", guia:"P0" },
       pasos:[
-        ["¿Para qué sirven estos ejercicios? (el porqué, en 2 minutos)", "sec:porque"],
-        ["Mi autoevaluación inicial, con la prueba de continuidad", "eval"],
-        ["Screening TEC/AIS: la autoevaluación inicial (o el registro de seguimiento, si tu psicólogo/a ya te dio tu código de 3 cifras)", "tool:screening_tec"],
-        ["¿Dónde está tu mono hoy? El detective te orienta", "tool:donde_esta_mono", ["tool:estado_mono"]]
+        ["¿Para qué sirven estos ejercicios? (el porqué, en 2 minutos)", "sec:porque", [], "Léelo con calma. Quédate con una idea: no vas a entrenar para sentirte mejor, sino para estar contigo."],
+        ["Mi autoevaluación inicial, con la prueba de continuidad", "eval", [], "Responde las tres preguntas (0–10) y haz la prueba de continuidad: mantén pulsado mientras tu atención sigue en la barriga. Son 2 minutos."],
+        ["Screening TEC/AIS: la autoevaluación inicial (o el registro de seguimiento, si tu psicólogo/a ya te dio tu código de 3 cifras)", "tool:screening_tec", [], "Si es la primera vez, haz la autoevaluación inicial completa. Si ya tienes tu código de 3 cifras, haz solo el registro de seguimiento. Después vuelve aquí y márcalo."],
+        ["¿Dónde está tu mono hoy? El detective te orienta", "tool:donde_esta_mono", ["tool:estado_mono"], "Cuéntale al detective, con tus palabras, cómo estás. Te dirá dónde llevas al mono. Hoy basta con saberlo: no hace falta hacer la herramienta que te sugiera."]
       ],
       crit:[["auto","evalHecha","He hecho mi autoevaluación inicial"],["chk","c0a","He hecho el Screening (inicial o de seguimiento)"],["chk","c0b","He leído cómo funciona el recorrido (pestaña «Recorrido»)"]]
     },
@@ -349,16 +350,16 @@
       practica:{ t:"Parada de pensamiento: para · respira · vuelve (STOP)", d:"Cuando te descubras en piloto automático: STOP, una respiración y 4–5 segundos de atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Y a lo largo del día, cada vez que te enganches: 30, 40, 50 veces no es demasiado.", vin:true },
       noche:{ t:"Respiración curiosa con la silueta · 1–2 minutos", d:"Antes de dormir, también si el día ha ido bien. Es el gesto que en la etapa 2 se convertirá en tu práctica diaria.", guia:"P0" },
       pasos:[
-        ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce", ["tool:historia_animada","pdf:quien-conduce-tu-vida.pdf"]],
+        ["La historia del mono y el coche: ¿quién conduce tu vida?", "tool:quien_conduce", ["tool:historia_animada","pdf:quien-conduce-tu-vida.pdf"], "Lee la historia (unos 5 minutos). Llévate una pregunta para hoy: ¿en qué momento ha conducido el mono?"],
         ["Vídeo: la Teoría del Efecto Consciente", "video:tec"],
-        ["La manada: por qué respiras", "tool:la_manada", ["tool:historia_manada"]],
+        ["La manada: por qué respiras", "tool:la_manada", ["tool:historia_manada"], "Lee por qué respiras (unos 3 minutos). Es el porqué de la respiración curiosa que haces cada hora."],
         ["Laboratorio: la atención es un vector", "tool:laboratorio_tec/s-vector"],
         ["Vídeo: el sobrepensamiento", "video:sobrepensamiento"],
-        ["El control y la presencia: el mapa del malestar", "tool:modelo_atencional", ["tool:historia_control"]],
+        ["El control y la presencia: el mapa del malestar", "tool:modelo_atencional", ["tool:historia_control"], "Lee el mapa y busca tu propia cadena: qué notas, qué haces para controlarlo y qué pasa después."],
         ["Laboratorio: la cadena que mantiene el malestar", "tool:laboratorio_tec/s-cadena"],
         ["Vídeo: cómo funciona tu cerebro", "video:cerebro"],
         ["Laboratorio: los cuatro pilares y las tres puertas (latencia, densidad, continuidad)", "tool:laboratorio_tec/s-pilares", ["sec:sec-las-tres-puertas-por-donde-entrar"]],
-        ["El AIS en un vistazo y las herramientas AIS básicas", "sec:sec-el-ais-en-un-vistazo", ["tool:ais_basicas","pdf:eines-ais-basiques.pdf"]],
+        ["El AIS en un vistazo y las herramientas AIS básicas", "sec:sec-el-ais-en-un-vistazo", ["tool:ais_basicas","pdf:eines-ais-basiques.pdf"], "Lee «El AIS en un vistazo». Las herramientas básicas son las mismas líneas básicas que ya registras aquí, en «Durante todo el día»: hoy no tienes que hacer nada nuevo, solo entender por qué las haces."],
         ["Juego: el laboratorio de Pavlov · por qué el «¿por qué?» se vuelve una campana", "tool:juegos_exposicion/pavlov"]
       ],
       crit:[["auto","pasosHechos","He visto todas las piezas de la etapa"],["chk","c1a","Puedo explicar con mis palabras qué es «sentarlo a mi lado»"],["chk","c1b","He hecho la parada STOP varios días"]]
@@ -372,16 +373,16 @@
       noche:{ t:"Respiración curiosa con anclaje · 3–5 minutos", d:"La misma de la mañana, al llegar a casa o antes de dormir. También si el día ha ido bien.", guia:"P2" },
       pasos:[
         ["Vídeo: «El día que tu cuerpo empezó a notarte»", "video:cuerpo"],
-        ["Organiza tus tres momentos fijos del día", "tool:agenda_atencional"],
+        ["Organiza tus tres momentos fijos del día", "tool:agenda_atencional", [], "Solo esto: decide a qué hora harás cada día tu práctica de mañana, la parada de mediodía y la práctica de la noche, y anótalas en tu agenda. El resto de la agenda lo usarás más adelante."],
         ["Vídeo: «Respirar es aparecer»", "video:respirar", ["tool:respiro_ais"]],
         ["Laboratorio: el aire como cebo y la afección interna segura", "tool:laboratorio_tec/s-afeccion"],
-        ["El mapa interno: cuello, pecho y barriga", "tool:mapa_atencion_interna"],
+        ["El mapa interno: cuello, pecho y barriga", "tool:mapa_atencion_interna", [], "Abre el mapa, elige una sola zona (cuello, pecho o barriga) y deja la atención ahí 1 minuto. Si no notas nada, también vale."],
         ["Vídeo: «Sentir conscientemente»", "video:sentir"],
-        ["AIS desde la curiosidad", "tool:ais_curiosidad"],
+        ["AIS desde la curiosidad: la linterna interior", "tool:ais_curiosidad/linterna", ["tool:ais_curiosidad/escaner"], "Haz «La linterna interior» (1 minuto). Otro día, si quieres, prueba «El escáner curioso» (1–3 minutos)."],
         ["Laboratorio: sentir, pensar, interpretar · ¿AIS o hipervigilancia?", "tool:laboratorio_tec/s-sentir"],
-        ["Protocolo AIS en audio (vía auditiva)", "tool:protocolo_ais"],
-        ["AIS muscular: tensar y soltar (vía física)", "tool:ais_muscular"],
-        ["Juegos AIS: aparecer jugando (Sonar con ojos cerrados y Globo de quietud)", "tool:juegos_ais", ["tool:juegos_ais/sonar","tool:juegos_ais/globo"]]
+        ["Protocolo AIS en audio (vía auditiva)", "tool:protocolo_ais", [], "Con auriculares, escucha solo la primera fase. Las siguientes, otros días: es un protocolo progresivo, no hace falta hacerlo entero."],
+        ["AIS muscular: tensar y soltar (vía física)", "tool:ais_muscular", [], "Haz una ronda: aprieta cada zona 10–15 segundos, suelta el mismo tiempo y nota el contraste entre tensión y distensión."],
+        ["Juegos AIS: aparecer jugando (Sonar con ojos cerrados y Globo de quietud)", "tool:juegos_ais/sonar", ["tool:juegos_ais/globo"], "Juega una partida de Sonar (2–3 minutos). No se gana por estar tranquilo/a: se gana dándote cuenta de que te has ido y volviendo."]
       ],
       crit:[["auto","programada","He hecho práctica programada al menos 10 de los últimos 14 días"],["auto","proporcion","Practico más en calma que cuando estoy mal"],
             ["chk","c2a","Practico aunque no esté mal: ya no espero al malestar para hacerlo"],["chk","c2b","Puedo localizar una sensación en el cuerpo sin tener que explicar lo que me pasa"],["chk","c2c","Ya no me pregunto «¿para qué sirve si no me calma?»"]]
@@ -395,17 +396,17 @@
       noche:{ t:"Respiración curiosa con anclaje + S·R·S·A · 3–5 minutos", d:"La misma de la mañana, al llegar a casa o antes de dormir.", guia:"P3" },
       pasos:[
         ["Vídeo: «La pregunta que casi nunca nos hacemos»", "video:pregunta"],
-        ["Laboratorio: la práctica AIS guiada completa (PARA · SIENTE · ACOMPAÑA · ACTÚA)", "tool:laboratorio_tec/s-ais"],
-        ["Acompañar la sensación: paradas AIS", "tool:acompanar_sensacion"],
+        ["Laboratorio: la práctica AIS guiada completa (PARA · SIENTE · ACOMPAÑA · ACTÚA)", "tool:laboratorio_tec/s-ais", [], "Haz la práctica guiada una vez, de principio a fin (unos 5 minutos). Es la versión larga del S·R·S·A que ya haces cada día."],
+        ["Acompañar la sensación: paradas AIS", "tool:acompanar_sensacion", [], "Haz una parada AIS de 1 minuto siguiendo sus pasos. Marca si vienes en verde (en calma) o en rojo (el cuerpo ha avisado)."],
         ["Vídeo: «Aprender a quedarte»", "video:quedarte"],
-        ["AIS desde el amor: acompañarte, no controlarte", "tool:ais_amor"],
+        ["AIS desde el amor: las pequeñas incomodidades", "tool:ais_amor/incomodidades", ["tool:ais_amor/abrazo"], "Haz «AIS de las pequeñas incomodidades» (30 segundos) la próxima vez que algo te moleste un poco. Si es un momento difícil, prueba «Abrazo del mono»."],
         ["Vídeo: la honestidad emocional", "video:honestidad"],
-        ["Honestidad emocional: «no sé por qué, pero lo noto aquí»", "tool:honestidad_emocional"],
+        ["Honestidad emocional: «no sé por qué, pero lo noto aquí»", "tool:honestidad_emocional", [], "Sigue sus pasos con algo que notes hoy: siente dónde, ponle textura, suspende el porqué y compártelo. Compartirlo puede ser, de momento, solo contigo."],
         ["Vídeo: «El yo que se construyó sin ti»", "video:yo"],
-        ["Estoy aquí conmigo: quedarme sin exigirme", "tool:estoy_aqui_conmigo"],
+        ["Estoy aquí conmigo: quedarme sin exigirme", "tool:estoy_aqui_conmigo", [], "Haz la «Respiración de presencia» y lee «Quedarme sin exigirme». El resto de la herramienta es para otros días."],
         ["Juego: La campana · honestidad emocional en una escena imaginada", "tool:juegos_exposicion/campana"],
         ["Juego: El carrusel · parar la rumiación (para · respira · vuelve)", "tool:juegos_exposicion/carrusel"],
-        ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion", ["tool:salidas_paso_a_paso"]]
+        ["Si tu psicólogo/a lo indica: la escalera de exposición", "tool:escalera_exposicion", ["tool:salidas_paso_a_paso"], "Solo si tu psicólogo/a te lo ha indicado: construye tu escalera con él o ella. Si no, marca este paso como hecho y sigue."]
       ],
       crit:[["auto","programada","Sigo con la práctica programada (10 de 14 días)"],["auto","iti","Mi tolerancia (ITI) sube o se mantiene alta"],
             ["chk","c3a","Me quedo un poco más allá del impulso de irme, sin forzarme a aguantar"],["chk","c3b","He dicho la frase honesta al menos a mí mismo/a"]]
@@ -418,14 +419,14 @@
         d:"La respiración curiosa con anclaje y, al terminar, la pregunta: «¿qué haría la persona que quiero ser?». Un paso pequeño, observable y realizable ahora." },
       noche:{ t:"Respiración curiosa con anclaje · 3–5 minutos", d:"Al llegar a casa o antes de dormir. Si quieres, repasa la micro-acción de hoy: ¿la hiciste, aunque hubiera activación?", guia:"P2" },
       pasos:[
-        ["Mi brújula de valores", "tool:brujula_valores"],
-        ["Mi semana con foco y valores (revísala con lo aprendido)", "tool:agenda_atencional"],
+        ["Mi brújula de valores", "tool:brujula_valores", [], "Elige 2 o 3 áreas de tu vida y escribe en una frase qué te importa en cada una. No hace falta completarlas todas."],
+        ["Mi semana con foco y valores (revísala con lo aprendido)", "tool:agenda_atencional", [], "Abre tu agenda y coloca una micro-acción con valor en cada día de la semana, ligada a lo que escribiste en tu brújula."],
         ["Vídeo: la ira, con Tòfol Villalonga", "video:ira"],
-        ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta", ["tool:control_ira"]],
-        ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_basicas", ["tool:juegos_exposicion/puertas"]],
+        ["Bajar la alerta: parar antes de reaccionar, en caliente", "tool:bajar_alerta", ["tool:control_ira"], "Lee los 4 pasos y ensáyalos una vez ahora, en calma, para tenerlos a mano cuando llegue el enfado. El control de ira es para registrar después de un episodio."],
+        ["Rituales de entrada: antes de casa, reuniones o situaciones con carga", "tool:ais_amor/entrada", [], "Lee el ejercicio y hazlo hoy en tres puertas: antes de cruzarlas, una respiración con la atención en la barriga. Súmalo en «Entradas y salidas»."],
         ["Juego: Puertas · respiración curiosa al entrar y al salir de cada lugar", "tool:juegos_exposicion/puertas"],
-        ["Laboratorio: la teoría aplicada a tu situación", "tool:laboratorio_tec/s-perfiles"],
-        ["Laboratorio: mide tus L·D·C", "tool:laboratorio_tec/s-mio"]
+        ["Laboratorio: la teoría aplicada a tu situación", "tool:laboratorio_tec/s-perfiles", [], "Busca el perfil que más se parece a tu situación y léelo. Quédate con una cosa que puedas aplicar esta semana."],
+        ["Laboratorio: mide tus L·D·C", "tool:laboratorio_tec/s-mio", [], "Mide tu latencia, densidad y continuidad, y compáralas con tu última autoevaluación."]
       ],
       crit:[["auto","cv","Micro-acción con valor al menos 4 de los últimos 7 días"],["chk","c4a","Sé qué me importa en mis áreas de vida"],["chk","c4b","He hecho algo valioso alguna vez aunque sintiera activación"]]
     },
@@ -437,14 +438,14 @@
         d:"La misma práctica de siempre, más breve. Breve y frecuente vale más que largo y ocasional." },
       noche:{ t:"Respiración curiosa con anclaje · 2–3 minutos", d:"Al llegar a casa o antes de dormir. Si ha sido un día difícil, añade S·R·S·A.", guia:"P5" },
       pasos:[
-        ["Reevaluación: registro de seguimiento del Screening", "tool:screening_tec"],
-        ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval"],
-        ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional"],
-        ["Juego: Llegar a casa · abrazo sentido, cómplices del dolor (también en pareja o familia)", "tool:juegos_exposicion/casa"],
-        ["Una frase que te acompañe, como fondo de pantalla", "tool:fondos_frases"],
-        ["Tracker TEC: mi rutina de paradas", "tool:tracker_tec"],
-        ["Laboratorio: el espacio APRENS completo y el glosario", "tool:laboratorio_tec/s-espacio", ["tool:laboratorio_tec/s-glosario"]],
-        ["Para profundizar: los libros de Tòfol Villalonga", "sec:libros"]
+        ["Reevaluación: registro de seguimiento del Screening", "tool:screening_tec", [], "Haz el registro de seguimiento con tu código de 3 cifras. Así tu psicólogo/a ve el cambio desde el inicio."],
+        ["Mi autoevaluación (aquí, en «Autoevaluación»)", "eval", [], "Responde las tres preguntas y repite la prueba de continuidad. En «Tu evolución» verás cómo has cambiado desde el primer día."],
+        ["Honestidad emocional con personas de confianza", "tool:honestidad_emocional", [], "Elige a una persona de confianza y, esta semana, dile la frase honesta con la mano donde lo notas. Si quieres, repasa antes los pasos en la herramienta."],
+        ["Juego: Llegar a casa · abrazo sentido, cómplices del dolor (también en pareja o familia)", "tool:juegos_exposicion/casa", [], "Juega una partida. Si convives con alguien, podéis hacerlo juntos."],
+        ["Una frase que te acompañe, como fondo de pantalla", "tool:fondos_frases", [], "Elige la frase que más te acompañe, un fondo, y guárdala como fondo de pantalla del móvil."],
+        ["Tracker TEC: mi rutina de paradas", "tool:tracker_tec", [], "Úsalo solo si tu psicólogo/a te lo pide: tus paradas ya las sumas aquí, en «Durante todo el día». Si no, basta con leer el bucle que entrena (STOP · respiro · presencia · actúo)."],
+        ["Laboratorio: el espacio APRENS completo y el glosario", "tool:laboratorio_tec/s-espacio", ["tool:laboratorio_tec/s-glosario"], "Lee el espacio APRENS completo: es el mapa de todo lo que has recorrido. El glosario, para consultar."],
+        ["Para profundizar: los libros de Tòfol Villalonga", "sec:libros", [], "Opcional. Si te apetece seguir leyendo, aquí tienes por dónde empezar."]
       ],
       crit:[]
     }
@@ -639,7 +640,9 @@
     var alt = {historia_animada:"Versión animada", historia_manada:"Versión animada", historia_control:"Versión animada", screening_tec:"Cuestionario de seguimiento",
       estado_mono:"Check-in con el cuento", respiro_ais:"Respiro · dos luces", ais_basicas:"Herramientas AIS básicas", control_ira:"Control de ira",
       salidas_paso_a_paso:"Paso a paso · salidas", cuestionario_tec:"Cuestionario TEC", "laboratorio_tec/s-glosario":"Glosario",
-      "juegos_ais/sonar":"Sonar", "juegos_ais/globo":"Globo de quietud", "juegos_exposicion/puertas":"Juego: Puertas"};
+      "juegos_ais/sonar":"Jugar a Sonar", "juegos_ais/globo":"Globo de quietud",
+      "ais_curiosidad/linterna":"Ir a «La linterna interior»", "ais_curiosidad/escaner":"El escáner curioso",
+      "ais_amor/incomodidades":"Ir a «Pequeñas incomodidades»", "ais_amor/abrazo":"Abrazo del mono", "ais_amor/entrada":"Ir a «Rituales de entrada»", "juegos_exposicion/puertas":"Juego: Puertas"};
     return alt[v] || "Abrir";
   }
   function videoHTML(name, open){
@@ -706,7 +709,17 @@
     for(var i=0;i<e.pasos.length;i++){ if(!t[i]) return i; }
     return -1;
   }
-  function pasoHTML(p){ return specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join("") + quizHTML(p[1]); }
+  // «Qué hacer»: la consigna concreta del paso (p[3]) o una por defecto según el tipo.
+  function hazDe(p){
+    if(p[3]) return p[3];
+    var k = p[1].split(":")[0], v = p[1].split(":")[1]||"";
+    if(k==="video") return "Míralo aquí mismo y, al acabar, responde «¿Lo he entendido?»: 5 preguntas para fijar la idea.";
+    if(v.indexOf("laboratorio_tec/")===0) return "Se abre solo esta sección del Laboratorio: léela, haz lo que proponga y vuelve aquí a marcarla. No hace falta recorrer el resto.";
+    if(/^juegos_/.test(v)) return "Juega una partida (3–5 minutos) y vuelve aquí a marcarlo.";
+    return "";
+  }
+  function hazHTML(p){ var h = hazDe(p); return h ? '<div class="haz"><b>👉 Qué hacer:</b> '+esc(h)+'</div>' : ""; }
+  function pasoHTML(p){ return hazHTML(p) + specHTML(p[1], true) + (p[2]||[]).map(function(x){ return specHTML(x, false); }).join("") + quizHTML(p[1]); }
 
   /* ---------- «¿Lo he entendido?»: 5 preguntas tras cada vídeo o lectura ---------- */
   // Id de las preguntas de una pieza: vídeos por su nombre, lecturas del hub y secciones del laboratorio.
