@@ -184,7 +184,7 @@
     const extra = {};
     if (p.extra && typeof p.extra === "object") Object.keys(p.extra).forEach((k) => {
       if (!/^\d{1,2}$/.test(k) || !Array.isArray(p.extra[k])) return;
-      const l = p.extra[k].filter(idOk).slice(0, 2); if (l.length) extra[k] = l;
+      const l = p.extra[k].slice(0, 2).map((x) => idOk(x) || ""); if (l.some(Boolean)) extra[k] = l;
     });
     return {
       id: idOk(p.id) || uid(), tipo: p.tipo === "partido" ? "partido" : "entreno",
@@ -866,7 +866,7 @@
       if (!ed && voz.ok) h += `<div class="fila" style="margin-top:8px"><button type="button" class="btn-peq" data-a="leerInfo">🔊 Escuchar</button></div>`;
       if (o.abrirFicha && !inf.rival && ctx.pidDe(f)) h += `<button type="button" class="btn ficha-btn" data-a="ficha">📋 Ficha completa de ${esc(inf.corto || inf.nombre)}: qué mirar y qué entrenar</button>`;
       info.innerHTML = h;
-      if (!ed && voz.ok && o.vozAuto && o.vozAuto()) {
+      if (!ed && voz.ok && o.vozAuto && o.vozAuto() && o.yoPid && ctx.pidsDe(f).includes(o.yoPid)) {
         const marca = i + "|" + f.id;
         if (marca !== ultimaVoz) {
           ultimaVoz = marca;
@@ -918,7 +918,9 @@
       i = 0; mostrado = posPaso(jug.pasos[0]); pintar(mostrado); pintarInfo();
       const siguiente = () => {
         if (i >= jug.pasos.length - 1) { reproduciendo = false; pintar(mostrado); pintarInfo(); return; }
-        luego(() => animarA(i + 1, 1200, () => { if (s0 === sesion) luego(siguiente, 900); }), 300);
+        const tocaEsperar = () => o.vozAuto && o.vozAuto() && voz.hablando();
+        const avanzar = () => { if (tocaEsperar()) luego(avanzar, 300); else animarA(i + 1, 1200, () => { if (s0 === sesion) luego(siguiente, 900); }); };
+        luego(avanzar, 300);
       };
       luego(siguiente, 700);
     }
@@ -1404,7 +1406,7 @@
   function paquete(plan, sinNombres) {
     const usados = new Set();
     Object.values(plan.once || {}).forEach((x) => usados.add(x));
-    Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => usados.add(x)));
+    Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => { if (x) usados.add(x); }));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
@@ -1449,8 +1451,9 @@
     const ok = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
     let btnActivo = null;
     function vozEs() {
-      const vs = window.speechSynthesis.getVoices() || [];
-      return vs.find((v) => /^es[-_]ES/i.test(v.lang)) || vs.find((v) => /^es/i.test(v.lang)) || null;
+      // Solo voces instaladas en el dispositivo: las remotas enviarían el texto a un servidor.
+      const vs = (window.speechSynthesis.getVoices() || []).filter((v) => v.localService === true);
+      return vs.find((v) => /^es[-_]ES/i.test(v.lang)) || vs.find((v) => /^es/i.test(v.lang)) || vs.find((v) => /^ca/i.test(v.lang)) || null;
     }
     function limpiar(t) {
       return String(t || "").replace(/\p{Extended_Pictographic}/gu, "").replace(/[·•]/g, ",").replace(/\s+/g, " ").trim();
@@ -1468,10 +1471,11 @@
       // Frases cortas: algunos navegadores cortan las locuciones largas.
       const trozos = t.match(/[^.!?;:]+[.!?;:]*/g) || [t];
       const v = vozEs();
+      if (!v) { toast("Este dispositivo no tiene una voz en castellano instalada. Puedes añadirla en los ajustes de accesibilidad del móvil."); return; }
       btnActivo = btn || null; marcar(btnActivo, true);
       trozos.forEach((tr, k) => {
         const u = new SpeechSynthesisUtterance(tr.trim());
-        u.lang = v ? v.lang : "es-ES"; if (v) u.voice = v; u.rate = 0.95;
+        u.lang = v.lang; u.voice = v; u.rate = 0.95;
         if (k === trozos.length - 1) u.onend = () => { if (btn && btnActivo === btn) { marcar(btn, false); btnActivo = null; } };
         window.speechSynthesis.speak(u);
       });
@@ -1487,7 +1491,9 @@
       if (btnActivo && btnActivo === btn) { parar(); return; }
       hablar(textoDe(el), btn);
     }
-    return { ok: ok, hablar: hablar, parar: parar, alternar: alternar, textoDe: textoDe };
+    const hablando = () => ok && (window.speechSynthesis.speaking || window.speechSynthesis.pending);
+    if (ok) window.speechSynthesis.getVoices();
+    return { ok: ok, hablar: hablar, parar: parar, alternar: alternar, textoDe: textoDe, hablando: hablando };
   })();
   let vozAuto = false;
   try { vozAuto = sessionStorage.getItem("pz_voz") === "1"; } catch (e) { /* nada */ }
@@ -1540,7 +1546,8 @@
         });
       });
       const generalFij = plan.bloques.filter((b) => b.fij || b.cuando).map((b) => `${b.titulo || CATS[b.cat]}: ${[b.fij, b.cuando && "cuándo: " + b.cuando].filter(Boolean).join(", ")}`);
-      const palabra = pal.p || plan.clave || "";
+      const mia = ctx.yo && ctx.yo === pid;
+      const palabra = (mia && pal.p) || plan.clave || "";
       cuerpo.innerHTML = `
         <div class="portada">
           <h1 style="margin:0">${j ? `<span class="dorsal" style="background:var(--acento);margin-right:8px">${esc(j.d)}</span>` : ""}${esc(nombre)}</h1>
@@ -1572,7 +1579,7 @@
         <section class="tarjeta">${secLeer()}<h2>${etapa === "cadete" || etapa === "juvenil" ? "Para dominar el puesto" : "Lo que vendrá más adelante"}</h2>${lista(P.avanzado)}</section>
         <section class="tarjeta">${secLeer()}<h2>Atención y emociones</h2>
           ${E ? lista(E.cabeza) : ""}
-          <p>Cuando te des cuenta de que te has ido de la jugada (un error, un pensamiento, el ruido de la grada), no luches con ello: ${palabra ? "di tu palabra clave («" + esc(palabra) + "»)" : "di tu palabra clave"}${pal.g ? ", haz tu gesto (" + esc(pal.g) + ")" : ""} y vuelve a lo que es importante en la jugada.</p></section>
+          <p>Cuando te des cuenta de que te has ido de la jugada (un error, un pensamiento, el ruido de la grada), no luches con ello: ${palabra ? "di tu palabra clave («" + esc(palabra) + "»)" : "di tu palabra clave"}${mia && pal.g ? ", haz tu gesto (" + esc(pal.g) + ")" : ""} y vuelve a lo que es importante en la jugada.</p></section>
         ${E ? `<section class="tarjeta">${secLeer()}<h2>Cuida tu cuerpo</h2>${lista(E.cuidado)}</section>` : ""}
         <p class="peq" style="text-align:center">Son pautas generales de desarrollo deportivo. Cada jugador crece a su ritmo; tu entrenador te ayudará a ver qué es lo tuyo.</p>`;
     }
@@ -1655,10 +1662,10 @@
     if (mf) mf.addEventListener("click", () => { if (yo) abrirFicha(plan, ctx, yo, pq.eq && pq.eq.et); });
     const va = cont.querySelector("#vozAuto");
     if (va) va.addEventListener("change", () => { vozAuto = va.checked; if (!vozAuto) voz.parar(); try { sessionStorage.setItem("pz_voz", vozAuto ? "1" : ""); } catch (e) { /* nada */ } });
-    cont.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-leer]"); if (!b) return;
+    cont.onclick = (e) => {
+      const b = e.target.closest("[data-leer]"); if (!b || b.closest("#dlgFicha")) return;
       voz.alternar(b.closest("section, .tarjeta"), b);
-    });
+    };
     const sy = cont.querySelector("#selYo");
     if (sy) sy.addEventListener("change", () => {
       yo = sy.value;
@@ -1763,9 +1770,8 @@
     if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); pintarSinPuesto(plan); return; }
     if (d.extra !== undefined && plan) {
       plan.extra = plan.extra || {};
-      const l = (plan.extra[d.extra] || []).slice(); l[+d.n] = t.value || "";
-      const lim2 = l.filter(Boolean).slice(0, 2);
-      if (lim2.length) plan.extra[d.extra] = lim2; else delete plan.extra[d.extra];
+      const l = ((plan.extra[d.extra] || []).concat(["", ""])).slice(0, 2); l[+d.n] = t.value || "";
+      if (l.some(Boolean)) plan.extra[d.extra] = l; else delete plan.extra[d.extra];
       guardar(); pintarSinPuesto(plan); return;
     }
     if (d.b === "cat" && plan) {

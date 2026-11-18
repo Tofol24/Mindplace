@@ -166,9 +166,9 @@ window.PZ_FICHA = (function () {
       robo: "Primer pase seguro o, si hay ventaja, pase vertical al compañero entre líneas.",
       perdida: "Retrocede, orienta al rival hacia fuera y gana tiempo para que el equipo vuelva.",
       fijate: ["Al delantero rival y al espacio a tu espalda.", "La posición del otro central y de los laterales (línea).", "El pie del que va a pasar: anticipa el pase en largo."],
-      tecnica: ["Pase largo y pase corto tenso con las dos piernas.", "Juego de cabeza defensivo.", "Control orientado bajo presión.", "Entrada y perfil en el uno contra uno."],
+      tecnica: ["Pase largo y pase corto tenso con las dos piernas.", "Juego de cabeza defensivo: se trabaja en el entreno, con supervisión y pocas repeticiones según tu edad.", "Control orientado bajo presión.", "Entrada y perfil en el uno contra uno."],
       fisico: ["Salto y fuerza en los duelos.", "Aceleración en los primeros metros.", "Giros rápidos para defender la espalda."],
-      solo: ["Pases largos contra una pared o con un compañero, 20 con cada pierna.", "Saltos con remate de cabeza a un balón lanzado.", "Carrera hacia atrás y giro para correr hacia delante, 6 repeticiones."],
+      solo: ["Pases largos contra una pared o con un compañero, 20 con cada pierna.", "Saltos con impulso de una y de dos piernas, cayendo con las rodillas alineadas, 3 series de 6.", "Carrera hacia atrás y giro para correr hacia delante, 6 repeticiones."],
       avanzado: ["Gestión de la altura de la línea y del fuera de juego.", "Salida de balón con tres jugadores.", "Comunicación y liderazgo de la defensa."]
     },
     piv: {
@@ -277,7 +277,7 @@ window.PZ_FICHA = (function () {
       robo: "Ofrécete al espacio o de cara según dónde haya sido el robo.",
       perdida: "Presiona al primer defensor para que no pueda salir limpio.",
       fijate: ["La línea defensiva rival (para no caer en fuera de juego).", "La cabeza del compañero con el balón: cuando la levanta, arranca.", "Al portero en el remate."],
-      tecnica: ["Remate con las dos piernas y de cabeza.", "Control de espaldas y protección del balón.", "Desmarques de ruptura y de apoyo.", "Definición en el uno contra uno con el portero."],
+      tecnica: ["Remate con las dos piernas (el remate de cabeza, en el entreno y con supervisión).", "Control de espaldas y protección del balón.", "Desmarques de ruptura y de apoyo.", "Definición en el uno contra uno con el portero."],
       fisico: ["Aceleración y velocidad máxima.", "Fuerza para proteger el balón.", "Salto en el remate."],
       solo: ["Tiros a portería con las dos piernas desde distintas posiciones, 30 en total.", "Control de espaldas contra una pared y giro.", "Sprints cortos de 10 metros saliendo desde parado, 8 repeticiones."],
       avanzado: ["Movimientos de desmarque coordinados con el mediapunta.", "Señales de presión para el equipo.", "Lectura del fuera de juego."]
