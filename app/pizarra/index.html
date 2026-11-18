@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14281D">
+<meta name="description" content="Pizarra táctica y cuaderno del entrenador: prepara entrenos y partidos, coloca a tus jugadores en el campo, anima las jugadas y envíalas al grupo del equipo.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pizarra">
+<link rel="icon" href="../entrenador/aprens-icona-192.png" type="image/png">
+<link rel="apple-touch-icon" href="../entrenador/aprens-icona-180.png">
+<title>Pizarra del entrenador · APRENS</title>
+<link rel="stylesheet" href="app.css">
+<script src="../js/descarga-segura.js"></script>
+</head>
+<body>
+<a class="salta" href="#app">Ir al contenido</a>
+<header class="top">
+  <span class="marca" aria-hidden="true">⚽</span>
+  <div class="top-tx">
+    <div class="tt" id="ttApp">Pizarra del entrenador</div>
+    <div class="ts" id="ttSub">Cuaderno de entrenos y partidos</div>
+  </div>
+</header>
+
+<main id="app" tabindex="-1">
+  <noscript><p>Esta herramienta necesita JavaScript.</p></noscript>
+</main>
+
+<nav class="nav" id="nav" aria-label="Secciones" hidden>
+  <button type="button" data-ir="cuaderno"><span aria-hidden="true">📒</span>Cuaderno</button>
+  <button type="button" data-ir="plantilla"><span aria-hidden="true">👕</span>Plantilla</button>
+  <button type="button" data-ir="ajustes"><span aria-hidden="true">⚙️</span>Ajustes</button>
+</nav>
+
+<dialog id="dlgPizarra" class="dlg-pz" aria-labelledby="dlgPzTit">
+  <div class="dlg-cab">
+    <button type="button" class="btn-sec" id="dlgCerrar">← Volver</button>
+    <h2 id="dlgPzTit">Pizarra</h2>
+  </div>
+  <div id="dlgPzCuerpo"></div>
+</dialog>
+
+<dialog id="dlgFicha" class="dlg-pz" aria-labelledby="dlgFichaTit">
+  <div class="dlg-cab">
+    <button type="button" class="btn-sec" id="dlgFichaCerrar">← Volver</button>
+    <h2 id="dlgFichaTit">Ficha del jugador</h2>
+  </div>
+  <div id="dlgFichaCuerpo" class="ficha-cuerpo"></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="../vendor/lz-string.min.js"></script>
+<script src="ficha.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
