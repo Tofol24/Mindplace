@@ -21,6 +21,7 @@
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
+  var URL_SCREENING = "https://aprens-app.aprens.net/#/tool/screening_tec";
 
   function num(v) { if (v == null || v === "") return null; var n = typeof v === "number" ? v : parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : null; }
   function r1(v) { return Math.round(v * 10) / 10; }
@@ -30,6 +31,7 @@
   function parseYMD(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || "")); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
   function dias(a, b) { var x = parseYMD(a), y = parseYMD(b); return x && y ? Math.round((y - x) / 86400000) : 0; }
   function sumarDias(s, n) { var d = parseYMD(s); d.setDate(d.getDate() + n); return ymd(d); }
+  function lista(xs, y) { xs = xs.map(function (x) { return "«" + x + "»"; }); return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " " + y + " " + xs[xs.length - 1]; }
   function coma(v) { return String(v).replace(".", ","); }
   function media(a) { return a.length ? a.reduce(function (s, x) { return s + x; }, 0) / a.length : null; }
 
@@ -51,13 +53,17 @@
   }
 
   /* Métricas de un conjunto de registros. span: días que cubre (mín. 7). */
-  function metricas(xs, span) {
-    var m = { n: xs.length, dias: 0, aisDias: 0, tools: {}, act: [], mono: { conduce: 0, delante: 0, maletero: 0, lado: 0 }, nMono: 0,
+  function metricas(xs, span, nombreDe) {
+    var m = { n: xs.length, dias: 0, aisDias: 0, tools: {}, herr: {}, act: [], mono: { conduce: 0, delante: 0, maletero: 0, lado: 0 }, nMono: 0,
       cv: { n: 0, unos: 0 }, accion: { valiosa: 0, evitativa: 0 }, L: [], D: [], C: [], sob: [] };
     var ds = {}, ais = {};
     xs.forEach(function (x) {
       var r = x.r, t = x.tool;
       ds[x.d] = 1; m.tools[t] = (m.tools[t] || 0) + 1;
+      // Herramienta exacta: id conocido, o «@Nombre» si llegó como registro de texto.
+      var nm = t === "registro_texto" ? (r.herramienta || (nombreDe && nombreDe(t, r))) : null;
+      var hk = nm && nm !== "Registro (texto)" ? "@" + nm : t;
+      m.herr[hk] = (m.herr[hk] || 0) + 1;
       if (AIS.indexOf(t) >= 0) ais[x.d] = 1;
       // Activación antes → después de la práctica (0–10)
       var a = null, b = null;
@@ -86,7 +92,8 @@
     m.pctReactivo = m.nMono ? Math.round(100 * (m.mono.conduce + m.mono.delante) / m.nMono) : null;
     m.pctCv = m.cv.n ? Math.round(100 * m.cv.unos / m.cv.n) : null;
     ["L", "D", "C"].forEach(function (k) { m["m" + k] = m[k].length ? r1(media(m[k])) : null; });
-    m.principal = Object.keys(m.tools).sort(function (a, b) { return m.tools[b] - m.tools[a]; })[0] || null;
+    m.herramientas = Object.keys(m.herr).sort(function (a, b) { return m.herr[b] - m.herr[a]; });
+    m.principal = m.herramientas[0] || null;
     return m;
   }
   function spanDe(xs) { return xs.length ? dias(xs[0].d, xs[xs.length - 1].d) + 1 : 7; }
@@ -118,9 +125,10 @@
     var corte = sumarDias(nuevos[0].d, -28);
     var previosMes = previos.filter(function (x) { return x.d >= corte && x.d < nuevos[0].d; });
     var spanNuevo = Math.max(spanDe(nuevos), Math.min(14, dias(nuevos[0].d, hoy) + 1));
-    var N = metricas(nuevos, spanNuevo);
-    var P = previosMes.length ? metricas(previosMes, Math.max(7, dias(previosMes[0].d, nuevos[0].d))) : null;
-    var T = metricas(todos, spanDe(todos));
+    var nd = opts.nombre || null;
+    var N = metricas(nuevos, spanNuevo, nd);
+    var P = previosMes.length ? metricas(previosMes, Math.max(7, dias(previosMes[0].d, nuevos[0].d)), nd) : null;
+    var T = metricas(todos, spanDe(todos), nd);
 
     /* ── Señales por parámetro TEC ── */
     var lat = [], den = [], con = [], fort = [];
@@ -179,11 +187,11 @@
   var TXT = {
     es: {
       hola: "Hola, he revisado los registros que me has ido enviando 🌱",
-      resumen: function (a, nombreTool) {
+      resumen: function (a, hs) {
         var N = a.nuevo;
         return (a.primerFeedback || a.sinNuevos ? "En los últimos días me han llegado " : "Desde mi último mensaje me han llegado ") +
           N.n + " registro" + (N.n === 1 ? "" : "s") + " en " + N.dias + " día" + (N.dias === 1 ? "" : "s") + " distinto" + (N.dias === 1 ? "" : "s") +
-          (nombreTool ? ", sobre todo de «" + nombreTool + "»" : "") + ".";
+          (hs.length === 1 ? ", de «" + hs[0] + "»" : hs.length ? ", sobre todo de " + lista(hs, "y") : "") + ".";
       },
       evol: {
         inicio: "Es el inicio de tus registros y ya me sirven para ir conociendo cómo estás y cómo responde tu cuerpo.",
@@ -249,16 +257,26 @@
       pasos: ["Paso 1 · ", "Paso 2 · ", "Paso 3 · "],
       linea: function (t) { return "Todo esto va en la línea de lo que estamos trabajando: «" + t + "»."; },
       frase: "🧭 Quédate con esta frase:",
+      screening: function (s) {
+        if (s.code3) return (s.segReciente
+            ? "Sigue haciendo, al menos una vez por semana, el registro de seguimiento del Screening, como ya has hecho estos días."
+            : "Te pido también que, al menos una vez por semana, hagas el registro de seguimiento del Screening. Me ayuda a ver tu evolución con más detalle.") +
+          " Son unos 2-3 minutos: entra como paciente, elige «Ya tengo mi código de seguimiento» y escribe tu código: *" + s.code3 + "*.\n" + URL_SCREENING;
+        if (s.hecho) return "Te pido también que, al menos una vez por semana, hagas el registro de seguimiento del Screening. Entra como paciente y elige «Ya tengo mi código de seguimiento»; si no tienes tu código a mano, pídemelo por aquí.\n" + URL_SCREENING;
+        return "Para poder ver tu evolución con más detalle, te pido que hagas la autoevaluación del Screening TEC/AIS. Se hace en unos 10-15 minutos, no hay respuestas correctas ni incorrectas" +
+          (s.codigoPaciente ? " y, al empezar, te pedirá tu código de paciente: *" + s.codigoPaciente + "*" : "") +
+          ". Al terminar te daré un código para que, a partir de ahí, hagas el registro de seguimiento al menos una vez por semana.\n" + URL_SCREENING;
+      },
       cierre: "Sigue enviándome tus registros como hasta ahora, así puedo ir viendo tu evolución y ajustar lo que trabajamos. No hace falta que salga perfecto: lo importante es hacerlo con presencia y no con exigencia.",
       firma: "Tòfol Villalonga"
     },
     ca: {
       hola: "Hola, he revisat els registres que m'has anat enviant 🌱",
-      resumen: function (a, nombreTool) {
+      resumen: function (a, hs) {
         var N = a.nuevo;
         return (a.primerFeedback || a.sinNuevos ? "Aquests darrers dies m'han arribat " : "Des del meu darrer missatge m'han arribat ") +
           N.n + " registre" + (N.n === 1 ? "" : "s") + " en " + N.dias + " di" + (N.dias === 1 ? "a" : "es") + " diferent" + (N.dias === 1 ? "" : "s") +
-          (nombreTool ? ", sobretot de «" + nombreTool + "»" : "") + ".";
+          (hs.length === 1 ? ", de «" + hs[0] + "»" : hs.length ? ", sobretot de " + lista(hs, "i") : "") + ".";
       },
       evol: {
         inicio: "És l'inici dels teus registres i ja em serveixen per anar coneixent com estàs i com respon el teu cos.",
@@ -324,6 +342,16 @@
       pasos: ["Passa 1 · ", "Passa 2 · ", "Passa 3 · "],
       linea: null,
       frase: "🧭 Queda't amb aquesta frase:",
+      screening: function (s) {
+        if (s.code3) return (s.segReciente
+            ? "Continua fent, almanco una vegada per setmana, el registre de seguiment del Screening, com ja has fet aquests dies."
+            : "També et deman que, almanco una vegada per setmana, facis el registre de seguiment del Screening. M'ajuda a veure la teva evolució amb més detall.") +
+          " Són uns 2-3 minuts: entra com a pacient, tria «Ya tengo mi código de seguimiento» i escriu el teu codi: *" + s.code3 + "*.\n" + URL_SCREENING;
+        if (s.hecho) return "També et deman que, almanco una vegada per setmana, facis el registre de seguiment del Screening. Entra com a pacient i tria «Ya tengo mi código de seguimiento»; si no tens el codi a mà, demana-me'l per aquí.\n" + URL_SCREENING;
+        return "Per poder veure la teva evolució amb més detall, et deman que facis l'autoavaluació del Screening TEC/AIS. Es fa en uns 10-15 minuts, no hi ha respostes correctes ni incorrectes" +
+          (s.codigoPaciente ? " i, en començar, et demanarà el teu codi de pacient: *" + s.codigoPaciente + "*" : "") +
+          ". En acabar et donaré un codi perquè, a partir d'aquí, facis el registre de seguiment almanco una vegada per setmana.\n" + URL_SCREENING;
+      },
       cierre: "Continua enviant-me els teus registres com fins ara, així puc anar veient la teva evolució i ajustar el que treballam. No cal que surti perfecte: l'important és fer-ho amb presència i no amb exigència.",
       firma: "Tòfol Villalonga"
     }
@@ -352,15 +380,18 @@
   function mensaje(a, opts) {
     opts = opts || {};
     var lang = opts.lang === "ca" ? "ca" : "es", T = TXT[lang], N = a.nuevo, F = T.foco[a.foco];
-    var tool = !N.principal ? null : (lang === "ca" && NOMBRE_CA[N.principal]) || (opts.nombreTool ? opts.nombreTool(N.principal) : null);
+    var hs = N.herramientas.slice(0, 3).map(function (k) {
+      return k.charAt(0) === "@" ? k.slice(1) : (lang === "ca" && NOMBRE_CA[k]) || (opts.nombreTool ? opts.nombreTool(k) : null);
+    }).filter(Boolean);
     var fortTxt = a.fortalezas.slice(0, 2).map(function (k) { return T.fort[k](N); });
     if (!fortTxt.length) fortTxt.push(T.fort.base);
-    var p1 = [T.resumen(a, tool), T.evol[a.evol]].join(" ");
+    var p1 = [T.resumen(a, hs), T.evol[a.evol]].join(" ");
     var p2 = fortTxt.join(" ");
     var p3 = [T.paso[a.paso], F.por(a)].filter(Boolean).join(" ");
     var pasos = T.semana + "\n" + [F.p1, F.p2, F.p3].map(function (s, i) { return T.pasos[i] + s; }).join("\n");
     var linea = opts.modulo && opts.modulo.titulo && T.linea ? T.linea(opts.modulo.titulo) : "";
-    return [T.hola, p1, p2, p3, pasos, linea, T.frase + "\n«" + F.consigna + "»", T.cierre, T.firma].filter(Boolean).join("\n\n");
+    var scr = opts.screening ? T.screening(opts.screening) : "";
+    return [T.hola, p1, p2, p3, pasos, linea, T.frase + "\n«" + F.consigna + "»", scr, T.cierre, T.firma].filter(Boolean).join("\n\n");
   }
 
   var NOMBRE_FOCO = { latencia: "Latencia · nivel 1 (detectar y pausar)", densidad: "Densidad · nivel 2 (paradas frecuentes)", continuidad: "Continuidad · nivel 3 (sostener y actuar con valor)" };

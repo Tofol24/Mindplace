@@ -219,9 +219,11 @@
     },
 
     /* Mensajes de WhatsApp de cualquier herramienta (pegados o por enlace #t=…). */
-    importTexto: function (texto, pac) {
+    importTexto: function (texto, pac, nombre) {
       var regs = parseMensajes(texto), codigo = normCodigoPac(pac);
       if (!regs.length || !codigo) throw new Error("texto-invalido");
+      // El enlace trae el nombre exacto de la herramienta: manda sobre el deducido del texto.
+      if (nombre && regs.length === 1 && regs[0].toolId === "registro_texto") regs[0].record.herramienta = String(nombre).slice(0, 60);
       var tools = {};
       regs.forEach(function (x) {
         var b = tools[x.toolId] || (tools[x.toolId] = { meta: { nombre: x.nombre, v: 1 }, records: [] });
@@ -431,6 +433,15 @@
   var POS_COLOR = { conduce: "#c0584e", delante: "#d98a3d", maletero: "#8d6fb0", lado: "#5f9070" };
   var POS_ORDER = ["conduce", "delante", "maletero", "lado"];
 
+  /* Nombre que se muestra de un registro: el de la herramienta exacta cuando
+     el mensaje no se reconoce («Registro (texto)»). */
+  function nombreRegistro(tool, r) {
+    if (tool === "registro_texto") {
+      var n = r.herramienta || (window.tituloRegistroTexto && r.texto ? tituloRegistroTexto(r.texto) : null);
+      if (n) return n;
+    }
+    return TOOL_LABEL[tool] || tool;
+  }
   function recDate(r) { return r.date || r.fecha || (r.ts ? new Date(r.ts).toISOString().slice(0, 10) : ""); }
   function allRecords(p) {
     var out = [];
@@ -1058,7 +1069,7 @@
         '<table class="acts"><thead><tr><th>Fecha</th><th>Herramienta</th><th>Resumen</th></tr></thead><tbody>' +
         recentActivity(p, 30).map(function (x) {
           return '<tr><td class="date">' + esc(recDate(x.r) || "—") + '</td>' +
-            '<td><span class="tag">' + esc(TOOL_LABEL[x.tool] || x.tool) + '</span></td>' +
+            '<td><span class="tag">' + esc(nombreRegistro(x.tool, x.r)) + '</span></td>' +
             '<td>' + (x.r.texto
               ? '<details class="txt"><summary>' + esc(recSummary(x.tool, x.r)) + '</summary><pre>' + esc(x.r.texto) + '</pre></details>'
               : esc(recSummary(x.tool, x.r))) + '</td></tr>';
@@ -1220,7 +1231,16 @@
       '<div class="sub" style="margin:10px 0 0;font-style:italic">La pauta sugerida no sustituye el criterio clínico.</div></div>';
   }
   /* ───────── Feedback a partir de los autorregistros (feedback-registros.js) ───────── */
-  function feedbackInfo(p) { return window.APRENS_FEEDBACK ? APRENS_FEEDBACK.analizar(p) : null; }
+  function feedbackInfo(p) { return window.APRENS_FEEDBACK ? APRENS_FEEDBACK.analizar(p, { nombre: nombreRegistro }) : null; }
+  /* Situación del Screening para la invitación semanal del mensaje. */
+  function screeningEstado(p) {
+    var pi = pautaInfo(p), hoy = new Date(), hace7 = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 7);
+    var d7 = hace7.getFullYear() + "-" + String(hace7.getMonth() + 1).padStart(2, "0") + "-" + String(hace7.getDate()).padStart(2, "0");
+    var seg = ((p.tools.screening_seg && p.tools.screening_seg.records) || []).some(function (r) { return String(recDate(r)) >= d7; });
+    var hecho = !!(((p.tools.screening_tec && p.tools.screening_tec.records) || []).length || pi);
+    return { hecho: hecho, code3: pi && pi.code3 ? String(pi.code3) : null, segReciente: seg,
+      codigoPaciente: /^SIN-/.test(p.codigo) ? null : p.codigo };
+  }
   function feedbackCard(p) {
     var a = feedbackInfo(p);
     if (!a) return "";
@@ -1234,7 +1254,7 @@
       '<div class="motivo">📌 <b>Por qué este foco:</b> ' + esc(a.motivo) + ' ' + esc(pasoTxt) + '</div>' +
       '<div class="sub" style="margin:0 0 4px">Registros que entran en este feedback:</div>' +
       a.nuevos.slice(-4).reverse().map(function (x) {
-        return '<div class="cuali"><b>' + esc(x.d) + ' · ' + esc(TOOL_LABEL[x.tool] || x.tool) + ':</b> ' + esc(recSummary(x.tool, x.r)) + '</div>';
+        return '<div class="cuali"><b>' + esc(x.d) + ' · ' + esc(nombreRegistro(x.tool, x.r)) + ':</b> ' + esc(recSummary(x.tool, x.r)) + '</div>';
       }).join("") +
       '<div class="acc" style="margin-top:10px"><button id="btnFeedback" class="btn btn-primary">📲 Preparar mensaje de feedback</button></div>' +
       '<div class="sub" style="margin:10px 0 0;font-style:italic">Se compara lo que ha llegado desde tu último feedback con el mes anterior. La propuesta no sustituye el criterio clínico.</div></div>';
@@ -1243,7 +1263,7 @@
   function feedbackTexto() {
     var a = feedbackInfo(pautaPac); if (!a) return "";
     var pi = msgLang === "es" ? pautaInfo(pautaPac) : null;
-    return APRENS_FEEDBACK.mensaje(a, { lang: msgLang, nombreTool: function (t) { return TOOL_LABEL[t] || null; },
+    return APRENS_FEEDBACK.mensaje(a, { lang: msgLang, nombreTool: function (t) { return TOOL_LABEL[t] || null; }, screening: screeningEstado(pautaPac),
       modulo: pi && MODULOS[pi.mod] ? { titulo: MODULOS[pi.mod].pac_titulo } : null });
   }
   function pintarIdiomaPauta() {
@@ -1325,16 +1345,17 @@
      El registro viaja en el fragmento de la URL: no pasa por ningún servidor.
      Se guarda en memoria hasta que el psicólogo abre el panel con su código. */
   var pendientes = [];
-  function claveTexto(texto, pac) { return "T|" + normCodigoPac(pac || "") + "|" + texto; }
+  function claveTexto(texto, pac, nombre) { return "T|" + normCodigoPac(pac || "") + "|" + String(nombre || "").replace(/\|/g, " ") + "|" + texto; }
   function esClaveTexto(k) { return k.slice(0, 2) === "T|"; }
-  function partesTexto(k) { var i = k.indexOf("|", 2); return { pac: k.slice(2, i), texto: k.slice(i + 1) }; }
+  function partesTexto(k) { var i = k.indexOf("|", 2), j = k.indexOf("|", i + 1); return { pac: k.slice(2, i), nombre: k.slice(i + 1, j), texto: k.slice(j + 1) }; }
   /* Enlaces #t=<texto comprimido>[&p=<paciente>] que añaden las herramientas. */
   function extraerTextos(str) {
-    var out = [], re = /[#&]t=([A-Za-z0-9+\-$_]+)(?:&p=([^\s&#]*))?/g, m;
+    var out = [], re = /[#&]t=([A-Za-z0-9+\-$_]+)((?:&[pn]=[^\s&#]*)*)/g, m;
     while ((m = re.exec(String(str || "")))) {
       try {
         var t = window.LZString && LZString.decompressFromEncodedURIComponent(m[1].replace(/_/g, "$"));
-        if (t) out.push(claveTexto(t, m[2] ? decodeURIComponent(m[2]) : ""));
+        var pm = /&p=([^\s&#]*)/.exec(m[2] || ""), nm = /&n=([^\s&#]*)/.exec(m[2] || "");
+        if (t) out.push(claveTexto(t, pm ? decodeURIComponent(pm[1]) : "", nm ? decodeURIComponent(nm[1]) : ""));
       } catch (e) {}
     }
     return out;
@@ -1369,7 +1390,7 @@
         try {
           var ok = await PanelStore.exclusivo(function () {
             listos.forEach(function (x) {
-              try { hechos.push(esClaveTexto(x[0]) ? PanelStore.importTexto(partesTexto(x[0]).texto, x[1]) : PanelStore.importCodigo(x[0], x[1])); }
+              try { hechos.push(esClaveTexto(x[0]) ? PanelStore.importTexto(partesTexto(x[0]).texto, x[1], partesTexto(x[0]).nombre) : PanelStore.importCodigo(x[0], x[1])); }
               catch (e) { malos++; }
             });
             return true;
@@ -1381,7 +1402,7 @@
           hechos = []; sinGuardar = listos; fallo = true;   // se reintenta en la próxima entrada o importación
           // Se devuelven a la URL: recargar la pestaña vuelve a intentarlo sin perder nada.
           try { history.replaceState(null, "", location.pathname + location.search + "#" + listos.map(function (x) {
-            return esClaveTexto(x[0]) ? "t=" + LZString.compressToEncodedURIComponent(partesTexto(x[0]).texto).replace(/\$/g, "_") + "&p=" + encodeURIComponent(x[1])
+            return esClaveTexto(x[0]) ? "t=" + LZString.compressToEncodedURIComponent(partesTexto(x[0]).texto).replace(/\$/g, "_") + "&p=" + encodeURIComponent(x[1]) + (partesTexto(x[0]).nombre ? "&n=" + encodeURIComponent(partesTexto(x[0]).nombre) : "")
               : "r=" + encodeURIComponent(x[0]); }).join("&")); } catch (e2) {}
           toast("⚠️ No se pudo guardar. No cierres esta pestaña: libera espacio y recárgala para reintentar.");
           return [];
@@ -1412,7 +1433,7 @@
       var t = !esClaveTexto(code) && parseCodigo(code), s = !t && !esClaveTexto(code) && parseCodigoSeg(code);
       var f = (t && t.fase0) || {};
       $("asigInfo").textContent = esClaveTexto(code)
-        ? parseMensajes(partesTexto(code).texto).map(function (x) { return x.nombre + " (" + x.record.date + ")"; }).join(" · ") + "."
+        ? parseMensajes(partesTexto(code).texto).map(function (x) { return (partesTexto(code).nombre || x.record.herramienta || x.nombre) + " (" + x.record.date + ")"; }).join(" · ") + "."
         : t
         ? "Screening inicial del " + (t.fecha || "—") + (f.nombre ? " · nombre: " + f.nombre : "") + (f.edad ? " · " + f.edad + " años" : "") + "."
         : "Seguimiento del " + ((s && s.fecha) || "—") + (s && s.perfil ? " · perfil " + s.perfil : "") + ".";
