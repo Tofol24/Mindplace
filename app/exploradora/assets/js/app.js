@@ -102,7 +102,7 @@
     { id: "respiracion", ico: "🌸", t: "Respiración de la flor y la vela", d: "Huele la flor (inspira)… apaga la vela (espira). Tres veces, despacio.", href: "/rincon/index.html?ej=respiracion" },
     { id: "curiosidad", ico: "🔎", t: "Mirar la sensación con curiosidad", d: "¿Dónde lo notas? ¿Calor, mariposas, nudo? Le ponemos nombre juntas, sin asustarnos.", href: "/rincon/index.html?ej=sensaciones" },
     { id: "pedir_abrazo", ico: "🗣️", t: "Pedir abrazo en vez de repetir", d: "Cuando repita «¿estás bien?», cambiamos la pregunta por un abrazo. Menos explicaciones, más presencia." },
-    { id: "audio", ico: "🎧", t: "El ritual diario de audios", d: "Un ratito de calma y atención, escuchado juntas (abre el ritual de audios AIS).", tool: "ritual_calma" }
+    { id: "audio", ico: "🎧", t: "El ritual diario de audios", d: "Una pista de audio al día, escuchada juntas: la que os toque hoy en el ritual (se abre directamente en los audios).", tool: "ritual_calma/audios" }
   ];
   var CARITAS = ["😣", "😟", "😐", "🙂", "😄"];
 
