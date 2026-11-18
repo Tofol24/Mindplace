@@ -140,7 +140,7 @@
   const txt = (v, n) => (typeof v === "string" || typeof v === "number" ? String(v).slice(0, n || 200) : "");
   const num = (v, a, b, def) => { const n = Number(v); return isFinite(n) ? lim(n, a, b) : def; };
   const pt = (v) => (Array.isArray(v) && v.length === 2 ? [num(v[0], -10, 78, 34), num(v[1], -10, 115, 52.5)] : null);
-  const idOk = (v) => (typeof v === "string" && RE_ID.test(v) ? v : null);
+  const idOk = (v) => (typeof v === "string" && RE_ID.test(v) && !/^(__proto__|constructor|prototype)$/.test(v) ? v : null);
   const colOk = (v, def) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : def);
   function sanJugador(j) {
     const id = idOk(j && j.id); if (!id) return null;
@@ -1191,6 +1191,14 @@
         <button type="button" class="btn" data-nuevo="entreno">＋ Nuevo entreno</button>
         <button type="button" class="btn rojo" data-nuevo="partido">＋ Nuevo partido</button>
       </div>
+      <div class="tarjeta abrir-arch">
+        <p><b>¿Te han enviado un archivo de la pizarra?</b> Ábrelo aquí: si es de tu entrenador verás la pizarra y tu ficha; si es de otro entrenador, se juntará con tu cuaderno.</p>
+        <div class="fila">
+          <label class="btn" for="abrirFile" style="cursor:pointer">📂 Abrir archivo</label>
+          <input type="file" id="abrirFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+          ${(function () { try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); return u && u.plan ? `<button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(u.plan.titulo || "último plan").slice(0, 40))}»</button>` : ""; } catch (e) { return ""; } })()}
+        </div>
+      </div>
       ${db.plantilla.length ? "" : `<div class="tarjeta"><p><b>Primero, tu plantilla.</b> Añade el dorsal y el nombre de cada jugador para que aparezcan en las fichas del campo.</p><button type="button" class="btn-sec" data-ir2="plantilla">Ir a la plantilla</button></div>`}
       <div class="lista-planes">
         ${planes.length ? planes.map((p) => `
@@ -1298,7 +1306,8 @@
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
-          <button type="button" class="btn" data-enviar="1">📤 Enviar al grupo</button>
+          <button type="button" class="btn" data-enviar="1">📤 Enviar enlace al grupo</button>
+          <button type="button" class="btn-sec" data-enviararch="1">📎 Enviar como archivo</button>
           <button type="button" class="btn-sec" data-preview="1">👁 Ver como jugador</button>
         </div>
         <div data-r="compartir"></div>
@@ -1418,13 +1427,13 @@
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
         <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
-          <button type="button" class="btn" data-enventr="1">📤 Enviar a otro entrenador</button>
-          <button type="button" class="btn-sec" data-envarch="1">Descargar como archivo</button>
+          <button type="button" class="btn" data-envarch="1">📎 Enviar archivo a otro entrenador</button>
+          <button type="button" class="btn-sec" data-enventr="1">🔗 Enviar enlace</button>
         </div>
         <div data-r="envEntr"></div>
         <div class="fila" style="margin-top:10px">
           <label class="btn-sec" for="juntFile" style="cursor:pointer">Juntar un archivo recibido</label>
-          <input type="file" id="juntFile" accept="application/json,.json" style="position:absolute;left:-999px">
+          <input type="file" id="juntFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
         </div>
       </div>
       <h2>Copia de seguridad</h2>
@@ -1433,7 +1442,7 @@
         <div class="fila">
           <button type="button" class="btn-sec" data-exportar="1">Descargar copia</button>
           <label class="btn-sec" for="impFile" style="cursor:pointer">Recuperar copia</label>
-          <input type="file" id="impFile" accept="application/json,.json" style="position:absolute;left:-999px">
+          <input type="file" id="impFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
         </div>
       </div>
       <h2>Sobre la privacidad</h2>
@@ -1442,11 +1451,118 @@
       </div>`;
   }
 
+  // ---------------------------------------------------------------- formato compacto de los enlaces
+  // Para que el enlace sea corto:
+  //  · posiciones en medios metros y en lista (en el orden de las fichas);
+  //  · si la pizarra sale de una jugada ya montada, solo se envía lo que cambia respecto a ella
+  //    (la otra app la vuelve a montar igual); si no, cada paso solo lleva lo que cambia del anterior;
+  //  · se quitan los campos vacíos y los títulos que coinciden con los de por defecto;
+  //  · en el paquete para jugadores, los identificadores de jugador se acortan.
+  const mm = (v) => [Math.round(v[0] * 2), Math.round(v[1] * 2)];
+  const igualP = (a, b) => !!a && !!b && a[0] === b[0] && a[1] === b[1];
+  function baseDe(plan, jug) {
+    const fj = JSON.stringify(jug.fichas);
+    let mejor = null, coste = 1e9;
+    Object.keys(PLANTILLAS).forEach((k) => {
+      const base = nuevaJugada(plan, k);
+      if (JSON.stringify(base.fichas) !== fj) return;
+      let c = Math.abs(base.pasos.length - jug.pasos.length) * 30;
+      jug.pasos.forEach((p, i) => {
+        const r = base.pasos[i]; if (!r) return;
+        Object.keys(p.pos).forEach((id) => { if (!igualP(mm(p.pos[id]), r.pos[id] && mm(r.pos[id]))) c++; });
+      });
+      if (c < coste) { coste = c; mejor = { k: k, base: base }; }
+    });
+    return mejor;
+  }
+  function limpiarVacios(x) {
+    if (Array.isArray(x)) { x.forEach(limpiarVacios); return; }
+    if (!x || typeof x !== "object") return;
+    Object.keys(x).forEach((k) => {
+      const v = x[k];
+      limpiarVacios(v);
+      if (v === "" || v === null || (Array.isArray(v) && !v.length && k !== "d") || (v && typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length)) delete x[k];
+    });
+  }
+  function compactar(pq, cortos) {
+    const o = clon(pq);
+    if (cortos && Array.isArray(o.jug) && o.plan) {
+      const m = {}; o.jug.forEach((j, i) => { m[j.id] = i.toString(36); j.id = m[j.id]; });
+      const r = (x) => (x && m[x] !== undefined ? m[x] : x);
+      const pl = o.plan;
+      Object.keys(pl.once || {}).forEach((k) => { pl.once[k] = r(pl.once[k]); });
+      Object.keys(pl.extra || {}).forEach((k) => { pl.extra[k] = pl.extra[k].map(r); });
+      pl.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = r(f.pj); }); });
+    }
+    const planes = o.plan ? [o.plan] : (o.planes || []);
+    planes.forEach((pl) => pl.bloques.forEach((b) => {
+      if (b.titulo === CATS[b.cat]) delete b.titulo;
+      const g = b.jug; if (!g) return;
+      const ids = g.fichas.map((f) => f.id);
+      const bs = baseDe(pl, g);
+      if (bs) { g.k = bs.k; delete g.fichas; if (g.vista === bs.base.vista) delete g.vista; }
+      if (g.rivales !== false) delete g.rivales;
+      let prev = null;
+      g.pasos.forEach((p, i) => {
+        const lista = ids.map((id) => (p.pos[id] ? mm(p.pos[id]) : null));
+        const ref = bs && bs.base.pasos[i];
+        const refL = ref ? ids.map((id) => (ref.pos[id] ? mm(ref.pos[id]) : null)) : prev;
+        const refB = ref ? mm(ref.b) : null;
+        if (!refL) p.q = lista.map((v) => v || [0, 0, 1]);
+        else { const d = []; lista.forEach((v, j) => { if (v && !igualP(v, refL[j])) d.push(j, v[0], v[1]); }); p.d = d; }
+        prev = lista.map((v, j) => v || (prev && prev[j]) || null);
+        const c = mm(p.b); if (!refB || !igualP(c, refB)) p.c = c;
+        if (ref && p.t === ref.t) delete p.t; else if (ref && !p.t) p.t = " ";
+        delete p.pos; delete p.b;
+      });
+    }));
+    limpiarVacios(o);
+    o.z = 1;
+    return o;
+  }
+  function expandir(o) {
+    if (!o || o.z !== 1) return o;
+    const planes = o.plan ? [o.plan] : (Array.isArray(o.planes) ? o.planes : []);
+    planes.forEach((pl) => {
+      if (!pl || !Array.isArray(pl.bloques)) return;
+      const plSeg = { sistema: own(SISTEMAS, pl.sistema) ? pl.sistema : "4231" };
+      pl.bloques.forEach((b) => {
+        if (!b) return;
+        if (!b.titulo && own(CATS, b.cat)) b.titulo = CATS[b.cat];
+        const g = b.jug; if (!g || !Array.isArray(g.pasos)) return;
+        const base = own(PLANTILLAS, g.k) ? nuevaJugada(plSeg, g.k) : null;
+        if (base) { g.fichas = base.fichas; if (!g.vista) g.vista = base.vista; }
+        if (!Array.isArray(g.fichas)) return;
+        if (g.rivales === undefined) g.rivales = true;
+        const ids = g.fichas.map((f) => f && f.id);
+        let actual = null;
+        g.pasos.forEach((p, i) => {
+          if (!p || typeof p !== "object") return;
+          const ref = base && base.pasos[i];
+          if (Array.isArray(p.q)) actual = p.q.map((v) => (Array.isArray(v) && v.length === 2 ? [v[0] / 2, v[1] / 2] : null));
+          else {
+            actual = ref ? ids.map((id) => (ref.pos[id] ? ref.pos[id].slice() : null)) : (actual ? actual.slice() : ids.map(() => null));
+            const d = Array.isArray(p.d) ? p.d : [];
+            for (let j = 0; j + 2 < d.length; j += 3) if (Number.isInteger(d[j]) && d[j] >= 0 && d[j] < ids.length) actual[d[j]] = [d[j + 1] / 2, d[j + 2] / 2];
+          }
+          p.pos = {}; ids.forEach((id, j) => { if (id && actual[j]) p.pos[id] = actual[j]; });
+          p.b = Array.isArray(p.c) ? [p.c[0] / 2, p.c[1] / 2] : ref ? ref.b.slice() : [34, 52.5];
+          if (p.t === undefined && ref) p.t = ref.t;
+          else if (p.t === " ") p.t = "";
+          delete p.q; delete p.d; delete p.c;
+        });
+        delete g.k;
+      });
+    });
+    delete o.z;
+    return o;
+  }
+
   // ---------------------------------------------------------------- codificación de enlaces
   // Base64 «url-safe» (solo letras, números, - y _): WhatsApp y otras apps cortan
   // el enlace en caracteres como «+» o «$», que usaba la codificación anterior.
-  function codificar(obj) {
-    const u8 = window.LZString.compressToUint8Array(JSON.stringify(obj));
+  function codificar(obj, cortos) {
+    const u8 = window.LZString.compressToUint8Array(JSON.stringify(compactar(obj, cortos)));
     let bin = "";
     for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -1461,7 +1577,7 @@
       while (b.length % 4) b += "=";
       const bin = atob(b), u8 = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-      return JSON.parse(window.LZString.decompressFromUint8Array(u8));
+      return expandir(JSON.parse(window.LZString.decompressFromUint8Array(u8)));
     }
     // Enlaces antiguos (#ver= / #ent=)
     return JSON.parse(window.LZString.decompressFromEncodedURIComponent(datos.replace(/ /g, "+")));
@@ -1480,7 +1596,7 @@
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
   }
   function enlaceDe(plan, sinNombres) {
-    return location.origin + location.pathname + "#v=" + codificar(paquete(plan, sinNombres));
+    return location.origin + location.pathname + "#v=" + codificar(paquete(plan, sinNombres), true);
   }
   function textoGrupo(plan, url) {
     const lin = [];
@@ -1493,6 +1609,34 @@
     plan.bloques.forEach((b, i) => lin.push((i + 1) + ". " + (b.titulo || CATS[b.cat]) + (b.min && plan.tipo === "entreno" ? " (" + b.min + "')" : "")));
     lin.push("", "Abre la pizarra, elige tu dorsal y mira dónde juegas y qué tienes que hacer en cada paso:", url);
     return lin.join("\n");
+  }
+  // Comparte un archivo (WhatsApp, correo…) con el menú del móvil; si no se puede, lo descarga.
+  // Se usa .txt porque algunos móviles no dejan compartir .json; dentro va JSON legible.
+  async function compartirArchivo(nombre, obj, titulo, texto) {
+    const contenido = JSON.stringify(obj);
+    let file = null;
+    try { file = new File([contenido], nombre, { type: "text/plain" }); } catch (e) { file = null; }
+    if (file && navigator.canShare && navigator.share) {
+      let puede = false;
+      try { puede = navigator.canShare({ files: [file] }); } catch (e) { puede = false; }
+      if (puede) {
+        try { await navigator.share({ files: [file], title: titulo, text: texto }); return "compartido"; } catch (e) { if (e && e.name === "AbortError") return "cancelado"; }
+      }
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([contenido], { type: "text/plain" })); a.download = nombre;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    return "descargado";
+  }
+  const nombreArchivo = (pref, t) => pref + "-" + String(t || "plan").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + "-" + hoyISO() + ".txt";
+  const URL_APP = () => location.origin + location.pathname;
+  async function enviarArchivoGrupo(plan, cont) {
+    const pq = Object.assign({ tipo: "jugadores" }, paquete(plan, !!plan.sinNombres));
+    const texto = (plan.titulo || "Pizarra") + ". Para verlo: abre " + URL_APP() + " , pulsa «Abrir archivo» y elige este archivo.";
+    const r = await compartirArchivo(nombreArchivo("pizarra", plan.titulo), pq, plan.titulo || "Pizarra", texto);
+    if (r === "cancelado") return;
+    cont.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíalo al grupo como documento."} Escribe en el grupo:</p>
+      <label class="sr-only" for="txtArch">Mensaje para acompañar el archivo</label><textarea id="txtArch" rows="3" readonly>${esc(texto)}</textarea>`;
   }
   async function enviar(plan, cont) {
     const url = enlaceDe(plan, !!plan.sinNombres);
@@ -1866,6 +2010,11 @@
     const d = b.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (d.ir2) return ir(d.ir2);
+    if (d.ultimo) {
+      let pq = null; try { pq = sanPaquete(JSON.parse(localStorage.getItem("pz_ultimo"))); } catch (e) { pq = null; }
+      if (pq) return mostrarJugador(pq, true);
+      return;
+    }
     if (d.nuevo) return nuevoPlan(d.nuevo);
     if (d.abrir) return ir("plan", { planId: d.abrir });
     if (d.dup) {
@@ -1892,6 +2041,7 @@
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.enviar) return enviar(plan, app.querySelector('[data-r="compartir"]'));
+      if (d.enviararch) return enviarArchivoGrupo(plan, app.querySelector('[data-r="compartir"]'));
       if (d.preview) return ir("preview", { planId: plan.id });
     }
     if (d.jborrar) {
@@ -1910,16 +2060,18 @@
       const ids = $$("[data-envplan]", app).filter((x) => x.checked).map((x) => x.dataset.envplan);
       if (d.enventr) return enviarEntrenador(ids, app.querySelector('[data-r="envEntr"]'));
       const sa = $("#envSinApe");
-      const blob = new Blob([JSON.stringify(paqueteEntrenador(ids, !!(sa && sa.checked)), null, 1)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob); a.download = "pizarra-para-entrenador-" + hoyISO() + ".json";
-      document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      const texto = "Cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "). Abre " + URL_APP() + " , pulsa «Abrir archivo» y elige este archivo para juntarlo con tu cuaderno.";
+      compartirArchivo(nombreArchivo("cuaderno", db.equipo.nombre), paqueteEntrenador(ids, !!(sa && sa.checked)), "Cuaderno de la pizarra", texto).then((r) => {
+        const c = app.querySelector('[data-r="envEntr"]');
+        if (r === "cancelado" || !c) return;
+        c.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíaselo por privado como documento."} Dile que abra la pizarra, pulse «Abrir archivo» y lo elija.</p>`;
+      });
       return;
     }
     if (d.exportar) {
       const blob = new Blob([JSON.stringify(db, null, 1)], { type: "application/json" });
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob); a.download = "pizarra-entrenador-" + hoyISO() + ".json";
+      a.href = URL.createObjectURL(blob); a.download = "pizarra-copia-" + hoyISO() + ".txt";
       document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
     }
   });
@@ -1951,6 +2103,19 @@
     if (d.b === "cat" && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b) { const viejo = CATS[b.cat]; b.cat = t.value; if (!b.titulo || b.titulo === viejo) b.titulo = CATS[t.value]; guardar(); pintarPantalla(); }
+      return;
+    }
+    if (t.id === "abrirFile" && t.files && t.files[0]) {
+      const r3 = new FileReader();
+      r3.onload = () => {
+        let crudo = null;
+        try { crudo = JSON.parse(r3.result); } catch (err) { crudo = null; }
+        if (crudo && crudo.tipo === "entrenador") { const rec = sanDB(crudo); if (rec) return pantRecibido(rec); }
+        if (crudo && crudo.plan) { const pq = sanPaquete(crudo); if (pq) return mostrarJugador(pq, true); }
+        if (crudo && Array.isArray(crudo.planes) && Array.isArray(crudo.plantilla)) { toast("Es una copia de seguridad: recupérala desde Ajustes."); return; }
+        toast("Ese archivo no es de la pizarra");
+      };
+      r3.readAsText(t.files[0]);
       return;
     }
     if (t.id === "juntFile" && t.files && t.files[0]) {
@@ -2001,12 +2166,27 @@
         app.innerHTML = `<h1>Enlace incompleto</h1><p>Este enlace no se ha podido leer. Pide al entrenador que lo vuelva a enviar (a veces se corta al copiarlo).</p>`;
         return;
       }
+      mostrarJugador(pq);
+      return;
+    }
+    pintarPantalla();
+  }
+  function mostrarJugador(pq, desdeArchivo) {
       $("#nav").hidden = true;
       $("#ttApp").textContent = (pq.eq && pq.eq.n) || "Pizarra";
       $("#ttSub").textContent = "Lo que vamos a trabajar";
       document.title = (pq.plan.titulo || "Pizarra") + " · " + ((pq.eq && pq.eq.n) || "Pizarra");
       document.body.style.paddingBottom = "20px";
+      window.scrollTo(0, 0);
       vistaJugador(app, pq);
+      // El último plan abierto se recuerda en este móvil para poder volver a él.
+      try { localStorage.setItem("pz_ultimo", JSON.stringify(pq)); } catch (e) { /* sin espacio: no pasa nada */ }
+      if (desdeArchivo) {
+        const vol = document.createElement("button");
+        vol.type = "button"; vol.className = "btn-sec"; vol.textContent = "← Salir"; vol.style.marginBottom = "10px";
+        vol.addEventListener("click", () => { voz.parar(); document.body.style.paddingBottom = ""; ir("cuaderno"); });
+        app.insertBefore(vol, app.firstChild);
+      }
       const extra = document.createElement("div");
       extra.className = "tarjeta";
       extra.innerHTML = `<p class="peq">¿Eres el entrenador? Puedes guardar este plan en tu cuaderno para editarlo.</p><button type="button" class="btn-sec" data-guardarplan="1">Guardar en mi cuaderno</button>`;
@@ -2016,11 +2196,9 @@
         (pq.jug || []).forEach((j) => { if (!db.plantilla.some((x) => x.id === j.id)) db.plantilla.push(clon(j)); });
         db.planes.push(p); guardar();
         history.replaceState(null, "", location.pathname);
+        document.body.style.paddingBottom = "";
         ir("plan", { planId: p.id });
       });
-      return;
-    }
-    pintarPantalla();
   }
   window.addEventListener("storage", (e) => {
     if (e.key !== CLAVE || !e.newValue) return;

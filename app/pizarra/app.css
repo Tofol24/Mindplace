@@ -186,3 +186,4 @@ button:disabled { opacity: .45; cursor: default; }
 .lista-env { border: 0; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
 .lista-env label { display: flex; gap: 8px; align-items: center; }
 .lista-env input { width: 20px; height: 20px; }
+.abrir-arch { border-left: 6px solid var(--aviso); }
