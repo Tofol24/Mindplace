@@ -193,7 +193,11 @@ window.APRENS_TOOLS = [
 
   { id:"salidas_paso_a_paso", emoji:"🚶", nombre:"Paso a paso · recuperar las salidas",
     desc:"Para agorafobia y evitación social: recuperar la calle poco a poco. Escalera de exposición gradual en vivo con las dos llaves (QUÉ conductual · CÓMO acompañamiento AIS) y registro antes/pico/después, exposición en imaginación, y las herramientas de dentro (respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto) más estructura del día. Registro diario para el psicólogo por WhatsApp.",
-    migrada:true, iframe:"tools-standalone/salidas-paso-a-paso.html" }
+    migrada:true, iframe:"tools-standalone/salidas-paso-a-paso.html" },
+
+  { id:"escalera_conducir_ar", emoji:"🚗", nombre:"السُّلَّم · Conducir juntos (árabe)",
+    desc:"Versión en árabe de la escalera de exposición a la conducción, pensada para hacerla en familia: la pareja como coterapeuta (guía de firmeza y compasión: qué hacer antes, durante y después, frases que ayudan y frases a evitar), escalera por niveles empezando la primera semana con trayectos cortos dentro del pueblo, pasos en que conduce ella para aceptar ser acompañado, herramientas AIS y parar la rumiación. Registro de cada salida y envío al psicólogo en castellano.",
+    migrada:true, iframe:"tools-standalone/escalera-conducir-ar.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];
