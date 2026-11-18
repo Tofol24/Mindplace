@@ -146,9 +146,9 @@
 
   /* ---------- APOYOS del CÓMO (cada uno enlaza a su herramienta de práctica) ---------- */
   var APOYOS = [
-    { id: "respiracion", ico: "🫁", t: "Respiración curiosa", d: "Observo cómo entra y sale el aire, sin forzarlo. Curiosidad, no control.", tool: "herramienta_diaria" },
+    { id: "respiracion", ico: "🫁", t: "Respiración curiosa", d: "Observo cómo entra y sale el aire, sin forzarlo. Curiosidad, no control.", tool: "herramienta_diaria/sec1" },
     { id: "muscular", ico: "💪", t: "Tensión y distensión", d: "Tenso y suelto hombros, manos y mandíbula. De la tensión a la distensión.", tool: "ais_muscular" },
-    { id: "abrazo", ico: "🤍", t: "Abrazo sentido", d: "Integro el dolor en mi manada: me acompaño como acompañaría a alguien que quiero.", tool: "ais_amor" },
+    { id: "abrazo", ico: "🤍", t: "Abrazo sentido", d: "Integro el dolor en mi manada: me acompaño como acompañaría a alguien que quiero. Para entrenarlo: el «Abrazo del mono», 1 minuto.", tool: "ais_amor/abrazo" },
     { id: "honestidad", ico: "🗣️", t: "Honestidad emocional", d: "Nombro lo que siento sin explicarlo ni taparlo: «noto miedo, y me quedo con ello».", tool: "honestidad_emocional" }
   ];
 
