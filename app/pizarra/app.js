@@ -133,6 +133,8 @@
   // Todo lo que entra de fuera (enlace #ver=, copia de seguridad, localStorage)
   // se reconstruye campo a campo: ids, números, colores y tipos de una lista cerrada.
   const RE_ID = /^[A-Za-z0-9_]{1,16}$/;
+  const FICHA = window.PZ_FICHA || { ETAPAS: {}, PUESTOS: {} };
+  const ETAPAS_OK = FICHA.ETAPAS;
   const own = (o, k) => typeof k === "string" && Object.prototype.hasOwnProperty.call(o, k);
   const MAX = { bloques: 60, pasos: 60, fichas: 120, dib: 60 };
   const txt = (v, n) => (typeof v === "string" || typeof v === "number" ? String(v).slice(0, n || 200) : "");
@@ -179,11 +181,16 @@
     if (!p || !Array.isArray(p.bloques)) return null;
     const once = {};
     if (p.once && typeof p.once === "object") Object.keys(p.once).forEach((k) => { if (/^\d{1,2}$/.test(k) && idOk(p.once[k])) once[k] = p.once[k]; });
+    const extra = {};
+    if (p.extra && typeof p.extra === "object") Object.keys(p.extra).forEach((k) => {
+      if (!/^\d{1,2}$/.test(k) || !Array.isArray(p.extra[k])) return;
+      const l = p.extra[k].filter(idOk).slice(0, 2); if (l.length) extra[k] = l;
+    });
     return {
       id: idOk(p.id) || uid(), tipo: p.tipo === "partido" ? "partido" : "entreno",
       fecha: /^\d{4}-\d{2}-\d{2}$/.test(p.fecha) ? p.fecha : "", titulo: txt(p.titulo, 80), rival: txt(p.rival, 60),
       objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30),
-      sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, sinNombres: p.sinNombres === true,
+      sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
       bloques: p.bloques.slice(0, MAX.bloques).map((b) => ({
         id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
         min: b.min === "" || b.min == null ? "" : Math.round(num(b.min, 0, 120, 0)), texto: txt(b.texto, 1200),
@@ -195,7 +202,7 @@
     if (!o || typeof o !== "object" || !Array.isArray(o.planes) || !Array.isArray(o.plantilla)) return null;
     return {
       v: 1,
-      equipo: { nombre: txt(o.equipo && o.equipo.nombre, 60) || "Mi equipo", color: colOk(o.equipo && o.equipo.color, "#C8102E") },
+      equipo: { nombre: txt(o.equipo && o.equipo.nombre, 60) || "Mi equipo", color: colOk(o.equipo && o.equipo.color, "#C8102E"), etapa: own(ETAPAS_OK, o.equipo && o.equipo.etapa) ? o.equipo.etapa : "" },
       plantilla: o.plantilla.map(sanJugador).filter(Boolean),
       planes: o.planes.map(sanPlan).filter(Boolean)
     };
@@ -203,7 +210,7 @@
   function sanPaquete(o) {
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
-    return { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") }, plan: plan, jug: (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean) };
+    return { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean) };
   }
 
   // ---------------------------------------------------------------- datos
@@ -362,10 +369,21 @@
       plan: plan, editable: editable,
       jugadores: jugadores || [],
       jugador: (pid) => porId[pid] || null,
+      yo: null,
+      pidsDe(f) {
+        if (f.pj) return [f.pj];
+        if (f.eq === "a" && /^a\d+$/.test(f.id)) {
+          const k = f.id.slice(1), l = [];
+          if ((plan.once || {})[k]) l.push(plan.once[k]);
+          ((plan.extra || {})[k] || []).forEach((x) => { if (x && !l.includes(x)) l.push(x); });
+          return l;
+        }
+        return [];
+      },
       pidDe(f) {
-        if (f.pj) return f.pj;
-        if (f.eq === "a" && /^a\d+$/.test(f.id)) return (plan.once || {})[f.id.slice(1)] || null;
-        return null;
+        const l = this.pidsDe(f);
+        if (this.yo && l.includes(this.yo)) return this.yo;
+        return l[0] || null;
       },
       info(f) {
         if (f.eq === "c") return { cono: true, nombre: "Cono", corto: "", dorsal: "" };
@@ -379,7 +397,8 @@
         }
         if (!fam && j && j.p) fam = famDePuesto(j.p);
         return {
-          pid: pid, nombre: j ? j.n : (rol || (f.eq === "a" ? "Jugador" : "Compañero (peto)")),
+          pid: pid, otros: this.pidsDe(f).filter((x) => x !== pid).map((x) => porId[x]).filter(Boolean),
+          nombre: j ? j.n : (rol || (f.eq === "a" ? "Jugador" : "Compañero (peto)")),
           corto: j ? (j.c || (/^Dorsal \d/.test(j.n) ? "" : j.n.split(" ")[0])) : cod, dorsal: j ? String(j.d) : "", rol: rol || (j && j.p) || "", fam: fam, cod: cod
         };
       }
@@ -574,13 +593,13 @@
     // o: {ctx, jug, cat, editable, yoPid, alCambiar}
     const ctx = o.ctx, jug = o.jug, ed = !!o.editable;
     let i = 0, sel = null, herr = "mover", color = "#FFD23F", bor = null, anim = null, selDib = -1;
-    let hist = [], fut = [], mostrado = null, drag = null, reproduciendo = false;
+    let hist = [], fut = [], mostrado = null, drag = null, reproduciendo = false, ultimaVoz = "";
     const colEq = { a: (db.equipo && db.equipo.color) || "#C8102E", r: "#2457C5" };
     if (o.equipoColor) colEq.a = o.equipoColor;
 
     function fichaYo() {
       if (!o.yoPid) return null;
-      const f = jug.fichas.find((f) => f.eq !== "c" && ctx.pidDe(f) === o.yoPid);
+      const f = jug.fichas.find((f) => f.eq !== "c" && ctx.pidsDe(f).includes(o.yoPid));
       return f ? f.id : null;
     }
     sel = fichaYo();
@@ -706,7 +725,7 @@
         const col = colEq[f.eq];
         const num = inf.dorsal || inf.cod || "";
         const fs = num.length > 2 ? 1.5 : 2.1;
-        const etiqueta = inf.corto && inf.corto !== num ? inf.corto : "";
+        const etiqueta = (inf.corto && inf.corto !== num ? inf.corto : "") + (inf.otros && inf.otros.length ? " +" + inf.otros.length : "");
         const label = (inf.dorsal ? inf.dorsal + " " : "") + (inf.nombre || "") + (inf.rol && !inf.rival ? ", " + inf.rol : "");
         s += `<g class="ficha" data-id="${f.id}" tabindex="0" role="button" aria-label="${esc(label)}" aria-pressed="${sel === f.id}">`;
         if (yoId === f.id) s += `<circle cx="${x}" cy="${y}" r="3.7" fill="rgba(255,210,63,.35)" stroke="#FFD23F" stroke-width="0.35"/>`;
@@ -761,8 +780,12 @@
       const vb = VISTAS[jug.vista] || VISTAS.C;
       const [x, y] = P[sel];
       const left = ((x - vb[0]) / vb[2]) * 100, top = ((y - vb[1]) / vb[3]) * 100;
-      burb.textContent = txt.length > 140 ? txt.slice(0, 137) + "…" : txt;
-      burb.style.left = lim(left, 22, 78) + "%";
+      const inB = ctx.info(f);
+      const quienB = [inB.dorsal, inB.corto || inB.nombre].filter(Boolean).join(" ") + (inB.otros && inB.otros.length ? " (y " + inB.otros.map((x) => x.c || x.n).join(", ") + ")" : "");
+      burb.innerHTML = `<b>${esc(quienB)}</b>${quienB ? ": " : ""}${esc(txt.length > 140 ? txt.slice(0, 137) + "…" : txt)}`;
+      burb.hidden = false;
+      const cw = campo.clientWidth || 1, bw = burb.offsetWidth;
+      burb.style.left = lim((left / 100) * cw, bw / 2 + 6, Math.max(bw / 2 + 6, cw - bw / 2 - 6)) + "px";
       burb.style.top = top + "%";
       burb.classList.toggle("abajo", top < 30);
       burb.hidden = false;
@@ -819,10 +842,11 @@
       const tips = (p.tips || {})[f.id] || {};
       const col = colEq[f.eq];
       let h = `<h3><span class="dorsal" style="background:${col}">${esc(inf.dorsal || inf.cod || "·")}</span>${esc(inf.nombre)}${inf.rol && !inf.rival ? ` <span class="peq">· ${esc(inf.rol)}</span>` : ""}</h3>`;
+      if (inf.otros && inf.otros.length) h += `<p class="peq">También en este puesto: ${inf.otros.map((x) => esc(x.d + " " + (x.c || x.n))).join(", ")}. Los mensajes valen para todos.</p>`;
       if (ed) {
         if (!inf.rival || f.pj || f.eq === "r") {
-          const opts = ctx.jugadores.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${ctx.pidDe(f) === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("");
-          h += `<div class="campo-f"><label for="selPj">Jugador en esta ficha${/^a\d+$/.test(f.id) ? " (cambia también la alineación)" : ""}</label><select id="selPj" data-pj><option value="">${f.eq === "r" ? "Rival sin nombre" : "Sin asignar"}</option>${opts}</select></div>`;
+          const opts = ctx.jugadores.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${ctx.pidsDe(f)[0] === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("");
+          h += `<div class="campo-f"><label for="selPj">Jugador en esta ficha${/^a\d+$/.test(f.id) ? " (cambia también el principal de la alineación)" : ""}</label><select id="selPj" data-pj><option value="">${f.eq === "r" ? "Rival sin nombre" : "Sin asignar"}</option>${opts}</select></div>`;
         }
         h += `<div class="tips-edit"><p class="subtit">Lo que le dices en este paso</p>
           <div class="campo-f"><label for="tpM">Qué hace / cómo se mueve</label><textarea id="tpM" data-tip="m" maxlength="300" placeholder="Ej.: Cuando el central controle, arranca a la espalda del lateral.">${esc(tips.m || "")}</textarea></div>
@@ -839,7 +863,19 @@
       analizar(ctx, jug, p, f.id, o.cat).forEach((m) => {
         h += `<div class="msg"><span class="ic" aria-hidden="true">${m.ic}</span><div><b>${esc(m.tit)}</b>${esc(m.txt)}</div></div>`;
       });
+      if (!ed && voz.ok) h += `<div class="fila" style="margin-top:8px"><button type="button" class="btn-peq" data-a="leerInfo">🔊 Escuchar</button></div>`;
+      if (o.abrirFicha && !inf.rival && ctx.pidDe(f)) h += `<button type="button" class="btn ficha-btn" data-a="ficha">📋 Ficha completa de ${esc(inf.corto || inf.nombre)}: qué mirar y qué entrenar</button>`;
       info.innerHTML = h;
+      if (!ed && voz.ok && o.vozAuto && o.vozAuto()) {
+        const marca = i + "|" + f.id;
+        if (marca !== ultimaVoz) {
+          ultimaVoz = marca;
+          const t = (p.tips || {})[f.id] || {};
+          const ms = analizar(ctx, jug, p, f.id, o.cat);
+          const k = ms.find((m) => m.clave);
+          voz.hablar(["Paso " + (i + 1) + ". " + (p.t || ""), t.m, t.f && "Fíjate en: " + t.f, t.q && "Cuándo: " + t.q, k && k.txt].filter(Boolean).join(". "));
+        }
+      }
     }
 
     function pintarTodo() { pintarCampo(); pintar(posPaso(paso())); pintarInfo(); }
@@ -1038,6 +1074,8 @@
         if (!window.confirm("¿Borrar el paso " + (i + 1) + "?")) return;
         snap(); jug.pasos.splice(i, 1); if (i >= jug.pasos.length) i = jug.pasos.length - 1; cambio(); pintarTodo();
       } else if (a === "cerrarZona") terminarDibujo();
+      else if (a === "leerInfo") voz.alternar(info, b);
+      else if (a === "ficha" && sel) { const f = jug.fichas.find((x) => x.id === sel); if (f) o.abrirFicha(ctx.pidDe(f)); }
       else if (a === "cancelarDib") { bor = null; pintarTodo(); }
       else if (/^mas[ARC]|^masChino/.test(a) && jug.fichas.length >= MAX.fichas) toast("Has llegado al máximo de fichas");
       else if (a === "masA") anadirFicha("a");
@@ -1193,9 +1231,13 @@
         <div class="campo-f"><label for="pSis">Sistema</label>
           <select id="pSis" data-p="sistema">${Object.keys(SISTEMAS).map((k) => `<option value="${k}" ${p.sistema === k ? "selected" : ""}>${SISTEMAS[k].n}</option>`).join("")}</select>
         </div>
-        ${db.plantilla.length ? `<div class="alin">${sl.map((s, idx) => `<label>${esc(s[1])}<select data-once="${idx}">${optsJug((p.once || {})[idx])}</select></label>`).join("")}</div>`
+        ${db.plantilla.length ? `<div class="alin">${sl.map((s, idx) => {
+            const ex = (p.extra || {})[idx] || [];
+            return `<div class="alin-puesto"><label for="on${idx}">${esc(s[1])}</label><select id="on${idx}" data-once="${idx}">${optsJug((p.once || {})[idx])}</select>
+              <div class="alin-extra">${[0, 1].map((n) => `<label class="sr-only" for="ex${idx}_${n}">${esc(s[1])}: otro jugador ${n + 1}</label><select id="ex${idx}_${n}" data-extra="${idx}" data-n="${n}">${optsJug(ex[n]).replace("<option value=\"\">—</option>", "<option value=\"\">＋ otro jugador</option>")}</select>`).join("")}</div></div>`;
+          }).join("")}</div><div data-r="sinPuesto"></div>`
           : `<p class="peq">Añade jugadores en la plantilla para ponerles nombre en las fichas.</p>`}
-        <p class="peq">La alineación se usa en todas las pizarras de este ${p.tipo}. En cada pizarra puedes cambiar a un jugador concreto tocando su ficha.</p>
+        <p class="peq">Puedes poner hasta tres jugadores en cada puesto (por ejemplo, el que empieza y los que entrarán) y un mismo jugador en varios puestos. En la pizarra sale el primero; cada jugador, al abrir el enlace, ve la ficha de su puesto con su nombre.</p>
       </div>
 
       <h2>${p.tipo === "partido" ? "Plan de partido" : "Ejercicios"}</h2>
@@ -1237,6 +1279,16 @@
         </div>
         <div data-r="compartir"></div>
       </div>`;
+    pintarSinPuesto(p);
+  }
+
+  function pintarSinPuesto(plan) {
+    const el = app.querySelector('[data-r="sinPuesto"]'); if (!el) return;
+    const con = new Set(Object.values(plan.once || {}));
+    Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => con.add(x)));
+    plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) con.add(f.pj); }); });
+    const fuera = db.plantilla.filter((j) => !con.has(j.id)).sort((a, b) => a.d - b.d);
+    el.innerHTML = fuera.length ? `<p class="sin-puesto"><b>Sin puesto todavía:</b> ${fuera.map((j) => esc(j.d + " " + (j.c || j.n))).join(", ")}. Si no les pones un puesto, no podrán ver su ficha en el enlace.</p>` : `<p class="peq">✅ Todos los jugadores de la plantilla tienen al menos un puesto.</p>`;
   }
 
   function abrirPizarra(plan, bloque) {
@@ -1247,7 +1299,7 @@
     const hostPz = document.createElement("div");
     cuerpo.appendChild(hostPz);
     const ctx = crearCtx(plan, db.plantilla, true);
-    const pz = crearPizarra(hostPz, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: guardar });
+    const pz = crearPizarra(hostPz, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: guardar, abrirFicha: (pid) => abrirFicha(plan, ctx, pid, db.equipo.etapa) });
     dlg._pz = pz;
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   }
@@ -1257,6 +1309,8 @@
     if (dlg.open) dlg.close();
   }
   $("#dlgCerrar").addEventListener("click", cerrarPizarra);
+  $("#dlgFichaCerrar").addEventListener("click", () => { voz.parar(); $("#dlgFicha").close(); });
+  $("#dlgFicha").addEventListener("close", () => voz.parar());
   $("#dlgPizarra").addEventListener("close", () => { guardar(); $("#dlgPzCuerpo").innerHTML = ""; if (estado.pant === "plan") pintarPantalla(); });
 
   function pantPlantilla() {
@@ -1326,6 +1380,9 @@
       <h1>Ajustes</h1>
       <div class="tarjeta">
         <div class="campo-f"><label for="aEq">Nombre del equipo</label><input type="text" id="aEq" data-eq="nombre" value="${esc(db.equipo.nombre)}" maxlength="60"></div>
+        <div class="campo-f"><label for="aEt">Categoría (edad de los jugadores)</label><select id="aEt" data-eq="etapa">
+          <option value="">Sin indicar</option>${Object.keys(FICHA.ETAPAS).map((k) => `<option value="${k}" ${db.equipo.etapa === k ? "selected" : ""}>${esc(FICHA.ETAPAS[k].n)} (${esc(FICHA.ETAPAS[k].edad)})</option>`).join("")}</select>
+          <span class="peq" style="font-weight:400">Adapta la ficha de cada jugador (físico, técnica y táctica) a su etapa de desarrollo.</span></div>
         <div class="campo-f"><label for="aCol">Color de nuestras fichas</label><input type="color" id="aCol" data-eq="color" value="${esc(db.equipo.color || "#C8102E")}" style="width:80px;height:44px;padding:2px"></div>
       </div>
       <h2>Copia de seguridad</h2>
@@ -1347,12 +1404,13 @@
   function paquete(plan, sinNombres) {
     const usados = new Set();
     Object.values(plan.once || {}).forEach((x) => usados.add(x));
+    Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => usados.add(x)));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
-    return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color }, plan: pl, jug: jug };
+    return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
   }
   function enlaceDe(plan, sinNombres) {
     const txt = window.LZString.compressToEncodedURIComponent(JSON.stringify(paquete(plan, sinNombres)));
@@ -1385,6 +1443,156 @@
     if (!copiado) { const t = $("#txtGrupo"); t.focus(); t.select(); }
   }
 
+  // ---------------------------------------------------------------- lectura en voz alta
+  // Síntesis de voz del propio dispositivo (Web Speech API): no envía nada fuera.
+  const voz = (function () {
+    const ok = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    let btnActivo = null;
+    function vozEs() {
+      const vs = window.speechSynthesis.getVoices() || [];
+      return vs.find((v) => /^es[-_]ES/i.test(v.lang)) || vs.find((v) => /^es/i.test(v.lang)) || null;
+    }
+    function limpiar(t) {
+      return String(t || "").replace(/\p{Extended_Pictographic}/gu, "").replace(/[·•]/g, ",").replace(/\s+/g, " ").trim();
+    }
+    function marcar(b, on) {
+      if (!b) return;
+      if (on) { b.dataset.txt = b.dataset.txt || b.textContent; b.textContent = "■ Parar"; b.setAttribute("aria-pressed", "true"); }
+      else { if (b.dataset.txt) b.textContent = b.dataset.txt; b.setAttribute("aria-pressed", "false"); }
+    }
+    function parar() { if (!ok) return; window.speechSynthesis.cancel(); marcar(btnActivo, false); btnActivo = null; }
+    function hablar(texto, btn) {
+      if (!ok) return;
+      parar();
+      const t = limpiar(texto); if (!t) return;
+      // Frases cortas: algunos navegadores cortan las locuciones largas.
+      const trozos = t.match(/[^.!?;:]+[.!?;:]*/g) || [t];
+      const v = vozEs();
+      btnActivo = btn || null; marcar(btnActivo, true);
+      trozos.forEach((tr, k) => {
+        const u = new SpeechSynthesisUtterance(tr.trim());
+        u.lang = v ? v.lang : "es-ES"; if (v) u.voice = v; u.rate = 0.95;
+        if (k === trozos.length - 1) u.onend = () => { if (btn && btnActivo === btn) { marcar(btn, false); btnActivo = null; } };
+        window.speechSynthesis.speak(u);
+      });
+    }
+    function textoDe(el) {
+      if (!el) return "";
+      const c = el.cloneNode(true);
+      c.querySelectorAll("button, select, input, textarea, svg, label, .burbuja, [aria-hidden=true]").forEach((x) => x.remove());
+      c.querySelectorAll("li, p, h1, h2, h3, h4, summary, .msg b").forEach((x) => x.append(". "));
+      return c.textContent.replace(/(\.\s*){2,}/g, ". ");
+    }
+    function alternar(el, btn) {
+      if (btnActivo && btnActivo === btn) { parar(); return; }
+      hablar(textoDe(el), btn);
+    }
+    return { ok: ok, hablar: hablar, parar: parar, alternar: alternar, textoDe: textoDe };
+  })();
+  let vozAuto = false;
+  try { vozAuto = sessionStorage.getItem("pz_voz") === "1"; } catch (e) { /* nada */ }
+
+  // ---------------------------------------------------------------- ficha del jugador
+  function puestosDe(plan, ctx, pid) {
+    const sl = slotsDe(plan), res = [], vistos = new Set();
+    const add = (idx) => { const s2 = sl[idx]; if (s2 && !vistos.has(s2[0])) { vistos.add(s2[0]); res.push({ fam: s2[2], rol: s2[1] }); } };
+    sl.forEach((s2, idx) => { const l = ctx.pidsDe({ id: "a" + idx, eq: "a" }); if (l.includes(pid)) add(idx); });
+    plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj === pid && /^a\d+$/.test(f.id)) add(+f.id.slice(1)); }); });
+    if (!res.length) { const j = ctx.jugador(pid); if (j && j.p && famDePuesto(j.p)) res.push({ fam: famDePuesto(j.p), rol: j.p }); }
+    return res;
+  }
+  const lista = (arr) => `<ul class="consignas">${arr.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  const secLeer = () => (voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : "");
+
+  function abrirFicha(plan, ctx, pid, etapaIni) {
+    const dlg = $("#dlgFicha"), cuerpo = $("#dlgFichaCuerpo");
+    const j = ctx.jugador(pid);
+    const pus = puestosDe(plan, ctx, pid);
+    const pu = pus[0] || { fam: "", rol: "" };
+    let fam = own(FICHA.PUESTOS, pu.fam) ? pu.fam : "med";
+    let etapa = own(FICHA.ETAPAS, etapaIni) ? etapaIni : "";
+    const pal = (function () { try { return JSON.parse(localStorage.getItem("pz_mivuelta") || "{}"); } catch (e) { return {}; } })();
+    function pintarFicha() {
+      voz.parar();
+      const P = FICHA.PUESTOS[fam], E = FICHA.ETAPAS[etapa];
+      const nombre = j ? (j.c || j.n) : "Jugador";
+      $("#dlgFichaTit").textContent = "Ficha de " + nombre;
+      // Lo específico de este plan: cada pizarra y cada paso en que sale
+      let especifico = "";
+      plan.bloques.forEach((b) => {
+        if (!b.jug) return;
+        b.jug.fichas.filter((x) => x.eq !== "c" && ctx.pidsDe(x).includes(pid)).forEach((f) => {
+        const rolF = ctx.info(f).rol;
+        const pasos = b.jug.pasos.map((p, k) => {
+          const t = (p.tips || {})[f.id] || {};
+          const ms = analizar(ctx, b.jug, p, f.id, b.cat);
+          const que = ms.find((m) => m.clave), fij = ms.find((m) => m.tit === "Fíjate en"), per = ms.find((m) => m.tit === "Perfil");
+          const lin = [];
+          if (t.m) lin.push(`<li><b>Entrenador:</b> ${esc(t.m)}</li>`);
+          if (que) lin.push(`<li><b>Qué haces:</b> ${esc(que.txt)}</li>`);
+          if (t.p || per) lin.push(`<li><b>Perfil:</b> ${esc(t.p || per.txt)}</li>`);
+          if (t.f || fij) lin.push(`<li><b>Fíjate en:</b> ${esc(t.f || fij.txt)}</li>`);
+          if (t.q) lin.push(`<li><b>Cuándo:</b> ${esc(t.q)}</li>`);
+          return `<li><b>Paso ${k + 1}${p.t ? ": " + esc(p.t) : ""}</b><ul>${lin.join("")}</ul></li>`;
+        }).join("");
+        const at = (b.fij ? `<p><b>En qué fijarte en este ejercicio:</b> ${esc(b.fij)}</p>` : "") + (b.cuando ? `<p><b>Cuándo:</b> ${esc(b.cuando)}</p>` : "");
+        especifico += `<details class="det"><summary>${esc(b.titulo || CATS[b.cat])}${rolF ? " · de " + esc(rolF.toLowerCase()) : ""}</summary>${at ? `<div class="atencion">${at}</div>` : ""}<ol class="consignas">${pasos}</ol></details>`;
+        });
+      });
+      const generalFij = plan.bloques.filter((b) => b.fij || b.cuando).map((b) => `${b.titulo || CATS[b.cat]}: ${[b.fij, b.cuando && "cuándo: " + b.cuando].filter(Boolean).join(", ")}`);
+      const palabra = pal.p || plan.clave || "";
+      cuerpo.innerHTML = `
+        <div class="portada">
+          <h1 style="margin:0">${j ? `<span class="dorsal" style="background:var(--acento);margin-right:8px">${esc(j.d)}</span>` : ""}${esc(nombre)}</h1>
+          <p class="peq">${pus.length ? "Juegas de " + esc(pus.map((x) => x.rol.toLowerCase()).join(" y de ")) : esc(P.n)}${E ? " · " + esc(E.n) + " (" + esc(E.edad) + ")" : ""}</p>
+          ${pus.length > 1 ? `<div class="fila" role="group" aria-label="Tus puestos">${pus.map((x) => `<button type="button" class="btn-peq" data-fam="${esc(x.fam)}" aria-pressed="${x.fam === fam}">${esc(x.rol)}</button>`).join("")}</div>` : ""}
+          <div class="fila" style="margin-top:8px">
+            <label class="peq" for="fPuesto">Puesto</label>
+            <select id="fPuesto" style="width:auto">${Object.keys(FICHA.PUESTOS).map((k) => `<option value="${k}" ${k === fam ? "selected" : ""}>${esc(FICHA.PUESTOS[k].n)}</option>`).join("")}</select>
+            <label class="peq" for="fEtapa">Edad</label>
+            <select id="fEtapa" style="width:auto"><option value="">Elige tu categoría</option>${Object.keys(FICHA.ETAPAS).map((k) => `<option value="${k}" ${k === etapa ? "selected" : ""}>${esc(FICHA.ETAPAS[k].n)} (${esc(FICHA.ETAPAS[k].edad)})</option>`).join("")}</select>
+          </div>
+          ${voz.ok ? `<button type="button" class="btn" data-leertodo="1" style="margin-top:10px">🔊 Escuchar toda la ficha</button>` : ""}
+        </div>
+        <section class="tarjeta">${secLeer()}<h2>Tu papel</h2><p>${esc(P.papel)}</p></section>
+        ${especifico ? `<section class="tarjeta">${secLeer()}<h2>En este ${plan.tipo === "partido" ? "partido" : "entreno"}, paso a paso</h2><p class="peq">Lo que te pide el entrenador y lo que haces en cada momento de cada jugada. Toca cada apartado para abrirlo.</p>${especifico}</section>` : ""}
+        <section class="tarjeta">${secLeer()}<h2>En qué fijarte siempre</h2>${lista(P.fijate.concat(generalFij))}
+          <p class="peq">La atención es limitada: no se puede mirar todo a la vez. Por eso conviene saber qué mirar y cuándo; con los entrenos, el cuerpo aprende a hacerlo solo.</p></section>
+        <section class="tarjeta">${secLeer()}<h2>Táctica: qué haces en cada momento</h2>
+          <h3>Cuando tenemos el balón</h3>${lista(P.conBalon)}
+          <h3>Cuando lo tiene el rival</h3>${lista(P.sinBalon)}
+          <h3>Justo al robar</h3><p>${esc(P.robo)}</p>
+          <h3>Justo al perderlo</h3><p>${esc(P.perdida)}</p>
+          ${E ? `<h3>Para tu edad</h3><p>${esc(E.tactica)}</p>` : ""}</section>
+        <section class="tarjeta">${secLeer()}<h2>Técnica: qué entrenar</h2>${lista(P.tecnica)}${E ? `<p><b>En tu etapa:</b> ${esc(E.tecnica)}</p>` : ""}</section>
+        <section class="tarjeta">${secLeer()}<h2>Físico</h2>
+          ${E ? `<p>${esc(E.fase)}</p><h3>Lo que más te conviene ahora</h3>${lista(E.fisico)}` : `<p class="peq">Elige tu categoría arriba para ver qué te conviene entrenar según tu edad.</p>`}
+          <h3>Lo que pide tu puesto</h3>${lista(P.fisico)}</section>
+        <section class="tarjeta">${secLeer()}<h2>Para entrenar por tu cuenta</h2>${lista(P.solo)}<p class="peq">Mejor poco y bien hecho que mucho y cansado. Si algo duele, para y coméntalo.</p></section>
+        <section class="tarjeta">${secLeer()}<h2>${etapa === "cadete" || etapa === "juvenil" ? "Para dominar el puesto" : "Lo que vendrá más adelante"}</h2>${lista(P.avanzado)}</section>
+        <section class="tarjeta">${secLeer()}<h2>Atención y emociones</h2>
+          ${E ? lista(E.cabeza) : ""}
+          <p>Cuando te des cuenta de que te has ido de la jugada (un error, un pensamiento, el ruido de la grada), no luches con ello: ${palabra ? "di tu palabra clave («" + esc(palabra) + "»)" : "di tu palabra clave"}${pal.g ? ", haz tu gesto (" + esc(pal.g) + ")" : ""} y vuelve a lo que es importante en la jugada.</p></section>
+        ${E ? `<section class="tarjeta">${secLeer()}<h2>Cuida tu cuerpo</h2>${lista(E.cuidado)}</section>` : ""}
+        <p class="peq" style="text-align:center">Son pautas generales de desarrollo deportivo. Cada jugador crece a su ritmo; tu entrenador te ayudará a ver qué es lo tuyo.</p>`;
+    }
+    cuerpo.onchange = (e) => {
+      if (e.target.id === "fPuesto" && own(FICHA.PUESTOS, e.target.value)) { fam = e.target.value; pintarFicha(); $("#fPuesto").focus(); }
+      if (e.target.id === "fEtapa") { etapa = own(FICHA.ETAPAS, e.target.value) ? e.target.value : ""; pintarFicha(); $("#fEtapa").focus(); }
+    };
+    cuerpo.onclick = (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.fam && own(FICHA.PUESTOS, b.dataset.fam)) { fam = b.dataset.fam; pintarFicha(); return; }
+      if (b.dataset.leertodo) {
+        if (b.getAttribute("aria-pressed") === "true") voz.parar();
+        else { const c = cuerpo.cloneNode(true); const por = c.querySelector(".portada"); if (por) por.remove(); voz.hablar(voz.textoDe(c), b); }
+      } else if (b.dataset.leer) voz.alternar(b.closest("section"), b);
+    };
+    pintarFicha();
+    if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
+    cuerpo.scrollTop = 0;
+  }
+
   // ---------------------------------------------------------------- vista del jugador
   let pizarrasVista = [];
   function vistaJugador(cont, pq, opciones) {
@@ -1393,6 +1601,7 @@
     let yo = "";
     try { yo = sessionStorage.getItem("pz_yo") || ""; } catch (e) { /* sin almacenamiento */ }
     if (!jug.some((j) => j.id === yo)) yo = "";
+    ctx.yo = yo || null;
     pizarrasVista.forEach((p) => p.parar()); pizarrasVista = [];
     cont.innerHTML = `
       ${opciones && opciones.volver ? `<button type="button" class="btn-sec" data-volverplan="1" style="margin-bottom:10px">← Volver a editar</button>` : ""}
@@ -1401,12 +1610,15 @@
         <h1>${esc(plan.titulo || "")}</h1>
         <p class="peq">${esc(pq.eq && pq.eq.n || "")}${plan.fecha ? " · " + esc(fechaBonita(plan.fecha)) : ""}${plan.rival ? " · contra " + esc(plan.rival) : ""}</p>
         ${jug.length ? `<div class="yo-sel"><label for="selYo"><b>¿Quién eres?</b></label>
-          <select id="selYo"><option value="">Elige tu dorsal</option>${jug.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${yo === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("")}</select></div>` : ""}
+          <select id="selYo"><option value="">Elige tu dorsal</option>${jug.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${yo === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("")}</select></div>
+          <div class="fila" style="margin-top:10px"><button type="button" class="btn" data-mificha="1" ${yo ? "" : "hidden"}>📋 Mi ficha: qué mirar y qué entrenar</button></div>` : ""}
+        ${voz.ok ? `<label class="voz-auto"><input type="checkbox" id="vozAuto" ${vozAuto ? "checked" : ""}> 🔊 Leer en voz alta mis mensajes en cada paso</label>` : ""}
       </div>
       ${plan.objetivo ? `<div class="tarjeta"><h3>${plan.tipo === "partido" ? "La idea" : "Objetivo"}</h3><p>${esc(plan.objetivo).replace(/\n/g, "<br>")}</p></div>` : ""}
       ${plan.notas ? `<div class="tarjeta"><h3>Notas</h3><p>${esc(plan.notas).replace(/\n/g, "<br>")}</p></div>` : ""}
       <div data-r="bloques"></div>
       <section class="tarjeta">
+        ${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}
         <h2 style="margin-top:0">Si te distraes, vuelve</h2>
         <p class="peq">En el partido, la atención va hacia fuera (la jugada) y a veces hacia dentro (pensamientos, nervios, cansancio). Es normal. No hace falta no distraerse nunca: la clave es darse cuenta antes y volver antes.</p>
         <div class="fila">
@@ -1425,7 +1637,7 @@
       d.className = "tarjeta bloque";
       d.style.borderLeftColor = plan.tipo === "partido" ? "var(--acento)" : "var(--verde)";
       const cons = (b.consignas || "").split(/\n/).map((x) => x.trim()).filter(Boolean);
-      d.innerHTML = `<h2 style="margin-top:0">${bi + 1}. ${esc(b.titulo || CATS[b.cat])}${b.min && plan.tipo === "entreno" ? ` <span class="peq">· ${esc(b.min)} min</span>` : ""}</h2>
+      d.innerHTML = `${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">${bi + 1}. ${esc(b.titulo || CATS[b.cat])}${b.min && plan.tipo === "entreno" ? ` <span class="peq">· ${esc(b.min)} min</span>` : ""}</h2>
         ${b.texto ? `<p>${esc(b.texto).replace(/\n/g, "<br>")}</p>` : ""}
         ${cons.length ? `<ul class="consignas">${cons.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
         ${b.fij || b.cuando ? `<div class="atencion">${b.fij ? `<p><b>🎯 En qué fijarte:</b> ${esc(b.fij)}</p>` : ""}${b.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(b.cuando)}</p>` : ""}</div>` : ""}
@@ -1433,14 +1645,25 @@
         ${b.jug ? `<div data-r="pz" id="pzv${bi}"></div>` : ""}`;
       bc.appendChild(d);
       if (b.jug) {
-        const pz = crearPizarra(d.querySelector('[data-r="pz"]'), { ctx: ctx, jug: b.jug, cat: b.cat, editable: false, yoPid: yo, equipoColor: pq.eq && pq.eq.col });
+        const pz = crearPizarra(d.querySelector('[data-r="pz"]'), { ctx: ctx, jug: b.jug, cat: b.cat, editable: false, yoPid: yo, equipoColor: pq.eq && pq.eq.col,
+          abrirFicha: (pid) => abrirFicha(plan, ctx, pid, pq.eq && pq.eq.et), vozAuto: () => vozAuto });
         pizarrasVista.push(pz);
       }
       pintarMio(d.querySelector('[data-r="mio"]'), b, ctx, yo);
     });
+    const mf = cont.querySelector("[data-mificha]");
+    if (mf) mf.addEventListener("click", () => { if (yo) abrirFicha(plan, ctx, yo, pq.eq && pq.eq.et); });
+    const va = cont.querySelector("#vozAuto");
+    if (va) va.addEventListener("change", () => { vozAuto = va.checked; if (!vozAuto) voz.parar(); try { sessionStorage.setItem("pz_voz", vozAuto ? "1" : ""); } catch (e) { /* nada */ } });
+    cont.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-leer]"); if (!b) return;
+      voz.alternar(b.closest("section, .tarjeta"), b);
+    });
     const sy = cont.querySelector("#selYo");
     if (sy) sy.addEventListener("change", () => {
       yo = sy.value;
+      ctx.yo = yo || null;
+      if (mf) mf.hidden = !yo;
       try { sessionStorage.setItem("pz_yo", yo); } catch (e) { /* nada */ }
       pizarrasVista.forEach((p) => p.seleccionarJugador(yo));
       $$(".bloque", cont).forEach((d, bi) => pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo));
@@ -1449,15 +1672,17 @@
   function pintarMio(el, b, ctx, yo) {
     if (!el) return;
     if (!yo || !b.jug) { el.innerHTML = ""; return; }
-    const f = b.jug.fichas.find((x) => x.eq !== "c" && ctx.pidDe(x) === yo);
-    if (!f) { el.innerHTML = `<p class="peq mi-papel">En esta pizarra no sales: fíjate en lo que hacen tus compañeros de puesto.</p>`; return; }
+    const fs = b.jug.fichas.filter((x) => x.eq !== "c" && ctx.pidsDe(x).includes(yo));
+    if (!fs.length) { el.innerHTML = `<p class="peq mi-papel">En esta pizarra no sales: fíjate en lo que hacen tus compañeros de puesto.</p>`; return; }
+    const f = fs[0];
     const lin = [];
     b.jug.pasos.forEach((p, i) => {
       const t = (p.tips || {})[f.id];
       if (t && (t.m || t.p || t.f || t.q)) lin.push(`<li><b>Paso ${i + 1}${p.t ? " · " + esc(p.t) : ""}:</b> ${esc([t.m, t.p && "Perfil: " + t.p, t.f && "Fíjate: " + t.f, t.q && "Cuándo: " + t.q].filter(Boolean).join(" · "))}</li>`);
     });
     const inf = ctx.info(f);
-    el.innerHTML = `<div class="mi-papel"><b>Tú juegas${inf.rol ? " de " + esc(inf.rol.toLowerCase()) : ""}.</b> Tu ficha brilla en amarillo; los mensajes salen debajo del campo.${lin.length ? `<ul class="consignas">${lin.join("")}</ul>` : ""}</div>`;
+    const roles = fs.map((x) => ctx.info(x).rol).filter(Boolean);
+    el.innerHTML = `<div class="mi-papel"><b>Tú juegas${roles.length ? " de " + esc(roles.join(" y de ").toLowerCase()) : inf.rol ? " de " + esc(inf.rol.toLowerCase()) : ""}.</b>${fs.length > 1 ? " En la pizarra brilla tu primer puesto." : ""} Tu ficha brilla en amarillo; los mensajes salen debajo del campo.${lin.length ? `<ul class="consignas">${lin.join("")}</ul>` : ""}</div>`;
   }
 
   function pantPreview() {
@@ -1535,7 +1760,14 @@
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); return; }
-    if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); return; }
+    if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); pintarSinPuesto(plan); return; }
+    if (d.extra !== undefined && plan) {
+      plan.extra = plan.extra || {};
+      const l = (plan.extra[d.extra] || []).slice(); l[+d.n] = t.value || "";
+      const lim2 = l.filter(Boolean).slice(0, 2);
+      if (lim2.length) plan.extra[d.extra] = lim2; else delete plan.extra[d.extra];
+      guardar(); pintarSinPuesto(plan); return;
+    }
     if (d.b === "cat" && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b) { const viejo = CATS[b.cat]; b.cat = t.value; if (!b.titulo || b.titulo === viejo) b.titulo = CATS[t.value]; guardar(); pintarPantalla(); }

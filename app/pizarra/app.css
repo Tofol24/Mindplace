@@ -166,3 +166,21 @@ button:disabled { opacity: .45; cursor: default; }
 .atencion p { margin: 4px 0; }
 [hidden] { display: none !important; }
 .portada select { color: var(--tinta); }
+.ficha-cuerpo { padding: 10px 12px 30px; }
+.ficha-cuerpo h3 { margin-top: 12px; }
+.tarjeta .leer { float: right; margin-left: 8px; }
+.ficha-btn { width: 100%; margin-top: 10px; }
+.det { border-top: 1px solid #EEE; padding: 6px 0; }
+.det summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.det ol ul { margin: 4px 0 8px; padding-left: 18px; }
+.voz-auto { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 14px; color: #E7F2EA; }
+.voz-auto input { width: 22px; height: 22px; }
+.portada label { color: #E7F2EA; }
+.alin-extra { margin-top: 4px; }
+.alin-extra select { min-height: 36px; padding: 4px 8px; font-size: 14px; }
+.sin-puesto { background: #FFF1D6; border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.alin-puesto > label { font-size: 13px; font-weight: 600; color: var(--suave); }
+.alin-extra { display: flex; flex-direction: column; gap: 4px; }
+.portada .btn-peq[aria-pressed="true"] { background: var(--aviso); color: #111; }
+.burbuja { max-width: calc(100% - 12px); }
