@@ -168,7 +168,11 @@
   <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="pautaTit">
     <button class="modal-x" id="pautaClose" aria-label="Cerrar">✕</button>
     <h2 id="pautaTit">Mensaje de pauta</h2>
-    <p class="muted">Redactado como mensaje tuyo. Revísalo, ajústalo si quieres y envíalo.</p>
+    <p class="muted" id="pautaSub">Redactado como mensaje tuyo. Revísalo, ajústalo si quieres y envíalo.</p>
+    <span class="msg-idioma pauta-idioma" id="pautaIdioma" role="group" aria-label="Idioma del mensaje" style="display:none">
+      <button class="btn" id="pautaEs" type="button">Castellano</button>
+      <button class="btn" id="pautaCa" type="button">Català</button>
+    </span>
     <label class="pauta-cod" id="pautaCodWrap"><input type="checkbox" id="pautaCod"> <span id="pautaCodTxt"></span></label>
     <textarea id="pautaTa" class="paste pauta-ta" aria-label="Texto del mensaje de pauta"></textarea>
     <div class="modal-foot">
@@ -201,6 +205,7 @@
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/registro-texto.js"></script>
 <script src="plantillas.js"></script>
+<script src="feedback-registros.js"></script>
 <script src="panel.js"></script>
 <script>
 if ("serviceWorker" in navigator) {
