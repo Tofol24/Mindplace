@@ -329,11 +329,30 @@
     }
   };
 
+  /* Nombres de las herramientas en catalán (para el mensaje en catalán). */
+  var NOMBRE_CA = {
+    cuestionario_tec: "Qüestionari TEC", estado_mono: "Com duus el teu mono?", donde_esta_mono: "On és el mono?",
+    donde_mono: "On és el teu mono?", agenda_atencional: "Agenda atencional", ais_curiosidad: "AIS des de la curiositat",
+    bajar_alerta: "Baixar l'alerta", brujula_valores: "Brúixola de valors", acompanar_sensacion: "Acompanyar la sensació",
+    ais_amor: "AIS des de l'amor", ais_muscular: "AIS muscular", mapa_atencion_interna: "Mapa intern",
+    tracker_tec: "Tracker TEC", tracker_ais: "Tracker AIS", control_ira: "Control de la ràbia",
+    retorno_trabajo: "Retorn a la feina", autorregistro: "Autorregistre", herramienta_diaria: "Eina diària",
+    protocolo_ais: "Protocol AIS (àudio)", compromiso_semanal: "Compromís setmanal",
+    honestidad_emocional: "Honestedat emocional", la_manada: "La manada (el perquè)",
+    estoy_aqui_conmigo: "Som aquí amb mi", toco_desde_dentro: "Toc des de dins", pedalea_desde_dentro: "Pedala des de dins",
+    cuento_familia: "La família d'en Koa (conte)", tiempo_limite: "El temps límit (petits)", fondos_frases: "Fons de frases",
+    escalera_exposicion: "L'escala (exposició)", exploradora_valiente: "L'exploradora valenta", mision_barrio: "Missió Barri",
+    escalera_comidas: "L'escala dels menjars", ritual_calma: "Ritual diari · calma", rincon_calma: "Racó de calma",
+    cuerpo_en_alerta: "Quan el cos continua en alerta", microaccion_valor: "Microacció amb valor",
+    registro_texto: "Registre", reto_mona: "Repte: sortir amb la meva mona", autorregistro_hospital: "Autorregistre de l'hospital",
+    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crònic"
+  };
+
   /* a: resultado de analizar(). opts: { lang, nombreTool(id)→texto, modulo:{titulo} } */
   function mensaje(a, opts) {
     opts = opts || {};
-    var T = TXT[opts.lang === "ca" ? "ca" : "es"], N = a.nuevo, F = T.foco[a.foco];
-    var tool = N.principal && opts.nombreTool ? opts.nombreTool(N.principal) : null;
+    var lang = opts.lang === "ca" ? "ca" : "es", T = TXT[lang], N = a.nuevo, F = T.foco[a.foco];
+    var tool = !N.principal ? null : (lang === "ca" && NOMBRE_CA[N.principal]) || (opts.nombreTool ? opts.nombreTool(N.principal) : null);
     var fortTxt = a.fortalezas.slice(0, 2).map(function (k) { return T.fort[k](N); });
     if (!fortTxt.length) fortTxt.push(T.fort.base);
     var p1 = [T.resumen(a, tool), T.evol[a.evol]].join(" ");
@@ -346,5 +365,5 @@
 
   var NOMBRE_FOCO = { latencia: "Latencia · nivel 1 (detectar y pausar)", densidad: "Densidad · nivel 2 (paradas frecuentes)", continuidad: "Continuidad · nivel 3 (sostener y actuar con valor)" };
 
-  g.APRENS_FEEDBACK = { analizar: analizar, mensaje: mensaje, autorregistros: autorregistros, clave: clave, NOMBRE_FOCO: NOMBRE_FOCO };
+  g.APRENS_FEEDBACK = { analizar: analizar, mensaje: mensaje, autorregistros: autorregistros, clave: clave, NOMBRE_FOCO: NOMBRE_FOCO, NOMBRE_CA: NOMBRE_CA };
 })(typeof window !== "undefined" ? window : globalThis);
