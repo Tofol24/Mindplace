@@ -216,6 +216,14 @@
                exhale: 'air rises and leaves; awareness remains', pause: 'breathe naturally' },
       legend: { air: 'the air · in through the nose', mind: 'your conscious attention · from the head' },
       start: 'Start', stop: 'Stop', one: 'breath', many: 'breaths'
+    },
+    ar: {
+      zones: { z1: 'الرقبة', z2: 'الصدر', z3: 'البطن' },
+      phase: { inhale: 'شهيق', anchor: 'ابقَ', exhale: 'زفير', pause: 'توقّف' },
+      hint:  { inhale: 'الهواء يدخل والانتباه ينزل', anchor: 'الوعي يبقى في البطن',
+               exhale: 'الهواء يصعد ويخرج، والوعي يبقى', pause: 'تنفّس بشكل طبيعي' },
+      legend: { air: 'الهواء · يدخل من الأنف', mind: 'انتباهك الواعي · من الرأس' },
+      start: 'ابدأ', stop: 'توقّف', one: ' نَفَس', many: ' أنفاس'
     }
   };
 
@@ -284,7 +292,7 @@
   function mount(container, opts){
     injectCSS();
     opts = opts || {};
-    var lang = (opts.lang === 'en') ? 'en' : 'es';
+    var lang = I18N[opts.lang] ? opts.lang : 'es';
     var rhythm = opts.rhythm || { inhale: 3000, anchor: 2000, exhale: 7000, pause: 1000 };
     var showControl = opts.showControl !== false;
     var showZones = opts.showZones !== false;
