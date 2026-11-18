@@ -183,3 +183,6 @@ button:disabled { opacity: .45; cursor: default; }
 .alin-puesto > label { font-size: 13px; font-weight: 600; color: var(--suave); }
 .alin-extra { display: flex; flex-direction: column; gap: 4px; }
 .portada .btn-peq[aria-pressed="true"] { background: var(--aviso); color: #111; }
+.lista-env { border: 0; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
+.lista-env label { display: flex; gap: 8px; align-items: center; }
+.lista-env input { width: 20px; height: 20px; }
