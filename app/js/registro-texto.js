@@ -65,6 +65,22 @@
     return /APRENS|Enviado desde mi herramienta|Enviat des de/i.test(t) || SIG.some(function (s) { return s[0].test(t); });
   }
 
+  /* Nombre de la herramienta a partir de la primera línea del mensaje
+     (para los registros que no se reconocen). null si no parece un título. */
+  function tituloDe(txt) {
+    var lineas = String(txt || "").split(/\n/);
+    for (var i = 0; i < lineas.length && i < 3; i++) {
+      var l = lineas[i].replace(/[*_~]/g, "").replace(/^[^A-Za-zÀ-ÿ¿¡«"]+/, "")
+        .replace(/\s*[·|—–-]\s*APRENS.*$/i, "").replace(/^APRENS\s*[·|—–:-]\s*/i, "").replace(/[\s:·—–-]+$/, "").trim();
+      if (!l) continue;
+      if (/^(hola|hey|bon dia|bones|buenos|buenas|hi)\b/i.test(l)) return null;
+      if (l.length < 3 || l.length > 60 || !/[A-Za-zÀ-ÿ]{3}/.test(l)) return null;
+      if (/^(lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo|dilluns|dimarts|dimecres|dijous|divendres|dissabte|diumenge)\b/i.test(l) || /^\d/.test(l)) return null;
+      return l;
+    }
+    return null;
+  }
+
   /* Un mensaje → { toolId, nombre, record }. fechaDefecto: la del encabezado de WhatsApp. */
   function parseRegistroTexto(txt, fechaDefecto) {
     txt = String(txt || "").trim();
@@ -143,6 +159,7 @@
       if (pres != null && rec.D == null) rec.D = pres;
       if (cont != null && rec.C == null) rec.C = cont;
     }
+    if (toolId === "registro_texto") { var tt = tituloDe(txt); if (tt) rec.herramienta = tt; }
     rec.texto = txt;
     return { toolId: toolId, nombre: nombre, record: rec };
   }
@@ -180,6 +197,7 @@
   }
 
   g.parseRegistroTexto = parseRegistroTexto;
+  g.tituloRegistroTexto = tituloDe;
   g.separarMensajes = separarMensajes;
   g.parseMensajes = parseMensajes;
   g.esDeHerramienta = esDeHerramienta;

@@ -21,6 +21,10 @@
     if (!c) { try { var db = JSON.parse(localStorage.getItem("aprens_db") || "{}"); c = (db.paciente && db.paciente.codigo) || ""; } catch (e) {} }
     return String(c).toUpperCase().replace(/[^\p{L}\p{N}._-]/gu, "").slice(0, 20);
   }
+  /* Nombre exacto de la herramienta: el título de su página sin « · APRENS». */
+  function nombreHerramienta() {
+    try { return String(g.document.title || "").split(/\s+[·|—–-]\s+/)[0].replace(/[|&#]/g, "").trim().slice(0, 60); } catch (e) { return ""; }
+  }
   function aprensConEnlace(txt) {
     if (typeof txt !== "string" || !txt.trim() || /#t=/.test(txt) || !g.LZString) return txt;
     // En la versión de bienestar («Anclado en mí») no hay psicólogo: sin enlace.
@@ -28,7 +32,8 @@
     try {
       var cod = codigoPaciente();
       // «$» → «_»: así WhatsApp reconoce el enlace entero al hacerlo tocable.
-      var url = urlPanel() + "#t=" + g.LZString.compressToEncodedURIComponent(txt).replace(/\$/g, "_") + (cod ? "&p=" + encodeURIComponent(cod) : "");
+      var url = urlPanel() + "#t=" + g.LZString.compressToEncodedURIComponent(txt).replace(/\$/g, "_") + (cod ? "&p=" + encodeURIComponent(cod) : "") +
+        (nombreHerramienta() ? "&n=" + encodeURIComponent(nombreHerramienta()) : "");
       return txt + "\n\n📲 Abrir en el panel de tu psicólogo/a:\n" + url;
     } catch (e) { return txt; }
   }
