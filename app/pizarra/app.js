@@ -146,6 +146,7 @@
     const id = idOk(j && j.id); if (!id) return null;
     const o = { id: id, d: Math.round(num(j.d, 0, 99, 0)), n: txt(j.n, 60) || "Jugador", c: txt(j.c, 18), p: txt(j.p, 24) };
     const mod = num(j.mod, 0, 4102444800000, 0); if (mod) o.mod = mod;
+    const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
     return o;
   }
   function sanJugada(g) {
@@ -1395,7 +1396,8 @@
         <fieldset class="lista-env"><legend class="peq"><b>Planes que se envían</b></legend>
           ${db.planes.length ? db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map((p) => `<label><input type="checkbox" data-envplan="${esc(p.id)}" checked> ${esc(p.titulo || "(sin título)")} <span class="peq">· ${esc(fechaBonita(p.fecha))}</span></label>`).join("") : `<p class="peq">Aún no hay planes; se enviará solo la plantilla.</p>`}
         </fieldset>
-        <p class="peq"><b>Ojo:</b> lleva los nombres completos de la plantilla. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
+        <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
           <button type="button" class="btn" data-enventr="1">📤 Enviar a otro entrenador</button>
           <button type="button" class="btn-sec" data-envarch="1">Descargar como archivo</button>
@@ -1465,22 +1467,30 @@
   }
 
   // ---------------------------------------------------------------- compartir entre entrenadores
-  function paqueteEntrenador(ids) {
-    const planes = db.planes.filter((p) => ids.includes(p.id));
-    return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: clon(db.plantilla), planes: clon(planes) };
+  function paqueteEntrenador(ids, sinApellidos) {
+    const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => { const c = clon(p); delete c.sinNombres; return c; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; return j; });
+    return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
   // Junta lo recibido con el cuaderno propio sin borrar nada. Devuelve un resumen.
   function juntar(rec) {
+    // Se parte de lo último guardado (por si otra pestaña lo cambió) y se trabaja sobre una copia.
+    let base = null;
+    try { base = sanDB(JSON.parse(localStorage.getItem(CLAVE))); } catch (e) { base = null; }
+    const db2 = clon(base || db);
     const r = { jugNuevos: 0, jugAct: 0, planNuevos: 0, planAct: 0, planMios: 0 };
     const mapa = {};
+    const ids = (x) => [x.id].concat(x.alias || []);
     rec.plantilla.forEach((j) => {
-      let ex = db.plantilla.find((x) => x.id === j.id);
-      if (!ex) ex = db.plantilla.find((x) => x.d === j.d && normNom(x.n) === normNom(j.n));
-      if (!ex) { db.plantilla.push(clon(j)); mapa[j.id] = j.id; r.jugNuevos++; return; }
+      let ex = db2.plantilla.find((x) => ids(x).some((k) => ids(j).includes(k)));
+      if (!ex) ex = db2.plantilla.find((x) => x.d === j.d && normNom(x.n) === normNom(j.n));
+      if (!ex) { db2.plantilla.push(clon(j)); mapa[j.id] = j.id; r.jugNuevos++; return; }
       mapa[j.id] = ex.id;
+      // Se recuerda que los dos identificadores son el mismo jugador.
+      ex.alias = Array.from(new Set((ex.alias || []).concat(ids(j)).filter((k) => k !== ex.id))).slice(0, 10);
       const cambia = ["d", "n", "c", "p"].some((k) => (j[k] || "") !== (ex[k] || ""));
-      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id }); if (cambia) r.jugAct++; }
+      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); if (cambia) r.jugAct++; }
     });
     const m = (pid) => (pid && mapa[pid]) || pid;
     rec.planes.forEach((p0) => {
@@ -1488,17 +1498,22 @@
       Object.keys(p.once || {}).forEach((k) => { p.once[k] = m(p.once[k]); });
       Object.keys(p.extra || {}).forEach((k) => { p.extra[k] = p.extra[k].map(m); });
       p.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = m(f.pj); }); });
-      const i = db.planes.findIndex((x) => x.id === p.id);
-      if (i < 0) { db.planes.push(p); r.planNuevos++; }
-      else if ((p.mod || 0) > (db.planes[i].mod || 0)) { db.planes[i] = p; r.planAct++; }
+      const i = db2.planes.findIndex((x) => x.id === p.id);
+      if (i < 0) { p.sinNombres = false; db2.planes.push(p); r.planNuevos++; }
+      else if ((p.mod || 0) > (db2.planes[i].mod || 0)) { p.sinNombres = !!db2.planes[i].sinNombres; db2.planes[i] = p; r.planAct++; }
       else r.planMios++;
     });
     if (rec.equipo) {
-      if (!db.equipo.nombre || db.equipo.nombre === "Mi equipo") { db.equipo.nombre = rec.equipo.nombre; db.equipo.color = rec.equipo.color; }
-      if (!db.equipo.etapa && rec.equipo.etapa) db.equipo.etapa = rec.equipo.etapa;
+      if (!db2.equipo.nombre || db2.equipo.nombre === "Mi equipo") { db2.equipo.nombre = rec.equipo.nombre; db2.equipo.color = rec.equipo.color; }
+      if (!db2.equipo.etapa && rec.equipo.etapa) db2.equipo.etapa = rec.equipo.etapa;
     }
-    try { localStorage.setItem(CLAVE, JSON.stringify(db)); } catch (e) { toast("No se ha podido guardar en este navegador."); }
+    try { localStorage.setItem(CLAVE, JSON.stringify(db2)); } catch (e) { return null; }
+    db = db2;
     return r;
+  }
+  function avisoJunta(r) {
+    if (!r) { toast("No se ha podido guardar en este navegador (¿falta espacio?). No se ha juntado nada."); return false; }
+    toast("Hecho: " + textoJunta(r)); return true;
   }
   function textoJunta(r) {
     const t = [];
@@ -1510,7 +1525,8 @@
     return t.join(", ") + ".";
   }
   async function enviarEntrenador(ids, cont) {
-    const pq = paqueteEntrenador(ids);
+    const sa = $("#envSinApe");
+    const pq = paqueteEntrenador(ids, !!(sa && sa.checked));
     const url = location.origin + location.pathname + "#ent=" + window.LZString.compressToEncodedURIComponent(JSON.stringify(pq));
     const txt = "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url;
     const largo = url.length > 12000;
@@ -1540,9 +1556,10 @@
       </div>`;
     app.querySelector("[data-juntar]").addEventListener("click", () => {
       const r = juntar(rec);
+      if (!r) { avisoJunta(r); return; }
       history.replaceState(null, "", location.pathname);
       ir("cuaderno");
-      toast("Hecho: " + textoJunta(r));
+      avisoJunta(r);
     });
     app.querySelector("[data-nojuntar]").addEventListener("click", () => { history.replaceState(null, "", location.pathname); ir("cuaderno"); });
   }
@@ -1820,18 +1837,17 @@
     }
     if (d.volverplan) return ir("plan", { planId: estado.planId });
     if (plan) {
-      if (d.pzcrear || d.pzborrar || d.bnuevo || d.bborrar || d.bmov) plan.mod = Date.now();
       const bl = (id) => plan.bloques.find((x) => x.id === id);
       if (d.pzcrear) {
         const b2 = bl(d.pzcrear); const sel = app.querySelector(`[data-tpl="${d.pzcrear}"]`);
-        b2.jug = nuevaJugada(plan, sel ? sel.value : "vacia"); guardar(); pintarPantalla(); return abrirPizarra(plan, b2);
+        b2.jug = nuevaJugada(plan, sel ? sel.value : "vacia"); plan.mod = Date.now(); guardar(); pintarPantalla(); return abrirPizarra(plan, b2);
       }
       if (d.pz) return abrirPizarra(plan, bl(d.pz));
-      if (d.pzborrar) { if (!window.confirm("¿Quitar la pizarra de este apartado?")) return; bl(d.pzborrar).jug = null; guardar(); return pintarPantalla(); }
+      if (d.pzborrar) { if (!window.confirm("¿Quitar la pizarra de este apartado?")) return; bl(d.pzborrar).jug = null; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bnuevo && plan.bloques.length >= MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
-      if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); guardar(); return pintarPantalla(); }
-      if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); guardar(); return pintarPantalla(); }
-      if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; guardar(); return pintarPantalla(); }
+      if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+      if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+      if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.enviar) return enviar(plan, app.querySelector('[data-r="compartir"]'));
       if (d.preview) return ir("preview", { planId: plan.id });
     }
@@ -1850,7 +1866,8 @@
     if (d.enventr || d.envarch) {
       const ids = $$("[data-envplan]", app).filter((x) => x.checked).map((x) => x.dataset.envplan);
       if (d.enventr) return enviarEntrenador(ids, app.querySelector('[data-r="envEntr"]'));
-      const blob = new Blob([JSON.stringify(paqueteEntrenador(ids), null, 1)], { type: "application/json" });
+      const sa = $("#envSinApe");
+      const blob = new Blob([JSON.stringify(paqueteEntrenador(ids, !!(sa && sa.checked)), null, 1)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob); a.download = "pizarra-para-entrenador-" + hoyISO() + ".json";
       document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
@@ -1866,7 +1883,7 @@
   app.addEventListener("input", (e) => {
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
-    if (plan && estado.pant === "plan" && t.dataset.r !== "sinNombres") plan.mod = Date.now();
+    if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
     if (d.p && plan && d.p !== "sistema") { plan[d.p] = t.value; guardar(); return; }
     if (d.b && plan) { const b = plan.bloques.find((x) => x.id === d.bid); if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); } return; }
     if (d.j) {
@@ -1878,7 +1895,7 @@
   app.addEventListener("change", (e) => {
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
-    if (plan && estado.pant === "plan" && t.dataset.r !== "sinNombres") plan.mod = Date.now();
+    if (plan && estado.pant === "plan" && (d.p || d.b || d.once !== undefined || d.extra !== undefined)) plan.mod = Date.now();
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); return; }
     if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); pintarSinPuesto(plan); return; }
@@ -1899,7 +1916,7 @@
         let rec = null;
         try { rec = sanDB(JSON.parse(r2.result)); } catch (err) { rec = null; }
         if (!rec) { toast("Ese archivo no es de la pizarra"); return; }
-        const res = juntar(rec); toast("Hecho: " + textoJunta(res)); ir("cuaderno");
+        const res = juntar(rec); if (res) ir("cuaderno"); avisoJunta(res);
       };
       r2.readAsText(t.files[0]);
       return;
@@ -1908,8 +1925,13 @@
       const r = new FileReader();
       r.onload = () => {
         try {
-          const o = sanDB(JSON.parse(r.result));
+          const crudo = JSON.parse(r.result);
+          const o = sanDB(crudo);
           if (!o) throw new Error("formato");
+          if (crudo && crudo.tipo === "entrenador") {
+            if (!window.confirm("Este archivo lo ha enviado otro entrenador y puede no llevar todos los planes. Se juntará con tu cuaderno sin borrar nada. ¿Seguir?")) return;
+            const res = juntar(o); if (res) ir("cuaderno"); avisoJunta(res); return;
+          }
           if (!window.confirm("Esto sustituye el cuaderno actual por la copia. ¿Seguir?")) return;
           try { localStorage.setItem(CLAVE, JSON.stringify(o)); } catch (err) { toast("No se ha podido guardar la copia en este navegador."); return; }
           db = o; toast("Copia recuperada"); ir("cuaderno");
@@ -1957,6 +1979,16 @@
     }
     pintarPantalla();
   }
+  window.addEventListener("storage", (e) => {
+    if (e.key !== CLAVE || !e.newValue) return;
+    let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
+    if (!o) return;
+    db = o;
+    if (/^#(ver|ent)=/.test(location.hash || "")) return;
+    if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
+    pintarPantalla();
+    toast("El cuaderno se ha actualizado desde otra pestaña");
+  });
   window.addEventListener("hashchange", () => { if (/^#(ver|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
