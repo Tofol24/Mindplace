@@ -1442,6 +1442,31 @@
       </div>`;
   }
 
+  // ---------------------------------------------------------------- codificación de enlaces
+  // Base64 «url-safe» (solo letras, números, - y _): WhatsApp y otras apps cortan
+  // el enlace en caracteres como «+» o «$», que usaba la codificación anterior.
+  function codificar(obj) {
+    const u8 = window.LZString.compressToUint8Array(JSON.stringify(obj));
+    let bin = "";
+    for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function descodificar(hash) {
+    const m = /^#(v|e|ver|ent)=(.*)$/.exec(hash || "");
+    if (!m) return null;
+    let datos = m[2];
+    try { datos = decodeURIComponent(datos); } catch (e) { /* tal cual */ }
+    if (m[1] === "v" || m[1] === "e") {
+      let b = datos.replace(/[^A-Za-z0-9_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
+      while (b.length % 4) b += "=";
+      const bin = atob(b), u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      return JSON.parse(window.LZString.decompressFromUint8Array(u8));
+    }
+    // Enlaces antiguos (#ver= / #ent=)
+    return JSON.parse(window.LZString.decompressFromEncodedURIComponent(datos.replace(/ /g, "+")));
+  }
+
   // ---------------------------------------------------------------- compartir
   function paquete(plan, sinNombres) {
     const usados = new Set();
@@ -1455,8 +1480,7 @@
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
   }
   function enlaceDe(plan, sinNombres) {
-    const txt = window.LZString.compressToEncodedURIComponent(JSON.stringify(paquete(plan, sinNombres)));
-    return location.origin + location.pathname + "#ver=" + txt;
+    return location.origin + location.pathname + "#v=" + codificar(paquete(plan, sinNombres));
   }
   function textoGrupo(plan, url) {
     const lin = [];
@@ -1546,7 +1570,7 @@
   async function enviarEntrenador(ids, cont) {
     const sa = $("#envSinApe");
     const pq = paqueteEntrenador(ids, !!(sa && sa.checked));
-    const url = location.origin + location.pathname + "#ent=" + window.LZString.compressToEncodedURIComponent(JSON.stringify(pq));
+    const url = location.origin + location.pathname + "#e=" + codificar(pq);
     const txt = "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url;
     const largo = url.length > 12000;
     if (navigator.share && !largo) {
@@ -1964,15 +1988,15 @@
   // ---------------------------------------------------------------- arranque
   function arrancar() {
     const h = location.hash || "";
-    if (h.startsWith("#ent=")) {
+    if (/^#(e|ent)=/.test(h)) {
       let rec = null;
-      try { rec = sanDB(JSON.parse(window.LZString.decompressFromEncodedURIComponent(h.slice(5)))); } catch (e) { rec = null; }
+      try { rec = sanDB(descodificar(h)); } catch (e) { rec = null; }
       if (!rec) { app.innerHTML = `<h1>Enlace incompleto</h1><p>Este enlace no se ha podido leer. Pide que te lo vuelvan a enviar o que te pasen el archivo.</p>`; return; }
       return pantRecibido(rec);
     }
-    if (h.startsWith("#ver=")) {
+    if (/^#(v|ver)=/.test(h)) {
       let pq = null;
-      try { pq = sanPaquete(JSON.parse(window.LZString.decompressFromEncodedURIComponent(h.slice(5)))); } catch (e) { pq = null; }
+      try { pq = sanPaquete(descodificar(h)); } catch (e) { pq = null; }
       if (!pq || !pq.plan) {
         app.innerHTML = `<h1>Enlace incompleto</h1><p>Este enlace no se ha podido leer. Pide al entrenador que lo vuelva a enviar (a veces se corta al copiarlo).</p>`;
         return;
@@ -2003,11 +2027,11 @@
     let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
     if (!o) return;
     db = o;
-    if (/^#(ver|ent)=/.test(location.hash || "")) return;
+    if (/^#(v|ver|e|ent)=/.test(location.hash || "")) return;
     if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
   });
-  window.addEventListener("hashchange", () => { if (/^#(ver|ent)=/.test(location.hash || "")) arrancar(); });
+  window.addEventListener("hashchange", () => { if (/^#(v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
