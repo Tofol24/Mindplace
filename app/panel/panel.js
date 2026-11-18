@@ -120,6 +120,7 @@
       var r = this.mergeEnvelope({ type: "aprens-export", paciente: { codigo: destino }, exportado: o.updated || new Date(0).toISOString(), tools: o.tools });
       var d = this.data.patients[r.codigo];
       ["updated", "recibido", "pautaEnviada"].forEach(function (k) { if (o[k] && (!d[k] || o[k] > d[k])) d[k] = o[k]; });
+      mergeFeedback(d, o.feedbacks, o.feedbackVistos);
       delete this.data.patients[origen];
       var al = this.data.alias || (this.data.alias = {});
       al[origen.toUpperCase()] = r.codigo;
@@ -169,6 +170,7 @@
       // Solo es «nuevo» si llega algo distinto (reabrir el mismo enlace no lo reactiva).
       if (est.recibido && (added || changed) && (!p.recibido || est.recibido > p.recibido)) p.recibido = est.recibido;
       if (est.pautaEnviada && (!p.pautaEnviada || est.pautaEnviada > p.pautaEnviada)) p.pautaEnviada = est.pautaEnviada;
+      mergeFeedback(p, est.feedbacks, est.feedbackVistos);
       return { codigo: codigo, added: added, updated: updated };
     },
 
@@ -271,8 +273,24 @@
       var p = map[codigo] || {};
       return { type: "aprens-export", paciente: { codigo: p.codigo || codigo },
         exportado: p.updated || p.importado || new Date(0).toISOString(), tools: p.tools || {},
-        estado: { recibido: p.recibido || null, pautaEnviada: p.pautaEnviada || null } };
+        estado: { recibido: p.recibido || null, pautaEnviada: p.pautaEnviada || null, feedbacks: p.feedbacks, feedbackVistos: p.feedbackVistos } };
     }).filter(function (env) { return env.tools && Object.keys(env.tools).length; });
+  }
+  /* Historial de feedbacks de autorregistros enviados (foco TEC y fecha) y claves
+     de los registros que ya estaban vistos en el último: así el siguiente feedback
+     compara lo nuevo con lo anterior. Se fusiona sin duplicar. */
+  function mergeFeedback(p, fbs, vistos) {
+    if (Array.isArray(fbs) && fbs.length) {
+      var cur = p.feedbacks || (p.feedbacks = []);
+      fbs.forEach(function (f) {
+        if (f && f.fecha && !cur.some(function (x) { return x.fecha === f.fecha && x.foco === f.foco; })) cur.push({ fecha: String(f.fecha), foco: f.foco || null });
+      });
+      cur.sort(function (a, c) { return String(a.fecha).localeCompare(String(c.fecha)); });
+    }
+    if (Array.isArray(vistos) && vistos.length) {
+      var set = {}; (p.feedbackVistos || []).concat(vistos).forEach(function (k) { if (typeof k === "string") set[k] = 1; });
+      p.feedbackVistos = Object.keys(set);
+    }
   }
   function numOrNull(v) { return v == null || v === "" ? null : Number(v); }
   /* D del seguimiento = densidad emocional (S5, 0–10, alto = mejor), como la D del
@@ -1007,6 +1025,7 @@
         stat(cvr ? cvr.ones + "/" + cvr.n : "—", "micro-acción con valor (días 1 / registrados)") +
       '</div>' +
       pautaCard(p) +
+      feedbackCard(p) +
       '<div class="grid2">' +
         '<div class="card"><h3>Evolución L / D / C</h3>' +
           '<div class="sub">Cuestionario TEC: latencia, densidad y continuidad (0–10).</div>' +
@@ -1049,6 +1068,7 @@
     drawLCC(p);
     drawAlerta(p);
     var bp = $("btnPauta"); if (bp) bp.onclick = function () { openPauta(p); };
+    var bf = $("btnFeedback"); if (bf) bf.onclick = function () { openFeedback(p); };
     var bg = $("btnPegar"); if (bg) bg.onclick = function () { openPegar(p.codigo); };
     var bu = $("btnUnir"); if (bu) bu.onclick = function () { openUnir(p.codigo); };
     var ba = $("btnAtendido"); if (ba) ba.onclick = function () { marcarAtendido(p); };
@@ -1199,13 +1219,79 @@
       '<div class="acc" style="margin-top:10px"><button id="btnPauta" class="btn btn-primary">📲 Preparar mensaje de pauta</button></div>' +
       '<div class="sub" style="margin:10px 0 0;font-style:italic">La pauta sugerida no sustituye el criterio clínico.</div></div>';
   }
+  /* ───────── Feedback a partir de los autorregistros (feedback-registros.js) ───────── */
+  function feedbackInfo(p) { return window.APRENS_FEEDBACK ? APRENS_FEEDBACK.analizar(p) : null; }
+  function feedbackCard(p) {
+    var a = feedbackInfo(p);
+    if (!a) return "";
+    var nuevoTxt = esPendiente(p) && !a.sinNuevos ? '<span class="fb-nuevo">nuevo registro</span>' : '';
+    var pasoTxt = { primero: "Primer feedback de autorregistros.", mantiene: "Mismo foco que el último feedback (" + (a.ultimo && a.ultimo.fecha) + ").",
+      avanza: "Avanza respecto al último feedback (" + (a.ultimo && a.ultimo.foco) + " → " + a.foco + ").",
+      retrocede: "Vuelve un paso atrás respecto al último feedback (" + (a.ultimo && a.ultimo.foco) + " → " + a.foco + ")." }[a.paso];
+    return '<div class="card card-pauta card-fb"><h3>📝 Feedback de autorregistros' + nuevoTxt + '</h3>' +
+      '<div class="mod">Foco propuesto: ' + esc(APRENS_FEEDBACK.NOMBRE_FOCO[a.foco]) + '</div>' +
+      '<ul class="fb-lineas">' + a.lineas.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join("") + '</ul>' +
+      '<div class="motivo">📌 <b>Por qué este foco:</b> ' + esc(a.motivo) + ' ' + esc(pasoTxt) + '</div>' +
+      '<div class="sub" style="margin:0 0 4px">Registros que entran en este feedback:</div>' +
+      a.nuevos.slice(-4).reverse().map(function (x) {
+        return '<div class="cuali"><b>' + esc(x.d) + ' · ' + esc(TOOL_LABEL[x.tool] || x.tool) + ':</b> ' + esc(recSummary(x.tool, x.r)) + '</div>';
+      }).join("") +
+      '<div class="acc" style="margin-top:10px"><button id="btnFeedback" class="btn btn-primary">📲 Preparar mensaje de feedback</button></div>' +
+      '<div class="sub" style="margin:10px 0 0;font-style:italic">Se compara lo que ha llegado desde tu último feedback con el mes anterior. La propuesta no sustituye el criterio clínico.</div></div>';
+  }
+  var pautaModo = "pauta";   // "pauta" (Screening) o "feedback" (autorregistros)
+  function feedbackTexto() {
+    var a = feedbackInfo(pautaPac); if (!a) return "";
+    var pi = msgLang === "es" ? pautaInfo(pautaPac) : null;
+    return APRENS_FEEDBACK.mensaje(a, { lang: msgLang, nombreTool: function (t) { return TOOL_LABEL[t] || null; },
+      modulo: pi && MODULOS[pi.mod] ? { titulo: MODULOS[pi.mod].pac_titulo } : null });
+  }
+  function pintarIdiomaPauta() {
+    ["es", "ca"].forEach(function (l) {
+      var b = $(l === "es" ? "pautaEs" : "pautaCa");
+      b.className = "btn" + (l === msgLang ? " btn-primary" : ""); b.setAttribute("aria-pressed", l === msgLang);
+    });
+  }
+  function openFeedback(p) {
+    pautaPac = p; pautaModo = "feedback";
+    $("pautaTit").textContent = "Mensaje de feedback · autorregistros";
+    $("pautaCodWrap").style.display = "none";
+    $("pautaIdioma").style.display = "flex"; pintarIdiomaPauta();
+    $("pautaTa").value = feedbackTexto();
+    $("pautaModal").style.display = "flex"; $("app").inert = true;
+    pautaVolver = document.activeElement;
+    $("pautaTa").focus();
+  }
+  /* Al enviarlo: queda respondido y se guarda el foco y lo que ya estaba visto. */
+  async function registrarFeedback(p) {
+    var codigo = p.codigo, hasta = p.recibido || new Date().toISOString(), a = feedbackInfo(p);
+    var fecha = new Date().toISOString().slice(0, 10);
+    try {
+      await PanelStore.exclusivo(function () {
+        var q = PanelStore.data.patients[codigo]; if (!q) return;
+        if (!q.pautaEnviada || hasta > q.pautaEnviada) q.pautaEnviada = hasta;
+        if (a) {
+          q.feedbacks = (q.feedbacks || []).filter(function (f) { return f.fecha !== fecha; });
+          q.feedbacks.push({ fecha: fecha, foco: a.foco });
+          // Solo lo que se veía al preparar el mensaje: lo que llegue después sigue siendo nuevo.
+          mergeFeedback(q, null, a.claves);
+        }
+      });
+    } catch (e) { if (PanelStore._key) toast("⚠️ No se pudo guardar"); return; }
+    if (!PanelStore._key) return;
+    renderList($("pfilter").value); renderDetail();
+    toast("✔ Feedback registrado: el próximo comparará con lo de hoy");
+  }
+
   var pautaPac = null;
   function pautaTexto() {
     var pi = pautaInfo(pautaPac);
     return mensajePauta(pi.mod, "", $("pautaCod").checked ? pi.code3 : "");
   }
   function openPauta(p) {
-    pautaPac = p;
+    pautaPac = p; pautaModo = "pauta";
+    $("pautaTit").textContent = "Mensaje de pauta";
+    $("pautaIdioma").style.display = "none";
     var pi = pautaInfo(p);
     $("pautaCodWrap").style.display = pi.code3 ? "flex" : "none";
     $("pautaCodTxt").textContent = "Incluir su código de seguimiento (" + (pi.code3 || "") + ")";
@@ -1218,7 +1304,7 @@
   var pautaVolver = null;
   function closePauta() {
     var abierto = $("pautaModal").style.display === "flex";
-    $("pautaModal").style.display = "none"; $("pautaTa").value = ""; pautaPac = null; $("app").inert = false;
+    $("pautaModal").style.display = "none"; $("pautaTa").value = ""; pautaPac = null; pautaModo = "pauta"; $("app").inert = false;
     if (abierto && pautaVolver && document.body.contains(pautaVolver)) pautaVolver.focus();
   }
   /* p es la ficha tal como la estabas viendo: se marca como respondido hasta su
@@ -1550,6 +1636,7 @@
     $("pautaModal").addEventListener("click", function (e) { if (e.target === $("pautaModal")) closePauta(); });
     // Añade o quita solo la línea del código: respeta lo que ya hayas editado.
     $("pautaCod").addEventListener("change", function () {
+      if (pautaModo !== "pauta") return;
       var ta = $("pautaTa"), pi = pautaPac && pautaInfo(pautaPac); if (!pi || !pi.code3) return;
       var t = ta.value.replace(/🔢 Para tus registros de seguimiento[^\n]*\n*/, "");
       if (this.checked) {
@@ -1558,11 +1645,18 @@
       }
       ta.value = t;
     });
+    ["es", "ca"].forEach(function (l) {
+      $(l === "es" ? "pautaEs" : "pautaCa").addEventListener("click", function () {
+        if (pautaModo !== "feedback" || !pautaPac) return;
+        msgLang = l; try { localStorage.setItem("aprens_panel_msg_lang", l); } catch (e) {}
+        pintarIdiomaPauta(); $("pautaTa").value = feedbackTexto(); $("pautaTa").scrollTop = 0;
+      });
+    });
     $("pautaWa").addEventListener("click", function () {
       this.href = "https://wa.me/?text=" + encodeURIComponent($("pautaTa").value);
     });
     $("pautaHecho").addEventListener("click", function () {
-      var p = pautaPac; closePauta(); if (p) marcarAtendido(p);
+      var p = pautaPac, modo = pautaModo; closePauta(); if (p) (modo === "feedback" ? registrarFeedback(p) : marcarAtendido(p));
     });
     $("pautaCopy").addEventListener("click", function () {
       var ta = $("pautaTa"), b = this; ta.select();

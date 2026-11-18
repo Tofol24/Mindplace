@@ -2,13 +2,14 @@
    Al ser un scope más específico que el de la app del paciente, se encarga
    él de las rutas /panel/*: así el panel funciona offline y no cae al hub del
    paciente. Sube CACHE al cambiar archivos. */
-const CACHE = "aprens-panel-v13";
+const CACHE = "aprens-panel-v14";
 const SHELL = [
   "./",
   "./index.html",
   "./panel.css",
   "./panel.js",
   "./plantillas.js",
+  "./feedback-registros.js",
   "../vendor/chart.umd.min.js",
   "../js/tec-screening.js",
   "../vendor/lz-string.min.js",

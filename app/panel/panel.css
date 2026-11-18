@@ -231,3 +231,9 @@ details.txt pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;backgr
 .msg-bar select{flex:1;min-width:200px}
 .msg-idioma{display:flex;gap:6px}
 .msg-foot{flex-wrap:wrap}
+
+/* Feedback de autorregistros */
+.card-fb{border:2px solid var(--D, #3a9e8c)}
+.card-fb .fb-lineas{margin:6px 0 4px;padding-left:18px;font-size:13px;line-height:1.55}
+.card-fb .fb-nuevo{display:inline-block;font-size:11.5px;font-weight:700;color:#fff;background:#c0584e;border-radius:20px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.pauta-idioma{margin:0 0 8px}
