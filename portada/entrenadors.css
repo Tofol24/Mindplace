@@ -38,3 +38,6 @@
   body.imprimint-fitxa .fitxa .peu-fitxa{display:block;font-size:.8rem;color:#555}
   body.imprimint-fitxa .fitxa fieldset{break-inside:avoid}
 }
+.doc .cicle .eina h3{font-size:1.15rem}
+.doc .eina .estat{align-self:flex-start}
+.doc .enllacos .boto{text-decoration:none}

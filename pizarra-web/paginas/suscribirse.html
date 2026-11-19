@@ -17,8 +17,8 @@
   <table class="tabla">
     <thead><tr><th scope="col">Gratis</th><th scope="col">Con la suscripción, además</th></tr></thead>
     <tbody><tr>
-      <td>Cuaderno de entrenos y partidos, plantilla y fichas de los jugadores.<br>Pizarra animada con pasos, zonas y mensajes para cada ficha.<br>Enviar los planes como archivo al grupo.</td>
-      <td>Enlaces cortos y cifrados para el grupo, que se abren con un toque.<br>Ficha privada para cada jugador o su familia, con tus notas.<br>Enviar el cuaderno a otro entrenador por enlace.<br>Sugerencias de Claude para cada apartado del entreno o del partido.</td>
+      <td>Cuaderno de entrenos y partidos, plantilla y fichas de los jugadores.<br>Pizarra animada con pasos, zonas y mensajes para cada ficha.<br>Aprendizajes en 5 pasos con las pizarras ya dibujadas.<br>Feedback de cada sesión, análisis del partido y memoria del equipo.<br>Enviar los planes como archivo al grupo.</td>
+      <td>Enlaces cortos y cifrados para el grupo, que se abren con un toque.<br>Ficha privada para cada jugador o su familia, con tus notas.<br>Enviar el cuaderno a otro entrenador por enlace.<br>Claude: sugerencias para cada apartado, diseñar la pizarra de un ejercicio, alternativas y el próximo entrenamiento a partir de los feedbacks.</td>
     </tr></tbody>
   </table>
   <p class="peq">Tu cuaderno sigue guardado solo en tu móvil. La suscripción no lo sube a ningún sitio.</p>
@@ -53,7 +53,7 @@ const listo = () => { $("#ir").disabled = !($("#ok").checked && $("#inicio").che
 fetch("/api/pizarra-config").then((r) => r.json()).then((c) => {
   if (!c.correo) { $("#notaCorreo").textContent = " (el código de acceso aparecerá en la pantalla después de pagar y en las facturas)"; $("#lnkRec").hidden = true; }
   if (!c.altas || !c.planes.length) { $("#planes").innerHTML = "<p>Ahora mismo no hay altas abiertas. Vuelve a mirarlo más adelante.</p>"; return; }
-  $("#planes").innerHTML = c.planes.map((p, i) => `<label class="plan"><input type="radio" name="plan" value="${esc(c.precios[i])}" ${i === 0 ? "checked" : ""}> <strong>${esc(p.nom)}</strong><span class="precio">${esc(p.precio)}</span><span class="peq">${p.ia ? "Hasta " + p.ia + " sugerencias de Claude al mes" : "Sugerencias de Claude sin tope mensual"}. Enlaces y fichas privadas sin tope.</span></label>`).join("");
+  $("#planes").innerHTML = c.planes.map((p, i) => `<label class="plan"><input type="radio" name="plan" value="${esc(c.precios[i])}" ${i === 0 ? "checked" : ""}> <strong>${esc(p.nom)}</strong><span class="precio">${esc(p.precio)}</span><span class="peq">${p.ia ? "Hasta " + p.ia + " consultas a Claude al mes" : "Consultas a Claude sin tope mensual"}. Enlaces y fichas privadas sin tope.</span></label>`).join("");
   listo();
 }).catch(() => { $("#planes").innerHTML = '<p class="error">No se ha podido cargar el plan. Vuelve a intentarlo dentro de un rato.</p>'; });
 document.addEventListener("change", listo);
