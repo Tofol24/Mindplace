@@ -61,6 +61,8 @@ assert.match(galleta, /^pz_pago=[A-Za-z0-9_-]{20,}$/);
 const url = "https://p/api/pizarra-codigo?session_id=cs_test_1234567890";
 assert.equal((await pago.codigo(new Request(url))).status, 403);
 assert.equal((await pago.codigo(new Request(url, { headers: { cookie: "pz_pago=" + "x".repeat(32) } }))).status, 403);
+const sinGalleta = await (await pago.codigo(new Request(url))).json();
+assert.equal(sinGalleta.correo, true); assert.equal(sinGalleta.codigo, undefined);
 const r1 = await (await pago.codigo(new Request(url, { headers: { cookie: "otra=1; " + galleta } }))).json();
 const r2 = await (await pago.codigo(new Request(url, { headers: { cookie: galleta } }))).json();
 assert.equal(correos.length, 1); assert.ok(correos[0].text.includes(r1.codigo));

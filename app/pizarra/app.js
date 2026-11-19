@@ -2006,7 +2006,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         return;
       }
       if (!o.largo) {
-        cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">No se ha podido crear el enlace privado (¿sin conexión?). Vuelve a intentarlo cuando tengas conexión.</p>`;
+        cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">No se ha podido crear el enlace privado (¿sin conexión?). Vuelve a intentarlo cuando tengas conexión, o envíalo como archivo.</p>`;
         return;
       }
       if (!window.confirm("No se ha podido crear el enlace corto (¿sin conexión?).\n\n¿Quieres el enlace largo? Lleva el plan dentro y no caduca: cualquiera que lo conserve podrá verlo.")) {
@@ -2116,7 +2116,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const pq = paqueteEntrenador(ids, !!(sa && sa.checked));
     return prepararEnvio(cont, {
       corto: () => enlaceCorto(pq, false),
-      largo: () => location.origin + location.pathname + "#c=" + codificar(pq),
+      // con notas privadas o contactos, nunca un enlace sin cifrar
+      largo: $("#envNotas") && $("#envNotas").checked ? null : () => location.origin + location.pathname + "#c=" + codificar(pq),
       texto: (url) => "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url,
       titulo: "Cuaderno de la pizarra", idTxt: "txtEntr", extra: "Enviar el cuaderno por enlace",
       indicacion: "Envíalo por privado al otro entrenador, nunca al grupo de jugadores."
@@ -2377,10 +2378,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Se envía a /api/pizarra-ia el apartado, la jugada y las notas SIN nombres (dorsal y puesto).
   const iaResultados = {};
   const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const PARTICULAS = new Set(["de", "da", "di", "do", "du", "la", "le", "lo", "el", "al", "en", "es", "na", "en", "ya", "va", "of", "y", "i"]);
   function quitarNombres(t) {
     let s = String(t || "");
     db.plantilla.forEach((j) => {
-      const nombres = new Set([j.n, j.c].concat(String(j.n || "").split(/\s+/)).filter((x) => x && x.length >= 3));
+      const nombres = new Set([j.n, j.c].concat(String(j.n || "").split(/\s+/)).filter((x) => x && (x.length >= 3 || (x.length === 2 && !PARTICULAS.has(x.toLowerCase())))));
       nombres.forEach((nm) => { s = s.replace(new RegExp("(^|[^\\p{L}])" + escRe(nm) + "(?=[^\\p{L}]|$)", "giu"), "$1el jugador"); });
     });
     return s;
@@ -2406,7 +2408,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         porJug[alias] = j.id;
         const inf = ctx.info(f);
         jugadores.push({
-          ficha: f.id, jugador: alias, puesto: inf.rol || j.p || "",
+          ficha: f.id, jugador: alias, puesto: quitarNombres(inf.rol || j.p || ""),
           notas: (j.notas || []).filter((n) => n.t !== "c" || n.s === b.cat).slice(0, 12).map((n) => ({ tipo: n.t === "f" ? "fuerte" : "mejora", area: n.a, situacion: CATS[n.s] || "", texto: quitarNombres(n.x) }))
         });
       });
@@ -2442,6 +2444,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       .concat(entrada.pasos.map((x) => ["Paso " + x.paso, x.titulo])).filter((x) => x[1]);
     const notas = [];
     entrada.jugadores.forEach((j) => j.notas.forEach((n) => notas.push(j.jugador + " (" + (j.puesto || "sin puesto") + "): " + n.texto)));
+    if (entrada.jugadores.length) textos.push(["Jugadores", entrada.jugadores.map((j) => j.jugador + (j.puesto ? " (" + j.puesto + ")" : "")).join(", ")]);
     cont.innerHTML = `<div class="ia-propuesta">
       <h3>✨ Antes de pedir la propuesta</h3>
       <p class="peq">Esto es lo que se enviará a Claude (Anthropic). Los jugadores van como J1, J2… y se quitan los nombres de la plantilla. Si alguna nota lleva otros datos personales (familiares, salud…), edítala antes en la ficha del jugador.</p>

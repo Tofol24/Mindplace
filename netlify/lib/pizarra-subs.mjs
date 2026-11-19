@@ -298,8 +298,6 @@ export async function purgar(ahora = Date.now()) {
       }
       cursor = key;
     }
-    cursor = "";
-    await us.delete("cursor-subs");
     const mails = sb.map((b) => b.key).filter((k) => k.startsWith("mail/"));
     for (const c of arr((await getJSON(us, "pendientes"))?.c)) {
       tarde();
@@ -311,6 +309,7 @@ export async function purgar(ahora = Date.now()) {
       }
       await updateJSON(us, "pendientes", (cur) => arr(cur?.c).includes(c) ? { c: arr(cur.c).filter((x) => x !== c) } : undefined);
     }
+    await us.delete("cursor-subs");   // las dos fases acabadas: la próxima vuelve a empezar
     await us.set(marca, JSON.stringify({ start: ahora, done: Date.now() }));
     return true;
   } catch (e) {

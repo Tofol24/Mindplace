@@ -26,7 +26,8 @@ async function pedir(intento) {
     const b = await r.json().catch(() => ({}));
     if (r.status === 409 && intento < 10) { setTimeout(() => pedir(intento + 1), 2500); return; }
     if (r.status === 403) {
-      caja.innerHTML = `<p>El pago se ha hecho bien. Por seguridad, el código solo se muestra en el navegador desde el que empezaste el pago: <b>te lo hemos enviado por correo</b>. Mira también la carpeta de correo no deseado.</p><div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a><a class="btn sec" href="/recuperar.html">No me ha llegado</a></div>`;
+      caja.innerHTML = `<p>El pago se ha hecho bien. Por seguridad, el código solo se muestra en el navegador desde el que empezaste el pago.</p>
+        <p>${b.correo ? "<b>Te lo hemos enviado por correo.</b> Mira también la carpeta de correo no deseado." : "Te llegará por correo en unos minutos. Si no llega, pídelo otra vez o escribe a <a href=\"mailto:tofol@aprens.es\">tofol@aprens.es</a>."}</p><div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a><a class="btn sec" href="/recuperar.html">No me ha llegado</a></div>`;
       return;
     }
     if (!r.ok || !b.codigo) throw new Error();

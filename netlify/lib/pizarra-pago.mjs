@@ -79,8 +79,6 @@ export async function codigo(req) {
   try {
     const s = await stripe("checkout/sessions/" + id + "?expand[]=subscription");
     if (s.metadata?.app !== APP) return json(404, { error: "sesion" });
-    const galleta = /(?:^|;\s*)pz_pago=([A-Za-z0-9_-]{20,64})/.exec(req.headers.get("cookie") || "");
-    if (!galleta || !s.metadata?.vinculo || (await huella("v:" + galleta[1])) !== s.metadata.vinculo) return json(403, { error: "otro_navegador" });
     if (s.status !== "complete" || !["paid", "no_payment_required"].includes(s.payment_status) || !s.subscription) return json(409, { error: "pendiente" });
     const sub = typeof s.subscription === "string" ? await stripe("subscriptions/" + s.subscription) : s.subscription;
     const info = subInfo(sub);
@@ -90,6 +88,10 @@ export async function codigo(req) {
     try { await codigoEnFacturas(info.customer, code); } catch { /* el código ya se muestra en pantalla */ }
     let correo = "no";
     try { correo = await enviarCodigo(st, info.id, new URL(req.url).origin); } catch { /* nada */ }
+    const galleta = /(?:^|;\s*)pz_pago=([A-Za-z0-9_-]{20,64})/.exec(req.headers.get("cookie") || "");
+    if (!galleta || !s.metadata?.vinculo || (await huella("v:" + galleta[1])) !== s.metadata.vinculo) {
+      return json(403, { error: "otro_navegador", correo: correo === "enviado" || correo === "ya" });   // pagado; el código solo por correo
+    }
     const plan = planes().find((p) => p.price === info.price);
     return json(200, { codigo: code, plan: plan?.nom || "", ia: plan?.ia || 0, correo: correo === "enviado" || correo === "ya" });
   } catch {
