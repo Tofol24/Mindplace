@@ -297,3 +297,13 @@ button:disabled { opacity: .45; cursor: default; }
 .pz-trban { margin: 4px 0; padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 15px; background: #FFF1E0; color: #7A3A00; border: 1px solid #F0B37A; }
 .pz-trban.tr-r { background: #E6F4EA; color: #14532D; border-color: #86C99A; }
 [data-r="iapzvista"] { margin: 8px 0; }
+.fb-bloque { border-top: 1px solid #EEE; padding: 8px 0; }
+.fb-bloque:first-of-type { border-top: 0; }
+.fb-tit { margin: 0 0 4px; }
+.fb-grupo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0; }
+.fb-grupo .peq { flex: 1 0 100%; }
+.fb-grupo .btn-peq[aria-pressed="true"] { background: var(--verde); color: #fff; }
+.fb-nota { align-items: flex-start; }
+.fb-nota textarea { flex: 1; min-width: 0; }
+.memoria { border-left: 6px solid #7C3AED; }
+.alt-prop { border-top: 1px dashed #CCC; padding-top: 8px; margin-top: 8px; }

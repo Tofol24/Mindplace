@@ -3,23 +3,32 @@
 // Solo procesa trabajos existentes en estado «pendiente» (los crea la función con tope diario).
 import Anthropic from "@anthropic-ai/sdk";
 import { getStore } from "@netlify/blobs";
-import { ESQUEMA, ESQUEMA_PIZARRA, MODELO, RE_JOB, SISTEMA, SISTEMA_PIZARRA, mensajeUsuario, sanearPizarra, sanearSalida } from "../lib/pizarra-ia.mjs";
+import { ESQUEMA, ESQUEMA_ALTERNATIVAS, ESQUEMA_ENTRENO, ESQUEMA_PIZARRA, MODELO, RE_JOB, SISTEMA, SISTEMA_ALTERNATIVAS, SISTEMA_ENTRENO, SISTEMA_PIZARRA,
+  mensajeUsuario, sanearAlternativas, sanearEntreno, sanearPizarra, sanearSalida } from "../lib/pizarra-ia.mjs";
+
+// Cada modo de consulta: instrucciones, esquema de la respuesta y saneado.
+const MODOS = {
+  sugerencias: { sis: SISTEMA, esq: ESQUEMA, san: (o, e) => sanearSalida(o, e) },
+  pizarra: { sis: SISTEMA_PIZARRA, esq: ESQUEMA_PIZARRA, san: (o) => sanearPizarra(o) },
+  alternativas: { sis: SISTEMA_ALTERNATIVAS, esq: ESQUEMA_ALTERNATIVAS, san: (o) => sanearAlternativas(o) },
+  entreno: { sis: SISTEMA_ENTRENO, esq: ESQUEMA_ENTRENO, san: (o) => sanearEntreno(o) }
+};
 
 export async function consultar(entrada, cliente = new Anthropic()) {
-  const pz = entrada && entrada.modo === "pizarra"; // diseñar la pizarra de un ejercicio
+  const m = MODOS[entrada && Object.prototype.hasOwnProperty.call(MODOS, entrada.modo) ? entrada.modo : "sugerencias"];
   const r = await cliente.beta.messages.create({
     model: MODELO,
     max_tokens: 16000,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
-    output_config: { effort: "medium", format: { type: "json_schema", schema: pz ? ESQUEMA_PIZARRA : ESQUEMA } },
-    system: [{ type: "text", text: pz ? SISTEMA_PIZARRA : SISTEMA, cache_control: { type: "ephemeral" } }],
+    output_config: { effort: "medium", format: { type: "json_schema", schema: m.esq } },
+    system: [{ type: "text", text: m.sis, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: mensajeUsuario(entrada) }]
   });
   if (r.stop_reason === "refusal") throw new Error("rechazo");
   if (r.stop_reason === "max_tokens") throw new Error("largo");
   const texto = r.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-  const salida = pz ? sanearPizarra(JSON.parse(texto)) : sanearSalida(JSON.parse(texto), entrada);
+  const salida = m.san(JSON.parse(texto), entrada);
   if (!salida) throw new Error("formato");
   return salida;
 }
