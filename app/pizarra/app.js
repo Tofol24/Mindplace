@@ -312,6 +312,22 @@
   // Juego parado → momento de atención interna (APRENS: no luchar, volver al estímulo relevante)
   const PARADO = { banda: "quién se mueve y dónde está el espacio", cornerF: "tu zona y la trayectoria del balón", cornerC: "el balón y tu zona", falta: "la señal del lanzador y la línea del fuera de juego" };
 
+  // Análisis del partido: preguntas de un toque. La última opción de cada escala es la que «cuesta» (para la memoria).
+  const BCR = ["Bien", "Regular", "Costó"], DUELO = ["Ganados", "Equilibrados", "Perdidos"], ZONA = ["Campo rival", "Medio campo", "Nuestro campo"], BANDA = ["Izquierda", "Centro", "Derecha"];
+  const ANALISIS = [
+    { g: "Recuperación y pérdida", p: [
+      ["recupera", "¿Dónde recuperamos más balones?", ZONA, 2], ["pierde", "¿Dónde perdimos más balones?", ["Último tercio", "Medio campo", "Nuestro campo"], 2],
+      ["activacion", "Activación después de pérdida", BCR, 2], ["errores", "Errores no forzados", ["Pocos", "Algunos", "Muchos"], 2], ["control", "Control y no perder el balón", BCR, 2]] },
+    { g: "Duelos", p: [["duelos", "Duelos uno contra uno", DUELO, 2], ["aereos", "Duelos aéreos", DUELO, 2]] },
+    { g: "Con balón", p: [
+      ["salida", "Coordinación en la salida de balón", BCR, 2], ["romper", "Romper líneas y generar transición", BCR, 2],
+      ["remate", "Remate y pegada: definir las ocasiones creadas", BCR, 2], ["bandaAtq", "¿Por dónde generamos más peligro?", BANDA, -1]] },
+    { g: "Sin balón", p: [
+      ["presion", "Presionar su salida y robar", BCR, 2], ["contemp", "Contemporizar y evitar contraataques con ocasiones claras", BCR, 2],
+      ["bandaDef", "¿Por dónde nos generaron más peligro?", BANDA, -1]] }
+  ];
+  const AN_P = {}; ANALISIS.forEach((g) => g.p.forEach((x) => { AN_P[x[0]] = x; }));
+
   // ---------------------------------------------------------------- saneado
   // Todo lo que entra de fuera (enlace #ver=, copia de seguridad, localStorage)
   // se reconstruye campo a campo: ids, números, colores y tipos de una lista cerrada.
@@ -450,7 +466,12 @@
     return { v: 1, equipo: { nombre: "Mi equipo", color: "#C8102E" }, plantilla: [], planes: [] };
   }
   let db;
-  try { db = sanDB(JSON.parse(localStorage.getItem(CLAVE))) || dbVacia(); } catch (e) { db = dbVacia(); }
+  try { db = sanDB(JSON.parse(localStorage.getItem(CLAVE))) || dbVacia(); }
+  catch (e) {
+    // No se pierde nada: lo guardado se copia aparte antes de empezar con un cuaderno vacío.
+    try { const crudo = localStorage.getItem(CLAVE); if (crudo && !localStorage.getItem(CLAVE + "_respaldo")) localStorage.setItem(CLAVE + "_respaldo", crudo); } catch (e2) { /* nada */ }
+    db = dbVacia();
+  }
   if (!db.equipo) db.equipo = dbVacia().equipo;
   let tGuardar = null;
   function guardar() {
@@ -1692,21 +1713,6 @@
     });
   }
 
-  // Análisis del partido: preguntas de un toque. La última opción de cada escala es la que «cuesta» (para la memoria).
-  const BCR = ["Bien", "Regular", "Costó"], DUELO = ["Ganados", "Equilibrados", "Perdidos"], ZONA = ["Campo rival", "Medio campo", "Nuestro campo"], BANDA = ["Izquierda", "Centro", "Derecha"];
-  const ANALISIS = [
-    { g: "Recuperación y pérdida", p: [
-      ["recupera", "¿Dónde recuperamos más balones?", ZONA, 2], ["pierde", "¿Dónde perdimos más balones?", ["Último tercio", "Medio campo", "Nuestro campo"], 2],
-      ["activacion", "Activación después de pérdida", BCR, 2], ["errores", "Errores no forzados", ["Pocos", "Algunos", "Muchos"], 2], ["control", "Control y no perder el balón", BCR, 2]] },
-    { g: "Duelos", p: [["duelos", "Duelos uno contra uno", DUELO, 2], ["aereos", "Duelos aéreos", DUELO, 2]] },
-    { g: "Con balón", p: [
-      ["salida", "Coordinación en la salida de balón", BCR, 2], ["romper", "Romper líneas y generar transición", BCR, 2],
-      ["remate", "Remate y pegada: definir las ocasiones creadas", BCR, 2], ["bandaAtq", "¿Por dónde generamos más peligro?", BANDA, -1]] },
-    { g: "Sin balón", p: [
-      ["presion", "Presionar su salida y robar", BCR, 2], ["contemp", "Contemporizar y evitar contraataques con ocasiones claras", BCR, 2],
-      ["bandaDef", "¿Por dónde nos generaron más peligro?", BANDA, -1]] }
-  ];
-  const AN_P = {}; ANALISIS.forEach((g) => g.p.forEach((x) => { AN_P[x[0]] = x; }));
   function htmlAnalisis(p) {
     const an = p.an || {};
     return `<details class="det analisis" ${Object.keys(an).length ? "" : "open"}><summary><b>🔎 Análisis del partido</b> <span class="peq">(preguntas de un toque)</span></summary>
@@ -2894,7 +2900,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       fecha: p.fecha, tipo: p.tipo, titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo).slice(0, 300), nota: quitarNombres(p.fbn), resultado: quitarNombres(p.fbr),
       analisis: analisisLista(p).map((x) => ({ aspecto: x.aspecto, valor: x.valor })),
       // solo los apartados con feedback (y como mucho 12): así la consulta no crece sin límite
-      bloques: (p.bloques.some((b) => b.fb) ? p.bloques.filter((b) => b.fb) : p.bloques).slice(0, 12).map((b) => ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
+      bloques: p.bloques.filter((b) => b.fb || !p.bloques.some((x) => x.fb)).slice(0, 12).map((b) => !b.fb ? { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo) } : ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
         fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond),
         como: b.fb && b.fb.c ? ["", "costó", "regular", "bien"][b.fb.c] : "", estimulos: b.fb && b.fb.a ? ["", "no", "a veces", "sí"][b.fb.a] : "", nota: quitarNombres(b.fb && b.fb.n) }))
     }));
@@ -2917,7 +2923,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${(function () {
         const ul = pls.find((p) => p.tipo === "partido" && (p.an || p.anOc)); if (!ul) return "";
         const l = analisisLista(ul), mal = l.filter((x) => x.cuesta), bienP = l.filter((x) => x.fuerte);
-        return `<p><b>Análisis del último partido</b></p>${mal.length ? `<p class="peq"><b>A mejorar:</b> ${esc(mal.map((x) => x.aspecto.replace(/^¿|\?$/g, "") + " (" + x.valor.toLowerCase() + ")").join(" · "))}</p>` : ""}${bienP.length ? `<p class="peq"><b>Fortalezas:</b> ${esc(bienP.map((x) => x.aspecto).join(" · "))}</p>` : ""}`;
+        return `<p><b>Análisis del partido</b> <span class="peq">(${esc(fechaBonita(ul.fecha))}${ul.rival ? ", contra " + esc(ul.rival) : ""})</span></p>${mal.length ? `<p class="peq"><b>A mejorar:</b> ${esc(mal.map((x) => x.aspecto.replace(/^¿|\?$/g, "") + " (" + x.valor.toLowerCase() + ")").join(" · "))}</p>` : ""}${bienP.length ? `<p class="peq"><b>Fortalezas:</b> ${esc(bienP.map((x) => x.aspecto).join(" · "))}</p>` : ""}`;
       })()}
       ${partido ? `<p><b>Último partido</b> (${esc(fechaBonita(partido.fecha))}${partido.rival ? ", contra " + esc(partido.rival) : ""}${partido.fbr ? ", " + esc(partido.fbr) : ""})${partido.fbn ? ": " + esc(partido.fbn) : ""}</p>` : ""}
       <h3>✨ El próximo entreno</h3>
@@ -3582,7 +3588,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
     if (d.anoc !== undefined && plan) {
       const a = $("#anOc0").value, b2 = $("#anOc1").value;
-      if (a === "" && b2 === "") delete plan.anOc; else plan.anOc = [Math.round(num(a, 0, 50, 0)), Math.round(num(b2, 0, 50, 0))];
+      if (a === "" || b2 === "") delete plan.anOc; else plan.anOc = [Math.round(num(a, 0, 50, 0)), Math.round(num(b2, 0, 50, 0))]; // solo con los dos datos
       plan.mod = Date.now(); guardar(); return;
     }
     if (d.fbn && plan) {
