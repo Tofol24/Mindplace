@@ -3,7 +3,7 @@
    - Recibe los archivos compartidos desde otra app (Android: Compartir → Pizarra):
      el archivo se guarda un momento en una caché local y se abre la pizarra con ?compartido=1.
      Nada sale del móvil. */
-const CACHE = "pizarra-v1";
+const CACHE = "pizarra-v2";
 const COMPARTIDO = "pizarra-compartido";
 const BASE = [
   "./", "./index.html", "./app.css", "./app.js", "./ficha.js", "./manifest.webmanifest",
@@ -38,6 +38,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (req.method !== "GET" || url.origin !== location.origin) return;
+  if (url.pathname.indexOf("/api/") === 0) return; // nunca desde caché
   e.respondWith(
     fetch(req).then((res) => {
       if (res && res.ok) { const copia = res.clone(); caches.open(CACHE).then((c) => c.put(req, copia)).catch(() => {}); return res; }
