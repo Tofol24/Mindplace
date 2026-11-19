@@ -288,3 +288,11 @@ button:disabled { opacity: .45; cursor: default; }
 .aviso-sus { background: #FFF6DB; border: 1px solid #E8C55A; border-radius: 12px; padding: 10px 12px; margin-top: 10px; }
 .aviso-sus p { margin: 4px 0; }
 .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: 1px; }
+.metodo { border-top: 1px dashed #DDD; padding-top: 6px; }
+.aprendizaje { border-left: 6px solid var(--verde); margin-top: 12px; }
+.condicion { background: #FFF6DB; border: 1px solid #E8C55A; border-radius: 12px; padding: 8px 12px; margin: 8px 0; }
+.condicion p { margin: 4px 0; }
+.pz-tr { display: flex; gap: 8px; align-items: center; margin: 4px 0; font-size: 14px; }
+.pz-tr select { width: auto; min-height: 36px; padding: 4px 8px; font-size: 14px; }
+.pz-trban { margin: 4px 0; padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 15px; background: #FFF1E0; color: #7A3A00; border: 1px solid #F0B37A; }
+.pz-trban.tr-r { background: #E6F4EA; color: #14532D; border-color: #86C99A; }

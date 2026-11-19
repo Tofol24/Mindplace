@@ -166,7 +166,7 @@
     </div>
     <div class="enllacos accions">
       <button type="button" class="boto" data-a="imprimeix">${esc(UI.imprimeix)}</button>
-      <a class="boto sec" href="https://pizarra.aprens.net/" rel="noopener">${esc(UI.pissarra)}</a>
+      <a class="boto sec" href="https://pizarra.aprens.net/pizarra/" rel="noopener" data-a="pissarra">${esc(UI.pissarra)}</a>
       <button type="button" class="boto sec" data-a="buida">${esc(UI.buida)}</button>
     </div>`;
 
@@ -176,6 +176,15 @@
     try { localStorage.setItem(CLAU, JSON.stringify({ l: L, f: o })); } catch (e) { /* només per comoditat */ }
   };
   const marca = (id) => arrel.querySelectorAll(".xips button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+  // «Munta-la a la pissarra»: obre la pissarra amb la fitxa al #hash (no arriba a cap servidor) i hi crea un entrenament
+  // amb tres apartats: analític, dinàmica ecològica i partit condicionat.
+  arrel.addEventListener("click", (e) => {
+    const a = e.target.closest('a[data-a="pissarra"]'); if (!a) return;
+    const sel = arrel.querySelector(".xips button[aria-pressed=true]");
+    const o = { k: sel ? sel.dataset.id : "" };
+    CAMPS.forEach((k) => { o[k] = $(`[data-k="${k}"]`, arrel).value.slice(0, 1200); });
+    a.href = "https://pizarra.aprens.net/pizarra/#apr=" + encodeURIComponent(JSON.stringify(o));
+  });
 
   let guardat = null;
   try { guardat = JSON.parse(localStorage.getItem(CLAU) || "null"); } catch (e) { guardat = null; }

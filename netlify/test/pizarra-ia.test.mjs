@@ -81,6 +81,20 @@ await store.setJSON("job/AAAAAAAAAAAAAAAA", { estado: "pendiente", creado: Date.
 assert.ok((await limpiarIA(store)) >= 1);
 assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
 
+// método de los cinco pasos: fase, condición, transiciones y preguntas
+{
+  const e = lib.sanearEntrada({ tipo: "entreno", bloque: { categoria: "Juego reducido", fase: "Dinámica ecológica", condicion: "Gol doble tras robo" },
+    pasos: [{ paso: 1, transicion: "perdida", fichas: [{ ficha: "a1", equipo: "nuestro", x: 30, y: 40 }] }, { paso: 2, transicion: "otra", fichas: [] }] });
+  assert.equal(e.bloque.fase, "Dinámica ecológica"); assert.equal(e.bloque.condicion, "Gol doble tras robo");
+  assert.equal(e.pasos[0].transicion, "perdida"); assert.equal(e.pasos[1].transicion, "");
+  const base = { analisis: "a", texto: "t", consignas: [], fijarse: "", cuando: "", mensaje: "", indicaciones: [], individual: [] };
+  const o = lib.sanearSalida({ ...base, condicion: "Solo vale tras pase a la espalda", preguntas: ["¿Qué viste?", "", 3] }, e);
+  assert.equal(o.condicion, "Solo vale tras pase a la espalda"); assert.deepEqual(o.preguntas, ["¿Qué viste?"]);
+  const p = lib.sanearSalida({ ...base, condicion: "no aplica" }, { ...e, tipo: "partido" });
+  assert.equal(p.condicion, ""); assert.deepEqual(p.preguntas, []);
+  assert.ok(lib.ESQUEMA.required.includes("condicion") && lib.ESQUEMA.required.includes("preguntas"));
+}
+
 await server.stop();
 rmSync(dir, { recursive: true, force: true });
 console.log("pizarra-ia: ok");
