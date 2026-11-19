@@ -140,7 +140,8 @@ export function sanearEntradaPizarra(e) {
     modo: "pizarra", etapa: txt(e.etapa, 40), tipo: e.tipo === "partido" ? "partido" : "entreno",
     bloque: {
       categoria: txt(b.categoria, 60), titulo: txt(b.titulo, 80), texto: txt(b.texto, 1200), consignas: txt(b.consignas, 800),
-      fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300), fase: txt(b.fase, 40), condicion: txt(b.condicion, 300)
+      fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300), fase: txt(b.fase, 40), condicion: txt(b.condicion, 300),
+      equipoCondicion: /^(nuestro|rival|peto [a-z]{3,10})$/.test(b.equipoCondicion || "") ? b.equipoCondicion : ""
     },
     jugadores: num(e.jugadores, 0, 30)
   };
@@ -190,7 +191,9 @@ Cómo diseñarla:
 - Si el ejercicio trabaja una transición, marca el paso de la pérdida («perdida») o del robo («recuperacion»).
 - Flechas solo para el movimiento o el pase principal de cada paso (como máximo 2 por paso).
 - Indicaciones para las fichas que protagonizan cada paso: qué hacen, en qué se fijan (el estímulo relevante: el balón, el compañero, el rival, hacia dónde mira…) y cuándo. Frases cortas, en segunda persona, sin emojis. Son para todo el grupo.
-- Respeta el método: el ejercicio enseña en qué fijarse y cuándo; nunca propongas que el entrenador dé instrucciones constantes durante el juego.`;
+- Respeta el método: el ejercicio enseña en qué fijarse y cuándo; nunca propongas que el entrenador dé instrucciones constantes durante el juego.
+- Las indicaciones las ve todo el grupo: nunca incluyas en ellas datos personales que pueda llevar la ficha (salud, familia, nombres).
+- Si la ficha dice qué equipo tiene la condición («equipoCondicion»), ilústrala con ese equipo: «nuestro» son las fichas e, «rival» las fichas f; si es un color de peto, pon ese peto a las fichas del equipo que la tiene.`;
 
 const clampN = (v, a, b, d) => { const n = Number(v); return Number.isFinite(n) ? Math.min(b, Math.max(a, Math.round(n * 2) / 2)) : d; };
 const VISTA_Y = { C: [-6, 111], A: [-7, 59], D: [46, 112] };
@@ -229,8 +232,12 @@ export function sanearPizarra(o) {
     return r;
   });
   if (!pasos.length) return null;
-  // toda ficha tiene que estar colocada en el primer paso
-  fichas.forEach((f) => { if (!pasos[0].pos[f.id]) pasos.forEach((p) => { if (!p.pos[f.id]) p.pos[f.id] = [34, (y0 + y1) / 2]; }); });
+  // una ficha sin posición en el primer paso no se dibuja (no se amontona en un punto por defecto)
+  const colocadas = fichas.filter((f) => pasos[0].pos[f.id]);
+  if (colocadas.length < 2) return null;
+  const quitar = new Set(fichas.filter((f) => !pasos[0].pos[f.id]).map((f) => f.id));
+  pasos.forEach((p) => { quitar.forEach((id) => { delete p.pos[id]; delete p.tips[id]; }); });
+  fichas.length = 0; colocadas.forEach((f) => fichas.push(f));
   conos.forEach((c) => pasos.forEach((p) => { p.pos[c.id] = [c.x, c.y]; }));
   return {
     jugada: { vista, rivales: true, fichas: fichas.concat(conos.map((c) => ({ id: c.id, eq: "c", forma: "cono", col: c.col }))), pasos },

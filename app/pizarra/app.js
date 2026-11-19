@@ -193,6 +193,8 @@
   const CAMPO5 = [[12, 6, "blanco", "chino"], [56, 6, "blanco", "chino"], [12, 50, "blanco", "chino"], [56, 50, "blanco", "chino"], [30, 6, "naranja"], [38, 6, "naranja"], [30, 50, "naranja"], [38, 50, "naranja"]];
   const F5 = [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["e5", "a"], ["f1", "r"], ["f2", "r"], ["f3", "r"], ["f4", "r"], ["f5", "r"]];
   const B5 = { e1: [34, 44], e2: [16, 34], e3: [52, 34], e4: [24, 20], e5: [44, 20], f1: [34, 9], f2: [18, 13], f3: [50, 13], f4: [26, 31], f5: [42, 31] };
+  const F6 = F5.concat([["e6", "a"], ["f6", "r"]]);
+  const B6 = Object.assign({}, B5, { e6: [34, 37], f6: [34, 19] });
   const CUADRO = (x0, y0, x1, y1) => [[x0, y0, "blanco", "chino"], [x1, y0, "blanco", "chino"], [x0, y1, "blanco", "chino"], [x1, y1, "blanco", "chino"]];
   const TIP = (m, f, q) => { const o = {}; if (m) o.m = m; if (f) o.f = f; if (q) o.q = q; return o; };
   const DISENOS = {
@@ -269,8 +271,8 @@
         { t: "Uno presiona, el otro cubre y cierra el pase", pos: { e1: [34, 30], e2: [39, 31] }, b: [34, 28],
           tips: { e1: TIP("Presiona sin dejarle girarse"), e2: TIP("Cubre a tu compañero y cierra el pase", "La línea de pase") } },
         { t: "Robo", tr: "r", pos: { e1: [34, 29] }, b: [34, 29] }] },
-      eco: { v: "A", f: F5, c: CAMPO5, p: [
-        { t: "Pase atrás del rival: señal de presión", pos: Object.assign({}, B5, { f4: [30, 24] }), b: [34, 10], d: [[[30, 24], [34, 10]]],
+      eco: { v: "A", f: F6, c: CAMPO5, p: [
+        { t: "6 contra 6. Pase atrás del rival: señal de presión", pos: Object.assign({}, B6, { f4: [30, 24] }), b: [34, 10], d: [[[30, 24], [34, 10]]],
           tips: { e5: TIP("Salta al que recibe", "El pase atrás", "Mientras viaja el balón") } },
         { t: "Presionamos juntos", pos: { e5: [38, 13], e4: [28, 15], e2: [22, 26], e3: [46, 26] }, b: [34, 10],
           tips: { e4: TIP("Cierra el pase a tu lado", "La línea de pase"), e2: TIP("Acompaña: equipo junto") } },
@@ -2714,49 +2716,56 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     cont.innerHTML = `<p class="sin-puesto">La propuesta está tardando demasiado. Vuelve a intentarlo.</p>`;
   }
   // Claude diseña la pizarra del apartado a partir de su ficha (sin datos de jugadores).
-  const iaPizarras = {};
+  const iaPizarras = {}, iaPzPend = {}, iaPzGen = {};
   function entradaPizarraIA(plan, b) {
     const E = FICHA.ETAPAS[db.equipo.etapa];
     return { modo: "pizarra", etapa: E ? E.n + " (" + E.edad + ")" : "", tipo: plan.tipo, jugadores: db.plantilla.length,
       bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas),
-        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), fase: FASE_CORTA[b.fase] || "", condicion: quitarNombres(b.cond) } };
+        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), fase: FASE_CORTA[b.fase] || "", condicion: quitarNombres(b.cond),
+        equipoCondicion: !b.cond || !b.condEq ? "" : b.condEq === "a" ? "nuestro" : b.condEq === "r" ? "rival" : "peto " + b.condEq } };
   }
   function previaPizarraIA(plan, b, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Diseñar la pizarra con Claude"); return; }
     const e = entradaPizarraIA(plan, b);
     if (!e.bloque.texto && !e.bloque.titulo) { cont.innerHTML = `<p class="sin-puesto">Escribe antes la explicación del ejercicio: Claude diseña la pizarra a partir de ella.</p>`; return; }
-    const textos = [["Título", e.bloque.titulo], ["Explicación", e.bloque.texto], ["Consignas", e.bloque.consignas], ["En qué fijarse", e.bloque.fijarse], ["Cuándo", e.bloque.cuando], ["Condición", e.bloque.condicion]].filter((x) => x[1]);
+    const textos = [["Título", e.bloque.titulo], ["Explicación", e.bloque.texto], ["Consignas", e.bloque.consignas], ["En qué fijarse", e.bloque.fijarse], ["Cuándo", e.bloque.cuando], ["Condición", e.bloque.condicion], ["La tiene", e.bloque.equipoCondicion]].filter((x) => x[1]);
+    iaPzPend[b.id] = e; // se envía exactamente lo que se muestra
     cont.innerHTML = `<div class="ia-propuesta">
       <h3>✨ Diseñar la pizarra con Claude</h3>
-      <p class="peq">Claude propone el espacio, las fichas, los conos y los pasos de la jugada a partir de la ficha del apartado. Se envía esto a Claude (Anthropic), sin ningún dato de los jugadores:</p>
+      <p class="peq">Claude propone el espacio, las fichas, los conos y los pasos de la jugada a partir de la ficha del apartado. Se envía esto a Claude (Anthropic), sin la plantilla ni las notas de los jugadores. Revisa que el texto no lleve datos personales (salud, familia…):</p>
       <ul class="consignas">${textos.map((x) => `<li><b>${esc(x[0])}:</b> ${esc(x[1])}</li>`).join("")}</ul>
       ${b.jug ? `<p class="peq">Este apartado ya tiene pizarra: verás la propuesta antes de sustituirla.</p>` : ""}
       <div class="fila"><button type="button" class="btn" data-iapzok="${esc(b.id)}">Diseñar</button><button type="button" class="btn-sec" data-iapzno="${esc(b.id)}">Cancelar</button></div>
     </div>`;
   }
   async function pedirPizarraIA(plan, b, cont) {
+    const entrada = iaPzPend[b.id]; delete iaPzPend[b.id];
+    if (!entrada) { previaPizarraIA(plan, b, cont); return; }
+    const gen = iaPzGen[b.id] = (iaPzGen[b.id] || 0) + 1;
+    const vigente = () => iaPzGen[b.id] === gen && cont.isConnected;
     cont.innerHTML = `<p class="peq ia-espera">✨ Claude está diseñando la pizarra. Puede tardar un minuto…</p>`;
     let job;
     try {
-      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entradaPizarraIA(plan, b)) });
+      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entrada) });
       const j = await r.json().catch(() => ({}));
       if (r.status === 402) { SUS.modo = true; SUS.activa = false; cont.innerHTML = htmlInvitacion("Diseñar la pizarra con Claude"); return; }
       if (!r.ok || !j.job) throw new Error(j.error || "red");
       if (SUS.ia) SUS.ia.usadas++;
       job = j.job;
-    } catch (e) { cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido pedir el diseño. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
+    } catch (e) { if (vigente()) cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido pedir el diseño. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
     for (let i = 0; i < 80; i++) {
       await new Promise((ok) => setTimeout(ok, i < 5 ? 2000 : 3000));
-      if (!cont.isConnected) return;
+      if (!vigente()) return;
       let r;
       try { r = await (await fetch("/api/pizarra-ia?job=" + job, { cache: "no-store" })).json(); } catch (e) { continue; }
       if (r.estado === "pendiente") continue;
+      if (!vigente()) return;
       const jug = r.estado === "listo" && r.resultado ? sanJugada(r.resultado.jugada) : null;
       if (jug) { iaPizarras[b.id] = { jug: jug, txt: String(r.resultado.explicacion || "").slice(0, 600) }; pintarPizarraIA(plan, b, cont); return; }
       cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[r.error] || "Claude no ha podido diseñar la pizarra. Vuelve a intentarlo.")}</p>`;
       return;
     }
-    cont.innerHTML = `<p class="sin-puesto">El diseño está tardando demasiado. Vuelve a intentarlo.</p>`;
+    if (vigente()) cont.innerHTML = `<p class="sin-puesto">El diseño está tardando demasiado. Vuelve a intentarlo.</p>`;
   }
   function pintarPizarraIA(plan, b, cont) {
     const it = iaPizarras[b.id]; if (!it) { cont.innerHTML = ""; return; }
@@ -3177,10 +3186,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
-      if (d.iapz) { const b2 = bl(d.iapz); if (b2) previaPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapz}"]`)); return; }
+      if (d.iapz) { iaPzGen[d.iapz] = (iaPzGen[d.iapz] || 0) + 1; const b2 = bl(d.iapz); if (b2) previaPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapz}"]`)); return; }
       if (d.iapzok) { const b2 = bl(d.iapzok); if (b2) pedirPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzok}"]`)); return; }
       if (d.iapzaplicar) { const b2 = bl(d.iapzaplicar); if (b2) aplicarPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzaplicar}"]`)); return; }
-      if (d.iapzno) { delete iaPizarras[d.iapzno]; const c = app.querySelector(`[data-r="iapz-${d.iapzno}"]`); if (c) c.innerHTML = ""; return; }
+      if (d.iapzno) { delete iaPizarras[d.iapzno]; delete iaPzPend[d.iapzno]; iaPzGen[d.iapzno] = (iaPzGen[d.iapzno] || 0) + 1; const c = app.querySelector(`[data-r="iapz-${d.iapzno}"]`); if (c) c.innerHTML = ""; return; }
       if (d.iapedir) { const b2 = bl(d.iapedir); if (b2) previaIA(plan, b2, app.querySelector(`[data-r="ia-${d.iapedir}"]`)); return; }
       if (d.iaconfirmar) { const b2 = bl(d.iaconfirmar); if (b2) pedirIA(plan, b2, app.querySelector(`[data-r="ia-${d.iaconfirmar}"]`)); return; }
       if (d.iaaplicar) { const b2 = bl(d.iaaplicar); if (b2) aplicarIA(plan, b2, app.querySelector(`[data-r="ia-${d.iaaplicar}"]`)); return; }
@@ -3257,6 +3266,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.b && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); }
+      if (b && iaPzPend[b.id]) { delete iaPzPend[b.id]; const c = app.querySelector(`[data-r="iapz-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Diseñar la pizarra con Claude» para revisar lo que se envía.</p>`; }
       if (b && iaPendiente[b.id]) { delete iaPendiente[b.id]; const c = app.querySelector(`[data-r="ia-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Sugerencias de Claude» para revisar lo que se envía.</p>`; }
       return;
     }
