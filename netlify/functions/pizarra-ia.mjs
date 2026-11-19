@@ -43,7 +43,8 @@ export default async (req) => {
 
   await store.setJSON("job/" + job, { estado: "pendiente", creado: Date.now(), entrada });
   // Lanza la función en segundo plano (responde 202 al momento).
-  const base = process.env.URL || new URL(req.url).origin;
+  // Mismo despliegue que ha recibido la petición (en una vista previa, la vista previa).
+  const base = new URL(req.url).origin;
   try {
     const r = await fetch(new URL("/.netlify/functions/pizarra-ia-fondo-background", base), { method: "POST", body: job });
     if (!r.ok && r.status !== 202) throw new Error("fondo " + r.status);
