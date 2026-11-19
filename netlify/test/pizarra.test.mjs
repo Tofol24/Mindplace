@@ -32,6 +32,9 @@ assert.equal(r2.status, 200);
 assert.equal(await r2.text(), datos);
 assert.equal(await store.get(lib.claveIndice(lib.caducidad(), id)), "", "índice de caducidad creado");
 
+// varias subidas seguidas (la cuota se actualiza con ETag)
+for (let i = 0; i < 3; i++) assert.equal((await post(datos)).status, 201, "subida seguida " + i);
+
 // entradas no válidas
 assert.equal((await post("")).status, 400);
 assert.equal((await post("corto")).status, 400);

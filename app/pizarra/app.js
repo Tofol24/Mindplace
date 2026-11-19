@@ -1747,16 +1747,18 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       url = o.largo();
     }
     if (cont.dataset.gen !== yo) return;
+    if (url.length > 12000) {
+      cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">El enlace largo sale de ${url.length} caracteres y se cortaría en el móvil. Envía un archivo, o marca menos planes.</p>`;
+      return;
+    }
     const txt = o.texto(url);
-    let copiado = false;
-    try { await navigator.clipboard.writeText(txt); copiado = true; } catch (e) { /* sin portapapeles */ }
-    if (cont.dataset.gen !== yo) return;
-    cont.innerHTML = `<p class="peq" style="margin-top:10px">${copiado ? "✅ Mensaje copiado. " : ""}${esc(o.indicacion)}</p>
+    cont.innerHTML = `<p class="peq" style="margin-top:10px">${esc(o.indicacion)}</p>
       <label class="sr-only" for="${o.idTxt}">Mensaje</label><textarea id="${o.idTxt}" rows="6" readonly>${esc(txt)}</textarea>
       <div class="fila">${navigator.share ? `<button type="button" class="btn" data-compartirya="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-copiarya="1">📋 Copiar</button></div>`;
     const bs = cont.querySelector("[data-compartirya]");
-    if (bs) bs.addEventListener("click", () => { navigator.share({ title: o.titulo, text: txt }).catch(() => {}); });
+    if (bs) bs.addEventListener("click", () => { if (cont.dataset.gen === yo) navigator.share({ title: o.titulo, text: txt }).catch(() => {}); });
     cont.querySelector("[data-copiarya]").addEventListener("click", () => {
+      if (cont.dataset.gen !== yo) return;
       const t = cont.querySelector("textarea"); t.focus(); t.select();
       (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast("Copiado"), () => { try { document.execCommand("copy"); toast("Copiado"); } catch (e) { /* nada */ } });
     });

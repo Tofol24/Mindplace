@@ -19,8 +19,6 @@ export default async (req) => {
   return new Response(r.data, { status: 200, headers: { ...CABECERAS, "Content-Type": "text/plain; charset=utf-8" } });
 };
 
-// Límite por IP en el borde de Netlify (la IP no se guarda en ningún sitio).
-export const config = {
-  path: "/api/pizarra",
-  rateLimit: { windowLimit: 120, windowSize: 60, aggregateBy: ["ip", "domain"] },
-};
+// Sin regla de límite propia: leer es barato (un 404 si el id no existe) y así no se supera
+// el número de reglas de límite del plan de Netlify. La subida sí tiene límite.
+export const config = { path: "/api/pizarra" };
