@@ -1,0 +1,23 @@
+# Pizarra del entrenador · sitio propio con suscripción (p. ej. pizarra.aprens.net)
+#
+# En Netlify: Add new site → Import an existing project → GitHub → Tofol24/Mindplace
+#   · Base directory:    pizarra-web      ← IMPRESCINDIBLE (lee ESTE netlify.toml)
+#   · El resto lo pone este archivo.
+# Variables de entorno: ver README.md de esta carpeta.
+#
+# La app es la misma que app/pizarra (no se duplica): al publicar, construir.mjs la copia a publico/.
+# Las funciones son envoltorios de netlify/functions y netlify/lib de la raíz del repositorio;
+# por eso se instalan también las dependencias de la raíz.
+[build]
+  publish = "publico"
+  command = "npm --prefix .. ci --omit=dev --no-audit --no-fund && node construir.mjs"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# La portada es la propia pizarra.
+[[redirects]]
+  from = "/"
+  to = "/pizarra/"
+  status = 302

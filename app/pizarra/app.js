@@ -258,6 +258,37 @@
     }, 250);
   }
 
+  // ---------------------------------------------------------------- suscripción (solo en el sitio de pago)
+  // En el sitio propio (p. ej. pizarra.aprens.net) /api/pizarra-config dice si los extras van con
+  // suscripción. En aprens-app esa ruta no existe y todo sigue libre, como siempre.
+  // Extras: enlaces cortos, ficha privada, cuaderno por enlace y sugerencias de Claude.
+  // Gratis: cuaderno, pizarra y archivos. El código se guarda solo en este navegador.
+  const SUS = { modo: false, activa: false, comprobado: false, codigo: "", plan: "", ia: null, altas: false, correo: false, portalLogin: "", manual: false, error: false };
+  try { SUS.codigo = localStorage.getItem("pz_codigo") || ""; } catch (e) { SUS.codigo = ""; }
+  const RE_CODIGO = /^[a-z0-9_-]{8,40}$/;
+  const cabCodigo = () => (SUS.codigo ? { "x-codigo": SUS.codigo } : {});
+  const extrasBloqueados = () => SUS.modo && !SUS.activa;
+  async function cargarSuscripcion() {
+    try {
+      const r = await fetch("/api/pizarra-config", { cache: "no-store", headers: cabCodigo() });
+      if (!r.ok || !/json/.test(r.headers.get("content-type") || "")) throw new Error("sin");
+      const c = await r.json();
+      SUS.modo = !!c.suscripcion; SUS.altas = !!c.altas; SUS.correo = !!c.correo;
+      SUS.portalLogin = /^https:\/\/billing\.stripe\.com\//.test(c.portalLogin || "") ? c.portalLogin : "";
+      const a = c.acceso || null;
+      SUS.activa = !!(a && a.activa); SUS.error = !!(a && a.error);
+      SUS.plan = SUS.activa ? String(a.plan || "") : ""; SUS.manual = !!(a && a.manual);
+      SUS.ia = SUS.activa && a.ia ? { usadas: Number(a.ia.usadas) || 0, limite: Number(a.ia.limite) || 0 } : null;
+    } catch (e) { SUS.modo = false; }
+    SUS.comprobado = true;
+    return SUS;
+  }
+  function htmlInvitacion(que) {
+    return `<div class="aviso-sus" role="status"><p><b>${esc(que)} forma parte de la suscripción de entrenador.</b></p>
+      <p class="peq">El cuaderno, la pizarra y el envío de archivos siguen siendo gratis. Mientras tanto, puedes enviar el plan como archivo.</p>
+      <div class="fila">${SUS.altas ? `<a class="btn" href="/suscribirse.html">Ver la suscripción</a>` : ""}<button type="button" class="btn-sec" data-susir="1">Ya tengo un código</button></div></div>`;
+  }
+
   // ---------------------------------------------------------------- plantillas de jugada
   const BASE_RIVAL_442 = [[34, 4], [58, 46], [42, 50], [26, 50], [10, 46], [60, 66], [42, 64], [26, 64], [8, 66], [42, 84], [26, 84]];
   function arr2map(pref, arr) { const m = {}; arr.forEach((p, i) => { if (p) m[pref + i] = p.slice(); }); return m; }
@@ -1610,6 +1641,31 @@
     return n;
   }
 
+  function htmlSuscripcion() {
+    const ia = SUS.ia ? (SUS.ia.limite ? `Sugerencias de Claude este mes: ${SUS.ia.usadas} de ${SUS.ia.limite}.` : `Sugerencias de Claude este mes: ${SUS.ia.usadas}.`) : "";
+    return `<h2 id="tuSuscripcion">Tu suscripción</h2>
+      <div class="tarjeta" data-r="sus">
+        ${SUS.activa ? `<p>✅ <b>Activa</b>${SUS.plan ? " · " + esc(SUS.plan) : ""}. Tienes los enlaces, las fichas privadas, el envío a otros entrenadores y las sugerencias de Claude.</p>
+          ${ia ? `<p class="peq">${esc(ia)}</p>` : ""}
+          <p class="peq">Código en este navegador: <b class="mono">${esc(SUS.codigo)}</b></p>
+          <div class="fila">
+            ${SUS.manual ? "" : SUS.correo ? `<button type="button" class="btn-sec" data-susgestionar="1">Gestionar (tarjeta, facturas, baja)</button>` : SUS.portalLogin ? `<a class="btn-sec" href="${esc(SUS.portalLogin)}" target="_blank" rel="noopener">Gestionar (tarjeta, facturas, baja)</a>` : ""}
+            <button type="button" class="btn-peq peligro" data-susquitar="1">Quitar el código de este navegador</button>
+          </div>`
+        : `<p>Lo básico es gratis: el cuaderno, la pizarra y enviar los planes como archivo. Con la suscripción de entrenador tienes además enlaces cortos para el grupo, la ficha privada de cada jugador, el envío del cuaderno a otro entrenador por enlace y sugerencias de Claude.</p>
+          ${SUS.codigo && !SUS.error ? `<p class="sin-puesto">El código guardado (${esc(SUS.codigo)}) no está activo. Revisa que esté bien escrito o que la suscripción siga en marcha.</p>` : ""}
+          ${SUS.error ? `<p class="sin-puesto">Ahora mismo no se puede comprobar el código. Prueba dentro de un rato.</p>` : ""}
+          <div class="campo-f"><label for="susCod">Código de acceso</label><input type="text" id="susCod" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40" value="${esc(SUS.codigo)}"></div>
+          <div class="fila">
+            <button type="button" class="btn" data-susguardar="1">Usar este código</button>
+            ${SUS.altas ? `<a class="btn-sec" href="/suscribirse.html">Suscribirme</a>` : ""}
+            ${SUS.correo ? `<a class="btn-sec" href="/recuperar.html">He perdido el código</a>` : ""}
+            ${SUS.codigo ? `<button type="button" class="btn-peq peligro" data-susquitar="1">Quitar el código</button>` : ""}
+          </div>`}
+        <div data-r="susMsg" role="status" aria-live="polite"></div>
+        <p class="peq"><a href="/condiciones.html" target="_blank" rel="noopener">Condiciones</a> · <a href="/privacidad.html" target="_blank" rel="noopener">Privacidad</a></p>
+      </div>`;
+  }
   function pantAjustes() {
     app.innerHTML = `
       <h1>Ajustes</h1>
@@ -1620,6 +1676,7 @@
           <span class="peq" style="font-weight:400">Adapta la ficha de cada jugador (físico, técnica y táctica) a su etapa de desarrollo.</span></div>
         <div class="campo-f"><label for="aCol">Color de nuestras fichas</label><input type="color" id="aCol" data-eq="color" value="${esc(db.equipo.color || "#C8102E")}" style="width:80px;height:44px;padding:2px"></div>
       </div>
+      ${SUS.modo ? htmlSuscripcion() : ""}
       <h2>Compartir con otro entrenador</h2>
       <div class="tarjeta">
         <p class="peq">Envía tu plantilla completa y los planes que marques a otro entrenador del equipo. Al abrir el enlace, se juntan con su cuaderno sin borrar nada: se añaden los jugadores y planes nuevos, y si un plan lo tenéis los dos, se queda la versión editada más tarde. Él puede hacer lo mismo para devolverte sus cambios.</p>
@@ -1811,7 +1868,8 @@
     const k = await crypto.subtle.importKey("raw", clave, "AES-GCM", false, ["encrypt"]);
     const cif = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, datos));
     const todo = new Uint8Array(iv.length + cif.length); todo.set(iv); todo.set(cif, iv.length);
-    const r = await fetch("/api/pizarra-subir", { method: "POST", body: b64u(todo), headers: { "Content-Type": "text/plain" } });
+    const r = await fetch("/api/pizarra-subir", { method: "POST", body: b64u(todo), headers: Object.assign({ "Content-Type": "text/plain" }, cabCodigo()) });
+    if (r.status === 402) { SUS.modo = true; SUS.activa = false; const e = new Error("suscripcion"); e.suscripcion = true; throw e; }
     if (!r.ok) throw new Error("servidor " + r.status);
     const j = await r.json();
     if (!j || !/^[A-Za-z0-9]{10}$/.test(j.id)) throw new Error("respuesta");
@@ -1931,11 +1989,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function invalidarEnvio(cont) { if (cont) { cont.dataset.gen = String(++envioGen); cont.innerHTML = ""; } }
   async function prepararEnvio(cont, o) {
     const yo = String(++envioGen); cont.dataset.gen = yo;
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion(o.extra || "Enviar enlaces"); return; }
     cont.innerHTML = `<p class="peq" style="margin-top:10px">Preparando el enlace…</p>`;
     let url;
     try { url = await o.corto(); }
     catch (e) {
       if (cont.dataset.gen !== yo) return;
+      if (e && e.suscripcion) { cont.innerHTML = htmlInvitacion(o.extra || "Enviar enlaces"); return; }
       if (!o.largo) {
         cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">No se ha podido crear el enlace privado (¿sin conexión?). Vuelve a intentarlo cuando tengas conexión.</p>`;
         return;
@@ -2049,7 +2109,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       corto: () => enlaceCorto(pq, false),
       largo: () => location.origin + location.pathname + "#c=" + codificar(pq),
       texto: (url) => "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url,
-      titulo: "Cuaderno de la pizarra", idTxt: "txtEntr",
+      titulo: "Cuaderno de la pizarra", idTxt: "txtEntr", extra: "Enviar el cuaderno por enlace",
       indicacion: "Envíalo por privado al otro entrenador, nunca al grupo de jugadores."
     });
   }
@@ -2279,7 +2339,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           corto: () => enlaceCorto(paqueteJugador(plan, j), true),
           largo: null, // una ficha privada nunca va sin cifrar
           texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha con lo que te digo como entrenador: tus puntos fuertes y lo que estás aprendiendo. Es solo para ti:\n" + url,
-          titulo: "Tu ficha", idTxt: "txtNotas",
+          titulo: "Tu ficha", idTxt: "txtNotas", extra: "La ficha privada del jugador",
           indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
           contacto: {
             tels: [{ tel: j.tel, nom: j.nom1 }, { tel: j.tel2, nom: j.nom2 }].filter((x) => x.tel),
@@ -2355,6 +2415,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   const ERRORES_IA = {
     sin_clave: "Falta configurar la clave de Claude en Netlify (variable ANTHROPIC_API_KEY).",
     cuota: "Se ha llegado al máximo de consultas de hoy. Prueba mañana.",
+    cuota_mes: "Ya has usado todas las sugerencias de Claude de este mes. Se renuevan el día 1.",
+    servicio: "No se ha podido comprobar la suscripción. Prueba en unos minutos.",
     ocupado: "Claude está muy ocupado ahora mismo. Prueba en unos minutos.",
     clave: "La clave de Claude configurada en Netlify no es válida.",
     rechazo: "Claude no ha podido responder a esta consulta.",
@@ -2362,6 +2424,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   };
   const iaPendiente = {};
   function previaIA(plan, b, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir sugerencias a Claude"); return; }
     const prep = entradaIA(plan, b);
     iaPendiente[b.id] = prep;
     const entrada = prep.entrada;
@@ -2386,8 +2449,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     cont.innerHTML = `<p class="peq ia-espera">✨ Claude está preparando la propuesta. Puede tardar un minuto…</p>`;
     let job;
     try {
-      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entrada) });
+      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entrada) });
       const j = await r.json().catch(() => ({}));
+      if (r.status === 402) { SUS.modo = true; SUS.activa = false; cont.innerHTML = htmlInvitacion("Pedir sugerencias a Claude"); return; }
+      if (r.ok && SUS.ia) SUS.ia.usadas++;
       if (!r.ok || !j.job) throw new Error(j.error || "red");
       job = j.job;
     } catch (e) { cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido pedir la propuesta. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
@@ -2792,6 +2857,28 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       db.plantilla.push({ id: uid(), d: dd === "" ? 0 : +dd, n: nn, c: $("#nC").value.trim() || nn.split(" ")[0], p: $("#nP").value.trim(), mod: Date.now() });
       guardar(); pintarPantalla(); toast("Jugador añadido"); $("#nD").focus(); return;
     }
+    if (d.susguardar || d.susquitar) {
+      const v = d.susquitar ? "" : String($("#susCod").value || "").trim().toLowerCase().replace(/\s+/g, "");
+      if (d.susguardar && !RE_CODIGO.test(v)) { toast("Revisa el código: son letras y números, sin espacios"); return; }
+      if (d.susquitar && !window.confirm("¿Quitar el código de este navegador? La suscripción sigue igual y podrás volver a escribirlo.")) return;
+      SUS.codigo = v;
+      try { if (v) localStorage.setItem("pz_codigo", v); else localStorage.removeItem("pz_codigo"); } catch (e) { /* solo para esta visita */ }
+      b.disabled = true;
+      cargarSuscripcion().then(() => { pintarPantalla(); toast(!v ? "Código quitado" : SUS.activa ? "✅ Suscripción activa" : SUS.error ? "No se ha podido comprobar el código" : "Ese código no está activo"); const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); });
+      return;
+    }
+    if (d.susgestionar) {
+      const msg = app.querySelector('[data-r="susMsg"]');
+      b.disabled = true;
+      fetch("/api/pizarra-portal-enlace", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ codigo: SUS.codigo }) })
+        .then((r) => r.json().then((j) => ({ r: r, j: j }), () => ({ r: r, j: {} })))
+        .then(({ r, j }) => {
+          msg.innerHTML = r.ok ? `<p class="peq">📧 Te hemos enviado un enlace a ${esc(j.a || "tu correo")}. Sirve una vez y caduca en 30 minutos.</p>`
+            : `<p class="sin-puesto">${r.status === 429 ? "Ya has pedido varios enlaces hoy. Mira tu correo o prueba mañana." : "No se ha podido enviar el enlace. Prueba dentro de un rato."}</p>`;
+        }, () => { msg.innerHTML = `<p class="sin-puesto">Sin conexión. Prueba de nuevo cuando tengas internet.</p>`; })
+        .then(() => { b.disabled = false; });
+      return;
+    }
     if (d.jpegar) { const n = importarLista($("#pegar").value); pintarPantalla(); toast(n ? n + " jugador" + (n === 1 ? "" : "es") + " añadido" + (n === 1 ? "" : "s") : "No he encontrado líneas con dorsal y nombre"); return; }
     if (d.enventr || d.envarch) {
       const ids = $$("[data-envplan]", app).filter((x) => x.checked).map((x) => x.dataset.envplan);
@@ -3014,6 +3101,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(() => { /* sin service worker la pizarra funciona igual */ });
   }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-susir]"); if (!b) return;
+    $$("dialog").forEach((x) => { if (x.open) x.close(); });
+    ir("ajustes"); setTimeout(() => { const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); const c = $("#susCod"); if (c) c.focus(); }, 50);
+  });
+  cargarSuscripcion().then(() => { if (SUS.modo && estado.pant === "ajustes" && !$$("dialog").some((x) => x.open)) pintarPantalla(); });
   window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();

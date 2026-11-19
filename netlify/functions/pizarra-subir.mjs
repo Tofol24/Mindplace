@@ -1,6 +1,7 @@
 // POST /api/pizarra-subir · guarda el bloque cifrado de un enlace corto de la Pizarra
 // (cuerpo: texto en base64url) y devuelve { id }. Ver netlify/lib/pizarra.mjs.
 import { getStore } from "@netlify/blobs";
+import { SUBIDAS_DIA, USO, acceso, almacen, claveSubida, contar, obligatoria } from "../lib/pizarra-subs.mjs";
 import { CABECERAS, CUOTA_DIA, MAX_BYTES, caducidad, claveDato, claveIndice, datosValidos, dia, nuevoId } from "../lib/pizarra.mjs";
 
 // Reserva una subida en el tope global del día con escritura condicional (ETag):
@@ -31,6 +32,14 @@ export default async (req) => {
   try { datos = (await req.text()).trim(); } catch { return new Response(null, { status: 400, headers: CABECERAS }); }
   if (datos.length > MAX_BYTES) return new Response(null, { status: 413, headers: CABECERAS });
   if (!datosValidos(datos)) return new Response(null, { status: 400, headers: CABECERAS });
+
+  // Sitio de pago (PIZARRA_SUSCRIPCION=si): los enlaces cortos son de la suscripción.
+  if (obligatoria()) {
+    let a = null;
+    try { a = await acceso(req.headers.get("x-codigo")); } catch { return new Response(null, { status: 503, headers: { ...CABECERAS, "Retry-After": "5" } }); }
+    if (!a) return Response.json({ error: "suscripcion" }, { status: 402, headers: CABECERAS });
+    if (!(await contar(almacen(USO), claveSubida(a.huella), SUBIDAS_DIA)).ok) return new Response(null, { status: 429, headers: { ...CABECERAS, "Retry-After": "3600" } });
+  }
 
   const store = getStore({ name: "pizarra", consistency: "strong" });
   const ahora = Date.now();

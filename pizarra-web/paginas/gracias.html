@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gracias · Pizarra del entrenador</title>
+<link rel="icon" href="/entrenador/aprens-icona-192.png" type="image/png">
+<link rel="stylesheet" href="/suscripcion.css">
+</head>
+<body>
+<main>
+  <p class="marca"><a href="/pizarra/">⚽ Pizarra del entrenador</a></p>
+  <h1>Gracias por suscribirte</h1>
+  <div class="panel" id="caja" aria-live="polite"><p>Comprobando el pago…</p></div>
+</main>
+<script>
+"use strict";
+const caja = document.getElementById("caja");
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const id = new URLSearchParams(location.search).get("session_id") || "";
+history.replaceState(null, "", location.pathname);   // el identificador del pago no se queda en el historial
+async function pedir(intento) {
+  try {
+    const r = await fetch("/api/pizarra-codigo?session_id=" + encodeURIComponent(id), { cache: "no-store" });
+    const b = await r.json().catch(() => ({}));
+    if (r.status === 409 && intento < 10) { setTimeout(() => pedir(intento + 1), 2500); return; }
+    if (!r.ok || !b.codigo) throw new Error();
+    try { localStorage.setItem("pz_codigo", b.codigo); } catch (e) { /* se escribe a mano en Ajustes */ }
+    caja.innerHTML = `<p>Este es tu código de acceso:</p>
+      <p><span class="codigo">${esc(b.codigo)}</span></p>
+      <p>En este navegador ya queda puesto. En otro móvil u ordenador, ve a <b>Ajustes → Tu suscripción</b> y escríbelo.</p>
+      <p class="peq">${b.correo ? "También te lo hemos enviado por correo." : "Apúntalo o haz una captura: también aparecerá en las facturas de Stripe."}</p>
+      <div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a></div>`;
+  } catch (e) {
+    caja.innerHTML = `<p class="error">No hemos podido confirmar el pago desde aquí.</p><p>Si el cargo se ha hecho, el código te llegará por correo y aparecerá en la factura. Si no lo encuentras, escribe a <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>.</p><div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a></div>`;
+  }
+}
+if (/^cs_[A-Za-z0-9_]{10,200}$/.test(id)) pedir(0);
+else caja.innerHTML = '<p>No hay ningún pago que comprobar.</p><div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a></div>';
+</script>
+</body>
+</html>

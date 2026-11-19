@@ -1,0 +1,30 @@
+/* Pizarra del entrenador · páginas de la suscripción */
+:root { --fondo: #F4F2EC; --texto: #14281D; --suave: #4F5D53; --verde: #15803A; --borde: #D5D9D2; --panel: #fff; --error: #B42318; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 680px; margin: 0 auto; padding: 20px 16px 48px; }
+.marca { margin: 0 0 14px; font-weight: 800; }
+.marca a { color: var(--texto); text-decoration: none; }
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 6px 0 12px; }
+h2 { font-size: 1.15rem; margin: 26px 0 8px; }
+a { color: #0F5E2A; }
+.panel { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 18px; margin: 16px 0; }
+.peq { font-size: .9rem; color: var(--suave); }
+.etq { display: block; font-weight: 700; margin: 16px 0 6px; }
+.etq:first-child { margin-top: 0; }
+input[type=email], input[type=text] { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid #9AA39C; border-radius: 10px; min-height: 46px; }
+.check { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; }
+.check input { width: 22px; height: 22px; flex: none; margin-top: 2px; }
+.plan { display: block; border: 2px solid var(--borde); border-radius: 12px; padding: 12px 14px; margin: 8px 0; cursor: pointer; }
+.plan:has(input:checked) { border-color: var(--verde); }
+.plan .precio { display: block; font-size: 1.2rem; font-weight: 800; }
+.fila { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
+.btn, button.btn { display: inline-block; background: var(--verde); color: #fff; border: 0; border-radius: 999px; padding: 12px 20px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; min-height: 46px; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn.sec { background: #fff; color: var(--verde); border: 2px solid var(--verde); }
+.error { color: var(--error); font-weight: 600; }
+.codigo { display: inline-block; font-family: ui-monospace, Menlo, monospace; font-size: 1.7rem; letter-spacing: 3px; background: #EEF5F0; border: 2px dashed var(--verde); border-radius: 10px; padding: 10px 16px; margin: 6px 0; }
+.tabla { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .95rem; }
+.tabla th, .tabla td { text-align: left; border-bottom: 1px solid var(--borde); padding: 8px 6px; vertical-align: top; }
+.tabla th[scope=col] { font-size: .85rem; color: var(--suave); }
+.aviso { background: #FFF6DB; border: 1px solid #E8C55A; border-radius: 10px; padding: 10px 14px; }

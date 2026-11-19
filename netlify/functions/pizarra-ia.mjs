@@ -5,6 +5,7 @@
 // hace una función en segundo plano y la app pregunta por el resultado cada pocos segundos.
 import { getStore } from "@netlify/blobs";
 import { CABECERAS } from "../lib/pizarra.mjs";
+import { USO, acceso, almacen, claveIA, contar, descontar, obligatoria } from "../lib/pizarra-subs.mjs";
 import { CUOTA_DIA_IA, MAX_ENTRADA, RE_JOB, nuevoJob, sanearEntrada } from "../lib/pizarra-ia.mjs";
 
 const json = (o, status = 200) => Response.json(o, { status, headers: CABECERAS });
@@ -33,12 +34,23 @@ export default async (req) => {
   } catch { entrada = null; }
   if (!entrada) return json({ error: "entrada" }, 400);
 
+  // Sitio de pago: hace falta un código activo y se cuenta la consulta en el mes del código.
+  let claveMes = null;
+  if (obligatoria()) {
+    let a = null;
+    try { a = await acceso(req.headers.get("x-codigo")); } catch { return json({ error: "servicio" }, 503); }
+    if (!a) return json({ error: "suscripcion" }, 402);
+    claveMes = claveIA(a.huella);
+    if (!(await contar(almacen(USO), claveMes, a.ia)).ok) return json({ error: "cuota_mes" }, 429);
+  }
+  const devolver = () => claveMes ? descontar(almacen(USO), claveMes) : null;
+
   // Tope diario de consultas: cada consulta deja una clave propia cuota/<día>/<job>, así
   // ningún recuento se pierde (con peticiones simultáneas el tope puede pasarse por muy poco).
   const job = nuevoJob();
   const pref = "cuota/" + new Date().toISOString().slice(0, 10) + "/";
   const { blobs } = await store.list({ prefix: pref });
-  if (blobs.length >= CUOTA_DIA_IA) return json({ error: "cuota" }, 429);
+  if (blobs.length >= CUOTA_DIA_IA) { await devolver(); return json({ error: "cuota" }, 429); }
   await store.set(pref + job, "");
 
   await store.setJSON("job/" + job, { estado: "pendiente", creado: Date.now(), entrada });
@@ -50,6 +62,7 @@ export default async (req) => {
     if (!r.ok && r.status !== 202) throw new Error("fondo " + r.status);
   } catch {
     await store.delete("job/" + job);
+    await devolver();
     return json({ error: "fondo" }, 502);
   }
   return json({ job }, 202);
