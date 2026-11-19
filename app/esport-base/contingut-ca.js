@@ -73,6 +73,8 @@ window.EPJ_TXT.ca = {
     entrenadorsD: "Situacions de banqueta i comunicació educativa.",
     quadernT: "El quadern de l'entrenador",
     quadernD: "Seguiment setmanal de l'equip: objectius, entrevista breu i tendències.",
+    espaiT: "Espai per a entrenadors i entrenadores",
+    espaiD: "La pissarra tàctica i dinàmiques perquè els jugadors trobin en què s'han de fixar.",
     setmanalT: "El meu compromís com a acompanyant",
     setmanalD: "Un objectiu concret per a aquesta setmana."
   },
