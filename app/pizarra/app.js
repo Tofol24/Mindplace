@@ -1956,7 +1956,7 @@
           ${db.planes.length ? db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map((p) => `<label><input type="checkbox" data-envplan="${esc(p.id)}" checked> ${esc(p.titulo || "(sin título)")} <span class="peq">· ${esc(fechaBonita(p.fecha))}</span></label>`).join("") : `<p class="peq">Aún no hay planes; se enviará solo la plantilla.</p>`}
         </fieldset>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
-        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas y los contactos de los jugadores (teléfono y correo)</label>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas, los contactos de los jugadores (teléfono y correo) y los feedbacks de las sesiones</label>
         <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
           <button type="button" class="btn" data-envarch="1">📎 Enviar archivo a otro entrenador</button>
@@ -2318,7 +2318,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // ---------------------------------------------------------------- compartir entre entrenadores
   function paqueteEntrenador(ids, sinApellidos) {
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
-    const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => { const c = clon(p); delete c.sinNombres; return c; });
+    const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => {
+      const c = clon(p); delete c.sinNombres;
+      if (!conNotas) { delete c.fbn; delete c.fbr; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
+      return c;
+    });
     const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
@@ -2832,8 +2836,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   function historialIA(excluir, max) {
     return planesConFeedback(excluir).slice(0, max || 8).map((p) => ({
-      fecha: p.fecha, tipo: p.tipo, titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo), nota: quitarNombres(p.fbn), resultado: p.fbr || "",
-      bloques: p.bloques.map((b) => ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 600), fase: FASE_CORTA[b.fase] || "",
+      fecha: p.fecha, tipo: p.tipo, titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo).slice(0, 300), nota: quitarNombres(p.fbn), resultado: quitarNombres(p.fbr),
+      // solo los apartados con feedback (y como mucho 12): así la consulta no crece sin límite
+      bloques: p.bloques.filter((b) => b.fb).slice(0, 12).map((b) => ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
         fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond),
         como: b.fb && b.fb.c ? ["", "costó", "regular", "bien"][b.fb.c] : "", estimulos: b.fb && b.fb.a ? ["", "no", "a veces", "sí"][b.fb.a] : "", nota: quitarNombres(b.fb && b.fb.n) }))
     }));
@@ -2866,6 +2871,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   // Consulta genérica a /api/pizarra-ia con vigencia: una respuesta antigua no pisa una nueva.
   const iaFbGen = {}, iaFbPend = {}, iaFbRes = {};
+  let iaFbMin = 0;
   async function consultaIA(clave, entrada, cont, espera, alListo) {
     const gen = iaFbGen[clave] = (iaFbGen[clave] || 0) + 1;
     const vigente = () => iaFbGen[clave] === gen && cont.isConnected;
@@ -2908,6 +2914,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     ${x.condicion ? `<p><b>🥅 Condición:</b> ${esc(x.condicion)}</p>` : ""}`;
 
   // ----- alternativas de un ejercicio
+  // Las notas y textos libres que se enviarán, para revisarlos antes de confirmar.
+  function htmlNotasEnvio(h, extra) {
+    const t = (extra || []).filter(Boolean);
+    h.forEach((p) => { [p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(fechaBonita(p.fecha) + " · " + x)); p.bloques.forEach((x) => { if (x.nota) t.push(fechaBonita(p.fecha) + " · " + x.titulo + ": " + x.nota); }); });
+    return t.length ? `<details class="det"><summary>Notas que se envían (${t.length}): revísalas</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
+  }
   function previaAlternativas(plan, b, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir alternativas a Claude"); return; }
     const fb = b.fb || {};
@@ -2921,8 +2933,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <h3>✨ Alternativas con Claude</h3>
       <p class="peq">Claude busca los estímulos relevantes y los objetivos de este ejercicio y propone variantes parecidas, teniendo en cuenta cómo ha ido${entrada.historial.length ? " y la memoria del equipo (" + entrada.historial.length + " sesiones)" : ""}. Se envía sin nombres: la ficha del apartado${fb.c || fb.a || fb.n ? ", su feedback" : ""}${entrada.historial.length ? " y los feedbacks recientes" : ""}. Revisa que las notas no lleven datos personales.</p>
       ${fb.c || fb.a || fb.n ? `<p class="peq"><b>Feedback:</b> ${esc([entrada.bloque.como && "ha ido " + entrada.bloque.como, entrada.bloque.estimulos && "estímulos: " + entrada.bloque.estimulos, entrada.bloque.nota].filter(Boolean).join(" · "))}</p>` : `<p class="peq">Este apartado aún no tiene feedback: rellénalo en «📝 Cómo ha ido» para que las alternativas sean más ajustadas.</p>`}
+      ${htmlNotasEnvio(entrada.historial, [entrada.bloque.nota && "Este apartado: " + entrada.bloque.nota])}
       <div class="fila"><button type="button" class="btn" data-altok="${esc(b.id)}">Pedir alternativas</button><button type="button" class="btn-sec" data-altno="${esc(b.id)}">Cancelar</button></div>
     </div>`;
+  }
+  function invalidarAlt(bid) {
+    if (!iaFbPend["alt" + bid]) return;
+    delete iaFbPend["alt" + bid];
+    const c = app.querySelector(`[data-r="iaalt-${bid}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el feedback: vuelve a pulsar «Alternativas con Claude» para revisar lo que se envía.</p>`;
   }
   function pedirAlternativas(plan, b, cont) {
     const entrada = iaFbPend["alt" + b.id]; delete iaFbPend["alt" + b.id];
@@ -2965,12 +2983,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     iaFbPend.ent = entrada;
     cont.innerHTML = `<div class="ia-propuesta">
       <p class="peq">Se envían a Claude (Anthropic), sin nombres, los planes y los feedbacks de las últimas ${h.length} sesiones${entrada.quiero ? " y lo que quieres trabajar" : ""}. Revisa que las notas no lleven datos personales.</p>
+      ${htmlNotasEnvio(h, [entrada.quiero && "Qué quieres trabajar: " + entrada.quiero])}
       <div class="fila"><button type="button" class="btn" data-entok="1">Proponer</button><button type="button" class="btn-sec" data-entno="1">Cancelar</button></div>
     </div>`;
   }
   function pedirEntreno(cont) {
     const entrada = iaFbPend.ent; delete iaFbPend.ent;
     if (!entrada) { previaEntreno(cont); return; }
+    iaFbMin = entrada.minutos;
     consultaIA("ent", entrada, cont, "Claude está preparando el entreno.", (r) => pintarEntreno(cont, r));
   }
   function pintarEntreno(cont, r) {
@@ -2979,7 +2999,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <h3>✨ ${esc(r.titulo || "Próximo entreno")}</h3>
       ${r.analisis ? `<p><b>Por qué:</b> ${esc(r.analisis)}</p>` : ""}
       ${r.objetivo ? `<p><b>Objetivo:</b> ${esc(r.objetivo)}</p>` : ""}
-      <p class="peq">${r.bloques.length} apartados${min ? " · " + min + " min" : ""}</p>
+      <p class="peq">${r.bloques.length} apartados${min ? " · " + min + " min" : ""}${iaFbMin && min && Math.abs(min - iaFbMin) > 10 ? ` (pediste ${iaFbMin}: ajusta los minutos al crearlo)` : ""}</p>
       ${r.bloques.map((x, i) => `<details class="det"${i === 0 ? " open" : ""}><summary>${i + 1}. ${esc(x.titulo)}${x.minutos ? " · " + esc(x.minutos) + "'" : ""}</summary>${htmlPropuesta(x)}</details>`).join("")}
       <div class="fila"><button type="button" class="btn" data-entcrear="1">Crear este entreno</button><button type="button" class="btn-sec" data-entno="1">Descartar</button></div>
       <p class="peq">Se crea como un entreno nuevo con fecha de hoy. Después puedes cambiar lo que quieras y diseñar cada pizarra.</p>
@@ -3378,6 +3398,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.dup) {
       const o = db.planes.find((x) => x.id === d.dup); if (!o) return;
       const c = clon(o); c.id = uid(); c.mod = Date.now(); c.titulo = (c.titulo || "") + " (copia)"; c.fecha = hoyISO();
+      delete c.fbn; delete c.fbr; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
       c.bloques.forEach((x) => { x.id = uid(); });
       db.planes.push(c); guardar(); return ir("plan", { planId: c.id });
     }
@@ -3410,7 +3431,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         const v = +d.v; b2.fb = b2.fb || {};
         if (b2.fb[d.fb] === v) delete b2.fb[d.fb]; else b2.fb[d.fb] = v;
         if (!Object.keys(b2.fb).length) delete b2.fb;
-        plan.mod = Date.now(); guardar();
+        plan.mod = Date.now(); guardar(); invalidarAlt(b2.id);
         $$(`[data-fb="${d.fb}"][data-bid="${d.bid}"]`, app).forEach((x) => x.setAttribute("aria-pressed", String(!!b2.fb && b2.fb[d.fb] === +x.dataset.v)));
         return;
       }
@@ -3494,7 +3515,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const b2 = plan.bloques.find((x) => x.id === d.fbn); if (!b2) return;
       b2.fb = b2.fb || {}; if (t.value) b2.fb.n = t.value; else delete b2.fb.n;
       if (!Object.keys(b2.fb).length) delete b2.fb;
-      plan.mod = Date.now(); guardar(); return;
+      plan.mod = Date.now(); guardar(); invalidarAlt(b2.id); return;
     }
     if ((t.id === "entQuiero" || t.id === "entMin") && iaFbPend.ent) { delete iaFbPend.ent; const c = app.querySelector('[data-r="iaent"]'); if (c) c.innerHTML = ""; }
     if (d.p && plan && d.p !== "sistema") {
