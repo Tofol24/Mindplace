@@ -60,9 +60,12 @@ export async function checkout(req) {
     "metadata[inicio_inmediato]": "solicitado; desistimiento con descuento proporcional"
   };
   if (email) form.customer_email = email;
+  // Vínculo con este navegador: la página de «gracias» solo muestra el código si lo trae. Si no, llega por correo.
+  const vinculo = token();
+  form["metadata[vinculo]"] = await huella("v:" + vinculo);
   try {
     const s = await stripe("checkout/sessions", { method: "POST", form });
-    return json(200, { url: s.url });
+    return json(200, { url: s.url }, { "set-cookie": "pz_pago=" + vinculo + "; Path=/api/pizarra-codigo; Max-Age=86400; HttpOnly; Secure; SameSite=Lax" });
   } catch {
     return json(502, { error: "stripe" });
   }
@@ -76,6 +79,8 @@ export async function codigo(req) {
   try {
     const s = await stripe("checkout/sessions/" + id + "?expand[]=subscription");
     if (s.metadata?.app !== APP) return json(404, { error: "sesion" });
+    const galleta = /(?:^|;\s*)pz_pago=([A-Za-z0-9_-]{20,64})/.exec(req.headers.get("cookie") || "");
+    if (!galleta || !s.metadata?.vinculo || (await huella("v:" + galleta[1])) !== s.metadata.vinculo) return json(403, { error: "otro_navegador" });
     if (s.status !== "complete" || !["paid", "no_payment_required"].includes(s.payment_status) || !s.subscription) return json(409, { error: "pendiente" });
     const sub = typeof s.subscription === "string" ? await stripe("subscriptions/" + s.subscription) : s.subscription;
     const info = subInfo(sub);
@@ -214,16 +219,16 @@ export async function recuperar(req, context) {
         const e = porCorreo.get(c.email) || { codes: [], customers: [] };
         for (const s of (await stripe("subscriptions?status=all&limit=20&customer=" + c.id)).data || []) {
           if (!esNuestra(s)) continue;
-          const info = subInfo(s);
-          await guardarSub(st, info);
+          const rec = await guardarSub(st, subInfo(s));
+          if (!rec) continue;   // acabada hace más de 12 meses: no se recrea ni se indexa
           if (!e.customers.includes(c.id)) e.customers.push(c.id);
-          if (subActiva((await getJSON(st, "sub/" + info.id)) || info)) e.codes.push(await asegurarCodigo(st, info.id));
+          if (subActiva(rec)) e.codes.push(await asegurarCodigo(st, rec.id));
         }
         if (e.customers.length) porCorreo.set(c.email, e);
       }
       const origen = new URL(req.url).origin;
       for (const [to, { codes, customers }] of porCorreo) {
-        await indexarCorreo(st, to, customers[0]);
+        for (const customer of customers) await indexarCorreo(st, to, customer);
         const enlaces = [];
         for (const customer of customers.slice(0, 5)) {
           const t = token();

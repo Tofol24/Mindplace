@@ -25,6 +25,10 @@ async function pedir(intento) {
     const r = await fetch("/api/pizarra-codigo?session_id=" + encodeURIComponent(id), { cache: "no-store" });
     const b = await r.json().catch(() => ({}));
     if (r.status === 409 && intento < 10) { setTimeout(() => pedir(intento + 1), 2500); return; }
+    if (r.status === 403) {
+      caja.innerHTML = `<p>El pago se ha hecho bien. Por seguridad, el código solo se muestra en el navegador desde el que empezaste el pago: <b>te lo hemos enviado por correo</b>. Mira también la carpeta de correo no deseado.</p><div class="fila"><a class="btn" href="/pizarra/">Abrir la pizarra</a><a class="btn sec" href="/recuperar.html">No me ha llegado</a></div>`;
+      return;
+    }
     if (!r.ok || !b.codigo) throw new Error();
     try { localStorage.setItem("pz_codigo", b.codigo); } catch (e) { /* se escribe a mano en Ajustes */ }
     caja.innerHTML = `<p>Este es tu código de acceso:</p>

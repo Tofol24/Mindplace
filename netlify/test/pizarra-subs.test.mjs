@@ -12,7 +12,7 @@ process.env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify({ siteID: "s", to
 Object.assign(process.env, {
   STRIPE_SECRET_KEY: "sk_test_x", STRIPE_WEBHOOK_SECRET: "whsec_x", PIZARRA_PLANES: "Entrenador|price_A1|3|4,99 € al mes",
   PIZARRA_TEXTOS_LEGALES: "revisados", PIZARRA_STRIPE_PORTAL_LOGIN: "https://billing.stripe.com/p/login/abc",
-  PIZARRA_CODIGOS: "manual1234:2", PIZARRA_SUSCRIPCION: "si"
+  PIZARRA_CODIGOS: "manual1234:2", PIZARRA_SUSCRIPCION: "si", RESEND_API_KEY: "re_x", PIZARRA_EMAIL_FROM: "Pizarra <p@x.es>"
 });
 const root = new URL("../..", import.meta.url).pathname;
 const lib = await import(root + "/netlify/lib/pizarra-subs.mjs");
@@ -22,7 +22,8 @@ const ia = (await import(root + "/netlify/functions/pizarra-ia.mjs")).default;
 
 // Stripe simulado
 const subs = { sub_1: { id: "sub_1", customer: "cus_1", status: "active", metadata: { app: "pizarra" }, items: { data: [{ price: { id: "price_A1" }, current_period_end: 2e9 }] } } };
-const llamadas = [];
+const llamadas = [], correos = [];
+let vinculo = "";
 const fetchReal = globalThis.fetch;
 globalThis.fetch = async (url, o = {}) => {
   const u = String(url);
@@ -30,11 +31,12 @@ globalThis.fetch = async (url, o = {}) => {
     const p = u.slice(26); llamadas.push([o.method || "GET", p, o.body || ""]);
     let r = {};
     if (p.startsWith("subscriptions/")) r = subs[p.slice(14)];
-    else if (p.startsWith("checkout/sessions/")) r = { status: "complete", payment_status: "paid", subscription: "sub_1", metadata: { app: "pizarra" } };
-    else if (p === "checkout/sessions") r = { url: "https://checkout.stripe.com/c/x" };
+    else if (p.startsWith("checkout/sessions/")) r = { status: "complete", payment_status: "paid", subscription: "sub_1", metadata: { app: "pizarra", vinculo } };
+    else if (p === "checkout/sessions") { vinculo = new URLSearchParams(o.body).get("metadata[vinculo]"); r = { url: "https://checkout.stripe.com/c/x" }; }
     else if (p.startsWith("customers/")) r = { id: "cus_1", email: "a@b.es", invoice_settings: { custom_fields: [] } };
     return new Response(JSON.stringify(r), { status: 200, headers: { "content-type": "application/json" } });
   }
+  if (u === "https://api.resend.com/emails") { correos.push(JSON.parse(o.body)); return new Response("{}", { status: 200 }); }
   if (u.includes("/.netlify/functions/pizarra-ia-fondo-background")) return new Response(null, { status: 202 });
   return fetchReal(url, o);
 };
@@ -52,9 +54,16 @@ const ck = await pago.checkout(new Request("https://p/x", { method: "POST", body
 assert.equal(ck.status, 200);
 assert.match(decodeURIComponent(llamadas.at(-1)[2]), /metadata\[app\]=pizarra/);
 
-// después de pagar: código (una sola vez aunque se pida dos veces)
-const r1 = await (await pago.codigo(new Request("https://p/api/pizarra-codigo?session_id=cs_test_1234567890"))).json();
-const r2 = await (await pago.codigo(new Request("https://p/api/pizarra-codigo?session_id=cs_test_1234567890"))).json();
+const galleta = ck.headers.get("set-cookie").split(";")[0];
+assert.match(galleta, /^pz_pago=[A-Za-z0-9_-]{20,}$/);
+
+// después de pagar: el código solo se muestra al navegador que empezó el pago, y una sola vez por correo
+const url = "https://p/api/pizarra-codigo?session_id=cs_test_1234567890";
+assert.equal((await pago.codigo(new Request(url))).status, 403);
+assert.equal((await pago.codigo(new Request(url, { headers: { cookie: "pz_pago=" + "x".repeat(32) } }))).status, 403);
+const r1 = await (await pago.codigo(new Request(url, { headers: { cookie: "otra=1; " + galleta } }))).json();
+const r2 = await (await pago.codigo(new Request(url, { headers: { cookie: galleta } }))).json();
+assert.equal(correos.length, 1); assert.ok(correos[0].text.includes(r1.codigo));
 assert.match(r1.codigo, /^[a-z2-9]{10}$/); assert.equal(r1.codigo, r2.codigo);
 const codigo = r1.codigo;
 c = await (await pago.config(new Request("https://p/x", { headers: { "x-codigo": codigo.toUpperCase() } }))).json();
@@ -95,6 +104,9 @@ assert.equal((await pago.webhook(new Request("https://p/x", { method: "POST", bo
 subs.sub_1 = { ...subs.sub_1, status: "canceled", ended_at: Math.floor(Date.now() / 1000) };
 assert.equal((await pago.webhook(new Request("https://p/x", { method: "POST", body: ev, headers: { "stripe-signature": await firmar(ev) } }))).status, 200);
 assert.equal(await lib.acceso(codigo), null);
+// una lectura antigua de Stripe («active») no reactiva la baja
+await lib.guardarSub(lib.almacen(lib.SUBS), { id: "sub_1", customer: "cus_1", status: "active", price: "price_A1" });
+assert.equal(await lib.acceso(codigo), null);
 assert.equal((await subir(new Request("https://p/api/pizarra-subir", { method: "POST", body: datos, headers: { "x-codigo": codigo } }))).status, 402);
 
 // impago: 3 días de margen
@@ -105,6 +117,10 @@ assert.equal(lib.subActiva({ status: "past_due", pastDueSince: 1000 }, 1000 + 4 
 delete process.env.PIZARRA_SUSCRIPCION;
 assert.equal((await subir(new Request("https://p/api/pizarra-subir", { method: "POST", body: datos }))).status, 201);
 
+// sin correo propio no hay altas (el código tiene que poder llegar siempre)
+process.env.RESEND_API_KEY = "";
+assert.equal((await (await pago.config(new Request("https://p/x"))).json()).altas, false);
+process.env.RESEND_API_KEY = "re_x";
 // sin textos legales revisados no hay altas
 process.env.PIZARRA_TEXTOS_LEGALES = "";
 c = await (await pago.config(new Request("https://p/x"))).json();

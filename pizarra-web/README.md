@@ -20,7 +20,7 @@ La app es la misma que `app/pizarra` (no se duplica). Este sitio la publica en s
      `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`,
      `customer.subscription.deleted` → copiar el secreto `whsec_…`.
    - Settings → Billing → Customer portal: activarlo (cancelar, cambiar tarjeta, ver facturas).
-     Si no usas correos propios, copia el enlace de acceso al portal (`https://billing.stripe.com/p/login/…`).
+     Opcional: copia el enlace de acceso al portal (`https://billing.stripe.com/p/login/…`).
 3. **Variables de entorno** del sitio nuevo (Site configuration → Environment variables):
 
 | Variable | Valor |
@@ -30,9 +30,9 @@ La app es la misma que `app/pizarra` (no se duplica). Este sitio la publica en s
 | `STRIPE_SECRET_KEY` | `sk_live_…` (o `sk_test_…` para probar) |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_…` |
 | `ANTHROPIC_API_KEY` | la clave de Claude |
-| `RESEND_API_KEY` + `PIZARRA_EMAIL_FROM` | opcional: correos con el código y enlaces de gestión (p. ej. `Pizarra <pizarra@aprens.net>`) |
+| `RESEND_API_KEY` + `PIZARRA_EMAIL_FROM` | **necesarias para abrir altas**: el código llega siempre por correo, y desde ahí se gestiona la suscripción (p. ej. `Pizarra <pizarra@aprens.net>`; el dominio tiene que estar verificado en Resend) |
 | `PIZARRA_EMAIL_REPLY` | opcional: correo de respuesta |
-| `PIZARRA_STRIPE_PORTAL_LOGIN` | si no hay Resend: el enlace de acceso al portal de Stripe |
+| `PIZARRA_STRIPE_PORTAL_LOGIN` | opcional: el enlace de acceso al portal de Stripe, como alternativa para gestionar |
 | `PIZARRA_CODIGOS` | opcional: códigos dados a mano, `codigo1234:300, otrocodigo99` (mínimo 8 caracteres; `:n` = sugerencias al mes) |
 | `PIZARRA_SECRETO` | opcional: una frase larga aleatoria para las huellas |
 | `PIZARRA_TEXTOS_LEGALES` | `revisados` **solo cuando hayas revisado** `condiciones.html` y `privacidad.html`. Sin esto no se abren altas. |

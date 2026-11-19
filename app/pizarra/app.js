@@ -1666,6 +1666,10 @@
         <p class="peq"><a href="/condiciones.html" target="_blank" rel="noopener">Condiciones</a> · <a href="/privacidad.html" target="_blank" rel="noopener">Privacidad</a></p>
       </div>`;
   }
+  function pintarSuscripcion() {
+    const c = app.querySelector('[data-r="susCaja"]'); if (!c) return false;
+    c.innerHTML = SUS.modo ? htmlSuscripcion() : ""; return true;
+  }
   function pantAjustes() {
     app.innerHTML = `
       <h1>Ajustes</h1>
@@ -1676,7 +1680,7 @@
           <span class="peq" style="font-weight:400">Adapta la ficha de cada jugador (físico, técnica y táctica) a su etapa de desarrollo.</span></div>
         <div class="campo-f"><label for="aCol">Color de nuestras fichas</label><input type="color" id="aCol" data-eq="color" value="${esc(db.equipo.color || "#C8102E")}" style="width:80px;height:44px;padding:2px"></div>
       </div>
-      ${SUS.modo ? htmlSuscripcion() : ""}
+      <div data-r="susCaja">${SUS.modo ? htmlSuscripcion() : ""}</div>
       <h2>Compartir con otro entrenador</h2>
       <div class="tarjeta">
         <p class="peq">Envía tu plantilla completa y los planes que marques a otro entrenador del equipo. Al abrir el enlace, se juntan con su cuaderno sin borrar nada: se añaden los jugadores y planes nuevos, y si un plan lo tenéis los dos, se queda la versión editada más tarde. Él puede hacer lo mismo para devolverte sus cambios.</p>
@@ -1870,7 +1874,7 @@
     const todo = new Uint8Array(iv.length + cif.length); todo.set(iv); todo.set(cif, iv.length);
     const r = await fetch("/api/pizarra-subir", { method: "POST", body: b64u(todo), headers: Object.assign({ "Content-Type": "text/plain" }, cabCodigo()) });
     if (r.status === 402) { SUS.modo = true; SUS.activa = false; const e = new Error("suscripcion"); e.suscripcion = true; throw e; }
-    if (!r.ok) throw new Error("servidor " + r.status);
+    if (!r.ok) { const e = new Error("servidor " + r.status); e.status = r.status; throw e; }
     const j = await r.json();
     if (!j || !/^[A-Za-z0-9]{10}$/.test(j.id)) throw new Error("respuesta");
     return location.origin + location.pathname + "#k=" + j.id + "." + b64u(clave);
@@ -1996,6 +2000,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     catch (e) {
       if (cont.dataset.gen !== yo) return;
       if (e && e.suscripcion) { cont.innerHTML = htmlInvitacion(o.extra || "Enviar enlaces"); return; }
+      // El servidor ha respondido (límite del día, mantenimiento…): no se ofrece el enlace sin cifrar.
+      if (e && e.status) {
+        cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">${e.status === 429 ? "Se ha llegado al máximo de enlaces por hoy." : "Ahora mismo no se puede crear el enlace."} Prueba más tarde, o envíalo como archivo.</p>`;
+        return;
+      }
       if (!o.largo) {
         cont.innerHTML = `<p class="sin-puesto" style="margin-top:10px">No se ha podido crear el enlace privado (¿sin conexión?). Vuelve a intentarlo cuando tengas conexión.</p>`;
         return;
@@ -2406,7 +2415,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       porJug: porJug,
       entrada: {
         etapa: E ? E.n + " (" + E.edad + ")" : "", tipo: plan.tipo, sistema: (SISTEMAS[plan.sistema] || {}).n || "",
-        objetivo: quitarNombres(plan.objetivo), clave: plan.clave || "",
+        objetivo: quitarNombres(plan.objetivo), clave: quitarNombres(plan.clave),
         bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas), fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando) },
         pasos: pasos, jugadores: jugadores
       }
@@ -2864,7 +2873,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       SUS.codigo = v;
       try { if (v) localStorage.setItem("pz_codigo", v); else localStorage.removeItem("pz_codigo"); } catch (e) { /* solo para esta visita */ }
       b.disabled = true;
-      cargarSuscripcion().then(() => { pintarPantalla(); toast(!v ? "Código quitado" : SUS.activa ? "✅ Suscripción activa" : SUS.error ? "No se ha podido comprobar el código" : "Ese código no está activo"); const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); });
+      cargarSuscripcion().then(() => { if (!pintarSuscripcion()) pintarPantalla(); toast(!v ? "Código quitado" : SUS.activa ? "✅ Suscripción activa" : SUS.error ? "No se ha podido comprobar el código" : "Ese código no está activo"); const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); });
       return;
     }
     if (d.susgestionar) {
@@ -3106,7 +3115,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     $$("dialog").forEach((x) => { if (x.open) x.close(); });
     ir("ajustes"); setTimeout(() => { const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); const c = $("#susCod"); if (c) c.focus(); }, 50);
   });
-  cargarSuscripcion().then(() => { if (SUS.modo && estado.pant === "ajustes" && !$$("dialog").some((x) => x.open)) pintarPantalla(); });
+  cargarSuscripcion().then(() => { if (estado.pant === "ajustes") pintarSuscripcion(); });
   window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();

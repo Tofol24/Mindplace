@@ -85,9 +85,9 @@ export const SUBIDAS_DIA = 200;   // enlaces cortos por código y día (contra a
 export const obligatoria = () => env("PIZARRA_SUSCRIPCION") === "si";
 export const portalLogin = () => { const u = String(env("PIZARRA_STRIPE_PORTAL_LOGIN")).trim(); return /^https:\/\/billing\.stripe\.com\/p\/login\/[A-Za-z0-9_]+$/.test(u) ? u : ""; };
 export const correoActivo = () => !!env("RESEND_API_KEY") && !!env("PIZARRA_EMAIL_FROM");
-// Las altas solo se abren con Stripe completo, planes, textos legales revisados y alguna forma de gestionar la suscripción.
+// Las altas solo se abren con Stripe completo, planes, textos legales revisados y correo propio (Resend).
 export const altasAbiertas = () => !!env("STRIPE_SECRET_KEY") && !!env("STRIPE_WEBHOOK_SECRET") && planes().length > 0
-  && env("PIZARRA_TEXTOS_LEGALES") === "revisados" && (correoActivo() || !!portalLogin());
+  && env("PIZARRA_TEXTOS_LEGALES") === "revisados" && correoActivo();   // el código llega siempre por correo: nadie paga y se queda sin él
 
 // Códigos dados a mano: "k7m2qpx4ab, r9tx4bm8cd:300". Mínimo 8 caracteres, para que no se puedan adivinar.
 export function codigosManuales() {
@@ -138,6 +138,7 @@ export const ACABADAS = ["canceled", "incomplete_expired"];
 export const GUARDAR_ACABADAS_MS = 365 * 86400 * 1000;
 export async function guardarSub(st, info) {
   return updateJSON(st, "sub/" + info.id, (cur) => {
+    if (cur && ACABADAS.includes(cur.status) && !ACABADAS.includes(info.status)) return undefined;   // lectura antigua de Stripe: no reactiva una baja
     const pastDueSince = info.status === "past_due" ? (cur?.pastDueSince || Math.floor(Date.now() / 1000)) : 0;
     const endedAt = ACABADAS.includes(info.status) ? (cur?.endedAt || info.endedAt || Date.now()) : 0;
     if (!cur && endedAt && Date.now() - endedAt > GUARDAR_ACABADAS_MS) return undefined;   // acabada hace más de 12 meses: no se recrea
@@ -268,9 +269,10 @@ export async function purgar(ahora = Date.now()) {
   await updateJSON(us, marca, (cur) => {
     mia = false;
     if (cur?.done || (cur?.start && ahora - cur.start < 15 * 60 * 1000)) return undefined;
-    mia = true; cursor = cur?.cursor || ""; return { start: ahora, cursor };
+    mia = true; return { start: ahora };
   });
   if (!mia) return false;
+  cursor = (await getJSON(us, "cursor-subs"))?.k || "";   // si una limpieza anterior no acabó, se sigue desde allí
   const t0 = Date.now(), tarde = () => { if (Date.now() - t0 > 20_000) throw new Error("tiempo"); };
   try {
     const { blobs: ub } = await us.list();
@@ -296,6 +298,8 @@ export async function purgar(ahora = Date.now()) {
       }
       cursor = key;
     }
+    cursor = "";
+    await us.delete("cursor-subs");
     const mails = sb.map((b) => b.key).filter((k) => k.startsWith("mail/"));
     for (const c of arr((await getJSON(us, "pendientes"))?.c)) {
       tarde();
@@ -307,10 +311,11 @@ export async function purgar(ahora = Date.now()) {
       }
       await updateJSON(us, "pendientes", (cur) => arr(cur?.c).includes(c) ? { c: arr(cur.c).filter((x) => x !== c) } : undefined);
     }
-    await us.set(marca, JSON.stringify({ start: ahora, cursor, done: Date.now() }));
+    await us.set(marca, JSON.stringify({ start: ahora, done: Date.now() }));
     return true;
   } catch (e) {
-    await us.set(marca, JSON.stringify({ cursor })).catch(() => {});
+    if (cursor) await us.set("cursor-subs", JSON.stringify({ k: cursor })).catch(() => {});
+    await us.delete(marca).catch(() => {});
     throw e;
   }
 }
