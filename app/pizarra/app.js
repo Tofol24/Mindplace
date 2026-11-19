@@ -68,6 +68,9 @@
     rondo: "Rondo 4 contra 2", transicion: "Transición tras robo (medio campo)", libre: "Pizarra en blanco (solo balón)"
   };
   const COLORES_DIB = [["#FFD23F", "amarillo"], ["#FF4FA3", "rosa"], ["#FF8A1F", "naranja"], ["#FFFFFF", "blanco"], ["#E11D2E", "rojo"], ["#3B82F6", "azul"]];
+  // Colores de peto para las fichas (por defecto, el color del equipo o el azul rival)
+  const PETOS = { rojo: "#C8102E", azul: "#2457C5", amarillo: "#F5C400", verde: "#15803A", naranja: "#F07800", blanco: "#F4F4F4", negro: "#1B1B1B", morado: "#7C3AED", rosa: "#E0458F", celeste: "#38BDF8", gris: "#8A8F98" };
+  const PETOS_CLAROS = new Set(["amarillo", "blanco", "celeste", "naranja", "rosa", "gris"]);
   const COLORES_CONO = { rojo: "#D7263D", azul: "#2457C5", amarillo: "#F5C400", naranja: "#FF7A00", blanco: "#F2F2F2" };
 
   // Claves por fase de juego y familia de puesto
@@ -168,10 +171,11 @@
     if (!g || !Array.isArray(g.fichas) || !Array.isArray(g.pasos)) return null;
     const fichas = [], ids = new Set();
     g.fichas.slice(0, MAX.fichas).forEach((f) => {
-      const id = idOk(f && f.id); if (!id || id === "_b" || ids.has(id) || !["a", "r", "c"].includes(f.eq)) return;
+      const id = idOk(f && f.id); if (!id || id === "_b" || ids.has(id) || !["a", "r", "c", "b"].includes(f.eq)) return;
       const o = { id: id, eq: f.eq };
       if (idOk(f.pj)) o.pj = f.pj;
       if (f.eq === "c") { o.forma = f.forma === "chino" ? "chino" : "cono"; o.col = own(COLORES_CONO, f.col) ? f.col : "amarillo"; }
+      if ((f.eq === "a" || f.eq === "r") && own(PETOS, f.peto)) o.peto = f.peto;
       ids.add(id); fichas.push(o);
     });
     const pasos = g.pasos.slice(0, MAX.pasos).map((p) => {
@@ -412,7 +416,7 @@
         return l[0] || null;
       },
       info(f) {
-        if (f.eq === "c") return { cono: true, nombre: "Cono", corto: "", dorsal: "" };
+        if (f.eq === "c" || f.eq === "b") return { cono: true, nombre: f.eq === "b" ? "Balón" : "Cono", corto: "", dorsal: "" };
         const pid = this.pidDe(f);
         const j = pid ? porId[pid] : null;
         let rol = "", fam = "", cod = "";
@@ -475,7 +479,7 @@
     if (!yo || !P[fid]) return [];
     const yoInfo = ctx.info(yo);
     const me = P[fid];
-    const vis = (f) => f.eq !== "c" && P[f.id];
+    const vis = (f) => f.eq !== "c" && f.eq !== "b" && P[f.id];
     const todos = jug.fichas.filter(vis);
     const eq = yo.eq;
     const comp = todos.filter((f) => f.eq === eq && f.id !== fid);
@@ -636,6 +640,7 @@
     let i = 0, sel = null, herr = "mover", color = "#FFD23F", bor = null, anim = null, selDib = -1;
     let hist = [], fut = [], mostrado = null, drag = null, reproduciendo = false, ultimaVoz = "";
     const colEq = { a: (db.equipo && db.equipo.color) || "#C8102E", r: "#2457C5" };
+    const colorFicha = (f) => (f.peto && PETOS[f.peto]) || colEq[f.eq];
     if (o.equipoColor) colEq.a = o.equipoColor;
 
     function fichaYo() {
@@ -691,12 +696,20 @@
           <div class="grupo"><span class="lbl">Añadir</span>
             <button type="button" class="btn-peq" data-a="masA">＋ Nuestro</button>
             <button type="button" class="btn-peq" data-a="masR">＋ Rival / peto</button>
+            <select data-r="petoNuevo" aria-label="Color del peto para las fichas que añadas" style="width:auto;min-height:36px;padding:4px 8px">
+              <option value="">Peto: color normal</option>${Object.keys(PETOS).map((k) => `<option value="${k}">Peto ${k}</option>`).join("")}
+            </select>
+            <button type="button" class="btn-peq" data-a="masB">⚽ ＋ Balón</button>
             <select data-r="conoCol" aria-label="Color del cono" style="width:auto;min-height:36px;padding:4px 8px">
               ${Object.keys(COLORES_CONO).map((k) => `<option value="${k}">${k}</option>`).join("")}
             </select>
             <button type="button" class="btn-peq" data-a="masCono">▲ Cono</button>
             <button type="button" class="btn-peq" data-a="masChino">◖ Chino</button>
           </div>
+          <div class="grupo"><span class="lbl">Jugadores</span>
+            <button type="button" class="btn-peq" data-a="asignar" aria-expanded="false">👥 Asignar jugadores y colores</button>
+          </div>
+          <div class="asignar" data-r="asignar" hidden></div>
           <div class="grupo"><span class="lbl">Ver</span>
             <select data-r="tam" aria-label="Tamaño de las fichas" style="width:auto;min-height:36px;padding:4px 8px">
               <option value="p">Fichas pequeñas</option><option value="m">Fichas normales</option><option value="g">Fichas grandes</option>
@@ -758,7 +771,7 @@
         jug.fichas.forEach((f) => {
           if (!visible(f) || f.eq === "c") return;
           const a = prev.pos[f.id], b = p.pos[f.id];
-          if (a && b && dist(a, b) > 1.5) s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${f.eq === "a" ? "#fff" : "#BFD4FF"}" stroke-width="0.35" stroke-dasharray="1 0.8" stroke-opacity="0.85" marker-end="url(#fl-${uidM})"/>`;
+          if (a && b && dist(a, b) > 1.5) s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${f.eq === "b" ? "#FFD23F" : f.eq === "a" ? "#fff" : "#BFD4FF"}" stroke-width="0.35" stroke-dasharray="1 0.8" stroke-opacity="0.85" marker-end="url(#fl-${uidM})"/>`;
         });
         if (dist(prev.b, p.b) > 1.5) s += `<line x1="${prev.b[0]}" y1="${prev.b[1]}" x2="${p.b[0]}" y2="${p.b[1]}" stroke="#FFD23F" stroke-width="0.45" stroke-dasharray="1.4 0.9" marker-end="url(#flb-${uidM})"/>`;
       }
@@ -772,9 +785,9 @@
       });
       const yoId = fichaYo();
       jug.fichas.forEach((f) => {
-        if (f.eq === "c" || !visible(f) || !P[f.id]) return;
+        if (f.eq === "c" || f.eq === "b" || !visible(f) || !P[f.id]) return;
         const [x, y] = P[f.id], inf = ctx.info(f);
-        const col = colEq[f.eq];
+        const col = colorFicha(f), claro = PETOS_CLAROS.has(f.peto);
         const num = inf.dorsal || inf.cod || "";
         const fs = (num.length > 2 ? 1.5 : 2.1) * T;
         const etiqueta = (inf.corto && inf.corto !== num ? inf.corto : "") + (inf.otros && inf.otros.length ? " +" + inf.otros.length : "");
@@ -783,9 +796,16 @@
         if (yoId === f.id) s += `<circle cx="${x}" cy="${y}" r="${3.7 * T}" fill="rgba(255,210,63,.35)" stroke="#FFD23F" stroke-width="0.35"/>`;
         if (sel === f.id) s += `<circle cx="${x}" cy="${y}" r="${3.2 * T}" fill="none" stroke="#FFD23F" stroke-width="0.55"/>`;
         s += `<circle cx="${x}" cy="${y}" r="${2.35 * T}" fill="${col}" stroke="#fff" stroke-width="${0.4 * Math.min(1, T + 0.2)}"/>`;
-        s += `<text x="${x}" y="${y + fs * 0.36}" font-size="${fs}" font-weight="800" fill="#fff" text-anchor="middle">${esc(num)}</text>`;
+        s += `<text x="${x}" y="${y + fs * 0.36}" font-size="${fs}" font-weight="800" fill="${claro ? "#111" : "#fff"}" text-anchor="middle">${esc(num)}</text>`;
         if (etiqueta) s += `<text x="${x}" y="${y + 2.35 * T + 2.2 * Math.max(0.8, T)}" font-size="${1.9 * Math.max(0.8, T)}" font-weight="700" fill="#fff" text-anchor="middle" stroke="#0C2414" stroke-width="0.45" paint-order="stroke">${esc(etiqueta.slice(0, 14))}</text>`;
         s += `</g>`;
+      });
+      // balones extra (ejercicios con varios balones)
+      const rb = 1.15 * Math.max(0.8, T), rn = 0.42 * Math.max(0.8, T);
+      jug.fichas.forEach((f) => {
+        if (f.eq !== "b" || !P[f.id]) return;
+        const [x, y] = P[f.id];
+        s += `<g class="ficha" data-id="${f.id}" ${ed ? `tabindex="0" role="button" aria-label="Balón"` : ""}><circle cx="${x}" cy="${y}" r="${rb}" fill="#fff" stroke="#111" stroke-width="0.25"/><circle cx="${x}" cy="${y}" r="${rn}" fill="#111"/>${sel === f.id ? `<circle cx="${x}" cy="${y}" r="${rb + 0.9}" fill="none" stroke="#FFD23F" stroke-width="0.4"/>` : ""}</g>`;
       });
       const b = P._b;
       s += `<g class="ficha" data-id="_b" ${ed ? `tabindex="0" role="button" aria-label="Balón"` : ""}><circle cx="${b[0]}" cy="${b[1]}" r="${1.15 * Math.max(0.8, T)}" fill="#fff" stroke="#111" stroke-width="0.25"/><circle cx="${b[0]}" cy="${b[1]}" r="${0.42 * Math.max(0.8, T)}" fill="#111"/></g>`;
@@ -824,7 +844,7 @@
 
     function ponerBurbuja(P) {
       const f = sel && jug.fichas.find((x) => x.id === sel);
-      if (!burbujasVisibles() || !f || f.eq === "c" || !P[sel] || !visible(f)) { burb.hidden = true; return; }
+      if (!burbujasVisibles() || !f || f.eq === "c" || f.eq === "b" || !P[sel] || !visible(f)) { burb.hidden = true; return; }
       const tips = (paso().tips || {})[sel] || {};
       let txt = tips.m;
       if (!txt) {
@@ -847,6 +867,58 @@
       burb.hidden = false;
     }
 
+    // ----- asignar jugadores y colores a todas las fichas del ejercicio
+    function pintarAsignar() {
+      const cont = R("asignar"); if (!cont || cont.hidden) return;
+      // conserva lo que ya estaba marcado para añadir al repintar
+      const marcados = new Set($$("[data-asignuevo]", cont).filter((x) => x.checked).map((x) => x.dataset.asignuevo));
+      const eqPrev = R("asEq") ? R("asEq").value : "a", petoPrev = R("asPeto") ? R("asPeto").value : "";
+      const fichas = jug.fichas.filter((f) => f.eq === "a" || f.eq === "r");
+      const pl = ctx.jugadores.slice().sort((a, b) => a.d - b.d);
+      const usados = new Set(); fichas.forEach((f) => ctx.pidsDe(f).forEach((x) => usados.add(x)));
+      const libres = pl.filter((j) => !usados.has(j.id));
+      const opPetos = (f) => `<option value="">${f.eq === "a" ? "Color del equipo" : "Azul (rival)"}</option>` + Object.keys(PETOS).map((k) => `<option value="${k}" ${f.peto === k ? "selected" : ""}>${k}</option>`).join("");
+      cont.innerHTML = `
+        <p class="peq">Pon a cada ficha un jugador de la plantilla (sale con su dorsal y nombre) y el color de su peto para hacer los equipos del ejercicio.</p>
+        <table class="tabla-asig"><thead><tr><th scope="col">Ficha</th><th scope="col">Jugador</th><th scope="col">Peto</th></tr></thead><tbody>
+        ${fichas.map((f) => {
+          const inf = ctx.info(f), col = colorFicha(f), pid = ctx.pidsDe(f)[0] || "";
+          return `<tr><td><span class="dorsal mini" style="background:${col};${PETOS_CLAROS.has(f.peto) ? "color:#111;" : ""}">${esc(inf.dorsal || inf.cod || "·")}</span></td>
+            <td><label class="sr-only" for="as-j-${f.id}">Jugador de la ficha ${esc(inf.cod || f.id)}</label><select id="as-j-${f.id}" data-asigpj="${f.id}"><option value="">${f.eq === "r" ? "Sin nombre" : "Sin asignar"}</option>${pl.map((j) => `<option value="${esc(j.id)}" ${pid === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("")}</select></td>
+            <td><label class="sr-only" for="as-p-${f.id}">Peto de la ficha ${esc(inf.cod || f.id)}</label><select id="as-p-${f.id}" data-asigpeto="${f.id}">${opPetos(f)}</select></td></tr>`;
+        }).join("")}
+        </tbody></table>
+        ${libres.length ? `<div class="asig-nuevos"><p class="subtit">Añadir jugadores que aún no están</p>
+          <div class="asig-lista">${libres.map((j) => `<label><input type="checkbox" data-asignuevo="${esc(j.id)}" ${marcados.has(j.id) ? "checked" : ""}> ${esc(j.d)} · ${esc(j.c || j.n)}</label>`).join("")}</div>
+          <div class="fila">
+            <label class="sr-only" for="asEq">Equipo</label><select id="asEq" data-r="asEq" style="width:auto"><option value="a">Con nuestro equipo</option><option value="r" ${eqPrev === "r" ? "selected" : ""}>Con el otro equipo</option></select>
+            <label class="sr-only" for="asPeto">Peto</label><select id="asPeto" data-r="asPeto" style="width:auto"><option value="">Peto: color normal</option>${Object.keys(PETOS).map((k) => `<option value="${k}" ${petoPrev === k ? "selected" : ""}>Peto ${k}</option>`).join("")}</select>
+            <button type="button" class="btn-peq" data-a="asignarTodos">Marcar todos</button>
+            <button type="button" class="btn-peq" data-a="anadirSel" style="background:var(--verde);color:#fff">＋ Añadir seleccionados</button>
+          </div></div>` : `<p class="peq">Todos los jugadores de la plantilla ya tienen ficha en este ejercicio.</p>`}`;
+    }
+    function anadirSeleccionados() {
+      const cont = R("asignar");
+      const ids = $$("[data-asignuevo]", cont).filter((x) => x.checked).map((x) => x.dataset.asignuevo);
+      if (!ids.length) { toast("Marca los jugadores que quieres añadir"); return; }
+      if (jug.fichas.length + ids.length > MAX.fichas) { toast("No caben tantas fichas"); return; }
+      const eq = R("asEq").value === "r" ? "r" : "a", peto = R("asPeto").value;
+      snap();
+      const vb = VISTAS[jug.vista] || VISTAS.C;
+      const fila = eq === "a" ? vb[1] + vb[3] - 5 : vb[1] + 5; // en una fila, abajo o arriba
+      ids.forEach((pid, k) => {
+        const pref = eq === "a" ? "e" : "f";
+        let n = 1; while (jug.fichas.some((f) => f.id === pref + n)) n++;
+        const f = { id: pref + n, eq: eq, pj: pid };
+        if (own(PETOS, peto)) f.peto = peto;
+        jug.fichas.push(f);
+        const x = lim(4 + (k % 9) * 7.5, -4, 72), y = fila + (eq === "a" ? -1 : 1) * Math.floor(k / 9) * 6.5;
+        jug.pasos.forEach((p) => { p.pos[f.id] = [r05(x), r05(y)]; });
+      });
+      if (eq === "r") jug.rivales = true;
+      cambio(); pintarTodo(); pintarAsignar();
+      toast(ids.length + " jugador" + (ids.length === 1 ? "" : "es") + " añadido" + (ids.length === 1 ? "" : "s") + ": colócalos en el campo");
+    }
     function pintarInfo() {
       const p = paso();
       const tot = jug.pasos.length;
@@ -895,20 +967,25 @@
           : `<p class="peq"><b>Toca una ficha</b> para ver qué tiene que hacer ese jugador en cada paso: dónde está el balón, cómo perfilarse, en qué fijarse y cuándo moverse. Pulsa «Reproducir» para ver la jugada.</p>`;
         return;
       }
+      if (f.eq === "b") {
+        info.innerHTML = `<h3>⚽ Balón</h3>${ed ? `<p class="peq">Arrástralo para colocarlo. El balón principal (el que usan los mensajes) es el que estaba al crear la pizarra.</p><button type="button" class="btn-peq peligro" data-a="quitar">Quitar de la pizarra</button>` : ""}`;
+        return;
+      }
       if (f.eq === "c") {
         info.innerHTML = `<h3>${f.forma === "chino" ? "Chino" : "Cono"} ${esc(f.col)}</h3>${ed ? `<button type="button" class="btn-peq peligro" data-a="quitar">Quitar de la pizarra</button>` : ""}`;
         return;
       }
       const inf = ctx.info(f);
       const tips = (p.tips || {})[f.id] || {};
-      const col = colEq[f.eq];
-      let h = `<h3><span class="dorsal" style="background:${col}">${esc(inf.dorsal || inf.cod || "·")}</span>${esc(inf.nombre)}${inf.rol && !inf.rival ? ` <span class="peq">· ${esc(inf.rol)}</span>` : ""}</h3>`;
+      const col = colorFicha(f);
+      let h = `<h3><span class="dorsal" style="background:${col};${PETOS_CLAROS.has(f.peto) ? "color:#111;" : ""}">${esc(inf.dorsal || inf.cod || "·")}</span>${esc(inf.nombre)}${inf.rol && !inf.rival ? ` <span class="peq">· ${esc(inf.rol)}</span>` : ""}</h3>`;
       if (inf.otros && inf.otros.length) h += `<p class="peq">También en este puesto: ${inf.otros.map((x) => esc(x.d + " " + (x.c || x.n))).join(", ")}. Los mensajes valen para todos.</p>`;
       if (ed) {
         if (!inf.rival || f.pj || f.eq === "r") {
           const opts = ctx.jugadores.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${ctx.pidsDe(f)[0] === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("");
           h += `<div class="campo-f"><label for="selPj">Jugador en esta ficha${/^a\d+$/.test(f.id) ? " (cambia también el principal de la alineación)" : ""}</label><select id="selPj" data-pj><option value="">${f.eq === "r" ? "Rival sin nombre" : "Sin asignar"}</option>${opts}</select></div>`;
         }
+        h += `<div class="campo-f"><label for="selPeto">Color del peto</label><select id="selPeto" data-peto><option value="">${f.eq === "a" ? "Color del equipo" : "Azul (rival)"}</option>${Object.keys(PETOS).map((k) => `<option value="${k}" ${f.peto === k ? "selected" : ""}>${k}</option>`).join("")}</select></div>`;
         h += `<div class="tips-edit"><p class="subtit">Lo que le dices en este paso</p>
           <div class="campo-f"><label for="tpM">Qué hace / cómo se mueve</label><textarea id="tpM" data-tip="m" maxlength="300" placeholder="Ej.: Cuando el central controle, arranca a la espalda del lateral.">${esc(tips.m || "")}</textarea></div>
           <div class="campo-f"><label for="tpP">Perfil</label><textarea id="tpP" data-tip="p" maxlength="200" placeholder="Ej.: De lado, mirando al balón y a la portería rival.">${esc(tips.p || "")}</textarea></div>
@@ -940,7 +1017,7 @@
       }
     }
 
-    function pintarTodo() { pintarCampo(); pintar(posPaso(paso())); pintarInfo(); }
+    function pintarTodo() { pintarCampo(); pintar(posPaso(paso())); pintarInfo(); pintarAsignar(); }
 
     // ----- animación
     function animarA(nuevo, ms, fin) {
@@ -990,12 +1067,12 @@
     // ----- acciones de edición
     function anadirFicha(eq, extra) {
       snap();
-      const pref = eq === "c" ? "c" : eq === "a" ? "e" : "f";
+      const pref = eq === "c" ? "c" : eq === "b" ? "b" : eq === "a" ? "e" : "f";
       let n = 1; while (jug.fichas.some((f) => f.id === pref + n)) n++;
       const f = Object.assign({ id: pref + n, eq: eq }, extra || {});
       jug.fichas.push(f);
       const vb = VISTAS[jug.vista] || VISTAS.C;
-      const p0 = [eq === "c" ? 34 : eq === "a" ? 30 : 38, vb[1] + vb[3] / 2];
+      const p0 = [eq === "c" ? 34 : eq === "b" ? 36 : eq === "a" ? 30 : 38, vb[1] + vb[3] / 2 + (eq === "b" ? 3 : 0)];
       jug.pasos.forEach((p) => { p.pos[f.id] = p0.slice(); });
       if (eq === "r") jug.rivales = true;
       sel = f.id; selDib = -1; cambio(); pintarTodo();
@@ -1166,9 +1243,12 @@
       else if (a === "notas" && sel && o.abrirNotas) { const f = jug.fichas.find((x) => x.id === sel); if (f && ctx.pidDe(f)) o.abrirNotas(ctx.pidDe(f)); }
       else if (a === "ficha" && sel) { const f = jug.fichas.find((x) => x.id === sel); if (f) o.abrirFicha(ctx.pidDe(f)); }
       else if (a === "cancelarDib") { bor = null; pintarTodo(); }
-      else if (/^mas[ARC]|^masChino/.test(a) && jug.fichas.length >= MAX.fichas) toast("Has llegado al máximo de fichas");
-      else if (a === "masA") anadirFicha("a");
-      else if (a === "masR") anadirFicha("r");
+      else if (/^mas[ARCB]|^masChino/.test(a) && jug.fichas.length >= MAX.fichas) toast("Has llegado al máximo de fichas");
+      else if (a === "masA" || a === "masR") { const pn = R("petoNuevo").value; anadirFicha(a === "masA" ? "a" : "r", own(PETOS, pn) ? { peto: pn } : null); }
+      else if (a === "masB") anadirFicha("b");
+      else if (a === "asignar") { const c = R("asignar"); c.hidden = !c.hidden; b.setAttribute("aria-expanded", String(!c.hidden)); pintarAsignar(); }
+      else if (a === "asignarTodos") $$("[data-asignuevo]", R("asignar")).forEach((x) => { x.checked = true; });
+      else if (a === "anadirSel") anadirSeleccionados();
       else if (a === "masCono") anadirFicha("c", { forma: "cono", col: R("conoCol").value });
       else if (a === "masChino") anadirFicha("c", { forma: "chino", col: R("conoCol").value });
       else if (a === "rivales") { snap(); jug.rivales = jug.rivales === false; cambio(); pintarTodo(); }
@@ -1203,6 +1283,22 @@
       const t = e.target;
       if (t.dataset.r === "vista") { snap(); jug.vista = t.value; cambio(); pintarTodo(); return; }
       if (t.dataset.r === "tam") { snap(); if (t.value === "m") delete jug.tam; else jug.tam = t.value; cambio(); pintarTodo(); return; }
+      if (t.dataset.asigpj !== undefined || t.dataset.asigpeto !== undefined) {
+        const id = t.dataset.asigpj || t.dataset.asigpeto;
+        const f = jug.fichas.find((x) => x.id === id); if (!f) return;
+        snap();
+        if (t.dataset.asigpeto !== undefined) { if (own(PETOS, t.value)) f.peto = t.value; else delete f.peto; }
+        else if (/^a\d+$/.test(f.id)) { ctx.plan.once = ctx.plan.once || {}; if (t.value) ctx.plan.once[f.id.slice(1)] = t.value; else delete ctx.plan.once[f.id.slice(1)]; delete f.pj; }
+        else if (t.value) f.pj = t.value; else delete f.pj;
+        cambio(); pintar(posPaso(paso())); pintarInfo(); pintarAsignar();
+        const n = host.querySelector("#" + t.id); if (n) n.focus();
+        return;
+      }
+      if (t.hasAttribute("data-peto")) {
+        const f = jug.fichas.find((x) => x.id === sel); if (!f) return;
+        snap(); if (own(PETOS, t.value)) f.peto = t.value; else delete f.peto;
+        cambio(); pintar(posPaso(paso())); pintarInfo(); return;
+      }
       if (t.hasAttribute("data-pj")) {
         const f = jug.fichas.find((x) => x.id === sel); if (!f) return;
         snap();
@@ -2229,7 +2325,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       b.jug.pasos.forEach((p, i) => {
         pasos.push({
           paso: i + 1, titulo: quitarNombres(p.t || ""), balon: p.b.map(Math.round),
-          fichas: b.jug.fichas.filter((f) => f.eq !== "c" && p.pos[f.id] && (f.eq === "a" || b.jug.rivales !== false))
+          fichas: b.jug.fichas.filter((f) => f.eq !== "c" && f.eq !== "b" && p.pos[f.id] && (f.eq === "a" || b.jug.rivales !== false))
             .map((f) => ({ ficha: f.id, equipo: f.eq === "a" ? "nuestro" : "rival", x: Math.round(p.pos[f.id][0]), y: Math.round(p.pos[f.id][1]) }))
         });
       });
