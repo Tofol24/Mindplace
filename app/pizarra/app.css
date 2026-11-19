@@ -296,3 +296,4 @@ button:disabled { opacity: .45; cursor: default; }
 .pz-tr select { width: auto; min-height: 36px; padding: 4px 8px; font-size: 14px; }
 .pz-trban { margin: 4px 0; padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 15px; background: #FFF1E0; color: #7A3A00; border: 1px solid #F0B37A; }
 .pz-trban.tr-r { background: #E6F4EA; color: #14532D; border-color: #86C99A; }
+[data-r="iapzvista"] { margin: 8px 0; }

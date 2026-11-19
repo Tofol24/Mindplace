@@ -186,6 +186,129 @@
       pre: "¿Qué has notado después del error?\n¿Cuánto has tardado en volver a la jugada?\n¿Qué palabra o qué gesto te han ayudado?", pc: "Reset" }
   };
 
+
+  // ----- Pizarras ya diseñadas para cada aprendizaje (analítico, dinámica ecológica y partido condicionado).
+  // Nuestro equipo ataca hacia arriba (y = 0). Cada paso hereda las posiciones del anterior y cambia solo lo indicado.
+  // f: [id, equipo, peto]; c: conos [x, y, color, forma]; p: pasos { t, pos, b (balón), tips, d (flechas [desde, hasta]), tr }.
+  const CAMPO5 = [[12, 6, "blanco", "chino"], [56, 6, "blanco", "chino"], [12, 50, "blanco", "chino"], [56, 50, "blanco", "chino"], [30, 6, "naranja"], [38, 6, "naranja"], [30, 50, "naranja"], [38, 50, "naranja"]];
+  const F5 = [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["e5", "a"], ["f1", "r"], ["f2", "r"], ["f3", "r"], ["f4", "r"], ["f5", "r"]];
+  const B5 = { e1: [34, 44], e2: [16, 34], e3: [52, 34], e4: [24, 20], e5: [44, 20], f1: [34, 9], f2: [18, 13], f3: [50, 13], f4: [26, 31], f5: [42, 31] };
+  const F6 = F5.concat([["e6", "a"], ["f6", "r"]]);
+  const B6 = Object.assign({}, B5, { e6: [34, 37], f6: [34, 19] });
+  const CUADRO = (x0, y0, x1, y1) => [[x0, y0, "blanco", "chino"], [x1, y0, "blanco", "chino"], [x0, y1, "blanco", "chino"], [x1, y1, "blanco", "chino"]];
+  const TIP = (m, f, q) => { const o = {}; if (m) o.m = m; if (f) o.f = f; if (q) o.q = q; return o; };
+  const DISENOS = {
+    ruptura: {
+      an: { v: "A", f: [["e1", "a"], ["e2", "a"]], c: [[34, 24, "rojo"]], p: [
+        { t: "Conduce el pasador; tú esperas en la línea del cono", pos: { e1: [28, 44], e2: [42, 26] }, b: [28, 43],
+          tips: { e2: TIP("Espera a la altura del cono, sin pasarte", "El cono (el último defensor) y la cabeza del pasador", "Mientras conduce"), e1: TIP("Conduce con la cabeza levantada", "El espacio a la espalda del cono") } },
+        { t: "Levanta la cabeza: sal en diagonal", pos: { e1: [30, 38], e2: [40, 22] }, b: [30, 37], d: [[[40, 22], [32, 12]]],
+          tips: { e2: TIP("Arranca en diagonal a la espalda del cono", "", "Justo cuando levanta la cabeza"), e1: TIP("Pasa al espacio, no al pie", "La carrera de tu compañero") } },
+        { t: "Recibe a la espalda y orienta hacia portería", pos: { e2: [32, 12] }, b: [32, 13], tips: { e2: TIP("Primer toque hacia la portería") } }] },
+      eco: { v: "A", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["e5", "a", "amarillo"], ["e6", "a", "amarillo"], ["f1", "r"], ["f2", "r"], ["f3", "r"], ["f4", "r"]], c: CAMPO5, p: [
+        { t: "4 contra 4 con dos comodines: ataca el otro equipo", pos: { e1: [34, 42], e2: [22, 34], e3: [46, 34], e4: [34, 24], e5: [12, 28], e6: [56, 28], f1: [34, 14], f2: [24, 22], f3: [44, 22], f4: [32, 32] }, b: [32, 31] },
+        { t: "¡Robo! 6 segundos para buscar la espalda", tr: "r", pos: { e2: [26, 32], f4: [30, 35], e4: [36, 22] }, b: [26, 31],
+          tips: { e4: TIP("Prepárate para romper", "La línea del último defensor y la cabeza del que tiene el balón", "En cuanto robamos"), e2: TIP("Cabeza arriba: busca la espalda", "La carrera de tus compañeros") } },
+        { t: "Pase a la espalda y finalizamos", pos: { e4: [36, 10] }, b: [36, 11], d: [[[26, 31], [36, 11]]], tips: { e4: TIP("Recibe a la espalda y define") } }] },
+      cond: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Atacan las fichas del color del equipo: tienen la condición", pos: B5, b: [16, 33] },
+        { t: "Pase a la espalda de la defensa: el gol vale", pos: { e5: [42, 8] }, b: [42, 9], d: [[[16, 33], [42, 9]]],
+          tips: { e5: TIP("Sal a la espalda en diagonal", "El último defensor", "Cuando el compañero levanta la cabeza") } }] }
+    },
+    control: {
+      an: { v: "A", f: [["e1", "a"], ["e2", "a"], ["e3", "a"]], c: [[40, 26, "rojo"]], p: [
+        { t: "Pase al vértice: mira antes de recibir", pos: { e1: [24, 40], e2: [44, 40], e3: [34, 24] }, b: [24, 39], d: [[[24, 39], [34, 25]]],
+          tips: { e3: TIP("Mira por encima del hombro antes de recibir", "Dónde está el cono (el presionador)", "Mientras viaja el balón") } },
+        { t: "Control orientado al lado contrario del cono", pos: { e3: [30, 25] }, b: [30, 26], tips: { e3: TIP("Primer toque hacia el lado libre", "El espacio libre", "En el primer toque") } },
+        { t: "El cono cambia de lado: vuelve a mirar", pos: { c0: [28, 26], e3: [34, 24] }, b: [44, 39], d: [[[30, 26], [44, 39]]],
+          tips: { e3: TIP("Ahora el presionador está al otro lado: controla hacia el contrario", "El cono", "Antes de cada recepción") } }] },
+      eco: { v: "A", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["f1", "r"], ["f2", "r"]], c: CUADRO(22, 24, 46, 48).concat([[30, 12, "naranja"], [38, 12, "naranja"]]), p: [
+        { t: "Rondo 4 contra 2: mira antes de recibir", pos: { e1: [34, 24], e2: [46, 36], e3: [34, 48], e4: [22, 36], f1: [32, 34], f2: [37, 38] }, b: [22, 35],
+          tips: { e1: TIP("Perfil abierto", "Dónde están los dos de dentro", "Antes de recibir") } },
+        { t: "Control orientado y pase lejos de la presión", pos: { f1: [33, 29] }, b: [34, 25], d: [[[22, 35], [34, 25]]], tips: { e1: TIP("Controla hacia el lado libre y pasa lejos de la presión") } },
+        { t: "Si roban, atacan la portería pequeña: cambia el foco", tr: "p", pos: { f1: [34, 20] }, b: [34, 19], d: [[[34, 19], [34, 13]]],
+          tips: { e1: TIP("Presiona enseguida al que ha robado", "El balón y la portería pequeña", "En el primer segundo"), e2: TIP("Cierra el camino a la portería") } }] },
+      cond: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Recibe: el control orientado que supera a un rival cuenta doble", pos: Object.assign({}, B5, { e4: [28, 22], f2: [24, 18] }), b: [16, 33], d: [[[16, 33], [28, 22]]],
+          tips: { e4: TIP("Mira antes de recibir", "Dónde está el rival", "Mientras viaja el balón") } },
+        { t: "Primer toque hacia el espacio y pase", pos: { e4: [34, 18] }, b: [34, 18], tips: { e4: TIP("Supera al rival con el primer toque") } }] }
+    },
+    perdua: {
+      an: { v: "A", f: [["e1", "a"], ["e2", "a"], ["f1", "r"]], c: CUADRO(22, 22, 46, 46), p: [
+        { t: "2 contra 1: atacamos", pos: { e1: [30, 40], e2: [40, 34], f1: [34, 30] }, b: [30, 39], tips: { e1: TIP("Conduce y busca el pase") } },
+        { t: "¡Perdemos el balón!", tr: "p", pos: { f1: [33, 35] }, b: [33, 35],
+          tips: { e1: TIP("Presiona enseguida al que ha robado", "El balón y el jugador que lo tiene", "En el primer segundo"), e2: TIP("Cierra su salida más fácil", "Hacia dónde quiere salir") } },
+        { t: "Los dos presionan y recuperamos", tr: "r", pos: { e1: [32, 37], e2: [36, 32] }, b: [32, 36], tips: { e2: TIP("Si recuperamos, ofrécete para atacar") } }] },
+      eco: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "5 contra 5 en campo corto: atacamos", pos: B5, b: [24, 19] },
+        { t: "Pérdida: el foco cambia a recuperar", tr: "p", pos: { f2: [21, 17] }, b: [21, 17],
+          tips: { e4: TIP("Presiona al que ha robado", "El balón", "En los primeros 3 segundos"), e5: TIP("Cierra el pase por dentro", "La línea de pase más fácil"), e2: TIP("Acércate para cerrar") } },
+        { t: "Recuperamos en menos de 5 segundos", tr: "r", pos: { e4: [22, 19], e5: [28, 16], e2: [16, 24] }, b: [24, 17] }] },
+      cond: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Pérdida: el equipo con la condición presiona", tr: "p", pos: Object.assign({}, B5, { f2: [21, 17] }), b: [21, 17],
+          tips: { e4: TIP("Presiona al que ha robado", "", "Enseguida") } },
+        { t: "Robo antes de 5 segundos: suma un gol", tr: "r", pos: { e4: [22, 19], e5: [28, 16] }, b: [24, 17] }] }
+    },
+    sortida: {
+      an: { v: "D", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["f1", "r"]], c: [], p: [
+        { t: "El portero tiene el balón: ¿quién está libre?", pos: { e1: [34, 102], e2: [18, 96], e3: [50, 96], e4: [34, 86], f1: [28, 92] }, b: [34, 101],
+          tips: { e1: TIP("Mira a quién no llega el presionador", "El presionador y hacia dónde mira"), e4: TIP("Ofrécete de cara", "La espalda del presionador") } },
+        { t: "El presionador cierra un lado: pase al otro central", pos: { f1: [24, 94] }, b: [49, 96], d: [[[34, 101], [49, 96]]], tips: { e3: TIP("Recibe orientado hacia delante", "", "Antes de recibir, mira") } },
+        { t: "Pase al pivote libre, de cara", pos: { e4: [36, 86] }, b: [35, 87], d: [[[49, 96], [35, 87]]], tips: { e4: TIP("Recibe de cara y gira", "El espacio a tu espalda") } }] },
+      eco: { v: "D", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["e5", "a"], ["e6", "a"], ["f1", "r"], ["f2", "r"], ["f3", "r"], ["f4", "r"], ["f5", "r"]], c: [[0, 70, "blanco", "chino"], [68, 70, "blanco", "chino"]], p: [
+        { t: "Salimos desde el portero", pos: { e1: [34, 102], e2: [18, 96], e3: [50, 96], e4: [34, 86], e5: [8, 84], e6: [60, 84], f1: [28, 92], f2: [42, 92], f3: [34, 80], f4: [16, 76], f5: [52, 76] }, b: [34, 101] },
+        { t: "Presionan: busca al hombre libre", pos: { f1: [22, 95], f2: [44, 93] }, b: [49, 96], d: [[[34, 101], [49, 96]]], tips: { e3: TIP("Mira dónde está el libre", "El lateral y el pivote", "Antes de recibir") } },
+        { t: "Superamos la primera línea: punto", pos: { e6: [60, 72] }, b: [60, 73], d: [[[49, 96], [60, 80]]], tips: { e6: TIP("Recibe y conduce hasta pasar la línea") } }] },
+      cond: { v: "D", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["f1", "r"], ["f2", "r"], ["f3", "r"]], c: [[0, 78, "blanco", "chino"], [68, 78, "blanco", "chino"]], p: [
+        { t: "Presión rival sobre la salida", pos: { e1: [34, 102], e2: [18, 96], e3: [50, 96], e4: [34, 86], f1: [26, 92], f2: [42, 92], f3: [34, 82] }, b: [34, 101] },
+        { t: "Pase al hombre libre que supera la línea: punto", pos: { e4: [40, 86], f3: [32, 83] }, b: [40, 86], d: [[[34, 101], [40, 86]]],
+          tips: { e4: TIP("Muévete a la espalda del presionador", "Quién te presiona", "Cuando el portero levanta la cabeza") } }] }
+    },
+    pressio: {
+      an: { v: "A", f: [["e1", "a"], ["e2", "a"], ["f1", "r"], ["f2", "r"]], c: CUADRO(20, 20, 48, 44), p: [
+        { t: "El rival recibe de espaldas: señal de presión", pos: { e1: [34, 36], e2: [42, 40], f1: [34, 27], f2: [44, 28] }, b: [34, 28],
+          tips: { e1: TIP("Prepárate para saltar", "Si recibe de espaldas o controla mal", "En cuanto recibe") } },
+        { t: "Uno presiona, el otro cubre y cierra el pase", pos: { e1: [34, 30], e2: [39, 31] }, b: [34, 28],
+          tips: { e1: TIP("Presiona sin dejarle girarse"), e2: TIP("Cubre a tu compañero y cierra el pase", "La línea de pase") } },
+        { t: "Robo", tr: "r", pos: { e1: [34, 29] }, b: [34, 29] }] },
+      eco: { v: "A", f: F6, c: CAMPO5, p: [
+        { t: "6 contra 6. Pase atrás del rival: señal de presión", pos: Object.assign({}, B6, { f4: [30, 24] }), b: [34, 10], d: [[[30, 24], [34, 10]]],
+          tips: { e5: TIP("Salta al que recibe", "El pase atrás", "Mientras viaja el balón") } },
+        { t: "Presionamos juntos", pos: { e5: [38, 13], e4: [28, 15], e2: [22, 26], e3: [46, 26] }, b: [34, 10],
+          tips: { e4: TIP("Cierra el pase a tu lado", "La línea de pase"), e2: TIP("Acompaña: equipo junto") } },
+        { t: "Robo en campo contrario: 8 segundos para acabar", tr: "r", pos: { e5: [35, 11], f1: [32, 6] }, b: [35, 11] }] },
+      cond: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Presión coordinada del equipo con la condición", pos: Object.assign({}, B5, { e5: [38, 12], e4: [28, 14] }), b: [34, 10] },
+        { t: "Robo y gol: vale doble", tr: "r", pos: { e5: [35, 9], f1: [30, 6] }, b: [34, 6], d: [[[35, 9], [34, 6]]] }] }
+    },
+    errada: {
+      an: { v: "A", f: [["e1", "a"], ["e2", "a"], ["e3", "a"], ["e4", "a"], ["e5", "a"], ["e6", "a"]], c: [], p: [
+        { t: "Un minuto de atención: la respiración o el tacto del balón", pos: { e1: [34, 20], e2: [43, 25], e3: [43, 35], e4: [34, 40], e5: [25, 35], e6: [25, 25] }, b: [34, 30],
+          tips: { e1: TIP("Lleva la atención al balón en tus manos o a la respiración", "Lo que notas: el tacto, el peso, el aire", "Cuando te distraigas, date cuenta y vuelve") } }] },
+      eco: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Fallo un pase", tr: "p", pos: B5, b: [27, 30], d: [[[24, 20], [27, 30]]],
+          tips: { e4: TIP("Haz tu gesto (subirte las medias) y vuelve", "La próxima jugada", "Justo después del error") } },
+        { t: "Vuelvo a mi sitio y participo", pos: { e4: [27, 25], e2: [20, 30] }, b: [26, 30], tips: { e4: TIP("Ya estás en la jugada: ayuda a recuperar") } }] },
+      cond: { v: "A", f: F5, c: CAMPO5, p: [
+        { t: "Error de un jugador", tr: "p", pos: B5, b: [27, 30] },
+        { t: "El que ha fallado participa en la acción siguiente: punto", tr: "r", pos: { e4: [26, 27], f4: [29, 33] }, b: [26, 28] }] }
+    }
+  };
+  function dzJugada(d) {
+    if (!d) return null;
+    const jug = { vista: d.v || "A", rivales: true, fichas: [], pasos: [] };
+    d.f.forEach((x) => { const o = { id: x[0], eq: x[1] }; if (x[2]) o.peto = x[2]; jug.fichas.push(o); });
+    let pos = {};
+    (d.c || []).forEach((c, i) => { jug.fichas.push({ id: "c" + i, eq: "c", forma: c[3] === "chino" ? "chino" : "cono", col: c[2] || "amarillo" }); pos["c" + i] = [c[0], c[1]]; });
+    d.p.forEach((p) => {
+      pos = Object.assign(clon(pos), clon(p.pos || {}));
+      const o = { t: p.t, pos: clon(pos), b: (p.b || [34, 30]).slice(), tips: clon(p.tips || {}), dib: (p.d || []).map((x) => ({ k: "flecha", c: "#FFD23F", pts: [x[0].slice(), x[1].slice()], t: "" })) };
+      if (p.tr) o.tr = p.tr;
+      jug.pasos.push(o);
+    });
+    return sanJugada(jug);
+  }
+
   // Juego parado → momento de atención interna (APRENS: no luchar, volver al estímulo relevante)
   const PARADO = { banda: "quién se mueve y dónde está el espacio", cornerF: "tu zona y la trayectoria del balón", cornerC: "el balón y tu zona", falta: "la señal del lanzador y la línea del fuera de juego" };
 
@@ -1528,20 +1651,21 @@
     ir("plan", { planId: p.id });
   }
   // Tres apartados seguidos para un aprendizaje: analítico, dinámica ecológica y partido condicionado.
-  function anadirAprendizaje(plan, a) {
+  function anadirAprendizaje(plan, a, clave) {
+    const dz = own(DISENOS, clave) ? DISENOS[clave] : null;
     const tit = a.t || "Aprendizaje";
     const preg = a.pre || "";
     const base = { fij: a.que || "", cuando: a.quan || "", consignas: "", preg: preg };
     plan.bloques.push(Object.assign({ id: uid(), cat: "ejercicio", fase: "analitico", titulo: (tit + " · analítico").slice(0, 80), min: 15,
-      texto: a.an || "", jug: null }, base));
+      texto: a.an || "", jug: dz ? dzJugada(dz.an) : null }, base));
     const eco = own(PLANTILLAS, a.tpl) ? a.tpl : "vacia";
-    const jEco = nuevaJugada(plan, eco);
-    if (eco === "transicion" && jEco && jEco.pasos[1]) jEco.pasos[1].tr = "r"; // «¡Robo! Primer pase hacia delante»
+    let jEco = dz ? dzJugada(dz.eco) : null;
+    if (!jEco) { jEco = nuevaJugada(plan, eco); if (eco === "transicion" && jEco && jEco.pasos[1]) jEco.pasos[1].tr = "r"; } // «¡Robo! Primer pase hacia delante»
     plan.bloques.push(Object.assign({ id: uid(), cat: own(CATS, a.cat) ? a.cat : "juego", fase: "ecologico", titulo: (tit + " · dinámica").slice(0, 80), min: 20,
       texto: a.eco || "", jug: jEco }, base));
     plan.bloques.push(Object.assign({ id: uid(), cat: "juego", fase: "condicionado", titulo: (tit + " · partido condicionado").slice(0, 80), min: 20,
       texto: "Partido con la condición. Durante el juego, observa: no hace falta recordarles la consigna, el gol ya lleva su atención a lo importante. Las preguntas, al acabar.",
-      cond: a.cond || "", condEq: a.cond ? "a" : "", jug: nuevaJugada(plan, "vacia") }, base));
+      cond: a.cond || "", condEq: a.cond ? "a" : "", jug: (dz && dzJugada(dz.cond)) || nuevaJugada(plan, "vacia") }, base));
     if (!plan.clave && a.pc) plan.clave = String(a.pc).replace(/[«»¡!¿?]/g, "").trim().slice(0, 30);
     plan.mod = Date.now();
   }
@@ -1625,8 +1749,10 @@
           </div>
           <div class="acciones">
             <button type="button" class="btn-peq ia-btn" data-iapedir="${b.id}">✨ Sugerencias de Claude</button>
+            <button type="button" class="btn-peq ia-btn" data-iapz="${b.id}">✨ Diseñar la pizarra con Claude</button>
           </div>
           <div data-r="ia-${b.id}"></div>
+          <div data-r="iapz-${b.id}"></div>
         </div>`).join("")}
       <p class="peq">✨ Las sugerencias de Claude usan la jugada, las notas de los jugadores y la edad del equipo. Se envían a Claude (Anthropic) <b>sin nombres</b>, solo con dorsal y puesto, y solo cuando pulsas el botón. Revisa la propuesta antes de aplicarla.</p>
       <button type="button" class="btn-sec" data-bnuevo="1">＋ Añadir apartado</button>
@@ -2589,6 +2715,77 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     cont.innerHTML = `<p class="sin-puesto">La propuesta está tardando demasiado. Vuelve a intentarlo.</p>`;
   }
+  // Claude diseña la pizarra del apartado a partir de su ficha (sin datos de jugadores).
+  const iaPizarras = {}, iaPzPend = {}, iaPzGen = {};
+  function entradaPizarraIA(plan, b) {
+    const E = FICHA.ETAPAS[db.equipo.etapa];
+    return { modo: "pizarra", etapa: E ? E.n + " (" + E.edad + ")" : "", tipo: plan.tipo, jugadores: db.plantilla.length,
+      bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas),
+        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), fase: FASE_CORTA[b.fase] || "", condicion: quitarNombres(b.cond),
+        equipoCondicion: !b.cond || !b.condEq ? "" : b.condEq === "a" ? "nuestro" : b.condEq === "r" ? "rival" : "peto " + b.condEq } };
+  }
+  function previaPizarraIA(plan, b, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Diseñar la pizarra con Claude"); return; }
+    const e = entradaPizarraIA(plan, b);
+    if (!e.bloque.texto && !e.bloque.titulo) { cont.innerHTML = `<p class="sin-puesto">Escribe antes la explicación del ejercicio: Claude diseña la pizarra a partir de ella.</p>`; return; }
+    const textos = [["Título", e.bloque.titulo], ["Explicación", e.bloque.texto], ["Consignas", e.bloque.consignas], ["En qué fijarse", e.bloque.fijarse], ["Cuándo", e.bloque.cuando], ["Condición", e.bloque.condicion], ["La tiene", e.bloque.equipoCondicion]].filter((x) => x[1]);
+    iaPzPend[b.id] = e; // se envía exactamente lo que se muestra
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ Diseñar la pizarra con Claude</h3>
+      <p class="peq">Claude propone el espacio, las fichas, los conos y los pasos de la jugada a partir de la ficha del apartado. Se envía esto a Claude (Anthropic), sin la plantilla ni las notas de los jugadores. Revisa que el texto no lleve datos personales (salud, familia…):</p>
+      <ul class="consignas">${textos.map((x) => `<li><b>${esc(x[0])}:</b> ${esc(x[1])}</li>`).join("")}</ul>
+      ${b.jug ? `<p class="peq">Este apartado ya tiene pizarra: verás la propuesta antes de sustituirla.</p>` : ""}
+      <div class="fila"><button type="button" class="btn" data-iapzok="${esc(b.id)}">Diseñar</button><button type="button" class="btn-sec" data-iapzno="${esc(b.id)}">Cancelar</button></div>
+    </div>`;
+  }
+  async function pedirPizarraIA(plan, b, cont) {
+    const entrada = iaPzPend[b.id]; delete iaPzPend[b.id];
+    if (!entrada) { previaPizarraIA(plan, b, cont); return; }
+    const gen = iaPzGen[b.id] = (iaPzGen[b.id] || 0) + 1;
+    const vigente = () => iaPzGen[b.id] === gen && cont.isConnected;
+    cont.innerHTML = `<p class="peq ia-espera">✨ Claude está diseñando la pizarra. Puede tardar un minuto…</p>`;
+    let job;
+    try {
+      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entrada) });
+      const j = await r.json().catch(() => ({}));
+      if (!vigente()) return;
+      if (r.status === 402) { SUS.modo = true; SUS.activa = false; cont.innerHTML = htmlInvitacion("Diseñar la pizarra con Claude"); return; }
+      if (!r.ok || !j.job) throw new Error(j.error || "red");
+      if (SUS.ia) SUS.ia.usadas++;
+      job = j.job;
+    } catch (e) { if (vigente()) cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido pedir el diseño. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
+    for (let i = 0; i < 80; i++) {
+      await new Promise((ok) => setTimeout(ok, i < 5 ? 2000 : 3000));
+      if (!vigente()) return;
+      let r;
+      try { r = await (await fetch("/api/pizarra-ia?job=" + job, { cache: "no-store" })).json(); } catch (e) { continue; }
+      if (r.estado === "pendiente") continue;
+      if (!vigente()) return;
+      const jug = r.estado === "listo" && r.resultado ? sanJugada(r.resultado.jugada) : null;
+      if (jug) { iaPizarras[b.id] = { jug: jug, txt: String(r.resultado.explicacion || "").slice(0, 600) }; pintarPizarraIA(plan, b, cont); return; }
+      cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[r.error] || "Claude no ha podido diseñar la pizarra. Vuelve a intentarlo.")}</p>`;
+      return;
+    }
+    if (vigente()) cont.innerHTML = `<p class="sin-puesto">El diseño está tardando demasiado. Vuelve a intentarlo.</p>`;
+  }
+  function pintarPizarraIA(plan, b, cont) {
+    const it = iaPizarras[b.id]; if (!it) { cont.innerHTML = ""; return; }
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ Pizarra propuesta</h3>
+      ${it.txt ? `<p><b>Para ti:</b> ${esc(it.txt)}</p>` : ""}
+      <p class="peq">Pulsa «Reproducir» para ver la jugada. Si la aplicas, después puedes mover cualquier ficha a mano.</p>
+      <div data-r="iapzvista" id="iapzv-${esc(b.id)}"></div>
+      <div class="fila"><button type="button" class="btn" data-iapzaplicar="${esc(b.id)}">${b.jug ? "Sustituir la pizarra" : "Aplicar"}</button><button type="button" class="btn-sec" data-iapzno="${esc(b.id)}">Descartar</button></div>
+    </div>`;
+    crearPizarra(cont.querySelector('[data-r="iapzvista"]'), { ctx: crearCtx(plan, db.plantilla, true), jug: clon(it.jug), cat: b.cat, editable: false });
+  }
+  function aplicarPizarraIA(plan, b, cont) {
+    const it = iaPizarras[b.id]; if (!it) return;
+    if (b.jug && !window.confirm("¿Sustituir la pizarra actual de este apartado por la propuesta?")) return;
+    b.jug = clon(it.jug); delete iaPizarras[b.id];
+    plan.mod = Date.now(); guardar(); pintarPantalla();
+    toast("Pizarra aplicada: ábrela para retocarla");
+  }
   function etiquetaFicha(plan, b, id) {
     const f = b.jug && b.jug.fichas.find((x) => x.id === id); if (!f) return id;
     const inf = crearCtx(plan, db.plantilla, true).info(f);
@@ -2983,13 +3180,17 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.aprnuevo) {
         const a = APRENDIZAJES[$("#aprSel").value]; if (!a) return;
         if (plan.bloques.length + 3 > MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
-        anadirAprendizaje(plan, a); guardar(); pintarPantalla();
+        anadirAprendizaje(plan, a, $("#aprSel").value); guardar(); pintarPantalla();
         toast("Añadidos los tres apartados de «" + a.t + "»");
         return;
       }
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+      if (d.iapz) { iaPzGen[d.iapz] = (iaPzGen[d.iapz] || 0) + 1; const b2 = bl(d.iapz); if (b2) previaPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapz}"]`)); return; }
+      if (d.iapzok) { const b2 = bl(d.iapzok); if (b2) pedirPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzok}"]`)); return; }
+      if (d.iapzaplicar) { const b2 = bl(d.iapzaplicar); if (b2) aplicarPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzaplicar}"]`)); return; }
+      if (d.iapzno) { delete iaPizarras[d.iapzno]; delete iaPzPend[d.iapzno]; iaPzGen[d.iapzno] = (iaPzGen[d.iapzno] || 0) + 1; const c = app.querySelector(`[data-r="iapz-${d.iapzno}"]`); if (c) c.innerHTML = ""; return; }
       if (d.iapedir) { const b2 = bl(d.iapedir); if (b2) previaIA(plan, b2, app.querySelector(`[data-r="ia-${d.iapedir}"]`)); return; }
       if (d.iaconfirmar) { const b2 = bl(d.iaconfirmar); if (b2) pedirIA(plan, b2, app.querySelector(`[data-r="ia-${d.iaconfirmar}"]`)); return; }
       if (d.iaaplicar) { const b2 = bl(d.iaaplicar); if (b2) aplicarIA(plan, b2, app.querySelector(`[data-r="ia-${d.iaaplicar}"]`)); return; }
@@ -3066,6 +3267,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.b && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); }
+      if (b) {
+        const c = app.querySelector(`[data-r="iapz-${b.id}"]`);
+        if (c && c.innerHTML) {
+          iaPzGen[b.id] = (iaPzGen[b.id] || 0) + 1; delete iaPzPend[b.id]; delete iaPizarras[b.id];
+          c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Diseñar la pizarra con Claude» para que la propuesta tenga en cuenta los cambios.</p>`;
+        }
+      }
       if (b && iaPendiente[b.id]) { delete iaPendiente[b.id]; const c = app.querySelector(`[data-r="ia-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Sugerencias de Claude» para revisar lo que se envía.</p>`; }
       return;
     }
@@ -3175,7 +3383,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const pl = { id: uid(), mod: Date.now(), tipo: "entreno", fecha: hoyISO(), titulo: ("Entreno · " + din.t).slice(0, 80), rival: "", objetivo: "Aprender: " + din.t.slice(0, 200), notas: "",
         sistema: "4231", once: {}, bloques: [{ id: uid(), cat: "calentamiento", titulo: CATS.calentamiento, min: 15, texto: "", consignas: "", jug: null }] };
       autoOnce(pl);
-      anadirAprendizaje(pl, din);
+      anadirAprendizaje(pl, din, own(APRENDIZAJES, a.k) ? a.k : "");
       db.planes.push(pl); guardar();
       ir("plan", { planId: pl.id });
       toast("Entreno creado con la dinámica «" + din.t + "»");

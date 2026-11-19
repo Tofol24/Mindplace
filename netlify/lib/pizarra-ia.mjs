@@ -22,6 +22,7 @@ const lista = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
 // Reconstruye la entrada campo a campo (nada de lo que llegue se pasa tal cual).
 export function sanearEntrada(e) {
   if (!e || typeof e !== "object") return null;
+  if (e.modo === "pizarra") return sanearEntradaPizarra(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -126,5 +127,116 @@ export function sanearSalida(o, entrada) {
     individual: lista(o.individual, 40)
       .filter((i) => i && ids.has(i.jugador))
       .map((i) => ({ jugador: i.jugador, texto: txt(i.texto, 500) }))
+  };
+}
+
+// ---------------------------------------------------------------- diseñar la pizarra de un ejercicio
+// A partir de la ficha del apartado (explicación, en qué fijarse, cuándo, condición), Claude propone
+// el espacio, las fichas, los conos y los pasos animados. No se envía ningún dato de jugadores.
+export const LIM_PZ = { fichas: 24, conos: 12, pasos: 6, flechas: 4 };
+export function sanearEntradaPizarra(e) {
+  const b = e.bloque || {};
+  const s = {
+    modo: "pizarra", etapa: txt(e.etapa, 40), tipo: e.tipo === "partido" ? "partido" : "entreno",
+    bloque: {
+      categoria: txt(b.categoria, 60), titulo: txt(b.titulo, 80), texto: txt(b.texto, 1200), consignas: txt(b.consignas, 800),
+      fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300), fase: txt(b.fase, 40), condicion: txt(b.condicion, 300),
+      equipoCondicion: /^(nuestro|rival|peto [a-z]{3,10})$/.test(b.equipoCondicion || "") ? b.equipoCondicion : ""
+    },
+    jugadores: num(e.jugadores, 0, 30)
+  };
+  if (!s.bloque.texto && !s.bloque.titulo) return null;
+  return s;
+}
+
+const XY = { type: "object", additionalProperties: false, required: ["x", "y"], properties: { x: { type: "number" }, y: { type: "number" } } };
+export const ESQUEMA_PIZARRA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["vista", "fichas", "conos", "pasos", "explicacion"],
+  properties: {
+    vista: { type: "string", enum: ["C", "A", "D"], description: "C campo entero; A mitad de ataque (y de -8 a 60, portería rival en y = 0); D mitad propia (y de 45 a 113, portería propia en y = 105)." },
+    fichas: {
+      type: "array", description: "Jugadores del ejercicio. Ids cortos: e1, e2… (nuestro equipo o el equipo con color del equipo) y f1, f2… (el otro equipo).",
+      items: { type: "object", additionalProperties: false, required: ["id", "equipo", "peto"],
+        properties: { id: { type: "string" }, equipo: { type: "string", enum: ["nuestro", "rival"] }, peto: { type: "string", enum: ["", "amarillo", "verde", "naranja", "rojo", "azul", "blanco", "negro", "morado", "rosa", "celeste", "gris"] } } }
+    },
+    conos: {
+      type: "array", description: "Conos para marcar el espacio, porterías pequeñas o un defensor fijo.",
+      items: { type: "object", additionalProperties: false, required: ["x", "y", "color"], properties: { x: { type: "number" }, y: { type: "number" }, color: { type: "string", enum: ["amarillo", "rojo", "azul", "naranja", "blanco"] } } }
+    },
+    pasos: {
+      type: "array", description: "2-5 pasos de la jugada. Cada paso: título corto, posición del balón y de cada ficha, si es momento de pérdida o recuperación, flechas de movimiento o pase e indicaciones.",
+      items: { type: "object", additionalProperties: false, required: ["titulo", "balon", "posiciones", "transicion", "flechas", "indicaciones"],
+        properties: {
+          titulo: { type: "string" }, balon: XY,
+          posiciones: { type: "array", items: { type: "object", additionalProperties: false, required: ["ficha", "x", "y"], properties: { ficha: { type: "string" }, x: { type: "number" }, y: { type: "number" } } } },
+          transicion: { type: "string", enum: ["", "perdida", "recuperacion"] },
+          flechas: { type: "array", items: { type: "object", additionalProperties: false, required: ["desde", "hasta"], properties: { desde: XY, hasta: XY } } },
+          indicaciones: { type: "array", items: { type: "object", additionalProperties: false, required: ["ficha", "que", "fijate", "cuando"], properties: { ficha: { type: "string" }, que: { type: "string" }, fijate: { type: "string" }, cuando: { type: "string" } } } }
+        } }
+    },
+    explicacion: { type: "string", description: "Para el entrenador, 1-3 frases: cómo está montada la pizarra y qué conviene retocar." }
+  }
+};
+
+export const SISTEMA_PIZARRA = `Eres un entrenador de fútbol base con formación en psicología del deporte. Diseñas la pizarra táctica animada de un ejercicio a partir de la ficha que ha escrito el entrenador.
+
+El campo mide 68 × 105 metros: x de 0 (izquierda) a 68 (derecha), y de 0 (portería rival, arriba) a 105 (portería propia, abajo). El equipo «nuestro» ataca hacia y = 0. Elige la vista que mejor encuadre el ejercicio: «A» si se juega en la mitad de ataque, «D» si es en la propia (por ejemplo, salida desde el portero), «C» si ocupa todo el campo. Usa solo posiciones dentro de la vista elegida.
+
+Cómo diseñarla:
+- Coloca exactamente los jugadores que pide el ejercicio (por ejemplo, 4 contra 4 más 2 comodines: 6 de un equipo contando los comodines con peto amarillo y 4 del otro). En los entrenamientos los dos equipos son del mismo club: el otro equipo va como «rival». Si hay un portero, inclúyelo.
+- Marca el espacio con pocos conos (las esquinas) y las porterías pequeñas con dos conos. No pongas más de 12.
+- 2 a 5 pasos que muestren la idea clave del ejercicio. El primer paso, la posición inicial, con todas las fichas y conos colocados. Mueve solo lo que cambia; las fichas que no aparecen en «posiciones» de un paso se quedan donde estaban.
+- Si el ejercicio trabaja una transición, marca el paso de la pérdida («perdida») o del robo («recuperacion»).
+- Flechas solo para el movimiento o el pase principal de cada paso (como máximo 2 por paso).
+- Indicaciones para las fichas que protagonizan cada paso: qué hacen, en qué se fijan (el estímulo relevante: el balón, el compañero, el rival, hacia dónde mira…) y cuándo. Frases cortas, en segunda persona, sin emojis. Son para todo el grupo.
+- Respeta el método: el ejercicio enseña en qué fijarse y cuándo; nunca propongas que el entrenador dé instrucciones constantes durante el juego.
+- Las indicaciones las ve todo el grupo: nunca incluyas en ellas datos personales que pueda llevar la ficha (salud, familia, nombres).
+- Si la ficha dice qué equipo tiene la condición («equipoCondicion»), ilústrala con ese equipo: «nuestro» son las fichas e, «rival» las fichas f; si es un color de peto, pon ese peto a las fichas del equipo que la tiene.`;
+
+const clampN = (v, a, b, d) => { const n = Number(v); return Number.isFinite(n) ? Math.min(b, Math.max(a, Math.round(n * 2) / 2)) : d; };
+const VISTA_Y = { C: [-6, 111], A: [-7, 59], D: [46, 112] };
+// Sanea la pizarra propuesta: ids y colores de listas cerradas, coordenadas dentro de la vista, tamaños acotados.
+export function sanearPizarra(o) {
+  if (!o || typeof o !== "object") return null;
+  const vista = ["C", "A", "D"].includes(o.vista) ? o.vista : "C";
+  const [y0, y1] = VISTA_Y[vista];
+  const PETOS = ["amarillo", "verde", "naranja", "rojo", "azul", "blanco", "negro", "morado", "rosa", "celeste", "gris"];
+  const fichas = [], ids = new Set();
+  lista(o.fichas, LIM_PZ.fichas).forEach((f) => {
+    const id = typeof f?.id === "string" && /^[ef]\d{1,2}$/.test(f.id) ? f.id : null;
+    if (!id || ids.has(id)) return;
+    const eq = f.equipo === "rival" ? "r" : "a";
+    if ((eq === "a") !== id.startsWith("e")) return;
+    const x = { id, eq }; if (PETOS.includes(f.peto)) x.peto = f.peto;
+    ids.add(id); fichas.push(x);
+  });
+  if (fichas.length < 2) return null;
+  const conos = lista(o.conos, LIM_PZ.conos).map((c, i) => ({ id: "c" + i, col: ["amarillo", "rojo", "azul", "naranja", "blanco"].includes(c?.color) ? c.color : "amarillo", x: clampN(c?.x, -4, 72, 34), y: clampN(c?.y, y0, y1, (y0 + y1) / 2) }));
+  const xy = (p, d) => [clampN(p?.x, -4, 72, d[0]), clampN(p?.y, y0, y1, d[1])];
+  let actual = {};
+  const pasos = lista(o.pasos, LIM_PZ.pasos).map((p, k) => {
+    const pos = Object.assign({}, actual);
+    lista(p?.posiciones, 40).forEach((q) => { if (ids.has(q?.ficha)) pos[q.ficha] = xy(q, [34, (y0 + y1) / 2]); });
+    actual = pos;
+    const tips = {};
+    lista(p?.indicaciones, 30).forEach((i) => {
+      if (!ids.has(i?.ficha)) return;
+      const t = {}; [["m", "que"], ["f", "fijate"], ["q", "cuando"]].forEach(([a, b]) => { const v = txt(i[b], 200); if (v) t[a] = v; });
+      if (Object.keys(t).length) tips[i.ficha] = t;
+    });
+    const dib = lista(p?.flechas, LIM_PZ.flechas).map((f) => ({ k: "flecha", c: "#FFD23F", pts: [xy(f?.desde, [34, 50]), xy(f?.hasta, [34, 50])], t: "" }));
+    const r = { t: txt(p?.titulo, 80), pos, b: xy(p?.balon, [34, (y0 + y1) / 2]), tips, dib };
+    if (p?.transicion === "perdida") r.tr = "p"; else if (p?.transicion === "recuperacion") r.tr = "r";
+    return r;
+  });
+  if (!pasos.length) return null;
+  // todas las fichas tienen que estar colocadas en el primer paso: si falta alguna, la propuesta no vale
+  if (fichas.some((f) => !pasos[0].pos[f.id])) return null;
+  conos.forEach((c) => pasos.forEach((p) => { p.pos[c.id] = [c.x, c.y]; }));
+  return {
+    jugada: { vista, rivales: true, fichas: fichas.concat(conos.map((c) => ({ id: c.id, eq: "c", forma: "cono", col: c.col }))), pasos },
+    explicacion: txt(o.explicacion, 600)
   };
 }
