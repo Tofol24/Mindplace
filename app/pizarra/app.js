@@ -1536,7 +1536,7 @@
       texto: a.an || "", jug: null }, base));
     const eco = own(PLANTILLAS, a.tpl) ? a.tpl : "vacia";
     const jEco = nuevaJugada(plan, eco);
-    if (jEco && jEco.pasos.length > 1) jEco.pasos[jEco.pasos.length - 1].tr = eco === "transicion" ? "r" : "p";
+    if (eco === "transicion" && jEco && jEco.pasos[1]) jEco.pasos[1].tr = "r"; // «¡Robo! Primer pase hacia delante»
     plan.bloques.push(Object.assign({ id: uid(), cat: own(CATS, a.cat) ? a.cat : "juego", fase: "ecologico", titulo: (tit + " · dinámica").slice(0, 80), min: 20,
       texto: a.eco || "", jug: jEco }, base));
     plan.bloques.push(Object.assign({ id: uid(), cat: "juego", fase: "condicionado", titulo: (tit + " · partido condicionado").slice(0, 80), min: 20,
@@ -1610,7 +1610,7 @@
             </div>
             <p class="peq">La condición la tiene un equipo y no la pierde al perder el balón. Así el gol, que es el refuerzo natural del fútbol, lleva la atención a lo que queremos enseñar.</p>
           </div>` : ""}
-          <div class="campo-f"><label for="bpr${b.id}">❓ Preguntas para hacer después (solo las ves tú)</label><textarea id="bpr${b.id}" data-b="preg" data-bid="${b.id}" maxlength="600" placeholder="¿Qué has visto antes de recibir?&#10;¿Cuándo has decidido moverte?">${esc(b.preg || "")}</textarea>
+          <div class="campo-f"><label for="bpr${b.id}">❓ Preguntas para hacer después (no se envían a los jugadores)</label><textarea id="bpr${b.id}" data-b="preg" data-bid="${b.id}" maxlength="600" placeholder="¿Qué has visto antes de recibir?&#10;¿Cuándo has decidido moverte?">${esc(b.preg || "")}</textarea>
             <span class="peq" style="font-weight:400">Lo conocen, pero aún no lo han aprendido: durante el juego, observa; las preguntas, mejor después. No se envían a los jugadores.</span></div>
           <div class="acciones">
             ${b.jug ? `<button type="button" class="btn-peq" data-pz="${b.id}" style="background:var(--verde);color:#fff">🟩 Abrir pizarra (${b.jug.pasos.length} paso${b.jug.pasos.length === 1 ? "" : "s"})</button>
@@ -2613,7 +2613,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <label><input type="checkbox" data-iaop="texto" checked> Explicación y consignas</label>
         <label><input type="checkbox" data-iaop="atencion" checked> En qué fijarse y cuándo</label>
         ${plan.tipo === "entreno" ? `<label><input type="checkbox" data-iaop="condicion" ${r.condicion ? "checked" : "disabled"}> La condición (qué vale gol)</label>` : ""}
-        <label><input type="checkbox" data-iaop="preguntas" ${r.preguntas && r.preguntas.length ? "checked" : "disabled"}> Preguntas para después (solo para ti)</label>
+        <label><input type="checkbox" data-iaop="preguntas" ${r.preguntas && r.preguntas.length ? "checked" : "disabled"}> Preguntas para después (no se envían a los jugadores)</label>
         <label><input type="checkbox" data-iaop="pizarra" ${r.indicaciones.length ? "" : "disabled"}> Indicaciones de cada jugador en la pizarra (${r.indicaciones.length}): revísalas arriba, las verá todo el grupo</label>
         <label><input type="checkbox" data-iaop="privado" ${r.individual.length ? "checked" : "disabled"}> Consejos privados en la ficha de cada jugador (${r.individual.length})</label>
       </fieldset>
@@ -2866,7 +2866,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         ${b.texto ? `<p>${esc(b.texto).replace(/\n/g, "<br>")}</p>` : ""}
         ${cons.length ? `<ul class="consignas">${cons.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
         ${b.fij || b.cuando ? `<div class="atencion">${b.fij ? `<p><b>🎯 En qué fijarte:</b> ${esc(b.fij)}</p>` : ""}${b.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(b.cuando)}</p>` : ""}</div>` : ""}
-        ${htmlCondicion(b, ctx, yo)}
+        <div data-r="cond">${htmlCondicion(b, ctx, yo)}</div>
         <div data-r="mio"></div>
         ${b.jug ? `<div data-r="pz" id="pzv${bi}"></div>` : ""}`;
       bc.appendChild(d);
@@ -2900,7 +2900,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (mf) mf.hidden = !yo;
       try { sessionStorage.setItem("pz_yo", yo); } catch (e) { /* nada */ }
       pizarrasVista.forEach((p) => p.seleccionarJugador(yo));
-      $$(".bloque", cont).forEach((d, bi) => pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo));
+      $$(".bloque", cont).forEach((d, bi) => {
+        pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo);
+        const c = d.querySelector('[data-r="cond"]'); if (c) c.innerHTML = htmlCondicion(plan.bloques[bi], ctx, yo);
+      });
     });
   }
   // La condición del apartado y si la tiene el equipo de este jugador (por color de peto o de equipo).
