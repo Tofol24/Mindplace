@@ -11,6 +11,9 @@
 [build]
   publish = "publico"
   command = "npm --prefix .. ci --omit=dev --no-audit --no-fund && node construir.mjs"
+  # La app y las funciones viven fuera de esta carpeta: se publica si cambia cualquiera de ellas
+  # (sin esto, Netlify solo mira pizarra-web/ y cancela la publicación). git diff --quiet = 0 → no publicar.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ../app/pizarra ../app/vendor/lz-string.min.js ../app/js/descarga-segura.js ../app/entrenador ../netlify/functions ../netlify/lib ../package.json ../package-lock.json"
 
 [functions]
   directory = "netlify/functions"
