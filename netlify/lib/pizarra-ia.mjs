@@ -260,6 +260,7 @@ function historial(h) {
   return lista(h, 8).map((p) => ({
     fecha: /^\d{4}-\d{2}-\d{2}$/.test(p?.fecha || "") ? p.fecha : "", tipo: p?.tipo === "partido" ? "partido" : "entreno",
     titulo: txt(p?.titulo, 80), objetivo: txt(p?.objetivo, 300), nota: txt(p?.nota, 600), resultado: txt(p?.resultado, 40),
+    analisis: lista(p?.analisis, 20).map((x) => ({ aspecto: txt(x?.aspecto, 80), valor: txt(x?.valor, 40) })).filter((x) => x.aspecto && x.valor),
     bloques: lista(p?.bloques, 12).map(bloqueFb)
   }));
 }
@@ -315,7 +316,11 @@ export const SISTEMA_ENTRENO = `Eres un entrenador de fútbol base con formació
 
 ${METODO}
 
-Qué tienes que hacer: detectar qué cuesta y qué ya está consolidado, sobre todo lo que se ha visto en los partidos, y proponer el próximo entrenamiento. Empieza con un calentamiento y sigue la secuencia del método para el aprendizaje principal (analítico, dinámica ecológica y partido condicionado). Si el entrenador indica qué quiere trabajar o la duración, respétalo. Cada apartado con qué mirar y cuándo, consignas, la condición cuando toque y 2-3 preguntas para después. Adapta todo a la edad y al número de jugadores. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
+En los partidos puede venir un «analisis»: dónde se recupera y se pierde el balón, duelos, salida, romper líneas, presión, contemporizar, remate, por qué banda hay peligro, activación tras pérdida, errores no forzados y ocasiones claras.
+
+El análisis del partido es la base para plantear el próximo entrenamiento: lo que ha costado (por ejemplo, perder muchos balones en nuestro campo, duelos perdidos o poca pegada) se convierte en el aprendizaje principal, y para cada aspecto tienes que concretar los estímulos relevantes que lo resuelven (qué mirar y cuándo) y llevarlos a «fijarse» y «cuando» de los apartados. Lo que ha ido bien se mantiene como fortaleza. En «analisis» explica qué aspecto del partido trabaja cada apartado.
+
+Qué tienes que hacer: detectar qué cuesta y qué ya está consolidado, sobre todo lo que se ha visto en los partidos y en su análisis, y proponer el próximo entrenamiento. Empieza con un calentamiento y sigue la secuencia del método para el aprendizaje principal (analítico, dinámica ecológica y partido condicionado). Si el entrenador indica qué quiere trabajar o la duración, respétalo. Cada apartado con qué mirar y cuándo, consignas, la condición cuando toque y 2-3 preguntas para después. Adapta todo a la edad y al número de jugadores. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
 
 function sanearBloqueProp(b) {
   if (!b || typeof b !== "object") return null;

@@ -307,3 +307,5 @@ button:disabled { opacity: .45; cursor: default; }
 .fb-nota textarea { flex: 1; min-width: 0; }
 .memoria { border-left: 6px solid #7C3AED; }
 .alt-prop { border-top: 1px dashed #CCC; padding-top: 8px; margin-top: 8px; }
+.analisis { margin: 6px 0 12px; }
+.analisis .subtit { margin: 10px 0 2px; }
