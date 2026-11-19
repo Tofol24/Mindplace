@@ -276,3 +276,12 @@ button:disabled { opacity: .45; cursor: default; }
   body.imprimiendo .inf-sit ul { font-size: 15px; }
   body.imprimiendo .inf-pie { font-size: 15px; }
 }
+.asignar { border-top: 1px solid #EEE; padding-top: 8px; }
+.tabla-asig { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabla-asig th { text-align: left; font-size: 12px; color: var(--suave); padding: 2px 4px; }
+.tabla-asig td { padding: 3px 4px; vertical-align: middle; }
+.tabla-asig select { min-height: 36px; padding: 4px 6px; font-size: 14px; }
+.dorsal.mini { min-width: 26px; height: 26px; font-size: 12px; }
+.asig-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 4px 10px; margin: 6px 0; font-size: 14px; }
+.asig-lista label { display: flex; gap: 6px; align-items: center; }
+.asig-lista input { width: 18px; height: 18px; }
