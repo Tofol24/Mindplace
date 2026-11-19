@@ -1879,7 +1879,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       // Se recuerda que los dos identificadores son el mismo jugador.
       ex.alias = Array.from(new Set((ex.alias || []).concat(ids(j)).filter((k) => k !== ex.id))).slice(0, 10);
       const cambia = ["d", "n", "c", "p"].some((k) => (j[k] || "") !== (ex[k] || ""));
-      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); if (cambia) r.jugAct++; }
+      const notasEx = ex.notas || [];
+      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); ex.notas = notasEx; if (cambia) r.jugAct++; }
+      if (Array.isArray(j.notas) && j.notas.length) {
+        const ids = new Set(notasEx.map((n) => n.id));
+        const nuevas = j.notas.filter((n) => !ids.has(n.id));
+        if (nuevas.length) { ex.notas = notasEx.concat(clon(nuevas)).slice(0, 80); r.notas = (r.notas || 0) + nuevas.length; }
+      }
     });
     const m = (pid) => (pid && mapa[pid]) || pid;
     rec.planes.forEach((p0) => {
@@ -1910,6 +1916,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (r.jugAct) t.push(r.jugAct + " jugador" + (r.jugAct === 1 ? "" : "es") + " actualizado" + (r.jugAct === 1 ? "" : "s"));
     t.push(r.planNuevos + " plan" + (r.planNuevos === 1 ? "" : "es") + " nuevo" + (r.planNuevos === 1 ? "" : "s"));
     if (r.planAct) t.push(r.planAct + " plan" + (r.planAct === 1 ? "" : "es") + " actualizado" + (r.planAct === 1 ? "" : "s"));
+    if (r.notas) t.push(r.notas + " nota" + (r.notas === 1 ? "" : "s") + " de jugadores");
     if (r.planMios) t.push(r.planMios + " en los que tu versión era más reciente (se quedan como estaban)");
     return t.join(", ") + ".";
   }
@@ -2107,20 +2114,29 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     rechazo: "Claude no ha podido responder a esta consulta.",
     grande: "El apartado es demasiado grande para analizarlo."
   };
+  const iaPendiente = {};
   function previaIA(plan, b, cont) {
-    const { entrada } = entradaIA(plan, b);
+    const prep = entradaIA(plan, b);
+    iaPendiente[b.id] = prep;
+    const entrada = prep.entrada;
+    const textos = [["Objetivo del plan", entrada.objetivo], ["Palabra clave", entrada.clave], ["Título", entrada.bloque.titulo], ["Explicación", entrada.bloque.texto],
+      ["Consignas", entrada.bloque.consignas], ["En qué fijarse", entrada.bloque.fijarse], ["Cuándo", entrada.bloque.cuando]]
+      .concat(entrada.pasos.map((x) => ["Paso " + x.paso, x.titulo])).filter((x) => x[1]);
     const notas = [];
     entrada.jugadores.forEach((j) => j.notas.forEach((n) => notas.push(j.jugador + " (" + (j.puesto || "sin puesto") + "): " + n.texto)));
     cont.innerHTML = `<div class="ia-propuesta">
       <h3>✨ Antes de pedir la propuesta</h3>
       <p class="peq">Esto es lo que se enviará a Claude (Anthropic). Los jugadores van como J1, J2… y se quitan los nombres de la plantilla. Si alguna nota lleva otros datos personales (familiares, salud…), edítala antes en la ficha del jugador.</p>
       <p><b>Apartado:</b> ${esc(entrada.bloque.categoria)}${entrada.bloque.titulo ? " · " + esc(entrada.bloque.titulo) : ""} · ${entrada.pasos.length} paso${entrada.pasos.length === 1 ? "" : "s"} de pizarra · edad: ${esc(entrada.etapa || "sin indicar")}</p>
-      ${notas.length ? `<details class="det"><summary>Ver las ${notas.length} notas que se envían</summary><ul class="consignas">${notas.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : `<p class="peq">No se envía ninguna nota de jugador.</p>`}
+      ${textos.length ? `<details class="det" open><summary>Textos que se envían (${textos.length})</summary><ul class="consignas">${textos.map((x) => `<li><b>${esc(x[0])}:</b> ${esc(x[1])}</li>`).join("")}</ul></details>` : ""}
+      ${notas.length ? `<details class="det" open><summary>Notas de jugadores que se envían (${notas.length})</summary><ul class="consignas">${notas.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : `<p class="peq">No se envía ninguna nota de jugador.</p>`}
       <div class="fila"><button type="button" class="btn" data-iaconfirmar="${esc(b.id)}">Enviar a Claude</button><button type="button" class="btn-sec" data-iadescartar="${esc(b.id)}">Cancelar</button></div>
     </div>`;
   }
   async function pedirIA(plan, b, cont) {
-    const { entrada, porJug } = entradaIA(plan, b);
+    const prep = iaPendiente[b.id]; delete iaPendiente[b.id];
+    if (!prep) { previaIA(plan, b, cont); return; }
+    const { entrada, porJug } = prep;
     cont.innerHTML = `<p class="peq ia-espera">✨ Claude está preparando la propuesta. Puede tardar un minuto…</p>`;
     let job;
     try {
@@ -2158,11 +2174,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${r.fijarse ? `<p><b>🎯 En qué fijarse:</b> ${esc(r.fijarse)}</p>` : ""}${r.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(r.cuando)}</p>` : ""}
       ${r.individual.length ? `<p><b>Consejos privados:</b></p><ul class="consignas">${r.individual.map((i) => `<li><b>${esc(nombre(i.jugador))}:</b> ${esc(i.texto)}</li>`).join("")}</ul>` : ""}
       ${r.mensaje ? `<p><b>Mensaje para el grupo:</b> ${esc(r.mensaje)}</p>` : ""}
-      ${r.indicaciones.length ? `<details class="det"><summary>Ver las ${r.indicaciones.length} indicaciones para la pizarra (las verá todo el grupo)</summary><ul class="consignas">${r.indicaciones.map((i) => `<li><b>Paso ${i.paso} · ${esc(etiquetaFicha(plan, b, i.ficha))}:</b> ${esc([i.que, i.fijate && "Fíjate: " + i.fijate, i.cuando && "Cuándo: " + i.cuando].filter(Boolean).join(" · "))}</li>`).join("")}</ul></details>` : ""}
+      ${r.indicaciones.length ? `<details class="det" open><summary>Indicaciones para la pizarra (${r.indicaciones.length}): las verá todo el grupo</summary><ul class="consignas">${r.indicaciones.map((i) => `<li><b>Paso ${i.paso} · ${esc(etiquetaFicha(plan, b, i.ficha))}:</b> ${esc([i.que, i.fijate && "Fíjate: " + i.fijate, i.cuando && "Cuándo: " + i.cuando].filter(Boolean).join(" · "))}</li>`).join("")}</ul></details>` : ""}
       <fieldset class="lista-env"><legend class="peq"><b>Qué quieres aplicar</b></legend>
         <label><input type="checkbox" data-iaop="texto" checked> Explicación y consignas</label>
         <label><input type="checkbox" data-iaop="atencion" checked> En qué fijarse y cuándo</label>
-        <label><input type="checkbox" data-iaop="pizarra" ${r.indicaciones.length ? "checked" : "disabled"}> Indicaciones de cada jugador en la pizarra (${r.indicaciones.length})</label>
+        <label><input type="checkbox" data-iaop="pizarra" ${r.indicaciones.length ? "" : "disabled"}> Indicaciones de cada jugador en la pizarra (${r.indicaciones.length}): revísalas arriba, las verá todo el grupo</label>
         <label><input type="checkbox" data-iaop="privado" ${r.individual.length ? "checked" : "disabled"}> Consejos privados en la ficha de cada jugador (${r.individual.length})</label>
       </fieldset>
       <div class="fila">
@@ -2472,6 +2488,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.olvidar) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
     if (d.ultimo) {
       let pq = null; try { pq = sanPaquete(JSON.parse(localStorage.getItem("pz_ultimo"))); } catch (e) { pq = null; }
+      if (pq && pq.yo) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
       if (pq) return mostrarJugador(pq, true);
       return;
     }
@@ -2546,8 +2563,17 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
-    if (d.p && plan && d.p !== "sistema") { plan[d.p] = t.value; guardar(); return; }
-    if (d.b && plan) { const b = plan.bloques.find((x) => x.id === d.bid); if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); } return; }
+    if (d.p && plan && d.p !== "sistema") {
+      plan[d.p] = t.value; guardar();
+      Object.keys(iaPendiente).forEach((k) => { delete iaPendiente[k]; const c = app.querySelector(`[data-r="ia-${k}"]`); if (c) c.innerHTML = ""; });
+      return;
+    }
+    if (d.b && plan) {
+      const b = plan.bloques.find((x) => x.id === d.bid);
+      if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); }
+      if (b && iaPendiente[b.id]) { delete iaPendiente[b.id]; const c = app.querySelector(`[data-r="ia-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Sugerencias de Claude» para revisar lo que se envía.</p>`; }
+      return;
+    }
     if (d.j) {
       const j = db.plantilla.find((x) => x.id === d.jid); if (!j) return;
       j[d.j] = d.j === "d" ? +t.value : t.value; j.mod = Date.now(); guardar(); return;
@@ -2639,6 +2665,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     } catch (e) { return false; }
   }
   function arrancar() {
+    // Una ficha privada nunca se queda guardada como «último plan» (versiones anteriores sí lo hacían).
+    try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); if (u && u.yo) localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ }
     const h = location.hash || "";
     if (/^#k=/.test(h)) {
       $("#nav").hidden = true;
