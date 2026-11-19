@@ -23,6 +23,8 @@ const lista = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
 export function sanearEntrada(e) {
   if (!e || typeof e !== "object") return null;
   if (e.modo === "pizarra") return sanearEntradaPizarra(e);
+  if (e.modo === "alternativas") return sanearEntradaAlternativas(e);
+  if (e.modo === "entreno") return sanearEntradaEntreno(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -239,4 +241,105 @@ export function sanearPizarra(o) {
     jugada: { vista, rivales: true, fichas: fichas.concat(conos.map((c) => ({ id: c.id, eq: "c", forma: "cono", col: c.col }))), pasos },
     explicacion: txt(o.explicacion, 600)
   };
+}
+
+// ---------------------------------------------------------------- feedback del equipo: alternativas y nuevos entrenos
+// La pizarra guarda en el móvil cómo ha ido cada ejercicio y cada situación de partido («memoria del equipo»)
+// y la envía, sin nombres, cuando el entrenador pide alternativas o un entreno nuevo. Claude no guarda nada.
+export const CATS_IA = ["calentamiento", "ejercicio", "rondo", "juego", "transicion", "salida", "presion", "banda", "cornerF", "cornerC", "falta", "situacion", "otro"];
+export const FASES_IA = ["", "analitico", "ecologico", "condicionado"];
+const COMO = ["", "costó", "regular", "bien"], ATENC = ["", "no", "a veces", "sí"];
+function bloqueFb(b) {
+  return {
+    categoria: txt(b?.categoria, 60), titulo: txt(b?.titulo, 80), texto: txt(b?.texto, 600), fase: txt(b?.fase, 40),
+    fijarse: txt(b?.fijarse, 300), cuando: txt(b?.cuando, 300), condicion: txt(b?.condicion, 300),
+    como: COMO.includes(b?.como) ? b.como : "", estimulos: ATENC.includes(b?.estimulos) ? b.estimulos : "", nota: txt(b?.nota, 300)
+  };
+}
+function historial(h) {
+  return lista(h, 8).map((p) => ({
+    fecha: /^\d{4}-\d{2}-\d{2}$/.test(p?.fecha || "") ? p.fecha : "", tipo: p?.tipo === "partido" ? "partido" : "entreno",
+    titulo: txt(p?.titulo, 80), objetivo: txt(p?.objetivo, 300), nota: txt(p?.nota, 600), resultado: txt(p?.resultado, 40),
+    analisis: lista(p?.analisis, 20).map((x) => ({ aspecto: txt(x?.aspecto, 80), valor: txt(x?.valor, 40) })).filter((x) => x.aspecto && x.valor),
+    bloques: lista(p?.bloques, 12).map(bloqueFb)
+  }));
+}
+export function sanearEntradaAlternativas(e) {
+  const b = bloqueFb(e.bloque);
+  if (!b.titulo && !b.texto) return null;
+  return { modo: "alternativas", etapa: txt(e.etapa, 40), tipo: e.tipo === "partido" ? "partido" : "entreno",
+    bloque: Object.assign(b, { consignas: txt(e.bloque?.consignas, 800) }), historial: historial(e.historial) };
+}
+export function sanearEntradaEntreno(e) {
+  const h = historial(e.historial);
+  if (!h.length) return null;
+  return { modo: "entreno", etapa: txt(e.etapa, 40), quiero: txt(e.quiero, 300), minutos: num(e.minutos, 30, 150), jugadores: num(e.jugadores, 0, 30), historial: h };
+}
+
+const BLOQUE_PROP = {
+  type: "object", additionalProperties: false,
+  required: ["titulo", "categoria", "fase", "minutos", "texto", "consignas", "fijarse", "cuando", "condicion", "preguntas"],
+  properties: {
+    titulo: { type: "string" }, categoria: { type: "string", enum: CATS_IA }, fase: { type: "string", enum: FASES_IA },
+    minutos: { type: "integer" }, texto: { type: "string", description: "Organización, espacio, número de jugadores y reglas." },
+    consignas: { type: "array", items: { type: "string" } }, fijarse: { type: "string", description: "Estímulos relevantes: en qué fijarse." },
+    cuando: { type: "string", description: "Cuándo fijarse o actuar." }, condicion: { type: "string", description: "Condición ligada al gol (vacía si no aplica)." },
+    preguntas: { type: "array", items: { type: "string" }, description: "Preguntas para hacer después." }
+  }
+};
+export const ESQUEMA_ALTERNATIVAS = {
+  type: "object", additionalProperties: false, required: ["analisis", "estimulos", "objetivos", "alternativas"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: qué trabaja el ejercicio y qué dice el feedback, 2-4 frases." },
+    estimulos: { type: "string", description: "Los estímulos relevantes del ejercicio: qué mirar y cuándo." },
+    objetivos: { type: "array", items: { type: "string" }, description: "2-5 objetivos que trabaja (técnicos, tácticos, de atención…)." },
+    alternativas: { type: "array", description: "2-3 variantes parecidas: una más fácil o más analítica, una más ecológica o exigente, y otra que ataque lo que costó.",
+      items: { type: "object", additionalProperties: false, required: ["cambio", "bloque"], properties: { cambio: { type: "string", description: "Qué cambia respecto al original y por qué, 1-2 frases." }, bloque: BLOQUE_PROP } } }
+  }
+};
+export const ESQUEMA_ENTRENO = {
+  type: "object", additionalProperties: false, required: ["analisis", "titulo", "objetivo", "bloques"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: qué has visto en los feedbacks y por qué propones este entreno, 3-5 frases." },
+    titulo: { type: "string" }, objetivo: { type: "string" },
+    bloques: { type: "array", description: "3-6 apartados que sumen los minutos indicados, empezando por un calentamiento.", items: BLOQUE_PROP }
+  }
+};
+
+const METODO = `Método de los cinco pasos para cualquier aprendizaje: (1) dar a conocer los estímulos relevantes, qué mirar y cuándo; (2) ejercicio analítico que repita el gesto; (3) lo conocen pero aún no lo han aprendido: el entrenador no repite la consigna en cada error; (4) dinámica ecológica con variables del juego real y el cambio de foco de las transiciones; (5) condición ligada al gol, que la tiene un equipo y no pierde al perder el balón, mientras el entrenador observa y pregunta.`;
+export const SISTEMA_ALTERNATIVAS = `Eres un entrenador de fútbol base con formación en psicología del deporte. El entrenador te pasa un ejercicio de su plan, cómo ha ido (si costó, si los jugadores encontraron los estímulos relevantes y su nota) y el historial reciente del equipo, sin nombres.
+
+${METODO}
+
+Qué tienes que hacer: identificar los estímulos relevantes y los objetivos que trabaja el ejercicio, y proponer 2-3 variantes parecidas que lo perfeccionen a partir del feedback. Si costó o no encontraron los estímulos, una variante más sencilla o más analítica; si fue bien, una más ecológica, con más oposición o con transiciones. Cada variante lleva su condición si es un entrenamiento. Adapta todo a la edad. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
+export const SISTEMA_ENTRENO = `Eres un entrenador de fútbol base con formación en psicología del deporte. El entrenador te pasa el historial reciente de su equipo: entrenos y partidos con los objetivos, las situaciones de juego trabajadas, cómo ha ido cada apartado, si encontraron los estímulos relevantes y sus notas, sin nombres.
+
+${METODO}
+
+En los partidos puede venir un «analisis»: dónde se recupera y se pierde el balón, duelos, salida, romper líneas, presión, contemporizar, remate, por qué banda hay peligro, activación tras pérdida, errores no forzados y ocasiones claras.
+
+El análisis del partido es la base para plantear el próximo entrenamiento: lo que ha costado (por ejemplo, perder muchos balones en nuestro campo, duelos perdidos o poca pegada) se convierte en el aprendizaje principal, y para cada aspecto tienes que concretar los estímulos relevantes que lo resuelven (qué mirar y cuándo) y llevarlos a «fijarse» y «cuando» de los apartados. Lo que ha ido bien se mantiene como fortaleza. En «analisis» explica qué aspecto del partido trabaja cada apartado.
+
+Qué tienes que hacer: detectar qué cuesta y qué ya está consolidado, sobre todo lo que se ha visto en los partidos y en su análisis, y proponer el próximo entrenamiento. Empieza con un calentamiento y sigue la secuencia del método para el aprendizaje principal (analítico, dinámica ecológica y partido condicionado). Si el entrenador indica qué quiere trabajar o la duración, respétalo. Cada apartado con qué mirar y cuándo, consignas, la condición cuando toque y 2-3 preguntas para después. Adapta todo a la edad y al número de jugadores. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
+
+function sanearBloqueProp(b) {
+  if (!b || typeof b !== "object") return null;
+  const o = {
+    titulo: txt(b.titulo, 80), categoria: CATS_IA.includes(b.categoria) ? b.categoria : "ejercicio", fase: FASES_IA.includes(b.fase) ? b.fase : "",
+    minutos: num(b.minutos, 0, 120), texto: txt(b.texto, 1200), consignas: lista(b.consignas, 8).map((c) => txt(c, 160)).filter(Boolean),
+    fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300), condicion: txt(b.condicion, 300), preguntas: lista(b.preguntas, 6).map((c) => txt(c, 200)).filter(Boolean)
+  };
+  return o.titulo || o.texto ? o : null;
+}
+export function sanearAlternativas(o) {
+  if (!o || typeof o !== "object") return null;
+  const alternativas = lista(o.alternativas, 3).map((a) => { const b = sanearBloqueProp(a?.bloque); return b ? { cambio: txt(a.cambio, 400), bloque: b } : null; }).filter(Boolean);
+  if (!alternativas.length) return null;
+  return { analisis: txt(o.analisis, 1200), estimulos: txt(o.estimulos, 400), objetivos: lista(o.objetivos, 6).map((c) => txt(c, 120)).filter(Boolean), alternativas };
+}
+export function sanearEntreno(o) {
+  if (!o || typeof o !== "object") return null;
+  const bloques = lista(o.bloques, 8).map(sanearBloqueProp).filter(Boolean);
+  if (!bloques.length) return null;
+  return { analisis: txt(o.analisis, 1500), titulo: txt(o.titulo, 80), objetivo: txt(o.objetivo, 600), bloques };
 }

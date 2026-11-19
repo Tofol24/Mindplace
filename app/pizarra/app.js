@@ -312,6 +312,22 @@
   // Juego parado → momento de atención interna (APRENS: no luchar, volver al estímulo relevante)
   const PARADO = { banda: "quién se mueve y dónde está el espacio", cornerF: "tu zona y la trayectoria del balón", cornerC: "el balón y tu zona", falta: "la señal del lanzador y la línea del fuera de juego" };
 
+  // Análisis del partido: preguntas de un toque. La última opción de cada escala es la que «cuesta» (para la memoria).
+  const BCR = ["Bien", "Regular", "Costó"], DUELO = ["Ganados", "Equilibrados", "Perdidos"], ZONA = ["Campo rival", "Medio campo", "Nuestro campo"], BANDA = ["Izquierda", "Centro", "Derecha"];
+  const ANALISIS = [
+    { g: "Recuperación y pérdida", p: [
+      ["recupera", "¿Dónde recuperamos más balones?", ZONA, 2], ["pierde", "¿Dónde perdimos más balones?", ["Último tercio", "Medio campo", "Nuestro campo"], 2],
+      ["activacion", "Activación después de pérdida", BCR, 2], ["errores", "Errores no forzados", ["Pocos", "Algunos", "Muchos"], 2], ["control", "Control y no perder el balón", BCR, 2]] },
+    { g: "Duelos", p: [["duelos", "Duelos uno contra uno", DUELO, 2], ["aereos", "Duelos aéreos", DUELO, 2]] },
+    { g: "Con balón", p: [
+      ["salida", "Coordinación en la salida de balón", BCR, 2], ["romper", "Romper líneas y generar transición", BCR, 2],
+      ["remate", "Remate y pegada: definir las ocasiones creadas", BCR, 2], ["bandaAtq", "¿Por dónde generamos más peligro?", BANDA, -1]] },
+    { g: "Sin balón", p: [
+      ["presion", "Presionar su salida y robar", BCR, 2], ["contemp", "Contemporizar y evitar contraataques con ocasiones claras", BCR, 2],
+      ["bandaDef", "¿Por dónde nos generaron más peligro?", BANDA, -1]] }
+  ];
+  const AN_P = {}; ANALISIS.forEach((g) => g.p.forEach((x) => { AN_P[x[0]] = x; }));
+
   // ---------------------------------------------------------------- saneado
   // Todo lo que entra de fuera (enlace #ver=, copia de seguridad, localStorage)
   // se reconstruye campo a campo: ids, números, colores y tipos de una lista cerrada.
@@ -393,7 +409,8 @@
     return {
       id: idOk(p.id) || uid(), mod: num(p.mod, 0, 4102444800000, 0), tipo: p.tipo === "partido" ? "partido" : "entreno",
       fecha: /^\d{4}-\d{2}-\d{2}$/.test(p.fecha) ? p.fecha : "", titulo: txt(p.titulo, 80), rival: txt(p.rival, 60),
-      objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30),
+      objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30), fbn: txt(p.fbn, 600), fbr: txt(p.fbr, 40),
+      an: sanAnalisis(p.an), anOc: Array.isArray(p.anOc) && p.anOc.length === 2 ? p.anOc.map((v) => Math.round(num(v, 0, 50, 0))) : null,
       sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
       bloques: p.bloques.slice(0, MAX.bloques).map((b) => {
         const o = {
@@ -406,17 +423,30 @@
         const cond = txt(b.cond, 300); if (cond) o.cond = cond;
         if (cond && (b.condEq === "a" || b.condEq === "r" || own(PETOS, b.condEq))) o.condEq = b.condEq;
         const preg = txt(b.preg, 600); if (preg) o.preg = preg;
+        // feedback: c cómo ha ido (1 costó, 2 regular, 3 bien), a estímulos relevantes (1 no, 2 a veces, 3 sí), n nota
+        if (b.fb && typeof b.fb === "object") {
+          const fb = {}; if ([1, 2, 3].includes(b.fb.c)) fb.c = b.fb.c; if ([1, 2, 3].includes(b.fb.a)) fb.a = b.fb.a;
+          const n = txt(b.fb.n, 300); if (n) fb.n = n;
+          if (Object.keys(fb).length) o.fb = fb;
+        }
         return o;
       })
     };
   }
+  function sanAnalisis(a) {
+    if (!a || typeof a !== "object") return null;
+    const o = {};
+    Object.keys(a).forEach((k) => { if (own(AN_P, k) && Number.isInteger(a[k]) && a[k] >= 0 && a[k] < AN_P[k][2].length) o[k] = a[k]; });
+    return Object.keys(o).length ? o : null;
+  }
   function sanDB(o) {
     if (!o || typeof o !== "object" || !Array.isArray(o.planes) || !Array.isArray(o.plantilla)) return null;
+    const limpiaAn = (p) => { if (!p.an) delete p.an; if (!p.anOc) delete p.anOc; return p; };
     return {
       v: 1,
       equipo: { nombre: txt(o.equipo && o.equipo.nombre, 60) || "Mi equipo", color: colOk(o.equipo && o.equipo.color, "#C8102E"), etapa: own(ETAPAS_OK, o.equipo && o.equipo.etapa) ? o.equipo.etapa : "" },
       plantilla: o.plantilla.map(sanJugador).filter(Boolean),
-      planes: o.planes.map(sanPlan).filter(Boolean)
+      planes: o.planes.map(sanPlan).filter(Boolean).map(limpiaAn)
     };
   }
   function sanPaquete(o) {
@@ -436,7 +466,12 @@
     return { v: 1, equipo: { nombre: "Mi equipo", color: "#C8102E" }, plantilla: [], planes: [] };
   }
   let db;
-  try { db = sanDB(JSON.parse(localStorage.getItem(CLAVE))) || dbVacia(); } catch (e) { db = dbVacia(); }
+  try { db = sanDB(JSON.parse(localStorage.getItem(CLAVE))) || dbVacia(); }
+  catch (e) {
+    // No se pierde nada: lo guardado se copia aparte antes de empezar con un cuaderno vacío.
+    try { const crudo = localStorage.getItem(CLAVE); if (crudo && !localStorage.getItem(CLAVE + "_respaldo")) localStorage.setItem(CLAVE + "_respaldo", crudo); } catch (e2) { /* nada */ }
+    db = dbVacia();
+  }
   if (!db.equipo) db.equipo = dbVacia().equipo;
   let tGuardar = null;
   function guardar() {
@@ -1618,6 +1653,7 @@
           ${(function () { try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); return u && u.plan ? `<button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(u.plan.titulo || "último plan").slice(0, 40))}»</button><button type="button" class="btn-peq peligro" data-olvidar="1" aria-label="Olvidar el último plan abierto en este móvil">✕ Olvidar</button>` : ""; } catch (e) { return ""; } })()}
         </div>
       </div>
+      ${htmlMemoria()}
       ${db.plantilla.length ? "" : `<div class="tarjeta"><p><b>Primero, tu plantilla.</b> Añade el dorsal y el nombre de cada jugador para que aparezcan en las fichas del campo.</p><button type="button" class="btn-sec" data-ir2="plantilla">Ir a la plantilla</button></div>`}
       <div class="lista-planes">
         ${planes.length ? planes.map((p) => `
@@ -1677,6 +1713,48 @@
     });
   }
 
+  function htmlAnalisis(p) {
+    const an = p.an || {};
+    return `<details class="det analisis" ${Object.keys(an).length ? "" : "open"}><summary><b>🔎 Análisis del partido</b> <span class="peq">(preguntas de un toque)</span></summary>
+      ${ANALISIS.map((g) => `<p class="subtit">${esc(g.g)}</p>${g.p.map((x) => `<div class="fb-grupo" role="group" aria-label="${esc(x[1])}"><span class="peq">${esc(x[1])}</span>${x[2].map((o, i) => `<button type="button" class="btn-peq" data-an="${x[0]}" data-v="${i}" aria-pressed="${an[x[0]] === i}">${esc(o)}</button>`).join("")}</div>`).join("")}`).join("")}
+      <p class="subtit">Ocasiones claras</p>
+      <div class="fila"><div class="campo-f"><label for="anOc0">A favor</label><input type="number" min="0" max="50" id="anOc0" data-anoc="0" value="${p.anOc ? esc(p.anOc[0]) : ""}" style="width:90px"></div>
+        <div class="campo-f"><label for="anOc1">En contra</label><input type="number" min="0" max="50" id="anOc1" data-anoc="1" value="${p.anOc ? esc(p.anOc[1]) : ""}" style="width:90px"></div></div>
+    </details>`;
+  }
+  // El análisis en frases, para la memoria y para Claude: [{aspecto, valor, cuesta}]
+  function analisisLista(p) {
+    const r = [];
+    Object.keys(p.an || {}).forEach((k) => { const x = AN_P[k]; if (x) r.push({ aspecto: x[1], valor: x[2][p.an[k]], cuesta: x[3] >= 0 && p.an[k] === x[3], fuerte: x[3] >= 0 && p.an[k] === 0 }); });
+    if (p.anOc) r.push({ aspecto: "Ocasiones claras", valor: "a favor " + p.anOc[0] + ", en contra " + p.anOc[1], cuesta: p.anOc[1] > p.anOc[0] });
+    return r;
+  }
+  const FB_C = [["", ""], ["😕", "Costó"], ["🙂", "Regular"], ["💪", "Bien"]];
+  const FB_A = [["", ""], ["", "No"], ["", "A veces"], ["", "Sí"]];
+  function htmlFeedback(p) {
+    const fila = (b) => {
+      const fb = b.fb || {};
+      const grupo = (k, ops, et) => `<div class="fb-grupo" role="group" aria-label="${esc(et)}: ${esc(b.titulo || CATS[b.cat])}"><span class="peq">${esc(et)}</span>${[1, 2, 3].map((v) => `<button type="button" class="btn-peq" data-fb="${k}" data-bid="${b.id}" data-v="${v}" aria-pressed="${fb[k] === v}">${ops[v][0] ? ops[v][0] + " " : ""}${ops[v][1]}</button>`).join("")}</div>`;
+      return `<div class="fb-bloque">
+        <p class="fb-tit"><b>${esc(b.titulo || CATS[b.cat])}</b>${b.fase ? ` <span class="peq">· ${esc(FASE_CORTA[b.fase])}</span>` : ""}</p>
+        ${grupo("c", FB_C, p.tipo === "partido" ? "¿Cómo ha salido?" : "¿Cómo ha ido?")}
+        ${grupo("a", FB_A, "¿Encontraron los estímulos relevantes?")}
+        <div class="fila fb-nota"><label class="sr-only" for="fbn${b.id}">Nota rápida: ${esc(b.titulo || CATS[b.cat])}</label><textarea id="fbn${b.id}" data-fbn="${b.id}" maxlength="300" rows="2" placeholder="Nota rápida: qué ha pasado, qué ajustarías…">${esc(fb.n || "")}</textarea>
+          <button type="button" class="btn-peq" data-fbdictar="fbn${b.id}" aria-label="Dictar la nota de ${esc(b.titulo || CATS[b.cat])}">🎤 Dictar</button></div>
+      </div>`;
+    };
+    return `<h2 id="comoHaIdo">📝 Cómo ha ido</h2>
+      <div class="tarjeta">
+        <p class="peq">Un minuto al acabar. Con estos feedbacks, la pizarra va formando la memoria del equipo, y Claude la usa para proponer alternativas y los próximos entrenos.</p>
+        ${p.tipo === "partido" ? htmlAnalisis(p) + `<p class="subtit">Situaciones de juego del plan</p>` : ""}
+        ${p.bloques.map(fila).join("")}
+        ${p.tipo === "partido" ? `<div class="campo-f"><label for="fbr">Resultado</label><input type="text" id="fbr" data-p="fbr" maxlength="40" value="${esc(p.fbr || "")}" placeholder="2-1"></div>` : ""}
+        <div class="campo-f"><label for="fbnG">${p.tipo === "partido" ? "Lo más importante del partido" : "Lo más importante de hoy"}</label>
+          <div class="fila fb-nota"><textarea id="fbnG" data-p="fbn" maxlength="600" rows="3" placeholder="${p.tipo === "partido" ? "Qué situaciones de juego han salido y cuáles han costado…" : "Qué han aprendido, qué hay que repetir…"}">${esc(p.fbn || "")}</textarea>
+          <button type="button" class="btn-peq" data-fbdictar="fbnG" aria-label="Dictar lo más importante">🎤 Dictar</button></div></div>
+        <p class="peq" data-r="ayudaDictadoFb" hidden>Pulsa el <b>micrófono del teclado</b> y habla: el móvil lo escribe por ti (en Mac, pulsa dos veces la tecla Fn). El dictado lo hace tu móvil, la pizarra no graba audio.</p>
+      </div>`;
+  }
   function pantPlan() {
     const p = db.planes.find((x) => x.id === estado.planId);
     if (!p) return ir("cuaderno");
@@ -1750,9 +1828,11 @@
           <div class="acciones">
             <button type="button" class="btn-peq ia-btn" data-iapedir="${b.id}">✨ Sugerencias de Claude</button>
             <button type="button" class="btn-peq ia-btn" data-iapz="${b.id}">✨ Diseñar la pizarra con Claude</button>
+            <button type="button" class="btn-peq ia-btn" data-iaalt="${b.id}">✨ Alternativas con Claude</button>
           </div>
           <div data-r="ia-${b.id}"></div>
           <div data-r="iapz-${b.id}"></div>
+          <div data-r="iaalt-${b.id}"></div>
         </div>`).join("")}
       <p class="peq">✨ Las sugerencias de Claude usan la jugada, las notas de los jugadores y la edad del equipo. Se envían a Claude (Anthropic) <b>sin nombres</b>, solo con dorsal y puesto, y solo cuando pulsas el botón. Revisa la propuesta antes de aplicarla.</p>
       <button type="button" class="btn-sec" data-bnuevo="1">＋ Añadir apartado</button>
@@ -1762,6 +1842,8 @@
         <div class="fila"><label class="sr-only" for="aprSel">Aprendizaje</label><select id="aprSel" style="width:auto">${Object.keys(APRENDIZAJES).map((k) => `<option value="${k}">${esc(APRENDIZAJES[k].t)}</option>`).join("")}</select>
           <button type="button" class="btn-sec" data-aprnuevo="1">＋ Añadir los tres apartados</button></div>
       </div>` : ""}
+
+      ${htmlFeedback(p)}
 
       <h2>Enviar</h2>
       <div class="tarjeta">
@@ -1920,7 +2002,7 @@
           ${db.planes.length ? db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map((p) => `<label><input type="checkbox" data-envplan="${esc(p.id)}" checked> ${esc(p.titulo || "(sin título)")} <span class="peq">· ${esc(fechaBonita(p.fecha))}</span></label>`).join("") : `<p class="peq">Aún no hay planes; se enviará solo la plantilla.</p>`}
         </fieldset>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
-        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas y los contactos de los jugadores (teléfono y correo)</label>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas, los contactos de los jugadores (teléfono y correo) y los feedbacks de las sesiones</label>
         <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
           <button type="button" class="btn" data-envarch="1">📎 Enviar archivo a otro entrenador</button>
@@ -2131,7 +2213,8 @@
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
-    pl.bloques.forEach((b) => { delete b.preg; }); // las preguntas son solo para el entrenador
+    pl.bloques.forEach((b) => { delete b.preg; delete b.fb; }); // las preguntas y el feedback son solo para el entrenador
+    delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
@@ -2281,7 +2364,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // ---------------------------------------------------------------- compartir entre entrenadores
   function paqueteEntrenador(ids, sinApellidos) {
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
-    const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => { const c = clon(p); delete c.sinNombres; return c; });
+    const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => {
+      const c = clon(p); delete c.sinNombres;
+      if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
+      return c;
+    });
     const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
@@ -2319,7 +2406,17 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       p.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = m(f.pj); }); });
       const i = db2.planes.findIndex((x) => x.id === p.id);
       if (i < 0) { p.sinNombres = false; db2.planes.push(p); r.planNuevos++; }
-      else if ((p.mod || 0) > (db2.planes[i].mod || 0)) { p.sinNombres = !!db2.planes[i].sinNombres; db2.planes[i] = p; r.planAct++; }
+      else if ((p.mod || 0) > (db2.planes[i].mod || 0)) {
+        const viejo = db2.planes[i];
+        p.sinNombres = !!viejo.sinNombres;
+        // el feedback solo viaja con las notas privadas: si no viene, se conserva el de este cuaderno
+        if (!p.fbn && viejo.fbn) p.fbn = viejo.fbn;
+        if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
+        if (!p.an && viejo.an) p.an = viejo.an;
+        if (!p.anOc && viejo.anOc) p.anOc = viejo.anOc;
+        p.bloques.forEach((b) => { if (!b.fb) { const v = viejo.bloques.find((x) => x.id === b.id); if (v && v.fb) b.fb = v.fb; } });
+        db2.planes[i] = p; r.planAct++;
+      }
       else r.planMios++;
     });
     if (rec.equipo) {
@@ -2786,6 +2883,205 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     plan.mod = Date.now(); guardar(); pintarPantalla();
     toast("Pizarra aplicada: ábrela para retocarla");
   }
+
+  // ---------------------------------------------------------------- memoria del equipo (feedbacks) y Claude
+  // Se calcula en el móvil a partir de «Cómo ha ido». Claude no guarda nada: cada vez se le envía este historial sin nombres.
+  const conFeedback = (p) => !!(p.fbn || p.fbr || p.an || p.anOc || p.bloques.some((b) => b.fb));
+  function planesConFeedback(excluir) {
+    return db.planes.filter((p) => p.id !== excluir && conFeedback(p)).sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  }
+  function historialIA(excluir, max) {
+    const h = historialCompleto(excluir, max);
+    while (h.length > 1 && JSON.stringify(h).length > 40000) h.pop(); // las más antiguas fuera: la consulta tiene un tamaño máximo
+    return h;
+  }
+  function historialCompleto(excluir, max) {
+    return planesConFeedback(excluir).slice(0, max || 8).map((p) => ({
+      fecha: p.fecha, tipo: p.tipo, titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo).slice(0, 300), nota: quitarNombres(p.fbn), resultado: quitarNombres(p.fbr),
+      analisis: analisisLista(p).map((x) => ({ aspecto: x.aspecto, valor: x.valor })),
+      // solo los apartados con feedback (y como mucho 12): así la consulta no crece sin límite
+      bloques: p.bloques.filter((b) => b.fb || !p.bloques.some((x) => x.fb)).slice(0, 12).map((b) => !b.fb ? { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo) } : ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
+        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond),
+        como: b.fb && b.fb.c ? ["", "costó", "regular", "bien"][b.fb.c] : "", estimulos: b.fb && b.fb.a ? ["", "no", "a veces", "sí"][b.fb.a] : "", nota: quitarNombres(b.fb && b.fb.n) }))
+    }));
+  }
+  function htmlMemoria() {
+    const pls = planesConFeedback().slice(0, 10);
+    if (!pls.length) return db.planes.length ? `<div class="tarjeta memoria"><h3 style="margin-top:0">🧠 Memoria del equipo</h3><p class="peq">Cuando acabes un entreno o un partido, rellena «📝 Cómo ha ido» dentro del plan. Con esos feedbacks verás aquí lo que cuesta y lo que va bien, y Claude podrá proponerte el próximo entreno.</p></div>` : "";
+    const cuesta = [], bien = [];
+    pls.forEach((p) => p.bloques.forEach((b) => {
+      if (!b.fb) return;
+      const t = (b.titulo || CATS[b.cat]) + " · " + fechaBonita(p.fecha) + (b.fb.n ? ": " + b.fb.n : "");
+      if (b.fb.c === 1 || b.fb.a === 1) cuesta.push(t); else if (b.fb.c === 3 && b.fb.a !== 2) bien.push(t);
+    }));
+    const partido = pls.find((p) => p.tipo === "partido" && (p.fbn || p.fbr));
+    return `<div class="tarjeta memoria">
+      <h3 style="margin-top:0">🧠 Memoria del equipo</h3>
+      <p class="peq">${pls.length} sesi${pls.length === 1 ? "ón" : "ones"} con feedback. Se guarda solo en este móvil.</p>
+      ${cuesta.length ? `<p><b>Lo que cuesta</b></p><ul class="consignas">${cuesta.slice(0, 5).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${bien.length ? `<p><b>Lo que va bien</b></p><ul class="consignas">${bien.slice(0, 3).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${(function () {
+        const ul = pls.find((p) => p.tipo === "partido" && (p.an || p.anOc)); if (!ul) return "";
+        const l = analisisLista(ul), mal = l.filter((x) => x.cuesta), bienP = l.filter((x) => x.fuerte);
+        return `<p><b>Análisis del partido</b> <span class="peq">(${esc(fechaBonita(ul.fecha))}${ul.rival ? ", contra " + esc(ul.rival) : ""})</span></p>${mal.length ? `<p class="peq"><b>A mejorar:</b> ${esc(mal.map((x) => x.aspecto.replace(/^¿|\?$/g, "") + " (" + x.valor.toLowerCase() + ")").join(" · "))}</p>` : ""}${bienP.length ? `<p class="peq"><b>Fortalezas:</b> ${esc(bienP.map((x) => x.aspecto).join(" · "))}</p>` : ""}`;
+      })()}
+      ${partido ? `<p><b>Último partido</b> (${esc(fechaBonita(partido.fecha))}${partido.rival ? ", contra " + esc(partido.rival) : ""}${partido.fbr ? ", " + esc(partido.fbr) : ""})${partido.fbn ? ": " + esc(partido.fbn) : ""}</p>` : ""}
+      <h3>✨ El próximo entreno</h3>
+      <div class="campo-f"><label for="entQuiero">¿Qué quieres trabajar? (opcional)</label>
+        <div class="fila fb-nota"><textarea id="entQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: la salida de balón, que en el último partido nos costó"></textarea>
+        <button type="button" class="btn-peq" data-fbdictar="entQuiero" aria-label="Dictar qué quieres trabajar">🎤 Dictar</button></div></div>
+      <p class="peq" data-r="ayudaDictadoFb" hidden>Pulsa el <b>micrófono del teclado</b> y habla: el móvil lo escribe por ti. El dictado lo hace tu móvil, la pizarra no graba audio.</p>
+      <div class="fila"><label for="entMin" class="peq">Duración</label><select id="entMin" style="width:auto"><option value="60">60 min</option><option value="75" selected>75 min</option><option value="90">90 min</option></select>
+        <button type="button" class="btn ia-btn" data-entpedir="1">✨ Proponer el próximo entreno</button></div>
+      <div data-r="iaent"></div>
+    </div>`;
+  }
+  // Consulta genérica a /api/pizarra-ia con vigencia: una respuesta antigua no pisa una nueva.
+  const iaFbGen = {}, iaFbPend = {}, iaFbRes = {};
+  let iaFbMin = 0;
+  async function consultaIA(clave, entrada, cont, espera, alListo) {
+    const gen = iaFbGen[clave] = (iaFbGen[clave] || 0) + 1;
+    const vigente = () => iaFbGen[clave] === gen && cont.isConnected;
+    cont.innerHTML = `<p class="peq ia-espera">✨ ${esc(espera)} Puede tardar un minuto…</p>`;
+    let job;
+    try {
+      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entrada) });
+      const j = await r.json().catch(() => ({}));
+      if (!vigente()) return;
+      if (r.status === 402) { SUS.modo = true; SUS.activa = false; cont.innerHTML = htmlInvitacion("Pedir propuestas a Claude"); return; }
+      if (!r.ok || !j.job) throw new Error(j.error || "red");
+      if (SUS.ia) SUS.ia.usadas++;
+      job = j.job;
+    } catch (e) { if (vigente()) cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido hacer la consulta. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
+    for (let i = 0; i < 80; i++) {
+      await new Promise((ok) => setTimeout(ok, i < 5 ? 2000 : 3000));
+      if (!vigente()) return;
+      let r;
+      try { r = await (await fetch("/api/pizarra-ia?job=" + job, { cache: "no-store" })).json(); } catch (e) { continue; }
+      if (r.estado === "pendiente") continue;
+      if (!vigente()) return;
+      if (r.estado === "listo" && r.resultado) { iaFbRes[clave] = r.resultado; alListo(r.resultado); return; }
+      cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[r.error] || "Claude no ha podido terminar. Vuelve a intentarlo.")}</p>`;
+      return;
+    }
+    if (vigente()) cont.innerHTML = `<p class="sin-puesto">Está tardando demasiado. Vuelve a intentarlo.</p>`;
+  }
+  const etapaTxt = () => { const E = FICHA.ETAPAS[db.equipo.etapa]; return E ? E.n + " (" + E.edad + ")" : ""; };
+  // Convierte un apartado propuesto por Claude en un apartado del plan.
+  function bloqueDePropuesta(x, tipo) {
+    const o = { id: uid(), cat: own(CATS, x.categoria) ? x.categoria : "ejercicio", titulo: x.titulo || "", min: tipo === "partido" ? "" : (x.minutos || ""),
+      texto: x.texto || "", consignas: (x.consignas || []).join("\n"), fij: x.fijarse || "", cuando: x.cuando || "", jug: null };
+    if (tipo === "entreno") { if (own(FASES, x.fase)) o.fase = x.fase; if (x.condicion) { o.cond = x.condicion; o.condEq = "a"; } }
+    if (x.preguntas && x.preguntas.length) o.preg = x.preguntas.join("\n");
+    return o;
+  }
+  const htmlPropuesta = (x) => `<p><b>${esc(x.titulo)}</b>${x.minutos ? ` <span class="peq">· ${esc(x.minutos)} min</span>` : ""}${x.fase && FASE_CORTA[x.fase] ? ` <span class="peq">· ${esc(FASE_CORTA[x.fase])}</span>` : ""}</p>
+    ${x.texto ? `<p>${esc(x.texto)}</p>` : ""}
+    ${x.fijarse ? `<p><b>🎯 En qué fijarse:</b> ${esc(x.fijarse)}</p>` : ""}${x.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(x.cuando)}</p>` : ""}
+    ${x.condicion ? `<p><b>🥅 Condición:</b> ${esc(x.condicion)}</p>` : ""}`;
+
+  // ----- alternativas de un ejercicio
+  // Las notas y textos libres que se enviarán, para revisarlos antes de confirmar.
+  function htmlNotasEnvio(h, extra) {
+    const t = (extra || []).filter(Boolean);
+    h.forEach((p) => { [p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(fechaBonita(p.fecha) + " · " + x)); p.bloques.forEach((x) => { if (x.nota) t.push(fechaBonita(p.fecha) + " · " + x.titulo + ": " + x.nota); }); });
+    return t.length ? `<details class="det"><summary>Notas que se envían (${t.length}): revísalas</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
+  }
+  function previaAlternativas(plan, b, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir alternativas a Claude"); return; }
+    const fb = b.fb || {};
+    const entrada = { modo: "alternativas", etapa: etapaTxt(), tipo: plan.tipo, historial: historialIA(plan.id, 5),
+      bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas), fase: FASE_CORTA[b.fase] || "",
+        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond),
+        como: fb.c ? ["", "costó", "regular", "bien"][fb.c] : "", estimulos: fb.a ? ["", "no", "a veces", "sí"][fb.a] : "", nota: quitarNombres(fb.n) } };
+    if (!entrada.bloque.titulo && !entrada.bloque.texto) { cont.innerHTML = `<p class="sin-puesto">Escribe antes la explicación del ejercicio.</p>`; return; }
+    iaFbPend["alt" + b.id] = entrada;
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ Alternativas con Claude</h3>
+      <p class="peq">Claude busca los estímulos relevantes y los objetivos de este ejercicio y propone variantes parecidas, teniendo en cuenta cómo ha ido${entrada.historial.length ? " y la memoria del equipo (" + entrada.historial.length + " sesiones)" : ""}. Se envía sin nombres: la ficha del apartado${fb.c || fb.a || fb.n ? ", su feedback" : ""}${entrada.historial.length ? " y los feedbacks recientes" : ""}. Revisa que las notas no lleven datos personales.</p>
+      ${fb.c || fb.a || fb.n ? `<p class="peq"><b>Feedback:</b> ${esc([entrada.bloque.como && "ha ido " + entrada.bloque.como, entrada.bloque.estimulos && "estímulos: " + entrada.bloque.estimulos, entrada.bloque.nota].filter(Boolean).join(" · "))}</p>` : `<p class="peq">Este apartado aún no tiene feedback: rellénalo en «📝 Cómo ha ido» para que las alternativas sean más ajustadas.</p>`}
+      ${htmlNotasEnvio(entrada.historial, [entrada.bloque.nota && "Este apartado: " + entrada.bloque.nota])}
+      <div class="fila"><button type="button" class="btn" data-altok="${esc(b.id)}">Pedir alternativas</button><button type="button" class="btn-sec" data-altno="${esc(b.id)}">Cancelar</button></div>
+    </div>`;
+  }
+  function invalidarAlt(bid) {
+    if (!iaFbPend["alt" + bid]) return;
+    delete iaFbPend["alt" + bid];
+    const c = app.querySelector(`[data-r="iaalt-${bid}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el feedback: vuelve a pulsar «Alternativas con Claude» para revisar lo que se envía.</p>`;
+  }
+  function pedirAlternativas(plan, b, cont) {
+    const entrada = iaFbPend["alt" + b.id]; delete iaFbPend["alt" + b.id];
+    if (!entrada) { previaAlternativas(plan, b, cont); return; }
+    consultaIA("alt" + b.id, entrada, cont, "Claude está preparando alternativas.", (r) => pintarAlternativas(plan, b, cont, r));
+  }
+  function pintarAlternativas(plan, b, cont, r) {
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ Alternativas</h3>
+      ${r.analisis ? `<p><b>Para ti:</b> ${esc(r.analisis)}</p>` : ""}
+      ${r.estimulos ? `<p><b>🎯 Estímulos relevantes:</b> ${esc(r.estimulos)}</p>` : ""}
+      ${r.objetivos.length ? `<p><b>Objetivos que trabaja:</b></p><ul class="consignas">${r.objetivos.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      ${r.alternativas.map((a, i) => `<div class="alt-prop"><p class="peq"><b>Variante ${i + 1}:</b> ${esc(a.cambio)}</p>${htmlPropuesta(a.bloque)}
+        <button type="button" class="btn-peq" data-altadd="${esc(b.id)}" data-i="${i}">＋ Añadir como apartado</button></div>`).join("")}
+      <div class="fila"><button type="button" class="btn-sec" data-altno="${esc(b.id)}">Cerrar</button></div>
+      <p class="peq">Se añade justo después de este apartado, sin pizarra: después puedes pulsar «Diseñar la pizarra con Claude».</p>
+    </div>`;
+  }
+  function anadirAlternativa(plan, b, i) {
+    const r = iaFbRes["alt" + b.id]; const a = r && r.alternativas[i]; if (!a) return;
+    if (plan.bloques.length >= MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
+    const k = plan.bloques.indexOf(b);
+    plan.bloques.splice(k + 1, 0, bloqueDePropuesta(a.bloque, plan.tipo));
+    plan.mod = Date.now(); guardar();
+    toast("Añadida «" + (a.bloque.titulo || "alternativa") + "»");
+    const bt = app.querySelector(`[data-altadd="${b.id}"][data-i="${i}"]`); if (bt) { bt.disabled = true; bt.textContent = "✓ Añadida"; }
+    const cont = app.querySelector(`[data-r="iaalt-${b.id}"]`);
+    // se repinta el plan para ver el apartado nuevo, conservando las alternativas a la vista
+    pintarPantalla();
+    const c2 = app.querySelector(`[data-r="iaalt-${b.id}"]`); if (c2 && r) { pintarAlternativas(plan, b, c2, r); }
+    if (cont) { /* nada */ }
+  }
+
+  // ----- el próximo entreno a partir de la memoria del equipo
+  function previaEntreno(cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir un entreno a Claude"); return; }
+    const h = historialIA("", 8);
+    if (!h.length) { cont.innerHTML = `<p class="sin-puesto">Aún no hay feedbacks.</p>`; return; }
+    const entrada = { modo: "entreno", etapa: etapaTxt(), quiero: quitarNombres($("#entQuiero").value), minutos: +$("#entMin").value || 75, jugadores: db.plantilla.length, historial: h };
+    iaFbPend.ent = entrada;
+    cont.innerHTML = `<div class="ia-propuesta">
+      <p class="peq">Se envían a Claude (Anthropic), sin nombres, los planes y los feedbacks de las últimas ${h.length} sesiones (títulos, objetivos, explicaciones, en qué fijarse, condiciones y notas)${entrada.quiero ? " y lo que quieres trabajar" : ""}. Revisa que ningún texto lleve datos personales.</p>
+      ${htmlNotasEnvio(h, [entrada.quiero && "Qué quieres trabajar: " + entrada.quiero])}
+      <div class="fila"><button type="button" class="btn" data-entok="1">Proponer</button><button type="button" class="btn-sec" data-entno="1">Cancelar</button></div>
+    </div>`;
+  }
+  function pedirEntreno(cont) {
+    const entrada = iaFbPend.ent; delete iaFbPend.ent;
+    if (!entrada) { previaEntreno(cont); return; }
+    iaFbMin = entrada.minutos;
+    consultaIA("ent", entrada, cont, "Claude está preparando el entreno.", (r) => pintarEntreno(cont, r));
+  }
+  function pintarEntreno(cont, r) {
+    const min = r.bloques.reduce((t, x) => t + (x.minutos || 0), 0);
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ ${esc(r.titulo || "Próximo entreno")}</h3>
+      ${r.analisis ? `<p><b>Por qué:</b> ${esc(r.analisis)}</p>` : ""}
+      ${r.objetivo ? `<p><b>Objetivo:</b> ${esc(r.objetivo)}</p>` : ""}
+      <p class="peq">${r.bloques.length} apartados${min ? " · " + min + " min" : ""}${iaFbMin && min && Math.abs(min - iaFbMin) > 10 ? ` (pediste ${iaFbMin}: ajusta los minutos al crearlo)` : ""}</p>
+      ${r.bloques.map((x, i) => `<details class="det"${i === 0 ? " open" : ""}><summary>${i + 1}. ${esc(x.titulo)}${x.minutos ? " · " + esc(x.minutos) + "'" : ""}</summary>${htmlPropuesta(x)}</details>`).join("")}
+      <div class="fila"><button type="button" class="btn" data-entcrear="1">Crear este entreno</button><button type="button" class="btn-sec" data-entno="1">Descartar</button></div>
+      <p class="peq">Se crea como un entreno nuevo con fecha de hoy. Después puedes cambiar lo que quieras y diseñar cada pizarra.</p>
+    </div>`;
+  }
+  function crearEntrenoPropuesto() {
+    const r = iaFbRes.ent; if (!r) return;
+    const p = { id: uid(), mod: Date.now(), tipo: "entreno", fecha: hoyISO(), titulo: (r.titulo || "Entreno").slice(0, 80), rival: "", objetivo: r.objetivo || "", notas: "",
+      sistema: "4231", once: {}, bloques: r.bloques.slice(0, MAX.bloques).map((x) => bloqueDePropuesta(x, "entreno")) };
+    autoOnce(p);
+    const limpio = sanPlan(p); if (!limpio) return;
+    db.planes.push(limpio); delete iaFbRes.ent; guardar();
+    ir("plan", { planId: limpio.id });
+    toast("Entreno creado: revísalo y diseña las pizarras");
+  }
   function etiquetaFicha(plan, b, id) {
     const f = b.jug && b.jug.fichas.find((x) => x.id === id); if (!f) return id;
     const inf = crearCtx(plan, db.plantilla, true).info(f);
@@ -3149,6 +3445,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.soyentr) { try { localStorage.setItem("pz_modo", "entrenador"); } catch (e) { /* nada */ } return ir("cuaderno"); }
     if (d.ir2) return ir(d.ir2);
     if (d.olvidar) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
+    if (d.fbdictar) {
+      const t = document.getElementById(d.fbdictar); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
+      const a = b.closest(".tarjeta") && b.closest(".tarjeta").querySelector('[data-r="ayudaDictadoFb"]'); if (a) a.hidden = false;
+      return;
+    }
+    if (d.entpedir) { iaFbGen.ent = (iaFbGen.ent || 0) + 1; previaEntreno(app.querySelector('[data-r="iaent"]')); return; }
+    if (d.entok) { pedirEntreno(app.querySelector('[data-r="iaent"]')); return; }
+    if (d.entno) { iaFbGen.ent = (iaFbGen.ent || 0) + 1; delete iaFbPend.ent; delete iaFbRes.ent; const c = app.querySelector('[data-r="iaent"]'); if (c) c.innerHTML = ""; return; }
+    if (d.entcrear) { crearEntrenoPropuesto(); return; }
     if (d.ultimo) {
       let pq = null; try { pq = sanPaquete(JSON.parse(localStorage.getItem("pz_ultimo"))); } catch (e) { pq = null; }
       if (pq && pq.yo) { try { localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ } return pintarPantalla(); }
@@ -3160,6 +3465,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.dup) {
       const o = db.planes.find((x) => x.id === d.dup); if (!o) return;
       const c = clon(o); c.id = uid(); c.mod = Date.now(); c.titulo = (c.titulo || "") + " (copia)"; c.fecha = hoyISO();
+      delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
       c.bloques.forEach((x) => { x.id = uid(); });
       db.planes.push(c); guardar(); return ir("plan", { planId: c.id });
     }
@@ -3187,6 +3493,27 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+      if (d.fb && d.bid) {
+        const b2 = bl(d.bid); if (!b2) return;
+        const v = +d.v; b2.fb = b2.fb || {};
+        if (b2.fb[d.fb] === v) delete b2.fb[d.fb]; else b2.fb[d.fb] = v;
+        if (!Object.keys(b2.fb).length) delete b2.fb;
+        plan.mod = Date.now(); guardar(); invalidarAlt(b2.id);
+        $$(`[data-fb="${d.fb}"][data-bid="${d.bid}"]`, app).forEach((x) => x.setAttribute("aria-pressed", String(!!b2.fb && b2.fb[d.fb] === +x.dataset.v)));
+        return;
+      }
+      if (d.an) {
+        const v = +d.v; plan.an = plan.an || {};
+        if (plan.an[d.an] === v) delete plan.an[d.an]; else plan.an[d.an] = v;
+        if (!Object.keys(plan.an).length) delete plan.an;
+        plan.mod = Date.now(); guardar();
+        $$(`[data-an="${d.an}"]`, app).forEach((x) => x.setAttribute("aria-pressed", String(!!plan.an && plan.an[d.an] === +x.dataset.v)));
+        return;
+      }
+      if (d.iaalt) { iaFbGen["alt" + d.iaalt] = (iaFbGen["alt" + d.iaalt] || 0) + 1; const b2 = bl(d.iaalt); if (b2) previaAlternativas(plan, b2, app.querySelector(`[data-r="iaalt-${d.iaalt}"]`)); return; }
+      if (d.altok) { const b2 = bl(d.altok); if (b2) pedirAlternativas(plan, b2, app.querySelector(`[data-r="iaalt-${d.altok}"]`)); return; }
+      if (d.altno) { iaFbGen["alt" + d.altno] = (iaFbGen["alt" + d.altno] || 0) + 1; delete iaFbPend["alt" + d.altno]; delete iaFbRes["alt" + d.altno]; const c = app.querySelector(`[data-r="iaalt-${d.altno}"]`); if (c) c.innerHTML = ""; return; }
+      if (d.altadd) { const b2 = bl(d.altadd); if (b2) anadirAlternativa(plan, b2, +d.i); return; }
       if (d.iapz) { iaPzGen[d.iapz] = (iaPzGen[d.iapz] || 0) + 1; const b2 = bl(d.iapz); if (b2) previaPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapz}"]`)); return; }
       if (d.iapzok) { const b2 = bl(d.iapzok); if (b2) pedirPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzok}"]`)); return; }
       if (d.iapzaplicar) { const b2 = bl(d.iapzaplicar); if (b2) aplicarPizarraIA(plan, b2, app.querySelector(`[data-r="iapz-${d.iapzaplicar}"]`)); return; }
@@ -3259,6 +3586,18 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
+    if (d.anoc !== undefined && plan) {
+      const a = $("#anOc0").value, b2 = $("#anOc1").value;
+      if (a === "" || b2 === "") delete plan.anOc; else plan.anOc = [Math.round(num(a, 0, 50, 0)), Math.round(num(b2, 0, 50, 0))]; // solo con los dos datos
+      plan.mod = Date.now(); guardar(); return;
+    }
+    if (d.fbn && plan) {
+      const b2 = plan.bloques.find((x) => x.id === d.fbn); if (!b2) return;
+      b2.fb = b2.fb || {}; if (t.value) b2.fb.n = t.value; else delete b2.fb.n;
+      if (!Object.keys(b2.fb).length) delete b2.fb;
+      plan.mod = Date.now(); guardar(); invalidarAlt(b2.id); return;
+    }
+    if ((t.id === "entQuiero" || t.id === "entMin") && iaFbPend.ent) { delete iaFbPend.ent; const c = app.querySelector('[data-r="iaent"]'); if (c) c.innerHTML = ""; }
     if (d.p && plan && d.p !== "sistema") {
       plan[d.p] = t.value; guardar();
       Object.keys(iaPendiente).forEach((k) => { delete iaPendiente[k]; const c = app.querySelector(`[data-r="ia-${k}"]`); if (c) c.innerHTML = ""; });
@@ -3267,6 +3606,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.b && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); }
+      if (b && iaFbPend["alt" + b.id]) { delete iaFbPend["alt" + b.id]; const c = app.querySelector(`[data-r="iaalt-${b.id}"]`); if (c) c.innerHTML = ""; }
       if (b) {
         const c = app.querySelector(`[data-r="iapz-${b.id}"]`);
         if (c && c.innerHTML) {

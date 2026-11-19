@@ -121,6 +121,26 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.ok(res.jugada && res.jugada.pasos.length === 2);
 }
 
+// feedback del equipo: alternativas y próximo entreno
+{
+  const hist = [{ fecha: "2026-11-10", tipo: "partido", titulo: "Liga", nota: "Nos costó salir", resultado: "1-2",
+    bloques: [{ categoria: "Salida de balón", titulo: "Salida", como: "costó", estimulos: "a veces", nota: "Presionaban mucho", otro: "x" }] }];
+  assert.equal(lib.sanearEntrada({ modo: "entreno", historial: [] }), null);
+  const e = lib.sanearEntrada({ modo: "entreno", quiero: "Salida", minutos: 500, historial: hist, notas: "no" });
+  assert.equal(e.minutos, 150); assert.equal(e.historial[0].bloques[0].como, "costó"); assert.equal(e.historial[0].bloques[0].otro, undefined);
+  assert.equal(lib.sanearEntrada({ modo: "entreno", historial: [{ bloques: [{ como: "fatal" }] }] }).historial[0].bloques[0].como, "");
+  const a = lib.sanearEntrada({ modo: "alternativas", bloque: { titulo: "Rondo", como: "bien", estimulos: "sí" }, historial: hist });
+  assert.equal(a.modo, "alternativas"); assert.equal(a.bloque.como, "bien");
+  const bp = { titulo: "Rondo 5x2", categoria: "inventada", fase: "ecologico", minutos: 999, texto: "t", consignas: ["a", ""], fijarse: "f", cuando: "c", condicion: "", preguntas: ["¿?"] };
+  const ra = lib.sanearAlternativas({ analisis: "x", estimulos: "y", objetivos: ["o"], alternativas: [{ cambio: "más fácil", bloque: bp }, { cambio: "vacía", bloque: {} }] });
+  assert.equal(ra.alternativas.length, 1); assert.equal(ra.alternativas[0].bloque.categoria, "ejercicio"); assert.equal(ra.alternativas[0].bloque.minutos, 120);
+  assert.equal(lib.sanearAlternativas({ alternativas: [] }), null);
+  const re = lib.sanearEntreno({ analisis: "x", titulo: "T", objetivo: "O", bloques: [bp, { titulo: "Cal", categoria: "calentamiento", fase: "x" }] });
+  assert.equal(re.bloques.length, 2); assert.equal(re.bloques[1].fase, "");
+  const cliente = { beta: { messages: { create: async (q) => { assert.equal(q.output_config.format.schema, lib.ESQUEMA_ENTRENO); return { stop_reason: "end_turn", content: [{ type: "text", text: JSON.stringify({ analisis: "a", titulo: "T", objetivo: "O", bloques: [bp] }) }] }; } } } };
+  assert.equal((await fondo.consultar(e, cliente)).bloques.length, 1);
+}
+
 await server.stop();
 rmSync(dir, { recursive: true, force: true });
 console.log("pizarra-ia: ok");
