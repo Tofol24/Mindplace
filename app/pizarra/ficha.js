@@ -284,5 +284,82 @@ window.PZ_FICHA = (function () {
     }
   };
 
-  return { ETAPAS: ETAPAS, PUESTOS: PUESTOS };
+  // Aspectos para marcar en la ficha de cada jugador (punto fuerte, a mejorar o consejo).
+  // [clave, área, grupo, texto]. «soloPortero» se muestra solo a porteros.
+  const ASPECTOS = [
+    // Técnica
+    ["control", "tecnica", "Técnica con balón", "Control orientado hacia donde va a jugar"],
+    ["primer_toque", "tecnica", "Técnica con balón", "Primer toque con presión de un rival"],
+    ["conduccion", "tecnica", "Técnica con balón", "Conducción con cambio de ritmo"],
+    ["pase_corto", "tecnica", "Técnica con balón", "Pase corto tenso y al pie"],
+    ["pase_largo", "tecnica", "Técnica con balón", "Pase largo y cambio de orientación"],
+    ["pase_espacio", "tecnica", "Técnica con balón", "Pase al espacio (al desmarque)"],
+    ["pierna_mala", "tecnica", "Técnica con balón", "Uso de la pierna menos hábil"],
+    ["regate", "tecnica", "Técnica con balón", "Regate en el uno contra uno"],
+    ["proteccion", "tecnica", "Técnica con balón", "Protección del balón de espaldas"],
+    ["tiro", "tecnica", "Técnica con balón", "Tiro a portería"],
+    ["centro", "tecnica", "Técnica con balón", "Centro desde la banda"],
+    ["balon_aereo", "tecnica", "Técnica con balón", "Control de balones altos"],
+    ["cabeza", "tecnica", "Técnica con balón", "Juego de cabeza (en el entreno, supervisado)"],
+    ["entrada", "tecnica", "Técnica defensiva", "Entrada y robo sin falta"],
+    ["temporizar", "tecnica", "Técnica defensiva", "Temporizar en el uno contra uno defensivo"],
+    ["perfil_def", "tecnica", "Técnica defensiva", "Perfil defensivo (de lado, empujando a banda)"],
+    ["por_base", "tecnica", "Portero", "Posición de base y desplazamientos", true],
+    ["por_blocaje", "tecnica", "Portero", "Blocaje", true],
+    ["por_caida", "tecnica", "Portero", "Caídas y estiradas", true],
+    ["por_alto", "tecnica", "Portero", "Salidas por alto", true],
+    ["por_1x1", "tecnica", "Portero", "Uno contra uno con el delantero", true],
+    ["por_pies", "tecnica", "Portero", "Juego de pies en la salida de balón", true],
+    ["por_saque", "tecnica", "Portero", "Saques con la mano y en largo", true],
+    ["por_voz", "tecnica", "Portero", "Dirigir y ordenar a la defensa", true],
+    // Táctica
+    ["perfil_abierto", "tactica", "Táctica con balón", "Perfil abierto antes de recibir"],
+    ["desm_apoyo", "tactica", "Táctica con balón", "Desmarque de apoyo (ofrecerse)"],
+    ["desm_ruptura", "tactica", "Táctica con balón", "Desmarque de ruptura (atacar el espacio)"],
+    ["amplitud", "tactica", "Táctica con balón", "Dar amplitud cuando toca"],
+    ["profundidad", "tactica", "Táctica con balón", "Dar profundidad cuando toca"],
+    ["espacio_libre", "tactica", "Táctica con balón", "Ocupar el espacio libre"],
+    ["triangulos", "tactica", "Táctica con balón", "Apoyos y triángulos con compañeros"],
+    ["llegada", "tactica", "Táctica con balón", "Llegada al área"],
+    ["fijar", "tactica", "Táctica con balón", "Fijar a un rival para liberar a un compañero"],
+    ["salida_balon", "tactica", "Táctica con balón", "Participar en la salida de balón"],
+    ["tras_perdida", "tactica", "Táctica sin balón", "Presión inmediata tras pérdida"],
+    ["primer_def", "tactica", "Táctica sin balón", "Primer defensor: llevar al rival a la banda"],
+    ["cobertura", "tactica", "Táctica sin balón", "Cobertura al compañero que presiona"],
+    ["basculacion", "tactica", "Táctica sin balón", "Basculación hacia el lado del balón"],
+    ["lineas_pase", "tactica", "Táctica sin balón", "Cerrar líneas de pase"],
+    ["marcaje", "tactica", "Táctica sin balón", "Marcaje y vigilancia del rival"],
+    ["repliegue", "tactica", "Táctica sin balón", "Repliegue rápido"],
+    ["altura_linea", "tactica", "Táctica sin balón", "Altura de la línea y fuera de juego"],
+    ["abp", "tactica", "Táctica sin balón", "Balón parado (córners, faltas, banda)"],
+    // Toma de decisiones
+    ["exploracion", "decision", "Toma de decisiones", "Mirar antes de recibir (saber qué hay alrededor)"],
+    ["elegir", "decision", "Toma de decisiones", "Elegir bien entre pase, conducción o tiro"],
+    ["simple", "decision", "Toma de decisiones", "Jugar fácil cuando hay presión"],
+    ["riesgo", "decision", "Toma de decisiones", "Saber cuándo arriesgar y cuándo asegurar"],
+    ["anticipar", "decision", "Toma de decisiones", "Leer la jugada y anticiparse"],
+    ["velocidad_dec", "decision", "Toma de decisiones", "Decidir rápido"],
+    ["lado_debil", "decision", "Toma de decisiones", "Cambiar el juego al lado con menos rivales"],
+    ["ritmo", "decision", "Toma de decisiones", "Gestionar el ritmo (acelerar o pausar)"],
+    ["momento", "decision", "Toma de decisiones", "Escoger el momento del desmarque"],
+    // Físico
+    ["reaccion", "fisico", "Físico", "Velocidad de reacción"],
+    ["aceleracion", "fisico", "Físico", "Aceleración y sprint"],
+    ["resistencia", "fisico", "Físico", "Repetir esfuerzos durante el partido"],
+    ["agilidad", "fisico", "Físico", "Agilidad y cambios de dirección"],
+    ["fuerza", "fisico", "Físico", "Fuerza en los duelos"],
+    ["salto", "fisico", "Físico", "Salto"],
+    ["coordinacion", "fisico", "Físico", "Coordinación y equilibrio"],
+    // Atención y actitud
+    ["concentracion", "atencion", "Atención y actitud", "Concentración durante todo el partido"],
+    ["volver", "atencion", "Atención y actitud", "Volver a la jugada después de un error"],
+    ["indicaciones", "atencion", "Atención y actitud", "Escuchar y aplicar las indicaciones"],
+    ["comunicacion", "atencion", "Atención y actitud", "Comunicarse con los compañeros"],
+    ["esfuerzo", "atencion", "Atención y actitud", "Esfuerzo y compromiso"],
+    ["nervios", "atencion", "Atención y actitud", "Gestionar los nervios y la presión"],
+    ["liderazgo", "atencion", "Atención y actitud", "Liderazgo y ayuda a los compañeros"],
+    ["respeto", "atencion", "Atención y actitud", "Juego limpio y respeto"]
+  ].map((x) => ({ k: x[0], a: x[1], g: x[2], t: x[3], soloPortero: !!x[4] }));
+
+  return { ETAPAS: ETAPAS, PUESTOS: PUESTOS, ASPECTOS: ASPECTOS };
 })();

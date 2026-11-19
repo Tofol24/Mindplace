@@ -147,7 +147,9 @@
   function sanNota(n) {
     if (!n || typeof n !== "object") return null;
     const x = txt(n.x, 400); if (!x) return null;
-    return { id: idOk(n.id) || uid(), t: ["f", "m", "c"].includes(n.t) ? n.t : "m", a: own(AREAS, n.a) ? n.a : "", s: own(CATS, n.s) ? n.s : "", x: x, f: /^\d{4}-\d{2}-\d{2}$/.test(n.f) ? n.f : "" };
+    const o = { id: idOk(n.id) || uid(), t: ["f", "m", "c"].includes(n.t) ? n.t : "m", a: own(AREAS, n.a) ? n.a : "", s: own(CATS, n.s) ? n.s : "", x: x, f: /^\d{4}-\d{2}-\d{2}$/.test(n.f) ? n.f : "" };
+    if (typeof n.k === "string" && /^[a-z0-9_]{1,30}$/.test(n.k)) o.k = n.k;
+    return o;
   }
   function sanJugador(j) {
     const id = idOk(j && j.id); if (!id) return null;
@@ -155,6 +157,8 @@
     const mod = num(j.mod, 0, 4102444800000, 0); if (mod) o.mod = mod;
     const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
     const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
+    const tel = txt(j.tel, 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(tel)) o.tel = tel;
+    const mail = txt(j.mail, 100).trim(); if (/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(mail)) o.mail = mail;
     return o;
   }
   function sanJugada(g) {
@@ -224,7 +228,7 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.tel; delete j.mail; });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
     const yo = idOk(o.yo);
@@ -1524,7 +1528,7 @@
           ${db.planes.length ? db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map((p) => `<label><input type="checkbox" data-envplan="${esc(p.id)}" checked> ${esc(p.titulo || "(sin título)")} <span class="peq">· ${esc(fechaBonita(p.fecha))}</span></label>`).join("") : `<p class="peq">Aún no hay planes; se enviará solo la plantilla.</p>`}
         </fieldset>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
-        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas de los jugadores (puntos fuertes y a mejorar)</label>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas y los contactos de los jugadores (teléfono y correo)</label>
         <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
           <button type="button" class="btn" data-envarch="1">📎 Enviar archivo a otro entrenador</button>
@@ -1806,6 +1810,21 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Prepara un enlace (corto y cifrado; si falla, el largo solo con permiso) y lo muestra
   // con botones «Compartir» y «Copiar». Si mientras tanto cambian las opciones de envío,
   // el resultado antiguo se descarta.
+  // Teléfono para WhatsApp: solo dígitos y, si es un número español de 9 cifras, con el prefijo 34.
+  function telWhatsApp(t) {
+    let d = String(t || "").replace(/[^\d+]/g, "");
+    if (d.startsWith("+")) d = d.slice(1); else if (d.startsWith("00")) d = d.slice(2); else if (/^[6789]\d{8}$/.test(d)) d = "34" + d;
+    return /^\d{8,15}$/.test(d) ? d : "";
+  }
+  function enlacesContacto(c, txt) {
+    const tel = telWhatsApp(c.tel);
+    const mail = c.mail && /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(c.mail) ? c.mail : "";
+    if (!tel && !mail) return `<p class="peq">Si añades su teléfono o su correo en «Contacto», podrás enviárselo directamente.</p>`;
+    return `<div class="fila" style="margin-top:6px">
+      ${tel ? `<a class="btn wa" href="https://wa.me/${tel}?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener noreferrer">💬 Enviar por WhatsApp</a>` : ""}
+      ${mail ? `<a class="btn-sec" href="mailto:${esc(mail)}?subject=${encodeURIComponent(c.asunto || "")}&amp;body=${encodeURIComponent(txt)}">✉️ Enviar por correo</a>` : ""}
+    </div>`;
+  }
   let envioGen = 0;
   function invalidarEnvio(cont) { if (cont) { cont.dataset.gen = String(++envioGen); cont.innerHTML = ""; } }
   async function prepararEnvio(cont, o) {
@@ -1833,7 +1852,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const txt = o.texto(url);
     cont.innerHTML = `<p class="peq" style="margin-top:10px">${esc(o.indicacion)}</p>
       <label class="sr-only" for="${o.idTxt}">Mensaje</label><textarea id="${o.idTxt}" rows="6" readonly>${esc(txt)}</textarea>
-      <div class="fila">${navigator.share ? `<button type="button" class="btn" data-compartirya="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-copiarya="1">📋 Copiar</button></div>`;
+      <div class="fila">${navigator.share ? `<button type="button" class="btn" data-compartirya="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-copiarya="1">📋 Copiar</button></div>
+      ${o.contacto ? enlacesContacto(o.contacto, txt) : ""}`;
     const bs = cont.querySelector("[data-compartirya]");
     if (bs) bs.addEventListener("click", () => { if (cont.dataset.gen === yo) navigator.share({ title: o.titulo, text: txt }).catch(() => {}); });
     cont.querySelector("[data-copiarya]").addEventListener("click", () => {
@@ -1858,7 +1878,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function paqueteEntrenador(ids, sinApellidos) {
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
     const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => { const c = clon(p); delete c.sinNombres; return c; });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) delete j.notas; return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.tel; delete j.mail; } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -1971,6 +1991,21 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       grupo("c", "💡 Consejos para situaciones de juego", "Aún no hay consejos para situaciones concretas.");
   }
 
+  function htmlAspectos(j) {
+    const portero = famDePuesto(j.p) === "por";
+    const lista = (FICHA.ASPECTOS || []).filter((x) => !x.soloPortero || portero);
+    const marcas = {};
+    (j.notas || []).forEach((n) => { if (n.k) marcas[n.k] = n.t; });
+    const grupos = [];
+    lista.forEach((x) => { let g = grupos.find((y) => y.g === x.g); if (!g) { g = { g: x.g, items: [] }; grupos.push(g); } g.items.push(x); });
+    return grupos.map((g, gi) => {
+      const n = g.items.filter((x) => marcas[x.k]).length;
+      return `<details class="det" data-grupo="${esc(g.g)}" ${gi === 0 ? "open" : ""}><summary>${esc(g.g)}${n ? ` <span class="chip">${n} marcado${n === 1 ? "" : "s"}</span>` : ""}</summary>
+        <ul class="aspectos-lista">${g.items.map((x) => `<li><span>${esc(x.t)}</span><span class="marcas" role="group" aria-label="${esc(x.t)}">
+          ${[["f", "💪", "Punto fuerte"], ["m", "🎯", "A mejorar"], ["c", "💡", "Consejo"]].map((m) => `<button type="button" class="marca" data-asp="${x.k}" data-tipo="${m[0]}" aria-pressed="${marcas[x.k] === m[0]}" aria-label="${m[2]}: ${esc(x.t)}" title="${m[2]}">${m[1]}</button>`).join("")}
+        </span></li>`).join("")}</ul></details>`;
+    }).join("");
+  }
   function abrirNotas(pid, planId) {
     const j = db.plantilla.find((x) => x.id === pid); if (!j) return;
     const dlg = $("#dlgNotas"), cuerpo = $("#dlgNotasCuerpo");
@@ -1999,6 +2034,19 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           </div>
           <p class="peq" data-r="ayudaDictado" hidden>Pulsa el <b>micrófono del teclado</b> y habla: el móvil lo escribe por ti (en Mac, pulsa dos veces la tecla Fn). El dictado lo hace tu móvil, la pizarra no graba audio.</p>
         </section>
+        <section class="tarjeta">
+          <h2 style="margin-top:0">Contacto</h2>
+          <p class="peq">Para enviarle su ficha por WhatsApp o por correo. Puede ser el del jugador o el de su familia. Solo se guarda en este móvil.</p>
+          <div class="fila">
+            <div class="campo-f crece"><label for="nTel">Teléfono (WhatsApp)</label><input type="tel" id="nTel" inputmode="tel" autocomplete="off" maxlength="20" value="${esc(j.tel || "")}" placeholder="600 000 000"></div>
+            <div class="campo-f crece"><label for="nMail">Correo electrónico</label><input type="email" id="nMail" autocomplete="off" maxlength="100" value="${esc(j.mail || "")}" placeholder="familia@correo.com"></div>
+          </div>
+        </section>
+        <section class="tarjeta aspectos">
+          <h2 style="margin-top:0">Marcar aspectos</h2>
+          <p class="peq">Toca 💪 si es un punto fuerte, 🎯 si tiene que mejorarlo o 💡 si quieres darle un consejo. Vuelve a tocar para quitarlo. Para añadir un matiz, escribe una nota arriba.</p>
+          ${htmlAspectos(j)}
+        </section>
         <section class="tarjeta">${htmlNotas(j.notas || [], { editable: true })}</section>
         <section class="tarjeta">
           <h2 style="margin-top:0">Enviar su ficha por privado</h2>
@@ -2009,6 +2057,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         </section>`;
       if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
     }
+    cuerpo.oninput = (e) => {
+      if (e.target.id === "nTel") { const v = e.target.value.replace(/[^\d+]/g, ""); if (v) j.tel = v; else delete j.tel; j.mod = Date.now(); guardar(); }
+      if (e.target.id === "nMail") { const v = e.target.value.trim(); if (v) j.mail = v; else delete j.mail; j.mod = Date.now(); guardar(); }
+    };
     cuerpo.onclick = (e) => {
       const b = e.target.closest("button"); if (!b) return;
       if (b.dataset.dictar) {
@@ -2027,6 +2079,26 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         $("#nTxt").focus();
         return;
       }
+      if (b.dataset.asp) {
+        const x = (FICHA.ASPECTOS || []).find((y) => y.k === b.dataset.asp); if (!x) return;
+        j.notas = j.notas || [];
+        const ya = j.notas.find((n) => n.k === x.k);
+        if (ya && ya.t === b.dataset.tipo) j.notas = j.notas.filter((n) => n !== ya);
+        else if (ya) ya.t = b.dataset.tipo;
+        else {
+          if (j.notas.length >= 80) { toast("Ya hay 80 notas: borra alguna antigua para añadir más"); return; }
+          j.notas.push({ id: uid(), t: b.dataset.tipo, a: x.a, s: "", x: x.t, k: x.k, f: hoyISO() });
+        }
+        j.mod = Date.now(); guardar();
+        // repinta conservando qué grupos están abiertos y el sitio en la pantalla
+        const abiertos = $$("details[data-grupo]", cuerpo).filter((d) => d.open).map((d) => d.dataset.grupo);
+        const scroll = cuerpo.scrollTop, scrollD = dlg.scrollTop, sel = '[data-asp="' + x.k + '"][data-tipo="' + b.dataset.tipo + '"]';
+        pintarN();
+        $$("details[data-grupo]", cuerpo).forEach((d) => { d.open = abiertos.includes(d.dataset.grupo); });
+        cuerpo.scrollTop = scroll; dlg.scrollTop = scrollD;
+        const nb = cuerpo.querySelector(sel); if (nb) nb.focus({ preventScroll: true });
+        return;
+      }
       if (b.dataset.nborrar) {
         if (!window.confirm("¿Borrar esta nota?")) return;
         j.notas = (j.notas || []).filter((n) => n.id !== b.dataset.nborrar); j.mod = Date.now(); guardar(); pintarN(); return;
@@ -2039,7 +2111,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           largo: null, // una ficha privada nunca va sin cifrar
           texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha con lo que te digo como entrenador: tus puntos fuertes y lo que estás aprendiendo. Es solo para ti:\n" + url,
           titulo: "Tu ficha", idTxt: "txtNotas",
-          indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo."
+          indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
+          contacto: { tel: j.tel, mail: j.mail, asunto: "Tu ficha de la pizarra" }
         });
       }
     };
