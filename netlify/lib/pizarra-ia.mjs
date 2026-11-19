@@ -5,7 +5,7 @@
 
 export const MODELO = "claude-opus-5-5";
 export const MAX_ENTRADA = 60_000;     // bytes del JSON de entrada
-export const CUOTA_DIA_IA = 300;       // consultas al día como máximo (tope de coste)
+export const CUOTA_DIA_IA = 100;       // consultas al día como máximo (tope de coste)
 export const RE_JOB = /^[A-Za-z0-9]{16}$/;
 
 const ALF = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -42,12 +42,12 @@ export function sanearEntrada(e) {
       }))
     })),
     jugadores: lista(e.jugadores, 40).map((j) => ({
-      ficha: txt(j && j.ficha, 16), dorsal: num(j && j.dorsal, 0, 99), puesto: txt(j && j.puesto, 40),
+      ficha: txt(j && j.ficha, 16), jugador: /^J\d{1,2}$/.test(j && j.jugador) ? j.jugador : "", puesto: txt(j && j.puesto, 40),
       notas: lista(j && j.notas, 20).map((n) => ({
         tipo: n && n.tipo === "fuerte" ? "fuerte" : "mejora", area: txt(n && n.area, 20),
         situacion: txt(n && n.situacion, 60), texto: txt(n && n.texto, 400)
       }))
-    }))
+    })).filter((j) => j.jugador)
   };
   if (!salida.bloque.categoria && !salida.bloque.titulo) return null;
   return salida;
@@ -75,8 +75,8 @@ export const ESQUEMA = {
       type: "array",
       description: "Consejo privado para un jugador concreto en este apartado, a partir de sus notas: cómo aprovechar su punto fuerte aquí y en qué centrarse para mejorar.",
       items: {
-        type: "object", additionalProperties: false, required: ["dorsal", "texto"],
-        properties: { dorsal: { type: "integer" }, texto: { type: "string" } }
+        type: "object", additionalProperties: false, required: ["jugador", "texto"],
+        properties: { jugador: { type: "string", description: "Identificador recibido (J1, J2…)" }, texto: { type: "string" } }
       }
     },
     mensaje: { type: "string", description: "Mensaje breve para el grupo del equipo (2-4 frases), sin enlace." }
@@ -85,7 +85,7 @@ export const ESQUEMA = {
 
 export const SISTEMA = `Eres un entrenador de fútbol base con formación en psicología del deporte. Ayudas a otro entrenador a preparar un apartado de su plan (un ejercicio de entrenamiento o una situación de partido) para enviarlo a sus jugadores en una pizarra digital.
 
-Recibirás en JSON: la etapa de edad del equipo, el tipo de plan, el sistema, el apartado (categoría, título, texto y consignas actuales), los pasos de la jugada con las posiciones en metros (campo de 68 × 105, nuestro equipo ataca hacia y = 0) y, para cada jugador, su ficha en la pizarra, su dorsal, su puesto y las notas del entrenador sobre sus puntos fuertes y lo que tiene que mejorar (técnica, táctica, toma de decisiones…). No hay nombres: refiérete a los jugadores solo por dorsal o por puesto.
+Recibirás en JSON: la etapa de edad del equipo, el tipo de plan, el sistema, el apartado (categoría, título, texto y consignas actuales), los pasos de la jugada con las posiciones en metros (campo de 68 × 105, nuestro equipo ataca hacia y = 0) y, para cada jugador, su ficha en la pizarra, un identificador (J1, J2…), su puesto y las notas del entrenador sobre sus puntos fuertes y lo que tiene que mejorar (técnica, táctica, toma de decisiones…). No hay nombres: en «individual» usa el identificador recibido; en los textos para el grupo, refiérete a los jugadores solo por su puesto.
 
 Qué tienes que hacer:
 - Proponer la mejor manera de plantear y mostrar este apartado para esa edad, aprovechando la dinámica de la jugada y las características de los jugadores.
@@ -105,7 +105,7 @@ export function sanearSalida(o, entrada) {
   const fichas = new Set();
   (entrada.pasos || []).forEach((p) => p.fichas.forEach((f) => { if (f.equipo === "nuestro") fichas.add(f.ficha); }));
   const nPasos = (entrada.pasos || []).length;
-  const dorsales = new Set((entrada.jugadores || []).map((j) => j.dorsal));
+  const ids = new Set((entrada.jugadores || []).map((j) => j.jugador));
   return {
     analisis: txt(o.analisis, 2000), texto: txt(o.texto, 1200),
     consignas: lista(o.consignas, 8).map((c) => txt(c, 160)).filter(Boolean),
@@ -114,7 +114,7 @@ export function sanearSalida(o, entrada) {
       .filter((i) => i && fichas.has(i.ficha) && Number.isInteger(i.paso) && i.paso >= 1 && i.paso <= nPasos)
       .map((i) => ({ ficha: i.ficha, paso: i.paso, que: txt(i.que, 300), fijate: txt(i.fijate, 200), cuando: txt(i.cuando, 200) })),
     individual: lista(o.individual, 40)
-      .filter((i) => i && dorsales.has(i.dorsal))
-      .map((i) => ({ dorsal: i.dorsal, texto: txt(i.texto, 500) }))
+      .filter((i) => i && ids.has(i.jugador))
+      .map((i) => ({ jugador: i.jugador, texto: txt(i.texto, 500) }))
   };
 }

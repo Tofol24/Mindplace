@@ -33,11 +33,21 @@ export default async (req) => {
   } catch { entrada = null; }
   if (!entrada) return json({ error: "entrada" }, 400);
 
-  // Tope diario de consultas (aproximado), para acotar el coste.
+  // Tope diario de consultas, reservado con escritura condicional (ETag) para acotar el coste.
   const kc = "cuota/" + new Date().toISOString().slice(0, 10);
-  const c = (await store.get(kc, { type: "json" })) || { n: 0 };
-  if (c.n >= CUOTA_DIA_IA) return json({ error: "cuota" }, 429);
-  await store.setJSON(kc, { n: c.n + 1 });
+  let reservada = false;
+  for (let i = 0; i < 6 && !reservada; i++) {
+    const r = await store.getWithMetadata(kc, { type: "json" });
+    const n = (r && r.data && r.data.n) || 0;
+    if (n >= CUOTA_DIA_IA) return json({ error: "cuota" }, 429);
+    let etag = r && r.etag;
+    if (r && !etag) { const m = await store.getMetadata(kc); etag = m && m.etag; }
+    const w = !r ? await store.setJSON(kc, { n: 1 }, { onlyIfNew: true })
+      : etag ? await store.setJSON(kc, { n: n + 1 }, { onlyIfMatch: etag })
+      : await store.setJSON(kc, { n: n + 1 });
+    reservada = !!(w && w.modified);
+  }
+  if (!reservada) return json({ error: "ocupado" }, 503);
 
   const job = nuevoJob();
   await store.setJSON("job/" + job, { estado: "pendiente", creado: Date.now(), entrada });

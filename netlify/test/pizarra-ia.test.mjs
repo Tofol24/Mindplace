@@ -20,7 +20,7 @@ const entrada = {
   etapa: "Cadete (14 y 15 años)", tipo: "entreno", sistema: "1-4-3-3", objetivo: "Salir jugando",
   bloque: { categoria: "Rondo / posesión", titulo: "Rondo 4 contra 2", texto: "", consignas: "", fijarse: "", cuando: "" },
   pasos: [{ paso: 1, titulo: "4 contra 2", balon: [34, 71], fichas: [{ ficha: "e1", equipo: "nuestro", x: 34, y: 70 }, { ficha: "f1", equipo: "rival", x: 32, y: 78 }] }],
-  jugadores: [{ ficha: "e1", dorsal: 7, puesto: "Extremo", notas: [{ tipo: "fuerte", area: "tecnica", situacion: "", texto: "Buen regate" }] }],
+  jugadores: [{ ficha: "e1", jugador: "J1", puesto: "Extremo", notas: [{ tipo: "fuerte", area: "tecnica", situacion: "", texto: "Buen regate" }] }],
   extra: "<script>"
 };
 
@@ -36,7 +36,7 @@ const respuesta = {
   analisis: "Plantea el rondo con poco espacio.", texto: "Mantened la posesión.", consignas: ["Perfil abierto", "Dos toques"],
   fijarse: "El rival que presiona.", cuando: "Antes de recibir.", mensaje: "Hoy trabajamos la posesión.",
   indicaciones: [{ ficha: "e1", paso: 1, que: "Ofrécete", fijate: "El balón", cuando: "Ahora" }, { ficha: "f1", paso: 1, que: "x", fijate: "x", cuando: "x" }, { ficha: "e1", paso: 9, que: "x", fijate: "x", cuando: "x" }],
-  individual: [{ dorsal: 7, texto: "Usa tu regate para salir de la presión." }, { dorsal: 99, texto: "x" }]
+  individual: [{ jugador: "J1", texto: "Usa tu regate para salir de la presión." }, { jugador: "J9", texto: "x" }]
 };
 const cliente = { beta: { messages: { create: async (p) => { peticion = p; return { stop_reason: "end_turn", content: [{ type: "text", text: JSON.stringify(respuesta) }] }; } } } };
 const r = await fondo.consultar(s, cliente);
@@ -45,7 +45,8 @@ assert.equal(peticion.output_config.format.type, "json_schema");
 assert.equal(peticion.fallbacks, "default");
 assert.ok(!JSON.stringify(peticion.messages).includes("<script>"));
 assert.equal(r.indicaciones.length, 1, "solo fichas nuestras y pasos existentes");
-assert.equal(r.individual.length, 1, "solo dorsales existentes");
+assert.equal(r.individual.length, 1, "solo jugadores de la consulta");
+assert.equal(lib.sanearEntrada({ ...entrada, jugadores: [{ ficha: "e1", jugador: "Toni", notas: [] }] }).jugadores.length, 0, "solo seudónimos J1, J2…");
 await assert.rejects(() => fondo.consultar(s, { beta: { messages: { create: async () => ({ stop_reason: "refusal", content: [] }) } } }));
 
 // flujo completo: POST crea el trabajo y lanza el fondo; GET devuelve el resultado una vez
