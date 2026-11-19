@@ -1328,7 +1328,7 @@
 
       <h2>Enviar</h2>
       <div class="tarjeta">
-        <p class="peq">Se crea un enlace con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada; el contenido viaja dentro del enlace.</p>
+        <p class="peq">Se crea un enlace corto con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada. El plan se guarda cifrado 90 días en el servidor de APRENS, que no lo puede leer.</p>
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
@@ -1473,7 +1473,7 @@
       </div>
       <h2>Sobre la privacidad</h2>
       <div class="tarjeta">
-        <p class="peq">La pizarra no usa servidores ni servicios externos. El enlace que envías al grupo lleva el plan dentro (después del símbolo #) y no se guarda en ningún servidor. Eso sí: lo puede abrir cualquiera que tenga el enlace, también si se reenvía. Usa nombres cortos o apodos, o envía solo dorsales, si prefieres no compartir nombres.</p>
+        <p class="peq">Tu cuaderno se guarda solo en este móvil. Al enviar un enlace, el plan se cifra aquí antes de salir y se guarda cifrado durante 90 días en el servidor de APRENS, que no lo puede leer: la clave va solo en el enlace. Pasados los 90 días se borra. Lo puede abrir cualquiera que tenga el enlace, también si se reenvía. Usa nombres cortos o apodos, o envía solo dorsales, si prefieres no compartir nombres. Los archivos no pasan por ningún servidor.</p>
       </div>`;
   }
 
@@ -1620,6 +1620,37 @@
     return JSON.parse(window.LZString.decompressFromEncodedURIComponent(datos.replace(/ /g, "+")));
   }
 
+  // ---------------------------------------------------------------- enlaces cortos cifrados
+  // El plan se cifra aquí (AES-GCM, clave aleatoria de 128 bits) y se sube a /api/pizarra.
+  // El servidor solo guarda el bloque cifrado (90 días). La clave va en el #hash del enlace,
+  // que el navegador nunca envía al servidor: sin el enlace completo nadie puede leerlo.
+  const b64u = (u8) => { let bin = ""; for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
+  const deB64u = (t) => { let b = String(t).replace(/-/g, "+").replace(/_/g, "/"); while (b.length % 4) b += "="; const bin = atob(b), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8; };
+  async function enlaceCorto(obj, cortos) {
+    if (!window.crypto || !crypto.subtle || !window.fetch) throw new Error("sin cifrado");
+    const datos = window.LZString.compressToUint8Array(JSON.stringify(compactar(obj, cortos)));
+    const clave = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const k = await crypto.subtle.importKey("raw", clave, "AES-GCM", false, ["encrypt"]);
+    const cif = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, datos));
+    const todo = new Uint8Array(iv.length + cif.length); todo.set(iv); todo.set(cif, iv.length);
+    const r = await fetch("/api/pizarra", { method: "POST", body: b64u(todo), headers: { "Content-Type": "text/plain" } });
+    if (!r.ok) throw new Error("servidor " + r.status);
+    const j = await r.json();
+    if (!j || !/^[A-Za-z0-9]{10}$/.test(j.id)) throw new Error("respuesta");
+    return location.origin + location.pathname + "#k=" + j.id + "." + b64u(clave);
+  }
+  async function leerEnlaceCorto(hash) {
+    const m = /^#k=([A-Za-z0-9]{10})\.([A-Za-z0-9_-]{22})$/.exec(hash || "");
+    if (!m) throw new Error("formato");
+    const r = await fetch("/api/pizarra?id=" + m[1], { cache: "no-store" });
+    if (r.status === 404) { const e = new Error("caducado"); e.caducado = true; throw e; }
+    if (!r.ok) throw new Error("servidor " + r.status);
+    const todo = deB64u((await r.text()).trim());
+    const k = await crypto.subtle.importKey("raw", deB64u(m[2]), "AES-GCM", false, ["decrypt"]);
+    const datos = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: todo.slice(0, 12) }, k, todo.slice(12)));
+    return expandir(JSON.parse(window.LZString.decompressFromUint8Array(datos)));
+  }
+
   // ---------------------------------------------------------------- compartir
   function paquete(plan, sinNombres) {
     const usados = new Set();
@@ -1698,7 +1729,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <label class="sr-only" for="txtArch">Mensaje para acompañar el archivo</label><textarea id="txtArch" rows="8" readonly>${esc(texto)}</textarea>`;
   }
   async function enviar(plan, cont) {
-    const url = enlaceDe(plan, !!plan.sinNombres);
+    let url;
+    cont.innerHTML = `<p class="peq" style="margin-top:10px">Preparando el enlace…</p>`;
+    try { url = await enlaceCorto(Object.assign({ tipo: "jugadores" }, paquete(plan, !!plan.sinNombres)), true); }
+    catch (e) { url = enlaceDe(plan, !!plan.sinNombres); toast("No se ha podido crear el enlace corto (¿sin conexión?): se envía el largo."); }
+    cont.innerHTML = "";
     const txt = textoGrupo(plan, url);
     if (navigator.share) {
       try { await navigator.share({ title: plan.titulo || "Pizarra", text: txt }); return; } catch (e) { if (e && e.name === "AbortError") return; }
@@ -1773,7 +1808,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   async function enviarEntrenador(ids, cont) {
     const sa = $("#envSinApe");
     const pq = paqueteEntrenador(ids, !!(sa && sa.checked));
-    const url = location.origin + location.pathname + "#c=" + codificar(pq);
+    let url;
+    try { url = await enlaceCorto(pq, false); }
+    catch (e) { url = location.origin + location.pathname + "#c=" + codificar(pq); toast("No se ha podido crear el enlace corto (¿sin conexión?): se envía el largo."); }
     const txt = "Te paso el cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + "): plantilla y " + pq.planes.length + " plan" + (pq.planes.length === 1 ? "" : "es") + ". Ábrelo y pulsa «Juntar con mi cuaderno»:\n" + url;
     const largo = url.length > 12000;
     if (navigator.share && !largo) {
@@ -2235,6 +2272,21 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   function arrancar() {
     const h = location.hash || "";
+    if (/^#k=/.test(h)) {
+      $("#nav").hidden = true;
+      app.innerHTML = `<p class="vacio">Abriendo la pizarra…</p>`;
+      leerEnlaceCorto(h).then((o) => {
+        if (o && o.tipo === "entrenador") { const rec = sanDB(o); if (rec) return pantRecibido(rec); }
+        const pq = o && o.plan ? sanPaquete(o) : null;
+        if (pq) return mostrarJugador(pq);
+        throw new Error("contenido");
+      }).catch((e) => {
+        app.innerHTML = e && e.caducado
+          ? `<h1>Enlace caducado</h1><p>Este enlace ya no está disponible: los enlaces de la pizarra se borran a los 90 días. Pide al entrenador que te lo vuelva a enviar.</p>`
+          : `<h1>No se ha podido abrir</h1><p>Comprueba que tienes conexión a internet y vuelve a tocar el enlace. Si sigue sin abrirse, pide que te lo vuelvan a enviar.</p>`;
+      });
+      return;
+    }
     if (/^#(c|e|ent)=/.test(h)) {
       let rec = null;
       try { rec = sanDB(descodificar(h)); } catch (e) { rec = null; }
@@ -2300,7 +2352,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
     if (!o) return;
     db = o;
-    if (/^#(p|c|v|ver|e|ent)=/.test(location.hash || "")) return;
+    if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) return;
     if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
@@ -2308,6 +2360,6 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
     navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(() => { /* sin service worker la pizarra funciona igual */ });
   }
-  window.addEventListener("hashchange", () => { if (/^#(p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
+  window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
