@@ -144,6 +144,8 @@
   const pt = (v) => (Array.isArray(v) && v.length === 2 ? [num(v[0], -10, 78, 34), num(v[1], -10, 115, 52.5)] : null);
   const idOk = (v) => (typeof v === "string" && RE_ID.test(v) && !/^(__proto__|constructor|prototype)$/.test(v) ? v : null);
   const colOk = (v, def) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : def);
+  const RE_MAIL = /^[^\s@<>"',;]+@[^\s@<>"',;]+\.[^\s@<>"',;]+$/;
+  const CONTACTO = ["tel", "tel2", "mail", "mail2", "nom1", "nom2"];
   function sanNota(n) {
     if (!n || typeof n !== "object") return null;
     const x = txt(n.x, 400); if (!x) return null;
@@ -157,8 +159,9 @@
     const mod = num(j.mod, 0, 4102444800000, 0); if (mod) o.mod = mod;
     const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
     const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
-    const tel = txt(j.tel, 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(tel)) o.tel = tel;
-    const mail = txt(j.mail, 100).trim(); if (/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(mail)) o.mail = mail;
+    ["tel", "tel2"].forEach((k) => { const t = txt(j[k], 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(t)) o[k] = t; });
+    ["mail", "mail2"].forEach((k) => { const m = txt(j[k], 100).trim(); if (RE_MAIL.test(m)) o[k] = m; });
+    ["nom1", "nom2"].forEach((k) => { const n = txt(j[k], 30).trim(); if (n) o[k] = n; });
     return o;
   }
   function sanJugada(g) {
@@ -228,7 +231,7 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.tel; delete j.mail; });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; CONTACTO.forEach((k) => delete j[k]); });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
     const yo = idOk(o.yo);
@@ -1817,13 +1820,16 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return /^\d{8,15}$/.test(d) ? d : "";
   }
   function enlacesContacto(c, txt) {
-    const tel = telWhatsApp(c.tel);
-    const mail = c.mail && /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(c.mail) ? c.mail : "";
-    if (!tel && !mail) return `<p class="peq">Si añades su teléfono o su correo en «Contacto», podrás enviárselo directamente.</p>`;
+    const tels = (c.tels || []).map((x) => ({ tel: telWhatsApp(x.tel), nom: x.nom })).filter((x) => x.tel);
+    const mails = (c.mails || []).filter((x) => x.mail && RE_MAIL.test(x.mail));
+    if (!tels.length && !mails.length) return `<p class="peq">Si añades su teléfono o su correo en «Contacto», podrás enviárselo directamente.</p>`;
+    const de = (x, i, total) => (x.nom ? " · " + esc(x.nom) : total > 1 ? " " + (i + 1) : "");
+    const asunto = encodeURIComponent(c.asunto || ""), cuerpo = encodeURIComponent(txt);
     return `<div class="fila" style="margin-top:6px">
-      ${tel ? `<a class="btn wa" href="https://wa.me/${tel}?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener noreferrer">💬 Enviar por WhatsApp</a>` : ""}
-      ${mail ? `<a class="btn-sec" href="mailto:${esc(mail)}?subject=${encodeURIComponent(c.asunto || "")}&amp;body=${encodeURIComponent(txt)}">✉️ Enviar por correo</a>` : ""}
-    </div>`;
+      ${tels.map((x, i) => `<a class="btn wa" href="https://wa.me/${x.tel}?text=${cuerpo}" target="_blank" rel="noopener noreferrer">💬 WhatsApp${de(x, i, tels.length)}</a>`).join("")}
+      ${mails.map((x, i) => `<a class="btn-sec" href="mailto:${esc(x.mail)}?subject=${asunto}&amp;body=${cuerpo}">✉️ Correo${de(x, i, mails.length)}</a>`).join("")}
+      ${mails.length > 1 ? `<a class="btn-sec" href="mailto:${mails.map((x) => esc(x.mail)).join(",")}?subject=${asunto}&amp;body=${cuerpo}">✉️ Correo a los dos</a>` : ""}
+    </div>${tels.length > 1 ? `<p class="peq">En WhatsApp hay que enviarlo a cada número por separado.</p>` : ""}`;
   }
   let envioGen = 0;
   function invalidarEnvio(cont) { if (cont) { cont.dataset.gen = String(++envioGen); cont.innerHTML = ""; } }
@@ -1878,7 +1884,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function paqueteEntrenador(ids, sinApellidos) {
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
     const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => { const c = clon(p); delete c.sinNombres; return c; });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.tel; delete j.mail; } return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -2036,11 +2042,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         </section>
         <section class="tarjeta">
           <h2 style="margin-top:0">Contacto</h2>
-          <p class="peq">Para enviarle su ficha por WhatsApp o por correo. Puede ser el del jugador o el de su familia. Solo se guarda en este móvil.</p>
-          <div class="fila">
-            <div class="campo-f crece"><label for="nTel">Teléfono (WhatsApp)</label><input type="tel" id="nTel" inputmode="tel" autocomplete="off" maxlength="20" value="${esc(j.tel || "")}" placeholder="600 000 000"></div>
-            <div class="campo-f crece"><label for="nMail">Correo electrónico</label><input type="email" id="nMail" autocomplete="off" maxlength="100" value="${esc(j.mail || "")}" placeholder="familia@correo.com"></div>
-          </div>
+          <p class="peq">Para enviarle su ficha por WhatsApp o por correo. Puedes poner dos contactos (por ejemplo, madre y padre). Solo se guardan en este móvil.</p>
+          ${[["1", "tel", "mail", "nom1"], ["2", "tel2", "mail2", "nom2"]].map((c) => `
+          <fieldset class="contacto"><legend>Contacto ${c[0]}</legend>
+            <div class="campo-f"><label for="nNom${c[0]}">Quién es (opcional)</label><input type="text" id="nNom${c[0]}" data-cont="${c[3]}" autocomplete="off" maxlength="30" value="${esc(j[c[3]] || "")}" placeholder="${c[0] === "1" ? "Madre, el propio jugador…" : "Padre, tutor…"}"></div>
+            <div class="fila">
+              <div class="campo-f crece"><label for="nTel${c[0]}">Teléfono (WhatsApp)</label><input type="tel" id="nTel${c[0]}" data-cont="${c[1]}" inputmode="tel" autocomplete="off" maxlength="20" value="${esc(j[c[1]] || "")}" placeholder="600 000 000"></div>
+              <div class="campo-f crece"><label for="nMail${c[0]}">Correo electrónico</label><input type="email" id="nMail${c[0]}" data-cont="${c[2]}" autocomplete="off" maxlength="100" value="${esc(j[c[2]] || "")}" placeholder="familia@correo.com"></div>
+            </div>
+          </fieldset>`).join("")}
         </section>
         <section class="tarjeta aspectos">
           <h2 style="margin-top:0">Marcar aspectos</h2>
@@ -2058,8 +2068,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
     }
     cuerpo.oninput = (e) => {
-      if (e.target.id === "nTel") { const v = e.target.value.replace(/[^\d+]/g, ""); if (v) j.tel = v; else delete j.tel; j.mod = Date.now(); guardar(); }
-      if (e.target.id === "nMail") { const v = e.target.value.trim(); if (v) j.mail = v; else delete j.mail; j.mod = Date.now(); guardar(); }
+      const k = e.target.dataset.cont; if (!k || !CONTACTO.includes(k)) return;
+      const v = k.startsWith("tel") ? e.target.value.replace(/[^\d+]/g, "") : e.target.value.trim();
+      if (v) j[k] = v; else delete j[k];
+      j.mod = Date.now(); guardar();
     };
     cuerpo.onclick = (e) => {
       const b = e.target.closest("button"); if (!b) return;
@@ -2112,7 +2124,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha con lo que te digo como entrenador: tus puntos fuertes y lo que estás aprendiendo. Es solo para ti:\n" + url,
           titulo: "Tu ficha", idTxt: "txtNotas",
           indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
-          contacto: { tel: j.tel, mail: j.mail, asunto: "Tu ficha de la pizarra" }
+          contacto: {
+            tels: [{ tel: j.tel, nom: j.nom1 }, { tel: j.tel2, nom: j.nom2 }].filter((x) => x.tel),
+            mails: [{ mail: j.mail, nom: j.nom1 }, { mail: j.mail2, nom: j.nom2 }].filter((x) => x.mail),
+            asunto: "Tu ficha de la pizarra"
+          }
         });
       }
     };

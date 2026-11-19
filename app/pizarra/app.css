@@ -210,3 +210,5 @@ button:disabled { opacity: .45; cursor: default; }
 .marca[data-tipo="m"][aria-pressed="true"] { border-color: #C77700; background: #FFF1D6; box-shadow: 0 0 0 2px #C77700 inset; }
 .marca[data-tipo="c"][aria-pressed="true"] { border-color: #7C5CFF; background: #EFEAFF; box-shadow: 0 0 0 2px #7C5CFF inset; }
 .btn.wa { background: #128C4A; }
+.contacto { border: 1px solid var(--linea); border-radius: 10px; padding: 8px 10px 2px; margin: 0 0 10px; }
+.contacto legend { font-weight: 700; font-size: 14px; padding: 0 4px; }
