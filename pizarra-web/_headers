@@ -1,0 +1,24 @@
+# Pizarra del entrenador (sitio propio) · cabeceras de Netlify
+# La página solo puede hablar con su propio servidor (connect-src 'self'): nada sale a terceros.
+# El pago y el portal de gestión se abren en las páginas de Stripe (navegación, no conexiones).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: microphone=(), camera=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://billing.stripe.com; object-src 'none'
+
+/pizarra/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+/pizarra/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/pizarra/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/pizarra/app.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/gracias.html
+  X-Robots-Tag: noindex, nofollow
+/recuperar.html
+  X-Robots-Tag: noindex, nofollow
+/api/*
+  X-Robots-Tag: noindex, nofollow

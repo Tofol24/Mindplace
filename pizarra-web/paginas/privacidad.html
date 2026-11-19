@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacidad · Pizarra del entrenador</title>
+<link rel="icon" href="/entrenador/aprens-icona-192.png" type="image/png">
+<link rel="stylesheet" href="/suscripcion.css">
+</head>
+<body>
+<main>
+  <p class="marca"><a href="/pizarra/">⚽ Pizarra del entrenador</a></p>
+  <h1>Política de privacidad</h1>
+  <p class="peq">Última actualización: 19 de noviembre de 2026</p>
+
+  <h2>Responsable</h2>
+  <p>Cristóbal Villalonga Melis (APRENS), NIF 78210217M, C/ Mare de Déu de l'Esperança, 70, 2.º, 07300 Inca (Illes Balears). Contacto para cualquier cuestión de privacidad: <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>.</p>
+
+  <h2>En pocas palabras</h2>
+  <p>La pizarra está pensada para guardar lo mínimo. El cuaderno del entrenador, con la plantilla, las fichas y las notas de los jugadores, se queda en su dispositivo. El servidor solo guarda lo necesario para saber si un código de acceso es válido, cuántas sugerencias le quedan este mes y, cuando se crea un enlace, el plan cifrado que no puede leer. No hay cookies de seguimiento ni analítica, y los datos no se usan para publicidad.</p>
+
+  <h2>Qué datos se tratan</h2>
+  <ul>
+    <li><b>El cuaderno</b> (plantilla, fichas, notas, contactos y planes) se guarda solo en el navegador del dispositivo, en el almacenamiento local. El servidor no lo recibe.</li>
+    <li><b>Los enlaces cortos:</b> el plan se cifra en el dispositivo antes de salir y el servidor guarda ese bloque cifrado durante 90 días. La clave para leerlo va solo en el enlace y nunca llega al servidor, que por tanto no puede leer su contenido. Quien recibe el enlace sí puede abrirlo. Respecto a estos datos de los jugadores, el entrenador o el club que los envía decide qué se comparte y con quién.</li>
+    <li><b>Las sugerencias de Claude:</b> cuando el entrenador las pide, y después de ver exactamente lo que se enviará, el apartado del plan y las notas de los jugadores implicados se envían a Anthropic sin los nombres de la plantilla (los jugadores van como J1, J2…) y pasando por el servidor. El filtro solo quita los nombres de la plantilla: antes de enviar se muestra todo lo que sale, para que el entrenador retire de las notas cualquier otro dato personal (familiares, salud…). El servidor guarda la petición solo mientras se prepara la respuesta y la borra al entregarla. Anthropic no usa estos datos para entrenar sus modelos.</li>
+    <li><b>En el servidor se guarda:</b> el código de acceso y la referencia de la suscripción y del cliente en Stripe, con el estado y el plan; contadores de sugerencias por mes y de enlaces por día, identificados por una huella cifrada del código; una huella cifrada (no reversible) del correo de quien paga, para poder reenviarle el código; contadores de intentos de recuperación identificados por huellas cifradas del correo o de la dirección IP, para evitar abusos; y los enlaces de un solo uso para gestionar la suscripción, que caducan a los 30 minutos.</li>
+    <li><b>Una cookie técnica</b> (pz_pago), solo al empezar el pago y durante un día, para que el código se muestre únicamente en el navegador que ha pagado. No sirve para seguimiento.</li>
+    <li><b>El pago:</b> Stripe recibe el correo, el nombre y los datos de pago de quien paga. Nunca vemos los datos de la tarjeta.</li>
+    <li><b>Los correos</b> (código de acceso y enlaces de gestión) se envían con Resend, que recibe la dirección de destino y el mensaje.</li>
+    <li><b>La dirección IP</b> la recibe el servicio de alojamiento (Netlify), como en cualquier web, y Stripe durante el pago. La lectura en voz alta usa solo voces instaladas en el propio dispositivo.</li>
+  </ul>
+
+  <h2>Para qué y con qué base</h2>
+  <ul>
+    <li>Prestar el servicio y gestionar la suscripción, el cobro y el envío del código: ejecución del contrato (art. 6.1.b del RGPD).</li>
+    <li>Conservar las facturas: obligación legal (art. 6.1.c del RGPD).</li>
+    <li>Limitar peticiones e intentos para evitar abusos y proteger el servicio: interés legítimo (art. 6.1.f del RGPD).</li>
+  </ul>
+
+  <h2>Quién tiene acceso (encargados del tratamiento)</h2>
+  <ul>
+    <li>Netlify, Inc. (EE. UU.): alojamiento de la web y del servidor.</li>
+    <li>Anthropic, PBC (EE. UU.): sugerencias con inteligencia artificial.</li>
+    <li>Stripe Payments Europe, Ltd. (Irlanda): pagos. Para algunas finalidades propias, como la prevención del fraude, Stripe actúa como responsable independiente.</li>
+    <li>Resend (EE. UU., con envío desde la región europea): correos.</li>
+  </ul>
+  <p>Cuando los datos se tratan fuera del Espacio Económico Europeo, la transferencia se hace con las garantías del RGPD: el Marco de Privacidad de Datos UE-EE. UU. o las cláusulas contractuales tipo de la Comisión Europea.</p>
+
+  <h2>Cuánto tiempo</h2>
+  <ul>
+    <li>El cuaderno en el navegador: hasta que lo borra quien lo usa.</li>
+    <li>Enlaces cifrados: 90 días.</li>
+    <li>Contadores diarios: se borran a partir del día siguiente. Contadores mensuales: al acabar el mes.</li>
+    <li>Código y referencia de la suscripción: mientras esté activa y hasta 12 meses después de la baja, para atender consultas y reclamaciones. Después se borran, junto con la huella del correo.</li>
+    <li>Facturas y datos de pago (en Stripe): el tiempo que exigen las normas fiscales y mercantiles.</li>
+  </ul>
+
+  <h2>Derechos</h2>
+  <p>Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a href="mailto:tofol@aprens.es">tofol@aprens.es</a>. Si consideras que no se han respetado, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+  <p>Consulta también las <a href="/condiciones.html">condiciones de uso</a>.</p>
+</main>
+</body>
+</html>

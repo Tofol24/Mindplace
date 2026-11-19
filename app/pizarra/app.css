@@ -285,3 +285,6 @@ button:disabled { opacity: .45; cursor: default; }
 .asig-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 4px 10px; margin: 6px 0; font-size: 14px; }
 .asig-lista label { display: flex; gap: 6px; align-items: center; }
 .asig-lista input { width: 18px; height: 18px; }
+.aviso-sus { background: #FFF6DB; border: 1px solid #E8C55A; border-radius: 12px; padding: 10px 12px; margin-top: 10px; }
+.aviso-sus p { margin: 4px 0; }
+.mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: 1px; }

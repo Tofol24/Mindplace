@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>He perdido el código · Pizarra del entrenador</title>
+<link rel="icon" href="/entrenador/aprens-icona-192.png" type="image/png">
+<link rel="stylesheet" href="/suscripcion.css">
+</head>
+<body>
+<main>
+  <p class="marca"><a href="/pizarra/">⚽ Pizarra del entrenador</a></p>
+  <h1>He perdido el código</h1>
+  <form id="f" class="panel" novalidate>
+    <label class="etq" for="email">Correo con el que pagaste</label>
+    <input type="email" id="email" autocomplete="email" required>
+    <p class="peq">Te enviaremos el código y un enlace para gestionar la suscripción. El código también aparece en las facturas de Stripe.</p>
+    <p id="msg" role="status" aria-live="polite"></p>
+    <div class="fila"><button class="btn" id="ir" type="submit">Enviarme el código</button><a class="btn sec" href="/pizarra/">Volver a la pizarra</a></div>
+  </form>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = $("#email").value.trim(), msg = $("#msg");
+  msg.className = ""; msg.textContent = "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.className = "error"; msg.textContent = "Revisa el correo: no parece válido."; return; }
+  $("#ir").disabled = true;
+  try {
+    const r = await fetch("/api/pizarra-recuperar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email }) });
+    const b = await r.json().catch(() => ({}));
+    if (r.status === 429) throw new Error("Has hecho demasiados intentos hoy. Vuelve a probar mañana.");
+    if (r.status === 404) throw new Error("Ahora mismo no se pueden enviar correos. Mira el código en las facturas de Stripe o escribe a tofol@aprens.es.");
+    if (!r.ok) throw new Error("No se ha podido enviar. Vuelve a intentarlo dentro de un rato.");
+    msg.textContent = b.mensaje || "Hecho.";
+  } catch (x) { msg.className = "error"; msg.textContent = x.message; }
+  $("#ir").disabled = false;
+});
+</script>
+</body>
+</html>
