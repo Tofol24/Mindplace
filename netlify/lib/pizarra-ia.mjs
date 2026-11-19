@@ -1,0 +1,120 @@
+// Sugerencias de Claude para la Pizarra del entrenador.
+// La app envía un apartado del plan (ejercicio o situación de partido), la jugada y las
+// notas de los jugadores SIN nombres: cada jugador es «dorsal + puesto». Aquí se valida
+// la entrada, se arma la consulta y se sanea la respuesta antes de devolverla.
+
+export const MODELO = "claude-opus-5-5";
+export const MAX_ENTRADA = 60_000;     // bytes del JSON de entrada
+export const CUOTA_DIA_IA = 300;       // consultas al día como máximo (tope de coste)
+export const RE_JOB = /^[A-Za-z0-9]{16}$/;
+
+const ALF = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+export function nuevoJob() {
+  let s = "";
+  while (s.length < 16) for (const x of crypto.getRandomValues(new Uint8Array(24))) if (x < 248 && s.length < 16) s += ALF[x % 62];
+  return s;
+}
+
+const txt = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
+const num = (v, a, b) => { const n = Number(v); return Number.isFinite(n) ? Math.min(b, Math.max(a, Math.round(n))) : a; };
+const lista = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
+
+// Reconstruye la entrada campo a campo (nada de lo que llegue se pasa tal cual).
+export function sanearEntrada(e) {
+  if (!e || typeof e !== "object") return null;
+  const b = e.bloque || {};
+  const salida = {
+    etapa: txt(e.etapa, 40),
+    tipo: e.tipo === "partido" ? "partido" : "entreno",
+    sistema: txt(e.sistema, 20),
+    objetivo: txt(e.objetivo, 600),
+    clave: txt(e.clave, 30),
+    bloque: {
+      categoria: txt(b.categoria, 60), titulo: txt(b.titulo, 80), texto: txt(b.texto, 1200),
+      consignas: txt(b.consignas, 800), fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300)
+    },
+    pasos: lista(e.pasos, 20).map((p) => ({
+      paso: num(p && p.paso, 1, 60), titulo: txt(p && p.titulo, 80),
+      balon: lista(p && p.balon, 2).map((v) => num(v, -10, 115)),
+      fichas: lista(p && p.fichas, 40).map((f) => ({
+        ficha: txt(f && f.ficha, 16), equipo: f && f.equipo === "rival" ? "rival" : "nuestro",
+        x: num(f && f.x, -10, 80), y: num(f && f.y, -10, 115)
+      }))
+    })),
+    jugadores: lista(e.jugadores, 40).map((j) => ({
+      ficha: txt(j && j.ficha, 16), dorsal: num(j && j.dorsal, 0, 99), puesto: txt(j && j.puesto, 40),
+      notas: lista(j && j.notas, 20).map((n) => ({
+        tipo: n && n.tipo === "fuerte" ? "fuerte" : "mejora", area: txt(n && n.area, 20),
+        situacion: txt(n && n.situacion, 60), texto: txt(n && n.texto, 400)
+      }))
+    }))
+  };
+  if (!salida.bloque.categoria && !salida.bloque.titulo) return null;
+  return salida;
+}
+
+export const ESQUEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["analisis", "texto", "consignas", "fijarse", "cuando", "indicaciones", "individual", "mensaje"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: cómo plantear y mostrar este apartado, qué ajustar y por qué. 4-8 frases." },
+    texto: { type: "string", description: "Explicación del ejercicio o la situación para todo el grupo, en segunda persona del plural." },
+    consignas: { type: "array", items: { type: "string" }, description: "3-6 consignas cortas para el grupo." },
+    fijarse: { type: "string", description: "En qué fijarse (estímulos relevantes) en este apartado." },
+    cuando: { type: "string", description: "Cuándo fijarse o actuar: el momento de la jugada." },
+    indicaciones: {
+      type: "array",
+      description: "Indicación por ficha y paso, visible para todo el grupo. Sin mencionar debilidades personales.",
+      items: {
+        type: "object", additionalProperties: false, required: ["ficha", "paso", "que", "fijate", "cuando"],
+        properties: { ficha: { type: "string" }, paso: { type: "integer" }, que: { type: "string" }, fijate: { type: "string" }, cuando: { type: "string" } }
+      }
+    },
+    individual: {
+      type: "array",
+      description: "Consejo privado para un jugador concreto en este apartado, a partir de sus notas: cómo aprovechar su punto fuerte aquí y en qué centrarse para mejorar.",
+      items: {
+        type: "object", additionalProperties: false, required: ["dorsal", "texto"],
+        properties: { dorsal: { type: "integer" }, texto: { type: "string" } }
+      }
+    },
+    mensaje: { type: "string", description: "Mensaje breve para el grupo del equipo (2-4 frases), sin enlace." }
+  }
+};
+
+export const SISTEMA = `Eres un entrenador de fútbol base con formación en psicología del deporte. Ayudas a otro entrenador a preparar un apartado de su plan (un ejercicio de entrenamiento o una situación de partido) para enviarlo a sus jugadores en una pizarra digital.
+
+Recibirás en JSON: la etapa de edad del equipo, el tipo de plan, el sistema, el apartado (categoría, título, texto y consignas actuales), los pasos de la jugada con las posiciones en metros (campo de 68 × 105, nuestro equipo ataca hacia y = 0) y, para cada jugador, su ficha en la pizarra, su dorsal, su puesto y las notas del entrenador sobre sus puntos fuertes y lo que tiene que mejorar (técnica, táctica, toma de decisiones…). No hay nombres: refiérete a los jugadores solo por dorsal o por puesto.
+
+Qué tienes que hacer:
+- Proponer la mejor manera de plantear y mostrar este apartado para esa edad, aprovechando la dinámica de la jugada y las características de los jugadores.
+- Adaptar el lenguaje y la exigencia a la etapa de desarrollo (más juego y técnica en edades tempranas; más táctica, velocidad y fuerza supervisada en cadete y juvenil).
+- Seguir este enfoque de atención: para cada momento, decir en qué fijarse (el balón, el compañero, el rival, hacia dónde mira, el pie…) y cuándo fijarse. Los pensamientos y los nervios no se combaten: se vuelve a la jugada con la palabra clave del equipo si la hay.
+- En «indicaciones», dar a cada ficha de nuestro equipo que aparezca en los pasos lo que hace, en qué se fija y cuándo, con la numeración de pasos recibida (empieza en 1). Solo fichas que existan en los pasos. Estas indicaciones las ve todo el grupo: nunca menciones puntos débiles personales en ellas.
+- En «individual», para los jugadores con notas, un consejo privado: cómo sacar partido a su punto fuerte en este apartado y en qué centrarse para mejorar, de forma constructiva.
+
+Estilo: castellano, en segunda persona, frases cortas y claras, tono sereno y cercano, sin exclamaciones en serie, sin emojis y sin promesas. Cada texto, como máximo 2-3 frases.`;
+
+// Mensaje del usuario: la entrada saneada como JSON.
+export const mensajeUsuario = (entrada) => "Datos del apartado:\n" + JSON.stringify(entrada);
+
+// Sanea la respuesta del modelo (solo texto y números, longitudes acotadas).
+export function sanearSalida(o, entrada) {
+  if (!o || typeof o !== "object") return null;
+  const fichas = new Set();
+  (entrada.pasos || []).forEach((p) => p.fichas.forEach((f) => { if (f.equipo === "nuestro") fichas.add(f.ficha); }));
+  const nPasos = (entrada.pasos || []).length;
+  const dorsales = new Set((entrada.jugadores || []).map((j) => j.dorsal));
+  return {
+    analisis: txt(o.analisis, 2000), texto: txt(o.texto, 1200),
+    consignas: lista(o.consignas, 8).map((c) => txt(c, 160)).filter(Boolean),
+    fijarse: txt(o.fijarse, 300), cuando: txt(o.cuando, 300), mensaje: txt(o.mensaje, 600),
+    indicaciones: lista(o.indicaciones, 200)
+      .filter((i) => i && fichas.has(i.ficha) && Number.isInteger(i.paso) && i.paso >= 1 && i.paso <= nPasos)
+      .map((i) => ({ ficha: i.ficha, paso: i.paso, que: txt(i.que, 300), fijate: txt(i.fijate, 200), cuando: txt(i.cuando, 200) })),
+    individual: lista(o.individual, 40)
+      .filter((i) => i && dorsales.has(i.dorsal))
+      .map((i) => ({ dorsal: i.dorsal, texto: txt(i.texto, 500) }))
+  };
+}

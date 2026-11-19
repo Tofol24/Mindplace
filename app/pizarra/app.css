@@ -86,7 +86,7 @@ button:disabled { opacity: .45; cursor: default; }
 .bloque { border-left: 6px solid var(--verde); }
 .bloque .acciones { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 
-.plantilla-fila { display: grid; grid-template-columns: 64px 1fr 1fr 44px; gap: 6px; align-items: center; margin-bottom: 6px; }
+.plantilla-fila { display: grid; grid-template-columns: 56px 1fr 1fr 48px 40px; gap: 6px; align-items: center; margin-bottom: 6px; }
 .plantilla-fila input { min-height: 38px; padding: 6px 8px; }
 
 .toast {
@@ -189,3 +189,15 @@ button:disabled { opacity: .45; cursor: default; }
 .abrir-arch { border-left: 6px solid var(--aviso); }
 .btn.grande { width: 100%; min-height: 56px; font-size: 18px; margin-top: 6px; }
 .inicio-jug { border-left: 6px solid var(--aviso); }
+.notas { list-style: none; padding: 0; margin: 6px 0; }
+.notas li { display: flex; gap: 8px; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-top: 1px solid #EEE; }
+.notas li:first-child { border-top: 0; }
+.tipos-nota { border: 0; padding: 0; margin: 0 0 10px; display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.tipos-nota label { display: flex; gap: 6px; align-items: center; }
+.tipos-nota input { width: 20px; height: 20px; }
+.mis-notas { border-left: 6px solid #7C5CFF; }
+.para-ti { background: #EFEAFF; border-radius: 8px; padding: 6px 10px; margin-top: 8px; }
+.ia-btn { background: #EFEAFF; color: #3B2A8C; }
+.ia-propuesta { background: #F6F3FF; border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+.ia-propuesta h3 { margin-top: 0; }
+.ia-espera { background: #F6F3FF; border-radius: 10px; padding: 8px 10px; }

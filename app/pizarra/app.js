@@ -59,6 +59,8 @@
     banda: "Saque de banda", cornerF: "Córner a favor", cornerC: "Córner en contra", falta: "Faltas",
     situacion: "Situación de partido", otro: "Otro"
   };
+  const AREAS = { tecnica: "Técnica", tactica: "Táctica", decision: "Toma de decisiones", fisico: "Físico", atencion: "Atención y actitud" };
+  const TIPOS_NOTA = { f: "💪 Punto fuerte", m: "🎯 A mejorar", c: "💡 Consejo para una situación" };
   const PLANT_POR_CAT = { salida: "salida", presion: "presion", banda: "banda", cornerF: "cornerF", cornerC: "cornerC", falta: "falta", rondo: "rondo", transicion: "transicion" };
   const PLANTILLAS = {
     vacia: "Los dos equipos colocados (1 paso)", salida: "Salida de balón en corto", presion: "Presión en saque de puerta rival",
@@ -142,11 +144,17 @@
   const pt = (v) => (Array.isArray(v) && v.length === 2 ? [num(v[0], -10, 78, 34), num(v[1], -10, 115, 52.5)] : null);
   const idOk = (v) => (typeof v === "string" && RE_ID.test(v) && !/^(__proto__|constructor|prototype)$/.test(v) ? v : null);
   const colOk = (v, def) => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : def);
+  function sanNota(n) {
+    if (!n || typeof n !== "object") return null;
+    const x = txt(n.x, 400); if (!x) return null;
+    return { id: idOk(n.id) || uid(), t: ["f", "m", "c"].includes(n.t) ? n.t : "m", a: own(AREAS, n.a) ? n.a : "", s: own(CATS, n.s) ? n.s : "", x: x, f: /^\d{4}-\d{2}-\d{2}$/.test(n.f) ? n.f : "" };
+  }
   function sanJugador(j) {
     const id = idOk(j && j.id); if (!id) return null;
     const o = { id: id, d: Math.round(num(j.d, 0, 99, 0)), n: txt(j.n, 60) || "Jugador", c: txt(j.c, 18), p: txt(j.p, 24) };
     const mod = num(j.mod, 0, 4102444800000, 0); if (mod) o.mod = mod;
     const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
+    const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
     return o;
   }
   function sanJugada(g) {
@@ -215,7 +223,13 @@
   function sanPaquete(o) {
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
-    return { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean) };
+    const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; });
+    const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
+    // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
+    const yo = idOk(o.yo);
+    if (yo && jug.some((j) => j.id === yo)) { r.yo = yo; r.notas = (Array.isArray(o.notas) ? o.notas : []).slice(0, 80).map(sanNota).filter(Boolean); }
+    return r;
   }
 
   // ---------------------------------------------------------------- datos
@@ -904,6 +918,7 @@
         h += `<div class="msg"><span class="ic" aria-hidden="true">${m.ic}</span><div><b>${esc(m.tit)}</b>${esc(m.txt)}</div></div>`;
       });
       if (!ed && voz.ok) h += `<div class="fila" style="margin-top:8px"><button type="button" class="btn-peq" data-a="leerInfo">🔊 Escuchar</button></div>`;
+      if (ed && o.abrirNotas && !inf.rival && ctx.pidDe(f)) h += `<button type="button" class="btn-peq" data-a="notas" style="margin-top:8px">📝 Notas de ${esc(inf.corto || inf.nombre)} (puntos fuertes y a mejorar)</button>`;
       if (o.abrirFicha && !inf.rival && ctx.pidDe(f)) h += `<button type="button" class="btn ficha-btn" data-a="ficha">📋 Ficha completa de ${esc(inf.corto || inf.nombre)}: qué mirar y qué entrenar</button>`;
       info.innerHTML = h;
       if (!ed && voz.ok && o.vozAuto && o.vozAuto() && o.yoPid && ctx.pidsDe(f).includes(o.yoPid)) {
@@ -1141,6 +1156,7 @@
         snap(); jug.pasos.splice(i, 1); if (i >= jug.pasos.length) i = jug.pasos.length - 1; cambio(); pintarTodo();
       } else if (a === "cerrarZona") terminarDibujo();
       else if (a === "leerInfo") voz.alternar(info, b);
+      else if (a === "notas" && sel && o.abrirNotas) { const f = jug.fichas.find((x) => x.id === sel); if (f && ctx.pidDe(f)) o.abrirNotas(ctx.pidDe(f)); }
       else if (a === "ficha" && sel) { const f = jug.fichas.find((x) => x.id === sel); if (f) o.abrirFicha(ctx.pidDe(f)); }
       else if (a === "cancelarDib") { bor = null; pintarTodo(); }
       else if (/^mas[ARC]|^masChino/.test(a) && jug.fichas.length >= MAX.fichas) toast("Has llegado al máximo de fichas");
@@ -1373,7 +1389,12 @@
             <button type="button" class="btn-peq" data-bmov="${bi}" data-dir="1" ${bi === p.bloques.length - 1 ? "disabled" : ""} aria-label="Bajar apartado">↓</button>
             <button type="button" class="btn-peq peligro" data-bborrar="${b.id}">Borrar apartado</button>
           </div>
+          <div class="acciones">
+            <button type="button" class="btn-peq ia-btn" data-iapedir="${b.id}">✨ Sugerencias de Claude</button>
+          </div>
+          <div data-r="ia-${b.id}"></div>
         </div>`).join("")}
+      <p class="peq">✨ Las sugerencias de Claude usan la jugada, las notas de los jugadores y la edad del equipo. Se envían a Claude (Anthropic) <b>sin nombres</b>, solo con dorsal y puesto, y solo cuando pulsas el botón. Revisa la propuesta antes de aplicarla.</p>
       <button type="button" class="btn-sec" data-bnuevo="1">＋ Añadir apartado</button>
 
       <h2>Enviar</h2>
@@ -1389,6 +1410,7 @@
         <div data-r="compartir"></div>
       </div>`;
     pintarSinPuesto(p);
+    p.bloques.forEach((b) => { if (iaResultados[b.id]) pintarIA(p, b, app.querySelector(`[data-r="ia-${b.id}"]`)); });
   }
 
   function pintarSinPuesto(plan) {
@@ -1408,7 +1430,7 @@
     const hostPz = document.createElement("div");
     cuerpo.appendChild(hostPz);
     const ctx = crearCtx(plan, db.plantilla, true);
-    const pz = crearPizarra(hostPz, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: () => { plan.mod = Date.now(); guardar(); }, abrirFicha: (pid) => abrirFicha(plan, ctx, pid, db.equipo.etapa) });
+    const pz = crearPizarra(hostPz, { ctx: ctx, jug: bloque.jug, cat: bloque.cat, editable: true, alCambiar: () => { plan.mod = Date.now(); guardar(); }, abrirFicha: (pid) => abrirFicha(plan, ctx, pid, db.equipo.etapa), abrirNotas: (pid) => abrirNotas(pid, plan.id) });
     dlg._pz = pz;
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   }
@@ -1435,6 +1457,7 @@
               <input type="number" min="0" max="99" value="${esc(j.d)}" data-j="d" data-jid="${esc(j.id)}" aria-label="Dorsal de ${esc(j.n)}">
               <input type="text" value="${esc(j.c || "")}" data-j="c" data-jid="${esc(j.id)}" maxlength="18" aria-label="Nombre corto de ${esc(j.n)}" placeholder="${esc(j.n)}">
               <input type="text" value="${esc(j.p || "")}" data-j="p" data-jid="${esc(j.id)}" maxlength="24" aria-label="Puesto de ${esc(j.n)}" placeholder="Puesto">
+              <button type="button" class="btn-peq" data-jnotas="${esc(j.id)}" aria-label="Notas de ${esc(j.n)}">📝${(j.notas || []).length ? (j.notas || []).length : ""}</button>
               <button type="button" class="btn-peq peligro" data-jborrar="${esc(j.id)}" aria-label="Quitar a ${esc(j.n)}">✕</button>
             </div>`).join("")}
         </div>
@@ -1565,6 +1588,7 @@
     const o = clon(pq);
     if (cortos && Array.isArray(o.jug) && o.plan) {
       const m = {}; o.jug.forEach((j, i) => { m[j.id] = i.toString(36); j.id = m[j.id]; });
+      if (o.yo && m[o.yo] !== undefined) o.yo = m[o.yo];
       const r = (x) => (x && m[x] !== undefined ? m[x] : x);
       const pl = o.plan;
       Object.keys(pl.once || {}).forEach((k) => { pl.once[k] = r(pl.once[k]); });
@@ -1918,6 +1942,236 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     app.querySelector("[data-nojuntar]").addEventListener("click", () => { history.replaceState(null, "", location.pathname); ir("cuaderno"); });
   }
 
+  // ---------------------------------------------------------------- notas del entrenador por jugador
+  // Puntos fuertes, lo que tiene que mejorar y consejos para situaciones concretas.
+  // Son privadas: el enlace del grupo no las lleva; cada jugador las recibe por un enlace propio.
+  function notasJugador(pid) { const j = db.plantilla.find((x) => x.id === pid); return j ? (j.notas || []) : []; }
+  function htmlNotas(notas, opciones) {
+    const ed = opciones && opciones.editable;
+    const grupo = (t, tit, vacio) => {
+      const l = notas.filter((n) => n.t === t);
+      if (!l.length && !ed) return "";
+      return `<h3>${tit}</h3>${l.length ? `<ul class="notas">${l.map((n) => `<li><span>${n.a ? `<b>${esc(AREAS[n.a] || "")}</b>${n.s ? " · " : ""}` : ""}${n.s ? `<i>${esc(CATS[n.s] || "")}</i>` : ""}${n.a || n.s ? "<br>" : ""}${esc(n.x)}</span>${ed ? `<button type="button" class="btn-peq peligro" data-nborrar="${esc(n.id)}" aria-label="Borrar esta nota">✕</button>` : ""}</li>`).join("")}</ul>` : `<p class="peq">${vacio}</p>`}`;
+    };
+    return grupo("f", "💪 Puntos fuertes", "Aún no hay puntos fuertes anotados.") +
+      grupo("m", "🎯 Lo que está aprendiendo", "Aún no hay nada anotado para mejorar.") +
+      grupo("c", "💡 Consejos para situaciones de juego", "Aún no hay consejos para situaciones concretas.");
+  }
+
+  function abrirNotas(pid, planId) {
+    const j = db.plantilla.find((x) => x.id === pid); if (!j) return;
+    const dlg = $("#dlgNotas"), cuerpo = $("#dlgNotasCuerpo");
+    $("#dlgNotasTit").textContent = "Notas de " + (j.c || j.n);
+    const planes = db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+    function pintarN() {
+      cuerpo.innerHTML = `
+        <div class="portada">
+          <h1 style="margin:0"><span class="dorsal" style="background:var(--acento);margin-right:8px">${esc(j.d)}</span>${esc(j.n)}</h1>
+          <p class="peq">${esc(j.p || "Sin puesto habitual")} · Estas notas son privadas: solo las verá ${esc(j.c || j.n)} si le envías su ficha.</p>
+        </div>
+        <section class="tarjeta">
+          <h2 style="margin-top:0">Añadir una nota</h2>
+          <fieldset class="tipos-nota"><legend class="sr-only">Tipo de nota</legend>
+            ${Object.keys(TIPOS_NOTA).map((k, i) => `<label><input type="radio" name="nTipo" value="${k}" ${i === 0 ? "checked" : ""}> ${TIPOS_NOTA[k]}</label>`).join("")}
+          </fieldset>
+          <div class="fila">
+            <div class="campo-f crece"><label for="nArea">Aspecto</label><select id="nArea"><option value="">General</option>${Object.keys(AREAS).map((k) => `<option value="${k}">${esc(AREAS[k])}</option>`).join("")}</select></div>
+            <div class="campo-f crece"><label for="nSit">Situación de juego (opcional)</label><select id="nSit"><option value="">Cualquier situación</option>${Object.keys(CATS).map((k) => `<option value="${k}">${esc(CATS[k])}</option>`).join("")}</select></div>
+          </div>
+          <div class="campo-f"><label for="nTxt">Qué le dices</label>
+            <textarea id="nTxt" rows="4" maxlength="400" placeholder="Ej.: Lee muy bien cuándo atacar la espalda del lateral. Le cuesta perfilarse antes de recibir."></textarea></div>
+          <div class="fila">
+            <button type="button" class="btn-sec" data-dictar="1">🎤 Dictar</button>
+            <button type="button" class="btn" data-nguardar="1">Guardar nota</button>
+          </div>
+          <p class="peq" data-r="ayudaDictado" hidden>Pulsa el <b>micrófono del teclado</b> y habla: el móvil lo escribe por ti (en Mac, pulsa dos veces la tecla Fn). El dictado lo hace tu móvil, la pizarra no graba audio.</p>
+        </section>
+        <section class="tarjeta">${htmlNotas(j.notas || [], { editable: true })}</section>
+        <section class="tarjeta">
+          <h2 style="margin-top:0">Enviar su ficha por privado</h2>
+          <p class="peq">Se crea un enlace corto y cifrado solo para ${esc(j.c || j.n)}, con sus notas y el plan que elijas. El enlace del grupo nunca lleva las notas de nadie.</p>
+          <div class="campo-f"><label for="nPlan">Con el plan</label><select id="nPlan"><option value="">Solo sus notas</option>${planes.map((p) => `<option value="${esc(p.id)}" ${p.id === planId ? "selected" : ""}>${esc(p.titulo || "(sin título)")} · ${esc(fechaBonita(p.fecha))}</option>`).join("")}</select></div>
+          <button type="button" class="btn" data-nenviar="1">📤 Preparar enlace privado</button>
+          <div data-r="envNotas"></div>
+        </section>`;
+      if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
+    }
+    cuerpo.onclick = (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.dictar) {
+        const t = $("#nTxt"); t.focus();
+        const a = cuerpo.querySelector('[data-r="ayudaDictado"]'); a.hidden = false;
+        return;
+      }
+      if (b.dataset.nguardar) {
+        const x = $("#nTxt").value.trim();
+        if (!x) { toast("Escribe o dicta la nota"); $("#nTxt").focus(); return; }
+        const t = (cuerpo.querySelector('input[name="nTipo"]:checked') || {}).value || "f";
+        j.notas = j.notas || [];
+        j.notas.push({ id: uid(), t: t, a: $("#nArea").value, s: $("#nSit").value, x: x.slice(0, 400), f: hoyISO() });
+        j.mod = Date.now(); guardar(); pintarN(); toast("Nota guardada");
+        $("#nTxt").focus();
+        return;
+      }
+      if (b.dataset.nborrar) {
+        if (!window.confirm("¿Borrar esta nota?")) return;
+        j.notas = (j.notas || []).filter((n) => n.id !== b.dataset.nborrar); j.mod = Date.now(); guardar(); pintarN(); return;
+      }
+      if (b.dataset.nenviar) {
+        const plan = db.planes.find((p) => p.id === $("#nPlan").value) || null;
+        const cont = cuerpo.querySelector('[data-r="envNotas"]');
+        prepararEnvio(cont, {
+          corto: () => enlaceCorto(paqueteJugador(plan, j), true),
+          largo: () => location.origin + location.pathname + "#p=" + codificar(paqueteJugador(plan, j), true),
+          texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha con lo que te digo como entrenador: tus puntos fuertes y lo que estás aprendiendo. Es solo para ti:\n" + url,
+          titulo: "Tu ficha", idTxt: "txtNotas",
+          indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo."
+        });
+      }
+    };
+    pintarN();
+    if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
+  }
+  // Paquete privado: el plan (como lo ve el grupo) más las notas de un solo jugador.
+  function paqueteJugador(plan, j) {
+    const base = plan ? paquete(plan, !!plan.sinNombres) : { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: { tipo: "entreno", titulo: "Tu ficha", fecha: hoyISO(), sistema: "4231", once: {}, extra: {}, bloques: [] }, jug: [] };
+    const pq = Object.assign({ tipo: "jugador" }, base);
+    if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
+    pq.yo = j.id;
+    pq.notas = clon(j.notas || []);
+    return pq;
+  }
+  $("#dlgNotasCerrar").addEventListener("click", () => { $("#dlgNotas").close(); });
+  $("#dlgNotas").addEventListener("close", () => { if (estado.pant === "plantilla") pintarPantalla(); });
+
+  // ---------------------------------------------------------------- sugerencias de Claude
+  // Se envía a /api/pizarra-ia el apartado, la jugada y las notas SIN nombres (dorsal y puesto).
+  const iaResultados = {};
+  const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  function quitarNombres(t) {
+    let s = String(t || "");
+    db.plantilla.forEach((j) => {
+      const nombres = new Set([j.n, j.c].concat(String(j.n || "").split(/\s+/)).filter((x) => x && x.length >= 3));
+      nombres.forEach((nm) => { s = s.replace(new RegExp("(^|[^\\p{L}])" + escRe(nm) + "(?=[^\\p{L}]|$)", "giu"), "$1el jugador"); });
+    });
+    return s;
+  }
+  function entradaIA(plan, b) {
+    const ctx = crearCtx(plan, db.plantilla, true);
+    const E = FICHA.ETAPAS[db.equipo.etapa];
+    const jugadores = [], porDorsal = {};
+    const pasos = [];
+    if (b.jug) {
+      b.jug.pasos.forEach((p, i) => {
+        pasos.push({
+          paso: i + 1, titulo: quitarNombres(p.t || ""), balon: p.b.map(Math.round),
+          fichas: b.jug.fichas.filter((f) => f.eq !== "c" && p.pos[f.id] && (f.eq === "a" || b.jug.rivales !== false))
+            .map((f) => ({ ficha: f.id, equipo: f.eq === "a" ? "nuestro" : "rival", x: Math.round(p.pos[f.id][0]), y: Math.round(p.pos[f.id][1]) }))
+        });
+      });
+      b.jug.fichas.filter((f) => f.eq === "a").forEach((f) => {
+        const pid = ctx.pidDe(f), j = pid && db.plantilla.find((x) => x.id === pid);
+        if (!j) return;
+        porDorsal[j.d] = j.id;
+        const inf = ctx.info(f);
+        jugadores.push({
+          ficha: f.id, dorsal: j.d, puesto: inf.rol || j.p || "",
+          notas: (j.notas || []).filter((n) => n.t !== "c" || n.s === b.cat).slice(0, 12).map((n) => ({ tipo: n.t === "f" ? "fuerte" : "mejora", area: n.a, situacion: CATS[n.s] || "", texto: quitarNombres(n.x) }))
+        });
+      });
+    }
+    return {
+      porDorsal: porDorsal,
+      entrada: {
+        etapa: E ? E.n + " (" + E.edad + ")" : "", tipo: plan.tipo, sistema: (SISTEMAS[plan.sistema] || {}).n || "",
+        objetivo: quitarNombres(plan.objetivo), clave: plan.clave || "",
+        bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas), fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando) },
+        pasos: pasos, jugadores: jugadores
+      }
+    };
+  }
+  const ERRORES_IA = {
+    sin_clave: "Falta configurar la clave de Claude en Netlify (variable ANTHROPIC_API_KEY).",
+    cuota: "Se ha llegado al máximo de consultas de hoy. Prueba mañana.",
+    ocupado: "Claude está muy ocupado ahora mismo. Prueba en unos minutos.",
+    clave: "La clave de Claude configurada en Netlify no es válida.",
+    rechazo: "Claude no ha podido responder a esta consulta.",
+    grande: "El apartado es demasiado grande para analizarlo."
+  };
+  async function pedirIA(plan, b, cont) {
+    const { entrada, porDorsal } = entradaIA(plan, b);
+    cont.innerHTML = `<p class="peq ia-espera">✨ Claude está preparando la propuesta. Puede tardar un minuto…</p>`;
+    let job;
+    try {
+      const r = await fetch("/api/pizarra-ia", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(entrada) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.job) throw new Error(j.error || "red");
+      job = j.job;
+    } catch (e) { cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[e.message] || "No se ha podido pedir la propuesta. Comprueba la conexión y vuelve a intentarlo.")}</p>`; return; }
+    for (let i = 0; i < 80; i++) {
+      await new Promise((ok) => setTimeout(ok, i < 5 ? 2000 : 3000));
+      if (!cont.isConnected) return;
+      let r;
+      try { r = await (await fetch("/api/pizarra-ia?job=" + job, { cache: "no-store" })).json(); } catch (e) { continue; }
+      if (r.estado === "pendiente") continue;
+      if (r.estado === "listo" && r.resultado) { iaResultados[b.id] = { res: r.resultado, porDorsal: porDorsal }; pintarIA(plan, b, cont); return; }
+      cont.innerHTML = `<p class="sin-puesto">${esc(ERRORES_IA[r.error] || "Claude no ha podido terminar la propuesta. Vuelve a intentarlo.")}</p>`;
+      return;
+    }
+    cont.innerHTML = `<p class="sin-puesto">La propuesta está tardando demasiado. Vuelve a intentarlo.</p>`;
+  }
+  function pintarIA(plan, b, cont) {
+    const it = iaResultados[b.id]; if (!it) { cont.innerHTML = ""; return; }
+    const r = it.res;
+    const nombre = (d) => { const j = db.plantilla.find((x) => x.id === it.porDorsal[d]); return j ? d + " · " + (j.c || j.n) : "Dorsal " + d; };
+    cont.innerHTML = `<div class="ia-propuesta">
+      <h3>✨ Propuesta de Claude</h3>
+      <p><b>Para ti:</b> ${esc(r.analisis)}</p>
+      <p><b>Explicación para el grupo:</b> ${esc(r.texto)}</p>
+      ${r.consignas.length ? `<p><b>Consignas:</b></p><ul class="consignas">${r.consignas.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+      ${r.fijarse ? `<p><b>🎯 En qué fijarse:</b> ${esc(r.fijarse)}</p>` : ""}${r.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(r.cuando)}</p>` : ""}
+      ${r.individual.length ? `<p><b>Consejos privados:</b></p><ul class="consignas">${r.individual.map((i) => `<li><b>${esc(nombre(i.dorsal))}:</b> ${esc(i.texto)}</li>`).join("")}</ul>` : ""}
+      ${r.mensaje ? `<p><b>Mensaje para el grupo:</b> ${esc(r.mensaje)}</p>` : ""}
+      <fieldset class="lista-env"><legend class="peq"><b>Qué quieres aplicar</b></legend>
+        <label><input type="checkbox" data-iaop="texto" checked> Explicación y consignas</label>
+        <label><input type="checkbox" data-iaop="atencion" checked> En qué fijarse y cuándo</label>
+        <label><input type="checkbox" data-iaop="pizarra" ${r.indicaciones.length ? "checked" : "disabled"}> Indicaciones de cada jugador en la pizarra (${r.indicaciones.length})</label>
+        <label><input type="checkbox" data-iaop="privado" ${r.individual.length ? "checked" : "disabled"}> Consejos privados en la ficha de cada jugador (${r.individual.length})</label>
+      </fieldset>
+      <div class="fila">
+        <button type="button" class="btn" data-iaaplicar="${esc(b.id)}">Aplicar</button>
+        <button type="button" class="btn-sec" data-iadescartar="${esc(b.id)}">Descartar</button>
+      </div>
+      <p class="peq">Revisa la propuesta: lo que apliques sustituye lo que había en esos campos. Las indicaciones de la pizarra las ve todo el grupo; los consejos privados solo van en el enlace privado de cada jugador.</p>
+    </div>`;
+  }
+  function aplicarIA(plan, b, cont) {
+    const it = iaResultados[b.id]; if (!it) return;
+    const r = it.res;
+    const op = (k) => { const c = cont.querySelector(`[data-iaop="${k}"]`); return c && c.checked; };
+    if (op("texto")) { b.texto = r.texto; b.consignas = r.consignas.join("\n"); }
+    if (op("atencion")) { b.fij = r.fijarse; b.cuando = r.cuando; }
+    if (op("pizarra") && b.jug) {
+      r.indicaciones.forEach((i) => {
+        const p = b.jug.pasos[i.paso - 1]; if (!p || !b.jug.fichas.some((f) => f.id === i.ficha)) return;
+        p.tips = p.tips || {};
+        const prev = p.tips[i.ficha] || {};
+        p.tips[i.ficha] = { m: i.que, p: prev.p || "", f: i.fijate, q: i.cuando };
+        if (!p.tips[i.ficha].p) delete p.tips[i.ficha].p;
+      });
+    }
+    if (op("privado")) {
+      r.individual.forEach((i) => {
+        const j = db.plantilla.find((x) => x.id === it.porDorsal[i.dorsal]); if (!j) return;
+        j.notas = j.notas || [];
+        j.notas.push({ id: uid(), t: "c", a: "", s: b.cat, x: i.texto.slice(0, 400), f: hoyISO() });
+        j.mod = Date.now();
+      });
+    }
+    delete iaResultados[b.id];
+    plan.mod = Date.now(); guardar(); pintarPantalla(); toast("Propuesta aplicada");
+  }
+
   // ---------------------------------------------------------------- lectura en voz alta
   // Síntesis de voz del propio dispositivo (Web Speech API): no envía nada fuera.
   const voz = (function () {
@@ -2035,6 +2289,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           ${voz.ok ? `<button type="button" class="btn" data-leertodo="1" style="margin-top:10px">🔊 Escuchar toda la ficha</button>` : ""}
         </div>
         <section class="tarjeta">${secLeer()}<h2>Tu papel</h2><p>${esc(P.papel)}</p></section>
+        ${pid === ctx.notasYo && (ctx.notas || []).length ? `<section class="tarjeta mis-notas">${secLeer()}<h2>Lo que te dice tu entrenador</h2>${htmlNotas(ctx.notas, {})}</section>` : ""}
         ${especifico ? `<section class="tarjeta">${secLeer()}<h2>En este ${plan.tipo === "partido" ? "partido" : "entreno"}, paso a paso</h2><p class="peq">Lo que te pide el entrenador y lo que haces en cada momento de cada jugada. Toca cada apartado para abrirlo.</p>${especifico}</section>` : ""}
         <section class="tarjeta">${secLeer()}<h2>En qué fijarte siempre</h2>${lista(P.fijate.concat(generalFij))}
           <p class="peq">La atención es limitada: no se puede mirar todo a la vez. Por eso conviene saber qué mirar y cuándo; con los entrenos, el cuerpo aprende a hacerlo solo.</p></section>
@@ -2080,8 +2335,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const ctx = crearCtx(plan, jug, false);
     let yo = "";
     try { yo = sessionStorage.getItem("pz_yo") || ""; } catch (e) { /* sin almacenamiento */ }
+    if (pq.yo && jug.some((j) => j.id === pq.yo) && !yo) yo = pq.yo;
     if (!jug.some((j) => j.id === yo)) yo = "";
     ctx.yo = yo || null;
+    ctx.notasYo = pq.yo || null; ctx.notas = pq.notas || [];
     pizarrasVista.forEach((p) => p.parar()); pizarrasVista = [];
     cont.innerHTML = `
       ${opciones && opciones.volver ? `<button type="button" class="btn-sec" data-volverplan="1" style="margin-bottom:10px">← Volver a editar</button>` : ""}
@@ -2096,6 +2353,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       </div>
       ${plan.objetivo ? `<div class="tarjeta"><h3>${plan.tipo === "partido" ? "La idea" : "Objetivo"}</h3><p>${esc(plan.objetivo).replace(/\n/g, "<br>")}</p></div>` : ""}
       ${plan.notas ? `<div class="tarjeta"><h3>Notas</h3><p>${esc(plan.notas).replace(/\n/g, "<br>")}</p></div>` : ""}
+      ${pq.yo && (pq.notas || []).length ? `<section class="tarjeta mis-notas" data-r="misNotas" ${yo === pq.yo ? "" : "hidden"}>${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">Lo que te dice tu entrenador</h2><p class="peq">Solo para ti. Sácale partido a lo que haces bien y céntrate en lo que estás aprendiendo.</p>${htmlNotas(pq.notas, {})}</section>` : ""}
       <div data-r="bloques"></div>
       <section class="tarjeta">
         ${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}
@@ -2143,6 +2401,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (sy) sy.addEventListener("change", () => {
       yo = sy.value;
       ctx.yo = yo || null;
+      const mn = cont.querySelector('[data-r="misNotas"]'); if (mn) mn.hidden = !(yo && yo === pq.yo);
       if (mf) mf.hidden = !yo;
       try { sessionStorage.setItem("pz_yo", yo); } catch (e) { /* nada */ }
       pizarrasVista.forEach((p) => p.seleccionarJugador(yo));
@@ -2162,7 +2421,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     });
     const inf = ctx.info(f);
     const roles = fs.map((x) => ctx.info(x).rol).filter(Boolean);
-    el.innerHTML = `<div class="mi-papel"><b>Tú juegas${roles.length ? " de " + esc(roles.join(" y de ").toLowerCase()) : inf.rol ? " de " + esc(inf.rol.toLowerCase()) : ""}.</b>${fs.length > 1 ? " En la pizarra brilla tu primer puesto." : ""} Tu ficha brilla en amarillo; los mensajes salen debajo del campo.${lin.length ? `<ul class="consignas">${lin.join("")}</ul>` : ""}</div>`;
+    const mias = yo === ctx.notasYo ? (ctx.notas || []).filter((n) => n.s === b.cat) : [];
+    const htmlMias = mias.length ? `<div class="para-ti"><b>Para ti en esta jugada:</b><ul class="consignas">${mias.map((n) => `<li>${n.t === "f" ? "💪 " : n.t === "m" ? "🎯 " : "💡 "}${esc(n.x)}</li>`).join("")}</ul></div>` : "";
+    el.innerHTML = `<div class="mi-papel"><b>Tú juegas${roles.length ? " de " + esc(roles.join(" y de ").toLowerCase()) : inf.rol ? " de " + esc(inf.rol.toLowerCase()) : ""}.</b>${fs.length > 1 ? " En la pizarra brilla tu primer puesto." : ""} Tu ficha brilla en amarillo; los mensajes salen debajo del campo.${lin.length ? `<ul class="consignas">${lin.join("")}</ul>` : ""}${htmlMias}</div>`;
   }
 
   function pantPreview() {
@@ -2209,10 +2470,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+      if (d.iapedir) { const b2 = bl(d.iapedir); if (b2) pedirIA(plan, b2, app.querySelector(`[data-r="ia-${d.iapedir}"]`)); return; }
+      if (d.iaaplicar) { const b2 = bl(d.iaaplicar); if (b2) aplicarIA(plan, b2, app.querySelector(`[data-r="ia-${d.iaaplicar}"]`)); return; }
+      if (d.iadescartar) { delete iaResultados[d.iadescartar]; const c = app.querySelector(`[data-r="ia-${d.iadescartar}"]`); if (c) c.innerHTML = ""; return; }
       if (d.enviar) return enviar(plan, app.querySelector('[data-r="compartir"]'));
       if (d.enviararch) return enviarArchivoGrupo(plan, app.querySelector('[data-r="compartir"]'));
       if (d.preview) return ir("preview", { planId: plan.id });
     }
+    if (d.jnotas) return abrirNotas(d.jnotas);
     if (d.jborrar) {
       const j = db.plantilla.find((x) => x.id === d.jborrar);
       if (!window.confirm("¿Quitar a " + (j ? j.n : "este jugador") + " de la plantilla?")) return;
@@ -2384,6 +2649,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     pintarPantalla();
   }
   function mostrarJugador(pq, desdeArchivo) {
+      if (pq.yo) { try { sessionStorage.setItem("pz_yo", pq.yo); } catch (e) { /* nada */ } }
       $("#nav").hidden = true;
       $("#ttApp").textContent = (pq.eq && pq.eq.n) || "Pizarra";
       $("#ttSub").textContent = "Lo que vamos a trabajar";
