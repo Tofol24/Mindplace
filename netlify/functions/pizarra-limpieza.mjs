@@ -37,6 +37,24 @@ export async function limpiar(store, ahora = Date.now(), presupuestoMs = 20_000)
   return borrados;
 }
 
-export default async () => { await limpiar(getStore("pizarra")); };
+// Sugerencias de Claude: los trabajos y contadores de más de un día se borran.
+export async function limpiarIA(store, ahora = Date.now()) {
+  const hoy = dia(ahora);
+  let borrados = 0;
+  for await (const pagina of store.list({ paginate: true })) {
+    for (const { key } of pagina.blobs) {
+      let viejo = false;
+      if (key.startsWith("cuota/")) viejo = key.slice(6) < hoy;
+      else { const t = await store.get(key, { type: "json" }); viejo = !t || !(t.creado > ahora - 86_400_000); }
+      if (viejo) { await store.delete(key); borrados++; }
+    }
+  }
+  return borrados;
+}
+
+export default async () => {
+  await limpiar(getStore("pizarra"));
+  await limpiarIA(getStore("pizarra-ia"));
+};
 
 export const config = { schedule: "@daily" };

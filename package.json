@@ -4,6 +4,7 @@
   "description": "Dependencias de las funciones de Netlify del sitio aprens-app (contador anónimo de uso).",
   "type": "module",
   "dependencies": {
+    "@anthropic-ai/sdk": "1.10.0",
     "@netlify/blobs": "11.1.4"
   },
   "scripts": {
