@@ -31,10 +31,12 @@ export function sanearEntrada(e) {
     clave: txt(e.clave, 30),
     bloque: {
       categoria: txt(b.categoria, 60), titulo: txt(b.titulo, 80), texto: txt(b.texto, 1200),
-      consignas: txt(b.consignas, 800), fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300)
+      consignas: txt(b.consignas, 800), fijarse: txt(b.fijarse, 300), cuando: txt(b.cuando, 300),
+      fase: txt(b.fase, 40), condicion: txt(b.condicion, 300), preguntas: txt(b.preguntas, 600)
     },
     pasos: lista(e.pasos, 20).map((p) => ({
       paso: num(p && p.paso, 1, 60), titulo: txt(p && p.titulo, 80),
+      transicion: p && (p.transicion === "perdida" || p.transicion === "recuperacion") ? p.transicion : "",
       balon: lista(p && p.balon, 2).map((v) => num(v, -10, 115)),
       fichas: lista(p && p.fichas, 40).map((f) => ({
         ficha: txt(f && f.ficha, 16), equipo: f && f.equipo === "rival" ? "rival" : "nuestro",
@@ -56,13 +58,15 @@ export function sanearEntrada(e) {
 export const ESQUEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["analisis", "texto", "consignas", "fijarse", "cuando", "indicaciones", "individual", "mensaje"],
+  required: ["analisis", "texto", "consignas", "fijarse", "cuando", "condicion", "preguntas", "indicaciones", "individual", "mensaje"],
   properties: {
     analisis: { type: "string", description: "Para el entrenador: cómo plantear y mostrar este apartado, qué ajustar y por qué. 4-8 frases." },
     texto: { type: "string", description: "Explicación del ejercicio o la situación para todo el grupo, en segunda persona del plural." },
     consignas: { type: "array", items: { type: "string" }, description: "3-6 consignas cortas para el grupo." },
     fijarse: { type: "string", description: "En qué fijarse (estímulos relevantes) en este apartado." },
     cuando: { type: "string", description: "Cuándo fijarse o actuar: el momento de la jugada." },
+    condicion: { type: "string", description: "En entrenamientos: una condición ligada al gol que lleve la atención al estímulo relevante (la tiene un equipo y no la pierde al perder el balón). En partidos, cadena vacía." },
+    preguntas: { type: "array", items: { type: "string" }, description: "2-4 preguntas cortas para que el entrenador las haga durante las pausas o al acabar, sobre qué miraron y cuándo." },
     indicaciones: {
       type: "array",
       description: "Indicación por ficha y paso, visible para todo el grupo. Sin mencionar debilidades personales.",
@@ -91,6 +95,10 @@ Qué tienes que hacer:
 - Proponer la mejor manera de plantear y mostrar este apartado para esa edad, aprovechando la dinámica de la jugada y las características de los jugadores.
 - Adaptar el lenguaje y la exigencia a la etapa de desarrollo (más juego y técnica en edades tempranas; más táctica, velocidad y fuerza supervisada en cadete y juvenil).
 - Seguir este enfoque de atención: para cada momento, decir en qué fijarse (el balón, el compañero, el rival, hacia dónde mira, el pie…) y cuándo fijarse. Los pensamientos y los nervios no se combaten: se vuelve a la jugada con la palabra clave del equipo si la hay.
+- En los entrenamientos, seguir los cinco pasos del método para cualquier aprendizaje: (1) dar a conocer los estímulos relevantes, qué mirar y cuándo; (2) un ejercicio analítico que repita el gesto y demuestre que lo entienden; (3) saber que lo conocen pero aún no lo han aprendido: es la experiencia la que lo hace aprender, así que el entrenador no repite la consigna en cada error ni lo vive como un drama; (4) una dinámica ecológica con variables del juego real (porterías, un equipo gana y otro pierde) y sobre todo con el cambio de foco de las transiciones, ataque-defensa al perder el balón y defensa-ataque al recuperarlo; (5) condicionar la acción al refuerzo natural del fútbol, el gol: la condición la tiene un equipo y no la pierde al perder el balón, y el entrenador pasa a observar y a preguntar. Si el apartado indica en qué paso está («fase»), ajusta la propuesta a ese paso. Nunca propongas que el entrenador dé instrucciones constantes durante el juego.
+- Si un paso de la jugada está marcado como «perdida» o «recuperacion», en ese paso las indicaciones tienen que hablar del cambio de foco: qué mirar en el primer segundo.
+- En «condicion», en entrenamientos, una condición concreta ligada al gol; en partidos, cadena vacía. En «preguntas», 2-4 preguntas abiertas sobre qué miraron y cuándo, para hacer después.
+- La explicación, las consignas, en qué fijarse, cuándo, la condición, las indicaciones y el mensaje los ve todo el grupo: nunca incluyas en ellos nada de las notas de un jugador concreto ni de las preguntas del entrenador. Lo individual va solo en «individual».
 - En «indicaciones», dar a cada ficha de nuestro equipo que aparezca en los pasos lo que hace, en qué se fija y cuándo, con la numeración de pasos recibida (empieza en 1). Solo fichas que existan en los pasos. Estas indicaciones las ve todo el grupo: nunca menciones puntos débiles personales en ellas.
 - En «individual», para los jugadores con notas, un consejo privado: cómo sacar partido a su punto fuerte en este apartado y en qué centrarse para mejorar, de forma constructiva.
 
@@ -110,6 +118,8 @@ export function sanearSalida(o, entrada) {
     analisis: txt(o.analisis, 2000), texto: txt(o.texto, 1200),
     consignas: lista(o.consignas, 8).map((c) => txt(c, 160)).filter(Boolean),
     fijarse: txt(o.fijarse, 300), cuando: txt(o.cuando, 300), mensaje: txt(o.mensaje, 600),
+    condicion: entrada.tipo === "entreno" ? txt(o.condicion, 300) : "",
+    preguntas: lista(o.preguntas, 6).map((c) => txt(c, 200)).filter(Boolean),
     indicaciones: lista(o.indicaciones, 200)
       .filter((i) => i && fichas.has(i.ficha) && Number.isInteger(i.paso) && i.paso >= 1 && i.paso <= nPasos)
       .map((i) => ({ ficha: i.ficha, paso: i.paso, que: txt(i.que, 300), fijate: txt(i.fijate, 200), cuando: txt(i.cuando, 200) })),

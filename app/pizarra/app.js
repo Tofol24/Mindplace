@@ -131,6 +131,61 @@
     rondo: { _: "Perfil abierto antes de recibir, dos toques como máximo. Los de dentro presionan juntos." }
   };
 
+  // ----- Método APRENS: cinco pasos para cualquier aprendizaje
+  // 1 dar a conocer los estímulos relevantes (qué y cuándo) · 2 ejercicio analítico · 3 lo conocen pero
+  // aún no lo han aprendido (observar y preguntar, no repetir) · 4 dinámica ecológica con cambio de foco
+  // en las transiciones · 5 condición ligada al gol (la tiene un equipo y no la pierde al perder el balón).
+  const FASES = { analitico: "Paso 2 · Analítico (repetir y entender)", ecologico: "Paso 4 · Dinámica ecológica (con transiciones)", condicionado: "Paso 5 · Partido condicionado" };
+  const FASE_CORTA = { analitico: "Analítico", ecologico: "Dinámica ecológica", condicionado: "Partido condicionado" };
+  const TRANS = { p: "⚡ Pérdida: cambia el foco a defender", r: "⚡ Recuperación: cambia el foco a atacar" };
+  const TRANS_JUG = { p: "⚡ Pérdida de balón: el foco cambia a defender. Mira el balón y a quien lo ha recuperado.", r: "⚡ Recuperación: el foco cambia a atacar. Mira el espacio y al compañero libre." };
+  // Aprendizajes de ejemplo (los mismos que el diseñador de dinámicas de aprens.net/entrenadors.html).
+  // tpl: pizarra de la dinámica ecológica; cat: tipo de apartado de la dinámica.
+  const APRENDIZAJES = {
+    ruptura: { t: "Desmarque de ruptura", tpl: "vacia", cat: "juego",
+      que: "La línea del último defensor. El compañero con balón: si tiene la cabeza levantada y el cuerpo orientado para pasar hacia delante. El espacio a la espalda de la defensa.",
+      quan: "Cuando el compañero controla orientado y levanta la cabeza, justo antes del pase. Salir en diagonal para no quedar en fuera de juego.",
+      an: "Parejas con un cono haciendo de defensor: el pasador conduce y, cuando levanta la cabeza, el receptor sale al espacio. Primero sin oposición, después con un defensor pasivo.",
+      eco: "4 contra 4 con dos comodines y dos porterías. Cuando un equipo recupera el balón tiene 6 segundos para buscar un pase a la espalda de la defensa: el foco tiene que pasar de defender a mirar el espacio.",
+      cond: "El gol solo vale si llega después de un pase a la espalda de la defensa. Si el equipo pierde el balón, conserva la condición.",
+      pre: "¿Dónde estaba el último defensor cuando saliste?\n¿Qué te dijo que el compañero ya podía pasar?\n¿Has salido antes o después del pase?", pc: "Espalda" },
+    control: { t: "Control orientado", tpl: "rondo", cat: "rondo",
+      que: "Dónde está el rival más cercano. Dónde está el espacio libre o el compañero desmarcado. La trayectoria del balón que llega.",
+      quan: "Antes de recibir: mirar por encima del hombro mientras el balón viaja. El primer toque ya va hacia el espacio libre.",
+      an: "Triángulos de pases con un cono que hace de presionador y que el entrenador cambia de lado. El receptor tiene que mirar antes de recibir y controlar hacia el lado contrario al cono.",
+      eco: "Rondo 4 contra 2 con dos zonas. Si los defensores roban el balón, pueden marcar en una portería pequeña: los atacantes tienen que cambiar el foco a defender.",
+      cond: "El pase que empieza con un control orientado que supera a un rival cuenta doble o vale gol.",
+      pre: "Antes de recibir, ¿qué has visto?\n¿Hacia dónde has dado el primer toque? ¿Por qué?\n¿Dónde estaba el rival cuando te ha llegado el balón?", pc: "Mira antes" },
+    perdua: { t: "Activación tras pérdida", tpl: "transicion", cat: "transicion",
+      que: "El balón y el jugador que lo acaba de recuperar. El compañero más cercano. La línea de pase más fácil del rival.",
+      quan: "En el mismo momento de perder el balón: los primeros 3 a 5 segundos.",
+      an: "2 contra 1 en espacio reducido: cuando el atacante pierde el balón, él y el compañero más cercano presionan enseguida. Al principio el entrenador señala la pérdida; después, nadie tiene que avisar.",
+      eco: "5 contra 5 con dos porterías en un campo corto, con muchas transiciones. El foco tiene que cambiar sin pausa de atacar a recuperar.",
+      cond: "Suma un gol si recupera el balón en menos de 5 segundos después de perderlo. Perderlo no le quita la condición.",
+      pre: "¿Qué has hecho en el primer segundo después de perderlo?\n¿Quién era el más cercano al balón?\n¿Qué pase querías tapar?", pc: "Ahora" },
+    sortida: { t: "Salida de balón desde el portero", tpl: "salida", cat: "salida",
+      que: "Dónde está el delantero rival que presiona y hacia dónde mira. El compañero libre (el hombre libre). La orientación del propio cuerpo para recibir de cara.",
+      quan: "Cuando el portero tiene el balón, antes de recibir. Si el rival cierra un lado, el foco va al otro.",
+      an: "Portero, dos centrales y un pivote contra uno o dos presionadores en medio campo: circular hasta encontrar al hombre libre. Primero con presión pasiva.",
+      eco: "6 contra 5 en medio campo con portero. Si el rival roba, ataca la portería; si el equipo supera la presión, hace punto pasando una línea o en porterías pequeñas.",
+      cond: "Hace punto si el balón supera la primera línea de presión con un pase al hombre libre.",
+      pre: "¿Quién era el jugador libre?\n¿Hacia dónde miraba el delantero que presionaba?\n¿Tu cuerpo estaba orientado para recibir de cara?", pc: "Libre" },
+    pressio: { t: "Presión coordinada", tpl: "vacia", cat: "juego",
+      que: "La orientación del rival con balón (de cara o de espaldas). El compañero que presiona, para hacerle la cobertura. La línea de pase que hay que cerrar.",
+      quan: "Cuando hay una señal de presión: el rival recibe de espaldas, controla mal o hace un pase atrás.",
+      an: "2 contra 2 en una zona: uno presiona y el otro cubre y cierra la línea de pase. Cambian los papeles en cada repetición.",
+      eco: "6 contra 6 con porterías. Cuando el rival da una señal de presión, el equipo presiona junto; si recupera en campo contrario, tiene que acabar en 8 segundos.",
+      cond: "Gol doble si el gol llega después de un robo en presión.",
+      pre: "¿Qué señal te ha dicho que podíais presionar?\n¿Quién te cubría?\n¿Qué pase has cerrado?", pc: "Juntos" },
+    errada: { t: "Volver a la jugada después de un error", tpl: "vacia", cat: "juego",
+      que: "Darse cuenta: el pensamiento, la emoción o la tensión que aparece después del error, sin pelearse con ello. La palabra clave o el gesto. La próxima jugada.",
+      quan: "Justo después del error o en la primera parada del juego.",
+      an: "Un minuto de atención plena al inicio del entrenamiento: la respiración o el tacto del balón con las manos. Cuando llega una distracción, darse cuenta y volver.",
+      eco: "En los partidos condicionados, quien se equivoca hace su gesto (subirse las medias, un estiramiento) y vuelve enseguida a su posición. El entrenador valora la vuelta, no el error.",
+      cond: "Suma un punto cuando un jugador que acaba de fallar participa en la acción siguiente.",
+      pre: "¿Qué has notado después del error?\n¿Cuánto has tardado en volver a la jugada?\n¿Qué palabra o qué gesto te han ayudado?", pc: "Reset" }
+  };
+
   // Juego parado → momento de atención interna (APRENS: no luchar, volver al estímulo relevante)
   const PARADO = { banda: "quién se mueve y dónde está el espacio", cornerF: "tu zona y la trayectoria del balón", cornerC: "el balón y tu zona", falta: "la señal del lanzador y la línea del fuera de juego" };
 
@@ -194,7 +249,9 @@
         if (!pts.length) return null;
         return { k: k.k, c: colOk(k.c, "#FFD23F"), pts: pts, t: txt(k.t, 40) };
       }).filter(Boolean);
-      return { t: txt(p.t, 80), pos: pos, b: pt(p.b) || [34, 52.5], tips: tips, dib: dib };
+      const o = { t: txt(p.t, 80), pos: pos, b: pt(p.b) || [34, 52.5], tips: tips, dib: dib };
+      if (p.tr === "p" || p.tr === "r") o.tr = p.tr; // momento de transición (pérdida o recuperación)
+      return o;
     });
     if (!pasos.length) return null;
     const o = { vista: ["C", "A", "D"].includes(g.vista) ? g.vista : "C", rivales: g.rivales !== false, fichas: fichas, pasos: pasos };
@@ -215,11 +272,19 @@
       fecha: /^\d{4}-\d{2}-\d{2}$/.test(p.fecha) ? p.fecha : "", titulo: txt(p.titulo, 80), rival: txt(p.rival, 60),
       objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30),
       sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
-      bloques: p.bloques.slice(0, MAX.bloques).map((b) => ({
-        id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
-        min: b.min === "" || b.min == null ? "" : Math.round(num(b.min, 0, 120, 0)), texto: txt(b.texto, 1200),
-        consignas: txt(b.consignas, 800), fij: txt(b.fij, 300), cuando: txt(b.cuando, 300), jug: sanJugada(b.jug)
-      }))
+      bloques: p.bloques.slice(0, MAX.bloques).map((b) => {
+        const o = {
+          id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
+          min: b.min === "" || b.min == null ? "" : Math.round(num(b.min, 0, 120, 0)), texto: txt(b.texto, 1200),
+          consignas: txt(b.consignas, 800), fij: txt(b.fij, 300), cuando: txt(b.cuando, 300), jug: sanJugada(b.jug)
+        };
+        // método de los cinco pasos: fase, condición (y qué equipo la tiene) y preguntas para el entrenador
+        if (own(FASES, b.fase)) o.fase = b.fase;
+        const cond = txt(b.cond, 300); if (cond) o.cond = cond;
+        if (cond && (b.condEq === "a" || b.condEq === "r" || own(PETOS, b.condEq))) o.condEq = b.condEq;
+        const preg = txt(b.preg, 600); if (preg) o.preg = preg;
+        return o;
+      })
     };
   }
   function sanDB(o) {
@@ -687,6 +752,8 @@
           <span class="num" data-r="num"></span>
           ${ed ? `<label class="sr" style="position:absolute;left:-999px" for="pzTit${host.id || ""}">Título del paso</label><input type="text" id="pzTit${host.id || ""}" data-r="tit" maxlength="80" placeholder="¿Qué pasa en este paso?">` : `<span class="titulo" data-r="tit" aria-live="polite"></span>`}
         </div>
+        ${ed ? `<div class="pz-tr"><label for="pzTr${host.id || ""}">Momento</label><select id="pzTr${host.id || ""}" data-r="tr"><option value="">Juego normal</option><option value="p">${TRANS.p}</option><option value="r">${TRANS.r}</option></select></div>`
+          : `<p class="pz-trban" data-r="trban" hidden></p>`}
         <div class="pz-campo" data-r="campo">
           <svg data-r="svg" role="group" aria-label="Campo de fútbol con las fichas de los jugadores"></svg>
           <div class="burbuja" data-r="burb" hidden></div>
@@ -956,6 +1023,8 @@
       R("num").textContent = "Paso " + (i + 1) + "/" + tot;
       const t = R("tit");
       if (ed) { if (document.activeElement !== t) t.value = p.t || ""; } else t.textContent = p.t || "";
+      if (ed) { const tr = R("tr"); if (tr) tr.value = p.tr || ""; }
+      else { const ban = R("trban"); if (ban) { ban.hidden = !p.tr; ban.className = "pz-trban" + (p.tr ? " tr-" + p.tr : ""); ban.textContent = p.tr ? TRANS_JUG[p.tr] : ""; } }
       host.querySelector('[data-a="ant"]').disabled = i === 0 || reproduciendo;
       host.querySelector('[data-a="sig"]').disabled = i >= tot - 1 || reproduciendo;
       host.querySelector('[data-a="play"]').textContent = reproduciendo ? "■ Parar" : "▶ Reproducir";
@@ -1301,6 +1370,7 @@
     host.addEventListener("input", (e) => {
       const t = e.target;
       if (t.dataset.r === "tit") { paso().t = t.value; cambio(); return; }
+      if (t.dataset.r === "tr") { snap(); if (t.value === "p" || t.value === "r") paso().tr = t.value; else delete paso().tr; cambio(); pintarInfo(); return; }
       if (t.dataset.tip) {
         const p = paso(); p.tips = p.tips || {};
         const tp = p.tips[sel] = p.tips[sel] || {};
@@ -1457,6 +1527,24 @@
     db.planes.push(p); guardar();
     ir("plan", { planId: p.id });
   }
+  // Tres apartados seguidos para un aprendizaje: analítico, dinámica ecológica y partido condicionado.
+  function anadirAprendizaje(plan, a) {
+    const tit = a.t || "Aprendizaje";
+    const preg = a.pre || "";
+    const base = { fij: a.que || "", cuando: a.quan || "", consignas: "", preg: preg };
+    plan.bloques.push(Object.assign({ id: uid(), cat: "ejercicio", fase: "analitico", titulo: (tit + " · analítico").slice(0, 80), min: 15,
+      texto: a.an || "", jug: null }, base));
+    const eco = own(PLANTILLAS, a.tpl) ? a.tpl : "vacia";
+    const jEco = nuevaJugada(plan, eco);
+    if (eco === "transicion" && jEco && jEco.pasos[1]) jEco.pasos[1].tr = "r"; // «¡Robo! Primer pase hacia delante»
+    plan.bloques.push(Object.assign({ id: uid(), cat: own(CATS, a.cat) ? a.cat : "juego", fase: "ecologico", titulo: (tit + " · dinámica").slice(0, 80), min: 20,
+      texto: a.eco || "", jug: jEco }, base));
+    plan.bloques.push(Object.assign({ id: uid(), cat: "juego", fase: "condicionado", titulo: (tit + " · partido condicionado").slice(0, 80), min: 20,
+      texto: "Partido con la condición. Durante el juego, observa: no hace falta recordarles la consigna, el gol ya lleva su atención a lo importante. Las preguntas, al acabar.",
+      cond: a.cond || "", condEq: a.cond ? "a" : "", jug: nuevaJugada(plan, "vacia") }, base));
+    if (!plan.clave && a.pc) plan.clave = String(a.pc).replace(/[«»¡!¿?]/g, "").trim().slice(0, 30);
+    plan.mod = Date.now();
+  }
   function autoOnce(p) {
     const usados = new Set();
     slotsDe(p).forEach((s, idx) => {
@@ -1512,6 +1600,18 @@
             <div class="campo-f crece"><label for="bf${b.id}">🎯 En qué fijarse</label><textarea id="bf${b.id}" data-b="fij" data-bid="${b.id}" maxlength="300" placeholder="El balón, el compañero, el rival, hacia dónde mira, el pie…">${esc(b.fij || "")}</textarea></div>
             <div class="campo-f crece"><label for="bq${b.id}">⏱️ Cuándo fijarse</label><textarea id="bq${b.id}" data-b="cuando" data-bid="${b.id}" maxlength="300" placeholder="En qué momento de la jugada mirar cada cosa para llegar a tiempo.">${esc(b.cuando || "")}</textarea></div>
           </div>
+          ${p.tipo === "entreno" ? `<div class="metodo">
+            <div class="fila">
+              <div class="campo-f crece"><label for="bfa${b.id}">Paso del aprendizaje</label><select id="bfa${b.id}" data-b="fase" data-bid="${b.id}"><option value="">—</option>${Object.keys(FASES).map((k) => `<option value="${k}" ${b.fase === k ? "selected" : ""}>${FASES[k]}</option>`).join("")}</select></div>
+            </div>
+            <div class="fila">
+              <div class="campo-f crece"><label for="bco${b.id}">🥅 La condición (qué vale gol)</label><textarea id="bco${b.id}" data-b="cond" data-bid="${b.id}" maxlength="300" placeholder="El gol solo vale si…">${esc(b.cond || "")}</textarea></div>
+              <div class="campo-f"><label for="bce${b.id}">La tiene</label><select id="bce${b.id}" data-b="condEq" data-bid="${b.id}" style="width:auto"><option value="">—</option><option value="a" ${b.condEq === "a" ? "selected" : ""}>Fichas del color del equipo</option><option value="r" ${b.condEq === "r" ? "selected" : ""}>Fichas azules (el otro equipo)</option>${Object.keys(PETOS).map((k) => `<option value="${k}" ${b.condEq === k ? "selected" : ""}>Peto ${k}</option>`).join("")}</select></div>
+            </div>
+            <p class="peq">La condición la tiene un equipo y no la pierde al perder el balón. Así el gol, que es el refuerzo natural del fútbol, lleva la atención a lo que queremos enseñar.</p>
+          </div>` : ""}
+          <div class="campo-f"><label for="bpr${b.id}">❓ Preguntas para hacer después (no se envían a los jugadores)</label><textarea id="bpr${b.id}" data-b="preg" data-bid="${b.id}" maxlength="600" placeholder="¿Qué has visto antes de recibir?&#10;¿Cuándo has decidido moverte?">${esc(b.preg || "")}</textarea>
+            <span class="peq" style="font-weight:400">Lo conocen, pero aún no lo han aprendido: durante el juego, observa; las preguntas, mejor después. No se envían a los jugadores.</span></div>
           <div class="acciones">
             ${b.jug ? `<button type="button" class="btn-peq" data-pz="${b.id}" style="background:var(--verde);color:#fff">🟩 Abrir pizarra (${b.jug.pasos.length} paso${b.jug.pasos.length === 1 ? "" : "s"})</button>
               <button type="button" class="btn-peq peligro" data-pzborrar="${b.id}">Quitar pizarra</button>`
@@ -1530,6 +1630,12 @@
         </div>`).join("")}
       <p class="peq">✨ Las sugerencias de Claude usan la jugada, las notas de los jugadores y la edad del equipo. Se envían a Claude (Anthropic) <b>sin nombres</b>, solo con dorsal y puesto, y solo cuando pulsas el botón. Revisa la propuesta antes de aplicarla.</p>
       <button type="button" class="btn-sec" data-bnuevo="1">＋ Añadir apartado</button>
+      ${p.tipo === "entreno" ? `<div class="tarjeta aprendizaje">
+        <h3 style="margin-top:0">🎯 Aprendizaje en 5 pasos</h3>
+        <p class="peq">Elige qué quieres enseñar y se crean tres apartados seguidos: ejercicio analítico, dinámica ecológica con transiciones y partido condicionado, con los estímulos relevantes, la condición y las preguntas ya escritos. Después adáptalos a tu equipo.</p>
+        <div class="fila"><label class="sr-only" for="aprSel">Aprendizaje</label><select id="aprSel" style="width:auto">${Object.keys(APRENDIZAJES).map((k) => `<option value="${k}">${esc(APRENDIZAJES[k].t)}</option>`).join("")}</select>
+          <button type="button" class="btn-sec" data-aprnuevo="1">＋ Añadir los tres apartados</button></div>
+      </div>` : ""}
 
       <h2>Enviar</h2>
       <div class="tarjeta">
@@ -1899,6 +2005,7 @@
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
+    pl.bloques.forEach((b) => { delete b.preg; }); // las preguntas son solo para el entrenador
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: { n: db.equipo.nombre, col: db.equipo.color, et: db.equipo.etapa || "" }, plan: pl, jug: jug };
@@ -2395,7 +2502,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (b.jug) {
       b.jug.pasos.forEach((p, i) => {
         pasos.push({
-          paso: i + 1, titulo: quitarNombres(p.t || ""), balon: p.b.map(Math.round),
+          paso: i + 1, titulo: quitarNombres(p.t || ""), transicion: p.tr === "p" ? "perdida" : p.tr === "r" ? "recuperacion" : "", balon: p.b.map(Math.round),
           fichas: b.jug.fichas.filter((f) => f.eq !== "c" && f.eq !== "b" && p.pos[f.id] && (f.eq === "a" || b.jug.rivales !== false))
             .map((f) => ({ ficha: f.id, equipo: f.eq === "a" ? "nuestro" : "rival", x: Math.round(p.pos[f.id][0]), y: Math.round(p.pos[f.id][1]) }))
         });
@@ -2418,7 +2525,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       entrada: {
         etapa: E ? E.n + " (" + E.edad + ")" : "", tipo: plan.tipo, sistema: (SISTEMAS[plan.sistema] || {}).n || "",
         objetivo: quitarNombres(plan.objetivo), clave: quitarNombres(plan.clave),
-        bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas), fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando) },
+        bloque: { categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto), consignas: quitarNombres(b.consignas), fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando),
+          fase: FASE_CORTA[b.fase] || "", condicion: quitarNombres(b.cond), preguntas: quitarNombres(b.preg) },
         pasos: pasos, jugadores: jugadores
       }
     };
@@ -2440,7 +2548,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     iaPendiente[b.id] = prep;
     const entrada = prep.entrada;
     const textos = [["Objetivo del plan", entrada.objetivo], ["Palabra clave", entrada.clave], ["Título", entrada.bloque.titulo], ["Explicación", entrada.bloque.texto],
-      ["Consignas", entrada.bloque.consignas], ["En qué fijarse", entrada.bloque.fijarse], ["Cuándo", entrada.bloque.cuando]]
+      ["Consignas", entrada.bloque.consignas], ["En qué fijarse", entrada.bloque.fijarse], ["Cuándo", entrada.bloque.cuando],
+      ["Paso del aprendizaje", entrada.bloque.fase], ["Condición", entrada.bloque.condicion], ["Preguntas", entrada.bloque.preguntas]]
       .concat(entrada.pasos.map((x) => ["Paso " + x.paso, x.titulo])).filter((x) => x[1]);
     const notas = [];
     entrada.jugadores.forEach((j) => j.notas.forEach((n) => notas.push(j.jugador + " (" + (j.puesto || "sin puesto") + "): " + n.texto)));
@@ -2495,12 +2604,16 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <p><b>Explicación para el grupo:</b> ${esc(r.texto)}</p>
       ${r.consignas.length ? `<p><b>Consignas:</b></p><ul class="consignas">${r.consignas.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
       ${r.fijarse ? `<p><b>🎯 En qué fijarse:</b> ${esc(r.fijarse)}</p>` : ""}${r.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(r.cuando)}</p>` : ""}
+      ${r.condicion ? `<p><b>🥅 Condición:</b> ${esc(r.condicion)}</p>` : ""}
+      ${r.preguntas && r.preguntas.length ? `<p><b>❓ Preguntas para después:</b></p><ul class="consignas">${r.preguntas.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
       ${r.individual.length ? `<p><b>Consejos privados:</b></p><ul class="consignas">${r.individual.map((i) => `<li><b>${esc(nombre(i.jugador))}:</b> ${esc(i.texto)}</li>`).join("")}</ul>` : ""}
       ${r.mensaje ? `<p><b>Mensaje para el grupo:</b> ${esc(r.mensaje)}</p>` : ""}
       ${r.indicaciones.length ? `<details class="det" open><summary>Indicaciones para la pizarra (${r.indicaciones.length}): las verá todo el grupo</summary><ul class="consignas">${r.indicaciones.map((i) => `<li><b>Paso ${i.paso} · ${esc(etiquetaFicha(plan, b, i.ficha))}:</b> ${esc([i.que, i.fijate && "Fíjate: " + i.fijate, i.cuando && "Cuándo: " + i.cuando].filter(Boolean).join(" · "))}</li>`).join("")}</ul></details>` : ""}
       <fieldset class="lista-env"><legend class="peq"><b>Qué quieres aplicar</b></legend>
         <label><input type="checkbox" data-iaop="texto" checked> Explicación y consignas</label>
         <label><input type="checkbox" data-iaop="atencion" checked> En qué fijarse y cuándo</label>
+        ${plan.tipo === "entreno" ? `<label><input type="checkbox" data-iaop="condicion" ${r.condicion ? "checked" : "disabled"}> La condición (qué vale gol)</label>` : ""}
+        <label><input type="checkbox" data-iaop="preguntas" ${r.preguntas && r.preguntas.length ? "checked" : "disabled"}> Preguntas para después (no se envían a los jugadores)</label>
         <label><input type="checkbox" data-iaop="pizarra" ${r.indicaciones.length ? "" : "disabled"}> Indicaciones de cada jugador en la pizarra (${r.indicaciones.length}): revísalas arriba, las verá todo el grupo</label>
         <label><input type="checkbox" data-iaop="privado" ${r.individual.length ? "checked" : "disabled"}> Consejos privados en la ficha de cada jugador (${r.individual.length})</label>
       </fieldset>
@@ -2517,6 +2630,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const op = (k) => { const c = cont.querySelector(`[data-iaop="${k}"]`); return c && c.checked; };
     if (op("texto")) { b.texto = r.texto; b.consignas = r.consignas.join("\n"); }
     if (op("atencion")) { b.fij = r.fijarse; b.cuando = r.cuando; }
+    if (op("condicion") && r.condicion) b.cond = r.condicion.slice(0, 300);
+    if (op("preguntas") && r.preguntas && r.preguntas.length) b.preg = r.preguntas.join("\n").slice(0, 600);
     if (op("pizarra") && b.jug) {
       r.indicaciones.forEach((i) => {
         const p = b.jug.pasos[i.paso - 1]; if (!p || !b.jug.fichas.some((f) => f.id === i.ficha)) return;
@@ -2635,6 +2750,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           if (t.p || per) lin.push(`<li><b>Perfil:</b> ${esc(t.p || per.txt)}</li>`);
           if (t.f || fij) lin.push(`<li><b>Fíjate en:</b> ${esc(t.f || fij.txt)}</li>`);
           if (t.q) lin.push(`<li><b>Cuándo:</b> ${esc(t.q)}</li>`);
+          if (p.tr) lin.unshift(`<li><b>${esc(TRANS[p.tr])}</b></li>`);
           return `<li><b>Paso ${k + 1}${p.t ? ": " + esc(p.t) : ""}</b><ul>${lin.join("")}</ul></li>`;
         }).join("");
         const at = (b.fij ? `<p><b>En qué fijarte en este ejercicio:</b> ${esc(b.fij)}</p>` : "") + (b.cuando ? `<p><b>Cuándo:</b> ${esc(b.cuando)}</p>` : "");
@@ -2750,6 +2866,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         ${b.texto ? `<p>${esc(b.texto).replace(/\n/g, "<br>")}</p>` : ""}
         ${cons.length ? `<ul class="consignas">${cons.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
         ${b.fij || b.cuando ? `<div class="atencion">${b.fij ? `<p><b>🎯 En qué fijarte:</b> ${esc(b.fij)}</p>` : ""}${b.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(b.cuando)}</p>` : ""}</div>` : ""}
+        <div data-r="cond">${htmlCondicion(b, ctx, yo)}</div>
         <div data-r="mio"></div>
         ${b.jug ? `<div data-r="pz" id="pzv${bi}"></div>` : ""}`;
       bc.appendChild(d);
@@ -2783,8 +2900,25 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (mf) mf.hidden = !yo;
       try { sessionStorage.setItem("pz_yo", yo); } catch (e) { /* nada */ }
       pizarrasVista.forEach((p) => p.seleccionarJugador(yo));
-      $$(".bloque", cont).forEach((d, bi) => pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo));
+      $$(".bloque", cont).forEach((d, bi) => {
+        pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo);
+        const c = d.querySelector('[data-r="cond"]'); if (c) c.innerHTML = htmlCondicion(plan.bloques[bi], ctx, yo);
+      });
     });
+  }
+  // La condición del apartado y si la tiene el equipo de este jugador (por color de peto o de equipo).
+  function htmlCondicion(b, ctx, yo) {
+    if (!b.cond) return "";
+    let quien = "";
+    if (b.condEq) {
+      const nombreEq = b.condEq === "a" ? "las fichas del color del equipo" : b.condEq === "r" ? "las fichas azules" : "los de peto " + b.condEq;
+      const mias = yo && b.jug ? b.jug.fichas.filter((x) => (x.eq === "a" || x.eq === "r") && ctx.pidsDe(x).includes(yo)) : [];
+      const eqDe = (f) => f.peto || f.eq;
+      if (mias.length && mias.some((f) => eqDe(f) === b.condEq)) quien = "Tu equipo tiene la condición: búscala.";
+      else if (mias.length) quien = "La condición la tiene el otro equipo (" + nombreEq + "): que no la consigan.";
+      else quien = "La tienen " + nombreEq + ".";
+    }
+    return `<div class="condicion"><p><b>🥅 La condición:</b> ${esc(b.cond)}</p>${quien ? `<p>${esc(quien)}</p>` : ""}</div>`;
   }
   function pintarMio(el, b, ctx, yo) {
     if (!el) return;
@@ -2846,6 +2980,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.pz) return abrirPizarra(plan, bl(d.pz));
       if (d.pzborrar) { if (!window.confirm("¿Quitar la pizarra de este apartado?")) return; bl(d.pzborrar).jug = null; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bnuevo && plan.bloques.length >= MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
+      if (d.aprnuevo) {
+        const a = APRENDIZAJES[$("#aprSel").value]; if (!a) return;
+        if (plan.bloques.length + 3 > MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
+        anadirAprendizaje(plan, a); guardar(); pintarPantalla();
+        toast("Añadidos los tres apartados de «" + a.t + "»");
+        return;
+      }
       if (d.bnuevo) { plan.bloques.push({ id: uid(), cat: plan.tipo === "partido" ? "situacion" : "ejercicio", titulo: "", min: plan.tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bborrar) { if (!window.confirm("¿Borrar este apartado?")) return; plan.bloques = plan.bloques.filter((x) => x.id !== d.bborrar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
       if (d.bmov) { const a = +d.bmov, z = a + +d.dir; const t = plan.bloques[a]; plan.bloques[a] = plan.bloques[z]; plan.bloques[z] = t; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
@@ -3022,6 +3163,24 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     // Una ficha privada nunca se queda guardada como «último plan» (versiones anteriores sí lo hacían).
     try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); if (u && u.yo) localStorage.removeItem("pz_ultimo"); } catch (e) { /* nada */ }
     const h = location.hash || "";
+    if (/^#apr=/.test(h)) {
+      let a = null;
+      try { a = JSON.parse(decodeURIComponent(h.slice(5))); } catch (e) { a = null; }
+      history.replaceState(null, "", location.pathname);
+      if (!a || typeof a !== "object") { pintarPantalla(); toast("No se ha podido leer la dinámica"); return; }
+      const ej = own(APRENDIZAJES, a.k) ? APRENDIZAJES[a.k] : {};
+      const din = { t: txt(a.t, 60) || ej.t || "Aprendizaje", tpl: ej.tpl || "vacia", cat: ej.cat || "juego",
+        que: txt(a.que, 300), quan: txt(a.quan, 300), an: txt(a.an, 1200), eco: txt(a.eco, 1200), cond: txt(a.cond, 300), pre: txt(a.pre, 600), pc: txt(a.pc, 40) };
+      try { localStorage.setItem("pz_modo", "entrenador"); } catch (e) { /* nada */ }
+      const pl = { id: uid(), mod: Date.now(), tipo: "entreno", fecha: hoyISO(), titulo: ("Entreno · " + din.t).slice(0, 80), rival: "", objetivo: "Aprender: " + din.t.slice(0, 200), notas: "",
+        sistema: "4231", once: {}, bloques: [{ id: uid(), cat: "calentamiento", titulo: CATS.calentamiento, min: 15, texto: "", consignas: "", jug: null }] };
+      autoOnce(pl);
+      anadirAprendizaje(pl, din);
+      db.planes.push(pl); guardar();
+      ir("plan", { planId: pl.id });
+      toast("Entreno creado con la dinámica «" + din.t + "»");
+      return;
+    }
     if (/^#k=/.test(h)) {
       $("#nav").hidden = true;
       app.innerHTML = `<p class="vacio">Abriendo la pizarra…</p>`;
@@ -3105,7 +3264,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
     if (!o) return;
     db = o;
-    if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) return;
+    if (/^#(k|p|c|v|ver|e|ent|apr)=/.test(location.hash || "")) return;
     if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
@@ -3119,6 +3278,6 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     ir("ajustes"); setTimeout(() => { const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); const c = $("#susCod"); if (c) c.focus(); }, 50);
   });
   cargarSuscripcion().then(() => { if (estado.pant === "ajustes") pintarSuscripcion(); });
-  window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent)=/.test(location.hash || "")) arrancar(); });
+  window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent|apr)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
