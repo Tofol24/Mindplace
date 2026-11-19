@@ -1981,6 +1981,63 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     app.querySelector("[data-nojuntar]").addEventListener("click", () => { history.replaceState(null, "", location.pathname); ir("cuaderno"); });
   }
 
+  // ---------------------------------------------------------------- ficha en una página (A4)
+  // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
+  // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
+  const ICONO_AREA = { tecnica: "⚽", tactica: "🧭", decision: "🧠", fisico: "⚡", atencion: "🧘" };
+  function htmlInforme(d) {
+    // d: { nombre, dorsal, puesto, etapa, equipo, color, notas, clave, gesto, fecha }
+    const notas = d.notas || [];
+    const fuertes = notas.filter((n) => n.t === "f"), mejora = notas.filter((n) => n.t === "m"), consejos = notas.filter((n) => n.t === "c");
+    const lista = (l, max, cls) => l.length
+      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}</span></li>`).join("")}</ul>${l.length > max ? `<p class="inf-mas">y ${l.length - max} más</p>` : ""}`
+      : `<p class="inf-vacio">Todavía nada anotado.</p>`;
+    const foco = mejora[0];
+    const areas = Object.keys(AREAS).map((a) => {
+      const f = fuertes.filter((n) => n.a === a).length, m = mejora.filter((n) => n.a === a).length;
+      const puntos = "●".repeat(Math.min(f, 5)), aprender = "●".repeat(Math.min(m, 5));
+      return `<div class="inf-area"><div class="inf-area-tit"><span aria-hidden="true">${ICONO_AREA[a]}</span> ${esc(AREAS[a])}</div>
+        <div class="inf-area-barras" aria-label="${f} puntos fuertes y ${m} por mejorar"><span class="inf-pf">${puntos || "–"}</span><span class="inf-am">${aprender || "–"}</span></div></div>`;
+    }).join("");
+    const porSit = {};
+    consejos.forEach((n) => { const k = n.s || "_"; (porSit[k] = porSit[k] || []).push(n); });
+    const sit = Object.keys(porSit).slice(0, 5).map((k) => `<div class="inf-sit"><span class="inf-chip">${esc(k === "_" ? "En cualquier momento" : CATS[k] || "")}</span><ul>${porSit[k].slice(0, 2).map((n) => `<li>${esc(n.x)}</li>`).join("")}</ul></div>`).join("");
+    return `<article class="informe" style="--eq:${esc(d.color || "#C8102E")}">
+      <header class="inf-cab">
+        <div class="inf-dorsal" aria-hidden="true">${esc(d.dorsal)}</div>
+        <div class="inf-quien"><h2>${esc(d.nombre)}</h2><p>${esc([d.puesto, d.etapa && !(d.equipo || "").toLowerCase().includes(d.etapa.toLowerCase()) ? d.etapa : "", d.equipo].filter(Boolean).join(" · "))}</p></div>
+        <div class="inf-fecha">${esc(d.fecha || "")}</div>
+      </header>
+      ${foco ? `<section class="inf-foco"><span class="inf-etq">Tu foco ahora</span><p>${esc(foco.x)}</p></section>` : ""}
+      <div class="inf-dos">
+        <section class="inf-caja inf-fuerte"><h3>💪 Tus puntos fuertes</h3><p class="inf-sub">Úsalos: son tu ventaja en el partido.</p>${lista(fuertes, 7, "")}</section>
+        <section class="inf-caja inf-mejora"><h3>🎯 Lo que estás aprendiendo</h3><p class="inf-sub">Poco a poco, en cada entreno.</p>${lista(mejora, 6, "")}</section>
+      </div>
+      <section class="inf-areas"><h3>Tu mapa</h3><div class="inf-areas-fila">${areas}</div>
+        <p class="inf-ley"><span class="inf-pf">●</span> punto fuerte · <span class="inf-am">●</span> por mejorar</p></section>
+      ${sit ? `<section class="inf-caja inf-consejo"><h3>💡 En el partido</h3><div class="inf-sits">${sit}</div></section>` : ""}
+      <footer class="inf-pie">
+        <div><b>Si te distraes, vuelve:</b> ${d.clave ? `di «${esc(d.clave)}»` : "di tu palabra clave"}${d.gesto ? `, haz tu gesto (${esc(d.gesto)})` : ""} y vuelve a la jugada.</div>
+        <div class="inf-firma">Tu entrenador</div>
+      </footer>
+    </article>`;
+  }
+  function abrirInforme(d) {
+    const dlg = $("#dlgInforme");
+    $("#dlgInformeCuerpo").innerHTML = htmlInforme(d);
+    $("#dlgInformeTit").textContent = "Ficha de " + d.nombre;
+    if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
+  }
+  $("#dlgInformeCerrar").addEventListener("click", () => $("#dlgInforme").close());
+  $("#dlgInformeImprimir").addEventListener("click", () => {
+    document.body.classList.add("imprimiendo");
+    const fin = () => { document.body.classList.remove("imprimiendo"); window.removeEventListener("afterprint", fin); };
+    window.addEventListener("afterprint", fin);
+    window.print();
+    setTimeout(fin, 1500);
+  });
+  const fechaCorta = () => new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+
   // ---------------------------------------------------------------- notas del entrenador por jugador
   // Puntos fuertes, lo que tiene que mejorar y consejos para situaciones concretas.
   // Son privadas: el enlace del grupo no las lleva; cada jugador las recibe por un enlace propio.
@@ -2062,7 +2119,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           <h2 style="margin-top:0">Enviar su ficha por privado</h2>
           <p class="peq">Se crea un enlace corto y cifrado solo para ${esc(j.c || j.n)}, con sus notas y el plan que elijas. El enlace del grupo nunca lleva las notas de nadie.</p>
           <div class="campo-f"><label for="nPlan">Con el plan</label><select id="nPlan"><option value="">Solo sus notas</option>${planes.map((p) => `<option value="${esc(p.id)}" ${p.id === planId ? "selected" : ""}>${esc(p.titulo || "(sin título)")} · ${esc(fechaBonita(p.fecha))}</option>`).join("")}</select></div>
-          <button type="button" class="btn" data-nenviar="1">📤 Preparar enlace privado</button>
+          <div class="fila"><button type="button" class="btn" data-nenviar="1">📤 Preparar enlace privado</button><button type="button" class="btn-sec" data-ninforme="1">📄 Ver su ficha en una página</button></div>
           <div data-r="envNotas"></div>
         </section>`;
       if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
@@ -2114,6 +2171,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (b.dataset.nborrar) {
         if (!window.confirm("¿Borrar esta nota?")) return;
         j.notas = (j.notas || []).filter((n) => n.id !== b.dataset.nborrar); j.mod = Date.now(); guardar(); pintarN(); return;
+      }
+      if (b.dataset.ninforme) {
+        abrirInforme({ nombre: j.c || j.n, dorsal: j.d, puesto: j.p || "", etapa: (FICHA.ETAPAS[db.equipo.etapa] || {}).n || "", equipo: db.equipo.nombre, color: db.equipo.color, notas: j.notas || [], clave: "", gesto: "", fecha: fechaCorta() });
+        return;
       }
       if (b.dataset.nenviar) {
         const plan = db.planes.find((p) => p.id === $("#nPlan").value) || null;
@@ -2488,7 +2549,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       </div>
       ${plan.objetivo ? `<div class="tarjeta"><h3>${plan.tipo === "partido" ? "La idea" : "Objetivo"}</h3><p>${esc(plan.objetivo).replace(/\n/g, "<br>")}</p></div>` : ""}
       ${plan.notas ? `<div class="tarjeta"><h3>Notas</h3><p>${esc(plan.notas).replace(/\n/g, "<br>")}</p></div>` : ""}
-      ${pq.yo && (pq.notas || []).length ? `<section class="tarjeta mis-notas" data-r="misNotas" ${yo === pq.yo ? "" : "hidden"}>${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">Lo que te dice tu entrenador</h2><p class="peq">Solo para ti. Sácale partido a lo que haces bien y céntrate en lo que estás aprendiendo.</p>${htmlNotas(pq.notas, {})}</section>` : ""}
+      ${pq.yo && (pq.notas || []).length ? `<section class="tarjeta mis-notas" data-r="misNotas" ${yo === pq.yo ? "" : "hidden"}>${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">Lo que te dice tu entrenador</h2><p class="peq">Solo para ti. Sácale partido a lo que haces bien y céntrate en lo que estás aprendiendo.</p>
+        <button type="button" class="btn" data-miinforme="1" style="margin:4px 0 10px">📄 Mi ficha en una página</button>
+        <details class="det"><summary>Ver todas las notas</summary>${htmlNotas(pq.notas, {})}</details></section>` : ""}
       <div data-r="bloques"></div>
       <section class="tarjeta">
         ${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}
@@ -2529,6 +2592,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const va = cont.querySelector("#vozAuto");
     if (va) va.addEventListener("change", () => { vozAuto = va.checked; if (!vozAuto) voz.parar(); try { sessionStorage.setItem("pz_voz", vozAuto ? "1" : ""); } catch (e) { /* nada */ } });
     cont.onclick = (e) => {
+      if (e.target.closest("[data-miinforme]")) {
+        const j = jug.find((x) => x.id === pq.yo) || {};
+        const pus = puestosDe(plan, ctx, pq.yo).map((x) => x.rol).filter(Boolean);
+        let mv = {}; try { mv = JSON.parse(localStorage.getItem("pz_mivuelta") || "{}"); } catch (err) { mv = {}; }
+        abrirInforme({ nombre: j.c || j.n || "", dorsal: j.d, puesto: pus.join(" / "), etapa: (FICHA.ETAPAS[pq.eq && pq.eq.et] || {}).n || "", equipo: pq.eq && pq.eq.n, color: pq.eq && pq.eq.col, notas: pq.notas || [], clave: mv.p || plan.clave || "", gesto: mv.g || "", fecha: fechaCorta() });
+        return;
+      }
       const b = e.target.closest("[data-leer]"); if (!b || b.closest("#dlgFicha")) return;
       voz.alternar(b.closest("section, .tarjeta"), b);
     };
