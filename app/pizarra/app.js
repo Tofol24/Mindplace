@@ -2748,6 +2748,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     try {
       const r = await fetch("/api/pizarra-ia", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabCodigo()), body: JSON.stringify(entrada) });
       const j = await r.json().catch(() => ({}));
+      if (!vigente()) return;
       if (r.status === 402) { SUS.modo = true; SUS.activa = false; cont.innerHTML = htmlInvitacion("Diseñar la pizarra con Claude"); return; }
       if (!r.ok || !j.job) throw new Error(j.error || "red");
       if (SUS.ia) SUS.ia.usadas++;
@@ -3266,7 +3267,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.b && plan) {
       const b = plan.bloques.find((x) => x.id === d.bid);
       if (b && d.b !== "cat") { b[d.b] = t.value; guardar(); }
-      if (b && iaPzPend[b.id]) { delete iaPzPend[b.id]; const c = app.querySelector(`[data-r="iapz-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Diseñar la pizarra con Claude» para revisar lo que se envía.</p>`; }
+      if (b) {
+        const c = app.querySelector(`[data-r="iapz-${b.id}"]`);
+        if (c && c.innerHTML) {
+          iaPzGen[b.id] = (iaPzGen[b.id] || 0) + 1; delete iaPzPend[b.id]; delete iaPizarras[b.id];
+          c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Diseñar la pizarra con Claude» para que la propuesta tenga en cuenta los cambios.</p>`;
+        }
+      }
       if (b && iaPendiente[b.id]) { delete iaPendiente[b.id]; const c = app.querySelector(`[data-r="ia-${b.id}"]`); if (c) c.innerHTML = `<p class="peq">Has cambiado el apartado: vuelve a pulsar «Sugerencias de Claude» para revisar lo que se envía.</p>`; }
       return;
     }

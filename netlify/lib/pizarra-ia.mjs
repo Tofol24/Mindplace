@@ -187,7 +187,7 @@ El campo mide 68 × 105 metros: x de 0 (izquierda) a 68 (derecha), y de 0 (porte
 Cómo diseñarla:
 - Coloca exactamente los jugadores que pide el ejercicio (por ejemplo, 4 contra 4 más 2 comodines: 6 de un equipo contando los comodines con peto amarillo y 4 del otro). En los entrenamientos los dos equipos son del mismo club: el otro equipo va como «rival». Si hay un portero, inclúyelo.
 - Marca el espacio con pocos conos (las esquinas) y las porterías pequeñas con dos conos. No pongas más de 12.
-- 2 a 5 pasos que muestren la idea clave del ejercicio. El primer paso, la posición inicial. Mueve solo lo que cambia; las fichas que no aparecen en «posiciones» de un paso se quedan donde estaban.
+- 2 a 5 pasos que muestren la idea clave del ejercicio. El primer paso, la posición inicial, con todas las fichas y conos colocados. Mueve solo lo que cambia; las fichas que no aparecen en «posiciones» de un paso se quedan donde estaban.
 - Si el ejercicio trabaja una transición, marca el paso de la pérdida («perdida») o del robo («recuperacion»).
 - Flechas solo para el movimiento o el pase principal de cada paso (como máximo 2 por paso).
 - Indicaciones para las fichas que protagonizan cada paso: qué hacen, en qué se fijan (el estímulo relevante: el balón, el compañero, el rival, hacia dónde mira…) y cuándo. Frases cortas, en segunda persona, sin emojis. Son para todo el grupo.
@@ -232,12 +232,8 @@ export function sanearPizarra(o) {
     return r;
   });
   if (!pasos.length) return null;
-  // una ficha sin posición en el primer paso no se dibuja (no se amontona en un punto por defecto)
-  const colocadas = fichas.filter((f) => pasos[0].pos[f.id]);
-  if (colocadas.length < 2) return null;
-  const quitar = new Set(fichas.filter((f) => !pasos[0].pos[f.id]).map((f) => f.id));
-  pasos.forEach((p) => { quitar.forEach((id) => { delete p.pos[id]; delete p.tips[id]; }); });
-  fichas.length = 0; colocadas.forEach((f) => fichas.push(f));
+  // todas las fichas tienen que estar colocadas en el primer paso: si falta alguna, la propuesta no vale
+  if (fichas.some((f) => !pasos[0].pos[f.id])) return null;
   conos.forEach((c) => pasos.forEach((p) => { p.pos[c.id] = [c.x, c.y]; }));
   return {
     jugada: { vista, rivales: true, fichas: fichas.concat(conos.map((c) => ({ id: c.id, eq: "c", forma: "cono", col: c.col }))), pasos },

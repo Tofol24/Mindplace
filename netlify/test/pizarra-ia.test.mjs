@@ -112,9 +112,8 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.deepEqual(r.jugada.pasos[1].b, [72, 46]); assert.equal(r.jugada.pasos[1].tr, "r");
   assert.deepEqual(r.jugada.pasos[1].pos.e1, [34, 100]);
   assert.equal(lib.sanearPizarra({ ...salida, fichas: [] }), null);
-  // una ficha sin posición inicial no se dibuja
-  const sinPos = lib.sanearPizarra({ ...salida, fichas: salida.fichas.concat([{ id: "e3", equipo: "nuestro", peto: "" }]) });
-  assert.ok(!sinPos.jugada.fichas.some((f) => f.id === "e3"));
+  // si a una ficha le falta la posición inicial, la propuesta se rechaza
+  assert.equal(lib.sanearPizarra({ ...salida, fichas: salida.fichas.concat([{ id: "e3", equipo: "nuestro", peto: "" }]) }), null);
   assert.equal(lib.sanearEntrada({ modo: "pizarra", bloque: { texto: "x", equipoCondicion: "peto amarillo" } }).bloque.equipoCondicion, "peto amarillo");
   assert.equal(lib.sanearEntrada({ modo: "pizarra", bloque: { texto: "x", equipoCondicion: "<b>" } }).bloque.equipoCondicion, "");
   const cliente = { beta: { messages: { create: async (q) => { assert.equal(q.output_config.format.schema, lib.ESQUEMA_PIZARRA); return { stop_reason: "end_turn", content: [{ type: "text", text: JSON.stringify(salida) }] }; } } } };
