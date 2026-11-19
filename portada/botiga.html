@@ -7,34 +7,7 @@
 <meta name="description" content="La botiga d'APRENS: els llibres de Tòfol Villalonga a Amazon, la subscripció a Explica-ho i el pack per a clubs d'esport de base amb «Els pares també juguen» i «El quadern de l'entrenador».">
 <link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="portada.css">
-<style>
-  .botiga{max-width:960px}
-  html[lang=es] span.es-only{display:inline}
-  .botiga .seccio{display:flex;flex-direction:column;gap:12px}
-  .botiga .seccio > p{max-width:68ch}
-  .botiga .llibre h3{color:var(--ink)}
-  .botiga .llibre .enllacos a,.botiga .enllacos a.boto{font-weight:600}
-  .botiga .producte{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--c);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
-  .botiga .producte h3{color:var(--c)}
-  .botiga .producte.explica{--c:var(--lila)}
-  .botiga .producte.esport{--c:var(--turquesa)}
-  .botiga .apps-ios{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px}
-  .botiga .app-ais{--c:var(--blau)}
-  .botiga .app-mindplace{--c:var(--turquesa)}
-  .botiga .app-cap{display:flex;gap:14px;align-items:center}
-  .botiga .app-cap img{width:72px;height:72px;border-radius:18px;flex:none;box-shadow:0 0 0 1px var(--line),0 2px 6px rgb(0 0 0 / .08)}
-  .botiga .app-cap .dues{display:flex;gap:8px;flex:none}
-  .botiga .app-cap .dues img{width:60px;height:60px}
-  .botiga .producte > div.ca-only,.botiga .producte > div.es-only{display:flex;flex-direction:column;gap:10px}
-  .botiga .producte > div.es-only{display:none}
-  html[lang=es] .botiga .producte > div.es-only{display:flex} html[lang=es] .botiga .producte > div.ca-only{display:none}
-  .botiga .preu{font-size:1.15rem}
-  .botiga .preu b{font-family:var(--f-tit);font-size:2rem;color:var(--c)}
-  .botiga .producte ul{margin:0;padding-left:20px}
-  .botiga .enllacos{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
-  .botiga .enllacos a.boto{display:inline-block;padding:11px 16px;border-radius:12px;background:var(--c,var(--blau));color:var(--on-blau);text-decoration:none}
-  .botiga .enllacos a.boto.sec{background:transparent;color:var(--c,var(--blau));border:1px solid currentColor}
-</style>
+<link rel="stylesheet" href="botiga.css">
 </head>
 <body>
 <header class="top"><a class="marca" href="/"><img src="img/logo.png" alt="" width="64" height="66"><span><b>APRENS</b><small>Psicologia · Tòfol Villalonga</small></span></a></header>
@@ -43,12 +16,12 @@
   <div class="ca-only" lang="ca">
     <p><a href="/">← Torna a l'inici</a></p>
     <h1>Botiga</h1>
-    <p class="suau">Aquí tens junt tot el que es pot comprar o contractar d'APRENS: els llibres, les apps per a iPhone, la subscripció a Explica-ho i la proposta per a clubs d'esport de base.</p>
+    <p class="suau">Aquí tens junt tot el que es pot comprar o contractar d'APRENS: els llibres, les apps per a iPhone, les subscripcions a Explica-ho i a la pissarra de l'entrenador, i la proposta per a clubs d'esport de base.</p>
   </div>
   <div class="es-only" lang="es">
     <p><a href="/">← Volver al inicio</a></p>
     <h1>Tienda</h1>
-    <p class="suau">Aquí tienes junto todo lo que se puede comprar o contratar de APRENS: los libros, las apps para iPhone, la suscripción a Explica-ho y la propuesta para clubes de deporte base.</p>
+    <p class="suau">Aquí tienes junto todo lo que se puede comprar o contratar de APRENS: los libros, las apps para iPhone, las suscripciones a Explica-ho y a la pizarra del entrenador, y la propuesta para clubes de deporte base.</p>
   </div>
 
   <section class="seccio" aria-labelledby="t-llibres">
@@ -161,6 +134,42 @@
           <a class="boto" href="https://explica.aprens.net/subscriu.html" rel="noopener">Suscríbete</a>
           <a class="boto sec" href="https://explica.aprens.net/" rel="noopener">Pruébala</a>
           <a class="boto sec" href="/explica-ho.html">Más información</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccio" aria-labelledby="t-pissarra">
+    <h2 id="t-pissarra" class="sr"><span class="ca-only" lang="ca">Pissarra de l'entrenador</span><span class="es-only" lang="es">Pizarra del entrenador</span></h2>
+    <div class="producte pissarra">
+      <div class="ca-only" lang="ca">
+        <div class="app-cap"><img src="img/logos/entrenadors.svg" width="72" height="72" alt=""><h3>Pissarra de l'entrenador · Futbol</h3></div>
+        <p>Pissarra tàctica animada i quadern d'entrenaments i partits. Cada jugador toca la seva fitxa i veu on és la pilota, en què s'ha de fixar i quan s'ha de moure. Bàsquet, voleibol i handbol, aviat.</p>
+        <p class="preu"><b>4,99 €</b> al mes · per entrenador</p>
+        <ul>
+          <li>Gratis: el quadern, la pissarra i enviar els plans com a arxiu.</li>
+          <li>Amb la subscripció: enllaços curts i xifrats per al grup, la fitxa privada de cada jugador, enviar el quadern a un altre entrenador i fins a 100 suggeriments de Claude al mes.</li>
+          <li>Te'n pots donar de baixa quan vulguis. El quadern es guarda només al teu mòbil.</li>
+        </ul>
+        <p class="enllacos">
+          <a class="boto" href="https://pizarra.aprens.net/suscribirse.html" rel="noopener">Subscriu-t'hi</a>
+          <a class="boto sec" href="https://pizarra.aprens.net/" rel="noopener">Prova-la</a>
+          <a class="boto sec" href="/entrenadors.html">Més informació</a>
+        </p>
+      </div>
+      <div class="es-only" lang="es">
+        <div class="app-cap"><img src="img/logos/entrenadors.svg" width="72" height="72" alt=""><h3>Pizarra del entrenador · Fútbol</h3></div>
+        <p>Pizarra táctica animada y cuaderno de entrenamientos y partidos. Cada jugador toca su ficha y ve dónde está el balón, en qué se tiene que fijar y cuándo se tiene que mover. Baloncesto, voleibol y balonmano, pronto.</p>
+        <p class="preu"><b>4,99 €</b> al mes · por entrenador</p>
+        <ul>
+          <li>Gratis: el cuaderno, la pizarra y enviar los planes como archivo.</li>
+          <li>Con la suscripción: enlaces cortos y cifrados para el grupo, la ficha privada de cada jugador, enviar el cuaderno a otro entrenador y hasta 100 sugerencias de Claude al mes.</li>
+          <li>Te puedes dar de baja cuando quieras. El cuaderno se guarda solo en tu móvil.</li>
+        </ul>
+        <p class="enllacos">
+          <a class="boto" href="https://pizarra.aprens.net/suscribirse.html" rel="noopener">Suscríbete</a>
+          <a class="boto sec" href="https://pizarra.aprens.net/" rel="noopener">Pruébala</a>
+          <a class="boto sec" href="/entrenadors.html">Más información</a>
         </p>
       </div>
     </div>

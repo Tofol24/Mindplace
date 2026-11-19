@@ -73,6 +73,8 @@ window.EPJ_TXT.es = {
     entrenadorsD: "Situaciones de banquillo y comunicación educativa.",
     quadernT: "El cuaderno del entrenador",
     quadernD: "Seguimiento semanal del equipo: objetivos, entrevista breve y tendencias.",
+    espaiT: "Espacio para entrenadores y entrenadoras",
+    espaiD: "La pizarra táctica y dinámicas para que los jugadores encuentren en qué se tienen que fijar.",
     setmanalT: "Mi compromiso como acompañante",
     setmanalD: "Un objetivo concreto para esta semana."
   },
