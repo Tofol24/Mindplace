@@ -178,7 +178,9 @@
       return { t: txt(p.t, 80), pos: pos, b: pt(p.b) || [34, 52.5], tips: tips, dib: dib };
     });
     if (!pasos.length) return null;
-    return { vista: ["C", "A", "D"].includes(g.vista) ? g.vista : "C", rivales: g.rivales !== false, fichas: fichas, pasos: pasos };
+    const o = { vista: ["C", "A", "D"].includes(g.vista) ? g.vista : "C", rivales: g.rivales !== false, fichas: fichas, pasos: pasos };
+    if (g.tam === "p" || g.tam === "g") o.tam = g.tam;
+    return o;
   }
   function sanPlan(p) {
     if (!p || !Array.isArray(p.bloques)) return null;
@@ -587,8 +589,10 @@
     });
     return s;
   }
-  function trianguloCono(x, y, c) {
-    return `<path d="M ${x} ${y - 1.7} L ${x + 1.3} ${y + 1} L ${x - 1.3} ${y + 1} Z" fill="${c}" stroke="#111" stroke-width="0.2"/><ellipse cx="${x}" cy="${y + 1}" rx="1.5" ry="0.45" fill="${c}" stroke="#111" stroke-width="0.15"/>`;
+  const TAMANOS = { p: 0.62, m: 1, g: 1.25 };
+  function trianguloCono(x, y, c, t) {
+    t = t || 1;
+    return `<path d="M ${x} ${y - 1.7 * t} L ${x + 1.3 * t} ${y + t} L ${x - 1.3 * t} ${y + t} Z" fill="${c}" stroke="#111" stroke-width="0.2"/><ellipse cx="${x}" cy="${y + t}" rx="${1.5 * t}" ry="${0.45 * t}" fill="${c}" stroke="#111" stroke-width="0.15"/>`;
   }
 
   // ---------------------------------------------------------------- mensajes sobre el campo (mostrar u ocultar)
@@ -647,12 +651,18 @@
             <button type="button" class="btn-peq" data-h="mover">✋ Mover</button>
             <button type="button" class="btn-peq" data-h="linea">╌ Línea</button>
             <button type="button" class="btn-peq" data-h="flecha">➝ Flecha</button>
-            <button type="button" class="btn-peq" data-h="zona">⬠ Zona</button>
+            <button type="button" class="btn-peq" data-h="rect">▭ Rectángulo</button>
+            <button type="button" class="btn-peq" data-h="zona">⬠ Zona libre</button>
             <button type="button" class="btn-peq" data-h="texto">T Texto</button>
           </div>
           <div class="grupo" data-r="zonaok" hidden><span class="lbl"></span>
             <button type="button" class="btn-peq" data-a="cerrarZona">✔ Cerrar zona</button>
-            <button type="button" class="btn-peq" data-a="cancelarDib">Cancelar</button>
+            <button type="button" class="btn-peq" data-a="quitarPunto">↩ Quitar último punto</button>
+            <button type="button" class="btn-peq peligro" data-a="cancelarDib">✕ Cancelar</button>
+          </div>
+          <div class="grupo" role="group" aria-label="Borrar dibujos"><span class="lbl">Dibujos</span>
+            <button type="button" class="btn-peq peligro" data-a="borrarDib">🗑 Borrar el seleccionado</button>
+            <button type="button" class="btn-peq peligro" data-a="borrarTodosDib">Borrar todos los del paso</button>
           </div>
           <div class="grupo" role="group" aria-label="Color del dibujo"><span class="lbl">Color</span>
             ${COLORES_DIB.map((c) => `<button type="button" class="color-btn" data-col="${c[0]}" style="background:${c[0]}" aria-label="Color ${c[1]}"></button>`).join("")}
@@ -667,6 +677,9 @@
             <button type="button" class="btn-peq" data-a="masChino">◖ Chino</button>
           </div>
           <div class="grupo"><span class="lbl">Ver</span>
+            <select data-r="tam" aria-label="Tamaño de las fichas" style="width:auto;min-height:36px;padding:4px 8px">
+              <option value="p">Fichas pequeñas</option><option value="m">Fichas normales</option><option value="g">Fichas grandes</option>
+            </select>
             <select data-r="vista" aria-label="Parte del campo" style="width:auto;min-height:36px;padding:4px 8px">
               <option value="C">Campo entero</option><option value="A">Medio campo (ataque)</option><option value="D">Medio campo (defensa)</option>
             </select>
@@ -728,12 +741,13 @@
         });
         if (dist(prev.b, p.b) > 1.5) s += `<line x1="${prev.b[0]}" y1="${prev.b[1]}" x2="${p.b[0]}" y2="${p.b[1]}" stroke="#FFD23F" stroke-width="0.45" stroke-dasharray="1.4 0.9" marker-end="url(#flb-${uidM})"/>`;
       }
+      const T = TAMANOS[jug.tam] || 1;
       // conos primero
       jug.fichas.forEach((f) => {
         if (f.eq !== "c" || !P[f.id]) return;
         const [x, y] = P[f.id], c = COLORES_CONO[f.col] || COLORES_CONO.amarillo;
-        const sh = f.forma === "chino" ? `<ellipse cx="${x}" cy="${y}" rx="1.3" ry="0.75" fill="${c}" stroke="#111" stroke-width="0.2"/>` : trianguloCono(x, y, c);
-        s += `<g class="ficha" data-id="${f.id}" ${ed ? `tabindex="0" role="button" aria-label="${f.forma === "chino" ? "Chino" : "Cono"} ${esc(f.col)}"` : ""}>${sh}${sel === f.id ? `<circle cx="${x}" cy="${y}" r="2.4" fill="none" stroke="#FFD23F" stroke-width="0.4"/>` : ""}</g>`;
+        const sh = f.forma === "chino" ? `<ellipse cx="${x}" cy="${y}" rx="${1.3 * T}" ry="${0.75 * T}" fill="${c}" stroke="#111" stroke-width="0.2"/>` : trianguloCono(x, y, c, T);
+        s += `<g class="ficha" data-id="${f.id}" ${ed ? `tabindex="0" role="button" aria-label="${f.forma === "chino" ? "Chino" : "Cono"} ${esc(f.col)}"` : ""}>${sh}${sel === f.id ? `<circle cx="${x}" cy="${y}" r="${2.4 * T}" fill="none" stroke="#FFD23F" stroke-width="0.4"/>` : ""}</g>`;
       });
       const yoId = fichaYo();
       jug.fichas.forEach((f) => {
@@ -741,19 +755,19 @@
         const [x, y] = P[f.id], inf = ctx.info(f);
         const col = colEq[f.eq];
         const num = inf.dorsal || inf.cod || "";
-        const fs = num.length > 2 ? 1.5 : 2.1;
+        const fs = (num.length > 2 ? 1.5 : 2.1) * T;
         const etiqueta = (inf.corto && inf.corto !== num ? inf.corto : "") + (inf.otros && inf.otros.length ? " +" + inf.otros.length : "");
         const label = (inf.dorsal ? inf.dorsal + " " : "") + (inf.nombre || "") + (inf.rol && !inf.rival ? ", " + inf.rol : "");
         s += `<g class="ficha" data-id="${f.id}" tabindex="0" role="button" aria-label="${esc(label)}" aria-pressed="${sel === f.id}">`;
-        if (yoId === f.id) s += `<circle cx="${x}" cy="${y}" r="3.7" fill="rgba(255,210,63,.35)" stroke="#FFD23F" stroke-width="0.35"/>`;
-        if (sel === f.id) s += `<circle cx="${x}" cy="${y}" r="3.2" fill="none" stroke="#FFD23F" stroke-width="0.55"/>`;
-        s += `<circle cx="${x}" cy="${y}" r="2.35" fill="${col}" stroke="#fff" stroke-width="0.4"/>`;
+        if (yoId === f.id) s += `<circle cx="${x}" cy="${y}" r="${3.7 * T}" fill="rgba(255,210,63,.35)" stroke="#FFD23F" stroke-width="0.35"/>`;
+        if (sel === f.id) s += `<circle cx="${x}" cy="${y}" r="${3.2 * T}" fill="none" stroke="#FFD23F" stroke-width="0.55"/>`;
+        s += `<circle cx="${x}" cy="${y}" r="${2.35 * T}" fill="${col}" stroke="#fff" stroke-width="${0.4 * Math.min(1, T + 0.2)}"/>`;
         s += `<text x="${x}" y="${y + fs * 0.36}" font-size="${fs}" font-weight="800" fill="#fff" text-anchor="middle">${esc(num)}</text>`;
-        if (etiqueta) s += `<text x="${x}" y="${y + 4.6}" font-size="1.9" font-weight="700" fill="#fff" text-anchor="middle" stroke="#0C2414" stroke-width="0.45" paint-order="stroke">${esc(etiqueta.slice(0, 14))}</text>`;
+        if (etiqueta) s += `<text x="${x}" y="${y + 2.35 * T + 2.2 * Math.max(0.8, T)}" font-size="${1.9 * Math.max(0.8, T)}" font-weight="700" fill="#fff" text-anchor="middle" stroke="#0C2414" stroke-width="0.45" paint-order="stroke">${esc(etiqueta.slice(0, 14))}</text>`;
         s += `</g>`;
       });
       const b = P._b;
-      s += `<g class="ficha" data-id="_b" ${ed ? `tabindex="0" role="button" aria-label="Balón"` : ""}><circle cx="${b[0]}" cy="${b[1]}" r="1.15" fill="#fff" stroke="#111" stroke-width="0.25"/><circle cx="${b[0]}" cy="${b[1]}" r="0.42" fill="#111"/></g>`;
+      s += `<g class="ficha" data-id="_b" ${ed ? `tabindex="0" role="button" aria-label="Balón"` : ""}><circle cx="${b[0]}" cy="${b[1]}" r="${1.15 * Math.max(0.8, T)}" fill="#fff" stroke="#111" stroke-width="0.25"/><circle cx="${b[0]}" cy="${b[1]}" r="${0.42 * Math.max(0.8, T)}" fill="#111"/></g>`;
       g.innerHTML = s;
 
       // dibujos del paso (pueden ir pegados a fichas)
@@ -771,7 +785,11 @@
           d += `<g data-dib="${idx}"><text x="${x}" y="${y}" font-size="2.5" font-weight="800" font-style="italic" fill="${c}" stroke="#0B1F12" stroke-width="0.55" paint-order="stroke" text-anchor="middle">${esc(k.t)}</text>${selDib === idx ? `<rect x="${x - k.t.length * 0.85}" y="${y - 2.6}" width="${k.t.length * 1.7}" height="3.4" fill="none" stroke="#fff" stroke-dasharray="0.6 0.4" stroke-width="0.25"/>` : ""}</g>`;
         }
       });
-      if (bor) {
+      if (bor && bor.k === "rect") {
+        const a = bor.pts[0], c2 = bor.cursor;
+        if (a && c2) d += `<rect x="${Math.min(a[0], c2[0])}" y="${Math.min(a[1], c2[1])}" width="${Math.abs(c2[0] - a[0])}" height="${Math.abs(c2[1] - a[1])}" fill="${bor.c}" fill-opacity="0.2" stroke="${bor.c}" stroke-width="0.5" stroke-dasharray="0.8 0.6"/>`;
+        if (a) d += `<circle cx="${a[0]}" cy="${a[1]}" r="0.7" fill="${bor.c}"/>`;
+      } else if (bor) {
         const pts = bor.pts.map((q) => resolver(q, P)).filter(Boolean);
         if (bor.cursor) pts.push(bor.cursor);
         if (pts.length) {
@@ -828,7 +846,12 @@
         const rb = host.querySelector('[data-a="rivales"]');
         rb.setAttribute("aria-pressed", String(jug.rivales !== false));
         rb.textContent = jug.rivales !== false ? "Rivales visibles" : "Rivales ocultos";
-        R("zonaok").hidden = !(bor && bor.k === "zona");
+        R("zonaok").hidden = !bor;
+        host.querySelector('[data-a="cerrarZona"]').hidden = !(bor && bor.k === "zona");
+        host.querySelector('[data-a="quitarPunto"]').hidden = !(bor && bor.k === "zona" && bor.pts.length);
+        host.querySelector('[data-a="borrarDib"]').disabled = selDib < 0;
+        host.querySelector('[data-a="borrarTodosDib"]').disabled = !(paso().dib || []).length;
+        R("tam").value = jug.tam || "m";
         campo.classList.toggle("dibujando", herr !== "mover");
       }
       pintarPanel();
@@ -958,6 +981,13 @@
 
     function terminarDibujo() {
       if (!bor) return;
+      if (bor.k === "rect") {
+        if (bor.pts.length === 2) {
+          const [a, b] = bor.pts;
+          if (Math.abs(a[0] - b[0]) >= 1 && Math.abs(a[1] - b[1]) >= 1) bor = { k: "zona", c: bor.c, pts: [[a[0], a[1]], [b[0], a[1]], [b[0], b[1]], [a[0], b[1]]] };
+          else { bor = null; pintarTodo(); toast("El rectángulo es demasiado pequeño"); return; }
+        } else { bor = null; pintarTodo(); return; }
+      }
       const min = bor.k === "zona" ? 3 : bor.k === "texto" ? 1 : 2;
       if (bor.pts.length >= min) {
         snap();
@@ -992,6 +1022,14 @@
           if (t && t.trim()) { bor = { k: "texto", c: color, pts: [[r05(q[0]), r05(q[1])]], t: t.trim().slice(0, 40) }; terminarDibujo(); }
           return;
         }
+        if (herr === "rect") {
+          const esq = [r05(lim(q[0], -6, 74)), r05(lim(q[1], -6, 111))];
+          if (bor && bor.k === "rect" && bor.pts.length === 1) { bor.pts.push(esq); bor.cursor = null; terminarDibujo(); return; }
+          bor = { k: "rect", c: color, pts: [esq], arrastre: true, x0: q };
+          svg.setPointerCapture(e.pointerId);
+          pintar(P); pintarInfo();
+          return;
+        }
         const pt = puntoConImán(q, P);
         if (herr === "zona") {
           if (!bor) bor = { k: "zona", c: color, pts: [] };
@@ -1022,7 +1060,7 @@
     });
     svg.addEventListener("pointermove", (e) => {
       const q = aSVG(e);
-      if (bor && bor.arrastre) { bor.cursor = q; pintar(mostrado || posPaso(paso())); return; }
+      if (bor && (bor.arrastre || (bor.k === "rect" && bor.pts.length === 1 && e.pointerType === "mouse"))) { bor.cursor = q; pintar(mostrado || posPaso(paso())); return; }
       if (!drag) return;
       if (!drag.mov && dist(q, drag.x0) < 0.9) return;
       if (!drag.mov) { snap(); drag.mov = true; }
@@ -1037,6 +1075,11 @@
       if (bor && bor.arrastre) {
         const q = aSVG(e);
         bor.arrastre = false; bor.cursor = null;
+        if (bor.k === "rect") {
+          if (dist(q, bor.x0) > 2) { bor.pts.push([r05(lim(q[0], -6, 74)), r05(lim(q[1], -6, 111))]); terminarDibujo(); }
+          else { bor.cursor = null; pintar(mostrado || posPaso(paso())); toast("Ahora toca la esquina opuesta"); }
+          return;
+        }
         if (dist(q, bor.x0) > 2) { bor.pts.push(puntoConImán(q, mostrado || posPaso(paso()))); terminarDibujo(); }
         else { pintar(mostrado || posPaso(paso())); toast("Ahora toca dónde acaba la línea"); }
         return;
@@ -1075,7 +1118,7 @@
     host.addEventListener("click", (e) => {
       const b = e.target.closest("button"); if (!b || !host.contains(b)) return;
       const a = b.dataset.a;
-      if (b.dataset.h) { herr = b.dataset.h; bor = null; selDib = -1; pintar(mostrado || posPaso(paso())); pintarInfo(); if (herr !== "mover") toast(herr === "zona" ? "Toca los vértices de la zona y pulsa «Cerrar zona»" : herr === "texto" ? "Toca donde quieras poner el texto" : "Arrastra, o toca el inicio y luego el final. Si empiezas en una ficha, la línea la sigue."); return; }
+      if (b.dataset.h) { herr = b.dataset.h; bor = null; selDib = -1; pintar(mostrado || posPaso(paso())); pintarInfo(); if (herr !== "mover") toast(herr === "rect" ? "Arrastra para dibujar el rectángulo, o toca dos esquinas opuestas" : herr === "zona" ? "Toca los vértices de la zona y pulsa «Cerrar zona». Si te equivocas, «Quitar último punto»" : herr === "texto" ? "Toca donde quieras poner el texto" : "Arrastra, o toca el inicio y luego el final. Si empiezas en una ficha, la línea la sigue."); return; }
       if (b.dataset.col) { color = b.dataset.col; if (selDib >= 0) { snap(); paso().dib[selDib].c = color; cambio(); pintar(posPaso(paso())); } pintarInfo(); return; }
       if (a === "ant" && i > 0) animarA(i - 1, 700);
       else if (a === "sig" && i < jug.pasos.length - 1) animarA(i + 1, 1100);
@@ -1106,6 +1149,12 @@
       else if (a === "masCono") anadirFicha("c", { forma: "cono", col: R("conoCol").value });
       else if (a === "masChino") anadirFicha("c", { forma: "chino", col: R("conoCol").value });
       else if (a === "rivales") { snap(); jug.rivales = jug.rivales === false; cambio(); pintarTodo(); }
+      else if (a === "quitarPunto" && bor && bor.pts.length) { bor.pts.pop(); if (!bor.pts.length && bor.k !== "zona") bor = null; pintar(mostrado || posPaso(paso())); pintarInfo(); }
+      else if (a === "borrarTodosDib" && (paso().dib || []).length) {
+        if (!window.confirm("¿Borrar todos los dibujos de este paso?")) return;
+        snap(); paso().dib = []; selDib = -1; cambio(); pintarTodo();
+      }
+      else if (a === "borrarDib" && selDib < 0) toast("Con «✋ Mover», toca primero el dibujo que quieres borrar");
       else if (a === "borrarDib" && selDib >= 0) { snap(); paso().dib.splice(selDib, 1); selDib = -1; cambio(); pintarTodo(); }
       else if (a === "quitar" && sel) {
         snap();
@@ -1130,6 +1179,7 @@
     host.addEventListener("change", (e) => {
       const t = e.target;
       if (t.dataset.r === "vista") { snap(); jug.vista = t.value; cambio(); pintarTodo(); return; }
+      if (t.dataset.r === "tam") { snap(); if (t.value === "m") delete jug.tam; else jug.tam = t.value; cambio(); pintarTodo(); return; }
       if (t.hasAttribute("data-pj")) {
         const f = jug.fichas.find((x) => x.id === sel); if (!f) return;
         snap();
