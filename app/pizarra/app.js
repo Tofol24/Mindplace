@@ -1186,7 +1186,7 @@
         <h2 style="margin-top:0">Soy jugador</h2>
         <p>Tu entrenador te ha enviado un archivo. Si aún no lo has guardado, mantenlo pulsado en WhatsApp y elige «Guardar» (o «Descargar»).</p>
         <label class="btn grande" for="abrirFileJ" style="cursor:pointer">📂 Soy jugador: abrir el archivo</label>
-        <input type="file" id="abrirFileJ" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+        <input type="file" id="abrirFileJ" accept=".html,.htm,.txt,.json,text/html,text/plain,application/json" style="position:absolute;left:-999px">
         ${ult && ult.plan ? `<div class="fila" style="margin-top:10px"><button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(ult.plan.titulo || "último plan").slice(0, 40))}»</button><button type="button" class="btn-peq peligro" data-olvidar="1" aria-label="Olvidar el último plan abierto en este móvil">✕ Olvidar</button></div>` : ""}
         <p class="peq">Si te ha llegado un enlace, ábrelo directamente: no hace falta pasar por aquí.</p>
       </div>
@@ -1221,7 +1221,7 @@
         <p><b>¿Te han enviado un archivo de la pizarra?</b> Ábrelo aquí: si es de tu entrenador verás la pizarra y tu ficha; si es de otro entrenador, se juntará con tu cuaderno.</p>
         <div class="fila">
           <label class="btn" for="abrirFile" style="cursor:pointer">📂 Abrir archivo</label>
-          <input type="file" id="abrirFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+          <input type="file" id="abrirFile" accept=".html,.htm,.txt,.json,text/html,text/plain,application/json" style="position:absolute;left:-999px">
           ${(function () { try { const u = JSON.parse(localStorage.getItem("pz_ultimo") || "null"); return u && u.plan ? `<button type="button" class="btn-sec" data-ultimo="1">Volver a «${esc(String(u.plan.titulo || "último plan").slice(0, 40))}»</button><button type="button" class="btn-peq peligro" data-olvidar="1" aria-label="Olvidar el último plan abierto en este móvil">✕ Olvidar</button>` : ""; } catch (e) { return ""; } })()}
         </div>
       </div>
@@ -1459,7 +1459,7 @@
         <div data-r="envEntr"></div>
         <div class="fila" style="margin-top:10px">
           <label class="btn-sec" for="juntFile" style="cursor:pointer">Juntar un archivo recibido</label>
-          <input type="file" id="juntFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+          <input type="file" id="juntFile" accept=".html,.htm,.txt,.json,text/html,text/plain,application/json" style="position:absolute;left:-999px">
         </div>
       </div>
       <h2>Copia de seguridad</h2>
@@ -1468,7 +1468,7 @@
         <div class="fila">
           <button type="button" class="btn-sec" data-exportar="1">Descargar copia</button>
           <label class="btn-sec" for="impFile" style="cursor:pointer">Recuperar copia</label>
-          <input type="file" id="impFile" accept=".txt,.json,text/plain,application/json" style="position:absolute;left:-999px">
+          <input type="file" id="impFile" accept=".html,.htm,.txt,.json,text/html,text/plain,application/json" style="position:absolute;left:-999px">
         </div>
       </div>
       <h2>Sobre la privacidad</h2>
@@ -1649,10 +1649,32 @@
   }
   // Comparte un archivo (WhatsApp, correo…) con el menú del móvil; si no se puede, lo descarga.
   // Se usa .txt porque algunos móviles no dejan compartir .json; dentro va JSON legible.
-  async function compartirArchivo(nombre, obj, titulo, texto) {
-    const contenido = JSON.stringify(obj);
+  // El archivo es una página HTML pequeña: al tocarla en WhatsApp se abre en el navegador
+  // y lleva directamente a la pizarra con el plan (en el #hash, que no llega al servidor).
+  // Además lleva los datos dentro, por si hay que abrirla con «Abrir archivo».
+  function paginaArchivo(titulo, url, obj, explicacion) {
+    const datos = JSON.stringify(obj).replace(/</g, "\\u003c");
+    return `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>${esc(titulo)}</title>
+<meta http-equiv="refresh" content="1; url=${esc(url)}">
+<style>body{margin:0;font:18px/1.45 system-ui,-apple-system,sans-serif;background:#14281D;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+a{display:block;margin:22px auto 12px;max-width:340px;background:#FFD23F;color:#111;font-weight:800;font-size:22px;text-decoration:none;padding:18px 22px;border-radius:999px}
+p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
+</head><body><main>
+<h1 style="font-size:24px;margin:0 0 6px">${esc(titulo)}</h1>
+<p>${esc(explicacion)}</p>
+<a href="${esc(url)}">⚽ Abrir la pizarra</a>
+<p>Si no se abre sola, pulsa el botón amarillo.</p>
+</main>
+<script type="application/json" id="pizarra-datos">${datos}</script>
+</body></html>`;
+  }
+  async function compartirArchivo(nombre, obj, titulo, texto, url, explicacion) {
+    const contenido = paginaArchivo(titulo, url, obj, explicacion);
     let file = null;
-    try { file = new File([contenido], nombre, { type: "text/plain" }); } catch (e) { file = null; }
+    try { file = new File([contenido], nombre, { type: "text/html" }); } catch (e) { file = null; }
     if (file && navigator.canShare && navigator.share) {
       let puede = false;
       try { puede = navigator.canShare({ files: [file] }); } catch (e) { puede = false; }
@@ -1661,16 +1683,16 @@
       }
     }
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([contenido], { type: "text/plain" })); a.download = nombre;
+    a.href = URL.createObjectURL(new Blob([contenido], { type: "text/html" })); a.download = nombre;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
     return "descargado";
   }
-  const nombreArchivo = (pref, t) => pref + "-" + String(t || "plan").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + "-" + hoyISO() + ".txt";
+  const nombreArchivo = (pref, t) => pref + "-" + String(t || "plan").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) + "-" + hoyISO() + ".html";
   const URL_APP = () => location.origin + location.pathname;
   async function enviarArchivoGrupo(plan, cont) {
     const pq = Object.assign({ tipo: "jugadores" }, paquete(plan, !!plan.sinNombres));
-    const texto = "📋 " + (plan.titulo || "Pizarra") + "\n\nPara verlo:\n1) Mantén pulsado este archivo y elige «Guardar» (o «Descargar»).\n2) Abre " + URL_APP() + "\n3) Pulsa «Soy jugador: abrir el archivo» y elige el archivo.\n\nEn Android, si tienes la Pizarra instalada, basta con: Compartir → Pizarra.";
-    const r = await compartirArchivo(nombreArchivo("pizarra", plan.titulo), pq, plan.titulo || "Pizarra", texto);
+    const texto = "📋 " + (plan.titulo || "Pizarra") + "\n\nToca el archivo: se abrirá la pizarra. Si no se abre sola, pulsa el botón amarillo «Abrir la pizarra». Después elige tu dorsal.";
+    const r = await compartirArchivo(nombreArchivo("pizarra", plan.titulo), pq, plan.titulo || "Pizarra", texto, enlaceDe(plan, !!plan.sinNombres), "Lo que vamos a trabajar. Después, elige tu dorsal.");
     if (r === "cancelado") return;
     cont.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíalo al grupo como documento."} Escribe en el grupo:</p>
       <label class="sr-only" for="txtArch">Mensaje para acompañar el archivo</label><textarea id="txtArch" rows="8" readonly>${esc(texto)}</textarea>`;
@@ -2099,11 +2121,13 @@
       const ids = $$("[data-envplan]", app).filter((x) => x.checked).map((x) => x.dataset.envplan);
       if (d.enventr) return enviarEntrenador(ids, app.querySelector('[data-r="envEntr"]'));
       const sa = $("#envSinApe");
-      const texto = "Cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + ").\n\n1) Mantén pulsado este archivo y elige «Guardar» (o «Descargar»).\n2) Abre " + URL_APP() + "\n3) En el Cuaderno, pulsa «📂 Abrir archivo» y elige el archivo: se junta con tu cuaderno sin borrar nada.\n\nEn Android, con la Pizarra instalada: Compartir → Pizarra.";
-      compartirArchivo(nombreArchivo("cuaderno", db.equipo.nombre), paqueteEntrenador(ids, !!(sa && sa.checked)), "Cuaderno de la pizarra", texto).then((r) => {
+      const texto = "Cuaderno de la pizarra (" + (db.equipo.nombre || "equipo") + ").\n\nToca el archivo: se abrirá la pizarra. Si no se abre sola, pulsa «Abrir la pizarra». Después pulsa «Juntar con mi cuaderno»: no se borra nada de lo tuyo.";
+      const pqE = paqueteEntrenador(ids, !!(sa && sa.checked));
+      const urlE = location.origin + location.pathname + "#c=" + codificar(pqE);
+      compartirArchivo(nombreArchivo("cuaderno", db.equipo.nombre), pqE, "Cuaderno de la pizarra", texto, urlE, "Cuaderno de otro entrenador: plantilla y planes para juntar con el tuyo.").then((r) => {
         const c = app.querySelector('[data-r="envEntr"]');
         if (r === "cancelado" || !c) return;
-        c.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíaselo por privado como documento."} Dile que abra la pizarra, pulse «Abrir archivo» y lo elija.</p>`;
+        c.innerHTML = `<p class="peq" style="margin-top:10px">${r === "compartido" ? "✅ Archivo enviado." : "✅ Archivo descargado. Envíaselo por privado como documento."} Al tocarlo se abre la pizarra; luego pulsa «Juntar con mi cuaderno».</p>`;
       });
       return;
     }
@@ -2185,7 +2209,10 @@
   // ---------------------------------------------------------------- arranque
   function abrirTextoArchivo(texto) {
     let crudo = null;
-    try { crudo = JSON.parse(texto); } catch (err) { crudo = null; }
+    try {
+      const m = /<script type="application\/json" id="pizarra-datos">([\s\S]*?)<\/script>/.exec(texto);
+      crudo = JSON.parse(m ? m[1] : texto);
+    } catch (err) { crudo = null; }
     if (crudo && crudo.tipo === "entrenador") { const rec = sanDB(crudo); if (rec) return pantRecibido(rec); }
     if (crudo && crudo.plan) { const pq = sanPaquete(crudo); if (pq) return mostrarJugador(pq, true); }
     if (crudo && Array.isArray(crudo.planes) && Array.isArray(crudo.plantilla)) { toast("Es una copia de seguridad: recupérala desde Ajustes."); return; }
