@@ -2360,7 +2360,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       p.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = m(f.pj); }); });
       const i = db2.planes.findIndex((x) => x.id === p.id);
       if (i < 0) { p.sinNombres = false; db2.planes.push(p); r.planNuevos++; }
-      else if ((p.mod || 0) > (db2.planes[i].mod || 0)) { p.sinNombres = !!db2.planes[i].sinNombres; db2.planes[i] = p; r.planAct++; }
+      else if ((p.mod || 0) > (db2.planes[i].mod || 0)) {
+        const viejo = db2.planes[i];
+        p.sinNombres = !!viejo.sinNombres;
+        // el feedback solo viaja con las notas privadas: si no viene, se conserva el de este cuaderno
+        if (!p.fbn && viejo.fbn) p.fbn = viejo.fbn;
+        if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
+        p.bloques.forEach((b) => { if (!b.fb) { const v = viejo.bloques.find((x) => x.id === b.id); if (v && v.fb) b.fb = v.fb; } });
+        db2.planes[i] = p; r.planAct++;
+      }
       else r.planMios++;
     });
     if (rec.equipo) {
@@ -2835,10 +2843,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return db.planes.filter((p) => p.id !== excluir && conFeedback(p)).sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
   }
   function historialIA(excluir, max) {
+    const h = historialCompleto(excluir, max);
+    while (h.length > 1 && JSON.stringify(h).length > 40000) h.pop(); // las más antiguas fuera: la consulta tiene un tamaño máximo
+    return h;
+  }
+  function historialCompleto(excluir, max) {
     return planesConFeedback(excluir).slice(0, max || 8).map((p) => ({
       fecha: p.fecha, tipo: p.tipo, titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo).slice(0, 300), nota: quitarNombres(p.fbn), resultado: quitarNombres(p.fbr),
       // solo los apartados con feedback (y como mucho 12): así la consulta no crece sin límite
-      bloques: p.bloques.filter((b) => b.fb).slice(0, 12).map((b) => ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
+      bloques: (p.bloques.some((b) => b.fb) ? p.bloques.filter((b) => b.fb) : p.bloques).slice(0, 12).map((b) => ({ categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 300), fase: FASE_CORTA[b.fase] || "",
         fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond),
         como: b.fb && b.fb.c ? ["", "costó", "regular", "bien"][b.fb.c] : "", estimulos: b.fb && b.fb.a ? ["", "no", "a veces", "sí"][b.fb.a] : "", nota: quitarNombres(b.fb && b.fb.n) }))
     }));
@@ -2982,7 +2995,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const entrada = { modo: "entreno", etapa: etapaTxt(), quiero: quitarNombres($("#entQuiero").value), minutos: +$("#entMin").value || 75, jugadores: db.plantilla.length, historial: h };
     iaFbPend.ent = entrada;
     cont.innerHTML = `<div class="ia-propuesta">
-      <p class="peq">Se envían a Claude (Anthropic), sin nombres, los planes y los feedbacks de las últimas ${h.length} sesiones${entrada.quiero ? " y lo que quieres trabajar" : ""}. Revisa que las notas no lleven datos personales.</p>
+      <p class="peq">Se envían a Claude (Anthropic), sin nombres, los planes y los feedbacks de las últimas ${h.length} sesiones (títulos, objetivos, explicaciones, en qué fijarse, condiciones y notas)${entrada.quiero ? " y lo que quieres trabajar" : ""}. Revisa que ningún texto lleve datos personales.</p>
       ${htmlNotasEnvio(h, [entrada.quiero && "Qué quieres trabajar: " + entrada.quiero])}
       <div class="fila"><button type="button" class="btn" data-entok="1">Proponer</button><button type="button" class="btn-sec" data-entno="1">Cancelar</button></div>
     </div>`;
