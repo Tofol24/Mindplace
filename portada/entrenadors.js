@@ -191,7 +191,8 @@
   let guardat = null;
   try { guardat = JSON.parse(localStorage.getItem(CLAU) || "null"); } catch (e) { guardat = null; }
   if (guardat && guardat.l === L && guardat.f && typeof guardat.f === "object") {
-    CAMPS.forEach((k) => { $(`[data-k="${k}"]`, arrel).value = String(guardat.f[k] || "").slice(0, LIMIT[k]); });
+    // Es restaura sencer (una fitxa d'abans dels límits no es retalla en obrir-la).
+    CAMPS.forEach((k) => { $(`[data-k="${k}"]`, arrel).value = String(guardat.f[k] || "").slice(0, 4000); });
     const d = D.find((x) => x.t === guardat.f.t); if (d) marca(d.id);
   } else { omple(D[0]); marca(D[0].id); }
 
