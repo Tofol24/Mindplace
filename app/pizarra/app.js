@@ -2493,8 +2493,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // con lo que se está trabajando en los entrenos y los partidos recientes (situaciones, en qué fijarse, análisis
   // del partido y lo que ha costado). El foco es una mejora técnica o táctica, la que más se trabaja ahora.
   const VACIAS = new Set("para pero como cuando donde desde hasta entre sobre tiene tienen hacer antes despues mismo misma todos todas este esta estos estas cada otro otra".split(" "));
+  const GENERICAS = new Set(["porte", "balon", "jugad", "compa", "rival", "rivale", "campo", "equip", "juego", "parti", "entre", "bien", "mejor", "siemp", "pase", "pasar", "recib", "momen", "lado"]);
   const raices = (t) => new Set(String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").split(/[^a-z0-9ñ]+/)
-    .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)));
+    .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)).filter((w) => !GENERICAS.has(w)));
   function trabajoReciente() {
     const hoy = Date.now(), cats = {}, bloques = [], pesos = {};
     const suma = (t, w) => raices(t).forEach((r) => { pesos[r] = (pesos[r] || 0) + w; });
@@ -2534,8 +2535,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     let foco = (j.foco && notas.find((n) => n.id === j.foco && n.t === "m")) || orden(notas.filter((n) => n.t === "m" && tecTac(n)))[0] || mejora[0] || null;
     let fij = "";
     if (foco) {
-      const rf = raices(foco.x); let mejor = 0;
-      tr.bloques.forEach((b) => { let c = 0; rf.forEach((w) => { if (b.r.has(w)) c++; }); if (c > mejor) { mejor = c; fij = b.fij; } });
+      // 1) los estímulos relevantes del aspecto (por su clave o porque la nota es el texto del aspecto)
+      const ESTI = FICHA.ESTIMULOS || {};
+      const asp = aspectoDe(foco);
+      if (asp && ESTI[asp.k]) fij = ESTI[asp.k];
+      else {
+        // 2) el «en qué fijarse» de un ejercicio reciente, solo si comparte al menos dos palabras específicas
+        const rf = raices(foco.x); let mejor = 1;
+        tr.bloques.forEach((b) => { let c = 0; rf.forEach((w) => { if (b.r.has(w)) c++; }); if (c > mejor) { mejor = c; fij = b.fij; } });
+      }
     }
     const consejos = notas.filter((n) => n.t === "c");
     return { prio: fuertes.concat(mejora).concat(consejos).map((n) => n.id).filter((id, i, a) => a.indexOf(id) === i).slice(0, 20), foco: foco ? { id: foco.id, fij: fij } : null };
@@ -2545,6 +2553,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
   // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
   const ICONO_AREA = { tecnica: "⚽", tactica: "🧭", decision: "🧠", fisico: "⚡", atencion: "🧘" };
+  // Aspecto de una nota: por su clave o porque el texto es el del aspecto.
+  const aspectoDe = (n) => (FICHA.ASPECTOS || []).find((x) => x.k === n.k) || (FICHA.ASPECTOS || []).find((x) => normNom(x.t) === normNom(n.x));
+  function mensajeNota(n) {
+    const a = aspectoDe(n), m = a && (FICHA.MENSAJES || {})[a.k];
+    return m ? (n.t === "f" ? m[0] : n.t === "m" ? m[1] : "") : "";
+  }
   function htmlInforme(d) {
     // d: { nombre, dorsal, puesto, etapa, equipo, color, notas, clave, gesto, fecha }
     const notas = d.notas || [];
@@ -2555,7 +2569,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const fuertes = elegidas("f", 6), mejora = elegidas("m", 6), consejos = notas.filter((n) => n.t === "c");
     const todasF = notas.filter((n) => n.t === "f"), todasM = notas.filter((n) => n.t === "m");
     const lista = (l, max, cls) => l.length
-      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}</span></li>`).join("")}</ul>`
+      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => { const msg = mensajeNota(n); return `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}${msg ? `<span class="inf-msg">${esc(msg)}</span>` : ""}</span></li>`; }).join("")}</ul>`
       : `<p class="inf-vacio">Todavía nada anotado.</p>`;
     const tecTac = (n) => n.a === "tecnica" || n.a === "tactica" || n.a === "decision";
     const foco = (d.foco && notas.find((n) => n.id === d.foco.id)) || mejora.find(tecTac) || mejora[0];
@@ -2576,6 +2590,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <div class="inf-fecha">${esc(d.fecha || "")}</div>
       </header>
       ${foco ? `<section class="inf-foco"><span class="inf-etq">🎯 Tu foco ahora</span><p>${esc(foco.x)}</p>
+        ${mensajeNota(foco) ? `<p class="inf-foco-fij"><b>Qué hacer:</b> ${esc(mensajeNota(foco))}</p>` : ""}
         ${focoFij ? `<p class="inf-foco-fij"><b>En qué fijarte:</b> ${esc(focoFij)}</p>` : ""}
         <p class="inf-foco-int">Ponle toda la intención en cada entreno y en cada partido.</p></section>` : ""}
       <div class="inf-dos">
