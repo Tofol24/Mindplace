@@ -25,6 +25,7 @@ export function sanearEntrada(e) {
   if (e.modo === "pizarra") return sanearEntradaPizarra(e);
   if (e.modo === "alternativas") return sanearEntradaAlternativas(e);
   if (e.modo === "entreno") return sanearEntradaEntreno(e);
+  if (e.modo === "autoeval") return sanearEntradaAuto(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -342,4 +343,43 @@ export function sanearEntreno(o) {
   const bloques = lista(o.bloques, 8).map(sanearBloqueProp).filter(Boolean);
   if (!bloques.length) return null;
   return { analisis: txt(o.analisis, 1500), titulo: txt(o.titulo, 80), objetivo: txt(o.objetivo, 600), bloques };
+}
+
+// ---------------------------------------------------------------- autoevaluación: la mirada del jugador y la del entrenador
+const listaT = (v, n) => lista(v, n).map((x) => txt(x, 120)).filter(Boolean);
+export function sanearEntradaAuto(e) {
+  const t = e.textos || {};
+  const o = {
+    modo: "autoeval", etapa: txt(e.etapa, 40), puesto: txt(e.puesto, 40),
+    coinciden: { fuertes: listaT(e.coinciden?.fuertes, 20), mejorar: listaT(e.coinciden?.mejorar, 20) },
+    entrenadorFuerteJugadorMejorar: listaT(e.entrenadorFuerteJugadorMejorar, 20), entrenadorFuerteJugadorNada: listaT(e.entrenadorFuerteJugadorNada, 20),
+    jugadorFuerteEntrenadorMejorar: listaT(e.jugadorFuerteEntrenadorMejorar, 20), jugadorQuiereMejorar: listaT(e.jugadorQuiereMejorar, 20), jugadorSeVeFuerte: listaT(e.jugadorSeVeFuerte, 20),
+    textos: { haceMejor: txt(t.haceMejor, 400), quiereMejorar: txt(t.quiereMejorar, 400), ayuda: txt(t.ayuda, 400) },
+    confianza: ["", "Nada", "Poco", "Normal", "Bastante", "Mucho"].includes(e.confianza) ? e.confianza : ""
+  };
+  const hay = [o.coinciden.fuertes, o.coinciden.mejorar, o.entrenadorFuerteJugadorMejorar, o.entrenadorFuerteJugadorNada, o.jugadorFuerteEntrenadorMejorar, o.jugadorQuiereMejorar, o.jugadorSeVeFuerte].some((l) => l.length)
+    || o.textos.haceMejor || o.textos.quiereMejorar || o.textos.ayuda;
+  return hay ? o : null;
+}
+export const ESQUEMA_AUTO = {
+  type: "object", additionalProperties: false, required: ["analisis", "confianza", "deportivo", "mensaje"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: cómo se percibe el jugador frente a lo que ve el entrenador, qué indica sobre su conciencia de juego y su confianza, 3-5 frases." },
+    confianza: { type: "array", items: { type: "string" }, description: "2-3 acciones concretas del entrenador para reforzar su confianza (sobre todo con lo que él no ve como fortaleza)." },
+    deportivo: { type: "array", items: { type: "string" }, description: "2-3 inputs deportivos concretos para entrenar lo que hay que mejorar, con en qué fijarse y cuándo." },
+    mensaje: { type: "string", description: "Mensaje del entrenador para la ficha del jugador, en segunda persona, 3-5 frases: reconoce lo que ve bien de sí mismo, le muestra lo que el entrenador ve y él quizá todavía no, y le da un foco concreto. Cálido y sereno." }
+  }
+};
+export const SISTEMA_AUTO = `Eres un entrenador de fútbol base con formación en psicología del deporte. El entrenador ha marcado los puntos fuertes y lo que tiene que mejorar un jugador, y el jugador ha hecho su propia autoevaluación con los mismos aspectos, además de responder qué cree que hace mejor, qué quiere mejorar, en qué le gustaría que le ayudara su entrenador y cómo de seguro se siente jugando. No hay nombres.
+
+Tu tarea es ayudar al entrenador a trabajar la conciencia del jugador sobre su propio juego y su confianza:
+- Lee las coincidencias (lo que los dos ven) y las diferencias. Lo que el entrenador ve como fortaleza y el jugador no (o quiere mejorar) es sobre todo trabajo de confianza. Lo que el jugador ve como fortaleza y el entrenador como algo a mejorar es una conversación sobre lo que pasa en los partidos, sin desautorizarlo.
+- Las propuestas deportivas siguen el método: en qué fijarse (estímulos relevantes) y cuándo, sin instrucciones constantes durante el juego.
+- El mensaje para el jugador es para un menor: cálido, concreto y sereno, sin etiquetas ni diagnósticos, sin comparar con compañeros y sin promesas.
+
+Castellano, segunda persona en el mensaje, frases cortas, sin emojis.`;
+export function sanearAuto(o) {
+  if (!o || typeof o !== "object") return null;
+  const r = { analisis: txt(o.analisis, 1200), confianza: lista(o.confianza, 4).map((x) => txt(x, 250)).filter(Boolean), deportivo: lista(o.deportivo, 4).map((x) => txt(x, 250)).filter(Boolean), mensaje: txt(o.mensaje, 700) };
+  return r.analisis || r.mensaje ? r : null;
 }

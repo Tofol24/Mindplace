@@ -141,6 +141,16 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.equal((await fondo.consultar(e, cliente)).bloques.length, 1);
 }
 
+// autoevaluación: entrada acotada y salida saneada
+{
+  assert.equal(lib.sanearEntrada({ modo: "autoeval" }), null);
+  const e = lib.sanearEntrada({ modo: "autoeval", puesto: "MC", coinciden: { fuertes: ["Pase corto", "", 3] }, entrenadorFuerteJugadorMejorar: ["Regate"], textos: { haceMejor: "Pasar" }, confianza: "Poco", nombre: "x" });
+  assert.deepEqual(e.coinciden.fuertes, ["Pase corto"]); assert.equal(e.confianza, "Poco"); assert.equal(e.nombre, undefined);
+  assert.equal(lib.sanearEntrada({ modo: "autoeval", textos: { haceMejor: "x" }, confianza: "Muchísimo" }).confianza, "");
+  const r = lib.sanearAuto({ analisis: "a", confianza: ["c1", ""], deportivo: ["d1"], mensaje: "m" });
+  assert.deepEqual(r.confianza, ["c1"]); assert.equal(lib.sanearAuto({}), null);
+}
+
 await server.stop();
 rmSync(dir, { recursive: true, force: true });
 console.log("pizarra-ia: ok");

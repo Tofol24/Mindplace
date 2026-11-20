@@ -321,3 +321,15 @@ button:disabled { opacity: .45; cursor: default; }
 .informe-envio { max-width: 760px; margin: 0 auto 10px; padding: 0 12px; }
 .notas .btn-peq[aria-pressed="true"] { background: #FFD23F; color: #111; }
 .inf-msg { display: block; font-size: 13px; color: #4A4A4A; margin-top: 2px; line-height: 1.35; }
+.auto-fila { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: space-between; border-top: 1px solid #EEE; padding: 6px 0; }
+.auto-bts { display: flex; gap: 6px; flex-wrap: wrap; }
+.auto-bts .btn-peq[aria-pressed="true"], .fb-grupo [data-aconf][aria-pressed="true"] { background: var(--verde); color: #fff; }
+.cmp-caja { border-top: 1px dashed #DDD; padding-top: 6px; margin-top: 6px; }
+.inf-tuyyo { background: #EEF4FB; }
+.inf-tuyyo-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 14px; }
+.inf-tuyyo ul { margin: 2px 0 0; padding-left: 18px; font-size: 14px; }
+.inf-lec { margin: 8px 0 0; padding-left: 10px; border-left: 3px solid var(--eq, #C8102E); font-style: italic; }
+@media print {
+  body.imprimiendo .inf-tuyyo-cols { grid-template-columns: repeat(3, 1fr); }
+  body.imprimiendo .inf-tuyyo ul, body.imprimiendo .inf-lec { font-size: 12px; }
+}

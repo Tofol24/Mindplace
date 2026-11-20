@@ -3,15 +3,16 @@
 // Solo procesa trabajos existentes en estado «pendiente» (los crea la función con tope diario).
 import Anthropic from "@anthropic-ai/sdk";
 import { getStore } from "@netlify/blobs";
-import { ESQUEMA, ESQUEMA_ALTERNATIVAS, ESQUEMA_ENTRENO, ESQUEMA_PIZARRA, MODELO, RE_JOB, SISTEMA, SISTEMA_ALTERNATIVAS, SISTEMA_ENTRENO, SISTEMA_PIZARRA,
-  mensajeUsuario, sanearAlternativas, sanearEntreno, sanearPizarra, sanearSalida } from "../lib/pizarra-ia.mjs";
+import { ESQUEMA, ESQUEMA_ALTERNATIVAS, ESQUEMA_AUTO, ESQUEMA_ENTRENO, ESQUEMA_PIZARRA, MODELO, RE_JOB, SISTEMA, SISTEMA_ALTERNATIVAS, SISTEMA_AUTO, SISTEMA_ENTRENO, SISTEMA_PIZARRA,
+  mensajeUsuario, sanearAlternativas, sanearAuto, sanearEntreno, sanearPizarra, sanearSalida } from "../lib/pizarra-ia.mjs";
 
 // Cada modo de consulta: instrucciones, esquema de la respuesta y saneado.
 const MODOS = {
   sugerencias: { sis: SISTEMA, esq: ESQUEMA, san: (o, e) => sanearSalida(o, e) },
   pizarra: { sis: SISTEMA_PIZARRA, esq: ESQUEMA_PIZARRA, san: (o) => sanearPizarra(o) },
   alternativas: { sis: SISTEMA_ALTERNATIVAS, esq: ESQUEMA_ALTERNATIVAS, san: (o) => sanearAlternativas(o) },
-  entreno: { sis: SISTEMA_ENTRENO, esq: ESQUEMA_ENTRENO, san: (o) => sanearEntreno(o) }
+  entreno: { sis: SISTEMA_ENTRENO, esq: ESQUEMA_ENTRENO, san: (o) => sanearEntreno(o) },
+  autoeval: { sis: SISTEMA_AUTO, esq: ESQUEMA_AUTO, san: (o) => sanearAuto(o) }
 };
 
 export async function consultar(entrada, cliente = new Anthropic()) {

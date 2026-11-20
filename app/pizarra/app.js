@@ -350,6 +350,14 @@
     if (typeof n.k === "string" && /^[a-z0-9_]{1,30}$/.test(n.k)) o.k = n.k;
     return o;
   }
+  // Autoevaluación del jugador: m {aspecto: "f" punto fuerte | "m" quiere mejorarlo}, textos y confianza (1-5).
+  function sanAuto(a) {
+    if (!a || typeof a !== "object") return null;
+    const m = {};
+    if (a.m && typeof a.m === "object") Object.keys(a.m).slice(0, 120).forEach((k) => { if (/^[a-z0-9_]{1,30}$/.test(k) && (a.m[k] === "f" || a.m[k] === "m")) m[k] = a.m[k]; });
+    const o = { f: /^\d{4}-\d{2}-\d{2}$/.test(a.f) ? a.f : "", m: m, tf: txt(a.tf, 400), tm: txt(a.tm, 400), ts: txt(a.ts, 400), c: [1, 2, 3, 4, 5].includes(a.c) ? a.c : 0 };
+    return Object.keys(m).length || o.tf || o.tm || o.ts || o.c ? o : null;
+  }
   function sanJugador(j) {
     const id = idOk(j && j.id); if (!id) return null;
     const o = { id: id, d: Math.round(num(j.d, 0, 99, 0)), n: txt(j.n, 60) || "Jugador", c: txt(j.c, 18), p: txt(j.p, 24) };
@@ -357,6 +365,8 @@
     const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
     const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
     if (idOk(j.foco) && ns.some((n) => n.id === j.foco && n.t === "m")) o.foco = j.foco; // foco fijado por el entrenador
+    const au = sanAuto(j.auto); if (au) o.auto = au; // su autoevaluación
+    const lec = txt(j.lec, 700); if (lec) o.lec = lec; // mensaje del entrenador para su ficha
     ["tel", "tel2"].forEach((k) => { const t = txt(j[k], 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(t)) o[k] = t; });
     ["mail", "mail2"].forEach((k) => { const m = txt(j[k], 100).trim(); if (RE_MAIL.test(m)) o[k] = m; });
     ["nom1", "nom2"].forEach((k) => { const n = txt(j[k], 30).trim(); if (n) o[k] = n; });
@@ -454,7 +464,7 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; CONTACTO.forEach((k) => delete j[k]); });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
     const yo = idOk(o.yo);
@@ -464,6 +474,8 @@
       const ids = new Set(r.notas.map((n) => n.id));
       if (Array.isArray(o.prio)) r.prio = o.prio.filter((x) => idOk(x) && ids.has(x)).slice(0, 20);
       if (o.foco && typeof o.foco === "object" && idOk(o.foco.id) && ids.has(o.foco.id)) r.foco = { id: o.foco.id, fij: txt(o.foco.fij, 300) };
+      const au = sanAuto(o.auto); if (au) r.auto = au; // su autoevaluación y el mensaje del entrenador, para «Tú y yo»
+      const lec = txt(o.lec, 700); if (lec) r.lec = lec;
     }
     return r;
   }
@@ -2165,11 +2177,11 @@
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
   function descodificar(hash) {
-    const m = /^#(p|c|v|e|ver|ent)=(.*)$/.exec(hash || "");
+    const m = /^#(p|c|v|e|ver|ent|ae)=(.*)$/.exec(hash || "");
     if (!m) return null;
     let datos = m[2];
     try { datos = decodeURIComponent(datos); } catch (e) { /* tal cual */ }
-    if (m[1] === "p" || m[1] === "c" || m[1] === "v" || m[1] === "e") {
+    if (m[1] === "p" || m[1] === "c" || m[1] === "v" || m[1] === "e" || m[1] === "ae") {
       let b = datos.replace(/[^A-Za-z0-9_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
       while (b.length % 4) b += "=";
       const bin = atob(b), u8 = new Uint8Array(bin.length);
@@ -2376,7 +2388,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
       return c;
     });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; CONTACTO.forEach((k) => delete j[k]); } return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -2549,6 +2561,142 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return { prio: fuertes.concat(mejora).concat(consejos).map((n) => n.id).filter((id, i, a) => a.indexOf(id) === i).slice(0, 20), foco: foco ? { id: foco.id, fij: fij } : null };
   }
 
+
+  // ---------------------------------------------------------------- autoevaluación del jugador
+  // El entrenador le envía un enlace; el jugador marca cómo se ve (con los mismos aspectos que su ficha) y lo
+  // devuelve con un enlace que solo lleva sus respuestas. El entrenador lo guarda en su ficha y compara las dos miradas.
+  const CONFIANZA = ["", "Nada", "Poco", "Normal", "Bastante", "Mucho"];
+  function sanPedidoAuto(o) {
+    const j = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean)[0];
+    if (!j || idOk(o.yo) !== j.id) return null;
+    return { yo: j.id, d: j.d, n: j.c || j.n, p: j.p || "", port: o.port === true, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") } };
+  }
+  function paqueteAutoev(j) {
+    return { v: 1, tipo: "autoev", eq: { n: db.equipo.nombre, col: db.equipo.color }, yo: j.id, port: famDePuesto(j.p) === "por",
+      jug: [{ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" }] };
+  }
+  function enviarAutoev(j, cont) {
+    return prepararEnvio(cont, {
+      corto: () => enlaceCorto(paqueteAutoev(j), false),
+      largo: null,
+      texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", ¿cómo te ves jugando? Marca lo que crees que haces bien y lo que quieres mejorar, y después pulsa «Enviar a mi entrenador». Así lo hablamos y lo trabajamos juntos:\n" + url,
+      titulo: "Tu autoevaluación", idTxt: "txtAuto", extra: "Enviar la autoevaluación",
+      indicacion: "Envíalo por privado al jugador (o a su familia).",
+      contacto: { tels: [{ tel: j.tel, nom: j.nom1 }, { tel: j.tel2, nom: j.nom2 }].filter((x) => x.tel), mails: [{ mail: j.mail, nom: j.nom1 }, { mail: j.mail2, nom: j.nom2 }].filter((x) => x.mail), asunto: "Tu autoevaluación" }
+    });
+  }
+  // Pantalla del jugador
+  function pantAutoev(ped) {
+    $("#nav").hidden = true;
+    $("#ttApp").textContent = ped.eq.n || "Pizarra";
+    $("#ttSub").textContent = "Tu autoevaluación";
+    document.title = "Autoevaluación · " + (ped.eq.n || "Pizarra");
+    const clave = "pz_autoev_" + ped.yo;
+    let st = null; try { st = sanAuto(JSON.parse(localStorage.getItem(clave) || "null")); } catch (e) { st = null; }
+    st = st || { f: "", m: {}, tf: "", tm: "", ts: "", c: 0 };
+    const guarda = () => { try { localStorage.setItem(clave, JSON.stringify(st)); } catch (e) { /* solo esta visita */ } };
+    const lista = (FICHA.ASPECTOS || []).filter((x) => !x.soloPortero || ped.port);
+    const grupos = []; lista.forEach((x) => { let g = grupos.find((y) => y.g === x.g); if (!g) { g = { g: x.g, items: [] }; grupos.push(g); } g.items.push(x); });
+    const cuenta = (g) => g.items.filter((x) => st.m[x.k]).length;
+    app.innerHTML = `
+      <h1><span class="dorsal" style="background:${esc(ped.eq.col)};margin-right:8px">${esc(ped.d)}</span>${esc(ped.n)}</h1>
+      <section class="tarjeta">
+        <p>Tu entrenador quiere saber cómo te ves jugando. No hay respuestas buenas ni malas: se trata de que te fijes en tu propio juego. Después lo comparáis y lo trabajáis juntos.</p>
+        <p class="peq">Marca 💪 en lo que crees que haces bien y 🎯 en lo que quieres mejorar. Deja sin marcar lo que no tengas claro. Se guarda en tu móvil mientras lo haces.</p>
+      </section>
+      <section class="tarjeta">
+        <h2 style="margin-top:0">¿Cómo de seguro te sientes jugando?</h2>
+        <div class="fb-grupo" role="group" aria-label="Cómo de seguro te sientes jugando">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="btn-peq" data-aconf="${v}" aria-pressed="${st.c === v}">${CONFIANZA[v]}</button>`).join("")}</div>
+      </section>
+      ${grupos.map((g, gi) => `<details class="det tarjeta" ${gi === 0 ? "open" : ""}><summary><b>${esc(g.g)}</b> <span class="peq" data-r="cnt${gi}">${cuenta(g) ? "· " + cuenta(g) + " marcados" : ""}</span></summary>
+        ${g.items.map((x) => `<div class="auto-fila"><span>${esc(x.t)}</span><span class="auto-bts" role="group" aria-label="${esc(x.t)}">
+          <button type="button" class="btn-peq" data-amark="${x.k}" data-v="f" data-g="${gi}" aria-pressed="${st.m[x.k] === "f"}">💪 Lo hago bien</button>
+          <button type="button" class="btn-peq" data-amark="${x.k}" data-v="m" data-g="${gi}" aria-pressed="${st.m[x.k] === "m"}">🎯 Quiero mejorarlo</button></span></div>`).join("")}
+      </details>`).join("")}
+      <section class="tarjeta">
+        <div class="campo-f"><label for="aTf">¿Qué crees que haces mejor?</label><textarea id="aTf" data-atxt="tf" maxlength="400" rows="2">${esc(st.tf)}</textarea></div>
+        <div class="campo-f"><label for="aTm">¿Qué te gustaría mejorar?</label><textarea id="aTm" data-atxt="tm" maxlength="400" rows="2">${esc(st.tm)}</textarea></div>
+        <div class="campo-f"><label for="aTs">¿En qué te gustaría que te ayudara tu entrenador?</label><textarea id="aTs" data-atxt="ts" maxlength="400" rows="2">${esc(st.ts)}</textarea></div>
+        <p class="peq">Si lo prefieres, pulsa el micrófono del teclado y díctalo: el móvil lo escribe por ti.</p>
+      </section>
+      <div class="fila"><button type="button" class="btn" data-aenviar="1">📤 Enviar a mi entrenador</button></div>
+      <div data-r="aEnvio"></div>`;
+    app.onclick = (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.aconf) { const v = +b.dataset.aconf; st.c = st.c === v ? 0 : v; guarda(); $$("[data-aconf]", app).forEach((x) => x.setAttribute("aria-pressed", String(+x.dataset.aconf === st.c))); return; }
+      if (b.dataset.amark) {
+        const k = b.dataset.amark, v = b.dataset.v;
+        if (st.m[k] === v) delete st.m[k]; else st.m[k] = v;
+        guarda();
+        $$(`[data-amark="${k}"]`, app).forEach((x) => x.setAttribute("aria-pressed", String(st.m[k] === x.dataset.v)));
+        const g = grupos[+b.dataset.g], c = app.querySelector(`[data-r="cnt${b.dataset.g}"]`); if (c) c.textContent = cuenta(g) ? "· " + cuenta(g) + " marcados" : "";
+        return;
+      }
+      if (b.dataset.aenviar) {
+        if (!Object.keys(st.m).length && !st.tf && !st.tm && !st.ts) { toast("Marca algo antes de enviarlo"); return; }
+        st.f = hoyISO(); guarda();
+        const url = location.origin + location.pathname + "#ae=" + codificar({ v: 1, tipo: "autoeval", yo: ped.yo, d: ped.d, n: ped.n, f: st.f, m: st.m, tf: st.tf, tm: st.tm, ts: st.ts, c: st.c });
+        const txtE = "Mi autoevaluación (" + ped.d + " · " + ped.n + "). Ábrela en la pizarra para guardarla en mi ficha:\n" + url;
+        const c = app.querySelector('[data-r="aEnvio"]');
+        c.innerHTML = `<p class="peq" style="margin-top:10px">Envíaselo a tu entrenador por privado (por ejemplo, por WhatsApp).</p>
+          <label class="sr-only" for="txtAE">Mensaje</label><textarea id="txtAE" rows="5" readonly>${esc(txtE)}</textarea>
+          <div class="fila">${navigator.share ? `<button type="button" class="btn" data-acomp="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-acop="1">📋 Copiar</button></div>`;
+        c.querySelector("[data-acop]").onclick = () => { const t = c.querySelector("textarea"); t.focus(); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(txtE) : Promise.reject()).then(() => toast("Copiado"), () => { try { document.execCommand("copy"); toast("Copiado"); } catch (err) { /* nada */ } }); };
+        const bc = c.querySelector("[data-acomp]"); if (bc) bc.onclick = () => navigator.share({ title: "Mi autoevaluación", text: txtE }).catch(() => {});
+        return;
+      }
+    };
+    app.oninput = (e) => { const k = e.target.dataset.atxt; if (k) { st[k] = e.target.value; guarda(); } };
+  }
+  // Pantalla del entrenador al abrir una autoevaluación recibida
+  function pantAutoevRecibida(r) {
+    const cand = db.plantilla.find((j) => j.id === r.yo || (j.alias || []).includes(r.yo)) || db.plantilla.find((j) => j.d === r.d && normNom(j.c || j.n.split(" ")[0]) === normNom(r.n));
+    const nf = Object.values(r.auto.m).filter((v) => v === "f").length, nm = Object.values(r.auto.m).filter((v) => v === "m").length;
+    app.innerHTML = `
+      <h1>Autoevaluación recibida</h1>
+      <div class="tarjeta">
+        <p><b>${esc(r.d)} · ${esc(r.n)}</b>${r.auto.f ? " · " + esc(fechaBonita(r.auto.f)) : ""}: ${nf} punto${nf === 1 ? "" : "s"} fuerte${nf === 1 ? "" : "s"}, ${nm} cosa${nm === 1 ? "" : "s"} que quiere mejorar${r.auto.c ? ", confianza: " + esc(CONFIANZA[r.auto.c].toLowerCase()) : ""}.</p>
+        <div class="campo-f"><label for="aeJ">Guardar en la ficha de</label><select id="aeJ">${db.plantilla.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${cand && cand.id === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("")}</select></div>
+        ${db.plantilla.length ? "" : `<p class="sin-puesto">Tu plantilla está vacía en este móvil: ábrela en el móvil donde tienes el cuaderno.</p>`}
+        <p class="peq">Si ya tenía una autoevaluación, se sustituye por esta.</p>
+        <div class="fila"><button type="button" class="btn" data-aeguardar="1" ${db.plantilla.length ? "" : "disabled"}>Guardar en su ficha</button><button type="button" class="btn-sec" data-aeno="1">Ahora no</button></div>
+      </div>`;
+    app.querySelector("[data-aeguardar]").addEventListener("click", () => {
+      const j = db.plantilla.find((x) => x.id === $("#aeJ").value); if (!j) return;
+      j.auto = r.auto; j.mod = Date.now(); guardar();
+      ir("plantilla"); abrirNotas(j.id);
+      toast("Autoevaluación guardada: mira la comparación en su ficha");
+    });
+    app.querySelector("[data-aeno]").addEventListener("click", () => ir("cuaderno"));
+  }
+  // Las dos miradas, aspecto a aspecto: lo que marca el entrenador (notas con aspecto) y lo que marca el jugador.
+  function compararAuto(notas, auto) {
+    const ent = {};
+    (notas || []).forEach((n) => { const a = aspectoDe(n); if (a && (n.t === "f" || n.t === "m")) ent[a.k] = n.t; });
+    const jug = (auto && auto.m) || {}, txtA = (k) => ((FICHA.ASPECTOS || []).find((x) => x.k === k) || {}).t || k;
+    const r = { ambosF: [], ambosM: [], yoFelM: [], yoFelNada: [], elFyoM: [], elMyoNada: [], elFyoNada: [] };
+    new Set(Object.keys(ent).concat(Object.keys(jug))).forEach((k) => {
+      const e = ent[k], j = jug[k], t = txtA(k);
+      if (e === "f" && j === "f") r.ambosF.push(t); else if (e === "m" && j === "m") r.ambosM.push(t);
+      else if (e === "f" && j === "m") r.yoFelM.push(t); else if (e === "f" && !j) r.yoFelNada.push(t);
+      else if (e === "m" && j === "f") r.elFyoM.push(t); else if (!e && j === "m") r.elMyoNada.push(t); else if (!e && j === "f") r.elFyoNada.push(t);
+    });
+    return r;
+  }
+  function htmlComparacion(j) {
+    const c = compararAuto(j.notas, j.auto), au = j.auto;
+    const caja = (tit, l, ayuda) => l.length ? `<div class="cmp-caja"><p><b>${tit}</b>${ayuda ? `<br><span class="peq">${ayuda}</span>` : ""}</p><ul class="consignas">${l.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
+    return `<p class="peq">Respondida ${au.f ? "el " + esc(fechaBonita(au.f)) : ""}${au.c ? " · se siente " + esc(CONFIANZA[au.c].toLowerCase()) + " de seguro jugando" : ""}.</p>
+      ${caja("✅ Coincidís: puntos fuertes", c.ambosF, "Reconócelos: los dos los veis.")}
+      ${caja("✅ Coincidís: a mejorar", c.ambosM, "Sabe qué tiene que trabajar: buen punto de partida.")}
+      ${caja("💪 Tú lo ves como fortaleza y él quiere mejorarlo", c.yoFelM, "Trabajo de confianza: díselo con ejemplos concretos.")}
+      ${caja("💪 Tú lo ves como fortaleza y él no lo ha marcado", c.yoFelNada, "Quizá todavía no lo ve: muéstraselo.")}
+      ${caja("🔎 Él se ve fuerte y tú lo tienes para mejorar", c.elFyoM, "Habladlo: qué ve él y qué ves tú en los partidos.")}
+      ${caja("🎯 Quiere mejorarlo y tú no lo tenías", c.elMyoNada, "Le importa: aprovéchalo para motivarlo.")}
+      ${caja("🙂 Se ve fuerte y tú no lo tenías marcado", c.elFyoNada, "")}
+      ${au.tf ? `<p><b>Lo que cree que hace mejor:</b> ${esc(au.tf)}</p>` : ""}${au.tm ? `<p><b>Lo que quiere mejorar:</b> ${esc(au.tm)}</p>` : ""}${au.ts ? `<p><b>En qué le gustaría que le ayudaras:</b> ${esc(au.ts)}</p>` : ""}`;
+  }
+
   // ---------------------------------------------------------------- ficha en una página (A4)
   // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
   // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
@@ -2601,6 +2749,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <section class="inf-caja inf-fuerte"><h3>💪 Tus puntos fuertes</h3><p class="inf-sub">Úsalos: son tu ventaja en el partido.</p>${lista(fuertes, 7, "")}</section>
         <section class="inf-caja inf-mejora"><h3>📈 Lo que estás aprendiendo</h3><p class="inf-sub">Lo que más trabajamos ahora, poco a poco.</p>${lista(mejora.filter((n) => !foco || n.id !== foco.id), 5, "")}</section>
       </div>
+      ${(function () {
+        if (!d.auto) return "";
+        const c = compararAuto(notas, d.auto);
+        const veoYo = c.yoFelM.concat(c.yoFelNada).slice(0, 3), ambos = c.ambosF.slice(0, 3), quiere = c.ambosM.concat(c.elMyoNada).slice(0, 3);
+        if (!veoYo.length && !ambos.length && !quiere.length && !d.lec) return "";
+        const col = (t, l) => l.length ? `<div><p class="inf-sub"><b>${t}</b></p><ul>${l.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+        return `<section class="inf-caja inf-tuyyo"><h3>🪞 Tú y yo</h3><div class="inf-tuyyo-cols">${col("Lo que los dos vemos", ambos)}${col("Lo que yo veo en ti (y quizá tú todavía no)", veoYo)}${col("Lo que tú quieres mejorar", quiere)}</div>
+          ${d.lec ? `<p class="inf-lec">${esc(d.lec)}</p>` : ""}</section>`;
+      })()}
       <section class="inf-areas"><h3>Tu mapa</h3><div class="inf-areas-fila">${areas}</div>
         <p class="inf-ley"><span class="inf-pf">●</span> punto fuerte · <span class="inf-am">●</span> por mejorar</p></section>
       ${sit ? `<section class="inf-caja inf-consejo"><h3>💡 Consejos para ti</h3><div class="inf-sits">${sit}</div></section>` : ""}
@@ -2709,6 +2866,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           <p class="peq">Toca 💪 si es un punto fuerte, 🎯 si tiene que mejorarlo o 💡 si quieres darle un consejo. Vuelve a tocar para quitarlo. Para añadir un matiz, escribe una nota arriba.</p>
           ${htmlAspectos(j)}
         </section>
+        <section class="tarjeta auto-sec">
+          <h2 style="margin-top:0">🪞 Su autoevaluación</h2>
+          ${j.auto ? htmlComparacion(j) : `<p class="peq">Envíale un enlace para que marque cómo se ve: lo que cree que hace bien y lo que quiere mejorar. Te lo devolverá con un botón y aquí verás en qué coincidís y en qué no: un trabajo de conciencia sobre su propio juego y de confianza.</p>`}
+          <div class="fila"><button type="button" class="btn-sec" data-aepedir="1">📤 ${j.auto ? "Pedirle una nueva autoevaluación" : "Enviarle la autoevaluación"}</button>
+            ${j.auto ? `<button type="button" class="btn-peq ia-btn" data-aeia="1">✨ Lectura con Claude</button>` : ""}</div>
+          <div data-r="aePedir"></div><div data-r="aeIa"></div>
+          ${j.auto ? `<div class="campo-f"><label for="nLec">Tu mensaje para su ficha (sale en «Tú y yo»)</label><textarea id="nLec" data-lec="1" maxlength="700" rows="4" placeholder="Lo que quieres que se lleve: lo que ve bien de sí mismo, lo que tú ves y él todavía no, y en qué vais a trabajar.">${esc(j.lec || "")}</textarea></div>` : ""}
+        </section>
         <section class="tarjeta">${htmlNotas(j.notas || [], { editable: true, foco: j.foco })}
           <p class="peq">⭐ Foco: elige la mejora técnica o táctica que saldrá arriba de su ficha. Si no eliges, se pone la que más se trabaja ahora en los entrenos y los partidos.</p></section>
         <section class="tarjeta">
@@ -2721,6 +2886,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
     }
     cuerpo.oninput = (e) => {
+      if (e.target.dataset.lec) { j.lec = e.target.value; if (!j.lec) delete j.lec; j.mod = Date.now(); guardar(); return; }
       const k = e.target.dataset.cont; if (!k || !CONTACTO.includes(k)) return;
       const v = k.startsWith("tel") ? e.target.value.replace(/[^\d+]/g, "") : e.target.value.trim();
       if (v) j[k] = v; else delete j[k];
@@ -2768,6 +2934,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!window.confirm("¿Borrar esta nota?")) return;
         j.notas = (j.notas || []).filter((n) => n.id !== b.dataset.nborrar); j.mod = Date.now(); guardar(); pintarN(); return;
       }
+      if (b.dataset.aepedir) { enviarAutoev(j, cuerpo.querySelector('[data-r="aePedir"]')); return; }
+      if (b.dataset.aeia) { previaLecturaAuto(j, cuerpo.querySelector('[data-r="aeIa"]')); return; }
+      if (b.dataset.aeiaok) { pedirLecturaAuto(j, cuerpo.querySelector('[data-r="aeIa"]')); return; }
+      if (b.dataset.aeiausar) { const r = iaFbRes["auto" + j.id]; if (r) { j.lec = r.mensaje.slice(0, 700); j.mod = Date.now(); guardar(); const t = cuerpo.querySelector("#nLec"); if (t) t.value = j.lec; toast("Mensaje puesto en su ficha: revísalo"); } return; }
       if (b.dataset.nfoco) {
         if (j.foco === b.dataset.nfoco) delete j.foco; else j.foco = b.dataset.nfoco;
         j.mod = Date.now(); guardar(); pintarN();
@@ -2777,7 +2947,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (b.dataset.ninforme) {
         const pr = prioridadNotas(j);
         abrirInforme({ nombre: j.c || j.n, dorsal: j.d, puesto: j.p || "", etapa: (FICHA.ETAPAS[db.equipo.etapa] || {}).n || "", equipo: db.equipo.nombre, color: db.equipo.color, notas: j.notas || [], clave: "", gesto: "", fecha: fechaCorta(),
-          prio: pr.prio, foco: pr.foco, enviar: (cont) => enviarFicha(j, null, cont) });
+          prio: pr.prio, foco: pr.foco, auto: j.auto, lec: j.lec, enviar: (cont) => enviarFicha(j, null, cont) });
         return;
       }
       if (b.dataset.nenviar) {
@@ -2812,6 +2982,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
     pq.yo = j.id;
     pq.notas = clon(j.notas || []);
+    if (j.auto) pq.auto = clon(j.auto);
+    if (j.lec) pq.lec = j.lec;
     const pr = prioridadNotas(j); pq.prio = pr.prio; if (pr.foco) pq.foco = pr.foco; // lo que sale en su ficha y su foco
     return pq;
   }
@@ -3093,6 +3265,35 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     ${x.texto ? `<p>${esc(x.texto)}</p>` : ""}
     ${x.fijarse ? `<p><b>🎯 En qué fijarse:</b> ${esc(x.fijarse)}</p>` : ""}${x.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(x.cuando)}</p>` : ""}
     ${x.condicion ? `<p><b>🥅 Condición:</b> ${esc(x.condicion)}</p>` : ""}`;
+
+
+  // ----- lectura de la autoevaluación con Claude: para el entrenador, y un mensaje para el jugador
+  function entradaAuto(j) {
+    const c = compararAuto(j.notas, j.auto), au = j.auto, E = FICHA.ETAPAS[db.equipo.etapa];
+    return { modo: "autoeval", etapa: E ? E.n + " (" + E.edad + ")" : "", puesto: j.p || "",
+      coinciden: { fuertes: c.ambosF, mejorar: c.ambosM }, entrenadorFuerteJugadorMejorar: c.yoFelM, entrenadorFuerteJugadorNada: c.yoFelNada,
+      jugadorFuerteEntrenadorMejorar: c.elFyoM, jugadorQuiereMejorar: c.elMyoNada, jugadorSeVeFuerte: c.elFyoNada,
+      textos: { haceMejor: quitarNombres(au.tf), quiereMejorar: quitarNombres(au.tm), ayuda: quitarNombres(au.ts) }, confianza: au.c ? CONFIANZA[au.c] : "" };
+  }
+  function previaLecturaAuto(j, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("La lectura con Claude"); return; }
+    const e = entradaAuto(j); iaFbPend["auto" + j.id] = e;
+    cont.innerHTML = `<div class="ia-propuesta"><p class="peq">Se envía a Claude (Anthropic), sin nombre, la comparación de aspectos, la confianza y sus respuestas escritas. Revisa que no lleven datos personales.</p>
+      ${[e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean).length ? `<ul class="consignas">${[e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      <div class="fila"><button type="button" class="btn" data-aeiaok="1">Pedir la lectura</button></div></div>`;
+  }
+  function pedirLecturaAuto(j, cont) {
+    const e = iaFbPend["auto" + j.id]; delete iaFbPend["auto" + j.id];
+    if (!e) { previaLecturaAuto(j, cont); return; }
+    consultaIA("auto" + j.id, e, cont, "Claude está leyendo las dos miradas.", (r) => {
+      cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Lectura</h3>
+        ${r.analisis ? `<p><b>Para ti:</b> ${esc(r.analisis)}</p>` : ""}
+        ${r.confianza.length ? `<p><b>Para su confianza:</b></p><ul class="consignas">${r.confianza.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+        ${r.deportivo.length ? `<p><b>Para su juego:</b></p><ul class="consignas">${r.deportivo.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+        ${r.mensaje ? `<p><b>Mensaje para él:</b> ${esc(r.mensaje)}</p><div class="fila"><button type="button" class="btn-sec" data-aeiausar="1">Usar como mensaje de su ficha</button></div>` : ""}
+      </div>`;
+    });
+  }
 
   // ----- alternativas de un ejercicio
   // Las notas y textos libres que se enviarán, para revisarlos antes de confirmar.
@@ -3497,7 +3698,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         const pus = puestosDe(plan, ctx, pq.yo).map((x) => x.rol).filter(Boolean);
         let mv = {}; try { mv = JSON.parse(localStorage.getItem("pz_mivuelta") || "{}"); } catch (err) { mv = {}; }
         abrirInforme({ nombre: j.c || j.n || "", dorsal: j.d, puesto: pus.join(" / "), etapa: (FICHA.ETAPAS[pq.eq && pq.eq.et] || {}).n || "", equipo: pq.eq && pq.eq.n, color: pq.eq && pq.eq.col, notas: pq.notas || [], clave: mv.p || plan.clave || "", gesto: mv.g || "", fecha: fechaCorta(),
-          prio: pq.prio, foco: pq.foco });
+          prio: pq.prio, foco: pq.foco, auto: pq.auto, lec: pq.lec });
         return;
       }
       const b = e.target.closest("[data-leer]"); if (!b || b.closest("#dlgFicha")) return;
@@ -3853,6 +4054,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       leerEnlaceCorto(h).then((o) => {
         if (location.hash !== h) return; // ya se ha abierto otro enlace
         if (o && o.tipo === "entrenador") { const rec = sanDB(o); if (rec) return pantRecibido(rec); }
+        if (o && o.tipo === "autoev") { const ped = sanPedidoAuto(o); if (ped) return pantAutoev(ped); }
         const pq = o && o.plan ? sanPaquete(o) : null;
         if (pq) return mostrarJugador(pq);
         throw new Error("contenido");
@@ -3863,6 +4065,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           : `<h1>No se ha podido abrir</h1><p>Comprueba que tienes conexión a internet y vuelve a tocar el enlace. Si sigue sin abrirse, pide que te lo vuelvan a enviar.</p>`;
       });
       return;
+    }
+    if (/^#ae=/.test(h)) {
+      let a = null;
+      try { a = descodificar(h); } catch (e) { a = null; }
+      history.replaceState(null, "", location.pathname);
+      const au = a && a.tipo === "autoeval" ? sanAuto(a) : null;
+      if (!au) { pintarPantalla(); toast("No se ha podido leer la autoevaluación"); return; }
+      return pantAutoevRecibida({ auto: au, yo: idOk(a.yo) || "", d: Math.round(num(a.d, 0, 99, 0)), n: txt(a.n, 30) });
     }
     if (/^#(c|e|ent)=/.test(h)) {
       let rec = null;
@@ -3930,7 +4140,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     let o = null; try { o = sanDB(JSON.parse(e.newValue)); } catch (err) { o = null; }
     if (!o) return;
     db = o;
-    if (/^#(k|p|c|v|ver|e|ent|apr)=/.test(location.hash || "")) return;
+    if (/^#(k|p|c|v|ver|e|ent|apr|ae)=/.test(location.hash || "")) return;
     if ($("#dlgPizarra").open) { $("#dlgPizarra").close(); }
     pintarPantalla();
     toast("El cuaderno se ha actualizado desde otra pestaña");
@@ -3944,6 +4154,6 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     ir("ajustes"); setTimeout(() => { const t = $("#tuSuscripcion"); if (t) t.scrollIntoView(); const c = $("#susCod"); if (c) c.focus(); }, 50);
   });
   cargarSuscripcion().then(() => { if (estado.pant === "ajustes") pintarSuscripcion(); });
-  window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent|apr)=/.test(location.hash || "")) arrancar(); });
+  window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent|apr|ae)=/.test(location.hash || "")) arrancar(); });
   arrancar();
 })();
