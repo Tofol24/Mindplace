@@ -2493,8 +2493,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // con lo que se está trabajando en los entrenos y los partidos recientes (situaciones, en qué fijarse, análisis
   // del partido y lo que ha costado). El foco es una mejora técnica o táctica, la que más se trabaja ahora.
   const VACIAS = new Set("para pero como cuando donde desde hasta entre sobre tiene tienen hacer antes despues mismo misma todos todas este esta estos estas cada otro otra".split(" "));
+  const GENERICAS = new Set(["porte", "balon", "jugad", "compa", "rival", "rivale", "campo", "equip", "juego", "parti", "entre", "bien", "mejor", "siemp", "pase", "pasar", "recib", "momen", "lado"]);
   const raices = (t) => new Set(String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").split(/[^a-z0-9ñ]+/)
-    .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)));
+    .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)).filter((w) => !GENERICAS.has(w)));
   function trabajoReciente() {
     const hoy = Date.now(), cats = {}, bloques = [], pesos = {};
     const suma = (t, w) => raices(t).forEach((r) => { pesos[r] = (pesos[r] || 0) + w; });
@@ -2534,8 +2535,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     let foco = (j.foco && notas.find((n) => n.id === j.foco && n.t === "m")) || orden(notas.filter((n) => n.t === "m" && tecTac(n)))[0] || mejora[0] || null;
     let fij = "";
     if (foco) {
-      const rf = raices(foco.x); let mejor = 0;
-      tr.bloques.forEach((b) => { let c = 0; rf.forEach((w) => { if (b.r.has(w)) c++; }); if (c > mejor) { mejor = c; fij = b.fij; } });
+      // 1) los estímulos relevantes del aspecto (por su clave o porque la nota es el texto del aspecto)
+      const ESTI = FICHA.ESTIMULOS || {};
+      const asp = (FICHA.ASPECTOS || []).find((x) => x.k === foco.k) || (FICHA.ASPECTOS || []).find((x) => normNom(x.t) === normNom(foco.x));
+      if (asp && ESTI[asp.k]) fij = ESTI[asp.k];
+      else {
+        // 2) el «en qué fijarse» de un ejercicio reciente, solo si comparte al menos dos palabras específicas
+        const rf = raices(foco.x); let mejor = 1;
+        tr.bloques.forEach((b) => { let c = 0; rf.forEach((w) => { if (b.r.has(w)) c++; }); if (c > mejor) { mejor = c; fij = b.fij; } });
+      }
     }
     const consejos = notas.filter((n) => n.t === "c");
     return { prio: fuertes.concat(mejora).concat(consejos).map((n) => n.id).filter((id, i, a) => a.indexOf(id) === i).slice(0, 20), foco: foco ? { id: foco.id, fij: fij } : null };
