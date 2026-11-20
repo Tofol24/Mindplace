@@ -25,6 +25,7 @@ export function sanearEntrada(e) {
   if (e.modo === "pizarra") return sanearEntradaPizarra(e);
   if (e.modo === "alternativas") return sanearEntradaAlternativas(e);
   if (e.modo === "entreno") return sanearEntradaEntreno(e);
+  if (e.modo === "autoeval") return sanearEntradaAuto(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -98,6 +99,7 @@ Qué tienes que hacer:
 - Proponer la mejor manera de plantear y mostrar este apartado para esa edad, aprovechando la dinámica de la jugada y las características de los jugadores.
 - Adaptar el lenguaje y la exigencia a la etapa de desarrollo (más juego y técnica en edades tempranas; más táctica, velocidad y fuerza supervisada en cadete y juvenil).
 - Seguir este enfoque de atención: para cada momento, decir en qué fijarse (el balón, el compañero, el rival, hacia dónde mira, el pie…) y cuándo fijarse. Los pensamientos y los nervios no se combaten: se vuelve a la jugada con la palabra clave del equipo si la hay.
+- Fomenta la orientación a la tarea: refuerza el esfuerzo, el aprendizaje y la mejora respecto a uno mismo, no el resultado ni la comparación con los demás.
 - En los entrenamientos, seguir los cinco pasos del método para cualquier aprendizaje: (1) dar a conocer los estímulos relevantes, qué mirar y cuándo; (2) un ejercicio analítico que repita el gesto y demuestre que lo entienden; (3) saber que lo conocen pero aún no lo han aprendido: es la experiencia la que lo hace aprender, así que el entrenador no repite la consigna en cada error ni lo vive como un drama; (4) una dinámica ecológica con variables del juego real (porterías, un equipo gana y otro pierde) y sobre todo con el cambio de foco de las transiciones, ataque-defensa al perder el balón y defensa-ataque al recuperarlo; (5) condicionar la acción al refuerzo natural del fútbol, el gol: la condición la tiene un equipo y no la pierde al perder el balón, y el entrenador pasa a observar y a preguntar. Si el apartado indica en qué paso está («fase»), ajusta la propuesta a ese paso. Nunca propongas que el entrenador dé instrucciones constantes durante el juego.
 - Si un paso de la jugada está marcado como «perdida» o «recuperacion», en ese paso las indicaciones tienen que hablar del cambio de foco: qué mirar en el primer segundo.
 - En «condicion», en entrenamientos, una condición concreta ligada al gol; en partidos, cadena vacía. En «preguntas», 2-4 preguntas abiertas sobre qué miraron y cuándo, para hacer después.
@@ -320,7 +322,7 @@ En los partidos puede venir un «analisis»: dónde se recupera y se pierde el b
 
 El análisis del partido es la base para plantear el próximo entrenamiento: lo que ha costado (por ejemplo, perder muchos balones en nuestro campo, duelos perdidos o poca pegada) se convierte en el aprendizaje principal, y para cada aspecto tienes que concretar los estímulos relevantes que lo resuelven (qué mirar y cuándo) y llevarlos a «fijarse» y «cuando» de los apartados. Lo que ha ido bien se mantiene como fortaleza. En «analisis» explica qué aspecto del partido trabaja cada apartado.
 
-Qué tienes que hacer: detectar qué cuesta y qué ya está consolidado, sobre todo lo que se ha visto en los partidos y en su análisis, y proponer el próximo entrenamiento. Empieza con un calentamiento y sigue la secuencia del método para el aprendizaje principal (analítico, dinámica ecológica y partido condicionado). Si el entrenador indica qué quiere trabajar o la duración, respétalo. Cada apartado con qué mirar y cuándo, consignas, la condición cuando toque y 2-3 preguntas para después. Adapta todo a la edad y al número de jugadores. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
+Qué tienes que hacer: detectar qué cuesta y qué ya está consolidado, sobre todo lo que se ha visto en los partidos y en su análisis, y proponer el próximo entrenamiento. Empieza con un calentamiento y sigue la secuencia del método para el aprendizaje principal (analítico, dinámica ecológica y partido condicionado). Si el entrenador indica qué quiere trabajar o la duración, respétalo. Cada apartado con qué mirar y cuándo, consignas, la condición cuando toque y 2-3 preguntas para después. Adapta todo a la edad y al número de jugadores. Fomenta la orientación a la tarea: que el éxito de cada apartado sea aprender y mejorar respecto a uno mismo, no solo ganar. Castellano, segunda persona, frases cortas, sin emojis. No incluyas datos personales que pudiera llevar una nota.`;
 
 function sanearBloqueProp(b) {
   if (!b || typeof b !== "object") return null;
@@ -342,4 +344,49 @@ export function sanearEntreno(o) {
   const bloques = lista(o.bloques, 8).map(sanearBloqueProp).filter(Boolean);
   if (!bloques.length) return null;
   return { analisis: txt(o.analisis, 1500), titulo: txt(o.titulo, 80), objetivo: txt(o.objetivo, 600), bloques };
+}
+
+// ---------------------------------------------------------------- autoevaluación: la mirada del jugador y la del entrenador
+const listaT = (v, n) => lista(v, n).map((x) => txt(x, 160)).filter(Boolean);
+export function sanearEntradaAuto(e) {
+  const t = e.textos || {};
+  const o = {
+    modo: "autoeval", etapa: txt(e.etapa, 40), puesto: txt(e.puesto, 40),
+    coinciden: { fuertes: listaT(e.coinciden?.fuertes, 20), mejorar: listaT(e.coinciden?.mejorar, 20) },
+    entrenadorFuerteJugadorMejorar: listaT(e.entrenadorFuerteJugadorMejorar, 20), entrenadorFuerteJugadorNada: listaT(e.entrenadorFuerteJugadorNada, 20),
+    jugadorFuerteEntrenadorMejorar: listaT(e.jugadorFuerteEntrenadorMejorar, 20), jugadorQuiereMejorar: listaT(e.jugadorQuiereMejorar, 20), jugadorSeVeFuerte: listaT(e.jugadorSeVeFuerte, 20),
+    textos: { haceMejor: txt(t.haceMejor, 400), quiereMejorar: txt(t.quiereMejorar, 400), ayuda: txt(t.ayuda, 400) },
+    confianza: ["", "Nada", "Poco", "Normal", "Bastante", "Mucho"].includes(e.confianza) ? e.confianza : "",
+    orientacion: listaT(e.orientacion, 4).map((x) => x.slice(0, 160))
+  };
+  const hay = [o.coinciden.fuertes, o.coinciden.mejorar, o.entrenadorFuerteJugadorMejorar, o.entrenadorFuerteJugadorNada, o.jugadorFuerteEntrenadorMejorar, o.jugadorQuiereMejorar, o.jugadorSeVeFuerte].some((l) => l.length)
+    || o.textos.haceMejor || o.textos.quiereMejorar || o.textos.ayuda || o.confianza || o.orientacion.length;
+  return hay ? o : null;
+}
+export const ESQUEMA_AUTO = {
+  type: "object", additionalProperties: false, required: ["analisis", "confianza", "deportivo", "mensaje"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: cómo se percibe el jugador frente a lo que ve el entrenador, qué indica sobre su conciencia de juego y su confianza, 3-5 frases." },
+    confianza: { type: "array", items: { type: "string" }, description: "2-3 acciones concretas del entrenador para reforzar su confianza (sobre todo con lo que él no ve como fortaleza)." },
+    deportivo: { type: "array", items: { type: "string" }, description: "2-3 inputs deportivos concretos para entrenar lo que hay que mejorar, con en qué fijarse y cuándo." },
+    mensaje: { type: "string", description: "Mensaje del entrenador para la ficha del jugador, en segunda persona, 3-5 frases: reconoce lo que ve bien de sí mismo, le muestra lo que el entrenador ve y él quizá todavía no, y le da un foco concreto. Cálido y sereno." }
+  }
+};
+export const SISTEMA_AUTO = `Eres un entrenador de fútbol base con formación en psicología del deporte. El entrenador ha marcado los puntos fuertes y lo que tiene que mejorar un jugador, y el jugador ha hecho su propia autoevaluación con los mismos aspectos, además de responder qué cree que hace mejor, qué quiere mejorar, en qué le gustaría que le ayudara su entrenador y cómo de seguro se siente jugando. No hay nombres.
+
+Pirámide del rendimiento (se lee de abajo arriba): dónde pone la atención el jugador durante la competición (en los procesos de aprendizaje o en los resultados) marca su percepción de control, cómo regula el error y la derrota, su motivación (intrínseca o extrínseca), su adherencia al deporte, su autoeficacia y, al final, su rendimiento. La orientación a la tarea (maestría: el éxito es aprender y me comparo conmigo mismo) protege y sostiene el rendimiento; la orientación al ego (el éxito es ganar y me comparo con los demás) lo hace más frágil.
+
+En «orientacion» pueden venir sus respuestas sobre cuándo se siente bien, qué hace cuando se equivoca, en qué se fija durante el partido y con quién se compara.
+
+Tu tarea es ayudar al entrenador a trabajar la conciencia del jugador sobre su propio juego, su confianza y su orientación a la tarea:
+- Lee las coincidencias (lo que los dos ven) y las diferencias. Lo que el entrenador ve como fortaleza y el jugador no (o quiere mejorar) es sobre todo trabajo de confianza. Lo que el jugador ve como fortaleza y el entrenador como algo a mejorar es una conversación sobre lo que pasa en los partidos, sin desautorizarlo.
+- Las propuestas deportivas siguen el método: en qué fijarse (estímulos relevantes) y cuándo, sin instrucciones constantes durante el juego.
+- El mensaje para el jugador es para un menor: cálido, concreto y sereno, sin etiquetas ni diagnósticos, sin comparar con compañeros y sin promesas. Pon el éxito en aprender y en mejorar respecto a él mismo, y en lo que tiene que mirar en cada jugada, no en el resultado.
+- Si su orientación va hacia el resultado o la comparación, incluye en «confianza» cómo puede el entrenador reforzar el esfuerzo, el aprendizaje y el progreso personal.
+
+Castellano, segunda persona en el mensaje, frases cortas, sin emojis.`;
+export function sanearAuto(o) {
+  if (!o || typeof o !== "object") return null;
+  const r = { analisis: txt(o.analisis, 1200), confianza: lista(o.confianza, 4).map((x) => txt(x, 250)).filter(Boolean), deportivo: lista(o.deportivo, 4).map((x) => txt(x, 250)).filter(Boolean), mensaje: txt(o.mensaje, 700) };
+  return r.analisis || r.mensaje ? r : null;
 }
