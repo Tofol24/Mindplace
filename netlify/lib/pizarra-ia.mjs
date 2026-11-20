@@ -351,7 +351,7 @@ const listaT = (v, n) => lista(v, n).map((x) => txt(x, 160)).filter(Boolean);
 export function sanearEntradaAuto(e) {
   const t = e.textos || {};
   const o = {
-    modo: "autoeval", etapa: txt(e.etapa, 40), puesto: txt(e.puesto, 40),
+    modo: "autoeval", etapa: txt(e.etapa, 40), puesto: txt(e.puesto, 40), entrenadores: e.entrenadores === 2 ? 2 : 1,
     coinciden: { fuertes: listaT(e.coinciden?.fuertes, 20), mejorar: listaT(e.coinciden?.mejorar, 20) },
     entrenadorFuerteJugadorMejorar: listaT(e.entrenadorFuerteJugadorMejorar, 20), entrenadorFuerteJugadorNada: listaT(e.entrenadorFuerteJugadorNada, 20),
     jugadorFuerteEntrenadorMejorar: listaT(e.jugadorFuerteEntrenadorMejorar, 20), jugadorQuiereMejorar: listaT(e.jugadorQuiereMejorar, 20), jugadorSeVeFuerte: listaT(e.jugadorSeVeFuerte, 20),
@@ -382,6 +382,7 @@ Tu tarea es ayudar al entrenador a trabajar la conciencia del jugador sobre su p
 - Lee las coincidencias (lo que los dos ven) y las diferencias. Lo que el entrenador ve como fortaleza y el jugador no (o quiere mejorar) es sobre todo trabajo de confianza. Lo que el jugador ve como fortaleza y el entrenador como algo a mejorar es una conversación sobre lo que pasa en los partidos, sin desautorizarlo.
 - Las propuestas deportivas siguen el método: en qué fijarse (estímulos relevantes) y cuándo, sin instrucciones constantes durante el juego.
 - El mensaje para el jugador es para un menor: cálido, concreto y sereno, sin etiquetas ni diagnósticos, sin comparar con compañeros y sin promesas. Pon el éxito en aprender y en mejorar respecto a él mismo, y en lo que tiene que mirar en cada jugada, no en el resultado.
+- Si «entrenadores» es 2, el equipo lo llevan dos o más entrenadores: el mensaje habla en plural («vemos», «nosotros», «tus entrenadores»).
 - Si su orientación va hacia el resultado o la comparación, incluye en «confianza» cómo puede el entrenador reforzar el esfuerzo, el aprendizaje y el progreso personal.
 
 Castellano, segunda persona en el mensaje, frases cortas, sin emojis.`;
