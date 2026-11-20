@@ -361,7 +361,7 @@
   const PDF_PIRAMIDE = "https://aprens.net/descarregues/APRENS-piramide-rendiment.pdf";
   // Resumen de la orientación: «tarea», «mixta» o «resultado» (o "" si no ha respondido)
   function orientacion(o) {
-    const v = ORIENTA.map((q) => (o || {})[q.k]).filter(Boolean); if (!v.length) return "";
+    const v = ["exito", "foco", "compara"].map((k) => (o || {})[k]).filter(Boolean); if (v.length < 2) return "";
     const media = v.reduce((a, b) => a + b, 0) / v.length;
     return media <= 1.5 ? "tarea" : media >= 2.5 ? "resultado" : "mixta";
   }
@@ -557,6 +557,12 @@
     return `<div class="aviso-sus" role="status"><p><b>${esc(que)} forma parte de la suscripción de entrenador.</b></p>
       <p class="peq">El cuaderno, la pizarra y el envío de archivos siguen siendo gratis. Mientras tanto, puedes enviar el plan como archivo.</p>
       <div class="fila">${SUS.altas ? `<a class="btn" href="/suscribirse.html">Ver la suscripción</a>` : ""}<button type="button" class="btn-sec" data-susir="1">Ya tengo un código</button></div></div>`;
+  }
+
+  // Guardar al momento (cuando hay que confirmar algo que no se puede repetir). Devuelve si se ha guardado.
+  function guardarYa() {
+    clearTimeout(tGuardar);
+    try { localStorage.setItem(CLAVE, JSON.stringify(db)); return true; } catch (e) { toast("No se ha podido guardar en este navegador."); return false; }
   }
 
   // ---------------------------------------------------------------- plantillas de jugada
@@ -2602,15 +2608,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!j || idOk(o.yo) !== j.id || typeof o.kk !== "string" || !/^[A-Za-z0-9_-]{22}$/.test(o.kk)) return null;
     return { yo: j.id, kk: o.kk, d: j.d, n: j.c || j.n, p: j.p || "", port: o.port === true, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") } };
   }
-  function paqueteAutoev(j) {
-    // una clave nueva por petición: la respuesta solo la puede leer este cuaderno, y la anterior deja de valer
-    j.autoKey = b64u(crypto.getRandomValues(new Uint8Array(16))); j.mod = Date.now(); guardar();
-    return { v: 1, tipo: "autoev", eq: { n: db.equipo.nombre, col: db.equipo.color }, yo: j.id, port: famDePuesto(j.p) === "por", kk: j.autoKey,
+  function paqueteAutoev(j, kk) {
+    return { v: 1, tipo: "autoev", eq: { n: db.equipo.nombre, col: db.equipo.color }, yo: j.id, port: famDePuesto(j.p) === "por", kk: kk,
       jug: [{ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" }] };
   }
   function enviarAutoev(j, cont) {
     return prepararEnvio(cont, {
-      corto: () => enlaceCorto(paqueteAutoev(j), false),
+      // una clave nueva por petición: la respuesta solo la puede leer este cuaderno. Sustituye a la anterior
+      // solo cuando el enlace nuevo ya existe.
+      corto: async () => { const kk = b64u(crypto.getRandomValues(new Uint8Array(16))); const url = await enlaceCorto(paqueteAutoev(j, kk), false); j.autoKey = kk; j.mod = Date.now(); guardarYa(); return url; },
       largo: null,
       texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", ¿cómo te ves jugando? Marca lo que crees que haces bien y lo que quieres mejorar, y después pulsa «Enviar a mi entrenador». Así lo hablamos y lo trabajamos juntos:\n" + url,
       titulo: "Tu autoevaluación", idTxt: "txtAuto", extra: "Enviar la autoevaluación",
@@ -2627,7 +2633,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const clave = "pz_autoev_" + ped.kk.slice(0, 10); // borrador de esta petición (una nueva empieza en blanco)
     let st = null; try { st = sanAuto(JSON.parse(localStorage.getItem(clave) || "null")); } catch (e) { st = null; }
     st = st || { f: "", m: {}, tf: "", tm: "", ts: "", c: 0 };
-    const guarda = () => { try { localStorage.setItem(clave, JSON.stringify(st)); } catch (e) { /* solo esta visita */ } };
+    const guarda = () => { try { localStorage.setItem(clave, JSON.stringify(Object.assign({}, st, { t: Date.now() }))); } catch (e) { /* solo esta visita */ } };
+    // borradores de más de 30 días: fuera
+    try { Object.keys(localStorage).filter((k) => k.startsWith("pz_autoev_") && k !== clave).forEach((k) => { let t = 0; try { t = JSON.parse(localStorage.getItem(k)).t || 0; } catch (e) { t = 0; } if (Date.now() - t > 30 * 86400000) localStorage.removeItem(k); }); } catch (e) { /* nada */ }
     const lista = (FICHA.ASPECTOS || []).filter((x) => !x.soloPortero || ped.port);
     const grupos = []; lista.forEach((x) => { let g = grupos.find((y) => y.g === x.g); if (!g) { g = { g: x.g, items: [] }; grupos.push(g); } g.items.push(x); });
     const cuenta = (g) => g.items.filter((x) => st.m[x.k]).length;
@@ -2685,7 +2693,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         const txtE = "Mi autoevaluación (dorsal " + ped.d + "). Ábrela en la pizarra para guardarla en mi ficha:\n" + url;
         c.innerHTML = `<p class="peq" style="margin-top:10px">Envíaselo a tu entrenador por privado (por ejemplo, por WhatsApp).</p>
           <label class="sr-only" for="txtAE">Mensaje</label><textarea id="txtAE" rows="5" readonly>${esc(txtE)}</textarea>
-          <div class="fila">${navigator.share ? `<button type="button" class="btn" data-acomp="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-acop="1">📋 Copiar</button></div>`;
+          <div class="fila">${navigator.share ? `<button type="button" class="btn" data-acomp="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-acop="1">📋 Copiar</button></div>
+          <p class="peq">Cuando ya se lo hayas enviado, puedes <button type="button" class="btn-peq" data-aborrar="1">borrar tus respuestas de este móvil</button></p>`;
+        c.querySelector("[data-aborrar]").onclick = () => { try { localStorage.removeItem(clave); } catch (err) { /* nada */ } toast("Respuestas borradas de este móvil"); };
         c.querySelector("[data-acop]").onclick = () => { const t = c.querySelector("textarea"); t.focus(); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(txtE) : Promise.reject()).then(() => toast("Copiado"), () => { try { document.execCommand("copy"); toast("Copiado"); } catch (err) { /* nada */ } }); };
         const bc = c.querySelector("[data-acomp]"); if (bc) bc.onclick = () => navigator.share({ title: "Mi autoevaluación", text: txtE }).catch(() => {});
         }, () => { c.innerHTML = `<p class="sin-puesto">Este navegador no puede preparar el envío cifrado. Ábrelo con Chrome o Safari actualizados.</p>`; });
@@ -2729,7 +2739,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       </div>`;
     app.querySelector("[data-aeguardar]").addEventListener("click", () => {
       const j = cand;
-      j.auto = r.auto; delete j.autoKey; j.mod = Date.now(); guardar(); // la respuesta se usa una vez: la clave deja de valer
+      j.auto = r.auto; delete j.autoKey; j.mod = Date.now(); // la respuesta se usa una vez: la clave deja de valer
+      if (!guardarYa()) { toast("No se ha podido guardar en este navegador"); return; }
       ir("plantilla"); abrirNotas(j.id);
       toast("Autoevaluación guardada: mira la comparación en su ficha");
     });
@@ -2761,7 +2772,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${caja("🎯 Quiere mejorarlo y tú no lo tenías", c.elMyoNada, "Le importa: aprovéchalo para motivarlo.")}
       ${caja("🙂 Se ve fuerte y tú no lo tenías marcado", c.elFyoNada, "")}
       ${au.tf ? `<p><b>Lo que cree que hace mejor:</b> ${esc(au.tf)}</p>` : ""}${au.tm ? `<p><b>Lo que quiere mejorar:</b> ${esc(au.tm)}</p>` : ""}${au.ts ? `<p><b>En qué le gustaría que le ayudaras:</b> ${esc(au.ts)}</p>` : ""}
-      ${au.o ? `<div class="cmp-caja"><p><b>🔺 Orientación: ${orientacion(au.o) === "tarea" ? "a la tarea (aprender)" : orientacion(au.o) === "resultado" ? "a los resultados" : "mixta"}</b><br><span class="peq">${orientacion(au.o) === "tarea"
+      ${au.o ? `<div class="cmp-caja"><p><b>🔺 Orientación: ${orientacion(au.o) === "tarea" ? "a la tarea (aprender)" : orientacion(au.o) === "resultado" ? "a los resultados" : orientacion(au.o) === "mixta" ? "mixta" : "pocas respuestas para saberlo"}</b><br><span class="peq">${orientacion(au.o) === "tarea"
         ? "Vive el juego para aprender. Refuérzalo: reconoce su esfuerzo y su progreso más que el resultado."
         : "Ayúdale a poner el éxito en aprender: habla de su esfuerzo y de lo que mejora respecto a él mismo, no del marcador ni de los demás. Lo que mira durante el partido acaba marcando su control, cómo vive el error, su motivación y su rendimiento."}</span></p>
         <ul class="consignas">${ORIENTA.filter((q) => au.o[q.k]).map((q) => `<li>${esc(q.t)} <b>${esc(q.o[au.o[q.k] - 1].toLowerCase())}</b></li>`).join("")}</ul>
@@ -2821,10 +2832,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <section class="inf-caja inf-mejora"><h3>📈 Lo que estás aprendiendo</h3><p class="inf-sub">Lo que más trabajamos ahora, poco a poco.</p>${lista(mejora.filter((n) => !foco || n.id !== foco.id), 5, "")}</section>
       </div>
       ${(function () {
-        if (!d.auto) return "";
-        const c = compararAuto(notas, d.auto);
+        if (!d.auto && !d.lec) return "";
+        const c = compararAuto(notas, d.auto || {});
         const veoYo = c.yoFelM.concat(c.yoFelNada).slice(0, 3), ambos = c.ambosF.slice(0, 3), quiere = c.ambosM.concat(c.elMyoNada).slice(0, 3);
-        const camino = mensajeCamino(d.auto.o);
+        const camino = mensajeCamino(d.auto && d.auto.o);
         if (!veoYo.length && !ambos.length && !quiere.length && !d.lec && !camino) return "";
         const col = (t, l) => l.length ? `<div><p class="inf-sub"><b>${t}</b></p><ul>${l.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
         return `<section class="inf-caja inf-tuyyo"><h3>🪞 Tú y yo</h3><div class="inf-tuyyo-cols">${col("Lo que los dos vemos", ambos)}${col("Lo que yo veo en ti (y quizá tú todavía no)", veoYo)}${col("Lo que tú quieres mejorar", quiere)}</div>
@@ -3352,15 +3363,15 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function previaLecturaAuto(j, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("La lectura con Claude"); return; }
     const e = entradaAuto(j); iaFbPend["auto" + j.id] = e;
-    const escritos = [e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean);
+    const escritos = [e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean).concat(e.orientacion || []);
     cont.innerHTML = `<div class="ia-propuesta"><p class="peq">Se envía a Claude (Anthropic), sin nombre, la comparación de aspectos y la confianza.</p>
-      ${escritos.length ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="aeIaTxt" style="width:22px;height:22px;flex:none"> Incluir también sus respuestas escritas (revisa que no lleven datos personales):</label><ul class="consignas">${escritos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${escritos.length ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="aeIaTxt" style="width:22px;height:22px;flex:none"> Incluir también sus respuestas escritas y de orientación (revisa que no lleven datos personales):</label><ul class="consignas">${escritos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
       <div class="fila"><button type="button" class="btn" data-aeiaok="1">Pedir la lectura</button></div></div>`;
   }
   function pedirLecturaAuto(j, cont) {
     const e = iaFbPend["auto" + j.id]; delete iaFbPend["auto" + j.id];
     if (!e) { previaLecturaAuto(j, cont); return; }
-    const conTxt = cont.querySelector("#aeIaTxt"); if (!conTxt || !conTxt.checked) e.textos = { haceMejor: "", quiereMejorar: "", ayuda: "" };
+    const conTxt = cont.querySelector("#aeIaTxt"); if (!conTxt || !conTxt.checked) { e.textos = { haceMejor: "", quiereMejorar: "", ayuda: "" }; e.orientacion = []; }
     consultaIA("auto" + j.id, e, cont, "Claude está leyendo las dos miradas.", (r) => {
       cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Lectura</h3>
         ${r.analisis ? `<p><b>Para ti:</b> ${esc(r.analisis)}</p>` : ""}
@@ -3971,7 +3982,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       return;
     }
     if (d.exportar) {
-      const blob = new Blob([JSON.stringify(db, null, 1)], { type: "application/json" });
+      const copia = clon(db); copia.plantilla.forEach((j) => { delete j.autoKey; }); // las claves no salen del móvil
+      const blob = new Blob([JSON.stringify(copia, null, 1)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob); a.download = "pizarra-copia-" + hoyISO() + ".txt";
       document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
