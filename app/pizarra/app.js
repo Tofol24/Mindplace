@@ -2376,7 +2376,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
       return c;
     });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; CONTACTO.forEach((k) => delete j[k]); } return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -2398,7 +2398,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ex.alias = Array.from(new Set((ex.alias || []).concat(ids(j)).filter((k) => k !== ex.id))).slice(0, 10);
       const cambia = ["d", "n", "c", "p"].some((k) => (j[k] || "") !== (ex[k] || ""));
       const notasEx = ex.notas || [];
-      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); ex.notas = notasEx; if (cambia) r.jugAct++; }
+      if ((j.mod || 0) > (ex.mod || 0)) {
+        Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); ex.notas = notasEx; if (cambia) r.jugAct++;
+        if (Array.isArray(j.notas) && !j.foco) delete ex.foco; // llegan sus notas sin foco: también se quitó allí
+      }
       if (Array.isArray(j.notas) && j.notas.length) {
         const ids = new Set(notasEx.map((n) => n.id));
         const nuevas = j.notas.filter((n) => !ids.has(n.id));
@@ -2493,26 +2496,26 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   const raices = (t) => new Set(String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").split(/[^a-z0-9ñ]+/)
     .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)));
   function trabajoReciente() {
-    const hoy = Date.now(), cats = {}, bloques = [];
-    let texto = "";
-    db.planes.filter((p) => { const t = Date.parse(p.fecha || ""); return isFinite(t) && hoy - t < 35 * 86400000 && t - hoy < 15 * 86400000; })
+    const hoy = Date.now(), cats = {}, bloques = [], pesos = {};
+    const suma = (t, w) => raices(t).forEach((r) => { pesos[r] = (pesos[r] || 0) + w; });
+    db.planes.filter((p) => { const t = Date.parse(p.fecha || ""); return isFinite(t) && hoy - t < 35 * 86400000 && t - hoy < 86400000; })
       .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).slice(0, 8).forEach((p) => {
         p.bloques.forEach((b) => {
           const peso = b.fb && (b.fb.c === 1 || b.fb.a === 1) ? 2 : 1; // lo que costó pesa más
           cats[b.cat] = (cats[b.cat] || 0) + peso;
           const t = [b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond].join(" ");
-          texto += " " + t; if (peso > 1) texto += " " + t;
+          suma(t, peso);
           if (b.fij) bloques.push({ fij: b.fij, r: raices(t + " " + b.fij) });
         });
-        analisisLista(p).filter((x) => x.cuesta).forEach((x) => { texto += " " + x.aspecto + " " + x.aspecto; });
+        analisisLista(p).filter((x) => x.cuesta).forEach((x) => suma(x.aspecto, 2));
       });
-    return { cats, r: raices(texto), bloques };
+    return { cats, pesos, bloques };
   }
   function puntuar(n, tr, ahora) {
     let s = 0;
     if (n.s && tr.cats[n.s]) s += 2 + Math.min(tr.cats[n.s], 3);
     const asp = n.k && (FICHA.ASPECTOS || []).find((x) => x.k === n.k);
-    raices(n.x + " " + (asp ? asp.t : "")).forEach((w) => { if (tr.r.has(w)) s += 1; });
+    raices(n.x + " " + (asp ? asp.t : "")).forEach((w) => { if (tr.pesos[w]) s += Math.min(tr.pesos[w], 3); });
     const dias = n.f ? (ahora - Date.parse(n.f)) / 86400000 : 999;
     if (dias < 21) s += 1; // anotado hace poco
     return s;
@@ -2593,12 +2596,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     $("#dlgInformeCuerpo").innerHTML = htmlInforme(d);
     // enviarla por WhatsApp (solo desde el cuaderno del entrenador)
     const be = $("#dlgInformeEnviar"), ce = $("#dlgInformeEnvio");
-    be.hidden = !d.enviar; ce.innerHTML = "";
+    invalidarEnvio(ce); // una respuesta pendiente de otra ficha ya no se pinta aquí
+    be.hidden = !d.enviar;
     be.onclick = d.enviar ? () => d.enviar(ce) : null;
     $("#dlgInformeTit").textContent = "Ficha de " + d.nombre;
     if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
   }
   $("#dlgInformeCerrar").addEventListener("click", () => $("#dlgInforme").close());
+  $("#dlgInforme").addEventListener("close", () => invalidarEnvio($("#dlgInformeEnvio")));
   $("#dlgInformeImprimir").addEventListener("click", () => {
     document.body.classList.add("imprimiendo");
     const fin = () => { document.body.classList.remove("imprimiendo"); window.removeEventListener("afterprint", fin); };
@@ -2766,11 +2771,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   // Envía la ficha de un jugador por privado (WhatsApp, correo o compartir), con o sin un plan.
   function enviarFicha(j, plan, cont) {
-    const pr = prioridadNotas(j), foco = pr.foco && (j.notas || []).find((n) => n.id === pr.foco.id);
+    const pr = prioridadNotas(j), foco = pr.foco;
     return prepararEnvio(cont, {
       corto: () => enlaceCorto(paqueteJugador(plan, j), true),
       largo: null, // una ficha privada nunca va sin cifrar
-      texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha: tus puntos fuertes y lo que estás aprendiendo." + (foco ? "\n\n🎯 Tu foco ahora: " + foco.x + "\nPonle toda la intención en cada entreno y en cada partido." : "") + "\n\nEs solo para ti:\n" + url,
+      // el contenido de las notas va solo dentro de la ficha cifrada, nunca en el texto del mensaje
+      texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha: tus puntos fuertes, lo que estás aprendiendo" + (foco ? " y tu foco para los próximos entrenos y partidos. Ponle toda la intención." : ".") + "\n\nEs solo para ti:\n" + url,
       titulo: "Tu ficha", idTxt: "txtNotas" + (plan ? "" : "F"), extra: "La ficha privada del jugador",
       indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
       contacto: {
