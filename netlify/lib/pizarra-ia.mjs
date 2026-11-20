@@ -80,7 +80,7 @@ export const ESQUEMA = {
     },
     individual: {
       type: "array",
-      description: "Consejo privado para un jugador concreto en este apartado, a partir de sus notas: cómo aprovechar su punto fuerte aquí y en qué centrarse para mejorar.",
+      description: "Consejo privado para un jugador concreto en este apartado, a partir de sus notas: cómo aprovechar su punto fuerte aquí y en qué centrarse para mejorar. Tiene que entenderse fuera del ejercicio: sin reglas propias del ejercicio (petos, comodines, zonas) o traducidas a la situación real de juego.",
       items: {
         type: "object", additionalProperties: false, required: ["jugador", "texto"],
         properties: { jugador: { type: "string", description: "Identificador recibido (J1, J2…)" }, texto: { type: "string" } }
@@ -103,7 +103,7 @@ Qué tienes que hacer:
 - En «condicion», en entrenamientos, una condición concreta ligada al gol; en partidos, cadena vacía. En «preguntas», 2-4 preguntas abiertas sobre qué miraron y cuándo, para hacer después.
 - La explicación, las consignas, en qué fijarse, cuándo, la condición, las indicaciones y el mensaje los ve todo el grupo: nunca incluyas en ellos nada de las notas de un jugador concreto ni de las preguntas del entrenador. Lo individual va solo en «individual».
 - En «indicaciones», dar a cada ficha de nuestro equipo que aparezca en los pasos lo que hace, en qué se fija y cuándo, con la numeración de pasos recibida (empieza en 1). Solo fichas que existan en los pasos. Estas indicaciones las ve todo el grupo: nunca menciones puntos débiles personales en ellas.
-- En «individual», para los jugadores con notas, un consejo privado: cómo sacar partido a su punto fuerte en este apartado y en qué centrarse para mejorar, de forma constructiva.
+- En «individual», para los jugadores con notas, un consejo privado: cómo sacar partido a su punto fuerte en este apartado y en qué centrarse para mejorar, de forma constructiva. El jugador lo leerá en su ficha, fuera del ejercicio: no uses reglas propias del ejercicio (petos, comodines, zonas, condiciones); tradúcelas a la situación real de juego («cuando tu equipo pierde el balón», «cuando recibes de espaldas»…).
 
 Estilo: castellano, en segunda persona, frases cortas y claras, tono sereno y cercano, sin exclamaciones en serie, sin emojis y sin promesas. Cada texto, como máximo 2-3 frases.`;
 

@@ -2557,7 +2557,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   const aspectoDe = (n) => (FICHA.ASPECTOS || []).find((x) => x.k === n.k) || (FICHA.ASPECTOS || []).find((x) => normNom(x.t) === normNom(n.x));
   function mensajeNota(n) {
     const a = aspectoDe(n), m = a && (FICHA.MENSAJES || {})[a.k];
-    return m ? (n.t === "f" ? m[0] : n.t === "m" ? m[1] : "") : "";
+    return m ? (n.t === "f" ? m[0] : m[1]) : ""; // punto fuerte: cómo aprovecharlo; a mejorar o consejo: qué hacer
   }
   function htmlInforme(d) {
     // d: { nombre, dorsal, puesto, etapa, equipo, color, notas, clave, gesto, fecha }
@@ -2582,7 +2582,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }).join("");
     const porSit = {};
     consejos.forEach((n) => { const k = n.s || "_"; (porSit[k] = porSit[k] || []).push(n); });
-    const sit = Object.keys(porSit).slice(0, 5).map((k) => `<div class="inf-sit"><span class="inf-chip">${esc(k === "_" ? "En cualquier momento" : CATS[k] || "")}</span><ul>${porSit[k].slice(0, 2).map((n) => `<li>${esc(n.x)}</li>`).join("")}</ul></div>`).join("");
+    // Situaciones de entreno (ejercicios) y de partido (situaciones de juego): cada consejo dice dónde sirve.
+    const DE_ENTRENO = new Set(["calentamiento", "ejercicio", "rondo", "juego"]);
+    const etiquetaSit = (k) => k === "_" ? "En cualquier momento" : k === "otro" ? "Otros consejos" : (DE_ENTRENO.has(k) ? "En los entrenos · " : "En el partido · ") + (CATS[k] || "");
+    const ordenSit = (k) => k === "_" ? 1 : k === "otro" ? 3 : DE_ENTRENO.has(k) ? 2 : 0; // primero el partido
+    const sit = Object.keys(porSit).sort((a, b) => ordenSit(a) - ordenSit(b)).slice(0, 5).map((k) => `<div class="inf-sit"><span class="inf-chip">${esc(etiquetaSit(k))}</span><ul>${porSit[k].slice(0, 2).map((n) => { const msg = mensajeNota(n); return `<li>${esc(n.x)}${msg ? `<span class="inf-msg">${esc(msg)}</span>` : ""}</li>`; }).join("")}</ul></div>`).join("");
     return `<article class="informe" style="--eq:${esc(d.color || "#C8102E")}">
       <header class="inf-cab">
         <div class="inf-dorsal" aria-hidden="true">${esc(d.dorsal)}</div>
@@ -2599,7 +2603,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       </div>
       <section class="inf-areas"><h3>Tu mapa</h3><div class="inf-areas-fila">${areas}</div>
         <p class="inf-ley"><span class="inf-pf">●</span> punto fuerte · <span class="inf-am">●</span> por mejorar</p></section>
-      ${sit ? `<section class="inf-caja inf-consejo"><h3>💡 En el partido</h3><div class="inf-sits">${sit}</div></section>` : ""}
+      ${sit ? `<section class="inf-caja inf-consejo"><h3>💡 Consejos para ti</h3><div class="inf-sits">${sit}</div></section>` : ""}
       <footer class="inf-pie">
         <div><b>Si te distraes, vuelve:</b> ${d.clave ? `di «${esc(d.clave)}»` : "di tu palabra clave"}${d.gesto ? `, haz tu gesto (${esc(d.gesto)})` : ""} y vuelve a la jugada.</div>
         <div class="inf-firma">Tu entrenador</div>
@@ -3250,7 +3254,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         const j = db.plantilla.find((x) => x.id === it.porJug[i.jugador]); if (!j) return;
         j.notas = j.notas || [];
         if (j.notas.length >= 80) { sinSitio.push(j.c || j.n); return; }
-        j.notas.push({ id: uid(), t: "c", a: "", s: b.cat, x: i.texto.slice(0, 400), f: hoyISO() });
+        const ctxEj = (b.titulo || CATS[b.cat] || "").slice(0, 60);
+        j.notas.push({ id: uid(), t: "c", a: "", s: b.cat, x: ((ctxEj ? "En «" + ctxEj + "»: " : "") + i.texto).slice(0, 400), f: hoyISO() });
         j.mod = Date.now();
       });
     }
