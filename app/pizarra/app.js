@@ -356,6 +356,7 @@
     const mod = num(j.mod, 0, 4102444800000, 0); if (mod) o.mod = mod;
     const al = (Array.isArray(j.alias) ? j.alias : []).filter(idOk).slice(0, 10); if (al.length) o.alias = al;
     const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
+    if (idOk(j.foco) && ns.some((n) => n.id === j.foco && n.t === "m")) o.foco = j.foco; // foco fijado por el entrenador
     ["tel", "tel2"].forEach((k) => { const t = txt(j[k], 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(t)) o[k] = t; });
     ["mail", "mail2"].forEach((k) => { const m = txt(j[k], 100).trim(); if (RE_MAIL.test(m)) o[k] = m; });
     ["nom1", "nom2"].forEach((k) => { const n = txt(j[k], 30).trim(); if (n) o[k] = n; });
@@ -453,11 +454,17 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; CONTACTO.forEach((k) => delete j[k]); });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; CONTACTO.forEach((k) => delete j[k]); });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
     const yo = idOk(o.yo);
-    if (yo && jug.some((j) => j.id === yo)) { r.yo = yo; r.notas = (Array.isArray(o.notas) ? o.notas : []).slice(0, 80).map(sanNota).filter(Boolean); }
+    if (yo && jug.some((j) => j.id === yo)) {
+      r.yo = yo; r.notas = (Array.isArray(o.notas) ? o.notas : []).slice(0, 80).map(sanNota).filter(Boolean);
+      // qué notas salen en su ficha (priorizadas por lo que se trabaja) y su foco
+      const ids = new Set(r.notas.map((n) => n.id));
+      if (Array.isArray(o.prio)) r.prio = o.prio.filter((x) => idOk(x) && ids.has(x)).slice(0, 20);
+      if (o.foco && typeof o.foco === "object" && idOk(o.foco.id) && ids.has(o.foco.id)) r.foco = { id: o.foco.id, fij: txt(o.foco.fij, 300) };
+    }
     return r;
   }
 
@@ -2369,7 +2376,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
       return c;
     });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; CONTACTO.forEach((k) => delete j[k]); } return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; CONTACTO.forEach((k) => delete j[k]); } return j; });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -2391,7 +2398,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ex.alias = Array.from(new Set((ex.alias || []).concat(ids(j)).filter((k) => k !== ex.id))).slice(0, 10);
       const cambia = ["d", "n", "c", "p"].some((k) => (j[k] || "") !== (ex[k] || ""));
       const notasEx = ex.notas || [];
-      if ((j.mod || 0) > (ex.mod || 0)) { Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); ex.notas = notasEx; if (cambia) r.jugAct++; }
+      if ((j.mod || 0) > (ex.mod || 0)) {
+        Object.assign(ex, clon(j), { id: ex.id, alias: ex.alias }); ex.notas = notasEx; if (cambia) r.jugAct++;
+        if (Array.isArray(j.notas) && !j.foco) delete ex.foco; // llegan sus notas sin foco: también se quitó allí
+      }
       if (Array.isArray(j.notas) && j.notas.length) {
         const ids = new Set(notasEx.map((n) => n.id));
         const nuevas = j.notas.filter((n) => !ids.has(n.id));
@@ -2477,6 +2487,60 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     app.querySelector("[data-nojuntar]").addEventListener("click", () => { history.replaceState(null, "", location.pathname); ir("cuaderno"); });
   }
 
+
+  // ---------------------------------------------------------------- prioridad de la ficha
+  // En una página no cabe todo lo marcado: se eligen una o dos cosas por área, primero las que tienen que ver
+  // con lo que se está trabajando en los entrenos y los partidos recientes (situaciones, en qué fijarse, análisis
+  // del partido y lo que ha costado). El foco es una mejora técnica o táctica, la que más se trabaja ahora.
+  const VACIAS = new Set("para pero como cuando donde desde hasta entre sobre tiene tienen hacer antes despues mismo misma todos todas este esta estos estas cada otro otra".split(" "));
+  const raices = (t) => new Set(String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").split(/[^a-z0-9ñ]+/)
+    .filter((w) => w.length > 3 && !VACIAS.has(w)).map((w) => w.slice(0, 5)));
+  function trabajoReciente() {
+    const hoy = Date.now(), cats = {}, bloques = [], pesos = {};
+    const suma = (t, w) => raices(t).forEach((r) => { pesos[r] = (pesos[r] || 0) + w; });
+    db.planes.filter((p) => { const t = Date.parse(p.fecha || ""); return isFinite(t) && hoy - t < 35 * 86400000 && t - hoy < 86400000; })
+      .sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).slice(0, 8).forEach((p) => {
+        p.bloques.forEach((b) => {
+          const peso = b.fb && (b.fb.c === 1 || b.fb.a === 1) ? 2 : 1; // lo que costó pesa más
+          cats[b.cat] = (cats[b.cat] || 0) + peso;
+          const t = [b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond].join(" ");
+          suma(t, peso);
+          if (b.fij) bloques.push({ fij: b.fij, r: raices(t + " " + b.fij) });
+        });
+        analisisLista(p).filter((x) => x.cuesta).forEach((x) => suma(x.aspecto, 2));
+      });
+    return { cats, pesos, bloques };
+  }
+  function puntuar(n, tr, ahora) {
+    let s = 0;
+    if (n.s && tr.cats[n.s]) s += 2 + Math.min(tr.cats[n.s], 3);
+    const asp = n.k && (FICHA.ASPECTOS || []).find((x) => x.k === n.k);
+    raices(n.x + " " + (asp ? asp.t : "")).forEach((w) => { if (tr.pesos[w]) s += Math.min(tr.pesos[w], 3); });
+    const dias = n.f ? (ahora - Date.parse(n.f)) / 86400000 : 999;
+    if (dias < 21) s += 1; // anotado hace poco
+    return s;
+  }
+  function prioridadNotas(j) {
+    const notas = j.notas || [], tr = trabajoReciente(), ahora = Date.now();
+    const pts = {}; notas.forEach((n) => { pts[n.id] = puntuar(n, tr, ahora); });
+    const orden = (l) => l.slice().sort((a, b) => pts[b.id] - pts[a.id] || String(b.f).localeCompare(String(a.f)));
+    const elegir = (t, porArea, max) => {
+      const l = orden(notas.filter((n) => n.t === t)), cuenta = {}, r = [];
+      l.forEach((n) => { const a = n.a || "_"; if ((cuenta[a] || 0) < porArea && r.length < max) { cuenta[a] = (cuenta[a] || 0) + 1; r.push(n); } });
+      return r;
+    };
+    const fuertes = elegir("f", 2, 6), mejora = elegir("m", 2, 6);
+    const tecTac = (n) => n.a === "tecnica" || n.a === "tactica" || n.a === "decision";
+    let foco = (j.foco && notas.find((n) => n.id === j.foco && n.t === "m")) || orden(notas.filter((n) => n.t === "m" && tecTac(n)))[0] || mejora[0] || null;
+    let fij = "";
+    if (foco) {
+      const rf = raices(foco.x); let mejor = 0;
+      tr.bloques.forEach((b) => { let c = 0; rf.forEach((w) => { if (b.r.has(w)) c++; }); if (c > mejor) { mejor = c; fij = b.fij; } });
+    }
+    const consejos = notas.filter((n) => n.t === "c");
+    return { prio: fuertes.concat(mejora).concat(consejos).map((n) => n.id).filter((id, i, a) => a.indexOf(id) === i).slice(0, 20), foco: foco ? { id: foco.id, fij: fij } : null };
+  }
+
   // ---------------------------------------------------------------- ficha en una página (A4)
   // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
   // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
@@ -2484,13 +2548,20 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function htmlInforme(d) {
     // d: { nombre, dorsal, puesto, etapa, equipo, color, notas, clave, gesto, fecha }
     const notas = d.notas || [];
-    const fuertes = notas.filter((n) => n.t === "f"), mejora = notas.filter((n) => n.t === "m"), consejos = notas.filter((n) => n.t === "c");
+    // con prioridad: solo las elegidas, en su orden; sin ella (enlaces antiguos): una o dos por área
+    const porArea = (l, max) => { const c = {}; return l.filter((n) => { const a = n.a || "_"; c[a] = (c[a] || 0) + 1; return c[a] <= 2; }).slice(0, max); };
+    const prio = Array.isArray(d.prio) && d.prio.length ? d.prio : null;
+    const elegidas = (t, max) => prio ? prio.map((id) => notas.find((n) => n.id === id && n.t === t)).filter(Boolean).slice(0, max) : porArea(notas.filter((n) => n.t === t), max);
+    const fuertes = elegidas("f", 6), mejora = elegidas("m", 6), consejos = notas.filter((n) => n.t === "c");
+    const todasF = notas.filter((n) => n.t === "f"), todasM = notas.filter((n) => n.t === "m");
     const lista = (l, max, cls) => l.length
-      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}</span></li>`).join("")}</ul>${l.length > max ? `<p class="inf-mas">y ${l.length - max} más</p>` : ""}`
+      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}</span></li>`).join("")}</ul>`
       : `<p class="inf-vacio">Todavía nada anotado.</p>`;
-    const foco = mejora[0];
+    const tecTac = (n) => n.a === "tecnica" || n.a === "tactica" || n.a === "decision";
+    const foco = (d.foco && notas.find((n) => n.id === d.foco.id)) || mejora.find(tecTac) || mejora[0];
+    const focoFij = d.foco && foco && d.foco.id === foco.id ? d.foco.fij : "";
     const areas = Object.keys(AREAS).map((a) => {
-      const f = fuertes.filter((n) => n.a === a).length, m = mejora.filter((n) => n.a === a).length;
+      const f = todasF.filter((n) => n.a === a).length, m = todasM.filter((n) => n.a === a).length;
       const puntos = "●".repeat(Math.min(f, 5)), aprender = "●".repeat(Math.min(m, 5));
       return `<div class="inf-area"><div class="inf-area-tit"><span aria-hidden="true">${ICONO_AREA[a]}</span> ${esc(AREAS[a])}</div>
         <div class="inf-area-barras" aria-label="${f} puntos fuertes y ${m} por mejorar"><span class="inf-pf">${puntos || "–"}</span><span class="inf-am">${aprender || "–"}</span></div></div>`;
@@ -2504,10 +2575,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <div class="inf-quien"><h2>${esc(d.nombre)}</h2><p>${esc([d.puesto, d.etapa && !(d.equipo || "").toLowerCase().includes(d.etapa.toLowerCase()) ? d.etapa : "", d.equipo].filter(Boolean).join(" · "))}</p></div>
         <div class="inf-fecha">${esc(d.fecha || "")}</div>
       </header>
-      ${foco ? `<section class="inf-foco"><span class="inf-etq">Tu foco ahora</span><p>${esc(foco.x)}</p></section>` : ""}
+      ${foco ? `<section class="inf-foco"><span class="inf-etq">🎯 Tu foco ahora</span><p>${esc(foco.x)}</p>
+        ${focoFij ? `<p class="inf-foco-fij"><b>En qué fijarte:</b> ${esc(focoFij)}</p>` : ""}
+        <p class="inf-foco-int">Ponle toda la intención en cada entreno y en cada partido.</p></section>` : ""}
       <div class="inf-dos">
         <section class="inf-caja inf-fuerte"><h3>💪 Tus puntos fuertes</h3><p class="inf-sub">Úsalos: son tu ventaja en el partido.</p>${lista(fuertes, 7, "")}</section>
-        <section class="inf-caja inf-mejora"><h3>🎯 Lo que estás aprendiendo</h3><p class="inf-sub">Poco a poco, en cada entreno.</p>${lista(mejora, 6, "")}</section>
+        <section class="inf-caja inf-mejora"><h3>📈 Lo que estás aprendiendo</h3><p class="inf-sub">Lo que más trabajamos ahora, poco a poco.</p>${lista(mejora.filter((n) => !foco || n.id !== foco.id), 5, "")}</section>
       </div>
       <section class="inf-areas"><h3>Tu mapa</h3><div class="inf-areas-fila">${areas}</div>
         <p class="inf-ley"><span class="inf-pf">●</span> punto fuerte · <span class="inf-am">●</span> por mejorar</p></section>
@@ -2521,10 +2594,16 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function abrirInforme(d) {
     const dlg = $("#dlgInforme");
     $("#dlgInformeCuerpo").innerHTML = htmlInforme(d);
+    // enviarla por WhatsApp (solo desde el cuaderno del entrenador)
+    const be = $("#dlgInformeEnviar"), ce = $("#dlgInformeEnvio");
+    invalidarEnvio(ce); // una respuesta pendiente de otra ficha ya no se pinta aquí
+    be.hidden = !d.enviar;
+    be.onclick = d.enviar ? () => d.enviar(ce) : null;
     $("#dlgInformeTit").textContent = "Ficha de " + d.nombre;
     if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
   }
   $("#dlgInformeCerrar").addEventListener("click", () => $("#dlgInforme").close());
+  $("#dlgInforme").addEventListener("close", () => invalidarEnvio($("#dlgInformeEnvio")));
   $("#dlgInformeImprimir").addEventListener("click", () => {
     document.body.classList.add("imprimiendo");
     const fin = () => { document.body.classList.remove("imprimiendo"); window.removeEventListener("afterprint", fin); };
@@ -2543,7 +2622,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const grupo = (t, tit, vacio) => {
       const l = notas.filter((n) => n.t === t);
       if (!l.length && !ed) return "";
-      return `<h3>${tit}</h3>${l.length ? `<ul class="notas">${l.map((n) => `<li><span>${n.a ? `<b>${esc(AREAS[n.a] || "")}</b>${n.s ? " · " : ""}` : ""}${n.s ? `<i>${esc(CATS[n.s] || "")}</i>` : ""}${n.a || n.s ? "<br>" : ""}${esc(n.x)}</span>${ed ? `<button type="button" class="btn-peq peligro" data-nborrar="${esc(n.id)}" aria-label="Borrar esta nota">✕</button>` : ""}</li>`).join("")}</ul>` : `<p class="peq">${vacio}</p>`}`;
+      const fo = opciones && opciones.foco;
+      return `<h3>${tit}</h3>${l.length ? `<ul class="notas">${l.map((n) => `<li><span>${n.id === fo ? "⭐ " : ""}${n.a ? `<b>${esc(AREAS[n.a] || "")}</b>${n.s ? " · " : ""}` : ""}${n.s ? `<i>${esc(CATS[n.s] || "")}</i>` : ""}${n.a || n.s ? "<br>" : ""}${esc(n.x)}</span>${ed && t === "m" ? `<button type="button" class="btn-peq" data-nfoco="${esc(n.id)}" aria-pressed="${n.id === fo}" aria-label="Que sea su foco en la ficha">⭐ Foco</button>` : ""}${ed ? `<button type="button" class="btn-peq peligro" data-nborrar="${esc(n.id)}" aria-label="Borrar esta nota">✕</button>` : ""}</li>`).join("")}</ul>` : `<p class="peq">${vacio}</p>`}`;
     };
     return grupo("f", "💪 Puntos fuertes", "Aún no hay puntos fuertes anotados.") +
       grupo("m", "🎯 Lo que está aprendiendo", "Aún no hay nada anotado para mejorar.") +
@@ -2610,12 +2690,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           <p class="peq">Toca 💪 si es un punto fuerte, 🎯 si tiene que mejorarlo o 💡 si quieres darle un consejo. Vuelve a tocar para quitarlo. Para añadir un matiz, escribe una nota arriba.</p>
           ${htmlAspectos(j)}
         </section>
-        <section class="tarjeta">${htmlNotas(j.notas || [], { editable: true })}</section>
+        <section class="tarjeta">${htmlNotas(j.notas || [], { editable: true, foco: j.foco })}
+          <p class="peq">⭐ Foco: elige la mejora técnica o táctica que saldrá arriba de su ficha. Si no eliges, se pone la que más se trabaja ahora en los entrenos y los partidos.</p></section>
         <section class="tarjeta">
           <h2 style="margin-top:0">Enviar su ficha por privado</h2>
           <p class="peq">Se crea un enlace corto y cifrado solo para ${esc(j.c || j.n)}, con sus notas y el plan que elijas. El enlace del grupo nunca lleva las notas de nadie.</p>
           <div class="campo-f"><label for="nPlan">Con el plan</label><select id="nPlan"><option value="">Solo sus notas</option>${planes.map((p) => `<option value="${esc(p.id)}" ${p.id === planId ? "selected" : ""}>${esc(p.titulo || "(sin título)")} · ${esc(fechaBonita(p.fecha))}</option>`).join("")}</select></div>
-          <div class="fila"><button type="button" class="btn" data-nenviar="1">📤 Preparar enlace privado</button><button type="button" class="btn-sec" data-ninforme="1">📄 Ver su ficha en una página</button></div>
+          <div class="fila"><button type="button" class="btn" data-nenviar="1">📤 Preparar enlace privado</button><button type="button" class="btn-sec" data-ninforme="1">📄 Ver su ficha en una página (y enviarla)</button></div>
           <div data-r="envNotas"></div>
         </section>`;
       if (!planId && planes[0]) cuerpo.querySelector("#nPlan").value = planes[0].id;
@@ -2668,29 +2749,42 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!window.confirm("¿Borrar esta nota?")) return;
         j.notas = (j.notas || []).filter((n) => n.id !== b.dataset.nborrar); j.mod = Date.now(); guardar(); pintarN(); return;
       }
+      if (b.dataset.nfoco) {
+        if (j.foco === b.dataset.nfoco) delete j.foco; else j.foco = b.dataset.nfoco;
+        j.mod = Date.now(); guardar(); pintarN();
+        toast(j.foco ? "Será su foco en la ficha" : "El foco se elegirá solo");
+        return;
+      }
       if (b.dataset.ninforme) {
-        abrirInforme({ nombre: j.c || j.n, dorsal: j.d, puesto: j.p || "", etapa: (FICHA.ETAPAS[db.equipo.etapa] || {}).n || "", equipo: db.equipo.nombre, color: db.equipo.color, notas: j.notas || [], clave: "", gesto: "", fecha: fechaCorta() });
+        const pr = prioridadNotas(j);
+        abrirInforme({ nombre: j.c || j.n, dorsal: j.d, puesto: j.p || "", etapa: (FICHA.ETAPAS[db.equipo.etapa] || {}).n || "", equipo: db.equipo.nombre, color: db.equipo.color, notas: j.notas || [], clave: "", gesto: "", fecha: fechaCorta(),
+          prio: pr.prio, foco: pr.foco, enviar: (cont) => enviarFicha(j, null, cont) });
         return;
       }
       if (b.dataset.nenviar) {
         const plan = db.planes.find((p) => p.id === $("#nPlan").value) || null;
-        const cont = cuerpo.querySelector('[data-r="envNotas"]');
-        prepararEnvio(cont, {
-          corto: () => enlaceCorto(paqueteJugador(plan, j), true),
-          largo: null, // una ficha privada nunca va sin cifrar
-          texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha con lo que te digo como entrenador: tus puntos fuertes y lo que estás aprendiendo. Es solo para ti:\n" + url,
-          titulo: "Tu ficha", idTxt: "txtNotas", extra: "La ficha privada del jugador",
-          indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
-          contacto: {
-            tels: [{ tel: j.tel, nom: j.nom1 }, { tel: j.tel2, nom: j.nom2 }].filter((x) => x.tel),
-            mails: [{ mail: j.mail, nom: j.nom1 }, { mail: j.mail2, nom: j.nom2 }].filter((x) => x.mail),
-            asunto: "Tu ficha de la pizarra"
-          }
-        });
+        enviarFicha(j, plan, cuerpo.querySelector('[data-r="envNotas"]'));
       }
     };
     pintarN();
     if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", "");
+  }
+  // Envía la ficha de un jugador por privado (WhatsApp, correo o compartir), con o sin un plan.
+  function enviarFicha(j, plan, cont) {
+    const pr = prioridadNotas(j), foco = pr.foco;
+    return prepararEnvio(cont, {
+      corto: () => enlaceCorto(paqueteJugador(plan, j), true),
+      largo: null, // una ficha privada nunca va sin cifrar
+      // el contenido de las notas va solo dentro de la ficha cifrada, nunca en el texto del mensaje
+      texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", aquí tienes tu ficha: tus puntos fuertes, lo que estás aprendiendo" + (foco ? " y tu foco para los próximos entrenos y partidos. Ponle toda la intención." : ".") + "\n\nEs solo para ti:\n" + url,
+      titulo: "Tu ficha", idTxt: "txtNotas" + (plan ? "" : "F"), extra: "La ficha privada del jugador",
+      indicacion: "Envíalo por privado al jugador (o a su familia), nunca al grupo.",
+      contacto: {
+        tels: [{ tel: j.tel, nom: j.nom1 }, { tel: j.tel2, nom: j.nom2 }].filter((x) => x.tel),
+        mails: [{ mail: j.mail, nom: j.nom1 }, { mail: j.mail2, nom: j.nom2 }].filter((x) => x.mail),
+        asunto: "Tu ficha de la pizarra"
+      }
+    });
   }
   // Paquete privado: el plan (como lo ve el grupo) más las notas de un solo jugador.
   function paqueteJugador(plan, j) {
@@ -2699,6 +2793,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
     pq.yo = j.id;
     pq.notas = clon(j.notas || []);
+    const pr = prioridadNotas(j); pq.prio = pr.prio; if (pr.foco) pq.foco = pr.foco; // lo que sale en su ficha y su foco
     return pq;
   }
   $("#dlgNotasCerrar").addEventListener("click", () => { $("#dlgNotas").close(); });
@@ -3370,6 +3465,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       }
       pintarMio(d.querySelector('[data-r="mio"]'), b, ctx, yo);
     });
+    // enlace solo con la ficha (sin plan): se abre directamente en una página
+    if (!plan.bloques.length && pq.yo && yo === pq.yo && (pq.notas || []).length) setTimeout(() => { const bi = cont.querySelector("[data-miinforme]"); if (bi) bi.click(); }, 60);
     const mf = cont.querySelector("[data-mificha]");
     if (mf) mf.addEventListener("click", () => { if (yo) abrirFicha(plan, ctx, yo, pq.eq && pq.eq.et); });
     const va = cont.querySelector("#vozAuto");
@@ -3379,7 +3476,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         const j = jug.find((x) => x.id === pq.yo) || {};
         const pus = puestosDe(plan, ctx, pq.yo).map((x) => x.rol).filter(Boolean);
         let mv = {}; try { mv = JSON.parse(localStorage.getItem("pz_mivuelta") || "{}"); } catch (err) { mv = {}; }
-        abrirInforme({ nombre: j.c || j.n || "", dorsal: j.d, puesto: pus.join(" / "), etapa: (FICHA.ETAPAS[pq.eq && pq.eq.et] || {}).n || "", equipo: pq.eq && pq.eq.n, color: pq.eq && pq.eq.col, notas: pq.notas || [], clave: mv.p || plan.clave || "", gesto: mv.g || "", fecha: fechaCorta() });
+        abrirInforme({ nombre: j.c || j.n || "", dorsal: j.d, puesto: pus.join(" / "), etapa: (FICHA.ETAPAS[pq.eq && pq.eq.et] || {}).n || "", equipo: pq.eq && pq.eq.n, color: pq.eq && pq.eq.col, notas: pq.notas || [], clave: mv.p || plan.clave || "", gesto: mv.g || "", fecha: fechaCorta(),
+          prio: pq.prio, foco: pq.foco });
         return;
       }
       const b = e.target.closest("[data-leer]"); if (!b || b.closest("#dlgFicha")) return;
