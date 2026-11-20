@@ -2537,7 +2537,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (foco) {
       // 1) los estímulos relevantes del aspecto (por su clave o porque la nota es el texto del aspecto)
       const ESTI = FICHA.ESTIMULOS || {};
-      const asp = (FICHA.ASPECTOS || []).find((x) => x.k === foco.k) || (FICHA.ASPECTOS || []).find((x) => normNom(x.t) === normNom(foco.x));
+      const asp = aspectoDe(foco);
       if (asp && ESTI[asp.k]) fij = ESTI[asp.k];
       else {
         // 2) el «en qué fijarse» de un ejercicio reciente, solo si comparte al menos dos palabras específicas
@@ -2553,6 +2553,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
   // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
   const ICONO_AREA = { tecnica: "⚽", tactica: "🧭", decision: "🧠", fisico: "⚡", atencion: "🧘" };
+  // Aspecto de una nota: por su clave o porque el texto es el del aspecto.
+  const aspectoDe = (n) => (FICHA.ASPECTOS || []).find((x) => x.k === n.k) || (FICHA.ASPECTOS || []).find((x) => normNom(x.t) === normNom(n.x));
+  function mensajeNota(n) {
+    const a = aspectoDe(n), m = a && (FICHA.MENSAJES || {})[a.k];
+    return m ? (n.t === "f" ? m[0] : n.t === "m" ? m[1] : "") : "";
+  }
   function htmlInforme(d) {
     // d: { nombre, dorsal, puesto, etapa, equipo, color, notas, clave, gesto, fecha }
     const notas = d.notas || [];
@@ -2563,7 +2569,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const fuertes = elegidas("f", 6), mejora = elegidas("m", 6), consejos = notas.filter((n) => n.t === "c");
     const todasF = notas.filter((n) => n.t === "f"), todasM = notas.filter((n) => n.t === "m");
     const lista = (l, max, cls) => l.length
-      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}</span></li>`).join("")}</ul>`
+      ? `<ul class="inf-lista ${cls}">${l.slice(0, max).map((n) => { const msg = mensajeNota(n); return `<li>${n.a ? `<span class="inf-ic" aria-hidden="true">${ICONO_AREA[n.a] || "•"}</span>` : ""}<span>${esc(n.x)}${msg ? `<span class="inf-msg">${esc(msg)}</span>` : ""}</span></li>`; }).join("")}</ul>`
       : `<p class="inf-vacio">Todavía nada anotado.</p>`;
     const tecTac = (n) => n.a === "tecnica" || n.a === "tactica" || n.a === "decision";
     const foco = (d.foco && notas.find((n) => n.id === d.foco.id)) || mejora.find(tecTac) || mejora[0];
@@ -2584,6 +2590,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         <div class="inf-fecha">${esc(d.fecha || "")}</div>
       </header>
       ${foco ? `<section class="inf-foco"><span class="inf-etq">🎯 Tu foco ahora</span><p>${esc(foco.x)}</p>
+        ${mensajeNota(foco) ? `<p class="inf-foco-fij"><b>Qué hacer:</b> ${esc(mensajeNota(foco))}</p>` : ""}
         ${focoFij ? `<p class="inf-foco-fij"><b>En qué fijarte:</b> ${esc(focoFij)}</p>` : ""}
         <p class="inf-foco-int">Ponle toda la intención en cada entreno y en cada partido.</p></section>` : ""}
       <div class="inf-dos">
