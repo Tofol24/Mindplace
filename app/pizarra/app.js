@@ -351,12 +351,39 @@
     return o;
   }
   // Autoevaluación del jugador: m {aspecto: "f" punto fuerte | "m" quiere mejorarlo}, textos y confianza (1-5).
+  // Orientación a la tarea (pirámide del rendimiento de APRENS): 1 tarea/maestría · 2 las dos · 3 resultado/ego.
+  const ORIENTA = [
+    { k: "exito", t: "Me siento bien después de un partido cuando…", o: ["He aprendido o mejorado algo", "Las dos cosas", "Hemos ganado o he jugado mejor que los demás"] },
+    { k: "error", t: "Cuando me equivoco…", o: ["Lo vuelvo a intentar enseguida", "Me cuesta un poco volver", "Me enfado y me cuesta mucho volver"] },
+    { k: "foco", t: "Durante el partido me fijo sobre todo en…", o: ["Lo que tengo que hacer en cada jugada", "Un poco de todo", "El marcador y lo que piensan los demás"] },
+    { k: "compara", t: "Me comparo sobre todo…", o: ["Conmigo mismo: si mejoro", "Un poco de las dos maneras", "Con los demás jugadores"] }
+  ];
+  const PDF_PIRAMIDE = "https://aprens.net/descarregues/APRENS-piramide-rendiment.pdf";
+  // Resumen de la orientación: «tarea», «mixta» o «resultado» (o "" si no ha respondido)
+  function orientacion(o) {
+    const v = ORIENTA.map((q) => (o || {})[q.k]).filter(Boolean); if (!v.length) return "";
+    const media = v.reduce((a, b) => a + b, 0) / v.length;
+    return media <= 1.5 ? "tarea" : media >= 2.5 ? "resultado" : "mixta";
+  }
+  // «Tu camino»: un mensaje de maestría según sus respuestas (para su ficha)
+  function mensajeCamino(o) {
+    if (!o) return "";
+    const l = [];
+    if (orientacion(o) === "tarea") l.push("Ya miras tu juego para aprender: eso es lo que te hace mejorar, partido a partido.");
+    else l.push("Tu éxito es aprender: cada partido es una oportunidad de mejorar algo que trabajamos en los entrenos.");
+    if (o.compara >= 2) l.push("Compárate contigo mismo: mira lo que hoy haces mejor que hace un mes.");
+    if (o.foco >= 2) l.push("En cada jugada, fíjate en lo que tienes que hacer, no en el marcador.");
+    if (o.error >= 2) l.push("Cuando te equivoques, haz tu gesto, di tu palabra y vuelve: el error es parte de aprender.");
+    return l.join(" ");
+  }
   function sanAuto(a) {
     if (!a || typeof a !== "object") return null;
     const m = {};
     if (a.m && typeof a.m === "object") Object.keys(a.m).slice(0, 120).forEach((k) => { if (/^[a-z0-9_]{1,30}$/.test(k) && (a.m[k] === "f" || a.m[k] === "m")) m[k] = a.m[k]; });
     const o = { f: /^\d{4}-\d{2}-\d{2}$/.test(a.f) ? a.f : "", m: m, tf: txt(a.tf, 400), tm: txt(a.tm, 400), ts: txt(a.ts, 400), c: [1, 2, 3, 4, 5].includes(a.c) ? a.c : 0 };
-    return Object.keys(m).length || o.tf || o.tm || o.ts || o.c ? o : null;
+    const or = {}; if (a.o && typeof a.o === "object") ORIENTA.forEach((q) => { if ([1, 2, 3].includes(a.o[q.k])) or[q.k] = a.o[q.k]; });
+    if (Object.keys(or).length) o.o = or;
+    return Object.keys(m).length || o.tf || o.tm || o.ts || o.c || o.o ? o : null;
   }
   function sanJugador(j) {
     const id = idOk(j && j.id); if (!id) return null;
@@ -366,6 +393,7 @@
     const ns = (Array.isArray(j.notas) ? j.notas : []).slice(0, 80).map(sanNota).filter(Boolean); if (ns.length) o.notas = ns;
     if (idOk(j.foco) && ns.some((n) => n.id === j.foco && n.t === "m")) o.foco = j.foco; // foco fijado por el entrenador
     const au = sanAuto(j.auto); if (au) o.auto = au; // su autoevaluación
+    if (typeof j.autoKey === "string" && /^[A-Za-z0-9_-]{22}$/.test(j.autoKey)) o.autoKey = j.autoKey; // clave de la última petición (solo en este cuaderno)
     const lec = txt(j.lec, 700); if (lec) o.lec = lec; // mensaje del entrenador para su ficha
     ["tel", "tel2"].forEach((k) => { const t = txt(j[k], 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(t)) o[k] = t; });
     ["mail", "mail2"].forEach((k) => { const m = txt(j[k], 100).trim(); if (RE_MAIL.test(m)) o[k] = m; });
@@ -464,7 +492,7 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; delete j.auto; delete j.lec; delete j.autoKey; CONTACTO.forEach((k) => delete j[k]); });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
     const yo = idOk(o.yo);
@@ -2021,7 +2049,7 @@
           ${db.planes.length ? db.planes.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map((p) => `<label><input type="checkbox" data-envplan="${esc(p.id)}" checked> ${esc(p.titulo || "(sin título)")} <span class="peq">· ${esc(fechaBonita(p.fecha))}</span></label>`).join("") : `<p class="peq">Aún no hay planes; se enviará solo la plantilla.</p>`}
         </fieldset>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envSinApe" style="width:22px;height:22px"> Enviar la plantilla sin apellidos (solo dorsal y nombre corto)</label>
-        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas, los contactos de los jugadores (teléfono y correo) y los feedbacks de las sesiones</label>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="envNotas" style="width:22px;height:22px"> Incluir las notas privadas, los contactos de los jugadores (teléfono y correo), sus autoevaluaciones y los feedbacks de las sesiones</label>
         <p class="peq"><b>Ojo:</b> lleva la plantilla, las notas y las consignas de los planes marcados, y lo puede abrir cualquiera que tenga el enlace. Envíalo solo al otro entrenador, por privado, nunca al grupo de jugadores.</p>
         <div class="fila">
           <button type="button" class="btn" data-envarch="1">📎 Enviar archivo a otro entrenador</button>
@@ -2177,11 +2205,11 @@
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
   function descodificar(hash) {
-    const m = /^#(p|c|v|e|ver|ent|ae)=(.*)$/.exec(hash || "");
+    const m = /^#(p|c|v|e|ver|ent)=(.*)$/.exec(hash || "");
     if (!m) return null;
     let datos = m[2];
     try { datos = decodeURIComponent(datos); } catch (e) { /* tal cual */ }
-    if (m[1] === "p" || m[1] === "c" || m[1] === "v" || m[1] === "e" || m[1] === "ae") {
+    if (m[1] === "p" || m[1] === "c" || m[1] === "v" || m[1] === "e") {
       let b = datos.replace(/[^A-Za-z0-9_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
       while (b.length % 4) b += "=";
       const bin = atob(b), u8 = new Uint8Array(bin.length);
@@ -2388,7 +2416,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
       return c;
     });
-    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); } return j; });
+    const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); }
+      delete j.autoKey; // la clave de la autoevaluación no sale nunca de este móvil
+      return j;
+    });
     return { v: 1, tipo: "entrenador", equipo: clon(db.equipo), plantilla: plantilla, planes: planes };
   }
   const normNom = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
@@ -2568,11 +2599,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   const CONFIANZA = ["", "Nada", "Poco", "Normal", "Bastante", "Mucho"];
   function sanPedidoAuto(o) {
     const j = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean)[0];
-    if (!j || idOk(o.yo) !== j.id) return null;
-    return { yo: j.id, d: j.d, n: j.c || j.n, p: j.p || "", port: o.port === true, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") } };
+    if (!j || idOk(o.yo) !== j.id || typeof o.kk !== "string" || !/^[A-Za-z0-9_-]{22}$/.test(o.kk)) return null;
+    return { yo: j.id, kk: o.kk, d: j.d, n: j.c || j.n, p: j.p || "", port: o.port === true, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E") } };
   }
   function paqueteAutoev(j) {
-    return { v: 1, tipo: "autoev", eq: { n: db.equipo.nombre, col: db.equipo.color }, yo: j.id, port: famDePuesto(j.p) === "por",
+    // una clave nueva por petición: la respuesta solo la puede leer este cuaderno, y la anterior deja de valer
+    j.autoKey = b64u(crypto.getRandomValues(new Uint8Array(16))); j.mod = Date.now(); guardar();
+    return { v: 1, tipo: "autoev", eq: { n: db.equipo.nombre, col: db.equipo.color }, yo: j.id, port: famDePuesto(j.p) === "por", kk: j.autoKey,
       jug: [{ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" }] };
   }
   function enviarAutoev(j, cont) {
@@ -2591,7 +2624,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     $("#ttApp").textContent = ped.eq.n || "Pizarra";
     $("#ttSub").textContent = "Tu autoevaluación";
     document.title = "Autoevaluación · " + (ped.eq.n || "Pizarra");
-    const clave = "pz_autoev_" + ped.yo;
+    const clave = "pz_autoev_" + ped.kk.slice(0, 10); // borrador de esta petición (una nueva empieza en blanco)
     let st = null; try { st = sanAuto(JSON.parse(localStorage.getItem(clave) || "null")); } catch (e) { st = null; }
     st = st || { f: "", m: {}, tf: "", tm: "", ts: "", c: 0 };
     const guarda = () => { try { localStorage.setItem(clave, JSON.stringify(st)); } catch (e) { /* solo esta visita */ } };
@@ -2603,6 +2636,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <section class="tarjeta">
         <p>Tu entrenador quiere saber cómo te ves jugando. No hay respuestas buenas ni malas: se trata de que te fijes en tu propio juego. Después lo comparáis y lo trabajáis juntos.</p>
         <p class="peq">Marca 💪 en lo que crees que haces bien y 🎯 en lo que quieres mejorar. Deja sin marcar lo que no tengas claro. Se guarda en tu móvil mientras lo haces.</p>
+      </section>
+      <section class="tarjeta">
+        <h2 style="margin-top:0">Tu manera de vivir el juego</h2>
+        <p class="peq">Elige lo que más se parezca a ti.</p>
+        ${ORIENTA.map((q) => `<div class="fb-grupo" role="group" aria-label="${esc(q.t)}"><span class="peq"><b>${esc(q.t)}</b></span>${q.o.map((t, i) => `<button type="button" class="btn-peq" data-aori="${q.k}" data-v="${i + 1}" aria-pressed="${(st.o || {})[q.k] === i + 1}">${esc(t)}</button>`).join("")}</div>`).join("")}
       </section>
       <section class="tarjeta">
         <h2 style="margin-top:0">¿Cómo de seguro te sientes jugando?</h2>
@@ -2623,6 +2661,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <div data-r="aEnvio"></div>`;
     app.onclick = (e) => {
       const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.aori) {
+        const k = b.dataset.aori, v = +b.dataset.v; st.o = st.o || {};
+        if (st.o[k] === v) delete st.o[k]; else st.o[k] = v;
+        guarda(); $$(`[data-aori="${k}"]`, app).forEach((x) => x.setAttribute("aria-pressed", String(st.o[k] === +x.dataset.v)));
+        return;
+      }
       if (b.dataset.aconf) { const v = +b.dataset.aconf; st.c = st.c === v ? 0 : v; guarda(); $$("[data-aconf]", app).forEach((x) => x.setAttribute("aria-pressed", String(+x.dataset.aconf === st.c))); return; }
       if (b.dataset.amark) {
         const k = b.dataset.amark, v = b.dataset.v;
@@ -2633,37 +2677,59 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         return;
       }
       if (b.dataset.aenviar) {
-        if (!Object.keys(st.m).length && !st.tf && !st.tm && !st.ts) { toast("Marca algo antes de enviarlo"); return; }
+        if (!Object.keys(st.m).length && !st.tf && !st.tm && !st.ts && !st.c && !Object.keys(st.o || {}).length) { toast("Marca algo antes de enviarlo"); return; }
         st.f = hoyISO(); guarda();
-        const url = location.origin + location.pathname + "#ae=" + codificar({ v: 1, tipo: "autoeval", yo: ped.yo, d: ped.d, n: ped.n, f: st.f, m: st.m, tf: st.tf, tm: st.tm, ts: st.ts, c: st.c });
-        const txtE = "Mi autoevaluación (" + ped.d + " · " + ped.n + "). Ábrela en la pizarra para guardarla en mi ficha:\n" + url;
         const c = app.querySelector('[data-r="aEnvio"]');
+        cifrarAuto(ped, { v: 1, tipo: "autoeval", yo: ped.yo, f: st.f, m: st.m, tf: st.tf, tm: st.tm, ts: st.ts, c: st.c, o: st.o || {} }).then((cif) => {
+        const url = location.origin + location.pathname + "#ae=" + cif;
+        const txtE = "Mi autoevaluación (dorsal " + ped.d + "). Ábrela en la pizarra para guardarla en mi ficha:\n" + url;
         c.innerHTML = `<p class="peq" style="margin-top:10px">Envíaselo a tu entrenador por privado (por ejemplo, por WhatsApp).</p>
           <label class="sr-only" for="txtAE">Mensaje</label><textarea id="txtAE" rows="5" readonly>${esc(txtE)}</textarea>
           <div class="fila">${navigator.share ? `<button type="button" class="btn" data-acomp="1">📤 Compartir</button>` : ""}<button type="button" class="btn-sec" data-acop="1">📋 Copiar</button></div>`;
         c.querySelector("[data-acop]").onclick = () => { const t = c.querySelector("textarea"); t.focus(); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(txtE) : Promise.reject()).then(() => toast("Copiado"), () => { try { document.execCommand("copy"); toast("Copiado"); } catch (err) { /* nada */ } }); };
         const bc = c.querySelector("[data-acomp]"); if (bc) bc.onclick = () => navigator.share({ title: "Mi autoevaluación", text: txtE }).catch(() => {});
+        }, () => { c.innerHTML = `<p class="sin-puesto">Este navegador no puede preparar el envío cifrado. Ábrelo con Chrome o Safari actualizados.</p>`; });
         return;
       }
     };
     app.oninput = (e) => { const k = e.target.dataset.atxt; if (k) { st[k] = e.target.value; guarda(); } };
   }
+  // Cifrado de la respuesta (AES-GCM con la clave de la petición): «#ae=<jugador>.<iv+cifrado>».
+  async function cifrarAuto(ped, obj) {
+    const k = await crypto.subtle.importKey("raw", deB64u(ped.kk), "AES-GCM", false, ["encrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const cif = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, window.LZString.compressToUint8Array(JSON.stringify(obj))));
+    const todo = new Uint8Array(iv.length + cif.length); todo.set(iv); todo.set(cif, iv.length);
+    return ped.yo + "." + b64u(todo);
+  }
+  async function descifrarAuto(h) {
+    const m = /^#ae=([A-Za-z0-9_]{1,16})\.([A-Za-z0-9_-]{30,20000})$/.exec(h || "");
+    if (!m) return { error: "formato" };
+    const j = db.plantilla.find((x) => (x.id === m[1] || (x.alias || []).includes(m[1])) && x.autoKey);
+    if (!j) return { error: "sinClave" };
+    try {
+      const todo = deB64u(m[2]);
+      const k = await crypto.subtle.importKey("raw", deB64u(j.autoKey), "AES-GCM", false, ["decrypt"]);
+      const datos = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: todo.slice(0, 12) }, k, todo.slice(12)));
+      const o = JSON.parse(window.LZString.decompressFromUint8Array(datos));
+      const au = o && o.tipo === "autoeval" ? sanAuto(o) : null;
+      return au ? { j: j, auto: au } : { error: "formato" };
+    } catch (e) { return { error: "otraClave" }; }
+  }
   // Pantalla del entrenador al abrir una autoevaluación recibida
   function pantAutoevRecibida(r) {
-    const cand = db.plantilla.find((j) => j.id === r.yo || (j.alias || []).includes(r.yo)) || db.plantilla.find((j) => j.d === r.d && normNom(j.c || j.n.split(" ")[0]) === normNom(r.n));
+    const cand = r.j;
     const nf = Object.values(r.auto.m).filter((v) => v === "f").length, nm = Object.values(r.auto.m).filter((v) => v === "m").length;
     app.innerHTML = `
       <h1>Autoevaluación recibida</h1>
       <div class="tarjeta">
-        <p><b>${esc(r.d)} · ${esc(r.n)}</b>${r.auto.f ? " · " + esc(fechaBonita(r.auto.f)) : ""}: ${nf} punto${nf === 1 ? "" : "s"} fuerte${nf === 1 ? "" : "s"}, ${nm} cosa${nm === 1 ? "" : "s"} que quiere mejorar${r.auto.c ? ", confianza: " + esc(CONFIANZA[r.auto.c].toLowerCase()) : ""}.</p>
-        <div class="campo-f"><label for="aeJ">Guardar en la ficha de</label><select id="aeJ">${db.plantilla.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${cand && cand.id === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("")}</select></div>
-        ${db.plantilla.length ? "" : `<p class="sin-puesto">Tu plantilla está vacía en este móvil: ábrela en el móvil donde tienes el cuaderno.</p>`}
-        <p class="peq">Si ya tenía una autoevaluación, se sustituye por esta.</p>
-        <div class="fila"><button type="button" class="btn" data-aeguardar="1" ${db.plantilla.length ? "" : "disabled"}>Guardar en su ficha</button><button type="button" class="btn-sec" data-aeno="1">Ahora no</button></div>
+        <p><b>${esc(cand.d)} · ${esc(cand.c || cand.n)}</b>${r.auto.f ? " · " + esc(fechaBonita(r.auto.f)) : ""}: ${nf} punto${nf === 1 ? "" : "s"} fuerte${nf === 1 ? "" : "s"}, ${nm} cosa${nm === 1 ? "" : "s"} que quiere mejorar${r.auto.c ? ", confianza: " + esc(CONFIANZA[r.auto.c].toLowerCase()) : ""}.</p>
+        <p class="peq">Se guarda en su ficha. Si ya tenía una autoevaluación, se sustituye por esta.</p>
+        <div class="fila"><button type="button" class="btn" data-aeguardar="1">Guardar en su ficha</button><button type="button" class="btn-sec" data-aeno="1">Ahora no</button></div>
       </div>`;
     app.querySelector("[data-aeguardar]").addEventListener("click", () => {
-      const j = db.plantilla.find((x) => x.id === $("#aeJ").value); if (!j) return;
-      j.auto = r.auto; j.mod = Date.now(); guardar();
+      const j = cand;
+      j.auto = r.auto; delete j.autoKey; j.mod = Date.now(); guardar(); // la respuesta se usa una vez: la clave deja de valer
       ir("plantilla"); abrirNotas(j.id);
       toast("Autoevaluación guardada: mira la comparación en su ficha");
     });
@@ -2694,7 +2760,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${caja("🔎 Él se ve fuerte y tú lo tienes para mejorar", c.elFyoM, "Habladlo: qué ve él y qué ves tú en los partidos.")}
       ${caja("🎯 Quiere mejorarlo y tú no lo tenías", c.elMyoNada, "Le importa: aprovéchalo para motivarlo.")}
       ${caja("🙂 Se ve fuerte y tú no lo tenías marcado", c.elFyoNada, "")}
-      ${au.tf ? `<p><b>Lo que cree que hace mejor:</b> ${esc(au.tf)}</p>` : ""}${au.tm ? `<p><b>Lo que quiere mejorar:</b> ${esc(au.tm)}</p>` : ""}${au.ts ? `<p><b>En qué le gustaría que le ayudaras:</b> ${esc(au.ts)}</p>` : ""}`;
+      ${au.tf ? `<p><b>Lo que cree que hace mejor:</b> ${esc(au.tf)}</p>` : ""}${au.tm ? `<p><b>Lo que quiere mejorar:</b> ${esc(au.tm)}</p>` : ""}${au.ts ? `<p><b>En qué le gustaría que le ayudaras:</b> ${esc(au.ts)}</p>` : ""}
+      ${au.o ? `<div class="cmp-caja"><p><b>🔺 Orientación: ${orientacion(au.o) === "tarea" ? "a la tarea (aprender)" : orientacion(au.o) === "resultado" ? "a los resultados" : "mixta"}</b><br><span class="peq">${orientacion(au.o) === "tarea"
+        ? "Vive el juego para aprender. Refuérzalo: reconoce su esfuerzo y su progreso más que el resultado."
+        : "Ayúdale a poner el éxito en aprender: habla de su esfuerzo y de lo que mejora respecto a él mismo, no del marcador ni de los demás. Lo que mira durante el partido acaba marcando su control, cómo vive el error, su motivación y su rendimiento."}</span></p>
+        <ul class="consignas">${ORIENTA.filter((q) => au.o[q.k]).map((q) => `<li>${esc(q.t)} <b>${esc(q.o[au.o[q.k] - 1].toLowerCase())}</b></li>`).join("")}</ul>
+        <p class="peq"><a href="${PDF_PIRAMIDE}" target="_blank" rel="noopener">La pirámide del rendimiento (PDF)</a></p></div>` : ""}`;
   }
 
   // ---------------------------------------------------------------- ficha en una página (A4)
@@ -2753,10 +2824,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!d.auto) return "";
         const c = compararAuto(notas, d.auto);
         const veoYo = c.yoFelM.concat(c.yoFelNada).slice(0, 3), ambos = c.ambosF.slice(0, 3), quiere = c.ambosM.concat(c.elMyoNada).slice(0, 3);
-        if (!veoYo.length && !ambos.length && !quiere.length && !d.lec) return "";
+        const camino = mensajeCamino(d.auto.o);
+        if (!veoYo.length && !ambos.length && !quiere.length && !d.lec && !camino) return "";
         const col = (t, l) => l.length ? `<div><p class="inf-sub"><b>${t}</b></p><ul>${l.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
         return `<section class="inf-caja inf-tuyyo"><h3>🪞 Tú y yo</h3><div class="inf-tuyyo-cols">${col("Lo que los dos vemos", ambos)}${col("Lo que yo veo en ti (y quizá tú todavía no)", veoYo)}${col("Lo que tú quieres mejorar", quiere)}</div>
-          ${d.lec ? `<p class="inf-lec">${esc(d.lec)}</p>` : ""}</section>`;
+          ${d.lec ? `<p class="inf-lec">${esc(d.lec)}</p>` : ""}
+          ${camino ? `<p class="inf-camino"><b>🔺 Tu camino:</b> ${esc(camino)}</p>` : ""}</section>`;
       })()}
       <section class="inf-areas"><h3>Tu mapa</h3><div class="inf-areas-fila">${areas}</div>
         <p class="inf-ley"><span class="inf-pf">●</span> punto fuerte · <span class="inf-am">●</span> por mejorar</p></section>
@@ -2982,7 +3055,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
     pq.yo = j.id;
     pq.notas = clon(j.notas || []);
-    if (j.auto) pq.auto = clon(j.auto);
+    if (j.auto && (Object.keys(j.auto.m || {}).length || j.auto.o)) pq.auto = Object.assign({ m: clon(j.auto.m || {}) }, j.auto.o ? { o: clon(j.auto.o) } : {}); // solo lo que muestra «Tú y yo»
     if (j.lec) pq.lec = j.lec;
     const pr = prioridadNotas(j); pq.prio = pr.prio; if (pr.foco) pq.foco = pr.foco; // lo que sale en su ficha y su foco
     return pq;
@@ -3273,18 +3346,21 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return { modo: "autoeval", etapa: E ? E.n + " (" + E.edad + ")" : "", puesto: j.p || "",
       coinciden: { fuertes: c.ambosF, mejorar: c.ambosM }, entrenadorFuerteJugadorMejorar: c.yoFelM, entrenadorFuerteJugadorNada: c.yoFelNada,
       jugadorFuerteEntrenadorMejorar: c.elFyoM, jugadorQuiereMejorar: c.elMyoNada, jugadorSeVeFuerte: c.elFyoNada,
-      textos: { haceMejor: quitarNombres(au.tf), quiereMejorar: quitarNombres(au.tm), ayuda: quitarNombres(au.ts) }, confianza: au.c ? CONFIANZA[au.c] : "" };
+      textos: { haceMejor: quitarNombres(au.tf), quiereMejorar: quitarNombres(au.tm), ayuda: quitarNombres(au.ts) }, confianza: au.c ? CONFIANZA[au.c] : "",
+      orientacion: au.o ? ORIENTA.filter((q) => au.o[q.k]).map((q) => q.t + " " + q.o[au.o[q.k] - 1].toLowerCase()) : [] };
   }
   function previaLecturaAuto(j, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("La lectura con Claude"); return; }
     const e = entradaAuto(j); iaFbPend["auto" + j.id] = e;
-    cont.innerHTML = `<div class="ia-propuesta"><p class="peq">Se envía a Claude (Anthropic), sin nombre, la comparación de aspectos, la confianza y sus respuestas escritas. Revisa que no lleven datos personales.</p>
-      ${[e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean).length ? `<ul class="consignas">${[e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+    const escritos = [e.textos.haceMejor, e.textos.quiereMejorar, e.textos.ayuda].filter(Boolean);
+    cont.innerHTML = `<div class="ia-propuesta"><p class="peq">Se envía a Claude (Anthropic), sin nombre, la comparación de aspectos y la confianza.</p>
+      ${escritos.length ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="aeIaTxt" style="width:22px;height:22px;flex:none"> Incluir también sus respuestas escritas (revisa que no lleven datos personales):</label><ul class="consignas">${escritos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
       <div class="fila"><button type="button" class="btn" data-aeiaok="1">Pedir la lectura</button></div></div>`;
   }
   function pedirLecturaAuto(j, cont) {
     const e = iaFbPend["auto" + j.id]; delete iaFbPend["auto" + j.id];
     if (!e) { previaLecturaAuto(j, cont); return; }
+    const conTxt = cont.querySelector("#aeIaTxt"); if (!conTxt || !conTxt.checked) e.textos = { haceMejor: "", quiereMejorar: "", ayuda: "" };
     consultaIA("auto" + j.id, e, cont, "Claude está leyendo las dos miradas.", (r) => {
       cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Lectura</h3>
         ${r.analisis ? `<p><b>Para ti:</b> ${esc(r.analisis)}</p>` : ""}
@@ -3647,7 +3723,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       </div>
       ${plan.objetivo ? `<div class="tarjeta"><h3>${plan.tipo === "partido" ? "La idea" : "Objetivo"}</h3><p>${esc(plan.objetivo).replace(/\n/g, "<br>")}</p></div>` : ""}
       ${plan.notas ? `<div class="tarjeta"><h3>Notas</h3><p>${esc(plan.notas).replace(/\n/g, "<br>")}</p></div>` : ""}
-      ${pq.yo && (pq.notas || []).length ? `<section class="tarjeta mis-notas" data-r="misNotas" ${yo === pq.yo ? "" : "hidden"}>${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">Lo que te dice tu entrenador</h2><p class="peq">Solo para ti. Sácale partido a lo que haces bien y céntrate en lo que estás aprendiendo.</p>
+      ${pq.yo && ((pq.notas || []).length || pq.auto || pq.lec) ? `<section class="tarjeta mis-notas" data-r="misNotas" ${yo === pq.yo ? "" : "hidden"}>${voz.ok ? `<button type="button" class="btn-peq leer" data-leer="1">🔊 Escuchar</button>` : ""}<h2 style="margin-top:0">Lo que te dice tu entrenador</h2><p class="peq">Solo para ti. Sácale partido a lo que haces bien y céntrate en lo que estás aprendiendo.</p>
         <button type="button" class="btn" data-miinforme="1" style="margin:4px 0 10px">📄 Mi ficha en una página</button>
         <details class="det"><summary>Ver todas las notas</summary>${htmlNotas(pq.notas, {})}</details></section>` : ""}
       <div data-r="bloques"></div>
@@ -3687,7 +3763,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       pintarMio(d.querySelector('[data-r="mio"]'), b, ctx, yo);
     });
     // enlace solo con la ficha (sin plan): se abre directamente en una página
-    if (!plan.bloques.length && pq.yo && yo === pq.yo && (pq.notas || []).length) setTimeout(() => { const bi = cont.querySelector("[data-miinforme]"); if (bi) bi.click(); }, 60);
+    if (!plan.bloques.length && pq.yo && yo === pq.yo && ((pq.notas || []).length || pq.auto || pq.lec)) setTimeout(() => { const bi = cont.querySelector("[data-miinforme]"); if (bi) bi.click(); }, 60);
     const mf = cont.querySelector("[data-mificha]");
     if (mf) mf.addEventListener("click", () => { if (yo) abrirFicha(plan, ctx, yo, pq.eq && pq.eq.et); });
     const va = cont.querySelector("#vozAuto");
@@ -4067,12 +4143,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       return;
     }
     if (/^#ae=/.test(h)) {
-      let a = null;
-      try { a = descodificar(h); } catch (e) { a = null; }
       history.replaceState(null, "", location.pathname);
-      const au = a && a.tipo === "autoeval" ? sanAuto(a) : null;
-      if (!au) { pintarPantalla(); toast("No se ha podido leer la autoevaluación"); return; }
-      return pantAutoevRecibida({ auto: au, yo: idOk(a.yo) || "", d: Math.round(num(a.d, 0, 99, 0)), n: txt(a.n, 30) });
+      descifrarAuto(h).then((r) => {
+        if (r.auto) return pantAutoevRecibida(r);
+        pintarPantalla();
+        toast(r.error === "sinClave" ? "Esta autoevaluación no es de este cuaderno, o ya está guardada"
+          : r.error === "otraClave" ? "Es de una petición anterior: guarda la última que le enviaste" : "No se ha podido leer la autoevaluación");
+      });
+      return;
     }
     if (/^#(c|e|ent)=/.test(h)) {
       let rec = null;

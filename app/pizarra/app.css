@@ -333,3 +333,5 @@ button:disabled { opacity: .45; cursor: default; }
   body.imprimiendo .inf-tuyyo-cols { grid-template-columns: repeat(3, 1fr); }
   body.imprimiendo .inf-tuyyo ul, body.imprimiendo .inf-lec { font-size: 12px; }
 }
+.inf-camino { margin: 8px 0 0; font-size: 14px; }
+@media print { body.imprimiendo .inf-camino { font-size: 12px; } }
