@@ -257,7 +257,10 @@ button:disabled { opacity: .45; cursor: default; }
 @media print {
   body.imprimiendo * { visibility: hidden !important; }
   body.imprimiendo #dlgInforme, body.imprimiendo #dlgInforme .informe, body.imprimiendo #dlgInforme .informe * { visibility: visible !important; }
-  body.imprimiendo #dlgInforme { position: absolute; inset: 0; max-width: none; height: auto; margin: 0; padding: 0; background: #fff; }
+  body.imprimiendo #dlgInforme { position: static; inset: auto; max-width: none; max-height: none; width: auto; height: auto; overflow: visible; margin: 0; padding: 0; background: #fff; border: 0; }
+  /* si no cabe en una página, sigue en la siguiente sin partir ninguna sección */
+  body.imprimiendo #dlgInforme .informe-cuerpo, body.imprimiendo #dlgInforme .informe { overflow: visible !important; max-height: none !important; height: auto !important; }
+  body.imprimiendo .informe > section, body.imprimiendo .inf-caja, body.imprimiendo .inf-areas, body.imprimiendo .inf-pie { break-inside: avoid; page-break-inside: avoid; }
   body.imprimiendo #dlgInforme::backdrop { background: none; }
   /* lo demás no ocupa espacio: así no sale una segunda página en blanco */
   body.imprimiendo > *:not(#dlgInforme) { display: none !important; }
