@@ -65,6 +65,9 @@ A la pestanya de la guia hi ha dos botons:
   per a ordinadors amb filtre (Chromebooks amb Lazarus…) que bloquegen explica.aprens.net, Google Fonts o jsDelivr.
   Només es connecta a api.anthropic.com, amb la clau de l'API. Es genera amb `./fes-chromebook.sh` (uns 3,5 MB);
   no es puja al repositori. Fa servir les mateixes dades del navegador (`explica:*`) que el fitxer autònom.
+- `estudi-filla.netlify.app` — la mateixa versió autònoma (clau de l'API) publicada a Netlify, amb les lletres
+  i els lectors de PDF i Word servits des del mateix lloc. Per actualitzar-la: `./fes-filla.sh` i després
+  `./publica-filla.py`. Es conserven les dades del navegador (mateix lloc, mateixes claus) i el `prova.html` del lloc.
 
 ## Dues maneres de fer-la servir
 
