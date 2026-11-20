@@ -61,6 +61,10 @@ A la pestanya de la guia hi ha dos botons:
   `<html>`, `<head>` ni `<body>`: la plataforma els hi posa en publicar-la.
 - `explica-ho-autonom.html` — la mateixa pàgina, per obrir-la directament al navegador.
   Es genera amb `./fes-autonom.sh`; no s'edita a mà.
+- `explica-ho-chromebook.html` — el fitxer autònom sense res de fora (lletres i lectors de PDF i Word a dins),
+  per a ordinadors amb filtre (Chromebooks amb Lazarus…) que bloquegen explica.aprens.net, Google Fonts o jsDelivr.
+  Només es connecta a api.anthropic.com, amb la clau de l'API. Es genera amb `./fes-chromebook.sh` (uns 3,5 MB);
+  no es puja al repositori. Fa servir les mateixes dades del navegador (`explica:*`) que el fitxer autònom.
 
 ## Dues maneres de fer-la servir
 
