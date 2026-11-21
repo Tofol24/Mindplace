@@ -996,7 +996,7 @@
     function conEnlace(fn){ if(window.aprensConCodigo) window.aprensConCodigo(txt, fn); else fn(txt); }
     $("#btnCopy").onclick = function(){ conEnlace(copiarTxt); };
     function copiarTxt(txt){ try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
-    $("#btnShare").onclick = function(){ if(navigator.share){ conEnlace(function(t){ navigator.share({title:"Mi recorrido TEC", text:t}).catch(function(e){ if(e && e.name==="NotAllowedError") copiarTxt(t); }); }); } else $("#btnCopy").click(); };
+    $("#btnShare").onclick = function(){ if(navigator.share){ conEnlace(function(t){ navigator.share({title:"Mi recorrido TEC", text:t}).catch(function(e){ if(e && e.name==="NotAllowedError") toast("No se ha podido compartir. Usa «Copiar resumen»."); }); }); } else $("#btnCopy").click(); };
     $("#btnReset").onclick = function(){ if(!confirm("¿Empezar el recorrido de nuevo? Se borrarán tus registros de este recorrido en este dispositivo.")) return; S = nuevo(); save(); show("v-hoy"); renderAll(); };
   }
 

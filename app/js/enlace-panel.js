@@ -57,7 +57,9 @@
     return String(s).replace(/(%26|&)p(%3D|=)__APRENS_COD__/g, cod ? "$1p$2" + cod : "");
   }
 
-  /* ── Ventana propia de confirmación ── */
+  /* ── Ventana propia de confirmación ──
+     «Enviar»: con el código escrito. «Enviar sin código»: sin código (el panel
+     pregunta de quién es). Escape: cierra sin enviar. */
   var abierta = null;
   function pedirCodigo(listo) {
     var d = g.document, guardado = codigoPaciente();
@@ -84,11 +86,12 @@
     var inp = q("apCodIn"); inp.value = guardado; inp.setAttribute("aria-label", T.tit);
     var volver = d.activeElement;
     abierta = { listo: listo };
-    function cerrar(cod) {
+    function cerrar(cod, cancelar) {
       var cb = abierta && abierta.listo; abierta = null;
+      d.removeEventListener("keydown", teclas, true);
       fondo.remove();
       try { if (volver && volver.focus) volver.focus(); } catch (e) {}
-      if (cb) cb(cod);   // dentro del toque en el botón: Safari deja abrir WhatsApp
+      if (cb && !cancelar) cb(cod);   // dentro del toque en el botón: Safari deja abrir WhatsApp
     }
     q("apCodOk").onclick = function () {
       var c = normCodigo(inp.value);
@@ -100,14 +103,16 @@
     };
     q("apCodSin").onclick = function () { cerrar(""); };
     inp.onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); q("apCodOk").click(); } };
-    fondo.onkeydown = function (e) {
-      if (e.key === "Escape") { e.preventDefault(); cerrar(""); }
+    // Teclas en toda la página mientras está abierta (aunque el foco aún no haya llegado al campo).
+    function teclas(e) {
+      if (e.key === "Escape") { e.preventDefault(); cerrar("", true); }   // cerrar = no enviar nada
       if (e.key === "Tab") {   // el foco no sale de la ventana
         var f = [inp, q("apCodSin"), q("apCodOk")], i = f.indexOf(d.activeElement);
         e.preventDefault(); f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus();
       }
-    };
-    setTimeout(function () { try { inp.focus(); inp.select(); } catch (e) {} }, 30);
+    }
+    d.addEventListener("keydown", teclas, true);
+    try { inp.focus(); inp.select(); } catch (e) {}
   }
 
   /* Texto con el enlace. Si el código aún no está confirmado en esta sesión, deja
@@ -135,7 +140,11 @@
   g.open = function (url) {
     if (typeof url === "string" && url.indexOf(MARCA) >= 0) {
       var args = Array.prototype.slice.call(arguments);
-      pedirCodigo(function (cod) { args[0] = rellenar(url, cod); abrirOriginal.apply(g, args); });
+      pedirCodigo(function (cod) {
+        args[0] = rellenar(url, cod);
+        var w = null; try { w = abrirOriginal.apply(g, args); } catch (e) {}
+        if (!w) g.location.href = args[0];   // si el navegador no deja abrir otra pestaña, en esta
+      });
       return { closed: false, close: function () {}, focus: function () {} };
     }
     return abrirOriginal.apply(g, arguments);
