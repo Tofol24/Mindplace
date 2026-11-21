@@ -39,7 +39,7 @@
     [/la llave de paso|la clau de pas/i, "llave_de_paso", "La llave de paso"],
     [/entre punto y punto|plan de partido/i, "entre_punto_y_punto", "Entre punto y punto"],
     [/mi recorrido tec/i, "recorrido_tec", "Mi recorrido"],
-    [/evaluaci[óo]n de trauma|\bAP5(?:[-\s]?[0-9A-Z.]){8}/i, "evaluacion_trauma", "Evaluación de trauma"],
+    [/evaluaci[óo]n de trauma|\bAP5[-\s]?\d(?:[-\s]?\d){6}/i, "evaluacion_trauma", "Evaluación de trauma"],
     [/exploradora valiente/i, "exploradora_valiente", "La exploradora valiente"],
     [/misi[óo]n barrio/i, "mision_barrio", "Misión Barrio"],
     [/ritual diario/i, "ritual_calma", "Ritual diario · calma"],

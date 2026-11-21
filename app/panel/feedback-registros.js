@@ -66,6 +66,8 @@
       var hk = nm && nm !== "Registro (texto)" ? "@" + nm : t;
       m.herr[hk] = (m.herr[hk] || 0) + 1;
       if (AIS.indexOf(t) >= 0) ais[x.d] = 1;
+      // Mi recorrido trae su propio recuento de días con práctica programada (ventana de 14 días).
+      if (t === "recorrido_tec" && num(r.prog14) != null) m.prog14 = num(r.prog14);
       // Activación antes → después de la práctica (0–10)
       var a = null, b = null;
       if (t === "acompanar_sensacion") { a = num(r.intensidad_antes); b = num(r.intensidad_despues); }
@@ -84,6 +86,7 @@
     m.dias = Object.keys(ds).length; m.aisDias = Object.keys(ais).length;
     var sem = Math.max(7, span || 7) / 7;
     m.diasSem = r1(m.dias / sem); m.aisSem = r1(m.aisDias / sem);
+    if (m.prog14 != null) m.aisSem = Math.max(m.aisSem, r1(m.prog14 / 2));
     if (m.act.length) {
       m.actAntes = r1(media(m.act.map(function (x) { return x[0]; })));
       m.actDespues = r1(media(m.act.map(function (x) { return x[1]; })));
@@ -166,7 +169,8 @@
     if (N.accion.valiosa > N.accion.evitativa && N.accion.valiosa > 0) fort.push("valiosa");
 
     /* ── Foco TEC (progresivo: no se salta a continuidad sin latencia y densidad) ── */
-    var evidenciaLat = N.act.length > 0 || N.nMono > 0 || N.mL != null || N.accion.valiosa + N.accion.evitativa > 0;
+    // Para pasar a continuidad hace falta evidencia suficiente de latencia (una sola medida no basta).
+    var evidenciaLat = N.act.length >= 2 || N.nMono >= 2 || N.mL != null || N.accion.valiosa + N.accion.evitativa >= 2;
     var foco, motivo, inicio = T.n < 3;
     if (inicio) { foco = "latencia"; motivo = "Pocos registros todavía (" + T.n + "): se empieza por el nivel 1 (detectar y pausar)."; }
     else if (lat.length) { foco = "latencia"; motivo = lat.map(function (x) { return x[1]; }).join(" "); }
@@ -225,9 +229,11 @@
     /* ── Alertas para revisar antes de enviar (nunca entran en el mensaje) ── */
     var alertas = [];
     // Se mantiene aunque ya se haya enviado un feedback: depende del último resumen, no de lo «nuevo».
-    var recs = todos.filter(function (x) { return x.tool === "recorrido_tec"; });
-    if (recs.length && recs[recs.length - 1].r.riesgo)
-      alertas.push("«Mi recorrido» (" + recs[recs.length - 1].d + "): la autoevaluación indica pensamientos de hacerse daño.");
+    // Solo la quita una autoevaluación posterior respondida sin esa marca (no un resumen con la autoevaluación pendiente).
+    var evals = todos.filter(function (x) { return x.tool === "recorrido_tec" && (x.r.riesgo || x.r.eval_fecha); });
+    var ue = evals[evals.length - 1];
+    if (ue && ue.r.riesgo)
+      alertas.push("«Mi recorrido» (autoevaluación del " + (ue.r.eval_fecha || ue.d) + "): indica pensamientos de hacerse daño.");
     if (traumaNueva) trs.forEach(function (r, i) {
       if (!trNueva(r, i)) return;
       if (r.riesgo) alertas.push("Evaluación de trauma (" + recDate(r) + "): ítem 16 del PCL-5 elevado (conductas de riesgo o que pueden causar daño). Explorar en entrevista.");
