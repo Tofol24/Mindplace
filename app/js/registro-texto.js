@@ -54,7 +54,6 @@
     [/salida \(exposici[óo]n en vivo\)|exposici[óo]n en imaginaci[óo]n|pelda[ñn]o trabajado/i, "paso_a_paso", "Paso a paso, de vuelta a mí"],
     [/d[óo]nde est[áa] (tu|mi) mono|detective del mono/i, "donde_mono", "¿Dónde está tu mono?"],  // al inicio: su resumen nombra otras herramientas
     [/agenda atencional/i, "agenda_atencional", "Agenda atencional"],
-    [/salir con mi mona|reto:\s*salir.*mona/i, "reto_mona", "Reto: salir con mi mona al lado"],
     [/tracker\s*tec/i, "tracker_tec", "Tracker TEC"],
     [/tracker\s*ais/i, "tracker_ais", "Tracker AIS"],
     [/br[uú]jula de valores/i, "brujula_valores", "Brújula de valores"],
@@ -282,20 +281,6 @@
     if (toolId === "toco_desde_dentro") {
       var tt2 = txt.match(/total:\s*(\d+)\s*respiros[^·]*·\s*(\d+)\s*puertas\s*·\s*(\d+)\s*«no»[^·]*·\s*(\d+)\s*cierres/i);
       if (tt2) { rec.respiros = +tt2[1]; rec.puertas = +tt2[2]; rec.noes = +tt2[3]; rec.cierres = +tt2[4]; }
-    }
-    if (toolId === "reto_mona") {
-      var hd = txt.match(/APRENS\s*·\s*[a-zà-ÿ]+\s+(\d{1,2})\s+de\s+([a-zà-ÿ]+)\s+de\s+(\d{4})/i);
-      if (hd) { var mz = MESES[hd[2].toLowerCase()]; if (mz) rec.date = hd[3] + "-" + pad(mz) + "-" + pad(hd[1]); }
-      var nv = txt.match(/nivel\s+(\d+)\s*:/i); if (nv) rec.nivel = +nv[1];
-      var an2 = txt.match(/ANTES[^0-9]*?(\d+)\s*\/\s*10/i); if (an2) rec.ans_antes = +an2[1];
-      var ansMx = txt.match(/ansiedad\s+m[áa]x\s*(\d+)\s*\/\s*10/i); if (ansMx) rec.ans_max = +ansMx[1];
-      var afn = txt.match(/final\s*(\d+)\s*\/\s*10/i); if (afn) rec.ans_final = +afn[1];
-      var res = /lo sostuve/i.test(txt) ? "sostuve" : /escap[ée]/i.test(txt) ? "escape" : /lo evit[ée]/i.test(txt) ? "evite" : null;
-      if (res) rec.resultado = res;
-      // El éxito no es ansiedad cero sino sostener con presencia: D y C salen del resultado.
-      var pres = { sostuve: 8, escape: 5, evite: 3 }[res], cont = { sostuve: 9, escape: 5, evite: 2 }[res];
-      if (pres != null && rec.D == null) rec.D = pres;
-      if (cont != null && rec.C == null) rec.C = cont;
     }
     if (toolId === "registro_texto") { var tt = tituloDe(txt); if (tt) rec.herramienta = tt; }
     rec.texto = txt;
