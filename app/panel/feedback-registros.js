@@ -98,6 +98,22 @@
   }
   function spanDe(xs) { return xs.length ? dias(xs[0].d, xs[xs.length - 1].d) + 1 : 7; }
 
+  /* Herramientas pensadas para niños (las rellenan con la familia). */
+  var INFANTILES = { cuento_familia: 1, tiempo_limite: 1, exploradora_valiente: 1, mision_barrio: 1, rincon_calma: 1,
+    ritual_calma: 1, la_manada: 1, fondos_frases: 1, escalera_comidas: 1 };
+  /* Edad: el código de paciente son las iniciales seguidas de la edad (DFG22). */
+  function edadDe(codigo) { var m = /(\d{1,2})$/.exec(String(codigo || "")); var e = m ? +m[1] : null; return e && e >= 3 && e <= 99 ? e : null; }
+  function detectarPerfil(p, todos) {
+    var edad = edadDe(p.codigo), auto = "adulto", motivo = "";
+    var nInf = todos.filter(function (x) { return INFANTILES[x.tool] || x.r.infantil; }).length;
+    if (edad != null && edad < 12) { auto = "nino"; motivo = edad + " años según el código"; }
+    else if (edad != null && edad < 18) { auto = "adolescente"; motivo = edad + " años según el código"; }
+    else if (edad == null && nInf * 2 > todos.length) { auto = "nino"; motivo = "usa sobre todo herramientas infantiles"; }
+    else if (edad != null) motivo = edad + " años según el código";
+    var elegido = { adulto: 1, adolescente: 1, nino: 1 }[p.perfilFeedback] ? p.perfilFeedback : null;
+    return { tipo: elegido || auto, auto: auto, motivo: motivo, edad: edad, manual: !!elegido };
+  }
+
   /* Análisis completo del paciente. opts.hoy (YYYY-MM-DD) solo para pruebas. */
   function analizar(p, opts) {
     opts = opts || {};
@@ -178,7 +194,25 @@
     if (ldc.length) lineas.push("L/D/C de los autorregistros: " + ldc.join(" · ") + ".");
     if (sinNuevos) lineas.push("No han llegado registros nuevos desde el último feedback: el análisis usa la última semana con registros.");
 
+    /* ── Destinatario: adulto, adolescente o familia (registros de un niño) ── */
+    var perfil = detectarPerfil(p, todos);
+
+    /* ── Registros por herramienta exacta (para el comentario específico) ── */
+    function porHerr(xs) {
+      var o = {};
+      xs.forEach(function (x) {
+        var nm = x.tool === "registro_texto" ? (x.r.herramienta || (nd && nd(x.tool, x.r))) : null;
+        var k = nm && nm !== "Registro (texto)" ? "@" + nm : x.tool;
+        (o[k] || (o[k] = [])).push(x);
+      });
+      return o;
+    }
+    var hN = porHerr(nuevos), hP = porHerr(previos);
+    var ultimoReg = nuevos[nuevos.length - 1];
+    var ultimoKey = Object.keys(hN).filter(function (k) { return hN[k].indexOf(ultimoReg) >= 0; })[0];
+
     return { foco: foco, motivo: motivo, paso: paso, ultimo: ultimo, evol: evol, inicio: inicio, sinNuevos: sinNuevos,
+      perfil: perfil, porHerr: hN, porHerrPrev: hP, ultimoKey: ultimoKey, nFeedbacks: fbs.length, codigo: p.codigo,
       primerFeedback: !ultimo, fortalezas: fort, senales: { latencia: lat, densidad: den, continuidad: con },
       nuevo: N, previo: P, total: T, lineas: lineas, nuevos: nuevos, claves: todos.map(function (x) { return x.k; }) };
   }
