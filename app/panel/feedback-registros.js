@@ -616,7 +616,7 @@
     honestidad_emocional: "Honestedat emocional", la_manada: "La manada (el perquè)",
     estoy_aqui_conmigo: "Som aquí amb mi", toco_desde_dentro: "Toc des de dins", pedalea_desde_dentro: "Pedala des de dins",
     cuento_familia: "La família d'en Koa (conte)", tiempo_limite: "El temps límit (petits)", fondos_frases: "Fons de frases",
-    escalera_exposicion: "L'escala (exposició)", exploradora_valiente: "L'exploradora valenta", mision_barrio: "Missió Barri",
+    escalera_exposicion: "L'escala (exposició)", escalera_exposicion_ar: "L'escala · conduir (àrab)", exploradora_valiente: "L'exploradora valenta", mision_barrio: "Missió Barri",
     escalera_comidas: "L'escala dels menjars", ritual_calma: "Ritual diari · calma", rincon_calma: "Racó de calma",
     cuerpo_en_alerta: "Quan el cos continua en alerta", microaccion_valor: "Microacció amb valor",
     registro_texto: "Registre", reto_mona: "Repte: sortir amb la meva mona", autorregistro_hospital: "Autorregistre de l'hospital",

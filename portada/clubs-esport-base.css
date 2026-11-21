@@ -1,0 +1,19 @@
+/* APRENS · clubs-esport-base.html (fora de l'HTML: la CSP de la portada no admet estils incrustats) */
+.doc .icona-gran{border-radius:20px}
+.doc .claus{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0 18px;padding:0;list-style:none}
+.doc .claus li{background:var(--card,#fff);border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:600;max-width:none}
+.doc .enllacos{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px}
+.doc .enllacos a{display:inline-block;padding:11px 16px;border-radius:12px;background:#1F2A37;color:#fff;text-decoration:none;font-weight:600}
+.doc .enllacos a.sec{background:var(--card,#fff);color:inherit;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.doc blockquote{margin:18px 0;padding:6px 0 6px 16px;border-left:4px solid #3B7224;font-size:1.12rem;font-weight:600}
+.doc .pack{border:2px solid var(--verd,#3d7a1a);border-radius:18px;padding:16px;margin:18px 0 22px;background:var(--card,#fff)}
+.doc .pack h2{margin:0 0 6px}
+.doc .pack .apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+.doc .pack .app{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:12px;background:var(--paper,#f4f6f9)}
+.doc .pack .app img{width:64px;height:64px;border-radius:16px;flex:0 0 auto}
+.doc .pack .app b{display:block;font-size:1.05rem}
+.doc .pack .app span{display:block;font-size:.95rem;color:var(--muted,#5d6b7c)}
+.doc .pack .app a{display:inline-block;margin-top:6px;font-weight:600}
+.doc .pack .qui{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;padding:0;list-style:none}
+.doc .pack .qui li{border-radius:999px;padding:4px 12px;background:var(--verd-soft,#ebf5e3);font-weight:600;font-size:.92rem;max-width:none;margin:0}
+.doc .pack .preu{font-size:1.15rem;margin:10px 0 0}

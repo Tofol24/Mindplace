@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar-MA" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1B4F8C">
+<meta name="description" content="السّلّوم · نرجعو نسوقو مجموعين · APRENS. مواجهة الخوف من السياقة شوية بشوية، مع الزوجة كتعاون فالعلاج (بالدارجة).">
+<title>السّلّوم · نسوقو مجموعين · APRENS</title>
+<style>
+:root{
+  --azul:#1B4F8C;--azulLt:#D6E4F0;--verde:#2E7D5E;--verdeLt:#D4EDDA;
+  --naranja:#B85E1F;--rojo:#B03225;--gris:#5B6270;--fondo:#F0F4F8;--oro:#9A6F1F;--oroLt:#F6EBD3;--lila:#6B43AE;--lilaLt:#ECE4F7;
+  --tinta:#1a1a2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Noto Naskh Arabic","Geeza Pro","Segoe UI",Tahoma,"Arial",sans-serif;background:linear-gradient(160deg,#EDF3FB 0%,#F7F4EF 100%);color:var(--tinta);min-height:100vh;line-height:1.85;font-size:17px;padding-bottom:env(safe-area-inset-bottom)}
+.header{background:var(--azul);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:11px;box-shadow:0 2px 12px rgba(27,79,140,.3);position:sticky;top:0;z-index:50}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--azul);font-size:12px;font-family:Georgia,serif;flex:none}
+.htitle{font-size:18px;font-weight:700;line-height:1.3}
+.hsub{font-size:12px;opacity:.85}
+.hlangs{margin-inline-start:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hlangs a{color:#fff;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff;border-bottom:1px solid #DDE5EE;position:sticky;top:60px;z-index:40}
+.tab{flex:none;border:1.5px solid var(--azulLt);background:#fff;color:var(--azul);border-radius:30px;padding:7px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--azul);color:#fff;border-color:var(--azul)}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 70px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 24px rgba(27,79,140,.08);margin-bottom:16px}
+h1{font-size:26px;margin:0 0 6px;color:var(--azul);line-height:1.4}
+h2{font-size:21px;margin:0 0 10px;color:var(--azul);line-height:1.45}
+h3{font-size:18px;margin:14px 0 6px;line-height:1.5}
+p{margin:0 0 10px}
+ul,ol{margin:0 0 10px;padding-inline-start:22px}
+li{margin-bottom:6px}
+.lead{font-size:18px}
+.quote{font-size:20px;color:var(--azul);font-weight:700;border-inline-start:4px solid var(--oro);padding-inline-start:12px;margin:6px 0 14px}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.keys{grid-template-columns:1fr}}
+.key{border-radius:16px;padding:16px}
+.key-que{background:var(--azulLt)}
+.key-como{background:var(--verdeLt)}
+.key h3{margin-top:0}
+.pill{display:inline-block;border-radius:30px;padding:2px 10px;font-size:13px;font-weight:700;margin-inline-end:4px;margin-bottom:4px}
+.p-que{background:var(--azulLt);color:var(--azul)}
+.p-como{background:var(--verdeLt);color:var(--verde)}
+.p-lvl{background:var(--oroLt);color:var(--oro)}
+.p-ella{background:var(--lilaLt);color:var(--lila)}
+.nivel{border:2px solid var(--azulLt);border-radius:18px;padding:16px;margin-bottom:14px;background:#fff}
+.nivel.actual{border-color:var(--oro);box-shadow:0 0 0 3px var(--oroLt)}
+.nivel-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.nivel-n{width:38px;height:38px;border-radius:50%;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:18px}
+.nivel-t{font-weight:700;font-size:18px;line-height:1.4}
+.nivel-s{font-size:14px;color:var(--gris)}
+.paso{border-top:1px dashed #D3DCE6;padding:10px 0}
+.paso:first-of-type{border-top:0}
+.paso-t{font-weight:700}
+.paso-v{font-size:14px;color:var(--gris)}
+.paso-c{font-size:14px;font-weight:700;color:var(--verde)}
+.paso-c.cero{color:var(--gris);font-weight:400}
+.bp{display:inline-block;border:0;border-radius:30px;padding:10px 18px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;background:var(--azul);color:#fff;text-decoration:none}
+.bpg{background:var(--verde)}
+.bs{background:#fff;color:var(--azul);border:1.5px solid var(--azul)}
+.bwa{background:#1E7A45}
+.bmini{padding:5px 12px;font-size:14px;margin-top:6px}
+.box{border-radius:14px;padding:14px;margin:10px 0}
+.box-oro{background:var(--oroLt)}
+.box-verde{background:var(--verdeLt)}
+.box-lila{background:var(--lilaLt)}
+.box-rojo{background:#FBE5E1}
+.frase{background:#fff;border-inline-start:4px solid var(--lila);border-radius:10px;padding:8px 12px;margin:6px 0;font-weight:700}
+.frase.no{border-color:var(--rojo);font-weight:400;text-decoration:line-through;text-decoration-color:rgba(176,50,37,.5)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.two{grid-template-columns:1fr}}
+details{background:#fff;border-radius:14px;padding:4px 14px;margin-bottom:10px;border:1px solid #E1E7EF}
+summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--azul)}
+label{display:block;font-weight:700;margin:12px 0 4px}
+select,input[type=text],input[type=number],input[type=date],textarea{width:100%;font:inherit;font-size:16px;border:1.5px solid #C9D4E0;border-radius:12px;padding:9px 12px;background:#fff;color:var(--tinta)}
+textarea{min-height:80px}
+input[type=range]{width:100%}
+.rv{display:flex;justify-content:space-between;font-size:14px;color:var(--gris)}
+.rv b{color:var(--azul);font-size:18px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-weight:400;margin:6px 0}
+.chk input{margin-top:8px;width:20px;height:20px;flex:none}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{margin:0;font-weight:400;border:1.5px solid #C9D4E0;border-radius:30px;padding:5px 12px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.reg{border-top:1px solid #E1E7EF;padding:10px 0;font-size:15px}
+.reg b{color:var(--azul)}
+.msg{white-space:pre-wrap;background:#F6F8FB;border-radius:12px;padding:12px;font-size:14px;direction:ltr;text-align:left;font-family:system-ui,sans-serif;max-height:300px;overflow:auto}
+.ok{color:var(--verde);font-weight:700}
+.foot{text-align:center;font-size:13px;color:var(--gris);padding:10px 16px 40px;max-width:700px;margin:0 auto}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hlogo" aria-hidden="true">ap</div>
+  <div>
+    <div class="htitle">السّلّوم · نرجعو نسوقو مجموعين</div>
+    <div class="hsub">APRENS · TEC · AIS · نواجهو الخوف شوية بشوية</div>
+  </div>
+  <nav class="hlangs" aria-label="اللغة">
+    <a href="escalera-conducir-ar.html" data-lang-link lang="ar">الفصحى</a>
+    <a href="escalera-conducir-es.html" data-lang-link lang="es">Castellano</a>
+  </nav>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="الأقسام">
+  <button class="tab" role="tab" id="t-inicio" aria-controls="v-inicio" aria-selected="true">البداية</button>
+  <button class="tab" role="tab" id="t-escalera" aria-controls="v-escalera" aria-selected="false">السّلّوم</button>
+  <button class="tab" role="tab" id="t-ella" aria-controls="v-ella" aria-selected="false">دليل الزوجة</button>
+  <button class="tab" role="tab" id="t-dentro" aria-controls="v-dentro" aria-selected="false">أدوات الداخل</button>
+  <button class="tab" role="tab" id="t-registro" aria-controls="v-registro" aria-selected="false">نقيّدو</button>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══════════ البداية ═══════════ -->
+<section id="v-inicio" role="tabpanel" aria-labelledby="t-inicio">
+  <div class="card">
+    <h1>درجة وحدة فكل مرة</h1>
+    <p class="lead">من بعد الكسيدة، الجسم ولّى كيشوف الطوموبيل بحال شي خطر. هادشي مفهوم. ولكن كل ما كنبعدو على السياقة، كيكبر الخوف كثر، وكتكبر معاه الهضرة مع راسك، والتخمام اللي كيدور وما كيحبسش، والبعد على مراتك وولدك.</p>
+    <p class="quote">تبقى ماشي هي تزيّر سنانك وتصبر بزّز.<br>تبقى هي تهزّ داكشي اللي كتحسّ بيه، وانت مرافَق.</p>
+    <p>المواجهة كتنجح ملي <b>كتبقى</b> فالموقف الوقت اللي تفاهمنا عليه، وانت كترافق راسك من الداخل، بلاصة ما تهرب باش ترتاح. إلا رجعتي قبل الوقت باش ينقص الخوف، الخوف كيتعلّم بلي الهروب كينفع، والمرة الجاية كيولّي تقيل كثر. الإنذار فالجسم يقدر ينقص ويقدر ما ينقصش: المهم هو انك <b>درتي الخطوة وبقيتي مع راسك</b>.</p>
+    <p>والبقاء <b>ماشي هو تكبت</b> الوجع اللي فالداخل. هو ترافقو: تتنفّس بفضول، ترخي الجسم، تعنّق راسك من الداخل، وتكون صادق مع داكشي اللي كتحسّ بيه.</p>
+  </div>
+
+  <div class="card">
+    <h2>كل خرجة كتتحلّ بجوج ساروت</h2>
+    <div class="keys">
+      <div class="key key-que">
+        <h3>🔑 الـ«آش»</h3>
+        <p><b>آش غادي نديرو اليوم.</b> شمن درجة، شحال من دقيقة، فين، وشكون معانا. الالتزام: نكمّلو الوقت اللي تفاهمنا عليه وما نهربوش، واخّا يبقى الخوف طالع.</p>
+      </div>
+      <div class="key key-como">
+        <h3>🔑 الـ«كيفاش»</h3>
+        <p><b>كيفاش كترافق راسك من الداخل</b> وانت تمّا: التنفّس بفضول، الزّيار والرّخو، العناق اللي كتحسّ بيه، والصراحة مع داكشي اللي كتحسّ بيه.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>تلاتة مجموعين: الأب، والأم، والولد</h2>
+    <p>هاد الخطة كنديروها <b>حنا التلاتة</b>. مراتك كتجلس حداك وكتشدّ الاتفاق بالحزم وبالحنان، وولدك كيرافقكم. وجودهم ماشي تقل عليك: هوما السبب اللي على قبالو كنرجعو للطريق، باش تكون أب وراجل حاضر، ماشي غايب فالتخمام ديالو.</p>
+    <p>وهي حتى هي عندها البيرمي. داكشي علاش جزء من الخطة هو <b>تقبل انها تسوق بيك هي</b>، وانها تخرج بالطوموبيل مع الولد، واخّا يكون عندك الخوف لا يوقع ليهم شي حاجة. الخوف عليهم راه محبة، ولكن ما نخلّيوهش هو اللي يقرّر فبلاصتنا.</p>
+    <div class="box box-oro">
+      <b>السيمانة اللولة:</b> طرقان قصار <b>وسط القرية</b> غير، فالنهار، كل نهار مرة وحدة على الأقل. من بعد كنطلعو درجة بدرجة، على حساب اللي يقرّرو الأخصائي فالجلسة.
+    </div>
+    <p><button class="bp" data-go="escalera">وريني السّلّوم ←</button></p>
+    <p class="nivel-s"><a href="escalera-conducir-ar.html">هاد الصفحة كاينة حتى بالعربية الفصحى ←</a></p>
+  </div>
+</section>
+
+<!-- ═══════════ السّلّوم ═══════════ -->
+<section id="v-escalera" role="tabpanel" aria-labelledby="t-escalera" hidden>
+  <div class="card">
+    <h2>السّلّوم من الساهل للصعيب</h2>
+    <p>كنطلعو للمستوى اللي من بعد ملي نديرو الخطوة <b>3 مرات على الأقل</b> ونكمّلو الوقت اللي تفاهمنا عليه <b>بلا هروب</b>، ومع «كيفاش» مزيان: ماشي غير شحال بقيتي، حتى كيفاش هزّيتي داكشي اللي حسّيتي بيه. إلا كان النهار صعيب، كنعاودو نفس الدرجة. ما كنقفزوش وما كنزربوش.</p>
+    <p class="nivel-s">العدّاد الخضر كيحسب الخرجات المقيّدين لكل خطوة فـ«نقيّدو».</p>
+    <label for="nivelActual">المستوى اللي خدّامين عليه دابا</label>
+    <select id="nivelActual"></select>
+  </div>
+  <div id="ladder"></div>
+  <div class="card box-rojo">
+    <h3 style="margin-top:0">⚠️ السلامة هي اللولة</h3>
+    <p>إلا حسّ بدوخة بصّح، ولا وقع شي خلل فالطوموبيل، ولا كانت الطريق خطيرة (شتا قوية، ضباب): كنحبسو فبلاصة آمنة. هادا ماشي هروب، هادا حذر. الهروب هو ترجع للدار غير حيت طلع الخوف.</p>
+    <p>الدوزة حدا البلاصة فين وقعات الكسيدة <b>ما كتكونش غير ملي يقرّرها الأخصائي</b>.</p>
+  </div>
+</section>
+
+<!-- ═══════════ دليل الزوجة ═══════════ -->
+<section id="v-ella" role="tabpanel" aria-labelledby="t-ella" hidden>
+  <div class="card">
+    <span class="pill p-ella">ليك نتي · كتعاوني فالعلاج</span>
+    <h1>الدور ديالك: رفيقة ثابتة وحنينة</h1>
+    <p class="lead">نتي ماشي فرملية ولا مونيتور ديال السياقة. الدور ديالك هو تكوني حداه بـ<b>الحزم</b> و<b>الرحمة</b> فنفس الوقت. راجلك ما يقدرش بوحدو دابا، والوجود ديالك كيخلّي الخطوة ممكنة.</p>
+    <div class="two">
+      <div class="box box-oro">
+        <h3 style="margin-top:0">💪 الحزم</h3>
+        <ul>
+          <li>الخرجة كتكون <b>كيف ما تفاهمنا</b>: فالوقت، الطريق كاملة، والوقت كامل.</li>
+          <li>ما كنلغيوش حيت هو خايف. الخوف عادي يجي، وهو جزء من العلاج.</li>
+          <li>الاتفاق التزام، ونتي <b>كتحضي الاتفاق</b>، ما كتبدّليهش وسط الطوموبيل.</li>
+        </ul>
+      </div>
+      <div class="box box-verde">
+        <h3 style="margin-top:0">🤍 الرحمة</h3>
+        <ul>
+          <li>كتعترفي بالخوف ديالو: «كنشوفك خايف، وهادشي مفهوم من بعد اللي وقع».</li>
+          <li>بلا تضحّك عليه، بلا لوم، بلا جدال طويل.</li>
+          <li>كتشكري <b>المجهود</b> ماشي النتيجة: «بقيتي واخّا كنتي خايف».</li>
+        </ul>
+      </div>
+    </div>
+    <p class="quote" style="font-size:18px">الحزم بلا رحمة كيولّي ضغط. والرحمة بلا حزم كتولّي هروب. خاصّنا بجوج مجموعين.</p>
+  </div>
+
+  <div class="card">
+    <h2>آش تديري وكيفاش: خطوة بخطوة</h2>
+
+    <details open>
+      <summary>١. قبل ما تخرجو (5 دقايق)</summary>
+      <ul>
+        <li>تفاهمو على خطوة اليوم من السّلّوم: <b>آش</b> (شمن طريق)، <b>شحال</b> من دقيقة، <b>شكون</b> معانا.</li>
+        <li>ديرو ساعة ثابتة كل نهار. حسن فالنهار، فوقت فيه شوية ديال الحركة فالسيمانة اللولة.</li>
+        <li>جلسو فالطوموبيل قبل ما تشعلو، وتنفّسو مجموعين دقيقة وحدة: كنلاحظو الهوا داخل وخارج، بلا ما نزيّرو عليه.</li>
+        <li>سوّليه: «من 0 حتى لـ10، شحال الخوف دابا؟» وقيّدي الرقم.</li>
+        <li>الولد كيجلس اللور بالسّمطة. ما كنطلبوش منو يطمّن باباه: هو غير كيرافق.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>٢. وهو كيسوق</summary>
+      <ul>
+        <li>صوت هادي، وجمل قصار. السكات ديالك الهادي حتى هو كيعاون.</li>
+        <li>ما تعطيهش بزّاف ديال التعليمات فالسياقة، ما تشدّيش الفولا، وما تغوّتيش غير إلا كان خطر بصّح.</li>
+        <li>إلا بدا <b>كيهضر بوحدو</b> ولا كيعاود «وإلا وقع...»: هادا تخمام كيدور. ما تجادليش الفكرة. رجّعيه للدابا:
+          <div class="frase">«راك هنا دابا. شوف الطريق، يديك على الفولا، تنفّس.»</div>
+        </li>
+        <li>قولي ليه يسمّي داكشي اللي كيحسّ بيه بلا ما يشرح:
+          <div class="frase">«قول غير آش كتحسّ: كنحسّ بالخوف، وكنبقى معاه.»</div>
+        </li>
+        <li>فنص الطريق سوّليه مرة وحدة: «شحال الخوف دابا من 0 حتى لـ10؟»</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>٣. إلا بغا يحبس ولا يرجع</summary>
+      <ul>
+        <li>إلا ما كانش خطر بصّح، ما كنرجعوش للدار. إلا احتاج، <b>يحبس الطوموبيل على جنب فبلاصة آمنة</b>، يتنفّس دقيقة ولا جوج وسط الطوموبيل، ومن بعد <b>يكمّل</b> حتى يسالي الوقت.</li>
+        <li>قولي ليه بالحزم وبالحنان:
+          <div class="frase">«عارفة بلي صعيب. حبس شوية وتنفّس، ومن بعد نكمّلو. هادشي تفاهمنا عليه بجوج.»</div>
+        </li>
+        <li>إلا رفض نهائيًا: ما تغوّتيش وما تهدّديش. كتبقاو فالطوموبيل الواقفة الوقت اللي بقا، وحتى هادي مواجهة. ومن بعد كتعلّمي الأخصائي.</li>
+        <li>ما تاخديش الفولا فبلاصتو فخطوة هو اللي خاصّو يسوق فيها: هادشي كيعلّم الخوف بلي الحل هو يسوق شي واحد آخر.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>٤. من بعد الخرجة (5 دقايق)</summary>
+      <ul>
+        <li>شكري المجهود بجملة وحدة من القلب:
+          <div class="frase">«بقيتي حتى للآخر واخّا كنتي خايف. أنا فرحانة بيك.»</div>
+        </li>
+        <li>قيّدو مجموعين فـ«نقيّدو»: الخوف قبل، وأعلى نقطة، ومن بعد، وواش كمّلتو الوقت.</li>
+        <li>ما تعاودوش تهضرو على الكسيدة من بعد الخرجة. هضرو على شي حاجة أخرى، شربو أتاي، رجعو للحياة العادية.</li>
+        <li>إلا كان النهار صعيب، قولي: «اليوم كان صعيب، وغدّا نعاودو نفس الخطوة». هادا ماشي فشل.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>٥. ملي كتسوقي نتي (يقبل انك ترافقيه نتي)</summary>
+      <p>الخوف ديالو لا يوقع ليكم شي حاجة إلا خديتو الطوموبيل هو خوف ديال المحبة، ولكن كيكبر إلا طعناه. داكشي علاش:</p>
+      <ul>
+        <li>فالسيمانة اللولة كتسوقي نتي وهو حداك راكب، والولد اللور، طريق قصيرة وسط القرية. هو كيتمرّن <b>يقبل يكون مرافَق</b> ويتيق.</li>
+        <li>من بعد كتخرجي نتي مع الولد وهو كيبقى فالدار. كتقولي ليه مرة وحدة:
+          <div class="frase">«فاهمة الخوف ديالك. أنا كنسوق بالعقل. غادي نخرج ونرجع، ونصيفط ليك ميساج ملي نوصل.»</div>
+        </li>
+        <li><b>ميساج واحد</b> ملي توصلي، ماشي عيطات بزّاف. إلا عيّط بزّاف ديال المرات، ما تجاوبيش على كل عيطة: هادشي كيوكّل القلق.</li>
+        <li>وهو فالدار، كيتمرّن على أدوات الداخل بلاصة ما يعيّط.</li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>جمل كتعاون، وجمل نبعدو منها</h2>
+    <div class="two">
+      <div>
+        <h3>✔️ قولي</h3>
+        <div class="frase">«كنشوفك خايف، وأنا هنا معاك.»</div>
+        <div class="frase">«الخوف كيجي وكيمشي، وحنا نكمّلو.»</div>
+        <div class="frase">«راك هنا دابا. الطريق، الفولا، النّفس.»</div>
+        <div class="frase">«تفاهمنا على 10 دقايق. بقا غير شوية.»</div>
+        <div class="frase">«ولدك كيشوفك كتحاول. هادا هو المهم.»</div>
+      </div>
+      <div>
+        <h3>✖️ بعدي من</h3>
+        <div class="frase no">«ما غادي يوقع والو، ما غادي يوقع والو...» (تطمين بزّاف)</div>
+        <div class="frase no">«راك كتبالغ، كون راجل.»</div>
+        <div class="frase no">«صافي، نرجعو للدار.» (غير حيت خاف)</div>
+        <div class="frase no">«خلّيني نسوق أنا.» (فالخطوة ديالو)</div>
+        <div class="frase no">«واش عاقل كيفاش وقعات الكسيدة؟»</div>
+      </div>
+    </div>
+    <p class="nivel-s">التطمين مرة وحدة مزيان. إلا عاودتيه بزّاف، الخوف كيطلب كثر.</p>
+  </div>
+
+  <div class="card">
+    <h2>فالدار، برّا الطوموبيل</h2>
+    <ul>
+      <li>ملي تلاحظي كيهضر بوحدو ولا سارح فالتخمام: حطّي يدك على كتافو بشوية وقولي ليه يتنفّس معاك دقيقة. ما تسوّليهش «فاش كتفكّر؟».</li>
+      <li>ديرو كل نهار شوية ديال الوقت للعائلة بلا تيليفون: تاكلو مجموعين، يلعب مع الولد، تمشيو شوية. القرب كيرجع بالحوايج الصغار.</li>
+      <li>ما تحمّليش راسك كلشي. حتى نتي محتاجة ترتاحي وتلقاي شي حد يسمع ليك.</li>
+    </ul>
+    <div class="box box-rojo">
+      <b>عيّطي للأخصائي فأقرب وقت إلا:</b> هضر على انه يأذي راسو ولا ما بقاش باغي يعيش، ولا ولّاو نوبات الخوف قويين بزّاف كل نهار، ولا رفض كل خرجة سيمانة كاملة، ولا بدا يشرب الشراب ولا ياخد الدوا بلا وصفة. إلا كان خطر دابا: <b>112</b>.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ أدوات الداخل ═══════════ -->
+<section id="v-dentro" role="tabpanel" aria-labelledby="t-dentro" hidden>
+  <div class="card">
+    <span class="pill p-como">الـ«كيفاش»</span>
+    <h1>كيفاش ترافق راسك من الداخل</h1>
+    <p><b>اللول نبانو، ومن بعد نبقاو.</b> قبل ما تواجه، تمرّن كل نهار وانت هادي، فسوايع ثابتين (بحال من بعد الفطور وقبل النعاس، 3 دقايق)، ماشي غير ملي يزيّر الخوف. هكّا، ملي تطلع درجة، ما تكونش بوحدك مع داكشي اللي كتحسّ بيه: غادي تكون عارف كيفاش ترافق راسك.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🫁 التنفّس بفضول</h3>
+    <p>لاحظ كيفاش الهوا كيدخل وكيخرج، بلا ما تزيّر عليه. فضول، ماشي تحكّم. فالطوموبيل: قبل ما تشعل، وفكل ضو حمر.</p>
+    <h3>💪 الزّيار والرّخو</h3>
+    <p>زيّر كتافك ويديك على الفولا وحنكك 5 ثواني، ومن بعد رخيهم بشوية. من الزّيار للرّخو. فالطوموبيل: وهي واقفة.</p>
+    <h3>🤍 العناق اللي كتحسّ بيه</h3>
+    <p>رافق راسك بحال اللي كترافق شي حد كتبغيه، بحال ملي كترافق ولدك ملي كيخاف. حطّ يدك على صدرك دقيقة (والطوموبيل واقفة) وقول لراسك: «أنا هنا معاك».</p>
+    <h3>🗣️ الصراحة مع راسك</h3>
+    <p>سمّي داكشي اللي كتحسّ بيه بلا ما تشرحو ولا تخبّيه: «كنلاحظ الخوف، وكنبقى معاه».</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🎠 حبس الدوّامة (الهضرة مع راسك والتخمام اللي كيدور)</h3>
+    <ol>
+      <li><b>لاحظ:</b> «أنا كندور فنفس الفكرة» ولا «أنا كنهضر بوحدي».</li>
+      <li><b>سمّيها:</b> «هادا تخمام كيدور، ماشي هو الواقع».</li>
+      <li><b>رجع للجسم:</b> نفس واحد بفضول، رجليك فالأرض (ولا يديك على الفولا).</li>
+      <li><b>رجع للحاجة اللي مهمّة:</b> آش كندير دابا مع مراتي وولدي؟</li>
+    </ol>
+    <p>إلا رجعات الفكرة، وغادي ترجع، كنرجعو مرة أخرى. المطلوب ماشي ما تجيش الفكرة، المطلوب تلاحظ بلي مشيتي وترجع.</p>
+    <div class="box box-lila"><b>وقت التخمام:</b> ختار ربع ساعة كل نهار (بحال الستة دلعشية) تكتب فيها المخاوف ديالك. إلا جات الفكرة فوقت آخر، قول ليها: «غادي نفكّر فيك مع الستة».</div>
+  </div>
+</section>
+
+<!-- ═══════════ نقيّدو ═══════════ -->
+<section id="v-registro" role="tabpanel" aria-labelledby="t-registro" hidden>
+  <div class="card">
+    <h1>نقيّدو الخرجة</h1>
+    <p>كتعمّرها المرا مع راجلها من بعد كل خرجة. المعلومات كتبقى <b>فهاد التيليفون غير</b>.</p>
+    <form id="fReg">
+      <label for="rFecha">التاريخ</label>
+      <input type="date" id="rFecha" required>
+      <label for="rPaso">الخطوة</label>
+      <select id="rPaso" required></select>
+      <div class="two">
+        <div><label for="rPlan">الدقايق اللي تفاهمنا عليها</label><input type="number" id="rPlan" min="0" max="240" inputmode="numeric"></div>
+        <div><label for="rReal">الدقايق اللي درنا بصّح</label><input type="number" id="rReal" min="0" max="240" inputmode="numeric"></div>
+      </div>
+      <div id="rangos"></div>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">واش كمّلنا الوقت بلا هروب؟</legend>
+        <div class="seg">
+          <label><input type="radio" name="rQuedo" value="si" required> إيه</label>
+          <label><input type="radio" name="rQuedo" value="parcial"> حبسنا ومن بعد كمّلنا</label>
+          <label><input type="radio" name="rQuedo" value="no"> لا، رجعنا</label>
+        </div>
+      </fieldset>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">الهضرة مع راسو والتخمام وحنا خارجين</legend>
+        <div class="seg">
+          <label><input type="radio" name="rRum" value="nada"> والو</label>
+          <label><input type="radio" name="rRum" value="poco"> شوية</label>
+          <label><input type="radio" name="rRum" value="mucho"> بزّاف</label>
+        </div>
+      </fieldset>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend style="font-weight:700;margin-top:12px">آش استعمل من أدوات الداخل؟</legend>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="respiracion"> 🫁 التنفّس بفضول</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="muscular"> 💪 الزّيار والرّخو</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="abrazo"> 🤍 العناق اللي كتحسّ بيه</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="honestidad"> 🗣️ الصراحة مع راسو</label>
+        <label class="chk"><input type="checkbox" name="rApoyo" value="carrusel"> 🎠 حبس الدوّامة</label>
+      </fieldset>
+      <label for="rNota">ملاحظة قصيرة (إلا بغيتي)</label>
+      <textarea id="rNota" maxlength="500"></textarea>
+      <p style="margin-top:14px"><button type="submit" class="bp bpg">سجّل الخرجة</button> <span id="rOk" class="ok" role="status"></span></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>الخرجات المقيّدين</h2>
+    <div id="lista"></div>
+  </div>
+
+  <div class="card">
+    <h2>صيفطي للأخصائي</h2>
+    <p>الميساج مكتوب بالسبليونية باش يفهمو الأخصائي ديريكت. الملاحظات كتبقى كيف ما كتبتوها.</p>
+    <p>
+      <button type="button" class="bp bwa" id="bWA">📲 صيفط فالواتساب</button>
+      <button type="button" class="bp bs" id="bCopy">📋 كوبي النص</button>
+    </p>
+    <div class="msg" id="msgBox" aria-live="polite"></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <b>APRENS · TEC · AIS</b>. هاد الأداة كترافق المواجهة اللي كيحدّدها الأخصائي النفسي، وما كتعوّضوش.<br>
+  المعلومات كتتحفظ فهاد التيليفون غير وما كتمشي لحتى سيرفور.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var KEY = "aprens_conducir_ar_v1", KEY_NIV = "aprens_conducir_ar_nivel";
+
+  /* ---------- السُّلَّم (es: título en castellano para el informe al psicólogo) ---------- */
+  var NIVELES = [
+    { n: 1, t: "السيمانة اللولة · وسط القرية", s: "طرقان قصار، فالنهار، شوية ديال الحركة. خرجة وحدة كل نهار على الأقل.", pasos: [
+      { id: "1a", es: "N1 · Pasajero: ella conduce, él al lado, hijo detrás, vuelta corta por el pueblo", t: "كتسوق مراتك وانت حداها راكب، والولد اللور: دورة قصيرة وسط القرية", v: "5–10 د · فالنهار", ella: true },
+      { id: "1b", es: "N1 · Él en el asiento del conductor, motor encendido, sin moverse", t: "كتجلس فبلاصة الشيفور، كتشعل الموطور وما كتحرّكش", v: "3–5 د · مراتك حداك · قدّام الدار" },
+      { id: "1c", es: "N1 · Él conduce un trayecto muy corto y conocido del pueblo (panadería, tienda)", t: "كتسوق نتا طريق قصيرة بزّاف وعارفها وسط القرية (الفرّان، الحانوت، الجامع) وترجع", v: "5 د · مراتك حداك · الولد اللور · فالنهار" },
+      { id: "1d", es: "N1 · Él conduce por varias calles del pueblo y aparca", t: "كتسوق فشي زناقي وسط القرية، وكتباركي الطوموبيل مرة وحدة على الأقل", v: "10 د · مراتك حداك · الولد اللور" }
+    ] },
+    { n: 2, t: "المستوى 2 · القرية كاملة", s: "طرقان أطول وسط القرية، وأوقات فيها الحركة كثر.", pasos: [
+      { id: "2a", es: "N2 · Él conduce 15 min por el pueblo en hora con más tráfico", t: "كتسوق 15 دقيقة وسط القرية فوقت فيه الحركة (خروج المدرسة، السوق)", v: "15 د · مراتك حداك · الولد اللور" },
+      { id: "2b", es: "N2 · Ella sale sola con el hijo a un recado corto; él en casa, un solo mensaje", t: "كتخرج مراتك بوحدها مع الولد لشي قضية قصيرة، وانت فالدار: ميساج واحد ملي توصل، بلا عيطات", v: "15–20 د · انت فالدار", ella: true },
+      { id: "2c", es: "N2 · Él conduce con ella en el asiento de atrás (menos apoyo)", t: "كتسوق وسط القرية ومراتك جالسة اللور مع الولد، ماشي حداك", v: "10–15 د" }
+    ] },
+    { n: 3, t: "المستوى 3 · برّا القرية", s: "الطريق للقرية ولا المدينة اللي حدانا.", pasos: [
+      { id: "3a", es: "N3 · Él conduce hasta el pueblo vecino por carretera secundaria", t: "كتسوق حتى للقرية اللي حدانا فطريق صغيرة، وترجع", v: "15–20 د · مراتك حداك · فالنهار" },
+      { id: "3b", es: "N3 · Él como pasajero en un trayecto largo conducido por ella", t: "كتسوق مراتك طريق أطول برّا القرية وانت راكب، بلا ما تعطيها تعليمات", v: "20–30 د", ella: true },
+      { id: "3c", es: "N3 · Él conduce a la población cercana a hacer una compra", t: "كتسوق للمدينة القريبة تشري شي حاجة، تباركي، وترجع", v: "30 د · مراتك والولد" }
+    ] },
+    { n: 4, t: "المستوى 4 · طرقان سريعة", s: "طريق كبيرة ولا الأوطوروت، وظروف صعيبة كثر.", pasos: [
+      { id: "4a", es: "N4 · Él conduce por carretera principal / vía rápida, ella al lado", t: "كتسوق فطريق كبيرة ولا فالأوطوروت مسافة قصيرة", v: "20–30 د · مراتك حداك" },
+      { id: "4b", es: "N4 · Él conduce al atardecer o con lluvia ligera", t: "كتسوق مع المغرب ولا مع شتا خفيفة، وسط القرية ومن بعد برّا", v: "15–20 د · مراتك حداك" },
+      { id: "4c", es: "N4 · Ella hace un viaje largo con el hijo; él en casa sin llamar", t: "كدير مراتك سفر أطول مع الولد، وانت فالدار بلا ما تعيّط بزّاف", v: "ساعة ولا كثر", ella: true }
+    ] },
+    { n: 5, t: "المستوى 5 · بوحدك", s: "غير ملي يقرّرها الأخصائي.", pasos: [
+      { id: "5a", es: "N5 · Él conduce solo un trayecto conocido; ella espera en casa", t: "كتسوق بوحدك طريق عارفها، ومراتك كتسناك فالدار", v: "10–15 د" },
+      { id: "5b", es: "N5 · Pasar cerca del lugar del accidente (solo si lo indica el psicólogo)", t: "الدوزة حدا البلاصة فين وقعات الكسيدة، مع مراتك (غير بقرار الأخصائي)", v: "على حساب الجلسة" },
+      { id: "5c", es: "N5 · Él lleva solo al hijo en un trayecto habitual", t: "كتسوق نتا مع الولد بوحدكم فشي مشوار عادي", v: "15–20 د" }
+    ] }
+  ];
+  var PASOS = {};
+  NIVELES.forEach(function (nv) { nv.pasos.forEach(function (p) { p.nivel = nv.n; PASOS[p.id] = p; }); });
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function load() { try { var a = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function save(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+  var regs = load();
+  function nivelActual() { var n = 1; try { n = Number(localStorage.getItem(KEY_NIV)) || 1; } catch (e) {} return n; }
+
+  /* ---------- pestañas ---------- */
+  function abrir(id) {
+    $$(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.id === "t-" + id ? "true" : "false"); });
+    $$("[role=tabpanel]").forEach(function (v) { v.hidden = v.id !== "v-" + id; });
+    window.scrollTo(0, 0);
+    try { history.replaceState(null, "", "#" + id); } catch (e) {}
+    if (id === "registro") { renderLista(); prepMsg(); }
+  }
+  var SECCIONES = ["inicio", "escalera", "ella", "dentro", "registro"];
+  function desdeEnlace() {
+    var h = (location.hash || "").replace("#", "");
+    if (SECCIONES.indexOf(h) > -1) abrir(h);
+  }
+  window.addEventListener("hashchange", desdeEnlace);
+  // Las pestañas se pegan justo debajo de la cabecera, mida lo que mida
+  function ajustarPestanas() { var h = $(".header"), t = $(".tabs"); if (h && t) t.style.top = h.offsetHeight + "px"; }
+  ajustarPestanas(); window.addEventListener("resize", ajustarPestanas);
+  // Cambiar de idioma conservando el apartado abierto
+  $$("[data-lang-link]").forEach(function (a) {
+    a.addEventListener("click", function () { a.href = a.getAttribute("href").split("#")[0] + location.hash; });
+  });
+  $$(".tab").forEach(function (t) {
+    t.addEventListener("click", function () { abrir(t.id.slice(2)); });
+  });
+  $$("[data-go]").forEach(function (b) { b.addEventListener("click", function () { abrir(b.getAttribute("data-go")); }); });
+
+  /* ---------- escalera ---------- */
+  function cuenta(id) { return regs.filter(function (r) { return r.paso === id; }).length; }
+  function renderLadder() {
+    var act = nivelActual();
+    $("#ladder").innerHTML = NIVELES.map(function (nv) {
+      return '<div class="nivel' + (nv.n === act ? " actual" : "") + '">' +
+        '<div class="nivel-h"><span class="nivel-n">' + nv.n + '</span><div><div class="nivel-t">' + esc(nv.t) + '</div><div class="nivel-s">' + esc(nv.s) + '</div></div></div>' +
+        nv.pasos.map(function (p) {
+          var c = cuenta(p.id);
+          return '<div class="paso"><div class="paso-t">' + (p.ella ? '<span class="pill p-ella">كتسوق هي</span>' : "") + esc(p.t) + '</div>' +
+            '<div class="paso-v">' + esc(p.v) + '</div>' +
+            '<div class="paso-c' + (c ? "" : " cero") + '">' + (c ? "✓ " + (c === 1 ? "خرجة وحدة مقيّدة" : c === 2 ? "جوج خرجات مقيّدين" : c + " ديال الخرجات مقيّدين") + (c >= 3 ? " · واجد تطلع إلا كان الـ«كيفاش» مزيان" : "") : "مازال ما تقيّدات") + '</div>' +
+            '<button type="button" class="bp bs bmini" data-reg="' + p.id + '">قيّد خرجة لهاد الخطوة</button></div>';
+        }).join("") + '</div>';
+    }).join("");
+    $$("[data-reg]", $("#ladder")).forEach(function (b) {
+      b.addEventListener("click", function () { $("#rPaso").value = b.getAttribute("data-reg"); abrir("registro"); $("#rFecha").focus(); });
+    });
+  }
+  var sel = $("#nivelActual");
+  sel.innerHTML = NIVELES.map(function (nv) { return '<option value="' + nv.n + '">' + esc(nv.t) + '</option>'; }).join("");
+  sel.value = String(nivelActual());
+  sel.addEventListener("change", function () { try { localStorage.setItem(KEY_NIV, sel.value); } catch (e) {} renderLadder(); });
+
+  /* ---------- registro ---------- */
+  $("#rPaso").innerHTML = NIVELES.map(function (nv) {
+    return '<optgroup label="' + esc(nv.t) + '">' + nv.pasos.map(function (p) { return '<option value="' + p.id + '">' + esc(p.t) + '</option>'; }).join("") + '</optgroup>';
+  }).join("");
+  var RANGOS = [["rAntes", "الخوف قبل الخرجة"], ["rPico", "أعلى نقطة ديال الخوف"], ["rDespues", "الخوف من بعد الخرجة"], ["rComo", "الـ«كيفاش»: شحال رافق راسو من الداخل"]];
+  $("#rangos").innerHTML = RANGOS.map(function (r) {
+    return '<label for="' + r[0] + '">' + r[1] + '</label><input type="range" id="' + r[0] + '" min="0" max="10" value="5">' +
+      '<div class="rv"><span>0</span><b id="' + r[0] + 'v">5</b><span>10</span></div>';
+  }).join("");
+  RANGOS.forEach(function (r) { var i = $("#" + r[0]); i.addEventListener("input", function () { $("#" + r[0] + "v").textContent = i.value; }); });
+  function hoy() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  $("#rFecha").value = hoy();
+  $("#rPaso").value = (NIVELES[nivelActual() - 1] || NIVELES[0]).pasos[0].id;
+
+  $("#fReg").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = $("input[name=rQuedo]:checked"), ru = $("input[name=rRum]:checked");
+    var r = {
+      id: "r" + Date.now(), fecha: $("#rFecha").value, paso: $("#rPaso").value,
+      plan: $("#rPlan").value, real: $("#rReal").value,
+      antes: +$("#rAntes").value, pico: +$("#rPico").value, despues: +$("#rDespues").value, como: +$("#rComo").value,
+      quedo: q ? q.value : "", rum: ru ? ru.value : "",
+      apoyos: $$("input[name=rApoyo]:checked").map(function (c) { return c.value; }),
+      nota: $("#rNota").value.trim()
+    };
+    regs.push(r);
+    var ok = save(regs);
+    $("#rOk").textContent = ok ? "✓ تسجّلات" : "تسجّلات غير لهاد المرة";
+    setTimeout(function () { $("#rOk").textContent = ""; }, 2500);
+    $("#rNota").value = ""; $("#rPlan").value = ""; $("#rReal").value = "";
+    $$("input[name=rApoyo], input[name=rQuedo], input[name=rRum]").forEach(function (c) { c.checked = false; });
+    renderLista(); renderLadder(); prepMsg();
+  });
+
+  var TXT_Q = { si: "كمّلنا", parcial: "حبسنا ومن بعد كمّلنا", no: "رجعنا" };
+  var TXT_R = { nada: "والو", poco: "شوية", mucho: "بزّاف" };
+  function renderLista() {
+    var box = $("#lista");
+    if (!regs.length) { box.innerHTML = '<p class="nivel-s">مازال ما تقيّدات حتى خرجة.</p>'; return; }
+    box.innerHTML = regs.slice().reverse().map(function (r) {
+      var p = PASOS[r.paso] || { t: r.paso };
+      return '<div class="reg"><b>' + esc(r.fecha) + '</b> · ' + esc(p.t) + '<br>' +
+        'الخوف: ' + r.antes + ' ← ' + r.pico + ' ← ' + r.despues + ' · الـ«كيفاش»: ' + r.como + '/10' +
+        (r.real ? ' · ' + esc(r.real) + ' د' : "") + (r.quedo ? ' · ' + TXT_Q[r.quedo] : "") +
+        (r.nota ? '<br><span class="nivel-s">' + esc(r.nota) + '</span>' : "") +
+        '<br><button type="button" class="bp bs bmini" data-del="' + r.id + '">مسح</button></div>';
+    }).join("");
+    $$("[data-del]", box).forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (!confirm("نمسحو هاد التسجيل؟")) return;
+        regs = regs.filter(function (r) { return r.id !== b.getAttribute("data-del"); });
+        save(regs); renderLista(); renderLadder(); prepMsg();
+      });
+    });
+  }
+
+  /* ---------- mensaje al psicólogo (en castellano) ---------- */
+  var ES_Q = { si: "sí, sin huida", parcial: "paró y continuó", no: "no, volvieron" };
+  var ES_R = { nada: "nada", poco: "poco", mucho: "mucho" };
+  var ES_A = { respiracion: "respiración", muscular: "tensión-distensión", abrazo: "abrazo sentido", honestidad: "honestidad emocional", carrusel: "parar el carrusel" };
+  function prepMsg() {
+    var ult = regs.slice(-10);
+    var lin = ["APRENS · La escalera · Conducir juntos · dariya (registro de la coterapeuta)",
+      "Nivel actual: " + nivelActual() + " · Salidas registradas: " + regs.length, ""];
+    if (!ult.length) lin.push("Todavía no hay salidas registradas.");
+    ult.forEach(function (r) {
+      var p = PASOS[r.paso];
+      lin.push("• " + r.fecha + " · " + (p ? p.es : r.paso));
+      lin.push("  Miedo antes/pico/después: " + r.antes + "/" + r.pico + "/" + r.despues + " · CÓMO: " + r.como + "/10" +
+        (r.plan || r.real ? " · min previstos/reales: " + (r.plan || "-") + "/" + (r.real || "-") : ""));
+      lin.push("  Se quedó: " + (ES_Q[r.quedo] || "-") + " · Hablar solo/rumiación: " + (ES_R[r.rum] || "-") +
+        (r.apoyos && r.apoyos.length ? " · Apoyos: " + r.apoyos.map(function (a) { return ES_A[a] || a; }).join(", ") : ""));
+      if (r.nota) lin.push("  Nota (original): " + r.nota);
+    });
+    $("#msgBox").textContent = lin.join("\n");
+  }
+  $("#bWA").addEventListener("click", function () {
+    prepMsg();
+    window.open("https://wa.me/?text=" + encodeURIComponent($("#msgBox").textContent), "_blank", "noopener");
+  });
+  $("#bCopy").addEventListener("click", function () {
+    prepMsg();
+    var t = $("#msgBox").textContent, b = this;
+    function hecho() { b.textContent = "✓ تكوبى"; setTimeout(function () { b.textContent = "📋 كوبي النص"; }, 2200); }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(t).then(hecho); }
+    else { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); hecho(); } catch (e) {} ta.remove(); }
+  });
+
+  renderLadder();
+  desdeEnlace();
+})();
+</script>
+</body>
+</html>

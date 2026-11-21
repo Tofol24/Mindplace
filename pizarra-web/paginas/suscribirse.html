@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suscripción · Pizarra del entrenador</title>
+<meta name="description" content="Pizarra táctica y cuaderno para entrenadores de fútbol base. Lo básico es gratis; la suscripción añade enlaces, fichas privadas y sugerencias de Claude.">
+<link rel="icon" href="/entrenador/aprens-icona-192.png" type="image/png">
+<link rel="stylesheet" href="/suscripcion.css">
+</head>
+<body>
+<main>
+  <p class="marca"><a href="/pizarra/">⚽ Pizarra del entrenador</a></p>
+  <h1>Suscripción de entrenador</h1>
+  <p>La pizarra nace de la idea de que un jugador aprende mejor cuando entiende qué tiene que hacer y por qué, y de que el entrenador pueda explicárselo de manera sencilla, con su dorsal, su posición y lo que conviene mirar en cada momento del juego. El cuaderno, la pizarra y el envío de archivos son gratis y lo seguirán siendo. La suscripción añade lo que necesita servidor y por tanto tiene un coste para mantenerlo.</p>
+
+  <table class="tabla">
+    <thead><tr><th scope="col">Gratis</th><th scope="col">Con la suscripción, además</th></tr></thead>
+    <tbody><tr>
+      <td>Cuaderno de entrenos y partidos, plantilla y fichas de los jugadores.<br>Pizarra animada con pasos, zonas y mensajes para cada ficha.<br>Aprendizajes en 5 pasos con las pizarras ya dibujadas.<br>Feedback de cada sesión, análisis del partido y memoria del equipo.<br>Enviar los planes como archivo al grupo.</td>
+      <td>Enlaces cortos y cifrados para el grupo, que se abren con un toque.<br>Ficha privada para cada jugador o su familia, con tus notas.<br>Enviar el cuaderno a otro entrenador por enlace.<br>Claude: sugerencias para cada apartado, diseñar la pizarra de un ejercicio, alternativas y el próximo entrenamiento a partir de los feedbacks.</td>
+    </tr></tbody>
+  </table>
+  <p class="peq">Tu cuaderno sigue guardado solo en tu móvil. La suscripción no lo sube a ningún sitio.</p>
+
+  <form id="f" class="panel" novalidate>
+    <span class="etq">1 · El plan</span>
+    <div id="planes"><p class="peq">Cargando…</p></div>
+
+    <label class="etq" for="email">2 · Correo para las facturas</label>
+    <input type="email" id="email" autocomplete="email" placeholder="correo@ejemplo.com">
+    <p class="peq">Opcional: si no lo pones aquí, te lo pedirá Stripe. A ese correo llegarán las facturas<span id="notaCorreo"> y el código de acceso</span>.</p>
+
+    <span class="etq">3 · Consentimiento</span>
+    <label class="check"><input type="checkbox" id="ok"><span>Soy mayor de edad. He leído las <a href="/condiciones.html" target="_blank" rel="noopener">condiciones de uso</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>, y entiendo que las sugerencias las genera una inteligencia artificial (Claude, de Anthropic) y que pueden equivocarse.</span></label>
+    <label class="check"><input type="checkbox" id="inicio"><span>Pido que el servicio empiece enseguida, antes de que acabe el plazo de desistimiento de 14 días. Entiendo que, si desisto dentro de ese plazo, se descontará la parte proporcional del servicio ya prestado.</span></label>
+
+    <p class="error" id="err" role="alert" hidden></p>
+    <div class="fila">
+      <button class="btn" id="ir" type="submit" disabled>Continuar al pago</button>
+      <a class="btn sec" href="/pizarra/">Ya tengo un código</a>
+      <a class="btn sec" href="/recuperar.html" id="lnkRec">He perdido el código</a>
+    </div>
+    <p class="peq">El pago lo gestiona Stripe: los datos de la tarjeta nunca pasan por la pizarra. Puedes darte de baja cuando quieras desde la propia pizarra, en Ajustes → Tu suscripción.</p>
+  </form>
+</main>
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const err = (m) => { $("#err").textContent = m; $("#err").hidden = !m; };
+const listo = () => { $("#ir").disabled = !($("#ok").checked && $("#inicio").checked && document.querySelector("input[name=plan]:checked")); };
+fetch("/api/pizarra-config").then((r) => r.json()).then((c) => {
+  if (!c.correo) { $("#notaCorreo").textContent = " (el código de acceso aparecerá en la pantalla después de pagar y en las facturas)"; $("#lnkRec").hidden = true; }
+  if (!c.altas || !c.planes.length) { $("#planes").innerHTML = "<p>Ahora mismo no hay altas abiertas. Vuelve a mirarlo más adelante.</p>"; return; }
+  $("#planes").innerHTML = c.planes.map((p, i) => `<label class="plan"><input type="radio" name="plan" value="${esc(c.precios[i])}" ${i === 0 ? "checked" : ""}> <strong>${esc(p.nom)}</strong><span class="precio">${esc(p.precio)}</span><span class="peq">${p.ia ? "Hasta " + p.ia + " consultas a Claude al mes" : "Consultas a Claude sin tope mensual"}. Enlaces y fichas privadas sin tope.</span></label>`).join("");
+  listo();
+}).catch(() => { $("#planes").innerHTML = '<p class="error">No se ha podido cargar el plan. Vuelve a intentarlo dentro de un rato.</p>'; });
+document.addEventListener("change", listo);
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault(); err("");
+  const p = document.querySelector("input[name=plan]:checked");
+  if (!p || !$("#ok").checked || !$("#inicio").checked) return;
+  $("#ir").disabled = true; $("#ir").textContent = "Abriendo el pago…";
+  try {
+    const r = await fetch("/api/pizarra-checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ precio: p.value, email: $("#email").value.trim(), acepto: true, inicio: true }) });
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok || !b.url) throw new Error(b.error === "email" ? "Revisa el correo: no parece válido." : "No se ha podido abrir el pago. Vuelve a intentarlo.");
+    location.href = b.url;
+  } catch (x) { err(x.message); $("#ir").disabled = false; $("#ir").textContent = "Continuar al pago"; }
+});
+</script>
+</body>
+</html>

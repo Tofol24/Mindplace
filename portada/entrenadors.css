@@ -1,0 +1,43 @@
+/* APRENS · Per a entrenadors i entrenadores */
+.doc .icona-gran{border-radius:20px}
+.doc blockquote{margin:18px 0;padding:6px 0 6px 16px;border-left:4px solid var(--verd);font-size:1.12rem;font-weight:600}
+.doc .eines{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px;margin:12px 0 22px;padding:0;list-style:none}
+.doc .eina{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;max-width:none}
+.doc .eina h3{font-size:1.25rem;color:var(--verd)}
+.doc .eina .estat{margin:0}
+.doc .eina .estat.aviat{background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+.doc .eina p{margin:0;color:var(--muted);font-size:.95rem}
+.doc .eina a{font-weight:700}
+.doc .passes{counter-reset:p;list-style:none;padding:0;margin:12px 0 22px}
+.doc .passes li{counter-increment:p;position:relative;padding:10px 12px 10px 52px;margin:0 0 8px;background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:none}
+.doc .passes li::before{content:counter(p);position:absolute;left:12px;top:10px;width:28px;height:28px;border-radius:50%;background:var(--verd);color:var(--card);font-weight:800;display:grid;place-items:center}
+.doc .passes li.alerta{background:var(--verd-soft)}
+.doc .enllacos{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 22px}
+.doc .boto{display:inline-block;padding:11px 16px;border-radius:12px;background:#1F2A37;color:#fff;text-decoration:none;font-weight:600;border:0;font:600 1rem var(--f-body);cursor:pointer}
+.doc .boto.sec{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+#dissenya{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0 26px}
+#dissenya h3{font-size:1.15rem;margin:6px 0 10px}
+#dissenya .suau{color:var(--muted);font-size:.92rem;margin:0 0 10px}
+.xips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.xips button{font:600 .92rem var(--f-body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.xips button[aria-pressed=true]{background:var(--verd);border-color:var(--verd);color:var(--card)}
+.fitxa fieldset{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 12px}
+.fitxa legend{font-weight:800;color:var(--verd);padding:0 6px}
+.fitxa .camp{display:flex;flex-direction:column;gap:4px;margin:0 0 10px}
+.fitxa label{font-weight:600;font-size:.92rem}
+.fitxa textarea{font:1rem/1.45 var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;resize:vertical;width:100%;box-sizing:border-box}
+.fitxa fieldset p{margin:0;font-size:.95rem}
+.fitxa .imprimible,.fitxa .peu-fitxa{display:none}
+.doc .material{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0 22px}
+.doc .material img{width:56px;height:56px;flex:none}
+@media print{
+  body.imprimint-fitxa header,body.imprimint-fitxa main > *:not(.fitxa-zona),body.imprimint-fitxa .fitxa-zona > *:not(#dissenya),body.imprimint-fitxa #dissenya > *:not(.fitxa){display:none!important}
+  body.imprimint-fitxa #dissenya{border:0;padding:0}
+  body.imprimint-fitxa .fitxa textarea{display:none}
+  body.imprimint-fitxa .fitxa .imprimible{display:block;white-space:pre-wrap;padding:4px 0 8px}
+  body.imprimint-fitxa .fitxa .peu-fitxa{display:block;font-size:.8rem;color:#555}
+  body.imprimint-fitxa .fitxa fieldset{break-inside:avoid}
+}
+.doc .cicle .eina h3{font-size:1.15rem}
+.doc .eina .estat{align-self:flex-start}
+.doc .enllacos .boto{text-decoration:none}

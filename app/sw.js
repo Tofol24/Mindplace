@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v226";
+const CACHE = "aprens-v254";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -178,6 +178,10 @@ const SHELL = [
   "./esport-base/silueta.js",
   "./esport-base/contingut-ca.js",
   "./esport-base/contingut-es.js",
+  "./pizarra/index.html",
+  "./pizarra/app.css",
+  "./pizarra/app.js",
+  "./pizarra/ficha.js",
   "./entrenador/index.html",
   "./entrenador/app.css",
   "./entrenador/app.js",
@@ -247,6 +251,18 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   // Funciones de Netlify (contador de uso): nunca desde caché.
   if (url.pathname.indexOf("/api/") === 0) return;
+  // Pizarra del entrenador: primero la red (siempre la última versión si hay
+  // conexión) y, sin conexión, lo que haya en caché.
+  if (url.pathname.indexOf("/pizarra/") !== -1) {
+    e.respondWith(
+      fetch(req).then(res => {
+        if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}); return res; }
+        if (res && res.status >= 500) return caches.match(req).then(hit => hit || res);
+        return res;
+      }).catch(() => caches.match(req).then(hit => hit || (req.mode === "navigate" ? caches.match("./pizarra/index.html") : Response.error())))
+    );
+    return;
+  }
   if (url.pathname.indexOf("/cuentos/img/") !== -1) {
     e.respondWith(
       caches.open(CUENTOS).then(c =>

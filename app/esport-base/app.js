@@ -341,6 +341,7 @@
     h += acces('apren', IC.apren, i.aprenT, i.aprenD);
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, i.entrenadorsT, i.entrenadorsD);
     if (r === 'entrenador') h += accesQuadern();
+    if (r === 'entrenador') h += accesEspai();
     h += acces('silueta', IC.silueta, i.siluetaT, i.siluetaD);
     h += acces('setmanal', IC.setmanal, i.setmanalT, i.setmanalD);
     h += acces('club', IC.club, t.club.titol, t.club.intro.split('. ')[0] + '.');
@@ -352,6 +353,11 @@
     if (c && c.slug) q.push('club=' + encodeURIComponent(c.slug));
     if (S.lang) q.push('lang=' + S.lang);
     return '<a class="acces" href="../entrenador/' + (q.length ? '?' + q.join('&') : '') + '"><span class="ic">' + IC.setmanal + '</span><span><b>' + esc(i.quadernT) + '</b><span class="d">' + esc(i.quadernD) + '</span></span><span class="fl" aria-hidden="true">›</span></a>';
+  }
+  /* Enllaç a l'espai per a entrenadors i entrenadores d'aprens.net (pissarra, mètode i dinàmiques) */
+  function accesEspai() {
+    var i = T().inici;
+    return '<a class="acces" href="https://aprens.net/entrenadors.html" rel="noopener"><span class="ic">' + IC.entrenador + '</span><span><b>' + esc(i.espaiT) + '</b><span class="d">' + esc(i.espaiD) + '</span></span><span class="fl" aria-hidden="true">›</span></a>';
   }
   function acces(v, icona, tit, d) {
     return '<button type="button" class="acces" data-go="' + v + '"><span class="ic">' + icona + '</span><span><b>' + esc(tit) + '</b><span class="d">' + esc(d) + '</span></span><span class="fl" aria-hidden="true">›</span></button>';
@@ -782,6 +788,7 @@
     var h = '<span class="kick">' + esc(t.ui.apren) + '</span><h1>' + esc(a.titol) + '</h1><p class="lead">' + esc(a.intro) + '</p>';
     if (r === 'entrenador') h += acces('entrenadors', IC.entrenador, t.inici.entrenadorsT, t.inici.entrenadorsD);
     if (r === 'entrenador') h += accesQuadern();
+    if (r === 'entrenador') h += accesEspai();
     h += acces('comunitat', IC.club, t.comunitat.titol, t.comunitat.exitCita);
     h += acces('atencio', IC.atencio, t.atencio.titol, t.atencio.clau);
     h += acces('piramide', IC.piramide, t.piramide.titol, t.piramide.mestria.lema);

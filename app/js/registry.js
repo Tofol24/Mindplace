@@ -89,6 +89,9 @@ window.APRENS_TOOLS = [
   { id:"escalera_exposicion", emoji:"🪜", nombre:"La escalera (exposición)",
     desc:"Exposición en vivo gradual: tu escalera de peldaños y dos llaves en cada exposición, el QUÉ (conductual) y el CÓMO (acompañamiento interno AIS).",
     migrada:true, iframe:"exposicion/index.html" },
+  { id:"escalera_exposicion_ar", emoji:"🚗", nombre:"السُّلَّم · La escalera para conducir (árabe)",
+    desc:"La escalera en árabe, solo para la conducción y ya configurada: primera semana con trayectos cortos dentro del pueblo, con la pareja al lado y el hijo detrás, y subida gradual, con peldaños en que conduce ella para aceptar ser acompañado. Mismas dos llaves (QUÉ y CÓMO), registro de cada exposición y resumen al psicólogo en castellano.",
+    migrada:true, iframe:"exposicion-ar/index.html" },
 
   { id:"exploradora_valiente", emoji:"🗺️", nombre:"La exploradora valiente",
     desc:"Juego infantil de exposición gradual para la ansiedad de separación (para madres y padres): escalera de misiones de valiente y dos llaves, el QUÉ y el CÓMO (co-regulación AIS).",
@@ -193,7 +196,19 @@ window.APRENS_TOOLS = [
 
   { id:"salidas_paso_a_paso", emoji:"🚶", nombre:"Paso a paso · recuperar las salidas",
     desc:"Para agorafobia y evitación social: recuperar la calle poco a poco. Escalera de exposición gradual en vivo con las dos llaves (QUÉ conductual · CÓMO acompañamiento AIS) y registro antes/pico/después, exposición en imaginación, y las herramientas de dentro (respiración curiosa, parar la rumiación, abrazo sentido, estar con el sobresalto) más estructura del día. Registro diario para el psicólogo por WhatsApp.",
-    migrada:true, iframe:"tools-standalone/salidas-paso-a-paso.html" }
+    migrada:true, iframe:"tools-standalone/salidas-paso-a-paso.html" },
+
+  { id:"escalera_conducir_ar", emoji:"🚗", nombre:"السُّلَّم · Conducir juntos (árabe)",
+    desc:"Versión en árabe de la escalera de exposición a la conducción, pensada para hacerla en familia: la pareja como coterapeuta (guía de firmeza y compasión: qué hacer antes, durante y después, frases que ayudan y frases a evitar), escalera por niveles empezando la primera semana con trayectos cortos dentro del pueblo, pasos en que conduce ella para aceptar ser acompañado, herramientas AIS y parar la rumiación. Registro de cada salida y envío al psicólogo en castellano.",
+    migrada:true, iframe:"tools-standalone/escalera-conducir-ar.html" },
+
+  { id:"escalera_conducir_darija", emoji:"🚗", nombre:"السّلّوم · Conducir juntos (dariya marroquí)",
+    desc:"La misma escalera de exposición a la conducción en familia, escrita en dariya marroquí (letra árabe) para quien no lee con soltura el árabe estándar: guía de la pareja como coterapeuta, escalera por niveles empezando dentro del pueblo, herramientas AIS y registro con envío al psicólogo en castellano. Comparte el registro con la versión en árabe estándar.",
+    migrada:true, iframe:"tools-standalone/escalera-conducir-darija.html" },
+
+  { id:"escalera_conducir_es", emoji:"🚗", nombre:"La escalera · Conducir juntos (castellano)",
+    desc:"Traducción al castellano de la guía de exposición a la conducción en árabe y dariya: escalera por niveles, guía de la esposa como coterapeuta, herramientas de dentro y registro. Sirve al psicólogo para ver exactamente lo que tienen el paciente y su pareja.",
+    migrada:true, iframe:"tools-standalone/escalera-conducir-es.html" }
 
   // --- Pendientes de portar (reutilizarán su CFG/lógica actual) ---
 ];

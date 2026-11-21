@@ -314,16 +314,28 @@ VIEWS.casa=function(){
   h+='<button class="btn full rosa" onclick="go(\'stop\')">Empezar a estar conmigo</button>';
   h+='<div class="nota" style="margin-top:14px"><b>Cada respiración curiosa</b> es una forma de decirle a tu cuerpo: <i>estoy aquí contigo</i>.</div>';
 
-  h+='<p class="kick">Estaciones</p><div class="qgrid">';
+  // Por dónde empezar: según cómo estás ahora, una sola cosa (no las diez estaciones a la vez).
+  h+='<div class="card"><h2>¿Por dónde empiezo?</h2>'
+    +'<p class="lead"><b>🛑 Si ahora mismo tienes la urgencia</b> (de escribirle, de comprobar, de no estar sola): haz el <b>STOP</b> (1 minuto), después la <b>respiración de presencia</b> (3 respiraciones) y, cuando puedas, apúntalo en <b>Registro</b>.</p>'
+    +'<button class="btn full" onclick="go(\'stop\')">Hacer el STOP ahora</button>'
+    +'<p class="lead" style="margin-top:14px"><b>🌤️ Si estás bien:</b> entrena en tus tres momentos del día (al despertarte, al llegar a casa, antes de dormir). Cada uno: STOP, una respiración, una zona del cuerpo, cinco segundos y vuelves a lo tuyo.</p>'
+    +'<button class="btn ghost full" onclick="go(\'rutina\')">Ver mis tres momentos</button>'
+    +'<p class="lead" style="margin-top:14px"><b>📖 Cuando tengas un rato tranquilo:</b> lee una estación de «Entender» al día. No hace falta verlas todas de golpe.</p></div>';
+
+  h+='<p class="kick">Practicar</p><div class="qgrid">';
+  h+=qa('stop','🛑','Botón STOP','1 minuto · recuperar mi atención');
+  h+=qa('respiro','🫁','Respiración de presencia','tres respiraciones');
+  h+=qa('quedarme','⏳','Quedarme sin exigirme','10 s a 1 min, sin examen');
+  h+=qa('rutina','🌤️','Entrenar cuando estoy bien','tres momentos al día');
+  h+='</div>';
+  h+='<p class="kick">Antes de acercarme a alguien</p><div class="qgrid">';
+  h+=qa('deseo','🧭','¿Deseo o alivio?','una pregunta antes de escribir o llamar');
+  h+=qa('frases','💬','Frases para acompañarme','elige una para hoy');
+  h+='</div>';
+  h+='<p class="kick">Entender · una al día</p><div class="qgrid">';
   h+=qa('canales','👁','¿Cómo puede notarme?','ver · escuchar · sentir dentro');
   h+=qa('ciclo','🔄','El ciclo del alivio','dos rutas ante la urgencia');
-  h+=qa('stop','🛑','Botón STOP','recuperar mi atención');
-  h+=qa('respiro','🫁','Respiración de presencia','tres respiraciones');
-  h+=qa('quedarme','⏳','Quedarme sin exigirme','permanecer, sin examen');
-  h+=qa('deseo','🧭','¿Deseo o alivio?','antes de acercarme a alguien');
   h+=qa('apego','🤝','Mis dos formas de apego','apegarme sin abandonarme');
-  h+=qa('frases','💬','Frases para acompañarme','favoritas y propias');
-  h+=qa('rutina','🌤️','Entrenar cuando estoy bien','presencia cotidiana');
   h+=qa('flecha','➡️','La flecha de la atención','pensamiento · cuerpo · elección');
   h+='</div>';
   h+=footerHTML(); return h;
@@ -589,6 +601,8 @@ VIEWS.rutina=function(){
     h+='<div class="rutrow"><button class="chk '+(r[key]?'on':'')+'" onclick="toggleRut(\''+key+'\')" aria-label="Marcar práctica">'+(r[key]?'✓':'')+'</button><input type="text" value="'+esc(m[key])+'" onchange="renMomento(\''+key+'\',this.value)" aria-label="Nombre del momento"></div>';
   });
   h+='<p class="muted" style="text-align:center;margin-top:12px">Cambia los nombres si quieres. Se guardan solos.</p>';
+  h+='<div class="btnrow"><button class="btn full" onclick="go(\'stop\')">Hacerla ahora con el STOP (1 minuto)</button></div>';
+  h+='<p class="muted" style="text-align:center;margin-top:8px">Cuando la hayas hecho, márcala aquí.</p>';
   h+=footerHTML(); return h;
 };
 function toggleRut(key){ var d=hoy(); if(!DB.rutina[d]) DB.rutina[d]={}; DB.rutina[d][key]=!DB.rutina[d][key]; if(DB.rutina[d][key]) logPractica('rutina'); save(); go('rutina'); }

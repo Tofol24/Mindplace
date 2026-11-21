@@ -341,13 +341,22 @@ VIEWS.home=function(){
   h+='<div class="fld" style="margin:6px 0 0"><input type="text" id="intencionInput" value="'+esc(DB.settings.intencion||"")+'" placeholder="Ej.: hoy vuelvo a la cadencia cada vez que aparezca el dolor"></div>';
   h+='<div class="btnrow" style="margin-top:10px"><button class="btn sm" onclick="guardaIntencion()">Guardar intención</button></div></div>';
 
-  h+='<p class="grp-t">Acceso rápido</p><div class="qgrid">';
-  h+=qa('antes','🟢','Antes de entrenar','preparación + AIS');
-  h+=qa('montana','⛰️','Entreno de montaña','continuidad en la subida');
+  // ¿Qué toca hoy?: el orden de un día, con lo que dura cada cosa, para no perderse entre secciones.
+  h+='<div class="card"><h2><span class="e">🗺️</span>¿Qué toca hoy?</h2>'
+    +'<p class="lead"><b>1 · Antes de salir (2 min):</b> la preparación y el AIS de salida, de 30 a 60 segundos.</p>'
+    +'<button class="btn full" onclick="go(\'antes\')">🟢 Antes de entrenar</button>'
+    +'<p class="lead" style="margin-top:12px"><b>2 · Si hoy hay subida:</b> repasa el plan de montaña antes de salir. En la bici, nada de móvil.</p>'
+    +'<button class="btn ghost full" onclick="go(\'montana\')">⛰️ Entreno de montaña</button>'
+    +'<p class="lead" style="margin-top:12px"><b>3 · Al volver (3 min):</b> el registro y una pregunta: ¿cómo me he hablado hoy?</p>'
+    +'<button class="btn ghost full" onclick="go(\'despues\')">🔵 Después de entrenar</button>'
+    +'<p class="lead" style="margin-top:12px"><b>Días sin entreno o tras uno suave:</b> AIS hacia el dolor, 1 o 2 minutos con el temporizador. Así '+esc(JOANET())+' aprende que apareces también cuando no duele.</p>'
+    +'<button class="btn ghost full" onclick="go(\'ais\')">🫁 AIS hacia el dolor</button></div>';
+
+  h+='<p class="grp-t">Para pensar con calma</p><div class="qgrid">';
   h+=qa('latigo','⚖️','Látigo o amor','cómo me hablo');
-  h+=qa('despues','🔵','Después de entrenar','registro + reflexión');
   h+=qa('brujula','🧭','Mi brújula','valores y dirección');
   h+=qa('piramide','🔺','Mi pirámide','dónde empezó mi rendimiento');
+  h+=qa('frases','💬','Autoverbalizaciones','elige una para hoy');
   h+='</div>';
 
   h+='<div class="card"><h2><span class="e">📊</span>Tu semana (proceso, no resultados)</h2>';
