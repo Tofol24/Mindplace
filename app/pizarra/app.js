@@ -1935,7 +1935,7 @@
       <div class="tarjeta">
         <p class="peq">Se crea un enlace corto con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada. El plan se guarda cifrado 90 días en el servidor de APRENS, que no lo puede leer.</p>
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
-        ${p.bloques.some((b) => b.pj) ? `<label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="pjGrupo" ${p.pjNo ? "" : "checked"} style="width:22px;height:22px"> Incluir las pautas individuales en el enlace del grupo. Cada jugador ve la suya, pero quien abra el enlace podría ver las de todos. Si lo desmarcas, cada uno las recibe solo en su ficha privada.</label>` : ""}
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="pjGrupo" ${p.pjNo ? "" : "checked"} style="width:22px;height:22px"> Incluir las pautas individuales («👤») en el enlace del grupo. Cada jugador ve la suya, pero quien abra el enlace podría ver las de todos. Si lo desmarcas, cada uno las recibe solo en su ficha privada.</label>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
           <button type="button" class="btn" data-enviar="1">📤 Enviar enlace al grupo</button>
@@ -2164,6 +2164,7 @@
       Object.keys(pl.once || {}).forEach((k) => { pl.once[k] = r(pl.once[k]); });
       Object.keys(pl.extra || {}).forEach((k) => { pl.extra[k] = pl.extra[k].map(r); });
       pl.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = r(f.pj); }); });
+      pl.bloques.forEach((b) => { if (b.pj) { const n = {}; Object.keys(b.pj).forEach((k) => { n[r(k)] = b.pj[k]; }); b.pj = n; } });
     }
     const planes = o.plan ? [o.plan] : (o.planes || []);
     planes.forEach((pl) => pl.bloques.forEach((b) => {
@@ -2510,6 +2511,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       else if ((p.mod || 0) > (db2.planes[i].mod || 0)) {
         const viejo = db2.planes[i];
         p.sinNombres = !!viejo.sinNombres;
+        if (viejo.pjNo) p.pjNo = true; else delete p.pjNo; // preferencia de este cuaderno
         // el feedback solo viaja con las notas privadas: si no viene, se conserva el de este cuaderno
         if (!p.fbn && viejo.fbn) p.fbn = viejo.fbn;
         if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
@@ -3130,7 +3132,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       necesidades: cl.nec.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"), fortalezas: cl.fort.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"),
       jugadores: jugadores } };
   }
-  const textosEquipo = (d) => d.necesidades.map((t) => "Necesita el grupo: " + t).concat(d.fortalezas.map((t) => "Fortaleza: " + t), d.jugadores.filter((j) => j.foco).map((j) => j.jugador + (j.puesto ? " (" + j.puesto + ")" : "") + ": " + j.foco + (j.fijarse ? " · " + j.fijarse : "")));
+  const textosEquipo = (d) => d.necesidades.map((t) => "Necesita el grupo: " + t).concat(d.fortalezas.map((t) => "Fortaleza: " + t), d.jugadores.filter((j) => j.foco || j.puesto).map((j) => j.jugador + (j.puesto ? " (" + j.puesto + ")" : "") + (j.foco ? ": " + j.foco : "") + (j.fijarse ? " · " + j.fijarse : "")));
   // Las pautas de Claude (J1…) pasan a los jugadores de verdad
   function pautasDe(l, mapa) {
     const pj = {};
@@ -3211,7 +3213,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const pj = pautasDe(m.pautas, x.mapa); if (pj) b.pj = Object.assign(b.pj || {}, pj);
       n++;
     });
-    if (r.objetivo && (p.objetivo === x.obj || pisar)) p.objetivo = r.objetivo.slice(0, 600);
+    if (r.objetivo && r.objetivo !== p.objetivo && (p.objetivo === x.obj || window.confirm("Has cambiado el objetivo mientras Claude respondía. ¿Sustituirlo por el que propone?\n\n" + r.objetivo))) p.objetivo = r.objetivo.slice(0, 600);
     delete iaFbRes["mej" + p.id]; delete iaFbPend.mejUsado;
     p.mod = Date.now(); guardar(); pintarPantalla();
     toast(n + " apartado" + (n === 1 ? "" : "s") + " mejorado" + (n === 1 ? "" : "s") + ": revisa los detalles y las pizarras");
@@ -3826,8 +3828,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Las notas y textos libres que se enviarán, para revisarlos antes de confirmar.
   function htmlNotasEnvio(h, extra) {
     const t = (extra || []).filter(Boolean);
-    h.forEach((p) => { [p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(fechaBonita(p.fecha) + " · " + x)); p.bloques.forEach((x) => { if (x.nota) t.push(fechaBonita(p.fecha) + " · " + x.titulo + ": " + x.nota); }); });
-    return t.length ? `<details class="det"><summary>Notas que se envían (${t.length}): revísalas</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
+    h.forEach((p) => {
+      const f = fechaBonita(p.fecha) + " · ";
+      [p.titulo, p.objetivo && "Objetivo: " + p.objetivo, p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(f + x));
+      p.bloques.forEach((x) => [x.titulo, x.texto, x.fijarse && "Fijarse: " + x.fijarse, x.cuando && "Cuándo: " + x.cuando, x.condicion && "Condición: " + x.condicion, x.nota && "Nota: " + x.nota].filter(Boolean).forEach((y, i) => t.push(f + (i ? (x.titulo || "") + " · " : "") + y)));
+    });
+    return t.length ? `<details class="det"><summary>Textos que se envían (${t.length}): revisa que no lleven datos personales</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
   }
   function previaAlternativas(plan, b, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir alternativas a Claude"); return; }
