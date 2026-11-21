@@ -239,3 +239,5 @@ details.txt pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;backgr
 .pauta-idioma{margin:0 0 8px}
 .fb-perfil{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:4px 0 8px}
 .fb-perfil select{width:auto;max-width:100%;margin:0}
+.fb-alerta{background:#fdecea;border:1px solid #e3a59c;color:#7a271a;border-radius:9px;padding:9px 12px;margin:8px 0;font-size:13px;line-height:1.5}
+.fb-alerta ul{margin:4px 0 0;padding-left:18px}
