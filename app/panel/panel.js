@@ -121,6 +121,7 @@
       var d = this.data.patients[r.codigo];
       ["updated", "recibido", "pautaEnviada"].forEach(function (k) { if (o[k] && (!d[k] || o[k] > d[k])) d[k] = o[k]; });
       mergeFeedback(d, o.feedbacks, o.feedbackVistos);
+      if (o.perfilFeedback && !d.perfilFeedback) d.perfilFeedback = o.perfilFeedback;
       delete this.data.patients[origen];
       var al = this.data.alias || (this.data.alias = {});
       al[origen.toUpperCase()] = r.codigo;
@@ -171,6 +172,7 @@
       if (est.recibido && (added || changed) && (!p.recibido || est.recibido > p.recibido)) p.recibido = est.recibido;
       if (est.pautaEnviada && (!p.pautaEnviada || est.pautaEnviada > p.pautaEnviada)) p.pautaEnviada = est.pautaEnviada;
       mergeFeedback(p, est.feedbacks, est.feedbackVistos);
+      if (est.perfilFeedback && !p.perfilFeedback) p.perfilFeedback = est.perfilFeedback;
       return { codigo: codigo, added: added, updated: updated };
     },
 
@@ -275,7 +277,7 @@
       var p = map[codigo] || {};
       return { type: "aprens-export", paciente: { codigo: p.codigo || codigo },
         exportado: p.updated || p.importado || new Date(0).toISOString(), tools: p.tools || {},
-        estado: { recibido: p.recibido || null, pautaEnviada: p.pautaEnviada || null, feedbacks: p.feedbacks, feedbackVistos: p.feedbackVistos } };
+        estado: { recibido: p.recibido || null, pautaEnviada: p.pautaEnviada || null, feedbacks: p.feedbacks, feedbackVistos: p.feedbackVistos, perfilFeedback: p.perfilFeedback } };
     }).filter(function (env) { return env.tools && Object.keys(env.tools).length; });
   }
   /* Historial de feedbacks de autorregistros enviados (foco TEC y fecha) y claves
@@ -423,7 +425,8 @@
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
     microaccion_valor: "Micro-acción con valor (0/1)",
     registro_texto: "Registro (texto)", reto_mona: "Reto: salir con mi mona", autorregistro_hospital: "Autorregistro hospital",
-    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crónico"
+    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crónico",
+    llave_de_paso: "La llave de paso", entre_punto_y_punto: "Entre punto y punto", paso_a_paso: "Paso a paso, de vuelta a mí"
   };
   var MONO_TOOLS = ["estado_mono", "donde_esta_mono", "donde_mono"];
   var POS_MAP = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
@@ -1080,6 +1083,7 @@
     drawAlerta(p);
     var bp = $("btnPauta"); if (bp) bp.onclick = function () { openPauta(p); };
     var bf = $("btnFeedback"); if (bf) bf.onclick = function () { openFeedback(p); };
+    var fp = $("fbPerfil"); if (fp) fp.onchange = function () { guardarPerfil(p.codigo, fp.value); };
     var bg = $("btnPegar"); if (bg) bg.onclick = function () { openPegar(p.codigo); };
     var bu = $("btnUnir"); if (bu) bu.onclick = function () { openUnir(p.codigo); };
     var ba = $("btnAtendido"); if (ba) ba.onclick = function () { marcarAtendido(p); };
@@ -1232,6 +1236,17 @@
   }
   /* ───────── Feedback a partir de los autorregistros (feedback-registros.js) ───────── */
   function feedbackInfo(p) { return window.APRENS_FEEDBACK ? APRENS_FEEDBACK.analizar(p, { nombre: nombreRegistro }) : null; }
+  /* A quién va el mensaje: lo eliges en la tarjeta o se deduce (edad del código y herramientas). */
+  var PERFIL_LABEL = { adulto: "Adulto", adolescente: "Adolescente", nino: "Familia (registros de un niño o niña)" };
+  async function guardarPerfil(codigo, v) {
+    try {
+      await PanelStore.exclusivo(function () {
+        var q = PanelStore.data.patients[codigo]; if (!q) return;
+        if (v === "auto") delete q.perfilFeedback; else q.perfilFeedback = v;
+      });
+    } catch (e) { if (PanelStore._key) toast("⚠️ No se pudo guardar"); return; }
+    if (PanelStore._key) renderDetail();
+  }
   /* Situación del Screening para la invitación semanal del mensaje. */
   function screeningEstado(p) {
     var pi = pautaInfo(p), hoy = new Date(), hace7 = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 7);
@@ -1250,6 +1265,10 @@
       retrocede: "Vuelve un paso atrás respecto al último feedback (" + (a.ultimo && a.ultimo.foco) + " → " + a.foco + ")." }[a.paso];
     return '<div class="card card-pauta card-fb"><h3>📝 Feedback de autorregistros' + nuevoTxt + '</h3>' +
       '<div class="mod">Foco propuesto: ' + esc(APRENS_FEEDBACK.NOMBRE_FOCO[a.foco]) + '</div>' +
+      '<label class="fb-perfil">Mensaje para: <select id="fbPerfil" class="pfilter">' +
+        '<option value="auto"' + (p.perfilFeedback ? '' : ' selected') + '>Automático: ' + esc(PERFIL_LABEL[a.perfil.auto]) + (a.perfil.motivo ? ' (' + esc(a.perfil.motivo) + ')' : '') + '</option>' +
+        ['adulto', 'adolescente', 'nino'].map(function (k) { return '<option value="' + k + '"' + (p.perfilFeedback === k ? ' selected' : '') + '>' + esc(PERFIL_LABEL[k]) + '</option>'; }).join("") +
+      '</select></label>' +
       '<ul class="fb-lineas">' + a.lineas.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join("") + '</ul>' +
       '<div class="motivo">📌 <b>Por qué este foco:</b> ' + esc(a.motivo) + ' ' + esc(pasoTxt) + '</div>' +
       '<div class="sub" style="margin:0 0 4px">Registros que entran en este feedback:</div>' +

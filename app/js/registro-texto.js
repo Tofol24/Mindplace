@@ -36,6 +36,22 @@
     return Math.round(v / den * 10 * 10) / 10;
   }
   var SIG = [
+    [/la llave de paso|la clau de pas/i, "llave_de_paso", "La llave de paso"],
+    [/entre punto y punto|plan de partido/i, "entre_punto_y_punto", "Entre punto y punto"],
+    [/exploradora valiente/i, "exploradora_valiente", "La exploradora valiente"],
+    [/misi[óo]n barrio/i, "mision_barrio", "Misión Barrio"],
+    [/ritual diario/i, "ritual_calma", "Ritual diario · calma"],
+    [/escalera de las comidas/i, "escalera_comidas", "La escalera de las comidas"],
+    [/rinc[óo]n de calma/i, "rincon_calma", "Rincón de calma"],
+    [/la escalera\s*·\s*exposici[óo]n/i, "escalera_exposicion", "La escalera (exposición)"],
+    [/^\W*honestidad emocional\s*[—-]\s*APRENS/i, "honestidad_emocional", "Honestidad emocional"],
+    [/protocolo progresivo ais/i, "protocolo_ais", "Protocolo AIS (audio)"],
+    [/registre ais/i, "tracker_ais", "Tracker AIS"],
+    [/estoy aqu[íi] conmigo/i, "estoy_aqui_conmigo", "Estoy aquí conmigo"],
+    [/pedalea desde dentro/i, "pedalea_desde_dentro", "Pedalea desde dentro"],
+    [/toco desde dentro/i, "toco_desde_dentro", "Toco desde dentro"],
+    [/APRENS\s*·\s*AIS curiosidad/i, "ais_curiosidad", "AIS desde la curiosidad"],
+    [/salida \(exposici[óo]n en vivo\)|exposici[óo]n en imaginaci[óo]n|pelda[ñn]o trabajado/i, "paso_a_paso", "Paso a paso, de vuelta a mí"],
     [/d[óo]nde est[áa] (tu|mi) mono|detective del mono/i, "donde_mono", "¿Dónde está tu mono?"],  // al inicio: su resumen nombra otras herramientas
     [/agenda atencional/i, "agenda_atencional", "Agenda atencional"],
     [/salir con mi mona|reto:\s*salir.*mona/i, "reto_mona", "Reto: salir con mi mona al lado"],
@@ -145,12 +161,123 @@
         if (nums.length) { rec.brujula_media = Math.round(nums.reduce(function (a, b) { return a + b; }, 0) / nums.length * 10) / 10; if (rec.C == null) rec.C = rec.brujula_media; }
       }
     }
+    function nro(re) { var m = txt.match(re); return m ? parseFloat(m[1].replace(",", ".")) : null; }
+    function poner(k, v) { if (v != null && !isNaN(v)) rec[k] = v; }
+    if (toolId === "llave_de_paso") {
+      poner("resp", nro(/respiracion(?:es|s) curios[ae]s:\s*(\d+)/i));
+      poner("paradas", nro(/parad(?:as|es) de pensa(?:miento|ment):\s*(\d+)/i));
+      poner("abrazos", nro(/abra(?:zo|çada) sentid[ao]:\s*(\d+)/i));
+      poner("honestidad", nro(/honest(?:idad|edat) emocional:\s*s[íi],\s*(\d+)/i) || (/honest(?:idad|edat) emocional:\s*(?:hoy|avui) no/i.test(txt) ? 0 : null));
+      poner("limites", nro(/l[íi]mit(?:es|s):\s*(\d+)/i));
+      var mn = txt.match(/man[óò]metre?o?:\s*(\d+(?:[.,]\d+)?)[^\d—\n]*?(?:→|->)\s*(\d+(?:[.,]\d+)?)/i);
+      if (mn) { rec.antes = parseFloat(mn[1].replace(",", ".")); rec.despues = parseFloat(mn[2].replace(",", ".")); }
+      poner("racha", nro(/continu[ïi]?(?:dad|tat):\s*(\d+)/i));
+      rec.cierre = /(?:cierre del d[íi]a|tancament del dia):\s*(?:hecho|fet)/i.test(txt) ? 1 : 0;
+      var dj = txt.match(/(?:se ha quedado fuera de casa|s'ha quedat fora de casa):\s*«([^»]+)»/i); if (dj) rec.dejado = dj[1].trim();
+    }
+    if (toolId === "entre_punto_y_punto") {
+      poner("sesiones", nro(/sesiones registradas:\s*(\d+)/i));
+      poner("escenas", nro(/escenas en imaginaci[óo]n:\s*(\d+)/i));
+      poner("dias_activos", nro(/d[íi]as con pr[áa]ctica:\s*(\d+)/i));
+      poner("racha", nro(/racha:\s*(\d+)/i));
+      poner("lat04", nro(/latencia \(0-4\):\s*(\d+(?:[.,]\d+)?)/i));
+      poner("den04", nro(/densidad \(0-4\):\s*(\d+(?:[.,]\d+)?)/i));
+      poner("cont10", nro(/continuidad \(0-10\):\s*(\d+(?:[.,]\d+)?)/i));
+      poner("foco", nro(/atenci[óo]n en la tarea:\s*(\d+(?:[.,]\d+)?)/i));
+      poner("sobrepensamiento", nro(/sobrepensamiento:\s*(\d+(?:[.,]\d+)?)/i));
+      poner("tension", nro(/tensi[óo]n corporal:\s*(\d+(?:[.,]\d+)?)/i));
+      var tp = txt.match(/tensi[óo]n pico media:\s*(\d+(?:[.,]\d+)?)\/10\s*→\s*final\s*(\d+(?:[.,]\d+)?)/i);
+      if (tp) { rec.antes = parseFloat(tp[1].replace(",", ".")); rec.despues = parseFloat(tp[2].replace(",", ".")); }
+      var mf = txt.match(/momentos con m[áa]s fuga:\s*(.+)/i); if (mf) rec.fugas = mf[1].trim();
+      rec.plan = /plan de partido/i.test(txt) ? 1 : 0;
+      // Escalas propias (0-4) → 0-10, para la línea L/D/C del panel.
+      if (rec.lat04 != null && rec.L == null) rec.L = Math.round(rec.lat04 * 2.5 * 10) / 10;
+      if (rec.den04 != null && rec.D == null) rec.D = Math.round(rec.den04 * 2.5 * 10) / 10;
+      if (rec.cont10 != null && rec.C == null) rec.C = rec.cont10;
+    }
+    if (toolId === "paso_a_paso") {
+      var pd = txt.match(/pelda[ñn]o trabajado:\s*(\d+)\s*de\s*(\d+)/i); if (pd) { rec.peldano = +pd[1]; rec.peldanos = +pd[2]; }
+      var sv = txt.match(/salida[\s\S]*?ansiedad \(0-10\):([^\n]*)/i);
+      if (sv) { var pk = sv[1].match(/pico\s*(\d+)/i), dp = sv[1].match(/despu[ée]s\s*(\d+)/i), anPas = sv[1].match(/antes\s*(\d+)/i);
+        if (anPas) rec.ans_antes = +anPas[1]; if (pk) rec.ans_max = +pk[1]; if (dp) rec.ans_final = +dp[1]; }
+      var pa = txt.match(/quedándome conmigo[^:]*:\s*(s[íi]|en parte|hoy no)/i); if (pa) rec.paso_ais = /s[íi]/i.test(pa[1]) && !/parte/.test(pa[1]) ? "si" : /parte/.test(pa[1]) ? "parte" : "no";
+      var ay = txt.match(/qu[ée] me ayud[óo]:\s*(.+)/i); if (ay) rec.ayudo = ay[1].trim();
+      var im = txt.match(/imaginaci[óo]n[\s\S]*?ansiedad \(0-10\):\s*inicio\s*(\d+)\s*·\s*final\s*(\d+)/i); if (im) { rec.imag_ini = +im[1]; rec.imag_fin = +im[2]; }
+      var ru = txt.match(/rutina del d[íi]a:\s*(\d+)\s*de\s*(\d+)/i); if (ru) { rec.rutina = +ru[1]; rec.rutina_total = +ru[2]; }
+      poner("rumia", nro(/rumiaci[óo]n hoy \(0-10\):\s*(\d+)/i));
+      poner("animo", nro(/[áa]nimo hoy \(0-10\):\s*(\d+)/i));
+      var lg = txt.match(/logro de hoy:\s*(.+)/i); if (lg) rec.logro = lg[1].trim();
+    }
+    function frase(re) { var m = txt.match(re); return m ? m[1].trim() : null; }
+    if (toolId === "exploradora_valiente") {
+      rec.mision = frase(/misi[óo]n:\s*([^\n(]+)/i); poner("estrellas", nro(/\((\d)★\)/));
+      var lo = frase(/lo logr[óo]\?:\s*([^\n]+)/i); if (lo) rec.logro = /del todo/i.test(lo) ? "si" : /medias/i.test(lo) ? "medias" : "no";
+      var ab = frase(/abrazo en vez de repetir\?:\s*([^\n]+)/i); if (ab) rec.abrazo = /^s[íi]/i.test(ab) ? 1 : 0;
+      var pl = frase(/^plan:\s*([^\n]+)/im); if (pl) rec.sin_negociar = /sin negociar/i.test(pl) ? 1 : 0;
+      var caras = ["😣", "😟", "😐", "🙂", "😄"], ce = txt.match(/c[óo]mo estaba:\s*(\S+)\s*→\s*(\S+)/i);
+      if (ce) { var i1 = caras.indexOf(ce[1]), i2 = caras.indexOf(ce[2]); if (i1 >= 0) rec.cara_antes = i1 + 1; if (i2 >= 0) rec.cara_despues = i2 + 1; }
+      rec.premio = frase(/premio:\s*([^\n]+)/i);
+    }
+    if (toolId === "mision_barrio") {
+      rec.nivel_txt = frase(/nivel:\s*([^\n(·]+)/i);
+      var hf = frase(/hasta el final\?:\s*([^\n]+)/i); if (hf) rec.final = /hasta el final/i.test(hf) ? "si" : /antes/i.test(hf) ? "antes" : "no";
+      var al = txt.match(/alarma:\s*(\d+)\s*→\s*(\d+)/i); if (al) { rec.antes = +al[1]; rec.despues = +al[2]; }
+      var ps = frase(/¿?pas[óo]\?:\s*([^\n]+)/i); if (ps) rec.paso = /falsa/i.test(ps) ? "falsa" : /poquito/i.test(ps) ? "poco" : "si";
+      rec.frase_campeon = frase(/frase de campe[óo]n:\s*«?([^»\n]+)/i); rec.mejor = frase(/lo mejor:\s*([^\n]+)/i);
+      rec.superpoderes = frase(/superpoderes:\s*([^\n]+)/i);
+      var pn = frase(/plan sin negociar:\s*([^\n]+)/i); if (pn) rec.sin_negociar = /sin negociar/i.test(pn) ? 1 : 0;
+    }
+    if (toolId === "ritual_calma") {
+      var au = frase(/audio:\s*([^\n]+)/i); if (au) rec.audio = /conmigo/i.test(au) ? "conmigo" : /silencio/i.test(au) ? "silencio" : "no";
+      var rp = frase(/respet[óo] el momento\?:\s*([^\n]+)/i); if (rp) rec.respeto = /^s[íi]/i.test(rp) ? 1 : 0;
+    }
+    if (toolId === "escalera_comidas") {
+      var escC = txt.match(/escalones:\s*(\d+)\s*de\s*(\d+)/i); if (escC) { rec.escalones = +escC[1]; rec.escalones_total = +escC[2]; }
+      rec.alimento = frase(/ahora:\s*([^·\n]+)/i);
+      var rg = txt.match(/registros:\s*(\d+)\s*\((\d+) conseguidos\)/i); if (rg) { rec.intentos = +rg[1]; rec.conseguidos = +rg[2]; }
+      var ul = txt.match(/·\s*\d{4}-\d{2}-\d{2}\s*(✓|○)\s*([^\n(→]+)/g); if (ul) { var last = ul[ul.length - 1]; rec.ultimo_ok = /✓/.test(last) ? 1 : 0; rec.ultimo_alimento = last.replace(/^.*?(✓|○)\s*/, "").trim(); }
+    }
+    if (toolId === "rincon_calma") { rec.juego = frase(/·\s*juego:\s*(\w+)/i); poner("practicas", nro(/registros:\s*(\d+)/i)); }
+    if (toolId === "escalera_exposicion") {
+      rec.peldano_txt = frase(/pelda[ñn]o:\s*([^\n(]+)/i); poner("dificultad", nro(/dif\.\s*(\d+)/i));
+      var ax = txt.match(/alarma:\s*(\d+)\s*→\s*pico\s*(\d+)\s*→\s*(\d+)/i); if (ax) { rec.ans_antes = +ax[1]; rec.ans_max = +ax[2]; rec.ans_final = +ax[3]; }
+      var de = frase(/desenlace:\s*([^\n]+)/i); if (de) rec.resultado = /hu[íi]/i.test(de) ? "escape" : "sostuve";
+      var aisAct = frase(/ais activo:\s*([^\n]+)/i); if (aisAct) rec.paso_ais = /^s[íi]/i.test(aisAct) ? "si" : "no";
+    }
+    if (toolId === "honestidad_emocional") {
+      var it = txt.match(/intensidad:\s*(\d+)\s*→\s*(\d+)/i); if (it) { rec.intensidad_antes = +it[1]; rec.intensidad_despues = +it[2]; }
+      rec.con = frase(/lo comparto con:\s*([^\n]+)/i); rec.zona = frase(/d[óo]nde lo noto:\s*([^\n]+)/i);
+      rec.paso_valor = frase(/mi paso en direcci[óo]n a lo que importa:\s*([^\n]+)/i);
+      if (/sin necesidad/i.test(txt)) rec.motivo = "verde";
+    }
+    if (toolId === "protocolo_ais") {
+      poner("dias_completados", nro(/d[íi]as completados:\s*(\d+)/i)); poner("racha", nro(/racha actual:\s*(\d+)/i));
+      poner("fase", nro(/fase que estoy practicando:\s*(\d+)/i)); poner("fase_recomendada", nro(/fase recomendada:\s*(\d+)/i));
+      rec.fase_txt = frase(/fase que estoy practicando:\s*\d+\s*·\s*([^\n]+)/i);
+    }
+    if (toolId === "tracker_ais") {
+      poner("paradas", nro(/parades de pensament:\s*(\d+)/i)); poner("resp", nro(/respiraci[óo] conscient:\s*(\d+)/i));
+      poner("abrazos", nro(/abra[çc]os sentits:\s*(\d+)/i)); poner("proactivas", nro(/🟢\s*(\d+)\s*proactiv/i)); poner("reactivas", nro(/🔴\s*(\d+)\s*reactiv/i));
+    }
+    if (toolId === "estoy_aqui_conmigo") {
+      poner("practicas", nro(/pr[áa]cticas:\s*(\d+)/i)); poner("esperar", nro(/veces que pude esperar:\s*(\d+)/i)); poner("calma", nro(/pr[áa]cticas en calma[^:]*:\s*(\d+)/i));
+      var ur = txt.match(/urgencia media:\s*(\d+(?:[.,]\d+)?)\s*→\s*(\d+(?:[.,]\d+)?)/i); if (ur) { rec.antes = parseFloat(ur[1].replace(",", ".")); rec.despues = parseFloat(ur[2].replace(",", ".")); }
+    }
+    if (toolId === "pedalea_desde_dentro") {
+      poner("disfrute", nro(/disfrute \(media\):\s*(\d+(?:[.,]\d+)?)/i)); poner("presion", nro(/presi[óo]n por demostrar \(media\):\s*(\d+(?:[.,]\d+)?)/i));
+      poner("amor_firme", nro(/amor firme\(10\) \(media\):\s*(\d+(?:[.,]\d+)?)/i));
+      var vt = txt.match(/volvi[óo] a la tarea en subida:\s*(\d+)\s*\/\s*(\d+)/i); if (vt) { rec.vuelve = +vt[1]; rec.vuelve_total = +vt[2]; }
+    }
+    if (toolId === "toco_desde_dentro") {
+      var tt2 = txt.match(/total:\s*(\d+)\s*respiros[^·]*·\s*(\d+)\s*puertas\s*·\s*(\d+)\s*«no»[^·]*·\s*(\d+)\s*cierres/i);
+      if (tt2) { rec.respiros = +tt2[1]; rec.puertas = +tt2[2]; rec.noes = +tt2[3]; rec.cierres = +tt2[4]; }
+    }
     if (toolId === "reto_mona") {
       var hd = txt.match(/APRENS\s*·\s*[a-zà-ÿ]+\s+(\d{1,2})\s+de\s+([a-zà-ÿ]+)\s+de\s+(\d{4})/i);
       if (hd) { var mz = MESES[hd[2].toLowerCase()]; if (mz) rec.date = hd[3] + "-" + pad(mz) + "-" + pad(hd[1]); }
       var nv = txt.match(/nivel\s+(\d+)\s*:/i); if (nv) rec.nivel = +nv[1];
       var an2 = txt.match(/ANTES[^0-9]*?(\d+)\s*\/\s*10/i); if (an2) rec.ans_antes = +an2[1];
-      var ax = txt.match(/ansiedad\s+m[áa]x\s*(\d+)\s*\/\s*10/i); if (ax) rec.ans_max = +ax[1];
+      var ansMx = txt.match(/ansiedad\s+m[áa]x\s*(\d+)\s*\/\s*10/i); if (ansMx) rec.ans_max = +ansMx[1];
       var afn = txt.match(/final\s*(\d+)\s*\/\s*10/i); if (afn) rec.ans_final = +afn[1];
       var res = /lo sostuve/i.test(txt) ? "sostuve" : /escap[ée]/i.test(txt) ? "escape" : /lo evit[ée]/i.test(txt) ? "evite" : null;
       if (res) rec.resultado = res;
