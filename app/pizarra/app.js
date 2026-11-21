@@ -471,7 +471,7 @@
         return o;
       }),
       // refuerzos individuales del informe del equipo: qué hacer el entrenador y qué decirle a cada jugador
-      ref: Array.isArray(p.ref) ? p.ref.slice(0, 40).map((r) => r && idOk(r.j) ? { j: r.j, h: txt(r.h, 600), d: txt(r.d, 300) } : null)
+      ref: Array.isArray(p.ref) ? p.ref.slice(0, 80).map((r) => r && idOk(r.j) ? { j: r.j, h: txt(r.h, 600), d: txt(r.d, 300) } : null)
         .filter((r, i, l) => r && (r.h || r.d) && l.findIndex((x) => x && x.j === r.j) === i) : []
     };
   }
@@ -2443,7 +2443,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
     const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => {
       const c = clon(p); delete c.sinNombres;
-      if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback va con las notas privadas
+      if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; delete c.ref; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback y los refuerzos van con las notas privadas
       return c;
     });
     const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); }
@@ -2487,6 +2487,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       Object.keys(p.once || {}).forEach((k) => { p.once[k] = m(p.once[k]); });
       Object.keys(p.extra || {}).forEach((k) => { p.extra[k] = p.extra[k].map(m); });
       p.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = m(f.pj); }); });
+      (p.ref || []).forEach((x) => { x.j = m(x.j); });
       const i = db2.planes.findIndex((x) => x.id === p.id);
       if (i < 0) { p.sinNombres = false; db2.planes.push(p); r.planNuevos++; }
       else if ((p.mod || 0) > (db2.planes[i].mod || 0)) {
@@ -2497,6 +2498,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
         if (!p.an && viejo.an) p.an = viejo.an;
         if (!p.anOc && viejo.anOc) p.anOc = viejo.anOc;
+        if (!(p.ref && p.ref.length) && viejo.ref && viejo.ref.length) p.ref = viejo.ref;
         p.bloques.forEach((b) => { if (!b.fb) { const v = viejo.bloques.find((x) => x.id === b.id); if (v && v.fb) b.fb = v.fb; } });
         db2.planes[i] = p; r.planAct++;
       }
@@ -2820,7 +2822,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (o.foco === 3) p.mot.push("En el partido mira el marcador y lo que piensan los demás");
     if (au && au.c && au.c <= 2) p.conf.push(SEGURO[au.c]);
     if (c && c.yoFelM.length) p.conf.push("Quiere mejorar lo que tú ves como fortaleza: " + c.yoFelM.slice(0, 2).join(", "));
-    else if (p.noVe.length >= 2) p.conf.push("Todavía no ve como fortaleza: " + p.noVe.slice(0, 2).join(", "));
+    p.yoFelM = c ? c.yoFelM : [];
     if (o.error === 3) p.err.push("Cuando se equivoca, se enfada y le cuesta mucho volver");
     else if (o.error === 2) p.err.push("Cuando se equivoca, le cuesta un poco volver");
     return p;
@@ -2846,7 +2848,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   // Lo que más se repite en la plantilla (aspectos a mejorar o puntos fuertes)
   function repetidos(perfiles, t) {
-    const m = {};
+    const m = Object.create(null);
     perfiles.forEach((p) => (p.j.notas || []).filter((n) => n.t === t).forEach((n) => {
       const a = aspectoDe(n), k = a ? a.k : normNom(n.x), x = a ? a.t : sinPunto(n.x);
       if (!k) return; m[k] = m[k] || { t: x, js: [] }; if (!m[k].js.includes(p.j)) m[k].js.push(p.j);
@@ -2860,7 +2862,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ori: [n((p) => p.ori === "tarea"), n((p) => p.ori === "mixta"), n((p) => p.ori === "resultado")],
       err: [n((p) => p.o.error === 1), n((p) => p.o.error === 2), n((p) => p.o.error === 3)],
       conf: [n((p) => p.au.c >= 4), n((p) => p.au.c === 3), n((p) => p.au.c && p.au.c <= 2)],
-      mirada: [con.reduce((s, p) => s + p.coinc, 0), con.reduce((s, p) => s + p.noVe.length, 0), con.reduce((s, p) => s + p.sobre.length, 0)],
+      // aspectos marcados por los dos: coinciden, tú ves fortaleza y él lo quiere mejorar, él se ve fuerte y tú lo tienes para mejorar
+      mirada: [con.reduce((s, p) => s + p.coinc, 0), con.reduce((s, p) => s + p.yoFelM.length, 0), con.reduce((s, p) => s + p.sobre.length, 0)],
+      miradaJ: [con.filter((p) => p.yoFelM.length).length, con.filter((p) => p.sobre.length).length],
       nec: repetidos(perfiles, "m"), fort: repetidos(perfiles, "f")
     };
   }
@@ -2875,8 +2879,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (sumE && malE * 3 >= sumE) l.push("A varios les cuesta volver después de un error: practicad en grupo la palabra clave y el gesto para volver a la jugada, y celebrad el intento.");
     const sumC = cl.conf.reduce((a, b) => a + b, 0);
     if (sumC && cl.conf[2] * 4 >= sumC) l.push("Hay jugadores con poca seguridad: busca momentos para reconocerles en público lo que hacen bien, con ejemplos concretos.");
-    if (cl.mirada[1] > cl.mirada[2] && cl.mirada[1] >= 3) l.push("En general se ven peor de lo que los ves tú: muéstrales sus puntos fuertes, porque muchos todavía no los ven.");
-    else if (cl.mirada[2] > cl.mirada[1] && cl.mirada[2] >= 3) l.push("Varios se ven mejor de lo que ves tú en algunos aspectos: habladlo con ejemplos de los partidos, sin desautorizarlos.");
+    if (cl.miradaJ[0] >= 2 && cl.miradaJ[0] > cl.miradaJ[1]) l.push(cl.miradaJ[0] + " jugadores quieren mejorar cosas que tú ves como fortaleza: muéstrales sus puntos fuertes con ejemplos concretos.");
+    else if (cl.miradaJ[1] >= 2 && cl.miradaJ[1] > cl.miradaJ[0]) l.push(cl.miradaJ[1] + " jugadores se ven fuertes en lo que tú tienes para mejorar: habladlo con ejemplos de los partidos, sin desautorizarlos.");
     const faltan = cl.total - cl.conAuto;
     if (faltan) l.push((faltan === 1 ? "Falta 1 autoevaluación" : "Faltan " + faltan + " autoevaluaciones") + ": con todas, la foto del grupo será más fiel.");
     return l;
@@ -2890,6 +2894,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   const btnJug = (j) => `<button type="button" class="eq-jug" data-jnotas="${esc(j.id)}" aria-label="Notas de ${esc(j.n)}"><span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(j.d)}</span>${esc(nomCorto(j))}</button>`;
   const eqEdit = {}; // lo que el entrenador ha cambiado en los refuerzos (mientras dure la visita)
+  let eqDestino = ""; // el entreno elegido para llevar los refuerzos
   function planesDestino() {
     const hoy = hoyISO();
     return db.planes.filter((p) => p.tipo === "entreno" && (!p.fecha || p.fecha >= hoy)).sort((a, b) => (a.fecha || "9").localeCompare(b.fecha || "9"));
@@ -2902,7 +2907,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${l.length ? `<ul class="eq-lista">${l.map((x) => `<li>${btnJug(x.p.j)}<span>${esc(x.m)}</span></li>`).join("")}</ul>` : `<p class="peq eq-nadie">Nadie destaca aquí ahora mismo.</p>`}</div>`;
     const de = (k) => perfiles.filter((p) => p[k].length).map((p) => ({ p: p, m: p[k].join(" · ") }));
     // aprendizaje: los focos agrupados (para plantear ejercicios) y quién se ve mejor de lo que ves tú
-    const focos = {};
+    const focos = Object.create(null);
     perfiles.forEach((p) => { if (!p.foco) return; const a = aspectoDe(p.foco), k = a ? a.t : sinPunto(p.foco.x); (focos[k] = focos[k] || []).push(p.j); });
     const sobre = perfiles.filter((p) => p.sobre.length);
     const sinAuto = perfiles.filter((p) => !p.au).map((p) => p.j);
@@ -2921,7 +2926,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           ${barraEq("Orientación (dónde pone el éxito)", [{ n: cl.ori[0], t: "aprender", c: "v" }, { n: cl.ori[1], t: "mixta", c: "a" }, { n: cl.ori[2], t: "ganar o resultado", c: "r" }])}
           ${barraEq("Cuando se equivocan", [{ n: cl.err[0], t: "vuelven enseguida", c: "v" }, { n: cl.err[1], t: "les cuesta un poco", c: "a" }, { n: cl.err[2], t: "les cuesta mucho", c: "r" }])}
           ${barraEq("Confianza jugando", [{ n: cl.conf[0], t: "alta", c: "v" }, { n: cl.conf[1], t: "normal", c: "a" }, { n: cl.conf[2], t: "baja", c: "r" }])}
-          ${barraEq("Tu mirada y la suya (aspectos)", [{ n: cl.mirada[0], t: "coincidís", c: "v" }, { n: cl.mirada[1], t: "tú ves fortaleza y ellos no", c: "az" }, { n: cl.mirada[2], t: "ellos se ven más fuertes", c: "a" }])}
+          ${barraEq("Tu mirada y la suya (aspectos)", [{ n: cl.mirada[0], t: "coincidís", c: "v" }, { n: cl.mirada[1], t: "tú ves fortaleza y ellos quieren mejorarlo", c: "az" }, { n: cl.mirada[2], t: "ellos se ven más fuertes", c: "a" }])}
         </div>
         <div class="eq-lectura"><p><b>Lectura</b></p><ul class="consignas">${lecturaClima(cl).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
         ${cl.nec.length ? `<p><b>📈 Lo que más necesita el grupo</b></p><ul class="eq-rep">${cl.nec.map((x) => `<li><span>${esc(x.t)}</span> <span class="peq">${x.js.length} · ${esc(x.js.map(nomCorto).join(", "))}</span></li>`).join("")}</ul>` : ""}
@@ -2956,8 +2961,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         }).join("")}</div>
         <div class="fila no-imprimir eq-llevar">
           <div class="campo-f crece"><label for="eqPlan">Llevar los refuerzos a</label><select id="eqPlan">
-            ${dest.map((p) => `<option value="${esc(p.id)}">${esc((p.titulo || "Entreno") + (p.fecha ? " · " + fechaBonita(p.fecha) : ""))}</option>`).join("")}
-            <option value="nuevo">Un entreno nuevo (hoy)</option></select></div>
+            ${dest.map((p) => `<option value="${esc(p.id)}" ${eqDestino === p.id ? "selected" : ""}>${esc((p.titulo || "Entreno") + (p.fecha ? " · " + fechaBonita(p.fecha) : ""))}</option>`).join("")}
+            <option value="nuevo" ${eqDestino === "nuevo" ? "selected" : ""}>Un entreno nuevo (hoy)</option></select></div>
           <button type="button" class="btn" data-eqllevar="1">📌 Llevar al entreno</button>
         </div>
         <div class="acciones no-imprimir"><button type="button" class="btn-peq ia-btn" data-eqia="1">✨ Afinar los refuerzos con Claude</button>
@@ -2973,8 +2978,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!refs.length) { toast("No hay refuerzos escritos"); return; }
     const p = sel.value === "nuevo" ? nuevoPlan("entreno", true) : db.planes.find((x) => x.id === sel.value);
     if (!p) return;
-    const otros = (p.ref || []).filter((r) => !refs.some((x) => x.j === r.j));
-    p.ref = refs.concat(otros).slice(0, 40); p.mod = Date.now(); guardar();
+    // lo que ya está en el plan y has retocado allí se queda, salvo que en el informe hayas cambiado ese refuerzo
+    const previos = p.ref || [];
+    const distintos = refs.filter((r) => { const v = previos.find((x) => x.j === r.j); return v && (v.h !== r.h || v.d !== r.d) && !eqEdit[r.j]; });
+    const pisar = distintos.length && window.confirm(distintos.length + " refuerzo" + (distintos.length === 1 ? "" : "s") + " de este entreno " + (distintos.length === 1 ? "es distinto" : "son distintos") + " de la propuesta del informe (quizá los retocaste en el plan). ¿Sustituirlos por los del informe? Si cancelas, se quedan como están.");
+    const nuevos = refs.map((r) => distintos.includes(r) && !pisar ? previos.find((x) => x.j === r.j) : r);
+    const otros = previos.filter((r) => !refs.some((x) => x.j === r.j));
+    p.ref = nuevos.concat(otros).slice(0, 80); p.mod = Date.now(); guardar();
     ir("plan", { planId: p.id });
     setTimeout(() => { const s = app.querySelector("#refuerzos"); if (s) s.scrollIntoView({ block: "start" }); }, 50);
     toast("Refuerzos en el entreno: los verás aquí, solo tú");
@@ -3001,7 +3011,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const mapa = {};
     const jugadores = perfiles.slice(0, 40).map((p, i) => {
       const k = "J" + (i + 1); mapa[k] = p.j.id;
-      return { jugador: k, puesto: p.j.p || "", foco: quitarNombres(p.foco ? p.foco.x : ""), fijarse: quitarNombres(p.fij), fuertes: p.fuertes.slice(0, 3).map((n) => quitarNombres(n.x)),
+      return { jugador: k, puesto: quitarNombres(p.j.p || "").slice(0, 40), foco: quitarNombres(p.foco ? p.foco.x : ""), fijarse: quitarNombres(p.fij), fuertes: p.fuertes.slice(0, 3).map((n) => quitarNombres(n.x)),
         noVeComoFortaleza: p.noVe.slice(0, 3), seVeFuerteEnLoQueHayQueMejorar: p.sobre.slice(0, 3), orientacion: p.ori,
         error: ["", "vuelve enseguida", "le cuesta un poco", "le cuesta mucho"][p.o.error || 0], confianza: p.au && p.au.c ? CONFIANZA[p.au.c] : "",
         ayuda: conTxt && p.au ? quitarNombres(p.au.ts) : "", autoevaluacion: !!p.au };
@@ -3009,15 +3019,20 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return { mapa: mapa, entrada: { modo: "equipo", etapa: etapaTxt(), entrenadores: somosVarios() ? 2 : 1,
       clima: { jugadores: cl.total, conAutoevaluacion: cl.conAuto, orientacion: { tarea: cl.ori[0], mixta: cl.ori[1], resultado: cl.ori[2] },
         error: { vuelveEnseguida: cl.err[0], leCuestaUnPoco: cl.err[1], leCuestaMucho: cl.err[2] }, confianza: { alta: cl.conf[0], normal: cl.conf[1], baja: cl.conf[2] } },
-      necesidades: cl.nec.map((x) => x.t + " (" + x.js.length + ")"), fortalezas: cl.fort.map((x) => x.t + " (" + x.js.length + ")"),
+      necesidades: cl.nec.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"), fortalezas: cl.fort.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"),
       entreno: dest ? { titulo: quitarNombres(dest.titulo), objetivo: quitarNombres(dest.objetivo), ejercicios: dest.bloques.map((b) => quitarNombres([b.titulo || CATS[b.cat], b.fij].filter(Boolean).join(": "))) } : { titulo: "", objetivo: "", ejercicios: [] },
       jugadores: jugadores } };
   }
   function previaEquipoIA(cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Afinar los refuerzos con Claude"); return; }
     const pedidos = db.plantilla.filter((j) => j.auto && j.auto.ts).length;
+    const ex = entradaEquipo(false).entrada, libres = new Set();
+    ex.jugadores.forEach((j) => [j.puesto, j.foco, j.fijarse].concat(j.fuertes).forEach((t) => { if (t) libres.add(t); }));
+    ex.entreno.ejercicios.concat([ex.entreno.titulo, ex.entreno.objetivo]).forEach((t) => { if (t) libres.add(t); });
     cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Afinar los refuerzos con Claude</h3>
       <p class="peq">Claude lee el clima del grupo y el perfil de cada jugador y propone un refuerzo para cada uno (qué haces tú y qué le dices), ajustado al entreno elegido, y dos o tres acciones para todo el grupo. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto, su foco, sus puntos fuertes, la comparación de las dos miradas, su orientación, cómo vive el error y su confianza.</p>
+      ${db.plantilla.length > 40 ? `<p class="sin-puesto">Se envían los 40 primeros jugadores por dorsal; el resto se queda con la propuesta del informe.</p>` : ""}
+      ${libres.size ? `<details class="det"><summary>Textos que se envían (${libres.size}): revisa que no lleven datos personales</summary><ul class="consignas">${[...libres].map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
       ${pedidos ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="eqIaTxt" style="width:22px;height:22px;flex:none"> Incluir también lo que te pidieron en su autoevaluación («en qué te gustaría que te ayudara»), ${pedidos} jugador${pedidos === 1 ? "" : "es"}. Revisa en sus notas que no lleve datos personales.</label>` : ""}
       <div class="fila"><button type="button" class="btn" data-eqiaok="1">Pedir los refuerzos</button><button type="button" class="btn-sec" data-eqiano="1">Cancelar</button></div></div>`;
   }
@@ -4214,7 +4229,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.jborrar) {
       const j = db.plantilla.find((x) => x.id === d.jborrar);
       if (!window.confirm("¿Quitar a " + (j ? j.n : "este jugador") + " de la plantilla?")) return;
-      db.plantilla = db.plantilla.filter((x) => x.id !== d.jborrar); guardar(); return pintarPantalla();
+      db.plantilla = db.plantilla.filter((x) => x.id !== d.jborrar);
+      db.planes.forEach((p) => { if (p.ref && p.ref.some((r) => r.j === d.jborrar)) { p.ref = p.ref.filter((r) => r.j !== d.jborrar); p.mod = Date.now(); } });
+      delete eqEdit[d.jborrar]; guardar(); return pintarPantalla();
     }
     if (d.jnuevo) {
       const dd = $("#nD").value, nn = $("#nN").value.trim();
@@ -4321,6 +4338,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b || d.once !== undefined || d.extra !== undefined)) plan.mod = Date.now();
+    if (t.id === "eqPlan") { eqDestino = t.value; return; }
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.hasAttribute("data-envplan") || t.id === "envSinApe" || t.id === "envNotas") { invalidarEnvio(app.querySelector('[data-r="envEntr"]')); return; }
