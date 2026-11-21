@@ -4935,4 +4935,29 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   cargarSuscripcion().then(() => { if (estado.pant === "ajustes") pintarSuscripcion(); });
   window.addEventListener("hashchange", () => { if (/^#(k|p|c|v|ver|e|ent|apr|ae)=/.test(location.hash || "")) arrancar(); });
   arrancar();
+
+  // ---------------------------------------------------------------- versión nueva
+  // Una pestaña abierta mucho tiempo sigue con la versión con la que se abrió. Al volver a ella, si la app ha
+  // cambiado en el servidor (otra huella de app.js), se avisa para recargar. Sin conexión, nada.
+  (function () {
+    if (!window.fetch) return;
+    let huella = null, ultima = 0, avisado = false;
+    const leer = () => fetch("app.js", { method: "HEAD", cache: "no-store" }).then((r) => (r.ok ? r.headers.get("etag") || r.headers.get("last-modified") : null)).catch(() => null);
+    leer().then((h) => { huella = h; ultima = Date.now(); });
+    const mirar = () => {
+      if (avisado || !huella || document.visibilityState !== "visible" || Date.now() - ultima < 60000) return;
+      ultima = Date.now();
+      leer().then((h) => {
+        if (!h || h === huella || avisado) return;
+        avisado = true;
+        const d = document.createElement("div"); d.className = "aviso-version no-imprimir"; d.setAttribute("role", "status");
+        d.innerHTML = `<span>Hay una versión nueva de la pizarra.</span><button type="button" class="btn-peq">Recargar</button>`;
+        d.querySelector("button").addEventListener("click", () => { if (esEntrenador()) guardarYa(); location.reload(); });
+        document.body.appendChild(d);
+      });
+    };
+    document.addEventListener("visibilitychange", mirar);
+    window.addEventListener("focus", mirar);
+    setInterval(mirar, 30 * 60000);
+  })();
 })();
