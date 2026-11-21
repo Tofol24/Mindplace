@@ -451,6 +451,8 @@
       objetivo: txt(p.objetivo, 600), notas: txt(p.notas, 800), clave: txt(p.clave, 30), fbn: txt(p.fbn, 600), fbr: txt(p.fbr, 40),
       an: sanAnalisis(p.an), anOc: Array.isArray(p.anOc) && p.anOc.length === 2 ? p.anOc.map((v) => Math.round(num(v, 0, 50, 0))) : null,
       sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
+      ...(idOk(p.base) ? { base: p.base } : {}), // entreno del que viene (al duplicar y mejorar)
+      ...(p.pjNo === true ? { pjNo: true } : {}), // las pautas individuales no van en el enlace del grupo
       bloques: p.bloques.slice(0, MAX.bloques).map((b) => {
         const o = {
           id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
@@ -462,6 +464,12 @@
         const cond = txt(b.cond, 300); if (cond) o.cond = cond;
         if (cond && (b.condEq === "a" || b.condEq === "r" || own(PETOS, b.condEq))) o.condEq = b.condEq;
         const preg = txt(b.preg, 600); if (preg) o.preg = preg;
+        // pautas individuales: { id del jugador: pauta de juego } (las ve cada jugador en su ficha del apartado)
+        if (b.pj && typeof b.pj === "object") {
+          const pj = {}; Object.keys(b.pj).slice(0, 60).forEach((k) => { const v = txt(b.pj[k], 200).trim(); if (idOk(k) && v) pj[k] = v; });
+          if (Object.keys(pj).length) o.pj = pj;
+        }
+        if (idOk(b.ob)) o.ob = b.ob; // apartado del entreno del que viene (al duplicar)
         // feedback: c cómo ha ido (1 costó, 2 regular, 3 bien), a estímulos relevantes (1 no, 2 a veces, 3 sí), n nota
         if (b.fb && typeof b.fb === "object") {
           const fb = {}; if ([1, 2, 3].includes(b.fb.c)) fb.c = b.fb.c; if ([1, 2, 3].includes(b.fb.a)) fb.a = b.fb.a;
@@ -1738,7 +1746,7 @@
             </div>
             <div class="fila">
               <button type="button" class="btn-peq" data-abrir="${p.id}">Abrir</button>
-              <button type="button" class="btn-peq" data-dup="${p.id}">Duplicar</button>
+              <button type="button" class="btn-peq" data-dup="${p.id}" aria-label="Duplicar y mejorar «${esc(p.titulo || "plan")}»">♻️ Duplicar y mejorar</button>
               <button type="button" class="btn-peq peligro" data-borrar="${p.id}">Borrar</button>
             </div>
           </div>`).join("") : `<p class="vacio">Aún no hay nada en el cuaderno.<br>Empieza con un entreno o un partido.</p>`}
@@ -1831,6 +1839,7 @@
     const p = db.planes.find((x) => x.id === estado.planId);
     if (!p) return ir("cuaderno");
     const sl = slotsDe(p);
+    const focosPlan = focosJugadores();
     const optsJug = (sel) => `<option value="">—</option>` + db.plantilla.slice().sort((a, b) => a.d - b.d).map((j) => `<option value="${esc(j.id)}" ${sel === j.id ? "selected" : ""}>${esc(j.d)} · ${esc(j.c || j.n)}</option>`).join("");
     app.innerHTML = `
       <button type="button" class="btn-sec" data-ir2="cuaderno">← Cuaderno</button>
@@ -1845,6 +1854,8 @@
         <div class="campo-f"><label for="pClave">Palabra clave del equipo para volver al juego (opcional)</label><input type="text" id="pClave" data-p="clave" value="${esc(p.clave || "")}" maxlength="30" placeholder="¡Reset!, ¡A la próxima!, ¡Balón!, ¡Ahora!"></div>
         <div class="campo-f"><label for="pNotas">Notas para el grupo (hora, material, convocatoria…)</label><textarea id="pNotas" data-p="notas" maxlength="800">${esc(p.notas)}</textarea></div>
       </div>
+
+      ${htmlBase(p)}
 
       <h2>Alineación</h2>
       <div class="tarjeta">
@@ -1886,6 +1897,7 @@
           </div>` : ""}
           <div class="campo-f"><label for="bpr${b.id}">❓ Preguntas para hacer después (no se envían a los jugadores)</label><textarea id="bpr${b.id}" data-b="preg" data-bid="${b.id}" maxlength="600" placeholder="¿Qué has visto antes de recibir?&#10;¿Cuándo has decidido moverte?">${esc(b.preg || "")}</textarea>
             <span class="peq" style="font-weight:400">Lo conocen, pero aún no lo han aprendido: durante el juego, observa; las preguntas, mejor después. No se envían a los jugadores.</span></div>
+          ${htmlPautas(b, focosPlan)}
           <div class="acciones">
             ${b.jug ? `<button type="button" class="btn-peq" data-pz="${b.id}" style="background:var(--verde);color:#fff">🟩 Abrir pizarra (${b.jug.pasos.length} paso${b.jug.pasos.length === 1 ? "" : "s"})</button>
               <button type="button" class="btn-peq peligro" data-pzborrar="${b.id}">Quitar pizarra</button>`
@@ -1923,6 +1935,7 @@
       <div class="tarjeta">
         <p class="peq">Se crea un enlace corto con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada. El plan se guarda cifrado 90 días en el servidor de APRENS, que no lo puede leer.</p>
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
+        <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="pjGrupo" ${p.pjNo ? "" : "checked"} style="width:22px;height:22px"> Incluir las pautas individuales («👤») en el enlace del grupo. Cada jugador ve la suya, pero quien abra el enlace podría ver las de todos. Si lo desmarcas, cada uno las recibe solo en su ficha privada.</label>
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
           <button type="button" class="btn" data-enviar="1">📤 Enviar enlace al grupo</button>
@@ -2151,6 +2164,7 @@
       Object.keys(pl.once || {}).forEach((k) => { pl.once[k] = r(pl.once[k]); });
       Object.keys(pl.extra || {}).forEach((k) => { pl.extra[k] = pl.extra[k].map(r); });
       pl.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) f.pj = r(f.pj); }); });
+      pl.bloques.forEach((b) => { if (b.pj) { const n = {}; Object.keys(b.pj).forEach((k) => { n[r(k)] = b.pj[k]; }); b.pj = n; } });
     }
     const planes = o.plan ? [o.plan] : (o.planes || []);
     planes.forEach((pl) => pl.bloques.forEach((b) => {
@@ -2289,10 +2303,13 @@
     Object.values(plan.once || {}).forEach((x) => usados.add(x));
     Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => { if (x) usados.add(x); }));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
+    if (!plan.pjNo) plan.bloques.forEach((b) => Object.keys(b.pj || {}).forEach((k) => usados.add(k))); // con pauta individual: tiene que poder elegir su dorsal
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
     pl.bloques.forEach((b) => { delete b.preg; delete b.fb; }); // las preguntas y el feedback son solo para el entrenador
-    delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc; delete pl.ref;
+    delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc; delete pl.ref; delete pl.base;
+    pl.bloques.forEach((b) => { delete b.ob; if (b.pj) Object.keys(b.pj).forEach((k) => { if (pl.pjNo || !jug.some((j) => j.id === k)) delete b.pj[k]; }); if (b.pj && !Object.keys(b.pj).length) delete b.pj; });
+    delete pl.pjNo;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: eqPaquete(), plan: pl, jug: jug };
@@ -2494,6 +2511,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       else if ((p.mod || 0) > (db2.planes[i].mod || 0)) {
         const viejo = db2.planes[i];
         p.sinNombres = !!viejo.sinNombres;
+        if (viejo.pjNo) p.pjNo = true; else delete p.pjNo; // preferencia de este cuaderno
         // el feedback solo viaja con las notas privadas: si no viene, se conserva el de este cuaderno
         if (!p.fbn && viejo.fbn) p.fbn = viejo.fbn;
         if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
@@ -3062,6 +3080,145 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     pantEquipo(); toast(n ? "Refuerzos puestos: revísalos antes de llevarlos al entreno" : "No había refuerzos que poner");
   }
 
+  // ---------------------------------------------------------------- pautas individuales y mejorar entreno a entreno
+  // El foco de cada jugador (de sus notas), para proponer pautas y para Claude.
+  function focosJugadores() {
+    const r = {};
+    db.plantilla.forEach((j) => {
+      const pr = prioridadNotas(j), f = pr.foco && (j.notas || []).find((n) => n.id === pr.foco.id);
+      if (f) r[j.id] = { x: f.x, fij: pr.foco.fij || "", msg: mensajeNota(f) || "", asp: aspectoDe(f), s: f.s || "" };
+    });
+    return r;
+  }
+  function htmlPautas(b, focos) {
+    if (!db.plantilla.length) return "";
+    const pj = b.pj || {}, n = Object.keys(pj).length;
+    return `<details class="det pautas"${n ? " open" : ""}><summary>👤 Pautas individuales${n ? " (" + n + ")" : ""}</summary>
+      <p class="peq">Una pauta de juego para jugadores concretos en este ejercicio: cada uno la ve en su ficha del plan, debajo del ejercicio. Va en el enlace del plan, así que escribe solo pautas de juego; lo personal, en los refuerzos del informe del equipo.</p>
+      <div class="fila"><button type="button" class="btn-peq" data-pjprop="${b.id}">💡 Proponer según el foco de cada uno</button></div>
+      <div class="pj-lista">${db.plantilla.slice().sort((a, c) => a.d - c.d).map((j) => {
+        const f = focos[j.id], id = "pj_" + b.id + "_" + j.id;
+        return `<div class="pj-fila"><label for="${esc(id)}"><span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(j.d)}</span> ${esc(nomCorto(j))}</label>
+          <input type="text" id="${esc(id)}" data-pj="${esc(b.id)}" data-pjj="${esc(j.id)}" maxlength="200" value="${esc(pj[j.id] || "")}" placeholder="${f ? esc("Su foco: " + sinPunto(f.x)) : "Pauta para este ejercicio"}"></div>`;
+      }).join("")}</div></details>`;
+  }
+  // Propuesta local: solo para los jugadores cuyo foco tiene que ver con el ejercicio
+  function proponerPautas(plan, b) {
+    const focos = focosJugadores(), rb = raices([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, CATS[b.cat]].join(" "));
+    b.pj = b.pj || {}; let n = 0;
+    Object.keys(focos).forEach((jid) => {
+      if (b.pj[jid]) return;
+      const f = focos[jid], rf = raices(f.x + " " + (f.asp ? f.asp.t : "") + " " + f.fij);
+      let comun = 0; rf.forEach((w) => { if (rb.has(w)) comun++; });
+      if (!comun && f.s !== b.cat) return;
+      // solo textos del catálogo (mensaje del aspecto o sus estímulos), nunca el texto libre de las notas
+      const t = f.msg || (f.asp && f.fij ? "Fíjate en " + sinPunto(f.fij).replace(/^./, (x) => x.toLowerCase()) + "." : "");
+      if (!t) return;
+      b.pj[jid] = t.slice(0, 200); n++;
+    });
+    if (!Object.keys(b.pj).length) delete b.pj;
+    plan.mod = Date.now(); guardar(); pintarPantalla();
+    const det = app.querySelector(`[data-pjprop="${b.id}"]`); if (det) det.closest("details").open = true;
+    toast(n ? n + " pauta" + (n === 1 ? "" : "s") + " propuesta" + (n === 1 ? "" : "s") + ": revísalas" : "Ningún foco encaja claramente con este ejercicio: escríbelas a mano o pide a Claude que lo mejore");
+  }
+  // El informe del equipo para Claude, sin nombres: clima, necesidades y el foco de cada jugador (J1, J2…)
+  function equipoParaIA() {
+    const perfiles = db.plantilla.slice().sort((a, b) => a.d - b.d).map(perfilJugador), cl = climaEquipo(perfiles), mapa = {};
+    const jugadores = perfiles.slice(0, 30).map((p, i) => { const k = "J" + (i + 1); mapa[k] = p.j.id;
+      return { jugador: k, puesto: quitarNombres(p.j.p || "").slice(0, 40), foco: quitarNombres(p.foco ? p.foco.x : ""), fijarse: quitarNombres(p.fij) }; });
+    return { mapa: mapa, datos: {
+      clima: { jugadores: cl.total, conAutoevaluacion: cl.conAuto, orientacion: { tarea: cl.ori[0], mixta: cl.ori[1], resultado: cl.ori[2] },
+        error: { vuelveEnseguida: cl.err[0], leCuestaUnPoco: cl.err[1], leCuestaMucho: cl.err[2] }, confianza: { alta: cl.conf[0], normal: cl.conf[1], baja: cl.conf[2] } },
+      necesidades: cl.nec.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"), fortalezas: cl.fort.map((x) => quitarNombres(x.t) + " (" + x.js.length + ")"),
+      jugadores: jugadores } };
+  }
+  const textosEquipo = (d) => d.necesidades.map((t) => "Necesita el grupo: " + t).concat(d.fortalezas.map((t) => "Fortaleza: " + t), d.jugadores.filter((j) => j.foco || j.puesto).map((j) => j.jugador + (j.puesto ? " (" + j.puesto + ")" : "") + (j.foco ? ": " + j.foco : "") + (j.fijarse ? " · " + j.fijarse : "")));
+  // Las pautas de Claude (J1…) pasan a los jugadores de verdad
+  function pautasDe(l, mapa) {
+    const pj = {};
+    (l || []).forEach((x) => { const id = mapa && mapa[x.jugador]; if (id && db.plantilla.some((j) => j.id === id) && x.texto) pj[id] = String(x.texto).slice(0, 200); });
+    return Object.keys(pj).length ? pj : null;
+  }
+  // ----- «viene de»: el feedback del entreno anterior a la vista y mejorarlo con Claude
+  function htmlBase(p) {
+    const o = p.base && db.planes.find((x) => x.id === p.base); if (!o) return "";
+    const fbs = p.bloques.map((b) => { const v = b.ob && o.bloques.find((x) => x.id === b.ob); return v && v.fb ? { t: b.titulo || CATS[b.cat], fb: v.fb } : null; }).filter(Boolean);
+    return `<div class="tarjeta base-plan">
+      <h3 style="margin-top:0">♻️ Viene de «${esc(o.titulo || "Entreno")}»${o.fecha ? " · " + esc(fechaBonita(o.fecha)) : ""}</h3>
+      <p class="peq">Se han copiado las pizarras, los objetivos, las consignas y las pautas. Concreta lo que cambia hoy o pide a Claude que lo mejore con el feedback de aquel entreno y el informe del equipo.</p>
+      ${fbs.length || o.fbn ? `<p><b>Cómo fue:</b></p><ul class="consignas">${fbs.map((x) => `<li><b>${esc(x.t)}:</b> ${esc([x.fb.c && "ha ido " + ["", "costó", "regular", "bien"][x.fb.c], x.fb.a && "estímulos: " + ["", "no", "a veces", "sí"][x.fb.a], x.fb.n].filter(Boolean).join(" · "))}</li>`).join("")}${o.fbn ? `<li><b>En general:</b> ${esc(o.fbn)}</li>` : ""}</ul>`
+        : `<p class="peq">Aquel entreno no tiene feedback. Rellena «📝 Cómo ha ido» en él para que la mejora sea más ajustada.</p>`}
+      <div class="fila"><button type="button" class="btn-peq ia-btn" data-mejpedir="1">✨ Mejorar este entreno con Claude</button></div>
+      <div data-r="iamej"></div>
+    </div>`;
+  }
+  function previaMejorar(p, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Mejorar el entreno con Claude"); return; }
+    const o = db.planes.find((x) => x.id === p.base) || { bloques: [] }, eq = equipoParaIA(), bmap = {};
+    const bloques = p.bloques.slice(0, 12).map((b, i) => {
+      const k = "B" + (i + 1), v = b.ob && o.bloques.find((x) => x.id === b.ob), fb = (v && v.fb) || {}; bmap[k] = b.id;
+      const inv = {}; Object.keys(eq.mapa).forEach((jk) => { inv[eq.mapa[jk]] = jk; });
+      return { bloque: k, categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 600), consignas: quitarNombres(b.consignas), fase: FASE_CORTA[b.fase] || "",
+        fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond), preguntas: quitarNombres(b.preg), pizarra: !!b.jug,
+        como: fb.c ? ["", "costó", "regular", "bien"][fb.c] : "", estimulos: fb.a ? ["", "no", "a veces", "sí"][fb.a] : "", nota: quitarNombres(fb.n),
+        pautas: Object.keys(b.pj || {}).filter((id) => inv[id]).map((id) => ({ jugador: inv[id], texto: quitarNombres(b.pj[id]) })) };
+    });
+    const entrada = { modo: "mejorar", etapa: etapaTxt(), titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo), notaGeneral: quitarNombres(o.fbn), quiero: "",
+      bloques: bloques, historial: historialIA(p.id, 4), equipo: eq.datos };
+    iaFbPend.mej = { entrada: entrada, mapa: eq.mapa, bmap: bmap, plan: p.id };
+    iaFbPend.mej.firmas = {}; p.bloques.forEach((b) => { iaFbPend.mej.firmas[b.id] = firmaBloque(b); }); iaFbPend.mej.obj = p.objetivo;
+    const libres = [];
+    [entrada.titulo, entrada.objetivo, entrada.notaGeneral && "Nota general: " + entrada.notaGeneral].forEach((t) => { if (t) libres.push(t); });
+    bloques.forEach((b) => { [b.titulo, b.texto, b.consignas, b.fijarse && "Fijarse: " + b.fijarse, b.cuando && "Cuándo: " + b.cuando, b.condicion && "Condición: " + b.condicion, b.preguntas && "Preguntas: " + b.preguntas, b.nota && "Feedback: " + b.nota]
+      .concat(b.pautas.map((x) => x.jugador + ": " + x.texto)).forEach((t) => { if (t) libres.push(b.bloque + " · " + t); }); });
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Mejorar este entreno con Claude</h3>
+      <div class="campo-f"><label for="mejQuiero">¿Qué quieres cambiar o reforzar? (opcional)</label><textarea id="mejQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: más oposición en el rondo, que la semana pasada fue fácil"></textarea></div>
+      <p class="peq">Claude revisa cada apartado con su feedback, la memoria del equipo y el informe del equipo, y propone los cambios: más fácil si costó, más real si fue bien, y los detalles (en qué fijarse, cuándo, condición, preguntas y pautas individuales). Se envía a Claude (Anthropic) <b>sin nombres</b>: los jugadores van como J1, J2… con su puesto y su foco.</p>
+      ${htmlNotasEnvio(entrada.historial, libres.concat(textosEquipo(eq.datos)))}
+      <div class="fila"><button type="button" class="btn" data-mejok="1">Proponer mejoras</button><button type="button" class="btn-sec" data-mejno="1">Cancelar</button></div></div>`;
+  }
+  function pedirMejorar(p, cont) {
+    const x = iaFbPend.mej; if (!x || x.plan !== p.id) { previaMejorar(p, cont); return; }
+    const q = cont.querySelector("#mejQuiero"); x.entrada.quiero = quitarNombres(q ? q.value : "").slice(0, 300);
+    iaFbPend.mejUsado = x; delete iaFbPend.mej;
+    consultaIA("mej" + p.id, x.entrada, cont, "Claude está mejorando el entreno.", (r) => pintarMejorar(p, cont, r));
+  }
+  function pintarMejorar(p, cont, r) {
+    const x = iaFbPend.mejUsado || {};
+    const titulo = (k) => { const b = p.bloques.find((y) => y.id === (x.bmap || {})[k]); return b ? b.titulo || CATS[b.cat] : k; };
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Propuesta de mejora</h3>
+      ${r.analisis ? `<p><b>Por qué:</b> ${esc(r.analisis)}</p>` : ""}${r.objetivo ? `<p><b>Objetivo:</b> ${esc(r.objetivo)}</p>` : ""}
+      ${r.bloques.map((b) => `<details class="det"><summary>${esc(titulo(b.bloque))}: ${esc(b.cambio || "ajustes")}</summary>${htmlPropuesta(Object.assign({ minutos: "" }, b))}
+        ${b.pautas.length ? `<p><b>👤 Pautas:</b></p><ul class="consignas">${b.pautas.map((y) => { const j = db.plantilla.find((z) => z.id === (x.mapa || {})[y.jugador]); return j ? `<li><b>${esc(j.d + " " + nomCorto(j))}:</b> ${esc(y.texto)}</li>` : ""; }).join("")}</ul>` : ""}</details>`).join("")}
+      <div class="fila"><button type="button" class="btn" data-mejaplicar="1">Aplicar los cambios</button><button type="button" class="btn-sec" data-mejno="1">Descartar</button></div>
+      <p class="peq">Se cambian los textos de cada apartado; las pizarras se quedan como están: revisa que encajen con los cambios.</p></div>`;
+  }
+  const firmaBloque = (b) => JSON.stringify([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, b.preg, b.pj || null]);
+  function aplicarMejorar(p) {
+    const r = iaFbRes["mej" + p.id], x = iaFbPend.mejUsado; if (!r || !x || x.plan !== p.id) return;
+    // si has cambiado algún apartado mientras Claude respondía, se pregunta antes de sustituirlo
+    const tocados = r.bloques.map((m) => p.bloques.find((y) => y.id === x.bmap[m.bloque])).filter((b) => b && x.firmas && x.firmas[b.id] !== firmaBloque(b));
+    const pisar = !tocados.length || window.confirm("Has cambiado " + tocados.length + " apartado" + (tocados.length === 1 ? "" : "s") + " mientras Claude respondía (" + tocados.map((b) => b.titulo || CATS[b.cat]).join(", ") + "). ¿Aplicar también ahí la propuesta? Si cancelas, esos apartados se quedan con tus cambios.");
+    let n = 0;
+    r.bloques.forEach((m) => {
+      const b = p.bloques.find((y) => y.id === x.bmap[m.bloque]); if (!b) return;
+      if (!pisar && tocados.includes(b)) return;
+      if (m.titulo) b.titulo = m.titulo.slice(0, 80);
+      if (m.texto) b.texto = m.texto.slice(0, 1200);
+      if (m.consignas.length) b.consignas = m.consignas.join("\n").slice(0, 800);
+      if (m.fijarse) b.fij = m.fijarse.slice(0, 300);
+      if (m.cuando) b.cuando = m.cuando.slice(0, 300);
+      if (p.tipo === "entreno" && m.condicion) b.cond = m.condicion.slice(0, 300);
+      if (m.preguntas.length) b.preg = m.preguntas.join("\n").slice(0, 600);
+      const pj = pautasDe(m.pautas, x.mapa); if (pj) b.pj = Object.assign(b.pj || {}, pj);
+      n++;
+    });
+    if (r.objetivo && r.objetivo !== p.objetivo && (p.objetivo === x.obj || window.confirm("Has cambiado el objetivo mientras Claude respondía. ¿Sustituirlo por el que propone?\n\n" + r.objetivo))) p.objetivo = r.objetivo.slice(0, 600);
+    delete iaFbRes["mej" + p.id]; delete iaFbPend.mejUsado;
+    p.mod = Date.now(); guardar(); pintarPantalla();
+    toast(n + " apartado" + (n === 1 ? "" : "s") + " mejorado" + (n === 1 ? "" : "s") + ": revisa los detalles y las pizarras");
+  }
+
   // ---------------------------------------------------------------- ficha en una página (A4)
   // Resumen visual de las notas de un jugador: puntos fuertes, foco de aprendizaje,
   // consejos por situación y cómo volver a la jugada. Se ve en pantalla y se imprime en A4.
@@ -3348,6 +3505,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const pq = Object.assign({ tipo: "jugador" }, base);
     if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
     pq.yo = j.id;
+    // en su ficha privada, solo sus pautas individuales (nunca las de los compañeros)
+    if (plan) pq.plan.bloques.forEach((b, i) => { const v = ((plan.bloques[i] || {}).pj || {})[j.id]; if (v) b.pj = { [j.id]: v }; else delete b.pj; });
     pq.notas = clon(j.notas || []);
     if (j.auto && (Object.keys(j.auto.m || {}).length || j.auto.o)) pq.auto = Object.assign({ m: clon(j.auto.m || {}) }, j.auto.o ? { o: clon(j.auto.o) } : {}); // solo lo que muestra «Tú y yo»
     if (j.lec) pq.lec = j.lec;
@@ -3669,8 +3828,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   // Las notas y textos libres que se enviarán, para revisarlos antes de confirmar.
   function htmlNotasEnvio(h, extra) {
     const t = (extra || []).filter(Boolean);
-    h.forEach((p) => { [p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(fechaBonita(p.fecha) + " · " + x)); p.bloques.forEach((x) => { if (x.nota) t.push(fechaBonita(p.fecha) + " · " + x.titulo + ": " + x.nota); }); });
-    return t.length ? `<details class="det"><summary>Notas que se envían (${t.length}): revísalas</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
+    h.forEach((p) => {
+      const f = fechaBonita(p.fecha) + " · ";
+      [p.titulo, p.objetivo && "Objetivo: " + p.objetivo, p.nota, p.resultado && "Resultado: " + p.resultado].filter(Boolean).forEach((x) => t.push(f + x));
+      p.bloques.forEach((x) => [x.titulo, x.texto, x.fijarse && "Fijarse: " + x.fijarse, x.cuando && "Cuándo: " + x.cuando, x.condicion && "Condición: " + x.condicion, x.nota && "Nota: " + x.nota].filter(Boolean).forEach((y, i) => t.push(f + (i ? (x.titulo || "") + " · " : "") + y)));
+    });
+    return t.length ? `<details class="det"><summary>Textos que se envían (${t.length}): revisa que no lleven datos personales</summary><ul class="consignas">${t.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : "";
   }
   function previaAlternativas(plan, b, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir alternativas a Claude"); return; }
@@ -3730,18 +3893,22 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function previaEntreno(cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Pedir un entreno a Claude"); return; }
     const h = historialIA("", 8);
-    if (!h.length) { cont.innerHTML = `<p class="sin-puesto">Aún no hay feedbacks.</p>`; return; }
+    const eq = equipoParaIA(), conEq = eq.datos.jugadores.some((j) => j.foco) || eq.datos.necesidades.length;
+    if (!h.length && !conEq) { cont.innerHTML = `<p class="sin-puesto">Aún no hay feedbacks ni notas de los jugadores.</p>`; return; }
     const entrada = { modo: "entreno", etapa: etapaTxt(), quiero: quitarNombres($("#entQuiero").value), minutos: +$("#entMin").value || 75, jugadores: db.plantilla.length, historial: h };
-    iaFbPend.ent = entrada;
+    if (conEq) entrada.equipo = eq.datos;
+    iaFbPend.ent = entrada; iaFbPend.entMapa = eq.mapa;
     cont.innerHTML = `<div class="ia-propuesta">
       <p class="peq">Se envían a Claude (Anthropic), sin nombres, los planes y los feedbacks de las últimas ${h.length} sesiones (títulos, objetivos, explicaciones, en qué fijarse, condiciones y notas)${entrada.quiero ? " y lo que quieres trabajar" : ""}. Revisa que ningún texto lleve datos personales.</p>
-      ${htmlNotasEnvio(h, [entrada.quiero && "Qué quieres trabajar: " + entrada.quiero])}
+      ${conEq ? `<p class="peq">📊 Tiene en cuenta el <b>informe del equipo</b>: el clima, lo que más necesita el grupo y el foco de cada jugador (como J1, J2…), y propone pautas individuales en los ejercicios.</p>` : ""}
+      ${htmlNotasEnvio(h, [entrada.quiero && "Qué quieres trabajar: " + entrada.quiero].concat(conEq ? textosEquipo(eq.datos) : []))}
       <div class="fila"><button type="button" class="btn" data-entok="1">Proponer</button><button type="button" class="btn-sec" data-entno="1">Cancelar</button></div>
     </div>`;
   }
   function pedirEntreno(cont) {
     const entrada = iaFbPend.ent; delete iaFbPend.ent;
     if (!entrada) { previaEntreno(cont); return; }
+    iaFbPend.entMapaUsado = iaFbPend.entMapa;
     iaFbMin = entrada.minutos;
     consultaIA("ent", entrada, cont, "Claude está preparando el entreno.", (r) => pintarEntreno(cont, r));
   }
@@ -3752,7 +3919,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       ${r.analisis ? `<p><b>Por qué:</b> ${esc(r.analisis)}</p>` : ""}
       ${r.objetivo ? `<p><b>Objetivo:</b> ${esc(r.objetivo)}</p>` : ""}
       <p class="peq">${r.bloques.length} apartados${min ? " · " + min + " min" : ""}${iaFbMin && min && Math.abs(min - iaFbMin) > 10 ? ` (pediste ${iaFbMin}: ajusta los minutos al crearlo)` : ""}</p>
-      ${r.bloques.map((x, i) => `<details class="det"${i === 0 ? " open" : ""}><summary>${i + 1}. ${esc(x.titulo)}${x.minutos ? " · " + esc(x.minutos) + "'" : ""}</summary>${htmlPropuesta(x)}</details>`).join("")}
+      ${r.bloques.map((x, i) => `<details class="det"${i === 0 ? " open" : ""}><summary>${i + 1}. ${esc(x.titulo)}${x.minutos ? " · " + esc(x.minutos) + "'" : ""}</summary>${htmlPropuesta(x)}
+        ${(x.pautas || []).length ? `<p><b>👤 Pautas individuales:</b></p><ul class="consignas">${x.pautas.map((y) => { const j = db.plantilla.find((z) => z.id === (iaFbPend.entMapaUsado || {})[y.jugador]); return j ? `<li><b>${esc(j.d + " " + nomCorto(j))}:</b> ${esc(y.texto)}</li>` : ""; }).join("")}</ul>` : ""}</details>`).join("")}
       <div class="fila"><button type="button" class="btn" data-entcrear="1">Crear este entreno</button><button type="button" class="btn-sec" data-entno="1">Descartar</button></div>
       <p class="peq">Se crea como un entreno nuevo con fecha de hoy. Después puedes cambiar lo que quieras y diseñar cada pizarra.</p>
     </div>`;
@@ -3760,7 +3928,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function crearEntrenoPropuesto() {
     const r = iaFbRes.ent; if (!r) return;
     const p = { id: uid(), mod: Date.now(), tipo: "entreno", fecha: hoyISO(), titulo: (r.titulo || "Entreno").slice(0, 80), rival: "", objetivo: r.objetivo || "", notas: "",
-      sistema: "4231", once: {}, bloques: r.bloques.slice(0, MAX.bloques).map((x) => bloqueDePropuesta(x, "entreno")) };
+      sistema: "4231", once: {}, bloques: r.bloques.slice(0, MAX.bloques).map((x) => { const b = bloqueDePropuesta(x, "entreno"), pj = pautasDe(x.pautas, iaFbPend.entMapaUsado); if (pj) b.pj = pj; return b; }) };
     autoOnce(p);
     const limpio = sanPlan(p); if (!limpio) return;
     db.planes.push(limpio); delete iaFbRes.ent; guardar();
@@ -4045,6 +4213,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         ${b.texto ? `<p>${esc(b.texto).replace(/\n/g, "<br>")}</p>` : ""}
         ${cons.length ? `<ul class="consignas">${cons.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
         ${b.fij || b.cuando ? `<div class="atencion">${b.fij ? `<p><b>🎯 En qué fijarte:</b> ${esc(b.fij)}</p>` : ""}${b.cuando ? `<p><b>⏱️ Cuándo:</b> ${esc(b.cuando)}</p>` : ""}</div>` : ""}
+        <div data-r="pjYo">${htmlPautaYo(b, yo)}</div>
         <div data-r="cond">${htmlCondicion(b, ctx, yo)}</div>
         <div data-r="mio"></div>
         ${b.jug ? `<div data-r="pz" id="pzv${bi}"></div>` : ""}`;
@@ -4085,9 +4254,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       $$(".bloque", cont).forEach((d, bi) => {
         pintarMio(d.querySelector('[data-r="mio"]'), plan.bloques[bi], ctx, yo);
         const c = d.querySelector('[data-r="cond"]'); if (c) c.innerHTML = htmlCondicion(plan.bloques[bi], ctx, yo);
+        const py = d.querySelector('[data-r="pjYo"]'); if (py) py.innerHTML = htmlPautaYo(plan.bloques[bi], yo);
       });
     });
   }
+  const htmlPautaYo = (b, yo) => yo && b.pj && b.pj[yo] ? `<div class="para-ti"><b>👤 Tu pauta en este ejercicio:</b> ${esc(b.pj[yo])}</div>` : "";
   // La condición del apartado y si la tiene el equipo de este jugador (por color de peto o de equipo).
   function htmlCondicion(b, ctx, yo) {
     if (!b.cond) return "";
@@ -4155,7 +4326,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const o = db.planes.find((x) => x.id === d.dup); if (!o) return;
       const c = clon(o); c.id = uid(); c.mod = Date.now(); c.titulo = (c.titulo || "") + " (copia)"; c.fecha = hoyISO();
       delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.ref = []; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
-      c.bloques.forEach((x) => { x.id = uid(); });
+      c.bloques.forEach((x) => { x.ob = x.id; x.id = uid(); }); // cada apartado recuerda de cuál viene (para su feedback)
+      c.base = o.id;
       db.planes.push(c); guardar(); return ir("plan", { planId: c.id });
     }
     if (d.borrar) {
@@ -4217,6 +4389,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     if (d.jnotas) return abrirNotas(d.jnotas);
     if (d.eqllevar) return llevarRefuerzos();
+    if (d.pjprop && plan) { const b2 = plan.bloques.find((x) => x.id === d.pjprop); if (b2) proponerPautas(plan, b2); return; }
+    if (d.mejpedir && plan) { iaFbGen["mej" + plan.id] = (iaFbGen["mej" + plan.id] || 0) + 1; delete iaFbRes["mej" + plan.id]; previaMejorar(plan, app.querySelector('[data-r="iamej"]')); return; }
+    if (d.mejok && plan) { pedirMejorar(plan, app.querySelector('[data-r="iamej"]')); return; }
+    if (d.mejno && plan) { iaFbGen["mej" + plan.id] = (iaFbGen["mej" + plan.id] || 0) + 1; delete iaFbPend.mej; delete iaFbRes["mej" + plan.id]; const c = app.querySelector('[data-r="iamej"]'); if (c) c.innerHTML = ""; return; }
+    if (d.mejaplicar && plan) return aplicarMejorar(plan);
     if (d.eqimp) {
       document.body.classList.add("imprimiendo-eq");
       const fin = () => { document.body.classList.remove("imprimiendo-eq"); window.removeEventListener("afterprint", fin); };
@@ -4290,6 +4467,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
+    if (d.pj && d.pjj && plan) {
+      const b2 = plan.bloques.find((x) => x.id === d.pj); if (!b2) return;
+      const v = t.value.trim().slice(0, 200); b2.pj = b2.pj || {};
+      if (v) b2.pj[d.pjj] = v; else delete b2.pj[d.pjj];
+      if (!Object.keys(b2.pj).length) delete b2.pj;
+      plan.mod = Date.now(); guardar(); return;
+    }
     if (d.eqref && d.rj) {
       const c = t.closest("[data-eqj]"); if (!c) return;
       eqEdit[d.rj] = { h: c.querySelector('[data-eqref="h"]').value, d: c.querySelector('[data-eqref="d"]').value }; return;
@@ -4346,6 +4530,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       return;
     }
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
+    if (t.dataset.r === "pjGrupo" && plan) { if (t.checked) delete plan.pjNo; else plan.pjNo = true; plan.mod = Date.now(); guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.hasAttribute("data-envplan") || t.id === "envSinApe" || t.id === "envNotas") { invalidarEnvio(app.querySelector('[data-r="envEntr"]')); return; }
     if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); pintarSinPuesto(plan); return; }

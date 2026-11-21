@@ -381,3 +381,11 @@ button:disabled { opacity: .45; cursor: default; }
   body.imprimiendo-eq .eq-informe { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body.imprimiendo-eq textarea { border: 0; resize: none; padding: 0; min-height: 0; field-sizing: content; }
 }
+
+/* ---- pautas individuales y «viene de» */
+.pautas summary { font-weight: 700; }
+.pj-lista { display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 8px; }
+.pj-fila { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 6px; }
+.pj-fila label { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.pj-fila input { min-height: 40px; }
+.base-plan { border-left: 6px solid var(--verde); }
