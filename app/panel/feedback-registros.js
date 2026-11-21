@@ -17,7 +17,7 @@
   // Herramientas de práctica de presencia interna (densidad AIS).
   var AIS = ["ais_curiosidad", "ais_amor", "ais_muscular", "bajar_alerta", "acompanar_sensacion", "herramienta_diaria",
     "protocolo_ais", "estoy_aqui_conmigo", "toco_desde_dentro", "mapa_atencion_interna", "tracker_ais", "sentarse_mono",
-    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro"];
+    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional"];
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
@@ -69,7 +69,7 @@
       var a = null, b = null;
       if (t === "acompanar_sensacion") { a = num(r.intensidad_antes); b = num(r.intensidad_despues); }
       else if (t === "cuerpo_en_alerta") { a = num(r.activacion); b = num(r.alivio); }
-      else if (t === "reto_mona") { a = num(pick(r.ans_max, r.ans_antes)); b = num(r.ans_final); }
+      else if (t === "reto_mona" || t === "paso_a_paso") { a = num(pick(r.ans_max, r.ans_antes)); b = num(r.ans_final); }
       else { a = num(pick(r.antes, r.alerta_antes, r.activacion_antes)); b = num(pick(r.despues, r.alerta_despues, r.activacion_despues)); }
       if (a != null && b != null && a <= 10 && b <= 10) m.act.push([a, b]);
       var pos = MONO[r.pos || r.escena || r.modo];
@@ -620,7 +620,8 @@
     escalera_comidas: "L'escala dels menjars", ritual_calma: "Ritual diari · calma", rincon_calma: "Racó de calma",
     cuerpo_en_alerta: "Quan el cos continua en alerta", microaccion_valor: "Microacció amb valor",
     registro_texto: "Registre", reto_mona: "Repte: sortir amb la meva mona", autorregistro_hospital: "Autorregistre de l'hospital",
-    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crònic"
+    eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crònic",
+    llave_de_paso: "La clau de pas", entre_punto_y_punto: "Entre punt i punt", paso_a_paso: "Passa a passa, de tornada a mi"
   };
 
   /* Elige variante de forma estable: el mismo mensaje sale igual si lo regeneras,
@@ -705,6 +706,19 @@
     return xs.map(function (x) { return [num(fa(x.r)), num(fb(x.r))]; }).filter(function (p) { return p[0] != null && p[1] != null; });
   }
   function mediaPar(ps, i) { return r1(media(ps.map(function (p) { return p[i]; }))); }
+  /* «mi pareja» (palabras del paciente) → «tu pareja» / «su pareja». */
+  function aTi(s, lang) {
+    s = String(s || "");
+    return lang === "ca" ? s.replace(/^(el |la |els |les )?(meu|meva|meus|meves) /i, function (m, art, p) { return (art || "") + "{" + p.replace(/^me/i, "te") + "|" + p.replace(/^me/i, "se") + "} "; })
+      : s.replace(/^mis /i, "{tus|sus} ").replace(/^mi /i, "{tu|su} ");
+  }
+  /* «Pecho» → «el pecho» / «el pit». */
+  var ZONAS = { pecho: ["el pecho", "el pit"], cuello: ["el cuello", "el coll"], barriga: ["la barriga", "la panxa"], vientre: ["el vientre", "el ventre"],
+    garganta: ["la garganta", "la gola"], hombros: ["los hombros", "les espatlles"], manos: ["las manos", "les mans"], estomago: ["el estómago", "l'estómac"] };
+  function zonaTxt(z, lang) {
+    var k = String(z || "").split(/[ ,(]/)[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return ZONAS[k] ? ZONAS[k][lang === "ca" ? 1 : 0] : textoCorto(z, 30).toLowerCase();
+  }
   function textoCorto(s, n) { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > (n || 70) ? s.slice(0, n || 70).replace(/\s+\S*$/, "") + "…" : s; }
 
   /* Antes → después: alerta, intensidad, activación, ansiedad. */
@@ -751,7 +765,7 @@
     acompanar_sensacion: function (xs, prev) {
       var c = comentarioAntesDespues(xs, prev, function (r) { return r.intensidad_antes; }, function (r) { return r.intensidad_despues; }, { es: "intensidad", ca: "intensitat" });
       var r = ultimoDe(xs);
-      if (c && r.zona) { c.es += " {Notarlo|Que lo note} en " + textoCorto(r.zona, 30).toLowerCase() + " y quedarse ahí, acompañándolo, es exactamente el trabajo."; c.ca += " {Notar-ho|Que ho noti} a " + textoCorto(r.zona, 30).toLowerCase() + " i quedar-s'hi, acompanyant-ho, és exactament la feina."; }
+      if (c && r.zona) { c.es += " {Notarlo|Que lo note} en " + zonaTxt(r.zona, "es") + " y quedarse ahí, acompañándolo, es exactamente el trabajo."; c.ca += " {Notar-ho|Que ho noti} a " + zonaTxt(r.zona, "ca") + " i quedar-s'hi, acompanyant-ho, és exactament la feina."; }
       return c;
     },
     ais_muscular: function (xs, prev) {
@@ -783,6 +797,144 @@
         ca: "{has|ha} fet la microacció amb valor " + unos.length + " de " + xs.length + " dies" + (d ? ", com «" + textoCorto(d, 50) + "»" : "") + ". Són passes petites, però són les que van construint el canvi.", temas: ["cv"] };
     },
     estado_mono: comentarioMono, donde_mono: comentarioMono, donde_esta_mono: comentarioMono,
+    llave_de_paso: function (xs) {
+      var r = ultimoDe(xs), es = [], ca = [], temas = [];
+      if (r.resp != null || r.paradas != null) {
+        es.push("{has hecho|ha hecho} " + (r.resp || 0) + " respiraciones curiosas y " + (r.paradas || 0) + " paradas de pensamiento");
+        ca.push("{has fet|ha fet} " + (r.resp || 0) + " respiracions curioses i " + (r.paradas || 0) + " parades de pensament");
+      }
+      if (num(r.antes) != null && num(r.despues) != null) {
+        var b = num(r.antes) > num(r.despues);
+        es.push("el manómetro ha " + (b ? "bajado" : "quedado") + " de " + coma(r.antes) + " a " + coma(r.despues) + " entre el inicio y el cierre del día");
+        ca.push("el manòmetre ha " + (b ? "baixat" : "quedat") + " de " + coma(r.antes) + " a " + coma(r.despues) + " entre l'inici i el tancament del dia");
+        if (b) temas.push("act");
+      }
+      if (!es.length) return null;
+      var tEs = es.join(", y ") + ".", tCa = ca.join(", i ") + ".";
+      if (num(r.honestidad) > 0) { tEs += " Me alegra especialmente que {hayas podido|haya podido} expresar lo que {sentías|sentía} " + r.honestidad + " " + (r.honestidad == 1 ? "vez" : "veces") + " con un tono sereno, sin tener que justificarlo."; tCa += " M'alegra especialment que {hagis pogut|hagi pogut} expressar el que {senties|sentia} " + r.honestidad + " " + (r.honestidad == 1 ? "vegada" : "vegades") + " amb un to serè, sense haver-ho de justificar."; }
+      if (num(r.limites) > 0) { tEs += " Y {has puesto|ha puesto} " + r.limites + " " + (r.limites == 1 ? "límite" : "límites") + ", que no es poca cosa."; tCa += " I {has posat|ha posat} " + r.limites + " " + (r.limites == 1 ? "límit" : "límits") + ", que no és poca cosa."; }
+      if (num(r.racha) >= 3) { tEs += " Ya {llevas|lleva} " + r.racha + " días seguidos."; tCa += " Ja {duus|du} " + r.racha + " dies seguits."; }
+      return { es: tEs, ca: tCa, temas: temas };
+    },
+    entre_punto_y_punto: function (xs) {
+      var r = ultimoDe(xs), es = "", ca = "";
+      if (r.plan && r.foco == null) return { es: "me gusta que {hayas preparado|haya preparado} el plan de partido: llevarlo pensado ayuda a volver al foco cuando aparece la tensión.", ca: "m'agrada que {hagis preparat|hagi preparat} el pla de partit: dur-lo pensat ajuda a tornar al focus quan apareix la tensió.", temas: [] };
+      if (num(r.foco) != null) { es = "en pista la atención en la tarea está en " + coma(r.foco) + "/10" + (num(r.tension) != null ? " y la tensión corporal en " + coma(r.tension) + "/10" : "") + "."; ca = "a pista l'atenció en la tasca és de " + coma(r.foco) + "/10" + (num(r.tension) != null ? " i la tensió corporal de " + coma(r.tension) + "/10" : "") + "."; }
+      if (r.fugas) { es += " Los momentos en que más se escapa la atención son «" + textoCorto(r.fugas, 50) + "»: ahí es justamente donde la pausa entre punto y punto tiene más sentido."; ca += " Els moments en què més s'escapa l'atenció són «" + textoCorto(r.fugas, 50) + "»: just aquí és on la pausa entre punt i punt té més sentit."; }
+      if (num(r.antes) != null && num(r.despues) != null && num(r.antes) > num(r.despues)) { es += " En imaginación, la tensión baja de " + coma(r.antes) + " a " + coma(r.despues) + " al {quedarte|quedarse} con la escena."; ca += " En imaginació, la tensió baixa de " + coma(r.antes) + " a " + coma(r.despues) + " en {quedar-te|quedar-se} amb l'escena."; }
+      return es ? { es: es.trim(), ca: ca.trim(), temas: ["act"] } : null;
+    },
+    exploradora_valiente: function (xs) {
+      var r = ultimoDe(xs), m = r.mision ? "la misión «" + textoCorto(r.mision, 40) + "»" : "la misión", mc = r.mision ? "la missió «" + textoCorto(r.mision, 40) + "»" : "la missió";
+      if (!r.logro) return null;
+      var es = r.logro === "si" ? m + " salió del todo." : r.logro === "medias" ? m + " salió a medias, y eso ya es avanzar." : m + " todavía no ha salido, y no pasa nada: cada intento cuenta.";
+      var ca = r.logro === "si" ? mc + " va sortir del tot." : r.logro === "medias" ? mc + " va sortir a mitges, i això ja és avançar." : mc + " encara no ha sortit, i no passa res: cada intent compta.";
+      if (r.cara_antes && r.cara_despues && r.cara_despues > r.cara_antes) { es += " Me gusta ver que empezó con más preocupación y terminó con más calma."; ca += " M'agrada veure que va començar amb més preocupació i va acabar amb més calma."; }
+      if (r.abrazo) { es += " Y que pidiera un abrazo en vez de repetir la pregunta es justo lo que estamos entrenando: buscar calma en el cuerpo y no en la seguridad de las respuestas."; ca += " I que demanàs una abraçada en lloc de repetir la pregunta és just el que entrenam: cercar calma en el cos i no en la seguretat de les respostes."; }
+      if (r.sin_negociar === 1) { es += " Mantener el plan sin negociar no es fácil, y lo estáis haciendo muy bien."; ca += " Mantenir el pla sense negociar no és fàcil, i ho estau fent molt bé."; }
+      else if (r.sin_negociar === 0) { es += " Si alguna vez se cede un poco es normal; la idea es ir manteniendo el plan cada vez un poco más."; ca += " Si qualque vegada se cedeix una mica és normal; la idea és anar mantenint el pla cada vegada una mica més."; }
+      return { es: es, ca: ca, temas: ["valiosa"] };
+    },
+    mision_barrio: function (xs) {
+      var r = ultimoDe(xs); if (!r.final) return null;
+      var es = r.final === "si" ? "la salida llegó hasta el final" : r.final === "antes" ? "volvió antes de acabar la salida, y aun así haberlo intentado ya cuenta" : "esta vez no salió";
+      var ca = r.final === "si" ? "la sortida va arribar fins al final" : r.final === "antes" ? "va tornar abans d'acabar la sortida, i tot i així haver-ho intentat ja compta" : "aquesta vegada no va sortir";
+      if (num(r.antes) != null && num(r.despues) != null && r.final !== "no") { es += ", y la alarma pasó de " + r.antes + " a " + r.despues; ca += ", i l'alarma va passar de " + r.antes + " a " + r.despues; }
+      es += "."; ca += ".";
+      if (r.paso === "falsa") { es += " Que comprobara que era una falsa alarma es lo más valioso de la misión: el miedo avisaba de algo que no pasó."; ca += " Que comprovàs que era una falsa alarma és el més valuós de la missió: la por avisava d'una cosa que no va passar."; }
+      if (r.frase_campeon) { es += " Me encanta su frase de campeón: «" + textoCorto(r.frase_campeon, 50) + "»."; ca += " M'encanta la seva frase de campió: «" + textoCorto(r.frase_campeon, 50) + "»."; }
+      if (r.final === "no") { es += " Cuando cuesta, conviene bajar un nivel y volver a probar sin presión."; ca += " Quan costa, convé baixar un nivell i tornar-ho a provar sense pressió."; }
+      return { es: es, ca: ca, temas: ["act", r.final === "si" ? "valiosa" : ""] };
+    },
+    ritual_calma: function (xs) {
+      var hechos = xs.filter(function (x) { return x.r.audio === "conmigo"; }).length, resp = xs.filter(function (x) { return x.r.respeto === 1; }).length;
+      if (!xs.some(function (x) { return x.r.audio || x.r.respeto != null; })) return null;
+      var es = "el ritual se ha hecho juntos " + hechos + " de " + xs.length + " días" + (resp ? " y ha respetado el momento " + resp + " " + (resp === 1 ? "vez" : "veces") : "") + ".";
+      var ca = "el ritual s'ha fet junts " + hechos + " de " + xs.length + " dies" + (resp ? " i ha respectat el moment " + resp + " " + (resp === 1 ? "vegada" : "vegades") : "") + ".";
+      es += " Que os vea regularos a vosotros mientras lo hacéis es lo que más le enseña."; ca += " Que us vegi regular-vos a vosaltres mentre ho feis és el que més l'ensenya.";
+      return { es: es, ca: ca, temas: [] };
+    },
+    escalera_comidas: function (xs) {
+      var r = ultimoDe(xs); if (r.escalones == null && r.ultimo_ok == null) return null;
+      var es = r.escalones != null ? "ya van " + r.escalones + " escalones conseguidos" + (r.escalones_total ? " de " + r.escalones_total : "") : "";
+      var ca = r.escalones != null ? "ja són " + r.escalones + " escalons aconseguits" + (r.escalones_total ? " de " + r.escalones_total : "") : "";
+      if (r.ultimo_alimento) { es += (es ? ", y " : "") + (r.ultimo_ok ? "el último intento con " + textoCorto(r.ultimo_alimento, 30) + " salió bien" : "con " + textoCorto(r.ultimo_alimento, 30) + " todavía cuesta, y es normal"); ca += (ca ? ", i " : "") + (r.ultimo_ok ? "el darrer intent amb " + textoCorto(r.ultimo_alimento, 30) + " va sortir bé" : "amb " + textoCorto(r.ultimo_alimento, 30) + " encara costa, i és normal"); }
+      es += ". Cada vez que lo prueba sin presión, su cuerpo aprende que puede estar tranquilo delante de un alimento nuevo."; ca += ". Cada vegada que ho prova sense pressió, el seu cos aprèn que pot estar tranquil davant d'un aliment nou.";
+      return { es: es, ca: ca, temas: [] };
+    },
+    rincon_calma: function (xs) {
+      var r = ultimoDe(xs), j = { abrazo: ["el abrazo", "l'abraçada"], respiracion: ["la respiración", "la respiració"], sensaciones: ["el juego de las sensaciones", "el joc de les sensacions"] }[r.juego];
+      return { es: "ha practicado en el rincón de calma" + (j ? ", esta vez con " + j[0] : "") + ". Jugar a calmarse cuando todavía está tranquilo es lo que luego le permite usarlo cuando la emoción se hace grande.",
+        ca: "ha practicat al racó de calma" + (j ? ", aquesta vegada amb " + j[1] : "") + ". Jugar a calmar-se quan encara està tranquil és el que després li permet fer-ho servir quan l'emoció es fa grossa.", temas: [] };
+    },
+    escalera_exposicion: function (xs) {
+      var r = ultimoDe(xs); if (r.ans_antes == null && !r.resultado) return null;
+      var es = "{has subido|ha subido} al peldaño" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : ""), ca = "{has pujat|ha pujat} a l'escaló" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : "");
+      if (r.ans_antes != null) { es += ": la alarma empezó en " + r.ans_antes + ", llegó a " + r.ans_max + " y terminó en " + r.ans_final; ca += ": l'alarma va començar a " + r.ans_antes + ", va arribar a " + r.ans_max + " i va acabar a " + r.ans_final; }
+      es += "."; ca += ".";
+      if (r.resultado === "sostuve") { es += " {Te quedaste|Se quedó} hasta el final" + (r.paso_ais === "si" ? " y con el AIS activo" : "") + ", que es exactamente el objetivo: no que no haya miedo, sino poder quedarse con él."; ca += " {Et vares quedar|Es va quedar} fins al final" + (r.paso_ais === "si" ? " i amb l'AIS actiu" : "") + ", que és exactament l'objectiu: no que no hi hagi por, sinó poder-s'hi quedar."; }
+      else if (r.resultado === "escape") { es += " Esta vez {saliste|salió} antes, y es información útil: quizá conviene repetir este peldaño o bajar uno antes de seguir."; ca += " Aquesta vegada {vares sortir|va sortir} abans, i és informació útil: potser convé repetir aquest escaló o baixar-ne un abans de continuar."; }
+      return { es: es, ca: ca, temas: ["act", r.resultado === "sostuve" ? "valiosa" : ""] };
+    },
+    honestidad_emocional: function (xs, prev) {
+      var r = ultimoDe(xs);
+      var es = r.con ? "{has podido compartir|ha podido compartir} con " + aTi(textoCorto(r.con, 30), "es") + " lo que {notabas|notaba}" : "{has podido nombrar|ha podido nombrar} lo que {notabas|notaba}";
+      var ca = r.con ? "{has pogut compartir|ha pogut compartir} amb " + aTi(textoCorto(r.con, 30), "ca") + " el que {notaves|notava}" : "{has pogut anomenar|ha pogut anomenar} el que {notaves|notava}";
+      if (r.zona) { es += " en " + zonaTxt(r.zona, "es"); ca += " a " + zonaTxt(r.zona, "ca"); }
+      es += ", sin tener que explicarlo ni justificarlo. Eso es justamente la honestidad emocional desde dentro."; ca += ", sense haver-ho d'explicar ni justificar. Això és justament l'honestedat emocional des de dins.";
+      if (r.paso_valor) { es += " Y el paso que {elegiste|eligió}, «" + textoCorto(r.paso_valor, 50) + "», va en la buena dirección."; ca += " I la passa que {vares triar|va triar}, «" + textoCorto(r.paso_valor, 50) + "», va en la bona direcció."; }
+      return { es: es, ca: ca, temas: [] };
+    },
+    protocolo_ais: function (xs) {
+      var r = ultimoDe(xs); if (r.dias_completados == null) return null;
+      var es = "{llevas|lleva} " + r.dias_completados + " días completados" + (num(r.racha) >= 2 ? " y " + r.racha + " seguidos" : "") + (r.fase_txt ? ", ahora en la fase «" + textoCorto(r.fase_txt, 40) + "»" : "") + ".";
+      var ca = "{duus|du} " + r.dias_completados + " dies completats" + (num(r.racha) >= 2 ? " i " + r.racha + " seguits" : "") + (r.fase_txt ? ", ara a la fase «" + textoCorto(r.fase_txt, 40) + "»" : "") + ".";
+      if (r.fase != null && r.fase_recomendada != null && r.fase > r.fase_recomendada) { es += " No hace falta correr: quedarse un poco más en la fase recomendada (" + r.fase_recomendada + ") ayuda a que se asiente."; ca += " No cal córrer: quedar-se una mica més a la fase recomanada (" + r.fase_recomendada + ") ajuda que s'assenti."; }
+      else { es += " Ir día a día, sin saltarse fases, es lo que hace que la práctica se vuelva propia."; ca += " Anar dia a dia, sense botar-se fases, és el que fa que la pràctica es torni pròpia."; }
+      return { es: es, ca: ca, temas: [] };
+    },
+    tracker_ais: function (xs) {
+      var r = ultimoDe(xs); if (r.paradas == null && r.resp == null) return null;
+      var es = "{has hecho|ha hecho} " + (r.paradas || 0) + " paradas de pensamiento y " + (r.resp || 0) + " respiraciones conscientes" + (num(r.abrazos) > 0 ? ", con " + r.abrazos + " abrazos sentidos" : "") + ".";
+      var ca = "{has fet|ha fet} " + (r.paradas || 0) + " parades de pensament i " + (r.resp || 0) + " respiracions conscients" + (num(r.abrazos) > 0 ? ", amb " + r.abrazos + " abraçades sentides" : "") + ".";
+      if (num(r.proactivas) != null && num(r.reactivas) != null && r.proactivas >= r.reactivas && r.proactivas > 0) { es += " Que la mayoría de comprobaciones sean proactivas, desde la barriga, quiere decir que ya no {esperas|espera} a estar mal para escucharte."; ca += " Que la majoria de comprovacions siguin proactives, des de la panxa, vol dir que ja no {esperes|espera} a estar malament per escoltar-te."; }
+      return { es: es, ca: ca, temas: [] };
+    },
+    estoy_aqui_conmigo: function (xs) {
+      var r = ultimoDe(xs); if (r.practicas == null) return null;
+      var es = "{has hecho|ha hecho} " + r.practicas + " prácticas" + (num(r.esperar) > 0 ? " y {has podido|ha podido} esperar " + r.esperar + " " + (r.esperar == 1 ? "vez" : "veces") + " en lugar de actuar con la urgencia" : "") + ".";
+      var ca = "{has fet|ha fet} " + r.practicas + " pràctiques" + (num(r.esperar) > 0 ? " i {has pogut|ha pogut} esperar " + r.esperar + " " + (r.esperar == 1 ? "vegada" : "vegades") + " en lloc d'actuar amb la urgència" : "") + ".";
+      es += " Cada vez que te quedas contigo en ese momento, aprendes que puedes sostenerlo sin necesitar a nadie más para calmarte."; ca += " Cada vegada que et quedes amb tu en aquest moment, aprens que pots sostenir-ho sense necessitar ningú més per calmar-te.";
+      return { es: es, ca: ca, temas: [] };
+    },
+    pedalea_desde_dentro: function (xs) {
+      var r = ultimoDe(xs), es = [], ca = [];
+      if (num(r.disfrute) != null) { es.push("el disfrute está en " + coma(r.disfrute) + "/10"); ca.push("el gaudi és de " + coma(r.disfrute) + "/10"); }
+      if (num(r.presion) != null) { es.push("la presión por demostrar en " + coma(r.presion) + "/10"); ca.push("la pressió per demostrar de " + coma(r.presion) + "/10"); }
+      if (r.vuelve != null) { es.push("y en subida {volviste|volvió} a la tarea " + r.vuelve + " de " + r.vuelve_total + " veces"); ca.push("i en pujada {vares tornar|va tornar} a la tasca " + r.vuelve + " de " + r.vuelve_total + " vegades"); }
+      if (!es.length) return null;
+      return { es: es.join(", ") + ". Pedalear desde dentro, acompañándote con firmeza y sin látigo, es lo que sostiene el rendimiento.", ca: ca.join(", ") + ". Pedalar des de dins, acompanyant-te amb fermesa i sense fuet, és el que sosté el rendiment.", temas: [] };
+    },
+    toco_desde_dentro: function (xs) {
+      var r = ultimoDe(xs); if (r.puertas == null) return null;
+      return { es: "esta semana {has hecho|ha hecho} " + r.respiros + " respiros antes de " + r.puertas + " puertas, " + (r.noes ? "soltando " + r.noes + " «no» " : "") + "y " + r.cierres + " cierres de día. Ir con el cuerpo y no contra él es lo que te permite llegar a casa con batería.",
+        ca: "aquesta setmana {has fet|ha fet} " + r.respiros + " respirs abans de " + r.puertas + " portes, " + (r.noes ? "deixant anar " + r.noes + " «no» " : "") + "i " + r.cierres + " tancaments de dia. Anar amb el cos i no contra ell és el que et permet arribar a casa amb bateria.", temas: [] };
+    },
+    paso_a_paso: function (xs) {
+      var r = ultimoDe(xs), es = "", ca = "";
+      if (r.peldano != null) {
+        es = "{has trabajado|ha trabajado} el peldaño " + r.peldano + (r.peldanos ? " de " + r.peldanos : "");
+        ca = "{has treballat|ha treballat} l'escaló " + r.peldano + (r.peldanos ? " de " + r.peldanos : "");
+        if (r.ans_antes != null && r.ans_final != null) {
+          es += ": la ansiedad empezó en " + r.ans_antes + (r.ans_max != null ? ", llegó a " + r.ans_max : "") + " y bajó a " + r.ans_final + " al {quedarte|quedarse}";
+          ca += ": l'ansietat va començar a " + r.ans_antes + (r.ans_max != null ? ", va arribar a " + r.ans_max : "") + " i va baixar a " + r.ans_final + " en {quedar-te|quedar-se}";
+        }
+        es += r.paso_ais === "si" ? ", y {lo hiciste quedándote contigo|lo hizo sin dejar de escucharse}." : "."; ca += r.paso_ais === "si" ? ", i {ho vares fer quedant-te amb tu|ho va fer sense deixar d'escoltar-se}." : ".";
+      }
+      if (r.ayudo) { es += " Me apunto que {te ayudó|le ayudó} «" + textoCorto(r.ayudo, 50) + "»: lo podemos usar en el siguiente paso."; ca += " M'apunt que {et va ajudar|li va ajudar} «" + textoCorto(r.ayudo, 50) + "»: ho podem fer servir a la passa següent."; }
+      if (r.logro) { es += " Y me quedo con {tu|su} logro de hoy: «" + textoCorto(r.logro, 60) + "»."; ca += " I em qued amb el {teu|seu} assoliment d'avui: «" + textoCorto(r.logro, 60) + "»."; }
+      return es ? { es: es.trim(), ca: ca.trim(), temas: ["act", "valiosa"] } : null;
+    },
     agenda_atencional: function (xs) {
       var r = ultimoDe(xs), h = num(r.acts_hechas), f = num(r.foco_medio), cy = num(r.conduje_yo_pct);
       var es = [], ca = [];
