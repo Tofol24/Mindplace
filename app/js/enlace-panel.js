@@ -21,9 +21,10 @@
     if (!c) { try { var db = JSON.parse(localStorage.getItem("aprens_db") || "{}"); c = (db.paciente && db.paciente.codigo) || ""; } catch (e) {} }
     return String(c).toUpperCase().replace(/[^\p{L}\p{N}._-]/gu, "").slice(0, 20);
   }
-  /* Nombre exacto de la herramienta: el título de su página sin « · APRENS». */
+  /* Nombre exacto de la herramienta: el título de su página sin « · APRENS» ni
+     paréntesis (WhatsApp puede cortar el enlace en un paréntesis). */
   function nombreHerramienta() {
-    try { return String(g.document.title || "").split(/\s+[·|—–-]\s+/)[0].replace(/[|&#]/g, "").trim().slice(0, 60); } catch (e) { return ""; }
+    try { return String(g.document.title || "").split(/\s+[·|—–-]\s+/)[0].replace(/\s*\([^)]*\)/g, "").replace(/[|&#()]/g, "").trim().slice(0, 60); } catch (e) { return ""; }
   }
   function aprensConEnlace(txt) {
     if (typeof txt !== "string" || !txt.trim() || /#t=/.test(txt) || !g.LZString) return txt;
