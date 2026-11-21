@@ -452,6 +452,7 @@
       an: sanAnalisis(p.an), anOc: Array.isArray(p.anOc) && p.anOc.length === 2 ? p.anOc.map((v) => Math.round(num(v, 0, 50, 0))) : null,
       sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
       ...(idOk(p.base) ? { base: p.base } : {}), // entreno del que viene (al duplicar y mejorar)
+      ...(p.pjNo === true ? { pjNo: true } : {}), // las pautas individuales no van en el enlace del grupo
       bloques: p.bloques.slice(0, MAX.bloques).map((b) => {
         const o = {
           id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
@@ -1934,6 +1935,7 @@
       <div class="tarjeta">
         <p class="peq">Se crea un enlace corto con todo el plan. Los jugadores lo abren, eligen su dorsal y ven la pizarra con sus mensajes. No hace falta cuenta ni instalar nada. El plan se guarda cifrado 90 días en el servidor de APRENS, que no lo puede leer.</p>
         <p class="peq"><b>Ojo:</b> quien tenga el enlace ve el plan entero (nombres cortos y consignas de todos). Si alguien lo reenvía, también lo verá quien lo reciba.</p>
+        ${p.bloques.some((b) => b.pj) ? `<label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="pjGrupo" ${p.pjNo ? "" : "checked"} style="width:22px;height:22px"> Incluir las pautas individuales en el enlace del grupo. Cada jugador ve la suya, pero quien abra el enlace podría ver las de todos. Si lo desmarcas, cada uno las recibe solo en su ficha privada.</label>` : ""}
         <label class="peq" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" data-r="sinNombres" ${p.sinNombres ? "checked" : ""} style="width:22px;height:22px"> Quitar los nombres de la plantilla (solo dorsales). Las notas y consignas se envían tal como las has escrito.</label>
         <div class="fila">
           <button type="button" class="btn" data-enviar="1">📤 Enviar enlace al grupo</button>
@@ -2300,12 +2302,13 @@
     Object.values(plan.once || {}).forEach((x) => usados.add(x));
     Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => { if (x) usados.add(x); }));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) usados.add(f.pj); }); });
-    plan.bloques.forEach((b) => Object.keys(b.pj || {}).forEach((k) => usados.add(k))); // con pauta individual: tiene que poder elegir su dorsal
+    if (!plan.pjNo) plan.bloques.forEach((b) => Object.keys(b.pj || {}).forEach((k) => usados.add(k))); // con pauta individual: tiene que poder elegir su dorsal
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
     pl.bloques.forEach((b) => { delete b.preg; delete b.fb; }); // las preguntas y el feedback son solo para el entrenador
     delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc; delete pl.ref; delete pl.base;
-    pl.bloques.forEach((b) => { delete b.ob; if (b.pj) Object.keys(b.pj).forEach((k) => { if (!jug.some((j) => j.id === k)) delete b.pj[k]; }); });
+    pl.bloques.forEach((b) => { delete b.ob; if (b.pj) Object.keys(b.pj).forEach((k) => { if (pl.pjNo || !jug.some((j) => j.id === k)) delete b.pj[k]; }); if (b.pj && !Object.keys(b.pj).length) delete b.pj; });
+    delete pl.pjNo;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: eqPaquete(), plan: pl, jug: jug };
@@ -3106,7 +3109,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const f = focos[jid], rf = raices(f.x + " " + (f.asp ? f.asp.t : "") + " " + f.fij);
       let comun = 0; rf.forEach((w) => { if (rb.has(w)) comun++; });
       if (!comun && f.s !== b.cat) return;
-      b.pj[jid] = (f.msg || (f.fij ? "Fíjate en " + sinPunto(f.fij).replace(/^./, (x) => x.toLowerCase()) + "." : "Tu reto: " + sinPunto(f.x) + ".")).slice(0, 200); n++;
+      // solo textos del catálogo (mensaje del aspecto o sus estímulos), nunca el texto libre de las notas
+      const t = f.msg || (f.asp && f.fij ? "Fíjate en " + sinPunto(f.fij).replace(/^./, (x) => x.toLowerCase()) + "." : "");
+      if (!t) return;
+      b.pj[jid] = t.slice(0, 200); n++;
     });
     if (!Object.keys(b.pj).length) delete b.pj;
     plan.mod = Date.now(); guardar(); pintarPantalla();
@@ -3158,8 +3164,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const entrada = { modo: "mejorar", etapa: etapaTxt(), titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo), notaGeneral: quitarNombres(o.fbn), quiero: "",
       bloques: bloques, historial: historialIA(p.id, 4), equipo: eq.datos };
     iaFbPend.mej = { entrada: entrada, mapa: eq.mapa, bmap: bmap, plan: p.id };
+    iaFbPend.mej.firmas = {}; p.bloques.forEach((b) => { iaFbPend.mej.firmas[b.id] = firmaBloque(b); }); iaFbPend.mej.obj = p.objetivo;
     const libres = [];
-    bloques.forEach((b) => { [b.nota && b.titulo + ": " + b.nota].concat(b.pautas.map((x) => b.titulo + " · " + x.jugador + ": " + x.texto)).forEach((t) => { if (t) libres.push(t); }); });
+    [entrada.titulo, entrada.objetivo, entrada.notaGeneral && "Nota general: " + entrada.notaGeneral].forEach((t) => { if (t) libres.push(t); });
+    bloques.forEach((b) => { [b.titulo, b.texto, b.consignas, b.fijarse && "Fijarse: " + b.fijarse, b.cuando && "Cuándo: " + b.cuando, b.condicion && "Condición: " + b.condicion, b.preguntas && "Preguntas: " + b.preguntas, b.nota && "Feedback: " + b.nota]
+      .concat(b.pautas.map((x) => x.jugador + ": " + x.texto)).forEach((t) => { if (t) libres.push(b.bloque + " · " + t); }); });
     cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Mejorar este entreno con Claude</h3>
       <div class="campo-f"><label for="mejQuiero">¿Qué quieres cambiar o reforzar? (opcional)</label><textarea id="mejQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: más oposición en el rondo, que la semana pasada fue fácil"></textarea></div>
       <p class="peq">Claude revisa cada apartado con su feedback, la memoria del equipo y el informe del equipo, y propone los cambios: más fácil si costó, más real si fue bien, y los detalles (en qué fijarse, cuándo, condición, preguntas y pautas individuales). Se envía a Claude (Anthropic) <b>sin nombres</b>: los jugadores van como J1, J2… con su puesto y su foco.</p>
@@ -3182,11 +3191,16 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <div class="fila"><button type="button" class="btn" data-mejaplicar="1">Aplicar los cambios</button><button type="button" class="btn-sec" data-mejno="1">Descartar</button></div>
       <p class="peq">Se cambian los textos de cada apartado; las pizarras se quedan como están: revisa que encajen con los cambios.</p></div>`;
   }
+  const firmaBloque = (b) => JSON.stringify([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, b.preg, b.pj || null]);
   function aplicarMejorar(p) {
     const r = iaFbRes["mej" + p.id], x = iaFbPend.mejUsado; if (!r || !x || x.plan !== p.id) return;
+    // si has cambiado algún apartado mientras Claude respondía, se pregunta antes de sustituirlo
+    const tocados = r.bloques.map((m) => p.bloques.find((y) => y.id === x.bmap[m.bloque])).filter((b) => b && x.firmas && x.firmas[b.id] !== firmaBloque(b));
+    const pisar = !tocados.length || window.confirm("Has cambiado " + tocados.length + " apartado" + (tocados.length === 1 ? "" : "s") + " mientras Claude respondía (" + tocados.map((b) => b.titulo || CATS[b.cat]).join(", ") + "). ¿Aplicar también ahí la propuesta? Si cancelas, esos apartados se quedan con tus cambios.");
     let n = 0;
     r.bloques.forEach((m) => {
       const b = p.bloques.find((y) => y.id === x.bmap[m.bloque]); if (!b) return;
+      if (!pisar && tocados.includes(b)) return;
       if (m.titulo) b.titulo = m.titulo.slice(0, 80);
       if (m.texto) b.texto = m.texto.slice(0, 1200);
       if (m.consignas.length) b.consignas = m.consignas.join("\n").slice(0, 800);
@@ -3197,7 +3211,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const pj = pautasDe(m.pautas, x.mapa); if (pj) b.pj = Object.assign(b.pj || {}, pj);
       n++;
     });
-    if (r.objetivo) p.objetivo = r.objetivo.slice(0, 600);
+    if (r.objetivo && (p.objetivo === x.obj || pisar)) p.objetivo = r.objetivo.slice(0, 600);
     delete iaFbRes["mej" + p.id]; delete iaFbPend.mejUsado;
     p.mod = Date.now(); guardar(); pintarPantalla();
     toast(n + " apartado" + (n === 1 ? "" : "s") + " mejorado" + (n === 1 ? "" : "s") + ": revisa los detalles y las pizarras");
@@ -3489,6 +3503,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const pq = Object.assign({ tipo: "jugador" }, base);
     if (!pq.jug.some((x) => x.id === j.id)) pq.jug.push({ id: j.id, d: j.d, n: j.c || j.n.split(" ")[0], c: j.c || j.n.split(" ")[0], p: j.p || "" });
     pq.yo = j.id;
+    // en su ficha privada, solo sus pautas individuales (nunca las de los compañeros)
+    if (plan) pq.plan.bloques.forEach((b, i) => { const v = ((plan.bloques[i] || {}).pj || {})[j.id]; if (v) b.pj = { [j.id]: v }; else delete b.pj; });
     pq.notas = clon(j.notas || []);
     if (j.auto && (Object.keys(j.auto.m || {}).length || j.auto.o)) pq.auto = Object.assign({ m: clon(j.auto.m || {}) }, j.auto.o ? { o: clon(j.auto.o) } : {}); // solo lo que muestra «Tú y yo»
     if (j.lec) pq.lec = j.lec;
@@ -4508,6 +4524,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       return;
     }
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
+    if (t.dataset.r === "pjGrupo" && plan) { if (t.checked) delete plan.pjNo; else plan.pjNo = true; plan.mod = Date.now(); guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.hasAttribute("data-envplan") || t.id === "envSinApe" || t.id === "envNotas") { invalidarEnvio(app.querySelector('[data-r="envEntr"]')); return; }
     if (d.once !== undefined && plan) { plan.once = plan.once || {}; if (t.value) plan.once[d.once] = t.value; else delete plan.once[d.once]; guardar(); pintarSinPuesto(plan); return; }
