@@ -69,7 +69,7 @@
       var a = null, b = null;
       if (t === "acompanar_sensacion") { a = num(r.intensidad_antes); b = num(r.intensidad_despues); }
       else if (t === "cuerpo_en_alerta") { a = num(r.activacion); b = num(r.alivio); }
-      else if (t === "reto_mona" || t === "paso_a_paso") { a = num(pick(r.ans_max, r.ans_antes)); b = num(r.ans_final); }
+      else if (t === "paso_a_paso") { a = num(pick(r.ans_max, r.ans_antes)); b = num(r.ans_final); }
       else { a = num(pick(r.antes, r.alerta_antes, r.activacion_antes)); b = num(pick(r.despues, r.alerta_despues, r.activacion_despues)); }
       if (a != null && b != null && a <= 10 && b <= 10) m.act.push([a, b]);
       var pos = MONO[r.pos || r.escena || r.modo];
@@ -619,7 +619,7 @@
     escalera_exposicion: "L'escala (exposició)", escalera_exposicion_ar: "L'escala · conduir (àrab)", exploradora_valiente: "L'exploradora valenta", mision_barrio: "Missió Barri",
     escalera_comidas: "L'escala dels menjars", ritual_calma: "Ritual diari · calma", rincon_calma: "Racó de calma",
     cuerpo_en_alerta: "Quan el cos continua en alerta", microaccion_valor: "Microacció amb valor",
-    registro_texto: "Registre", reto_mona: "Repte: sortir amb la meva mona", autorregistro_hospital: "Autorregistre de l'hospital",
+    registro_texto: "Registre", autorregistro_hospital: "Autorregistre de l'hospital",
     eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crònic",
     llave_de_paso: "La clau de pas", entre_punto_y_punto: "Entre punt i punt", paso_a_paso: "Passa a passa, de tornada a mi"
   };
@@ -779,15 +779,6 @@
       if (val) { es += " Y la respuesta fue " + String(r.tipo_accion).toLowerCase() + ": aunque el cuerpo seguía en alerta, {elegiste|eligió} desde lo que {te|le} importa."; ca += " I la resposta va ser " + ({ Valiosa: "valuosa", Asertiva: "assertiva", "Protectora necesaria": "protectora necessària" })[r.tipo_accion] + ": encara que el cos continuava en alerta, {vares triar|va triar} des del que {t'|li }importa."; }
       else if (evi) { es += " Esta vez la respuesta fue más de evitar, y es normal cuando el cuerpo está tan activado; registrarlo ya es empezar a verlo con más distancia."; ca += " Aquesta vegada la resposta va ser més d'evitar, i és normal quan el cos està tan activat; registrar-ho ja és començar a veure-ho amb més distància."; }
       return es ? { es: es.trim(), ca: ca.trim(), temas: ["act", val ? "valiosa" : ""] } : null;
-    },
-    reto_mona: function (xs) {
-      var r = ultimoDe(xs), res = r.resultado;
-      if (!res) return null;
-      var niv = r.nivel != null ? " del nivel " + r.nivel : "";
-      var ans = num(r.ans_max) != null ? " con la ansiedad llegando a " + r.ans_max : "", ansC = num(r.ans_max) != null ? " amb l'ansietat arribant a " + r.ans_max : "";
-      if (res === "sostuve") return { es: "{sostuviste|sostuvo} el reto" + niv + ans + ". Eso es exactamente el objetivo: no que la ansiedad desaparezca, sino quedarse con ella al lado.", ca: "{vares sostenir|va sostenir} el repte" + niv.replace("del nivel", "del nivell") + ansC + ". Això és exactament l'objectiu: no que l'ansietat desaparegui, sinó quedar-s'hi amb ella al costat.", temas: ["valiosa"] };
-      if (res === "escape") return { es: "{saliste|salió} antes de terminar el reto" + niv + ". Haberlo intentado ya cuenta, y nos da información para ajustar el paso siguiente.", ca: "{vares sortir|va sortir} abans d'acabar el repte" + niv.replace("del nivel", "del nivell") + ". Haver-ho intentat ja compta, i ens dona informació per ajustar la passa següent.", temas: [] };
-      return { es: "esta vez el reto" + niv + " se quedó sin hacer. Es normal que algunos días cueste más; quizá conviene bajar un escalón y volver a intentarlo.", ca: "aquesta vegada el repte" + niv.replace("del nivel", "del nivell") + " va quedar sense fer. És normal que alguns dies costi més; potser convé baixar un escaló i tornar-ho a intentar.", temas: [] };
     },
     microaccion_valor: function (xs) {
       var unos = xs.filter(function (x) { return num(x.r.cv) === 1; });

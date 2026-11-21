@@ -441,7 +441,7 @@
     ritual_calma: "Ritual diario · calma", rincon_calma: "Rincón de calma",
     cuerpo_en_alerta: "Cuando el cuerpo sigue en alerta",
     microaccion_valor: "Micro-acción con valor (0/1)",
-    registro_texto: "Registro (texto)", reto_mona: "Reto: salir con mi mona", autorregistro_hospital: "Autorregistro hospital",
+    registro_texto: "Registro (texto)", autorregistro_hospital: "Autorregistro hospital",
     eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crónico",
     llave_de_paso: "La llave de paso", entre_punto_y_punto: "Entre punto y punto", paso_a_paso: "Paso a paso, de vuelta a mí"
   };
