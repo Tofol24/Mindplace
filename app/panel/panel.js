@@ -67,6 +67,8 @@
       this.data = v.data ? await decryptObj(key, v.data) : { patients: {} };
       if (!this.data.patients) this.data.patients = {};
       Object.keys(this.data.patients).forEach(function (k) { migrarD(this.data.patients[k]); }, this);
+      // Tus plantillas guardadas con el enlace antiguo pasan al nuevo y se guardan (cifradas).
+      if (migrarPlantillas(this.data)) { try { await this._persist(); } catch (e) {} }
       return true;
     },
 
@@ -80,6 +82,7 @@
       var d; try { d = await decryptObj(key, v.data); } catch (e) { throw new Error("boveda-cambiada"); }
       if (this._key !== key) return;                        // se bloqueó mientras tanto
       this.data = d; if (!this.data.patients) this.data.patients = {};
+      migrarPlantillas(this.data);
       Object.keys(this.data.patients).forEach(function (k) { migrarD(this.data.patients[k]); }, this);
     },
     /* Releer → cambiar → guardar en exclusiva entre pestañas (Web Locks si existe). */
@@ -208,6 +211,7 @@
       var codigos = {}, added = 0, updated = 0;
       var self = this;
       envs.forEach(function (env) { var r = self.mergeEnvelope(env); codigos[r.codigo] = 1; added += r.added; updated += r.updated; });
+      migrarPlantillas(this.data);   // copias de seguridad con plantillas del enlace antiguo
       return { codigos: Object.keys(codigos), added: added, updated: updated };
     },
 
@@ -240,6 +244,23 @@
     save: function () { return this._persist(); },
     patients: function () { return Object.keys(this.data.patients).map(function (k) { return this.data.patients[k]; }, this); }
   };
+
+  /* Enlace antiguo de la app en las plantillas de «Mensajes» guardadas por el psicólogo
+     → enlace actual. Solo cambia el dominio; el resto del texto queda igual. */
+  function migrarPlantillas(data) {
+    var pl = data && data.plantillas, cambio = false;
+    if (!pl || typeof pl !== "object") return false;
+    Object.keys(pl).forEach(function (k) {
+      var m = pl[k]; if (!m || typeof m !== "object") return;
+      ["es", "ca"].forEach(function (l) {
+        if (typeof m[l] === "string" && m[l].indexOf("aprens-app.aprens.net") >= 0) {
+          m[l] = m[l].replace(/https?:\/\/aprens-app\.aprens\.net/g, "https://aprens-app.netlify.app").replace(/aprens-app\.aprens\.net/g, "aprens-app.netlify.app");
+          cambio = true;
+        }
+      });
+    });
+    return cambio;
+  }
 
   /* Convierte la BD cruda del Screening TEC ({codigo:{screenings,seguimientos}})
      a sobres aprens-export. Usa los MISMOS tool ids y campos que el panel anterior
