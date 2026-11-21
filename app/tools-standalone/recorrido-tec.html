@@ -202,6 +202,8 @@
 <script src="../js/vineta-atencion.js"></script>
 <script src="../js/comprension.js"></script>
 <script src="../js/vineta-vinculo.js"></script>
+<script src="../vendor/lz-string.min.js"></script>
+<script src="../js/enlace-panel.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -990,8 +992,10 @@
       + quizResumen()
       + (ev ? "Autoevaluación (" + ev.f + "): L " + ev.L + " · D " + ev.D + " · C " + ev.C + " (0–10, más alto = mejor)" + (ev.Cs!=null ? " · continuidad " + ev.Cs + " s" : "") + (ev.riesgo ? " · ⚠ indica pensamientos de hacerse daño" : "") + "\n" : "Autoevaluación: pendiente\n");
     $("#resumen").textContent = txt;
-    $("#btnCopy").onclick = function(){ try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
-    $("#btnShare").onclick = function(){ if(navigator.share){ navigator.share({title:"Mi recorrido TEC", text:txt}).catch(function(){}); } else $("#btnCopy").click(); };
+    // Al enviarlo se añade el enlace de un toque al panel del psicólogo/a.
+    var txtEnvio = (window.aprensConEnlace || String)(txt);
+    $("#btnCopy").onclick = function(){ var txt = txtEnvio; try{ navigator.clipboard.writeText(txt).then(function(){ toast("Copiado. Pégalo en WhatsApp o en un correo."); }, function(){ prompt("Copia el texto:", txt); }); }catch(e){ prompt("Copia el texto:", txt); } };
+    $("#btnShare").onclick = function(){ if(navigator.share){ navigator.share({title:"Mi recorrido TEC", text:txtEnvio}).catch(function(){}); } else $("#btnCopy").click(); };
     $("#btnReset").onclick = function(){ if(!confirm("¿Empezar el recorrido de nuevo? Se borrarán tus registros de este recorrido en este dispositivo.")) return; S = nuevo(); save(); show("v-hoy"); renderAll(); };
   }
 
