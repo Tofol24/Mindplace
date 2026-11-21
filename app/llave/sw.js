@@ -1,7 +1,7 @@
 /* LA LLAVE DE PASO · Service Worker
    Precache completo: la app funciona sin cobertura (sótanos, garajes, obra).
    Sube CACHE al cambiar archivos para forzar la actualización. */
-const CACHE = "llave-v5";
+const CACHE = "llave-v6";
 const SHELL = [
   "./",
   "./index.html",
