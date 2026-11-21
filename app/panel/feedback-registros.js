@@ -18,7 +18,7 @@
   // Herramientas de práctica de presencia interna (densidad AIS).
   var AIS = ["ais_curiosidad", "ais_amor", "ais_muscular", "bajar_alerta", "acompanar_sensacion", "herramienta_diaria",
     "protocolo_ais", "estoy_aqui_conmigo", "toco_desde_dentro", "mapa_atencion_interna", "tracker_ais", "sentarse_mono",
-    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional", "control_ira", "recorrido_tec"];
+    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional", "control_ira"];
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
@@ -166,10 +166,12 @@
     if (N.accion.valiosa > N.accion.evitativa && N.accion.valiosa > 0) fort.push("valiosa");
 
     /* ── Foco TEC (progresivo: no se salta a continuidad sin latencia y densidad) ── */
+    var evidenciaLat = N.act.length > 0 || N.nMono > 0 || N.mL != null || N.accion.valiosa + N.accion.evitativa > 0;
     var foco, motivo, inicio = T.n < 3;
     if (inicio) { foco = "latencia"; motivo = "Pocos registros todavía (" + T.n + "): se empieza por el nivel 1 (detectar y pausar)."; }
     else if (lat.length) { foco = "latencia"; motivo = lat.map(function (x) { return x[1]; }).join(" "); }
     else if (den.length) { foco = "densidad"; motivo = den.map(function (x) { return x[1]; }).join(" "); }
+    else if (!evidenciaLat) { foco = "densidad"; motivo = "No hay todavía registros que permitan valorar la latencia (antes/después, posición del mono, respuestas valiosas o L): se mantiene el nivel 2 antes de pasar a continuidad."; }
     else { foco = "continuidad"; motivo = con.length ? con.map(function (x) { return x[1]; }).join(" ") : "Pausa y práctica frecuentes sin señales de alarma: toca consolidar y llevarlo a la acción con valor."; }
 
     var paso = "primero";
@@ -222,8 +224,10 @@
 
     /* ── Alertas para revisar antes de enviar (nunca entran en el mensaje) ── */
     var alertas = [];
-    if (nuevos.some(function (x) { return x.tool === "recorrido_tec" && x.r.riesgo; }))
-      alertas.push("«Mi recorrido»: la autoevaluación indica pensamientos de hacerse daño.");
+    // Se mantiene aunque ya se haya enviado un feedback: depende del último resumen, no de lo «nuevo».
+    var recs = todos.filter(function (x) { return x.tool === "recorrido_tec"; });
+    if (recs.length && recs[recs.length - 1].r.riesgo)
+      alertas.push("«Mi recorrido» (" + recs[recs.length - 1].d + "): la autoevaluación indica pensamientos de hacerse daño.");
     if (traumaNueva) trs.forEach(function (r, i) {
       if (!trNueva(r, i)) return;
       if (r.riesgo) alertas.push("Evaluación de trauma (" + recDate(r) + "): ítem 16 del PCL-5 elevado (conductas de riesgo o que pueden causar daño). Explorar en entrevista.");

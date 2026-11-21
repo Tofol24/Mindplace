@@ -39,7 +39,7 @@
     [/la llave de paso|la clau de pas/i, "llave_de_paso", "La llave de paso"],
     [/entre punto y punto|plan de partido/i, "entre_punto_y_punto", "Entre punto y punto"],
     [/mi recorrido tec/i, "recorrido_tec", "Mi recorrido"],
-    [/evaluaci[óo]n de trauma|\bAP5[0-9A-Z.]{4}/i, "evaluacion_trauma", "Evaluación de trauma"],
+    [/evaluaci[óo]n de trauma|\bAP5(?:[-\s]?[0-9A-Z.]){8}/i, "evaluacion_trauma", "Evaluación de trauma"],
     [/exploradora valiente/i, "exploradora_valiente", "La exploradora valiente"],
     [/misi[óo]n barrio/i, "mision_barrio", "Misión Barrio"],
     [/ritual diario/i, "ritual_calma", "Ritual diario · calma"],
@@ -130,6 +130,9 @@
     var mIdx = ev > 0 ? (lec[ev - 1] || 0) : 0;
     var critA = (mIdx & 15) > 0, critF = dur != null && dur >= 1, critG = Math.max.apply(null, func.map(function (x) { return x == null ? -1 : x; })) >= 2;
     r.tept = critA && cumple.B && cumple.C && cumple.D && cumple.E && critF && critG ? 1 : 0;
+    // Con ítems sin contestar, un cribado negativo no es concluyente (los vacíos cuentan como 0).
+    if (r.pcl_resp < 20 && !r.tept) r.tept_nc = 1;
+    r.completo = r.pcl_resp === 20 ? 1 : 0;
     r.banda = r.pcl_total >= 50 ? "grave" : r.pcl_total >= 33 ? "moderada-alta" : r.pcl_total >= 31 ? "en el punto de corte" : r.pcl_total >= 15 ? "leve / subumbral" : "mínima";
     if ((pcl[15] || 0) >= 2) r.riesgo = 1;               // ítem 16: conductas de riesgo / autodaño
     if (f7 === 1) r.consumo = 1;
@@ -259,7 +262,7 @@
       if (ae) { rec.eval_fecha = ae[1]; rec.L = parseFloat(ae[2].replace(",", ".")); rec.D = parseFloat(ae[3].replace(",", ".")); rec.C = parseFloat(ae[4].replace(",", ".")); }
       if (/⚠\s*indica pensamientos de hacerse da[ñn]o/i.test(txt)) rec.riesgo = 1;
     }
-    if (toolId === "evaluacion_trauma") { var tr = decodificarTrauma(txt); if (tr) { Object.keys(tr).forEach(function (k) { rec[k] = tr[k]; }); if (tr.fecha) rec.date = tr.fecha; } }
+    if (toolId === "evaluacion_trauma") { var tr = decodificarTrauma(txt) || { valido: 0 }; Object.keys(tr).forEach(function (k) { rec[k] = tr[k]; }); if (tr.fecha) rec.date = tr.fecha; }
     if (toolId === "control_ira") {
       // «Nivel inicial: 😠 Muy activado (4/5)»: el genérico ya toma nivel_inicial / nivel_final.
       var ni2 = frase(/niv[ei]ll? inicial:\s*\S+\s+([^(\n]+?)\s*\(/i), nf2 = frase(/niv[ei]ll? final:\s*\S+\s+([^(\n]+?)\s*\(/i);
