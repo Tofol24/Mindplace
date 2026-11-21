@@ -471,8 +471,9 @@
         return o;
       }),
       // refuerzos individuales del informe del equipo: qué hacer el entrenador y qué decirle a cada jugador
-      ref: Array.isArray(p.ref) ? p.ref.slice(0, 80).map((r) => r && idOk(r.j) ? { j: r.j, h: txt(r.h, 600), d: txt(r.d, 300) } : null)
-        .filter((r, i, l) => r && (r.h || r.d) && l.findIndex((x) => x && x.j === r.j) === i) : []
+      // (si no vienen, el campo no existe: así, al juntar cuadernos, se distingue «no enviados» de «borrados»)
+      ...(Array.isArray(p.ref) ? { ref: p.ref.slice(0, 80).map((r) => r && idOk(r.j) ? { j: r.j, h: txt(r.h, 600), d: txt(r.d, 300) } : null)
+        .filter((r, i, l) => r && (r.h || r.d) && l.findIndex((x) => x && x.j === r.j) === i) } : {})
     };
   }
   function sanAnalisis(a) {
@@ -2498,7 +2499,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
         if (!p.an && viejo.an) p.an = viejo.an;
         if (!p.anOc && viejo.anOc) p.anOc = viejo.anOc;
-        if (!(p.ref && p.ref.length) && viejo.ref && viejo.ref.length) p.ref = viejo.ref;
+        if (!Array.isArray(p.ref) && viejo.ref) p.ref = viejo.ref; // no venían (sin notas privadas): se quedan los de aquí
         p.bloques.forEach((b) => { if (!b.fb) { const v = viejo.bloques.find((x) => x.id === b.id); if (v && v.fb) b.fb = v.fb; } });
         db2.planes[i] = p; r.planAct++;
       }
@@ -2978,10 +2979,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (!refs.length) { toast("No hay refuerzos escritos"); return; }
     const p = sel.value === "nuevo" ? nuevoPlan("entreno", true) : db.planes.find((x) => x.id === sel.value);
     if (!p) return;
-    // lo que ya está en el plan y has retocado allí se queda, salvo que en el informe hayas cambiado ese refuerzo
+    // si en el plan ya hay un refuerzo distinto para ese jugador (quizá retocado allí), se pregunta antes de sustituirlo
     const previos = p.ref || [];
-    const distintos = refs.filter((r) => { const v = previos.find((x) => x.j === r.j); return v && (v.h !== r.h || v.d !== r.d) && !eqEdit[r.j]; });
-    const pisar = distintos.length && window.confirm(distintos.length + " refuerzo" + (distintos.length === 1 ? "" : "s") + " de este entreno " + (distintos.length === 1 ? "es distinto" : "son distintos") + " de la propuesta del informe (quizá los retocaste en el plan). ¿Sustituirlos por los del informe? Si cancelas, se quedan como están.");
+    const distintos = refs.filter((r) => { const v = previos.find((x) => x.j === r.j); return v && (v.h !== r.h || v.d !== r.d); });
+    const pisar = distintos.length && window.confirm(distintos.length + " refuerzo" + (distintos.length === 1 ? "" : "s") + " de este entreno " + (distintos.length === 1 ? "es distinto" : "son distintos") + " de la propuesta del informe (quizá los retocaste allí). ¿Sustituirlos por los del informe? Si cancelas, se quedan como están.");
     const nuevos = refs.map((r) => distintos.includes(r) && !pisar ? previos.find((x) => x.j === r.j) : r);
     const otros = previos.filter((r) => !refs.some((x) => x.j === r.j));
     p.ref = nuevos.concat(otros).slice(0, 80); p.mod = Date.now(); guardar();
@@ -3028,12 +3029,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const pedidos = db.plantilla.filter((j) => j.auto && j.auto.ts).length;
     const ex = entradaEquipo(false).entrada, libres = new Set();
     ex.jugadores.forEach((j) => [j.puesto, j.foco, j.fijarse].concat(j.fuertes).forEach((t) => { if (t) libres.add(t); }));
-    ex.entreno.ejercicios.concat([ex.entreno.titulo, ex.entreno.objetivo]).forEach((t) => { if (t) libres.add(t); });
+    ex.entreno.ejercicios.concat([ex.entreno.titulo, ex.entreno.objetivo], ex.necesidades, ex.fortalezas).forEach((t) => { if (t) libres.add(t); });
+    const ayudas = db.plantilla.filter((j) => j.auto && j.auto.ts).map((j) => quitarNombres(j.auto.ts));
     cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Afinar los refuerzos con Claude</h3>
       <p class="peq">Claude lee el clima del grupo y el perfil de cada jugador y propone un refuerzo para cada uno (qué haces tú y qué le dices), ajustado al entreno elegido, y dos o tres acciones para todo el grupo. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto, su foco, sus puntos fuertes, la comparación de las dos miradas, su orientación, cómo vive el error y su confianza.</p>
       ${db.plantilla.length > 40 ? `<p class="sin-puesto">Se envían los 40 primeros jugadores por dorsal; el resto se queda con la propuesta del informe.</p>` : ""}
       ${libres.size ? `<details class="det"><summary>Textos que se envían (${libres.size}): revisa que no lleven datos personales</summary><ul class="consignas">${[...libres].map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
-      ${pedidos ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="eqIaTxt" style="width:22px;height:22px;flex:none"> Incluir también lo que te pidieron en su autoevaluación («en qué te gustaría que te ayudara»), ${pedidos} jugador${pedidos === 1 ? "" : "es"}. Revisa en sus notas que no lleve datos personales.</label>` : ""}
+      ${pedidos ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="eqIaTxt" style="width:22px;height:22px;flex:none"> Incluir también lo que te pidieron en su autoevaluación («en qué te gustaría que te ayudara»), ${pedidos} jugador${pedidos === 1 ? "" : "es"}. Revisa que no lleve datos personales:</label><ul class="consignas">${ayudas.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
       <div class="fila"><button type="button" class="btn" data-eqiaok="1">Pedir los refuerzos</button><button type="button" class="btn-sec" data-eqiano="1">Cancelar</button></div></div>`;
   }
   function pedirEquipoIA(cont) {
@@ -4230,7 +4232,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const j = db.plantilla.find((x) => x.id === d.jborrar);
       if (!window.confirm("¿Quitar a " + (j ? j.n : "este jugador") + " de la plantilla?")) return;
       db.plantilla = db.plantilla.filter((x) => x.id !== d.jborrar);
-      db.planes.forEach((p) => { if (p.ref && p.ref.some((r) => r.j === d.jborrar)) { p.ref = p.ref.filter((r) => r.j !== d.jborrar); p.mod = Date.now(); } });
+      db.planes.forEach((p) => { if (p.ref && p.ref.some((r) => r.j === d.jborrar)) { p.ref = p.ref.filter((r) => r.j !== d.jborrar); } }); // limpieza local: no cambia la versión del plan
       delete eqEdit[d.jborrar]; guardar(); return pintarPantalla();
     }
     if (d.jnuevo) {
@@ -4338,7 +4340,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b || d.once !== undefined || d.extra !== undefined)) plan.mod = Date.now();
-    if (t.id === "eqPlan") { eqDestino = t.value; return; }
+    if (t.id === "eqPlan") {
+      eqDestino = t.value;
+      const c = app.querySelector('[data-r="eqia"]'); if (c && c.querySelector("[data-eqiaok]")) previaEquipoIA(c); // lo que se envía depende del entreno
+      return;
+    }
     if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.hasAttribute("data-envplan") || t.id === "envSinApe" || t.id === "envNotas") { invalidarEnvio(app.querySelector('[data-r="envEntr"]')); return; }
