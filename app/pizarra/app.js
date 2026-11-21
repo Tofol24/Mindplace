@@ -3103,29 +3103,24 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const ctx = crearCtx(plan, db.plantilla, true), sl = slotsDe(plan), p0 = b.jug.pasos[0].pos || {};
     return b.jug.fichas.filter((f) => f.eq === "a").map((f) => {
       const pos = p0[f.id]; let fam = "";
-      if (/^a\d+$/.test(f.id) && !f.pj && sl[+f.id.slice(1)]) fam = sl[+f.id.slice(1)][2];
+      if (/^a\d+$/.test(f.id) && sl[+f.id.slice(1)]) fam = sl[+f.id.slice(1)][2]; // el puesto del sistema, la ocupe quien la ocupe
       else if (pos) fam = famDeZona(pos[0], pos[1]);
       return { f: f, fam: fam, lado: pos ? ladoDeX(pos[0]) : "", pids: ctx.pidsDe(f) };
     }).filter((r) => r.fam);
   }
   function colocarPorPuesto(plan, b) {
     if (!b.jug) { toast("Crea antes la pizarra del ejercicio"); return; }
-    if (!Object.keys(plan.once || {}).length) { plan.once = plan.once || {}; autoOnce(plan); } // la alineación por puestos, si no la hay
-    const roles = rolesPizarra(plan, b), usados = new Set();
-    roles.forEach((r) => r.pids.forEach((x) => usados.add(x)));
+    // se guarda en la pizarra de este ejercicio (no cambia la alineación del plan)
+    const ctx = crearCtx(plan, db.plantilla, true), roles = rolesPizarra(plan, b), usados = new Set();
+    b.jug.fichas.forEach((f) => ctx.pidsDe(f).forEach((x) => usados.add(x))); // de los dos equipos
     const libres = db.plantilla.filter((j) => !usados.has(j.id));
-    let n = 0; const faltan = [];
-    roles.filter((r) => !r.pids.length).forEach((r) => {
-      const fams = AFIN[r.fam] || [r.fam];
-      let j = null;
-      for (const fam of fams) {
-        const c = libres.filter((x) => famDePuesto(x.p) === fam);
-        j = c.find((x) => r.lado && ladoDePuesto(x.p) === r.lado) || c.find((x) => !ladoDePuesto(x.p)) || c[0];
-        if (j) break;
-      }
-      if (!j) { faltan.push(NOM_FAM[r.fam] || r.fam); return; }
-      r.f.pj = j.id; libres.splice(libres.indexOf(j), 1); n++;
-    });
+    const vacias = roles.filter((r) => !r.pids.length);
+    let n = 0;
+    const toma = (r, j) => { r.f.pj = j.id; libres.splice(libres.indexOf(j), 1); r.hecha = true; n++; };
+    // primero los puestos exactos (y su lado) en todas las fichas; después los parecidos
+    vacias.forEach((r) => { const c = libres.filter((x) => famDePuesto(x.p) === r.fam); const j = c.find((x) => r.lado && ladoDePuesto(x.p) === r.lado) || c.find((x) => !ladoDePuesto(x.p)) || c[0]; if (j) toma(r, j); });
+    vacias.filter((r) => !r.hecha).forEach((r) => { for (const fam of (AFIN[r.fam] || []).slice(1)) { const j = libres.find((x) => famDePuesto(x.p) === fam); if (j) { toma(r, j); break; } } });
+    const faltan = vacias.filter((r) => !r.hecha).map((r) => NOM_FAM[r.fam] || r.fam);
     plan.mod = Date.now(); guardar(); pintarPantalla();
     const sinPuesto = db.plantilla.filter((j) => !j.p).length;
     toast((n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " por su puesto" : "Todas las fichas ya tenían jugador")
@@ -3251,7 +3246,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const entrada = { modo: "mejorar", etapa: etapaTxt(), titulo: quitarNombres(p.titulo), objetivo: quitarNombres(p.objetivo), notaGeneral: quitarNombres(o.fbn), quiero: "",
       bloques: bloques, historial: historialIA(p.id, 4), equipo: eq.datos };
     iaFbPend.mej = { entrada: entrada, mapa: eq.mapa, bmap: bmap, plan: p.id };
-    iaFbPend.mej.firmas = {}; p.bloques.forEach((b) => { iaFbPend.mej.firmas[b.id] = firmaBloque(b); }); iaFbPend.mej.obj = p.objetivo;
+    iaFbPend.mej.firmas = {}; p.bloques.forEach((b) => { iaFbPend.mej.firmas[b.id] = firmaBloque(b, p); }); iaFbPend.mej.obj = p.objetivo;
     const libres = [];
     [entrada.titulo, entrada.objetivo, entrada.notaGeneral && "Nota general: " + entrada.notaGeneral].forEach((t) => { if (t) libres.push(t); });
     bloques.forEach((b) => { [b.titulo, b.texto, b.consignas, b.fijarse && "Fijarse: " + b.fijarse, b.cuando && "Cuándo: " + b.cuando, b.condicion && "Condición: " + b.condicion, b.preguntas && "Preguntas: " + b.preguntas, b.nota && "Feedback: " + b.nota]
@@ -3278,11 +3273,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <div class="fila"><button type="button" class="btn" data-mejaplicar="1">Aplicar los cambios</button><button type="button" class="btn-sec" data-mejno="1">Descartar</button></div>
       <p class="peq">Se cambian los textos de cada apartado; las pizarras se quedan como están: revisa que encajen con los cambios.</p></div>`;
   }
-  const firmaBloque = (b) => JSON.stringify([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, b.preg, b.pj || null]);
+  // lo que se ha enviado de cada apartado, incluidos el tipo y quién ocupa cada ficha
+  const firmaBloque = (b, p) => JSON.stringify([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, b.preg, b.pj || null, b.cat, p ? rolesPizarra(p, b).map((r) => [r.fam, r.pids]) : null]);
   function aplicarMejorar(p) {
     const r = iaFbRes["mej" + p.id], x = iaFbPend.mejUsado; if (!r || !x || x.plan !== p.id) return;
     // si has cambiado algún apartado mientras Claude respondía, se pregunta antes de sustituirlo
-    const tocados = r.bloques.map((m) => p.bloques.find((y) => y.id === x.bmap[m.bloque])).filter((b) => b && x.firmas && x.firmas[b.id] !== firmaBloque(b));
+    const tocados = r.bloques.map((m) => p.bloques.find((y) => y.id === x.bmap[m.bloque])).filter((b) => b && x.firmas && x.firmas[b.id] !== firmaBloque(b, p));
     const pisar = !tocados.length || window.confirm("Has cambiado " + tocados.length + " apartado" + (tocados.length === 1 ? "" : "s") + " mientras Claude respondía (" + tocados.map((b) => b.titulo || CATS[b.cat]).join(", ") + "). ¿Aplicar también ahí la propuesta? Si cancelas, esos apartados se quedan con tus cambios.");
     let n = 0;
     r.bloques.forEach((m) => {

@@ -492,7 +492,7 @@ export function sanearEntradaMejorar(e) {
   const bloques = lista(e.bloques, 12).map((b) => Object.assign(bloqueFb(b), {
     bloque: /^B\d{1,2}$/.test(b && b.bloque) ? b.bloque : "", consignas: txt(b && b.consignas, 800), preguntas: txt(b && b.preguntas, 600), pizarra: !!(b && b.pizarra === true),
     situacionDeJuego: !!(b && b.situacionDeJuego === true),
-    puestos: lista(b && b.puestos, 22).map((p) => ({ jugador: /^J\d{1,2}$/.test(p && p.jugador) ? p.jugador : "", rol: txt(p && p.rol, 40) })).filter((p) => p.jugador && p.rol),
+    puestos: lista(b && b.puestos, 30).map((p) => ({ jugador: /^J\d{1,2}$/.test(p && p.jugador) ? p.jugador : "", rol: txt(p && p.rol, 40) })).filter((p) => p.jugador && p.rol),
     pautas: lista(b && b.pautas, 30).map((p) => ({ jugador: /^J\d{1,2}$/.test(p && p.jugador) ? p.jugador : "", texto: txt(p && p.texto, 200) })).filter((p) => p.jugador && p.texto)
   })).filter((b) => b.bloque && !vistos.has(b.bloque) && vistos.add(b.bloque) && (b.titulo || b.texto));
   if (!bloques.length) return null;
@@ -526,6 +526,7 @@ Qué tienes que hacer: devolver cada apartado recibido, con su identificador exa
 export function sanearMejorar(o, entrada) {
   if (!o || typeof o !== "object") return null;
   const bids = new Set(((entrada && entrada.bloques) || []).map((b) => b.bloque)), ids = idsEquipo(entrada), vistos = new Set();
+  ((entrada && entrada.bloques) || []).forEach((b) => (b.puestos || []).forEach((p) => ids.add(p.jugador))); // en situaciones de juego, también quien tiene puesto
   const bloques = lista(o.bloques, 12).map((b) => ({
     bloque: txt(b && b.bloque, 4), cambio: txt(b && b.cambio, 400), titulo: txt(b && b.titulo, 80), texto: txt(b && b.texto, 1200),
     consignas: lista(b && b.consignas, 8).map((c) => txt(c, 160)).filter(Boolean), fijarse: txt(b && b.fijarse, 300), cuando: txt(b && b.cuando, 300),

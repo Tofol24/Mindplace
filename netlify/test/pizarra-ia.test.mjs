@@ -163,6 +163,7 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.equal(m.bloques.length, 1); assert.equal(m.bloques[0].pizarra, true); assert.equal(m.bloques[0].como, "costó");
   const ms = lib.sanearEntrada({ modo: "mejorar", bloques: [{ bloque: "B1", titulo: "Salida", situacionDeJuego: true, puestos: [{ jugador: "J1", rol: "Central derecho" }, { jugador: "Marc", rol: "x" }] }] });
   assert.equal(ms.bloques[0].situacionDeJuego, true); assert.deepEqual(ms.bloques[0].puestos, [{ jugador: "J1", rol: "Central derecho" }]);
+  assert.deepEqual(lib.sanearMejorar({ bloques: [{ bloque: "B1", titulo: "S", pautas: [{ jugador: "J1", texto: "Ábrete" }, { jugador: "J2", texto: "x" }] }] }, ms).bloques[0].pautas.map((x) => x.jugador), ["J1"]);
   assert.equal(lib.sanearEntrada({ modo: "mejorar", bloques: [] }), null);
   const s = lib.sanearMejorar({ analisis: "a", bloques: [{ bloque: "B1", titulo: "Rondo 2", consignas: ["c"], pautas: [{ jugador: "J1", texto: "p" }, { jugador: "J2", texto: "q" }] }, { bloque: "B9", titulo: "z" }] }, m);
   assert.equal(s.bloques.length, 1); assert.deepEqual(s.bloques[0].pautas.map((x) => x.jugador), ["J1"]);
