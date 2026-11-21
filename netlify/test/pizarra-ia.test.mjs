@@ -151,6 +151,17 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.deepEqual(r.confianza, ["c1"]); assert.equal(lib.sanearAuto({}), null);
 }
 
+// informe del equipo: entrada acotada (jugadores J1…, sin nombres) y refuerzos solo de los jugadores enviados
+{
+  assert.equal(lib.sanearEntrada({ modo: "equipo", jugadores: [] }), null);
+  const e = lib.sanearEntrada({ modo: "equipo", entrenadores: 2, clima: { orientacion: { tarea: 3, resultado: "x" } },
+    jugadores: [{ jugador: "J1", foco: "Salida de balón", orientacion: "resultado", error: "le cuesta mucho", confianza: "Poco", nombre: "Pep" }, { jugador: "J1" }, { jugador: "Pep" }, { jugador: "J2", orientacion: "ego" }] });
+  assert.equal(e.jugadores.length, 2); assert.equal(e.jugadores[0].nombre, undefined); assert.equal(e.jugadores[1].orientacion, "");
+  assert.equal(e.clima.orientacion.tarea, 3); assert.equal(e.clima.orientacion.resultado, 0); assert.equal(e.entrenadores, 2);
+  const r = lib.sanearEquipo({ lectura: "l", grupo: ["g", ""], refuerzos: [{ jugador: "J1", hacer: "h", decir: "d" }, { jugador: "J1", hacer: "otra" }, { jugador: "J9", hacer: "x" }] }, e);
+  assert.deepEqual(r.refuerzos.map((x) => x.jugador), ["J1"]); assert.deepEqual(r.grupo, ["g"]); assert.equal(lib.sanearEquipo({}, e), null);
+}
+
 await server.stop();
 rmSync(dir, { recursive: true, force: true });
 console.log("pizarra-ia: ok");

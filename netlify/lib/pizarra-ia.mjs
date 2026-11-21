@@ -26,6 +26,7 @@ export function sanearEntrada(e) {
   if (e.modo === "alternativas") return sanearEntradaAlternativas(e);
   if (e.modo === "entreno") return sanearEntradaEntreno(e);
   if (e.modo === "autoeval") return sanearEntradaAuto(e);
+  if (e.modo === "equipo") return sanearEntradaEquipo(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -390,4 +391,65 @@ export function sanearAuto(o) {
   if (!o || typeof o !== "object") return null;
   const r = { analisis: txt(o.analisis, 1200), confianza: lista(o.confianza, 4).map((x) => txt(x, 250)).filter(Boolean), deportivo: lista(o.deportivo, 4).map((x) => txt(x, 250)).filter(Boolean), mensaje: txt(o.mensaje, 700) };
   return r.analisis || r.mensaje ? r : null;
+}
+
+// ---------------------------------------------------------------- informe del equipo: clima y refuerzos individuales
+const ORI_OK = ["tarea", "mixta", "resultado"], ERR_OK = ["vuelve enseguida", "le cuesta un poco", "le cuesta mucho"], CONF_OK = ["Nada", "Poco", "Normal", "Bastante", "Mucho"];
+const cuentas = (o, ks) => Object.fromEntries(ks.map((k) => [k, num(o && o[k], 0, 60)]));
+export function sanearEntradaEquipo(e) {
+  const vistos = new Set();
+  const jugadores = lista(e.jugadores, 40).map((j) => ({
+    jugador: /^J\d{1,2}$/.test(j && j.jugador) ? j.jugador : "", puesto: txt(j && j.puesto, 40), foco: txt(j && j.foco, 300), fijarse: txt(j && j.fijarse, 300),
+    fuertes: listaT(j && j.fuertes, 3), noVeComoFortaleza: listaT(j && j.noVeComoFortaleza, 3), seVeFuerteEnLoQueHayQueMejorar: listaT(j && j.seVeFuerteEnLoQueHayQueMejorar, 3),
+    orientacion: ORI_OK.includes(j && j.orientacion) ? j.orientacion : "", error: ERR_OK.includes(j && j.error) ? j.error : "",
+    confianza: CONF_OK.includes(j && j.confianza) ? j.confianza : "", ayuda: txt(j && j.ayuda, 400), autoevaluacion: !!(j && j.autoevaluacion === true)
+  })).filter((j) => j.jugador && !vistos.has(j.jugador) && vistos.add(j.jugador));
+  if (!jugadores.length) return null;
+  const c = e.clima || {}, en = e.entreno || {};
+  return {
+    modo: "equipo", etapa: txt(e.etapa, 40), entrenadores: e.entrenadores === 2 ? 2 : 1,
+    clima: { jugadores: num(c.jugadores, 0, 60), conAutoevaluacion: num(c.conAutoevaluacion, 0, 60), orientacion: cuentas(c.orientacion, ORI_OK),
+      error: cuentas(c.error, ["vuelveEnseguida", "leCuestaUnPoco", "leCuestaMucho"]), confianza: cuentas(c.confianza, ["alta", "normal", "baja"]) },
+    necesidades: listaT(e.necesidades, 6), fortalezas: listaT(e.fortalezas, 6),
+    entreno: { titulo: txt(en.titulo, 80), objetivo: txt(en.objetivo, 600), ejercicios: listaT(en.ejercicios, 10) },
+    jugadores
+  };
+}
+export const ESQUEMA_EQUIPO = {
+  type: "object", additionalProperties: false, required: ["lectura", "grupo", "refuerzos"],
+  properties: {
+    lectura: { type: "string", description: "Para el entrenador: el clima del grupo (orientación, cómo viven el error, confianza, lo que más necesitan), 3-5 frases." },
+    grupo: { type: "array", items: { type: "string" }, description: "2-3 acciones concretas para todo el grupo en el próximo entreno." },
+    refuerzos: { type: "array", description: "Un refuerzo para cada jugador recibido.", items: {
+      type: "object", additionalProperties: false, required: ["jugador", "hacer", "decir"],
+      properties: {
+        jugador: { type: "string", description: "El identificador recibido (J1, J2…)." },
+        hacer: { type: "string", description: "Qué hace el entrenador con este jugador en el próximo entreno (antes, durante o después), 1-3 frases concretas y operativas." },
+        decir: { type: "string", description: "Qué le dice al jugador, en segunda persona, 1-2 frases cortas, cálidas y concretas." }
+      } } }
+  }
+};
+export const SISTEMA_EQUIPO = `Eres un entrenador de fútbol base con formación en psicología del deporte. El entrenador te pasa el resumen de su equipo, sin nombres: el clima del grupo (orientación, cómo viven el error, confianza), lo que más necesitan y sus fortalezas, el próximo entreno si lo ha elegido y, para cada jugador (J1, J2…), su puesto, su foco de aprendizaje y en qué fijarse, sus puntos fuertes, lo que el entrenador ve como fortaleza y él todavía no, lo que él se ve fuerte y el entrenador tiene para mejorar, su orientación, cómo vive el error, su confianza y, a veces, en qué le pidió ayuda.
+
+Pirámide del rendimiento (se lee de abajo arriba): dónde pone la atención el jugador durante la competición (en los procesos de aprendizaje o en los resultados) marca su percepción de control, cómo regula el error, su motivación, su autoeficacia y su rendimiento. La orientación a la tarea (el éxito es aprender y me comparo conmigo mismo) lo sostiene; la orientación al resultado o a la comparación lo hace más frágil.
+
+Tu tarea es que cada jugador se sienta visto y acompañado en el próximo entreno y en el partido:
+- Un refuerzo para cada jugador recibido, con su identificador exacto. Concreto y operativo, ligado a su foco y, si hay entreno, a un ejercicio concreto.
+- Poca confianza o fortalezas que no ve: reconocimiento concreto y en público de lo que hace bien, o un papel en el que pueda usarlo.
+- Le cuesta volver después de un error: rutina para volver (gesto, palabra clave), valorar el intento, no corregir en caliente.
+- Orientación al resultado o a la comparación: preguntas y reconocimiento sobre el esfuerzo, lo que aprende y lo que mejora respecto a sí mismo.
+- Se ve fuerte en lo que el entrenador tiene para mejorar: una conversación breve con ejemplos de los partidos, sin desautorizarlo.
+- Si pidió ayuda en algo, inclúyelo.
+- Las propuestas siguen el método: en qué fijarse (estímulos relevantes) y cuándo, sin instrucciones constantes durante el juego.
+- «decir» es para un menor: cálido, concreto y sereno, sin etiquetas ni diagnósticos, sin compararlo con compañeros y sin promesas. Si «entrenadores» es 2, puede hablar en plural («vemos»).
+- «lectura» y «grupo» son para los entrenadores: qué clima hay y qué hacer con todo el grupo.
+
+Castellano, frases cortas, sin emojis.`;
+export function sanearEquipo(o, entrada) {
+  if (!o || typeof o !== "object") return null;
+  const ids = new Set(((entrada && entrada.jugadores) || []).map((j) => j.jugador)), vistos = new Set();
+  const refuerzos = lista(o.refuerzos, 40).map((r) => ({ jugador: txt(r && r.jugador, 4), hacer: txt(r && r.hacer, 500), decir: txt(r && r.decir, 300) }))
+    .filter((r) => ids.has(r.jugador) && !vistos.has(r.jugador) && vistos.add(r.jugador) && (r.hacer || r.decir));
+  const r = { lectura: txt(o.lectura, 1200), grupo: lista(o.grupo, 4).map((x) => txt(x, 300)).filter(Boolean), refuerzos };
+  return r.lectura || refuerzos.length ? r : null;
 }
