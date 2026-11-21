@@ -151,6 +151,22 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   assert.deepEqual(r.confianza, ["c1"]); assert.equal(lib.sanearAuto({}), null);
 }
 
+// entreno con el informe del equipo y mejorar un entreno: pautas solo de los jugadores enviados
+{
+  const eq = { jugadores: [{ jugador: "J1", foco: "Salida de balón", nombre: "Pep" }, { jugador: "Pep", foco: "x" }], necesidades: ["Salida (2)"] };
+  const e = lib.sanearEntrada({ modo: "entreno", historial: [], equipo: eq });
+  assert.equal(e.equipo.jugadores.length, 1); assert.equal(e.equipo.jugadores[0].nombre, undefined);
+  assert.equal(lib.sanearEntrada({ modo: "entreno", historial: [] }), null);
+  const r = lib.sanearEntreno({ titulo: "t", bloques: [{ titulo: "b", pautas: [{ jugador: "J1", texto: "Ofrécete de cara" }, { jugador: "J1", texto: "otra" }, { jugador: "J7", texto: "x" }] }] }, e);
+  assert.deepEqual(r.bloques[0].pautas, [{ jugador: "J1", texto: "Ofrécete de cara" }]);
+  const m = lib.sanearEntrada({ modo: "mejorar", bloques: [{ bloque: "B1", titulo: "Rondo", como: "costó", pizarra: true }, { bloque: "B1", titulo: "dup" }, { bloque: "X", titulo: "y" }], equipo: eq });
+  assert.equal(m.bloques.length, 1); assert.equal(m.bloques[0].pizarra, true); assert.equal(m.bloques[0].como, "costó");
+  assert.equal(lib.sanearEntrada({ modo: "mejorar", bloques: [] }), null);
+  const s = lib.sanearMejorar({ analisis: "a", bloques: [{ bloque: "B1", titulo: "Rondo 2", consignas: ["c"], pautas: [{ jugador: "J1", texto: "p" }, { jugador: "J2", texto: "q" }] }, { bloque: "B9", titulo: "z" }] }, m);
+  assert.equal(s.bloques.length, 1); assert.deepEqual(s.bloques[0].pautas.map((x) => x.jugador), ["J1"]);
+  assert.equal(lib.sanearMejorar({ bloques: [{ bloque: "B5" }] }, m), null);
+}
+
 // informe del equipo: entrada acotada (jugadores J1…, sin nombres) y refuerzos solo de los jugadores enviados
 {
   assert.equal(lib.sanearEntrada({ modo: "equipo", jugadores: [] }), null);
