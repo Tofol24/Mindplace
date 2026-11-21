@@ -1900,7 +1900,8 @@
           ${htmlPautas(b, focosPlan)}
           <div class="acciones">
             ${b.jug ? `<button type="button" class="btn-peq" data-pz="${b.id}" style="background:var(--verde);color:#fff">🟩 Abrir pizarra (${b.jug.pasos.length} paso${b.jug.pasos.length === 1 ? "" : "s"})</button>
-              <button type="button" class="btn-peq peligro" data-pzborrar="${b.id}">Quitar pizarra</button>`
+              <button type="button" class="btn-peq peligro" data-pzborrar="${b.id}">Quitar pizarra</button>
+              ${SITU.has(b.cat) && db.plantilla.length ? `<button type="button" class="btn-peq" data-pzpuesto="${b.id}">🧩 Colocar a los jugadores por su puesto</button>` : ""}`
               : `<label class="peq" for="tp${b.id}" style="align-self:center">Pizarra:</label><select id="tp${b.id}" data-tpl="${b.id}" style="width:auto;min-height:36px;padding:4px 8px">${Object.keys(PLANTILLAS).map((k) => `<option value="${k}" ${(PLANT_POR_CAT[b.cat] || (p.tipo === "partido" ? "vacia" : "libre")) === k ? "selected" : ""}>${PLANTILLAS[k]}</option>`).join("")}</select>
               <button type="button" class="btn-peq" data-pzcrear="${b.id}">Crear pizarra</button>`}
           </div>
@@ -3080,6 +3081,85 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     pantEquipo(); toast(n ? "Refuerzos puestos: revísalos antes de llevarlos al entreno" : "No había refuerzos que poner");
   }
 
+  // ---------------------------------------------------------------- situaciones de juego: cada uno en su puesto
+  // En las situaciones de juego (salida, presión, balón parado…) importa dónde juega cada uno: se coloca a los
+  // jugadores en las fichas según su puesto y se proponen las funciones de cada puesto.
+  const SITU = new Set(["salida", "presion", "banda", "cornerF", "cornerC", "falta", "situacion", "transicion"]);
+  const NOM_FAM = { por: "Portero", cen: "Central", lat: "Lateral", piv: "Pivote", med: "Interior", mp: "Mediapunta", ext: "Extremo", del: "Delantero" };
+  // Puesto por la zona del campo (nuestro equipo ataca hacia y = 0; nuestra portería está en y = 105)
+  function famDeZona(x, y) {
+    const banda = x < 15 || x > 53;
+    if (y >= 96 && !banda) return "por";
+    if (y >= 72) return banda ? "lat" : "cen";
+    if (y >= 52) return banda ? "lat" : y >= 62 ? "piv" : "med";
+    if (y >= 30) return banda ? "ext" : "mp";
+    return banda ? "ext" : "del";
+  }
+  const ladoDeX = (x) => x < 30 ? "izq" : x > 38 ? "der" : "";
+  const ladoDePuesto = (p) => /izq|esq/i.test(p || "") ? "izq" : /der|dre/i.test(p || "") ? "der" : "";
+  // Las fichas de nuestro equipo con su puesto (por el sistema o por la zona) y quién está en cada una
+  function rolesPizarra(plan, b) {
+    if (!b.jug || !b.jug.pasos.length) return [];
+    const ctx = crearCtx(plan, db.plantilla, true), sl = slotsDe(plan), p0 = b.jug.pasos[0].pos || {};
+    return b.jug.fichas.filter((f) => f.eq === "a").map((f) => {
+      const pos = p0[f.id]; let fam = "";
+      if (/^a\d+$/.test(f.id) && !f.pj && sl[+f.id.slice(1)]) fam = sl[+f.id.slice(1)][2];
+      else if (pos) fam = famDeZona(pos[0], pos[1]);
+      return { f: f, fam: fam, lado: pos ? ladoDeX(pos[0]) : "", pids: ctx.pidsDe(f) };
+    }).filter((r) => r.fam);
+  }
+  function colocarPorPuesto(plan, b) {
+    if (!b.jug) { toast("Crea antes la pizarra del ejercicio"); return; }
+    if (!Object.keys(plan.once || {}).length) { plan.once = plan.once || {}; autoOnce(plan); } // la alineación por puestos, si no la hay
+    const roles = rolesPizarra(plan, b), usados = new Set();
+    roles.forEach((r) => r.pids.forEach((x) => usados.add(x)));
+    const libres = db.plantilla.filter((j) => !usados.has(j.id));
+    let n = 0; const faltan = [];
+    roles.filter((r) => !r.pids.length).forEach((r) => {
+      const fams = AFIN[r.fam] || [r.fam];
+      let j = null;
+      for (const fam of fams) {
+        const c = libres.filter((x) => famDePuesto(x.p) === fam);
+        j = c.find((x) => r.lado && ladoDePuesto(x.p) === r.lado) || c.find((x) => !ladoDePuesto(x.p)) || c[0];
+        if (j) break;
+      }
+      if (!j) { faltan.push(NOM_FAM[r.fam] || r.fam); return; }
+      r.f.pj = j.id; libres.splice(libres.indexOf(j), 1); n++;
+    });
+    plan.mod = Date.now(); guardar(); pintarPantalla();
+    const sinPuesto = db.plantilla.filter((j) => !j.p).length;
+    toast((n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " por su puesto" : "Todas las fichas ya tenían jugador")
+      + (faltan.length ? ". Sin jugador para: " + [...new Set(faltan)].join(", ") : "") + (sinPuesto ? ". " + sinPuesto + " sin puesto en la plantilla" : ""));
+  }
+  // Funciones por puesto (las más habituales); el resto, con Claude
+  const FUNCIONES = {
+    salida: {
+      por: "Antes de sacar, mira quién queda libre: si un central está solo, saca en corto; si presionan a todos, busca al pivote o en largo.",
+      cen: "Ábrete a la altura del área con el perfil abierto hacia el campo y pide el balón al pie lejos del presionador.",
+      lat: "Abre bien en banda y alto para dar amplitud; si te presionan, ofrécete por dentro.",
+      piv: "Ofrécete de cara entre los presionadores; si te tapan, aléjate para abrir el pase al central.",
+      med: "Ofrécete a la espalda de la primera presión para recibir de cara.",
+      mp: "Colócate entre líneas para recibir el segundo pase y girarte.",
+      ext: "Abre en banda para fijar al lateral rival y prepárate para atacar su espalda.",
+      del: "Fija a los centrales rivales arriba y ofrécete de apoyo si el balón sale largo."
+    },
+    presion: {
+      del: "Sal al central que tiene el balón tapando con tu carrera el pase al otro central.",
+      mp: "Salta al pivote rival cuando reciba de espaldas, sin dejarle girarse.",
+      med: "Salta al pivote rival cuando reciba de espaldas, sin dejarle girarse.",
+      ext: "Cierra por dentro el pase al lateral y salta cuando le llegue el balón.",
+      piv: "Vigila al mediapunta rival y anticipa el pase entre líneas.",
+      cen: "Sube la línea con el equipo y anticipa al delantero cuando reciba.",
+      lat: "Acércate al extremo rival para saltar en cuanto le llegue el pase.",
+      por: "Juega adelantado para cubrir la espalda de la defensa."
+    }
+  };
+  function funcionesPorPuesto(plan, b) {
+    const F = FUNCIONES[b.cat], r = {}; if (!F) return r;
+    rolesPizarra(plan, b).forEach((x) => { const t = F[x.fam]; if (t) x.pids.forEach((pid) => { if (!r[pid]) r[pid] = t; }); });
+    return r;
+  }
+
   // ---------------------------------------------------------------- pautas individuales y mejorar entreno a entreno
   // El foco de cada jugador (de sus notas), para proponer pautas y para Claude.
   function focosJugadores() {
@@ -3095,7 +3175,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const pj = b.pj || {}, n = Object.keys(pj).length;
     return `<details class="det pautas"${n ? " open" : ""}><summary>👤 Pautas individuales${n ? " (" + n + ")" : ""}</summary>
       <p class="peq">Una pauta de juego para jugadores concretos en este ejercicio: cada uno la ve en su ficha del plan, debajo del ejercicio. Va en el enlace del plan, así que escribe solo pautas de juego; lo personal, en los refuerzos del informe del equipo.</p>
-      <div class="fila"><button type="button" class="btn-peq" data-pjprop="${b.id}">💡 Proponer según el foco de cada uno</button></div>
+      <div class="fila"><button type="button" class="btn-peq" data-pjprop="${b.id}">💡 Proponer ${SITU.has(b.cat) ? "la función de cada puesto y el foco de cada uno" : "según el foco de cada uno"}</button></div>
+      ${SITU.has(b.cat) ? `<p class="peq">Situación de juego: cada jugador hace la función de su puesto. ${b.jug ? "Coloca antes a los jugadores en la pizarra («🧩 Colocar a los jugadores por su puesto»)." : "Crea la pizarra y coloca a los jugadores por su puesto para proponer sus funciones."}</p>` : ""}
       <div class="pj-lista">${db.plantilla.slice().sort((a, c) => a.d - c.d).map((j) => {
         const f = focos[j.id], id = "pj_" + b.id + "_" + j.id;
         return `<div class="pj-fila"><label for="${esc(id)}"><span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(j.d)}</span> ${esc(nomCorto(j))}</label>
@@ -3106,6 +3187,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   function proponerPautas(plan, b) {
     const focos = focosJugadores(), rb = raices([b.titulo, b.texto, b.consignas, b.fij, b.cuando, b.cond, CATS[b.cat]].join(" "));
     b.pj = b.pj || {}; let n = 0;
+    // situación de juego: la función de su puesto en la pizarra
+    const fun = SITU.has(b.cat) ? funcionesPorPuesto(plan, b) : {};
+    Object.keys(fun).forEach((pid) => { if (!b.pj[pid] && db.plantilla.some((j) => j.id === pid)) { b.pj[pid] = fun[pid]; n++; } });
     Object.keys(focos).forEach((jid) => {
       if (b.pj[jid]) return;
       const f = focos[jid], rf = raices(f.x + " " + (f.asp ? f.asp.t : "") + " " + f.fij);
@@ -3160,6 +3244,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const inv = {}; Object.keys(eq.mapa).forEach((jk) => { inv[eq.mapa[jk]] = jk; });
       return { bloque: k, categoria: CATS[b.cat] || "", titulo: quitarNombres(b.titulo), texto: quitarNombres(b.texto).slice(0, 600), consignas: quitarNombres(b.consignas), fase: FASE_CORTA[b.fase] || "",
         fijarse: quitarNombres(b.fij), cuando: quitarNombres(b.cuando), condicion: quitarNombres(b.cond), preguntas: quitarNombres(b.preg), pizarra: !!b.jug,
+        situacionDeJuego: SITU.has(b.cat), puestos: SITU.has(b.cat) ? rolesPizarra(p, b).flatMap((r) => r.pids.filter((id) => inv[id]).map((id) => ({ jugador: inv[id], rol: NOM_FAM[r.fam] + (r.lado ? (r.lado === "izq" ? " izquierdo" : " derecho") : "") }))) : [],
         como: fb.c ? ["", "costó", "regular", "bien"][fb.c] : "", estimulos: fb.a ? ["", "no", "a veces", "sí"][fb.a] : "", nota: quitarNombres(fb.n),
         pautas: Object.keys(b.pj || {}).filter((id) => inv[id]).map((id) => ({ jugador: inv[id], texto: quitarNombres(b.pj[id]) })) };
     });
@@ -3170,7 +3255,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const libres = [];
     [entrada.titulo, entrada.objetivo, entrada.notaGeneral && "Nota general: " + entrada.notaGeneral].forEach((t) => { if (t) libres.push(t); });
     bloques.forEach((b) => { [b.titulo, b.texto, b.consignas, b.fijarse && "Fijarse: " + b.fijarse, b.cuando && "Cuándo: " + b.cuando, b.condicion && "Condición: " + b.condicion, b.preguntas && "Preguntas: " + b.preguntas, b.nota && "Feedback: " + b.nota]
-      .concat(b.pautas.map((x) => x.jugador + ": " + x.texto)).forEach((t) => { if (t) libres.push(b.bloque + " · " + t); }); });
+      .concat(b.pautas.map((x) => x.jugador + ": " + x.texto), b.puestos.map((x) => x.jugador + " hace de " + x.rol.toLowerCase())).forEach((t) => { if (t) libres.push(b.bloque + " · " + t); }); });
     cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Mejorar este entreno con Claude</h3>
       <div class="campo-f"><label for="mejQuiero">¿Qué quieres cambiar o reforzar? (opcional)</label><textarea id="mejQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: más oposición en el rondo, que la semana pasada fue fácil"></textarea></div>
       <p class="peq">Claude revisa cada apartado con su feedback, la memoria del equipo y el informe del equipo, y propone los cambios: más fácil si costó, más real si fue bien, y los detalles (en qué fijarse, cuándo, condición, preguntas y pautas individuales). Se envía a Claude (Anthropic) <b>sin nombres</b>: los jugadores van como J1, J2… con su puesto y su foco.</p>
@@ -4389,6 +4474,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     if (d.jnotas) return abrirNotas(d.jnotas);
     if (d.eqllevar) return llevarRefuerzos();
+    if (d.pzpuesto && plan) { const b2 = plan.bloques.find((x) => x.id === d.pzpuesto); if (b2) colocarPorPuesto(plan, b2); return; }
     if (d.pjprop && plan) { const b2 = plan.bloques.find((x) => x.id === d.pjprop); if (b2) proponerPautas(plan, b2); return; }
     if (d.mejpedir && plan) { iaFbGen["mej" + plan.id] = (iaFbGen["mej" + plan.id] || 0) + 1; delete iaFbRes["mej" + plan.id]; previaMejorar(plan, app.querySelector('[data-r="iamej"]')); return; }
     if (d.mejok && plan) { pedirMejorar(plan, app.querySelector('[data-r="iamej"]')); return; }
