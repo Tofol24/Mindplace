@@ -310,7 +310,24 @@
   /* Migra seguimientos guardados con la D antigua (S1): la activación pasa a su
      campo y la D se recalcula desde S5; sin respuestas no se puede: D queda vacía
      para no mezclar dos medidas en la misma línea. Idempotente (marca dS5). */
+  /* Los mensajes de Control de ira se guardaban como «autorregistro»: pasan a
+     control_ira, el id de la herramienta (idempotente; no toca otros autorregistros). */
+  function migrarIra(p) {
+    var a = p && p.tools && p.tools.autorregistro; if (!a || !a.records) return;
+    var mover = a.records.filter(function (r) { return r && r.fuente === "texto" && /autorregistr[oe] aprens\s*·/i.test(r.texto || ""); });
+    if (!mover.length) return;
+    var d = p.tools.control_ira || (p.tools.control_ira = { meta: { nombre: "Control de ira", v: 1 }, records: [] });
+    mover.forEach(function (r) {
+      var nr = window.parseRegistroTexto ? parseRegistroTexto(r.texto, r.date).record : r;
+      nr.id = r.id; nr.date = r.date || nr.date;
+      if (!d.records.some(function (x) { return x.id === nr.id; })) d.records.push(nr);
+    });
+    a.records = a.records.filter(function (r) { return mover.indexOf(r) < 0; });
+    if (!a.records.length) delete p.tools.autorregistro;
+    d.records.sort(function (x, y) { return String(recDate(x)).localeCompare(String(recDate(y))); });
+  }
   function migrarD(p) {
+    migrarIra(p);
     var b = p && p.tools && p.tools.screening_seg; if (!b) return;
     (b.records || []).forEach(migrarRecD);
   }

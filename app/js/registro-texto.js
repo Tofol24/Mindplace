@@ -73,7 +73,9 @@
     [/dolor cr[óo]nico/i, "dolor_cronico", "Dolor crónico"],
     [/(d[ií]a en el hospital|hospital)/i, "autorregistro_hospital", "Autorregistro hospital"],
     [/registre\s*setmana|eines.{0,6}setmana/i, "eines_setmana", "Eines de la setmana"],
-    [/autorregistre|autorregistro/i, "autorregistro", "Autorregistro (control de ira)"],
+    // Control de ira: su mensaje empieza «AUTORREGISTRO APRENS ·» («AUTORREGISTRE» en catalán).
+    [/autorregistr[oe] aprens\s*·/i, "control_ira", "Control de ira"],
+    [/autorregistre|autorregistro/i, "autorregistro", "Autorregistro"],
     [/compromiso semanal/i, "compromiso_semanal", "Compromiso semanal"],
     [/cuestionario/i, "cuestionario_tec", "Cuestionario TEC"]
   ];
@@ -209,6 +211,15 @@
       var lg = txt.match(/logro de hoy:\s*(.+)/i); if (lg) rec.logro = lg[1].trim();
     }
     function frase(re) { var m = txt.match(re); return m ? m[1].trim() : null; }
+    if (toolId === "control_ira") {
+      // «Nivel inicial: 😠 Muy activado (4/5)»: el genérico ya toma nivel_inicial / nivel_final.
+      var ni2 = frase(/niv[ei]ll? inicial:\s*\S+\s+([^(\n]+?)\s*\(/i), nf2 = frase(/niv[ei]ll? final:\s*\S+\s+([^(\n]+?)\s*\(/i);
+      if (ni2) rec.nivel_inicial_txt = ni2; if (nf2) rec.nivel_final_txt = nf2;
+      rec.desencadenante = frase(/desencadenant[e]?:\s*([^\n]+)/i);
+      rec.sensacion = frase(/sensaci[óo] ?n? corporal:\s*([^\n]+)/i);
+      rec.tecnica = frase(/t[èée]cnica:\s*([^\n]+)/i);
+      if (rec.nivel_inicial != null && rec.nivel_final != null) rec.baja = rec.nivel_inicial - rec.nivel_final;
+    }
     if (toolId === "exploradora_valiente") {
       rec.mision = frase(/misi[óo]n:\s*([^\n(]+)/i); poner("estrellas", nro(/\((\d)★\)/));
       var lo = frase(/lo logr[óo]\?:\s*([^\n]+)/i); if (lo) rec.logro = /del todo/i.test(lo) ? "si" : /medias/i.test(lo) ? "medias" : "no";
