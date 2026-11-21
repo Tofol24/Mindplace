@@ -17,7 +17,7 @@
   // Herramientas de práctica de presencia interna (densidad AIS).
   var AIS = ["ais_curiosidad", "ais_amor", "ais_muscular", "bajar_alerta", "acompanar_sensacion", "herramienta_diaria",
     "protocolo_ais", "estoy_aqui_conmigo", "toco_desde_dentro", "mapa_atencion_interna", "tracker_ais", "sentarse_mono",
-    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional"];
+    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional", "control_ira"];
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
@@ -823,6 +823,20 @@
       if (r.fugas) { es += " Los momentos en que más se escapa la atención son «" + textoCorto(r.fugas, 50) + "»: ahí es justamente donde la pausa entre punto y punto tiene más sentido."; ca += " Els moments en què més s'escapa l'atenció són «" + textoCorto(r.fugas, 50) + "»: just aquí és on la pausa entre punt i punt té més sentit."; }
       if (num(r.antes) != null && num(r.despues) != null && num(r.antes) > num(r.despues)) { es += " En imaginación, la tensión baja de " + coma(r.antes) + " a " + coma(r.despues) + " al {quedarte|quedarse} con la escena."; ca += " En imaginació, la tensió baixa de " + coma(r.antes) + " a " + coma(r.despues) + " en {quedar-te|quedar-se} amb l'escena."; }
       return es ? { es: es.trim(), ca: ca.trim(), temas: ["act"] } : null;
+    },
+    control_ira: function (xs, prev) {
+      var r = ultimoDe(xs), a = num(r.nivel_inicial), b = num(r.nivel_final);
+      if (a == null || b == null) return null;
+      var de = r.desencadenante ? " (lo que lo desencadenó: " + minuscula(textoCorto(r.desencadenante, 40)) + ")" : "", deCa = r.desencadenante ? " (el que ho va desencadenar: " + minuscula(textoCorto(r.desencadenante, 40)) + ")" : "";
+      var volver = /volver a lo que estaba|tornar al que/i.test(r.tecnica || ""), tec = r.tecnica && !volver;
+      var es, ca;
+      if (b < a) { es = "la activación pasó de " + a + " a " + b + " sobre 5" + de + (tec ? ", y lo que {usaste|usó} fue «" + textoCorto(r.tecnica, 40).replace(/\s*✅$/, "") + "»" : "") + ". Que el enfado baje sin tener que descargarlo hacia fuera es justamente lo que entrenamos.";
+        ca = "l'activació va passar de " + a + " a " + b + " sobre 5" + deCa + (tec ? ", i el que {vares fer servir|va fer servir} va ser «" + textoCorto(r.tecnica, 40).replace(/\s*✅$/, "") + "»" : "") + ". Que l'enfadament baixi sense haver-lo de descarregar cap a fora és justament el que entrenam."; }
+      else { es = "la activación se quedó en " + b + " sobre 5" + de + ". Aun así, {pararte|pararse} a registrarlo ya es abrir un espacio entre el enfado y la respuesta, y eso cuenta.";
+        ca = "l'activació es va quedar a " + b + " sobre 5" + deCa + ". Tot i així, {aturar-te|aturar-se} a registrar-ho ja és obrir un espai entre l'enfadament i la resposta, i això compta."; }
+      if (volver) { es += " Y {volviste|volvió} a lo que {estabas|estaba} haciendo, que es el mejor final posible."; ca += " I {vares tornar|va tornar} al que {estaves|estava} fent, que és el millor final possible."; }
+      if (r.sensacion && !/no noto/i.test(r.sensacion)) { es += " Tener localizado dónde lo {notas|nota} (" + textoCorto(r.sensacion, 40).toLowerCase() + ") ayuda a frenarlo antes la próxima vez."; ca += " Tenir localitzat on ho {notes|nota} (" + textoCorto(r.sensacion, 40).toLowerCase() + ") ajuda a frenar-ho abans la propera vegada."; }
+      return { es: es, ca: ca, temas: ["act"] };
     },
     exploradora_valiente: function (xs) {
       var r = ultimoDe(xs), m = r.mision ? "la misión «" + textoCorto(r.mision, 40) + "»" : "la misión", mc = r.mision ? "la missió «" + textoCorto(r.mision, 40) + "»" : "la missió";
