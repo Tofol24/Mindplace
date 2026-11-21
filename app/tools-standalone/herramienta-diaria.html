@@ -976,7 +976,7 @@ function updResum(){
   var bw=document.getElementById("btnWA");
   bw.href="https://wa.me/?text="+encodeURIComponent(t);
   // El enlace al panel (que confirma el código) se añade al pulsar, no al pintar.
-  bw.onclick=function(){ this.href="https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(document.getElementById("msgBox").textContent)); };
+  bw.onclick=function(e){ e.preventDefault(); window.open("https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(document.getElementById("msgBox").textContent)),"_blank"); };
 }
 function copiar(btn){
   var txt=document.getElementById("msgBox").textContent;
