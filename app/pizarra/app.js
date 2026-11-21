@@ -647,6 +647,21 @@
   // Puestos equivalentes cuando el sistema no tiene el mismo código (orden de preferencia)
   const AFIN = { med: ["med", "mp", "piv"], piv: ["piv", "med"], mp: ["mp", "med"], del: ["del", "mp"], ext: ["ext"], lat: ["lat"], cen: ["cen"], por: ["por"] };
   function slotsDe(plan) { return (SISTEMAS[plan.sistema] || SISTEMAS["4231"]).s; }
+  // Biblioteca de situaciones de juego (tacticas.js): escritas para el 1-4-2-3-1
+  const TACT = (window.PZ_TACTICAS && window.PZ_TACTICAS.situaciones) || {};
+  const TACT_PL = (window.PZ_TACTICAS && window.PZ_TACTICAS.dePlantilla) || {};
+  // Puesto del 1-4-2-3-1 → puesto del sistema del plan (mismo código o misma familia).
+  // «familiaPrimero» (biblioteca): antes de los parecidos, la misma familia en todos los puestos (el pivote del
+  // 1-4-3-3 hace de pivote). Las plantillas antiguas siguen con el orden de siempre: los enlaces ya enviados se
+  // montan sobre ellas y tienen que salir igual.
+  function mapa4231(plan, familiaPrimero) {
+    const sl = slotsDe(plan), ref = SISTEMAS["4231"].s, usados = new Set(), mapa = {};
+    sl.forEach((s, k) => { const j = ref.findIndex((r, n) => !usados.has(n) && r[0] === s[0]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
+    if (familiaPrimero) sl.forEach((s, k) => { if (mapa[k] !== undefined) return; const j = ref.findIndex((r, n) => !usados.has(n) && r[2] === s[2]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
+    sl.forEach((s, k) => { if (mapa[k] !== undefined) return; const afin = AFIN[s[2]] || [s[2]]; let j = -1; for (const fam of afin) { j = ref.findIndex((r, n) => !usados.has(n) && r[2] === fam); if (j >= 0) break; } if (j >= 0) { mapa[k] = j; usados.add(j); } });
+    const inv = {}; Object.keys(mapa).forEach((k) => { inv[mapa[k]] = k; });
+    return inv;
+  }
 
   function nuevaJugada(plan, clave) {
     const sl = slotsDe(plan);
@@ -657,15 +672,12 @@
       for (let i = 0; i < 11; i++) jug.fichas.push({ id: "a" + i, eq: "a" });
       for (let i = 0; i < 11; i++) jug.fichas.push({ id: "r" + i, eq: "r" });
     }
-    if (DEF[clave]) {
-      const d = DEF[clave];
+    if (DEF[clave] || own(TACT, clave)) {
+      const d = DEF[clave] || TACT[clave];
       equipos();
       // Las plantillas están escritas para 1-4-2-3-1: cada puesto del sistema elegido
       // toma el movimiento del puesto equivalente (mismo código o misma familia).
-      const ref = SISTEMAS["4231"].s, usados = new Set(), mapa = {};
-      sl.forEach((s, k) => { const j = ref.findIndex((r, n) => !usados.has(n) && r[0] === s[0]); if (j >= 0) { mapa[k] = j; usados.add(j); } });
-      sl.forEach((s, k) => { if (mapa[k] !== undefined) return; const afin = AFIN[s[2]] || [s[2]]; let j = -1; for (const fam of afin) { j = ref.findIndex((r, n) => !usados.has(n) && r[2] === fam); if (j >= 0) break; } if (j >= 0) { mapa[k] = j; usados.add(j); } });
-      const inv = {}; Object.keys(mapa).forEach((k) => { inv[mapa[k]] = k; });
+      const inv = mapa4231(plan, !DEF[clave]);
       const aMap = (arr) => { const m = {}; arr.forEach((p, n) => { if (p && inv[n] !== undefined) m["a" + inv[n]] = p.slice(); }); return m; };
       // un puesto sin equivalente (p. ej. el tercer central) se queda en su sitio del sistema
       let pos = Object.assign(arr2map("a", aBase), aMap(d.a), arr2map("r", d.r));
@@ -675,10 +687,14 @@
         if (p.a) Object.keys(p.a).forEach((k) => { if (inv[k] !== undefined) pos["a" + inv[k]] = p.a[k].slice(); });
         if (p.r) Object.keys(p.r).forEach((k) => { pos["r" + k] = p.r[k].slice(); });
         if (p.b) b = p.b.slice();
-        jug.pasos.push({ t: p.t, pos: pos, b: b.slice(), tips: {}, dib: [] });
+        // indicaciones por puesto (biblioteca): a la ficha del puesto equivalente
+        const tips = {}; if (p.tips) Object.keys(p.tips).forEach((k) => { if (inv[k] !== undefined) tips["a" + inv[k]] = Object.assign({}, p.tips[k]); });
+        const paso = { t: p.t, pos: pos, b: b.slice(), tips: tips, dib: [] }; if (p.tr === "p" || p.tr === "r") paso.tr = p.tr;
+        jug.pasos.push(paso);
       });
       if (clave === "cornerF" || clave === "falta" || clave === "banda") jug.vista = "A";
       if (clave === "cornerC") jug.vista = "D";
+      if (own(TACT, clave) && ["C", "A", "D"].includes(d.vista)) jug.vista = d.vista;
       return jug;
     }
     if (clave === "rondo") {
@@ -1902,7 +1918,7 @@
             ${b.jug ? `<button type="button" class="btn-peq" data-pz="${b.id}" style="background:var(--verde);color:#fff">🟩 Abrir pizarra (${b.jug.pasos.length} paso${b.jug.pasos.length === 1 ? "" : "s"})</button>
               <button type="button" class="btn-peq peligro" data-pzborrar="${b.id}">Quitar pizarra</button>
               ${SITU.has(b.cat) && db.plantilla.length ? `<button type="button" class="btn-peq" data-pzpuesto="${b.id}">🧩 Colocar a los jugadores por su puesto</button>` : ""}`
-              : `<label class="peq" for="tp${b.id}" style="align-self:center">Pizarra:</label><select id="tp${b.id}" data-tpl="${b.id}" style="width:auto;min-height:36px;padding:4px 8px">${Object.keys(PLANTILLAS).map((k) => `<option value="${k}" ${(PLANT_POR_CAT[b.cat] || (p.tipo === "partido" ? "vacia" : "libre")) === k ? "selected" : ""}>${PLANTILLAS[k]}</option>`).join("")}</select>
+              : `<label class="peq" for="tp${b.id}" style="align-self:center">Pizarra:</label><select id="tp${b.id}" data-tpl="${b.id}" style="width:auto;min-height:36px;padding:4px 8px">${Object.keys(PLANTILLAS).map((k) => `<option value="${k}" ${(PLANT_POR_CAT[b.cat] || (p.tipo === "partido" ? "vacia" : "libre")) === k ? "selected" : ""}>${PLANTILLAS[k]}</option>`).join("")}${Object.keys(TACT).length ? `<optgroup label="Situaciones de juego">${Object.keys(TACT).map((k) => `<option value="${k}">${esc(TACT[k].bloque.titulo)}</option>`).join("")}</optgroup>` : ""}</select>
               <button type="button" class="btn-peq" data-pzcrear="${b.id}">Crear pizarra</button>`}
           </div>
           <div class="acciones">
@@ -1921,6 +1937,7 @@
         </div>`).join("")}
       <p class="peq">✨ Las sugerencias de Claude usan la jugada, las notas de los jugadores y la edad del equipo. Se envían a Claude (Anthropic) <b>sin nombres</b>, solo con dorsal y puesto, y solo cuando pulsas el botón. Revisa la propuesta antes de aplicarla.</p>
       <button type="button" class="btn-sec" data-bnuevo="1">＋ Añadir apartado</button>
+      ${htmlSituaciones(p)}
       ${p.tipo === "entreno" ? `<div class="tarjeta aprendizaje">
         <h3 style="margin-top:0">🎯 Aprendizaje en 5 pasos</h3>
         <p class="peq">Elige qué quieres enseñar y se crean tres apartados seguidos: ejercicio analítico, dinámica ecológica con transiciones y partido condicionado, con los estímulos relevantes, la condición y las preguntas ya escritos. Después adáptalos a tu equipo.</p>
@@ -3110,6 +3127,13 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   function colocarPorPuesto(plan, b) {
     if (!b.jug) { toast("Crea antes la pizarra del ejercicio"); return; }
+    const { n, faltan } = asignarPorPuesto(plan, b);
+    plan.mod = Date.now(); guardar(); pintarPantalla();
+    const sinPuesto = db.plantilla.filter((j) => !j.p).length;
+    toast((n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " por su puesto" : "Todas las fichas ya tenían jugador")
+      + (faltan.length ? ". Sin jugador para: " + [...new Set(faltan)].join(", ") : "") + (sinPuesto ? ". " + sinPuesto + " sin puesto en la plantilla" : ""));
+  }
+  function asignarPorPuesto(plan, b) {
     // se guarda en la pizarra de este ejercicio (no cambia la alineación del plan)
     const ctx = crearCtx(plan, db.plantilla, true), roles = rolesPizarra(plan, b), usados = new Set();
     b.jug.fichas.forEach((f) => ctx.pidsDe(f).forEach((x) => usados.add(x))); // de los dos equipos
@@ -3121,10 +3145,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     vacias.forEach((r) => { const c = libres.filter((x) => famDePuesto(x.p) === r.fam); const j = c.find((x) => r.lado && ladoDePuesto(x.p) === r.lado) || c.find((x) => !ladoDePuesto(x.p)) || c[0]; if (j) toma(r, j); });
     vacias.filter((r) => !r.hecha).forEach((r) => { for (const fam of (AFIN[r.fam] || []).slice(1)) { const j = libres.find((x) => famDePuesto(x.p) === fam); if (j) { toma(r, j); break; } } });
     const faltan = vacias.filter((r) => !r.hecha).map((r) => NOM_FAM[r.fam] || r.fam);
-    plan.mod = Date.now(); guardar(); pintarPantalla();
-    const sinPuesto = db.plantilla.filter((j) => !j.p).length;
-    toast((n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " por su puesto" : "Todas las fichas ya tenían jugador")
-      + (faltan.length ? ". Sin jugador para: " + [...new Set(faltan)].join(", ") : "") + (sinPuesto ? ". " + sinPuesto + " sin puesto en la plantilla" : ""));
+    return { n: n, faltan: faltan };
   }
   // Funciones por puesto (las más habituales); el resto, con Claude
   const FUNCIONES = {
@@ -3153,6 +3174,49 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const F = FUNCIONES[b.cat], r = {}; if (!F) return r;
     rolesPizarra(plan, b).forEach((x) => { const t = F[x.fam]; if (t) x.pids.forEach((pid) => { if (!r[pid]) r[pid] = t; }); });
     return r;
+  }
+
+  // ----- situaciones de juego del sistema (biblioteca): el apartado con su pizarra, cada jugador en su puesto
+  function situacionesLista() {
+    const l = Object.keys(TACT_PL).map((k) => ({ k: "pl:" + k, e: TACT_PL[k] })).concat(Object.keys(TACT).map((k) => ({ k: k, e: TACT[k] })));
+    return { ataque: l.filter((x) => x.e.fase === "ataque"), defensa: l.filter((x) => x.e.fase === "defensa") };
+  }
+  function htmlSituaciones(p) {
+    const l = situacionesLista(); if (!l.ataque.length && !l.defensa.length) return "";
+    const op = (x) => `<option value="${esc(x.k)}">${esc(x.e.bloque.titulo)}</option>`;
+    return `<div class="tarjeta situaciones">
+      <h3 style="margin-top:0">⚽ Situaciones de juego del sistema</h3>
+      <p class="peq">Para interiorizar los movimientos de cada puesto en ataque y en defensa. Se monta con el sistema del plan (${esc((SISTEMAS[p.sistema] || SISTEMAS["4231"]).n)}): cada jugador sale en la pizarra en su puesto de la alineación, con lo que tiene que hacer en cada paso, y recibe la función de su puesto como pauta individual.</p>
+      <div class="fila"><label class="sr-only" for="sitSel">Situación de juego</label><select id="sitSel" style="width:auto">
+        <optgroup label="En ataque">${l.ataque.map(op).join("")}</optgroup><optgroup label="En defensa">${l.defensa.map(op).join("")}</optgroup></select>
+        <button type="button" class="btn-sec" data-situnueva="1">＋ Añadir con su pizarra</button></div>
+    </div>`;
+  }
+  // «Pivote: baja…» → «Baja…» (en otro sistema el puesto puede llamarse distinto; el jugador ya sabe el suyo)
+  const sinPuestoDelante = (t) => String(t || "").replace(/^[^:.]{2,30}:\s*/, "").replace(/^./, (x) => x.toUpperCase());
+  function anadirSituacion(plan, clave) {
+    const deP = clave.startsWith("pl:"), k = deP ? clave.slice(3) : clave, e = deP ? TACT_PL[k] : TACT[k];
+    if (!e || !own(deP ? TACT_PL : TACT, k)) return;
+    if (plan.bloques.length >= MAX.bloques) { toast("Has llegado al máximo de apartados"); return; }
+    const x = e.bloque, ent = plan.tipo === "entreno";
+    const b = { id: uid(), cat: own(CATS, e.cat) ? e.cat : "situacion", titulo: x.titulo, min: ent ? 15 : "", texto: x.texto || "", consignas: (x.consignas || []).join("\n"),
+      fij: x.fij || "", cuando: x.cuando || "", jug: nuevaJugada(plan, deP ? e.plantilla : k) };
+    if (ent) { b.fase = "ecologico"; if (x.cond) { b.cond = x.cond; b.condEq = "a"; } }
+    if (x.preg && x.preg.length) b.preg = x.preg.join("\n");
+    plan.bloques.push(b);
+    // los puestos sin jugador en la alineación se llenan en esta pizarra, por el puesto de cada uno
+    const r = asignarPorPuesto(plan, b);
+    // la función de cada puesto, como pauta individual de quien lo ocupa
+    const inv = mapa4231(plan, !deP), ctx = crearCtx(plan, db.plantilla, true); let n = 0;
+    Object.keys(e.roles || {}).forEach((i) => {
+      if (inv[i] === undefined) return;
+      const f = b.jug.fichas.find((y) => y.id === "a" + inv[i]); if (!f) return;
+      ctx.pidsDe(f).forEach((pid) => { if (!db.plantilla.some((j) => j.id === pid)) return; b.pj = b.pj || {}; if (!b.pj[pid]) { b.pj[pid] = sinPuestoDelante(e.roles[i]).slice(0, 200); n++; } });
+    });
+    plan.mod = Date.now(); guardar(); pintarPantalla();
+    const el = app.querySelector(`[data-pz="${b.id}"]`); if (el) el.closest(".bloque").scrollIntoView({ block: "start" });
+    const con = new Set(); b.jug.fichas.forEach((f) => { if (f.eq === "a") ctx.pidsDe(f).forEach((pid) => con.add(pid)); });
+    toast("Añadida «" + x.titulo + "»: " + con.size + " jugador" + (con.size === 1 ? "" : "es") + " en su puesto" + (n ? ", " + n + " con su función" : "") + (r.faltan.length ? ". Sin jugador: " + [...new Set(r.faltan)].join(", ") : ""));
   }
 
   // ---------------------------------------------------------------- pautas individuales y mejorar entreno a entreno
@@ -4470,6 +4534,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     if (d.jnotas) return abrirNotas(d.jnotas);
     if (d.eqllevar) return llevarRefuerzos();
+    if (d.situnueva && plan) { const s = $("#sitSel"); if (s) anadirSituacion(plan, s.value); return; }
     if (d.pzpuesto && plan) { const b2 = plan.bloques.find((x) => x.id === d.pzpuesto); if (b2) colocarPorPuesto(plan, b2); return; }
     if (d.pjprop && plan) { const b2 = plan.bloques.find((x) => x.id === d.pjprop); if (b2) proponerPautas(plan, b2); return; }
     if (d.mejpedir && plan) { iaFbGen["mej" + plan.id] = (iaFbGen["mej" + plan.id] || 0) + 1; delete iaFbRes["mej" + plan.id]; previaMejorar(plan, app.querySelector('[data-r="iamej"]')); return; }

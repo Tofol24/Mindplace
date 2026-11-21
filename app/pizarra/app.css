@@ -389,3 +389,4 @@ button:disabled { opacity: .45; cursor: default; }
 .pj-fila label { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
 .pj-fila input { min-height: 40px; }
 .base-plan { border-left: 6px solid var(--verde); }
+.situaciones { border-left: 6px solid var(--rival); margin-top: 12px; }

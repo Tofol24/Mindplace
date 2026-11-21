@@ -3,10 +3,10 @@
    - Recibe los archivos compartidos desde otra app (Android: Compartir → Pizarra):
      el archivo se guarda un momento en una caché local y se abre la pizarra con ?compartido=1.
      Nada sale del móvil. */
-const CACHE = "pizarra-v25";
+const CACHE = "pizarra-v26";
 const COMPARTIDO = "pizarra-compartido";
 const BASE = [
-  "./", "./index.html", "./app.css", "./app.js", "./ficha.js", "./manifest.webmanifest",
+  "./", "./index.html", "./app.css", "./app.js", "./ficha.js", "./tacticas.js", "./manifest.webmanifest",
   "../vendor/lz-string.min.js", "../js/descarga-segura.js"
 ];
 
