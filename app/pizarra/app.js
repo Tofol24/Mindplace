@@ -783,15 +783,21 @@
     };
   }
   function famDePuesto(p) {
-    p = (p || "").toLowerCase();
+    p = String(p || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    if (!p) return "";
+    // abreviaturas habituales (PT, LD, DFC, MCD, MP, ED, DC…)
+    const ab = p.replace(/[^a-z]/g, "");
+    const AB = { pt: "por", por: "por", gk: "por", ld: "lat", li: "lat", le: "lat", lat: "lat", cad: "lat", cai: "lat", dfc: "cen", dfi: "cen", dfd: "cen", ct: "cen", cti: "cen", ctd: "cen", cb: "cen",
+      mcd: "piv", pv: "piv", piv: "piv", mc: "med", mci: "med", mcc: "med", in: "med", mco: "mp", mp: "mp", ei: "ext", ed: "ext", ext: "ext", mi: "ext", md: "ext", dc: "del", del: "del", dav: "del", st: "del" };
+    if (AB[ab]) return AB[ab];
     if (/port/.test(p)) return "por";
     if (/lateral|carril/.test(p)) return "lat";
-    if (/central|defens/.test(p)) return "cen";
-    if (/pivot|medioc|mediocentro/.test(p)) return "piv";
-    if (/interior|medio/.test(p)) return "med";
-    if (/mediapunta|media punta/.test(p)) return "mp";
-    if (/extrem|banda|mig/.test(p)) return "ext";
-    if (/delant|punta|9/.test(p)) return "del";
+    if (/central|defens|stopper|libero/.test(p)) return "cen";
+    if (/pivot|medioc|mediocentro|migcentre|mig centre|defensiu|defensivo/.test(p)) return "piv";
+    if (/mediapunta|media punta|enganche/.test(p)) return "mp";
+    if (/interior|medio|centrocamp|migcamp|volant|mig/.test(p)) return "med";
+    if (/extrem|banda|ala\b|exterior/.test(p)) return "ext";
+    if (/delant|davant|punta|ariete|^9$/.test(p)) return "del";
     return "";
   }
 
@@ -1807,6 +1813,38 @@
       const j = db.plantilla.find((x) => !usados.has(x.id) && x.p && famDePuesto(x.p) === s[2]);
       if (j) { p.once[idx] = j.id; usados.add(j.id); }
     });
+    completarAlineacion(p);
+  }
+  // Coloca en la alineación a los jugadores que aún no tienen sitio, según el puesto de la plantilla: en un puesto
+  // vacío de su familia o como «otro jugador» (hasta dos por puesto), repartidos; si no cabe, en un puesto parecido.
+  // Devuelve cuántos ha colocado. No cambia a nadie que ya esté.
+  function completarAlineacion(p) {
+    p.once = p.once || {}; p.extra = p.extra || {};
+    const sl = slotsDe(p), ya = new Set(Object.values(p.once));
+    Object.values(p.extra).forEach((l) => l.forEach((x) => { if (x) ya.add(x); }));
+    const lado = (j) => /izq|esq/i.test(j.p || "") ? "izq" : /der|dre/i.test(j.p || "") ? "der" : "";
+    const ladoSlot = (s) => s[3] < 30 ? "izq" : s[3] > 38 ? "der" : "";
+    const ocup = (idx) => (p.once[idx] ? 1 : 0) + ((p.extra[idx] || []).filter(Boolean).length);
+    const poner = (j, idx) => {
+      if (!p.once[idx]) p.once[idx] = j.id;
+      else { const l = (p.extra[idx] || []).slice(0, 2); while (l.length < 2) l.push(""); const k = l.indexOf(""); if (k < 0) return false; l[k] = j.id; p.extra[idx] = l; }
+      ya.add(j.id); return true;
+    };
+    let n = 0;
+    const pendientes = db.plantilla.filter((j) => !ya.has(j.id) && famDePuesto(j.p)).sort((a, b) => a.d - b.d);
+    [false, true].forEach((parecidos) => {
+      pendientes.filter((j) => !ya.has(j.id)).forEach((j) => {
+        const fam = famDePuesto(j.p), fams = parecidos ? (AFIN[fam] || [fam]).slice(1) : [fam];
+        for (const f of fams) {
+          const cand = sl.map((s, idx) => ({ s: s, idx: idx })).filter((x) => x.s[2] === f && ocup(x.idx) < 3);
+          if (!cand.length) continue;
+          // primero su lado, después el puesto con menos jugadores
+          cand.sort((a, b) => ((lado(j) && ladoSlot(b.s) === lado(j)) - (lado(j) && ladoSlot(a.s) === lado(j))) || ocup(a.idx) - ocup(b.idx));
+          if (poner(j, cand[0].idx)) { n++; break; }
+        }
+      });
+    });
+    return n;
   }
 
   function htmlAnalisis(p) {
@@ -1972,7 +2010,11 @@
     Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => con.add(x)));
     plan.bloques.forEach((b) => { if (b.jug) b.jug.fichas.forEach((f) => { if (f.pj) con.add(f.pj); }); });
     const fuera = db.plantilla.filter((j) => !con.has(j.id)).sort((a, b) => a.d - b.d);
-    el.innerHTML = fuera.length ? `<p class="sin-puesto"><b>Sin puesto todavía:</b> ${fuera.map((j) => esc(j.d + " " + (j.c || j.n))).join(", ")}. Si no les pones un puesto, no podrán ver su ficha en el enlace.</p>` : `<p class="peq">✅ Todos los jugadores de la plantilla tienen al menos un puesto.</p>`;
+    const sinRec = fuera.filter((j) => !famDePuesto(j.p));
+    el.innerHTML = fuera.length ? `<div class="sin-puesto"><p style="margin-top:0"><b>Sin puesto todavía:</b> ${fuera.map((j) => esc(j.d + " " + (j.c || j.n))).join(", ")}. Si no les pones un puesto, no podrán ver su ficha en el enlace.</p>
+        ${fuera.length > sinRec.length ? `<button type="button" class="btn-peq" data-alincompletar="1">👥 Colocarlos según su puesto de la plantilla</button>` : ""}
+        ${sinRec.length ? `<p class="peq" style="margin-bottom:0">${sinRec.map((j) => esc(j.d + " " + (j.c || j.n) + (j.p ? " («" + j.p + "»)" : " (sin puesto)"))).join(", ")}: no reconozco su puesto. Escríbelo en la plantilla como portero, lateral, central, pivote, interior, mediapunta, extremo o delantero (también vale en catalán o abreviado: PT, LD, DFC, MC, ED, DC…).</p>` : ""}</div>`
+      : `<p class="peq">✅ Todos los jugadores de la plantilla tienen al menos un puesto.</p>`;
   }
 
   function abrirPizarra(plan, bloque) {
@@ -4534,6 +4576,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     if (d.jnotas) return abrirNotas(d.jnotas);
     if (d.eqllevar) return llevarRefuerzos();
+    if (d.alincompletar && plan) {
+      const n = completarAlineacion(plan); plan.mod = Date.now(); guardar(); pintarPantalla();
+      toast(n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " en la alineación según su puesto" : "No queda sitio para nadie más en sus puestos"); return;
+    }
     if (d.situnueva && plan) { const s = $("#sitSel"); if (s) anadirSituacion(plan, s.value); return; }
     if (d.pzpuesto && plan) { const b2 = plan.bloques.find((x) => x.id === d.pzpuesto); if (b2) colocarPorPuesto(plan, b2); return; }
     if (d.pjprop && plan) { const b2 = plan.bloques.find((x) => x.id === d.pjprop); if (b2) proponerPautas(plan, b2); return; }
