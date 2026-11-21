@@ -709,13 +709,20 @@ function vFunc(){
 }
 function setF(k,v){S.func[k]=v;guardarProgreso();render();}
 function setSN(k,v){S.sn[k]=v;guardarProgreso();render();}
+function enviarTraumaWA(e){
+  if(!window.aprensConEnlace) return true;   // sin enlace: el href abre WhatsApp con el código de resultado
+  e.preventDefault();
+  window.open("https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent(window.aprensConEnlace(window.__msgTrauma||"")),"_blank");
+  return false;
+}
 function finalizar(){S.fecha=HOY();ultimoCodigo=genCodigo(S);guardarProgreso();ir("pac_fin");}
 
 /* ── Cierre del paciente ── */
 function vFin(){
   const code=ultimoCodigo||genCodigo(S);
   const msg="Hola Tòfol, he terminado la evaluación de trauma. Este es mi código de resultado:\n\n"+code;
-  const wa="https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent((window.aprensConEnlace||String)(msg));
+  const wa="https://wa.me/"+WA_PSICOLOGO+"?text="+encodeURIComponent(msg);
+  window.__msgTrauma=msg;   // el enlace al panel (y la confirmación del código) se añaden al pulsar
   const r=corregir(S);
   return `
   <div class="hero">
@@ -728,7 +735,7 @@ function vFin(){
     <div class="code" id="codeView">${esc(code)}</div>
   </div>
   <div class="acc">
-    <a href="${wa}" target="_blank" rel="noopener" class="btn bwa">📱 Enviar por WhatsApp</a>
+    <a href="${wa}" target="_blank" rel="noopener" class="btn bwa" onclick="return enviarTraumaWA(event)">📱 Enviar por WhatsApp</a>
     <button class="btn bcopy" onclick='copiar(${JSON.stringify(code)})'>📋 Copiar el código</button>
   </div>
   <div id="okm" style="display:none;text-align:center;color:var(--verde);font-weight:600;margin-bottom:12px"></div>
