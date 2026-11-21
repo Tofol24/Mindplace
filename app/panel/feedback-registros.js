@@ -13,11 +13,12 @@
   "use strict";
 
   // El Screening tiene su propia pauta (módulos): aquí solo cuentan los autorregistros.
-  var EXCLUIR = { screening_tec: 1, screening_seg: 1, seguimiento_tec: 1 };
+  // La Evaluación de trauma es una valoración: sus resultados van a la ficha, no al feedback.
+  var EXCLUIR = { screening_tec: 1, screening_seg: 1, seguimiento_tec: 1, evaluacion_trauma: 1 };
   // Herramientas de práctica de presencia interna (densidad AIS).
   var AIS = ["ais_curiosidad", "ais_amor", "ais_muscular", "bajar_alerta", "acompanar_sensacion", "herramienta_diaria",
     "protocolo_ais", "estoy_aqui_conmigo", "toco_desde_dentro", "mapa_atencion_interna", "tracker_ais", "sentarse_mono",
-    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional", "control_ira"];
+    "respiracion_curiosa", "ritual_calma", "rincon_calma", "respiro_ais", "cuerpo_en_alerta", "pedalea_desde_dentro", "llave_de_paso", "entre_punto_y_punto", "honestidad_emocional", "control_ira", "recorrido_tec"];
   var MONO = { conduce: "conduce", persigo: "delante", persecucion: "delante", sobrepensamiento: "delante",
     voltaatras: "delante", delante: "delante", maletero: "maletero", allado: "lado", lado: "lado" };
   var FOCOS = ["latencia", "densidad", "continuidad"];
@@ -211,10 +212,29 @@
     var ultimoReg = nuevos[nuevos.length - 1];
     var ultimoKey = Object.keys(hN).filter(function (k) { return hN[k].indexOf(ultimoReg) >= 0; })[0];
 
+    /* ── Evaluación de trauma recibida desde el último feedback (solo para agradecerla) ── */
+    var trs = ((p.tools.evaluacion_trauma && p.tools.evaluacion_trauma.records) || []).filter(function (r) { return r && r.valido !== 0; });
+    var trClaves = trs.map(function (r) { return clave("evaluacion_trauma", r); });
+    // Sin feedback previo: cuenta como nueva si es de las dos últimas semanas.
+    var desdeTr = sumarDias(todos[todos.length - 1].d, -14);
+    function trNueva(r, i) { return hayVistos ? !vistos[trClaves[i]] : recDate(r) >= desdeTr; }
+    var traumaNueva = trs.some(trNueva);
+
+    /* ── Alertas para revisar antes de enviar (nunca entran en el mensaje) ── */
+    var alertas = [];
+    if (nuevos.some(function (x) { return x.tool === "recorrido_tec" && x.r.riesgo; }))
+      alertas.push("«Mi recorrido»: la autoevaluación indica pensamientos de hacerse daño.");
+    if (traumaNueva) trs.forEach(function (r, i) {
+      if (!trNueva(r, i)) return;
+      if (r.riesgo) alertas.push("Evaluación de trauma (" + recDate(r) + "): ítem 16 del PCL-5 elevado (conductas de riesgo o que pueden causar daño). Explorar en entrevista.");
+      if (r.consumo) alertas.push("Evaluación de trauma (" + recDate(r) + "): refiere aumento de alcohol, sustancias o medicación para dormir o calmarse.");
+    });
+
     return { foco: foco, motivo: motivo, paso: paso, ultimo: ultimo, evol: evol, inicio: inicio, sinNuevos: sinNuevos,
+      traumaNueva: traumaNueva, alertas: alertas,
       perfil: perfil, porHerr: hN, porHerrPrev: hP, ultimoKey: ultimoKey, nFeedbacks: fbs.length, codigo: p.codigo,
       primerFeedback: !ultimo, fortalezas: fort, senales: { latencia: lat, densidad: den, continuidad: con },
-      nuevo: N, previo: P, total: T, lineas: lineas, nuevos: nuevos, claves: todos.map(function (x) { return x.k; }) };
+      nuevo: N, previo: P, total: T, lineas: lineas, nuevos: nuevos, claves: todos.map(function (x) { return x.k; }).concat(trClaves) };
   }
 
   /* ───────────────────────── Mensaje al paciente ─────────────────────────
@@ -621,7 +641,7 @@
     cuerpo_en_alerta: "Quan el cos continua en alerta", microaccion_valor: "Microacció amb valor",
     registro_texto: "Registre", autorregistro_hospital: "Autorregistre de l'hospital",
     eines_setmana: "Eines de la setmana", dolor_cronico: "Dolor crònic",
-    llave_de_paso: "La clau de pas", entre_punto_y_punto: "Entre punt i punt", paso_a_paso: "Passa a passa, de tornada a mi"
+    llave_de_paso: "La clau de pas", recorrido_tec: "El meu recorregut", evaluacion_trauma: "Avaluació del trauma", entre_punto_y_punto: "Entre punt i punt", paso_a_paso: "Passa a passa, de tornada a mi"
   };
 
   /* Elige variante de forma estable: el mismo mensaje sale igual si lo regeneras,
@@ -666,7 +686,9 @@
     // El Screening TEC es para adolescentes y adultos.
     var scr = opts.screening && perfil !== "nino" ? T.screening(opts.screening) : "";
     var ded = T.dedicatoria ? V(T.dedicatoria, "ded") : "";
-    return [V(T.hola, "hola"), p1, p2, p3, pasos, linea, T.frase + "\n«" + F.consigna + "»", scr, ded, V(T.cierre, "cierre"), T.firma]
+    var trauma = a.traumaNueva ? (lang === "ca" ? "Gràcies també per haver completat l'avaluació que et vaig demanar. La revisaré amb calma i en parlarem a la propera sessió."
+      : "Gracias también por haber completado la evaluación que te pedí. La revisaré con calma y lo hablaremos en la próxima sesión.") : "";
+    return [V(T.hola, "hola"), p1, trauma, p2, p3, pasos, linea, T.frase + "\n«" + F.consigna + "»", scr, ded, V(T.cierre, "cierre"), T.firma]
       .filter(Boolean).map(function (x) { return persona(x, perfil); }).join("\n\n");
   }
   function mezclarFoco(base, sobre) {
@@ -814,6 +836,19 @@
       if (r.fugas) { es += " Los momentos en que más se escapa la atención son «" + textoCorto(r.fugas, 50) + "»: ahí es justamente donde la pausa entre punto y punto tiene más sentido."; ca += " Els moments en què més s'escapa l'atenció són «" + textoCorto(r.fugas, 50) + "»: just aquí és on la pausa entre punt i punt té més sentit."; }
       if (num(r.antes) != null && num(r.despues) != null && num(r.antes) > num(r.despues)) { es += " En imaginación, la tensión baja de " + coma(r.antes) + " a " + coma(r.despues) + " al {quedarte|quedarse} con la escena."; ca += " En imaginació, la tensió baixa de " + coma(r.antes) + " a " + coma(r.despues) + " en {quedar-te|quedar-se} amb l'escena."; }
       return es ? { es: es.trim(), ca: ca.trim(), temas: ["act"] } : null;
+    },
+    recorrido_tec: function (xs, prev) {
+      var r = ultimoDe(xs); if (r.etapa == null && r.prog14 == null) return null;
+      var es = "", ca = "";
+      if (r.etapa != null) { es = "{estás|está} en la etapa «" + textoCorto(r.etapa_txt || "", 30) + "»" + (r.dia_etapa ? " (día " + r.dia_etapa + ")" : "") + (r.pasos != null ? " y {llevas|lleva} " + r.pasos + " de " + r.pasos_total + " pasos hechos" : "") + ".";
+        ca = "{ets|és} a l'etapa «" + textoCorto(r.etapa_txt || "", 30) + "»" + (r.dia_etapa ? " (dia " + r.dia_etapa + ")" : "") + (r.pasos != null ? " i {duus|du} " + r.pasos + " de " + r.pasos_total + " passes fetes" : "") + "."; }
+      if (r.prog14 != null) {
+        es += " La práctica programada va en " + r.prog14 + " de 14 días" + (r.calma != null && r.calma >= r.mal && r.calma > 0 ? ", y la mayoría en calma, sin esperar a estar mal: eso es justo lo que hace que el cuerpo aprenda" : "") + ".";
+        ca += " La pràctica programada va per " + r.prog14 + " de 14 dies" + (r.calma != null && r.calma >= r.mal && r.calma > 0 ? ", i la majoria en calma, sense esperar a estar malament: això és just el que fa que el cos aprengui" : "") + ".";
+      }
+      var rp = prev.length ? num(ultimoDe(prev).ruido) : null;
+      if (num(r.ruido) != null && rp != null && num(r.ruido) < rp - 0.4) { es += " Además, el ruido interno ha bajado de " + coma(rp) + " a " + coma(r.ruido) + "."; ca += " A més, el renou intern ha baixat de " + coma(rp) + " a " + coma(r.ruido) + "."; }
+      return es ? { es: es.trim(), ca: ca.trim(), temas: [] } : null;
     },
     control_ira: function (xs, prev) {
       var r = ultimoDe(xs), a = num(r.nivel_inicial), b = num(r.nivel_final);

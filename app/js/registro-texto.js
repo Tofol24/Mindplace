@@ -38,6 +38,8 @@
   var SIG = [
     [/la llave de paso|la clau de pas/i, "llave_de_paso", "La llave de paso"],
     [/entre punto y punto|plan de partido/i, "entre_punto_y_punto", "Entre punto y punto"],
+    [/mi recorrido tec/i, "recorrido_tec", "Mi recorrido"],
+    [/evaluaci[óo]n de trauma|\bAP5[0-9A-Z.]{4}/i, "evaluacion_trauma", "Evaluación de trauma"],
     [/exploradora valiente/i, "exploradora_valiente", "La exploradora valiente"],
     [/misi[óo]n barrio/i, "mision_barrio", "Misión Barrio"],
     [/ritual diario/i, "ritual_calma", "Ritual diario · calma"],
@@ -96,6 +98,43 @@
       return l;
     }
     return null;
+  }
+
+  /* Evaluación de trauma (LEC-5 + PCL-5): el paciente envía solo un código AP5-…
+     Se descifra aquí con el mismo formato que la herramienta (evaluacion-trauma.html)
+     y se corrige el PCL-5. El código no lleva relato ni datos identificativos. */
+  var A36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var CLUSTER_PCL = { B: { min: 1, ids: [0, 1, 2, 3, 4] }, C: { min: 1, ids: [5, 6] }, D: { min: 2, ids: [7, 8, 9, 10, 11, 12, 13] }, E: { min: 2, ids: [14, 15, 16, 17, 18, 19] } };
+  function d36(c) { var i = A36.indexOf(c); return i < 0 ? 0 : i; }
+  function decodificarTrauma(txt) {
+    var m = String(txt || "").toUpperCase().match(/AP5[0-9A-Z.\-\s]{60,100}/); if (!m) return null;
+    var c = m[0].replace(/[^0-9A-Z.]/g, "").slice(0, 69);
+    if (c.length !== 69) return { valido: 0 };
+    var h = 7; for (var k = 0; k < 68; k++) h = (h * 31 + c.charCodeAt(k)) % 36;
+    if (A36[h] !== c[68]) return { valido: 0 };
+    var i = 4, f = c.slice(i, i + 6); i += 6 + 3 + 2 + 1;
+    var lec = []; for (k = 0; k < 17; k++) { var v = d36(c[i + k]); lec.push(v === 17 ? 32 : v === 16 ? 16 : (v & 15)); } i += 17;
+    var pcl = []; for (k = 0; k < 20; k++) pcl.push(c[i + k] === "." ? null : +c[i + k]); i += 20;
+    var ev = d36(c[i]), dur = c[i + 3] === "." ? null : +c[i + 3], desper = c[i + 5] === "." ? null : +c[i + 5], desrea = c[i + 6] === "." ? null : +c[i + 6]; i += 7;
+    var func = []; for (k = 0; k < 5; k++) func.push(c[i + k] === "." ? null : +c[i + k]);
+    var f7 = c[i + 6] === "." ? null : +c[i + 6];
+    var r = { valido: 1, fecha: "20" + f.slice(0, 2) + "-" + f.slice(2, 4) + "-" + f.slice(4, 6), pcl: pcl.map(function (x) { return x == null ? "." : x; }).join("") };
+    r.pcl_resp = pcl.filter(function (x) { return x != null; }).length;
+    r.pcl_total = pcl.reduce(function (a, x) { return a + (x || 0); }, 0);
+    var cumple = {};
+    Object.keys(CLUSTER_PCL).forEach(function (cl) {
+      var ids = CLUSTER_PCL[cl].ids;
+      r["pcl_" + cl] = ids.reduce(function (a, j) { return a + (pcl[j] || 0); }, 0);
+      cumple[cl] = ids.filter(function (j) { return (pcl[j] || 0) >= 2; }).length >= CLUSTER_PCL[cl].min;
+    });
+    var mIdx = ev > 0 ? (lec[ev - 1] || 0) : 0;
+    var critA = (mIdx & 15) > 0, critF = dur != null && dur >= 1, critG = Math.max.apply(null, func.map(function (x) { return x == null ? -1 : x; })) >= 2;
+    r.tept = critA && cumple.B && cumple.C && cumple.D && cumple.E && critF && critG ? 1 : 0;
+    r.banda = r.pcl_total >= 50 ? "grave" : r.pcl_total >= 33 ? "moderada-alta" : r.pcl_total >= 31 ? "en el punto de corte" : r.pcl_total >= 15 ? "leve / subumbral" : "mínima";
+    if ((pcl[15] || 0) >= 2) r.riesgo = 1;               // ítem 16: conductas de riesgo / autodaño
+    if (f7 === 1) r.consumo = 1;
+    if ((desper || 0) >= 2 || (desrea || 0) >= 2) r.disociacion = 1;
+    return r;
   }
 
   /* Un mensaje → { toolId, nombre, record }. fechaDefecto: la del encabezado de WhatsApp. */
@@ -210,6 +249,17 @@
       var lg = txt.match(/logro de hoy:\s*(.+)/i); if (lg) rec.logro = lg[1].trim();
     }
     function frase(re) { var m = txt.match(re); return m ? m[1].trim() : null; }
+    if (toolId === "recorrido_tec") {
+      var et = txt.match(/etapa:\s*etapa\s*(\d+)\s*·\s*([^(\n]+?)\s*\(d[íi]a\s*(\d+)\)/i); if (et) { rec.etapa = +et[1]; rec.etapa_txt = et[2].trim(); rec.dia_etapa = +et[3]; }
+      var ph = txt.match(/pasos hechos en la etapa:\s*(\d+)\s*de\s*(\d+)/i); if (ph) { rec.pasos = +ph[1]; rec.pasos_total = +ph[2]; }
+      var pp2 = txt.match(/pr[áa]ctica programada:\s*(\d+)\s*de\s*14 d[íi]as\s*·\s*en calma\s*(\d+)\s*\/\s*porque estaba mal\s*(\d+)/i); if (pp2) { rec.prog14 = +pp2[1]; rec.calma = +pp2[2]; rec.mal = +pp2[3]; }
+      poner("ruido", nro(/ruido interno medio[^:]*:\s*(\d+(?:[.,]\d+)?)/i));
+      poner("cv7", nro(/micro-acci[óo]n con valor:\s*(\d+)\s*de 7/i)); poner("iti", nro(/ITI \(7 d\):\s*(\d+)/i));
+      var ae = txt.match(/autoevaluaci[óo]n \(([^)]+)\):\s*L\s*(\d+(?:[.,]\d+)?)\s*·\s*D\s*(\d+(?:[.,]\d+)?)\s*·\s*C\s*(\d+(?:[.,]\d+)?)/i);
+      if (ae) { rec.eval_fecha = ae[1]; rec.L = parseFloat(ae[2].replace(",", ".")); rec.D = parseFloat(ae[3].replace(",", ".")); rec.C = parseFloat(ae[4].replace(",", ".")); }
+      if (/⚠\s*indica pensamientos de hacerse da[ñn]o/i.test(txt)) rec.riesgo = 1;
+    }
+    if (toolId === "evaluacion_trauma") { var tr = decodificarTrauma(txt); if (tr) { Object.keys(tr).forEach(function (k) { rec[k] = tr[k]; }); if (tr.fecha) rec.date = tr.fecha; } }
     if (toolId === "control_ira") {
       // «Nivel inicial: 😠 Muy activado (4/5)»: el genérico ya toma nivel_inicial / nivel_final.
       var ni2 = frase(/niv[ei]ll? inicial:\s*\S+\s+([^(\n]+?)\s*\(/i), nf2 = frase(/niv[ei]ll? final:\s*\S+\s+([^(\n]+?)\s*\(/i);
@@ -321,6 +371,7 @@
 
   g.parseRegistroTexto = parseRegistroTexto;
   g.tituloRegistroTexto = tituloDe;
+  g.decodificarTrauma = decodificarTrauma;
   g.separarMensajes = separarMensajes;
   g.parseMensajes = parseMensajes;
   g.esDeHerramienta = esDeHerramienta;
