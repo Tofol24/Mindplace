@@ -973,7 +973,10 @@ function updResum(){
   t+=TXT.s6label+"\n"+(D.grounding.length?D.grounding.map(function(g){return g.activitat+" | "+TXT.por+": "+g.por+"/10 | "+TXT.dupres+": "+g.sat+"/10";}).join("\n"):TXT.noGrounding)+"\n";
   var mb=document.getElementById("msgBox");
   if(mb) mb.textContent=t;
-  document.getElementById("btnWA").href="https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(t));
+  var bw=document.getElementById("btnWA");
+  bw.href="https://wa.me/?text="+encodeURIComponent(t);
+  // El enlace al panel (que confirma el código) se añade al pulsar, no al pintar.
+  bw.onclick=function(){ this.href="https://wa.me/?text="+encodeURIComponent((window.aprensConEnlace||String)(document.getElementById("msgBox").textContent)); };
 }
 function copiar(btn){
   var txt=document.getElementById("msgBox").textContent;
