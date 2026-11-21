@@ -534,7 +534,7 @@
       case "mapa_atencion_interna": return (r.tipo === "recorrido" ? "Recorrido completo" : (r.zona || "Zona")) + cualTxt(r.cualidades);
       case "screening_tec": return "L " + fmt(r.L) + " · D " + fmt(r.D) + " · C " + fmt(r.C) + (pick(r.patron, r.perfil) ? " · " + pick(r.patron, r.perfil) : "") + (pick(r.codigo3, r.codigo) ? " · cód " + pick(r.codigo3, r.codigo) : "");
       case "screening_seg": case "seguimiento_tec": return "índice " + fmt(r.indice) + "/10" + (r.L != null ? " · L " + r.L + " · D " + fmt(r.D) + " · C " + r.C : (r.latencia != null ? " · latencia " + r.latencia + " · continuidad " + r.continuidad : "")) + (r.cuali ? " · «" + firstLine(r.cuali) + "»" : "");
-      case "evaluacion_trauma": return r.valido === 0 ? "código incompleto o mal copiado: pide que lo reenvíe" : "PCL-5 " + fmt(r.pcl_total) + "/80 · " + (r.banda || "") + " · cribado TEPT: " + (r.tept ? "positivo" : "negativo") + (r.riesgo ? " · ⚠ ítem 16" : "");
+      case "evaluacion_trauma": return r.valido === 0 || r.pcl_total == null ? "código incompleto o mal copiado: pide que lo reenvíe" : "PCL-5 " + fmt(r.pcl_total) + "/80 · " + (r.pcl_resp < 20 ? "incompleta (" + r.pcl_resp + "/20 ítems)" : (r.banda || "")) + " · cribado TEPT: " + (r.tept ? "positivo" : r.pcl_resp < 20 ? "no concluyente" : "negativo") + (r.riesgo ? " · ⚠ ítem 16" : "");
       case "recorrido_tec": return (r.etapa != null ? "Etapa " + r.etapa + " · " + (r.etapa_txt || "") + " · pasos " + fmt(r.pasos) + "/" + fmt(r.pasos_total) : "Mi recorrido") + (r.ruido != null ? " · ruido " + r.ruido + "/10" : "") + (r.riesgo ? " · ⚠ pensamientos de hacerse daño" : "");
       case "microaccion_valor": return num(r.cv) === 1 ? "✔ 1 · " + (r.descripcion ? firstLine(r.descripcion) : "micro-acción hecha") : "○ 0 · hoy no";
       default: return r.texto ? firstLine(r.texto.split("\n").slice(r.fuente === "texto" ? 1 : 0).join("\n") || r.texto) : "—";
@@ -1281,20 +1281,24 @@
     var rs = ((p.tools.evaluacion_trauma && p.tools.evaluacion_trauma.records) || []).filter(function (r) { return r.valido !== 0 && r.pcl_total != null; })
       .sort(function (a, c) { return String(recDate(a)).localeCompare(String(recDate(c))); });
     if (!rs.length) return "";
-    var u = rs[rs.length - 1], f = rs[0];
+    var n = function (v) { var x = Number(v); return isFinite(x) ? x : 0; };
+    var u = rs[rs.length - 1];
+    // Evolución solo entre evaluaciones completas (los ítems vacíos cuentan como 0).
+    var comp = rs.filter(function (r) { return n(r.pcl_resp) === 20; }), f = comp[0], uc = comp[comp.length - 1];
+    var incompleta = n(u.pcl_resp) < 20;
     var fl = [];
     if (u.riesgo) fl.push("Ítem 16 (asumir riesgos o conductas que pueden causar daño) elevado: explorar conducta de riesgo e ideación autolítica en entrevista.");
     if (u.consumo) fl.push("Refiere aumento del consumo de alcohol, sustancias o medicación para dormir o calmarse.");
     if (u.disociacion) fl.push("Síntomas disociativos presentes: priorizar anclaje y ventana de tolerancia antes de exponer.");
-    if (u.pcl_resp < 20) fl.push("Faltan " + (20 - u.pcl_resp) + " ítems del PCL-5: puntuaciones orientativas.");
+    if (incompleta) fl.push("Faltan " + (20 - n(u.pcl_resp)) + " ítems del PCL-5: la puntuación y el cribado no son concluyentes (los ítems vacíos cuentan como 0).");
     return '<div class="card"><h3>🧩 Evaluación de trauma (LEC-5 + PCL-5)</h3>' +
       '<div class="sub">Última: ' + esc(recDate(u)) + (rs.length > 1 ? ' · ' + rs.length + ' evaluaciones' : '') + '. Solo para ti: no entra en el mensaje al paciente.</div>' +
       '<div class="stat-row" style="margin:6px 0 0">' +
-        stat(u.pcl_total + "/80", "PCL-5 total (" + u.banda + ")") +
-        stat(u.tept ? "Positivo" : "Negativo", "cribado TEPT (criterios DSM-5)") +
-        (rs.length > 1 ? stat((u.pcl_total - f.pcl_total > 0 ? "+" : "") + (u.pcl_total - f.pcl_total), "desde la primera (" + f.pcl_total + ")") : "") +
+        stat(n(u.pcl_total) + "/80", "PCL-5 total (" + (incompleta ? "incompleta" : u.banda) + ")") +
+        stat(u.tept ? "Positivo" : incompleta ? "No concluyente" : "Negativo", "cribado TEPT (criterios DSM-5)") +
+        (comp.length > 1 ? stat((n(uc.pcl_total) - n(f.pcl_total) > 0 ? "+" : "") + (n(uc.pcl_total) - n(f.pcl_total)), "entre evaluaciones completas (desde " + n(f.pcl_total) + ")") : "") +
       '</div>' +
-      '<div class="sub" style="margin:8px 0 0">Clústeres: B intrusión ' + u.pcl_B + '/20 · C evitación ' + u.pcl_C + '/8 · D cognición y ánimo ' + u.pcl_D + '/28 · E activación ' + u.pcl_E + '/24.</div>' +
+      '<div class="sub" style="margin:8px 0 0">Clústeres: B intrusión ' + n(u.pcl_B) + '/20 · C evitación ' + n(u.pcl_C) + '/8 · D cognición y ánimo ' + n(u.pcl_D) + '/28 · E activación ' + n(u.pcl_E) + '/24.</div>' +
       (fl.length ? '<div class="fb-alerta"><ul>' + fl.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join("") + '</ul></div>' : '') +
       '<div class="sub" style="margin:8px 0 0;font-style:italic">Cribado orientativo; el diagnóstico se establece en entrevista clínica. Para el informe completo, pega el código en la herramienta en modo profesional.</div></div>';
   }
