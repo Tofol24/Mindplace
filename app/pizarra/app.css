@@ -390,3 +390,5 @@ button:disabled { opacity: .45; cursor: default; }
 .pj-fila input { min-height: 40px; }
 .base-plan { border-left: 6px solid var(--verde); }
 .situaciones { border-left: 6px solid var(--rival); margin-top: 12px; }
+.aviso-version { position: fixed; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top)); z-index: 1000; display: flex; align-items: center; gap: 10px;
+  max-width: calc(100% - 32px); background: var(--verde-osc); color: #fff; border-radius: 14px; padding: 8px 10px 8px 14px; box-shadow: var(--sombra); font-weight: 700; }
