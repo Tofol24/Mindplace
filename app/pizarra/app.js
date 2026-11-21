@@ -469,7 +469,10 @@
           if (Object.keys(fb).length) o.fb = fb;
         }
         return o;
-      })
+      }),
+      // refuerzos individuales del informe del equipo: qué hacer el entrenador y qué decirle a cada jugador
+      ref: Array.isArray(p.ref) ? p.ref.slice(0, 40).map((r) => r && idOk(r.j) ? { j: r.j, h: txt(r.h, 600), d: txt(r.d, 300) } : null)
+        .filter((r, i, l) => r && (r.h || r.d) && l.findIndex((x) => x && x.j === r.j) === i) : []
     };
   }
   function sanAnalisis(a) {
@@ -1653,7 +1656,7 @@
   }
   function navActual() {
     $$("#nav button").forEach((b) => {
-      const act = b.dataset.ir === estado.pant || (estado.pant === "plan" && b.dataset.ir === "cuaderno");
+      const act = b.dataset.ir === estado.pant || (estado.pant === "plan" && b.dataset.ir === "cuaderno") || (estado.pant === "equipo" && b.dataset.ir === "plantilla");
       if (act) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     });
   }
@@ -1697,6 +1700,7 @@
     $("#ttSub").textContent = "Pizarra y cuaderno del entrenador";
     navActual();
     if (estado.pant === "plantilla") return pantPlantilla();
+    if (estado.pant === "equipo") return pantEquipo();
     if (estado.pant === "ajustes") return pantAjustes();
     if (estado.pant === "plan") return pantPlan();
     if (estado.pant === "preview") return pantPreview();
@@ -1740,16 +1744,17 @@
       </div>`;
   }
 
-  function nuevoPlan(tipo) {
+  function nuevoPlan(tipo, sinIr) {
     const p = {
       id: uid(), mod: Date.now(), tipo: tipo, fecha: hoyISO(), titulo: tipo === "partido" ? "Partido" : "Entreno", rival: "", objetivo: "", notas: "",
-      sistema: "4231", once: {}, bloques: []
+      sistema: "4231", once: {}, bloques: [], ref: []
     };
     // alineación por defecto: dorsales de la plantilla según el puesto preferido
     autoOnce(p);
     const cats = tipo === "partido" ? ["salida", "presion", "banda", "cornerF", "cornerC", "falta"] : ["calentamiento", "ejercicio", "juego"];
     cats.forEach((c) => p.bloques.push({ id: uid(), cat: c, titulo: CATS[c], min: tipo === "partido" ? "" : 15, texto: "", consignas: "", jug: null }));
     db.planes.push(p); guardar();
+    if (sinIr) return p;
     ir("plan", { planId: p.id });
   }
   // Tres apartados seguidos para un aprendizaje: analítico, dinámica ecológica y partido condicionado.
@@ -1909,6 +1914,8 @@
           <button type="button" class="btn-sec" data-aprnuevo="1">＋ Añadir los tres apartados</button></div>
       </div>` : ""}
 
+      ${htmlRefuerzosPlan(p)}
+
       ${htmlFeedback(p)}
 
       <h2>Enviar</h2>
@@ -1962,6 +1969,8 @@
     const pl = db.plantilla.slice().sort((a, b) => a.d - b.d);
     app.innerHTML = `
       <h1>Plantilla</h1>
+      ${pl.length ? `<div class="tarjeta eq-entrada"><p><b>📊 Informe del equipo</b><br><span class="peq">El clima del grupo, a quién tener en cuenta (motivación, confianza, error y aprendizaje) y un refuerzo para cada jugador en el próximo entreno.</span></p>
+        <button type="button" class="btn" data-ir2="equipo">Ver el informe del equipo</button></div>` : ""}
       <div class="tarjeta">
         <p class="peq">El <b>nombre corto</b> es el que sale debajo de la ficha (p. ej. «Bouba», «Toni C.»). En el puesto, escribe la posición habitual: ayuda a proponer la alineación.</p>
         <div class="plantilla-fila peq" aria-hidden="true"><b>Dorsal</b><b>Nombre corto</b><b>Puesto</b><span></span></div>
@@ -2282,7 +2291,7 @@
     const jug = db.plantilla.filter((j) => usados.has(j.id)).map((j) => { const n = sinNombres ? "" : (j.c || j.n.split(" ")[0]); return { id: j.id, d: j.d, n: n || "Dorsal " + j.d, c: n, p: j.p || "" }; });
     const pl = clon(plan); delete pl.id;
     pl.bloques.forEach((b) => { delete b.preg; delete b.fb; }); // las preguntas y el feedback son solo para el entrenador
-    delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc;
+    delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc; delete pl.ref;
     // limpieza: redondeo
     pl.bloques.forEach((b) => { if (b.jug) b.jug.pasos.forEach((p) => { Object.keys(p.pos).forEach((k) => { p.pos[k] = p.pos[k].map(r05); }); p.b = p.b.map(r05); if (p.tips && !Object.keys(p.tips).length) delete p.tips; if (p.dib && !p.dib.length) delete p.dib; }); });
     return { v: 1, eq: eqPaquete(), plan: pl, jug: jug };
@@ -2792,6 +2801,248 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         : "Ayúdale a poner el éxito en aprender: habla de su esfuerzo y de lo que mejora respecto a él mismo, no del marcador ni de los demás. Lo que mira durante el partido acaba marcando su control, cómo vive el error, su motivación y su rendimiento."}</span></p>
         <ul class="consignas">${ORIENTA.filter((q) => au.o[q.k]).map((q) => `<li>${esc(q.t)} <b>${esc(q.o[au.o[q.k] - 1].toLowerCase())}</b></li>`).join("")}</ul>
         <p class="peq"><a href="${PDF_PIRAMIDE}" target="_blank" rel="noopener">La pirámide del rendimiento (PDF)</a></p></div>` : ""}`;
+  }
+
+  // ---------------------------------------------------------------- informe del equipo
+  // Junta las notas, las autoevaluaciones y la comparación de toda la plantilla: el clima del grupo, a quién tener
+  // en cuenta (motivación, confianza, manejo del error y aprendizaje) y un refuerzo concreto para cada jugador en el
+  // próximo entreno, para que se sienta visto y acompañado. Se calcula en este móvil.
+  const SEGURO = ["", "No se siente seguro jugando", "Se siente poco seguro jugando"];
+  function perfilJugador(j) {
+    const au = j.auto || null, o = (au && au.o) || {}, notas = j.notas || [];
+    const c = au ? compararAuto(notas, au) : null;
+    const pr = prioridadNotas(j), foco = pr.foco ? notas.find((n) => n.id === pr.foco.id) || null : null;
+    const p = { j: j, au: au, o: o, ori: au ? orientacion(o) : "", foco: foco, fij: pr.foco ? pr.foco.fij : "",
+      fuertes: notas.filter((n) => n.t === "f"), noVe: c ? c.yoFelM.concat(c.yoFelNada) : [], sobre: c ? c.elFyoM : [],
+      coinc: c ? c.ambosF.length + c.ambosM.length : 0, mot: [], conf: [], err: [] };
+    if (p.ori === "resultado") p.mot.push("Pone el éxito en ganar o en el resultado");
+    if (o.compara === 3) p.mot.push("Se compara sobre todo con los demás");
+    if (o.foco === 3) p.mot.push("En el partido mira el marcador y lo que piensan los demás");
+    if (au && au.c && au.c <= 2) p.conf.push(SEGURO[au.c]);
+    if (c && c.yoFelM.length) p.conf.push("Quiere mejorar lo que tú ves como fortaleza: " + c.yoFelM.slice(0, 2).join(", "));
+    else if (p.noVe.length >= 2) p.conf.push("Todavía no ve como fortaleza: " + p.noVe.slice(0, 2).join(", "));
+    if (o.error === 3) p.err.push("Cuando se equivoca, se enfada y le cuesta mucho volver");
+    else if (o.error === 2) p.err.push("Cuando se equivoca, le cuesta un poco volver");
+    return p;
+  }
+  const nomCorto = (j) => j.c || String(j.n || "").split(" ")[0];
+  const sinPunto = (t) => String(t || "").trim().replace(/[.\s]+$/, "");
+  // Propuesta de refuerzo: qué hace el entrenador (h) y qué le dice al jugador (d)
+  function refuerzoLocal(p) {
+    const h = [], d = [];
+    const fuerte = p.noVe[0] || (p.fuertes[0] && p.fuertes[0].x) || "";
+    if (p.foco) h.push("Su reto de hoy: " + sinPunto(p.foco.x) + "." + (p.fij ? " Recuérdale en qué fijarse: " + sinPunto(p.fij).replace(/^./, (x) => x.toLowerCase()) + "." : ""));
+    if (p.conf.length && fuerte) h.push("Reconócele en voz alta, delante del grupo, la primera vez que lo haga bien en «" + sinPunto(fuerte) + "».");
+    if (p.o.error === 3) h.push("Si falla, acércate un momento: valora que lo vuelva a intentar y recuérdale su gesto y su palabra para volver a la jugada.");
+    else if (p.o.error === 2) h.push("Después de un fallo, un gesto de ánimo y «¡a la siguiente!»: que vea que equivocarse forma parte de aprender.");
+    if (p.mot.length) h.push("Al acabar, pregúntale qué ha aprendido o mejorado hoy, no quién ha ganado.");
+    if (p.au && p.au.ts) h.push("Te pidió: «" + sinPunto(p.au.ts) + "». Dáselo hoy.");
+    if (!p.au) h.push("Todavía no tiene autoevaluación: pídesela para saber cómo se ve.");
+    if (!h.length && fuerte) h.push("Dale un papel en el que pueda usar su punto fuerte («" + sinPunto(fuerte) + "») y díselo cuando lo haga bien.");
+    if (p.conf.length && fuerte) d.push("«" + sinPunto(fuerte) + "» lo haces muy bien: úsalo sin miedo.");
+    if (p.foco) { const m = mensajeNota(p.foco); d.push(m || ("Hoy pon toda la intención en esto: " + sinPunto(p.foco.x).replace(/^./, (x) => x.toLowerCase()) + ".")); }
+    else if (!d.length && fuerte) d.push("Hoy quiero ver tu «" + sinPunto(fuerte) + "»: es tu ventaja.");
+    return { h: h.slice(0, 4).join(" "), d: d.join(" ") };
+  }
+  // Lo que más se repite en la plantilla (aspectos a mejorar o puntos fuertes)
+  function repetidos(perfiles, t) {
+    const m = {};
+    perfiles.forEach((p) => (p.j.notas || []).filter((n) => n.t === t).forEach((n) => {
+      const a = aspectoDe(n), k = a ? a.k : normNom(n.x), x = a ? a.t : sinPunto(n.x);
+      if (!k) return; m[k] = m[k] || { t: x, js: [] }; if (!m[k].js.includes(p.j)) m[k].js.push(p.j);
+    }));
+    return Object.values(m).filter((x) => x.js.length >= 2).sort((a, b) => b.js.length - a.js.length).slice(0, 5);
+  }
+  function climaEquipo(perfiles) {
+    const con = perfiles.filter((p) => p.au), n = (f) => con.filter(f).length;
+    return {
+      total: perfiles.length, conAuto: con.length,
+      ori: [n((p) => p.ori === "tarea"), n((p) => p.ori === "mixta"), n((p) => p.ori === "resultado")],
+      err: [n((p) => p.o.error === 1), n((p) => p.o.error === 2), n((p) => p.o.error === 3)],
+      conf: [n((p) => p.au.c >= 4), n((p) => p.au.c === 3), n((p) => p.au.c && p.au.c <= 2)],
+      mirada: [con.reduce((s, p) => s + p.coinc, 0), con.reduce((s, p) => s + p.noVe.length, 0), con.reduce((s, p) => s + p.sobre.length, 0)],
+      nec: repetidos(perfiles, "m"), fort: repetidos(perfiles, "f")
+    };
+  }
+  function lecturaClima(cl) {
+    const l = [];
+    if (!cl.conAuto) return ["Todavía no hay autoevaluaciones. Pídesela a cada jugador desde sus notas («🪞 Pedir su autoevaluación») para ver el clima del grupo."];
+    const [tar, , res] = cl.ori, sumO = cl.ori.reduce((a, b) => a + b, 0);
+    if (sumO && tar * 2 >= sumO) l.push("La mayoría vive el juego para aprender: buen clima para entrenar. Sigue reconociendo el esfuerzo y el progreso de cada uno.");
+    else if (sumO && res * 3 >= sumO) l.push("Una parte del grupo pone el éxito en ganar. En las charlas, habla de lo que aprendéis y de lo que mejora cada uno respecto a sí mismo, no del marcador.");
+    else if (sumO) l.push("El grupo está a medio camino entre aprender y ganar: refuerza que el éxito es mejorar, partido a partido.");
+    const malE = cl.err[1] + cl.err[2], sumE = cl.err.reduce((a, b) => a + b, 0);
+    if (sumE && malE * 3 >= sumE) l.push("A varios les cuesta volver después de un error: practicad en grupo la palabra clave y el gesto para volver a la jugada, y celebrad el intento.");
+    const sumC = cl.conf.reduce((a, b) => a + b, 0);
+    if (sumC && cl.conf[2] * 4 >= sumC) l.push("Hay jugadores con poca seguridad: busca momentos para reconocerles en público lo que hacen bien, con ejemplos concretos.");
+    if (cl.mirada[1] > cl.mirada[2] && cl.mirada[1] >= 3) l.push("En general se ven peor de lo que los ves tú: muéstrales sus puntos fuertes, porque muchos todavía no los ven.");
+    else if (cl.mirada[2] > cl.mirada[1] && cl.mirada[2] >= 3) l.push("Varios se ven mejor de lo que ves tú en algunos aspectos: habladlo con ejemplos de los partidos, sin desautorizarlos.");
+    const faltan = cl.total - cl.conAuto;
+    if (faltan) l.push((faltan === 1 ? "Falta 1 autoevaluación" : "Faltan " + faltan + " autoevaluaciones") + ": con todas, la foto del grupo será más fiel.");
+    return l;
+  }
+  function barraEq(tit, seg) {
+    const tot = seg.reduce((a, s) => a + s.n, 0);
+    if (!tot) return `<div class="eq-barra"><p class="eq-barra-tit">${esc(tit)}</p><p class="peq">Sin respuestas todavía.</p></div>`;
+    return `<div class="eq-barra"><p class="eq-barra-tit">${esc(tit)}</p>
+      <div class="eq-barra-fila" role="img" aria-label="${esc(tit + ": " + seg.filter((s) => s.n).map((s) => s.n + " " + s.t).join(", "))}">${seg.filter((s) => s.n).map((s) => `<span class="eq-seg ${s.c}" style="flex:${s.n}"></span>`).join("")}</div>
+      <p class="eq-ley">${seg.map((s) => `<span><i class="eq-pto ${s.c}" aria-hidden="true"></i>${esc(s.t)}: <b>${s.n}</b></span>`).join("")}</p></div>`;
+  }
+  const btnJug = (j) => `<button type="button" class="eq-jug" data-jnotas="${esc(j.id)}" aria-label="Notas de ${esc(j.n)}"><span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(j.d)}</span>${esc(nomCorto(j))}</button>`;
+  const eqEdit = {}; // lo que el entrenador ha cambiado en los refuerzos (mientras dure la visita)
+  function planesDestino() {
+    const hoy = hoyISO();
+    return db.planes.filter((p) => p.tipo === "entreno" && (!p.fecha || p.fecha >= hoy)).sort((a, b) => (a.fecha || "9").localeCompare(b.fecha || "9"));
+  }
+  function pantEquipo() {
+    const perfiles = db.plantilla.slice().sort((a, b) => a.d - b.d).map(perfilJugador);
+    if (!perfiles.length) return ir("plantilla");
+    const cl = climaEquipo(perfiles);
+    const grupo = (ic, tit, sub, l) => `<div class="eq-grupo"><h3>${ic} ${esc(tit)}</h3><p class="peq">${esc(sub)}</p>
+      ${l.length ? `<ul class="eq-lista">${l.map((x) => `<li>${btnJug(x.p.j)}<span>${esc(x.m)}</span></li>`).join("")}</ul>` : `<p class="peq eq-nadie">Nadie destaca aquí ahora mismo.</p>`}</div>`;
+    const de = (k) => perfiles.filter((p) => p[k].length).map((p) => ({ p: p, m: p[k].join(" · ") }));
+    // aprendizaje: los focos agrupados (para plantear ejercicios) y quién se ve mejor de lo que ves tú
+    const focos = {};
+    perfiles.forEach((p) => { if (!p.foco) return; const a = aspectoDe(p.foco), k = a ? a.t : sinPunto(p.foco.x); (focos[k] = focos[k] || []).push(p.j); });
+    const sobre = perfiles.filter((p) => p.sobre.length);
+    const sinAuto = perfiles.filter((p) => !p.au).map((p) => p.j);
+    const orden = perfiles.slice().sort((a, b) => (b.mot.length + b.conf.length + b.err.length) - (a.mot.length + a.conf.length + a.err.length) || a.j.d - b.j.d);
+    const dest = planesDestino();
+    app.innerHTML = `
+      <button type="button" class="btn-sec no-imprimir" data-ir2="plantilla">← Plantilla</button>
+      <div class="eq-informe">
+      <h1 style="margin-top:12px">Informe del equipo</h1>
+      <p class="peq">${esc(db.equipo.nombre)} · ${cl.total} jugador${cl.total === 1 ? "" : "es"} · ${cl.conAuto} con autoevaluación · ${esc(fechaCorta())}. Se calcula en este móvil con tus notas, sus autoevaluaciones y la comparación de las dos miradas.</p>
+      <div class="fila no-imprimir"><button type="button" class="btn-sec" data-eqimp="1">🖨️ Imprimir o PDF</button></div>
+
+      <section class="tarjeta eq-sec">
+        <h2>🌡️ Clima del equipo</h2>
+        <div class="eq-barras">
+          ${barraEq("Orientación (dónde pone el éxito)", [{ n: cl.ori[0], t: "aprender", c: "v" }, { n: cl.ori[1], t: "mixta", c: "a" }, { n: cl.ori[2], t: "ganar o resultado", c: "r" }])}
+          ${barraEq("Cuando se equivocan", [{ n: cl.err[0], t: "vuelven enseguida", c: "v" }, { n: cl.err[1], t: "les cuesta un poco", c: "a" }, { n: cl.err[2], t: "les cuesta mucho", c: "r" }])}
+          ${barraEq("Confianza jugando", [{ n: cl.conf[0], t: "alta", c: "v" }, { n: cl.conf[1], t: "normal", c: "a" }, { n: cl.conf[2], t: "baja", c: "r" }])}
+          ${barraEq("Tu mirada y la suya (aspectos)", [{ n: cl.mirada[0], t: "coincidís", c: "v" }, { n: cl.mirada[1], t: "tú ves fortaleza y ellos no", c: "az" }, { n: cl.mirada[2], t: "ellos se ven más fuertes", c: "a" }])}
+        </div>
+        <div class="eq-lectura"><p><b>Lectura</b></p><ul class="consignas">${lecturaClima(cl).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+        ${cl.nec.length ? `<p><b>📈 Lo que más necesita el grupo</b></p><ul class="eq-rep">${cl.nec.map((x) => `<li><span>${esc(x.t)}</span> <span class="peq">${x.js.length} · ${esc(x.js.map(nomCorto).join(", "))}</span></li>`).join("")}</ul>` : ""}
+        ${cl.fort.length ? `<p><b>💪 Las fortalezas del grupo</b></p><ul class="eq-rep">${cl.fort.map((x) => `<li><span>${esc(x.t)}</span> <span class="peq">${x.js.length} · ${esc(x.js.map(nomCorto).join(", "))}</span></li>`).join("")}</ul>` : ""}
+      </section>
+
+      <section class="tarjeta eq-sec">
+        <h2>👀 A quién tener en cuenta</h2>
+        <div class="eq-grupos">
+          ${grupo("🔥", "Motivación", "Ponen el éxito en ganar o se comparan con los demás: refuerza su esfuerzo y su progreso.", de("mot"))}
+          ${grupo("💪", "Confianza", "Se sienten poco seguros o no ven lo que hacen bien: reconocimiento concreto y en público.", de("conf"))}
+          ${grupo("🔁", "Manejo del error", "Les cuesta volver después de equivocarse: gesto, palabra clave y valorar el intento.", de("err"))}
+          <div class="eq-grupo"><h3>🎯 Aprendizaje técnico-táctico</h3><p class="peq">El foco de cada uno, agrupado: te ayuda a plantear los ejercicios.</p>
+            ${Object.keys(focos).length ? `<ul class="eq-lista eq-focos">${Object.keys(focos).sort((a, b) => focos[b].length - focos[a].length).map((k) => `<li><b>${esc(k)}</b><span class="eq-chips">${focos[k].map(btnJug).join("")}</span></li>`).join("")}</ul>` : `<p class="peq eq-nadie">Marca lo que tiene que mejorar cada jugador para ver sus focos.</p>`}
+            ${sobre.length ? `<p class="peq"><b>🔎 Se ven fuertes en lo que tú tienes para mejorar</b> (habladlo con ejemplos de los partidos):</p><ul class="eq-lista">${sobre.map((p) => `<li>${btnJug(p.j)}<span>${esc(p.sobre.slice(0, 2).join(", "))}</span></li>`).join("")}</ul>` : ""}
+          </div>
+        </div>
+        ${sinAuto.length ? `<p class="peq eq-sin"><b>Sin autoevaluación:</b> <span class="eq-chips">${sinAuto.map(btnJug).join("")}</span> Ábrelos y pulsa «🪞 Pedir su autoevaluación».</p>` : ""}
+      </section>
+
+      <section class="tarjeta eq-sec">
+        <h2>🤝 Refuerzos para el próximo entreno</h2>
+        <p class="peq">Uno para cada jugador: qué haces tú y qué le dices. La idea es que cada uno note que lo ves y que lo acompañas, en el entreno y en el partido. Edítalos y llévalos al entreno: saldrán en el plan, solo para ti.</p>
+        <div class="eq-refs">${orden.map((p) => {
+          const r = eqEdit[p.j.id] || refuerzoLocal(p), id = esc(p.j.id);
+          const tags = [p.mot.length && "🔥 motivación", p.conf.length && "💪 confianza", p.err.length && "🔁 error", p.foco && "🎯 " + (aspectoDe(p.foco) ? aspectoDe(p.foco).t : sinPunto(p.foco.x))].filter(Boolean);
+          return `<div class="eq-ref" data-eqj="${id}">
+            <p class="eq-ref-cab">${btnJug(p.j)}${tags.map((t) => `<span class="eq-tag">${esc(t)}</span>`).join("")}</p>
+            <div class="campo-f"><label for="eqh_${id}">Qué haces tú</label><textarea id="eqh_${id}" data-eqref="h" data-rj="${id}" maxlength="600" rows="5">${esc(r.h)}</textarea></div>
+            <div class="campo-f"><label for="eqd_${id}">Qué le dices</label><textarea id="eqd_${id}" data-eqref="d" data-rj="${id}" maxlength="300" rows="3">${esc(r.d)}</textarea></div>
+          </div>`;
+        }).join("")}</div>
+        <div class="fila no-imprimir eq-llevar">
+          <div class="campo-f crece"><label for="eqPlan">Llevar los refuerzos a</label><select id="eqPlan">
+            ${dest.map((p) => `<option value="${esc(p.id)}">${esc((p.titulo || "Entreno") + (p.fecha ? " · " + fechaBonita(p.fecha) : ""))}</option>`).join("")}
+            <option value="nuevo">Un entreno nuevo (hoy)</option></select></div>
+          <button type="button" class="btn" data-eqllevar="1">📌 Llevar al entreno</button>
+        </div>
+        <div class="acciones no-imprimir"><button type="button" class="btn-peq ia-btn" data-eqia="1">✨ Afinar los refuerzos con Claude</button>
+          <button type="button" class="btn-peq" data-eqrehacer="1">↺ Volver a la propuesta</button></div>
+        <div data-r="eqia" class="no-imprimir"></div>
+      </section>
+      </div>`;
+    if (iaFbRes.equipo) pintarEquipoIA(app.querySelector('[data-r="eqia"]'), iaFbRes.equipo);
+  }
+  function llevarRefuerzos() {
+    const sel = $("#eqPlan"); if (!sel) return;
+    const refs = $$("[data-eqj]", app).map((c) => ({ j: c.dataset.eqj, h: c.querySelector('[data-eqref="h"]').value.trim().slice(0, 600), d: c.querySelector('[data-eqref="d"]').value.trim().slice(0, 300) })).filter((r) => r.h || r.d);
+    if (!refs.length) { toast("No hay refuerzos escritos"); return; }
+    const p = sel.value === "nuevo" ? nuevoPlan("entreno", true) : db.planes.find((x) => x.id === sel.value);
+    if (!p) return;
+    const otros = (p.ref || []).filter((r) => !refs.some((x) => x.j === r.j));
+    p.ref = refs.concat(otros).slice(0, 40); p.mod = Date.now(); guardar();
+    ir("plan", { planId: p.id });
+    setTimeout(() => { const s = app.querySelector("#refuerzos"); if (s) s.scrollIntoView({ block: "start" }); }, 50);
+    toast("Refuerzos en el entreno: los verás aquí, solo tú");
+  }
+  function htmlRefuerzosPlan(p) {
+    const l = (p.ref || []).map((r) => ({ r: r, j: db.plantilla.find((x) => x.id === r.j) })).filter((x) => x.j);
+    if (!l.length) return "";
+    return `<h2 id="refuerzos">🤝 Refuerzos individuales</h2>
+      <div class="tarjeta eq-plan">
+        <p class="peq">Solo para ti: no se envían a los jugadores. Que cada uno note que lo ves y lo acompañas.</p>
+        ${l.map((x) => { const id = esc(x.j.id); return `<div class="eq-ref">
+          <p class="eq-ref-cab"><span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(x.j.d)}</span> <b>${esc(nomCorto(x.j))}</b>
+            <button type="button" class="btn-peq peligro" data-refquitar="${id}" aria-label="Quitar el refuerzo de ${esc(x.j.n)}">✕</button></p>
+          <div class="campo-f"><label for="rh_${id}">Qué haces tú</label><textarea id="rh_${id}" data-ref="h" data-rj="${id}" maxlength="600" rows="4">${esc(x.r.h)}</textarea></div>
+          <div class="campo-f"><label for="rd_${id}">Qué le dices</label><textarea id="rd_${id}" data-ref="d" data-rj="${id}" maxlength="300" rows="2">${esc(x.r.d)}</textarea></div>
+        </div>`; }).join("")}
+        <div class="fila"><button type="button" class="btn-sec" data-ir2="equipo">📊 Ver el informe del equipo</button></div>
+      </div>`;
+  }
+  // ----- con Claude: refuerzos más finos, con la lectura del clima y acciones para el grupo
+  function entradaEquipo(conTxt) {
+    const perfiles = db.plantilla.slice().sort((a, b) => a.d - b.d).map(perfilJugador), cl = climaEquipo(perfiles);
+    const sel = $("#eqPlan"), dest = sel && sel.value !== "nuevo" ? db.planes.find((x) => x.id === sel.value) : null;
+    const mapa = {};
+    const jugadores = perfiles.slice(0, 40).map((p, i) => {
+      const k = "J" + (i + 1); mapa[k] = p.j.id;
+      return { jugador: k, puesto: p.j.p || "", foco: quitarNombres(p.foco ? p.foco.x : ""), fijarse: quitarNombres(p.fij), fuertes: p.fuertes.slice(0, 3).map((n) => quitarNombres(n.x)),
+        noVeComoFortaleza: p.noVe.slice(0, 3), seVeFuerteEnLoQueHayQueMejorar: p.sobre.slice(0, 3), orientacion: p.ori,
+        error: ["", "vuelve enseguida", "le cuesta un poco", "le cuesta mucho"][p.o.error || 0], confianza: p.au && p.au.c ? CONFIANZA[p.au.c] : "",
+        ayuda: conTxt && p.au ? quitarNombres(p.au.ts) : "", autoevaluacion: !!p.au };
+    });
+    return { mapa: mapa, entrada: { modo: "equipo", etapa: etapaTxt(), entrenadores: somosVarios() ? 2 : 1,
+      clima: { jugadores: cl.total, conAutoevaluacion: cl.conAuto, orientacion: { tarea: cl.ori[0], mixta: cl.ori[1], resultado: cl.ori[2] },
+        error: { vuelveEnseguida: cl.err[0], leCuestaUnPoco: cl.err[1], leCuestaMucho: cl.err[2] }, confianza: { alta: cl.conf[0], normal: cl.conf[1], baja: cl.conf[2] } },
+      necesidades: cl.nec.map((x) => x.t + " (" + x.js.length + ")"), fortalezas: cl.fort.map((x) => x.t + " (" + x.js.length + ")"),
+      entreno: dest ? { titulo: quitarNombres(dest.titulo), objetivo: quitarNombres(dest.objetivo), ejercicios: dest.bloques.map((b) => quitarNombres([b.titulo || CATS[b.cat], b.fij].filter(Boolean).join(": "))) } : { titulo: "", objetivo: "", ejercicios: [] },
+      jugadores: jugadores } };
+  }
+  function previaEquipoIA(cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Afinar los refuerzos con Claude"); return; }
+    const pedidos = db.plantilla.filter((j) => j.auto && j.auto.ts).length;
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Afinar los refuerzos con Claude</h3>
+      <p class="peq">Claude lee el clima del grupo y el perfil de cada jugador y propone un refuerzo para cada uno (qué haces tú y qué le dices), ajustado al entreno elegido, y dos o tres acciones para todo el grupo. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto, su foco, sus puntos fuertes, la comparación de las dos miradas, su orientación, cómo vive el error y su confianza.</p>
+      ${pedidos ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="eqIaTxt" style="width:22px;height:22px;flex:none"> Incluir también lo que te pidieron en su autoevaluación («en qué te gustaría que te ayudara»), ${pedidos} jugador${pedidos === 1 ? "" : "es"}. Revisa en sus notas que no lleve datos personales.</label>` : ""}
+      <div class="fila"><button type="button" class="btn" data-eqiaok="1">Pedir los refuerzos</button><button type="button" class="btn-sec" data-eqiano="1">Cancelar</button></div></div>`;
+  }
+  function pedirEquipoIA(cont) {
+    const t = cont.querySelector("#eqIaTxt"), x = entradaEquipo(!!(t && t.checked));
+    iaFbPend.equipoMapa = x.mapa;
+    consultaIA("equipo", x.entrada, cont, "Claude está leyendo al equipo.", (r) => pintarEquipoIA(cont, r));
+  }
+  function pintarEquipoIA(cont, r) {
+    if (!cont) return;
+    const mapa = iaFbPend.equipoMapa || {};
+    const n = (r.refuerzos || []).filter((x) => mapa[x.jugador] && db.plantilla.some((j) => j.id === mapa[x.jugador])).length;
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ La lectura de Claude</h3>
+      ${r.lectura ? `<p><b>El clima:</b> ${esc(r.lectura)}</p>` : ""}
+      ${r.grupo && r.grupo.length ? `<p><b>Para todo el grupo:</b></p><ul class="consignas">${r.grupo.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      ${n ? `<p class="peq">Ha propuesto ${n} refuerzo${n === 1 ? "" : "s"} individual${n === 1 ? "" : "es"}.</p><div class="fila"><button type="button" class="btn-sec" data-eqiausar="1">Poner sus refuerzos en las tarjetas</button></div>` : ""}</div>`;
+  }
+  function usarEquipoIA() {
+    const r = iaFbRes.equipo, mapa = iaFbPend.equipoMapa || {}; if (!r) return;
+    let n = 0;
+    (r.refuerzos || []).forEach((x) => {
+      const id = mapa[x.jugador]; if (!id || !db.plantilla.some((j) => j.id === id)) return;
+      eqEdit[id] = { h: String(x.hacer || "").slice(0, 600), d: String(x.decir || "").slice(0, 300) }; n++;
+    });
+    pantEquipo(); toast(n ? "Refuerzos puestos: revísalos antes de llevarlos al entreno" : "No había refuerzos que poner");
   }
 
   // ---------------------------------------------------------------- ficha en una página (A4)
@@ -3886,7 +4137,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.dup) {
       const o = db.planes.find((x) => x.id === d.dup); if (!o) return;
       const c = clon(o); c.id = uid(); c.mod = Date.now(); c.titulo = (c.titulo || "") + " (copia)"; c.fecha = hoyISO();
-      delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
+      delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.ref = []; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
       c.bloques.forEach((x) => { x.id = uid(); });
       db.planes.push(c); guardar(); return ir("plan", { planId: c.id });
     }
@@ -3948,6 +4199,18 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       if (d.preview) return ir("preview", { planId: plan.id });
     }
     if (d.jnotas) return abrirNotas(d.jnotas);
+    if (d.eqllevar) return llevarRefuerzos();
+    if (d.eqimp) {
+      document.body.classList.add("imprimiendo-eq");
+      const fin = () => { document.body.classList.remove("imprimiendo-eq"); window.removeEventListener("afterprint", fin); };
+      window.addEventListener("afterprint", fin); window.print(); setTimeout(fin, 1500); return;
+    }
+    if (d.eqia) { iaFbGen.equipo = (iaFbGen.equipo || 0) + 1; delete iaFbRes.equipo; previaEquipoIA(app.querySelector('[data-r="eqia"]')); return; }
+    if (d.eqiaok) { pedirEquipoIA(app.querySelector('[data-r="eqia"]')); return; }
+    if (d.eqiano) { iaFbGen.equipo = (iaFbGen.equipo || 0) + 1; delete iaFbRes.equipo; const c = app.querySelector('[data-r="eqia"]'); if (c) c.innerHTML = ""; return; }
+    if (d.eqiausar) return usarEquipoIA();
+    if (d.eqrehacer) { Object.keys(eqEdit).forEach((k) => delete eqEdit[k]); pantEquipo(); toast("Vuelve a estar la propuesta inicial"); return; }
+    if (d.refquitar && plan) { plan.ref = (plan.ref || []).filter((r) => r.j !== d.refquitar); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
     if (d.jborrar) {
       const j = db.plantilla.find((x) => x.id === d.jborrar);
       if (!window.confirm("¿Quitar a " + (j ? j.n : "este jugador") + " de la plantilla?")) return;
@@ -4008,6 +4271,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const t = e.target, d = t.dataset;
     const plan = db.planes.find((x) => x.id === estado.planId);
     if (plan && estado.pant === "plan" && (d.p || d.b)) plan.mod = Date.now();
+    if (d.eqref && d.rj) {
+      const c = t.closest("[data-eqj]"); if (!c) return;
+      eqEdit[d.rj] = { h: c.querySelector('[data-eqref="h"]').value, d: c.querySelector('[data-eqref="d"]').value }; return;
+    }
+    if (d.ref && d.rj && plan) {
+      const r = (plan.ref || []).find((x) => x.j === d.rj); if (!r) return;
+      r[d.ref === "h" ? "h" : "d"] = t.value.slice(0, d.ref === "h" ? 600 : 300); plan.mod = Date.now(); guardar(); return;
+    }
     if (d.anoc !== undefined && plan) {
       const a = $("#anOc0").value, b2 = $("#anOc1").value;
       if (a === "" || b2 === "") delete plan.anOc; else plan.anOc = [Math.round(num(a, 0, 50, 0)), Math.round(num(b2, 0, 50, 0))]; // solo con los dos datos
