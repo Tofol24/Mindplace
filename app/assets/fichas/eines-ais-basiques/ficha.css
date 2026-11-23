@@ -1,0 +1,74 @@
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --ink:#1f2328; --soft:#4b5157; --line:#e4dfd6; --paper:#fbf9f5;
+    --c0:#8f5639; --c1:#2b7457; --c2:#3f6b74; --c3:#b0475a; --c4:#a9781f; --c5:#7a4f8a;
+    --gold:#ffd41d;
+  }
+  html,body{ background:#fff; }
+  body{ font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page{ width:210mm; height:297mm; padding:11mm 12mm 8mm; position:relative; overflow:hidden; background:var(--paper); display:flex; flex-direction:column; }
+
+  /* Cabecera */
+  header{ display:grid; grid-template-columns:1fr 50mm; gap:4mm; align-items:start; }
+  .brand{ display:flex; align-items:center; gap:3mm; margin-bottom:4mm; }
+  .brand img{ width:13mm; height:auto; border-radius:2mm; }
+  .kicker{ font-size:8.6pt; font-weight:600; letter-spacing:.32em; text-transform:uppercase; line-height:1.5; }
+  .kicker span{ background:linear-gradient(transparent 58%, var(--gold) 58%, var(--gold) 92%, transparent 92%); padding:0 1mm; }
+  h1{ font-family:"Inter Display","Inter",sans-serif; font-weight:800; font-size:25pt; line-height:1.06; letter-spacing:-.01em; margin:1mm 0 3mm; }
+  .intro{ font-size:9.6pt; line-height:1.45; color:var(--soft); max-width:128mm; }
+  .intro b{ color:var(--ink); }
+  .ilus{ position:relative; height:62mm; }
+  .ilus .sol{ position:absolute; right:0; top:4mm; width:48mm; height:48mm; border-radius:50%; background:var(--gold); opacity:.9; }
+  .ilus img{ position:absolute; right:9mm; top:0; height:60mm; }
+  .cita{ margin-top:3mm; font-family:"Bitstream Charter",Charter,"Iowan Old Style",Georgia,serif; font-style:italic; font-size:10.4pt; line-height:1.4; color:var(--ink); border-left:1.2mm solid var(--gold); padding:1mm 0 1mm 3mm; max-width:128mm; }
+
+  /* Camino */
+  .camino{ list-style:none; margin-top:4mm; position:relative; flex:1; display:flex; flex-direction:column; gap:2.2mm; }
+  .camino::before{ content:""; position:absolute; left:5.4mm; top:4mm; bottom:6mm; width:.7mm; background:repeating-linear-gradient(to bottom, #cfc6b8 0 2mm, transparent 2mm 3.4mm); }
+  .paso{ display:grid; grid-template-columns:11.5mm 41mm 1fr; gap:0 3mm; align-items:start; background:#fff; border:.3mm solid var(--line); border-left:1.6mm solid var(--c); border-radius:3mm; padding:2.6mm 3.2mm 2.6mm 2mm; position:relative; }
+  .paso .n{ width:9mm; height:9mm; border-radius:50%; background:var(--c); color:#fff; display:grid; place-items:center; font-weight:700; font-size:11pt; margin-left:-.4mm; position:relative; z-index:1; }
+  .paso .n svg{ width:5.2mm; height:5.2mm; }
+  .concepto h2{ font-size:12.2pt; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--c); line-height:1.1; }
+  .concepto .et{ font-size:7.4pt; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--soft); margin-top:.8mm; }
+  .concepto .lema{ font-family:"Bitstream Charter",Charter,"Iowan Old Style",Georgia,serif; font-style:italic; font-size:9pt; line-height:1.32; margin-top:1.6mm; color:var(--ink); }
+  .practica{ font-size:8.7pt; line-height:1.42; color:var(--ink); }
+  .practica .h{ font-weight:700; font-size:9pt; display:block; margin-bottom:.6mm; }
+  .practica p + p{ margin-top:1mm; }
+  .practica em{ font-style:normal; font-weight:600; }
+  .practica .frase{ font-family:"Bitstream Charter",Charter,"Iowan Old Style",Georgia,serif; font-style:italic; font-weight:400; }
+
+  .p0{ --c:var(--c0); } .p1{ --c:var(--c1); } .p2{ --c:var(--c2); }
+  .p3{ --c:var(--c3); } .p4{ --c:var(--c4); } .p5{ --c:var(--c5); }
+
+  footer{ margin-top:3mm; display:flex; justify-content:space-between; align-items:flex-end; font-size:7.6pt; color:var(--soft); }
+  footer .nota{ max-width:135mm; line-height:1.4; }
+  footer .firma{ color:#4f6078; white-space:nowrap; }
+
+  /* ---------- En pantalla (la página de la app): barra y diseño adaptable ----------
+     Al imprimir o generar el PDF se ve solo el A4 (la barra se oculta). */
+  .barra{ display:none; }
+  @media screen{
+    html,body{ background:#e9e4da; }
+    .barra{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; padding:12px 16px; max-width:210mm; margin:0 auto; }
+    .barra a, .barra button{ font:600 15px/1 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:#fff; background:#2b5f6b; border:0; border-radius:999px; padding:11px 16px; text-decoration:none; cursor:pointer; }
+    .barra .sec{ background:#fff; color:#2b5f6b; border:1px solid #c9d6d9; }
+    .page{ margin:0 auto 24px; box-shadow:0 6px 24px rgba(0,0,0,.12); }
+  }
+  @media screen and (max-width: 760px){
+    .page{ width:auto; height:auto; overflow:visible; padding:18px 16px 20px; box-shadow:none; margin:0; }
+    header{ grid-template-columns:1fr; }
+    .ilus{ order:-1; height:150px; }
+    .ilus .sol{ width:130px; height:130px; right:auto; left:50%; transform:translateX(-30%); top:12px; }
+    .ilus img{ height:150px; right:auto; left:50%; transform:translateX(-50%); }
+    .brand img{ width:44px; } .kicker{ font-size:11px; letter-spacing:.16em; }
+    h1{ font-size:27px; }
+    .intro, .cita{ max-width:none; font-size:16px; }
+    .camino{ gap:10px; }
+    .camino::before{ display:none; }
+    .paso{ grid-template-columns:44px 1fr; padding:12px 12px 12px 10px; }
+    .paso .practica{ grid-column:1 / -1; margin-top:8px; }
+    .concepto h2{ font-size:19px; } .concepto .et{ font-size:12px; } .concepto .lema{ font-size:15.5px; }
+    .practica{ font-size:16px; line-height:1.5; } .practica .h{ font-size:16px; }
+    footer{ flex-direction:column; align-items:flex-start; gap:6px; font-size:13px; }
+  }

@@ -322,6 +322,8 @@ table.t td.r{text-align:center;font-weight:700}
 .bas-go{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .bas-go a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-size:13px;font-weight:700;color:var(--bc,var(--verde));background:#f7f3ec;border:1px solid var(--linea);border-radius:18px;padding:6px 12px}
 .bas-go a:first-child{background:var(--bc,var(--verde));border-color:var(--bc,var(--verde));color:#fff}
+.bas-ficha{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 4px 0;font-size:13.5px;color:var(--gris,#555)}
+.bas-ficha a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-size:13px;font-weight:700;color:var(--azul);background:#fff;border:1px solid var(--linea);border-radius:18px;padding:6px 12px}
 .bas-reg{display:inline-block;margin:10px 4px 0;font-size:13px;font-weight:600;color:var(--azul);text-decoration:none}
 
 /* Aviso de privacidad · botón del contador anónimo de uso */

@@ -509,7 +509,7 @@
           + (b.vinculo ? '<div class="vvBox" data-vineta-vinculo></div>' : '')
           + '<p class="small muted" style="margin-top:8px">Para profundizar (se abre otra herramienta):</p><div>'+b.go.map(function(g){ return link(g[0], esc(g[1])); }).join("")+'</div></details></li>';
       }).join("") + '</ol>'
-      + '<div>'+link("tool:ais_basicas","Herramientas AIS básicas")+'<a class="tl" href="../assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener">📄 La ficha en PDF <span class="ar">↓</span></a></div>';
+      + '<div>'+link("tool:ais_basicas","Herramientas AIS básicas")+'<a class="tl" href="../assets/fichas/eines-ais-basiques/es.html" target="_blank" rel="noopener">📄 Ver la ficha <span class="ar">→</span></a><a class="tl" href="../assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener" download>La ficha en PDF <span class="ar">↓</span></a></div>';
     $("#lineas").innerHTML = h;
   }
   function renderTodoDia(){
