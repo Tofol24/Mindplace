@@ -67,7 +67,7 @@ function pinta() {
   $("#filtres").hidden = cats.length < 2;
   $("#filtres").innerHTML = ["", ...cats].map(c => `<button type="button" data-f="${c}" aria-pressed="${c === filtre}">${esc(c ? t(c) : t("tot"))}</button>`).join("");
   $("#novetats").innerHTML = nov.filter(n => !filtre || n.tipus === filtre).map(n => {
-    const link = safeUrl(n.enllac), img = safeUrl(n.imatge);
+    const link = safeUrl(tx(n.enllac)), img = safeUrl(tx(n.imatge)); // enllac pot ser {ca, es}
     return `<article class="nov">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : ""}<div class="cos">
       <span class="meta">${esc([CAT[n.tipus] ? t(n.tipus) : "", tx(n.mitja), dataLlarga(n.data)].filter(Boolean).join(" · "))}</span>
       <h3${/^(ca|es)$/.test(n.idioma_titol || "") ? ` lang="${n.idioma_titol}"` : ""}>${esc(tx(n.titol))}</h3>${tx(n.text) ? `<p>${esc(tx(n.text))}</p>` : ""}

@@ -239,12 +239,17 @@
         "es": "Herramientas básicas de Atención Interna Sensorial"
       },
       "text": {
-        "ca": "Sis pràctiques per donar-te presència i acompanyament: aturada de pensament, l'abraçada sentida, honestedat emocional, respiració, rituals d'entrada i rutina diària.",
-        "es": "Seis prácticas para darte presencia y acompañamiento: parada de pensamiento, el abrazo sentido, honestidad emocional, respiración, rituales de entrada y rutina diaria."
+        "ca": "Les pràctiques per donar-te presència i acompanyament, en l'ordre del recorregut: entendre, aparèixer, romandre, validar, donar espai i integrar.",
+        "es": "Las prácticas para darte presencia y acompañamiento, en el orden del recorrido: entender, aparecer, permanecer, validar, dar espacio e integrar."
       },
-      "imatge": "img/novetats/eines-ais-basiques.jpg",
-      "enllac": "descarregues/APRENS-eines-ais-basiques.pdf",
-      "idioma_doc": "es"
+      "imatge": {
+        "ca": "img/novetats/eines-ais-basiques.jpg",
+        "es": "img/novetats/eines-ais-basiques-es.jpg"
+      },
+      "enllac": {
+        "ca": "descarregues/APRENS-eines-ais-basiques-ca.pdf",
+        "es": "descarregues/APRENS-eines-ais-basiques.pdf"
+      }
     },
     {
       "tipus": "article",
