@@ -74,3 +74,13 @@
     .practica{ font-size:16px; line-height:1.5; } .practica .h{ font-size:16px; }
     footer{ flex-direction:column; align-items:flex-start; gap:6px; font-size:13px; }
   }
+
+  /* Imprimir la página directamente desde el navegador (Cmd/Ctrl+P): el navegador
+     añade márgenes, cabecera y pie, y el A4 exacto saltaría a una segunda hoja.
+     Se reduce un poco para que quepa en una. El generador de PDF marca <html class="pdf">
+     y usa el A4 exacto. */
+  @media print{
+    html:not(.pdf) .page{ width:auto; height:auto; overflow:visible; zoom:.88; }
+    html:not(.pdf) .camino{ flex:none; }
+    html:not(.pdf) .camino > .paso{ flex:none; }
+  }

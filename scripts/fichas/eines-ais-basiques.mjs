@@ -28,6 +28,7 @@ for (const [lang, destinos] of Object.entries(salidas)) {
   await pag.emulateMedia({ media: "print" });
   await pag.goto(pathToFileURL(join(fuentes, lang + ".html")).href);
   await pag.waitForLoadState("networkidle");
+  await pag.evaluate(() => document.documentElement.classList.add("pdf"));
   const desborda = await pag.evaluate(() => { const p = document.querySelector(".page"); return p.scrollHeight > p.clientHeight; });
   if (desborda) throw new Error(lang + ".html no cabe en un A4: acorta el texto.");
   const tmp = join(raiz, "scripts", "fichas", "tmp-" + lang + ".pdf");
