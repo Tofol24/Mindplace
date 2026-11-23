@@ -527,7 +527,9 @@
   function valoresStat(p) {
     var b = p.tools.brujula_valores; if (!b || !b.records.length) return null;
     var last = b.records[b.records.length - 1];
-    return { disc: num(last.disc_total), max: num(last.max), cercania: num(last.cercania_media), fecha: recDate(last) };
+    // Los registros llegan con dos formatos de claves (app y registro de texto): igual que en el resumen.
+    return { disc: num(pick(last.disc_total, last.discrepancia_total)), max: num(last.max),
+      cercania: num(pick(last.cercania_media, last.cercania_media_forma_de_relacionarme)), fecha: recDate(last) };
   }
   function recentActivity(p, n) {
     return allRecords(p).sort(function (a, c) {
@@ -1097,7 +1099,7 @@
         '<div class="card"><h3>Valores (ACT)</h3>' +
           (val ? '<div class="sub">Última brújula · ' + esc(val.fecha) + '</div>' +
             '<div class="stat-row" style="margin:6px 0 0">' +
-            stat(val.disc + "/" + val.max, "discrepancia total") +
+            stat(val.disc == null ? "—" : val.disc + (val.max ? "/" + val.max : ""), "discrepancia total") +
             stat(val.cercania == null ? "—" : val.cercania, "cercanía media") + '</div>'
             : '<div class="nodata">Sin registros de la Brújula de valores.</div>') +
         '</div>' +

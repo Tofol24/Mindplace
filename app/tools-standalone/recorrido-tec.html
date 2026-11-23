@@ -757,9 +757,40 @@
     if(S.etapa===0) av += '<div class="note acc"><b>Bienvenido/a a tu recorrido.</b> Cada día encontrarás aquí lo que te toca, <b>en orden</b>: una práctica por la mañana, tu paso del día, una parada a mediodía, una práctica por la noche y un cierre de un minuto. Las etapas siguen la Teoría del Efecto Consciente: entender → aparecer → permanecer → elegir → consolidar. Y, desde hoy mismo, <b>durante todo el día</b>: una respiración curiosa cada hora y una parada de pensamiento cada vez que te descubras sobrepensando. No hace falta hacerlo perfecto: hace falta volver.</div>';
     if(evalPendiente() && S.etapa>0) av += '<div class="note gold">🔄 <b>Toca autoevaluarte.</b> Han pasado 4 semanas (o aún no la has hecho). Son 2 minutos. <button class="tl" type="button" data-tab="v-eval">Hacerla <span class="ar">→</span></button></div>';
     if(S.etapa>=2 && m.mal > m.calma && m.mal >= 3) av += '<div class="note warn"><b>Señal de aviso:</b> estás practicando más cuando estás mal que en calma. No aumentes la práctica de apoyo: vuelve a los tres momentos fijos. Es lo que enseña a tu cuerpo que no tiene que estar mal para recibir tu atención.</div>';
+    var sp = siguientePaso();
+    // Pasos de la etapa terminados: el paso a la siguiente etapa se ofrece aquí mismo
+    // (antes solo se veía en «Recorrido» y era fácil quedarse parado sin saberlo).
+    var avance = sp < 0 && e.crit.length && S.etapa < E.length - 1;
+    if(avance){
+      var todoOk = true, tiempoOk = diasEnEtapa() >= e.min, sig = E[S.etapa+1];
+      var lis = e.crit.map(function(c){
+        var ok = c[0]==="auto" ? autoOk(c[1], m) : !!S.crit[c[1]];
+        if(!ok) todoOk = false;
+        return c[0]==="auto"
+          ? '<li><span class="auto" style="color:'+(ok?'var(--ok)':'var(--muted)')+'">'+(ok?'✓':'·')+'</span><span>'+esc(c[2])+'</span></li>'
+          : '<li><input type="checkbox" id="hoy-'+c[1]+'" data-crit="'+c[1]+'" '+(ok?'checked':'')+'><label for="hoy-'+c[1]+'">'+esc(c[2])+'</label></li>';
+      }).join("");
+      var listo = todoOk && tiempoOk;
+      av += '<div class="note '+(listo?'ok':'acc')+'"><b>Has terminado los pasos de la '+e.n.toLowerCase()+'.</b> '
+        + (listo
+          ? 'Se cumplen los criterios para pasar a la '+sig.n.toLowerCase()+' · '+sig.t+'.'
+          : (tiempoOk ? 'Para pasar a la '+sig.n.toLowerCase()+' · '+sig.t+', revisa estos puntos y marca los que ya cumples:'
+                      : 'Mínimo orientativo en esta etapa: '+e.min+' días (llevas '+diasEnEtapa()+'). Mientras, sigue con tu práctica y revisa estos puntos:'))
+        + '<ul class="crit">'+lis+'</ul>'
+        + (listo
+          ? '<div class="row"><button class="btn" id="hoyNext" type="button">Pasar a la '+sig.n.toLowerCase()+' →</button></div>'
+          : '<p class="small muted" style="margin:6px 0 0">Si tienes dudas, coméntalo con tu psicólogo/a. <a href="#" data-tab="v-plan">Ver los criterios en «Recorrido»</a>.</p>')
+        + '</div>';
+    }
     $("#hoyAvisos").innerHTML = av;
+    if(avance){
+      $$("#hoyAvisos [data-crit]").forEach(function(c){ c.onchange = function(){ S.crit[c.getAttribute("data-crit")] = c.checked ? 1 : 0; save(); renderAll(); }; });
+      var hn = $("#hoyNext"); if(hn) hn.onclick = function(){
+        S.etapa++; S.etapaDesde = HOY; S.porPsico = false; save(); toast("Bienvenido/a a la " + E[S.etapa].n.toLowerCase() + ": " + E[S.etapa].t); window.scrollTo(0,0); renderAll();
+      };
+    }
 
-    var sp = siguientePaso(), items = [], tE = S.tareas[S.etapa] || {}, hoyP = -1;
+    var items = [], tE = S.tareas[S.etapa] || {}, hoyP = -1;
     for(var k in tE){ if(tE[k]===HOY) hoyP = Math.max(hoyP, +k); }
     items.push({k:"m", w:"☀️ Mañana · tu práctica", t:e.practica.t, d:e.practica.d + (e.practica.guia==="P4" && d.micro ? '<br><b>Tu micro-acción de hoy:</b> «'+esc(d.micro)+'»' : ''), vin:e.practica.vin, guia:e.practica.guia});
     // Un paso al día: si hoy ya hiciste uno, queda hecho; el siguiente llega mañana (o puedes adelantarlo).
@@ -774,7 +805,7 @@
         d: (sp >= 0 ? 'Hecho. Mañana te espera el siguiente; puedes volver a abrirlo cuando quieras.' : 'Hecho. Era el último paso de esta etapa.'), extra:adel});
     }
     else if(sp >= 0) items.push({k:"t", w:"📚 Tu paso de hoy · "+(sp+1)+" de "+e.pasos.length+" · "+tipo(e.pasos[sp][1])[1], t:e.pasos[sp][0], paso:e.pasos[sp]});
-    else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude. Mira en «Recorrido» si cumples los criterios para avanzar.", hecho:true});
+    else items.push({k:"t", w:"📚 Pasos de la etapa", t:"Has recorrido todos los pasos de esta etapa", d:"Puedes repetir el que más te ayude." + (avance ? " Arriba tienes lo que falta para pasar a la siguiente etapa." : ""), hecho:true});
     items.push({k:"md", w:"🌤️ Mediodía", t:"Parada STOP · 4–5 segundos", d:"Di STOP, una respiración, la atención en barriga, pecho o cuello. Aunque no sientas nada. Después, vuelve a lo que hacías. Esta es la parada programada; las demás, cada vez que te descubras sobrepensando, súmalas abajo.", vin:true});
     items.push({k:"n", w:"🌙 Tarde o noche · tu práctica", t:e.noche.t, d:e.noche.d, guia:e.noche.guia});
     var done = 0, vinAbierta = false;
