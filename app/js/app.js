@@ -470,7 +470,7 @@
       <div class="hub-sec"><span class="hub-sec-e">🧰</span><span class="hub-sec-t" id="basTit">Tus cuatro herramientas básicas</span></div>
       <div class="hub-sec-d">Para tenerlas a mano cada día, también cuando estás bien. Breve y frecuente vale más que largo y ocasional.</div>
       <div class="bas-grid">${cards}</div>
-      <div class="bas-ficha"><span>📄 Todas en una página, en el orden de tu recorrido:</span>
+      <div class="bas-ficha"><span>📄 Las cuatro en una página:</span>
         <a href="assets/fichas/eines-ais-basiques/es.html" target="_blank" rel="noopener">Ver la ficha</a>
         <a href="assets/pdf/eines-ais-basiques.pdf" target="_blank" rel="noopener" download>Descargar PDF</a></div>
       <a class="bas-reg" href="#/tool/recorrido_tec">📝 Apúntalas en tu recorrido, en «Hoy › Durante todo el día» →</a>
