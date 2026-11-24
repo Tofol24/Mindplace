@@ -486,7 +486,8 @@
   function recDate(r) { return r.date || r.fecha || (r.ts ? new Date(r.ts).toISOString().slice(0, 10) : ""); }
   function allRecords(p) {
     var out = [];
-    Object.keys(p.tools).forEach(function (t) { (p.tools[t].records || []).forEach(function (r) { out.push({ tool: t, r: r }); }); });
+    // Los peldaños y la escala de miedo de «La escalera» configuran la herramienta: no son actividad.
+    Object.keys(p.tools).forEach(function (t) { (p.tools[t].records || []).forEach(function (r) { if (r && r.kind !== "peldano" && r.kind !== "jerarquia") out.push({ tool: t, r: r }); }); });
     return out;
   }
   function totalRecords(p) { return allRecords(p).length; }

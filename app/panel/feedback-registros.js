@@ -47,6 +47,8 @@
     Object.keys(p.tools || {}).forEach(function (t) {
       if (EXCLUIR[t]) return;
       (p.tools[t].records || []).forEach(function (r) {
+        // Los peldaños y las situaciones de la escala configuran la escalera: no son registros.
+        if (r && (r.kind === "peldano" || r.kind === "jerarquia")) return;
         if (r && recDate(r)) out.push({ tool: t, r: r, d: recDate(r), k: clave(t, r) });
       });
     });
@@ -918,11 +920,17 @@
         ca: "ha practicat al racó de calma" + (j ? ", aquesta vegada amb " + j[1] : "") + ". Jugar a calmar-se quan encara està tranquil és el que després li permet fer-ho servir quan l'emoció es fa grossa.", temas: [] };
     },
     escalera_exposicion: function (xs) {
-      var r = ultimoDe(xs); if (r.ans_antes == null && !r.resultado) return null;
+      var r = ultimoDe(xs);
+      if (r.escala) return { es: "{has preparado|ha preparado} {tu|su} escala de miedo con " + r.escala + " situaciones, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenarla de menos a más es lo que permite subir peldaño a peldaño, sin saltos que asusten." +
+          (r.saltos ? " Hay algún salto grande entre situaciones: conviene añadir algún paso intermedio antes de llegar ahí." : ""),
+        ca: "{has preparat|ha preparat} la {teva|seva} escala de por amb " + r.escala + " situacions, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenar-la de menys a més és el que permet pujar escaló a escaló, sense salts que facin por." +
+          (r.saltos ? " Hi ha qualque salt gran entre situacions: convé afegir-hi qualque passa intermèdia abans d'arribar-hi." : ""), temas: [] };
+      if (r.ans_antes == null && !r.resultado) return null;
       var es = "{has subido|ha subido} al peldaño" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : ""), ca = "{has pujat|ha pujat} a l'escaló" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : "");
       if (r.ans_antes != null) { es += ": la alarma empezó en " + r.ans_antes + ", llegó a " + r.ans_max + " y terminó en " + r.ans_final; ca += ": l'alarma va començar a " + r.ans_antes + ", va arribar a " + r.ans_max + " i va acabar a " + r.ans_final; }
       es += "."; ca += ".";
       if (r.resultado === "sostuve") { es += " {Te quedaste|Se quedó} hasta el final" + (r.paso_ais === "si" ? " y con el AIS activo" : "") + ", que es exactamente el objetivo: no que no haya miedo, sino poder quedarse con él."; ca += " {Et vares quedar|Es va quedar} fins al final" + (r.paso_ais === "si" ? " i amb l'AIS actiu" : "") + ", que és exactament l'objectiu: no que no hi hagi por, sinó poder-s'hi quedar."; }
+      if (r.supera) { es += " Con esto {has superado|ha superado} este peldaño" + (r.posicion ? " (el " + r.posicion + " de " + r.total + ")" : "") + ": el siguiente ya está esperando, sin prisa."; ca += " Amb això {has superat|ha superat} aquest escaló" + (r.posicion ? " (el " + r.posicion + " de " + r.total + ")" : "") + ": el següent ja espera, sense pressa."; }
       else if (r.resultado === "escape") { es += " Esta vez {saliste|salió} antes, y es información útil: quizá conviene repetir este peldaño o bajar uno antes de seguir."; ca += " Aquesta vegada {vares sortir|va sortir} abans, i és informació útil: potser convé repetir aquest escaló o baixar-ne un abans de continuar."; }
       return { es: es, ca: ca, temas: ["act", r.resultado === "sostuve" ? "valiosa" : ""] };
     },
