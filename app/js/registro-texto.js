@@ -45,7 +45,7 @@
     [/ritual diario/i, "ritual_calma", "Ritual diario · calma"],
     [/escalera de las comidas/i, "escalera_comidas", "La escalera de las comidas"],
     [/rinc[óo]n de calma/i, "rincon_calma", "Rincón de calma"],
-    [/la escalera\s*·\s*exposici[óo]n/i, "escalera_exposicion", "La escalera (exposición)"],
+    [/la escalera\s*·\s*(?:exposici[óo]n|mi escala de miedo)/i, "escalera_exposicion", "La escalera (exposición)"],
     [/^\W*honestidad emocional\s*[—-]\s*APRENS/i, "honestidad_emocional", "Honestidad emocional"],
     [/protocolo progresivo ais/i, "protocolo_ais", "Protocolo AIS (audio)"],
     [/registre ais/i, "tracker_ais", "Tracker AIS"],
@@ -306,6 +306,16 @@
       var ax = txt.match(/alarma:\s*(\d+)\s*→\s*pico\s*(\d+)\s*→\s*(\d+)/i); if (ax) { rec.ans_antes = +ax[1]; rec.ans_max = +ax[2]; rec.ans_final = +ax[3]; }
       var de = frase(/desenlace:\s*([^\n]+)/i); if (de) rec.resultado = /hu[íi]/i.test(de) ? "escape" : "sostuve";
       var aisAct = frase(/ais activo:\s*([^\n]+)/i); if (aisAct) rec.paso_ais = /^s[íi]/i.test(aisAct) ? "si" : "no";
+      poner("usa", nro(/USA\s*(\d+)\)/));
+      var esn = txt.match(/escal[óo]n\s*(\d+)\s*de\s*(\d+)/i); if (esn) { rec.posicion = +esn[1]; rec.total = +esn[2]; }
+      if (/superado ✓/i.test(txt)) rec.supera = 1;
+      // Escala de miedo (jerarquía de desensibilización sistemática)
+      if (/mi escala de miedo/i.test(txt)) {
+        var us = [], mu, reU = /^\s*\d+\.\s*.+?—\s*USA\s*(\d+)/gm;
+        while ((mu = reU.exec(txt))) us.push(+mu[1]);
+        rec.escala = us.length; if (us.length) { rec.usa_min = Math.min.apply(null, us); rec.usa_max = Math.max.apply(null, us); }
+        rec.saltos = (txt.match(/salto grande/gi) || []).length;
+      }
     }
     if (toolId === "honestidad_emocional") {
       var it = txt.match(/intensidad:\s*(\d+)\s*→\s*(\d+)/i); if (it) { rec.intensidad_antes = +it[1]; rec.intensidad_despues = +it[2]; }
