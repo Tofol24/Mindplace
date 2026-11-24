@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F4EFE6">
+<meta name="description" content="Psicoeducación para acompañar a niños y niñas de 8 a 12 años con preguntas sobre su identidad de género, y a sus familias. APRENS · Tòfol Villalonga.">
+<title>Quién soy, sin prisa · APRENS</title>
+<style>
+:root{
+  --bg:#F4EFE6; --papel:#FBF8F2; --tinta:#2E2C28; --suave:#5F5B53; --linea:#DDD4C4;
+  --acento:#4F6F64; --acento-2:#8A5A44; --calma:#E3ECE7; --tierra:#F1E4D8; --foco:#1F5FBF;
+  --sombra:0 6px 24px rgba(70,60,40,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1D1C1A; --papel:#262522; --tinta:#ECE7DE; --suave:#B9B2A6; --linea:#3D3A35;
+    --acento:#8FB8A9; --acento-2:#D9A88E; --calma:#26332E; --tierra:#3A2E27; --foco:#8DB8FF;
+    --sombra:0 6px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1D1C1A; --papel:#262522; --tinta:#ECE7DE; --suave:#B9B2A6; --linea:#3D3A35;
+  --acento:#8FB8A9; --acento-2:#D9A88E; --calma:#26332E; --tierra:#3A2E27; --foco:#8DB8FF;
+  --sombra:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--tinta);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--acento)}
+:focus-visible{outline:3px solid var(--foco);outline-offset:3px;border-radius:6px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+.saltar{position:absolute;left:-9999px;top:8px;background:var(--papel);padding:8px 12px;border-radius:8px;z-index:10}
+.saltar:focus{left:8px}
+header.marca{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;max-width:760px;margin:0 auto;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave)}
+header.marca b{color:var(--tinta);letter-spacing:.18em}
+.portada{padding:28px 0 8px;text-align:center}
+.portada h1{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:clamp(30px,7vw,46px);line-height:1.15;margin:8px 0 12px}
+.portada p.sub{color:var(--suave);font-size:18px;max-width:560px;margin:0 auto}
+.antetitulo{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--acento-2);margin:0}
+svg.ilus{display:block;margin:22px auto 4px;width:min(320px,80%);height:auto}
+
+/* Pestañas */
+.pestanas{display:flex;gap:8px;justify-content:center;margin:26px auto 8px;flex-wrap:wrap;padding:0 16px}
+.pestanas button{font:inherit;font-size:16px;padding:10px 18px;border-radius:999px;border:1.5px solid var(--linea);background:var(--papel);color:var(--tinta);cursor:pointer;min-height:44px}
+.pestanas button[aria-selected="true"]{background:var(--acento);border-color:var(--acento);color:var(--papel)}
+[role="tabpanel"][hidden]{display:none}
+
+section{padding:18px 0}
+h2{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:clamp(24px,5vw,30px);line-height:1.25;margin:26px 0 10px}
+h3{font-size:18px;margin:18px 0 6px}
+.tarjeta{background:var(--papel);border:1px solid var(--linea);border-radius:18px;padding:18px 18px;box-shadow:var(--sombra);margin:14px 0}
+.cita{font-family:Georgia,"Times New Roman",serif;font-size:21px;line-height:1.45;border-left:3px solid var(--acento);padding:4px 0 4px 16px;margin:18px 0;color:var(--tinta)}
+.calma{background:var(--calma)}
+.tierra{background:var(--tierra)}
+ul.limpia{padding-left:20px;margin:8px 0}
+ul.limpia li{margin:6px 0}
+.dos{display:grid;gap:14px}
+@media (min-width:640px){.dos{grid-template-columns:1fr 1fr}}
+.dos .tarjeta{margin:0}
+.etq{display:inline-block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--acento-2);margin-bottom:4px}
+
+details{background:var(--papel);border:1px solid var(--linea);border-radius:14px;margin:10px 0;padding:0 16px}
+details summary{cursor:pointer;padding:14px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px;min-height:44px;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-weight:400;font-size:22px;color:var(--acento)}
+details[open] summary::after{content:"–"}
+details > div{padding:0 0 14px}
+
+/* Zona niño/a */
+.ninos{font-size:18px}
+.ninos h2{color:var(--acento)}
+.burbujas{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.burbujas button{font:inherit;font-size:16px;padding:9px 14px;border-radius:999px;border:1.5px solid var(--linea);background:var(--papel);color:var(--tinta);cursor:pointer;min-height:44px}
+.burbujas button[aria-pressed="true"]{background:var(--calma);border-color:var(--acento);font-weight:600}
+.burbujas button[aria-pressed="true"]::before{content:"✓ ";color:var(--acento)}
+.resultado{margin-top:10px;color:var(--suave);font-size:16px;min-height:1.6em}
+.tiempo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.tiempo button{font:inherit;font-size:16px;padding:14px 10px;border-radius:16px;border:1.5px solid var(--linea);background:var(--papel);color:var(--tinta);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:44px}
+.tiempo button[aria-pressed="true"]{border-color:var(--acento);background:var(--calma);font-weight:600}
+.tiempo svg{width:40px;height:40px}
+.respuesta{border-radius:14px;padding:14px 16px;background:var(--tierra);margin-top:6px}
+.respuesta:empty{display:none}
+.frases li{margin:8px 0}
+.boton{font:inherit;font-size:16px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--acento);background:transparent;color:var(--acento);cursor:pointer;min-height:44px}
+.respira{display:flex;flex-direction:column;align-items:center;gap:12px;margin:10px 0}
+.circulo{width:120px;height:120px;border-radius:50%;background:var(--calma);border:2px solid var(--acento);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--tinta);transition:transform 4s ease-in-out}
+.circulo.grande{transform:scale(1.35)}
+
+.aviso{font-size:15px;color:var(--suave)}
+footer{padding:30px 0 50px;text-align:center;color:var(--suave);font-size:14px}
+footer .firma{font-family:Georgia,"Times New Roman",serif;font-size:17px;color:var(--tinta)}
+@media print{.pestanas,.saltar,.respira,.boton{display:none}[role="tabpanel"][hidden]{display:block}body{background:#fff;color:#000}.tarjeta,details{box-shadow:none}}
+</style>
+</head>
+<body>
+<a class="saltar" href="#contenido">Ir al contenido</a>
+
+<header class="marca">
+  <span><b>APRENS</b> · TEC · AIS</span>
+  <span>Quién soy, sin prisa</span>
+</header>
+
+<main id="contenido">
+  <div class="wrap portada">
+    <p class="antetitulo">Psicoeducación · 8 a 12 años</p>
+    <h1>Quién soy, sin prisa</h1>
+    <p class="sub">Una guía para acompañar a niños y niñas que se hacen preguntas sobre su identidad, y a las familias que quieren estar a su lado.</p>
+    <svg class="ilus" viewBox="0 0 320 170" aria-hidden="true" focusable="false">
+      <path d="M10 150 Q160 110 310 150" fill="none" stroke="var(--linea)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="110" cy="70" r="16" fill="var(--tierra)" stroke="var(--acento-2)" stroke-width="2"/>
+      <path d="M92 132 q18 -46 36 0" fill="var(--tierra)" stroke="var(--acento-2)" stroke-width="2"/>
+      <circle cx="170" cy="86" r="12" fill="var(--calma)" stroke="var(--acento)" stroke-width="2"/>
+      <path d="M157 134 q13 -34 26 0" fill="var(--calma)" stroke="var(--acento)" stroke-width="2"/>
+      <path d="M128 104 Q145 96 158 106" fill="none" stroke="var(--suave)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="250" cy="40" r="14" fill="none" stroke="var(--acento-2)" stroke-width="2" opacity=".7"/>
+      <path d="M232 40h-8M276 40h-8M250 22v-8M250 66v-8" stroke="var(--acento-2)" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    </svg>
+  </div>
+
+  <div class="pestanas" role="tablist" aria-label="Elige para quién es esta parte">
+    <button role="tab" id="tab-familia" aria-controls="panel-familia" aria-selected="true">Para madres y padres</button>
+    <button role="tab" id="tab-nino" aria-controls="panel-nino" aria-selected="false" tabindex="-1">Para ti (8 a 12 años)</button>
+  </div>
+
+  <!-- ═══════════ FAMILIA ═══════════ -->
+  <div role="tabpanel" id="panel-familia" aria-labelledby="tab-familia" tabindex="0">
+    <div class="wrap">
+
+      <section>
+        <h2>Antes de nada</h2>
+        <p>Cuando un hijo o una hija empieza a decir, de una manera o de otra, que no se siente del todo cómodo con ser nombrado como niño o como niña, o que a veces le gustaría tener otro cuerpo, es muy habitual que en casa aparezca mucha inquietud, preguntas sin respuesta y una cierta urgencia por saber qué está pasando y qué hay que hacer.</p>
+        <p>Esta guía parte de una idea sencilla. A estas edades no hace falta llegar a ninguna conclusión, y lo que más protege a vuestro hijo o hija no es tener una respuesta, sino sentir que puede hablar de lo que le pasa sin perder vuestro cariño ni vuestra mirada.</p>
+        <p class="cita">No tenemos que decidir quién es. Tenemos que acompañarle mientras lo va descubriendo.</p>
+      </section>
+
+      <section>
+        <h2>Algunas ideas para entender lo que pasa</h2>
+        <div class="dos">
+          <div class="tarjeta">
+            <span class="etq">Cuerpo</span>
+            <h3>El sexo con el que se nace</h3>
+            <p>Hace referencia al cuerpo, a cómo es físicamente.</p>
+          </div>
+          <div class="tarjeta">
+            <span class="etq">Sentir</span>
+            <h3>La identidad de género</h3>
+            <p>Es cómo una persona se siente y se vive por dentro: niño, niña, o a veces de una manera que todavía no tiene nombre claro.</p>
+          </div>
+          <div class="tarjeta">
+            <span class="etq">Mostrar</span>
+            <h3>La expresión</h3>
+            <p>La ropa, el pelo, los juegos, los colores o los amigos que elige. Un niño al que le gustan cosas consideradas “de niñas”, o al revés, no nos dice por sí solo nada sobre su identidad.</p>
+          </div>
+          <div class="tarjeta">
+            <span class="etq">Tiempo</span>
+            <h3>Un proceso que se mueve</h3>
+            <p>Entre los 8 y los 12 años la identidad se está construyendo. En algunos niños y niñas estas preguntas se mantienen y se hacen más claras; en otros cambian o se diluyen con el tiempo, sobre todo al acercarse a la pubertad. Las dos cosas son posibles y las dos están bien.</p>
+          </div>
+        </div>
+        <p>Destacar que el malestar que a veces aparece no suele venir solo de la pregunta en sí, sino de la sensación de no ser entendido, del miedo a decepcionar, de las burlas en el contexto escolar o de sentir que tiene que esconder una parte de sí mismo.</p>
+      </section>
+
+      <section>
+        <h2>Ni adelantarse ni frenar</h2>
+        <p>Entre las familias se observan con frecuencia dos reacciones muy comprensibles, que nacen del amor y del miedo, pero que pueden generar presión en el niño o la niña.</p>
+        <div class="dos">
+          <div class="tarjeta tierra">
+            <h3>Adelantarse</h3>
+            <p>Querer ponerle una etiqueta enseguida, anunciarlo a todo el entorno o tomar decisiones grandes antes de que el propio niño o niña lo tenga claro. Puede hacerle sentir que ya no tiene permiso para dudar o para cambiar de idea.</p>
+          </div>
+          <div class="tarjeta tierra">
+            <h3>Frenar</h3>
+            <p>Prohibir, corregir, ridiculizar o evitar el tema esperando que pase. Suele hacer que el niño o niña deje de hablar en casa, pero no que deje de sentir, y aumenta el malestar a nivel emocional.</p>
+          </div>
+        </div>
+        <div class="tarjeta calma">
+          <h3>El camino del medio: acompañar con calma</h3>
+          <ul class="limpia">
+            <li>Escuchar con curiosidad, sin interrogar ni sacar conclusiones.</li>
+            <li>Dejarle explorar en lo pequeño y reversible (juegos, ropa, aficiones, amistades) dentro de un clima seguro.</li>
+            <li>Ir a su ritmo: es el niño o la niña quien marca los pasos, no la prisa de los adultos ni la del entorno.</li>
+            <li>Mantener las rutinas y hábitos de siempre: colegio, deporte, amigos, familia. Su vida es mucho más que esta pregunta.</li>
+            <li>Contar con un profesional que acompañe el proceso, a la familia y al niño o niña.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Qué podemos decir, y qué conviene evitar</h2>
+        <div class="dos">
+          <div class="tarjeta">
+            <span class="etq">Ayuda</span>
+            <ul class="limpia frases">
+              <li>“Gracias por contármelo. Te quiero igual.”</li>
+              <li>“No hace falta que lo tengas claro. Podemos ir viéndolo juntos.”</li>
+              <li>“Puedes cambiar de idea cuando quieras, y no pasa nada.”</li>
+              <li>“¿Cómo te sientes cuando…?”</li>
+              <li>“Si alguien te molesta por esto, quiero saberlo.”</li>
+            </ul>
+          </div>
+          <div class="tarjeta">
+            <span class="etq">Conviene evitar</span>
+            <ul class="limpia frases">
+              <li>“Es una fase, ya se te pasará.”</li>
+              <li>“Entonces eres trans”, o cualquier etiqueta que no haya elegido.</li>
+              <li>“Eso no es de niños” o “eso no es de niñas”.</li>
+              <li>Hablar de ello delante de otros sin su permiso.</li>
+              <li>Convertirlo en el tema de todas las conversaciones.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Preguntas que suelen hacerse las familias</h2>
+
+        <details>
+          <summary>¿Lo hemos provocado nosotros?</summary>
+          <div><p>No. Las preguntas sobre la identidad no aparecen por una manera concreta de educar, ni por un juguete, ni por una serie. Lo que sí depende de vosotros, y mucho, es cómo se vive: si con miedo y en secreto, o con calma y acompañado.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Y si solo es una fase?</summary>
+          <div><p>Puede serlo y puede no serlo, y a estas edades nadie puede saberlo con certeza. Por eso la propuesta no es confirmar ni negar, sino acompañar sin prisa. Si con el tiempo las preguntas se diluyen, habrá aprendido que en casa puede hablar de todo. Si se mantienen y se hacen más claras, habrá sentido desde el principio que no estaba solo o sola.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Tenemos que decidir algo ahora?</summary>
+          <div><p>Entre los 8 y los 12 años no hay decisiones urgentes que tomar. Lo prioritario es su bienestar emocional, su autoestima y que pueda seguir con su vida de manera adaptativa. Cualquier paso más grande conviene pensarlo con calma, con el propio niño o niña y con el acompañamiento de un profesional, valorando cada situación de manera individual. Las cuestiones médicas no forman parte de esta guía y, si algún día se plantean, corresponden siempre a equipos especializados.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Y si pide cambiar de nombre o de pronombres?</summary>
+          <div><p>Es una petición que merece ser escuchada con respeto y sin dramatizar. Las guías actuales coinciden en que no es un gesto sin importancia, y por tanto conviene que sea una decisión pensada, no tomada con prisa ni impuesta. Suele ayudar empezar por lo pequeño y reversible (en casa, con un apodo neutro, en algunos contextos), observar cómo se siente y dejar siempre la puerta abierta a volver atrás sin que eso suponga ningún fracaso. Este paso es mejor valorarlo con el profesional que os acompaña.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Puede tener relación con otras dificultades?</summary>
+          <div><p>A veces estas preguntas aparecen junto con ansiedad, tristeza, dificultades con los compañeros o un perfil neurodivergente (como TEA o TDAH). Esto no quiere decir que una cosa explique la otra, pero sí que conviene mirar al niño o niña en su globalidad, a nivel emocional, social y familiar, y atender también a todo lo demás que necesita.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Qué hacemos con el colegio y la familia extensa?</summary>
+          <div><p>Antes de contar nada, preguntadle a él o a ella qué quiere que se sepa y quién. Su intimidad merece respeto. Con el colegio, más que explicarlo todo, suele ser útil pedir que estén atentos a burlas o exclusión y que haya un adulto de referencia con quien pueda hablar si lo necesita.</p></div>
+        </details>
+
+        <details>
+          <summary>Nosotros también estamos removidos. ¿Es normal?</summary>
+          <div><p>Sí, es muy habitual. Puede aparecer miedo, tristeza, confusión o incluso duelo por expectativas que teníais. Todo esto merece su espacio, pero conviene que sea un espacio entre adultos o con el profesional, no delante del niño o niña, para que no sienta que es el responsable de vuestro malestar.</p></div>
+        </details>
+
+        <details>
+          <summary>¿Cuándo conviene pedir ayuda más pronto?</summary>
+          <div>
+            <p>Conviene prestar especial atención y consultar sin esperar si observáis:</p>
+            <ul class="limpia">
+              <li>Tristeza mantenida, aislamiento o pérdida de interés por lo que antes le gustaba.</li>
+              <li>Mucha angustia con su cuerpo o rechazo intenso a ducharse, vestirse o mirarse.</li>
+              <li>Ansiedad alta, problemas de sueño o rechazo a ir al colegio.</li>
+              <li>Burlas, acoso o exclusión por parte de compañeros.</li>
+              <li>Cualquier comentario sobre hacerse daño o no querer vivir. En este caso, consultad de inmediato. En España podéis llamar al 024 (atención a la conducta suicida, 24 horas) o al 112 si hay riesgo inmediato.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <section>
+        <h2>Para hacer en casa</h2>
+        <div class="tarjeta">
+          <ul class="limpia">
+            <li><b>Un rato de “nosotros” cada semana</b>, sin pantallas y sin hablar necesariamente de este tema. El vínculo se cuida también en lo cotidiano.</li>
+            <li><b>Preguntas abiertas y cortas</b>: “¿Cómo ha ido hoy?”, “¿Hay algo que te haya hecho sentir bien o mal?”. Y aceptar un “no sé” como respuesta.</li>
+            <li><b>Mirar juntos la otra pestaña</b> de esta guía (“Para ti”), dejando que sea él o ella quien elija qué compartir.</li>
+            <li><b>Reconocer sus fortalezas</b> más allá de la identidad: lo que se le da bien, cómo trata a los demás, lo que ha logrado.</li>
+            <li><b>Cuidaros vosotros</b>: un niño o una niña se regula mejor cuando los adultos que le rodean están serenos.</li>
+          </ul>
+        </div>
+        <p>Entiendo que este camino puede generar dudas y que no siempre sabréis qué decir. No hace falta hacerlo perfecto. Lo que vuestro hijo o hija necesita es saber que, sea cual sea su camino, vosotros vais a estar ahí, y espero que con el tiempo lo podáis ver también en el día a día.</p>
+      </section>
+
+      <section>
+        <h2>El criterio de esta guía</h2>
+        <p>Es un campo en el que las sociedades científicas no siempre coinciden, y por eso esta guía se apoya en lo que sí comparten: que el niño o niña necesita aceptación y cariño incondicional en casa, que los juegos y gustos no tradicionales forman parte del desarrollo normal, que nunca se deben intentar forzar ni corregir sus sentimientos, que la mirada tiene que ser global (emocional, familiar, escolar, también otras dificultades que puedan existir) y que el abordaje principal a estas edades es psicológico y psicosocial, sin prisas y con acompañamiento profesional.</p>
+        <details>
+          <summary>Fuentes consultadas</summary>
+          <div>
+            <ul class="limpia">
+              <li>Academia Americana de Pediatría, <a href="https://www.healthychildren.org/English/ages-stages/gradeschool/Pages/Gender-Identity-and-Gender-Confusion-In-Children.aspx" rel="noopener">Gender Identity and Gender Confusion in Children</a> (HealthyChildren.org).</li>
+              <li>Academia Americana de Psiquiatría del Niño y del Adolescente, <a href="https://www.aacap.org/AACAP/Families_and_Youth/Facts_for_Families/FFF-Guide/transgender-and-gender-diverse-youth-122.aspx" rel="noopener">Transgender and Gender Diverse Youth</a>.</li>
+              <li>NHS England, <a href="https://www.england.nhs.uk/long-read/children-and-young-peoples-gender-services-implementing-the-cass-review-recommendations/" rel="noopener">aplicación de las recomendaciones de la Cass Review</a> (2024).</li>
+              <li>Socialstyrelsen (Suecia), <a href="https://socialstyrelsen.se/publikationer/care-of-children-and-adolescents-with-gender-dysphoria--summary-of-national-guidelines--december-2022-2023-1-8330/" rel="noopener">Care of children and adolescents with gender dysphoria</a> (2022).</li>
+              <li>WPATH, <a href="https://pubmed.ncbi.nlm.nih.gov/36238954/" rel="noopener">Standards of Care, versión 8</a>, capítulo de infancia (2022).</li>
+              <li>Generalitat de Catalunya, <a href="https://canalsalut.gencat.cat/web/.content/_Sistema_de_salut/CBC/recursos/documents_tematica/recomendaciones-acompanar-personas-proceso-identitat-genero.pdf" rel="noopener">Recomendaciones para acompañar a personas en su proceso de identidad de género</a>.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══════════ NIÑO / NIÑA ═══════════ -->
+  <div role="tabpanel" id="panel-nino" aria-labelledby="tab-nino" tabindex="0" hidden>
+    <div class="wrap ninos">
+
+      <section>
+        <h2>Hola. Este rincón es para ti</h2>
+        <p>A veces una persona se pregunta cosas sobre sí misma. Por ejemplo, si se siente más niño, más niña, un poco de las dos cosas, o si todavía no lo sabe.</p>
+        <p>Si te pasa, quiero que sepas tres cosas:</p>
+        <div class="tarjeta calma">
+          <ul class="limpia">
+            <li><b>No hay nada malo en ti.</b> Hacerse preguntas es parte de crecer.</li>
+            <li><b>No tienes que saberlo ya.</b> Puedes tomarte todo el tiempo que necesites.</li>
+            <li><b>Puedes cambiar de idea.</b> Lo que sientes hoy puede ser distinto mañana, y está bien.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-gusta">
+        <h2 id="t-gusta">Las cosas que me gustan</h2>
+        <p>Los gustos no son de niños ni de niñas. Son tuyos. Toca las que van contigo.</p>
+        <div class="burbujas" id="gustos">
+          <button type="button" aria-pressed="false">Dibujar</button>
+          <button type="button" aria-pressed="false">Fútbol</button>
+          <button type="button" aria-pressed="false">Bailar</button>
+          <button type="button" aria-pressed="false">Leer</button>
+          <button type="button" aria-pressed="false">Animales</button>
+          <button type="button" aria-pressed="false">Videojuegos</button>
+          <button type="button" aria-pressed="false">Cocinar</button>
+          <button type="button" aria-pressed="false">Construir cosas</button>
+          <button type="button" aria-pressed="false">Música</button>
+          <button type="button" aria-pressed="false">Naturaleza</button>
+          <button type="button" aria-pressed="false">Ropa y estilo</button>
+          <button type="button" aria-pressed="false">Ciencia</button>
+        </div>
+        <p class="resultado" id="gustos-res" aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="t-tiempo">
+        <h2 id="t-tiempo">¿Qué tiempo hace hoy dentro de mí?</h2>
+        <p>Cuando pienso en quién soy, hoy me siento…</p>
+        <div class="tiempo" id="tiempo">
+          <button type="button" aria-pressed="false" data-r="Qué bien. Disfruta de este día. Si quieres, cuéntale a alguien de confianza qué te ha hecho sentir así.">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M20 4v5M20 31v5M4 20h5M31 20h5M8.7 8.7l3.5 3.5M27.8 27.8l3.5 3.5M8.7 31.3l3.5-3.5M27.8 12.2l3.5-3.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            Soleado, tranquilo
+          </button>
+          <button type="button" aria-pressed="false" data-r="Las nubes vienen y se van. No hace falta entenderlo todo hoy. Puedes probar la respiración de abajo y seguir con tu día.">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 30h17a7 7 0 0 0 0-14 9 9 0 0 0-17 2 6 6 0 0 0 0 12z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
+            Nublado, con dudas
+          </button>
+          <button type="button" aria-pressed="false" data-r="Gracias por notarlo. Cuando hay lluvia por dentro, ayuda mucho no estar solo o sola. Busca a un adulto de confianza y dile: “hoy estoy un poco triste, ¿podemos estar un rato juntos?”.">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 24h17a7 7 0 0 0 0-14 9 9 0 0 0-17 2 6 6 0 0 0 0 12z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M15 29l-2 5M22 29l-2 5M29 29l-2 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            Lluvia, un poco triste
+          </button>
+          <button type="button" aria-pressed="false" data-r="Las tormentas asustan, pero pasan. Ahora lo más importante es que se lo digas a un adulto en quien confíes: tu madre, tu padre, tu psicólogo, tu tutora… Mereces que te ayuden.">
+            <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 22h17a7 7 0 0 0 0-14 9 9 0 0 0-17 2 6 6 0 0 0 0 12z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M21 24l-4 7h5l-3 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Tormenta, muy mal
+          </button>
+        </div>
+        <p class="respuesta" id="tiempo-res" aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="t-respira">
+        <h2 id="t-respira">Un momento para calmarme</h2>
+        <p>Cuando hay muchas preguntas en la cabeza, el cuerpo se pone en alerta. Respirar despacio le ayuda a bajar la activación.</p>
+        <div class="respira">
+          <div class="circulo" id="circulo" aria-live="polite">Preparado</div>
+          <button type="button" class="boton" id="btn-respira">Empezar a respirar</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-frases">
+        <h2 id="t-frases">Frases que me pueden ayudar</h2>
+        <div class="tarjeta">
+          <ul class="limpia frases">
+            <li>Me puedo hacer preguntas y seguir siendo yo.</li>
+            <li>No tengo que darme prisa.</li>
+            <li>Mis gustos son míos.</li>
+            <li>Merezco que me quieran tal como soy.</li>
+            <li>Si alguien se ríe de mí, el problema no soy yo, y lo puedo contar.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-hablar">
+        <h2 id="t-hablar">Si quiero hablarlo con alguien</h2>
+        <p>A veces cuesta empezar. Puedes elegir una de estas frases y decirla, o enseñar esta pantalla:</p>
+        <div class="tarjeta tierra">
+          <ul class="limpia frases">
+            <li>“¿Tienes un rato? Quiero contarte algo que pienso a veces.”</li>
+            <li>“No sé muy bien cómo explicarlo, pero me gustaría que me escucharas.”</li>
+            <li>“No necesito que me digas qué soy, solo que estés conmigo.”</li>
+            <li>“Hoy no quiero hablar de esto. Otro día, sí.”</li>
+          </ul>
+        </div>
+        <p>Y recuerda: tú decides qué cuentas, cuándo y a quién.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="aviso">Esta guía es un material de psicoeducación y no sustituye la valoración y el acompañamiento de un profesional. No guarda ni envía nada de lo que marques: al cerrar la página, todo se borra.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="firma">Tòfol Villalonga · psicólogo</p>
+    <p>APRENS · TEC · AIS</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Pestañas accesibles
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function activar(tab, foco) {
+    tabs.forEach(function (t) {
+      var sel = t === tab;
+      t.setAttribute('aria-selected', sel ? 'true' : 'false');
+      t.tabIndex = sel ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !sel;
+    });
+    if (foco) tab.focus();
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { activar(tab, false); });
+    tab.addEventListener('keydown', function (e) {
+      var n = null;
+      if (e.key === 'ArrowRight') n = tabs[(i + 1) % tabs.length];
+      if (e.key === 'ArrowLeft') n = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (e.key === 'Home') n = tabs[0];
+      if (e.key === 'End') n = tabs[tabs.length - 1];
+      if (n) { e.preventDefault(); activar(n, true); }
+    });
+  });
+
+  // Gustos (sin guardar nada)
+  var gustos = document.getElementById('gustos');
+  var gustosRes = document.getElementById('gustos-res');
+  gustos.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+    var n = gustos.querySelectorAll('[aria-pressed="true"]').length;
+    gustosRes.textContent = n === 0 ? '' :
+      (n === 1 ? 'Has elegido 1 cosa. ' : 'Has elegido ' + n + ' cosas. ') +
+      'Todas forman parte de ti, y ninguna te obliga a ser de una manera.';
+  });
+
+  // Tiempo interior
+  var tiempo = document.getElementById('tiempo');
+  var tiempoRes = document.getElementById('tiempo-res');
+  tiempo.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    Array.prototype.forEach.call(tiempo.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    tiempoRes.textContent = b.getAttribute('data-r');
+  });
+
+  // Respiración guiada: 4 ciclos de 4 s inspirar y 4 s soltar
+  var circulo = document.getElementById('circulo');
+  var btn = document.getElementById('btn-respira');
+  var temporizador = null;
+  function parar(texto) {
+    clearTimeout(temporizador); temporizador = null;
+    circulo.classList.remove('grande');
+    circulo.textContent = texto;
+    btn.textContent = 'Empezar a respirar';
+  }
+  btn.addEventListener('click', function () {
+    if (temporizador) { parar('Preparado'); return; }
+    var paso = 0, total = 8;
+    btn.textContent = 'Parar';
+    (function siguiente() {
+      if (paso >= total) { parar('Muy bien'); return; }
+      var dentro = paso % 2 === 0;
+      circulo.classList.toggle('grande', dentro);
+      circulo.textContent = dentro ? 'Coge aire' : 'Suelta';
+      paso++;
+      temporizador = setTimeout(siguiente, 4000);
+    })();
+  });
+})();
+</script>
+</body>
+</html>
