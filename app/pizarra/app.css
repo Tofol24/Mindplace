@@ -415,3 +415,4 @@ button:disabled { opacity: .45; cursor: default; }
 .cu-tabla th, .cu-tabla td { padding: 4px 6px; border-bottom: 1px solid var(--linea); text-align: center; }
 .cu-tabla th[scope="row"], .cu-tabla thead th:first-child { text-align: left; }
 .cu-tabla tr.cu-poco th, .cu-tabla tr.cu-poco td { background: #FFF4D6; }
+.cu-min { align-items: center; } .cu-min label { font-weight: 700; }

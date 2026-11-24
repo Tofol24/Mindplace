@@ -551,7 +551,8 @@ export function sanearEntradaCuartos(e) {
   if (jugadores.length < 2 || puestos.length !== 11) return null;
   const ids = new Set(jugadores.map((j) => j.jugador));
   const actual = lista(e.actual, 4).map((q, i) => ({ cuarto: i + 1, alineacion: lista(q && q.alineacion, 40).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) })).filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador)).slice(0, 11) }));
-  return { modo: "cuartos", etapa: txt(e.etapa, 40), sistema: { nombre: txt(s.nombre, 20), puestos }, jugadores, actual, quiero: txt(e.quiero, 300) };
+  const min = Number.isInteger(e.minutosPorCuarto) && e.minutosPorCuarto >= 5 && e.minutosPorCuarto <= 45 ? e.minutosPorCuarto : 0;
+  return { modo: "cuartos", etapa: txt(e.etapa, 40), sistema: { nombre: txt(s.nombre, 20), puestos }, jugadores, actual, minutosPorCuarto: min, quiero: txt(e.quiero, 300) };
 }
 export const ESQUEMA_CUARTOS = {
   type: "object", additionalProperties: false, required: ["analisis", "cuartos"],
@@ -570,6 +571,7 @@ export const SISTEMA_CUARTOS = `Eres un entrenador de fútbol base con formació
 
 Tu tarea es proponer quién sale en cada puesto en cada cuarto:
 - Cada jugador en su puesto habitual o en uno parecido; el portero, en la portería.
+- «minutosPorCuarto» dice cuánto dura cada cuarto (0 si no se sabe): úsalo para hablar de minutos en el análisis.
 - Minutos para todos: reparte los cuartos lo más igualados posible (todos los convocados juegan al menos dos cuartos si hay sitio) y alterna a los porteros si hay más de uno.
 - Líneas equilibradas en cada cuarto: que ninguna línea (defensa, medio y ataque) ni ninguna pareja (centrales, pivotes, extremos) junte solo a los más fuertes o solo a los que más tienen que mejorar en técnica, táctica y físico; combina perfiles que se complementen.
 - Estabilidad: pocos cambios de puesto para un mismo jugador entre cuartos.

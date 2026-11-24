@@ -502,7 +502,8 @@
     return {
       v: 1,
       equipo: Object.assign({ nombre: txt(o.equipo && o.equipo.nombre, 60) || "Mi equipo", color: colOk(o.equipo && o.equipo.color, "#C8102E"), etapa: own(ETAPAS_OK, o.equipo && o.equipo.etapa) ? o.equipo.etapa : "" },
-        o.equipo && Number(o.equipo.ent) === 2 ? { ent: 2 } : {}), // ent 2: dos o más entrenadores (los textos para los jugadores, en plural)
+        o.equipo && Number(o.equipo.ent) === 2 ? { ent: 2 } : {}, // ent 2: dos o más entrenadores (los textos para los jugadores, en plural)
+        o.equipo && Number.isInteger(o.equipo.cuMin) && o.equipo.cuMin >= 5 && o.equipo.cuMin <= 45 ? { cuMin: o.equipo.cuMin } : {}), // minutos de cada cuarto
       plantilla: o.plantilla.map(sanJugador).filter(Boolean),
       planes: o.planes.map(sanPlan).filter(Boolean).map(limpiaAn)
     };
@@ -3422,6 +3423,9 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     });
     return { cuenta: cuenta, avisos: avisos };
   }
+  // Minutos de cada cuarto: los del equipo o, si no se han puesto, los de su categoría (infantil, 18)
+  const MIN_CUARTO = { infantil: 18 };
+  const minCuarto = () => db.equipo.cuMin || MIN_CUARTO[db.equipo.etapa] || 0;
   function htmlCuartos(p) {
     if (!db.plantilla.length) return "";
     const sl = slotsDe(p), cu = p.cuartos || [], js = jugadoresCuartos(p);
@@ -3431,6 +3435,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const r = resumenCuartos(p);
     return `<h2>🔄 Cuartos (solo para ti)</h2>
       <div class="tarjeta cuartos">
+        <div class="fila cu-min"><label for="cuMin">Minutos de cada cuarto</label><input type="number" id="cuMin" data-cumin="1" min="5" max="45" value="${minCuarto() || ""}" placeholder="${MIN_CUARTO[db.equipo.etapa] || "18"}" style="width:90px">
+          <span class="peq">${minCuarto() ? "Partido de " + minCuarto() * 4 + " minutos. Vale para todos los partidos del equipo." : "Depende de la categoría: escríbelos y se guardan para todos los partidos del equipo."}</span></div>
         <p class="peq">Cómo saldréis en cada cuarto con el sistema del partido (${esc((SISTEMAS[p.sistema] || SISTEMAS["4231"]).n)}), con los convocados${(p.conv || []).length ? "" : " (todavía no hay: se usa la plantilla)"}. No se envía a los jugadores ni a las familias (al otro entrenador, solo si le pasas el cuaderno con las notas privadas). «Proponer por puestos» coloca a cada uno en su puesto de la plantilla, reparte los cuartos para que todos jueguen y equilibra las parejas (pivotes, centrales…) según sus notas.</p>
         <div class="acciones"><button type="button" class="btn-sec" data-cuprop="1">🔄 Proponer por puestos</button><button type="button" class="btn-peq ia-btn" data-cuia="1">✨ Equilibrar con Claude</button>${cu.length ? `<button type="button" class="btn-peq peligro" data-cuvaciar="1">Vaciar los cuartos</button>` : ""}</div>
         <div data-r="cuia">${iaFbPend.cuVuela === p.id ? `<p class="peq ia-espera">✨ Claude está equilibrando los cuartos. Puede tardar un minuto…</p>` : ""}</div>
@@ -3438,8 +3444,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
           <details class="det"><summary>Cambiar jugadores del ${i + 1}.º cuarto</summary>${sl.map((s, k) => `<div class="cu-sel"><label for="cu${i}_${k}">${esc(s[1])}</label><select id="cu${i}_${k}" data-cu="${i}" data-cuk="${k}">${opciones(q[k])}</select></div>`).join("")}</details></div>`; }).join("")}</div>
         <h3>Cuartos de cada jugador</h3>
         ${r.avisos.length ? `<ul class="consignas sin-puesto">${r.avisos.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
-        <table class="cu-tabla"><thead><tr><th scope="col">Jugador</th><th scope="col">1.º</th><th scope="col">2.º</th><th scope="col">3.º</th><th scope="col">4.º</th><th scope="col">Total</th></tr></thead><tbody>
-          ${Object.keys(r.cuenta).map((id) => ({ j: nom(id), c: r.cuenta[id] })).filter((x) => x.j).sort((a, b) => a.j.d - b.j.d).map((x) => { const t = x.c.reduce((a, b) => a + b, 0); return `<tr class="${t < 2 ? "cu-poco" : ""}"><th scope="row">${esc(etqJ(x.j))}</th>${x.c.map((v) => `<td>${v ? "●" : ""}</td>`).join("")}<td><b>${t}</b>${t < 2 ? " ⚠️" : ""}</td></tr>`; }).join("")}
+        <table class="cu-tabla"><thead><tr><th scope="col">Jugador</th><th scope="col">1.º</th><th scope="col">2.º</th><th scope="col">3.º</th><th scope="col">4.º</th><th scope="col">Cuartos</th>${minCuarto() ? `<th scope="col">Minutos</th>` : ""}</tr></thead><tbody>
+          ${Object.keys(r.cuenta).map((id) => ({ j: nom(id), c: r.cuenta[id] })).filter((x) => x.j).sort((a, b) => a.j.d - b.j.d).map((x) => { const t = x.c.reduce((a, b) => a + b, 0); return `<tr class="${t < 2 ? "cu-poco" : ""}"><th scope="row">${esc(etqJ(x.j))}</th>${x.c.map((v) => `<td>${v ? "●" : ""}</td>`).join("")}<td><b>${t}</b>${t < 2 ? " ⚠️" : ""}</td>${minCuarto() ? `<td>${t * minCuarto()}'</td>` : ""}</tr>`; }).join("")}
         </tbody></table>
         ${Object.values(r.cuenta).some((c) => c.reduce((a, b) => a + b, 0) < 2) ? `<p class="peq">⚠️ Juega menos de dos cuartos.</p>` : ""}
         <p class="peq">Puedes cambiar a cualquiera en «Cambiar jugadores».</p>` : ""}
@@ -3453,7 +3459,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       return { jugador: k, puesto: famJ(j) ? NOM_FAM[famJ(j)] : "", tecnica: nv.tecnica, tactica: nv.tactica, fisico: nv.fisico, fuertes: de("f"), mejorar: de("m") }; });
     const actual = (p.cuartos || []).slice(0, 4).map((q, i) => ({ cuarto: i + 1, alineacion: Object.keys(q).filter((k) => inv[q[k]]).map((k) => ({ puesto: +k, jugador: inv[q[k]] })) }));
     return { mapa: mapa, entrada: { modo: "cuartos", etapa: etapaTxt(), sistema: { nombre: (SISTEMAS[p.sistema] || SISTEMAS["4231"]).n, puestos: sl.map((s, k) => ({ puesto: k, nombre: s[1] })) },
-      jugadores: jugadores, actual: actual, quiero: "" } };
+      jugadores: jugadores, actual: actual, minutosPorCuarto: minCuarto(), quiero: "" } };
   }
   const firmaCuartos = (p) => p.sistema + "|" + jugadoresCuartos(p).map((j) => j.id).join(",");
   function previaCuartosIA(p, cont) {
@@ -4999,6 +5005,10 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       }
       invalidarCuartosIA(plan, "Has cambiado el sistema: vuelve a pedir los cuartos a Claude");
       plan.sistema = t.value; guardar(); return pintarPantalla();
+    }
+    if (d.cumin && plan) {
+      const v = Math.round(+t.value); if (Number.isInteger(v) && v >= 5 && v <= 45) db.equipo.cuMin = v; else delete db.equipo.cuMin;
+      guardar(); const y = window.scrollY; pintarPantalla(); window.scrollTo(0, y); return;
     }
     if (d.conv !== undefined && plan) {
       const l = (plan.conv || []).filter((x) => x !== d.conv && db.plantilla.some((j) => j.id === x));
