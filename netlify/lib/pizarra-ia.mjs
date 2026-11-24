@@ -550,7 +550,7 @@ export function sanearEntradaCuartos(e) {
   const puestos = lista(s.puestos, 11).map((p, i) => ({ puesto: i, nombre: txt(p && p.nombre, 40) })).filter((p) => p.nombre);
   if (jugadores.length < 2 || puestos.length !== 11) return null;
   const ids = new Set(jugadores.map((j) => j.jugador));
-  const actual = lista(e.actual, 4).map((q, i) => ({ cuarto: i + 1, alineacion: lista(q && q.alineacion, 11).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) })).filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador)) }));
+  const actual = lista(e.actual, 4).map((q, i) => ({ cuarto: i + 1, alineacion: lista(q && q.alineacion, 40).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) })).filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador)).slice(0, 11) }));
   return { modo: "cuartos", etapa: txt(e.etapa, 40), sistema: { nombre: txt(s.nombre, 20), puestos }, jugadores, actual, quiero: txt(e.quiero, 300) };
 }
 export const ESQUEMA_CUARTOS = {
@@ -581,8 +581,8 @@ export function sanearCuartos(o, entrada) {
   const cuartos = lista(o.cuartos, 4).map((q) => {
     const c = q && q.cuarto; if (!Number.isInteger(c) || c < 1 || c > 4 || vistosQ.has(c)) return null; vistosQ.add(c);
     const ps = new Set(), js = new Set();
-    const alineacion = lista(q && q.alineacion, 11).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) }))
-      .filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador) && !ps.has(a.puesto) && !js.has(a.jugador) && ps.add(a.puesto) && js.add(a.jugador));
+    const alineacion = lista(q && q.alineacion, 40).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) }))
+      .filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador) && !ps.has(a.puesto) && !js.has(a.jugador) && ps.add(a.puesto) && js.add(a.jugador)).slice(0, 11);
     return alineacion.length ? { cuarto: c, nota: txt(q && q.nota, 300), alineacion } : null;
   }).filter(Boolean).sort((a, b) => a.cuarto - b.cuarto);
   if (!cuartos.length) return null;
