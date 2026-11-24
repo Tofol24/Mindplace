@@ -394,6 +394,7 @@
     if (idOk(j.foco) && ns.some((n) => n.id === j.foco && n.t === "m")) o.foco = j.foco; // foco fijado por el entrenador
     const au = sanAuto(j.auto); if (au) o.auto = au; // su autoevaluación
     if (typeof j.autoKey === "string" && /^[A-Za-z0-9_-]{22}$/.test(j.autoKey)) o.autoKey = j.autoKey; // clave de la última petición (solo en este cuaderno)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(j.autoPed || "")) o.autoPed = j.autoPed; // cuándo se le envió el último enlace
     const lec = txt(j.lec, 700); if (lec) o.lec = lec; // mensaje del entrenador para su ficha
     ["tel", "tel2"].forEach((k) => { const t = txt(j[k], 20).replace(/[^\d+]/g, ""); if (/^\+?\d{6,15}$/.test(t)) o[k] = t; });
     ["mail", "mail2"].forEach((k) => { const m = txt(j[k], 100).trim(); if (RE_MAIL.test(m)) o[k] = m; });
@@ -505,7 +506,7 @@
     if (!o || typeof o !== "object") return null;
     const plan = sanPlan(o.plan); if (!plan) return null;
     const jug = (Array.isArray(o.jug) ? o.jug : []).map(sanJugador).filter(Boolean);
-    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; delete j.auto; delete j.lec; delete j.autoKey; CONTACTO.forEach((k) => delete j[k]); });
+    jug.forEach((j) => { delete j.notas; delete j.alias; delete j.mod; delete j.foco; delete j.auto; delete j.lec; delete j.autoKey; delete j.autoPed; CONTACTO.forEach((k) => delete j[k]); });
     const r = { v: 1, eq: { n: txt(o.eq && o.eq.n, 60), col: colOk(o.eq && o.eq.col, "#C8102E"), et: own(ETAPAS_OK, o.eq && o.eq.et) ? o.eq.et : "" }, plan: plan, jug: jug };
     if (o.eq && Number(o.eq.en) === 2) r.eq.en = 2;
     // Enlace privado de un jugador: sus notas (solo si el jugador está en el paquete)
@@ -2054,7 +2055,7 @@
               <input type="number" min="0" max="99" value="${esc(j.d)}" data-j="d" data-jid="${esc(j.id)}" aria-label="Dorsal de ${esc(j.n)}">
               <input type="text" value="${esc(j.c || "")}" data-j="c" data-jid="${esc(j.id)}" maxlength="18" aria-label="Nombre corto de ${esc(j.n)}" placeholder="${esc(j.n)}">
               <input type="text" value="${esc(j.p || "")}" data-j="p" data-jid="${esc(j.id)}" maxlength="24" aria-label="Puesto de ${esc(j.n)}" placeholder="Puesto">
-              <button type="button" class="btn-peq" data-jnotas="${esc(j.id)}" aria-label="Notas de ${esc(j.n)}">📝${(j.notas || []).length ? (j.notas || []).length : ""}</button>
+              <button type="button" class="btn-peq" data-jnotas="${esc(j.id)}" aria-label="Notas de ${esc(j.n)}. Autoevaluación: ${esc(estadoAuto(j).t)}">📝${(j.notas || []).length ? (j.notas || []).length : ""}${estadoAuto(j).k === "hecha" ? " 🪞" : estadoAuto(j).k === "pedida" ? " ⏳" : ""}</button>
               <button type="button" class="btn-peq peligro" data-jborrar="${esc(j.id)}" aria-label="Quitar a ${esc(j.n)}">✕</button>
             </div>`).join("")}
         </div>
@@ -2721,7 +2722,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     return prepararEnvio(cont, {
       // una clave nueva por petición: la respuesta solo la puede leer este cuaderno. Sustituye a la anterior
       // solo cuando el enlace nuevo ya existe.
-      corto: async () => { const kk = b64u(crypto.getRandomValues(new Uint8Array(16))); const url = await enlaceCorto(paqueteAutoev(j, kk), false); j.autoKey = kk; j.mod = Date.now(); guardarYa(); return url; },
+      corto: async () => { const kk = b64u(crypto.getRandomValues(new Uint8Array(16))); const url = await enlaceCorto(paqueteAutoev(j, kk), false); j.autoKey = kk; j.autoPed = hoyISO(); j.mod = Date.now(); guardarYa(); return url; },
       largo: null,
       texto: (url) => "Hola " + (j.c || j.n.split(" ")[0]) + ", ¿cómo te ves jugando? Marca lo que crees que haces bien y lo que quieres mejorar, y después pulsa «" + tEnt(somosVarios()).enviar + "». Así lo hablamos y lo trabajamos juntos:\n" + url,
       titulo: "Tu autoevaluación", idTxt: "txtAuto", extra: "Enviar la autoevaluación",
@@ -2851,6 +2852,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     });
     app.querySelector("[data-aeno]").addEventListener("click", () => ir("cuaderno"));
   }
+  // ¿Ha hecho la autoevaluación? hecha (con fecha), pedida sin respuesta o sin pedir
+  function estadoAuto(j) {
+    const f = (d) => d ? fechaBonita(d) : "";
+    const pend = !!j.autoKey && (!j.auto || !j.autoPed || !j.auto.f || j.autoPed > j.auto.f);
+    if (j.auto) return { k: "hecha", ic: "✅", t: "Hecha" + (j.auto.f ? " el " + f(j.auto.f) : "") + (pend ? " · le has pedido una nueva" + (j.autoPed ? " el " + f(j.autoPed) : "") + ", sin respuesta todavía" : "") };
+    if (pend) return { k: "pedida", ic: "⏳", t: "Pedida" + (j.autoPed ? " el " + f(j.autoPed) : "") + ", sin respuesta todavía" };
+    return { k: "no", ic: "—", t: "No se la has pedido todavía" };
+  }
   // Las dos miradas, aspecto a aspecto: lo que marca el entrenador (notas con aspecto) y lo que marca el jugador.
   function compararAuto(notas, auto) {
     const ent = {};
@@ -2949,7 +2958,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   function lecturaClima(cl) {
     const l = [];
-    if (!cl.conAuto) return ["Todavía no hay autoevaluaciones. Pídesela a cada jugador desde sus notas («🪞 Pedir su autoevaluación») para ver el clima del grupo."];
+    if (!cl.conAuto) return ["Todavía no hay autoevaluaciones. Pídesela a cada jugador desde sus notas («📤 Enviarle la autoevaluación») para ver el clima del grupo."];
     const [tar, , res] = cl.ori, sumO = cl.ori.reduce((a, b) => a + b, 0);
     if (sumO && tar * 2 >= sumO) l.push("La mayoría vive el juego para aprender: buen clima para entrenar. Sigue reconociendo el esfuerzo y el progreso de cada uno.");
     else if (sumO && res * 3 >= sumO) l.push("Una parte del grupo pone el éxito en ganar. En las charlas, habla de lo que aprendéis y de lo que mejora cada uno respecto a sí mismo, no del marcador.");
@@ -2989,7 +2998,8 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const focos = Object.create(null);
     perfiles.forEach((p) => { if (!p.foco) return; const a = aspectoDe(p.foco), k = a ? a.t : sinPunto(p.foco.x); (focos[k] = focos[k] || []).push(p.j); });
     const sobre = perfiles.filter((p) => p.sobre.length);
-    const sinAuto = perfiles.filter((p) => !p.au).map((p) => p.j);
+    const hechas = perfiles.filter((p) => p.au).map((p) => p.j), pedidas = perfiles.filter((p) => !p.au && estadoAuto(p.j).k === "pedida").map((p) => p.j);
+    const sinPedir = perfiles.filter((p) => !p.au && estadoAuto(p.j).k === "no").map((p) => p.j);
     const orden = perfiles.slice().sort((a, b) => (b.mot.length + b.conf.length + b.err.length) - (a.mot.length + a.conf.length + a.err.length) || a.j.d - b.j.d);
     const dest = planesDestino();
     app.innerHTML = `
@@ -2998,6 +3008,14 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       <h1 style="margin-top:12px">Informe del equipo</h1>
       <p class="peq">${esc(db.equipo.nombre)} · ${cl.total} jugador${cl.total === 1 ? "" : "es"} · ${cl.conAuto} con autoevaluación · ${esc(fechaCorta())}. Se calcula en este móvil con tus notas, sus autoevaluaciones y la comparación de las dos miradas.</p>
       <div class="fila no-imprimir"><button type="button" class="btn-sec" data-eqimp="1">🖨️ Imprimir o PDF</button></div>
+
+      <section class="tarjeta eq-sec eq-autos">
+        <h2>🪞 Autoevaluaciones</h2>
+        <div class="eq-auto-fila"><p><b>✅ Hechas (${hechas.length})</b></p>${hechas.length ? `<ul class="eq-lista">${hechas.map((j) => `<li>${btnJug(j)}<span class="peq">${j.auto.f ? esc(fechaBonita(j.auto.f)) : ""}${j.autoKey && (!j.autoPed || !j.auto.f || j.autoPed > j.auto.f) ? " · le has pedido una nueva" : ""}</span></li>`).join("")}</ul>` : `<p class="peq eq-nadie">Todavía ninguna.</p>`}</div>
+        ${pedidas.length ? `<div class="eq-auto-fila"><p><b>⏳ Pedidas, sin respuesta (${pedidas.length})</b></p><ul class="eq-lista">${pedidas.map((j) => `<li>${btnJug(j)}<span class="peq">${j.autoPed ? "enviada el " + esc(fechaBonita(j.autoPed)) : "enviada"}</span></li>`).join("")}</ul></div>` : ""}
+        ${sinPedir.length ? `<div class="eq-auto-fila"><p><b>— Sin pedir (${sinPedir.length})</b></p><p class="eq-chips">${sinPedir.map(btnJug).join("")}</p></div>` : ""}
+        ${pedidas.length || sinPedir.length ? `<p class="peq no-imprimir">Pulsa un nombre para abrir su ficha y enviarle o recordarle el enlace («📤 Enviarle la autoevaluación»).</p>` : ""}
+      </section>
 
       <section class="tarjeta eq-sec">
         <h2>🌡️ Clima del equipo</h2>
@@ -3023,7 +3041,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
             ${sobre.length ? `<p class="peq"><b>🔎 Se ven fuertes en lo que tú tienes para mejorar</b> (habladlo con ejemplos de los partidos):</p><ul class="eq-lista">${sobre.map((p) => `<li>${btnJug(p.j)}<span>${esc(p.sobre.slice(0, 2).join(", "))}</span></li>`).join("")}</ul>` : ""}
           </div>
         </div>
-        ${sinAuto.length ? `<p class="peq eq-sin"><b>Sin autoevaluación:</b> <span class="eq-chips">${sinAuto.map(btnJug).join("")}</span> Ábrelos y pulsa «🪞 Pedir su autoevaluación».</p>` : ""}
+
       </section>
 
       <section class="tarjeta eq-sec">
@@ -3579,6 +3597,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         </section>
         <section class="tarjeta auto-sec">
           <h2 style="margin-top:0">🪞 Su autoevaluación</h2>
+          <p class="ae-estado ae-${estadoAuto(j).k}"><b>${estadoAuto(j).ic} ${esc(estadoAuto(j).t)}</b></p>
           ${j.auto ? htmlComparacion(j) : `<p class="peq">Envíale un enlace para que marque cómo se ve: lo que cree que hace bien y lo que quiere mejorar. Te lo devolverá con un botón y aquí verás en qué coincidís y en qué no: un trabajo de conciencia sobre su propio juego y de confianza.</p>`}
           <div class="fila"><button type="button" class="btn-sec" data-aepedir="1">📤 ${j.auto ? "Pedirle una nueva autoevaluación" : "Enviarle la autoevaluación"}</button>
             ${j.auto ? `<button type="button" class="btn-peq ia-btn" data-aeia="1">✨ Lectura con Claude</button>` : ""}</div>
