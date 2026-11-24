@@ -53,7 +53,7 @@
     [/pedalea desde dentro/i, "pedalea_desde_dentro", "Pedalea desde dentro"],
     [/toco desde dentro/i, "toco_desde_dentro", "Toco desde dentro"],
     [/APRENS\s*·\s*AIS curiosidad/i, "ais_curiosidad", "AIS desde la curiosidad"],
-    [/salida \(exposici[óo]n en vivo\)|exposici[óo]n en imaginaci[óo]n|pelda[ñn]o trabajado/i, "paso_a_paso", "Paso a paso, de vuelta a mí"],
+    [/salida \(exposici[óo]n en vivo\)|exposici[óo]n en imaginaci[óo]n|pelda[ñn]o trabajado|paso a paso\s*·\s*mi escala de miedo/i, "paso_a_paso", "Paso a paso, de vuelta a mí"],
     [/d[óo]nde est[áa] (tu|mi) mono|detective del mono/i, "donde_mono", "¿Dónde está tu mono?"],  // al inicio: su resumen nombra otras herramientas
     [/agenda atencional/i, "agenda_atencional", "Agenda atencional"],
     [/tracker\s*tec/i, "tracker_tec", "Tracker TEC"],
@@ -240,6 +240,8 @@
     }
     if (toolId === "paso_a_paso") {
       var pd = txt.match(/pelda[ñn]o trabajado:\s*(\d+)\s*de\s*(\d+)/i); if (pd) { rec.peldano = +pd[1]; rec.peldanos = +pd[2]; }
+      if (/pelda[ñn]o trabajado:[^\n]*superado ✓/i.test(txt)) rec.supera = 1;
+      leerEscala();
       var sv = txt.match(/salida[\s\S]*?ansiedad \(0-10\):([^\n]*)/i);
       if (sv) { var pk = sv[1].match(/pico\s*(\d+)/i), dp = sv[1].match(/despu[ée]s\s*(\d+)/i), anPas = sv[1].match(/antes\s*(\d+)/i);
         if (anPas) rec.ans_antes = +anPas[1]; if (pk) rec.ans_max = +pk[1]; if (dp) rec.ans_final = +dp[1]; }
@@ -250,6 +252,14 @@
       poner("rumia", nro(/rumiaci[óo]n hoy \(0-10\):\s*(\d+)/i));
       poner("animo", nro(/[áa]nimo hoy \(0-10\):\s*(\d+)/i));
       var lg = txt.match(/logro de hoy:\s*(.+)/i); if (lg) rec.logro = lg[1].trim();
+    }
+    // Escala de miedo (jerarquía de desensibilización sistemática): «N. situación — USA X».
+    function leerEscala() {
+      if (!/mi escala de miedo/i.test(txt)) return;
+      var us = [], mu, reU = /^\s*\d+\.\s*.+?—\s*USA\s*(\d+)/gm;
+      while ((mu = reU.exec(txt))) us.push(+mu[1]);
+      rec.escala = us.length; if (us.length) { rec.usa_min = Math.min.apply(null, us); rec.usa_max = Math.max.apply(null, us); }
+      rec.saltos = (txt.match(/salto grande/gi) || []).length;
     }
     function frase(re) { var m = txt.match(re); return m ? m[1].trim() : null; }
     if (toolId === "recorrido_tec") {
@@ -309,13 +319,7 @@
       poner("usa", nro(/USA\s*(\d+)\)/));
       var esn = txt.match(/escal[óo]n\s*(\d+)\s*de\s*(\d+)/i); if (esn) { rec.posicion = +esn[1]; rec.total = +esn[2]; }
       if (/superado ✓/i.test(txt)) rec.supera = 1;
-      // Escala de miedo (jerarquía de desensibilización sistemática)
-      if (/mi escala de miedo/i.test(txt)) {
-        var us = [], mu, reU = /^\s*\d+\.\s*.+?—\s*USA\s*(\d+)/gm;
-        while ((mu = reU.exec(txt))) us.push(+mu[1]);
-        rec.escala = us.length; if (us.length) { rec.usa_min = Math.min.apply(null, us); rec.usa_max = Math.max.apply(null, us); }
-        rec.saltos = (txt.match(/salto grande/gi) || []).length;
-      }
+      leerEscala();
     }
     if (toolId === "honestidad_emocional") {
       var it = txt.match(/intensidad:\s*(\d+)\s*→\s*(\d+)/i); if (it) { rec.intensidad_antes = +it[1]; rec.intensidad_despues = +it[2]; }

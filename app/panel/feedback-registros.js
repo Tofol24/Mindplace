@@ -788,6 +788,13 @@
     return { es: es, ca: ca, temas: ["act"] };
   }
 
+  /* Escala de miedo (La escalera y Paso a paso). */
+  function comentarioEscala(r) {
+    return { es: "{has preparado|ha preparado} {tu|su} escala de miedo con " + r.escala + " situaciones, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenarla de menos a más es lo que permite subir peldaño a peldaño, sin saltos que asusten." +
+        (r.saltos ? " Hay algún salto grande entre situaciones: conviene añadir algún paso intermedio antes de llegar ahí." : ""),
+      ca: "{has preparat|ha preparat} la {teva|seva} escala de por amb " + r.escala + " situacions, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenar-la de menys a més és el que permet pujar escaló a escaló, sense salts que facin por." +
+        (r.saltos ? " Hi ha qualque salt gran entre situacions: convé afegir-hi qualque passa intermèdia abans d'arribar-hi." : ""), temas: [] };
+  }
   var COMENTA = {
     bajar_alerta: function (xs, prev) {
       var c = comentarioAntesDespues(xs, prev, function (r) { return pick(r.antes, r.alerta_antes); }, function (r) { return pick(r.despues, r.alerta_despues); }, { es: "alerta", ca: "alerta" });
@@ -921,10 +928,7 @@
     },
     escalera_exposicion: function (xs) {
       var r = ultimoDe(xs);
-      if (r.escala) return { es: "{has preparado|ha preparado} {tu|su} escala de miedo con " + r.escala + " situaciones, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenarla de menos a más es lo que permite subir peldaño a peldaño, sin saltos que asusten." +
-          (r.saltos ? " Hay algún salto grande entre situaciones: conviene añadir algún paso intermedio antes de llegar ahí." : ""),
-        ca: "{has preparat|ha preparat} la {teva|seva} escala de por amb " + r.escala + " situacions, de " + r.usa_min + " a " + r.usa_max + " USA. Ordenar-la de menys a més és el que permet pujar escaló a escaló, sense salts que facin por." +
-          (r.saltos ? " Hi ha qualque salt gran entre situacions: convé afegir-hi qualque passa intermèdia abans d'arribar-hi." : ""), temas: [] };
+      if (r.escala) return comentarioEscala(r);
       if (r.ans_antes == null && !r.resultado) return null;
       var es = "{has subido|ha subido} al peldaño" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : ""), ca = "{has pujat|ha pujat} a l'escaló" + (r.peldano_txt ? " «" + textoCorto(r.peldano_txt, 40) + "»" : "");
       if (r.ans_antes != null) { es += ": la alarma empezó en " + r.ans_antes + ", llegó a " + r.ans_max + " y terminó en " + r.ans_final; ca += ": l'alarma va començar a " + r.ans_antes + ", va arribar a " + r.ans_max + " i va acabar a " + r.ans_final; }
@@ -980,6 +984,7 @@
     },
     paso_a_paso: function (xs) {
       var r = ultimoDe(xs), es = "", ca = "";
+      if (r.escala) return comentarioEscala(r);
       if (r.peldano != null) {
         es = "{has trabajado|ha trabajado} el peldaño " + r.peldano + (r.peldanos ? " de " + r.peldanos : "");
         ca = "{has treballat|ha treballat} l'escaló " + r.peldano + (r.peldanos ? " de " + r.peldanos : "");
@@ -987,7 +992,9 @@
           es += ": la ansiedad empezó en " + r.ans_antes + (r.ans_max != null ? ", llegó a " + r.ans_max : "") + " y bajó a " + r.ans_final + " al {quedarte|quedarse}";
           ca += ": l'ansietat va començar a " + r.ans_antes + (r.ans_max != null ? ", va arribar a " + r.ans_max : "") + " i va baixar a " + r.ans_final + " en {quedar-te|quedar-se}";
         }
-        es += r.paso_ais === "si" ? ", y {lo hiciste quedándote contigo|lo hizo sin dejar de escucharse}." : "."; ca += r.paso_ais === "si" ? ", i {ho vares fer quedant-te amb tu|ho va fer sense deixar d'escoltar-se}." : ".";
+        es += r.paso_ais === "si" ? ", y {lo hiciste quedándote contigo|lo hizo sin dejar de escucharse}." : ".";
+        ca += r.paso_ais === "si" ? ", i {ho vares fer quedant-te amb tu|ho va fer sense deixar d'escoltar-se}." : ".";
+        if (r.supera) { es += " Con esto {has superado|ha superado} este peldaño: el siguiente ya está esperando, sin prisa."; ca += " Amb això {has superat|ha superat} aquest escaló: el següent ja espera, sense pressa."; }
       }
       if (r.ayudo) { es += " Me apunto que {te ayudó|le ayudó} «" + textoCorto(r.ayudo, 50) + "»: lo podemos usar en el siguiente paso."; ca += " M'apunt que {et va ajudar|li va ajudar} «" + textoCorto(r.ayudo, 50) + "»: ho podem fer servir a la passa següent."; }
       if (r.logro) { es += " Y me quedo con {tu|su} logro de hoy: «" + textoCorto(r.logro, 60) + "»."; ca += " I em qued amb el {teu|seu} assoliment d'avui: «" + textoCorto(r.logro, 60) + "»."; }

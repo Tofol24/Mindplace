@@ -131,7 +131,6 @@ var D={
   logro:'',             // un logro
   nota:''               // nota para el psicólogo
 };
-var pelDone={};         // peldaños marcados como logrados
 
 /* ===== Escalera de exposición en vivo ===== */
 var ESC_DEFAULT=[
@@ -220,6 +219,7 @@ VIEWS.home=function(){
   <div class="ctit" style="margin:16px 0 2px">Por fuera · recuperar mi vida</div>
   <div class="hub">
     <button class="tool" onclick="go('escalera')"><span class="e">🪜</span><span class="n">Mi escalera de salidas</span><span class="d">Exposición gradual: salir solo/a, paso a paso.</span></button>
+    <button class="tool" onclick="go('escala')"><span class="e">📊</span><span class="n">Mi escala de miedo</span><span class="d">Puntúa lo que temes y la escalera se ordena sola.</span></button>
     <button class="tool" onclick="go('imaginacion')"><span class="e">🎬</span><span class="n">Exposición en imaginación</span><span class="d">Ensayar por dentro lo que temo, sin huir.</span></button>
     <button class="tool c-oro" onclick="go('dia')"><span class="e">🗓️</span><span class="n">Mi día a día</span><span class="d">Estructura y pequeños pasos con sentido.</span></button>
     <button class="tool c-oro" onclick="go('registro')"><span class="e">📝</span><span class="n">Registro del día</span><span class="d">Anotar cómo fue y enviárselo a tu psicólogo.</span></button>
@@ -383,18 +383,20 @@ function editForm(i){
   </div>`;
 }
 VIEWS.escalera=function(){
+  var act=idxActual();
   var steps=esc.map(function(s,i){
     if(editIdx===i) return editForm(i);
-    var done=pelDone[i];
+    var done=superado(s), ahora=i===act;
     return `<div class="step${done?' done':''}">
-      <div class="sh">${done?'✓ ':''}Peldaño ${i+1} · ${escHtml(s.t)}<span class="lvl">${escHtml(s.lvl||'')}</span></div>
+      <div class="sh">${done?'✓ ':''}Peldaño ${i+1} · ${escHtml(s.t)}<span class="lvl">${escHtml(s.lvl||'')}${s.usa!=null?' · USA '+s.usa:''}</span></div>
+      ${done?'<div class="sm" style="color:var(--verde);font-weight:600;margin-top:4px">✓ Superado</div>':ahora?'<div class="sm" style="color:var(--azul);font-weight:700;margin-top:4px">▶ Tu peldaño de ahora · '+(s.ok||0)+' de '+VECES_PARA_SUBIR+' veces quedándote contigo</div>':''}
       <div class="keys">
         <div class="key"><b>Qué hago (fuera)</b>${escHtml(s.que||'')}</div>
         <div class="key"><b>Cómo me acompaño (dentro)</b>${escHtml(s.como||'')}</div>
       </div>
       <div class="row" style="margin-top:10px">
         <button class="btn bs bsm" onclick="trabajar(${i})">Hoy trabajo este</button>
-        <button class="btn ${done?'bpg':'bs'} bsm" onclick="togglePel(${i})">${done?'Logrado ✓':'Marcar logrado'}</button>
+        <button class="btn ${s.logrado?'bpg':'bs'} bsm" onclick="togglePel(${i})">${s.logrado?'Logrado ✓':'Marcar logrado'}</button>
       </div>
       <div class="esc-tools">
         <button class="et" onclick="moveStep(${i},-1)" ${i===0?'disabled':''}>↑</button>
@@ -410,6 +412,10 @@ VIEWS.escalera=function(){
   <h2>Mi escalera de salidas</h2>
   <p class="mut sm">Recuperar la calle <b>poco a poco</b>. No saltes peldaños: repite cada uno hasta que puedas hacerlo <b>quedándote contigo</b> —acompañando la sensación, sin escapar— y entonces sube. No mides si el miedo baja, sino si te quedas: la calma, si llega, viene después.</p>
   <div class="warn">Antes de exponerte: ¿practicas cada día <b>por dentro y en calma</b> (respiración curiosa, a horas fijas)? Si aún no, empieza por ahí unos días. Primero aparecer, después permanecer.</div>
+  <div class="card" style="padding:16px">${escala.length?'':'<p class="sm" style="margin:0 0 10px"><b>¿Aún no has hecho tu escala de miedo?</b> Puntúa las situaciones que temes y la escalera se ordenará sola.</p>'}
+    <button class="btn bs bsm" onclick="go('escala')">📊 ${escala.length?'Ver o cambiar mi escala de miedo':'Hacer mi escala de miedo'}</button></div>
+  ${act>=0?'<div class="card" style="border:2px solid var(--verde);padding:16px"><div class="ctit" style="margin-bottom:6px">Tu siguiente salida · peldaño '+(act+1)+' de '+esc.length+'</div><p style="margin:0 0 8px;font-weight:600">'+escHtml(esc[act].t)+'</p><p class="sm mut" style="margin:0 0 10px">Pasarás al siguiente cuando lo hayas hecho '+VECES_PARA_SUBIR+' veces <b>quedándote contigo</b>, sin huir; no hace falta que la ansiedad baje.</p><button class="btn bpg bsm" onclick="trabajar('+act+')">Hoy trabajo este</button></div>'
+    :'<div class="card" style="padding:16px"><b>Has superado todos los peldaños.</b> Coméntalo con tu psicólogo/a: quizá toca añadir alguno más.</div>'}
   <div class="aviso">Esta escalera es <b>tuya</b>: edítala con el ✏️, cambia el orden con ↑↓ y añade o quita peldaños. Las sugerencias se ponen tocando, para no escribir tanto. Se guarda en este dispositivo.</div>
   ${steps}
   ${addBlock}
@@ -430,6 +436,95 @@ VIEWS.escalera=function(){
     <p class="sm mut" id="salidaMsg" style="text-align:center;margin-top:8px"></p>
   </div>`;
 };
+/* ===== Escala de miedo (jerarquía de desensibilización sistemática) =====
+   Situaciones puntuadas en USA (0–100). Al ordenar, la escalera se rehace de menos
+   a más USA. Se guarda solo en este dispositivo, como la escalera. */
+var ESCALA_KEY="aprens.salidas.escala.v1";
+function loadEscala(){ try{ var r=localStorage.getItem(ESCALA_KEY); if(r){var a=JSON.parse(r); if(Array.isArray(a))return a;} }catch(e){} return []; }
+function saveEscala(){ try{ localStorage.setItem(ESCALA_KEY,JSON.stringify(escala)); }catch(e){} }
+var escala=loadEscala();
+function escalaOrdenada(){ return escala.slice().sort(function(a,b){return a.usa-b.usa;}); }
+function nivelDeUSA(u){ return u<20?'Muy suave':u<40?'Suave':u<60?'Media':u<80?'Alta':'Reto'; }
+function avisosEscala(its){
+  var av=[];
+  if(its.length && its.length<6) av.push('Tienes '+its.length+' situaci'+(its.length===1?'ón':'ones')+'. Para una escalera que se pueda subir sin saltos, mejor entre 8 y 12.');
+  for(var i=1;i<its.length;i++){ var a=its[i-1].usa, b=its[i].usa;
+    if(b-a>20) av.push('Entre «'+its[i-1].t+'» ('+a+') y «'+its[i].t+'» ('+b+') hay un salto grande: añade una situación intermedia, alrededor de '+Math.round((a+b)/20)*10+'.'); }
+  if(its.length>=3 && its[its.length-1].usa<70) av.push('Tu situación más difícil está en '+its[its.length-1].usa+'. Si hay algo que evitas y te daría más miedo, añádelo: es la meta de la escalera.');
+  if(its.length && its[0].usa>40) av.push('La situación más fácil ya está en '+its[0].usa+'. Añade alguna más sencilla para empezar a subir con confianza.');
+  return av;
+}
+VIEWS.escala=function(){
+  var its=escalaOrdenada(), ya={}; its.forEach(function(x){ya[x.t.toLowerCase()]=1;});
+  var ideas=ESC_DEFAULT.map(function(s){return s.t;}).concat(SUG.sit).filter(function(t,i,a){return a.indexOf(t)===i && !ya[t.toLowerCase()];});
+  var av=avisosEscala(its);
+  return `
+  <h2>Mi escala de miedo</h2>
+  <p class="mut sm">Escribe las salidas o situaciones que te dan miedo o que evitas y puntúa cada una de <b>0 a 100</b>: cuánto malestar te daría hacerla <b>hoy</b>. Con tu escala, la escalera se <b>ordena sola</b> de menos a más y te dirá cuál es tu siguiente peldaño.</p>
+  <div class="card">
+    <label class="f" for="escTxt">Una situación que te da miedo o que evitas</label>
+    <div class="row"><input type="text" id="escTxt" placeholder="p. ej. ir sola/o a la panadería por la mañana" style="flex:1 1 200px">
+    <button class="btn bpg bsm" id="escAdd">Añadir</button></div>
+    <div class="sughint">Ideas (tócalas y ajústalas a tu caso):</div>
+    <div class="sugs">${ideas.map(function(t,i){return '<span class="sug" role="button" tabindex="0" data-i="'+i+'">+ '+escHtml(t)+'</span>';}).join('')}</div>
+  </div>
+  ${its.length?`<p class="sm mut"><b>¿Cómo puntuar?</b> 0 = calma total · 50 = mucho malestar, pero lo aguantaría · 100 = el máximo miedo que puedas imaginar.</p>`:''}
+  ${its.map(function(it,i){ return `<div class="step escit" data-k="${escAttr(it.t)}">
+      <div class="sh">${i+1}. ${escHtml(it.t)}<button class="et del" style="margin-left:auto" data-act="del" aria-label="Quitar ${escAttr(it.t)}">Quitar</button></div>
+      <div class="row" style="align-items:center;margin-top:8px"><input type="range" min="0" max="100" step="5" value="${it.usa}" aria-label="USA de ${escAttr(it.t)}" style="flex:1"><b class="usan" style="min-width:2.4em;text-align:right">${it.usa}</b></div>
+      <label class="sm mut"><input type="checkbox" data-act="evito"${it.evito?' checked':''}> Ahora mismo lo evito</label>
+    </div>`; }).join('')}
+  ${av.length?'<div class="warn">'+av.map(escHtml).join('<br>')+'</div>':''}
+  ${its.length?`<button class="btn bpg full" onclick="crearEscalera()">Ordenar y crear mi escalera</button>
+  <button class="btn bs full" style="margin-top:8px" onclick="enviarEscala()">Enviar mi escala a mi psicólogo/a</button>
+  <p class="sm mut" id="escMsg" style="text-align:center;margin-top:8px"></p>`:''}`;
+};
+bindAfter.escala=function(){
+  var txt=$('#escTxt');
+  function anadir(t,usa){ t=String(t||'').trim(); if(!t){txt.focus();return;} if(escala.some(function(x){return x.t.toLowerCase()===t.toLowerCase();}))return;
+    escala.push({t:t,usa:usa!=null?usa:50,evito:false}); saveEscala(); render(); var t2=$('#escTxt'); if(t2)t2.focus(); }
+  $('#escAdd').onclick=function(){anadir(txt.value);};
+  txt.onkeydown=function(e){ if(e.key==='Enter'){e.preventDefault(); anadir(txt.value);} };
+  var its=escalaOrdenada(), ya={}; its.forEach(function(x){ya[x.t.toLowerCase()]=1;});
+  var ideas=ESC_DEFAULT.map(function(s,i){return {t:s.t,u:[10,20,30,45,55,65,75,90][i]};}).concat(SUG.sit.map(function(t){return {t:t,u:50};}))
+    .filter(function(x,i,a){return a.map(function(y){return y.t;}).indexOf(x.t)===i && !ya[x.t.toLowerCase()];});
+  [].forEach.call(document.querySelectorAll('.sugs .sug[data-i]'),function(s){
+    function go2(){ var x=ideas[+s.getAttribute('data-i')]; if(x) anadir(x.t,x.u); }
+    s.onclick=go2; s.onkeydown=function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault(); go2();} };
+  });
+  [].forEach.call(document.querySelectorAll('.escit'),function(el){
+    var k=el.getAttribute('data-k'), it=escala.filter(function(x){return x.t===k;})[0]; if(!it)return;
+    var r=el.querySelector('input[type=range]'), n=el.querySelector('.usan');
+    r.oninput=function(){ n.textContent=r.value; };
+    r.onchange=function(){ it.usa=+r.value; saveEscala(); render(); var r2=document.querySelector('.escit[data-k="'+k.replace(/"/g,'\\"')+'"] input[type=range]'); if(r2)r2.focus(); };
+    el.querySelector('[data-act=evito]').onchange=function(){ it.evito=this.checked; saveEscala(); };
+    el.querySelector('[data-act=del]').onclick=function(){ escala=escala.filter(function(x){return x!==it;}); saveEscala(); render(); };
+  });
+};
+function crearEscalera(){
+  var its=escalaOrdenada().filter(function(x){return x.usa>0;}); if(!its.length)return;
+  if(!confirm('Tu escalera se rehará con las '+its.length+' situaciones de tu escala, de menos a más miedo. Los peldaños que coincidan conservan lo que ya escribiste. ¿Continuar?'))return;
+  var prev={}; esc.forEach(function(s){prev[s.t.toLowerCase()]=s;});
+  esc=its.map(function(it){ var p=prev[it.t.toLowerCase()]; var o=p?clon(p):{t:it.t,que:'',como:''}; o.t=it.t; o.usa=it.usa; o.lvl=nivelDeUSA(it.usa); return o; });
+  saveEsc(); editIdx=null; go('escalera');
+}
+function textoEscala(){
+  var its=escalaOrdenada(), L=['Paso a paso · mi escala de miedo — APRENS','Fecha: '+D.fecha,'Situaciones: '+its.length+' (USA 0–100, de menos a más)',''];
+  its.forEach(function(it,i){ L.push((i+1)+'. '+it.t+' — USA '+it.usa+(it.evito?' · lo evito':'')); });
+  var av=avisosEscala(its); if(av.length){ L.push(''); av.forEach(function(a){L.push('· '+a);}); }
+  L.push('','(Enviado desde mi app de acompañamiento APRENS)');
+  return L.join('\n');
+}
+function enviarEscala(){ window.open('https://wa.me/?text='+encodeURIComponent((window.aprensConEnlace||String)(textoEscala())),'_blank'); var m=$('#escMsg'); if(m)m.textContent='Se ha abierto WhatsApp para enviar tu escala.'; }
+
+/* ===== Avance automático =====
+   Un peldaño se supera al hacerlo VECES_PARA_SUBIR veces quedándote contigo (AIS activo:
+   «sí»), o si lo marcas como logrado. El peldaño de ahora es el primero sin superar.
+   Solo se guarda el recuento junto al peldaño; el registro del día no se guarda. */
+var VECES_PARA_SUBIR=2;
+function superado(s){ return !!s.logrado || (s.ok||0)>=VECES_PARA_SUBIR; }
+function idxActual(){ for(var i=0;i<esc.length;i++) if(!superado(esc[i])) return i; return -1; }
+
 bindAfter.escalera=function(){
   // selector de peldaño para el registro
   var sp=$('#selPel'); if(sp){ sp.innerHTML=esc.map(function(s,i){return '<span class="pill'+(D.peldano===i+1?' on':'')+'" data-pel="'+(i+1)+'">'+(i+1)+'</span>';}).join('');
@@ -445,8 +540,8 @@ bindAfter.escalera=function(){
     el.focus();
   }); }
 };
-function trabajar(i){ D.peldano=i+1; var e=$('#regSalida'); if(e)e.scrollIntoView({behavior:'smooth'}); bindAfter.escalera(); }
-function togglePel(i){ pelDone[i]=!pelDone[i]; render(); }
+function trabajar(i){ D.peldano=i+1; if(D.contado && D.contado!==i+1) D.contado=null; var e=$('#regSalida'); if(e)e.scrollIntoView({behavior:'smooth'}); bindAfter.escalera(); }
+function togglePel(i){ esc[i].logrado=!esc[i].logrado; saveEsc(); render(); }
 function editStep(i){ editIdx=i; render(); var f=$('#editForm'); if(f)f.scrollIntoView({behavior:'smooth',block:'center'}); }
 function addStep(){ editIdx=-1; render(); var f=$('#editForm'); if(f)f.scrollIntoView({behavior:'smooth',block:'center'}); }
 function cancelEdit(){ editIdx=null; render(); }
@@ -454,15 +549,21 @@ function saveStep(){
   var onp=document.querySelector('#edNiv .nivp.on'); var niv=onp?onp.getAttribute('data-niv'):'Media';
   var o={t:($('#edT')||{}).value||'',lvl:niv,que:($('#edQue')||{}).value||'',como:($('#edComo')||{}).value||''};
   if(!o.t.trim()){ var t=$('#edT'); if(t){t.style.borderColor='#C0392B'; t.focus();} return; }
-  if(editIdx===-1) esc.push(o); else if(editIdx!=null) esc[editIdx]=o;
+  if(editIdx===-1) esc.push(o); else if(editIdx!=null){ ['usa','ok','logrado'].forEach(function(k){ if(esc[editIdx][k]!=null) o[k]=esc[editIdx][k]; }); esc[editIdx]=o; }
   editIdx=null; saveEsc(); render();
 }
 function moveStep(i,dir){ var j=i+dir; if(j<0||j>=esc.length)return; var tmp=esc[i]; esc[i]=esc[j]; esc[j]=tmp;
   // mantener marcas de logrado con el movimiento
-  var a=pelDone[i], b=pelDone[j]; pelDone[i]=b; pelDone[j]=a; saveEsc(); render(); }
-function delStep(i){ if(esc.length<=1){alert('Deja al menos un peldaño.');return;} if(!confirm('¿Quitar este peldaño?'))return; esc.splice(i,1); pelDone={}; saveEsc(); render(); }
-function resetEsc(){ if(!confirm('¿Restaurar la escalera sugerida? Perderás tus cambios.'))return; esc=clon(ESC_DEFAULT); pelDone={}; editIdx=null; saveEsc(); render(); }
-function guardarSalida(){ D.salida=($('#salidaTxt')||{}).value||''; var m=$('#salidaMsg'); if(m)m.textContent='Guardado en esta sesión. Recuerda enviarlo desde «Registro del día».'; marca('Salida (exposición)'); }
+  saveEsc(); render(); }
+function delStep(i){ if(esc.length<=1){alert('Deja al menos un peldaño.');return;} if(!confirm('¿Quitar este peldaño?'))return; esc.splice(i,1); saveEsc(); render(); }
+function resetEsc(){ if(!confirm('¿Restaurar la escalera sugerida? Perderás tus cambios.'))return; esc=clon(ESC_DEFAULT); editIdx=null; saveEsc(); render(); }
+function guardarSalida(){ D.salida=($('#salidaTxt')||{}).value||''; var m=$('#salidaMsg'); var extra='';
+  // Cuenta para subir de peldaño si se hizo quedándose contigo (una vez por peldaño y sesión).
+  if(D.peldano && D.pasoAIS==='si' && esc[D.peldano-1] && D.contado!==D.peldano){
+    var p=esc[D.peldano-1], antes=superado(p); p.ok=(p.ok||0)+1; D.contado=D.peldano; saveEsc();
+    if(!antes && superado(p)){ D.supera=D.peldano; var sig=idxActual(); extra=sig>=0?' Peldaño superado: el siguiente es «'+esc[sig].t+'». Si quieres, vuelve a puntuar tu escala: a menudo los siguientes ya dan menos miedo.':' Has superado el último peldaño de tu escalera.'; }
+  }
+  if(m)m.textContent='Guardado en esta sesión. Recuerda enviarlo desde «Registro del día».'+extra; marca('Salida (exposición)'); }
 
 /* ---- Exposición en imaginación ---- */
 VIEWS.imaginacion=function(){
@@ -562,7 +663,7 @@ function prep(){
   L.push('');
   if(D.peldano||D.sudsAntes!=null||D.salida||D.pasoAIS){
     L.push('— Salida (exposición en vivo) —');
-    if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+esc.length);
+    if(D.peldano) L.push('Peldaño trabajado: '+D.peldano+' de '+esc.length+(esc[D.peldano-1]&&esc[D.peldano-1].usa!=null?' (USA '+esc[D.peldano-1].usa+')':'')+(D.supera===D.peldano?' · superado ✓':''));
     var s=[]; if(D.sudsAntes!=null)s.push('antes '+D.sudsAntes); if(D.sudsPico!=null)s.push('pico '+D.sudsPico); if(D.sudsDesp!=null)s.push('después '+D.sudsDesp);
     if(s.length) L.push('Ansiedad (0-10): '+s.join(' · '));
     if(D.pasoAIS) L.push('Paso hecho quedándome conmigo (AIS activo): '+({si:'sí',parte:'en parte',no:'hoy no'}[D.pasoAIS]||D.pasoAIS));
