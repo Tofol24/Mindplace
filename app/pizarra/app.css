@@ -392,3 +392,9 @@ button:disabled { opacity: .45; cursor: default; }
 .situaciones { border-left: 6px solid var(--rival); margin-top: 12px; }
 .aviso-version { position: fixed; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top)); z-index: 1000; display: flex; align-items: center; gap: 10px;
   max-width: calc(100% - 32px); background: var(--verde-osc); color: #fff; border-radius: 14px; padding: 8px 10px 8px 14px; box-shadow: var(--sombra); font-weight: 700; }
+.eq-autos .eq-auto-fila { margin-bottom: 8px; }
+.eq-autos .eq-auto-fila > p { margin: 4px 0; }
+.eq-autos .eq-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 12px; }
+.ae-estado { margin: 0 0 8px; padding: 6px 10px; border-radius: 10px; background: #F1EEE6; }
+.ae-estado.ae-hecha { background: #E6F2EA; }
+.ae-estado.ae-pedida { background: #FFF4D6; }
