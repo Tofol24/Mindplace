@@ -437,6 +437,7 @@
     if (g.tam === "p" || g.tam === "g") o.tam = g.tam;
     return o;
   }
+  const MAX_CONV = 18; // convocados por partido
   function sanPlan(p) {
     if (!p || !Array.isArray(p.bloques)) return null;
     const once = {};
@@ -454,6 +455,10 @@
       sistema: own(SISTEMAS, p.sistema) ? p.sistema : "4231", once: once, extra: extra, sinNombres: p.sinNombres === true,
       ...(idOk(p.base) ? { base: p.base } : {}), // entreno del que viene (al duplicar y mejorar)
       ...(p.pjNo === true ? { pjNo: true } : {}), // las pautas individuales no van en el enlace del grupo
+      // convocatoria (hasta 18) y su mensaje, y cómo salen en cada uno de los cuatro cuartos (solo para el entrenador)
+      ...(Array.isArray(p.conv) ? { conv: p.conv.filter((x, i, l) => idOk(x) && l.indexOf(x) === i).slice(0, MAX_CONV) } : {}),
+      ...(txt(p.convH, 40) ? { convH: txt(p.convH, 40) } : {}), ...(txt(p.convL, 80) ? { convL: txt(p.convL, 80) } : {}), ...(txt(p.convN, 300) ? { convN: txt(p.convN, 300) } : {}),
+      ...(Array.isArray(p.cuartos) ? { cuartos: p.cuartos.slice(0, 4).map((q) => { const o = {}; if (q && typeof q === "object") Object.keys(q).forEach((k) => { if (/^\d{1,2}$/.test(k) && idOk(q[k])) o[k] = q[k]; }); return o; }) } : {}),
       bloques: p.bloques.slice(0, MAX.bloques).map((b) => {
         const o = {
           id: idOk(b && b.id) || uid(), cat: own(CATS, b && b.cat) ? b.cat : "otro", titulo: txt(b.titulo, 80),
@@ -1926,6 +1931,8 @@
         <p class="peq">Puedes poner hasta tres jugadores en cada puesto (por ejemplo, el que empieza y los que entrarán) y un mismo jugador en varios puestos. En la pizarra sale el primero; cada jugador, al abrir el enlace, ve la ficha de su puesto con su nombre.</p>
       </div>
 
+      ${p.tipo === "partido" ? htmlConvocatoria(p) + htmlCuartos(p) : ""}
+
       <h2>${p.tipo === "partido" ? "Plan de partido" : "Ejercicios"}</h2>
       ${p.bloques.map((b, bi) => `
         <div class="tarjeta bloque" style="border-left-color:${p.tipo === "partido" ? "var(--acento)" : "var(--verde)"}">
@@ -2369,6 +2376,7 @@
     const pl = clon(plan); delete pl.id;
     pl.bloques.forEach((b) => { delete b.preg; delete b.fb; }); // las preguntas y el feedback son solo para el entrenador
     delete pl.fbn; delete pl.fbr; delete pl.an; delete pl.anOc; delete pl.ref; delete pl.base;
+    delete pl.conv; delete pl.convH; delete pl.convL; delete pl.convN; delete pl.cuartos; // la convocatoria va por mensaje; los cuartos, solo para el entrenador
     pl.bloques.forEach((b) => { delete b.ob; if (b.pj) Object.keys(b.pj).forEach((k) => { if (pl.pjNo || !jug.some((j) => j.id === k)) delete b.pj[k]; }); if (b.pj && !Object.keys(b.pj).length) delete b.pj; });
     delete pl.pjNo;
     // limpieza: redondeo
@@ -3277,6 +3285,175 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const el = app.querySelector(`[data-pz="${b.id}"]`); if (el) el.closest(".bloque").scrollIntoView({ block: "start" });
     const con = new Set(); b.jug.fichas.forEach((f) => { if (f.eq === "a") ctx.pidsDe(f).forEach((pid) => con.add(pid)); });
     toast("Añadida «" + x.titulo + "»: " + con.size + " jugador" + (con.size === 1 ? "" : "es") + " en su puesto" + (n ? ", " + n + " con su función" : "") + (r.faltan.length ? ". Sin jugador: " + [...new Set(r.faltan)].join(", ") : ""));
+  }
+
+  // ---------------------------------------------------------------- convocatoria y cuartos del partido
+  // Hasta 18 convocados: el mensaje para el grupo de familias dice quién va y quién no esta semana. Los cuartos
+  // (cuatro por partido) son solo para el entrenador: quién sale en cada puesto del sistema, para llevar los cambios
+  // pensados y que todos jueguen y las líneas queden equilibradas.
+  const convocados = (p) => {
+    const l = (p.conv || []).map((id) => db.plantilla.find((j) => j.id === id)).filter(Boolean);
+    return l.sort((a, b) => a.d - b.d);
+  };
+  const etqJ = (j) => j.d + " " + nomCorto(j);
+  function htmlConvocatoria(p) {
+    if (!db.plantilla.length) return "";
+    const con = new Set(p.conv || []), n = convocados(p).length;
+    return `<h2>📋 Convocatoria</h2>
+      <div class="tarjeta conv">
+        <p class="peq">Marca a los convocados (máximo ${MAX_CONV}). Con «Preparar el mensaje» sale el texto para el grupo de familias: quién va convocado, quién no esta semana, la hora y el lugar.</p>
+        <div class="fila"><button type="button" class="btn-peq" data-convalin="1">Marcar los de la alineación</button><button type="button" class="btn-peq" data-convnadie="1">Quitar todos</button>
+          <span class="peq conv-n" data-r="convN" aria-live="polite"><b>${n}</b> de ${MAX_CONV} convocados</span></div>
+        <div class="conv-lista">${db.plantilla.slice().sort((a, b) => a.d - b.d).map((j) => `<label class="conv-j"><input type="checkbox" data-conv="${esc(j.id)}" ${con.has(j.id) ? "checked" : ""}> <span class="dorsal mini" style="background:${esc(db.equipo.color)}">${esc(j.d)}</span> ${esc(nomCorto(j))}${j.p ? ` <span class="peq">${esc(j.p)}</span>` : ""}</label>`).join("")}</div>
+        <div class="fila">
+          <div class="campo-f crece"><label for="convH">Hora de quedada</label><input type="text" id="convH" data-p="convH" maxlength="40" value="${esc(p.convH || "")}" placeholder="9:15"></div>
+          <div class="campo-f crece"><label for="convL">Lugar</label><input type="text" id="convL" data-p="convL" maxlength="80" value="${esc(p.convL || "")}" placeholder="Campo, vestuario, punto de encuentro…"></div>
+        </div>
+        <div class="campo-f"><label for="convNo">Otra indicación (opcional)</label><input type="text" id="convNo" data-p="convN" maxlength="300" value="${esc(p.convN || "")}" placeholder="Equipación, transporte, almuerzo…"></div>
+        <button type="button" class="btn" data-convmsg="1">📤 Preparar el mensaje para las familias</button>
+        <div data-r="convMsg"></div>
+      </div>`;
+  }
+  function textoConvocatoria(p) {
+    const si = convocados(p), no = db.plantilla.filter((j) => !(p.conv || []).includes(j.id)).sort((a, b) => a.d - b.d), pl = somosVarios();
+    const l = [];
+    l.push("Convocatoria del partido" + (p.fecha ? " del " + fechaBonita(p.fecha) : "") + (p.rival ? " contra " + p.rival : "") + ".");
+    if (p.convH || p.convL) l.push("Quedamos" + (p.convH ? " a las " + p.convH : "") + (p.convL ? " en " + p.convL : "") + ".");
+    l.push("", "Convocados (" + si.length + "): " + si.map(etqJ).join(", ") + ".");
+    if (no.length) l.push("", "Esta semana no van convocados: " + no.map(etqJ).join(", ") + ". La convocatoria va rotando cada semana para que todos tengan sus minutos a lo largo de la temporada; en los entrenos seguimos contando con todos igual.");
+    if (p.convN) l.push("", p.convN);
+    l.push("", "Si alguien no puede venir, avisadnos cuanto antes.", "", pl ? "Los entrenadores" : "El entrenador");
+    return l.join("\n");
+  }
+  function prepararConvocatoria(p, cont) {
+    if (!convocados(p).length) { cont.innerHTML = `<p class="sin-puesto">Marca antes a los convocados.</p>`; return; }
+    const t = textoConvocatoria(p);
+    cont.innerHTML = `<div class="campo-f" style="margin-top:10px"><label for="convTxt">Mensaje para el grupo de familias (puedes cambiarlo antes de enviarlo)</label><textarea id="convTxt" rows="10">${esc(t)}</textarea></div>
+      <div class="fila">${navigator.share ? `<button type="button" class="btn" data-convcomp="1">📤 Compartir</button>` : ""}<button type="button" class="btn wa" data-convwa="1">💬 WhatsApp</button><button type="button" class="btn-sec" data-convcop="1">📋 Copiar</button></div>
+      <p class="peq">Envíalo al grupo de familias. Los cuartos no se incluyen.</p>`;
+  }
+  // ----- cuartos
+  const NIV_AREAS = { tecnica: ["tecnica"], tactica: ["tactica", "decision"], fisico: ["fisico"] };
+  // Nivel aproximado por área a partir de sus notas: puntos fuertes suman, lo que tiene que mejorar resta un poco
+  function nivelJugador(j) {
+    const r = { tecnica: 0, tactica: 0, fisico: 0 };
+    (j.notas || []).forEach((n) => Object.keys(NIV_AREAS).forEach((k) => { if (NIV_AREAS[k].includes(n.a)) r[k] += n.t === "f" ? 1 : n.t === "m" ? -0.5 : 0; }));
+    r.total = r.tecnica + r.tactica + r.fisico;
+    return r;
+  }
+  const famJ = (j) => famDePuesto(j.p);
+  function jugadoresCuartos(p) { const c = convocados(p); return c.length ? c : db.plantilla.slice().sort((a, b) => a.d - b.d).slice(0, MAX_CONV); }
+  function proponerCuartos(p) {
+    const sl = slotsDe(p), js = jugadoresCuartos(p), nivel = {}, jug = {};
+    js.forEach((j) => { nivel[j.id] = nivelJugador(j).total; jug[j.id] = 0; });
+    const mediaFam = {}; Object.keys(NOM_FAM).forEach((f) => { const l = js.filter((j) => famJ(j) === f); mediaFam[f] = l.length ? l.reduce((s, j) => s + nivel[j.id], 0) / l.length : 0; });
+    const ladoS = (s) => s[3] < 30 ? "izq" : s[3] > 38 ? "der" : "";
+    const coste = (j, s, q, asign) => {
+      const f = famJ(j), fs = s[2];
+      let c = jug[j.id] * 10 + (jug[j.id] >= 3 ? 20 : 0); // un cuarto más cuesta; un cuarto más que tres, bastante más
+      if (fs === "por" || f === "por") c += f === fs ? 0 : 60; // el portero, en la portería
+      else if (f !== fs) {
+        // fuera de su puesto: parecido, poco; en otra línea, según lo lejos que quede (un central no va de delantero)
+        const LIN = { cen: 1, lat: 1, piv: 2, med: 2, mp: 3, ext: 3, del: 3 }, dl = f ? Math.abs((LIN[f] || 2) - (LIN[fs] || 2)) : 1;
+        c += (AFIN[fs] || []).includes(f) ? 12 : !f ? 22 : dl === 0 ? 18 : dl === 1 ? 32 : 60;
+      }
+      const lj = ladoDePuesto(j.p); if (lj && ladoS(s) && lj !== ladoS(s)) c += 2;
+      // pareja equilibrada: si su compañero de la misma familia ya está, que entre los dos queden cerca de la media
+      const comp = Object.keys(asign).map((k) => ({ s: sl[k], id: asign[k] })).find((x) => x.s[2] === fs && fs !== "por");
+      if (comp) c += Math.abs(nivel[j.id] + nivel[comp.id] - 2 * (mediaFam[fs] || 0));
+      return c;
+    };
+    const orden = sl.map((s, i) => i).sort((a, b) => (sl[a][2] === "por" ? -1 : 0) - (sl[b][2] === "por" ? -1 : 0) || js.filter((j) => famJ(j) === sl[a][2]).length - js.filter((j) => famJ(j) === sl[b][2]).length);
+    const cuartos = [];
+    for (let q = 0; q < 4; q++) {
+      const asign = {}, usados = new Set();
+      orden.forEach((i) => {
+        let mejor = null, cm = 1e9;
+        js.forEach((j) => { if (usados.has(j.id)) return; const c = coste(j, sl[i], q, asign); if (c < cm) { cm = c; mejor = j; } });
+        if (mejor) { asign[i] = mejor.id; usados.add(mejor.id); }
+      });
+      Object.values(asign).forEach((id) => { jug[id]++; });
+      cuartos.push(asign);
+    }
+    return cuartos;
+  }
+  function resumenCuartos(p) {
+    const sl = slotsDe(p), cu = p.cuartos || [], js = jugadoresCuartos(p), avisos = [];
+    const cuenta = {}; js.forEach((j) => { cuenta[j.id] = [0, 0, 0, 0]; });
+    cu.forEach((q, i) => {
+      const vistos = {};
+      Object.keys(q).forEach((k) => {
+        const id = q[k]; if (!cuenta[id]) cuenta[id] = [0, 0, 0, 0];
+        cuenta[id][i] = 1; vistos[id] = (vistos[id] || 0) + 1;
+      });
+      Object.keys(vistos).filter((id) => vistos[id] > 1).forEach((id) => { const j = db.plantilla.find((x) => x.id === id); if (j) avisos.push(etqJ(j) + " está en dos puestos en el " + (i + 1) + ".º cuarto"); });
+      const vacios = sl.filter((s, k) => !q[k]).length; if (vacios) avisos.push((i + 1) + ".º cuarto: " + vacios + " puesto" + (vacios === 1 ? "" : "s") + " sin jugador");
+    });
+    return { cuenta: cuenta, avisos: avisos };
+  }
+  function htmlCuartos(p) {
+    if (!db.plantilla.length) return "";
+    const sl = slotsDe(p), cu = p.cuartos || [], js = jugadoresCuartos(p);
+    const nom = (id) => { const j = db.plantilla.find((x) => x.id === id); return j ? j : null; };
+    const campo = (q) => `<div class="cu-campo" aria-hidden="true">${sl.map((s, k) => { const j = nom(q[k]); return `<span class="cu-f" style="left:${(s[3] / 68 * 100).toFixed(1)}%;top:${((s[4] - 50) / 56 * 100).toFixed(1)}%"><b style="background:${esc(db.equipo.color)}">${j ? esc(j.d) : "·"}</b>${j ? esc(nomCorto(j)) : ""}</span>`; }).join("")}</div>`;
+    const opciones = (sel) => `<option value="">—</option>` + js.map((j) => `<option value="${esc(j.id)}" ${sel === j.id ? "selected" : ""}>${esc(etqJ(j))}${j.p ? " · " + esc(j.p) : ""}</option>`).join("");
+    const r = resumenCuartos(p);
+    return `<h2>🔄 Cuartos (solo para ti)</h2>
+      <div class="tarjeta cuartos">
+        <p class="peq">Cómo saldréis en cada cuarto con el sistema del partido (${esc((SISTEMAS[p.sistema] || SISTEMAS["4231"]).n)}), con los convocados${(p.conv || []).length ? "" : " (todavía no hay: se usa la plantilla)"}. No se envía a nadie. «Proponer por puestos» coloca a cada uno en su puesto de la plantilla, reparte los cuartos para que todos jueguen y equilibra las parejas (pivotes, centrales…) según sus notas.</p>
+        <div class="acciones"><button type="button" class="btn-sec" data-cuprop="1">🔄 Proponer por puestos</button><button type="button" class="btn-peq ia-btn" data-cuia="1">✨ Equilibrar con Claude</button>${cu.length ? `<button type="button" class="btn-peq peligro" data-cuvaciar="1">Vaciar los cuartos</button>` : ""}</div>
+        <div data-r="cuia"></div>
+        ${cu.length ? `<div class="cu-grid">${[0, 1, 2, 3].map((i) => { const q = cu[i] || {}; return `<div class="cu-q"><h3>${i + 1}.º cuarto</h3>${campo(q)}
+          <details class="det"><summary>Cambiar jugadores del ${i + 1}.º cuarto</summary>${sl.map((s, k) => `<div class="cu-sel"><label for="cu${i}_${k}">${esc(s[1])}</label><select id="cu${i}_${k}" data-cu="${i}" data-cuk="${k}">${opciones(q[k])}</select></div>`).join("")}</details></div>`; }).join("")}</div>
+        <h3>Cuartos de cada jugador</h3>
+        ${r.avisos.length ? `<ul class="consignas sin-puesto">${r.avisos.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
+        <table class="cu-tabla"><thead><tr><th scope="col">Jugador</th><th scope="col">1.º</th><th scope="col">2.º</th><th scope="col">3.º</th><th scope="col">4.º</th><th scope="col">Total</th></tr></thead><tbody>
+          ${Object.keys(r.cuenta).map((id) => ({ j: nom(id), c: r.cuenta[id] })).filter((x) => x.j).sort((a, b) => a.j.d - b.j.d).map((x) => { const t = x.c.reduce((a, b) => a + b, 0); return `<tr class="${t < 2 ? "cu-poco" : ""}"><th scope="row">${esc(etqJ(x.j))}</th>${x.c.map((v) => `<td>${v ? "●" : ""}</td>`).join("")}<td><b>${t}</b>${t < 2 ? " ⚠️" : ""}</td></tr>`; }).join("")}
+        </tbody></table>
+        ${Object.values(r.cuenta).some((c) => c.reduce((a, b) => a + b, 0) < 2) ? `<p class="peq">⚠️ Juega menos de dos cuartos.</p>` : ""}
+        <p class="peq">Puedes cambiar a cualquiera en «Cambiar jugadores».</p>` : ""}
+      </div>`;
+  }
+  // ----- con Claude: líneas equilibradas en cada cuarto (técnica, táctica y físico)
+  function entradaCuartos(p) {
+    const sl = slotsDe(p), js = jugadoresCuartos(p).slice(0, 22), mapa = {}, inv = {};
+    const jugadores = js.map((j, i) => { const k = "J" + (i + 1); mapa[k] = j.id; inv[j.id] = k; const nv = nivelJugador(j), ns = j.notas || [];
+      const de = (t) => ns.filter((n) => n.t === t && n.a && n.a !== "atencion").slice(0, 4).map((n) => quitarNombres(n.x).slice(0, 120));
+      return { jugador: k, puesto: quitarNombres(j.p || "").slice(0, 40), tecnica: nv.tecnica, tactica: nv.tactica, fisico: nv.fisico, fuertes: de("f"), mejorar: de("m") }; });
+    const actual = (p.cuartos || []).slice(0, 4).map((q, i) => ({ cuarto: i + 1, alineacion: Object.keys(q).filter((k) => inv[q[k]]).map((k) => ({ puesto: +k, jugador: inv[q[k]] })) }));
+    return { mapa: mapa, entrada: { modo: "cuartos", etapa: etapaTxt(), sistema: { nombre: (SISTEMAS[p.sistema] || SISTEMAS["4231"]).n, puestos: sl.map((s, k) => ({ puesto: k, nombre: s[1] })) },
+      jugadores: jugadores, actual: actual, quiero: "" } };
+  }
+  function previaCuartosIA(p, cont) {
+    if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Equilibrar los cuartos con Claude"); return; }
+    const x = entradaCuartos(p); iaFbPend.cu = Object.assign({ plan: p.id }, x);
+    const textos = x.entrada.jugadores.flatMap((j) => [j.puesto].concat(j.fuertes, j.mejorar).filter(Boolean).map((t) => j.jugador + ": " + t));
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Equilibrar los cuartos con Claude</h3>
+      <div class="campo-f"><label for="cuQuiero">¿Algo a tener en cuenta? (opcional)</label><textarea id="cuQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: el 3.º cuarto, el más fuerte; los dos porteros juegan dos cuartos cada uno"></textarea></div>
+      <p class="peq">Claude reparte a los convocados en los cuatro cuartos por su puesto, con todas las líneas equilibradas (técnica, táctica y físico, según tus notas) y con minutos para todos. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto y sus notas.</p>
+      ${textos.length ? `<details class="det"><summary>Textos que se envían (${textos.length}): revisa que no lleven datos personales</summary><ul class="consignas">${textos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
+      <div class="fila"><button type="button" class="btn" data-cuiaok="1">Proponer los cuartos</button><button type="button" class="btn-sec" data-cuiano="1">Cancelar</button></div></div>`;
+  }
+  function pedirCuartosIA(p, cont) {
+    const x = iaFbPend.cu; if (!x || x.plan !== p.id) { previaCuartosIA(p, cont); return; }
+    const q = cont.querySelector("#cuQuiero"); x.entrada.quiero = quitarNombres(q ? q.value : "").slice(0, 300);
+    iaFbPend.cuUsado = x; delete iaFbPend.cu;
+    consultaIA("cu" + p.id, x.entrada, cont, "Claude está equilibrando los cuartos.", (r) => pintarCuartosIA(p, cont, r));
+  }
+  function pintarCuartosIA(p, cont, r) {
+    const x = iaFbPend.cuUsado || {}, sl = slotsDe(p);
+    const nom = (k) => { const j = db.plantilla.find((y) => y.id === (x.mapa || {})[k]); return j ? etqJ(j) : k; };
+    cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Propuesta de cuartos</h3>
+      ${r.analisis ? `<p><b>Por qué:</b> ${esc(r.analisis)}</p>` : ""}
+      ${r.cuartos.map((q) => `<details class="det"><summary>${q.cuarto}.º cuarto${q.nota ? ": " + esc(q.nota) : ""}</summary><ul class="consignas">${q.alineacion.slice().sort((a, b) => a.puesto - b.puesto).map((a) => `<li><b>${esc(sl[a.puesto] ? sl[a.puesto][1] : "")}:</b> ${esc(nom(a.jugador))}</li>`).join("")}</ul></details>`).join("")}
+      <div class="fila"><button type="button" class="btn" data-cuiausar="1">Usar estos cuartos</button><button type="button" class="btn-sec" data-cuiano="1">Descartar</button></div></div>`;
+  }
+  function usarCuartosIA(p) {
+    const r = iaFbRes["cu" + p.id], x = iaFbPend.cuUsado; if (!r || !x || x.plan !== p.id) return;
+    if ((p.cuartos || []).some((q) => Object.keys(q).length) && !window.confirm("¿Sustituir los cuartos que tienes por la propuesta de Claude?")) return;
+    const cu = [{}, {}, {}, {}];
+    r.cuartos.forEach((q) => { const o = cu[q.cuarto - 1]; if (!o) return; q.alineacion.forEach((a) => { const id = x.mapa[a.jugador]; if (id && db.plantilla.some((j) => j.id === id)) o[a.puesto] = id; }); });
+    p.cuartos = cu; p.mod = Date.now(); delete iaFbRes["cu" + p.id]; guardar(); pintarPantalla(); toast("Cuartos de Claude puestos: revísalos");
   }
 
   // ---------------------------------------------------------------- pautas individuales y mejorar entreno a entreno
@@ -4531,7 +4708,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if (d.dup) {
       const o = db.planes.find((x) => x.id === d.dup); if (!o) return;
       const c = clon(o); c.id = uid(); c.mod = Date.now(); c.titulo = (c.titulo || "") + " (copia)"; c.fecha = hoyISO();
-      delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.ref = []; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
+      delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; c.ref = []; delete c.conv; delete c.cuartos; c.bloques.forEach((x) => { delete x.fb; }); // una copia es una sesión nueva
       c.bloques.forEach((x) => { x.ob = x.id; x.id = uid(); }); // cada apartado recuerda de cuál viene (para su feedback)
       c.base = o.id;
       db.planes.push(c); guardar(); return ir("plan", { planId: c.id });
@@ -4599,6 +4776,30 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const n = completarAlineacion(plan); plan.mod = Date.now(); guardar(); pintarPantalla();
       toast(n ? n + " jugador" + (n === 1 ? "" : "es") + " colocado" + (n === 1 ? "" : "s") + " en la alineación según su puesto" : "No queda sitio para nadie más en sus puestos"); return;
     }
+    if (d.convalin && plan) {
+      const ids = []; Object.values(plan.once || {}).forEach((x) => ids.push(x)); Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => { if (x) ids.push(x); }));
+      const l = [...new Set((plan.conv || []).concat(ids))].filter((id) => db.plantilla.some((j) => j.id === id));
+      plan.conv = l.slice(0, MAX_CONV); plan.mod = Date.now(); guardar(); pintarPantalla();
+      toast(l.length > MAX_CONV ? "Hay " + l.length + " en la alineación: se han marcado los " + MAX_CONV + " primeros. Revisa la lista" : plan.conv.length + " convocados"); return;
+    }
+    if (d.convnadie && plan) { plan.conv = []; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+    if (d.convmsg && plan) { guardarYa(); prepararConvocatoria(plan, app.querySelector('[data-r="convMsg"]')); return; }
+    if (d.convcop || d.convwa || d.convcomp) {
+      const t = $("#convTxt"); if (!t) return;
+      if (d.convwa) { window.open("https://wa.me/?text=" + encodeURIComponent(t.value), "_blank", "noopener"); return; }
+      if (d.convcomp && navigator.share) { navigator.share({ text: t.value }).catch(() => {}); return; }
+      t.focus(); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(() => toast("Copiado"), () => { try { document.execCommand("copy"); toast("Copiado"); } catch (err) { /* nada */ } }); return;
+    }
+    if (d.cuprop && plan) {
+      if ((plan.cuartos || []).some((q) => Object.keys(q).length) && !window.confirm("¿Sustituir los cuartos que tienes por una propuesta nueva?")) return;
+      const js = jugadoresCuartos(plan); plan.cuartos = proponerCuartos(plan); plan.mod = Date.now(); guardar(); pintarPantalla();
+      toast(js.length < 11 ? "Solo hay " + js.length + " jugadores: faltan para llenar los once puestos" : "Cuartos propuestos: revísalos"); return;
+    }
+    if (d.cuvaciar && plan) { if (!window.confirm("¿Vaciar los cuatro cuartos?")) return; delete plan.cuartos; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+    if (d.cuia && plan) { iaFbGen["cu" + plan.id] = (iaFbGen["cu" + plan.id] || 0) + 1; delete iaFbRes["cu" + plan.id]; previaCuartosIA(plan, app.querySelector('[data-r="cuia"]')); return; }
+    if (d.cuiaok && plan) { pedirCuartosIA(plan, app.querySelector('[data-r="cuia"]')); return; }
+    if (d.cuiano && plan) { iaFbGen["cu" + plan.id] = (iaFbGen["cu" + plan.id] || 0) + 1; delete iaFbPend.cu; delete iaFbRes["cu" + plan.id]; const c = app.querySelector('[data-r="cuia"]'); if (c) c.innerHTML = ""; return; }
+    if (d.cuiausar && plan) return usarCuartosIA(plan);
     if (d.situnueva && plan) { const s = $("#sitSel"); if (s) anadirSituacion(plan, s.value); return; }
     if (d.pzpuesto && plan) { const b2 = plan.bloques.find((x) => x.id === d.pzpuesto); if (b2) colocarPorPuesto(plan, b2); return; }
     if (d.pjprop && plan) { const b2 = plan.bloques.find((x) => x.id === d.pjprop); if (b2) proponerPautas(plan, b2); return; }
@@ -4741,7 +4942,26 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const c = app.querySelector('[data-r="eqia"]'); if (c && c.querySelector("[data-eqiaok]")) previaEquipoIA(c); // lo que se envía depende del entreno
       return;
     }
-    if (d.p === "sistema" && plan) { plan.sistema = t.value; guardar(); return pintarPantalla(); }
+    if (d.p === "sistema" && plan) {
+      // los cuartos van por puesto del sistema: con otro sistema hay que rehacerlos
+      if ((plan.cuartos || []).some((q) => Object.keys(q).length)) { delete plan.cuartos; toast("Has cambiado el sistema: vuelve a proponer los cuartos"); }
+      plan.sistema = t.value; guardar(); return pintarPantalla();
+    }
+    if (d.conv !== undefined && plan) {
+      const l = (plan.conv || []).filter((x) => x !== d.conv);
+      if (t.checked) { if (l.length >= MAX_CONV) { t.checked = false; toast("Máximo " + MAX_CONV + " convocados"); return; } l.push(d.conv); }
+      plan.conv = l; plan.mod = Date.now(); guardar();
+      const n = app.querySelector('[data-r="convN"]'); if (n) n.innerHTML = `<b>${l.length}</b> de ${MAX_CONV} convocados`;
+      const m = app.querySelector('[data-r="convMsg"]'); if (m) m.innerHTML = "";
+      return;
+    }
+    if (d.cu !== undefined && d.cuk !== undefined && plan) {
+      plan.cuartos = plan.cuartos || [{}, {}, {}, {}]; while (plan.cuartos.length < 4) plan.cuartos.push({});
+      if (t.value) plan.cuartos[+d.cu][d.cuk] = t.value; else delete plan.cuartos[+d.cu][d.cuk];
+      plan.mod = Date.now(); guardar(); const y = window.scrollY; pintarPantalla(); window.scrollTo(0, y);
+      const s = document.getElementById("cu" + d.cu + "_" + d.cuk); if (s) { s.closest("details").open = true; s.focus(); }
+      return;
+    }
     if (t.dataset.r === "pjGrupo" && plan) { if (t.checked) delete plan.pjNo; else plan.pjNo = true; plan.mod = Date.now(); guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.dataset.r === "sinNombres" && plan) { plan.sinNombres = t.checked; guardar(); invalidarEnvio(app.querySelector('[data-r="compartir"]')); return; }
     if (t.hasAttribute("data-envplan") || t.id === "envSinApe" || t.id === "envNotas") { invalidarEnvio(app.querySelector('[data-r="envEntr"]')); return; }
