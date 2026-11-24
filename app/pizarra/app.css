@@ -398,3 +398,21 @@ button:disabled { opacity: .45; cursor: default; }
 .ae-estado { margin: 0 0 8px; padding: 6px 10px; border-radius: 10px; background: #F1EEE6; }
 .ae-estado.ae-hecha { background: #E6F2EA; }
 .ae-estado.ae-pedida { background: #FFF4D6; }
+
+/* ---- convocatoria y cuartos */
+.conv-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 10px; margin: 8px 0; }
+.conv-j { display: flex; align-items: center; gap: 6px; min-height: 40px; font-weight: 600; }
+.conv-j input { width: 22px; height: 22px; flex: none; }
+.conv-n { align-self: center; }
+.cu-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 10px; }
+.cu-q h3 { margin: 0 0 6px; font-size: 16px; }
+.cu-campo { position: relative; aspect-ratio: 68 / 56; background: #2E8B47; border-radius: 10px; border: 2px solid #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+  background-image: linear-gradient(#fff, #fff), linear-gradient(#fff, #fff); background-size: 60% 2px, 2px 0; background-repeat: no-repeat; background-position: 50% 92%; margin-bottom: 6px; }
+.cu-f { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); white-space: nowrap; line-height: 1.1; }
+.cu-f b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; font-size: 11px; text-shadow: none; }
+.cu-sel { display: grid; grid-template-columns: 1fr 1.3fr; gap: 6px; align-items: center; margin: 4px 0; font-size: 14px; }
+.cu-tabla { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cu-tabla th, .cu-tabla td { padding: 4px 6px; border-bottom: 1px solid var(--linea); text-align: center; }
+.cu-tabla th[scope="row"], .cu-tabla thead th:first-child { text-align: left; }
+.cu-tabla tr.cu-poco th, .cu-tabla tr.cu-poco td { background: #FFF4D6; }
+.cu-min { align-items: center; } .cu-min label { font-weight: 700; }

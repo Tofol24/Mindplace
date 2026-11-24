@@ -28,6 +28,7 @@ export function sanearEntrada(e) {
   if (e.modo === "autoeval") return sanearEntradaAuto(e);
   if (e.modo === "equipo") return sanearEntradaEquipo(e);
   if (e.modo === "mejorar") return sanearEntradaMejorar(e);
+  if (e.modo === "cuartos") return sanearEntradaCuartos(e);
   const b = e.bloque || {};
   const salida = {
     etapa: txt(e.etapa, 40),
@@ -534,4 +535,58 @@ export function sanearMejorar(o, entrada) {
   })).filter((b) => bids.has(b.bloque) && !vistos.has(b.bloque) && vistos.add(b.bloque));
   if (!bloques.length) return null;
   return { analisis: txt(o.analisis, 1500), objetivo: txt(o.objetivo, 600), bloques };
+}
+
+// ---------------------------------------------------------------- cuartos del partido: líneas equilibradas
+const nivelN = (v) => { const n = Number(v); return Number.isFinite(n) ? Math.max(-10, Math.min(10, Math.round(n * 2) / 2)) : 0; };
+export function sanearEntradaCuartos(e) {
+  const vistos = new Set();
+  const jugadores = lista(e.jugadores, 22).map((j) => ({
+    jugador: /^J\d{1,2}$/.test(j && j.jugador) ? j.jugador : "", puesto: txt(j && j.puesto, 40),
+    tecnica: nivelN(j && j.tecnica), tactica: nivelN(j && j.tactica), fisico: nivelN(j && j.fisico),
+    fuertes: listaT(j && j.fuertes, 4), mejorar: listaT(j && j.mejorar, 4)
+  })).filter((j) => j.jugador && !vistos.has(j.jugador) && vistos.add(j.jugador));
+  const s = e.sistema || {};
+  const puestos = lista(s.puestos, 11).map((p, i) => ({ puesto: i, nombre: txt(p && p.nombre, 40) })).filter((p) => p.nombre);
+  if (jugadores.length < 2 || puestos.length !== 11) return null;
+  const ids = new Set(jugadores.map((j) => j.jugador));
+  const actual = lista(e.actual, 4).map((q, i) => ({ cuarto: i + 1, alineacion: lista(q && q.alineacion, 40).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) })).filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador)).slice(0, 11) }));
+  const min = Number.isInteger(e.minutosPorCuarto) && e.minutosPorCuarto >= 5 && e.minutosPorCuarto <= 45 ? e.minutosPorCuarto : 0;
+  return { modo: "cuartos", etapa: txt(e.etapa, 40), sistema: { nombre: txt(s.nombre, 20), puestos }, jugadores, actual, minutosPorCuarto: min, quiero: txt(e.quiero, 300) };
+}
+export const ESQUEMA_CUARTOS = {
+  type: "object", additionalProperties: false, required: ["analisis", "cuartos"],
+  properties: {
+    analisis: { type: "string", description: "Para el entrenador: cómo has repartido y equilibrado las líneas, y los minutos de cada uno, 3-5 frases." },
+    cuartos: { type: "array", description: "Los cuatro cuartos, del 1 al 4.", items: {
+      type: "object", additionalProperties: false, required: ["cuarto", "nota", "alineacion"],
+      properties: {
+        cuarto: { type: "integer" }, nota: { type: "string", description: "Una frase: qué tiene este cuarto (por ejemplo, qué pareja de pivotes y por qué)." },
+        alineacion: { type: "array", description: "Once jugadores: uno por puesto (0-10), sin repetir jugador.", items: {
+          type: "object", additionalProperties: false, required: ["puesto", "jugador"], properties: { puesto: { type: "integer" }, jugador: { type: "string" } } } }
+      } } }
+  }
+};
+export const SISTEMA_CUARTOS = `Eres un entrenador de fútbol base con formación en psicología del deporte. El partido se juega en cuatro cuartos y el entrenador te pasa el sistema (once puestos numerados del 0 al 10), los jugadores convocados sin nombres (J1, J2…) con su puesto habitual, un nivel aproximado de técnica, táctica y físico sacado de sus notas (positivo, puntos fuertes; negativo, aspectos a mejorar; 0, sin datos) y sus puntos fuertes y lo que tiene que mejorar. A veces viene la propuesta actual y lo que quiere el entrenador.
+
+Tu tarea es proponer quién sale en cada puesto en cada cuarto:
+- Cada jugador en su puesto habitual o en uno parecido; el portero, en la portería.
+- «minutosPorCuarto» dice cuánto dura cada cuarto (0 si no se sabe): úsalo para hablar de minutos en el análisis.
+- Minutos para todos: reparte los cuartos lo más igualados posible (todos los convocados juegan al menos dos cuartos si hay sitio) y alterna a los porteros si hay más de uno.
+- Líneas equilibradas en cada cuarto: que ninguna línea (defensa, medio y ataque) ni ninguna pareja (centrales, pivotes, extremos) junte solo a los más fuertes o solo a los que más tienen que mejorar en técnica, táctica y físico; combina perfiles que se complementen.
+- Estabilidad: pocos cambios de puesto para un mismo jugador entre cuartos.
+- Respeta lo que pida el entrenador.
+Devuelve los cuatro cuartos completos (once jugadores en cada uno, sin repetir jugador dentro de un cuarto) y usa solo los identificadores recibidos. Castellano, frases cortas, sin emojis y sin nombres.`;
+export function sanearCuartos(o, entrada) {
+  if (!o || typeof o !== "object") return null;
+  const ids = new Set(((entrada && entrada.jugadores) || []).map((j) => j.jugador)), vistosQ = new Set();
+  const cuartos = lista(o.cuartos, 4).map((q) => {
+    const c = q && q.cuarto; if (!Number.isInteger(c) || c < 1 || c > 4 || vistosQ.has(c)) return null; vistosQ.add(c);
+    const ps = new Set(), js = new Set();
+    const alineacion = lista(q && q.alineacion, 40).map((a) => ({ puesto: a && a.puesto, jugador: txt(a && a.jugador, 4) }))
+      .filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador) && !ps.has(a.puesto) && !js.has(a.jugador) && ps.add(a.puesto) && js.add(a.jugador)).slice(0, 11);
+    return alineacion.length ? { cuarto: c, nota: txt(q && q.nota, 300), alineacion } : null;
+  }).filter(Boolean).sort((a, b) => a.cuarto - b.cuarto);
+  if (cuartos.length !== 4) return null; // los cuatro cuartos, o nada
+  return { analisis: txt(o.analisis, 1500), cuartos };
 }
