@@ -177,7 +177,10 @@ assert.equal(await store.get("job/AAAAAAAAAAAAAAAA"), null);
   const e = lib.sanearEntrada({ modo: "cuartos", sistema: { nombre: "1-4-2-3-1", puestos: pu }, jugadores: [{ jugador: "J1", tecnica: 99, nombre: "Pep" }, { jugador: "J2" }, { jugador: "Pep" }] });
   assert.equal(e.jugadores.length, 2); assert.equal(e.jugadores[0].tecnica, 10); assert.equal(e.jugadores[0].nombre, undefined);
   const r = lib.sanearCuartos({ analisis: "a", cuartos: [{ cuarto: 1, nota: "n", alineacion: [{ puesto: 0, jugador: "J1" }, { puesto: 0, jugador: "J2" }, { puesto: 1, jugador: "J1" }, { puesto: 2, jugador: "J9" }, { puesto: 3, jugador: "J2" }, { puesto: 15, jugador: "J2" }] }, { cuarto: 1, alineacion: [{ puesto: 1, jugador: "J2" }] }, { cuarto: 7, alineacion: [{ puesto: 1, jugador: "J1" }] }] }, e);
-  assert.equal(r.cuartos.length, 1); assert.deepEqual(r.cuartos[0].alineacion, [{ puesto: 0, jugador: "J1" }, { puesto: 3, jugador: "J2" }]);
+  assert.equal(r, null); // sin los cuatro cuartos, nada
+  const al = [{ puesto: 0, jugador: "J1" }, { puesto: 0, jugador: "J2" }, { puesto: 1, jugador: "J1" }, { puesto: 2, jugador: "J9" }, { puesto: 3, jugador: "J2" }, { puesto: 15, jugador: "J2" }];
+  const r4 = lib.sanearCuartos({ analisis: "a", cuartos: [1, 2, 3, 4].map((c) => ({ cuarto: c, nota: "", alineacion: al })) }, e);
+  assert.equal(r4.cuartos.length, 4); assert.deepEqual(r4.cuartos[0].alineacion, [{ puesto: 0, jugador: "J1" }, { puesto: 3, jugador: "J2" }]);
 }
 
 // informe del equipo: entrada acotada (jugadores J1…, sin nombres) y refuerzos solo de los jugadores enviados

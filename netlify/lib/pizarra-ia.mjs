@@ -585,6 +585,6 @@ export function sanearCuartos(o, entrada) {
       .filter((a) => Number.isInteger(a.puesto) && a.puesto >= 0 && a.puesto <= 10 && ids.has(a.jugador) && !ps.has(a.puesto) && !js.has(a.jugador) && ps.add(a.puesto) && js.add(a.jugador)).slice(0, 11);
     return alineacion.length ? { cuarto: c, nota: txt(q && q.nota, 300), alineacion } : null;
   }).filter(Boolean).sort((a, b) => a.cuarto - b.cuarto);
-  if (!cuartos.length) return null;
+  if (cuartos.length !== 4) return null; // los cuatro cuartos, o nada
   return { analisis: txt(o.analisis, 1500), cuartos };
 }

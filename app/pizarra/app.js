@@ -2010,7 +2010,7 @@
       </div>`;
     pintarSinPuesto(p);
     p.bloques.forEach((b) => { if (iaResultados[b.id]) pintarIA(p, b, app.querySelector(`[data-r="ia-${b.id}"]`)); });
-    if (iaFbRes["cu" + p.id] && iaFbPend.cuUsado && iaFbPend.cuUsado.plan === p.id) pintarCuartosIA(p, app.querySelector('[data-r="cuia"]'), iaFbRes["cu" + p.id]);
+    if (iaFbRes["cu" + p.id] && iaFbPend.cuUsado && iaFbPend.cuUsado.plan === p.id && iaFbPend.cuUsado.firma === firmaCuartos(p)) pintarCuartosIA(p, app.querySelector('[data-r="cuia"]'), iaFbRes["cu" + p.id]);
   }
 
   function pintarSinPuesto(plan) {
@@ -2531,7 +2531,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const conNotas = !!($("#envNotas") && $("#envNotas").checked);
     const planes = db.planes.filter((p) => ids.includes(p.id)).map((p) => {
       const c = clon(p); delete c.sinNombres;
-      if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; delete c.ref; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback y los refuerzos van con las notas privadas
+      if (!conNotas) { delete c.fbn; delete c.fbr; delete c.an; delete c.anOc; delete c.ref; delete c.conv; delete c.convH; delete c.convL; delete c.convN; delete c.cuartos; c.bloques.forEach((b) => { delete b.fb; }); } // el feedback, los refuerzos, la convocatoria y los cuartos van con las notas privadas
       return c;
     });
     const plantilla = clon(db.plantilla).map((j) => { if (sinApellidos) j.n = j.c || j.n.split(" ")[0]; if (!conNotas) { delete j.notas; delete j.foco; delete j.auto; delete j.lec; CONTACTO.forEach((k) => delete j[k]); }
@@ -2589,6 +2589,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!p.fbr && viejo.fbr) p.fbr = viejo.fbr;
         if (!p.an && viejo.an) p.an = viejo.an;
         if (!p.anOc && viejo.anOc) p.anOc = viejo.anOc;
+        ["conv", "convH", "convL", "convN", "cuartos"].forEach((k) => { if (p[k] === undefined && viejo[k] !== undefined) p[k] = viejo[k]; }); // no venían: se quedan los de aquí
         if (!Array.isArray(p.ref) && viejo.ref) p.ref = viejo.ref; // no venían (sin notas privadas): se quedan los de aquí
         p.bloques.forEach((b) => { if (!b.fb) { const v = viejo.bloques.find((x) => x.id === b.id); if (v && v.fb) b.fb = v.fb; } });
         db2.planes[i] = p; r.planAct++;
@@ -3354,7 +3355,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const coste = (j, s, q, asign) => {
       const f = famJ(j), fs = s[2];
       let c = jug[j.id] * 10 + (jug[j.id] >= 2 ? 30 : 0) + (jug[j.id] >= 3 ? 20 : 0); // primero que todos lleguen a dos cuartos
-      if (fs === "por" || f === "por") c += f === fs ? 0 : 60; // el portero, en la portería
+      if (fs === "por" || f === "por") c += f === fs ? 0 : 300; // el portero, en la portería (y nadie más, si hay portero)
       else if (f !== fs) {
         // fuera de su puesto: parecido, poco; en otra línea, según lo lejos que quede (un central no va de delantero)
         const LIN = { cen: 1, lat: 1, piv: 2, med: 2, mp: 3, ext: 3, del: 3 }, dl = f ? Math.abs((LIN[f] || 2) - (LIN[fs] || 2)) : 1;
@@ -3395,6 +3396,18 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     }
     return cuartos;
   }
+  // Quita de los cuartos a quien ya no está convocado (si hay convocatoria)
+  function reconciliarCuartos(p) {
+    if (!(p.conv || []).length || !p.cuartos) return;
+    const ok = new Set(p.conv);
+    p.cuartos.forEach((q) => Object.keys(q).forEach((k) => { if (!ok.has(q[k])) delete q[k]; }));
+  }
+  // La propuesta de Claude en marcha o preparada deja de valer (otros convocados, otro sistema…)
+  function invalidarCuartosIA(p, aviso) {
+    const habia = iaFbPend.cu || iaFbPend.cuVuela === p.id || iaFbRes["cu" + p.id];
+    iaFbGen["cu" + p.id] = (iaFbGen["cu" + p.id] || 0) + 1; delete iaFbPend.cu; delete iaFbPend.cuVuela; delete iaFbRes["cu" + p.id];
+    if (habia && aviso) toast(aviso);
+  }
   function resumenCuartos(p) {
     const sl = slotsDe(p), cu = p.cuartos || [], js = jugadoresCuartos(p), avisos = [];
     const cuenta = {}; js.forEach((j) => { cuenta[j.id] = [0, 0, 0, 0]; });
@@ -3418,7 +3431,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const r = resumenCuartos(p);
     return `<h2>🔄 Cuartos (solo para ti)</h2>
       <div class="tarjeta cuartos">
-        <p class="peq">Cómo saldréis en cada cuarto con el sistema del partido (${esc((SISTEMAS[p.sistema] || SISTEMAS["4231"]).n)}), con los convocados${(p.conv || []).length ? "" : " (todavía no hay: se usa la plantilla)"}. No se envía a nadie. «Proponer por puestos» coloca a cada uno en su puesto de la plantilla, reparte los cuartos para que todos jueguen y equilibra las parejas (pivotes, centrales…) según sus notas.</p>
+        <p class="peq">Cómo saldréis en cada cuarto con el sistema del partido (${esc((SISTEMAS[p.sistema] || SISTEMAS["4231"]).n)}), con los convocados${(p.conv || []).length ? "" : " (todavía no hay: se usa la plantilla)"}. No se envía a los jugadores ni a las familias (al otro entrenador, solo si le pasas el cuaderno con las notas privadas). «Proponer por puestos» coloca a cada uno en su puesto de la plantilla, reparte los cuartos para que todos jueguen y equilibra las parejas (pivotes, centrales…) según sus notas.</p>
         <div class="acciones"><button type="button" class="btn-sec" data-cuprop="1">🔄 Proponer por puestos</button><button type="button" class="btn-peq ia-btn" data-cuia="1">✨ Equilibrar con Claude</button>${cu.length ? `<button type="button" class="btn-peq peligro" data-cuvaciar="1">Vaciar los cuartos</button>` : ""}</div>
         <div data-r="cuia">${iaFbPend.cuVuela === p.id ? `<p class="peq ia-espera">✨ Claude está equilibrando los cuartos. Puede tardar un minuto…</p>` : ""}</div>
         ${cu.length ? `<div class="cu-grid">${[0, 1, 2, 3].map((i) => { const q = cu[i] || {}; return `<div class="cu-q"><h3>${i + 1}.º cuarto</h3>${campo(q)}
@@ -3437,28 +3450,32 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     const sl = slotsDe(p), js = jugadoresCuartos(p).slice(0, 22), mapa = {}, inv = {};
     const jugadores = js.map((j, i) => { const k = "J" + (i + 1); mapa[k] = j.id; inv[j.id] = k; const nv = nivelJugador(j), ns = j.notas || [];
       const de = (t) => ns.filter((n) => n.t === t && n.a && n.a !== "atencion").slice(0, 4).map((n) => quitarNombres(n.x).slice(0, 120));
-      return { jugador: k, puesto: quitarNombres(j.p || "").slice(0, 40), tecnica: nv.tecnica, tactica: nv.tactica, fisico: nv.fisico, fuertes: de("f"), mejorar: de("m") }; });
+      return { jugador: k, puesto: famJ(j) ? NOM_FAM[famJ(j)] : "", tecnica: nv.tecnica, tactica: nv.tactica, fisico: nv.fisico, fuertes: de("f"), mejorar: de("m") }; });
     const actual = (p.cuartos || []).slice(0, 4).map((q, i) => ({ cuarto: i + 1, alineacion: Object.keys(q).filter((k) => inv[q[k]]).map((k) => ({ puesto: +k, jugador: inv[q[k]] })) }));
     return { mapa: mapa, entrada: { modo: "cuartos", etapa: etapaTxt(), sistema: { nombre: (SISTEMAS[p.sistema] || SISTEMAS["4231"]).n, puestos: sl.map((s, k) => ({ puesto: k, nombre: s[1] })) },
       jugadores: jugadores, actual: actual, quiero: "" } };
   }
+  const firmaCuartos = (p) => p.sistema + "|" + jugadoresCuartos(p).map((j) => j.id).join(",");
   function previaCuartosIA(p, cont) {
     if (extrasBloqueados()) { cont.innerHTML = htmlInvitacion("Equilibrar los cuartos con Claude"); return; }
-    const x = entradaCuartos(p); iaFbPend.cu = Object.assign({ plan: p.id }, x);
-    const textos = x.entrada.jugadores.flatMap((j) => [j.puesto].concat(j.fuertes, j.mejorar).filter(Boolean).map((t) => j.jugador + ": " + t));
+    const x = entradaCuartos(p); iaFbPend.cu = Object.assign({ plan: p.id, sistema: p.sistema, firma: firmaCuartos(p) }, x);
+    const textos = x.entrada.jugadores.flatMap((j) => j.fuertes.map((t) => j.jugador + " 💪 " + t).concat(j.mejorar.map((t) => j.jugador + " 🎯 " + t)));
     cont.innerHTML = `<div class="ia-propuesta"><h3>✨ Equilibrar los cuartos con Claude</h3>
       <div class="campo-f"><label for="cuQuiero">¿Algo a tener en cuenta? (opcional)</label><textarea id="cuQuiero" maxlength="300" rows="2" placeholder="Por ejemplo: el 3.º cuarto, el más fuerte; los dos porteros juegan dos cuartos cada uno"></textarea></div>
-      <p class="peq">Claude reparte a los convocados en los cuatro cuartos por su puesto, con todas las líneas equilibradas (técnica, táctica y físico, según tus notas) y con minutos para todos. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto y sus notas.</p>
-      ${textos.length ? `<details class="det"><summary>Textos que se envían (${textos.length}): revisa que no lleven datos personales</summary><ul class="consignas">${textos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
+      <p class="peq">Claude reparte a los convocados en los cuatro cuartos por su puesto, con todas las líneas equilibradas (técnica, táctica y físico, según tus notas) y con minutos para todos. Se envía a Claude (Anthropic) <b>sin nombres</b>: cada jugador va como J1, J2… con su puesto y un nivel de técnica, táctica y físico calculado de sus notas. Lo que escribas arriba se envía tal cual: no pongas nombres.</p>
+      ${textos.length ? `<label class="peq" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="cuIaTxt" style="width:22px;height:22px;flex:none"> Incluir también el texto de sus puntos fuertes y lo que tienen que mejorar (más preciso). Revisa que no lleven datos personales:</label>
+        <details class="det"><summary>Textos que se enviarían (${textos.length})</summary><ul class="consignas">${textos.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
       <div class="fila"><button type="button" class="btn" data-cuiaok="1">Proponer los cuartos</button><button type="button" class="btn-sec" data-cuiano="1">Cancelar</button></div></div>`;
   }
   function pedirCuartosIA(p, cont) {
     const x = iaFbPend.cu; if (!x || x.plan !== p.id) { previaCuartosIA(p, cont); return; }
     const q = cont.querySelector("#cuQuiero"); x.entrada.quiero = quitarNombres(q ? q.value : "").slice(0, 300);
+    const tx = cont.querySelector("#cuIaTxt"); if (!tx || !tx.checked) x.entrada.jugadores.forEach((j) => { j.fuertes = []; j.mejorar = []; });
     iaFbPend.cuUsado = x; delete iaFbPend.cu;
     iaFbPend.cuVuela = p.id;
     const caja = () => app.querySelector('[data-r="cuia"]');
-    consultaIA("cu" + p.id, x.entrada, caja, "Claude está equilibrando los cuartos.", (r) => { delete iaFbPend.cuVuela; pintarCuartosIA(p, caja(), r); });
+    const caja2 = () => (estado.pant === "plan" && estado.planId === p.id ? caja() : null); // solo en su partido
+    consultaIA("cu" + p.id, x.entrada, caja2, "Claude está equilibrando los cuartos.", (r) => { delete iaFbPend.cuVuela; const c = caja2(); if (c) pintarCuartosIA(p, c, r); });
   }
   function pintarCuartosIA(p, cont, r) {
     const x = iaFbPend.cuUsado || {}, sl = slotsDe(p);
@@ -3470,9 +3487,12 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
   }
   function usarCuartosIA(p) {
     const r = iaFbRes["cu" + p.id], x = iaFbPend.cuUsado; if (!r || !x || x.plan !== p.id) return;
+    if (x.firma !== firmaCuartos(p)) { toast("Han cambiado el sistema o los convocados: vuelve a pedir los cuartos a Claude"); return; }
     if ((p.cuartos || []).some((q) => Object.keys(q).length) && !window.confirm("¿Sustituir los cuartos que tienes por la propuesta de Claude?")) return;
-    const cu = [{}, {}, {}, {}];
-    r.cuartos.forEach((q) => { const o = cu[q.cuarto - 1]; if (!o) return; q.alineacion.forEach((a) => { const id = x.mapa[a.jugador]; if (id && db.plantilla.some((j) => j.id === id)) o[a.puesto] = id; }); });
+    // sobre lo que hay: un cuarto o un puesto que no venga en la propuesta se queda como estaba
+    const cu = [0, 1, 2, 3].map((i) => Object.assign({}, (p.cuartos || [])[i] || {}));
+    r.cuartos.forEach((q) => { const o = cu[q.cuarto - 1]; if (!o) return; q.alineacion.forEach((a) => { const id = x.mapa[a.jugador]; if (!id || !db.plantilla.some((j) => j.id === id)) return;
+      Object.keys(o).forEach((k) => { if (o[k] === id) delete o[k]; }); o[a.puesto] = id; }); });
     p.cuartos = cu; p.mod = Date.now(); delete iaFbRes["cu" + p.id]; guardar(); pintarPantalla(); toast("Cuartos de Claude puestos: revísalos");
   }
 
@@ -4802,10 +4822,11 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
       const ids = []; Object.values(plan.once || {}).forEach((x) => ids.push(x)); Object.values(plan.extra || {}).forEach((l) => l.forEach((x) => { if (x) ids.push(x); }));
       const enAlin = [...new Set(ids)].filter((id) => db.plantilla.some((j) => j.id === id));
       const l = [...new Set(enAlin.concat(plan.conv || []))].filter((id) => db.plantilla.some((j) => j.id === id));
-      plan.conv = l.slice(0, MAX_CONV); plan.mod = Date.now(); guardar(); pintarPantalla();
+      plan.conv = l.slice(0, MAX_CONV); reconciliarCuartos(plan); invalidarCuartosIA(plan, "Has cambiado la convocatoria: vuelve a pedir los cuartos a Claude");
+      plan.mod = Date.now(); guardar(); pintarPantalla();
       toast(enAlin.length > MAX_CONV ? "Hay " + enAlin.length + " en la alineación: se han marcado los " + MAX_CONV + " primeros. Revisa la lista" : l.length > MAX_CONV ? "Se han marcado los de la alineación; no caben todos los que ya tenías marcados. Revisa la lista" : plan.conv.length + " convocados"); return;
     }
-    if (d.convnadie && plan) { plan.conv = []; plan.mod = Date.now(); guardar(); return pintarPantalla(); }
+    if (d.convnadie && plan) { plan.conv = []; invalidarCuartosIA(plan, "Has cambiado la convocatoria: vuelve a pedir los cuartos a Claude"); plan.mod = Date.now(); guardar(); return pintarPantalla(); }
     if (d.convmsg && plan) { guardarYa(); prepararConvocatoria(plan, app.querySelector('[data-r="convMsg"]')); return; }
     if (d.convcop || d.convwa || d.convcomp) {
       const t = $("#convTxt"); if (!t) return;
@@ -4936,6 +4957,7 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
     if ((t.id === "entQuiero" || t.id === "entMin") && iaFbPend.ent) { delete iaFbPend.ent; const c = app.querySelector('[data-r="iaent"]'); if (c) c.innerHTML = ""; }
     if (d.p && plan && d.p !== "sistema") {
       plan[d.p] = t.value; guardar();
+      if (["fecha", "rival", "convH", "convL", "convN"].includes(d.p)) { const m = app.querySelector('[data-r="convMsg"]'); if (m && m.innerHTML) m.innerHTML = `<p class="peq">Has cambiado los datos del partido: vuelve a pulsar «Preparar el mensaje».</p>`; }
       Object.keys(iaPendiente).forEach((k) => { delete iaPendiente[k]; const c = app.querySelector(`[data-r="ia-${k}"]`); if (c) c.innerHTML = ""; });
       return;
     }
@@ -4975,14 +4997,16 @@ p{color:#CFE3D5;font-size:15px;max-width:420px;margin:8px auto}</style>
         if (!window.confirm("Los cuartos están hechos para el sistema actual. Si lo cambias, se vacían y tendrás que volver a proponerlos. ¿Cambiar el sistema?")) { t.value = plan.sistema; return; }
         delete plan.cuartos;
       }
+      invalidarCuartosIA(plan, "Has cambiado el sistema: vuelve a pedir los cuartos a Claude");
       plan.sistema = t.value; guardar(); return pintarPantalla();
     }
     if (d.conv !== undefined && plan) {
       const l = (plan.conv || []).filter((x) => x !== d.conv && db.plantilla.some((j) => j.id === x));
       if (t.checked) { if (l.length >= MAX_CONV) { t.checked = false; toast("Máximo " + MAX_CONV + " convocados"); return; } l.push(d.conv); }
       plan.conv = l; plan.mod = Date.now(); guardar();
+      reconciliarCuartos(plan);
       // la consulta de los cuartos que estuviera preparada o en marcha ya no vale: era con otros convocados
-      if (iaFbPend.cu || iaFbPend.cuVuela === plan.id) { iaFbGen["cu" + plan.id] = (iaFbGen["cu" + plan.id] || 0) + 1; delete iaFbPend.cu; delete iaFbPend.cuVuela; toast("Has cambiado la convocatoria: vuelve a pedir los cuartos a Claude"); }
+      invalidarCuartosIA(plan, "Has cambiado la convocatoria: vuelve a pedir los cuartos a Claude");
       const y = window.scrollY; pintarPantalla(); window.scrollTo(0, y);
       const cb = app.querySelector(`[data-conv="${d.conv}"]`); if (cb) cb.focus();
       return;
