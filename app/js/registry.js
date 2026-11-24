@@ -113,6 +113,10 @@ window.APRENS_TOOLS = [
     desc:"Juegos infantiles cortos, visuales y lúdicos para practicar estar con lo que siento: la flor y la vela (respiración), el abrazo sentido y el detective de sensaciones.",
     migrada:true, iframe:"rincon/index.html" },
 
+  { id:"identidad_sin_prisa", emoji:"🌱", nombre:"Quién soy, sin prisa",
+    desc:"Psicoeducación para acompañar a niñas y niños de 8 a 12 años con preguntas sobre su identidad de género: una guía para madres y padres (ni adelantarse ni frenar, qué decir, preguntas frecuentes y cuándo pedir ayuda) y un rincón para el niño o la niña, con sus gustos, su tiempo interior y una respiración. No guarda nada.",
+    migrada:true, iframe:"identidad/index.html" },
+
   { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
     desc:"Ciclismo de competición desde la tarea y el amor a la bici, no el látigo: pirámide de rendimiento (atención→…→resultado), entreno de montaña y continuidad, AIS hacia el dolor, látigo vs amor firme, banco de autoverbalizaciones para acompañar a tu cuerpo, modo prueba, revisión semanal y ICE. Nombre y diminutivo editables.",
     migrada:true, iframe:"tools-standalone/pedalea_desde_dentro_aprens.html" },

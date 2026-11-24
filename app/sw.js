@@ -2,7 +2,7 @@
    Precache del app-shell → funciona 100% offline tras la primera visita.
    Estrategia: cache-first para el shell; para el resto, red con fallback a caché.
    Sube CACHE al cambiar archivos para forzar actualización. */
-const CACHE = "aprens-v272";
+const CACHE = "aprens-v273";
 // Caché aparte y versionada para las ilustraciones de los cuentos:
 // se llenan bajo demanda al abrir los cuentos y NO se reinstalan con cada
 // actualización global de la app (no entran en SHELL).
@@ -226,6 +226,7 @@ const SHELL = [
   "./ritual/assets/js/app.js",
   "./ritual/assets/js/aprens-core.js",
   "./rincon/index.html",
+  "./identidad/index.html",
   "./rincon/assets/images/portada-rincon.webp",
   "./rincon/assets/css/styles.css",
   "./rincon/assets/js/app.js",
