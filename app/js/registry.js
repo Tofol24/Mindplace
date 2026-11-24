@@ -114,7 +114,7 @@ window.APRENS_TOOLS = [
     migrada:true, iframe:"rincon/index.html" },
 
   { id:"identidad_sin_prisa", emoji:"🌱", nombre:"Quién soy, sin prisa",
-    desc:"Psicoeducación para acompañar a niñas y niños de 8 a 12 años con preguntas sobre su identidad de género: una guía para madres y padres (ni adelantarse ni frenar, qué decir, preguntas frecuentes y cuándo pedir ayuda) y un rincón para el niño o la niña, con sus gustos, su tiempo interior y una respiración. No guarda nada.",
+    desc:"Psicoeducación para acompañar a niñas y niños de 8 a 12 años con preguntas sobre su identidad de género: una guía para madres y padres (ni adelantarse ni frenar, qué decir, preguntas frecuentes y cuándo pedir ayuda) y un rincón para el niño o la niña, con sus gustos, su tiempo interior y una respiración. En castellano y en català. No guarda nada.",
     migrada:true, iframe:"identidad/index.html" },
 
   { id:"pedalea_desde_dentro", emoji:"🚵", nombre:"Pedalea desde dentro",
