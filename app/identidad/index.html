@@ -413,6 +413,7 @@ header.marca a{color:var(--acento);text-transform:none;letter-spacing:.04em;font
   </div>
 </footer>
 
+<script src="../js/atras.js"></script>
 <script>
 (function () {
   // Pestañas accesibles
@@ -436,6 +437,12 @@ header.marca a{color:var(--acento);text-transform:none;letter-spacing:.04em;font
       if (e.key === 'End') n = tabs[tabs.length - 1];
       if (n) { e.preventDefault(); activar(n, true); }
     });
+  });
+
+  // «Atrás» paso a paso (app o navegador): vuelve a la pestaña anterior.
+  if (window.AprensAtras) AprensAtras.vigilar({
+    vista: function () { var t = tabs.filter(function (x) { return x.getAttribute('aria-selected') === 'true'; })[0]; return t ? t.id : null; },
+    ir: function (v) { var t = document.getElementById(v); if (t && tabs.indexOf(t) >= 0) activar(t, false); }
   });
 
   // Gustos (sin guardar nada)

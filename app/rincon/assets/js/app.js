@@ -36,12 +36,13 @@
 
   var timer = null;
   var activeRespiro = null;
+  var juegoActual = "menu";   // pantalla visible (para «atrás» paso a paso)
   function stopTimer() {
     if (timer) { clearInterval(timer); timer = null; }
     if (activeRespiro) { activeRespiro.destroy(); activeRespiro = null; }
   }
 
-  function goHome() { stopTimer(); homeBtn.hidden = true; renderMenu(); }
+  function goHome() { stopTimer(); homeBtn.hidden = true; juegoActual = "menu"; renderMenu(); }
   homeBtn.addEventListener("click", goHome);
 
   /* ---------------- MENÚ ---------------- */
@@ -69,6 +70,7 @@
 
   function openGame(id) {
     homeBtn.hidden = false;
+    juegoActual = id;
     if (id === "respiracion") return juegoRespiracion();
     if (id === "abrazo") return juegoAbrazo();
     if (id === "sensaciones") return juegoSensaciones();
@@ -242,4 +244,11 @@
   var ej = (param("ej") || "").toLowerCase();
   if (ej === "respiracion" || ej === "abrazo" || ej === "sensaciones") { homeBtn.hidden = false; openGame(ej); }
   else renderMenu();
+
+  // «Atrás» paso a paso (app o navegador): del juego vuelve al menú de juegos.
+  // Abrir un juego no arranca nada por sí solo: la respiración y el abrazo esperan al botón.
+  if (window.AprensAtras) AprensAtras.vigilar({
+    vista: function () { return juegoActual; },
+    ir: function (v) { if (v === "menu") goHome(); else openGame(v); }
+  });
 })();

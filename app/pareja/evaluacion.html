@@ -823,5 +823,11 @@ document.addEventListener("keydown", function(e){
   renderStep();
 })();
 </script>
+<script src="../js/atras.js"></script>
+<script>
+// «Atrás» paso a paso (app o navegador): vuelve a la sección anterior sin validar
+// ni borrar nada; las respuestas siguen en STATE. El resumen final solo se repinta.
+if(window.AprensAtras) AprensAtras.vigilar({ vista:function(){ return STEP; }, ir:function(v){ var n=Number(v); if(n>=0 && n<SECTIONS.length){ STEP=n; renderStep(); } } });
+</script>
 </body>
 </html>
