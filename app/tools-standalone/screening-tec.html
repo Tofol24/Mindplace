@@ -962,8 +962,9 @@ render();
         else bIdx=Math.max(0,Math.min(n-1,s[2]));
       }
       vista=vi; render();
-      // Si la pantalla no ha cambiado (p. ej. tras salir de un modo), se salta para que «atrás» no quede sin efecto.
-      if(pantallaAtras()===antes && AprensAtras.profundidad()>0){ try{ history.back(); }catch(e){} }
+      // Si la pantalla no ha cambiado (p. ej. tras salir de un modo), se da otro paso atrás para que la
+      // pulsación no quede sin efecto; en el primer paso, eso ya es salir de la herramienta.
+      if(pantallaAtras()===antes){ try{ history.back(); }catch(e){} }
     }
   });
 }</script>

@@ -981,10 +981,13 @@ function reabrir(code){
 if(window.AprensAtras) AprensAtras.vigilar({
   vista:function(){ return vista==="pac_pcl" ? "pac_pcl:"+qIdx : vista; },
   ir:function(v){
-    if(vista==="pac_suceso"&&S) salvaRelato();   // no perder el relato escrito
+    // No perder el relato escrito, pero solo del propio paciente (nunca con datos abiertos por el profesional).
+    if(vista==="pac_suceso"&&S&&modo==="paciente") salvaRelato();
     var p=String(v).split(":");
-    // Sin evaluación en curso o fuera de la zona profesional, no se reabre lo anterior: al selector.
-    if(p[0].indexOf("pac_")===0&&!S){ ir("selector"); return; }
+    // Sin evaluación en curso, fuera del modo paciente o fuera de la zona profesional, no se reabre lo
+    // anterior: al selector. Así, en una tablet compartida, atrás nunca enseña en las pantallas del
+    // paciente la evaluación de otra persona que el profesional haya abierto.
+    if(p[0].indexOf("pac_")===0&&(!S||modo!=="paciente")){ ir("selector"); return; }
     if(p[0].indexOf("prof_")===0&&modo!=="profesional"){ ir("selector"); return; }
     if(p[0]==="prof_informe"&&!S){ ir("prof_inicio"); return; }
     if(p[0]==="pac_pcl") qIdx=Math.max(0,Math.min(PCL.length-1,parseInt(p[1],10)||0));

@@ -591,7 +591,8 @@
         document.querySelectorAll('.pstep').forEach(function(s){s.classList.remove('show');});
         document.getElementById('result').classList.add('show');
       } else if(enResultado){ nuevaParada(); }
-      else if(/^ps[0-3]$/.test(v)){ goStep(Number(v.slice(2))); }
+      // Sin intensidad inicial elegida (parada nueva) no se salta el paso 0: se registraría mal.
+      else if(/^ps[0-3]$/.test(v)){ goStep(v!=='ps0'&&parada.ini==null ? 0 : Number(v.slice(2))); }
     }
   });
 </script>

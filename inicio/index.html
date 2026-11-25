@@ -614,13 +614,16 @@
 <script>
 /* Las herramientas se abren en la MISMA pestaña: así «← Atrás» (o el gesto del móvil)
    vuelve aquí, a Mi espacio, en vez de ir acumulando pestañas. Con Ctrl/Cmd o la rueda
-   del ratón se sigue pudiendo abrir en otra pestaña. Los PDF siguen abriéndose aparte. */
+   del ratón se sigue pudiendo abrir en otra pestaña. Los PDF y el calendario siguen como antes. */
 document.addEventListener("click", function(e){
   if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Solo las herramientas (enlaces a «#/…» de la app); PDF, calendario y demás archivos, como siempre.
   var a=e.target.closest && e.target.closest('a[href^="https://aprens-app.netlify.app/"]');
-  if(!a || /\.pdf(\?|#|$)/i.test(a.getAttribute("href")||"")) return;
+  if(!a || (a.getAttribute("href")||"").indexOf("#/")<0) return;
+  var u; try{ u=new URL(a.href); }catch(err){ return; }
+  u.searchParams.set("desde","espacio");   // para que, al principio, «← Atrás» de la app vuelva aquí
   e.preventDefault();
-  location.href=a.href;
+  location.href=u.toString();
 });
 </script>
 <script>

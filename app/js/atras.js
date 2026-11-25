@@ -10,64 +10,89 @@
        ir:    function(v){ <muestra la pantalla v, sin más efectos>; }
      });
 
-   Cada vez que cambia la pantalla (por un clic, un temporizador…) se apunta
-   la anterior y se añade una entrada al historial. Al ir atrás (botón de la
-   app, botón o gesto del navegador) se vuelve a ella. Cuando ya no quedan
-   pantallas, «atrás» sale de la herramienta como siempre.
+   Se guarda la lista de pantallas visitadas (pasos) y en cuál se está (pos).
+   Cada entrada del historial lleva su posición, así que atrás y adelante del
+   navegador llevan exactamente a la pantalla de esa posición. Si la propia
+   herramienta vuelve a la pantalla anterior con su botón («Anterior», «Volver»…),
+   se cuenta como un paso atrás, no como uno nuevo.
    Funciona igual dentro de la app (iframe del mismo origen) que abierta sola.
 */
 (function(){
   "use strict";
   if (window.AprensAtras) return;
-  var pila = [], cfg = null, actual = null, volviendo = false, pendiente = 0, marca = "aprensAtras";
+  var pasos = [], pos = 0, cfg = null, aplicando = false, pendiente = 0, MARCA = "aprensAtras";
 
   function leer(){ try { var v = cfg.vista(); return v == null ? null : String(v); } catch (e) { return null; } }
+  function posDe(estado){ return estado && estado[MARCA] === true && typeof estado.n === "number" ? estado.n : 0; }
 
   function comprobar(){
     pendiente = 0;
-    if (!cfg || volviendo) return;
+    if (!cfg || aplicando) return;
     var v = leer();
-    if (v === null || v === actual) return;
-    if (actual !== null) {
-      pila.push(actual);
-      try { history.pushState({ aprensAtras: marca, n: pila.length }, ""); } catch (e) { /* sin historial: queda el botón de la app */ }
+    if (v === null || v === pasos[pos]) return;
+    if (pos > 0 && v === pasos[pos - 1]) {
+      // La herramienta ha vuelto atrás con su propio botón: se retrocede también en el historial
+      // (el popstate que llega encontrará la pantalla ya puesta y no hará nada).
+      pos--;
+      try { history.back(); } catch (e) {}
+      return;
     }
-    actual = v;
+    pasos = pasos.slice(0, pos + 1);
+    pasos.push(v); pos++;
+    try { history.pushState({ aprensAtras: true, n: pos }, ""); } catch (e) { /* sin historial: queda el botón de la app */ }
   }
-  function programar(){ if (!pendiente) pendiente = setTimeout(comprobar, 0); }
+  // Pequeña espera: agrupa los cambios de una misma acción y no recalcula en cada fotograma de una animación.
+  function programar(){ if (!pendiente) pendiente = setTimeout(comprobar, 80); }
 
-  function volverUna(){
-    if (!pila.length) return false;
-    var v = pila.pop();
-    volviendo = true;
-    try { cfg.ir(v); } catch (e) { /* si falla, al menos no se queda bloqueado */ }
-    actual = leer() || v;
-    volviendo = false;
+  function aplicar(n){
+    if (n < 0 || n >= pasos.length) return;
+    pos = n;
+    if (leer() === pasos[n]) return;   // ya está en esa pantalla
+    aplicando = true;
+    try { cfg.ir(pasos[n]); } catch (e) { /* si falla, al menos no se queda bloqueado */ }
+    aplicando = false;
+    // Si la herramienta ha llevado a otra pantalla segura (no a la pedida), se anota así.
+    var real = leer(); if (real !== null) pasos[n] = real;
     try { window.scrollTo(0, 0); } catch (e) {}
-    return true;
   }
 
-  window.addEventListener("popstate", function(){
-    // El navegador ya ha quitado la entrada: solo hay que pintar la pantalla anterior.
-    if (pila.length) volverUna();
+  // Algunas herramientas reescriben la dirección (#sección) con replaceState: se conserva la marca de
+  // posición de esa entrada, para que atrás y adelante sigan sabiendo a qué pantalla llevan.
+  try {
+    var reemplazar = history.replaceState;
+    history.replaceState = function(estado, titulo, url){
+      if (cfg && !(estado && estado[MARCA] === true)) {
+        var marca = { aprensAtras: true, n: posDe(history.state) };
+        estado = (estado && typeof estado === "object") ? Object.assign({}, estado, marca) : marca;
+      }
+      return arguments.length > 2 ? reemplazar.call(history, estado, titulo, url) : reemplazar.call(history, estado, titulo);
+    };
+  } catch (e) {}
+
+  window.addEventListener("popstate", function(e){
+    if (!cfg) return;
+    clearTimeout(pendiente); pendiente = 0;
+    aplicar(posDe(e.state));   // sirve tanto para atrás como para adelante
   });
 
   window.AprensAtras = {
     vigilar: function(c){
       if (!c || typeof c.vista !== "function" || typeof c.ir !== "function") return;
-      cfg = c; actual = leer();
-      // Cualquier cambio de pantalla: clics, teclado, envíos y temporizadores (cambios en la página).
+      cfg = c;
+      var v = leer();
+      pasos = [v === null ? "" : v]; pos = 0;
+      try { history.replaceState({ aprensAtras: true, n: 0 }, ""); } catch (e) {}
       ["click", "change", "submit", "keyup"].forEach(function(t){ document.addEventListener(t, programar, true); });
-      try { new MutationObserver(programar).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden", "style"] }); } catch (e) {}
+      try { new MutationObserver(programar).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden", "style", "aria-selected"] }); } catch (e) {}
     },
     // Lo usa la cabecera de la app: true si ha retrocedido dentro de la herramienta.
     atras: function(){
-      comprobar();
-      if (!pila.length) return false;
-      try { history.back(); } catch (e) { return volverUna(); }
+      clearTimeout(pendiente); comprobar();
+      if (pos <= 0) return false;
+      try { history.back(); } catch (e) { aplicar(pos - 1); }
       return true;
     },
-    profundidad: function(){ return pila.length; }
+    profundidad: function(){ return pos; }
   };
   // Si la herramienta ya tenía su propio gancho, se respeta; si no, se usa este.
   if (typeof window.APRENS_toolBack !== "function") window.APRENS_toolBack = function(){ return window.AprensAtras.atras(); };
