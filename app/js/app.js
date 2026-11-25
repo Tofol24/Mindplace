@@ -440,30 +440,39 @@
   }
 
   // «Tus cuatro herramientas básicas»: las líneas básicas del AIS, a mano justo
-  // debajo del recorrido. Cada una dice para qué sirve y lleva a su herramienta.
+  // debajo del recorrido. Cada una dice para qué sirve, lleva el vídeo de Tòfol
+  // que explica por qué hacerla y enlaza a su herramienta.
   function basicasHTML(){
     const B = [
       { para:"Para aparecer", e:"🫁", col:"#2d795b",
         t:"Respiración curiosa",
         d:"Una vez <b>cada hora</b>, unos 10 segundos, sobre todo cuando no hace falta. Y en cada <b>entrada y salida</b> de un lugar o de una situación, cogiendo de la mano a tu niño interno.",
+        vid:["respirar","Respirar es aparecer","Respirar no es para relajarte: es la forma más antigua de decirle a tu cuerpo «estoy aquí»."],
         go:[["ais_curiosidad/respiracion","Respiración curiosa"],["ais_amor/entrada","Entradas y salidas"]] },
       { para:"Para permanecer", e:"✋", col:"#3f6b74",
         t:"Parada de pensamiento",
         d:"Cada vez que te enganchas a sobrepensar: <b>para, respira y vuelve</b>. 30, 40 o 50 veces al día, para que la atención no quede secuestrada.",
+        vid:["sobrepensamiento","El sobrepensamiento","La salida no es pensar mejor: es bajar del pensamiento al cuerpo, una y otra vez."],
         go:[["ais_amor/parada","Parada de pensamiento"],["juegos_exposicion/carrusel","Juego: El carrusel"]] },
       { para:"Para integrar mi vulnerabilidad en mi familia", e:"🤗", col:"#8d641a",
         t:"Abrazo sentido",
         d:"En los encuentros, al llegar a casa: respira, nota la sensación y abraza con la <b>atención en la barriga</b>, desde la complicidad.",
+        vid:["yo","El yo que se construyó sin ti","Para tirar adelante dejaste fuera al cuerpo que sentía. Abrazar desde la barriga es volver a por él, también con los tuyos."],
         go:[["ais_amor/abrazo_sentido","Abrazo sentido"],["juegos_exposicion/casa","Juego: Llegar a casa"]] },
       { para:"Para validarme y darme espacio en mis vínculos", e:"💬", col:"#9c5238",
         t:"Honestidad emocional",
         d:"Con la <b>mano fija</b> en la barriga, el pecho o el cuello: «No sé por qué, pero noto una sensación aquí, y necesito compartirlo contigo».",
+        vid:["honestidad","La honestidad emocional","No es decirlo todo a todo el mundo: es dejar de mentirte a ti. Empieza por reconocer lo que sientes."],
         go:[["honestidad_emocional/vinetas","Honestidad emocional"]] }
     ];
     const cards = B.map(b=>`<div class="bas-card" style="--bc:${b.col}">
         <div class="bas-para">${b.para}</div>
         <div class="bas-t"><span class="bas-e" aria-hidden="true">${b.e}</span>${b.t}</div>
         <div class="bas-d">${b.d}</div>
+        <details class="bas-vid"><summary><span aria-hidden="true">▶</span> Mira por qué: «${b.vid[1]}»</summary>
+          <p>${b.vid[2]}</p>
+          <video controls playsinline preload="none" poster="/assets/video/poster-${b.vid[0]}.png" aria-label="Vídeo: ${b.vid[1]}"><source src="/assets/video/video-${b.vid[0]}.mp4" type="video/mp4"></video>
+        </details>
         <div class="bas-go">${b.go.map(([id,txt])=>`<a href="#/tool/${id}">${txt} →</a>`).join("")}</div>
       </div>`).join("");
     return `<section class="basicas" aria-labelledby="basTit">
@@ -476,6 +485,12 @@
       <a class="bas-reg" href="#/tool/recorrido_tec">📝 Apúntalas en tu recorrido, en «Hoy › Durante todo el día» →</a>
     </section>`;
   }
+  // Un solo vídeo de las herramientas básicas sonando a la vez.
+  document.addEventListener("play", e=>{
+    const v = e.target;
+    if(!v.closest || !v.closest(".bas-vid")) return;
+    document.querySelectorAll(".bas-vid video").forEach(o=>{ if(o!==v) o.pause(); });
+  }, true);
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
   function porqueHTML(){
     return `

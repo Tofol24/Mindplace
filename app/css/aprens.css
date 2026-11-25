@@ -319,6 +319,12 @@ table.t td.r{text-align:center;font-weight:700}
 .bas-t{font-family:var(--serif);font-size:19px;line-height:1.2;color:var(--tinta);margin:3px 0 5px;display:flex;align-items:center;gap:8px}
 .bas-e{font-size:20px}
 .bas-d{font-size:13.5px;line-height:1.5;color:#4a443c}
+.bas-vid{margin-top:9px}
+.bas-vid summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;font-size:13px;font-weight:700;color:var(--bc,var(--verde));background:#fff;border:1px dashed var(--bc,var(--verde));border-radius:18px;padding:6px 12px}
+.bas-vid summary::-webkit-details-marker{display:none}
+.bas-vid[open] summary{border-style:solid}
+.bas-vid p{font-size:13px;line-height:1.45;color:#4a443c;margin:8px 2px 0;font-style:italic}
+.bas-vid video{display:block;width:100%;max-width:280px;aspect-ratio:9/16;object-fit:contain;background:#000;border-radius:14px;margin:8px auto 0}
 .bas-go{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .bas-go a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-size:13px;font-weight:700;color:var(--bc,var(--verde));background:#f7f3ec;border:1px solid var(--linea);border-radius:18px;padding:6px 12px}
 .bas-go a:first-child{background:var(--bc,var(--verde));border-color:var(--bc,var(--verde));color:#fff}
