@@ -687,7 +687,10 @@
     var q=b.getAttribute("data-acc");
     if(q==="solicitar") solicitar();
     if(q==="tengo"||q==="otro"){ estado.form=true; aviso(""); pintar(); var i=document.getElementById("accIn"); if(i) i.focus(); }
-    if(q==="copiar"){ var a=leer(); if(a&&navigator.clipboard) navigator.clipboard.writeText(a.codigo).then(function(){ aviso("Código copiado.","ok"); pintar(); },function(){}); }
+    if(q==="copiar"){
+      var a=leer(), fallo=function(){ aviso("No se ha podido copiar. Mantén el dedo sobre el código para seleccionarlo, o hazle una captura.","err"); pintar(); };
+      if(a&&navigator.clipboard) navigator.clipboard.writeText(a.codigo).then(function(){ aviso("Código copiado.","ok"); pintar(); },fallo); else fallo();
+    }
   });
   caja.addEventListener("submit", function(e){ e.preventDefault(); var i=document.getElementById("accIn"); activar(i?i.value:""); });
   pintar();
@@ -696,6 +699,17 @@
   try{ var u=new URL(location.href); deEnlace=u.searchParams.get("codigo"); if(deEnlace){ u.searchParams.delete("codigo"); history.replaceState(null,"",u.pathname+u.search+u.hash); } }catch(e){}
   if(deEnlace){ estado.form=true; pintar(); var i0=document.getElementById("accIn"); if(i0) i0.value=norm(deEnlace)||deEnlace; activar(deEnlace); }
   if(publicado) pedir("acceso/config").then(function(c){ if(c&&c._status===200){ estado.cfg=c; pintar(); } }).catch(function(){});
+  // Una vez al día se vuelve a comprobar el código guardado, por si el psicólogo/a lo ha anulado.
+  var g=leer();
+  if(publicado && g && !deEnlace && g.caduca>=Date.now() && Date.now()-(g.comprobado||0)>864e5){
+    pedir("acceso/validar",{codigo:g.codigo}).then(function(r){
+      if(r._status!==200) return;   // sin servicio o demasiados intentos: se deja como estaba
+      if(r.valido) guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()});
+      else if(r.motivo==="caducado") guardar({codigo:g.codigo, caduca:Math.min(g.caduca, r.caduca||Date.now()), comprobado:Date.now()});
+      else { guardar(null); aviso("Tu código "+g.codigo+" ya no está activo. Pregunta a tu psicólogo/a.","err"); }
+      pintar();
+    }).catch(function(){});
+  }
 })();
 </script>
 <script>

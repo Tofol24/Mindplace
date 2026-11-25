@@ -13,8 +13,9 @@ export default async (req) => {
   }
 };
 
-// Pocos por IP: una persona pide uno (quizá dos, si lo pierde). La IP no se guarda.
+// Límite por IP holgado (varias personas pueden compartir la wifi o la IP del operador móvil),
+// pero que frena a un script que quiera llenar el almacén. La IP no se guarda.
 export const config = {
   path: "/api/acceso-solicitar",
-  rateLimit: { windowLimit: 5, windowSize: 3600, aggregateBy: ["ip", "domain"] },
+  rateLimit: { windowLimit: 20, windowSize: 3600, aggregateBy: ["ip", "domain"] },
 };

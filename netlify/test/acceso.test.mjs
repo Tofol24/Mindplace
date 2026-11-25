@@ -30,6 +30,10 @@ assert.equal(lib.normCodigo("APR-7K2M"), "");
 // meses de calendario: 30 de noviembre + 3 meses → 28 de febrero
 assert.equal(new Date(lib.sumarMeses(3, new Date("2026-11-30T10:00:00Z"))).toISOString().slice(0, 10), "2027-02-28");
 assert.equal(new Date(lib.sumarMeses(1, new Date("2026-11-25T10:00:00Z"))).toISOString().slice(0, 10), "2026-12-25");
+// el último segundo del día en Mallorca, en invierno (UTC+1) y en verano (UTC+2)
+assert.equal(new Date(lib.sumarMeses(1, new Date("2026-11-25T10:00:00Z"))).toISOString(), "2026-12-25T22:59:59.000Z");
+assert.equal(new Date(lib.sumarMeses(6, new Date("2026-11-25T10:00:00Z"))).toISOString(), "2027-05-25T21:59:59.000Z");
+assert.equal(lib.diaMadrid(new Date(lib.sumarMeses(6, new Date("2026-11-25T10:00:00Z")))), "2027-05-25");
 
 // botón automático
 let r = await J(await solicitar(req("/api/acceso-solicitar", { method: "POST", origin: "https://aprens.es" })));
@@ -81,6 +85,14 @@ assert.equal(r.status, 409); assert.equal(r.body.limite, 2);
 const uno = (await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.codigos[0].codigo;
 await api(req("/api/acceso/revocar", { method: "POST", pro: "codigo-pro-limitado", body: { codigo: uno } }));
 assert.equal((await api(req("/api/acceso/crear", { method: "POST", pro: "codigo-pro-limitado", body: { meses: 1 } }))).status, 200);
+// varias peticiones a la vez no pasan del límite
+{
+  const l = (await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.codigos.filter((c) => !c.revocado);
+  await api(req("/api/acceso/revocar", { method: "POST", pro: "codigo-pro-limitado", body: { codigo: l[0].codigo } }));
+  const rs = await Promise.all([1, 2, 3, 4].map(() => api(req("/api/acceso/crear", { method: "POST", pro: "codigo-pro-limitado", body: { meses: 1 } }))));
+  assert.ok(rs.filter((r) => r.status === 200).length <= 1);
+  assert.ok((await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.activos <= 2);
+}
 // si el profesional sale de la lista (deja de pagar), sus códigos siguen hasta su fecha
 const vivo = (await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.codigos.find((c) => !c.revocado).codigo;
 process.env.ACCESO_CODIGOS_PRO = "codigo-pro-ilimitado";

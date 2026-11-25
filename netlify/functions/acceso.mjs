@@ -32,7 +32,13 @@ export default async (req) => {
       const meses = Number(b.meses);
       if (!MESES_VALIDOS.includes(meses)) return json(req, 400, { error: "meses" });
       if (p.limite && activos(await listarPro(pro)) >= p.limite) return json(req, 409, { error: "limite", limite: p.limite });
-      return json(req, 200, await crear({ meses, origen: "pro", pro }));
+      const nuevo = await crear({ meses, origen: "pro", pro });
+      // Dos peticiones a la vez pueden pasar la comprobación: se vuelve a contar y, si sobra, se anula el nuevo.
+      if (p.limite && activos(await listarPro(pro)) > p.limite) {
+        await revocar(pro, nuevo.codigo);
+        return json(req, 409, { error: "limite", limite: p.limite });
+      }
+      return json(req, 200, nuevo);
     }
     return (await revocar(pro, b.codigo)) ? json(req, 200, { ok: true }) : json(req, 404, { error: "no_existe" });
   } catch {

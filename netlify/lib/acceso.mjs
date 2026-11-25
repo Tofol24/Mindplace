@@ -70,13 +70,14 @@ export function nuevoCodigo() {
   return "APR-" + s.slice(0, 4) + "-" + s.slice(4);
 }
 
-/** Fecha de caducidad: el mismo día, `meses` después, al final del día (hora de Mallorca ≈ 23:59 UTC+1). */
+/** Fecha de caducidad: el mismo día, `meses` después, a las 23:59:59 de Mallorca (horario de invierno o de verano). */
 export function sumarMeses(meses, desde = new Date()) {
   const [a, m, d] = diaMadrid(desde).split("-").map(Number);
   const fin = new Date(Date.UTC(a, m - 1 + meses, 1));
   const ultimo = new Date(Date.UTC(fin.getUTCFullYear(), fin.getUTCMonth() + 1, 0)).getUTCDate();
-  const dia = Math.min(d, ultimo);
-  return Date.UTC(fin.getUTCFullYear(), fin.getUTCMonth(), dia, 22, 59, 59);
+  const mediodia = Date.UTC(fin.getUTCFullYear(), fin.getUTCMonth(), Math.min(d, ultimo), 12);
+  const horaMadrid = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", hour: "2-digit", hourCycle: "h23" }).format(mediodia));
+  return mediodia + (11 - (horaMadrid - 12)) * 3600000 + 59 * 60000 + 59000;   // 12:00 UTC → 23:59:59 hora local
 }
 
 const sha = (s) => createHash("sha256").update(s).digest("hex");

@@ -155,6 +155,12 @@
     return fetch(API+ruta,{method:cuerpo?"POST":"GET", headers:h, body:cuerpo?JSON.stringify(cuerpo):undefined})
       .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; return b; }); });
   }
+  // Si el código profesional deja de valer (p. ej. fin de la suscripción), se vuelve a la entrada.
+  function caducaPro(){
+    pro=""; ls(K_PRO,null); ss(K_PRO,null); $("pro").value="";
+    $("zona").classList.add("oculto"); $("secEntrar").classList.remove("oculto");
+    aviso("mEntrar","Tu código profesional ya no es válido. Los códigos que ya diste siguen vigentes hasta su fecha.","err"); $("pro").focus();
+  }
   function plantilla(){ return ls(K_TXT) || PLANTILLA; }
   function mensaje(c){ return plantilla().split("{codigo}").join(c.codigo).split("{fecha}").join(fecha(c.caduca)).split("{enlace}").join(ENLACE+c.codigo); }
   function waUrl(c){ return "https://wa.me/?text="+encodeURIComponent(mensaje(c)); }
@@ -179,6 +185,7 @@
 
   function cargar(){
     pedir("lista").then(function(r){
+      if(r._status===401){ caducaPro(); return; }
       if(r._status!==200){ aviso("mLista","No se ha podido cargar la lista.","err"); return; }
       var e=etiquetas(), h="";
       r.codigos.forEach(function(c){
@@ -207,20 +214,21 @@
         $("nWa").href=waUrl(r); $("nuevo").classList.remove("oculto"); aviso("mCrear","");
         $("nuevo").focus(); cargar();
       } else if(r._status===409) aviso("mCrear","Has llegado al máximo de "+r.limite+" pacientes activos. Anula un código que ya no uses para crear otro.","err");
-      else if(r._status===401){ aviso("mCrear","Tu código profesional ya no es válido.","err"); }
+      else if(r._status===401) caducaPro();
       else aviso("mCrear","No se ha podido crear el código. Prueba de nuevo.","err");
     }).catch(function(){ b.disabled=false; aviso("mCrear","No hay conexión.","err"); });
   });
   $("nCopiar").addEventListener("click", function(){
-    if(!ultimo||!navigator.clipboard) return;
-    navigator.clipboard.writeText(mensaje(ultimo)).then(function(){ aviso("mCrear","Mensaje copiado.","ok"); }, function(){});
+    if(!ultimo) return;
+    var fallo=function(){ aviso("mCrear","No se ha podido copiar. Usa «Enviar por WhatsApp» o copia el código a mano.","err"); };
+    if(navigator.clipboard) navigator.clipboard.writeText(mensaje(ultimo)).then(function(){ aviso("mCrear","Mensaje copiado.","ok"); }, fallo); else fallo();
   });
   $("lista").addEventListener("change", function(e){ var i=e.target.closest("input[data-etq]"); if(i) ponEtiqueta(i.closest("tr").getAttribute("data-cod"), i.value); });
   $("lista").addEventListener("click", function(e){
     var b=e.target.closest("button[data-anular]"); if(!b) return;
     var c=b.closest("tr").getAttribute("data-cod");
     if(!confirm("¿Anular el código "+c+"? El paciente dejará de tener acceso con él.")) return;
-    pedir("revocar",{codigo:c}).then(function(r){ aviso("mLista", r._status===200 ? "Código "+c+" anulado." : "No se ha podido anular.", r._status===200?"ok":"err"); cargar(); })
+    pedir("revocar",{codigo:c}).then(function(r){ if(r._status===401){ caducaPro(); return; } aviso("mLista", r._status===200 ? "Código "+c+" anulado." : "No se ha podido anular.", r._status===200?"ok":"err"); cargar(); })
       .catch(function(){ aviso("mLista","No hay conexión.","err"); });
   });
   $("plantilla").value=plantilla();
