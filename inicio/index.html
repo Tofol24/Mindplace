@@ -618,9 +618,9 @@
   var estado={cfg:null, ocupado:false, msg:"", tipo:"", form:false};
   // Si el navegador no deja guardar (modo privado, sin espacio…), el código se conserva en memoria
   // para poder verlo y copiarlo, y se avisa de que no quedará guardado.
-  var mem;
-  function leer(){ try{ var o=JSON.parse(localStorage.getItem(K)||"null"); return o&&o.codigo?o:null; }catch(e){ return mem||null; } }
-  function guardar(o){ mem=o||null; try{ if(o) localStorage.setItem(K, JSON.stringify(o)); else localStorage.removeItem(K); return true; }catch(e){ return false; } }
+  var mem, enMemoria=false;   // enMemoria: la última escritura falló y manda lo que hay en memoria
+  function leer(){ if(enMemoria) return mem||null; try{ var o=JSON.parse(localStorage.getItem(K)||"null"); return o&&o.codigo?o:null; }catch(e){ return mem||null; } }
+  function guardar(o){ mem=o||null; try{ if(o) localStorage.setItem(K, JSON.stringify(o)); else localStorage.removeItem(K); enMemoria=false; return true; }catch(e){ enMemoria=true; return false; } }
   var NO_GUARDA=" Este navegador no deja guardarlo: apúntalo o hazle una captura.";
   function esc(x){ return String(x||"").replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   function fecha(ms){ try{ return new Date(ms).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Madrid"}); }catch(e){ return ""; } }
@@ -706,7 +706,14 @@
     deEnlace = mh ? mh[1] : u.searchParams.get("codigo");
     if(deEnlace){ u.searchParams.delete("codigo"); history.replaceState(null,"",u.pathname+u.search+(mh?"":u.hash)); }
   }catch(e){}
-  if(deEnlace){ estado.form=true; pintar(); var i0=document.getElementById("accIn"); if(i0) i0.value=norm(deEnlace)||deEnlace; activar(deEnlace); }
+  function desdeEnlace(c){ estado.form=true; pintar(); var i0=document.getElementById("accIn"); if(i0) i0.value=norm(c)||c; activar(c); }
+  if(deEnlace) desdeEnlace(deEnlace);
+  // Si Mi espacio ya estaba abierto, el navegador solo cambia el «#»: también se atiende.
+  window.addEventListener("hashchange", function(){
+    var m=/^#codigo=([A-Za-z0-9-]{8,20})$/.exec(location.hash); if(!m) return;
+    try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+    if(!estado.ocupado) desdeEnlace(m[1]);
+  });
   if(publicado) pedir("acceso/config").then(function(c){ if(c&&c._status===200){ estado.cfg=c; pintar(); } }).catch(function(){});
   // Una vez al día se vuelve a comprobar el código guardado, por si el psicólogo/a lo ha anulado.
   var g=leer();

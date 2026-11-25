@@ -156,7 +156,7 @@
       .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; if(s!==sesion) return new Promise(function(){}); return b; }); });
   }
   function limpiar(){
-    sesion++; ultimo=null;
+    sesion++; ultimo=null; $("bCrear").disabled=false;
     $("lista").innerHTML='<tr><td colspan="5" class="suave">Cargando…</td></tr>'; $("cuenta").textContent="";
     $("nuevo").classList.add("oculto"); $("nCod").textContent=""; $("nFecha").textContent=""; $("nWa").href="#";
     aviso("mCrear",""); aviso("mLista","");

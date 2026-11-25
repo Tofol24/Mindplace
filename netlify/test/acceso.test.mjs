@@ -105,6 +105,10 @@ process.env.ACCESO_CODIGOS_PRO = "ana=codigo-ana-segundo-yy:5";
 assert.equal((await api(req("/api/acceso/lista", { pro: "codigo-ana-primero-xx" }))).status, 401);
 r = await J(await api(req("/api/acceso/lista", { pro: "codigo-ana-segundo-yy" })));
 assert.deepEqual(r.body.codigos.map((c) => c.codigo), [deAna]); assert.equal(r.body.limite, 5);
+// un nombre fijo repetido no da acceso a nadie
+process.env.ACCESO_CODIGOS_PRO = "ana=codigo-ana-segundo-yy, ana=codigo-intruso-zzzz";
+assert.equal((await api(req("/api/acceso/lista", { pro: "codigo-intruso-zzzz" }))).status, 401);
+assert.equal((await api(req("/api/acceso/lista", { pro: "codigo-ana-segundo-yy" }))).status, 401);
 // preflight
 const o = await api(req("/api/acceso/crear", { method: "OPTIONS", origin: "https://aprens.es" }));
 assert.equal(o.status, 204); assert.match(o.headers.get("access-control-allow-headers"), /x-codigo-pro/);

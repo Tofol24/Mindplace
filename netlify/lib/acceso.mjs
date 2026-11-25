@@ -23,7 +23,10 @@
                             "tofol=codigo-de-tofol-xxxx, ana=codigo-de-ana-xxxx:40"   (sin «:n», sin límite)
                           El nombre fijo es el que «posee» los códigos: si un código profesional se
                           filtra, se cambia por otro con el mismo nombre y se conserva la lista.
-                          (Sin «nombre=», los códigos quedan ligados al propio código profesional.) Los códigos ya dados siguen hasta su fecha aunque
+                          (Sin «nombre=», los códigos quedan ligados al propio código profesional.)
+                          Pon el nombre desde el principio: añadirlo después deja fuera de la lista los
+                          códigos ya creados. El nombre no puede repetirse, y el código profesional no
+                          debe contener «=» ni comas. Los códigos ya dados siguen hasta su fecha aunque
                           el profesional se quite de la lista o deje de pagar.
      ACCESO_AUTO_HASTA    último día (YYYY-MM-DD, hora de Mallorca) del botón automático, o "no"
      ACCESO_ORIGENES      orígenes extra que pueden llamar a la API (coma), además de los de ORIGENES
@@ -93,9 +96,12 @@ export function profesional(codigo) {
   if (c.length < 12 || c.length > 80) return null;
   const h = Buffer.from(sha(c));
   let res = null;
-  for (const item of String(env("ACCESO_CODIGOS_PRO")).split(",")) {
-    const m = item.trim().match(/^(?:([a-z0-9_-]{2,30})=)?(.{12,80}?)(?::(\d{1,4}))?$/);
-    if (!m) continue;
+  const entradas = String(env("ACCESO_CODIGOS_PRO")).split(",").map((x) => x.trim().match(/^(?:([a-z0-9_-]{2,30})=)?(.{12,80}?)(?::(\d{1,4}))?$/)).filter(Boolean);
+  // Un nombre fijo repetido daría a dos credenciales los mismos códigos: se anulan todas las que lo repiten.
+  const vistos = {};
+  for (const m of entradas) if (m[1]) vistos[m[1]] = (vistos[m[1]] || 0) + 1;
+  for (const m of entradas) {
+    if (m[1] && vistos[m[1]] > 1) continue;
     const b = Buffer.from(sha(m[2]));
     if (b.length === h.length && timingSafeEqual(b, h)) res = { huella: m[1] ? "id-" + m[1] : huella(c), limite: m[3] ? Number(m[3]) : 0 };
   }
