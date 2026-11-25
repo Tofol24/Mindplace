@@ -406,6 +406,7 @@ input[type=range]{width:100%}
   Los datos se guardan solo en este dispositivo y no se envían a ningún servidor.
 </footer>
 
+<script src="../js/atras.js"></script>
 <script>
 (function () {
   "use strict";
@@ -592,6 +593,12 @@ input[type=range]{width:100%}
 
   renderLadder();
   desdeEnlace();
+
+  /* ---------- «atrás» paso a paso entre pestañas ---------- */
+  if (window.AprensAtras) AprensAtras.vigilar({
+    vista: function () { var v = $("[role=tabpanel]:not([hidden])"); return v ? v.id.slice(2) : null; },
+    ir: function (v) { if (SECCIONES.indexOf(v) > -1) abrir(v); }
+  });
 })();
 </script>
 </body>

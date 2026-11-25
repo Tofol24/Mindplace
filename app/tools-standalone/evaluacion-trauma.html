@@ -975,5 +975,22 @@ function reabrir(code){
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso: cada pantalla (y cada ítem del PCL-5) es un paso. */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){ return vista==="pac_pcl" ? "pac_pcl:"+qIdx : vista; },
+  ir:function(v){
+    if(vista==="pac_suceso"&&S) salvaRelato();   // no perder el relato escrito
+    var p=String(v).split(":");
+    // Sin evaluación en curso o fuera de la zona profesional, no se reabre lo anterior: al selector.
+    if(p[0].indexOf("pac_")===0&&!S){ ir("selector"); return; }
+    if(p[0].indexOf("prof_")===0&&modo!=="profesional"){ ir("selector"); return; }
+    if(p[0]==="prof_informe"&&!S){ ir("prof_inicio"); return; }
+    if(p[0]==="pac_pcl") qIdx=Math.max(0,Math.min(PCL.length-1,parseInt(p[1],10)||0));
+    ir(p[0]);
+  }
+});
+</script>
 </body>
 </html>
