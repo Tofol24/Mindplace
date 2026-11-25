@@ -18,6 +18,7 @@ const SHELL = [
   "./js/registry.js",
   "./js/uso.js",
   "./js/app.js",
+  "./js/atras.js",
   "./js/respiro-ais.js",
   "./js/vineta-atencion.js",
   "./js/comprension.js",

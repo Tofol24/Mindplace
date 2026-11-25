@@ -8,6 +8,7 @@
 (function () {
   const screen = document.getElementById("screen");
   const backBtn = document.getElementById("hback");
+  const homeBtn = document.getElementById("hhome");
   const titleEl = document.getElementById("htitle");
 
   // Foco de la semana (pauta): ?foco=L|D|C  (se conserva entre navegaciones)
@@ -681,6 +682,7 @@
     removeExportBar();
     screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
+    if(homeBtn) homeBtn.style.display = "none";
     document.body.classList.remove("en-tool");
     titleEl.textContent = "APRENS";
     const tools = window.APRENS_TOOLS || [];
@@ -865,6 +867,7 @@
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
+    if(homeBtn) homeBtn.style.display = "inline-flex";
     document.body.classList.add("en-tool");
     titleEl.textContent = tool.nombre;
     screen.innerHTML = "";
@@ -892,18 +895,21 @@
   const trail = [];
   let goingBack = false;
 
+  // ¿Se ha entrado en la app desde otra página (p. ej. Mi espacio) directamente a una herramienta?
+  // Entonces, al llegar al principio, «← Atrás» vuelve a esa página en vez de ir al menú.
+  const entradaDeFuera = /^#\/tool\//.test(location.hash||"") && history.length > 1;
   function route(){
     const h = location.hash || "#/";
     // Cada navegación reinicia el gancho de "atrás interno"; la herramienta lo
     // vuelve a poner si tiene pantallas propias por las que retroceder.
     window.APRENS_toolBack = null;
     if(goingBack){ goingBack = false; }
+    else if(trail.length > 1 && trail[trail.length-2] === h){ trail.pop(); }   // atrás del navegador o del móvil
     else if(trail[trail.length-1] !== h){ trail.push(h); }
     const m = h.match(/^#\/tool\/([\w-]+)(?:\/([\w-]+))?/);
     const sec = h.match(/^#\/sec\/([\w-]+)/);
     if(m) renderTool(m[1], m[2]);
     else { renderHub(); if(sec) irAApartado(sec[1]); }
-    backBtn.textContent = "← Atrás";
   }
 
   function goHome(){ if((location.hash||"#/") !== "#/") location.hash = "#/"; }
@@ -925,10 +931,13 @@
         if(typeof h === "function" && h() === true) return;
       }catch(e){ /* si por lo que sea no es accesible, seguimos */ }
     }
-    // 2) Si no, retrocede un paso en la app (a la herramienta anterior); o al inicio.
-    if(trail.length > 1){ trail.pop(); goingBack = true; location.hash = trail[trail.length-1]; }
+    // 2) Si no, retrocede un paso de verdad en el historial (a la herramienta o pantalla anterior);
+    //    si se llegó de fuera (Mi espacio), vuelve allí; si no, al inicio de la app.
+    if(trail.length > 1){ trail.pop(); goingBack = true; history.back(); }
+    else if(entradaDeFuera){ history.back(); }
     else { location.hash = "#/"; }
   };
+  if(homeBtn) homeBtn.onclick = goHome;
   window.addEventListener("hashchange", route);
   route();
 })();
