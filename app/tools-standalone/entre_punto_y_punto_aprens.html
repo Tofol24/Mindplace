@@ -1244,5 +1244,29 @@ imReset(); adReset(); applyTheme(); render();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso: secciones, pasos de la escena en imaginación y niveles de la escalera.
+   Nunca arranca un temporizador; si la práctica ya se guardó, vuelve al primer paso. */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){
+    if(VIEW==='imag'&&IM) return 'imag:'+IM.paso;
+    if(VIEW==='adentro'&&AD) return 'adentro:'+(AD.fase==='practica'?AD.nivel:'lista');
+    return VIEW;
+  },
+  ir:function(v){
+    var p=String(v).split(':'), w=p[0];
+    if(!VIEWS[w]) return;
+    if(VIEW!==w) go(w);
+    if(w==='imag'){
+      var n=+p[1]||0; if(n>0&&!IM.escena) n=0;
+      if(IM.paso!==n) imGo(n);
+    } else if(w==='adentro'){
+      if(p[1]==='lista'||!p[1]){ if(AD.fase!=='lista') adVolver(); }
+      else { var nv=+p[1]; if(AD.fase!=='practica'||AD.nivel!==nv) adAbrir(nv); }
+    }
+  }
+});
+</script>
 </body>
 </html>

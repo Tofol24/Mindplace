@@ -293,6 +293,7 @@ footer.foot{font-size:13px;color:var(--soft);padding:10px 0 30px}
 
 <script src="../js/aprens-core.js"></script>
 <script src="../js/escalera-lateral.js"></script>
+<script src="../js/atras.js"></script>
 <script>
 (function () {
   "use strict";
@@ -659,6 +660,12 @@ footer.foot{font-size:13px;color:var(--soft);padding:10px 0 30px}
   }
   render();
   if (window.Aprens && Aprens.mountBar) Aprens.mountBar();
+
+  /* ---------- «atrás» paso a paso entre pestañas ---------- */
+  if (window.AprensAtras) AprensAtras.vigilar({
+    vista: function () { for (var i = 0; i < tabs.length; i++) if (tabs[i].getAttribute("aria-selected") === "true") return i; return null; },
+    ir: function (v) { var t = tabs[+v]; if (t) abrir(t); }
+  });
 })();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
