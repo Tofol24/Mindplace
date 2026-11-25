@@ -89,6 +89,9 @@ details > div{padding:0 0 14px}
 .circulo{width:120px;height:120px;border-radius:50%;background:var(--calma);border:2px solid var(--acento);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--tinta);transition:transform 4s ease-in-out}
 .circulo.grande{transform:scale(1.35)}
 
+figure.video{margin:22px auto 6px;text-align:center}
+figure.video video{width:240px;height:auto;aspect-ratio:9/16;max-width:100%;border-radius:16px;background:#000;box-shadow:var(--sombra);display:block;margin:0 auto}
+figure.video figcaption{font-size:14px;color:var(--suave);margin-top:8px}
 .aviso{font-size:15px;color:var(--suave)}
 footer{padding:30px 0 50px;text-align:center;color:var(--suave);font-size:14px}
 footer .firma{font-family:Georgia,"Times New Roman",serif;font-size:17px;color:var(--tinta)}
@@ -129,6 +132,13 @@ header.marca a{color:var(--acento);text-transform:none;letter-spacing:.04em;font
   <!-- ═══════════ FAMILIA ═══════════ -->
   <div role="tabpanel" id="panel-familia" aria-labelledby="tab-familia" tabindex="0">
     <div class="wrap">
+
+      <figure class="video">
+        <video controls playsinline preload="none" poster="/assets/video/poster-identidad.png" width="720" height="1280" aria-describedby="video-desc">
+          <source src="/assets/video/video-identidad.mp4" type="video/mp4">
+        </video>
+        <figcaption id="video-desc">En un minuto: las ideas principales de esta guía para familias. Es un vídeo sin sonido, solo con texto.</figcaption>
+      </figure>
 
       <section>
         <h2>Antes de nada</h2>
