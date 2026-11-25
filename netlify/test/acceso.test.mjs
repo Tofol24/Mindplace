@@ -90,7 +90,7 @@ assert.equal((await api(req("/api/acceso/crear", { method: "POST", pro: "codigo-
   const l = (await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.codigos.filter((c) => !c.revocado);
   await api(req("/api/acceso/revocar", { method: "POST", pro: "codigo-pro-limitado", body: { codigo: l[0].codigo } }));
   const rs = await Promise.all([1, 2, 3, 4].map(() => api(req("/api/acceso/crear", { method: "POST", pro: "codigo-pro-limitado", body: { meses: 1 } }))));
-  assert.ok(rs.filter((r) => r.status === 200).length <= 1);
+  assert.equal(rs.filter((r) => r.status === 200).length, 1);   // ni más del cupo ni perder la plaza libre
   assert.ok((await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" })))).body.activos <= 2);
 }
 // si el profesional sale de la lista (deja de pagar), sus códigos siguen hasta su fecha
@@ -98,6 +98,13 @@ const vivo = (await J(await api(req("/api/acceso/lista", { pro: "codigo-pro-limi
 process.env.ACCESO_CODIGOS_PRO = "codigo-pro-ilimitado";
 assert.equal((await api(req("/api/acceso/lista", { pro: "codigo-pro-limitado" }))).status, 401);
 assert.equal((await J(await api(req("/api/acceso/validar", { method: "POST", body: { codigo: vivo } })))).body.valido, true);
+// nombre fijo: cambiar el código profesional conserva la lista
+process.env.ACCESO_CODIGOS_PRO = "ana=codigo-ana-primero-xx:5";
+const deAna = (await J(await api(req("/api/acceso/crear", { method: "POST", pro: "codigo-ana-primero-xx", body: { meses: 2 } })))).body.codigo;
+process.env.ACCESO_CODIGOS_PRO = "ana=codigo-ana-segundo-yy:5";
+assert.equal((await api(req("/api/acceso/lista", { pro: "codigo-ana-primero-xx" }))).status, 401);
+r = await J(await api(req("/api/acceso/lista", { pro: "codigo-ana-segundo-yy" })));
+assert.deepEqual(r.body.codigos.map((c) => c.codigo), [deAna]); assert.equal(r.body.limite, 5);
 // preflight
 const o = await api(req("/api/acceso/crear", { method: "OPTIONS", origin: "https://aprens.es" }));
 assert.equal(o.status, 204); assert.match(o.headers.get("access-control-allow-headers"), /x-codigo-pro/);

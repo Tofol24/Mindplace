@@ -609,15 +609,19 @@
 /* Código de acceso al espacio APRENS (servidor: netlify/lib/acceso.mjs, sitio aprens-app).
    Por ahora es VOLUNTARIO: sin código se sigue entrando igual. El código y su
    fecha se guardan solo en este dispositivo; al servidor solo viaja el código.
-   Un enlace ?codigo=APR-XXXX-XXXX (el que manda el psicólogo por WhatsApp) lo
+   Un enlace #codigo=APR-XXXX-XXXX (el que manda el psicólogo por WhatsApp) lo
    rellena y lo valida solo. */
 (function(){
   var API="https://aprens-app.netlify.app/api/", K="aprens_acceso";
   var caja=document.getElementById("acceso"); if(!caja) return;
   var publicado = location.protocol==="https:" && location.hostname.indexOf("--")<0;
   var estado={cfg:null, ocupado:false, msg:"", tipo:"", form:false};
-  function leer(){ try{ var o=JSON.parse(localStorage.getItem(K)||"null"); return o&&o.codigo?o:null; }catch(e){ return null; } }
-  function guardar(o){ try{ if(o) localStorage.setItem(K, JSON.stringify(o)); else localStorage.removeItem(K); }catch(e){} }
+  // Si el navegador no deja guardar (modo privado, sin espacio…), el código se conserva en memoria
+  // para poder verlo y copiarlo, y se avisa de que no quedará guardado.
+  var mem;
+  function leer(){ try{ var o=JSON.parse(localStorage.getItem(K)||"null"); return o&&o.codigo?o:null; }catch(e){ return mem||null; } }
+  function guardar(o){ mem=o||null; try{ if(o) localStorage.setItem(K, JSON.stringify(o)); else localStorage.removeItem(K); return true; }catch(e){ return false; } }
+  var NO_GUARDA=" Este navegador no deja guardarlo: apúntalo o hazle una captura.";
   function esc(x){ return String(x||"").replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   function fecha(ms){ try{ return new Date(ms).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Madrid"}); }catch(e){ return ""; } }
   function fechaDia(d){ return d ? fecha(Date.parse(d+"T12:00:00Z")) : ""; }
@@ -663,7 +667,7 @@
     estado.ocupado=true; aviso("Comprobando el código…"); pintar();
     pedir("acceso/validar",{codigo:cod}).then(function(r){
       estado.ocupado=false;
-      if(r.valido){ guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso("Código activado. Ya está guardado en este dispositivo.","ok"); }
+      if(r.valido){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Código activado. Ya está guardado en este dispositivo.":"Código activado."+NO_GUARDA, ok?"ok":"err"); }
       else if(r.motivo==="caducado") aviso("Este código ya ha caducado. Pide a tu psicólogo/a uno nuevo.","err");
       else if(r.motivo==="revocado") aviso("Este código ya no está activo. Pregunta a tu psicólogo/a.","err");
       else if(r._status===429) aviso("Demasiados intentos seguidos. Prueba de nuevo dentro de un minuto.","err");
@@ -675,7 +679,7 @@
     estado.ocupado=true; aviso("Preparando tu código…"); pintar();
     pedir("acceso-solicitar",{}).then(function(r){
       estado.ocupado=false;
-      if(r.codigo){ guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso("Ya tienes tu código. Está guardado en este dispositivo.","ok"); }
+      if(r.codigo){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Ya tienes tu código. Está guardado en este dispositivo.":"Ya tienes tu código."+NO_GUARDA, ok?"ok":"err"); }
       else if(r._status===403){ estado.cfg={autoAbierto:false}; aviso("El periodo para pedir el código aquí ya ha terminado. Pídeselo a tu psicólogo/a.","err"); }
       else if(r._status===429) aviso("Ya se han pedido varios códigos desde aquí. Si has perdido el tuyo, pídeselo a tu psicólogo/a.","err");
       else aviso("No se ha podido crear el código. Prueba de nuevo en un momento.","err");
@@ -696,7 +700,12 @@
   pintar();
   // Enlace del WhatsApp: ?codigo=… se activa solo y se quita de la barra de direcciones.
   var deEnlace=null;
-  try{ var u=new URL(location.href); deEnlace=u.searchParams.get("codigo"); if(deEnlace){ u.searchParams.delete("codigo"); history.replaceState(null,"",u.pathname+u.search+u.hash); } }catch(e){}
+  // El enlace nuevo lleva el código tras «#» (no llega al servidor ni a sus registros); se acepta también «?codigo=».
+  try{
+    var u=new URL(location.href), mh=/^#codigo=([A-Za-z0-9-]{8,20})$/.exec(u.hash);
+    deEnlace = mh ? mh[1] : u.searchParams.get("codigo");
+    if(deEnlace){ u.searchParams.delete("codigo"); history.replaceState(null,"",u.pathname+u.search+(mh?"":u.hash)); }
+  }catch(e){}
   if(deEnlace){ estado.form=true; pintar(); var i0=document.getElementById("accIn"); if(i0) i0.value=norm(deEnlace)||deEnlace; activar(deEnlace); }
   if(publicado) pedir("acceso/config").then(function(c){ if(c&&c._status===200){ estado.cfg=c; pintar(); } }).catch(function(){});
   // Una vez al día se vuelve a comprobar el código guardado, por si el psicólogo/a lo ha anulado.
@@ -704,6 +713,7 @@
   if(publicado && g && !deEnlace && g.caduca>=Date.now() && Date.now()-(g.comprobado||0)>864e5){
     pedir("acceso/validar",{codigo:g.codigo}).then(function(r){
       if(r._status!==200) return;   // sin servicio o demasiados intentos: se deja como estaba
+      var ahora=leer(); if(!ahora || ahora.codigo!==g.codigo) return;   // mientras tanto se ha activado otro
       if(r.valido) guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()});
       else if(r.motivo==="caducado") guardar({codigo:g.codigo, caduca:Math.min(g.caduca, r.caduca||Date.now()), comprobado:Date.now()});
       else { guardar(null); aviso("Tu código "+g.codigo+" ya no está activo. Pregunta a tu psicólogo/a.","err"); }

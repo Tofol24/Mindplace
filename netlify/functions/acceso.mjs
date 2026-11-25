@@ -6,7 +6,7 @@
 //   POST /api/acceso/crear     {meses}            código nuevo de 1, 2, 3, 6 o 12 meses
 //   GET  /api/acceso/lista                        códigos creados con ese código profesional
 //   POST /api/acceso/revocar   {codigo}           anula uno de esos códigos
-import { activos, autoAbierto, autoHasta, cors, crear, cuerpo, estado, json, leer, listarPro, MESES_AUTO, MESES_VALIDOS, profesional, revocar } from "../lib/acceso.mjs";
+import { activos, autoAbierto, fueraDeCupo, autoHasta, cors, crear, cuerpo, estado, json, leer, listarPro, MESES_AUTO, MESES_VALIDOS, profesional, revocar } from "../lib/acceso.mjs";
 
 export default async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(req) });
@@ -33,10 +33,16 @@ export default async (req) => {
       if (!MESES_VALIDOS.includes(meses)) return json(req, 400, { error: "meses" });
       if (p.limite && activos(await listarPro(pro)) >= p.limite) return json(req, 409, { error: "limite", limite: p.limite });
       const nuevo = await crear({ meses, origen: "pro", pro });
-      // Dos peticiones a la vez pueden pasar la comprobación: se vuelve a contar y, si sobra, se anula el nuevo.
-      if (p.limite && activos(await listarPro(pro)) > p.limite) {
-        await revocar(pro, nuevo.codigo);
-        return json(req, 409, { error: "limite", limite: p.limite });
+      // Dos peticiones a la vez pueden pasar la comprobación: se vuelve a contar y, si este queda fuera
+      // del cupo (es de los últimos), se anula. Si el recuento falla, se entrega igual: mejor un código
+      // de más que dejar una plaza ocupada por un código que nadie ha recibido.
+      if (p.limite) {
+        let sobra = false;
+        try { sobra = fueraDeCupo(await listarPro(pro), nuevo.codigo, p.limite); } catch { sobra = false; }
+        if (sobra) {
+          await revocar(pro, nuevo.codigo).catch(() => {});
+          return json(req, 409, { error: "limite", limite: p.limite });
+        }
       }
       return json(req, 200, nuevo);
     }

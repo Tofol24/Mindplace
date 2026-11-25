@@ -18,9 +18,12 @@
                lista separada por comas), elige 1, 2, 3, 6 o 12 meses.
 
    Variables de entorno (sitio aprens-app):
-     ACCESO_CODIGOS_PRO   códigos profesionales separados por comas; cada uno con un límite opcional de
-                          pacientes activos a la vez: "codigo-de-tofol-xxxx, codigo-de-otra-xxxx:40"
-                          (sin «:n», sin límite). Los códigos ya dados siguen hasta su fecha aunque
+     ACCESO_CODIGOS_PRO   códigos profesionales separados por comas, con un nombre fijo delante y un
+                          límite opcional de pacientes activos a la vez:
+                            "tofol=codigo-de-tofol-xxxx, ana=codigo-de-ana-xxxx:40"   (sin «:n», sin límite)
+                          El nombre fijo es el que «posee» los códigos: si un código profesional se
+                          filtra, se cambia por otro con el mismo nombre y se conserva la lista.
+                          (Sin «nombre=», los códigos quedan ligados al propio código profesional.) Los códigos ya dados siguen hasta su fecha aunque
                           el profesional se quite de la lista o deje de pagar.
      ACCESO_AUTO_HASTA    último día (YYYY-MM-DD, hora de Mallorca) del botón automático, o "no"
      ACCESO_ORIGENES      orígenes extra que pueden llamar a la API (coma), además de los de ORIGENES
@@ -83,21 +86,29 @@ export function sumarMeses(meses, desde = new Date()) {
 const sha = (s) => createHash("sha256").update(s).digest("hex");
 export const huella = (codigoPro) => sha("aprens-acceso|" + codigoPro).slice(0, 24);
 
-/** Si el código es uno de ACCESO_CODIGOS_PRO devuelve {huella, limite} (limite 0 = sin límite); si no, null. */
+/** Si el código es uno de ACCESO_CODIGOS_PRO devuelve {huella, limite} (limite 0 = sin límite); si no, null.
+    huella es "id-<nombre>" si la entrada lleva nombre fijo, o la huella del propio código si no. */
 export function profesional(codigo) {
   const c = String(codigo || "").trim();
   if (c.length < 12 || c.length > 80) return null;
   const h = Buffer.from(sha(c));
-  let limite = -1;
+  let res = null;
   for (const item of String(env("ACCESO_CODIGOS_PRO")).split(",")) {
-    const m = item.trim().match(/^(.{12,80}?)(?::(\d{1,4}))?$/);
+    const m = item.trim().match(/^(?:([a-z0-9_-]{2,30})=)?(.{12,80}?)(?::(\d{1,4}))?$/);
     if (!m) continue;
-    const b = Buffer.from(sha(m[1]));
-    if (b.length === h.length && timingSafeEqual(b, h)) limite = m[2] ? Number(m[2]) : 0;
+    const b = Buffer.from(sha(m[2]));
+    if (b.length === h.length && timingSafeEqual(b, h)) res = { huella: m[1] ? "id-" + m[1] : huella(c), limite: m[3] ? Number(m[3]) : 0 };
   }
-  return limite < 0 ? null : { huella: huella(c), limite };
+  return res;
 }
 
+/** ¿Queda este código fuera del cupo? Los activos se ordenan por antigüedad (y código, para desempatar):
+    los `limite` primeros caben. Así, si dos altas coinciden, solo sobra la última, nunca las dos. */
+export const fueraDeCupo = (lista, codigo, limite, ahora = Date.now()) => {
+  const act = lista.filter((r) => !r.revocado && r.caduca >= ahora).sort((a, b) => a.creado - b.creado || (a.codigo < b.codigo ? -1 : 1));
+  const i = act.findIndex((r) => r.codigo === codigo);
+  return i >= limite;
+};
 /** Cuántos códigos de un profesional están en vigor ahora (ni caducados ni anulados). */
 export const activos = (lista, ahora = Date.now()) => lista.filter((r) => !r.revocado && r.caduca >= ahora).length;
 

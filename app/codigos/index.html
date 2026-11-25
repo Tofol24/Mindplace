@@ -138,10 +138,10 @@
 <script>
 (function(){
   "use strict";
-  var API="/api/acceso/", ENLACE="https://aprens.es/?codigo=";
+  var API="/api/acceso/", ENLACE="https://aprens.es/#codigo=";
   var K_PRO="aprens_codigos_pro", K_ETQ="aprens_codigos_etiquetas", K_TXT="aprens_codigos_plantilla";
   var PLANTILLA="Te paso tu código de acceso al espacio APRENS: {codigo}\n\nEs válido hasta el {fecha}, que es el tiempo que entiendo que te va a acompañar en esta etapa de la terapia. Para activarlo, entra en este enlace y se quedará guardado en tu móvil:\n{enlace}\n\nCualquier duda lo comentamos en la próxima sesión.\nTòfol";
-  var pro="", ultimo=null;
+  var pro="", ultimo=null, sesion=0;   // sesion: descarta respuestas que lleguen de una sesión anterior
   function $(id){ return document.getElementById(id); }
   function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){ return null; } }
   function ss(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); if(v===null) sessionStorage.removeItem(k); else sessionStorage.setItem(k,v); }catch(e){ return null; } }
@@ -151,13 +151,19 @@
   function fecha(ms){ return new Date(ms).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Madrid"}); }
   function aviso(id,t,tipo){ var m=$(id); m.textContent=t||""; m.className="msg"+(tipo?" "+tipo:""); }
   function pedir(ruta, cuerpo){
-    var h={"x-codigo-pro":pro}; if(cuerpo) h["content-type"]="application/json";
+    var h={"x-codigo-pro":pro}, s=sesion; if(cuerpo) h["content-type"]="application/json";
     return fetch(API+ruta,{method:cuerpo?"POST":"GET", headers:h, body:cuerpo?JSON.stringify(cuerpo):undefined})
-      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; return b; }); });
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; if(s!==sesion) return new Promise(function(){}); return b; }); });
+  }
+  function limpiar(){
+    sesion++; ultimo=null;
+    $("lista").innerHTML='<tr><td colspan="5" class="suave">Cargando…</td></tr>'; $("cuenta").textContent="";
+    $("nuevo").classList.add("oculto"); $("nCod").textContent=""; $("nFecha").textContent=""; $("nWa").href="#";
+    aviso("mCrear",""); aviso("mLista","");
   }
   // Si el código profesional deja de valer (p. ej. fin de la suscripción), se vuelve a la entrada.
   function caducaPro(){
-    pro=""; ls(K_PRO,null); ss(K_PRO,null); $("pro").value="";
+    pro=""; ls(K_PRO,null); ss(K_PRO,null); $("pro").value=""; limpiar();
     $("zona").classList.add("oculto"); $("secEntrar").classList.remove("oculto");
     aviso("mEntrar","Tu código profesional ya no es válido. Los códigos que ya diste siguen vigentes hasta su fecha.","err"); $("pro").focus();
   }
@@ -167,7 +173,7 @@
   function estadoDe(c){ return c.revocado ? "anulado" : (c.caduca < Date.now() ? "caducado" : "activo"); }
 
   function entrar(codigo, recordar){
-    pro=String(codigo||"").trim();
+    limpiar(); pro=String(codigo||"").trim();
     if(!pro){ aviso("mEntrar","Escribe tu código profesional.","err"); $("pro").focus(); return; }
     aviso("mEntrar","Comprobando…");
     pedir("pro").then(function(r){
