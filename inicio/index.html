@@ -93,6 +93,7 @@
   .tool:last-child{margin-bottom:0;}
   .tool .tic{font-size:23px;line-height:1.1;flex-shrink:0;}
   .tool .tbody{flex:1;min-width:0;}
+  .tool .tn,.tool .td{display:block;}
   .tool .tn{font-weight:600;font-size:14.5px;color:var(--azul);}
   .tool .td{font-size:12.5px;color:var(--gris);line-height:1.5;margin-top:2px;}
   .tool .arr{align-self:center;color:#C3CDDA;font-size:18px;flex-shrink:0;}
@@ -414,6 +415,11 @@
   .rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:#2c4f56;font-weight:700;font-size:15px;padding:11px 16px;border-radius:24px;}
   .lab-lk{display:inline-flex;align-items:center;gap:7px;margin:10px 0 2px;text-decoration:none;background:#f8e4eb;border:1px solid #ebc3d1;color:#8c0f39;font-weight:700;font-size:13px;padding:9px 15px;border-radius:999px;}
   .lab-lk:hover{border-color:#b3154a;}
+  /* Secciones por edades */
+  .grp-nav{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px;}
+  .grp-nav a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--linea);color:var(--tinta);font-weight:600;font-size:14px;text-decoration:none;}
+  .grp-nav a:hover{border-color:var(--tinta-soft);}
+  .grp-tit{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--tinta);margin:26px 0 10px;scroll-margin-top:12px;}
   /* Código de acceso (netlify/lib/acceso.mjs en aprens-app). Por ahora es voluntario. */
   .acc{background:#fff;border:1px solid var(--linea);border-radius:16px;padding:18px 18px 16px;margin:0 0 18px;color:var(--tinta);}
   .acc h2{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 6px;}
@@ -808,19 +814,21 @@ const TOOLS=[
   {nombre:"AIS desde la curiosidad", url:"https://aprens-app.netlify.app/#/tool/ais_curiosidad",      ic:"🔎", params:["L","D"],     desc:"Mirar lo que sientes con curiosidad, observando sus cualidades sin el «por qué»."},
   {nombre:"Retorno al trabajo",      url:"https://aprens-app.netlify.app/#/tool/retorno_trabajo",              ic:"💼", params:["L","C"], tema:"trabajo",     desc:"Volver al trabajo tras una baja, paso a paso y con tus valores."},
   {nombre:"Pedalea desde dentro",    url:"https://aprens-app.netlify.app/#/tool/pedalea_desde_dentro",        ic:"🚵", params:["D","C"], tema:"deporte",     desc:"Ciclismo de competición desde la tarea y el amor a la bici: pirámide de rendimiento, montaña y continuidad, AIS hacia el dolor, látigo vs amor firme y acompañar a tu cuerpo (nombre y diminutivo editables)."},
-  {nombre:"Estoy aquí conmigo",      url:"https://aprens-app.netlify.app/#/tool/estoy_aqui_conmigo",          ic:"🤍", params:["L","D"], tema:"impulsos",     desc:"Para adolescentes: presencia interna y apego seguro con una misma. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia y plan de apoyo (TEC–AIS)."},
+  {nombre:"Estoy aquí conmigo",      url:"https://aprens-app.netlify.app/#/tool/estoy_aqui_conmigo",          ic:"🤍", params:["L","D"], grupo:["adol"],     desc:"Para adolescentes: presencia interna y apego seguro con una misma. STOP, respiración de presencia, ¿deseo o alivio?, apego sano vs dependencia y plan de apoyo (TEC–AIS)."},
   {nombre:"Toco desde dentro",       url:"https://aprens-app.netlify.app/#/tool/toco_desde_dentro",           ic:"🚪", params:["L","C"], tema:"trabajo",     desc:"Para trabajo de puerta fría: respiración AIS antes de tocar, acompañar el cuerpo y no arrastrarlo, reencuadrar amenaza→reto, soltar los «no» y cerrar el día antes de llegar a casa."},
   {nombre:"Herramienta diaria",      url:"https://aprens-app.netlify.app/#/tool/herramienta_diaria",          ic:"🌿", params:["D"],         desc:"Tu práctica diaria de respiración, anclaje y presencia."},
   {nombre:"Tracker AIS",             url:"https://aprens-app.netlify.app/#/tool/tracker_ais", ic:"🧰", params:["D"],  desc:"Tu caja de herramientas AIS de la semana."},
   {nombre:"AIS desde el amor",       url:"https://aprens-app.netlify.app/#/tool/ais_amor",         ic:"💚", params:["D","C"],     desc:"Practicar la presencia como acompañamiento, también cuando estás bien."},
-  {nombre:"Honestidad emocional",    url:"https://aprens-app.netlify.app/#/tool/honestidad_emocional", ic:"🤍", params:["D","C"], destacar:true, desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, compartir y elegir (una experiencia AIS)."},
+  {nombre:"Honestidad emocional",    url:"https://aprens-app.netlify.app/#/tool/honestidad_emocional", ic:"🤍", params:["D","C"], todos:true, desc:"Acompañar lo que sientes antes de explicarlo: sentir, describir, compartir y elegir (una experiencia AIS)."},
   {nombre:"La escalera (exposición)", url:"https://aprens-app.netlify.app/#/tool/escalera_exposicion", ic:"🪜", params:["D","C"], destacar:true, tema:"miedos", desc:"Exposición en vivo gradual: tu escalera de peldaños y, en cada paso, dos llaves — el QUÉ (afrontar) y el CÓMO (acompañarte por dentro con AIS)."},
   {nombre:"Cuando el cuerpo sigue en alerta", url:"https://aprens-app.netlify.app/#/tool/cuerpo_en_alerta", ic:"🌿", params:["L","D"], tema:"miedos", desc:"Acompañamiento después de una experiencia traumática (accidente, agresión, amenaza): entender la respuesta de protección, orientarte al presente, acompañar la activación con AIS, diferenciar recuerdo, alerta y peligro, y recuperar territorio paso a paso (ACT · TEC · AIS)."},
-  {nombre:"La familia de Koa (cuento)", url:"https://aprens-app.netlify.app/#/tool/cuento_familia", ic:"🐨", params:["D"], peques:true, pdfs:[{l:"Castellano",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-es.pdf"},{l:"Català",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-ca.pdf"}], desc:"Cuento ilustrado para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Con pregunta y gesto en cada página y guía para mamá."},
-  {nombre:"La exploradora valiente", url:"https://aprens-app.netlify.app/#/tool/exploradora_valiente", ic:"🗺️", params:["D","C"], peques:true, desc:"Exposición gradual para la ansiedad de separación: escaleras de misiones de valiente, mapa de seguridad y las dos llaves (para madres y padres)."},
-  {nombre:"Misión Barrio", url:"https://aprens-app.netlify.app/#/tool/mision_barrio", ic:"🏙️", params:["D","C"], peques:true, tema:"miedos", desc:"Para 9–12 años: volver a salir con los amigos nivel a nivel, con superpoderes, XP, cromos y premios pactados (exposición gradual con refuerzo positivo)."},
-  {nombre:"Ritual diario · calma y atención", url:"https://aprens-app.netlify.app/#/tool/ritual_calma", ic:"🌙", params:["L","D"], peques:true, desc:"Ritual diario de audios AIS, normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1 (para regulación y rabietas)."},
-  {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], peques:true, desc:"Juegos cortos y visuales para practicar estar con lo que siento: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
+  {nombre:"La familia de Koa (cuento)", url:"https://aprens-app.netlify.app/#/tool/cuento_familia", ic:"🐨", params:["D"], grupo:["peques","familias"], pdfs:[{l:"Castellano",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-es.pdf"},{l:"Català",u:"https://aprens-app.netlify.app/assets/pdf/la-familia-de-koa-ca.pdf"}], desc:"Cuento ilustrado para dormir (3 años, familia monoparental): muchas formas de familia y todas con amor, desde el apego seguro. Con pregunta y gesto en cada página y guía para mamá."},
+  {nombre:"La exploradora valiente", url:"https://aprens-app.netlify.app/#/tool/exploradora_valiente", ic:"🗺️", params:["D","C"], grupo:["peques"], desc:"Exposición gradual para la ansiedad de separación: escaleras de misiones de valiente, mapa de seguridad y las dos llaves (para madres y padres)."},
+  {nombre:"Misión Barrio", url:"https://aprens-app.netlify.app/#/tool/mision_barrio", ic:"🏙️", params:["D","C"], grupo:["adol","peques"], desc:"Para 9–12 años: volver a salir con los amigos nivel a nivel, con superpoderes, XP, cromos y premios pactados (exposición gradual con refuerzo positivo)."},
+  {nombre:"Ritual diario · calma y atención", url:"https://aprens-app.netlify.app/#/tool/ritual_calma", ic:"🌙", params:["L","D"], grupo:["familias"], desc:"Ritual diario de audios AIS, normas y refuerzo, parada de pensamiento con respiración y grounding 5-4-3-2-1 (para regulación y rabietas)."},
+  {nombre:"Rincón de calma", url:"https://aprens-app.netlify.app/#/tool/rincon_calma", ic:"🧸", params:["D"], grupo:["peques"], desc:"Juegos cortos y visuales para practicar estar con lo que siento: la flor y la vela, el abrazo sentido y el detective de sensaciones."},
+  {nombre:"Quién soy, sin prisa", url:"https://aprens-app.netlify.app/#/tool/identidad_sin_prisa", ic:"🌱", params:[], grupo:["familias"], desc:"Para madres y padres de niñas y niños de 8 a 12 años con preguntas sobre su identidad de género: ni adelantarse ni frenar, qué decir y cómo acompañar."},
+  {nombre:"Herramientas AIS básicas", url:"https://aprens-app.netlify.app/#/tool/ais_basicas", ic:"🧰", params:[], todos:true, desc:"Respiración curiosa, parada de pensamiento, abrazo sentido y las anclas (cuello, pecho, barriga): lo que entrenas cada día, sea cual sea tu momento."},
   {nombre:"Tracker TEC",             url:"https://aprens-app.netlify.app/#/tool/tracker_tec",               ic:"📊", params:["L","C"],     desc:"Tu seguimiento de paradas y rutina diaria."},
   {nombre:"Brújula de valores",      url:"https://aprens-app.netlify.app/#/tool/brujula_valores",     ic:"🧭", params:["C"],         desc:"Mirar qué te importa y cómo de cerca estás por tu forma de estar."},
   {nombre:"Agenda atencional",       url:"https://aprens-app.netlify.app/#/tool/agenda_atencional",   ic:"🗓️", params:["L","D","C"], desc:"Organiza tu semana y dónde poner tu atención en cada momento."},
@@ -828,6 +836,13 @@ const TOOLS=[
   {nombre:"Cuestionario de seguimiento", url:"https://aprens-app.netlify.app/#/tool/screening_tec",   ic:"📝", params:[],            revisar:true, desc:"El de tu código de 3 cifras: deja ver tu evolución (latencia, densidad, continuidad)."}
 ];
 
+// Para quién es cada herramienta. Sin «grupo» ni «todos», la herramienta es de adultos (puertas L·D·C y temas).
+const GRUPOS=[
+  {k:"adol",     id:"adolescentes", ic:"🎒", tit:"Adolescentes",  col:"#3d6076", bg:"#dbe4ea", obj:"Herramientas pensadas para tu edad: estar contigo cuando todo va rápido y volver a salir con tu gente, paso a paso."},
+  {k:"peques",   id:"peques",       ic:"🧸", tit:"Peques",        col:"#905477", bg:"#f3e4ec", obj:"Juegos y cuentos para niñas y niños, para hacer <b>con madre y padre</b>: calma, valentía y estar con lo que se siente."},
+  {k:"familias", id:"familias",     ic:"🏡", tit:"Familias",      col:"#6a5a2a", bg:"#efe6cf", obj:"Pautas para madres y padres: cómo acompañar en casa la regulación de vuestros hijos e hijas y sus preguntas."}
+];
+const esAdultos=t=>!t.todos && !t.grupo;
 const DOORS=[
   {k:"L", ic:"🛑", tit:"Parar a tiempo",     sub:"Latencia",     color:"var(--azul)",   bg:"var(--azulLt)",  obj:"Tu objetivo aquí: ganar un instante entre lo que sientes y lo que haces, para poder elegir en vez de reaccionar. Para parar en caliente empieza por «Bajar la alerta» (o respiración); «Control de ira» es el autorregistro para después.", main:"Bajar la alerta"},
   {k:"D", ic:"🌬️", tit:"Estar presente",     sub:"Densidad",     color:"var(--verde)",  bg:"var(--verdeLt)", obj:"Tu objetivo aquí: aparecer por dentro y sostener lo que sientes, sin luchar contra ello.", main:"Herramienta diaria"},
@@ -941,7 +956,8 @@ function render(){
   MENU.push({href:'https://aprens-app.netlify.app/#/tool/fondos_frases', ext:true, ic:'🖼️', tit:'Fondos de frases', txt:'Convierte una frase que te acompañe en el fondo de pantalla de tu móvil.', col:'#805b17', bg:'#f4e7cc'});
   MENU.push({href:'#material', ic:'📄', tit:'Material de apoyo', txt:'Dos documentos base, útiles para todas las herramientas (PDF).', col:'#4f7353', bg:'#e7f0e4'});
   if(TOOLS.some(t=>t.tema)) MENU.push({href:'#temas', ic:'🎯', tit:'Por temas · situaciones', txt:'¿Buscas algo para una situación concreta? Trabajo, deporte, superar miedos o parar impulsos.', col:'#936031', bg:'#f4e6cc'});
-  if(TOOLS.some(t=>t.peques)) MENU.push({href:'#peques', ic:'🧸', tit:'Peques · familias', txt:'Herramientas infantiles para hacer con madre y padre.', col:'#905477', bg:'#f3e4ec'});
+  MENU.push({href:'#todos', ic:'🤲', tit:'Para todos', txt:'Lo básico que se trabaja en todos los casos: tu recorrido y las herramientas AIS de cada día.', col:'#2f5a46', bg:'#e1ece4'});
+  GRUPOS.forEach(g=>{ if(TOOLS.some(t=>t.grupo&&t.grupo.indexOf(g.k)>=0)) MENU.push({href:'#'+g.id, ic:g.ic, tit:g.tit, txt:g.obj.replace(/<[^>]+>/g,''), col:g.col, bg:g.bg}); });
   MENU.push({href:'#revisar', ic:'📝', tit:'Revisar mi progreso', txt:'Mira cómo evolucionas con tus cuestionarios. Esto se mide, no se entrena.', col:'var(--gris)', bg:'#EAEEF3', rev:true});
   html+='<div class="menu-lbl">¿Por dónde quieres ir hoy?</div><div class="menu">';
   MENU.forEach(m=>{
@@ -979,19 +995,30 @@ function render(){
       +'<span><span class="fn">'+esc(feat.nombre)+'</span><span class="fd">'+esc(feat.desc)+'</span></span>'
       +'<span class="arr">›</span></a></div>';
   }
+  // Navegación por edades
+  html+='<nav class="grp-nav" aria-label="Secciones por edades"><a href="#todos">🤲 Para todos</a><a href="#adultos">🧑 Adultos</a>'
+    + GRUPOS.map(g=>'<a href="#'+g.id+'">'+g.ic+' '+esc(g.tit)+'</a>').join('') + '</nav>';
+  // Para todos: lo básico, abierto en todos los casos
+  html+='<div class="sec" id="todos" style="border-top-color:#2f5a46">'
+    +'<div class="sec-head"><span class="sec-ic">🤲</span><span class="sec-tit" style="color:#2f5a46">Para todos</span>'
+    +'<span class="sec-badge" style="background:#e1ece4;color:#2f5a46">Siempre abierto</span></div>'
+    +'<div class="sec-obj">Lo que se trabaja en todos los casos, sea cual sea tu edad y tu momento: <a href="#recHero">tu recorrido</a>, las herramientas AIS básicas y la honestidad emocional.</div>'
+    + TOOLS.filter(t=>t.todos).map(toolHTML).join('')
+    +'</div>';
   // Material de apoyo (documentos transversales · PDF)
   if(MATERIAL.length){
     html+='<div class="sec" id="material" style="border-top-color:#4f7353">'
       +'<div class="sec-head"><span class="sec-ic">📄</span><span class="sec-tit" style="color:#4f7353">Material de apoyo</span></div>'
-      +'<div class="sec-obj">Dos documentos base, útiles para todas las herramientas. Puedes verlos o descargarlos en PDF.</div>'
+      +'<div class="sec-obj">Dos documentos base, útiles para todas las herramientas y para todas las edades. Puedes verlos o descargarlos en PDF.</div>'
       + MATERIAL.map(function(m){return '<a class="tool" href="'+m.u+'" target="_blank" rel="noopener"><span class="tic">'+m.ic+'</span><span class="tbody"><span class="tn">'+esc(m.n)+'</span><span class="td">'+esc(m.d)+'</span></span><span class="arr">↓</span></a>';}).join('')
       +'</div>';
   }
+  html+='<h2 class="grp-tit" id="adultos">🧑 Adultos</h2>';
   // Doors (si hay foco, su puerta se renderiza primero y destacada)
   const doorsOrder = DOORS.slice().sort((a,b)=>(a.k===FOCO?-1:0)-(b.k===FOCO?-1:0));
   doorsOrder.forEach(d=>{
     const isFoco=(FOCO && d.k===FOCO);
-    const all=TOOLS.filter(t=>!t.feat && !t.revisar && !t.peques && t.params.indexOf(d.k)>=0);
+    const all=TOOLS.filter(t=>!t.feat && !t.revisar && esAdultos(t) && t.params.indexOf(d.k)>=0);
     const main=all.filter(t=>t.nombre===d.main)[0] || all[0];
     const destac=all.filter(t=>t!==main && t.destacar);
     const rest=all.filter(t=>t!==main && !t.destacar);
@@ -1013,26 +1040,16 @@ function render(){
     {k:"miedos",   ic:"🪜", tit:"Superar miedos",  col:"#8f6119"},
     {k:"impulsos", ic:"🧯", tit:"Parar impulsos",  col:"#a8524b"}
   ];
-  const temasActivos=TEMAS.filter(g=>TOOLS.some(t=>t.tema===g.k));
+  const temasActivos=TEMAS.filter(g=>TOOLS.some(t=>t.tema===g.k && esAdultos(t)));
   if(temasActivos.length){
     html+='<div class="sec" id="temas" style="border-top-color:#936031">'
       +'<div class="sec-head"><span class="sec-ic">🎯</span><span class="sec-tit" style="color:#936031">Por temas · situaciones</span></div>'
       +'<div class="sec-obj">Si buscas algo para una situación concreta. (Las mismas herramientas también aparecen arriba, según qué entrenan.)</div>';
     temasActivos.forEach(g=>{
-      const ts=TOOLS.filter(t=>t.tema===g.k);
+      const ts=TOOLS.filter(t=>t.tema===g.k && esAdultos(t));
       html+='<div class="tema-sub" style="color:'+g.col+'"><span>'+g.ic+'</span>'+esc(g.tit)+'</div>'+ts.map(toolHTML).join('');
     });
     html+='</div>';
-  }
-  // Peques · familias (herramientas infantiles agrupadas aparte)
-  const peq=TOOLS.filter(t=>t.peques);
-  if(peq.length){
-    html+='<div class="sec" id="peques" style="border-top-color:#905477">'
-      +'<div class="sec-head"><span class="sec-ic">🧸</span><span class="sec-tit" style="color:#905477">Peques · familias</span>'
-      +'<span class="sec-badge" style="background:#f3e4ec;color:#905477">Infantil</span></div>'
-      +'<div class="sec-obj">Herramientas para niñas y niños, pensadas para hacer <b>con madre y padre</b>: exposición a la separación, ritual de calma y juegos para practicar.</div>'
-      + peq.map(toolHTML).join('')
-      +'</div>';
   }
   // Revisar
   const rev=TOOLS.filter(t=>t.revisar);
@@ -1044,6 +1061,16 @@ function render(){
       + rev.map(toolHTML).join('')
       +'</div>';
   }
+  // Adolescentes · Peques · Familias
+  GRUPOS.forEach(g=>{
+    const ts=TOOLS.filter(t=>t.grupo && t.grupo.indexOf(g.k)>=0);
+    if(!ts.length) return;
+    html+='<h2 class="grp-tit" style="color:'+g.col+'">'+g.ic+' '+esc(g.tit)+'</h2>'
+      +'<div class="sec" id="'+g.id+'" style="border-top-color:'+g.col+'">'
+      +'<div class="sec-obj">'+g.obj+'</div>'
+      + ts.map(toolHTML).join('')
+      +'</div>';
+  });
   // Footer
   html+='<div class="foot">🔒 Esta portada <b>no guarda nada</b> de lo que escribes. Cada herramienta se abre en una pestaña nueva y, si acaso, guarda sus datos solo en tu propio dispositivo.<br>Cuando una herramienta te lo proponga, podrás enviar tu registro a tu psicólogo/a.<br>'
     +'Si lo aceptas, se cuenta de manera anónima cuántas veces se entra en esta portada, sin saber quién eres. '
