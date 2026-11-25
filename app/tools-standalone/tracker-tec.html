@@ -669,5 +669,11 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>if(window.AprensAtras) AprensAtras.vigilar({
+  // Pestaña visible: «hoy» o «hist».
+  vista:function(){ return document.getElementById('pageHist').style.display==='none' ? 'hoy' : 'hist'; },
+  ir:function(v){ showTab(v==='hist' ? 'hist' : 'hoy'); }
+});</script>
 </body>
 </html>
