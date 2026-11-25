@@ -414,6 +414,21 @@
   .rec-hero .rh-go{flex:1 1 100%;text-align:center;background:#fff;color:#2c4f56;font-weight:700;font-size:15px;padding:11px 16px;border-radius:24px;}
   .lab-lk{display:inline-flex;align-items:center;gap:7px;margin:10px 0 2px;text-decoration:none;background:#f8e4eb;border:1px solid #ebc3d1;color:#8c0f39;font-weight:700;font-size:13px;padding:9px 15px;border-radius:999px;}
   .lab-lk:hover{border-color:#b3154a;}
+  /* Código de acceso (netlify/lib/acceso.mjs en aprens-app). Por ahora es voluntario. */
+  .acc{background:#fff;border:1px solid var(--linea);border-radius:16px;padding:18px 18px 16px;margin:0 0 18px;color:var(--tinta);}
+  .acc h2{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 6px;}
+  .acc p{font-size:14.5px;line-height:1.5;margin:0 0 10px;color:var(--tinta-soft);}
+  .acc-cod{display:inline-block;font:700 20px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;background:var(--paper);border:1px dashed var(--linea);border-radius:10px;padding:8px 12px;margin:2px 0 10px;color:var(--tinta);}
+  .acc-btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .acc button{font:inherit;font-size:14.5px;font-weight:600;border-radius:999px;padding:10px 16px;cursor:pointer;border:1px solid #2f5a46;background:#2f5a46;color:#fff;min-height:44px;}
+  .acc button.sec{background:#fff;color:#2f5a46;}
+  .acc button:disabled{opacity:.6;cursor:wait;}
+  .acc form{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;}
+  .acc label{flex-basis:100%;font-size:14px;font-weight:600;}
+  .acc input{flex:1 1 180px;font:600 17px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.05em;text-transform:uppercase;border:1px solid #8a7f72;border-radius:10px;padding:10px 12px;min-height:44px;color:var(--tinta);background:#fff;}
+  .acc-msg{font-size:14px;margin:8px 0 0;min-height:1em;}
+  .acc-msg.err{color:#9b2c22;}
+  .acc-msg.ok{color:#2f5a46;}
 </style>
 </head>
 <body>
@@ -429,6 +444,7 @@
       <div class="hw-sub">Herramientas para acompañarte por dentro, un momento cada día.</div>
     </div>
   </div>
+  <section class="acc" id="acceso" aria-labelledby="accTit" hidden></section>
   <div id="recHero"></div>
   <section class="porque" id="porque">
     <div class="pq-tit">¿Para qué sirven estos ejercicios?</div>
@@ -589,6 +605,99 @@
 
   <div id="appMain"></div>
 </div>
+<script>
+/* Código de acceso al espacio APRENS (servidor: netlify/lib/acceso.mjs, sitio aprens-app).
+   Por ahora es VOLUNTARIO: sin código se sigue entrando igual. El código y su
+   fecha se guardan solo en este dispositivo; al servidor solo viaja el código.
+   Un enlace ?codigo=APR-XXXX-XXXX (el que manda el psicólogo por WhatsApp) lo
+   rellena y lo valida solo. */
+(function(){
+  var API="https://aprens-app.netlify.app/api/", K="aprens_acceso";
+  var caja=document.getElementById("acceso"); if(!caja) return;
+  var publicado = location.protocol==="https:" && location.hostname.indexOf("--")<0;
+  var estado={cfg:null, ocupado:false, msg:"", tipo:"", form:false};
+  function leer(){ try{ var o=JSON.parse(localStorage.getItem(K)||"null"); return o&&o.codigo?o:null; }catch(e){ return null; } }
+  function guardar(o){ try{ if(o) localStorage.setItem(K, JSON.stringify(o)); else localStorage.removeItem(K); }catch(e){} }
+  function esc(x){ return String(x||"").replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function fecha(ms){ try{ return new Date(ms).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Madrid"}); }catch(e){ return ""; } }
+  function fechaDia(d){ return d ? fecha(Date.parse(d+"T12:00:00Z")) : ""; }
+  function norm(c){ var s=String(c||"").toUpperCase().replace(/[^0-9A-Z]/g,""); if(s.length===11&&s.indexOf("APR")===0) s=s.slice(3); return s.length===8 ? "APR-"+s.slice(0,4)+"-"+s.slice(4) : ""; }
+  function pedir(ruta, cuerpo){
+    var o={method:cuerpo?"POST":"GET", headers:cuerpo?{"content-type":"application/json"}:{}};
+    if(cuerpo) o.body=JSON.stringify(cuerpo);
+    return fetch(API+ruta,o).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; return b; }); });
+  }
+  function aviso(t,tipo){ estado.msg=t; estado.tipo=tipo||""; }
+  function pintar(){
+    var a=leer(), ahora=Date.now(), h='<h2 id="accTit">Tu código de acceso</h2>';
+    var auto = estado.cfg && estado.cfg.autoAbierto;
+    if(a && a.caduca>=ahora){
+      h+='<p>Este es tu código personal del espacio APRENS. Es válido hasta el <b>'+esc(fecha(a.caduca))+'</b> y se queda guardado en este dispositivo.</p>'
+        +'<div class="acc-cod">'+esc(a.codigo)+'</div>'
+        +'<p>Guárdalo o hazle una captura: si cambias de móvil o borras los datos del navegador, te lo volveremos a pedir.</p>'
+        +'<div class="acc-btns"><button type="button" class="sec" data-acc="copiar">Copiar el código</button><button type="button" class="sec" data-acc="otro">Tengo otro código</button></div>';
+    } else {
+      if(a) h+='<p>Tu código <b>'+esc(a.codigo)+'</b> caducó el '+esc(fecha(a.caduca))+'. Pide a tu psicólogo/a uno nuevo para seguir acompañándote con estas herramientas.</p>';
+      else h+='<p>A partir de ahora, el espacio APRENS funcionará con un código personal que te dará tu psicólogo/a, asociado al tiempo que entendemos que te va a acompañar durante la terapia. Por ahora puedes seguir entrando como siempre, sin código.</p>';
+      if(auto) h+='<p>Hasta el <b>'+esc(fechaDia(estado.cfg.autoHasta))+'</b> puedes pedir el tuyo aquí mismo. Es válido durante '+esc(estado.cfg.mesesAuto||3)+' meses.</p>';
+      h+='<div class="acc-btns">'
+        +(auto?'<button type="button" data-acc="solicitar"'+(estado.ocupado?' disabled':'')+'>Solicitar mi código</button>':'')
+        +(estado.form?'':'<button type="button" class="sec" data-acc="tengo">Ya tengo un código</button>')+'</div>';
+    }
+    if(estado.form){
+      h+='<form data-acc="form" novalidate><label for="accIn">Escribe tu código</label>'
+        +'<input id="accIn" name="codigo" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="APR-XXXX-XXXX" maxlength="20" inputmode="text">'
+        +'<button type="submit"'+(estado.ocupado?' disabled':'')+'>Activar</button></form>';
+    }
+    h+='<p class="acc-msg'+(estado.tipo?' '+estado.tipo:'')+'" role="status" aria-live="polite">'+esc(estado.msg)+'</p>';
+    var foco=document.activeElement && caja.contains(document.activeElement) ? (document.activeElement.getAttribute("data-acc")||document.activeElement.id) : null;
+    var valor=document.getElementById("accIn") ? document.getElementById("accIn").value : "";
+    caja.innerHTML=h; caja.hidden=false;
+    var inp=document.getElementById("accIn"); if(inp && valor) inp.value=valor;
+    if(foco){ var f=document.getElementById(foco)||caja.querySelector('[data-acc="'+foco+'"]'); if(f) f.focus(); }
+  }
+  function activar(c){
+    var cod=norm(c);
+    if(!cod){ aviso("Este código no tiene el formato correcto. Debería ser como APR-7K2M-9QXD.","err"); pintar(); return; }
+    if(!publicado){ aviso("Para activar el código hace falta abrir Mi espacio desde aprens.es.","err"); pintar(); return; }
+    estado.ocupado=true; aviso("Comprobando el código…"); pintar();
+    pedir("acceso/validar",{codigo:cod}).then(function(r){
+      estado.ocupado=false;
+      if(r.valido){ guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso("Código activado. Ya está guardado en este dispositivo.","ok"); }
+      else if(r.motivo==="caducado") aviso("Este código ya ha caducado. Pide a tu psicólogo/a uno nuevo.","err");
+      else if(r.motivo==="revocado") aviso("Este código ya no está activo. Pregunta a tu psicólogo/a.","err");
+      else if(r._status===429) aviso("Demasiados intentos seguidos. Prueba de nuevo dentro de un minuto.","err");
+      else aviso("No encuentro este código. Revisa que esté bien escrito.","err");
+      pintar();
+    }).catch(function(){ estado.ocupado=false; aviso("Ahora no hay conexión. Prueba de nuevo en un momento.","err"); pintar(); });
+  }
+  function solicitar(){
+    estado.ocupado=true; aviso("Preparando tu código…"); pintar();
+    pedir("acceso-solicitar",{}).then(function(r){
+      estado.ocupado=false;
+      if(r.codigo){ guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso("Ya tienes tu código. Está guardado en este dispositivo.","ok"); }
+      else if(r._status===403){ estado.cfg={autoAbierto:false}; aviso("El periodo para pedir el código aquí ya ha terminado. Pídeselo a tu psicólogo/a.","err"); }
+      else if(r._status===429) aviso("Ya se han pedido varios códigos desde aquí. Si has perdido el tuyo, pídeselo a tu psicólogo/a.","err");
+      else aviso("No se ha podido crear el código. Prueba de nuevo en un momento.","err");
+      pintar();
+    }).catch(function(){ estado.ocupado=false; aviso("Ahora no hay conexión. Prueba de nuevo en un momento.","err"); pintar(); });
+  }
+  caja.addEventListener("click", function(e){
+    var b=e.target.closest("button[data-acc]"); if(!b) return;
+    var q=b.getAttribute("data-acc");
+    if(q==="solicitar") solicitar();
+    if(q==="tengo"||q==="otro"){ estado.form=true; aviso(""); pintar(); var i=document.getElementById("accIn"); if(i) i.focus(); }
+    if(q==="copiar"){ var a=leer(); if(a&&navigator.clipboard) navigator.clipboard.writeText(a.codigo).then(function(){ aviso("Código copiado.","ok"); pintar(); },function(){}); }
+  });
+  caja.addEventListener("submit", function(e){ e.preventDefault(); var i=document.getElementById("accIn"); activar(i?i.value:""); });
+  pintar();
+  // Enlace del WhatsApp: ?codigo=… se activa solo y se quita de la barra de direcciones.
+  var deEnlace=null;
+  try{ var u=new URL(location.href); deEnlace=u.searchParams.get("codigo"); if(deEnlace){ u.searchParams.delete("codigo"); history.replaceState(null,"",u.pathname+u.search+u.hash); } }catch(e){}
+  if(deEnlace){ estado.form=true; pintar(); var i0=document.getElementById("accIn"); if(i0) i0.value=norm(deEnlace)||deEnlace; activar(deEnlace); }
+  if(publicado) pedir("acceso/config").then(function(c){ if(c&&c._status===200){ estado.cfg=c; pintar(); } }).catch(function(){});
+})();
+</script>
 <script>
 /* Contador anónimo de entradas (sitio aprens-inicio → función de aprens-app).
    Solo envía «se ha entrado en Mi espacio» y, decidido en el propio

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!--
+  APRENS · Códigos de acceso (para el psicólogo/a)
+  Genera códigos de paciente con caducidad (1, 2, 3, 6 o 12 meses) y los envía por WhatsApp.
+  Servidor: netlify/lib/acceso.mjs (/api/acceso/*). Se entra con el código profesional
+  (variable ACCESO_CODIGOS_PRO del sitio aprens-app).
+  Al servidor solo viajan los códigos y sus fechas. Las etiquetas («Paciente martes»)
+  y el texto del mensaje se guardan solo en este navegador.
+-->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f2a3f">
+<title>Códigos de acceso · APRENS</title>
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<style>
+  :root{--fondo:#f4f6f8;--card:#fff;--tinta:#1d2733;--suave:#56606b;--linea:#d6dce3;--azul:#0f2a3f;--verde:#2f6a4f;--rojo:#a32d22;--chip:#eef2f5;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  header{background:var(--azul);color:#fff;padding:16px;}
+  header h1{margin:0;font-size:20px;}
+  header p{margin:2px 0 0;font-size:14px;opacity:.85;}
+  header a{color:#fff;}
+  main{max-width:760px;margin:0 auto;padding:16px;}
+  section{background:var(--card);border:1px solid var(--linea);border-radius:14px;padding:16px;margin:0 0 16px;}
+  h2{font-size:17px;margin:0 0 10px;}
+  p{margin:0 0 10px;}
+  .suave{color:var(--suave);font-size:14px;}
+  label{display:block;font-weight:600;font-size:14px;margin:10px 0 4px;}
+  input,select,textarea{font:inherit;width:100%;border:1px solid #8a949e;border-radius:10px;padding:10px 12px;min-height:44px;background:#fff;color:var(--tinta);}
+  textarea{min-height:150px;resize:vertical;font-size:15px;}
+  .fila{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .fila > div{flex:1 1 180px;}
+  button,.btn{font:inherit;font-weight:600;font-size:15px;border-radius:999px;padding:10px 16px;min-height:44px;cursor:pointer;border:1px solid var(--azul);background:var(--azul);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
+  button.sec,.btn.sec{background:#fff;color:var(--azul);}
+  button.peligro{background:#fff;color:var(--rojo);border-color:var(--rojo);}
+  .btn.wa{background:#1d6b45;border-color:#1d6b45;}
+  button:disabled{opacity:.6;cursor:wait;}
+  .msg{min-height:1.2em;font-size:14px;margin:8px 0 0;}
+  .msg.err{color:var(--rojo);} .msg.ok{color:var(--verde);}
+  .nuevo{border:2px solid var(--verde);border-radius:12px;padding:14px;margin-top:14px;}
+  .cod{font:700 22px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;}
+  .acciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--linea);vertical-align:middle;}
+  th{font-size:13px;color:var(--suave);font-weight:600;}
+  td .cod{font-size:15px;}
+  td input{min-height:36px;padding:6px 8px;font-size:14px;}
+  td button{min-height:36px;padding:6px 12px;font-size:13px;}
+  .estado{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12.5px;font-weight:600;background:var(--chip);}
+  .estado.activo{background:#dcefe3;color:#1f5138;} .estado.caducado{color:#5d4b10;background:#f4ead0;} .estado.anulado{color:#7a2219;background:#f6e0dd;}
+  .oculto{display:none;}
+  .oculto-vis{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .tabla{overflow-x:auto;}
+  @media (max-width:560px){
+    thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+    table,tbody,tr,td{display:block;width:100%;}
+    tr{border-bottom:1px solid var(--linea);padding:10px 0;}
+    td{border:0;padding:3px 0;}
+    td[data-l]::before{content:attr(data-l) " ";color:var(--suave);}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Códigos de acceso</h1>
+  <p>Espacio APRENS · para psicólogos/as · <a href="../panel/">Volver al panel</a></p>
+</header>
+<main>
+  <section id="secEntrar" aria-labelledby="tEntrar">
+    <h2 id="tEntrar">Entrar con tu código profesional</h2>
+    <form id="fEntrar" novalidate>
+      <label for="pro">Código profesional</label>
+      <div class="fila">
+        <div><input id="pro" type="password" autocomplete="current-password" spellcheck="false" required></div>
+        <button type="submit">Entrar</button>
+      </div>
+      <label class="suave" style="font-weight:400;display:flex;gap:8px;align-items:center"><input id="recordar" type="checkbox" style="width:auto;min-height:0"> Recordarlo en este dispositivo</label>
+      <p class="msg" id="mEntrar" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <div id="zona" class="oculto">
+    <section aria-labelledby="tCrear">
+      <h2 id="tCrear">Nuevo código para un paciente</h2>
+      <p class="suave">Elige el tiempo que entiendes que el paciente necesitará el espacio. El código sigue vivo hasta su fecha aunque más adelante dejes la suscripción.</p>
+      <form id="fCrear" novalidate>
+        <div class="fila">
+          <div>
+            <label for="meses">Duración</label>
+            <select id="meses">
+              <option value="1">1 mes</option><option value="2">2 meses</option><option value="3" selected>3 meses</option>
+              <option value="6">6 meses</option><option value="12">12 meses</option>
+            </select>
+          </div>
+          <div>
+            <label for="etiqueta">Etiqueta (solo la ves tú)</label>
+            <input id="etiqueta" maxlength="40" placeholder="Iniciales o un alias, nunca el nombre" autocomplete="off">
+          </div>
+          <button type="submit" id="bCrear">Crear código</button>
+        </div>
+        <p class="msg" id="mCrear" role="status" aria-live="polite"></p>
+      </form>
+      <div id="nuevo" class="nuevo oculto" tabindex="-1" aria-labelledby="tNuevo">
+        <p id="tNuevo" style="margin:0 0 4px;font-weight:600">Código creado</p>
+        <div class="cod" id="nCod"></div>
+        <p class="suave" id="nFecha" style="margin:4px 0 0"></p>
+        <div class="acciones">
+          <a class="btn wa" id="nWa" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+          <button type="button" class="sec" id="nCopiar">Copiar el mensaje</button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="tLista">
+      <h2 id="tLista">Tus códigos</h2>
+      <p class="suave" id="cuenta"></p>
+      <div class="tabla"><table>
+        <thead><tr><th scope="col">Código</th><th scope="col">Etiqueta</th><th scope="col">Válido hasta</th><th scope="col">Estado</th><th scope="col"><span class="oculto-vis">Acciones</span></th></tr></thead>
+        <tbody id="lista"><tr><td colspan="5" class="suave">Cargando…</td></tr></tbody>
+      </table></div>
+      <p class="msg" id="mLista" role="status" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="tPlantilla">
+      <h2 id="tPlantilla">Mensaje de WhatsApp</h2>
+      <p class="suave">Puedes adaptarlo a tu manera de escribir. <b>{codigo}</b>, <b>{fecha}</b> y <b>{enlace}</b> se cambian solos. Se guarda en este dispositivo.</p>
+      <label for="plantilla">Texto del mensaje</label>
+      <textarea id="plantilla"></textarea>
+      <div class="acciones"><button type="button" class="sec" id="bPlantilla">Volver al texto original</button></div>
+    </section>
+
+    <button type="button" class="sec" id="bSalir">Salir</button>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  var API="/api/acceso/", ENLACE="https://aprens.es/?codigo=";
+  var K_PRO="aprens_codigos_pro", K_ETQ="aprens_codigos_etiquetas", K_TXT="aprens_codigos_plantilla";
+  var PLANTILLA="Te paso tu código de acceso al espacio APRENS: {codigo}\n\nEs válido hasta el {fecha}, que es el tiempo que entiendo que te va a acompañar en esta etapa de la terapia. Para activarlo, entra en este enlace y se quedará guardado en tu móvil:\n{enlace}\n\nCualquier duda lo comentamos en la próxima sesión.\nTòfol";
+  var pro="", ultimo=null;
+  function $(id){ return document.getElementById(id); }
+  function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){ return null; } }
+  function ss(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); if(v===null) sessionStorage.removeItem(k); else sessionStorage.setItem(k,v); }catch(e){ return null; } }
+  function etiquetas(){ try{ return JSON.parse(ls(K_ETQ)||"{}")||{}; }catch(e){ return {}; } }
+  function ponEtiqueta(c,t){ var o=etiquetas(); t=String(t||"").trim().slice(0,40); if(t) o[c]=t; else delete o[c]; ls(K_ETQ, JSON.stringify(o)); }
+  function esc(x){ return String(x==null?"":x).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function fecha(ms){ return new Date(ms).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric",timeZone:"Europe/Madrid"}); }
+  function aviso(id,t,tipo){ var m=$(id); m.textContent=t||""; m.className="msg"+(tipo?" "+tipo:""); }
+  function pedir(ruta, cuerpo){
+    var h={"x-codigo-pro":pro}; if(cuerpo) h["content-type"]="application/json";
+    return fetch(API+ruta,{method:cuerpo?"POST":"GET", headers:h, body:cuerpo?JSON.stringify(cuerpo):undefined})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; return b; }); });
+  }
+  function plantilla(){ return ls(K_TXT) || PLANTILLA; }
+  function mensaje(c){ return plantilla().split("{codigo}").join(c.codigo).split("{fecha}").join(fecha(c.caduca)).split("{enlace}").join(ENLACE+c.codigo); }
+  function waUrl(c){ return "https://wa.me/?text="+encodeURIComponent(mensaje(c)); }
+  function estadoDe(c){ return c.revocado ? "anulado" : (c.caduca < Date.now() ? "caducado" : "activo"); }
+
+  function entrar(codigo, recordar){
+    pro=String(codigo||"").trim();
+    if(!pro){ aviso("mEntrar","Escribe tu código profesional.","err"); $("pro").focus(); return; }
+    aviso("mEntrar","Comprobando…");
+    pedir("pro").then(function(r){
+      if(r._status===200){
+        if(recordar) ls(K_PRO,pro); else ss(K_PRO,pro);
+        aviso("mEntrar",""); $("secEntrar").classList.add("oculto"); $("zona").classList.remove("oculto");
+        $("tCrear").setAttribute("tabindex","-1"); $("tCrear").focus();
+        cargar();
+      } else {
+        pro=""; ls(K_PRO,null); ss(K_PRO,null); $("secEntrar").classList.remove("oculto");
+        aviso("mEntrar", r._status===401 ? "Este código profesional no es válido." : r._status===429 ? "Demasiados intentos. Espera un minuto." : "El servicio no responde ahora mismo.","err");
+      }
+    }).catch(function(){ aviso("mEntrar","No hay conexión. Prueba de nuevo en un momento.","err"); });
+  }
+
+  function cargar(){
+    pedir("lista").then(function(r){
+      if(r._status!==200){ aviso("mLista","No se ha podido cargar la lista.","err"); return; }
+      var e=etiquetas(), h="";
+      r.codigos.forEach(function(c){
+        var st=estadoDe(c);
+        h+='<tr data-cod="'+esc(c.codigo)+'"><td><span class="cod">'+esc(c.codigo)+'</span></td>'
+          +'<td><input aria-label="Etiqueta de '+esc(c.codigo)+'" maxlength="40" value="'+esc(e[c.codigo]||"")+'" data-etq></td>'
+          +'<td data-l="Válido hasta">'+esc(fecha(c.caduca))+'</td><td data-l="Estado:"><span class="estado '+st+'">'+st+'</span></td>'
+          +'<td style="white-space:nowrap">'+(st==="activo"
+            ? '<a class="btn sec" style="min-height:36px;padding:6px 12px;font-size:13px" target="_blank" rel="noopener" href="'+esc(waUrl(c))+'" aria-label="Enviar '+esc(c.codigo)+' por WhatsApp">WhatsApp</a> <button type="button" class="peligro" data-anular aria-label="Anular '+esc(c.codigo)+'">Anular</button>'
+            : '')+'</td></tr>';
+      });
+      $("lista").innerHTML = h || '<tr><td colspan="5" class="suave">Aún no has creado ningún código.</td></tr>';
+      $("cuenta").textContent = r.activos+" código"+(r.activos===1?"":"s")+" activo"+(r.activos===1?"":"s")+(r.limite?" de "+r.limite+" posibles":"")+".";
+    }).catch(function(){ aviso("mLista","No hay conexión.","err"); });
+  }
+
+  $("fEntrar").addEventListener("submit", function(e){ e.preventDefault(); entrar($("pro").value, $("recordar").checked); });
+  $("fCrear").addEventListener("submit", function(e){
+    e.preventDefault();
+    var b=$("bCrear"); b.disabled=true; aviso("mCrear","Creando…");
+    pedir("crear",{meses:Number($("meses").value)}).then(function(r){
+      b.disabled=false;
+      if(r._status===200){
+        ponEtiqueta(r.codigo, $("etiqueta").value); $("etiqueta").value="";
+        ultimo=r; $("nCod").textContent=r.codigo; $("nFecha").textContent="Válido hasta el "+fecha(r.caduca)+".";
+        $("nWa").href=waUrl(r); $("nuevo").classList.remove("oculto"); aviso("mCrear","");
+        $("nuevo").focus(); cargar();
+      } else if(r._status===409) aviso("mCrear","Has llegado al máximo de "+r.limite+" pacientes activos. Anula un código que ya no uses para crear otro.","err");
+      else if(r._status===401){ aviso("mCrear","Tu código profesional ya no es válido.","err"); }
+      else aviso("mCrear","No se ha podido crear el código. Prueba de nuevo.","err");
+    }).catch(function(){ b.disabled=false; aviso("mCrear","No hay conexión.","err"); });
+  });
+  $("nCopiar").addEventListener("click", function(){
+    if(!ultimo||!navigator.clipboard) return;
+    navigator.clipboard.writeText(mensaje(ultimo)).then(function(){ aviso("mCrear","Mensaje copiado.","ok"); }, function(){});
+  });
+  $("lista").addEventListener("change", function(e){ var i=e.target.closest("input[data-etq]"); if(i) ponEtiqueta(i.closest("tr").getAttribute("data-cod"), i.value); });
+  $("lista").addEventListener("click", function(e){
+    var b=e.target.closest("button[data-anular]"); if(!b) return;
+    var c=b.closest("tr").getAttribute("data-cod");
+    if(!confirm("¿Anular el código "+c+"? El paciente dejará de tener acceso con él.")) return;
+    pedir("revocar",{codigo:c}).then(function(r){ aviso("mLista", r._status===200 ? "Código "+c+" anulado." : "No se ha podido anular.", r._status===200?"ok":"err"); cargar(); })
+      .catch(function(){ aviso("mLista","No hay conexión.","err"); });
+  });
+  $("plantilla").value=plantilla();
+  $("plantilla").addEventListener("input", function(){ var v=$("plantilla").value; ls(K_TXT, v.trim() && v!==PLANTILLA ? v : null); if(ultimo) $("nWa").href=waUrl(ultimo); });
+  $("bPlantilla").addEventListener("click", function(){ ls(K_TXT,null); $("plantilla").value=PLANTILLA; if(ultimo) $("nWa").href=waUrl(ultimo); });
+  $("bSalir").addEventListener("click", function(){ ls(K_PRO,null); ss(K_PRO,null); location.reload(); });
+
+  var guardado=ls(K_PRO)||ss(K_PRO);
+  if(guardado){ $("pro").value=guardado; $("recordar").checked=!!ls(K_PRO); entrar(guardado, !!ls(K_PRO)); }
+})();
+</script>
+</body>
+</html>
