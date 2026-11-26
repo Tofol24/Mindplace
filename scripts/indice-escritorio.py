@@ -41,13 +41,13 @@ SITIOS = {
 OFFLINE_BASE = "https://claude.ai/artifact/3Yf4GS3km74CQLA4myBZgh"
 OFFLINE = [
     dict(rel="offline/neuroestimulador.html", local="protocolo_idoneidad_neuroestimulador-2.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
-         desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ…) previa a neuroestimulación, con señales a revisar y texto para el informe.", pub="profesional"),
+         desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ, CPGS…) previa a neuroestimulación, con señales a revisar y texto para el informe. «Importar datos» recoge el cuestionario de dolor crónico, el PAI y la historia clínica; PCS, TSK, PSEQ y CPGS se corrigen tecleando las respuestas.", pub="profesional"),
     dict(rel="offline/tdah-v5.html", local="APRENS_TDAH_v5_1_Dropbox.html", emoji="🧩", nombre="Orientador clínico TDAH · v5.1",
          desc="Versión con biblioteca de instrumentos, carpeta de documentación en Dropbox/Drive y enlaces a TEAcorrige.", pub="profesional"),
     dict(rel="offline/cami-cap-a-dins.html", local="cribratge_cami_cap_a_dins.html", emoji="⛰️", nombre="Camí cap a dins · cribratge previ",
          desc="Cribratge abans de l'experiència AIS · TEC a Santa Magdalena: bandera orientativa i resum per enviar a en Tòfol.", pub="paciente"),
     dict(rel=None, local="PAI_PROFESIONAL(17).html", emoji="📋", nombre="PAI Profesional · corrección e interpretación",
-         desc="Corrección del PAI con baremos españoles, vaciado de protocolo en papel y hoja de tecleo para TEA.", pub="profesional",
+         desc="Corrección del PAI con baremos españoles, vaciado de protocolo en papel y hoja de tecleo para TEA. Genera el código de puntuaciones T para «Importar datos» del protocolo de neuroestimulador.", pub="profesional",
          nota="Solo en tu Mac: contiene ítems y baremos protegidos, por eso no se sube a ningún sitio."),
 ]
 
