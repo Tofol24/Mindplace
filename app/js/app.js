@@ -183,7 +183,11 @@
     if(window.AprensAcceso){ AprensAcceso.montar(document.getElementById("acceso")); }
   }
   // Al activar (o perder) el código, se vuelve a pintar lo que se está viendo.
-  window.addEventListener("aprens-acceso", () => { setTimeout(route, 600); });
+  // Solo se redibuja si se está en el menú o en una pantalla con candado: una herramienta abierta
+  // no se recarga a media tarea (el cambio se nota en la siguiente navegación).
+  window.addEventListener("aprens-acceso", () => { setTimeout(() => {
+    if(!document.body.classList.contains("en-tool") || screen.querySelector(".cerrada")) route();
+  }, 600); });
 
   function hubCard(t){
     if(!t.migrada){
@@ -926,7 +930,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
-    if(!abierta(tool.id)){ renderCerrada(tool); return; }
+    if(!abierta(tool.id)){ pararNucleoAIS(); removeExportBar(); renderCerrada(tool); return; }
     if(tool.enlace){ location.href = tool.enlace; return; }
     if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();
