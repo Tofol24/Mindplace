@@ -152,6 +152,43 @@
 
   function removeExportBar(){ const b=document.getElementById("aprensBar"); if(b) b.remove(); }
 
+  // ============================================================
+  //  Acceso con código: sin código solo se abre «Para todos»
+  // ============================================================
+  // Lo de «Para todos»: los grupos marcados con edad «todos», el recorrido y las herramientas
+  // básicas (respiración curiosa, parada de pensamiento y abrazo sentido viven en ais_curiosidad,
+  // ais_amor y juegos_exposicion; más la honestidad emocional).
+  const ABIERTAS = new Set(GRUPOS.filter(g=>g.edad==="todos").reduce((a,g)=>a.concat(g.ids),[])
+    .concat(["recorrido_tec","ais_basicas","ais_curiosidad","ais_amor","juegos_exposicion","honestidad_emocional"]));
+  function tieneCodigo(){
+    if(window.AprensAcceso) return AprensAcceso.vigente();
+    try{ const a = JSON.parse(localStorage.getItem("aprens_acceso")||"null"); return !!(a && a.codigo && a.caduca >= Date.now()); }catch(e){ return false; }
+  }
+  const abierta = id => ABIERTAS.has(id) || tieneCodigo();
+
+  function renderCerrada(tool){
+    backBtn.style.display = "inline-flex";
+    if(homeBtn) homeBtn.style.display = "inline-flex";
+    document.body.classList.add("en-tool");
+    screen.classList.remove("iframe-host");
+    titleEl.textContent = tool.nombre;
+    screen.innerHTML = `
+      <div class="cerrada">
+        <div class="cerrada-ic" aria-hidden="true">🔒</div>
+        <h1 class="cerrada-t">${tool.emoji||""} ${tool.nombre}</h1>
+        <p>Esta herramienta forma parte de tu espacio con código. Escribe el código que te ha dado tu psicólogo/a y se abrirá al momento.</p>
+      </div>
+      <section class="acc" id="acceso" aria-labelledby="accTit" hidden></section>
+      <p class="cerrada-pie"><a href="#/sec/edad-todos">Ir a lo que está abierto para todos →</a></p>`;
+    if(window.AprensAcceso){ AprensAcceso.montar(document.getElementById("acceso")); }
+  }
+  // Al activar (o perder) el código, se vuelve a pintar lo que se está viendo.
+  // Solo se redibuja si se está en el menú o en una pantalla con candado: una herramienta abierta
+  // no se recarga a media tarea (el cambio se nota en la siguiente navegación).
+  window.addEventListener("aprens-acceso", () => { setTimeout(() => {
+    if(!document.body.classList.contains("en-tool") || screen.querySelector(".cerrada")) route();
+  }, 600); });
+
   function hubCard(t){
     if(!t.migrada){
       return `<div class="hub-card soon"><span class="hub-emoji">${t.emoji}</span>
@@ -173,9 +210,10 @@
         <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
         <span class="hub-tag">Abrir →</span></a>`;
     }
-    return `<a class="hub-card" href="#/tool/${t.id}"><span class="hub-emoji">${t.emoji}</span>
+    const cerrada = !abierta(t.id);
+    return `<a class="hub-card${cerrada?" cerrada":""}" href="#/tool/${t.id}"${cerrada?` aria-label="${t.nombre} · necesita tu código"`:""}><span class="hub-emoji">${t.emoji}</span>
       <span class="hub-name">${t.nombre}</span><span class="hub-desc">${t.desc}</span>
-      <span class="hub-tag">Abrir →</span></a>`;
+      <span class="hub-tag">${cerrada?"🔒 Con código":"Abrir →"}</span></a>`;
   }
 
   // ============================================================
@@ -892,6 +930,7 @@
     // Las externas no tienen pantalla dentro de la app: si se llega por URL,
     // se vuelve al hub (desde el hub se abren con su enlace).
     if(!tool || !tool.migrada || tool.externa){ location.hash = "#/"; return; }
+    if(!abierta(tool.id)){ pararNucleoAIS(); removeExportBar(); renderCerrada(tool); return; }
     if(tool.enlace){ location.href = tool.enlace; return; }
     if(window.AprensUso) AprensUso.abrir(id);
     pararNucleoAIS();

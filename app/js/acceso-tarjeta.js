@@ -23,6 +23,7 @@
     if(cuerpo) o.body=JSON.stringify(cuerpo);
     return fetch(API+ruta,o).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(b){ b._status=r.status; return b; }); });
   }
+  function avisarApp(){ try{ window.dispatchEvent(new Event("aprens-acceso")); }catch(e){} }
   function aviso(t,tipo){ estado.msg=t; estado.tipo=tipo||""; }
   function pintar(){
     if(!caja || !document.body.contains(caja)) return;
@@ -35,7 +36,7 @@
         +'<div class="acc-btns"><button type="button" class="sec" data-acc="copiar">Copiar el código</button><button type="button" class="sec" data-acc="otro">Tengo otro código</button></div>';
     } else {
       if(a) h+='<p>Tu código <b>'+esc(a.codigo)+'</b> caducó el '+esc(fecha(a.caduca))+'. Pide a tu psicólogo/a uno nuevo para seguir acompañándote con estas herramientas.</p>';
-      else h+='<p>A partir de ahora, el espacio APRENS funcionará con un código personal que te dará tu psicólogo/a, asociado al tiempo que entendemos que te va a acompañar durante la terapia. Por ahora puedes seguir entrando como siempre, sin código.</p>';
+      else h+='<p>Lo que está en <b>Para todos</b> (tu recorrido y las herramientas básicas) sigue abierto. Para el resto de herramientas (Adultos, Adolescentes, Peques y Familias) necesitas tu código personal, que te da tu psicólogo/a según el tiempo que entendemos que te va a acompañar durante la terapia.</p>';
       if(auto) h+='<p>Hasta el <b>'+esc(fechaDia(estado.cfg.autoHasta))+'</b> puedes pedir el tuyo aquí mismo. Es válido durante '+esc(estado.cfg.mesesAuto||3)+' meses.</p>';
       h+='<div class="acc-btns">'
         +(auto?'<button type="button" data-acc="solicitar"'+(estado.ocupado?' disabled':'')+'>Solicitar mi código</button>':'')
@@ -60,7 +61,7 @@
     estado.ocupado=true; aviso("Comprobando el código…"); pintar();
     pedir("acceso/validar",{codigo:cod}).then(function(r){
       estado.ocupado=false;
-      if(r.valido){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Código activado. Ya está guardado en este dispositivo.":"Código activado."+NO_GUARDA, ok?"ok":"err"); }
+      if(r.valido){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Código activado. Ya está guardado en este dispositivo.":"Código activado."+NO_GUARDA, ok?"ok":"err"); avisarApp(); }
       else if(r.motivo==="caducado") aviso("Este código ya ha caducado. Pide a tu psicólogo/a uno nuevo.","err");
       else if(r.motivo==="revocado") aviso("Este código ya no está activo. Pregunta a tu psicólogo/a.","err");
       else if(r._status===429) aviso("Demasiados intentos seguidos. Prueba de nuevo dentro de un minuto.","err");
@@ -72,7 +73,7 @@
     estado.ocupado=true; aviso("Preparando tu código…"); pintar();
     pedir("acceso-solicitar",{}).then(function(r){
       estado.ocupado=false;
-      if(r.codigo){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Ya tienes tu código. Está guardado en este dispositivo.":"Ya tienes tu código."+NO_GUARDA, ok?"ok":"err"); }
+      if(r.codigo){ var ok=guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()}); estado.form=false; aviso(ok?"Ya tienes tu código. Está guardado en este dispositivo.":"Ya tienes tu código."+NO_GUARDA, ok?"ok":"err"); avisarApp(); }
       else if(r._status===403){ estado.cfg={autoAbierto:false}; aviso("El periodo para pedir el código aquí ya ha terminado. Pídeselo a tu psicólogo/a.","err"); }
       else if(r._status===429) aviso("Ya se han pedido varios códigos desde aquí. Si has perdido el tuyo, pídeselo a tu psicólogo/a.","err");
       else aviso("No se ha podido crear el código. Prueba de nuevo en un momento.","err");
@@ -94,6 +95,8 @@
   }
   var configPedida=false, comprobada=false;
   window.AprensAcceso={
+    // ¿Hay un código en vigor en este dispositivo? (también si el navegador no deja guardarlo)
+    vigente:function(){ var a=leer(); return !!(a && a.caduca>=Date.now()); },
     // Pinta la tarjeta en el elemento (el menú se vuelve a dibujar a menudo: se reengancha cada vez).
     montar:function(el){
       if(!el) return;
@@ -113,7 +116,7 @@
         var ahora=leer(); if(!ahora || ahora.codigo!==g.codigo) return;   // mientras tanto se ha activado otro
         if(r.valido) guardar({codigo:r.codigo, caduca:r.caduca, comprobado:Date.now()});
         else if(r.motivo==="caducado") guardar({codigo:g.codigo, caduca:Math.min(g.caduca, r.caduca||Date.now()), comprobado:Date.now()});
-        else { guardar(null); aviso("Tu código "+g.codigo+" ya no está activo. Pregunta a tu psicólogo/a.","err"); }
+        else { guardar(null); aviso("Tu código "+g.codigo+" ya no está activo. Pregunta a tu psicólogo/a.","err"); avisarApp(); }
         pintar();
       }).catch(function(){});
     }
