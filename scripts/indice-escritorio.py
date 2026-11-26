@@ -36,8 +36,9 @@ SITIOS = {
 # cat: categoría · pub: "paciente" | "profesional" | "centro"
 # Herramientas que no están en el repositorio ni en Netlify (viven en tu ordenador).
 # rel: ruta dentro de la página privada de claude.ai donde se alojan; None si no se sube.
-# Con --offline-base=URL (la página privada) las tarjetas llevan a esa página; sin él, a la ruta relativa.
+# Las tarjetas llevan a la página privada (OFFLINE_BASE, o la que se pase con --offline-base=URL).
 # Con --local-dir=RUTA (la carpeta del Mac) se añade «Abrir en el Mac» con el archivo local (local:).
+OFFLINE_BASE = "https://claude.ai/artifact/3Yf4GS3km74CQLA4myBZgh"
 OFFLINE = [
     dict(rel="offline/neuroestimulador.html", local="protocolo_idoneidad_neuroestimulador-2.html", emoji="🔌", nombre="Idoneidad para neuroestimulador",
          desc="Entrevista semiestructurada y batería (PAI, PCS, TSK, CPAQ, PSEQ…) previa a neuroestimulación, con señales a revisar y texto para el informe.", pub="profesional"),
@@ -227,7 +228,9 @@ def main():
             t, d = meta(p)
             add(dict(cat="sinclasificar", emoji="📄", nombre=t, desc=d or p, pub="paciente", path=p))
     # 3b) herramientas fuera del repositorio
-    base = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--offline-base=")), "")
+    # Por defecto, tu página privada de claude.ai: sin ella, la ruta relativa apunta a un
+    # archivo que no existe junto al índice del escritorio y «Abrir» no hace nada.
+    base = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--offline-base=")), OFFLINE_BASE)
     localdir = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--local-dir=")), "")
     for o in OFFLINE:
         it = dict(o); it.pop("local", None); it["cat"] = "offline"; it["offline"] = True
