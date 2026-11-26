@@ -50,7 +50,7 @@ python3 scripts/indice-escritorio.py --comprobar \
 
 `--offline-base` y `--local-dir` solo afectan a la sección «Fuera de Netlify»
 (lista `OFFLINE` del script): la primera enlaza a la página privada de
-claude.ai y la segunda abre el archivo de la carpeta del Mac. Los enlaces
+claude.ai (si no se pasa, usa la de `OFFLINE_BASE`) y la segunda abre el archivo de la carpeta del Mac. Los enlaces
 `file://` solo funcionan desde el índice guardado en el propio Mac.
 
 Arriba muestra «📈 Uso de los pacientes»: lee los recuentos anónimos de
