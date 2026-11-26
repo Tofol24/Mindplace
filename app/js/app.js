@@ -578,7 +578,10 @@
   }
   // Enlace profundo a un apartado del hub (#/sec/<id>), p. ej. desde el
   // Laboratorio TEC o desde «Mi espacio APRENS». Los ids son los del índice.
+  // Apartados que han cambiado de nombre: los enlaces antiguos (p. ej. del Laboratorio TEC) siguen llevando a su sitio.
+  const APARTADOS_ANTIGUOS = { "sec-peques-y-familias":"edad-peques" };
   function irAApartado(id){
+    id = APARTADOS_ANTIGUOS[id] || id;
     setTimeout(()=>{
       const el = document.getElementById(id);
       if(!el) return;
