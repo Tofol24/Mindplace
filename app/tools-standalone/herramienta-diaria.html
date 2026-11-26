@@ -1068,5 +1068,16 @@ if(window.Aprens) Aprens.mountBar();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso: la única pantalla interna es el modo enfocado (#secN) frente a la herramienta entera. */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){ return document.body.classList.contains("foco") ? (location.hash||"todo") : "todo"; },
+  ir:function(v){
+    if(v==="todo"){ salirFoco(); return; }
+    if(/^#sec[1-8]$/.test(v)){ try{ history.replaceState(null,"",location.pathname+location.search+v); }catch(e){} aplicarFoco(); }
+  }
+});
+</script>
 </body>
 </html>

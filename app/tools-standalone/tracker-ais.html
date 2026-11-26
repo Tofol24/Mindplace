@@ -1316,5 +1316,15 @@ function aprensExport(){
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>if(window.AprensAtras) AprensAtras.vigilar({
+  // Pestaña visible (avui, eines, parella, tec, historial).
+  vista:function(){
+    var ts=['avui','eines','parella','tec','historial'];
+    for(var i=0;i<ts.length;i++){ var el=document.getElementById('tab-'+ts[i]); if(el && el.style.display!=='none') return ts[i]; }
+    return null;
+  },
+  ir:function(v){ mostrarTab(v); }
+});</script>
 </body>
 </html>

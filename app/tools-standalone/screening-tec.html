@@ -929,5 +929,44 @@ function importar(input){
 }
 render();
 </script>
+<script src="../js/atras.js"></script>
+<script>if(window.AprensAtras){
+  // Pantalla actual: modo, vista y, si toca, pregunta del cuestionario, paciente y screening abierto.
+  var pantallaAtras=function(){
+    var q=(vista==="cuestionario"||vista==="seg_cuestionario")?bIdx:null;
+    var p=(modo==="profesional")?pacienteActual:null;
+    var r=(vista==="ver_resultado")?ctx.verIdx:null;
+    return JSON.stringify([modo,vista,q,p,r]);
+  };
+  AprensAtras.vigilar({
+    vista:pantallaAtras,
+    ir:function(v){
+      var s; try{ s=JSON.parse(v); }catch(e){ return; }
+      var antes=pantallaAtras();
+      document.querySelectorAll(".modal-ov").forEach(function(m){ m.remove(); });
+      var vi=s[1];
+      // Nunca se vuelve a entrar en un modo del que se ha salido (el profesional pide clave y el paciente,
+      // consentimiento): se va a la portada. Volver a la portada (sin modo) siempre se puede.
+      if(s[0]===null || s[0]!==modo){ modo=null; pacienteActual=null; vi="selector"; }
+      if(modo==="profesional"){
+        pacienteActual=s[3];
+        if(pacienteActual && !pacData()){ pacienteActual=null; vi="pacientes"; }
+        // Un resultado sin guardar no se repite (evita guardarlo dos veces): se vuelve a la ficha.
+        if(vi==="prof_resultado") vi=pacienteActual?"ficha":"pacientes";
+        if(!pacienteActual && (vi==="ficha"||vi==="evolucion"||vi==="ver_resultado")) vi="pacientes";
+        if(vi==="ver_resultado"){ var d=pacData(); if(s[4]==null || !d || !d.screenings || !d.screenings[s[4]]) vi="ficha"; else ctx.verIdx=s[4]; }
+      }
+      if(vi==="cuestionario"||vi==="seg_cuestionario"){
+        var n=(vi==="cuestionario")?bloque.length:SEG_ITEMS.length;
+        if(!n || s[2]==null){ vi=(modo==="paciente")?"pac_intro":(pacienteActual?"ficha":"pacientes"); }
+        else bIdx=Math.max(0,Math.min(n-1,s[2]));
+      }
+      vista=vi; render();
+      // Si la pantalla no ha cambiado (p. ej. tras salir de un modo), se da otro paso atrás para que la
+      // pulsación no quede sin efecto; en el primer paso, eso ya es salir de la herramienta.
+      if(pantallaAtras()===antes){ try{ history.back(); }catch(e){} }
+    }
+  });
+}</script>
 </body>
 </html>

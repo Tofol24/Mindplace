@@ -1081,5 +1081,26 @@ document.getElementById("btnImprimir").addEventListener("click", function(){
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso: cuestionario, corrección (modo profesional) y pantalla de gracias.
+   Volver al cuestionario no borra las respuestas ni envía nada. */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){
+    if(document.getElementById("gracias").style.display==="block") return "gracias";
+    if(document.getElementById("resultado").style.display==="block") return "resultado";
+    return "form";
+  },
+  ir:function(v){
+    if(v==="gracias"){ mostrarGracias(); return; }
+    if(v==="resultado" && MODO_PRO){ corregir(); return; }
+    document.getElementById("gracias").style.display="none";
+    document.getElementById("resultado").style.display="none";
+    document.getElementById("formulario").style.display="block";
+    document.querySelector(".intro").style.display="block";
+    var bw=document.getElementById("btnWA"); if(bw) bw.style.display="";
+  }
+});
+</script>
 </body>
 </html>

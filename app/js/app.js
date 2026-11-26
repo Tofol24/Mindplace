@@ -8,6 +8,7 @@
 (function () {
   const screen = document.getElementById("screen");
   const backBtn = document.getElementById("hback");
+  const homeBtn = document.getElementById("hhome");
   const titleEl = document.getElementById("htitle");
 
   // Foco de la semana (pauta): ?foco=L|D|C  (se conserva entre navegaciones)
@@ -681,6 +682,7 @@
     removeExportBar();
     screen.classList.remove("iframe-host");
     backBtn.style.display = "none";
+    if(homeBtn) homeBtn.style.display = "none";
     document.body.classList.remove("en-tool");
     titleEl.textContent = "APRENS";
     const tools = window.APRENS_TOOLS || [];
@@ -865,6 +867,7 @@
     registrarPractica();
     removeExportBar();
     backBtn.style.display = "inline-flex";
+    if(homeBtn) homeBtn.style.display = "inline-flex";
     document.body.classList.add("en-tool");
     titleEl.textContent = tool.nombre;
     screen.innerHTML = "";
@@ -888,25 +891,48 @@
     mod.mount(screen);
   }
 
-  // Rastro de navegación en la app (para "← Atrás" paso a paso).
-  const trail = [];
-  let goingBack = false;
-
+  // Posición en el historial de la app: cada entrada lleva su número (history.state.apPos),
+  // así se distingue de verdad ir atrás, ir adelante o abrir algo nuevo.
+  let apPos = 0;
+  // ¿Se ha entrado desde Mi espacio? (sus enlaces llevan ?desde=espacio). Entonces, en el
+  // principio, «← Atrás» vuelve a Mi espacio; si no, va al menú de la app.
+  const desdeEspacio = new URLSearchParams(location.search).get("desde") === "espacio";
   function route(){
     const h = location.hash || "#/";
     // Cada navegación reinicia el gancho de "atrás interno"; la herramienta lo
     // vuelve a poner si tiene pantallas propias por las que retroceder.
     window.APRENS_toolBack = null;
-    if(goingBack){ goingBack = false; }
-    else if(trail[trail.length-1] !== h){ trail.push(h); }
+    const st = history.state;
+    if(st && typeof st.apPos === "number") apPos = st.apPos;            // atrás o adelante a una entrada conocida
+    else {                                                              // entrada nueva
+      if(route.yaHabia) apPos++;
+      try{ history.replaceState({ apPos }, ""); }catch(e){}
+    }
+    route.yaHabia = true;
     const m = h.match(/^#\/tool\/([\w-]+)(?:\/([\w-]+))?/);
     const sec = h.match(/^#\/sec\/([\w-]+)/);
     if(m) renderTool(m[1], m[2]);
     else { renderHub(); if(sec) irAApartado(sec[1]); }
-    backBtn.textContent = "← Atrás";
   }
 
-  function goHome(){ if((location.hash||"#/") !== "#/") location.hash = "#/"; }
+  function marcoHerramienta(){ return screen.querySelector("iframe.tool-frame"); }
+  // Al ir al inicio, antes se deshacen los pasos internos que haya dejado la herramienta en el
+  // historial; si no, al volver atrás desde el menú se reabriría la herramienta en pantallas muertas.
+  function goHome(){
+    let d = 0;
+    const fr = marcoHerramienta();
+    try{ d = (fr && fr.contentWindow && fr.contentWindow.AprensAtras) ? fr.contentWindow.AprensAtras.profundidad() : 0; }catch(e){ d = 0; }
+    const alMenu = () => { if((location.hash||"#/") !== "#/") location.hash = "#/"; };
+    if(d > 0){
+      let hecho = false;
+      const fin = () => { if(!hecho){ hecho = true; alMenu(); } };
+      try{ fr.contentWindow.addEventListener("popstate", () => setTimeout(fin, 0), { once:true }); }catch(e){}
+      history.go(-d);
+      setTimeout(fin, 500);
+      return;
+    }
+    alMenu();
+  }
   // El logo/título lleva siempre al inicio.
   const brand = document.querySelector(".header .hlogo");
   if(brand){ brand.style.cursor = "pointer"; brand.setAttribute("role","button"); brand.setAttribute("aria-label","ap · Inicio"); brand.onclick = goHome; }
@@ -918,17 +944,19 @@
     if(typeof window.APRENS_toolBack === "function" && window.APRENS_toolBack() === true) return;
     // 1b) Herramienta en iframe (mismo origen): consulta su gancho interno de "atrás".
     //     Así el botón de la cabecera retrocede paso a paso también dentro del iframe.
-    const fr = screen.querySelector("iframe.tool-frame");
+    const fr = marcoHerramienta();
     if(fr && fr.contentWindow){
       try{
         const h = fr.contentWindow.APRENS_toolBack;
         if(typeof h === "function" && h() === true) return;
       }catch(e){ /* si por lo que sea no es accesible, seguimos */ }
     }
-    // 2) Si no, retrocede un paso en la app (a la herramienta anterior); o al inicio.
-    if(trail.length > 1){ trail.pop(); goingBack = true; location.hash = trail[trail.length-1]; }
-    else { location.hash = "#/"; }
+    // 2) Si no, un paso atrás de verdad en la app; al principio, a Mi espacio si se vino de allí,
+    //    y si no, al menú de la app.
+    if(apPos > 0 || desdeEspacio) history.back();
+    else location.hash = "#/";
   };
+  if(homeBtn) homeBtn.onclick = goHome;
   window.addEventListener("hashchange", route);
   route();
 })();

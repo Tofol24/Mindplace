@@ -574,5 +574,27 @@
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+  // «Atrás» paso a paso (app o navegador): vuelve al paso anterior de la parada.
+  // Desde el resultado no se vuelve al paso 4 (la parada ya está registrada y se
+  // duplicaría): se empieza otra parada, como «Hacer otra parada».
+  if(window.AprensAtras) AprensAtras.vigilar({
+    vista:function(){
+      if(document.getElementById('result').classList.contains('show')) return 'result';
+      var s=document.querySelector('.pstep.show'); return s ? s.id : null;
+    },
+    ir:function(v){
+      var enResultado=document.getElementById('result').classList.contains('show');
+      if(v==='result'){
+        pararResp();
+        document.querySelectorAll('.pstep').forEach(function(s){s.classList.remove('show');});
+        document.getElementById('result').classList.add('show');
+      } else if(enResultado){ nuevaParada(); }
+      // Sin intensidad inicial elegida (parada nueva) no se salta el paso 0: se registraría mal.
+      else if(/^ps[0-3]$/.test(v)){ goStep(v!=='ps0'&&parada.ini==null ? 0 : Number(v.slice(2))); }
+    }
+  });
+</script>
 </body>
 </html>

@@ -1409,5 +1409,7 @@ if("serviceWorker" in navigator && window.top===window.self){ window.addEventLis
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>if(window.AprensAtras) AprensAtras.vigilar({ vista:function(){ return VIEW; }, ir:function(v){ go(v); } });</script>
 </body>
 </html>

@@ -341,3 +341,5 @@ table.t td.r{text-align:center;font-weight:700}
 .uso-aviso button{font:inherit;font-weight:700;border-radius:18px;padding:8px 14px;cursor:pointer;border:1.5px solid var(--azul);background:var(--azul);color:#fff}
 .uso-aviso button[data-uso="no"]{background:transparent;color:var(--azul)}
 .uso-aviso button:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+/* «⌂ Inicio» al lado de «← Atrás» dentro de una herramienta */
+.hback + .hhome, .en-tool .hweb ~ .hback + .hhome{margin-left:6px;white-space:nowrap}

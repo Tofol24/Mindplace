@@ -552,6 +552,8 @@ function go(v,noPush){
   if(v==='entender')resetEntender();
 }
 document.getElementById('backBtn').onclick=function(){
+  // Si «atrás» paso a paso está activo, el botón de la barra usa el mismo historial
+  if(window.AprensAtras&&AprensAtras.atras()) return;
   var prev=stack.pop()||'role';
   go(prev,true);
 };
@@ -784,6 +786,25 @@ var ninoBig=[['NECESITO UNA PAUSA'],['AHORA NO PUEDO HABLAR'],['QUÉDATE CERCA']
 renderTree(TREE);
 /* keyboard: Esc = back */
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.getElementById('appbar').hidden){document.getElementById('backBtn').click();}});
+</script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso (cabecera de la app y gesto del móvil): cada pantalla y cada paso de «Primero yo». */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){
+    var a=document.querySelector('.view.active'); if(!a) return null;
+    var id=a.id.replace('v-','');
+    if(id==='primeroyo'){ var s=a.querySelector('.step.active'); return id+':'+(s?s.getAttribute('data-step'):'0'); }
+    return id;
+  },
+  ir:function(v){
+    var p=String(v).split(':'), a=document.querySelector('.view.active'), cur=a?a.id.replace('v-',''):'';
+    // Se mantiene al día la pila propia de la herramienta
+    if(stack.length&&stack[stack.length-1]===p[0]) stack.pop();
+    if(cur!==p[0]) go(p[0],true);
+    if(p[0]==='primeroyo') pyNext(+p[1]||0);
+  }
+});
 </script>
 </body>
 </html>

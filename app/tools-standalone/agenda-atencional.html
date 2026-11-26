@@ -1230,5 +1230,8 @@ if(_pb) _pb.addEventListener('pointerdown', planPointerDown);
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<!-- «Atrás» paso a paso entre las secciones (Plan, Semana, Hoy…) -->
+<script>if(window.AprensAtras) AprensAtras.vigilar({ vista:function(){ return curView; }, ir:function(v){ go(v); } });</script>
 </body>
 </html>

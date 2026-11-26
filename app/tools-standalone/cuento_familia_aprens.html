@@ -678,5 +678,19 @@ render();
 </script>
 <script src="../vendor/lz-string.min.js"></script>
 <script src="../js/enlace-panel.js"></script>
+<script src="../js/atras.js"></script>
+<script>
+/* «Atrás» paso a paso: portada, guía, versión imprimible y cada página del cuento.
+   Al volver a la proyección no se pide otra vez pantalla completa. */
+if(window.AprensAtras) AprensAtras.vigilar({
+  vista:function(){ return (VISTA==='cuento'||VISTA==='present') ? VISTA+':'+pag : VISTA; },
+  ir:function(v){
+    var p=String(v).split(':');
+    if(p[0]==='cuento'||p[0]==='present'){ VISTA=p[0]; pag=Math.max(0,Math.min(PAGES.length-1,+p[1]||0)); mamaOpen=false; }
+    else VISTA=p[0];
+    render();
+  }
+});
+</script>
 </body>
 </html>
