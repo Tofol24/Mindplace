@@ -684,7 +684,7 @@ document.addEventListener("click", function(e){
   function activar(c){
     var cod=norm(c);
     if(!cod){ aviso("Este código no tiene el formato correcto. Debería ser como APR-7K2M-9QXD.","err"); pintar(); return; }
-    if(!publicado){ aviso("Para activar el código hace falta abrir Mi espacio desde aprens.es.","err"); pintar(); return; }
+    if(!publicado){ aviso("Para activar el código hace falta abrir Mi espacio desde su dirección (aprens-inicio.netlify.app).","err"); pintar(); return; }
     estado.ocupado=true; aviso("Comprobando el código…"); pintar();
     pedir("acceso/validar",{codigo:cod}).then(function(r){
       estado.ocupado=false;
