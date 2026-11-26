@@ -49,6 +49,9 @@ OFFLINE = [
     dict(rel=None, local="PAI_PROFESIONAL(17).html", emoji="📋", nombre="PAI Profesional · corrección e interpretación",
          desc="Corrección del PAI con baremos españoles, vaciado de protocolo en papel y hoja de tecleo para TEA. Genera el código de puntuaciones T para «Importar datos» del protocolo de neuroestimulador.", pub="profesional",
          nota="Solo en tu Mac: contiene ítems y baremos protegidos, por eso no se sube a ningún sitio."),
+    dict(rel=None, local="Anonimizador_APRENS.html", emoji="🕶️", nombre="Anonimizador de historiales",
+         desc="Tapa en un PDF los datos del paciente, DNI, teléfonos, correos, nº de historia, fecha de nacimiento y nombres de profesionales, con revisión página a página. Descarga un PDF como imagen o un .txt para trabajar con Claude.", pub="profesional",
+         nota="Solo en tu Mac: se usa con historiales reales, sin conexión."),
 ]
 
 EXTRA = {
