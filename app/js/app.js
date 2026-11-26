@@ -934,7 +934,8 @@
     // vuelve a poner si tiene pantallas propias por las que retroceder.
     window.APRENS_toolBack = null;
     // Enlace del WhatsApp: #/codigo/APR-XXXX-XXXX → se activa el código y se queda en el menú.
-    const mc = h.match(/^#\/codigo\/([A-Za-z0-9-]{8,20})$/);
+    // (También #codigo=…, el formato de los enlaces antiguos de Mi espacio, que ahora redirige aquí.)
+    const mc = h.match(/^#\/codigo\/([A-Za-z0-9-]{8,20})$/) || h.match(/^#codigo=([A-Za-z0-9-]{8,20})$/);
     if(mc){
       try{ history.replaceState(history.state, "", location.pathname + location.search + "#/"); }catch(e){}
       route();

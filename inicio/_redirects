@@ -10,3 +10,9 @@
 # en caché el destino y el redireccionamiento sigue siendo modificable.
 /nil    https://aprens-app.netlify.app/tools-standalone/cuentos/index.html    302
 /nil/*  https://aprens-app.netlify.app/tools-standalone/cuentos/:splat        302
+
+# Mi espacio ya vive dentro de la app (aprens-app): todo lo demás de este sitio redirige allí.
+# Va después de /nil para no romper el QR del libro. El «!» obliga a redirigir aunque exista el
+# archivo (index.html). El fragmento (#codigo=…) lo conserva el navegador y la app lo atiende.
+/quien-conduce-tu-vida.pdf  https://aprens-app.netlify.app/assets/pdf/quien-conduce-tu-vida.pdf  302!
+/*      https://aprens-app.netlify.app/:splat    302!
