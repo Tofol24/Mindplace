@@ -173,7 +173,7 @@ function abrirURL(it){ return it.local || (it.app && !it.antigua ? it.app : it.u
 function card(it, q){
   var main = abrirURL(it), fav = !!st.fav[it.k];
   var h = '<div class="card" data-k="'+esc(it.k)+'"><div class="top"><span class="em">'+esc(it.emoji)+'</span><div class="tt"><div class="nm">'+
-    (main ? '<a href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">'+hl(it.nombre,q)+'</a>' : hl(it.nombre,q))+
+    (main ? '<a href="'+esc(main)+'"'+(/^[a-z]+:/i.test(main)?' target="_blank" rel="noopener"':'')+' data-open="1">'+hl(it.nombre,q)+'</a>' : hl(it.nombre,q))+
     '</div></div><button class="star'+(fav?' on':'')+'" data-fav="1" title="'+(fav?'Quitar de favoritos':'Añadir a favoritos')+'" aria-label="Favorito" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button></div>';
   h += '<div class="ds">'+hl(it.desc,q)+(it.nota?' '+esc(it.nota):'')+'</div>';
   var u = it.id && uso.porId[it.id];
@@ -188,6 +188,8 @@ function card(it, q){
   if(it.src) h += '<a class="btn ghost" href="'+esc(it.src)+'" target="_blank" rel="noopener">Código</a>';
   h += '</div>';
   if(it.path) h += '<div class="path">'+hl(it.path,q)+'</div>';
+  // Archivos del Mac: dónde tiene que estar para que «Abrir» funcione.
+  if(it.local){ var ruta=it.local.replace(/^file:\/\//,""); try{ ruta=decodeURIComponent(ruta); }catch(e){} h += '<div class="path" title="Si «Abrir» no funciona, comprueba que el archivo está aquí">En tu Mac: '+esc(ruta.replace(/^\/Users\/[^\/]+/,"~"))+'</div>'; }
   return h + '</div>';
 }
 
