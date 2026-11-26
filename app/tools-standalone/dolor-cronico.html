@@ -741,7 +741,7 @@ function pintar(I, rojas, ambar, verdes){
   window.scrollTo(0,0);
 }
 
-function texto(I, rojas, ambar, verdes){
+function texto(I, rojas, ambar, verdes, sinCodigo){
   var L = [];
   var hoy = new Date();
   var dd = ("0"+hoy.getDate()).slice(-2)+"/"+("0"+(hoy.getMonth()+1)).slice(-2)+"/"+hoy.getFullYear();
@@ -785,7 +785,7 @@ function texto(I, rojas, ambar, verdes){
   L.push("Instrumento de apoyo a la entrevista clínica. Los índices son descriptivos y no diagnósticos;");
   L.push("su interpretación corresponde al profesional y debe realizarse por convergencia con la");
   L.push("exploración clínica y con el resto del protocolo psicométrico.");
-  var cod = codigoProtocolo();
+  var cod = sinCodigo? "" : codigoProtocolo();
   if(cod){ L.push(""); L.push(cod); }
   return L.join("\n");
 }
@@ -811,7 +811,7 @@ function etiquetas(id){
   return arr.length? arr.join(", ") : null;
 }
 function frases(partes){
-  var t = partes.filter(function(p){ return p[1]; }).map(function(p){ return p[0]+p[1]+"."; });
+  var t = partes.filter(function(p){ return p[1]; }).map(function(p){ return p[0]+String(p[1]).replace(/[\s.]+$/,"")+"."; });
   return t.length? "Autoinforme · "+t.join(" ") : null;
 }
 function campos(){
@@ -831,7 +831,6 @@ function campos(){
   [["c_quema","Quemante"],["c_agudo","Punzante"],["c_electr","Eléctrico / descargas"],["c_hormig","Hormigueo"],
    ["c_profundo","Opresivo"],["c_roce","Alodinia"]].forEach(function(m){ if(R[m[0]]==="1") tipo.push(m[1]); });
   pon("hist.tipo", tipo);
-  pon("hist.farm", R.g_medic? "Autoinforme · "+R.g_medic : null);
   pon("hist.it", [etiquetas("j_situacion"), etiquetas("j_tiempo_baja")].filter(Boolean).join(" · "));
   pon("func.perd", R.e_dejado? "Autoinforme · "+R.e_dejado : null);
   pon("func.sueno", [etiquetas("f_conciliar")? "le cuesta dormirse: "+etiquetas("f_conciliar").toLowerCase() : "",
@@ -840,9 +839,9 @@ function campos(){
   pon("social.conv", etiquetas("h_convive"));
   pon("social.socobs", frases([["Persona de confianza: ",etiquetas("h_confianza")],["Acompañante para citas: ",etiquetas("h_acompana")],
     ["Ayuda en casa tras una intervención: ",etiquetas("h_cuidados")]]));
-  pon("expect.prueba", {"2":"Sí","1":"Parcialmente","0":"No"}[R.m_prueba]);
-  pon("expect.decision", {"3":"Autónoma e informada","2":"Con ambivalencia elaborada","1":"Delegada en terceros","0":"Presionada"}[R.m_decision]);
-  pon("expect.objfun", frases([["Para qué cree que sirve: ",etiquetas("m_objetivo")],["Cuánto espera que baje el dolor: ",etiquetas("m_cuanto")],
+  /* Lo que el protocolo pide como juicio clínico (fase de prueba, toma de decisión) va solo como texto de autoinforme. */
+  pon("expect.objfun", frases([["Le han explicado el dispositivo: ",etiquetas("m_explic")],["Conoce la fase de prueba: ",etiquetas("m_prueba")],
+    ["Decisión: ",etiquetas("m_decision")],["Para qué cree que sirve: ",etiquetas("m_objetivo")],["Cuánto espera que baje el dolor: ",etiquetas("m_cuanto")],
     ["Lo primero que querría volver a hacer: ",R.m_esperanza],["Lo que más le preocupa: ",R.m_miedo]]));
   pon("expect.nofunc", frases([["Si la prueba no funcionara: ",etiquetas("m_si_no")]]));
   pon("id.caso", R.o_caso);
@@ -855,7 +854,7 @@ function codigoProtocolo(){
     var bytes = new TextEncoder().encode(json), bin = "";
     for(var i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
     var b64 = btoa(bin).replace(/(.{76})/g, "$1\n");
-    return "--- APRENS · CÓDIGO PARA EL PROTOCOLO DE IDONEIDAD (v1) ---\n"+b64+"\n--- FIN DEL CÓDIGO ---";
+    return "Código técnico para su psicólogo (no hace falta tocarlo):\n--- APRENS · CÓDIGO PARA EL PROTOCOLO DE IDONEIDAD (v1) ---\n"+b64+"\n--- FIN DEL CÓDIGO ---";
   }catch(e){ return ""; }
 }
 
@@ -979,7 +978,10 @@ function enviar(){
   }
 
   var res = construirResumen();
-  var cuerpo = "Paciente: "+R.o_nombre+"\nCaso/Historia: "+(R.o_caso||"no indicado")+"\nFecha: "+fechaHoy()+"\n\n"+res.txt;
+  /* En el correo el código va arriba: algunos clientes cortan los enlaces mailto largos por el final. */
+  var cod = codigoProtocolo();
+  var cuerpo = "Paciente: "+R.o_nombre+"\nCaso/Historia: "+(R.o_caso||"no indicado")+"\nFecha: "+fechaHoy()+"\n\n"+
+               (cod? cod+"\n\n" : "")+texto(res.I.I, res.I.rojas, res.I.ambar, res.I.verdes, true);
   var asunto = "Cuestionario de dolor crónico · "+R.o_nombre+" · "+fechaHoy();
 
   copiarTexto(cuerpo);
