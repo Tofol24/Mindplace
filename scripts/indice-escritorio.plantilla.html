@@ -180,7 +180,8 @@ function card(it, q){
   h += '<div class="tags">'+estadoTag(it)+(u ? '<span class="tag uso" title="Últimos '+uso.dias+' días: aperturas y registros guardados">👁 '+u.abrir+' · ✓ '+u.registros+'</span>' : '')+'<span class="tag'+(it.pub==="profesional"?' pro':'')+'">'+(PUB[it.pub]||"")+'</span></div>';
   if(it.sub && it.sub.length) h += '<div class="sub">'+it.sub.map(function(s){ return '<a href="'+esc(s.url)+'" target="_blank" rel="noopener" data-open="1">'+esc(s.n)+'</a>'; }).join(" · ")+'</div>';
   h += '<div class="acts">';
-  if(main) h += '<a class="btn pri" href="'+esc(main)+'" target="_blank" rel="noopener" data-open="1">Abrir</a>';
+  // Ruta relativa (archivo alojado junto al índice, p. ej. en la página privada): se abre en la misma pestaña.
+  if(main) h += '<a class="btn pri" href="'+esc(main)+'"'+(/^[a-z]+:/i.test(main)?' target="_blank" rel="noopener"':'')+' data-open="1">Abrir</a>';
   if(it.app && it.url && !it.antigua && it.url!==it.app) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="El archivo suelto, fuera de la app">Archivo suelto</a>';
   if(it.local && it.url) h += '<a class="btn ghost" href="'+esc(it.url)+'" target="_blank" rel="noopener" data-open="1" title="Copia en claude.ai, para el móvil">Página privada</a>';
   if(main) h += '<button class="btn" data-copy="'+esc(main)+'">Copiar enlace</button>';
