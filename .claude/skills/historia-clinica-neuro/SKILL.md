@@ -36,6 +36,51 @@ el psicólogo revisa cada campo antes de pasarlo.
    conviertas dosis ni interpretes «a demanda».
 7. Lenguaje clínico neutro, en castellano, sin siglas propias del centro. Si el informe
    usa una sigla médica, escríbela desarrollada la primera vez.
+8. **Notas de psicología.** Si la historia incluye notas del propio psicólogo, no
+   importes su valoración, su formulación ni sus pautas: es su trabajo, no un dato
+   ajeno. Solo antecedentes biográficos y convivencia, citando la nota, y avísalo en
+   `revisar`.
+9. **Datos sensibles que no pide el protocolo** (religión, origen, orientación sexual,
+   situación migratoria): no los importes.
+
+## Qué buscar además de lo evidente
+
+Para una valoración de idoneidad pesan mucho cosas que no siempre están en los
+diagnósticos. Recógelas literalmente, con fecha y fuente:
+
+- En `hist.hc`, **observaciones de otros profesionales sobre la conducta de dolor**:
+  «magnificación», discordancia entre la queja y la exploración, uso de ayudas técnicas
+  (muletas, collarín, férulas) contra la indicación médica, marcha antiálgica.
+- En `hist.hc`, la **adherencia**: sesiones de rehabilitación indicadas frente a días de
+  asistencia registrados (cuéntalos si el informe los lista), faltas, abandonos.
+- En `revisar`, lo que puede afectar a la **validez de los autoaplicados**: idioma,
+  lectura limitada, nivel educativo, déficit sensorial.
+- En `revisar`, **contradicciones** dentro del mismo informe (mecanismo del accidente,
+  lado afectado, fechas) y **posibles errores de registro** (dosis imposibles,
+  lateralidad cambiada). No las corrijas: cítalas.
+- En `revisar`, lo que **no se ha podido leer**: páginas escaneadas sin texto y
+  documentos adjuntos que se mencionan pero no están en el texto.
+- Si no consta dispositivo propuesto ni petición de la Unidad del Dolor, dilo en
+  `revisar`.
+
+## Informe general de la mutua
+
+Formato habitual de la mutua (exportación «INFORME GENERAL»):
+
+- Cada página repite un pie con caso, historia, entidad, gestor asistencial y «copia
+  fiel del original»: ignóralo; toma el caso y la entidad una sola vez.
+- Apartados: Diagnósticos (con códigos CIE; usa los «de confirmación»), Antecedentes,
+  Anámnesis, exploración y evolución, Hoja de enfermería, Psicólogo, Pruebas,
+  Tratamientos, Rehabilitación y Medicación.
+- La línea temporal sale sobre todo de «Anámnesis, exploración y evolución» y de
+  «Pruebas»; las hojas de enfermería solo si añaden algo (ayudas técnicas, citas).
+- «Medicación» es una lista de dispensaciones con «Fecha desde / hasta», de la más
+  reciente a la más antigua. La **pauta vigente** es la del periodo más reciente;
+  las anteriores resúmelas en una línea («Pautas previas: …», solo los fármacos).
+  La «Medicación que refiere el paciente» de Antecedentes va aparte, tal cual, aunque
+  no tenga pauta.
+- Los días de baja suelen constar en la evolución médica («tiene N días de evolución
+  de baja»): usa la cifra de la visita más reciente y su fecha.
 
 ## Campos que puedes rellenar
 
@@ -63,6 +108,7 @@ campo y explícalo en `revisar`.
 | `hist.it` | texto | Situación de incapacidad temporal, días de baja, propuestas de incapacidad |
 | `emo.antp` | texto largo | Antecedentes psicológicos o psiquiátricos y tratamientos previos que consten |
 | `emo.antf` | texto | Antecedentes familiares relevantes que consten |
+| `social.conv` | texto | Con quién convive, si consta |
 | `laboral.demandas` | texto | Demandas físicas del puesto, si se describen |
 | `laboral.legal` | lista | Solo si el documento lo dice: `Propuesta de incapacidad` · `Incapacidad en trámite` · `Reclamación / litigio` · `Conflicto con la empresa` |
 
