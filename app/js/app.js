@@ -17,7 +17,7 @@
   // Agrupación del hub por tipo/tema (fuente única). Cada herramienta se lista
   // por su id en el grupo que le corresponde; las no listadas caen en "Otras".
   const GRUPOS = [
-    { emoji:"🐾", label:"Empieza por aquí · el porqué", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
+    { emoji:"🐾", label:"Empieza por aquí · el porqué", edad:"todos", desc:"La historia del mono y la metáfora de la manada: para qué respiras y para qué sirve todo esto. Son complementarios: léelos juntos.",
       ids:["recorrido_tec","quien_conduce","la_manada","modelo_atencional","laboratorio_tec"] },
     { emoji:"🫁", label:"Práctica AIS", desc:"Parar y llevar la atención adentro, en el momento.",
       img:"tools-standalone/assets/editorial/ais-curiosidad.webp",
@@ -29,7 +29,7 @@
       ids:["estado_mono","donde_esta_mono"] },
     { emoji:"🧯", label:"Parar y regular impulsos", desc:"Cuando te notas en alerta o a punto de reaccionar.",
       img:"tools-standalone/assets/editorial/ais-amor.webp",
-      ids:["bajar_alerta","control_ira","estoy_aqui_conmigo"] },
+      ids:["bajar_alerta","control_ira"] },
     { emoji:"🪜", label:"Superar miedos", desc:"Exposición gradual, paso a paso.",
       ids:["escalera_exposicion","salidas_paso_a_paso","cuerpo_en_alerta"] },
     { emoji:"💼", label:"Trabajo", desc:"Sostener el día laboral sin arrastrar el cuerpo.",
@@ -41,14 +41,18 @@
         { emoji:"📗", nombre:"Guia per a clubs (català)", desc:"«Esport de base: salut i rendiment». La mateixa guia, en català.", url:"assets/pdf/guia-clubs-esport-aprens.pdf" },
         { emoji:"🤝", nombre:"Propuesta para clubes", desc:"Una página con lo que incluye, la cuota por temporada, el piloto gratuito y las ayudas.", url:"assets/pdf/proposta-clubs-aprens-es.pdf" }
       ] },
-    { emoji:"🧸", label:"Peques y familias", desc:"Para acompañar a niñas y niños.",
-      ids:["peques_desbordamiento","cuentos_nil","cuento_familia","tiempo_limite","exploradora_valiente","mision_barrio","escalera_comidas","ritual_calma","rincon_calma","identidad_sin_prisa"] },
+    { emoji:"🎒", label:"Estar contigo y volver a salir", edad:"adol", desc:"Pensadas para tu edad: estar contigo cuando todo va rápido y volver a salir con tu gente, paso a paso.",
+      ids:["estoy_aqui_conmigo","mision_barrio"] },
+    { emoji:"🧸", label:"Jugar, contar y probar", edad:"peques", desc:"Juegos, cuentos y escaleras para niñas y niños, para hacer con madre y padre.",
+      ids:["cuentos_nil","cuento_familia","exploradora_valiente","mision_barrio","escalera_comidas","rincon_calma"] },
+    { emoji:"🏡", label:"Acompañar desde casa", edad:"familias", desc:"Pautas para madres y padres: acompañar en casa la regulación de vuestros hijos e hijas, los tipos de familia y sus preguntas sobre quiénes son.",
+      ids:["peques_desbordamiento","tiempo_limite","ritual_calma","cuento_familia","identidad_sin_prisa"] },
     { emoji:"📊", label:"Autoevaluación y seguimiento", desc:"Ver cómo evolucionas (L/D/C) y registrar tu semana.",
       img:"tools-standalone/assets/editorial/herramienta-diaria.webp",
       ids:["screening_tec","brujula_valores","agenda_atencional","tracker_ais","tracker_tec"] },
-    { emoji:"🎬", label:"Las historias, animadas", desc:"Las tres reflexiones base en versión animada y narrada, de un minuto cada una. Son las mismas de «Empieza por aquí», en vídeo, para verlas con calma o compartirlas.",
+    { emoji:"🎬", label:"Las historias, animadas", edad:"todos", desc:"Las tres reflexiones base en versión animada y narrada, de un minuto cada una. Son las mismas de «Empieza por aquí», en vídeo, para verlas con calma o compartirlas.",
       ids:["historia_animada","historia_manada","historia_control"] },
-    { emoji:"🖼️", label:"Para llevar contigo", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
+    { emoji:"🖼️", label:"Para llevar contigo", edad:"todos", desc:"Convierte una frase en el fondo de pantalla de tu móvil.",
       ids:["fondos_frases"] }
   ];
 
@@ -689,7 +693,18 @@
     const byId = {}; tools.forEach(t=>{ byId[t.id]=t; });
     const usados = {};
 
+    // Secciones por edades. «Para todos» (lo básico, abierto siempre) va arriba, con el recorrido y las
+    // herramientas básicas; después Adultos, Adolescentes, Peques y Familias. Sin «edad», un grupo es de adultos.
+    const EDADES = [
+      { k:"todos",    id:"edad-todos",    t:"🤲 Para todos" },
+      { k:"adultos",  id:"edad-adultos",  t:"🧑 Adultos" },
+      { k:"adol",     id:"edad-adol",     t:"🎒 Adolescentes" },
+      { k:"peques",   id:"edad-peques",   t:"🧸 Peques" },
+      { k:"familias", id:"edad-familias", t:"🏡 Familias" }
+    ];
+    const edadDe = g => g.edad || "adultos";
     let secciones = "";
+    const seccionesEdad = {};
     GRUPOS.forEach(g=>{
       const gtools = g.ids.map(id=>byId[id]).filter(Boolean);
       const gpdfs = g.pdfs || [];
@@ -699,15 +714,19 @@
       const secIco = g.img
         ? `<span class="hub-sec-thumb"><img src="${g.img}" alt="" loading="lazy"></span>`
         : `<span class="hub-sec-e">${g.emoji}</span>`;
-      secciones += `<div class="hub-sec">${secIco}<span class="hub-sec-t">${g.label}</span></div>
+      seccionesEdad[edadDe(g)] = (seccionesEdad[edadDe(g)]||"") + `<div class="hub-sec">${secIco}<span class="hub-sec-t">${g.label}</span></div>
         <div class="hub-sec-d">${g.desc}</div>
         <div class="hub-grid">${cards}</div>`;
     });
     const otras = tools.filter(t=>!usados[t.id] && !t.oculta);
     if(otras.length){
-      secciones += `<div class="hub-sec"><span class="hub-sec-e">🧩</span><span class="hub-sec-t">Otras</span></div>
+      seccionesEdad.adultos = (seccionesEdad.adultos||"") + `<div class="hub-sec"><span class="hub-sec-e">🧩</span><span class="hub-sec-t">Otras</span></div>
         <div class="hub-grid">${otras.map(hubCard).join("")}</div>`;
     }
+    // Los grupos «para todos» siguen a lo básico; cada edad lleva su título (el de «Para todos» va arriba).
+    secciones += seccionesEdad.todos || "";
+    EDADES.slice(1).forEach(e=>{ if(seccionesEdad[e.k]) secciones += `<h2 class="hub-edad" id="${e.id}">${e.t}</h2>` + seccionesEdad[e.k]; });
+    const navEdades = `<nav class="hub-edades" aria-label="Secciones por edades">${EDADES.filter(e=>e.k==="todos"||seccionesEdad[e.k]).map(e=>`<a href="#${e.id}" data-edad="${e.id}">${e.t}</a>`).join("")}</nav>`;
 
     const focoBanner = focoPauta && ["L","D","C"].includes(focoPauta)
       ? `<div class="aviso" style="margin-bottom:16px">🎯 <b>Foco de esta semana:</b> ${({L:"Latencia",D:"Densidad",C:"Continuidad"})[focoPauta]}. Tu psicólogo/a te ha pautado prestar atención especial a este parámetro.</div>`
@@ -721,6 +740,9 @@
           <div class="hsubt">Empieza por tu recorrido: te dice qué hacer cada día y en qué orden.</div>
         </div>
       </div>
+      <section class="acc" id="acceso" aria-labelledby="accTit" hidden></section>
+      ${navEdades}
+      <h2 class="hub-edad" id="edad-todos">🤲 Para todos <span class="hub-edad-b">siempre abierto</span></h2>
       ${recorridoHoyHTML()}
       ${basicasHTML()}
       ${porqueHTML()}
@@ -737,6 +759,7 @@
       ${recorridoHTML()}
       ${historiaHTML()}
       ${secciones}
+      <h2 class="hub-edad" id="edad-material">📚 Material de apoyo y libros</h2>
       ${docsHTML()}
       ${librosHTML()}
       ${avisoPrivacidadHTML()}`;
@@ -744,6 +767,11 @@
     wireCont();
     wireCV();
     montarIndice();
+    if(window.AprensAcceso) AprensAcceso.montar(document.getElementById("acceso"));
+    // Los enlaces del índice por edades bajan al apartado sin cambiar la ruta (#/) de la app.
+    screen.querySelectorAll(".hub-edades a").forEach(a=>a.addEventListener("click", e=>{
+      e.preventDefault(); const d=document.getElementById(a.dataset.edad); if(d) d.scrollIntoView({behavior:"smooth", block:"start"});
+    }));
     montarNucleoAIS();
     montarVineta();
     montarAbrazo();
@@ -902,6 +930,14 @@
     // Cada navegación reinicia el gancho de "atrás interno"; la herramienta lo
     // vuelve a poner si tiene pantallas propias por las que retroceder.
     window.APRENS_toolBack = null;
+    // Enlace del WhatsApp: #/codigo/APR-XXXX-XXXX → se activa el código y se queda en el menú.
+    const mc = h.match(/^#\/codigo\/([A-Za-z0-9-]{8,20})$/);
+    if(mc){
+      try{ history.replaceState(history.state, "", location.pathname + location.search + "#/"); }catch(e){}
+      route();
+      if(window.AprensAcceso){ AprensAcceso.activar(mc[1]); const c=document.getElementById("acceso"); if(c) c.scrollIntoView({block:"start"}); }
+      return;
+    }
     const st = history.state;
     if(st && typeof st.apPos === "number") apPos = st.apPos;            // atrás o adelante a una entrada conocida
     else {                                                              // entrada nueva
